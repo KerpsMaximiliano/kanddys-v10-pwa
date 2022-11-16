@@ -14,7 +14,7 @@ import {
   addTagContainersPublic,
   itemAddTag,
   itemRemoveTag,
-  ordersByTag
+  ordersByTag,
 } from '../graphql/tags.gql';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
@@ -215,14 +215,19 @@ export class TagsService {
     }
   }
 
-  async ordersByTag(limit: number, tagIds: Array<string>) {
+  async ordersByTag(
+    orderStatuses: Array<string>,
+    limit: number,
+    tagIds: Array<string>
+  ) {
     try {
+      console.log({ orderStatus: orderStatuses, limit, tagId: tagIds })
       const result = await this.graphql.query({
         query: ordersByTag,
-        variables: { limit, tagId: tagIds },
+        variables: { orderStatus: orderStatuses, limit, tagId: tagIds },
         fetchPolicy: 'no-cache',
       });
-      return result;
+      return result?.ordersByTag;
     } catch (e) {
       console.log(e);
     }

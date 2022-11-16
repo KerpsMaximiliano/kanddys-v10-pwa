@@ -266,7 +266,12 @@
                   </div>
                   <div class="incomes-and-show-all">
                     <div class="mb-3 middle">
-                      Ingreso: ${{ tagGroup.income | number: "1.2-2" }}
+                      <ng-container *ngIf="incomeLoadingStatus === 'complete'">
+                        Ingreso: ${{ tagGroup.income | number: "1.2-2" }}                        
+                      </ng-container>
+                      <ng-container *ngIf="incomeLoadingStatus !== 'complete'">
+                        Ingreso: Cargando...
+                      </ng-container>
                     </div>
                     <div
                       class="mb-3 text-right"
@@ -610,7 +615,7 @@
   >
     <img
       [src]="env + '/double-arrow-up.png'"
-      (click)="navigate()"
+      (click)="resetSelectedTags()"
       alt="open info"
     />
     <span>EN {{ matchingOrdersTotalCounter }} FACTURAS</span>

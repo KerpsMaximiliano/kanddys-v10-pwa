@@ -42,6 +42,7 @@ interface TagGroup {
 export class OrdersAndPreOrdersList implements OnInit {
   URI: string = environment.uri;
   loadingStatus = 'loading';
+  incomeLoadingStatus = 'loading';
   searchBar: FormControl = new FormControl();
   headerText: any = {
     text: 'Facturas y Pre-facturas',
@@ -105,10 +106,11 @@ export class OrdersAndPreOrdersList implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 30,
+    pageSize: 5,
     status: 'complete',
   };
   renderItemsPromise: Promise<{ ordersByMerchant: Array<ItemOrder> }> = null;
+  changedMenuOption: boolean = false;
 
   @ViewChild('highlightedOrdersSwiper')
   highlightedOrdersSwiper: SwiperComponent;
@@ -196,24 +198,10 @@ export class OrdersAndPreOrdersList implements OnInit {
       this.typeOfList === 'facturas' ? 'prefacturas' : 'facturas';
     //first loads orders by facturas or prefacturas
     await this.organizeTagsGroups();
-    for (const tagGroup of this.tagGroups) {
-      ordersByMerchantPerTagPromises.push(
-        this.loadFirstsOrdersForTagGroup(tagGroup.tag, this.typeOfList)
-      );
-    }
 
-    this.tagGroups = [];
-    for await (const orderByMerchantResponse of ordersByMerchantPerTagPromises) {
-      if ('orders' in orderByMerchantResponse) {
-        this.tagGroups.push(orderByMerchantResponse);
+    const tagsIds = this.tags.map((tag) => tag._id);
 
-        if (this.typeOfList === 'facturas')
-          this.permanentOrdersTagGroups.push(orderByMerchantResponse);
-        else this.permanentPreOrdersTagGroups.push(orderByMerchantResponse);
-      }
-    }
-
-    this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
+    await this.loadFirstsOrdersForAllTagGroups(tagsIds, this.typeOfList);
 
     let highlightedOrders = await this.loadFirstsHighlightedOrders(
       this.typeOfList
@@ -236,29 +224,8 @@ export class OrdersAndPreOrdersList implements OnInit {
     }
 
     //then does the same for the opposite(if typeOflist === facturas, its oposite is prefacturas)
-    const oppositeOrdersByMerchantPerTagPromises = [];
-    for (const tagGroup of this.tagGroups) {
-      oppositeOrdersByMerchantPerTagPromises.push(
-        this.loadFirstsOrdersForTagGroup(tagGroup.tag, opposite)
-      );
-    }
 
-    for await (const orderByMerchantResponse of oppositeOrdersByMerchantPerTagPromises) {
-      if ('orders' in orderByMerchantResponse) {
-        if (opposite === 'facturas')
-          this.permanentOrdersTagGroups.push(orderByMerchantResponse);
-        else this.permanentPreOrdersTagGroups.push(orderByMerchantResponse);
-      }
-    }
-
-    if (opposite === 'facturas')
-      this.permanentOrdersTagGroups = await this.getPermanentTagGroupsIncome(
-        this.permanentOrdersTagGroups
-      );
-    else
-      this.permanentPreOrdersTagGroups = await this.getPermanentTagGroupsIncome(
-        this.permanentPreOrdersTagGroups
-      );
+    await this.loadFirstsOrdersForAllTagGroups(tagsIds, opposite);
 
     highlightedOrders = await this.loadFirstsHighlightedOrders(opposite);
 
@@ -279,47 +246,58 @@ export class OrdersAndPreOrdersList implements OnInit {
     }
 
     this.loadingStatus = 'complete';
-  }
 
-  loadFirstsOrdersForTagGroup = async (
-    tag: Tag,
-    typeOfList: string
-  ): Promise<any> => {
-    const ordersByMerchantPagination: PaginationInput = {
-      options: {
-        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
-        limit: 10,
-      },
-      findBy: {
-        orderStatus:
-          typeOfList === 'facturas'
-            ? ['in progress', 'to confirm', 'completed']
-            : 'draft',
-        tags: [tag._id],
-      },
-    };
-
-    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
-      this.defaultMerchant._id,
-      ordersByMerchantPagination
-    );
-
-    const income = await this.merchantsService.incomeMerchant({
-      findBy: {
-        merchant: this.merchantsService.merchantData._id,
-        orderStatus:
-          typeOfList === 'facturas'
-            ? ['in progress', 'to confirm', 'completed']
-            : 'draft',
-        tags: [tag._id],
-      },
+    //Get income for tagGroups
+    this.getPermanentTagGroupsIncome(this.tagGroups).then((result) => {
+      if (!this.changedMenuOption) this.tagGroups = result;
     });
 
-    return {
-      tag: tag,
-      orders: ordersByMerchant,
-      income,
-    };
+    if (opposite === 'facturas')
+      this.permanentOrdersTagGroups = await this.getPermanentTagGroupsIncome(
+        this.permanentOrdersTagGroups
+      );
+    else
+      this.permanentPreOrdersTagGroups = await this.getPermanentTagGroupsIncome(
+        this.permanentPreOrdersTagGroups
+      );
+
+    this.incomeLoadingStatus = 'complete';
+  }
+
+  loadFirstsOrdersForAllTagGroups = async (
+    tagIds: Array<string>,
+    typeOfList: string
+  ): Promise<any> => {
+    const result = await this.tagsService.ordersByTag(
+      typeOfList === 'facturas'
+        ? ['in progress', 'to confirm', 'completed']
+        : ['draft'],
+      10,
+      tagIds
+    );
+
+    if (result) {
+      for (const tagAndOrders of result as Array<{
+        tag: string;
+        orders: Array<ItemOrder>;
+      }>) {
+        const { tag: tagId, orders } = tagAndOrders;
+        const tag = this.tagsHashTable[tagId];
+
+        const tagGroupInput = {
+          tag,
+          orders,
+          income: 0,
+        };
+        this.tagGroups.push(tagGroupInput);
+
+        if (typeOfList === 'facturas')
+          this.permanentOrdersTagGroups.push(tagGroupInput);
+        else this.permanentPreOrdersTagGroups.push(tagGroupInput);
+      }
+    }
+
+    return result;
   };
 
   loadFirstsHighlightedOrders = async (
@@ -669,7 +647,7 @@ export class OrdersAndPreOrdersList implements OnInit {
           ...ordersByMerchantPagination,
           findBy: {
             ...ordersByMerchantPagination.findBy,
-            merchant: this.defaultMerchant._id
+            merchant: this.defaultMerchant._id,
           },
         });
 
@@ -735,6 +713,7 @@ export class OrdersAndPreOrdersList implements OnInit {
   }
 
   async handleOption(option: string) {
+    this.changedMenuOption = true;
     if (this.loadingStatus === 'complete') {
       this.unselectedTags = [...this.tags];
       this.showSearchbar = true;
@@ -757,6 +736,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       this.matchingOrdersTotalCounter = null;
       this.ordersIncomeForMatchingOrders = null;
       this.searchBar.setValue('');
+      this.incomeLoadingStatus = 'loading';
       await this.getHighlightedOrdersIncome();
 
       if (option === 'facturas') {
@@ -772,6 +752,8 @@ export class OrdersAndPreOrdersList implements OnInit {
         this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
         this.ordersWithoutTagsIncome = this.preordersWithoutTagsIncomePermanent;
       }
+
+      this.incomeLoadingStatus = 'complete';
     }
   }
 

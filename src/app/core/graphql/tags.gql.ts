@@ -133,7 +133,59 @@ export const tags = gql`
 `;
 
 export const ordersByTag = gql`
-  query ordersByTag($limit: Float, $tagId: [ObjectID!]!) {
-    ordersByTag(limit: $limit, tagId: $tagId)
+  query ordersByTag(
+    $orderStatus: [String!]
+    $limit: Float
+    $tagId: [ObjectID!]!
+  ) {
+    ordersByTag(orderStatus: $orderStatus, limit: $limit, tagId: $tagId) {
+      tag
+      orders {
+        _id
+        subtotals {
+          amount
+        }
+        user {
+          phone
+          email
+          name
+          image
+        }
+        ocr {
+          _id
+        }
+        items {
+          item {
+            name
+            images
+            tags
+            params {
+              _id
+              name
+              values {
+                _id
+                name
+                price
+              }
+            }
+          }
+          params {
+            param
+            paramValue
+          }
+          reservation {
+            _id
+          }
+        }
+        orderStatus
+        status {
+          status
+          access
+        }
+        dateId
+        createdAt
+        tags
+      }
+    }
   }
 `;
