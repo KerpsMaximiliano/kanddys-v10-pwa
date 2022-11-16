@@ -20,7 +20,7 @@ export const tagsByUser = gql`
   query tagsByUser($paginate: PaginationInput) {
     tagsByUser(paginate: $paginate) {
       _id
-			name
+      name
       images
       status
     }
@@ -47,10 +47,7 @@ export const addTagsInOrder = gql`
 `;
 
 export const itemAddTag = gql`
-  mutation itemAddTag(
-    $tagId: ObjectID!
-    $id: ObjectID!
-  ) {
+  mutation itemAddTag($tagId: ObjectID!, $id: ObjectID!) {
     itemAddTag(tagId: $tagId, id: $id) {
       _id
       tags
@@ -59,10 +56,7 @@ export const itemAddTag = gql`
 `;
 
 export const itemRemoveTag = gql`
-  mutation itemRemoveTag(
-    $tagId: ObjectID!
-    $id: ObjectID!
-  ) {
+  mutation itemRemoveTag($tagId: ObjectID!, $id: ObjectID!) {
     itemRemoveTag(tagId: $tagId, id: $id) {
       _id
       tags
@@ -135,5 +129,11 @@ export const tags = gql`
       status
       images
     }
+  }
+`;
+
+export const ordersByTag = gql`
+  query ordersByTag($limit: Float, $tagId: [ObjectID!]!) {
+    ordersByTag(limit: $limit, tagId: $tagId)
   }
 `;
