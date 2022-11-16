@@ -11,6 +11,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anexos-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { Item } from 'src/app/core/models/item';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-article-params',
@@ -52,7 +53,8 @@ export class ArticleParamsComponent implements OnInit {
     private _MerchantsService: MerchantsService,
     private _SaleflowService: SaleFlowService,
     private _Router: Router,
-    private _Route: ActivatedRoute
+    private _Route: ActivatedRoute,
+    private _ToastrService: ToastrService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -111,7 +113,7 @@ export class ArticleParamsComponent implements OnInit {
   };
 
   countDecimals(value: number) {
-    if(!value) return;
+    if (!value) return;
     if (Math.floor(value) === value) return 0;
     return value.toString().split('.')[1]?.length || 0;
   }
@@ -152,7 +154,7 @@ export class ArticleParamsComponent implements OnInit {
           this.models.push(item.name);
           this.name.setValue(item.name);
           this.changeModel(0);
-          this.default ? this.default = false : this.default = true;
+          this.default ? (this.default = false) : (this.default = true);
           this.handleCurrencyInput(item.pricing);
         },
       });
@@ -250,6 +252,7 @@ export class ArticleParamsComponent implements OnInit {
           },
           this._SaleflowService.saleflowData._id
         );
+        this._ToastrService.success('Producto creado satisfactoriamente!');
         this._Router.navigate([`/admin/create-article/${createItem._id}`]);
       } else {
         const { createPreItem } = await this._ItemsService.createPreItem(

@@ -145,14 +145,14 @@ export class ItemsService {
     return result;
   }
 
-  async authItem(merchantId: string, id: string) {
+  async authItem(merchantId: string, id: string): Promise<Item> {
     const result = await this.graphql.mutate({
       mutation: authItem,
       variables: { merchantId, id },
       fetchPolicy: 'no-cache',
     });
     if (!result || result?.errors) return undefined;
-    return result;
+    return result.authItem;
   }
 
   async itemsByMerchant(
