@@ -356,29 +356,37 @@ export class ItemDisplayComponent implements OnInit {
             ] = tag as Tag;
           }
 
-          for (const item of allItems as Array<ExtendedItem>) {
+          (
+            this.headerService.dashboardTemporalData[
+              'allItems'
+            ] as Array<ExtendedItem>
+          ).forEach((item, index) => {
             if (item._id === this.item._id) {
-              for (const tag of newTags) {
+              for (const tagId of this.item.tags) {
                 item.tagsFilled.push(
                   this.headerService.dashboardTemporalData['tagsHashTable'][
-                    tag._id
+                    tagId
                   ]
                 );
               }
             }
-          }
+          });
 
-          for (const item of highlightedItems as Array<ExtendedItem>) {
+          (
+            this.headerService.dashboardTemporalData[
+              'highlightedItems'
+            ] as Array<ExtendedItem>
+          ).forEach((item, index) => {
             if (item._id === this.item._id) {
-              for (const tag of newTags) {
+              for (const tagId of item.tags) {
                 item.tagsFilled.push(
                   this.headerService.dashboardTemporalData['tagsHashTable'][
-                    tag._id
+                    tagId
                   ]
                 );
               }
             }
-          }
+          });
         }
 
         this.router.navigate(['admin/entity-detail-metrics'], {
@@ -536,19 +544,31 @@ export class ItemDisplayComponent implements OnInit {
           itemTags && Array.isArray(itemTags)
             ? itemTags.map((tag) => tag._id)
             : null,
-        tagAction: async ({ selectedTags }) => {
-          this.selectedTags = selectedTags;
+        tagAction: async (params) => {
+          this.selectedTags = params;
+
+          const clickedTagId = params._id;
 
           try {
-            const response = await this.itemsService.updateItem(
-              {
-                tags: this.selectedTags,
-              },
-              this.item._id
-            );
+            if (!this.item.tags.includes(clickedTagId)) {
+              const { itemAddTag: result } = await this.tagsService.itemAddTag(
+                clickedTagId,
+                this.item._id
+              );
 
-            if (response) {
-              this.item.tags = this.selectedTags;
+              if (result) {
+                this.item.tags = result.tags;
+              }
+            } else {
+              const { itemRemoveTag: result } =
+                await this.tagsService.itemRemoveTag(
+                  clickedTagId,
+                  this.item._id
+                );
+
+              if (result) {
+                this.item.tags = result.tags;
+              }
             }
           } catch (error) {
             this.toastr.error('Error al asignar tags', null, {

@@ -14,6 +14,7 @@ import {
   addTagContainersPublic,
   itemAddTag,
   itemRemoveTag,
+  ordersByTag,
 } from '../graphql/tags.gql';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
@@ -96,6 +97,35 @@ export class TagsService {
       const result = await this.graphql.mutate({
         mutation: addTagsInOrder,
         variables: { merchantId, tagId, orderId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemAddTag(tagId: string, id: string) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: itemAddTag,
+        variables: { tagId, id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemRemoveTag(tagId: string, id: string) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: itemRemoveTag,
+        variables: { tagId, id },
+        fetchPolicy: 'no-cache',
       });
       if (!result || result?.errors) return undefined;
       return result;
@@ -171,32 +201,6 @@ export class TagsService {
     }
   }
 
-  async itemAddTag(tagId: string, id: string) {
-    try {
-      const result = await this.graphql.mutate({
-        mutation: itemAddTag,
-        variables: { tagId, id },
-      });
-      if (!result || result?.errors) return undefined;
-      return result;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async itemRemoveTag(tagId: string, id: string) {
-    try {
-      const result = await this.graphql.mutate({
-        mutation: itemRemoveTag,
-        variables: { tagId, id },
-      });
-      if (!result || result?.errors) return undefined;
-      return result;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   async tags(paginate: PaginationInput) {
     try {
       const result = await this.graphql.query({
@@ -205,6 +209,24 @@ export class TagsService {
         fetchPolicy: 'no-cache',
       });
       return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async ordersByTag(
+    orderStatuses: Array<string>,
+    limit: number,
+    tagIds: Array<string>
+  ) {
+    try {
+      console.log({ orderStatus: orderStatuses, limit, tagId: tagIds })
+      const result = await this.graphql.query({
+        query: ordersByTag,
+        variables: { orderStatus: orderStatuses, limit, tagId: tagIds },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.ordersByTag;
     } catch (e) {
       console.log(e);
     }

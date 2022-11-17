@@ -1,17 +1,28 @@
 import { LocationStrategy } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
 import { ItemOrder, OrderStatusNameType } from 'src/app/core/models/order';
 import { Post } from 'src/app/core/models/post';
+import { Tag } from 'src/app/core/models/tags';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
+import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 import { environment } from 'src/environments/environment';
+
+interface Image {
+  src: string;
+  filter?: string;
+  callback?(...param): any;
+}
 
 @Component({
   selector: 'app-order-detail',
@@ -28,6 +39,7 @@ export class OrderDetailComponent implements OnInit {
   payment: number;
   orderStatus: OrderStatusNameType;
   orderDate: string;
+  URI: string = environment.uri;
   date: {
     month: string;
     day: number;
@@ -36,6 +48,47 @@ export class OrderDetailComponent implements OnInit {
   };
   flowRoute: string = null;
   messageLink: string;
+  tags: Tag[];
+  selectedTags: any = {};
+  previousTags: any;
+  merchant: boolean;
+  imageList: Image[] = [
+    {
+      src: '/bookmark-checked.svg',
+      filter: 'brightness(2)',
+      callback: async () => {
+        const tags = (await this.tagsService.tagsByUser()) || [];
+        for (const tag of tags) {
+          this.selectedTags[tag._id] = false;
+          if (this.order.tags.includes(tag._id)) {
+            this.selectedTags[tag._id] = true;
+          }
+        }
+        this.tags = tags;
+        this.tagDialog();
+      },
+    },
+    {
+      src: '/QR.svg',
+      filter: 'brightness(7)',
+      callback: () => {
+        this.downloadQr();
+      },
+    },
+    {
+      src: '/upload.svg',
+      filter: 'brightness(2)',
+      callback: async () => {
+        await this.ngNavigatorShareService.share({
+          title: `Mi orden`,
+          url: `${this.URI}/ecommerce/order-detail/${this.order._id}`,
+        });
+      },
+    },
+  ];
+
+  tabs: any[] = ['', '', '', '', ''];
+  @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,7 +98,10 @@ export class OrderDetailComponent implements OnInit {
     private postsService: PostsService,
     private customizerValueService: CustomizerValueService,
     private reservationService: ReservationService,
-    private location: LocationStrategy
+    private location: LocationStrategy,
+    private merchantsService: MerchantsService,
+    private tagsService: TagsService,
+    private ngNavigatorShareService: NgNavigatorShareService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -84,6 +140,8 @@ export class OrderDetailComponent implements OnInit {
     const secondsString = String(seconds).length < 2 ? '0' + seconds : seconds;
 
     this.orderDate = `${dayString}/${monthString}/${year}, ${hourString}:${minutesString} ${timeOfDay}`;
+
+    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
 
     if (this.order.items[0].post) {
       this.post = (
@@ -294,7 +352,6 @@ export class OrderDetailComponent implements OnInit {
           : ''
       }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
 
-
       this.messageLink = `https://api.whatsapp.com/send?phone=${
         this.order.items[0].saleflow.merchant.owner.phone
       }&text=${encodeURIComponent(message)}`;
@@ -302,11 +359,21 @@ export class OrderDetailComponent implements OnInit {
     }
   }
 
-  notificationClicked() {
+  async notificationClicked() {
     this.notify = false;
     this.router.navigate([], {
       relativeTo: this.route,
     });
+    console.log(this.order.tags);
+    const tags = (await this.tagsService.tagsByUser()) || [];
+    for (const tag of tags) {
+      this.selectedTags[tag._id] = false;
+      if (this.order.tags.includes(tag._id)) {
+        this.selectedTags[tag._id] = true;
+      }
+    }
+    this.tags = tags;
+    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
   }
 
   openImageModal(imageSourceURL: string) {
@@ -351,6 +418,117 @@ export class OrderDetailComponent implements OnInit {
     this.router.navigate([`ecommerce/store/${link}`]);
   }
 
+  async tagDialog(tags?: string[]) {
+    const tagsFilled = await this.tagsService.tagsByUser();
+
+    this.dialogService.open(TagAsignationComponent, {
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      props: {
+        text: 'SALVAR LA ORDEN EN TAGS SELECCIOANDOS',
+        tags: tagsFilled,
+        orderId: this.order._id,
+        entity: 'order',
+        entityId: this.order._id,
+        activeTags:
+          this.order.tags &&
+          (this.order.tags !== null ||
+            (undefined && this.order.tags.length > 0))
+            ? this.order.tags
+            : null,
+        tagAction: async (param) => {
+          /*
+          !this.selectedTags[param._id]
+            ? (this.selectedTags[param._id] = true)
+            : (this.selectedTags[param._id] = false);
+            */
+          this.addTag(param._id);
+        },
+      },
+    });
+  }
+
+  async isMerchantOwner(merchant: string) {
+    const ismerchant = await this.merchantsService.merchantDefault();
+
+    console.log('ismerchant', ismerchant);
+    merchant === ismerchant?._id ? (this.merchant = true) : null;
+  }
+
+  async addTag(tagId?: string) {
+    if (!this.selectedTags[tagId]) {
+      const added = await this.tagsService.addTagsInOrder(
+        this.order.items[0].saleflow.merchant._id,
+        tagId,
+        this.order._id
+      );
+      this.selectedTags[tagId] = true;
+      this.order.tags.push(tagId);
+    } else {
+      const removed = await this.tagsService.removeTagsInOrder(
+        this.order.items[0].saleflow.merchant._id,
+        tagId,
+        this.order._id
+      );
+      this.selectedTags[tagId] = false;
+      if (this.order.tags.includes(tagId)) {
+        this.order.tags = this.order.tags.filter((tag) => tag !== tagId);
+      }
+      /* const tagIndex = this.order.tags.findIndex((tag)=>{
+         tagId === this.order.tags[tag]
+         console.log(tagId + ' EL ID DEL TAG');
+      });
+      console.log(tagIndex + ' INDICE')
+      if(tagIndex >= 0){
+         this.order.tags.splice(tagIndex, 1)
+      } else {
+         console.log('No Esta')
+      } */
+    }
+    /* let selectedTags = Object.keys(this.selectedTags).filter((tag) =>{
+      return this.selectedTags[tag] == true
+   })
+   console.log(selectedTags);
+   for await (const tag of selectedTags) { 
+   } */
+  }
+
+  downloadQr() {
+    const parentElement = this.qr.nativeElement.querySelector('img').src;
+    let blobData = this.convertBase64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(blobData, 'Qrcode');
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Qrcode';
+      link.click();
+    }
+  }
+
+  private convertBase64ToBlob(Base64Image: string) {
+    // SPLIT INTO TWO PARTS
+    const parts = Base64Image.split(';base64,');
+    // HOLD THE CONTENT TYPE
+    const imageType = parts[0].split(':')[1];
+    // DECODE BASE64 STRING
+    const decodedData = window.atob(parts[1]);
+    // CREATE UNIT8ARRAY OF SIZE SAME AS ROW DATA LENGTH
+    const uInt8Array = new Uint8Array(decodedData.length);
+    // INSERT ALL CHARACTER CODE INTO UINT8ARRAY
+    for (let i = 0; i < decodedData.length; ++i) {
+      uInt8Array[i] = decodedData.charCodeAt(i);
+    }
+    // RETURN BLOB IMAGE AFTER CONVERSION
+    return new Blob([uInt8Array], { type: imageType });
+  }
+
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;
@@ -376,6 +554,30 @@ export class OrderDetailComponent implements OnInit {
   }
 
   goBackToFlowRoute() {
-    this.router.navigate([this.flowRoute]);
+    if (
+      this.flowRoute.includes('admin/orders') &&
+      this.flowRoute &&
+      this.merchant
+    ) {
+      this.router.navigate([this.flowRoute], {
+        queryParams: {
+          startOnSnapshot: true,
+        },
+      });
+      return;
+    } else {
+      if (this.merchant && !this.flowRoute.includes('admin/orders')) {
+        this.router.navigate(['admin/orders']);
+        return;
+      }
+
+      if (this.flowRoute && !this.merchant) {
+        this.router.navigate([this.flowRoute]);
+        return;
+      } else {
+        this.location.back();
+        return;
+      }
+    }
   }
 }

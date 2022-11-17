@@ -405,6 +405,12 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         this.finishedMutation = true;
 
         if (this.orderID) {
+          await this.tagsService.addTagsInOrder(
+            this.merchantDefault._id,
+            createdTag._id,
+            this.orderID
+          );
+
           this.router.navigate(['ecommerce/order-info/' + this.orderID]);
         } else {
           if (this.entity === 'item') {

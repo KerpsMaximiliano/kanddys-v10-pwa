@@ -33,6 +33,7 @@ import {
   usersOrderMerchant,
   incomeMerchant,
   merchantDefault2,
+  ordersByMerchantHot,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -95,10 +96,32 @@ export class MerchantsService {
 
   async ordersByMerchant(
     merchant: string,
+    pagination?: PaginationInput,
+    justPromise?: boolean
+  ): Promise<{ ordersByMerchant: ItemOrder[] } | any> {
+    if (!justPromise) {
+      const response = await this.graphql.query({
+        query: ordersByMerchant,
+        variables: { pagination, merchant },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } else {
+      const promise = this.graphql.query({
+        query: ordersByMerchant,
+        variables: { pagination, merchant },
+        fetchPolicy: 'no-cache',
+      });
+      return promise;
+    }
+  }
+
+  async hotOrdersByMerchant(
+    merchant: string,
     pagination?: PaginationInput
   ): Promise<{ ordersByMerchant: ItemOrder[] }> {
     const response = await this.graphql.query({
-      query: ordersByMerchant,
+      query: ordersByMerchantHot,
       variables: { pagination, merchant },
       fetchPolicy: 'no-cache',
     });
@@ -327,10 +350,10 @@ export class MerchantsService {
     return response;
   }
 
-  async incomeMerchant(merchantId: string) {
+  async incomeMerchant(input: PaginationInput) {
     const response = await this.graphql.query({
       query: incomeMerchant,
-      variables: { merchantId },
+      variables: { input },
       fetchPolicy: 'no-cache',
     });
     if (!response || response?.errors) return undefined;

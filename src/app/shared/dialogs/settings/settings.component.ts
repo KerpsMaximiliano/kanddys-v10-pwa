@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
 
-interface Button {
+export interface Button {
   text: string;
   callback?(...params): any;
   asyncCallback?(...params): Promise<any>;
@@ -37,6 +37,7 @@ export class SettingsComponent implements OnInit {
   }> = [];
   @Input() indexValue: number;
   @Input() link: string;
+  @Input() linkToCopy: string = null;
   currentStatusIndex: number = 0;
   env: string = environment.assetsUrl;
 
@@ -91,9 +92,14 @@ export class SettingsComponent implements OnInit {
     this.ref.close();
   }
 
+  // Aquí hubo un merge conflict
   copyLink() {
     if (this.link) this.clipboard.copy(this.link);
     else this.clipboard.copy(window.location.href);
+    const clipboardLink = !this.linkToCopy
+      ? window.location.href
+      : this.linkToCopy;
+    this.clipboard.copy(clipboardLink);
     this.toastr.info('Enlace copiado en el clipboard');
     this.close();
   }
