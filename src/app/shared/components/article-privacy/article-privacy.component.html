@@ -33,6 +33,12 @@
     <swiper [config]="swiperConfig">
       <div
         class="listado"
+        (click)="addTag()"
+      >
+        Nueva
+      </div>
+      <div
+        class="listado"
         *ngFor="let tag of tags"
         [style.color]="
           listadoSelection.includes(tag._id) ? '#272727' : '#7b7b7b'

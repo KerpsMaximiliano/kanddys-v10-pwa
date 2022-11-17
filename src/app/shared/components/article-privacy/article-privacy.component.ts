@@ -8,7 +8,8 @@ import {
 } from '@angular/forms';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { Recipient } from 'src/app/core/models/recipients';
-import { Tag } from 'src/app/core/models/tags';
+import { Tag, TagInput } from 'src/app/core/models/tags';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { RecipientsService } from 'src/app/core/services/recipients.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -167,16 +168,20 @@ export class ArticlePrivacyComponent implements OnInit {
   _Recipients: Recipient[];
   tempRecipients: Recipient[];
   _AbstractControl: AbstractControl = new FormControl();
+  idMerchant: string;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _DialogService: DialogService,
     private _RecipientsService: RecipientsService,
-    private _TagsService: TagsService
+    private _TagsService: TagsService,
+    private _MerchantsService: MerchantsService
   ) {}
 
   ngOnInit(): void {
     this.filter = this._DomSanitizer.bypassSecurityTrustStyle('opacity(0.5)');
     const recipients = async () => {
+      const { _id } = await this._MerchantsService.merchantDefault();
+      this.idMerchant = _id;
       const { recipients }: any = await this._RecipientsService.recipients();
       this._Recipients = recipients;
       this.tempRecipients = this._Recipients;
@@ -468,5 +473,24 @@ export class ArticlePrivacyComponent implements OnInit {
     return this.listadoSelection.length
       ? control.get('tags').value.some((r) => this.listadoSelection.includes(r))
       : true;
+  }
+
+  addTag(): void {
+    const createTag = async () => {
+      const lastTag = this.tags[this.tags.length - 1];
+      const name = `Listado #${this.tags.length}`;
+      const _TagInput: any = {
+        name,
+        entity: 'recipient',
+        merchant: this.idMerchant,
+      };
+      const { createTag } = await this._TagsService.createTag(_TagInput);
+      const { _id } = createTag;
+      this.tags.unshift({
+        _id,
+        name,
+      } as Tag);
+    };
+    createTag();
   }
 }
