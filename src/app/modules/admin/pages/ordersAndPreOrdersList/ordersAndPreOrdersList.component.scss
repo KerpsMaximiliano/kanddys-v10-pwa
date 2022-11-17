@@ -1,5 +1,10 @@
 @import "forms";
 
+.orders-page {
+  overflow-y: scroll;
+  height: 100vh;
+}
+
 .title {
   font-size: 16px;
   color: #000;
@@ -27,8 +32,9 @@
   font-size: 17px;
   border: none;
   color: #a1a1a1;
-  box-shadow: 0px 6px 10px -4px inset;
+  box-shadow: inset 0px 3px 5px lightgrey;
   margin: 20px auto;
+  margin-bottom: 42px;
   display: block;
   width: 91%;
 
@@ -46,28 +52,67 @@
 }
 
 .content {
-  width: 90%;
+  width: 100%;
   margin: auto;
-  margin-bottom: 30px;
-  margin-top: 20px;
+  padding-bottom: 76px;
+  padding-left: 22px;
 }
 
-.factura {
+.order {
   background: white;
-  min-width: 300px;
-  min-height: 115px;
-  margin-right: 6px;
-  border-radius: 6px;
+  max-width: 300px;
+  border-radius: 10px;
   box-shadow: 0px 3px 10px -5px #979797;
   cursor: pointer;
   color: #000;
   display: flex;
-  align-items: center;
-  padding: 0px 20px;
-  padding-top: 9px;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  margin-left: 10px;
+  height: 100%;
+
+  .dot-trio {
+    position: absolute;
+    top: 0;
+    right: 0;
+    position: absolute;
+    background-color: white;
+    right: 3px;
+    top: 3px;
+    height: 28px;
+    width: 28px;
+    border: 1px solid black;
+    border-radius: 50%;
+    background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 999;
+
+    &:hover {
+      background-color: lightgray;
+      cursor: pointer;
+    }
+  }
+
+  &.all-orders-mode {
+    margin-top: 11px;
+    max-width: calc(100% - 22px);
+  }
+
+  .inner-wrapper {
+    width: 100%;
+    display: flex;
+    margin-top: 18px;
+    margin-bottom: 11px;
+    margin-left: 20px;
+    margin-right: 20px;
+    flex-direction: column;
+
+    .order-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1px;
+      align-items: end;
+    }
+  }
 
   p {
     margin: 0px;
@@ -99,31 +144,40 @@
   font-family: "SfProBold";
 }
 
-.text-grid {
-  display: grid;
-  grid-template-columns: 3fr 3fr 1fr;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  align-items: end;
-  margin-right: 25px;
-}
+.group-of-items-header-flex {
+  display: flex;
+  margin-top: 60px;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 22px;
 
-.text-right {
-  text-align: right;
-  color: #2874ad;
-  font-family: "SfProDisplay";
-  font-size: 14px;
-}
+  .group-title {
+    font-family: "RobotoMedium";
+    font-size: 19px;
+    margin-left: 6px;
+  }
 
-.destacada {
-  font-family: "RobotoMedium";
-  font-size: 19px;
-}
+  .incomes-and-show-all {
+    display: flex;
+  }
 
-.middle {
-  font-family: "SfProDisplay";
-  color: #7b7b7b;
-  font-size: 14px;
+  .middle {
+    font-family: SfProRegular;
+    color: #7b7b7b;
+    font-size: 14px;
+  }
+
+  .text-right {
+    margin-left: 20px;
+    text-align: right;
+    color: #2874ad;
+    font-family: SfProRegular;
+    font-size: 14px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 
 .submit {
@@ -152,7 +206,7 @@
 
 .tap {
   color: #7b7b7b;
-  font-family: "SfProDisplay";
+  font-family: SfProRegular;
   font-size: 17px;
 }
 
@@ -165,23 +219,30 @@
   margin-bottom: 3px;
 }
 
-.price,
-.name,
-.user-id {
+.price {
   color: #7b7b7b;
   font-family: SfProRegular;
-  font-size: 17px;
-  margin: 0px;
-}
-
-.price {
-  margin: 0px;
-  font-family: SfProBold;
   font-size: 16px;
+  font-weight: bold;
   margin-top: 10px;
 }
 
+.order-tags {
+  font-size: 14px;
+  color: #7b7b7b;
+  font-family: SfProRegular;
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 122px;
+  text-align: right;
+}
+
 .name {
+  color: #7b7b7b;
+  font-family: SfProRegular;
+  font-size: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 260px;
@@ -204,8 +265,8 @@
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 1px;
-  padding-top: 18px;
-  padding-bottom: 11px;
+  padding-top: 10px;
+  padding-bottom: 6px;
   align-items: end;
 }
 
@@ -274,7 +335,7 @@
   background: #2874ad;
   display: grid;
   grid-template-columns: 1fr 9fr 1fr;
-  padding: 20px 20px;
+  padding: 8px 17px 0px 10px;
 }
 
 .header-text {
@@ -309,15 +370,22 @@
   justify-content: space-between;
   padding: 0px 17px;
   z-index: 999;
+
+  img {
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 
 nav {
-  margin-top: 36px;
+  margin-top: 42px;
   height: 37px;
   display: flex;
   align-items: center;
   padding: 0px 17px;
   font-size: 17px;
+  background-color: #ffffff;
 
   button {
     color: #7b7b7b;
@@ -333,6 +401,54 @@ nav {
 
     &:hover {
       cursor: pointer;
+    }
+  }
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  margin: auto;
+  background-color: #2874ad;
+  display: flex;
+  justify-content: space-between;
+  height: 42px;
+  padding: 0px 17px;
+  align-items: center;
+  color: white;
+  z-index: 999;
+
+  .icon-and-title {
+    display: flex;
+
+    span {
+      font-family: SfProBold;
+      font-size: clamp(16px, 5vw, 21px);
+    }
+
+    img {
+      margin-right: 16px;
+      width: clamp(14px, 5vw, 17px);
+      height: clamp(18px, 5vw, 21px);
+    }
+  }
+
+  .userid {
+    display: flex;
+    align-items: baseline;
+
+    span {
+      font-size: clamp(10px, 4vw, 13px);
+      font-family: RobotoRegular;
+      margin-right: 10px;
+    }
+
+    img {
+      width: 13px;
+      height: 17px;
     }
   }
 }

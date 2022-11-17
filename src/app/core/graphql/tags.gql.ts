@@ -46,6 +46,24 @@ export const addTagsInOrder = gql`
   }
 `;
 
+export const itemAddTag = gql`
+  mutation itemAddTag($tagId: ObjectID!, $id: ObjectID!) {
+    itemAddTag(tagId: $tagId, id: $id) {
+      _id
+      tags
+    }
+  }
+`;
+
+export const itemRemoveTag = gql`
+  mutation itemRemoveTag($tagId: ObjectID!, $id: ObjectID!) {
+    itemRemoveTag(tagId: $tagId, id: $id) {
+      _id
+      tags
+    }
+  }
+`;
+
 export const removeTagsInOrder = gql`
   mutation removeTagsInOrder(
     $merchantId: ObjectID!
@@ -110,6 +128,64 @@ export const tags = gql`
       user
       status
       images
+    }
+  }
+`;
+
+export const ordersByTag = gql`
+  query ordersByTag(
+    $orderStatus: [String!]
+    $limit: Float
+    $tagId: [ObjectID!]!
+  ) {
+    ordersByTag(orderStatus: $orderStatus, limit: $limit, tagId: $tagId) {
+      tag
+      orders {
+        _id
+        subtotals {
+          amount
+        }
+        user {
+          phone
+          email
+          name
+          image
+        }
+        ocr {
+          _id
+        }
+        items {
+          item {
+            name
+            images
+            tags
+            params {
+              _id
+              name
+              values {
+                _id
+                name
+                price
+              }
+            }
+          }
+          params {
+            param
+            paramValue
+          }
+          reservation {
+            _id
+          }
+        }
+        orderStatus
+        status {
+          status
+          access
+        }
+        dateId
+        createdAt
+        tags
+      }
     }
   }
 `;
