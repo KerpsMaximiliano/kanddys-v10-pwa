@@ -20,6 +20,7 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { StoreComponent } from './pages/store/store.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { AppointmentsModule } from '../appointments/appointments.module';
+import { ArticleAccessComponent } from './pages/article-access/article-access.component';
 
 const routes: Routes = [
   {
@@ -33,6 +34,10 @@ const routes: Routes = [
   {
     path: 'redirections',
     component: RedirectionsComponent,
+  },
+  {
+    path: 'article-access',
+    component: ArticleAccessComponent
   },
   {
     path: '',
@@ -129,6 +134,7 @@ const routes: Routes = [
     CheckoutComponent,
     PaymentsComponent,
     ReservationsComponent,
+    ArticleAccessComponent,
   ],
   imports: [
     CommonModule,

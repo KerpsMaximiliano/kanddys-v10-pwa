@@ -1,0 +1,105 @@
+.main-container{
+   min-height: 100vh;
+
+   .header-invite{
+      width: 100%;
+      height: 39px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000000;
+      position: relative;
+
+      .headline{
+         font-family: 'SfProRegular';
+         font-size: 1.813rem;
+         font-weight: 500;
+         color: #FFFFFF;
+      }
+
+      .close{
+         all: unset;
+         width: 16px;
+         height: 16px;
+         position: absolute;
+         font-family: 'RobotoMedium';
+         font-size: 1.188rem;
+         color: #FFFFFF;
+         right: 5%;
+         top: 10px;
+         cursor: pointer;
+      }
+   }
+
+   .tabs-container{
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: #FFFFFF;
+      overflow-x: scroll;
+      margin-bottom: 3px;
+      padding: 6px 0;
+   
+      .tab{
+         all: unset;
+         font-family: 'SfProRegular';
+         font-size: 1.063rem;
+         color: #7B7B7B;
+         margin-right: 4%;
+         margin-left: 2%;
+         cursor: pointer;
+      }
+   }
+
+   .answers-container{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 18px 5% 25px;
+
+      .answer-label{
+         font-family: 'SfProMedium';
+         font-size: 1.063rem;
+         color: #7B7B7B;
+         margin-bottom: 16px;
+      }
+   }
+
+   .sent-invite{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 50px;
+
+      .invite{
+         font-family: 'RobotoRegular';
+         font-size: 1.063rem;
+         color: #7B7B7B;
+         margin: 0 0 9px;
+         font-weight: 500;
+      }
+
+      .time{
+         font-family: 'RobotoRegular';
+         font-size: 1.063rem;
+         color: #7B7B7B;
+         margin: 0 0 26px;
+      }
+
+      .info{
+         max-width: 56%;
+         font-family: 'SfProBold';
+         font-size: 1.438rem;
+         color: #4F4F4F;
+         text-align: center;
+         line-height: 31px;
+         margin: 0;
+      }
+   }
+}
+
+.active{
+   color: #202020 !important;
+}
