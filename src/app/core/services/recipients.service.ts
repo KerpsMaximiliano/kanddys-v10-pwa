@@ -13,6 +13,7 @@ export class RecipientsService {
     try {
       const result = await this.graphql.mutate({
         mutation: createRecipient,
+        context: { useMultipart: true },
         variables: { input: _RecipientInput },
       });
       if (!result || result?.errors) return undefined;
