@@ -426,13 +426,13 @@ nav {
 
     span {
       font-family: SfProBold;
-      font-size: 21px;
+      font-size: clamp(16px, 5vw, 21px);
     }
 
     img {
       margin-right: 16px;
-      width: 17px;
-      height: 21px;
+      width: clamp(14px, 5vw, 17px);
+      height: clamp(18px, 5vw, 21px);
     }
   }
 
@@ -441,7 +441,7 @@ nav {
     align-items: baseline;
 
     span {
-      font-size: 13px;
+      font-size: clamp(10px, 4vw, 13px);
       font-family: RobotoRegular;
       margin-right: 10px;
     }

@@ -248,17 +248,17 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.loadingStatus = 'complete';
 
     //Get income for tagGroups
-    this.getPermanentTagGroupsIncome(this.tagGroups).then((result) => {
+    this.getPermanentTagGroupsIncome(this.tagGroups, this.typeOfList).then((result) => {
       if (!this.changedMenuOption) this.tagGroups = result;
     });
 
-    if (opposite === 'facturas')
       this.permanentOrdersTagGroups = await this.getPermanentTagGroupsIncome(
-        this.permanentOrdersTagGroups
+        JSON.parse(JSON.stringify(this.permanentOrdersTagGroups)),
+        'facturas'
       );
-    else
       this.permanentPreOrdersTagGroups = await this.getPermanentTagGroupsIncome(
-        this.permanentPreOrdersTagGroups
+        JSON.parse(JSON.stringify(this.permanentPreOrdersTagGroups)),
+        'draft'
       );
 
     this.incomeLoadingStatus = 'complete';
@@ -340,19 +340,21 @@ export class OrdersAndPreOrdersList implements OnInit {
   }
 
   async getPermanentTagGroupsIncome(
-    tagGroups: Array<TagGroup>
+    tagGroups: Array<TagGroup>,
+    typeOfList: string
   ): Promise<Array<TagGroup>> {
     for await (const tagGroup of tagGroups) {
       const income = await this.merchantsService.incomeMerchant({
         findBy: {
           merchant: this.merchantsService.merchantData._id,
           orderStatus:
-            this.typeOfList === 'facturas'
+            typeOfList === 'facturas'
               ? ['in progress', 'to confirm', 'completed']
               : 'draft',
           tags: [tagGroup.tag._id],
         },
       });
+
 
       tagGroup.income = income;
     }
@@ -743,13 +745,11 @@ export class OrdersAndPreOrdersList implements OnInit {
         this.tagGroups = [...this.permanentOrdersTagGroups];
         this.highlightedOrders = [...this.highlightedOrdersPermanent];
         this.ordersWithoutTags = [...this.ordersWithoutTagsPermanent];
-        this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
         this.ordersWithoutTagsIncome = this.ordersWithoutTagsIncomePermanent;
       } else {
         this.tagGroups = [...this.permanentPreOrdersTagGroups];
         this.highlightedOrders = [...this.highlightedPreOrdersPermanent];
         this.ordersWithoutTags = [...this.preordersWithoutTagsPermanent];
-        this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
         this.ordersWithoutTagsIncome = this.preordersWithoutTagsIncomePermanent;
       }
 
