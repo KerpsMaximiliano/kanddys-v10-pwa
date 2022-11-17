@@ -67,9 +67,11 @@ export class ReservationListComponent implements OnInit, OnDestroy {
         this._MerchantService.loadedMerchantData.subscribe({
           next: async (value) => {
             if (value) {
-              this.income = await this._MerchantService.incomeMerchant(
-                this._MerchantService.merchantData._id
-              );
+              this.income = await this._MerchantService.incomeMerchant({
+                findBy: {
+                  merchant: this._MerchantService.merchantData._id,
+                },
+              });
             }
           },
         });
