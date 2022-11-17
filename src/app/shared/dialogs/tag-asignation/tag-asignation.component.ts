@@ -19,14 +19,15 @@ export class TagAsignationComponent implements OnInit {
   env: string = environment.assetsUrl;
   @Input() tags: Tag[] = [];
   @Input() activeTags: Tag[];
-  @Input() entity: 'item' | 'order' = 'order';
-  @Input() entityId: string = null;
   background: string = '#2874ad';
   @Input('text') text: string = '';
-  @Input('loadingText') loadingText: string = 'ESPERE...';
-  @Input('untouchedActionText') untouchedActionText: string = null;
   @Input() orderId: string = null;
   @Input() public tagAction: (args?: any) => any;
+  @Input() entity: 'item' | 'order' = 'order';
+  @Input() entityId: string = null;
+  @Input('loadingText') loadingText: string = 'ESPERE...';
+  @Input('untouchedActionText') untouchedActionText: string = null;
+  @Input() outputAllSelectedTags: boolean = false;
   @Input() public ctaAction: (args?: any) => any;
   blockCta: boolean = false;
 
@@ -50,6 +51,8 @@ export class TagAsignationComponent implements OnInit {
       this.router.navigate(['admin/create-tag'], {
         queryParams: {
           orderId: this.orderId,
+          entity: this.entity,
+          entityId: this.entityId,
         },
       });
     } else {

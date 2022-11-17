@@ -7,6 +7,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class HelperHeaderv3Component implements OnInit {
   @Input('text') text: string = '';
+  @Input('containerStyles') containerStyles: Record<string, string | number> =
+    null;
   @Output('arrowsClick') arrowsClick: EventEmitter<any> = new EventEmitter();
   @Output('searchClick') searchClick: EventEmitter<any> = new EventEmitter();
   @Output('dotsClicked') dotsClicked: EventEmitter<any> = new EventEmitter();
