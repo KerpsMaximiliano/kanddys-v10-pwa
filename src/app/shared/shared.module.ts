@@ -103,6 +103,7 @@ import { FunctionalityParametersComponent } from './components/functionality-par
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
+import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
 
 const imports = [
   CommonModule,
@@ -212,6 +213,7 @@ const declarations = [
   ConfirmActionDialogComponent,
   TagAsignationComponent,
   AnexosDialogComponent,
+  MediaDialogComponent,
 ];
 
 @NgModule({
