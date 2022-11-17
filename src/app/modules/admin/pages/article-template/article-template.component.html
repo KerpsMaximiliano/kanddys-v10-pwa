@@ -5,7 +5,7 @@
       selected[0] === 'Adjunta un Símbolo existente' ? '42px' : '116px'
     "
   >
-    <div class="head-grid">
+    <div class="head-grid" [style.height]="selected[0] === 'Adjunta un Símbolo existente'? 'auto' : '49px' ">
       <div class="icons-container">
         <i
           *ngFor="
@@ -34,7 +34,7 @@
   </div>
   <div class="content" [ngSwitch]="selected">
     <ng-container *ngSwitchCase="'Adjunta un Símbolo existente'">
-      <p class="title">
+      <p class="title" [style.marginTop]="'41px'">
         Pega o escribe el código de referencia del Símbolo existente:
       </p>
       <input class="base-input" type="text" placeholder="Escribe.." />
@@ -44,6 +44,7 @@
       <div
         *ngFor="let item of list; let i = index"
         class="select-option"
+        [style.marginBottom]="i > 0 ? '8px' : '14px'"
         [style.backgroundPosition]="
           selected.includes(item.text) ? 'left bottom' : 'right bottom'
         "

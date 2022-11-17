@@ -102,6 +102,7 @@ import { HelperHeaderv3Component } from './components/helper-headerv3/helper-hea
 import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
+import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
 
 const imports = [
   CommonModule,
@@ -210,6 +211,7 @@ const declarations = [
   HelperHeaderv3Component,
   FunctionalityParametersComponent,
   ConfirmActionDialogComponent,
+  QrCodeDialogComponent
 ];
 
 @NgModule({

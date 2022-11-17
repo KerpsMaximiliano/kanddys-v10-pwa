@@ -1,0 +1,27 @@
+<div class="parent">
+  <div class="container">
+    <div class="grid">
+      <div class="title">qrCode ID</div>
+      <div class="image-container">
+        <img
+          src="{{ env + '/' + 'qr-code-line.png' }}"
+          width="30"
+          height="30"
+          alt="icon"
+        />
+        <img
+          src="{{ env + '/' + 'merge-vertical-blue.png' }}"
+          width="30"
+          height="30"
+          alt="icon"
+        />
+      </div>
+    </div>
+    <div *ngFor="let option of options" class="options">
+      <p class="option">
+        {{ option }}
+      </p>
+      <hr />
+    </div>
+  </div>
+</div>

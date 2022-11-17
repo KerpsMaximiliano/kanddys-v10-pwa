@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { QrCodeDialogComponent } from 'src/app/shared/dialogs/qr-code-dialog/qr-code-dialog.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -17,15 +18,15 @@ export class ArticleTemplateComponent implements OnInit {
   list: any[] = [
     {
       text: 'Adjunta un Símbolo existente',
-      img: '',
+      img: 'merge-vertical.png',
     },
     {
       text: 'Crea un nuevo Símbolo (tu mismo adicionarás el contenido).',
-      img: '',
+      img: 'file-new.png',
     },
     {
       text: 'Comparte el enlace (para que otra persona adicione el contenido).',
-      img: '',
+      img: 'share-outline2.png',
       callback: () => this.handleDialog(),
     },
   ];
@@ -40,32 +41,9 @@ export class ArticleTemplateComponent implements OnInit {
   }
 
   handleDialog(): void {
-    const list: StoreShareList[] = [
-      {
-        title: 'qrCode ID',
-        options: [
-          {
-            text: 'Descarga el qrCode del enlace',
-            mode: 'func',
-            func: () => {},
-          },
-          {
-            text: 'Copia el enlace de este qrCode',
-            mode: 'func',
-            func: () => {},
-          },
-          {
-            text: 'Menú de cmpartir',
-            mode: 'func',
-            func: () => {},
-          },
-        ],
-      },
-    ];
-    this._DialogService.open(StoreShareComponent, {
+    this._DialogService.open(QrCodeDialogComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list,
       },
     });
   }
