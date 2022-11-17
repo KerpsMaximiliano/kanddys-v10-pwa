@@ -19,15 +19,21 @@ export class ArticleTemplateComponent implements OnInit {
     {
       text: 'Adjunta un Símbolo existente',
       img: 'merge-vertical.png',
+      width: '22',
+      height: '17',
     },
     {
       text: 'Crea un nuevo Símbolo (tu mismo adicionarás el contenido).',
       img: 'file-new.png',
+      width: '22',
+      height: '23',
     },
     {
       text: 'Comparte el enlace (para que otra persona adicione el contenido).',
       img: 'share-outline2.png',
       callback: () => this.handleDialog(),
+      width: '21',
+      height: '27',
     },
   ];
   constructor(private _DialogService: DialogService) {}
@@ -43,8 +49,7 @@ export class ArticleTemplateComponent implements OnInit {
   handleDialog(): void {
     this._DialogService.open(QrCodeDialogComponent, {
       type: 'fullscreen-translucent',
-      props: {
-      },
+      props: {},
     });
   }
 }
