@@ -93,6 +93,7 @@
                 *ngIf="videoFiles.includes(types[i][k])"
                 controls
                 [src]="multimedia[i][k]"
+                style="height: calc(100vh - 112px)"
               ></video>
               <div *ngIf="audioFiles.includes(types[i][k])" class="audio">
                 <div class="audio-container">
