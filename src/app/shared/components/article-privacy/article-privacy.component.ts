@@ -207,8 +207,18 @@ export class ArticlePrivacyComponent implements OnInit {
         ({ name, value, validators, type }: any, j: number) => {
           controller.addControl(
             name,
-            new FormControl(item[name] || value, validators)
+            new FormControl(
+              name === 'image' ? [item[name]] : item[name] || value,
+              validators
+            )
           );
+          if (name === 'image' && item[name]) {
+            this.multimedia[0].push(
+              this._DomSanitizer.bypassSecurityTrustStyle(`url(
+            ${item[name]})
+            no-repeat center center / cover #e9e371`)
+            );
+          }
         }
       );
       controller.setValidators([this.whatsappOrEmailValid]);

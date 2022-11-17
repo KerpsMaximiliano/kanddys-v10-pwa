@@ -22,6 +22,7 @@ export const recipients = gql`
       nickname
       user
       tags
+      image
     }
   }
 `;

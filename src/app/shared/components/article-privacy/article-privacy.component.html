@@ -70,7 +70,7 @@
             <div
               [style.background]="multimedia[j][0]"
               [style.filter]="toDelete.includes(j) ? filter : ''"
-              class="square"
+              class="square {{ j }}"
               (click)="accessContact(j)"
             ></div>
             <button
@@ -88,7 +88,7 @@
                 /></ng-template>
               </ng-template>
             </button>
-            <p *ngIf="j !== 0" class="name-id">Name ID</p>
+            <p *ngIf="j !== 0" class="name-id">{{ control.get('name').value || control.get('nickname').value || control.get('email').value || control.get('phone').value }}</p>
           </div>
         </ng-container>
       </div>
@@ -164,11 +164,7 @@
               (change)="loadFile($event, controlIndex, j)"
             />
             <div
-              [style.background]="
-                imageFiles.includes(types[controlIndex][j])
-                  ? multimedia[controlIndex][j]
-                  : ''
-              "
+              [style.background]="multimedia[controlIndex][0]"
               class="square"
             >
               <label for="{{ j }}" class="plus bg-green" [style.top]="'0'"
