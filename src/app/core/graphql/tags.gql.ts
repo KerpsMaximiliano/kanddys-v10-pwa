@@ -110,24 +110,6 @@ export const addTagContainersPublic = gql`
   }
 `;
 
-export const itemAddTag = gql`
-  mutation itemAddTag($tagId: ObjectID!, $id: ObjectID!) {
-    itemAddTag(tagId: $tagId, id: $id) {
-      _id
-      tags
-    }
-  }
-`;
-
-export const itemRemoveTag = gql`
-  mutation itemRemoveTag($tagId: ObjectID!, $id: ObjectID!) {
-    itemRemoveTag(tagId: $tagId, id: $id) {
-      _id
-      tags
-    }
-  }
-`;
-
 export const tag = gql`
   query tag($tagId: ObjectID!) {
     tag(tagId: $tagId) {
