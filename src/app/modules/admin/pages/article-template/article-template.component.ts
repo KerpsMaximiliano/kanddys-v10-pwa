@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { QrCodeDialogComponent } from 'src/app/shared/dialogs/qr-code-dialog/qr-code-dialog.component';
 import {
@@ -7,6 +13,14 @@ import {
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
+interface Options {
+  text: string;
+  img: string;
+  width: string;
+  height: string;
+  callback?(...params): any;
+}
+
 @Component({
   selector: 'app-article-template',
   templateUrl: './article-template.component.html',
@@ -14,8 +28,13 @@ import { environment } from 'src/environments/environment';
 })
 export class ArticleTemplateComponent implements OnInit {
   env: string = environment.assetsUrl;
-  selected: string[] = [];
-  list: any[] = [
+  selectedOption: Options = null;
+  entityTemplate: EntityTemplate;
+  entityTemplateReferenceInput: FormControl = new FormControl(
+    null,
+    Validators.pattern(/[\S]/)
+  );
+  list: Options[] = [
     {
       text: 'Adjunta un Símbolo existente',
       img: 'merge-vertical.png',
@@ -26,6 +45,7 @@ export class ArticleTemplateComponent implements OnInit {
       text: 'Crea un nuevo Símbolo (tu mismo adicionarás el contenido).',
       img: 'file-new.png',
       width: '22',
+      callback: () => this.createPostForEntityTemplate(),
       height: '23',
     },
     {
@@ -36,14 +56,37 @@ export class ArticleTemplateComponent implements OnInit {
       height: '27',
     },
   ];
-  constructor(private _DialogService: DialogService) {}
+  constructor(
+    private _DialogService: DialogService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private toastr: ToastrService,
+    private entityTemplateService: EntityTemplateService,
+    private postsService: PostsService
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.route.params.subscribe(async (param) => {
+      const { entityTemplateId } = param;
 
-  handleOption(option: string): void {
-    if (this.selected.includes(option))
-      this.selected = this.selected.filter((opt) => opt !== option);
-    else this.selected = [option];
+      const entityTemplate = await this.entityTemplateService.entityTemplate(
+        entityTemplateId
+      );
+
+      if (entityTemplate.reference && entityTemplate.entity) {
+        this.router.navigate([
+          `admin/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
+        ]);
+      } else {
+        this.entityTemplate = entityTemplate;
+      }
+    });
+  }
+
+  handleOption(option: Options): void {
+    if (this.selectedOption && this.selectedOption.text === option.text)
+      this.selectedOption = null;
+    else this.selectedOption = option;
   }
 
   handleDialog(): void {
@@ -51,5 +94,58 @@ export class ArticleTemplateComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {},
     });
+  }
+
+  async backButtonHandler(option: Options) {
+    if (this.selectedOption.text === 'Adjunta un Símbolo existente') {
+      const entityTemplateIdToMimic = this.entityTemplateReferenceInput.value;
+
+      const entityTemplateToMimic =
+        await this.entityTemplateService.entityTemplate(
+          entityTemplateIdToMimic
+        );
+
+      if (entityTemplateToMimic) {
+        await this.entityTemplateService.entityTemplateSetData(
+          this.entityTemplate._id,
+          {
+            entity: entityTemplateToMimic.entity,
+            reference: entityTemplateToMimic.reference,
+          }
+        );
+
+        this.toastr.info('Se agregaron datos al simbolo', null, {
+          timeOut: 2000,
+        });
+        this.selectedOption = null;
+      }
+    } else {
+      this.selectedOption = null;
+    }
+  }
+
+  async createPostForEntityTemplate() {
+    const { createPost: createdPost } = await this.postsService.createPost({
+      title: 'post for entity template',
+    });
+
+    const result = await this.entityTemplateService.entityTemplateSetData(
+      this.entityTemplate._id,
+      {
+        entity: 'post',
+        reference: createdPost._id,
+      }
+    );
+
+    if (result) {
+      this.toastr.info('Se agregaron datos al simbolo', null, {
+        timeOut: 2000,
+      });
+
+      //lo redirije al detalle del simbolo
+      this.router.navigate([
+        `admin/article-detail/${result.entity}/${result.reference}`,
+      ]);
+    }
   }
 }

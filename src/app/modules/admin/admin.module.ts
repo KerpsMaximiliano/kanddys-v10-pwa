@@ -94,7 +94,7 @@ const routes: Routes = [
         component: CreateTagComponent,
       },
       {
-        path: 'article-template',
+        path: 'article-template/:entityTemplateId',
         component: ArticleTemplateComponent,
       },
     ],

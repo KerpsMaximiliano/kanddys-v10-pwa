@@ -3,13 +3,20 @@
     <div class="grid">
       <div class="title">qrCode ID</div>
       <div class="image-container">
+        <div class="qr-container" *ngIf="link">
+          <qrcode
+            #qrcode
+            [qrdata]="link"
+            [elementType]="'img'"
+            [width]="50"
+            [style.margin-top.px]="-25"
+            [errorCorrectionLevel]="'M'"
+            [allowEmptyString]="true"
+            colorDark="#2874AD"
+          ></qrcode>
+        </div>
         <img
-          src="{{ env + '/' + 'qr-code-line.png' }}"
-          width="30"
-          height="30"
-          alt="icon"
-        />
-        <img
+          style="margin-left: 5px;"
           src="{{ env + '/' + 'merge-vertical-blue.png' }}"
           width="30"
           height="30"
@@ -18,7 +25,7 @@
       </div>
     </div>
     <div *ngFor="let option of options" class="options">
-      <p class="option">
+      <p class="option" (click)="handleClick(option)">
         {{ option }}
       </p>
       <hr />
