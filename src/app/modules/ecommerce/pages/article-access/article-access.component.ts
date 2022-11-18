@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { InputTransparentComponent } from 'src/app/shared/dialogs/input-transparent/input-transparent.component';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import { PostsService } from 'src/app/core/services/posts.service';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-article-access',
   templateUrl: './article-access.component.html',
   styleUrls: ['./article-access.component.scss']
 })
-export class ArticleAccessComponent implements OnInit {
+export class ArticleAccessComponent implements OnInit, OnDestroy {
 
    code: string = '(8XX) XX3 - XX4X';
    sentInvite: boolean;
@@ -18,46 +21,51 @@ export class ArticleAccessComponent implements OnInit {
    options: string[] = ['Como Invitado', 'Con la clave', 'Solicita acceso'];
    active: number = 0;
    activeIndex: number;
-   check: OptionAnswerSelector[] = [
-      {
-         status: true,
-         id: 'noId',
-         click: true,
-         value: '(8XX) XX3 - XX4X',
-         valueStyles: {
-            'font-family': 'SfProRegular',
-            'font-size': '1.063rem',
-            'color': '#272727'
-         },
-      },
-      {
-         status: true,
-         id: 'withId',
-         click: true,
-         value: 'El mejor swimer',
-         valueStyles: {
-            'font-family': 'SfProRegular',
-            'font-size': '1.063rem',
-            'color': '#272727',
-            'letter-spacing': '0.075rem'
-         },
-      },
-      {
-         status: true,
-         id: 'other',
-         click: true,
-         value: '(8XX) XX3 - XX4X',
-         valueStyles: {
-            'font-family': 'SfProRegular',
-            'font-size': '1.063rem',
-            'color': '#272727'
-         },
-      },
-   ];
+   check: OptionAnswerSelector[] = [];
+   _Subscription: Subscription;
 
-  constructor( private dialog: DialogService) { }
+  constructor(
+   private dialog: DialogService,
+   private _PostsService: PostsService,
+   private _ActivatedRoute: ActivatedRoute
+   ) { }
 
   ngOnInit(): void {
+   this._Subscription = this._ActivatedRoute.params.subscribe(({ postId }) => {
+      const post = async () => {
+         const { post } = await this._PostsService.getSimplePost(postId);
+         const { targets } = post;
+         for(const { emailOrPhone } of targets){
+            let aux = false;
+            const list = emailOrPhone.split('');
+            const isEmail = emailOrPhone.includes('@');
+            this.check.push({
+               status: true,
+               id: 'other',
+               click: true,
+               value: list.map(
+                  (character:string, index:number) => {
+                  if(character==='@')
+                     aux = true;
+                  return isEmail? (index < 2 ? character : (aux ? character : 'X' )) :
+                  (index < list.length - 4 ? `${index===0?'(':''}${index===3?' ':''}X${index===list.length - 5?' - ':''}${index===2?')':''}` : character)
+               }
+               ).join(''),
+               valueStyles: {
+                  'font-family': 'SfProRegular',
+                  'font-size': '1.063rem',
+                  'color': '#272727'
+               }
+            });
+         }
+      }
+      if(postId)
+         post();
+   })
+  }
+
+  ngOnDestroy():void {
+   this._Subscription.unsubscribe();
   }
 
   sample =() => {
@@ -102,8 +110,9 @@ export class ArticleAccessComponent implements OnInit {
  }
 
  selectedOption(e){
+   console.log('e: ', e);
    this.sentInvite = true;
-   e === 1 ? this.code = 'El mejor swimmer' : '(8XX) XX3 - XX4X'; 
+   this.code = this.check[e].value; 
    console.log(e);
   }
 
