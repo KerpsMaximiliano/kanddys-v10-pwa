@@ -83,6 +83,11 @@ export class ArticleParamsComponent implements OnInit {
         });
         this._ItemsService.itemImages = multimedia;
       }
+    } else {
+      if (this._ItemsService.itemName)
+        this.name.setValue(this._ItemsService.itemName);
+      if (this._ItemsService.itemPrice)
+        this.price.setValue(this._ItemsService.itemPrice);
     }
     this._MerchantsService.merchantData =
       await this._MerchantsService.merchantDefault();
@@ -103,6 +108,8 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   iconCallback = () => {
+    this._ItemsService.itemName = this.name.value;
+    this._ItemsService.itemPrice = this.price.value;
     this._Router.navigate([
       `admin/create-article${this.item ? '/' + this.item._id : ''}`,
     ]);
@@ -220,7 +227,8 @@ export class ArticleParamsComponent implements OnInit {
         purchaseLocations: [],
         showImages: this._ItemsService.itemImages.length > 0,
       };
-
+      this._ItemsService.itemPrice = null;
+      this._ItemsService.itemName = null;
       if (this.item) {
         delete itemInput.images;
         delete itemInput.merchant;
@@ -237,6 +245,8 @@ export class ArticleParamsComponent implements OnInit {
             this._ItemsService.itemImages,
             updatedItem._id
           );
+          this._ItemsService.itemImages = [];
+          this._ItemsService.changedImages = false;
         }
 
         this._ItemsService.removeTemporalItem();

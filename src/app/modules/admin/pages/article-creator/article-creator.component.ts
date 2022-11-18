@@ -38,6 +38,7 @@ export class ArticleCreatorComponent implements OnInit {
   URI: string = environment.uri;
   controllers: FormArray = new FormArray([]);
   multimedia: any = [];
+  urls: string[] = [];
   display: string;
   types: any = [];
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
@@ -147,6 +148,7 @@ export class ArticleCreatorComponent implements OnInit {
             .bypassSecurityTrustStyle(`url(
         ${image})
         no-repeat center center / cover #e9e371`);
+          this.urls.push(image);
           this.types[0][index] = 'image/jpeg';
 
           const response = await fetch(image);
@@ -161,27 +163,28 @@ export class ArticleCreatorComponent implements OnInit {
             this.activeSlide = 0;
           }
         });
-      } else if (this._ItemsService.itemImages.length) {
-        this._ItemsService.itemImages?.forEach((file, index) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onload = (e) => {
-            this.multimedia[0][index] = this._DomSanitizer
-              .bypassSecurityTrustStyle(`url(
-        ${reader.result})
-        no-repeat center center / cover #e9e371`);
-            this.types[0][index] = 'image/jpeg';
-            if (index + 1 === this._ItemsService.itemImages.length) {
-              this.updateFrantions();
-              this.activeSlide = 0;
-            }
-          };
-        });
-        this.controllers
-          .at(0)
-          .get('multimedia')
-          .setValue(this._ItemsService.itemImages);
       }
+    }
+    if (this._ItemsService.itemImages.length) {
+      this._ItemsService.itemImages?.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          this.multimedia[0][index] = this._DomSanitizer
+            .bypassSecurityTrustStyle(`url(
+      ${reader.result})
+      no-repeat center center / cover #e9e371`);
+          this.types[0][index] = 'image/jpeg';
+          if (index + 1 === this._ItemsService.itemImages.length) {
+            this.updateFrantions();
+            this.activeSlide = 0;
+          }
+        };
+      });
+      this.controllers
+        .at(0)
+        .get('multimedia')
+        .setValue(this._ItemsService.itemImages);
     }
     if (this.tagsAsignationOnStart) await this.openTagsDialog();
   }
@@ -198,9 +201,9 @@ export class ArticleCreatorComponent implements OnInit {
           }fr`
       )
       .join(' ');
-      setTimeout(()=>{
-         this.display = 'grid';
-      }, 900)
+    setTimeout(() => {
+      this.display = 'grid';
+    }, 900);
   }
 
   updateCurrentSlideData(event: any) {
@@ -268,16 +271,17 @@ export class ArticleCreatorComponent implements OnInit {
       const result = reader.result;
       if (this.videoFiles.includes(type))
         this.multimedia[i][j] = (<FileReader>e.target).result;
-      else if (this.imageFiles.includes(type))
+      else if (this.imageFiles.includes(type)) {
         this.multimedia[i][j] = this._DomSanitizer
           .bypassSecurityTrustStyle(`url(
         ${result})
         no-repeat center center / cover #e9e371`);
-      else if (this.audioFiles.includes(type))
+        this.urls.push(result as string);
+      } else if (this.audioFiles.includes(type)) {
         this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustUrl(
           URL.createObjectURL(file)
         );
-      else this.multimedia[i][j] = result;
+      } else this.multimedia[i][j] = result;
       this.types[i][j] = type;
       const multimedia = this.controllers
         .at(i)
@@ -317,8 +321,56 @@ export class ArticleCreatorComponent implements OnInit {
     this.updateFrantions();
   }
 
+  // Converts image to File
+  async urltoFile(dataUrl: string, fileName: string): Promise<File> {
+    const res: Response = await fetch(dataUrl);
+    const blob: Blob = await res.blob();
+    return new File([blob], fileName, { type: 'image/png' });
+  }
+
+  rotateImg(i: number, j: number) {
+    const img = this.urls[i];
+    const imageElement = new Image();
+    imageElement.src = img as string;
+    imageElement.crossOrigin = 'anonymous';
+    imageElement.onload = async () => {
+      const angle = Math.PI / 2;
+      var newCanvas = document.createElement('canvas');
+      newCanvas.width = imageElement.height;
+      newCanvas.height = imageElement.width;
+      var newCtx = newCanvas.getContext('2d');
+      newCtx.save();
+      newCtx.translate(imageElement.height / 2, imageElement.width / 2);
+      newCtx.rotate(angle);
+      newCtx.drawImage(
+        imageElement,
+        -imageElement.width / 2,
+        -imageElement.height / 2
+      );
+      newCtx.restore();
+      const url = newCanvas.toDataURL('image/png');
+      this.urls[i] = url;
+      this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustStyle(`url(
+        ${url})
+        no-repeat center center / cover #e9e371`);
+      const file = await this.urltoFile(url, 'image.png');
+      const { type } = file;
+      const multimedia = this.controllers
+        .at(i)
+        .get('multimedia')
+        .value.map((image, index: number) => {
+          var formData = new FormData();
+          const { name } = file;
+          var blob = new Blob([JSON.stringify(file)], { type });
+          formData.append(name, blob);
+          return index === j ? file : image;
+        });
+      this.controllers.at(i).get('multimedia').setValue(multimedia);
+      if (this.item) this._ItemsService.changedImages = true;
+    };
+  }
+
   submit(): void {
-    // console.log(this.controllers.value);
     this.blockSubmitButton = true;
     if (this.mode === 'symbols') {
       if (this.controllers.invalid) return;
@@ -441,7 +493,7 @@ export class ArticleCreatorComponent implements OnInit {
               },
             },
           },
-         /*  {
+          /*  {
             text: 'Ir a la vista del visitante',
             mode: 'func',
             func: () => {
@@ -549,6 +601,10 @@ export class ArticleCreatorComponent implements OnInit {
   };
 
   goBack() {
+    this._ItemsService.itemImages = [];
+    this._ItemsService.itemName = null;
+    this._ItemsService.itemPrice = null;
+    this._ItemsService.changedImages = false;
     this._Router.navigate([`admin/items-dashboard`]);
   }
 
@@ -772,7 +828,7 @@ export class ArticleCreatorComponent implements OnInit {
         cancelButton: {
           text: 'Cerrar',
         },
-        link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+        linkToCopy: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

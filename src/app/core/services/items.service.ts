@@ -59,6 +59,8 @@ export class ItemsService {
   };
   changedImages: boolean = null;
   itemImages: File[] = [];
+  itemPrice: number;
+  itemName: string;
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;

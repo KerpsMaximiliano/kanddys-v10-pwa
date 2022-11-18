@@ -36,7 +36,6 @@ export class SettingsComponent implements OnInit {
     callbackParams?: Array<any>;
   }> = [];
   @Input() indexValue: number;
-  @Input() link: string;
   @Input() linkToCopy: string = null;
   currentStatusIndex: number = 0;
   env: string = environment.assetsUrl;
@@ -92,10 +91,7 @@ export class SettingsComponent implements OnInit {
     this.ref.close();
   }
 
-  // Aquí hubo un merge conflict
   copyLink() {
-    if (this.link) this.clipboard.copy(this.link);
-    else this.clipboard.copy(window.location.href);
     const clipboardLink = !this.linkToCopy
       ? window.location.href
       : this.linkToCopy;

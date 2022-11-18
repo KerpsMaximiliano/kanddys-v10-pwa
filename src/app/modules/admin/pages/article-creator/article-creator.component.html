@@ -1,43 +1,43 @@
 <div class="container">
-   <div
-  class="nav"
-  [ngStyle]="{
-    gridTemplateColumns:
-      mode === 'item' && item ? 'repeat(3, 1fr)' : 'repeat(1, 1fr)'
-  }"
->
-  <div class="icon-container">
-    <button (click)="goBack()">
-      <i
-        class="fas fa-chevron-up"
-        aria-hidden="true"
-        style="color: rgb(255, 255, 255); display: block"
-      ></i>
-      <i
-        class="fas fa-chevron-up"
-        aria-hidden="true"
-        style="color: rgb(255, 255, 255); display: block"
-      ></i>
-    </button>
-  </div>
-  <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-  <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-  <img
-    *ngIf="mode === 'item' && item"
-    src="{{ env }}/save-blue.png"
-    class="notification"
-    alt=""
-    (click)="openTagsDialog()"
-  />
-  <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
-  <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
-  <!-- <span class="text">VISTA</span> -->
   <div
-    class="dot-trio"
-    *ngIf="mode === 'item' && item"
-    (click)="openItemOptionsDialog()"
-  ></div>
-</div>
+    class="nav"
+    [ngStyle]="{
+      gridTemplateColumns:
+        mode === 'item' && item ? 'repeat(3, 1fr)' : 'repeat(1, 1fr)'
+    }"
+  >
+    <div class="icon-container">
+      <button (click)="goBack()">
+        <i
+          class="fas fa-chevron-up"
+          aria-hidden="true"
+          style="color: rgb(255, 255, 255); display: block"
+        ></i>
+        <i
+          class="fas fa-chevron-up"
+          aria-hidden="true"
+          style="color: rgb(255, 255, 255); display: block"
+        ></i>
+      </button>
+    </div>
+    <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
+    <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
+    <img
+      *ngIf="mode === 'item' && item"
+      src="{{ env }}/save-blue.png"
+      class="notification"
+      alt=""
+      (click)="openTagsDialog()"
+    />
+    <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
+    <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
+    <!-- <span class="text">VISTA</span> -->
+    <div
+      class="dot-trio"
+      *ngIf="mode === 'item' && item"
+      (click)="openItemOptionsDialog()"
+    ></div>
+  </div>
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
       <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">
@@ -145,6 +145,14 @@
                   </audio>
                 </div>
               </div>
+              <button
+                *ngIf="controller.valid"
+                class="rotate-btn"
+                type="button"
+                (click)="rotateImg(i, k)"
+              >
+                <i class="fa fa-repeat" aria-hidden="true"></i>
+              </button>
             </div>
           </swiper>
         </ng-container>
