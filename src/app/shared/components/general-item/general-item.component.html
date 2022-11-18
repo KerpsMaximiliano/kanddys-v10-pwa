@@ -1,0 +1,123 @@
+<div
+  class="container"
+  [ngStyle]="
+    spreadOperator(containerStyles, {
+      backgroundImage:
+        'url(' + cardMainImage + ')' + ',url(/assets/images/noimage.png)'
+    })
+  "
+>
+  <div class="containerGradientBox" [ngStyle]="containerGradientBoxStyles">
+    <div
+      class="topRightButton"
+      *ngIf="topRightButton"
+      (click)="topRightButton.clickEvent()"
+    ></div>
+
+    <div
+      class="topInnerButtonsContainer"
+      [ngStyle]="topInnerButtonsContainerStyles"
+      *ngIf="topInnerButtons && topInnerButtons.length > 0"
+    >
+      <button
+        *ngFor="let button of topInnerButtons"
+        [ngStyle]="
+          !mainColor
+            ? topInnerButtonStyles
+            : spreadOperator(topInnerButtonStyles, {
+                backgroundColor: mainColor
+              })
+        "
+        class="topInnerButton"
+        (click)="button.clickEvent()"
+      >
+        {{ button.text }}
+      </button>
+    </div>
+
+    <div class="itemPresentationBox" [ngStyle]="itemPresentationBoxStyles">
+
+      <div class="input" *ngIf="entity === 'TAG'">
+        Input #1 con valor largo
+      </div>
+
+      <div class="flex-container">
+        <div
+          class="viewsCounter"
+          [ngStyle]="entity === 'ITEM' && viewsCounterStyles"
+          *ngIf="
+            showVisitorCounter &&
+            item.visitorCounter &&
+            item.visitorCounter.counter
+          "
+        >
+          {{ item.visitorCounter.counter }} vistas
+        </div>
+
+        <div class="icons-rows" [ngStyle]="iconsRowsStyles">
+          <ng-container
+            *ngIf="
+              (showIconForItemStatus && statusIcon) ||
+              (showIconForTagStatus && statusIcon)
+            "
+          >
+            <img
+              *ngIf="!shouldIconsHaveBackground"
+              class="icon"
+              [ngStyle]="singleIconStyles"
+              [src]="statusIcon"
+              alt="hidden"
+            />
+
+            <div
+              *ngIf="
+                (shouldIconsHaveBackground && showIconForItemStatus) ||
+                (shouldIconsHaveBackground && showIconForTagStatus)
+              "
+              class="icon-filled"
+              alt="hidden"
+              [ngStyle]="{
+                backgroundColor: mainColor
+              }"
+            >
+              <div
+                class="inner-icon"
+                [ngStyle]="
+                  spreadOperator(singleIconStyles, {
+                    backgroundImage: 'url(' + statusIcon + ')'
+                  })
+                "
+              ></div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div
+        class="title"
+        [ngStyle]="titleStyles"
+        [ngClass]="{
+          'tag-title': entity === 'TAG'
+        }"
+      >
+        <ng-container [ngSwitch]="entity">
+          <ng-container *ngSwitchCase="'ITEM'">
+            {{ itemMainTitle }}
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'TAG'">
+            {{ tag.name }}
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <div
+        class="tags"
+        [ngStyle]="tagsStyles"
+        *ngIf="entity === 'ITEM' && item.tags && item.tags.length"
+      >
+        {{ getTagSeparatedByComma() }}
+      </div>
+    </div>
+  </div>
+</div>

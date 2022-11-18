@@ -256,3 +256,83 @@ headline="EXPUESTO EN TAB (S)"
       [usesGoogleMaps]="true"
     ></app-multistep-form>
 -->
+<div style="min-height: 100vh">
+  <h5>ITEMS</h5>
+  <div style="height: 281px; width: 186px">
+    <app-general-item
+      *ngIf="item"
+      [item]="item"
+      [mainColor]="'#020202'"
+      [tagsByIdsObject]="tagsByIdsObject"
+      [singleIconStyles]="{
+        filter:
+          'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+      }"
+      [showVisitorCounter]="true"
+      [topInnerButtons]="topInnerButtons"
+      [topRightButton]="topRightButton"
+    >
+    </app-general-item>
+  </div>
+
+  <div style="height: 281px; width: 186px">
+    <app-general-item
+      *ngIf="item2"
+      [item]="item"
+      [mainColor]="'#906028'"
+      [singleIconStyles]="{
+        filter:
+          'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+      }"
+      [topInnerButtons]="topInnerButtons"
+      [topRightButton]="topRightButton"
+    >
+    </app-general-item>
+  </div>
+
+  <h5>TAGS</h5>
+
+  <div style="height: 141px; width: 112px">
+    <app-general-item
+      *ngIf="tag"
+      [tag]="tag"
+      [entity]="'TAG'"
+      [mainColor]="'#9b611d'"
+      [textColor]="'white'"
+      [singleIconStyles]="{
+        filter:
+          'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+      }"
+      [titleStyles]="{ width: '100%' }"
+    >
+    </app-general-item>
+  </div>
+
+  <div style="height: 141px; width: 112px">
+    <app-general-item
+      *ngIf="tag2"
+      [tag]="tag2"
+      [entity]="'TAG'"
+      [mainColor]="'#ffffff'"
+      [textColor]="'black'"
+      [titleStyles]="{ width: '100%' }"
+    >
+    </app-general-item>
+  </div>
+
+  <div style="height: 141px; width: 112px">
+    <app-general-item
+      *ngIf="tag2"
+      [tag]="tag2"
+      [entity]="'TAG'"
+      [mainColor]="'#9b611d'"
+      [textColor]="'white'"
+      [singleIconStyles]="{
+        filter:
+          'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+      }"
+      [shouldIconsHaveBackground]="true"
+    >
+    </app-general-item>
+  </div>
+</div>

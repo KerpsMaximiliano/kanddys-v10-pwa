@@ -20,6 +20,14 @@ import { FormStep, FormField } from 'src/app/core/types/multistep-form';
 import { FormControl } from '@angular/forms';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { Item } from 'src/app/core/models/item';
+import { TagsService } from 'src/app/core/services/tags.service';
+
+interface Button {
+  text?: string;
+  clickEvent(...params): any;
+}
 
 @Component({
   selector: 'app-test',
@@ -27,8 +35,8 @@ import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.comp
   styleUrls: ['./test.component.scss'],
 })
 export class TestComponent implements OnInit {
-
-  textSample: string = 'Al borrar las reservaciones las fechas involucradas volverán a estar disponible.';
+  textSample: string =
+    'Al borrar las reservaciones las fechas involucradas volverán a estar disponible.';
   hourRangeInDays = {
     MONDAY: [
       { from: 9, to: 11 },
@@ -101,9 +109,53 @@ export class TestComponent implements OnInit {
     },
   ];
 
-  constructor(private dialog: DialogService) {}
+  item: Item = null;
+  item2: Item = null;
+  tag: Tag = null;
+  tag2: Tag = null;
+  tags: Array<Tag> = null;
+  tagsByIdsObject: Record<string, Tag> = null;
 
-  ngOnInit(): void {}
+  topInnerButtons: Array<Button> = [
+    {
+      text: 'Articulos',
+      clickEvent: () => {
+        console.log('clickeado pana');
+      },
+    },
+  ];
+
+  topRightButton: Button = {
+    clickEvent: () => {
+      alert('clicked icon');
+    },
+  };
+
+  constructor(
+    private itemsService: ItemsService,
+    private dialog: DialogService,
+    private tagsService: TagsService
+  ) {}
+
+  async ngOnInit() {
+    this.item = await this.itemsService.item('63658003b0f89428c8e6a27f');
+    this.item2 = await this.itemsService.item('6364cf158016a926583f90f0');
+    let tags: Array<Tag> = await this.tagsService.tagsByUser();
+    this.tags = tags;
+    const { tag } = await this.tagsService.tag('6356fd635231611a3471cf3e');
+    this.tag = tag;
+    const { tag: tag2 } = await this.tagsService.tag(
+      '636aa2f647674a1090976e3c'
+    );
+    this.tag2 = tag2;
+
+    this.tagsByIdsObject = {};
+    for (const tag of tags) {
+      this.tagsByIdsObject[tag._id] = tag;
+    }
+
+    console.log(this.tagsByIdsObject);
+  }
 
   openDialog() {
     /*   const list: StoreShareList[] = [
@@ -152,7 +204,6 @@ export class TestComponent implements OnInit {
         customClass: 'app-dialog',
         flags: ['no-header'],
     });*/
-    
 
     /* this.dialog.open(GeneralFormSubmissionDialogComponent, {
       type: 'centralized-fullscreen',
