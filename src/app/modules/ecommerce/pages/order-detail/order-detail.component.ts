@@ -33,6 +33,12 @@ interface Image {
   callback?(...param): any;
 }
 
+interface Image {
+  src: string;
+  filter?: string;
+  callback?(...param): any;
+}
+
 @Component({
   selector: 'app-order-detail',
   templateUrl: './order-detail.component.html',
@@ -70,6 +76,7 @@ export class OrderDetailComponent implements OnInit {
   tags: Tag[];
   selectedTags: any = {};
   tabs: any[] = ['', '', '', '', ''];
+  previousTags: any;
   imageList: Image[] = [
     {
       src: '/bookmark-checked.svg',
@@ -167,6 +174,8 @@ export class OrderDetailComponent implements OnInit {
       .toLocaleUpperCase();
     this.checkUser();
     await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+
+    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
 
     if (this.order.items[0].post) {
       this.post = (
@@ -559,11 +568,21 @@ export class OrderDetailComponent implements OnInit {
     }
   }
 
-  notificationClicked() {
+  async notificationClicked() {
     this.notify = false;
     this.router.navigate([], {
       relativeTo: this.route,
     });
+    console.log(this.order.tags);
+    const tags = (await this.tagsService.tagsByUser()) || [];
+    for (const tag of tags) {
+      this.selectedTags[tag._id] = false;
+      if (this.order.tags.includes(tag._id)) {
+        this.selectedTags[tag._id] = true;
+      }
+    }
+    this.tags = tags;
+    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
   }
 
   openImageModal(imageSourceURL: string) {
@@ -822,6 +841,51 @@ export class OrderDetailComponent implements OnInit {
     this.merchantOwner = true;
   }
 
+  // async isMerchantOwner(merchant: string) {
+  //   const ismerchant = await this.merchantsService.merchantDefault();
+
+  //   console.log('ismerchant', ismerchant);
+  //   merchant === ismerchant?._id ? (this.merchant = true) : null;
+  // }
+
+  // async addTag(tagId?: string) {
+  //   if (!this.selectedTags[tagId]) {
+  //     const added = await this.tagsService.addTagsInOrder(
+  //       this.order.items[0].saleflow.merchant._id,
+  //       tagId,
+  //       this.order._id
+  //     );
+  //     this.selectedTags[tagId] = true;
+  //     this.order.tags.push(tagId);
+  //   } else {
+  //     const removed = await this.tagsService.removeTagsInOrder(
+  //       this.order.items[0].saleflow.merchant._id,
+  //       tagId,
+  //       this.order._id
+  //     );
+  //     this.selectedTags[tagId] = false;
+  //     if (this.order.tags.includes(tagId)) {
+  //       this.order.tags = this.order.tags.filter((tag) => tag !== tagId);
+  //     }
+  //     /* const tagIndex = this.order.tags.findIndex((tag)=>{
+  //        tagId === this.order.tags[tag]
+  //        console.log(tagId + ' EL ID DEL TAG');
+  //     });
+  //     console.log(tagIndex + ' INDICE')
+  //     if(tagIndex >= 0){
+  //        this.order.tags.splice(tagIndex, 1)
+  //     } else {
+  //        console.log('No Esta')
+  //     } */
+  //   }
+  //   /* let selectedTags = Object.keys(this.selectedTags).filter((tag) =>{
+  //     return this.selectedTags[tag] == true
+  //  })
+  //  console.log(selectedTags);
+  //  for await (const tag of selectedTags) { 
+  //  } */
+  // }
+
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;
@@ -845,4 +909,32 @@ export class OrderDetailComponent implements OnInit {
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
   }
+
+  // goBackToFlowRoute() {
+  //   if (
+  //     this.flowRoute.includes('admin/orders') &&
+  //     this.flowRoute &&
+  //     this.merchant
+  //   ) {
+  //     this.router.navigate([this.flowRoute], {
+  //       queryParams: {
+  //         startOnSnapshot: true,
+  //       },
+  //     });
+  //     return;
+  //   } else {
+  //     if (this.merchant && !this.flowRoute.includes('admin/orders')) {
+  //       this.router.navigate(['admin/orders']);
+  //       return;
+  //     }
+
+  //     if (this.flowRoute && !this.merchant) {
+  //       this.router.navigate([this.flowRoute]);
+  //       return;
+  //     } else {
+  //       this.location.back();
+  //       return;
+  //     }
+  //   }
+  // }
 }

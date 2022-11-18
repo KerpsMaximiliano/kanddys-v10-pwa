@@ -749,7 +749,7 @@ export class LoginComponent implements OnInit {
 
         // await this.authService.generateMagicLink(
         //   this.merchantNumber,
-        //   `admin/entity-detail-metrics`,
+        //   `admin/items-dashboards`,
         //   newUser._id,
         //   'MerchantAccess',
         //   null

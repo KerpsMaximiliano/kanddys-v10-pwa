@@ -18,6 +18,7 @@ import {
   ordersByItem,
   createOCR,
   createPartialOCR,
+  orderSetStatus,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -26,6 +27,7 @@ import {
   OCRInput,
   OrderStatusNameType,
   OrderStatusType,
+  OrderStatusType2,
 } from '../models/order';
 @Injectable({
   providedIn: 'root',
@@ -97,7 +99,7 @@ export class OrderService {
     merchantId: string,
     orders: string[] = [],
     itemCategoryId?: string
-  ): Promise<{ total: number; length: number }> {
+  ): Promise<{ total: number; length: number; items: number }> {
     try {
       const response = await this.graphql.query({
         query: ordersTotal,
@@ -190,6 +192,20 @@ export class OrderService {
 
     console.log(result);
     return result;
+  }
+
+  async orderSetStatus(
+    status: OrderStatusType2,
+    id: string
+  ): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: orderSetStatus,
+      variables: { status, id },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    return result.orderSetStatus;
   }
 
   async ordersByItem(itemId: string): Promise<{ ordersByItem: ItemOrder[] }> {

@@ -13,6 +13,7 @@ import {
   addItemToSaleFlow,
   createSaleflow,
   createSaleFlowModule,
+  hotListItems,
   hotSaleflow,
   listItemPackage,
   listItems,
@@ -76,10 +77,35 @@ export class SaleFlowService {
     }
   }
 
-  async listItems(params: PaginationInput): Promise<{ listItems: Item[] }> {
+  async listItems(
+    params: PaginationInput,
+    justPromise?: boolean
+  ): Promise<{ listItems: Item[] }> {
+    try {
+      if (!justPromise) {
+        const response = await this.graphql.query({
+          query: listItems,
+          variables: { params },
+          fetchPolicy: 'no-cache',
+        });
+        return response;
+      } else {
+        const promise = this.graphql.query({
+          query: listItems,
+          variables: { params },
+          fetchPolicy: 'no-cache',
+        });
+        return promise;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async hotListItems(params: PaginationInput): Promise<{ listItems: Item[] }> {
     try {
       const response = await this.graphql.query({
-        query: listItems,
+        query: hotListItems,
         variables: { params },
         fetchPolicy: 'no-cache',
       });

@@ -2,7 +2,12 @@
   <div class="text-grid">
     <h4 class="title">Tags previamente usados</h4>
     <div class="icon-container">
-      <img class="icon-blue" src="{{ env }}/bookmark-plus.svg" alt="" (click)="goToCreateTag()"/>
+      <img
+        class="icon-blue"
+        src="{{ env }}/bookmark-plus.svg"
+        alt=""
+        (click)="goToCreateTag()"
+      />
     </div>
   </div>
   <app-tags-selector
@@ -24,6 +29,8 @@
     selectedFilter="brightness(2)"
     [useIdToRemoveOrAddTags]="true"
     (tagSelect)="tagAction($event)"
+    [outputAllSelectedTags]="outputAllSelectedTags"
+    (tagSelect3)="selectTagHandler($event)"
   ></app-tags-selector>
   <button class="save" (click)="buttonAction()">
     <img class="icon" src="{{ env }}/save.png" alt="" />

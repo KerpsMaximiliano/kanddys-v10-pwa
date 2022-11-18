@@ -1,4 +1,5 @@
 <div class="container">
+<<<<<<< HEAD
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="false"
@@ -39,6 +40,12 @@
     "
     (agnosticAction)="openLogoutDialog()"
   ></app-helper-headerv2>
+=======
+  <header class="header">
+    <a class="return-holder" (click)="goBackToFlowRoute()" *ngIf="flowRoute"
+      ><i class="fas fa-chevron-left" [style.color]="'white'"></i>
+    </a>
+>>>>>>> staging-v3
 
   <div class="top-area" *ngIf="!notify">
     <button class="top-button" (click)="buyAgain()">
@@ -440,4 +447,18 @@
       />
     </div>
   </footer>
+
+
+  <!-- Aquí hubo un merge conflict -->
+  
+  <!-- <app-sticky-button
+  *ngIf="!merchant"
+  [mode]="'fixed'"
+  [bgColor]="'#2874AD'"
+  [size]="'small'"
+  [fontSize]="'1.25rem'"
+  [text]="'VOLVER A LA TIENDA'"
+  (click)="goToStore()"
+  ></app-sticky-button> -->
+
 </div>

@@ -287,10 +287,18 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   };
 
   back() {
+    if (!this.headerService.flowRoute) {
+      this.headerService.flowRoute = localStorage.getItem('flowRoute');
+    }
+
     if (this.previewMode) {
       if (this.item._id)
         return this.router.navigate([`/admin/create-item/${this.item._id}`]);
-      else return this.router.navigate([`/admin/create-item`]);
+      else {
+        if (!this.headerService.flowRoute)
+          return this.router.navigate([`/admin/create-item`]);
+        else return this.router.navigate([this.headerService.flowRoute]);
+      }
     }
     if (this.selectedParam) {
       this.selectedParam = null;
@@ -301,6 +309,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       [`/ecommerce/${this.headerService.saleflow._id}/store`],
       {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
+        queryParams: {
+          startOnSnapshot: true,
+        }
       }
     );
   }

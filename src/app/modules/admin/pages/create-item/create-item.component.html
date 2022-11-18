@@ -7,7 +7,11 @@
     <span>Adicionando la alegria del dia</span>
 
     <!--  *ngIf="itemForm.valid" iba aqui abajo -->
-    <button class="dot-trio" (click)="!justDynamicMode ? onOpenDialog() : null" *ngIf="!justDynamicMode">
+    <button
+      class="dot-trio"
+      (click)="!justDynamicMode ? onOpenDialog() : null"
+      *ngIf="!justDynamicMode"
+    >
       <div class="dot"> </div>
       <div class="dot"> </div>
       <div class="dot"> </div>
@@ -19,13 +23,20 @@
         <div class="fullScreenSwiper" *ngIf="imageField.length">
           <div class="shadowWrapper">
             <swiper [config]="swiperConfig">
-              <label
+              <div
+                style="position: relative"
                 *ngFor="let item of imageField; let i = index"
-                [style.background]="sanitize(item)"
-                [for]="'filemultiple'"
-                class="item"
-                [ngClass]="{ error: error[0] }"
-              ></label>
+              >
+                <label
+                  [style.background]="sanitize(item)"
+                  [for]="'filemultiple'"
+                  class="item"
+                  [ngClass]="{ error: error[0] }"
+                ></label>
+                <button class="rotate-btn" type="button" (click)="rotateImg(i)">
+                  <i class="fa fa-repeat" aria-hidden="true"></i>
+                </button>
+              </div>
             </swiper>
           </div>
         </div>

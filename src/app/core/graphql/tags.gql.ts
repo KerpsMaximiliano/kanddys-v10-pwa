@@ -17,10 +17,10 @@ export const createTag = gql`
 `;
 
 export const tagsByUser = gql`
-  query {
-		tagsByUser {
+  query tagsByUser($paginate: PaginationInput) {
+    tagsByUser(paginate: $paginate) {
       _id
-			name
+      name
       images
       status
     }
@@ -40,6 +40,24 @@ export const addTagsInOrder = gql`
     $orderId: ObjectID!
   ) {
     addTagsInOrder(merchantId: $merchantId, tagId: $tagId, orderId: $orderId) {
+      _id
+      tags
+    }
+  }
+`;
+
+export const itemAddTag = gql`
+  mutation itemAddTag($tagId: ObjectID!, $id: ObjectID!) {
+    itemAddTag(tagId: $tagId, id: $id) {
+      _id
+      tags
+    }
+  }
+`;
+
+export const itemRemoveTag = gql`
+  mutation itemRemoveTag($tagId: ObjectID!, $id: ObjectID!) {
+    itemRemoveTag(tagId: $tagId, id: $id) {
       _id
       tags
     }
@@ -96,6 +114,78 @@ export const tag = gql`
     tag(tagId: $tagId) {
       _id
       name
+      images
+      status
+    }
+  }
+`;
+
+export const tags = gql`
+  query tags($paginate: PaginationInput) {
+    tags(paginate: $paginate) {
+      _id
+      name
+      user
+      status
+      images
+    }
+  }
+`;
+
+export const ordersByTag = gql`
+  query ordersByTag(
+    $orderStatus: [String!]
+    $limit: Float
+    $tagId: [ObjectID!]!
+  ) {
+    ordersByTag(orderStatus: $orderStatus, limit: $limit, tagId: $tagId) {
+      tag
+      orders {
+        _id
+        subtotals {
+          amount
+        }
+        user {
+          phone
+          email
+          name
+          image
+        }
+        ocr {
+          _id
+        }
+        items {
+          item {
+            name
+            images
+            tags
+            params {
+              _id
+              name
+              values {
+                _id
+                name
+                price
+              }
+            }
+          }
+          params {
+            param
+            paramValue
+          }
+          reservation {
+            _id
+          }
+        }
+        orderStatus
+        status {
+          status
+          access
+        }
+        dateId
+        createdAt
+        tags
+      }
     }
   }
 `;

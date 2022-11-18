@@ -141,7 +141,11 @@ export class EntityDetailMetricsComponent implements OnInit {
       );
 
       const incomeMerchantResponse = await this.merchantsService.incomeMerchant(
-        this.merchantsService.merchantData._id
+        {
+          findBy: {
+            merchant: this.merchantsService.merchantData._id,
+          },
+        }
       );
 
       if (ordersTotalResponse !== null && incomeMerchantResponse !== null) {

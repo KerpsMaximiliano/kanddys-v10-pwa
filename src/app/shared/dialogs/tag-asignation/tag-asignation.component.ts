@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { TagsService } from 'src/app/core/services/tags.service';
@@ -23,7 +23,13 @@ export class TagAsignationComponent implements OnInit {
   @Input('text') text: string = '';
   @Input() orderId: string = null;
   @Input() public tagAction: (args?: any) => any;
-  @Input() buttonCallback: (args?: any) => void;
+  @Input() entity: 'item' | 'order' = 'order';
+  @Input() entityId: string = null;
+  @Input('loadingText') loadingText: string = 'ESPERE...';
+  @Input('untouchedActionText') untouchedActionText: string = null;
+  @Input() outputAllSelectedTags: boolean = false;
+  @Input() public ctaAction: (args?: any) => any;
+  blockCta: boolean = false;
 
   constructor(
     private router: Router,
@@ -45,24 +51,38 @@ export class TagAsignationComponent implements OnInit {
       this.router.navigate(['admin/create-tag'], {
         queryParams: {
           orderId: this.orderId,
+          entity: this.entity,
+          entityId: this.entityId,
         },
       });
     } else {
-      this.router.navigate(['admin/create-tag']);
+      const queryParams: any = {
+        entity: this.entity,
+      };
+
+      if (this.entityId) queryParams.entityId = this.entityId;
+
+      this.router.navigate(['admin/create-tag'], {
+        queryParams,
+      });
     }
     this.close();
-  }
-
-  buttonAction(){
-   if (this.buttonCallback) {
-      this.buttonCallback();
-      this.close();
-    } else {
-      this.close();
-    }
   }
 
   close() {
     this.ref.close();
   }
+
+  selectTagHandler(eventData: any) {
+    this.untouchedActionText = null;
+    this.blockCta = true;
+    this.tagAction(eventData);
+  }
+
+  submit = async () => {
+    this.blockCta = false;
+    await this.ctaAction();
+    this.blockCta = true;
+    this.ref.close();
+  };
 }

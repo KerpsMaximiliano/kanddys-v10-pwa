@@ -5,12 +5,14 @@ import { environment } from 'src/environments/environment';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
 
-interface Button {
+export interface Button {
   text: string;
   callback?(...params): any;
   asyncCallback?(...params): Promise<any>;
   styles?: Record<string, string | number>;
 }
+
+export interface SettingsDialogButton extends Button {}
 
 @Component({
   selector: 'app-settings',
@@ -34,6 +36,7 @@ export class SettingsComponent implements OnInit {
     callbackParams?: Array<any>;
   }> = [];
   @Input() indexValue: number;
+  @Input() linkToCopy: string = null;
   currentStatusIndex: number = 0;
   env: string = environment.assetsUrl;
 
@@ -47,7 +50,7 @@ export class SettingsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if(this.indexValue <= this.statuses.length -1){
+    if (this.indexValue <= this.statuses.length - 1) {
       this.currentStatusIndex = this.indexValue;
     }
   }
@@ -62,9 +65,9 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  async buttonCallback(callback?: () => void){
-   callback? callback() : null;
-   this.close();
+  async buttonCallback(callback?: () => void) {
+    callback ? callback() : null;
+    this.close();
   }
 
   async executeStatusButtonCallback() {
@@ -89,7 +92,10 @@ export class SettingsComponent implements OnInit {
   }
 
   copyLink() {
-    this.clipboard.copy(window.location.href);
+    const clipboardLink = !this.linkToCopy
+      ? window.location.href
+      : this.linkToCopy;
+    this.clipboard.copy(clipboardLink);
     this.toastr.info('Enlace copiado en el clipboard');
     this.close();
   }
