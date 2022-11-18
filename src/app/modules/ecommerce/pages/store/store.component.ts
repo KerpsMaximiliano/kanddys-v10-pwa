@@ -137,7 +137,7 @@ export class StoreComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private merchantService: MerchantsService,
-    private header: HeaderService,
+    public header: HeaderService,
     private saleflow: SaleFlowService,
     private item: ItemsService,
     private authService: AuthService,
