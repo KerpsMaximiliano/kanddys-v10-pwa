@@ -156,21 +156,21 @@ a {
                   }
                }
 
-               .video{
+               .video {
                   all: unset;
                   width: 84px;
                   height: 74px;
                   position: relative;
                   cursor: pointer;
 
-                  .item-video{
+                  .item-video {
                      width: 86px;
                      height: 74px;
                      object-fit: fill;
                      border-radius: 6px;
                   }
 
-                  &::before{
+                  &::before {
                      content: "\a";
                      position: absolute;
                      top: 20px;
@@ -204,30 +204,29 @@ a {
                }
 
                audio::-webkit-media-controls-panel
-               audio::-webkit-media-controls-mute-button
-               audio::-webkit-media-controls-timeline
-               audio::-webkit-media-controls-timeline-container
-               audio::-webkit-media-controls-current-time-display
-               audio::-webkit-media-controls-time-remaining-display
-               audio::-webkit-media-controls-timeline
-               audio::-webkit-media-controls-volume-slider-container
-               audio::-webkit-media-controls-volume-slider
-               audio::-webkit-media-controls-seek-back-button
-               audio::-webkit-media-controls-seek-forward-button
-               audio::-webkit-media-controls-fullscreen-button
-               audio::-webkit-media-controls-rewind-button
-               audio::-webkit-media-controls-return-to-realtime-button
-               audio::-webkit-internal-media-controls-overflow-button
-               audio::-webkit-media-controls-toggle-closed-captions-button{
+                  audio::-webkit-media-controls-mute-button
+                  audio::-webkit-media-controls-timeline
+                  audio::-webkit-media-controls-timeline-container
+                  audio::-webkit-media-controls-current-time-display
+                  audio::-webkit-media-controls-time-remaining-display
+                  audio::-webkit-media-controls-timeline
+                  audio::-webkit-media-controls-volume-slider-container
+                  audio::-webkit-media-controls-volume-slider
+                  audio::-webkit-media-controls-seek-back-button
+                  audio::-webkit-media-controls-seek-forward-button
+                  audio::-webkit-media-controls-fullscreen-button
+                  audio::-webkit-media-controls-rewind-button
+                  audio::-webkit-media-controls-return-to-realtime-button
+                  audio::-webkit-internal-media-controls-overflow-button
+                  audio::-webkit-media-controls-toggle-closed-captions-button {
                   display: none !important;
                }
-               audio::-webkit-media-controls-play-button{
+               audio::-webkit-media-controls-play-button {
                   display: inline !important;
                }
 
-               .audio{
-                  .item-audio{
-                     width: 84px;
+               .audio {
+                  .item-audio {
                      height: 65px;
                   }
                }

@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
@@ -19,8 +20,6 @@ import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
-
-const videoContainer = document.getElementById('videoContainer');
 
 const options = [
   {
@@ -129,11 +128,11 @@ export class CheckoutComponent implements OnInit {
   selectedPostOption: number;
   missingOrderData: boolean;
   postSlideImages: (string | ArrayBuffer)[] = [];
-  postSlideVideos: any[] = [];
-  postSlideAudio: any[] = [];
-  @ViewChild('video') video: ElementRef;
+  postSlideVideos: (string | ArrayBuffer)[] = [];
+  postSlideAudio: SafeUrl[] = [];
 
   constructor(
+    private _DomSanitizer: DomSanitizer,
     private dialogService: DialogService,
     public headerService: HeaderService,
     private customizerValueService: CustomizerValueService,
@@ -241,12 +240,31 @@ export class CheckoutComponent implements OnInit {
     if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost();
     if (this.post?.slides?.length) {
-      this.populatePost(this.post.slides);
       this.post.slides.forEach((slide) => {
-        if (slide.media && slide.media.type == 'image/png' || 'image/jpeg') {
+        if (slide.media?.type.includes('image')) {
           const reader = new FileReader();
           reader.onload = (e) => {
             this.postSlideImages.push(reader.result);
+            console.log(this.postSlideImages);
+          };
+          reader.readAsDataURL(slide.media);
+        }
+        if (slide.media?.type.includes('video')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideVideos.push(reader.result);
+            console.log(this.postSlideVideos);
+          };
+          reader.readAsDataURL(slide.media);
+        }
+        if (slide.media?.type.includes('audio')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideAudio.push(
+              this._DomSanitizer.bypassSecurityTrustUrl(
+                URL.createObjectURL(slide.media)
+              )
+            );
           };
           reader.readAsDataURL(slide.media);
         }
@@ -563,28 +581,6 @@ export class CheckoutComponent implements OnInit {
       }
     }
   }
-
-  handleFullscreen() {
-   let elem = this.video.nativeElement as HTMLVideoElement;
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } /* else if (elem.mozRequestFullScreen) {
-    elem.mozRequestFullScreen();
-  } else if (elem.webkitRequestFullscreen) {
-    elem.webkitRequestFullscreen();
-  } */
- }
-
- populatePost(medias){
-   const files = medias.map((media) => {
-      return media.media
-   });
-   this.postSlideAudio = files.filter((audio) => audio.type ==='audio/mpeg');
-   this.postSlideVideos = files.filter((video) => video.type === 'video/mp4');
-   console.log(files);
-   console.log(this.postSlideAudio);
-   console.log(this.postSlideVideos);
- }
 
   mouseDown: boolean;
   startX: number;
