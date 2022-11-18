@@ -360,6 +360,11 @@ export class ArticlePrivacyComponent implements OnInit {
       controller.get('_id').setValue(_id);
       this._Recipients = this.controllers.value;
       this.initControllers();
+      for (const tag of this.listadoSelection) {
+        const { recipientAddTag } =
+          await this._RecipientsService.recipientAddTag(tag, _id);
+        controller.get('tags').setValue(this.listadoSelection);
+      }
     };
     if (!_id) createRecipient();
     this.selected = ['Yo y mis invitados'];
@@ -477,7 +482,6 @@ export class ArticlePrivacyComponent implements OnInit {
 
   addTag(): void {
     const createTag = async () => {
-      const lastTag = this.tags[this.tags.length - 1];
       const name = `Listado #${this.tags.length}`;
       const _TagInput: any = {
         name,

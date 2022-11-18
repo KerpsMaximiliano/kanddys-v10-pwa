@@ -67,7 +67,7 @@
             class="mutimedia-container"
             [style.display]="
               listadoSelection
-                ? checkList(control)
+                ? checkList(control) || j === 0 
                   ? 'initial'
                   : 'none'
                 : 'initial'

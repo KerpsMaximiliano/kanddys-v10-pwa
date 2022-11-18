@@ -32,3 +32,11 @@ export const deleteRecipient = gql`
     deleteRecipient(id: $id)
   }
 `;
+
+export const recipientAddTag = gql`
+  mutation recipientAddTag($tagId: ObjectID!, $id: ObjectID!) {
+    recipientAddTag(tagId: $tagId, id: $id) {
+      _id
+    }
+  }
+`;
