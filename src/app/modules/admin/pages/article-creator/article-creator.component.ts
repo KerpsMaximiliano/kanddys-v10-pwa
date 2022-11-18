@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgxImageCompressService } from 'ngx-image-compress';
 import { ToastrService } from 'ngx-toastr';
 import { Item, ItemInput } from 'src/app/core/models/item';
 import { PostInput } from 'src/app/core/models/post';
@@ -87,7 +88,8 @@ export class ArticleCreatorComponent implements OnInit {
     private _MerchantsService: MerchantsService,
     private _SaleflowService: SaleFlowService,
     private _DialogService: DialogService,
-    private _ToastrService: ToastrService
+    private _ToastrService: ToastrService,
+    private _ImageCompress: NgxImageCompressService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -203,21 +205,29 @@ export class ArticleCreatorComponent implements OnInit {
     const reader = new FileReader();
     reader.readAsDataURL(file);
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const { type } = file;
-      const result = reader.result;
+      let result = reader.result;
       if (this.videoFiles.includes(type))
         this.multimedia[i][j] = (<FileReader>e.target).result;
-      else if (this.imageFiles.includes(type))
+      else if (this.imageFiles.includes(type)) {
+        const compressedImage = await this._ImageCompress.compressFile(
+          reader.result as string,
+          -1,
+          50,
+          50
+        ); // 50% ratio, 50% quality
+        result = compressedImage;
+        file = await this.urltoFile(compressedImage, file.name, type);
         this.multimedia[i][j] = this._DomSanitizer
           .bypassSecurityTrustStyle(`url(
         ${result})
         no-repeat center center / cover #e9e371`);
-      else if (this.audioFiles.includes(type))
+      } else if (this.audioFiles.includes(type)) {
         this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustUrl(
           URL.createObjectURL(file)
         );
-      else this.multimedia[i][j] = result;
+      } else this.multimedia[i][j] = result;
       this.types[i][j] = type;
       const multimedia = this.controllers
         .at(i)
@@ -344,6 +354,16 @@ export class ArticleCreatorComponent implements OnInit {
   handleSlide(e) {
     const activeSlide = document.querySelector('.swiper-slide-active');
     this.activeSlide = +activeSlide.id;
+  }
+
+  async urltoFile(
+    dataUrl: string,
+    fileName: string,
+    type?: string
+  ): Promise<File> {
+    const res: Response = await fetch(dataUrl);
+    const blob: Blob = await res.blob();
+    return new File([blob], fileName, { type: type || 'image/jpg' });
   }
 
   openShareDialog = () => {
