@@ -16,9 +16,9 @@
       [bgColor]="header.colorTheme"
       [dots]="{
         active: header.user ? true : false,
-        func: openLogoutDialog
+        func: openUserManagementDialog
       }"
-      (dotEvent)="openLogoutDialog()"
+      (dotEvent)="openUserManagementDialog()"
       [returnAble]="false"
     ></app-helper-headerv2>
 
