@@ -154,6 +154,8 @@ export class StoreComponent implements OnInit {
       let { startOnSnapshot } = queryParams;
       startOnSnapshot = Boolean(startOnSnapshot);
 
+      console.log(queryParams);
+
       if (!this.header.storeTemporalData || !startOnSnapshot)
         this.executeProcessesAfterLoading();
       else this.getPageSnapshot();
@@ -211,11 +213,12 @@ export class StoreComponent implements OnInit {
 
   executeProcessesAfterLoading() {
     this.route.params.subscribe(async (params) => {
+      console.log(params);
       this.status = 'loading';
       lockUI();
 
       this.header.orderId = null;
-      this.saleflowData = await this.header.fetchSaleflow(params.id);
+      this.saleflowData = await this.header.fetchSaleflow(params.saleflowId);
       this.getTags();
       const orderData = this.header.getOrder();
       if (!orderData || !orderData.products || orderData.products.length === 0)
