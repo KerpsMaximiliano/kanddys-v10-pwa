@@ -5,6 +5,8 @@ import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { Target } from 'src/app/core/models/post';
 
 @Component({
   selector: 'app-article-access',
@@ -23,18 +25,23 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    activeIndex: number;
    check: OptionAnswerSelector[] = [];
    _Subscription: Subscription;
+   targets:Target[] = [];
+   postId:string;
 
   constructor(
    private dialog: DialogService,
    private _PostsService: PostsService,
-   private _ActivatedRoute: ActivatedRoute
+   private _ActivatedRoute: ActivatedRoute,
+   private _AuthService: AuthService
    ) { }
 
   ngOnInit(): void {
    this._Subscription = this._ActivatedRoute.params.subscribe(({ postId }) => {
+      this.postId = postId;
       const post = async () => {
          const { post } = await this._PostsService.getSimplePost(postId);
          const { targets } = post;
+         this.targets = targets;
          for(const { emailOrPhone } of targets){
             let aux = false;
             const list = emailOrPhone.split('');
@@ -110,10 +117,19 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
  }
 
  selectedOption(e){
-   console.log('e: ', e);
    this.sentInvite = true;
    this.code = this.check[e].value; 
-   console.log(e);
+   const generateMagicLink = async () => {
+      const emailOrPhone = this.targets[e].emailOrPhone;
+      const result = await this._AuthService.generateMagicLink(
+      emailOrPhone,
+         'ecommerce/article-detail',
+         this.postId,
+         'PostAccess',
+         {}
+      );
+   };
+   generateMagicLink();
   }
 
   return(){
