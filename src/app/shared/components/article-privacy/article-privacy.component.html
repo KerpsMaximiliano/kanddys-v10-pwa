@@ -31,12 +31,7 @@
     class="swiper-container"
   >
     <swiper [config]="swiperConfig">
-      <div
-        class="listado"
-        (click)="addTag()"
-      >
-        Nueva
-      </div>
+      <div class="listado" (click)="addTag()">Nueva</div>
       <div
         class="listado"
         *ngFor="let tag of tags"
@@ -67,7 +62,7 @@
             class="mutimedia-container"
             [style.display]="
               listadoSelection
-                ? checkList(control) || j === 0 
+                ? checkList(control) || j === 0
                   ? 'initial'
                   : 'none'
                 : 'initial'
@@ -94,7 +89,14 @@
                 /></ng-template>
               </ng-template>
             </button>
-            <p *ngIf="j !== 0" class="name-id">{{ control.get('name').value || control.get('nickname').value || control.get('email').value || control.get('phone').value }}</p>
+            <p *ngIf="j !== 0" class="name-id">
+              {{
+                control.get("name").value ||
+                  control.get("nickname").value ||
+                  control.get("email").value ||
+                  control.get("phone").value
+              }}
+            </p>
           </div>
         </ng-container>
       </div>
@@ -114,82 +116,93 @@
       </p>
     </div>
     <div class="invites" *ngSwitchCase="'invites'">
-      <form [formGroup]="getFormGroupAt(controlIndex)" class="w-90 mt">
-        <div class="input-grid">
-          <div>
-            <label>Name</label>
-            <input
-              formControlName="name"
-              class="input-base"
-              type="text"
-              placeholder="Escribe.."
-            />
-          </div>
-          <div>
-            <label>Last Name</label>
-            <input
-              formControlName="lastName"
-              class="input-base"
-              type="text"
-              placeholder="Escribe.."
-            />
-          </div>
-        </div>
-        <p class="paragraph">Contact that will receive the access</p>
-        <input
-          formControlName="email"
-          class="input"
-          placeholder="Correo Electrónico"
-          type="email"
-        />
-        <input
-          formControlName="phone"
-          class="input"
-          placeholder="WhatsApp.."
-          type="tel"
-        />
-        <p class="paragraph">Photo</p>
-        <swiper [config]="swiperConfig">
-          <div
-            *ngFor="
-              let file of controllers.at(controlIndex).get('image')
-                ? controllers.at(controlIndex).get('image').value
-                : [];
-              let j = index
-            "
-            id="0{{ j }}"
-            attr.aria-label="{{ j + 1 }} / {{ multimedia[0].length }}"
-            role="group"
-            class="mutimedia-container"
-          >
-            <input
-              class="hidden"
-              type="text"
-              type="file"
-              [id]="j"
-              (change)="loadFile($event, controlIndex, j)"
-            />
-            <div
-              [style.background]="multimedia[controlIndex][0]"
-              class="square"
-            >
-              <label for="{{ j }}" class="plus bg-green" [style.top]="'0'"
-                >+</label
-              >
+      <ng-container [ngSwitch]="status">
+        <div *ngSwitchCase="'loading'" class="loading">Cargando...</div>
+        <form *ngSwitchDefault [formGroup]="getFormGroupAt(controlIndex)" class="w-90 mt">
+          <div class="input-grid">
+            <div>
+              <label>Name</label>
+              <input
+                formControlName="name"
+                class="input-base"
+                type="text"
+                placeholder="Escribe.."
+              />
+            </div>
+            <div>
+              <label>Last Name</label>
+              <input
+                formControlName="lastName"
+                class="input-base"
+                type="text"
+                placeholder="Escribe.."
+              />
             </div>
           </div>
-        </swiper>
-        <p class="paragraph">Oración identificadora</p>
-        <input
-          formControlName="nickname"
-          class="input"
-          placeholder="Escribe.."
-          type="text"
-        />
-        <button class="submit" type="button" (click)="submit()">
-          SALVAR COMO INVITADO
-        </button>
-      </form>
+          <p class="paragraph">Contact that will receive the access</p>
+          <input
+            formControlName="email"
+            class="input"
+            placeholder="Correo Electrónico"
+            type="email"
+          />
+          <input
+            formControlName="phone"
+            class="input"
+            placeholder="WhatsApp.."
+            type="tel"
+          />
+          <p class="paragraph">Photo</p>
+          <swiper [config]="swiperConfig">
+            <div
+              *ngFor="
+                let file of controllers.at(controlIndex).get('image')
+                  ? controllers.at(controlIndex).get('image').value
+                  : [];
+                let j = index
+              "
+              id="0{{ j }}"
+              attr.aria-label="{{ j + 1 }} / {{ multimedia[0].length }}"
+              role="group"
+              class="mutimedia-container"
+            >
+              <input
+                class="hidden"
+                type="text"
+                type="file"
+                [id]="j"
+                (change)="loadFile($event, controlIndex, j)"
+              />
+              <label
+                for="{{ j }}"
+                [style.background]="multimedia[controlIndex][0]"
+                class="square"
+              >
+                <div class="plus bg-green" [style.top]="'0'">+</div>
+              </label>
+            </div>
+          </swiper>
+          <p class="paragraph">Oración identificadora</p>
+          <input
+            formControlName="nickname"
+            class="input"
+            placeholder="Escribe.."
+            type="text"
+          />
+          <button
+            *ngIf="
+              (controllers.at(controlIndex).get('phone').value ||
+                controllers.at(controlIndex).get('email').value) &&
+              controllers.at(controlIndex).valid
+            "
+            class="submit"
+            type="button"
+            (click)="submit()"
+          >
+            SALVAR COMO INVITADO
+          </button>
+        </form>
+      </ng-container>
     </div>
     <div
       class="password-container"

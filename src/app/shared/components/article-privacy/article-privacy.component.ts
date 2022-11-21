@@ -23,6 +23,7 @@ import { StoreShareComponent } from '../../dialogs/store-share/store-share.compo
   styleUrls: ['./article-privacy.component.scss'],
 })
 export class ArticlePrivacyComponent implements OnInit {
+  status: string = 'controller';
   options: string[] = ['A ver', 'A editar'];
   selected: string[] = ['A ver'];
   icons: string[] = ['up', 'up'];
@@ -128,7 +129,7 @@ export class ArticlePrivacyComponent implements OnInit {
         marginLeft: '36px',
       },
       value: '',
-      validators: [],
+      validators: [Validators.pattern('^[0-9]*$')],
       type: 'tel',
     },
     {
@@ -138,7 +139,11 @@ export class ArticlePrivacyComponent implements OnInit {
         marginLeft: '36px',
       },
       value: '',
-      validators: [],
+      validators: [
+        Validators.pattern(
+          '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'
+        ),
+      ],
       type: 'email',
     },
     {
@@ -226,7 +231,6 @@ export class ArticlePrivacyComponent implements OnInit {
           }
         }
       );
-      controller.setValidators([this.whatsappOrEmailValid]);
       this.controllers = new FormArray([
         controller,
         ...this.controllers.controls,
@@ -241,20 +245,6 @@ export class ArticlePrivacyComponent implements OnInit {
 
   multimediaValid(g: FormControl) {
     return g.value.some((image) => !image) ? { invalid: true } : null;
-  }
-
-  whatsappOrEmailValid(g: FormGroup) {
-    const email = g.get('email');
-    const phone = g.get('phone');
-    if (email.value)
-      email.setValidators(
-        Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$')
-      );
-    else email.setValidators([]);
-
-    return g.get('phone').value || g.get('email').value
-      ? null
-      : { invalid: true };
   }
 
   handleOption(option: string): void {
@@ -339,6 +329,7 @@ export class ArticlePrivacyComponent implements OnInit {
   }
 
   submit(): void {
+    this.status = 'loading';
     const controller: AbstractControl = this.controllers.at(this.controlIndex);
     if (controller.invalid) return;
     const { name, lastName, _id, phone, email, nickname, image } =
@@ -365,9 +356,10 @@ export class ArticlePrivacyComponent implements OnInit {
           await this._RecipientsService.recipientAddTag(tag, _id);
         controller.get('tags').setValue(this.listadoSelection);
       }
+      this.status = 'controller';
+      this.selected = ['Yo y mis invitados'];
     };
     if (!_id) createRecipient();
-    this.selected = ['Yo y mis invitados'];
   }
 
   deleteSelected(): void {

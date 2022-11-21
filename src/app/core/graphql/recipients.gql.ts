@@ -4,6 +4,8 @@ export const createRecipient = gql`
   mutation createRecipient($input: RecipientInput!) {
     createRecipient(input: $input) {
       _id
+      name
+      lastName
       phone
       user
       createdAt
@@ -15,6 +17,8 @@ export const recipients = gql`
   query recipients($paginate: PaginationInput) {
     recipients(paginate: $paginate) {
       _id
+      name
+      lastName
       createdAt
       updatedAt
       phone

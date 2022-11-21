@@ -306,8 +306,18 @@ img {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  min-width: 113px!important;
 }
 
 form {
   padding-bottom: 30px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 22px;
+  font-family: "SfProRegular";
 }
