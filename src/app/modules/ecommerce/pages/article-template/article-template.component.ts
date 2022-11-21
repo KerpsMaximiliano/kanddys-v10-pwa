@@ -118,6 +118,10 @@ export class ArticleTemplateComponent implements OnInit {
   }
 
   async backButtonHandler(option: Options) {
+    this.selectedOption = null;
+  }
+
+  async saveExistingTemplateDataInCurrentTemplate(option: Options) {
     if (this.selectedOption.text === 'Adjunta un Símbolo existente') {
       const entityTemplateIdToMimic = this.entityTemplateReferenceInput.value;
 
@@ -140,8 +144,6 @@ export class ArticleTemplateComponent implements OnInit {
         });
         this.selectedOption = null;
       }
-    } else {
-      this.selectedOption = null;
     }
   }
 

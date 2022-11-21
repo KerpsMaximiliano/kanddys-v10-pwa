@@ -56,12 +56,30 @@
       <p class="title" [style.marginTop]="'41px'" [style.marginBottom]="'25px'">
         Pega o escribe el código de referencia del Símbolo existente:
       </p>
-      <input
-        class="base-input"
-        [formControl]="entityTemplateReferenceInput"
-        type="text"
-        placeholder="Escribe.."
-      />
+
+      <div class="input-wrapper">
+        <input
+          class="base-input"
+          [formControl]="entityTemplateReferenceInput"
+          type="text"
+          placeholder="Escribe.."
+        />
+        <button
+          class="confirm"
+          [disabled]="
+            !entityTemplateReferenceInput.value ||
+            entityTemplateReferenceInput.value.length === 0
+          "
+          [ngClass]="{
+            disabled:
+              !entityTemplateReferenceInput.value ||
+              entityTemplateReferenceInput.value.length === 0
+          }"
+          (click)="saveExistingTemplateDataInCurrentTemplate(selectedOption)"
+        >
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
     </ng-container>
     <ng-container *ngSwitchDefault>
       <p class="title">Selecciona entre estas opciones:</p>
