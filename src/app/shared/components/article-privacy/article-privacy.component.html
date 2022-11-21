@@ -31,7 +31,15 @@
     class="swiper-container"
   >
     <swiper [config]="swiperConfig">
-      <div class="listado" (click)="addTag()">Nueva</div>
+      <div
+        class="listado"
+        [style.color]="
+          listadoSelection.includes('Nueva') ? '#272727' : '#7b7b7b'
+        "
+        (click)="filterRecipients('Nueva')"
+      >
+        Nueva
+      </div>
       <div
         class="listado"
         *ngFor="let tag of tags"
@@ -118,7 +126,11 @@
     <div class="invites" *ngSwitchCase="'invites'">
       <ng-container [ngSwitch]="status">
         <div *ngSwitchCase="'loading'" class="loading">Cargando...</div>
-        <form *ngSwitchDefault [formGroup]="getFormGroupAt(controlIndex)" class="w-90 mt">
+        <form
+          *ngSwitchDefault
+          [formGroup]="getFormGroupAt(controlIndex)"
+          class="w-90 mt"
+        >
           <div class="input-grid">
             <div>
               <label>Name</label>

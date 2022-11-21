@@ -231,6 +231,10 @@ img {
   position: relative;
   top: 98px;
   text-align: center;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .images-grid {

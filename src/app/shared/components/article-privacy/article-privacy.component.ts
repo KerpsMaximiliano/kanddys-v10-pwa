@@ -339,7 +339,7 @@ export class ArticlePrivacyComponent implements OnInit {
       const body = {
         name,
         lastName,
-        phone,
+        phone: `${phone}`,
         email,
         nickname,
         image: _image,
@@ -464,12 +464,13 @@ export class ArticlePrivacyComponent implements OnInit {
     this.tempRecipients = this._Recipients.filter((recipient: Recipient) =>
       recipient.tags.includes(_id)
     );
+    if(this.listadoSelection.includes('Nueva')){
+      this.addTag();
+    }
   }
 
   checkList(control: AbstractControl): boolean {
-    return this.listadoSelection.length
-      ? control.get('tags').value.some((r) => this.listadoSelection.includes(r))
-      : true;
+    return this.listadoSelection.length?control.get('tags').value.some((r) => this.listadoSelection.includes(r)):true;
   }
 
   addTag(): void {
