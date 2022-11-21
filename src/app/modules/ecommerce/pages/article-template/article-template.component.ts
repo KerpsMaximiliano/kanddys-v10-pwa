@@ -3,6 +3,8 @@ import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
+import { User } from 'src/app/core/models/user';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -34,6 +36,7 @@ export class ArticleTemplateComponent implements OnInit {
     null,
     Validators.pattern(/[\S]/)
   );
+  user: User;
   list: Options[] = [
     {
       text: 'Adjunta un Símbolo existente',
@@ -62,25 +65,43 @@ export class ArticleTemplateComponent implements OnInit {
     private router: Router,
     private toastr: ToastrService,
     private entityTemplateService: EntityTemplateService,
-    private postsService: PostsService
+    private postsService: PostsService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(async (param) => {
       const { entityTemplateId } = param;
 
-      const entityTemplate = await this.entityTemplateService.entityTemplate(
-        entityTemplateId
-      );
+      if (this.isUserLogged()) {
+        const entityTemplate = await this.entityTemplateService.entityTemplate(
+          entityTemplateId
+        );
 
-      if (entityTemplate.reference && entityTemplate.entity) {
-        this.router.navigate([
-          `admin/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
-        ]);
+        if (entityTemplate.reference && entityTemplate.entity) {
+          this.router.navigate([
+            `admin/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
+          ]);
+        } else {
+          this.entityTemplate = entityTemplate;
+        }
       } else {
-        this.entityTemplate = entityTemplate;
+        this.router.navigate(['auth/login'], {
+          queryParams: {
+            redirect: window.location.href.split('/').slice(3).join('/'),
+          },
+        });
       }
     });
+  }
+
+  async isUserLogged() {
+    this.user = await this.authService.me();
+    if (!this.user) {
+      return false;
+    }
+
+    return true;
   }
 
   handleOption(option: Options): void {

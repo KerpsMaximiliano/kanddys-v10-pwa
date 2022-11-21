@@ -14,7 +14,6 @@ import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-crea
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
-import { ArticleTemplateComponent } from './pages/article-template/article-template.component';
 
 const routes: Routes = [
   {
@@ -93,10 +92,6 @@ const routes: Routes = [
         path: 'create-tag/:tagId',
         component: CreateTagComponent,
       },
-      {
-        path: 'article-template/:entityTemplateId',
-        component: ArticleTemplateComponent,
-      },
     ],
   },
 ];
@@ -113,7 +108,6 @@ const routes: Routes = [
     TimeBlockComponent,
     ItemsDashboardComponent,
     CreateTagComponent,
-    ArticleTemplateComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
