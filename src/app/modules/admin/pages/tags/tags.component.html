@@ -1,0 +1,74 @@
+<div class="main-container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [bgColor]="'#FFFFFF'"
+    [returnAble]="true"
+    [color]="'#272727'"
+    [mainText]="{
+      text: 'Lista de Tags recientes',
+      fontFamily: 'SfProBold',
+      fontSize: '1.313rem',
+      color: '#272727'
+    }"
+    [dots]="{
+      active: true,
+      color: '#272727',
+      margin: '0 1px'
+    }"
+  ></app-helper-headerv2>
+
+  <div
+    class="tabs-container"
+    #elemt
+    (mousedown)="startDragging($event, elemt)"
+    (mouseup)="stopDragging()"
+    (mouseleave)="stopDragging()"
+    (mousemove)="moveEvent($event, elemt)"
+  >
+    <button
+      class="tab"
+      *ngFor="let item of options; index as i"
+      [ngClass]="{ active: active === i }"
+      (click)="changeStep(i)"
+    >
+      {{ item }}
+    </button>
+  </div>
+
+  <div class="display-container">
+    <div class="title-button">
+      <h2 class="title">Recientes</h2>
+      <button class="top-button">Ver Todos</button>
+    </div>
+    <div class="swiper-area">
+      <!-- Aqui va un swiper-->
+    </div>
+  </div>
+
+  <div class="display-container">
+    <div class="title-button">
+      <h2 class="title">Los más asignados</h2>
+      <button class="top-button">Ver Todos</button>
+    </div>
+    <div class="swiper-area">
+      <!-- Aqui va un swiper-->
+    </div>
+  </div>
+
+  <div class="display-container">
+    <div class="title-button">
+      <h2 class="title">Input ID</h2>
+      <button class="top-button">Ver Todos</button>
+    </div>
+    <div class="swiper-area">
+      <!-- Aqui va un swiper-->
+    </div>
+  </div>
+
+  <div class="fixed-buttons">
+    <button class="create"><span>+</span> CREA</button>
+    <button class="share">
+      <img [src]="env + '/upload.svg'" alt="Imagen de compartir" />
+    </button>
+  </div>
+</div>

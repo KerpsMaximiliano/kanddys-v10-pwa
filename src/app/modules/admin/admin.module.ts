@@ -14,6 +14,7 @@ import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-crea
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
+import { TagsComponent } from './pages/tags/tags.component';
 
 const routes: Routes = [
   {
@@ -94,6 +95,10 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'tags',
+    component: TagsComponent
+  },
 ];
 
 @NgModule({
@@ -108,6 +113,7 @@ const routes: Routes = [
     TimeBlockComponent,
     ItemsDashboardComponent,
     CreateTagComponent,
+    TagsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

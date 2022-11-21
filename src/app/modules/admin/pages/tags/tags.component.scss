@@ -1,0 +1,108 @@
+.main-container{
+   min-height: 100vh;
+   position: relative;
+   
+   .tabs-container{
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: #fff;
+      overflow-x: scroll;
+      margin-bottom: 3px;
+      padding: 5px 0;
+      border-top: solid 2px #F6F6F6;
+   
+      .tab{
+         all: unset;
+         font-family: 'SfProRegular';
+         font-size: 1.063rem;
+         color: #7B7B7B;
+         margin-right: 4%;
+         margin-left: 2%;
+         cursor: pointer;
+      }
+   }
+   
+   .display-container{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+      padding: 0 4%;
+      min-height: 309px;
+
+      .title-button{
+         width: 100%;
+         display: flex;
+         justify-content: space-between;
+         margin-bottom: 10px;
+
+         .title{
+            font-family: 'RobotoMedium';
+            font-size: 19px;
+            font-weight: 500;
+            color: #272727;
+            margin: 0;
+         }
+
+         .top-button{
+            all: unset;
+            font-family: 'SfProBold';
+            font-size: 17px;
+            color: #272727;
+            cursor: pointer;
+         }
+      }
+   }
+
+   .fixed-buttons{
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      position: fixed;
+      bottom: 54px;
+
+      .create{
+         width: 68.45%;
+         height: 39px;
+         border: none;
+         border-radius: 19px;
+         background-color: #fff;
+         font-size: 15px;
+         font-family: 'SfProBold';
+         text-align: center;
+         cursor: pointer;
+         box-shadow: 0px 6px 6px 0px rgba(0, 0, 0, 16%);
+
+         span{
+            font-size: 22px;
+            font-family: 'SfProBold';
+            color: #272227;
+         }
+      }
+
+      .share{
+         width: 56px;
+         height: 56px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         background-color: #fff;
+         border: none;
+         border-radius: 50%;
+         margin-left: 24px;
+         cursor: pointer;
+         box-shadow: 0px 6px 6px 0px rgba(0, 0, 0, 16%);
+
+         img{
+            filter: invert(12%) sepia(94%) saturate(0%) hue-rotate(194deg) brightness(20%) contrast(95%);
+         }
+      }
+   }
+}
+.active{
+   color: #272727 !important;
+}

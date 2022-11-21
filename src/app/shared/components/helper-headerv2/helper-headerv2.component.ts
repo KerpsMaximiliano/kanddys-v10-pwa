@@ -112,6 +112,7 @@ export class HelperHeaderv2Component implements OnInit {
     active: boolean;
     color?: string;
     func?: () => void;
+    margin?: string;
   };
   @Input() tags: {
     active: boolean;
