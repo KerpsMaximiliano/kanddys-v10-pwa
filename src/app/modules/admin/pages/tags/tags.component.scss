@@ -5,7 +5,6 @@
    .tabs-container{
       width: 100%;
       display: flex;
-      justify-content: space-around;
       align-items: center;
       background-color: #fff;
       overflow-x: scroll;
@@ -19,7 +18,7 @@
          font-size: 1.063rem;
          color: #7B7B7B;
          margin-right: 4%;
-         margin-left: 2%;
+         margin-left: 4%;
          cursor: pointer;
       }
    }
