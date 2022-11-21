@@ -221,7 +221,14 @@ export class ItemsDashboardComponent implements OnInit {
   }
 
   async inicializeTags() {
-    const tagsList = await this.tagsService.tagsByUser();
+    const tagsList = await this.tagsService.tagsByUser({
+      findBy: {
+        entity: 'item',
+      },
+      options: {
+        limit: -1
+      }
+    });
 
     if (tagsList) {
       this.tagsList = tagsList;
@@ -558,8 +565,8 @@ export class ItemsDashboardComponent implements OnInit {
       const incomeMerchantResponse = await this.merchantsService.incomeMerchant(
         {
           findBy: {
-            merchant: this.merchantsService.merchantData._id
-          }
+            merchant: this.merchantsService.merchantData._id,
+          },
         }
       );
 

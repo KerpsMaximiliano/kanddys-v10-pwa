@@ -83,7 +83,14 @@ export class ItemDisplayComponent implements OnInit {
 
         lockUI();
         this.item = await this.itemsService.item(params.itemId);
-        const userTags = await this.tagsService.tagsByUser();
+        const userTags = await this.tagsService.tagsByUser({
+          findBy: {
+            entity: 'item',
+          },
+          options: {
+            limit: -1,
+          },
+        });
         this.userTags = userTags;
 
         if (!this.item) return this.redirect();
@@ -517,18 +524,18 @@ export class ItemDisplayComponent implements OnInit {
 
   openTagsDialog = async () => {
     this.selectedTags = [];
-    const itemTags = (
-      await this.tagsService.tags({
-        options: {
-          limit: -1,
+
+    const itemTags = await this.tagsService.tagsByUser({
+      findBy: {
+        entity: 'item',
+        id: {
+          __in: this.item.tags,
         },
-        findBy: {
-          id: {
-            __in: this.item.tags,
-          },
-        },
-      })
-    ).tags;
+      },
+      options: {
+        limit: -1,
+      },
+    });
 
     this.dialogService.open(TagAsignationComponent, {
       type: 'fullscreen-translucent',
