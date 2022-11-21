@@ -474,7 +474,13 @@ export class ArticlePrivacyComponent implements OnInit {
 
   addTag(): void {
     const createTag = async () => {
-      const name = `Listado #${this.tags.length}`;
+      const index =
+        Math.max(
+          ...this.tags.map(
+            ({ name }) => +name.split('#').find((str) => +str) || 1
+          )
+        ) + 1;
+      const name = `Listado #${index}`;
       const _TagInput: any = {
         name,
         entity: 'recipient',
