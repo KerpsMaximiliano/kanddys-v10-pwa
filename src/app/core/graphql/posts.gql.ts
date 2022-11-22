@@ -66,8 +66,9 @@ query post($id:ObjectID!){
   post(id:$id) {
     _id,
     targets{
-      name,
+      name
       emailOrPhone
+      nickname
     }
   } 
 }

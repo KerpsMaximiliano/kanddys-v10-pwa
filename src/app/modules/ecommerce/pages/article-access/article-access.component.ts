@@ -40,30 +40,44 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
       this.postId = postId;
       const post = async () => {
          const { post } = await this._PostsService.getSimplePost(postId);
-         const { targets } = post;
+         const { targets }:any = post;
          this.targets = targets;
-         for(const { emailOrPhone } of targets){
+         for(const { emailOrPhone, nickname } of targets){
             let aux = false;
             const list = emailOrPhone.split('');
             const isEmail = emailOrPhone.includes('@');
-            this.check.push({
+            const maskedContent = list.map(
+               (character:string, index:number) => {
+               if(character==='@')
+                  aux = true;
+               return isEmail? (index < 2 ? character : (aux ? character : 'X' )) :
+               (index < list.length - 4 ? `${index===0?'(':''}${index===3?' ':''}X${index===list.length - 5?' - ':''}${index===2?')':''}` : character)
+            }
+            ).join('');
+            const subtexts = nickname?[
+               {
+                  text: maskedContent,
+                  styles: {
+                     'font-family': 'SfProRegular',
+                     'font-size': '1.063rem',
+                     'color': '#272727'
+                  }
+               }
+            ]:[];
+            const value = nickname || maskedContent;
+            const content = {
                status: true,
                id: 'other',
                click: true,
-               value: list.map(
-                  (character:string, index:number) => {
-                  if(character==='@')
-                     aux = true;
-                  return isEmail? (index < 2 ? character : (aux ? character : 'X' )) :
-                  (index < list.length - 4 ? `${index===0?'(':''}${index===3?' ':''}X${index===list.length - 5?' - ':''}${index===2?')':''}` : character)
-               }
-               ).join(''),
+               value,
+               subtexts,
                valueStyles: {
-                  'font-family': 'SfProRegular',
+                  'font-family': nickname?'SfProBold':'SfProRegular',
                   'font-size': '1.063rem',
-                  'color': '#272727'
+                  'color': nickname?'#000':'#272727'
                }
-            });
+            };
+            this.check.push(content);
          }
       }
       if(postId)
