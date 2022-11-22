@@ -13,6 +13,19 @@ export const entityTemplate = gql`
   }
 `;
 
+export const entityTemplateByDateId = gql`
+  query entityTemplateByDateId($dateId: String!) {
+    entityTemplateByDateId(dateId: $dateId) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+    }
+  }
+`;
+
 export const entityTemplateSetData = gql`
   mutation entityTemplateSetData($id: ObjectID!, $input: EntityTemplateInput!) {
     entityTemplateSetData(id: $id, input: $input) {

@@ -4,6 +4,7 @@ import { EntityTemplate, EntityTemplateInput } from '../models/entity-template';
 import {
   entityTemplate,
   entityTemplateSetData,
+  entityTemplateByDateId,
 } from '../graphql/entity-template.gql';
 
 @Injectable({
@@ -20,6 +21,16 @@ export class EntityTemplateService {
     });
     if (!result) return;
     return result?.entityTemplate;
+  }
+
+  async entityTemplateByDateId(dateId: string): Promise<EntityTemplate> {
+    const result = await this.graphql.query({
+      query: entityTemplateByDateId,
+      variables: { dateId },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result?.entityTemplateByDateId;
   }
 
   async entityTemplateSetData(

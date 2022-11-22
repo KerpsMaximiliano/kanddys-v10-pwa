@@ -123,14 +123,19 @@ export class ArticleTemplateComponent implements OnInit {
 
   async saveExistingTemplateDataInCurrentTemplate(option: Options) {
     if (this.selectedOption.text === 'Adjunta un Símbolo existente') {
-      const entityTemplateIdToMimic = this.entityTemplateReferenceInput.value;
+      const entityTemplateDateIdToMimic =
+        this.entityTemplateReferenceInput.value;
 
       const entityTemplateToMimic =
-        await this.entityTemplateService.entityTemplate(
-          entityTemplateIdToMimic
+        await this.entityTemplateService.entityTemplateByDateId(
+          entityTemplateDateIdToMimic
         );
 
-      if (entityTemplateToMimic) {
+      if (
+        entityTemplateToMimic &&
+        entityTemplateToMimic.entity &&
+        entityTemplateToMimic.reference
+      ) {
         await this.entityTemplateService.entityTemplateSetData(
           this.entityTemplate._id,
           {
@@ -143,6 +148,17 @@ export class ArticleTemplateComponent implements OnInit {
           timeOut: 2000,
         });
         this.selectedOption = null;
+      }
+
+      if (
+        entityTemplateToMimic &&
+        (!entityTemplateToMimic.entity || !entityTemplateToMimic.reference)
+      ) {
+        this.toastr.error('Simbolo vacio', null, { timeOut: 2000 });
+      }
+
+      if(!entityTemplateToMimic) {
+        this.toastr.error('Ocurrió un error', null, { timeOut: 2000 });
       }
     }
   }
