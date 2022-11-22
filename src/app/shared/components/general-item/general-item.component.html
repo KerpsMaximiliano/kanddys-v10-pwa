@@ -36,9 +36,30 @@
     </div>
 
     <div class="itemPresentationBox" [ngStyle]="itemPresentationBoxStyles">
+      <div class="input" *ngIf="entity === 'TAG'">Input #1 con valor largo</div>
 
-      <div class="input" *ngIf="entity === 'TAG'">
-        Input #1 con valor largo
+      <div class="icons-rows">
+        <div class="icons-rows" [ngStyle]="iconsRowsStyles">
+          <div
+            *ngIf="shouldItemBeSelectectable"
+            [ngStyle]="selectionButtonStyles"
+            class="icon-filled selection-button"
+            (click)="selectItem()"
+            alt="hidden"
+          >
+            <div
+              class="inner-icon"
+              [ngClass]="{
+                visible: itemSelected
+              }"
+              [ngStyle]="
+                spreadOperator(selectionButtonIconStyles, {
+                  backgroundImage: 'url(' + env + '/check-black.svg' + ')'
+                })
+              "
+            ></div>
+          </div>
+        </div>
       </div>
 
       <div class="flex-container">

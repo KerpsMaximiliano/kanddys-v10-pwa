@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { Item } from 'src/app/core/models/item';
 import { Tag } from 'src/app/core/models/tags';
 import { environment } from 'src/environments/environment';
@@ -22,6 +22,9 @@ type CSSStyles = Record<string, string | number>;
 export class GeneralItemComponent implements OnInit {
   //General variables
   @Input() entity: EntitiesAllowed = 'ITEM';
+  @Input() shouldItemBeSelectectable: boolean = false;
+  @Input() itemSelected: boolean = false;
+  @Output() itemSelectedEvent = new EventEmitter();
   cardMainImage: string = null;
 
   //item-specific variables
@@ -55,6 +58,8 @@ export class GeneralItemComponent implements OnInit {
   @Input() itemPresentationBoxStyles: CSSStyles = {};
   @Input() iconsRowsStyles: CSSStyles = null;
   @Input() singleIconStyles: CSSStyles = null;
+  @Input() selectionButtonStyles: CSSStyles = {};
+  @Input() selectionButtonIconStyles: CSSStyles = {};
   @Input() titleStyles: CSSStyles = {};
   @Input() tagsStyles: CSSStyles = {};
   @Input() itemPresentationBoxTopRowStyles: CSSStyles = null;
@@ -145,5 +150,10 @@ export class GeneralItemComponent implements OnInit {
     }
 
     return this.tagsSeparatedByComma;
+  }
+
+  selectItem() {
+    this.itemSelected = !this.itemSelected;
+    this.itemSelectedEvent.emit(this.itemSelected);
   }
 }
