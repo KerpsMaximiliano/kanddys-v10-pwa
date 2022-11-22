@@ -13,6 +13,19 @@ export const createRecipient = gql`
   }
 `;
 
+export const updateRecipient = gql`
+  mutation updateRecipient($input: RecipientInput!, $id: ObjectID!) {
+    updateRecipient(input: $input, id: $id) {
+      _id
+      name
+      lastName
+      phone
+      user
+      createdAt
+    }
+  }
+`;
+
 export const recipients = gql`
   query recipients($paginate: PaginationInput) {
     recipients(paginate: $paginate) {

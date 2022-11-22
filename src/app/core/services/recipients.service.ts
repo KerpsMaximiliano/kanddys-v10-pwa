@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { createRecipient, deleteRecipient, recipientAddTag, recipients } from '../graphql/recipients.gql';
+import { createRecipient, deleteRecipient, recipientAddTag, recipients, updateRecipient } from '../graphql/recipients.gql';
 import { Recipient, RecipientInput } from '../models/recipients';
 
 @Injectable({
@@ -15,6 +15,20 @@ export class RecipientsService {
         mutation: createRecipient,
         context: { useMultipart: true },
         variables: { input: _RecipientInput },
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async updateRecipient(_RecipientInput: RecipientInput, id: string) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: updateRecipient,
+        context: { useMultipart: true },
+        variables: { input: _RecipientInput, id },
       });
       if (!result || result?.errors) return undefined;
       return result;
