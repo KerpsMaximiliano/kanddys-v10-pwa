@@ -359,7 +359,33 @@ export class ArticlePrivacyComponent implements OnInit {
       this.status = 'controller';
       this.selected = ['Yo y mis invitados'];
     };
+    const updateRecipient = async () => {
+      console.log('_image: ', typeof _image);
+      let body:any = {
+        name,
+        lastName,
+        phone: `${phone}`,
+        email,
+        nickname,
+      };
+      if(typeof _image !== 'string')
+        body.image = _image;
+      const { updateRecipient } = await this._RecipientsService.updateRecipient(
+        body,
+        _id
+      );
+      console.log('updateRecipient: ', updateRecipient);
+      this._Recipients = this.controllers.value;
+      for (const tag of this.listadoSelection) {
+        const { recipientAddTag } =
+          await this._RecipientsService.recipientAddTag(tag, _id);
+        controller.get('tags').setValue(this.listadoSelection);
+      }
+      this.status = 'controller';
+      this.selected = ['Yo y mis invitados'];
+    };
     if (!_id) createRecipient();
+    else updateRecipient();
   }
 
   deleteSelected(): void {
