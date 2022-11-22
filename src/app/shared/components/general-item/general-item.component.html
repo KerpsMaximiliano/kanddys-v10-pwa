@@ -7,11 +7,17 @@
     })
   "
 >
-  <div class="containerGradientBox" [ngStyle]="containerGradientBoxStyles">
+  <div
+    class="containerGradientBox"
+    [ngStyle]="{
+      backgroundImage:
+        'linear-gradient(to top,' + mainColor + ', transparent 60%)'
+    }"
+  >
     <div
       class="topRightButton"
       *ngIf="topRightButton"
-      (click)="topRightButton.clickEvent()"
+      (click)="triggerTopRightButtonClick()"
     ></div>
 
     <div
@@ -36,7 +42,6 @@
     </div>
 
     <div class="itemPresentationBox" [ngStyle]="itemPresentationBoxStyles">
-
       <!--
         Descomentar luego
         <div class="input" *ngIf="entity === 'TAG'">Input #1 con valor largo</div>

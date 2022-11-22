@@ -1,8 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { TagsService } from 'src/app/core/services/tags.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { Button } from 'src/app/shared/components/general-item/general-item.component';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
+import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 
@@ -68,7 +76,15 @@ export class TagsComponent implements OnInit {
     }
   }
 
-  constructor(private tagsService: TagsService) {}
+  @ViewChild('recentTagsSwiper') recentTagsSwiper: SwiperComponent;
+  @ViewChild('mostAssignedTagsSwiper') mostAssignedTagsSwiper: SwiperComponent;
+
+  constructor(
+    private tagsService: TagsService,
+    private dialogService: DialogService,
+    private toastr: ToastrService,
+    private router: Router
+  ) {}
 
   async ngOnInit() {
     const allTags = await this.tagsService.tagsByUser({
@@ -137,6 +153,220 @@ export class TagsComponent implements OnInit {
 
       this.paginationState.status = 'complete';
     }
+  }
+
+  toggleActivateTag = async (tag: Tag): Promise<string> => {
+    try {
+      await this.tagsService.updateTag(
+        {
+          status:
+            tag.status === 'disabled'
+              ? 'active'
+              : tag.status === 'active'
+              ? 'featured'
+              : 'disabled',
+        },
+        tag._id
+      );
+
+      tag.status =
+        tag.status === 'disabled'
+          ? 'active'
+          : tag.status === 'active'
+          ? 'featured'
+          : 'disabled';
+
+      this.mostAssignedTags.forEach((tagInList) => {
+        if (tagInList._id === tag._id) {
+          tagInList.status = tag.status;
+          this.tagsByIdsObject[tag._id].status = tag.status;
+        }
+      });
+
+      this.mostRecentTags.forEach((tagInList) => {
+        if (tagInList._id === tag._id) {
+          tagInList.status = tag.status;
+          this.tagsByIdsObject[tag._id].status = tag.status;
+        }
+      });
+
+      return tag.status;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  async openSingleTagOptionsDialog(tag: Tag) {
+    console.log(tag._id);
+    const list: Array<SettingsDialogButton> = [
+      {
+        text: 'Renombrar',
+        callback: async () => {
+          try {
+            this.router.navigate(['admin/create-tag/' + tag._id], {
+              queryParams: {
+                redirectTo: window.location.href.split('/').slice(3).join('/'),
+              },
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        },
+      },
+      {
+        text: 'Archivar',
+        callback: async () => {
+          try {
+            const { updateTag: updatedTag } = await this.tagsService.updateTag(
+              {
+                status: 'archived',
+              },
+              tag._id
+            );
+
+            if (updatedTag && updatedTag._id) {
+              delete this.tagsByIdsObject[tag._id];
+
+              const mostAssignedTagsIndex = this.mostAssignedTags.findIndex(
+                (tagInList) => tagInList._id === tag._id
+              );
+
+              if (mostAssignedTagsIndex >= 0) {
+                this.mostAssignedTags.splice(mostAssignedTagsIndex, 1);
+                this.mostAssignedTagsSwiper.directiveRef.update();
+              }
+
+              const recentTagsIndex = this.mostRecentTags.findIndex(
+                (tagInList) => tagInList._id === tag._id
+              );
+
+              if (recentTagsIndex >= 0) {
+                this.mostRecentTags.splice(recentTagsIndex, 1);
+                this.recentTagsSwiper.directiveRef.update();
+              }
+
+              this.toastr.info('Tag archivado exitosamente', null, {
+                timeOut: 1500,
+              });
+            }
+          } catch (error) {
+            console.log('ocurrio un error', error);
+          }
+        },
+      },
+      {
+        text: 'Eliminar',
+        callback: async () => {
+          try {
+            const { deleteTag: success } = await this.tagsService.deleteTag(
+              tag._id
+            );
+
+            if (success) {
+              delete this.tagsByIdsObject[tag._id];
+
+              const mostAssignedTagsIndex = this.mostAssignedTags.findIndex(
+                (tagInList) => tagInList._id === tag._id
+              );
+
+              if (mostAssignedTagsIndex >= 0) {
+                this.mostAssignedTags.splice(mostAssignedTagsIndex, 1);
+                this.mostAssignedTagsSwiper.directiveRef.update();
+              }
+
+              const recentTagsIndex = this.mostRecentTags.findIndex(
+                (tagInList) => tagInList._id === tag._id
+              );
+
+              if (recentTagsIndex >= 0) {
+                this.mostRecentTags.splice(recentTagsIndex, 1);
+                this.recentTagsSwiper.directiveRef.update();
+              }
+
+              this.toastr.info('Tag eliminado exitosamente', null, {
+                timeOut: 1500,
+              });
+            }
+          } catch (error) {}
+        },
+      },
+    ];
+
+    const toggleStatus = () => {
+      return new Promise((resolve, reject) => {
+        this.toggleActivateTag(tag).then((newStatus) => {
+          newStatus === 'disabled'
+            ? (number = 2)
+            : newStatus === 'active'
+            ? (number = 0)
+            : (number = 1);
+
+          /*
+            setTimeout(() => {
+              if (
+                this.highlightedItemsSwiper &&
+                this.highlightedItemsSwiper.directiveRef
+              )
+                this.highlightedItemsSwiper.directiveRef.update();
+            }, 300);
+            */
+
+          /*
+          if (newStatus === 'featured' && visibleItemsIndex >= 0) {
+            this.highlightedItems.push(item);
+
+            setTimeout(() => {
+              if (
+                this.highlightedItemsSwiper &&
+                this.highlightedItemsSwiper.directiveRef
+              )
+                this.highlightedItemsSwiper.directiveRef.update();
+            }, 300);
+          }*/
+
+          resolve(true);
+        });
+      });
+    };
+
+    let number: number =
+      tag.status === 'disabled' ? 2 : tag.status === 'active' ? 0 : 1;
+    const statuses = [
+      {
+        text: 'VISIBLE (NO DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'VISIBLE (Y DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'INVISIBLE',
+        backgroundColor: '#B17608',
+        color: 'white',
+        asyncCallback: toggleStatus,
+      },
+    ];
+
+    this.dialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        statuses,
+        //qr code in the xd's too small to scanning to work
+        indexValue: number,
+        title: tag.name ? tag.name : 'Tag sin nombre',
+        cancelButton: {
+          text: 'Cerrar',
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   async getMostRecentAndMostAssignedTags() {
@@ -223,8 +453,8 @@ export class TagsComponent implements OnInit {
   }
 
   tagsOptionsButton: Button = {
-    clickEvent: () => {
-      alert('clicked icon');
+    clickEvent: (params: Tag) => {
+      this.openSingleTagOptionsDialog(params);
     },
   };
 

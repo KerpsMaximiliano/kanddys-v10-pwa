@@ -15,6 +15,7 @@ import {
   itemAddTag,
   itemRemoveTag,
   ordersByTag,
+  deleteTag
 } from '../graphql/tags.gql';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
@@ -54,6 +55,18 @@ export class TagsService {
       context: {
         useMultipart: true,
       },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    console.log(result);
+    return result;
+  }
+
+  async deleteTag(tagId: string) {
+    const result = await this.graphql.mutate({
+      mutation: deleteTag,
+      variables: { tagId },
     });
 
     if (!result || result?.errors) return undefined;

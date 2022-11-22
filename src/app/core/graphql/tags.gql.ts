@@ -8,6 +8,12 @@ export const updateTag = gql`
   }
 `;
 
+export const deleteTag = gql`
+  mutation deleteTag($tagId: ObjectID!) {
+    deleteTag(tagId: $tagId)
+  }
+`;
+
 export const createTag = gql`
   mutation createTag($input: TagInput!) {
     createTag(input: $input) {

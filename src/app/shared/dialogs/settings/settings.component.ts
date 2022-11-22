@@ -35,7 +35,7 @@ export class SettingsComponent implements OnInit {
     asyncCallback(...params): Promise<any>;
     callbackParams?: Array<any>;
   }> = [];
-  @Input() indexValue: number;
+  @Input('statusIndex') indexValue: number;
   @Input() linkToCopy: string = null;
   currentStatusIndex: number = 0;
   env: string = environment.assetsUrl;

@@ -48,7 +48,7 @@
           </button>
         </div>
         <div class="swiper-area">
-          <swiper [config]="tagsSwiperConfig">
+          <swiper [config]="tagsSwiperConfig" #recentTagsSwiper>
             <div
               class="tag-wrapper"
               *ngFor="let tag of mostRecentTags"
@@ -63,6 +63,17 @@
                   filter:
                     'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
                 }"
+                [showIconForTagStatus]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                "
+                [statusIcon]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                    ? env +
+                      (tag.status === 'disabled'
+                        ? '/closed-eye-black.svg'
+                        : '/binoculars-fill-black.svg')
+                    : null
+                "
                 [showVisitorCounter]="true"
                 [topRightButton]="tagsOptionsButton"
                 [titleStyles]="{
@@ -80,7 +91,7 @@
         </div>
       </div>
 
-      <div class="display-container" style="margin-top: 0px;">
+      <div class="display-container" style="margin-top: 0px">
         <div class="title-button">
           <h2 class="title">Los más asignados</h2>
           <button class="top-button" (click)="showTagsOfType('MOST_ASSIGNED')">
@@ -88,7 +99,7 @@
           </button>
         </div>
         <div class="swiper-area">
-          <swiper [config]="tagsSwiperConfig">
+          <swiper [config]="tagsSwiperConfig" #mostAssignedTagsSwiper>
             <div
               class="tag-wrapper"
               *ngFor="let tag of mostAssignedTags"
@@ -99,6 +110,17 @@
                 [entity]="'TAG'"
                 [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
                 [tagsByIdsObject]="tagsByIdsObject"
+                [showIconForTagStatus]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                "
+                [statusIcon]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                    ? env +
+                      (tag.status === 'disabled'
+                        ? '/closed-eye-black.svg'
+                        : '/binoculars-fill-black.svg')
+                    : null
+                "
                 [singleIconStyles]="{
                   filter:
                     'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
@@ -138,6 +160,17 @@
               filter:
                 'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
             }"
+            [showIconForTagStatus]="
+              tag.status === 'disabled' || tag.status === 'featured'
+            "
+            [statusIcon]="
+              tag.status === 'disabled' || tag.status === 'featured'
+                ? env +
+                  (tag.status === 'disabled'
+                    ? '/closed-eye-black.svg'
+                    : '/binoculars-fill-black.svg')
+                : null
+            "
             [showVisitorCounter]="true"
             [topRightButton]="tagsOptionsButton"
             [titleStyles]="{

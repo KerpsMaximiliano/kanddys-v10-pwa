@@ -77,6 +77,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   active: number = 0;
   entity: 'item' | 'order' = 'order';
   entityId: string = null;
+  redirectTo: string;
   routeParamsSubscription: Subscription;
   routeQueryParamsSubscription: Subscription;
 
@@ -100,12 +101,13 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         this.routeQueryParamsSubscription = this.route.queryParams.subscribe(
           async (queryParams) => {
             const { tagId } = routeParams;
-            const { orderId, entity, entityId } = queryParams;
+            const { orderId, entity, entityId, redirectTo } = queryParams;
 
             this.tagID = tagId;
             this.orderID = orderId;
             this.entity = entity;
             this.entityId = entityId;
+            this.redirectTo = redirectTo;
 
             this.setOptionalFunctionalityList();
             await this.verifyIfUserIsLogged();
@@ -455,7 +457,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         this.finishedMutation = true;
       }
     } else {
-      data.merchant = this.merchantDefault._id;
+      delete data.merchant;
 
       /*
       if (this.notificationService.temporalNotification) {
@@ -477,7 +479,9 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         this.notificationService.temporalNotification = null;
         */
 
-        if (this.orderID) {
+        if (this.redirectTo) {
+          this.router.navigate([this.redirectTo]);
+        } else if (this.orderID) {
           this.router.navigate(['ecommerce/order-info/' + this.orderID]);
         } else {
           if (this.entity === 'item') {
