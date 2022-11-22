@@ -464,13 +464,13 @@ export class ArticlePrivacyComponent implements OnInit {
     this.tempRecipients = this._Recipients.filter((recipient: Recipient) =>
       recipient.tags.includes(_id)
     );
-    if(this.listadoSelection.includes('Nueva')){
+    if (this.listadoSelection.includes('Nueva')) {
       this.addTag();
     }
   }
 
   checkList(control: AbstractControl): boolean {
-    return this.listadoSelection.length?control.get('tags').value.some((r) => this.listadoSelection.includes(r)):true;
+    return control.get('tags').value.some((r) => this.listadoSelection.includes(r));
   }
 
   addTag(): void {
@@ -495,5 +495,13 @@ export class ArticlePrivacyComponent implements OnInit {
       } as Tag);
     };
     createTag();
+  }
+
+  numberOnly(event): boolean {
+    const charCode = (event.which) ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      return false;
+    }
+    return true;
   }
 }

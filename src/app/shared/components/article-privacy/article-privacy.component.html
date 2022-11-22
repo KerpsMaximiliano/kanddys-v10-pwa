@@ -163,6 +163,7 @@
             class="input"
             placeholder="WhatsApp.."
             type="number"
+            (keypress)="numberOnly($event)"
           />
           <p class="paragraph">Photo</p>
           <swiper [config]="swiperConfig">
