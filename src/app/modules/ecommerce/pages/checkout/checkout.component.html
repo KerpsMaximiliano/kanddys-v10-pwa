@@ -241,7 +241,7 @@
             <button
               *ngFor="let video of postSlideVideos"
               class="video"
-              (click)="videoElem.requestFullscreen()"
+              (click)="fullscreenDialog('video', video)"
             >
               <video
                 width="86px"
@@ -256,12 +256,14 @@
               </video>
             </button>
 
-            <div class="audio" *ngFor="let audio of postSlideAudio">
-              <audio class="item-audio" controls="controls">
-                <source [src]="audio" />
-                Lo sentimos, no se puede reproducir el audio
-              </audio>
-            </div>
+            <button class="video" *ngFor="let audio of postSlideAudio" (click)="fullscreenDialog('audio', audio)">
+               <div class="audio" >
+                 <audio class="item-audio" controls="controls">
+                   <source [src]="audio" />
+                   Lo sentimos, no se puede reproducir el audio
+                 </audio>
+               </div>
+            </button>
           </div>
         </div>
         <div

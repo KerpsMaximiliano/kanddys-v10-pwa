@@ -19,6 +19,7 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { environment } from 'src/environments/environment';
 
 const options = [
@@ -580,6 +581,18 @@ export class CheckoutComponent implements OnInit {
         break;
       }
     }
+  }
+
+  fullscreenDialog(type?: string, src?: any){
+      this.dialogService.open(MediaDialogComponent, {
+         props: {
+            inputType: type,
+            src: src
+         },
+         type: 'fullscreen-translucent',
+         customClass: 'app-dialog',
+         flags: ['no-header'],
+      })
   }
 
   mouseDown: boolean;

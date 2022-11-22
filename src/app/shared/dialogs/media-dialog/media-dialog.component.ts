@@ -9,7 +9,7 @@ import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 export class MediaDialogComponent implements OnInit {
 
    @Input() inputType: 'video' | 'audio';
-   @Input() src: string;
+   @Input() src: any;
    @Input() type: string;
   constructor( public ref: DialogRef) { }
 
