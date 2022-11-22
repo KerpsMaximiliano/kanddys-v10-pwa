@@ -51,6 +51,7 @@ export class ArticlePrivacyComponent implements OnInit {
         this.icons = ['left'];
         this.textAlign = 'left';
         this.paddingRight = '0';
+        this.listadoSelection = ['Nueva'];
         this.handleSelection(text);
       },
     },
@@ -351,6 +352,8 @@ export class ArticlePrivacyComponent implements OnInit {
       controller.get('_id').setValue(_id);
       this._Recipients = this.controllers.value;
       this.initControllers();
+      if(this.listadoSelection.includes('Nueva'))
+        await this.addTag();
       for (const tag of this.listadoSelection) {
         const { recipientAddTag } =
           await this._RecipientsService.recipientAddTag(tag, _id);
@@ -360,7 +363,6 @@ export class ArticlePrivacyComponent implements OnInit {
       this.selected = ['Yo y mis invitados'];
     };
     const updateRecipient = async () => {
-      console.log('_image: ', typeof _image);
       let body:any = {
         name,
         lastName,
@@ -374,7 +376,6 @@ export class ArticlePrivacyComponent implements OnInit {
         body,
         _id
       );
-      console.log('updateRecipient: ', updateRecipient);
       this._Recipients = this.controllers.value;
       for (const tag of this.listadoSelection) {
         const { recipientAddTag } =
@@ -485,42 +486,37 @@ export class ArticlePrivacyComponent implements OnInit {
 
   filterRecipients(_id: string): void {
     this.listadoSelection = this.listadoSelection.includes(_id)
-      ? this.listadoSelection.filter((id) => id !== _id)
-      : [...this.listadoSelection, _id];
+      ? ['Nueva', ...this.listadoSelection.filter((id) => id !== _id)]
+      : [_id];
     this.tempRecipients = this._Recipients.filter((recipient: Recipient) =>
       recipient.tags.includes(_id)
     );
-    if (this.listadoSelection.includes('Nueva')) {
-      this.addTag();
-    }
   }
 
   checkList(control: AbstractControl): boolean {
     return control.get('tags').value.some((r) => this.listadoSelection.includes(r));
   }
 
-  addTag(): void {
-    const createTag = async () => {
-      const index =
-        Math.max(
-          ...this.tags.map(
-            ({ name }) => +name.split('#').find((str) => +str) || 1
-          )
-        ) + 1;
-      const name = `Listado #${index}`;
-      const _TagInput: any = {
-        name,
-        entity: 'recipient',
-        merchant: this.idMerchant,
-      };
-      const { createTag } = await this._TagsService.createTag(_TagInput);
-      const { _id } = createTag;
-      this.tags.unshift({
-        _id,
-        name,
-      } as Tag);
+  async addTag(): Promise<void> {
+    const index =
+      Math.max(
+        ...this.tags.map(
+          ({ name }) => +name.split('#').find((str) => +str) || 1
+        )
+      ) + 1;
+    const name = `Listado #${index}`;
+    const _TagInput: any = {
+      name,
+      entity: 'recipient',
+      merchant: this.idMerchant,
     };
-    createTag();
+    const { createTag } = await this._TagsService.createTag(_TagInput);
+    const { _id } = createTag;
+    this.tags.unshift({
+      _id,
+      name,
+    } as Tag);
+    this.listadoSelection = [_id];
   }
 
   numberOnly(event): boolean {
