@@ -40,7 +40,67 @@
 
   <ng-container [ngSwitch]="tagsDisplayMode">
     <ng-container *ngSwitchCase="'PER-SECTION'">
-      <div class="display-container">
+      <div
+        class="display-container"
+        *ngIf="highlightedTags && highlightedTags.length > 0"
+      >
+        <div class="title-button">
+          <h2 class="title">Destacados</h2>
+          <button class="top-button" (click)="showTagsOfType('MOST_RECENT')">
+            Ver Todos
+          </button>
+        </div>
+        <div class="swiper-area">
+          <swiper [config]="tagsSwiperConfig" #highlightedTagsSwiper>
+            <div
+              class="tag-wrapper"
+              *ngFor="let tag of highlightedTags"
+              style="width: 159px; height: 230px"
+            >
+              <app-general-item
+                [tag]="tag"
+                [entity]="'TAG'"
+                [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+                [tagsByIdsObject]="tagsByIdsObject"
+                [singleIconStyles]="{
+                  filter:
+                    'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+                }"
+                [showIconForTagStatus]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                "
+                [statusIcon]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                    ? env +
+                      (tag.status === 'disabled'
+                        ? '/closed-eye-black.svg'
+                        : '/binoculars-fill-black.svg')
+                    : null
+                "
+                [showVisitorCounter]="true"
+                [topRightButton]="tagsOptionsButton"
+                [titleStyles]="{
+                  display: '-webkit-box',
+                  '-webkit-line-clamp': 1,
+                  'line-clamp': 1,
+                  '-webkit-box-orient': 'vertical',
+                  overflow: 'hidden',
+                  'word-break': 'break-all'
+                }"
+              >
+              </app-general-item>
+            </div>
+          </swiper>
+        </div>
+      </div>
+
+      <div
+        class="display-container"
+        [ngStyle]="{
+          marginTop:
+            highlightedTags && highlightedTags.length > 0 ? '0px' : null
+        }"
+      >
         <div class="title-button">
           <h2 class="title">Recientes</h2>
           <button class="top-button" (click)="showTagsOfType('MOST_RECENT')">

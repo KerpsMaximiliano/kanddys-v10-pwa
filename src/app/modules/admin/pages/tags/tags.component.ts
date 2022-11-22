@@ -44,6 +44,7 @@ export class TagsComponent implements OnInit {
   tagsByIdsObject: Record<string, Tag> = {};
   mostRecentTags: Array<Tag> = [];
   mostAssignedTags: Array<Tag> = [];
+  highlightedTags: Array<Tag> = [];
   tagsDisplayMode: 'GRID' | 'PER-SECTION' = 'PER-SECTION';
   dependantGridOfTagsToShow: Array<Tag> = null;
   entityToFilterTagsBy: 'item' | 'order' = null;
@@ -78,6 +79,7 @@ export class TagsComponent implements OnInit {
 
   @ViewChild('recentTagsSwiper') recentTagsSwiper: SwiperComponent;
   @ViewChild('mostAssignedTagsSwiper') mostAssignedTagsSwiper: SwiperComponent;
+  @ViewChild('highlightedTagsSwiper') highlightedTagsSwiper: SwiperComponent;
 
   constructor(
     private tagsService: TagsService,
@@ -98,7 +100,7 @@ export class TagsComponent implements OnInit {
       this.tagsByIdsObject[tag._id] = tag;
     }
 
-    await this.getMostRecentAndMostAssignedTags();
+    await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
   }
 
   async getTags(params: {
@@ -294,6 +296,8 @@ export class TagsComponent implements OnInit {
 
     const toggleStatus = () => {
       return new Promise((resolve, reject) => {
+        let previousStatus = tag.status;
+
         this.toggleActivateTag(tag).then((newStatus) => {
           newStatus === 'disabled'
             ? (number = 2)
@@ -301,28 +305,39 @@ export class TagsComponent implements OnInit {
             ? (number = 0)
             : (number = 1);
 
-          /*
-            setTimeout(() => {
-              if (
-                this.highlightedItemsSwiper &&
-                this.highlightedItemsSwiper.directiveRef
-              )
-                this.highlightedItemsSwiper.directiveRef.update();
-            }, 300);
-            */
-
-          /*
-          if (newStatus === 'featured' && visibleItemsIndex >= 0) {
-            this.highlightedItems.push(item);
+          if (newStatus === 'featured' && previousStatus !== 'featured') {
+            this.highlightedTags.push(tag);
 
             setTimeout(() => {
               if (
-                this.highlightedItemsSwiper &&
-                this.highlightedItemsSwiper.directiveRef
+                this.highlightedTagsSwiper &&
+                this.highlightedTagsSwiper.directiveRef
               )
-                this.highlightedItemsSwiper.directiveRef.update();
+                this.highlightedTagsSwiper.directiveRef.update();
             }, 300);
-          }*/
+          } else if (
+            newStatus !== 'featured' &&
+            previousStatus === 'featured'
+          ) {
+            const highlightedTagsIndex = this.highlightedTags.findIndex(
+              (tagInList) => tagInList._id === tag._id
+            );
+
+            if (highlightedTagsIndex >= 0) {
+              this.highlightedTags.splice(highlightedTagsIndex, 1);
+              this.highlightedTagsSwiper.directiveRef.update();
+            }
+
+            if (this.highlightedTags.length > 0) {
+              setTimeout(() => {
+                if (
+                  this.highlightedTagsSwiper &&
+                  this.highlightedTagsSwiper.directiveRef
+                )
+                  this.highlightedTagsSwiper.directiveRef.update();
+              }, 300);
+            }
+          }
 
           resolve(true);
         });
@@ -369,7 +384,7 @@ export class TagsComponent implements OnInit {
     });
   }
 
-  async getMostRecentAndMostAssignedTags() {
+  async getMostRecentPlusHighlightedPlusMostAssignedTags() {
     let pagination: PaginationInput = {
       options: {
         sortBy: `createdAt:desc`,
@@ -383,8 +398,14 @@ export class TagsComponent implements OnInit {
     }
 
     const mostRecentTags = await this.tagsService.tagsByUser(pagination);
-
     if (mostRecentTags) this.mostRecentTags = mostRecentTags;
+
+    if (!pagination.findBy) pagination.findBy = {};
+    pagination.findBy.status = 'featured';
+    const highlightedTags = await this.tagsService.tagsByUser(pagination);
+    if (highlightedTags) this.highlightedTags = highlightedTags;
+
+    delete pagination.findBy.status;
 
     pagination.options = {
       sortBy: `counter:desc`,
@@ -485,7 +506,7 @@ export class TagsComponent implements OnInit {
         this.entityToFilterTagsBy = null;
     }
 
-    await this.getMostRecentAndMostAssignedTags();
+    await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
   }
 
   moveEvent(e: MouseEvent, el: HTMLDivElement) {
