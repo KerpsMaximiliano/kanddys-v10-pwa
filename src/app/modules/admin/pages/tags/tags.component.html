@@ -1,11 +1,13 @@
-<div class="main-container">
+<div class="main-container tags-page" (scroll)="infinitePagination()">
+  <div id="top-of-the-page"></div>
+
   <app-helper-headerv2
     [mode]="'basic'"
     [bgColor]="'#FFFFFF'"
     [returnAble]="true"
     [color]="'#272727'"
     [mainText]="{
-      text: 'Lista de Tags recientes',
+      text: headerText,
       fontFamily: 'SfProBold',
       fontSize: '1.313rem',
       color: '#272727'
@@ -15,6 +17,7 @@
       color: '#272727',
       margin: '0 1px'
     }"
+    (returnEvent)="backButtonAction()"
   ></app-helper-headerv2>
 
   <div
@@ -27,43 +30,132 @@
   >
     <button
       class="tab"
-      *ngFor="let item of options; index as i"
-      [ngClass]="{ active: active === i }"
+      *ngFor="let option of optionsToFilterTagsBy; index as i"
+      [ngClass]="{ active: option.selected }"
       (click)="changeStep(i)"
     >
-      {{ item }}
+      {{ option.text }}
     </button>
   </div>
 
-  <div class="display-container">
-    <div class="title-button">
-      <h2 class="title">Recientes</h2>
-      <button class="top-button">Ver Todos</button>
-    </div>
-    <div class="swiper-area">
-      <!-- Aqui va un swiper-->
-    </div>
-  </div>
+  <ng-container [ngSwitch]="tagsDisplayMode">
+    <ng-container *ngSwitchCase="'PER-SECTION'">
+      <div class="display-container">
+        <div class="title-button">
+          <h2 class="title">Recientes</h2>
+          <button class="top-button" (click)="showTagsOfType('MOST_RECENT')">
+            Ver Todos
+          </button>
+        </div>
+        <div class="swiper-area">
+          <swiper [config]="tagsSwiperConfig">
+            <div
+              class="tag-wrapper"
+              *ngFor="let tag of mostRecentTags"
+              style="width: 159px; height: 230px"
+            >
+              <app-general-item
+                [tag]="tag"
+                [entity]="'TAG'"
+                [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+                [tagsByIdsObject]="tagsByIdsObject"
+                [singleIconStyles]="{
+                  filter:
+                    'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+                }"
+                [showVisitorCounter]="true"
+                [topRightButton]="tagsOptionsButton"
+                [titleStyles]="{
+                  display: '-webkit-box',
+                  '-webkit-line-clamp': 1,
+                  'line-clamp': 1,
+                  '-webkit-box-orient': 'vertical',
+                  overflow: 'hidden',
+                  'word-break': 'break-all'
+                }"
+              >
+              </app-general-item>
+            </div>
+          </swiper>
+        </div>
+      </div>
 
-  <div class="display-container">
-    <div class="title-button">
-      <h2 class="title">Los más asignados</h2>
-      <button class="top-button">Ver Todos</button>
-    </div>
-    <div class="swiper-area">
-      <!-- Aqui va un swiper-->
-    </div>
-  </div>
+      <div class="display-container" style="margin-top: 0px;">
+        <div class="title-button">
+          <h2 class="title">Los más asignados</h2>
+          <button class="top-button" (click)="showTagsOfType('MOST_ASSIGNED')">
+            Ver Todos
+          </button>
+        </div>
+        <div class="swiper-area">
+          <swiper [config]="tagsSwiperConfig">
+            <div
+              class="tag-wrapper"
+              *ngFor="let tag of mostAssignedTags"
+              style="width: 159px; height: 230px"
+            >
+              <app-general-item
+                [tag]="tag"
+                [entity]="'TAG'"
+                [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+                [tagsByIdsObject]="tagsByIdsObject"
+                [singleIconStyles]="{
+                  filter:
+                    'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
+                  width: '20px'
+                }"
+                [showVisitorCounter]="true"
+                [topRightButton]="tagsOptionsButton"
+                [titleStyles]="{
+                  display: '-webkit-box',
+                  '-webkit-line-clamp': 1,
+                  'line-clamp': 1,
+                  '-webkit-box-orient': 'vertical',
+                  overflow: 'hidden',
+                  'word-break': 'break-all'
+                }"
+              >
+              </app-general-item>
+            </div>
+          </swiper>
+        </div>
+      </div>
+    </ng-container>
 
-  <div class="display-container">
-    <div class="title-button">
-      <h2 class="title">Input ID</h2>
-      <button class="top-button">Ver Todos</button>
-    </div>
-    <div class="swiper-area">
-      <!-- Aqui va un swiper-->
-    </div>
-  </div>
+    <ng-container *ngSwitchCase="'GRID'">
+      <div class="tags-grid">
+        <div
+          class="tag-wrapper"
+          *ngFor="let tag of dependantGridOfTagsToShow"
+          style="width: 100%; height: 272px; margin: 0px; padding: 0px"
+        >
+          <app-general-item
+            [tag]="tag"
+            [entity]="'TAG'"
+            [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+            [tagsByIdsObject]="tagsByIdsObject"
+            [singleIconStyles]="{
+              filter:
+                'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+            }"
+            [showVisitorCounter]="true"
+            [topRightButton]="tagsOptionsButton"
+            [titleStyles]="{
+              display: '-webkit-box',
+              '-webkit-line-clamp': 1,
+              'line-clamp': 1,
+              '-webkit-box-orient': 'vertical',
+              overflow: 'hidden',
+              'word-break': 'break-all'
+            }"
+          >
+          </app-general-item>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <div class="blank-space"></div>
 
   <div class="fixed-buttons">
     <button class="create"><span>+</span> CREA</button>

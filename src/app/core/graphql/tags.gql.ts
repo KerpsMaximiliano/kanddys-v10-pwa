@@ -23,6 +23,9 @@ export const tagsByUser = gql`
       name
       images
       status
+      createdAt
+      counter
+      entity
     }
   }
 `;

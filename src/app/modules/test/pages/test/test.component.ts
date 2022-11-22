@@ -24,7 +24,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { Item } from 'src/app/core/models/item';
 import { TagsService } from 'src/app/core/services/tags.service';
 
-interface Button {
+export interface Button {
   text?: string;
   clickEvent(...params): any;
 }

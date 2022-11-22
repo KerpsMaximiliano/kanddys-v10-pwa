@@ -20,6 +20,7 @@ export class Tag extends Model<Tag> {
   images?: [string];
   notifications: string[];
   merchant: string;
+  entity?: string;
 }
 
 export class TagInput {

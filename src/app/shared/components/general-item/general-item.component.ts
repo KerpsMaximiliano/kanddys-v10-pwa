@@ -108,6 +108,25 @@ export class GeneralItemComponent implements OnInit {
               : '/binoculars-fill-black.svg');
         }
 
+        if (this.tag.entity && !this.topInnerButtons) {
+          let text = null;
+
+          switch (this.tag.entity) {
+            case 'order':
+              text = 'Facturas';
+              break;
+            case 'item':
+              text = 'Articulos';
+              break;
+          }
+
+          this.topInnerButtons = []
+          this.topInnerButtons.push({
+            text,
+            clickEvent: () => null,
+          });
+        }
+
         if (this.tag.images.length > 0) this.cardMainImage = this.tag.images[0];
 
         break;

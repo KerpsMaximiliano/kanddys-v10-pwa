@@ -36,37 +36,53 @@
     </div>
 
     <div class="itemPresentationBox" [ngStyle]="itemPresentationBoxStyles">
-      <div class="input" *ngIf="entity === 'TAG'">Input #1 con valor largo</div>
 
-      <div class="icons-rows">
-        <div class="icons-rows" [ngStyle]="iconsRowsStyles">
+      <!--
+        Descomentar luego
+        <div class="input" *ngIf="entity === 'TAG'">Input #1 con valor largo</div>
+      -->
+
+      <div
+        class="icons-rows"
+        [ngStyle]="iconsRowsStyles"
+        *ngIf="shouldItemBeSelectectable"
+      >
+        <div
+          [ngStyle]="selectionButtonStyles"
+          class="icon-filled selection-button"
+          (click)="selectItem()"
+          alt="hidden"
+        >
           <div
-            *ngIf="shouldItemBeSelectectable"
-            [ngStyle]="selectionButtonStyles"
-            class="icon-filled selection-button"
-            (click)="selectItem()"
-            alt="hidden"
-          >
-            <div
-              class="inner-icon"
-              [ngClass]="{
-                visible: itemSelected
-              }"
-              [ngStyle]="
-                spreadOperator(selectionButtonIconStyles, {
-                  backgroundImage: 'url(' + env + '/check-black.svg' + ')'
-                })
-              "
-            ></div>
-          </div>
+            class="inner-icon"
+            [ngClass]="{
+              visible: itemSelected
+            }"
+            [ngStyle]="
+              spreadOperator(selectionButtonIconStyles, {
+                backgroundImage: 'url(' + env + '/check-black.svg' + ')'
+              })
+            "
+          ></div>
         </div>
       </div>
 
-      <div class="flex-container">
+      <div
+        class="flex-container"
+        *ngIf="
+          (entity === 'ITEM' &&
+            showVisitorCounter &&
+            item.visitorCounter &&
+            item.visitorCounter.counter) ||
+          (showIconForItemStatus && statusIcon) ||
+          (showIconForTagStatus && statusIcon)
+        "
+      >
         <div
           class="viewsCounter"
           [ngStyle]="entity === 'ITEM' && viewsCounterStyles"
           *ngIf="
+            entity === 'ITEM' &&
             showVisitorCounter &&
             item.visitorCounter &&
             item.visitorCounter.counter
@@ -87,7 +103,7 @@
               class="icon"
               [ngStyle]="singleIconStyles"
               [src]="statusIcon"
-              alt="hidden"
+              alt="status"
             />
 
             <div
