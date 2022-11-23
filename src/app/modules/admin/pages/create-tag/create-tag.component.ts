@@ -406,7 +406,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
           data.entity = 'item';
         }
 
-        const { createTag: createdTag } = await this.tagsService.createTag(
+        const createdTag = await this.tagsService.createTag(
           data
         );
 
@@ -439,7 +439,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
 
             this.headerService.flowRoute = null;
             localStorage.removeItem('flowRoute');
-            this.router.navigate(['admin/item-display/' + this.entityId], {
+            this.router.navigate(['admin/create-article/' + this.entityId], {
               queryParams: {
                 tagsAsignationOnStart: true,
               },

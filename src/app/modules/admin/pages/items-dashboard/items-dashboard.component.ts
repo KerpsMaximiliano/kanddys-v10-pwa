@@ -147,6 +147,7 @@ export class ItemsDashboardComponent implements OnInit {
     pageSize: 5,
     status: 'complete',
   };
+  windowWidth: number = 0;
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
   @ViewChild('highlightedItemsSwiper') highlightedItemsSwiper: SwiperComponent;
@@ -205,6 +206,12 @@ export class ItemsDashboardComponent implements OnInit {
     this.itemSearchbar.valueChanges.subscribe((change) =>
       this.inicializeItems(true, false)
     );
+
+    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+    });
   }
 
   async verifyIfUserIsLogged() {
@@ -625,12 +632,12 @@ export class ItemsDashboardComponent implements OnInit {
   }
 
   goToCreateItem() {
-    this.router.navigate([`admin/create-item/`]);
+    this.router.navigate([`admin/create-article`]);
   }
 
   goToDetail(id: string) {
     this.savePageSnapshot();
-    this.router.navigate([`admin/item-display/${id}`]);
+    this.router.navigate([`admin/create-article/${id}`]);
   }
 
   savePageSnapshot() {
@@ -718,7 +725,7 @@ export class ItemsDashboardComponent implements OnInit {
               if (section === 'featured')
                 routerConfig.queryParams.initialStatus = 'featured';
 
-              this.router.navigate(['admin/create-item'], routerConfig);
+              this.router.navigate(['admin/create-article'], routerConfig);
             },
           },
           {

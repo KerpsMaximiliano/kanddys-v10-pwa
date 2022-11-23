@@ -47,7 +47,7 @@ export class TagsService {
     return result;
   }
 
-  async createTag(input: TagInput) {
+  async createTag(input: TagInput): Promise<Tag> {
     const result = await this.graphql.mutate({
       mutation: createTag,
       variables: { input },
@@ -58,8 +58,7 @@ export class TagsService {
 
     if (!result || result?.errors) return undefined;
 
-    console.log(result);
-    return result;
+    return result?.createTag;
   }
 
   async tagsByUser(

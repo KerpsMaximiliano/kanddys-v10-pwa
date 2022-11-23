@@ -360,7 +360,10 @@
       >
         <div
           class="tag-wrapper swiper-slide"
-          style="width: 81px !important; margin-right: 8px !important"
+          style="margin-right: 8px !important"
+          [ngStyle]="{
+            maxWidth: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)'
+          }"
           *ngFor="let tag of unselectedTags; let tagIndex = index"
         >
           <ng-container *ngFor="let tag2 of tagsList; let tagIndex = index">
@@ -372,7 +375,9 @@
                   'background-image':
                     tag.images?.length > 0
                       ? 'url(' + tag.images[0] + ')'
-                      : 'url(/assets/images/noimage.png)'
+                      : 'url(/assets/images/noimage.png)',
+                  width: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
+                  height: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)'
                 }"
               >
                 <div

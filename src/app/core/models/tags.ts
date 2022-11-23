@@ -20,6 +20,8 @@ export class Tag extends Model<Tag> {
   images?: [string];
   notifications: string[];
   merchant: string;
+  entity?: string;
+  containers?: TagContainers[];
 }
 
 type TagEntityEnum = 'user' | 'order' | 'item' | 'recipient' | 'merchant';
@@ -27,6 +29,7 @@ type TagEntityEnum = 'user' | 'order' | 'item' | 'recipient' | 'merchant';
 export class TagInput {
   name?: string;
   images?: File[];
+  notify?: boolean;
   notifyUserOrder?: boolean;
   notifyMerchantOrder?: boolean;
   status?: string;
