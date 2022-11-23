@@ -644,27 +644,30 @@ export class StoreComponent implements OnInit {
   }
 
   async getTags() {
-    const userTag = await this.tagsService.tags({
+    const tagsList = await this.tagsService.tagsByUser({
       findBy: {
-        user: this.saleflowData.merchant.owner._id,
+        entity: 'item',
         status: 'active',
       },
       options: {
-        limit: 60,
+        limit: -1,
       },
     });
-    this.tags = userTag.tags;
-    this.unselectedTags = [...this.tags];
 
-    for (const tag of this.tags) {
-      this.tagsHashTable[tag._id] = tag;
-      this.tagsByNameHashTable[tag.name] = tag;
-      tag.selected = false;
+    if (tagsList) {
+      this.tags = tagsList;
+      this.unselectedTags = [...this.tags];
+
+      for (const tag of this.tags) {
+        this.tagsHashTable[tag._id] = tag;
+        this.tagsByNameHashTable[tag.name] = tag;
+        tag.selected = false;
+      }
+
+      setTimeout(() => {
+        this.tagsSwiper.directiveRef.update();
+      }, 300);
     }
-
-    setTimeout(() => {
-      this.tagsSwiper.directiveRef.update();
-    }, 300);
   }
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
