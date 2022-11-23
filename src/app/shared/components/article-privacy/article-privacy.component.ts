@@ -189,9 +189,6 @@ export class ArticlePrivacyComponent implements OnInit {
       const { _id } = await this._MerchantsService.merchantDefault();
       this.idMerchant = _id;
       const { recipients }: any = await this._RecipientsService.recipients();
-      this._Recipients = recipients;
-      this.tempRecipients = this._Recipients;
-      this.initControllers(this._Recipients);
       const pagination = {
         paginate: {
           options: {
@@ -204,6 +201,13 @@ export class ArticlePrivacyComponent implements OnInit {
         },
       };
       this.tags = (await this._TagsService.tagsByUser(pagination)) || [];
+      this._Recipients = recipients.filter((recipient: Recipient) => 
+        this.tags.filter(
+          (tag: any) => tag.entity === "recipient" && recipient.tags.includes(tag._id)
+        )
+      );
+      this.tempRecipients = this._Recipients;
+      this.initControllers(this._Recipients);
       this.initControllers();
     };
     recipients();
@@ -426,6 +430,7 @@ export class ArticlePrivacyComponent implements OnInit {
               },
             },
             func: () => {
+              this.status = 'loading';
               const deleteRecipient = async () => {
                 for (const index of this.toDelete) {
                   const result = await this._RecipientsService.deleteRecipient(
@@ -445,6 +450,7 @@ export class ArticlePrivacyComponent implements OnInit {
                   (item, j: number) => !this.toDelete.includes(j)
                 );
                 this.toDelete = [];
+                this.status = 'controller';
               };
               deleteRecipient();
             },

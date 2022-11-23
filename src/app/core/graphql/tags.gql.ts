@@ -23,6 +23,7 @@ export const tagsByUser = gql`
       name
       images
       status
+      entity
     }
   }
 `;
