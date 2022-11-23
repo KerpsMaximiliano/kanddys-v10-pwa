@@ -27,8 +27,8 @@ import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.comp
   styleUrls: ['./test.component.scss'],
 })
 export class TestComponent implements OnInit {
-
-  textSample: string = 'Al borrar las reservaciones las fechas involucradas volverán a estar disponible.';
+  textSample: string =
+    'Al borrar las reservaciones las fechas involucradas volverán a estar disponible.';
   hourRangeInDays = {
     MONDAY: [
       { from: 9, to: 11 },
@@ -103,7 +103,36 @@ export class TestComponent implements OnInit {
 
   constructor(private dialog: DialogService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log();
+    const amazonPayButton = (window as any).amazon.Pay.renderButton(
+      '#AmazonPayButton',
+      {
+        // set checkout environment
+        merchantId: 'A3IR2015SQ6204',
+        publicKeyId: 'SANDBOX-AGYUSTTL5TIC6AQTPN5TWYCO',
+        ledgerCurrency: 'USD',
+        // customize the buyer experience
+        checkoutLanguage: 'en_US',
+        productType: 'PayAndShip',
+        placement: 'Cart',
+        buttonColor: 'Gold',
+        estimatedOrderAmount: { amount: '109.99', currencyCode: 'USD' },
+        // configure Create Checkout Session request
+        createCheckoutSessionConfig: {
+          payloadJSON: JSON.stringify({
+            webCheckoutDetails: {
+              checkoutReviewReturnUrl: 'https://kanddys.com/ecommerce/checkout',
+            },
+            storeId:
+              'amzn1.application-oa2-client.bfad20fb1a834bb6b7889d7e18a5c33f',
+            scopes: ['name', 'email', 'phoneNumber', 'billingAddress'],
+          }), // string generated in step 2
+          signature: `JUshdOuFPBPzEC6Lstp0L9ewu0sf1yc/x9xB8hc73hfH02aZJDB3nLMlqL9UjUMyjuMKyAGwDQvhP7xijWrWaeVrNaQLwp+DLFDE2nrQ26Ba0bX8L5iqET3/8Yx0voya9w9gOCYl2a7J4Etg4bNvX1j/dn5NSpMYzGxKsfNYYTmu/CPmJOonlukdN+Qc5iZsVUfDqFxkO2jH8L72SiK0yCOMqhRBiK6zr++NMtMSBjFmMpYdAFGj7rgaxE2Mf0u0BTlaf3kC0IJ1FpVQ4Tn1EKgN6MtXaDWCOc0tyymds2SUltM4k7WwLblwxlzYYsuYsHCQYZwTmXE54piGvv9h2Q==`, // signature generated in step 3
+        },
+      }
+    );
+  }
 
   openDialog() {
     /*   const list: StoreShareList[] = [
@@ -152,7 +181,6 @@ export class TestComponent implements OnInit {
         customClass: 'app-dialog',
         flags: ['no-header'],
     });*/
-    
 
     /* this.dialog.open(GeneralFormSubmissionDialogComponent, {
       type: 'centralized-fullscreen',
