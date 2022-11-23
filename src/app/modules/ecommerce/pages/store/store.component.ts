@@ -154,8 +154,6 @@ export class StoreComponent implements OnInit {
       let { startOnSnapshot } = queryParams;
       startOnSnapshot = Boolean(startOnSnapshot);
 
-      console.log(queryParams);
-
       if (!this.header.storeTemporalData || !startOnSnapshot)
         this.executeProcessesAfterLoading();
       else this.getPageSnapshot();
@@ -189,18 +187,45 @@ export class StoreComponent implements OnInit {
     return categories;
   }
 
+  async getHighlightedItems() {
+    const saleflowItems = this.saleflowData.items.map((saleflowItem) => ({
+      item: saleflowItem.item._id,
+      customizer: saleflowItem.customizer?._id,
+      index: saleflowItem.index,
+    }));
+
+    const pagination: PaginationInput = {
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.item)),
+        },
+        status: 'featured',
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: 10,
+        page: 1
+      },
+    };
+
+    const { listItems: highlightedItems } = await this.saleflow.listItems(
+      pagination
+    );
+
+    for (const item of highlightedItems) {
+      if (item.status === 'featured') {
+        this.highlightedItems.push(item);
+      }
+    }
+  }
+
   async organizeItems(merchant: Merchant) {
     // .sort((a, b) => a.pricing - b.pricing);
-    const highlightedItemsObject = {};
     this.highlightedItems = [];
 
     //Sets highlightedItems array
-    for (const item of this.items) {
-      if (item.status === 'featured') {
-        this.highlightedItems.push(item);
-        highlightedItemsObject[item._id] = true;
-      }
-    }
+    await this.getHighlightedItems();
+
 
     //************************* GROUPS ITEMS BY TAG***************//
     const tagsAndItemsHashtable: Record<string, Array<Item>> = {};
@@ -219,7 +244,6 @@ export class StoreComponent implements OnInit {
 
   executeProcessesAfterLoading() {
     this.route.params.subscribe(async (params) => {
-      console.log(params);
       this.status = 'loading';
       lockUI();
 
@@ -646,10 +670,11 @@ export class StoreComponent implements OnInit {
   }
 
   async getTags() {
-    const tagsList = await this.tagsService.tagsByUser({
+    const { tags: tagsList } = await this.tagsService.tags({
       findBy: {
         entity: 'item',
         status: 'active',
+        user: this.saleflowData.merchant.owner._id,
       },
       options: {
         limit: -1,
