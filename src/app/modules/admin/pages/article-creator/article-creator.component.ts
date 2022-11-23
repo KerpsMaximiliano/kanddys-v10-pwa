@@ -147,7 +147,7 @@ export class ArticleCreatorComponent implements OnInit {
           this.multimedia[0][index] = this._DomSanitizer
             .bypassSecurityTrustStyle(`url(
         ${image})
-        no-repeat center center / cover #e9e371`);
+        no-repeat center center / contain #2e2e2e`);
           this.urls.push(image);
           this.types[0][index] = 'image/jpeg';
 
@@ -173,7 +173,7 @@ export class ArticleCreatorComponent implements OnInit {
           this.multimedia[0][index] = this._DomSanitizer
             .bypassSecurityTrustStyle(`url(
       ${reader.result})
-      no-repeat center center / cover #e9e371`);
+      no-repeat center center / contain #2e2e2e`);
           this.types[0][index] = 'image/jpeg';
           if (index + 1 === this._ItemsService.itemImages.length) {
             this.updateFrantions();
@@ -275,8 +275,8 @@ export class ArticleCreatorComponent implements OnInit {
         this.multimedia[i][j] = this._DomSanitizer
           .bypassSecurityTrustStyle(`url(
         ${result})
-        no-repeat center center / cover #e9e371`);
-        this.urls.push(result as string);
+        no-repeat center center / contain #2e2e2e`);
+        this.urls[j] = result as string;
       } else if (this.audioFiles.includes(type)) {
         this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustUrl(
           URL.createObjectURL(file)
@@ -352,7 +352,7 @@ export class ArticleCreatorComponent implements OnInit {
       this.urls[i] = url;
       this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustStyle(`url(
         ${url})
-        no-repeat center center / cover #e9e371`);
+        no-repeat center center / contain #2e2e2e`);
       const file = await this.urltoFile(url, 'image.png');
       const { type } = file;
       const multimedia = this.controllers

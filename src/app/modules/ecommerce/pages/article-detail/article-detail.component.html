@@ -44,7 +44,9 @@
           *ngFor="let image of itemData.images"
           [ngStyle]="{
             backgroundImage: 'url(' + image + ')',
-            height: 'calc(100vh - (179px))'
+            backgroundSize: 'contain',
+            height: 'calc(100vh - (179px))',
+            backgroundColor: '#2e2e2e'
           }"
         ></div>
       </ng-container>
