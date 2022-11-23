@@ -14,7 +14,11 @@ import { Target } from 'src/app/core/models/post';
   styleUrls: ['./article-access.component.scss']
 })
 export class ArticleAccessComponent implements OnInit, OnDestroy {
-
+   timeinterval;
+   days;
+   hours;
+   minutes;
+   seconds;
    code: string = '(8XX) XX3 - XX4X';
    sentInvite: boolean;
    mouseDown: boolean;
@@ -85,8 +89,40 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    })
   }
 
+  getTimeRemaining(endtime){
+   const total = Date.parse(endtime) - Date.parse(`${new Date()}`);
+   const seconds = Math.floor( (total/1000) % 60 );
+   const minutes = Math.floor( (total/1000/60) % 60 );
+   const hours = Math.floor( (total/(1000*60*60)) % 24 );
+   const days = Math.floor( total/(1000*60*60*24) );
+ 
+   return {
+     total,
+     days,
+     hours,
+     minutes,
+     seconds
+   };
+ }
+
+ initializeClock():void {
+   const _Date = new Date();
+   _Date.setDate(_Date.getDate() + 30);
+   this.timeinterval = setInterval(() => {
+     const t = this.getTimeRemaining(_Date);
+      this.days = t.days;
+      this.hours = t.hours;
+      this.minutes = t.minutes;
+      this.seconds = t.seconds;
+     if (t.total <= 0) {
+       clearInterval(this.timeinterval);
+     }
+   },0);
+ }
+
   ngOnDestroy():void {
    this._Subscription.unsubscribe();
+   clearInterval(this.timeinterval);
   }
 
   sample =() => {
@@ -132,7 +168,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
 
  selectedOption(e){
    this.sentInvite = true;
-   this.code = this.check[e].value; 
+   this.code = this.check[e].subtexts.length?this.check[e].subtexts[0].text:this.check[e].value; 
    const generateMagicLink = async () => {
       const emailOrPhone = this.targets[e].emailOrPhone;
       const result = await this._AuthService.generateMagicLink(
@@ -142,6 +178,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
          'PostAccess',
          {}
       );
+      this.initializeClock();
    };
    generateMagicLink();
   }
