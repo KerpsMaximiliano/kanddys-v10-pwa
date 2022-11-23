@@ -235,10 +235,10 @@ export class ArticlePrivacyComponent implements OnInit {
       this.fields.forEach(
         ({ name, value, validators, type }: any, j: number) => {
           if (name === 'phone' && item['phone']) {
-            const { countryIso, nationalNumber } =
+            const { countryIso, nationalNumber, countryCode } =
               this._AuthService.getPhoneInformation(`${item['phone']}`);
             this.CountryISO = countryIso;
-            item[name] = nationalNumber;
+            item[name] = `+${countryCode}${nationalNumber}`;
           }
           controller.addControl(
             name,
@@ -365,7 +365,7 @@ export class ArticlePrivacyComponent implements OnInit {
       const body = {
         name,
         lastName,
-        phone: phone.internationalNumber,
+        phone: phone.e164Number,
         email,
         nickname,
         image: _image,
@@ -390,7 +390,7 @@ export class ArticlePrivacyComponent implements OnInit {
       let body: any = {
         name,
         lastName,
-        phone: `${phone}`,
+        phone: phone.e164Number,
         email,
         nickname,
       };
@@ -525,18 +525,16 @@ export class ArticlePrivacyComponent implements OnInit {
   }
 
   checkList(control: AbstractControl): boolean {
-    return control
-      .get('tags')
-      .value.some((r) => this.listadoSelection.includes(r));
+    return true;
   }
 
   async addTag(): Promise<void> {
-    const index =
-      Math.max(
-        ...this.tags.map(
-          ({ name }) => +name.split('#').find((str) => +str) || 1
-        )
-      ) + 1;
+    const max = Math.max(
+      ...(this.tags.length?this.tags.map(
+        ({ name }) => +name.split('#').find((str) => +str) || 1
+      ):[0])
+    );
+    const index = max + 1;
     const name = `Listado #${index}`;
     const _TagInput: any = {
       name,

@@ -107,7 +107,7 @@
                     control.get("name").value ||
                       control.get("nickname").value ||
                       control.get("email").value ||
-                      control.get("phone").value
+                      control.get("phone").value.e164Number || control.get("phone").value
                   }}
                 </p>
               </div>
