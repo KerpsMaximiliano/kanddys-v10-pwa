@@ -378,6 +378,8 @@ export class ArticlePrivacyComponent implements OnInit {
       );
       this._Recipients = this.controllers.value;
       for (const tag of this.listadoSelection) {
+        const { recipientRemoveTag } =
+          await this._RecipientsService.recipientRemoveTag(tag, _id);
         const { recipientAddTag } =
           await this._RecipientsService.recipientAddTag(tag, _id);
         controller.get('tags').setValue(this.listadoSelection);
@@ -385,8 +387,12 @@ export class ArticlePrivacyComponent implements OnInit {
       this.status = 'controller';
       this.selected = ['Yo y mis invitados'];
     };
-    if (!_id) createRecipient();
-    else updateRecipient();
+    try {
+      if (!_id) createRecipient();
+      else updateRecipient(); 
+    } catch (error) {
+      console.log('error: ' , error);
+    }
   }
 
   deleteSelected(): void {

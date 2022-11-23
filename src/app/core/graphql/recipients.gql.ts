@@ -57,3 +57,11 @@ export const recipientAddTag = gql`
     }
   }
 `;
+
+export const recipientRemoveTag = gql`
+  mutation recipientRemoveTag($tagId: ObjectID!, $id: ObjectID!) {
+    recipientRemoveTag(tagId: $tagId, id: $id) {
+      _id
+    }
+  }
+`;
