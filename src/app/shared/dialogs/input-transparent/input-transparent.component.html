@@ -8,6 +8,11 @@
    
    <div class="input-area">
       <label for="input" name="Titulo" class="input-label">{{inputLabel}}</label>
-      <input type="text" class="input" [formControl]="input" placeholder="Escribe..." (keydown)="fieldEvent($event.target)">
+      <div class="input">
+         <input type="text" [formControl]="input" placeholder="Escribe..." (keydown)="fieldEvent($event.target)">
+         <button class="confirm" [style.background]="input.value.length>2?'#2874ad':'#c1c1c1'">
+            <i class="fas fa-chevron-right"></i>
+         </button>
+      </div>
    </div>
 </div>
