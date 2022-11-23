@@ -52,6 +52,7 @@ export class TagsComponent implements OnInit {
   tagsSortCriteria: string = null;
   typeOfTagsGrid: TypeOfTagsGrid = null;
   isTagSelectionModeEnabled: boolean = false;
+  isTagReorderingModeEnabled: boolean = false;
   tagSelectionMode: 'HIGHLIGHT' | 'HIDE' | 'DELETE' = null;
   paginationState: {
     pageSize: number;
@@ -412,6 +413,13 @@ export class TagsComponent implements OnInit {
           this.isTagSelectionModeEnabled = true;
           this.tagSelectionMode = 'DELETE';
 
+          await this.showTagsOfType();
+        },
+      },
+      {
+        text: 'Cambiar el orden de los tags',
+        asyncCallback: async (params) => {
+          this.isTagReorderingModeEnabled = true;
           await this.showTagsOfType();
         },
       },

@@ -78,6 +78,7 @@ export class GeneralItemComponent implements OnInit {
   //buttons
   @Input() topRightButton: Button = null;
   @Input() topInnerButtons: Array<Button> = null;
+  @Input() showEntityButton: boolean = true;
 
   env: string = environment.assetsUrl;
 
@@ -116,20 +117,22 @@ export class GeneralItemComponent implements OnInit {
         if (this.tag.entity && !this.topInnerButtons) {
           let text = null;
 
-          switch (this.tag.entity) {
-            case 'order':
-              text = 'Facturas';
-              break;
-            case 'item':
-              text = 'Articulos';
-              break;
+          if(this.showEntityButton) {
+            switch (this.tag.entity) {
+              case 'order':
+                text = 'Facturas';
+                break;
+              case 'item':
+                text = 'Articulos';
+                break;
+            }
+  
+            this.topInnerButtons = [];
+            this.topInnerButtons.push({
+              text,
+              clickEvent: () => null,
+            });
           }
-
-          this.topInnerButtons = [];
-          this.topInnerButtons.push({
-            text,
-            clickEvent: () => null,
-          });
         }
 
         if (this.tag.images && this.tag.images.length > 0) this.cardMainImage = this.tag.images[0];

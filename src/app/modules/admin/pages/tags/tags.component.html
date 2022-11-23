@@ -206,58 +206,116 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="'GRID'">
-      <div class="tags-grid">
-        <div
-          class="tag-wrapper"
-          *ngFor="let tag of dependantGridOfTagsToShow"
-          style="width: 100%; height: 272px; margin: 0px; padding: 0px"
-        >
-          <app-general-item
-            [tag]="tag"
-            [entity]="'TAG'"
-            [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
-            [tagsByIdsObject]="tagsByIdsObject"
-            [singleIconStyles]="{
-              filter:
-                'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
-              width: '20px'
-            }"
-            [showIconForTagStatus]="
-              tag.status === 'disabled' || tag.status === 'featured'
-            "
-            [statusIcon]="
-              tag.status === 'disabled' || tag.status === 'featured'
-                ? env +
-                  (tag.status === 'disabled'
-                    ? '/closed-eye-black.svg'
-                    : '/binoculars-fill-black.svg')
-                : null
-            "
-            [showVisitorCounter]="true"
-            [topRightButton]="tagsOptionsButton"
-            [titleStyles]="{
-              display: '-webkit-box',
-              '-webkit-line-clamp': 1,
-              'line-clamp': 1,
-              '-webkit-box-orient': 'vertical',
-              overflow: 'hidden',
-              'word-break': 'break-all'
-            }"
-            [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
-            (itemSelectedEvent)="selectTag($event, tag)"
+      <ng-container *ngIf="!isTagReorderingModeEnabled">
+        <div class="tags-grid">
+          <div
+            class="tag-wrapper"
+            *ngFor="let tag of dependantGridOfTagsToShow"
+            style="width: 100%; height: 272px; margin: 0px; padding: 0px"
           >
-          </app-general-item>
+            <app-general-item
+              [tag]="tag"
+              [entity]="'TAG'"
+              [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+              [tagsByIdsObject]="tagsByIdsObject"
+              [singleIconStyles]="{
+                filter:
+                  'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
+                width: '20px'
+              }"
+              [showIconForTagStatus]="
+                tag.status === 'disabled' || tag.status === 'featured'
+              "
+              [statusIcon]="
+                tag.status === 'disabled' || tag.status === 'featured'
+                  ? env +
+                    (tag.status === 'disabled'
+                      ? '/closed-eye-black.svg'
+                      : '/binoculars-fill-black.svg')
+                  : null
+              "
+              [showVisitorCounter]="true"
+              [topRightButton]="tagsOptionsButton"
+              [titleStyles]="{
+                display: '-webkit-box',
+                '-webkit-line-clamp': 1,
+                'line-clamp': 1,
+                '-webkit-box-orient': 'vertical',
+                overflow: 'hidden',
+                'word-break': 'break-all'
+              }"
+              [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
+              (itemSelectedEvent)="selectTag($event, tag)"
+            >
+            </app-general-item>
+          </div>
         </div>
-      </div>
+      </ng-container>
+
+      <ng-container *ngIf="isTagReorderingModeEnabled">
+        <div class="tags-grid-drag-and-drop"
+          cdkDropList
+        >
+          <div
+            class="tag-wrapper"
+            cdkDrag
+            *ngFor="let tag of dependantGridOfTagsToShow"
+            style="width: 100%; height: 141px; margin: 0px; padding: 0px"
+          >
+            <app-general-item
+              [tag]="tag"
+              [entity]="'TAG'"
+              [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+              [tagsByIdsObject]="tagsByIdsObject"
+              [singleIconStyles]="{
+                filter:
+                  'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
+                width: '20px'
+              }"
+              [showIconForTagStatus]="
+                tag.status === 'disabled' || tag.status === 'featured'
+              "
+              [statusIcon]="
+                tag.status === 'disabled' || tag.status === 'featured'
+                  ? env +
+                    (tag.status === 'disabled'
+                      ? '/closed-eye-black.svg'
+                      : '/binoculars-fill-black.svg')
+                  : null
+              "
+              [showVisitorCounter]="true"
+              [titleStyles]="{
+                display: '-webkit-box',
+                '-webkit-line-clamp': 1,
+                'line-clamp': 1,
+                '-webkit-box-orient': 'vertical',
+                overflow: 'hidden',
+                'word-break': 'break-all'
+              }"
+              [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
+              (itemSelectedEvent)="selectTag($event, tag)"
+              [showEntityButton]="false"
+            >
+            </app-general-item>
+
+            <div class="drag-area">
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/drag-area.svg"
+                alt="drag"
+              />
+            </div>
+          </div>
+        </div>
+      </ng-container>
     </ng-container>
   </ng-container>
 
   <div class="blank-space"></div>
 
-  <div class="fixed-buttons">
-    <button class="create"
-      (click)="ctaEventHandler()"
-    >
+  <div class="fixed-buttons"
+    *ngIf="!isTagReorderingModeEnabled"
+  >
+    <button class="create" (click)="ctaEventHandler()">
       {{
         tagSelectionMode === "HIGHLIGHT"
           ? "DESTACAR"

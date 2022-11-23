@@ -112,6 +112,13 @@
 .tag-wrapper {
   padding-top: 14px;
   padding-right: 7px;
+
+  .drag-area {
+    width: 29.5%;
+    height: 26px;
+    margin: auto;
+    margin-top: 5px;
+  }
 }
 
 .blank-space {
@@ -119,13 +126,25 @@
 }
 
 .tags-grid {
-   display: grid;
-   row-gap: 14px;
-   -moz-column-gap: 8px;
-   column-gap: 8px;
-   grid-template-columns: repeat(2, 43.9%);
-   /* padding: 0px 21px; */
-   /* margin: 0px 21px; */
-   justify-content: center;
-   margin-top: 24px;
+  display: grid;
+  row-gap: 14px;
+  -moz-column-gap: 8px;
+  column-gap: 8px;
+  grid-template-columns: repeat(2, 43.9%);
+  /* padding: 0px 21px; */
+  /* margin: 0px 21px; */
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.tags-grid-drag-and-drop {
+  display: grid;
+  row-gap: 70px;
+  -moz-column-gap: 11px;
+  column-gap: 11px;
+  grid-template-columns: repeat(3, 28.5%);
+  /* padding: 0px 21px; */
+  /* margin: 0px 21px; */
+  justify-content: center;
+  margin-top: 23px;
 }
