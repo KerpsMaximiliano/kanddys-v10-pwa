@@ -363,47 +363,14 @@ export class CheckoutComponent implements OnInit {
           this.router.navigate([`/auth/login`], {
             queryParams: {
               orderId: createdOrder,
-              auth: anonymous && 'anonymous',
+              auth: 'anonymous',
             },
           });
           return;
         }
-        const fullLink = `/ecommerce/order-info/${createdOrder}`;
-        const order = (await this.orderService.order(createdOrder)).order;
-        let address = '';
-        const location = order.items[0].deliveryLocation;
-        if (location.street) {
-          if (location.houseNumber)
-            address += '#' + location.houseNumber + ', ';
-          address += location.street + ', ';
-          if (location.referencePoint)
-            address += location.referencePoint + ', ';
-          address += location.city + ', República Dominicana';
-          if (location.note) address += ` (nota: ${location.note})`;
-        } else {
-          address = location.nickName;
-        }
-        let giftMessage = '';
-        if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
-        if (this.post?.targets?.[0]?.name)
-          giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
-        if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
-        const message = `*FACTURA ${formatID(
-          order.dateId
-        )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.payment.toLocaleString(
-          'es-MX'
-        )}: ${fullLink}*\n\nComprador: ${
-          this.headerService.user?.name ||
-          this.headerService.user?.phone ||
-          this.headerService.user?.email ||
-          'Anónimo'
-        }\n\nDirección: ${address}\n\n${
-          giftMessage ? 'Mensaje en la tarjetita de regalo: ' + giftMessage : ''
-        }`;
-        this.router.navigate([fullLink], {
+        this.router.navigate([`/ecommerce/order-detail/${createdOrder}`], {
           replaceUrl: true,
         });
-        window.location.href = message;
         return;
       }
       unlockUI();
@@ -416,7 +383,7 @@ export class CheckoutComponent implements OnInit {
 
   async checkLogged() {
     try {
-      const anonymous = await this.headerService.getOrderAnonymous(
+      const anonymous = this.headerService.getOrderAnonymous(
         this.headerService.saleflow._id
       );
       const registeredUser = JSON.parse(

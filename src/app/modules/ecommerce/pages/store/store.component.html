@@ -71,6 +71,9 @@
           <swiper [config]="swiperConfigTag" #tagsSwiper>
             <div
               class="tags-area swiper-slide"
+              [ngStyle]="{
+                maxWidth: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)'
+              }"
               *ngFor="let tag of unselectedTags"
             >
               <ng-container *ngFor="let tag2 of tags; let tagIndex = index">
@@ -79,6 +82,9 @@
                     (click)="selectTag(tag, tagIndex)"
                     class="tag-item"
                     [ngStyle]="{
+                      width: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
+                      height:
+                        'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
                       'background-image':
                         tag.images?.length > 0
                           ? 'url(' + tag.images[0] + ')'
@@ -188,7 +194,7 @@
                   ? true
                   : false
               "
-              [imgURL]="item.images ? item.images[0] : ''"
+              [imgURL]="item.images?.length ? item.images[0] : ''"
               [price]="item.pricing"
               [showPrice]="true"
               [itemParams]="item.params"

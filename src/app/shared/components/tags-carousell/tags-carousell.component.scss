@@ -6,6 +6,7 @@
   max-width: 81px !important;
 }
 .circle {
+  position: relative;
   min-width: 81px;
   min-height: 81px;
   max-width: 81px;
@@ -16,6 +17,20 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+
+  .badge {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #b17608;
+    color: #ffffff;
+    background-size: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 }
 .tag-title {
   text-align: center;

@@ -20,6 +20,9 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { StoreComponent } from './pages/store/store.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { AppointmentsModule } from '../appointments/appointments.module';
+import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
+import { CreateArticleComponent } from './pages/create-article/create-article.component';
+import { AdminModule } from '../admin/admin.module';
 
 const routes: Routes = [
   {
@@ -64,6 +67,14 @@ const routes: Routes = [
       {
         path: 'store/:id',
         component: StoreComponent,
+      },
+      {
+        path: 'create-article',
+        component: CreateArticleComponent,
+      },
+      {
+        path: ':saleflowId/article-detail/:entity/:entityId',
+        component: ArticleDetailComponent,
       },
       {
         path: 'order-info/:id',
@@ -129,11 +140,14 @@ const routes: Routes = [
     CheckoutComponent,
     PaymentsComponent,
     ReservationsComponent,
+    ArticleDetailComponent,
+    CreateArticleComponent,
   ],
   imports: [
     CommonModule,
     SharedModule,
     AppointmentsModule,
+    AdminModule,
     RouterModule.forChild(routes),
   ],
 })
