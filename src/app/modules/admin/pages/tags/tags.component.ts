@@ -45,11 +45,14 @@ export class TagsComponent implements OnInit {
   mostRecentTags: Array<Tag> = [];
   mostAssignedTags: Array<Tag> = [];
   highlightedTags: Array<Tag> = [];
-  tagsDisplayMode: 'GRID' | 'PER-SECTION' = 'PER-SECTION';
+  selectedTags: Array<Tag> = [];
   dependantGridOfTagsToShow: Array<Tag> = null;
+  tagsDisplayMode: 'GRID' | 'PER-SECTION' = 'PER-SECTION';
   entityToFilterTagsBy: 'item' | 'order' = null;
   tagsSortCriteria: string = null;
   typeOfTagsGrid: TypeOfTagsGrid = null;
+  isTagSelectionModeEnabled: boolean = false;
+  tagSelectionMode: 'HIGHLIGHT' | 'HIDE' | 'DELETE' = null;
   paginationState: {
     pageSize: number;
     page: number;
@@ -199,7 +202,6 @@ export class TagsComponent implements OnInit {
   };
 
   async openSingleTagOptionsDialog(tag: Tag) {
-    console.log(tag._id);
     const list: Array<SettingsDialogButton> = [
       {
         text: 'Renombrar',
@@ -384,6 +386,232 @@ export class TagsComponent implements OnInit {
     });
   }
 
+  async openGeneralTagsManagementDialog() {
+    const list: Array<SettingsDialogButton> = [
+      {
+        text: 'Destacar',
+        asyncCallback: async (params) => {
+          this.isTagSelectionModeEnabled = true;
+          this.tagSelectionMode = 'HIGHLIGHT';
+
+          await this.showTagsOfType();
+        },
+      },
+      {
+        text: 'Esconder',
+        asyncCallback: async (params) => {
+          this.isTagSelectionModeEnabled = true;
+          this.tagSelectionMode = 'HIDE';
+
+          await this.showTagsOfType();
+        },
+      },
+      {
+        text: 'Borrar',
+        asyncCallback: async (params) => {
+          this.isTagSelectionModeEnabled = true;
+          this.tagSelectionMode = 'DELETE';
+
+          await this.showTagsOfType();
+        },
+      },
+    ];
+
+    if (this.entityToFilterTagsBy) {
+      list.unshift({
+        text: 'Adicionar',
+        callback: (...params) => {
+          this.router.navigate(['admin/create-tag'], {
+            queryParams: {
+              entity: this.entityToFilterTagsBy,
+              redirectTo: window.location.href.split('/').slice(3).join('/'),
+            },
+          });
+        },
+      });
+    }
+
+    this.dialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        title: 'Gestión de Tags',
+        cancelButton: {
+          text: 'Cerrar',
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  async ctaEventHandler() {
+    switch (this.tagSelectionMode) {
+      case 'HIGHLIGHT':
+        await this.highlightMultipleTags();
+        break;
+      case 'HIDE':
+        await this.hideMultipleTags();
+        break;
+      case 'DELETE':
+        await this.deleteMultipleTags();
+        break;
+    }
+  }
+
+  deleteMultipleTags = async () => {
+    if (this.selectedTags.length > 0) {
+      const arrayOfMutationsForTagsDeletionPromises = [];
+
+      this.selectedTags.forEach((tag, index) => {
+        arrayOfMutationsForTagsDeletionPromises.push(this.deleteTag(tag));
+      });
+
+      Promise.all(arrayOfMutationsForTagsDeletionPromises)
+        .then(async (arrayOfResults) => {
+          await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
+          this.tagsDisplayMode = 'PER-SECTION';
+          this.tagSelectionMode = null;
+        })
+        .catch((arrayOfErrors) => {
+          console.log(arrayOfErrors);
+        });
+    }
+  };
+
+  deleteTag = (tag: Tag): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { deleteTag: success } = await this.tagsService.deleteTag(
+          tag._id
+        );
+
+        if (success) {
+          delete this.tagsByIdsObject[tag._id];
+
+          const mostAssignedTagsIndex = this.mostAssignedTags.findIndex(
+            (tagInList) => tagInList._id === tag._id
+          );
+
+          if (mostAssignedTagsIndex >= 0) {
+            this.mostAssignedTags.splice(mostAssignedTagsIndex, 1);
+          }
+
+          const recentTagsIndex = this.mostRecentTags.findIndex(
+            (tagInList) => tagInList._id === tag._id
+          );
+
+          if (recentTagsIndex >= 0) {
+            this.mostRecentTags.splice(recentTagsIndex, 1);
+          }
+
+          console.log({
+            success: true,
+            id: tag._id,
+          });
+
+          resolve({
+            success: true,
+            id: tag._id,
+          });
+        }
+      } catch (error) {
+        reject({
+          success: false,
+          id: null,
+        });
+      }
+    });
+  };
+
+  highlightMultipleTags = async () => {
+    if (this.selectedTags.length > 0) {
+      const arrayOfMutationsForHightlightTagsPromises = [];
+
+      this.selectedTags.forEach((tag, index) => {
+        arrayOfMutationsForHightlightTagsPromises.push(this.hightlightTag(tag));
+      });
+
+      Promise.all(arrayOfMutationsForHightlightTagsPromises)
+        .then(async (arrayOfResults) => {
+          await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
+          this.tagsDisplayMode = 'PER-SECTION';
+          this.tagSelectionMode = null;
+        })
+        .catch((arrayOfErrors) => {
+          console.log(arrayOfErrors);
+        });
+    }
+  };
+
+  hightlightTag = (tag: Tag): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { updateTag: updatedTag } = await this.tagsService.updateTag(
+          {
+            status: 'featured',
+          },
+          tag._id
+        );
+
+        if (updatedTag && updatedTag._id)
+          resolve({
+            success: true,
+            id: tag._id,
+          });
+      } catch (error) {
+        reject({
+          success: false,
+          id: null,
+        });
+      }
+    });
+  };
+
+  hideMultipleTags = async () => {
+    if (this.selectedTags.length > 0) {
+      const arrayOfMutationsForHightlightTagsPromises = [];
+
+      this.selectedTags.forEach((tag, index) => {
+        arrayOfMutationsForHightlightTagsPromises.push(this.hideTag(tag));
+      });
+
+      Promise.all(arrayOfMutationsForHightlightTagsPromises)
+        .then(async (arrayOfResults) => {
+          await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
+          this.tagsDisplayMode = 'PER-SECTION';
+          this.tagSelectionMode = null;
+        })
+        .catch((arrayOfErrors) => {
+          console.log(arrayOfErrors);
+        });
+    }
+  };
+
+  hideTag = (tag: Tag): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { updateTag: updatedTag } = await this.tagsService.updateTag(
+          {
+            status: 'disabled',
+          },
+          tag._id
+        );
+
+        if (updatedTag && updatedTag._id)
+          resolve({
+            success: true,
+            id: tag._id,
+          });
+      } catch (error) {
+        reject({
+          success: false,
+          id: null,
+        });
+      }
+    });
+  };
+
   async getMostRecentPlusHighlightedPlusMostAssignedTags() {
     let pagination: PaginationInput = {
       options: {
@@ -463,14 +691,20 @@ export class TagsComponent implements OnInit {
     this.tagsDisplayMode = 'GRID';
   }
 
+  selectTag(insertTag: boolean, tag: Tag) {
+    if (insertTag) {
+      this.selectedTags.push(tag);
+    } else {
+      this.selectedTags = this.selectedTags.filter(
+        (tagInList) => tagInList._id !== tag._id
+      );
+    }
+  }
+
   backButtonAction() {
     this.headerText = 'Tags';
     this.tagsDisplayMode = 'PER-SECTION';
     this.dependantGridOfTagsToShow = null;
-  }
-
-  stopDragging() {
-    this.mouseDown = false;
   }
 
   tagsOptionsButton: Button = {
@@ -478,12 +712,6 @@ export class TagsComponent implements OnInit {
       this.openSingleTagOptionsDialog(params);
     },
   };
-
-  startDragging(e: MouseEvent, el: HTMLDivElement) {
-    this.mouseDown = true;
-    this.startX = e.pageX - el.offsetLeft;
-    this.scrollLeft = el.scrollLeft;
-  }
 
   async changeStep(indexToSelect: number) {
     this.optionsToFilterTagsBy.forEach((option, index) => {
@@ -507,6 +735,16 @@ export class TagsComponent implements OnInit {
     }
 
     await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
+  }
+
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
+    this.mouseDown = true;
+    this.startX = e.pageX - el.offsetLeft;
+    this.scrollLeft = el.scrollLeft;
+  }
+
+  stopDragging() {
+    this.mouseDown = false;
   }
 
   moveEvent(e: MouseEvent, el: HTMLDivElement) {

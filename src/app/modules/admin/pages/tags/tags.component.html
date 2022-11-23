@@ -17,6 +17,7 @@
       color: '#272727',
       margin: '0 1px'
     }"
+    (dotEvent)="openGeneralTagsManagementDialog()"
     (returnEvent)="backButtonAction()"
   ></app-helper-headerv2>
 
@@ -218,7 +219,8 @@
             [tagsByIdsObject]="tagsByIdsObject"
             [singleIconStyles]="{
               filter:
-                'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+                'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
+              width: '20px'
             }"
             [showIconForTagStatus]="
               tag.status === 'disabled' || tag.status === 'featured'
@@ -241,6 +243,8 @@
               overflow: 'hidden',
               'word-break': 'break-all'
             }"
+            [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
+            (itemSelectedEvent)="selectTag($event, tag)"
           >
           </app-general-item>
         </div>
@@ -251,7 +255,19 @@
   <div class="blank-space"></div>
 
   <div class="fixed-buttons">
-    <button class="create"><span>+</span> CREA</button>
+    <button class="create"
+      (click)="ctaEventHandler()"
+    >
+      {{
+        tagSelectionMode === "HIGHLIGHT"
+          ? "DESTACAR"
+          : tagSelectionMode === "HIDE"
+          ? "ESCONDER"
+          : tagSelectionMode === "DELETE"
+          ? "BORRAR"
+          : "CREAR"
+      }}
+    </button>
     <button class="share">
       <img [src]="env + '/upload.svg'" alt="Imagen de compartir" />
     </button>

@@ -30,4 +30,5 @@ export class TagInput {
   notifyMerchantOrder?: boolean;
   status?: string;
   merchant?: string;
+  entity?: string;
 }

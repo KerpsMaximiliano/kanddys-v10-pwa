@@ -402,6 +402,10 @@ export class CreateTagComponent implements OnInit, OnDestroy {
     let result = null;
     if (!this.tagID || this.tagID.length < 1) {
       try {
+        if (this.entity) {
+          data.entity = this.entity;
+        }
+
         const { createTag: createdTag } = await this.tagsService.createTag(
           data
         );
@@ -418,25 +422,36 @@ export class CreateTagComponent implements OnInit, OnDestroy {
           this.router.navigate(['ecommerce/order-info/' + this.orderID]);
         } else {
           if (this.entity === 'item') {
-            const item = await this.itemsService.item(this.entityId);
-            const tagsUpdated = [...item.tags];
-            tagsUpdated.push(createdTag._id);
+            if (this.entityId) {
+              const item = await this.itemsService.item(this.entityId);
+              const tagsUpdated = [...item.tags];
+              tagsUpdated.push(createdTag._id);
 
-            await this.itemsService.updateItem(
-              {
-                tags: tagsUpdated,
-              },
-              this.entityId
-            );
+              await this.itemsService.updateItem(
+                {
+                  tags: tagsUpdated,
+                },
+                this.entityId
+              );
 
-            this.headerService.flowRoute = null;
-            localStorage.removeItem('flowRoute');
-            this.router.navigate(['admin/item-display/' + this.entityId], {
-              queryParams: {
-                tagsAsignationOnStart: true,
-              },
-            });
+              this.headerService.flowRoute = null;
+              localStorage.removeItem('flowRoute');
+              this.router.navigate(['admin/item-display/' + this.entityId], {
+                queryParams: {
+                  tagsAsignationOnStart: true,
+                },
+              });
+            }
           }
+
+          if (
+            (this.entity === 'order' || this.entity === 'item') &&
+            !this.entityId &&
+            !this.orderID
+          ) {
+            this.router.navigate([this.redirectTo]);
+          }
+
           if (!this.entity) this.router.navigate(['admin/items-dashboard']);
         }
 
@@ -479,7 +494,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         this.notificationService.temporalNotification = null;
         */
 
-        if (this.redirectTo) {
+        if (this.redirectTo && !this.entity) {
           this.router.navigate([this.redirectTo]);
         } else if (this.orderID) {
           this.router.navigate(['ecommerce/order-info/' + this.orderID]);

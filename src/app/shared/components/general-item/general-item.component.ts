@@ -132,7 +132,7 @@ export class GeneralItemComponent implements OnInit {
           });
         }
 
-        if (this.tag.images.length > 0) this.cardMainImage = this.tag.images[0];
+        if (this.tag.images && this.tag.images.length > 0) this.cardMainImage = this.tag.images[0];
 
         break;
     }
