@@ -469,7 +469,7 @@ export class CheckoutComponent implements OnInit {
           this.router.navigate([`/auth/login`], {
             queryParams: {
               orderId: createdOrder,
-              auth: anonymous && 'anonymous',
+              auth: 'anonymous',
             },
           });
           return;

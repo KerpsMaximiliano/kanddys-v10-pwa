@@ -77,12 +77,21 @@ export class OrderDetailComponent implements OnInit {
   selectedTags: any = {};
   tabs: any[] = ['', '', '', '', ''];
   previousTags: any;
+  tagsAsignationOnStart: boolean = false;
   imageList: Image[] = [
     {
       src: '/bookmark-checked.svg',
       filter: 'brightness(2)',
       callback: async () => {
-        const tags = (await this.tagsService.tagsByUser()) || [];
+        const tags =
+          (await this.tagsService.tagsByUser({
+            findBy: {
+              entity: 'order',
+            },
+            options: {
+              limit: -1,
+            },
+          })) || [];
         for (const tag of tags) {
           this.selectedTags[tag._id] = false;
           if (this.order.tags.includes(tag._id)) {
@@ -149,6 +158,12 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
+    const tagsAsignationOnStart = this.route.snapshot.queryParamMap.get(
+      'tagsAsignationOnStart'
+    );
+
+    if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
+
     this.order = (await this.orderService.order(orderId))?.order;
 
     if (!this.order) {
@@ -174,8 +189,6 @@ export class OrderDetailComponent implements OnInit {
       .toLocaleUpperCase();
     this.checkUser();
     await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
-
-    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
 
     if (this.order.items[0].post) {
       this.post = (
@@ -422,6 +435,7 @@ export class OrderDetailComponent implements OnInit {
     };
 
     await this.getAdjacentOrders();
+    if (this.tagsAsignationOnStart) await this.tagDialog();
   }
 
   async getAdjacentOrders() {
@@ -574,7 +588,15 @@ export class OrderDetailComponent implements OnInit {
       relativeTo: this.route,
     });
     console.log(this.order.tags);
-    const tags = (await this.tagsService.tagsByUser()) || [];
+    const tags =
+      (await this.tagsService.tagsByUser({
+        findBy: {
+          entity: 'order',
+        },
+        options: {
+          limit: -1,
+        },
+      })) || [];
     for (const tag of tags) {
       this.selectedTags[tag._id] = false;
       if (this.order.tags.includes(tag._id)) {
@@ -611,7 +633,31 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 
-  tagDialog() {
+  formatId(dateId: string) {
+    return formatID(dateId);
+  }
+
+  redirectToUserContact = () => {
+    this.router.navigate([
+      `/others/user-contact-landing/${this.order.user._id}`,
+    ]);
+  };
+
+  goToStore() {
+    let link = this.order.items[0].saleflow._id;
+    this.router.navigate([`ecommerce/store/${link}`]);
+  }
+
+  async tagDialog(tags?: string[]) {
+    const tagsFilled = await this.tagsService.tagsByUser({
+      findBy: {
+        entity: 'order',
+      },
+      options: {
+        limit: -1,
+      },
+    });
+
     this.dialogService.open(TagAsignationComponent, {
       type: 'fullscreen-translucent',
       customClass: 'app-dialog',
@@ -754,16 +800,6 @@ export class OrderDetailComponent implements OnInit {
     return result;
   }
 
-  formatId(dateId: string) {
-    return formatID(dateId);
-  }
-
-  redirectToUserContact = () => {
-    this.router.navigate([
-      `/others/user-contact-landing/${this.order.user._id}`,
-    ]);
-  };
-
   async buyAgain() {
     if (!this.headerService.saleflow)
       await this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
@@ -826,19 +862,19 @@ export class OrderDetailComponent implements OnInit {
     else return;
   }
 
-  changeView = ()=>{
-    if(this.merchantOwner && !this.merchant){
+  changeView = () => {
+    if (this.merchantOwner && !this.merchant) {
       this.merchant = true;
-      this.changeColor = '#2874AD'
-    }
-    else return
-  }
+      this.changeColor = '#2874AD';
+    } else return;
+  };
 
   async isMerchantOwner(merchant: string) {
     const ismerchant = await this.merchantsService.merchantDefault();
     this.merchant = merchant === ismerchant?._id;
     if (ismerchant) this.orderMerchant = ismerchant;
     this.merchantOwner = true;
+    this.headerService.colorTheme = this.merchant ? '#2874AD' : '#272727';
   }
 
   // async isMerchantOwner(merchant: string) {
@@ -882,7 +918,7 @@ export class OrderDetailComponent implements OnInit {
   //     return this.selectedTags[tag] == true
   //  })
   //  console.log(selectedTags);
-  //  for await (const tag of selectedTags) { 
+  //  for await (const tag of selectedTags) {
   //  } */
   // }
 

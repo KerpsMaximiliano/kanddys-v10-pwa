@@ -1,67 +1,19 @@
-<div class="component" (scroll)="infinitePagination()">
-  <header>
-    <app-helper-headerv2
-      [mode]="'basic'"
-      [fixed]="true"
-      *ngIf="!hasCustomizer"
-      [mainText]="{
-        text:
-          (header.saleflow?.merchant?.name.length < 38
-            ? header.saleflow?.merchant?.name
-            : header.saleflow?.merchant?.name.split(' ')['0']) || 'Tienda',
-        fontFamily: 'SfProBold',
-        fontSize: '21px',
-        color: '#FFF'
-      }"
-      [bgColor]="header.colorTheme"
-      [dots]="{
-        active: header.user ? true : false,
-        func: openUserManagementDialog
-      }"
-      (dotEvent)="openUserManagementDialog()"
-      [returnAble]="false"
-    ></app-helper-headerv2>
-
-    <div
-      *ngIf="!hasCustomizer"
-      class="blank"
-      [ngStyle]="{ paddingBottom: '36px' }"
-    ></div>
-
-    <div class="header-bg" *ngIf="hasCustomizer">
-      <app-header-info
-        [profileImage]="header.saleflow.banner"
-        [title]="header.saleflow.headline"
-        [description]="header.saleflow.subheadline"
-        [route]="contactLandingRoute"
-        type="route"
-      ></app-header-info>
-    </div>
-  </header>
-  <main>
-    <!--REGULAR MERCHANT-->
-    <div
-      class="content"
-      [ngStyle]="{
-        paddingBottom: '1rem'
-      }"
-      *ngIf="!hasCustomizer && items.length"
-    >
+<div class="store-page" (scroll)="infinitePagination()">
+  <div class="component">
+    <header>
       <div
-        *ngIf="highlightedItems.length > 0"
-        [ngStyle]="{
-          paddingLeft: '25px',
-          paddingBottom: '60px'
-        }"
+        class="header"
+        [style.backgroundColor]="header.colorTheme"
+        *ngIf="selectedTags.length === 0"
       >
-        <div
-          class="header-wrapper"
-          [ngStyle]="{
-            paddingLeft: '0px',
-            paddingBottom: '17px'
-          }"
-        >
-          <h2 class="items-header">Destacados</h2>
+        <div class="title">
+          {{
+            saleflowData?.merchant?.name.length < 18
+              ? "Bienvenido a " + saleflowData?.merchant?.name
+              : "Bienvenido a " +
+                  saleflowData?.merchant?.name.slice(0, 18) +
+                  ".." || "Tienda"
+          }}
         </div>
 
         <div class="user-area" (click)="openUserManagementDialog()">
@@ -102,6 +54,7 @@
         class="blank"
         [ngStyle]="{ paddingBottom: '36px' }"
       ></div>
+    </header>
     <main>
       <form class="top-input-area" *ngIf="!hasCustomizer">
         <!-- ********************************************** SEARCHBAR ************************************-->
@@ -122,6 +75,9 @@
           <swiper [config]="swiperConfigTag" #tagsSwiper>
             <div
               class="tags-area swiper-slide"
+              [ngStyle]="{
+                maxWidth: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)'
+              }"
               *ngFor="let tag of unselectedTags"
             >
               <ng-container *ngFor="let tag2 of tags; let tagIndex = index">
@@ -130,6 +86,9 @@
                     (click)="selectTag(tag, tagIndex)"
                     class="tag-item"
                     [ngStyle]="{
+                      width: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
+                      height:
+                        'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
                       'background-image':
                         tag.images?.length > 0
                           ? 'url(' + tag.images[0] + ')'
@@ -239,7 +198,7 @@
                   ? true
                   : false
               "
-              [imgURL]="item.images ? item.images[0] : ''"
+              [imgURL]="item.images?.length ? item.images[0] : ''"
               [price]="item.pricing"
               [showPrice]="true"
               [itemParams]="item.params"
@@ -250,6 +209,5 @@
         </div>
       </div>
     </main>
-    </div>
-  </main>
+  </div>
 </div>

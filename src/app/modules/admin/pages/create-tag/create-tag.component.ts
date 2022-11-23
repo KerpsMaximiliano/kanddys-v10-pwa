@@ -400,7 +400,13 @@ export class CreateTagComponent implements OnInit, OnDestroy {
     let result = null;
     if (!this.tagID || this.tagID.length < 1) {
       try {
-        const { createTag: createdTag } = await this.tagsService.createTag(
+        if (this.entity) {
+          data.entity = this.entity;
+        } else {
+          data.entity = 'item';
+        }
+
+        const createdTag = await this.tagsService.createTag(
           data
         );
 
@@ -413,7 +419,11 @@ export class CreateTagComponent implements OnInit, OnDestroy {
             this.orderID
           );
 
-          this.router.navigate(['ecommerce/order-info/' + this.orderID]);
+          this.router.navigate(['ecommerce/order-info/' + this.orderID], {
+            queryParams: {
+              tagsAsignationOnStart: true,
+            },
+          });
         } else {
           if (this.entity === 'item') {
             const item = await this.itemsService.item(this.entityId);
@@ -429,7 +439,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
 
             this.headerService.flowRoute = null;
             localStorage.removeItem('flowRoute');
-            this.router.navigate(['admin/item-display/' + this.entityId], {
+            this.router.navigate(['admin/create-article/' + this.entityId], {
               queryParams: {
                 tagsAsignationOnStart: true,
               },

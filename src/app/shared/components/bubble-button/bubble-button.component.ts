@@ -28,12 +28,7 @@ export class BubbleButtonComponent implements OnInit {
   @Input() solo: boolean = true;
   @Input() return: boolean = false;
   @Input() cart: boolean = false;
-  @Input() custom: {
-    width?: number;
-    height?: number;
-    left?: string;
-    right?: string;
-  };
+  @Input() custom: Record<string, string | number>;
   //valores utilizados
   filterColor: string;
   env: string = environment.assetsUrl;
@@ -52,6 +47,12 @@ export class BubbleButtonComponent implements OnInit {
       case 'blue':
         this.filterColor =
           'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
+        break;
+
+      case 'black':
+        this.filterColor =
+          'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
+
         break;
     }
   }

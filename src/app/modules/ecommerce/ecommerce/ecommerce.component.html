@@ -7,7 +7,9 @@
   "
   position="right"
   color="blue"
-  [bgColor]="headerService.colorTheme"
+  [custom]="{
+    backgroundColor: headerService.colorTheme
+  }"
   [solo]="false"
   [cart]="true"
   [cartAmount]="headerService.order?.products?.length"

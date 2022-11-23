@@ -120,6 +120,8 @@ export class StoreComponent implements OnInit {
     spaceBetween: 0,
   };
 
+  windowWidth: number = 0;
+
   async infinitePagination() {
     const page = document.querySelector('.store-page');
     const pageScrollHeight = page.scrollHeight;
@@ -148,8 +150,6 @@ export class StoreComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    // Esta función dejó de existir producto de un merge conflict
-    // this.header.resetIsComplete();
     this.route.queryParams.subscribe(async (queryParams) => {
       let { startOnSnapshot } = queryParams;
       startOnSnapshot = Boolean(startOnSnapshot);
@@ -159,6 +159,12 @@ export class StoreComponent implements OnInit {
       if (!this.header.storeTemporalData || !startOnSnapshot)
         this.executeProcessesAfterLoading();
       else this.getPageSnapshot();
+    });
+
+    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
     });
   }
 
@@ -291,6 +297,10 @@ export class StoreComponent implements OnInit {
           const saleflowItem = saleflowItems.find(
             (item) => item.item === this.items[i]._id
           );
+          const item = this.header.saleflow.items.find(
+            (saleflowItem) => saleflowItem.item._id === this.items[i]._id
+          );
+          item.item.status = this.items[i].status;
           this.items[i].customizerId = saleflowItem.customizer;
           this.items[i].index = saleflowItem.index;
           if (!this.items[i].customizerId)
@@ -473,18 +483,27 @@ export class StoreComponent implements OnInit {
           replaceUrl: this.header.checkoutRoute ? true : false,
         }
       );
-        this.header.storeOrderProduct({
-          item: itemData._id,
-          amount: 1,
-          saleflow: this.saleflowData._id,
-        });
-        this.header.storeItem(itemData);
-      }
-      this.savePageSnapshot();
-      this.router.navigate([
-        `/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`,
-      ]);
+      this.header.storeOrderProduct({
+        item: itemData._id,
+        amount: 1,
+        saleflow: this.saleflowData._id,
+      });
+      this.header.storeItem(itemData);
     }
+    this.savePageSnapshot();
+    this.router.navigate(
+      [
+        `/ecommerce/${this.saleflowData._id}/article-detail/item/${itemData._id}`,
+      ],
+      {
+        replaceUrl: this.header.checkoutRoute ? true : false,
+        queryParams: {
+          mode: 'saleflow',
+          id: this.saleflowData._id,
+        },
+      }
+    );
+  }
 
   save(index?: number) {
     this.header.items = [];
@@ -627,27 +646,30 @@ export class StoreComponent implements OnInit {
   }
 
   async getTags() {
-    const userTag = await this.tagsService.tags({
+    const tagsList = await this.tagsService.tagsByUser({
       findBy: {
-        user: this.saleflowData.merchant.owner._id,
+        entity: 'item',
         status: 'active',
       },
       options: {
-        limit: 60,
+        limit: -1,
       },
     });
-    this.tags = userTag.tags;
-    this.unselectedTags = [...this.tags];
 
-    for (const tag of this.tags) {
-      this.tagsHashTable[tag._id] = tag;
-      this.tagsByNameHashTable[tag.name] = tag;
-      tag.selected = false;
+    if (tagsList) {
+      this.tags = tagsList;
+      this.unselectedTags = [...this.tags];
+
+      for (const tag of this.tags) {
+        this.tagsHashTable[tag._id] = tag;
+        this.tagsByNameHashTable[tag.name] = tag;
+        tag.selected = false;
+      }
+
+      setTimeout(() => {
+        this.tagsSwiper.directiveRef.update();
+      }, 300);
     }
-
-    setTimeout(() => {
-      this.tagsSwiper.directiveRef.update();
-    }, 300);
   }
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
