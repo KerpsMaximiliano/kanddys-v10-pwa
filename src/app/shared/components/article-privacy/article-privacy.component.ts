@@ -215,7 +215,7 @@ export class ArticlePrivacyComponent implements OnInit {
       };
       this.tags = (await this._TagsService.tagsByUser(pagination)) || [];
       this._Recipients = recipients.filter((recipient: Recipient) =>
-        this.tags.filter(
+        this.tags.some(
           (tag: any) =>
             tag.entity === 'recipient' && recipient.tags.includes(tag._id)
         )
