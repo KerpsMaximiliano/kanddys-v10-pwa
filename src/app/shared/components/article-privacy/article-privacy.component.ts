@@ -16,6 +16,12 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
 import { StoreShareComponent } from '../../dialogs/store-share/store-share.component';
+import {
+  CountryISO,
+  PhoneNumberFormat,
+  SearchCountryField,
+} from 'ngx-intl-tel-input';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-article-privacy',
@@ -130,7 +136,7 @@ export class ArticlePrivacyComponent implements OnInit {
         marginLeft: '36px',
       },
       value: '',
-      validators: [Validators.pattern('^[0-9]*$')],
+      validators: [],
       type: 'tel',
     },
     {
@@ -175,12 +181,19 @@ export class ArticlePrivacyComponent implements OnInit {
   tempRecipients: Recipient[];
   _AbstractControl: AbstractControl = new FormControl();
   idMerchant: string;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
+  CountryISO = CountryISO.DominicanRepublic;
+  PhoneNumberFormat = PhoneNumberFormat;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _DialogService: DialogService,
     private _RecipientsService: RecipientsService,
     private _TagsService: TagsService,
-    private _MerchantsService: MerchantsService
+    private _MerchantsService: MerchantsService,
+    private _AuthService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -201,9 +214,10 @@ export class ArticlePrivacyComponent implements OnInit {
         },
       };
       this.tags = (await this._TagsService.tagsByUser(pagination)) || [];
-      this._Recipients = recipients.filter((recipient: Recipient) => 
+      this._Recipients = recipients.filter((recipient: Recipient) =>
         this.tags.filter(
-          (tag: any) => tag.entity === "recipient" && recipient.tags.includes(tag._id)
+          (tag: any) =>
+            tag.entity === 'recipient' && recipient.tags.includes(tag._id)
         )
       );
       this.tempRecipients = this._Recipients;
@@ -220,6 +234,12 @@ export class ArticlePrivacyComponent implements OnInit {
       const controller: FormGroup = new FormGroup({});
       this.fields.forEach(
         ({ name, value, validators, type }: any, j: number) => {
+          if (name === 'phone' && item['phone']) {
+            const { countryIso, nationalNumber } =
+              this._AuthService.getPhoneInformation(`${item['phone']}`);
+            this.CountryISO = countryIso;
+            item[name] = nationalNumber;
+          }
           controller.addControl(
             name,
             new FormControl(
@@ -285,6 +305,7 @@ export class ArticlePrivacyComponent implements OnInit {
 
   accessContact(index: number): void {
     this.controlIndex = index;
+    if (index === 0) this.CountryISO = CountryISO.DominicanRepublic;
     this.selected = ['invites'];
   }
 
@@ -344,7 +365,7 @@ export class ArticlePrivacyComponent implements OnInit {
       const body = {
         name,
         lastName,
-        phone: `${phone}`,
+        phone: phone.internationalNumber,
         email,
         nickname,
         image: _image,
@@ -356,8 +377,7 @@ export class ArticlePrivacyComponent implements OnInit {
       controller.get('_id').setValue(_id);
       this._Recipients = this.controllers.value;
       this.initControllers();
-      if(this.listadoSelection.includes('Nueva'))
-        await this.addTag();
+      if (this.listadoSelection.includes('Nueva')) await this.addTag();
       for (const tag of this.listadoSelection) {
         const { recipientAddTag } =
           await this._RecipientsService.recipientAddTag(tag, _id);
@@ -367,15 +387,14 @@ export class ArticlePrivacyComponent implements OnInit {
       this.selected = ['Yo y mis invitados'];
     };
     const updateRecipient = async () => {
-      let body:any = {
+      let body: any = {
         name,
         lastName,
         phone: `${phone}`,
         email,
         nickname,
       };
-      if(typeof _image !== 'string')
-        body.image = _image;
+      if (typeof _image !== 'string') body.image = _image;
       const { updateRecipient } = await this._RecipientsService.updateRecipient(
         body,
         _id
@@ -393,9 +412,9 @@ export class ArticlePrivacyComponent implements OnInit {
     };
     try {
       if (!_id) createRecipient();
-      else updateRecipient(); 
+      else updateRecipient();
     } catch (error) {
-      console.log('error: ' , error);
+      console.log('error: ', error);
     }
   }
 
@@ -506,7 +525,9 @@ export class ArticlePrivacyComponent implements OnInit {
   }
 
   checkList(control: AbstractControl): boolean {
-    return control.get('tags').value.some((r) => this.listadoSelection.includes(r));
+    return control
+      .get('tags')
+      .value.some((r) => this.listadoSelection.includes(r));
   }
 
   async addTag(): Promise<void> {
@@ -532,7 +553,7 @@ export class ArticlePrivacyComponent implements OnInit {
   }
 
   numberOnly(event): boolean {
-    const charCode = (event.which) ? event.which : event.keyCode;
+    const charCode = event.which ? event.which : event.keyCode;
     if (charCode > 31 && (charCode < 48 || charCode > 57)) {
       return false;
     }
