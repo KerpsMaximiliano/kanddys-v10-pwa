@@ -102,7 +102,7 @@
                 [style.background]="
                   imageFiles.includes(types[i][k]) ? multimedia[i][k] : ''
                 "
-              ></label>
+              ><img src="{{ env + '/image.svg' }}" alt="" *ngIf="!imageFiles.includes(types[i][k])"></label>
               <video
                 *ngIf="videoFiles.includes(types[i][k])"
                 controls
