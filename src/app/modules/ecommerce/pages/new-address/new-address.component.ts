@@ -125,28 +125,30 @@ export class NewAddressComponent implements OnInit {
     }
     this.checkAddresses();
     this.user = await this.authService.me();
-    this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
-    this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
-      this.addressesOptions.push({
-        status: true,
-        id: pickup._id,
-        value: 'Pick Up. Pasaré a recoger',
-        valueStyles: {
-          fontFamily: 'SfProBold',
-          fontSize: '0.875rem',
-          color: '#000000',
-        },
-        subtexts: [
-          {
-            text: pickup.nickName,
-            styles: {
-              fontFamily: 'SfProRegular',
-              fontSize: '1rem',
-            },
+    if (this.saleflow.module?.delivery?.pickUpLocations?.length) {
+      this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
+      this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
+        this.addressesOptions.push({
+          status: true,
+          id: pickup._id,
+          value: 'Pick Up. Pasaré a recoger',
+          valueStyles: {
+            fontFamily: 'SfProBold',
+            fontSize: '0.875rem',
+            color: '#000000',
           },
-        ],
+          subtexts: [
+            {
+              text: pickup.nickName,
+              styles: {
+                fontFamily: 'SfProRegular',
+                fontSize: '1rem',
+              },
+            },
+          ],
+        });
       });
-    });
+    }
     // if (!this.user) return;
     if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.newAddressOption.push({

@@ -1,7 +1,7 @@
 <router-outlet></router-outlet>
 <app-bubble-button
   position="right"
-  color="blue"
+  [color]="headerService.colorTheme == '#2874AD' ? 'blue': 'black'"
   [solo]="false"
   [cart]="true"
   [cartAmount]="itemCartAmount"

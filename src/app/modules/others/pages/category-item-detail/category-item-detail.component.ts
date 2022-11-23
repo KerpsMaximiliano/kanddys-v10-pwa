@@ -92,7 +92,7 @@ export class CategoryItemDetailComponent implements OnInit {
 
   redirectToItemCreator = () => {
     this.headerService.flowRoute = this.router.url;
-    this.router.navigate([`admin/create-item/${this.item._id}`]);
+    this.router.navigate([`admin/create-article/${this.item._id}`]);
   }
 
   toData(){
