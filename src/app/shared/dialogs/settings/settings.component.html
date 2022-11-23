@@ -98,13 +98,13 @@
           <span class="text">Facturas</span>
         </li>
 
+        <li class="icon" (click)="redirect('/admin/tags')">
+          <div class="icon">
+            <img [src]="env + '/bookmark-checked.svg'" alt="tags" />
+          </div>
+          <span class="text">Tags</span>
+        </li>
         <!--
-          <li class="disabled">
-            <div class="icon">
-              <img [src]="env + '/search-white.svg'" alt="search" />
-            </div>
-            <span class="text">Buscar</span>
-          </li>
   
           <li class="disabled">
             <div class="icon">
