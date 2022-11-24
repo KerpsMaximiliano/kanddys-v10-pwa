@@ -114,10 +114,16 @@
   padding-right: 7px;
 
   .drag-area {
-    width: 29.5%;
     height: 26px;
-    margin: auto;
+    width: 100%;
     margin-top: 5px;
+    display: flex;
+    justify-content: center;
+
+    img {
+      height: 100%;
+      cursor: move;
+    }
   }
 }
 
@@ -139,7 +145,6 @@
 
 .tags-grid-drag-and-drop {
   display: grid;
-  row-gap: 70px;
   -moz-column-gap: 11px;
   column-gap: 11px;
   grid-template-columns: repeat(3, 28.5%);
@@ -147,4 +152,22 @@
   /* margin: 0px 21px; */
   justify-content: center;
   margin-top: 23px;
+
+  .tag-wrapper {
+    height: 211px;
+  }
+}
+
+.inner-drag-wrapper {
+  width: 100%;
+  height: 211px;
+  position: relative;
+
+  .drag-handler {
+    position: absolute;
+    bottom: 38px;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+  }
 }

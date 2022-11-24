@@ -253,53 +253,61 @@
       </ng-container>
 
       <ng-container *ngIf="isTagReorderingModeEnabled">
-        <div class="tags-grid-drag-and-drop"
-          cdkDropList
-        >
+        <div class="tags-grid-drag-and-drop" cdkDropListGroup>
           <div
             class="tag-wrapper"
-            cdkDrag
-            *ngFor="let tag of dependantGridOfTagsToShow"
-            style="width: 100%; height: 141px; margin: 0px; padding: 0px"
+            cdkDropList
+            *ngFor="let tag of dependantGridOfTagsToShow; let i = index"
+            [cdkDropListData]="{ tag: tag, index: i }"
+            (cdkDropListDropped)="dropTagDraggable($event)"
+            style="width: 100%; margin: 0px; padding: 0px"
           >
-            <app-general-item
-              [tag]="tag"
-              [entity]="'TAG'"
-              [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
-              [tagsByIdsObject]="tagsByIdsObject"
-              [singleIconStyles]="{
-                filter:
-                  'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
-                width: '20px'
-              }"
-              [showIconForTagStatus]="
-                tag.status === 'disabled' || tag.status === 'featured'
-              "
-              [statusIcon]="
-                tag.status === 'disabled' || tag.status === 'featured'
-                  ? env +
-                    (tag.status === 'disabled'
-                      ? '/closed-eye-black.svg'
-                      : '/binoculars-fill-black.svg')
-                  : null
-              "
-              [showVisitorCounter]="true"
-              [titleStyles]="{
-                display: '-webkit-box',
-                '-webkit-line-clamp': 1,
-                'line-clamp': 1,
-                '-webkit-box-orient': 'vertical',
-                overflow: 'hidden',
-                'word-break': 'break-all'
-              }"
-              [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
-              (itemSelectedEvent)="selectTag($event, tag)"
-              [showEntityButton]="false"
-            >
-            </app-general-item>
+            <div class="inner-drag-wrapper" cdkDrag>
+              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
 
-            <div class="drag-area">
+              <div class="general-item-wrapper" style="height: 141px">
+                <app-general-item
+                  [tag]="tag"
+                  [entity]="'TAG'"
+                  [mainColor]="
+                    tag.status !== 'disabled' ? '#272727' : '#b17608'
+                  "
+                  [tagsByIdsObject]="tagsByIdsObject"
+                  [singleIconStyles]="{
+                    filter:
+                      'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
+                    width: '20px'
+                  }"
+                  [showIconForTagStatus]="
+                    tag.status === 'disabled' || tag.status === 'featured'
+                  "
+                  [statusIcon]="
+                    tag.status === 'disabled' || tag.status === 'featured'
+                      ? env +
+                        (tag.status === 'disabled'
+                          ? '/closed-eye-black.svg'
+                          : '/binoculars-fill-black.svg')
+                      : null
+                  "
+                  [showVisitorCounter]="true"
+                  [titleStyles]="{
+                    display: '-webkit-box',
+                    '-webkit-line-clamp': 1,
+                    'line-clamp': 1,
+                    '-webkit-box-orient': 'vertical',
+                    overflow: 'hidden',
+                    'word-break': 'break-all'
+                  }"
+                  [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
+                  (itemSelectedEvent)="selectTag($event, tag)"
+                  [showEntityButton]="false"
+                >
+                </app-general-item>
+              </div>
+
               <img
+                class="drag-handler"
+                cdkDragHandle
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/drag-area.svg"
                 alt="drag"
               />
@@ -312,9 +320,7 @@
 
   <div class="blank-space"></div>
 
-  <div class="fixed-buttons"
-    *ngIf="!isTagReorderingModeEnabled"
-  >
+  <div class="fixed-buttons" *ngIf="!isTagReorderingModeEnabled">
     <button class="create" (click)="ctaEventHandler()">
       {{
         tagSelectionMode === "HIGHLIGHT"

@@ -13,6 +13,7 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 type TypeOfTagsGrid = 'MOST_ASSIGNED' | 'MOST_RECENT' | 'ALL';
 
@@ -707,6 +708,11 @@ export class TagsComponent implements OnInit {
         (tagInList) => tagInList._id !== tag._id
       );
     }
+  }
+
+  dropTagDraggable(event: CdkDragDrop<{ tag: Tag; index: number }>) {
+    this.dependantGridOfTagsToShow[event.previousContainer.data.index] = event.container.data.tag;
+    this.dependantGridOfTagsToShow[event.container.data.index] = event.previousContainer.data.tag;
   }
 
   backButtonAction() {
