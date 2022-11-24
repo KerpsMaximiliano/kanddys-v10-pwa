@@ -74,7 +74,13 @@
          }
 
          .fas.fa-chevron-right {
-            padding-top: 4px;
+            width: 5px;
+            height: 9px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-right: 11px;
+            padding-top: 8px;
          }
       }
    }
