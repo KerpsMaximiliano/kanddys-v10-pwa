@@ -158,7 +158,11 @@
         </div>
       </div>
 
-      <div class="display-container" style="margin-top: 0px">
+      <div
+        class="display-container"
+        *ngIf="mostAssignedTags.length > 0"
+        style="margin-top: 0px"
+      >
         <div class="title-button">
           <h2 class="title">Los más asignados</h2>
           <button class="top-button" (click)="showTagsOfType('MOST_ASSIGNED')">

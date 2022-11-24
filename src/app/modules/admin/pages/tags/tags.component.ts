@@ -649,6 +649,10 @@ export class TagsComponent implements OnInit {
       limit: 10,
     };
 
+    pagination.findBy.counter = {
+      $gt: 0,
+    };
+
     const mostAssignedTags = await this.tagsService.tagsByUser(pagination);
 
     if (mostAssignedTags) this.mostAssignedTags = mostAssignedTags;
@@ -711,8 +715,10 @@ export class TagsComponent implements OnInit {
   }
 
   dropTagDraggable(event: CdkDragDrop<{ tag: Tag; index: number }>) {
-    this.dependantGridOfTagsToShow[event.previousContainer.data.index] = event.container.data.tag;
-    this.dependantGridOfTagsToShow[event.container.data.index] = event.previousContainer.data.tag;
+    this.dependantGridOfTagsToShow[event.previousContainer.data.index] =
+      event.container.data.tag;
+    this.dependantGridOfTagsToShow[event.container.data.index] =
+      event.previousContainer.data.tag;
   }
 
   backButtonAction() {
