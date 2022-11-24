@@ -14,6 +14,10 @@ import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 
 type TypeOfTagsGrid = 'MOST_ASSIGNED' | 'MOST_RECENT' | 'ALL';
 
@@ -264,35 +268,7 @@ export class TagsComponent implements OnInit {
         text: 'Eliminar',
         callback: async () => {
           try {
-            const { deleteTag: success } = await this.tagsService.deleteTag(
-              tag._id
-            );
-
-            if (success) {
-              delete this.tagsByIdsObject[tag._id];
-
-              const mostAssignedTagsIndex = this.mostAssignedTags.findIndex(
-                (tagInList) => tagInList._id === tag._id
-              );
-
-              if (mostAssignedTagsIndex >= 0) {
-                this.mostAssignedTags.splice(mostAssignedTagsIndex, 1);
-                this.mostAssignedTagsSwiper.directiveRef.update();
-              }
-
-              const recentTagsIndex = this.mostRecentTags.findIndex(
-                (tagInList) => tagInList._id === tag._id
-              );
-
-              if (recentTagsIndex >= 0) {
-                this.mostRecentTags.splice(recentTagsIndex, 1);
-                this.recentTagsSwiper.directiveRef.update();
-              }
-
-              this.toastr.info('Tag eliminado exitosamente', null, {
-                timeOut: 1500,
-              });
-            }
+            await this.openDeleteSingleTagDialog(tag);
           } catch (error) {}
         },
       },
@@ -463,9 +439,85 @@ export class TagsComponent implements OnInit {
         await this.hideMultipleTags();
         break;
       case 'DELETE':
-        await this.deleteMultipleTags();
+        this.openDeleteMultipleTagsDialog();
         break;
     }
+  }
+
+  async openDeleteSingleTagDialog(tag: Tag) {
+    const list: StoreShareList[] = [
+      {
+        title: `¿Eliminar tag ${tag.name}?`,
+        description:
+          'Esta acción es irreversible, ¿estás seguro que deseas eliminar este tag?',
+        message: 'Eliminar',
+        messageCallback: async () => {
+          const { deleteTag: success } = await this.tagsService.deleteTag(
+            tag._id
+          );
+
+          if (success) {
+            delete this.tagsByIdsObject[tag._id];
+
+            const mostAssignedTagsIndex = this.mostAssignedTags.findIndex(
+              (tagInList) => tagInList._id === tag._id
+            );
+
+            if (mostAssignedTagsIndex >= 0) {
+              this.mostAssignedTags.splice(mostAssignedTagsIndex, 1);
+              this.mostAssignedTagsSwiper.directiveRef.update();
+            }
+
+            const recentTagsIndex = this.mostRecentTags.findIndex(
+              (tagInList) => tagInList._id === tag._id
+            );
+
+            if (recentTagsIndex >= 0) {
+              this.mostRecentTags.splice(recentTagsIndex, 1);
+              this.recentTagsSwiper.directiveRef.update();
+            }
+
+            this.toastr.info('Tag eliminado exitosamente', null, {
+              timeOut: 1500,
+            });
+          }
+        },
+      },
+    ];
+
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  openDeleteMultipleTagsDialog() {
+    const list: StoreShareList[] = [
+      {
+        title: `¿Eliminar tags?`,
+        description:
+          'Esta acción es irreversible, ¿estás seguro que deseas eliminar los tags seleccionados?',
+        message: 'Eliminar',
+        messageCallback: async () => {
+          await this.deleteMultipleTags();
+        },
+      },
+    ];
+
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   deleteMultipleTags = async () => {
@@ -481,6 +533,7 @@ export class TagsComponent implements OnInit {
           await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
           this.tagsDisplayMode = 'PER-SECTION';
           this.tagSelectionMode = null;
+          this.selectedTags = [];
         })
         .catch((arrayOfErrors) => {
           console.log(arrayOfErrors);
@@ -546,6 +599,7 @@ export class TagsComponent implements OnInit {
           await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
           this.tagsDisplayMode = 'PER-SECTION';
           this.tagSelectionMode = null;
+          this.selectedTags = [];
         })
         .catch((arrayOfErrors) => {
           console.log(arrayOfErrors);
@@ -590,6 +644,7 @@ export class TagsComponent implements OnInit {
           await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
           this.tagsDisplayMode = 'PER-SECTION';
           this.tagSelectionMode = null;
+          this.selectedTags = [];
         })
         .catch((arrayOfErrors) => {
           console.log(arrayOfErrors);
