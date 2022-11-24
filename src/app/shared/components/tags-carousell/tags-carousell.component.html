@@ -26,7 +26,15 @@
             ? 'url(' + tag.images[0] + ')'
             : null
         "
-      ></div>
+      >
+        <div
+          class="badge"
+          *ngIf="tag.status === 'disabled'"
+          [ngStyle]="{
+            'background-image': 'url(' + env + '/closed-eye-white.svg' + ')'
+          }"
+        ></div>
+      </div>
       <p
         class="tag-title"
         [style.color]="tagTitleColor"

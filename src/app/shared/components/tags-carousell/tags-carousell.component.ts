@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { SwiperOptions } from 'swiper';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tags-carousell',
@@ -7,6 +8,7 @@ import { SwiperOptions } from 'swiper';
   styleUrls: ['./tags-carousell.component.scss'],
 })
 export class TagsCarousellComponent implements OnInit {
+  env = environment.assetsUrl;
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,

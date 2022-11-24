@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 export const updateTag = gql`
   mutation updateTag($input: TagInput!, $tagId: ObjectID!) {
     updateTag(input: $input, tagId: $tagId) {
+      name
       _id
     }
   }
@@ -123,8 +124,9 @@ export const tag = gql`
     tag(tagId: $tagId) {
       _id
       name
-      images
       status
+      images
+      notifications
     }
   }
 `;
