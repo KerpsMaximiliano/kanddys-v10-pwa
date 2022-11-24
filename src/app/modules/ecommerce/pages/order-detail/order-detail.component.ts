@@ -78,6 +78,7 @@ export class OrderDetailComponent implements OnInit {
   tabs: any[] = ['', '', '', '', ''];
   previousTags: any;
   tagsAsignationOnStart: boolean = false;
+  redirectTo: string = null;
   imageList: Image[] = [
     {
       src: '/bookmark-checked.svg',
@@ -147,7 +148,8 @@ export class OrderDetailComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { notify: notification } = queryParams;
+      const { notify: notification, redirectTo } = queryParams;
+      this.redirectTo = redirectTo;
 
       this.route.params.subscribe(async (params) => {
         const { orderId } = params;
@@ -944,6 +946,10 @@ export class OrderDetailComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  returnEvent() {
+    this.router.navigate([this.redirectTo]);
   }
 
   // goBackToFlowRoute() {

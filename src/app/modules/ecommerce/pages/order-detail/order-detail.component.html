@@ -1,7 +1,8 @@
 <div class="container">
   <app-helper-headerv2
     [mode]="'basic'"
-    [returnAble]="false"
+    [returnAble]="redirectTo !== null && redirectTo !== ''"
+    (returnEvent)="returnEvent()"
     [bgColor]="changeColor ? changeColor : headerService.colorTheme"
     [icon]="
       !merchant && merchantOwner
@@ -356,9 +357,7 @@
         />
       </div>
     </div>
-    <div class="tab-pages">
-      <div class="tab" *ngFor="let tab of tabs"></div>
-    </div>
+
     <div
       class="right-arrow"
       *ngIf="
