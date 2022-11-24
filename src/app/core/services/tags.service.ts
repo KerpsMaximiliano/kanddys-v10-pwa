@@ -48,7 +48,7 @@ export class TagsService {
     return result;
   }
 
-  async createTag(input: TagInput) {
+  async createTag(input: TagInput): Promise<Tag> {
     const result = await this.graphql.mutate({
       mutation: createTag,
       variables: { input },
@@ -59,8 +59,7 @@ export class TagsService {
 
     if (!result || result?.errors) return undefined;
 
-    console.log(result);
-    return result;
+    return result?.createTag;
   }
 
   async deleteTag(tagId: string) {
@@ -234,7 +233,7 @@ export class TagsService {
     tagIds: Array<string>
   ) {
     try {
-      console.log({ orderStatus: orderStatuses, limit, tagId: tagIds })
+      console.log({ orderStatus: orderStatuses, limit, tagId: tagIds });
       const result = await this.graphql.query({
         query: ordersByTag,
         variables: { orderStatus: orderStatuses, limit, tagId: tagIds },

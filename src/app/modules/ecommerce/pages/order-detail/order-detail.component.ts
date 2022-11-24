@@ -52,12 +52,21 @@ export class OrderDetailComponent implements OnInit {
   selectedTags: any = {};
   previousTags: any;
   merchant: boolean;
+  tagsAsignationOnStart: boolean = false;
   imageList: Image[] = [
     {
       src: '/bookmark-checked.svg',
       filter: 'brightness(2)',
       callback: async () => {
-        const tags = (await this.tagsService.tagsByUser()) || [];
+        const tags =
+          (await this.tagsService.tagsByUser({
+            findBy: {
+              entity: 'order',
+            },
+            options: {
+              limit: -1,
+            },
+          })) || [];
         for (const tag of tags) {
           this.selectedTags[tag._id] = false;
           if (this.order.tags.includes(tag._id)) {
@@ -111,6 +120,12 @@ export class OrderDetailComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const notification = this.route.snapshot.queryParamMap.get('notify');
+    const tagsAsignationOnStart = this.route.snapshot.queryParamMap.get(
+      'tagsAsignationOnStart'
+    );
+
+    if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
+
     const id = this.route.snapshot.paramMap.get('id');
     this.order = (await this.orderService.order(id))?.order;
     this.flowRoute = localStorage.getItem('flowRoute');
@@ -357,6 +372,8 @@ export class OrderDetailComponent implements OnInit {
       }&text=${encodeURIComponent(message)}`;
       this.notify = true;
     }
+
+    if (this.tagsAsignationOnStart) await this.tagDialog();
   }
 
   async notificationClicked() {
@@ -365,7 +382,15 @@ export class OrderDetailComponent implements OnInit {
       relativeTo: this.route,
     });
     console.log(this.order.tags);
-    const tags = (await this.tagsService.tagsByUser()) || [];
+    const tags =
+      (await this.tagsService.tagsByUser({
+        findBy: {
+          entity: 'order',
+        },
+        options: {
+          limit: -1,
+        },
+      })) || [];
     for (const tag of tags) {
       this.selectedTags[tag._id] = false;
       if (this.order.tags.includes(tag._id)) {
@@ -419,7 +444,14 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async tagDialog(tags?: string[]) {
-    const tagsFilled = await this.tagsService.tagsByUser();
+    const tagsFilled = await this.tagsService.tagsByUser({
+      findBy: {
+        entity: 'order',
+      },
+      options: {
+        limit: -1,
+      },
+    });
 
     this.dialogService.open(TagAsignationComponent, {
       type: 'fullscreen-translucent',

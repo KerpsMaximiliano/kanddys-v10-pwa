@@ -404,9 +404,11 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       try {
         if (this.entity) {
           data.entity = this.entity;
+        } else {
+          data.entity = 'item';
         }
 
-        const { createTag: createdTag } = await this.tagsService.createTag(
+        const createdTag = await this.tagsService.createTag(
           data
         );
 
@@ -419,7 +421,11 @@ export class CreateTagComponent implements OnInit, OnDestroy {
             this.orderID
           );
 
-          this.router.navigate(['ecommerce/order-info/' + this.orderID]);
+          this.router.navigate(['ecommerce/order-info/' + this.orderID], {
+            queryParams: {
+              tagsAsignationOnStart: true,
+            },
+          });
         } else {
           if (this.entity === 'item') {
             if (this.entityId) {
