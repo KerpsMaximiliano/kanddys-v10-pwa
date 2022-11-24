@@ -522,7 +522,9 @@ export class ArticlePrivacyComponent implements OnInit {
   }
 
   checkList(control: AbstractControl): boolean {
-    return true;
+    return control
+    .get('tags')
+    .value.some((r) => this.listadoSelection.includes(r));
   }
 
   async addTag(): Promise<void> {
