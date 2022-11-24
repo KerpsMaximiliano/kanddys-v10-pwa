@@ -18,6 +18,7 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 
 type TypeOfTagsGrid = 'MOST_ASSIGNED' | 'MOST_RECENT' | 'ALL';
 
@@ -58,6 +59,7 @@ export class TagsComponent implements OnInit {
   typeOfTagsGrid: TypeOfTagsGrid = null;
   isTagSelectionModeEnabled: boolean = false;
   isTagReorderingModeEnabled: boolean = false;
+  URI: string = environment.uri;
   tagSelectionMode: 'HIGHLIGHT' | 'HIDE' | 'DELETE' = null;
   paginationState: {
     pageSize: number;
@@ -94,6 +96,7 @@ export class TagsComponent implements OnInit {
     private tagsService: TagsService,
     private dialogService: DialogService,
     private toastr: ToastrService,
+    private ngNavigatorShareService: NgNavigatorShareService,
     private router: Router
   ) {}
 
@@ -441,6 +444,12 @@ export class TagsComponent implements OnInit {
       case 'DELETE':
         this.openDeleteMultipleTagsDialog();
         break;
+      default:
+        this.router.navigate(['admin/create-tag'], {
+          queryParams: {
+            redirectTo: window.location.href.split('/').slice(3).join('/'),
+          },
+        });
     }
   }
 
@@ -779,6 +788,8 @@ export class TagsComponent implements OnInit {
   backButtonAction() {
     this.headerText = 'Tags';
     this.tagsDisplayMode = 'PER-SECTION';
+    this.tagSelectionMode = null;
+    this.selectedTags = [];
     this.dependantGridOfTagsToShow = null;
   }
 
@@ -830,5 +841,21 @@ export class TagsComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  async share() {
+    const link = window.location.href;
+
+    await this.ngNavigatorShareService
+      .share({
+        title: '',
+        url: link,
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }
