@@ -17,6 +17,8 @@ a {
 .container {
   width: 100%;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 
   .header {
     width: 100%;
@@ -161,6 +163,7 @@ a {
     width: 100%;
     margin: 61px 0 40px 0;
     padding: 0 24px 32px;
+    flex: 1;
 
     .top {
       margin: 0 0 59.5px;

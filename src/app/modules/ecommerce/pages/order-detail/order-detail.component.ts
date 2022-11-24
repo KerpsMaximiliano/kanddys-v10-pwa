@@ -645,7 +645,7 @@ export class OrderDetailComponent implements OnInit {
 
   goToStore() {
     let link = this.order.items[0].saleflow._id;
-    this.router.navigate([`ecommerce/store/${link}`]);
+    this.router.navigate([`ecommerce/${link}/store`]);
   }
 
   async tagDialog(tags?: string[]) {
@@ -693,7 +693,7 @@ export class OrderDetailComponent implements OnInit {
             callback: async () => {
               await this.ngNavigatorShareService.share({
                 title: `Mi orden`,
-                url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
+                url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow._id}`,
               });
             },
           },
@@ -779,7 +779,7 @@ export class OrderDetailComponent implements OnInit {
     )}: ${fullLink}`;
 
     this.messageLink = `https://api.whatsapp.com/send?phone=${
-      this.order.user?.name || this.order.user?.phone || this.order.user?.email
+      this.order.user?.phone
     }&text=${encodeURIComponent(message)}`;
     window.open(this.messageLink, '_blank');
   }

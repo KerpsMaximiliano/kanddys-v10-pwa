@@ -321,7 +321,7 @@ export class ArticleDetailComponent implements OnInit {
         headerButton: 'Ver más productos',
         headerCallback: () =>
           this.router.navigate(
-            [`/ecommerce/store/${this.headerService.saleflow._id}`],
+            [`/ecommerce/${this.headerService.saleflow._id}/store`],
             {
               replaceUrl: this.headerService.checkoutRoute ? true : false,
             }
@@ -375,7 +375,7 @@ export class ArticleDetailComponent implements OnInit {
     }
     this.itemsService.removeTemporalItem();
     this.router.navigate(
-      [`/ecommerce/store/${this.headerService.saleflow._id}`],
+      [`/ecommerce/${this.headerService.saleflow._id}/store`],
       {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
       }

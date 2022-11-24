@@ -179,6 +179,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       customHelperHeaderConfig: {
         bgcolor: this.header.colorTheme,
       },
+      footerConfig: {
+        bgColor: this.header.colorTheme,
+      },
       stepProcessingFunction: (params) => {
         this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
         this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
@@ -312,6 +315,12 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           },
         },
       ],
+      customHelperHeaderConfig: {
+        bgcolor: this.header.colorTheme,
+      },
+      footerConfig: {
+        bgColor: this.header.colorTheme,
+      },
       customScrollToStepBackwards: (params) => {
         if (this.scrollableForm) {
           params.unblockScrollPastCurrentStep();

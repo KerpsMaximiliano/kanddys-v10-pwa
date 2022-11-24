@@ -31,46 +31,46 @@ const options = [
       color: '#202020',
     },
   },
-  {
-    status: true,
-    click: true,
-    value: 'Con mensaje virtual e impreso',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-    subtexts: [
-      {
-        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
-        styles: {
-          fontFamily: 'SfProRegular',
-          fontSize: '1rem',
-          color: '#7B7B7B',
-        },
-      },
-    ],
-  },
-  {
-    status: true,
-    click: true,
-    value: 'Mensaje virtual',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-    subtexts: [
-      {
-        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
-        styles: {
-          fontFamily: 'SfProRegular',
-          fontSize: '1rem',
-          color: '#7B7B7B',
-        },
-      },
-    ],
-  },
+  // {
+  //   status: true,
+  //   click: true,
+  //   value: 'Con mensaje virtual e impreso',
+  //   valueStyles: {
+  //     'font-family': 'SfProBold',
+  //     'font-size': '13px',
+  //     color: '#202020',
+  //   },
+  //   subtexts: [
+  //     {
+  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
+  //       styles: {
+  //         fontFamily: 'SfProRegular',
+  //         fontSize: '1rem',
+  //         color: '#7B7B7B',
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   status: true,
+  //   click: true,
+  //   value: 'Mensaje virtual',
+  //   valueStyles: {
+  //     'font-family': 'SfProBold',
+  //     'font-size': '13px',
+  //     color: '#202020',
+  //   },
+  //   subtexts: [
+  //     {
+  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
+  //       styles: {
+  //         fontFamily: 'SfProRegular',
+  //         fontSize: '1rem',
+  //         color: '#7B7B7B',
+  //       },
+  //     },
+  //   ],
+  // },
   {
     status: true,
     click: true,
@@ -525,17 +525,17 @@ export class CheckoutComponent implements OnInit {
         this.headerService.storePost(this.post);
         break;
       }
+      // case 1: {
+      //   break;
+      // }
+      // case 2: {
+      //   // this.router.navigate([`../create-article`], {
+      //   //   relativeTo: this.route,
+      //   //   replaceUrl: true,
+      //   // });
+      //   break;
+      // }
       case 1: {
-        break;
-      }
-      case 2: {
-        // this.router.navigate([`../create-article`], {
-        //   relativeTo: this.route,
-        //   replaceUrl: true,
-        // });
-        break;
-      }
-      case 3: {
         this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
         this.router.navigate([`../create-giftcard`], {
           relativeTo: this.route,

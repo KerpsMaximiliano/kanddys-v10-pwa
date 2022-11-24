@@ -233,8 +233,8 @@ export class ItemsDashboardComponent implements OnInit {
         entity: 'item',
       },
       options: {
-        limit: -1
-      }
+        limit: -1,
+      },
     });
 
     if (tagsList) {
@@ -798,7 +798,7 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
-          const link = `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`;
+          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/store`;
 
           await this.ngNavigatorShareService
             .share({

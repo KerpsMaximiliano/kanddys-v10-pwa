@@ -3,12 +3,16 @@
     [mode]="'basic'"
     [returnAble]="false"
     [bgColor]="changeColor ? changeColor : headerService.colorTheme"
-    [icon]="!merchant && merchantOwner? {
-      src: '/arrow-double-up.svg',
-      width: 17,
-      height: 21,
-      callback: changeView
-    } : null"
+    [icon]="
+      !merchant && merchantOwner
+        ? {
+            src: '/arrow-double-up.svg',
+            width: 17,
+            height: 21,
+            callback: changeView
+          }
+        : null
+    "
     [rightText]="
       loggedUser
         ? {
@@ -40,18 +44,10 @@
     (agnosticAction)="openLogoutDialog()"
   ></app-helper-headerv2>
 
-  <div class="top-area" *ngIf="!notify">
+  <div class="top-area" *ngIf="!notify && !merchant">
     <button class="top-button" (click)="buyAgain()">
       <span class="plus"> + </span> COMPRAR OTRA VEZ
     </button>
-
-    <!-- <div class="coins-info">
-      <h2 class="info-headline">Gana Coins</h2>
-
-      <p class="info-paragraph">
-        Te faltan N facturas para ganar XYZ MerchantID Coins
-      </p>
-    </div>-->
   </div>
 
   <div class="bill-area" *ngIf="notify">
@@ -74,69 +70,6 @@
       {{ order?.items[0].saleflow.merchant.name }}.
     </p>
   </div>
-
-  <!-- <div class="bill-area" *ngIf="notify">
-    <h2 class="user-name">{{ order.user?.name || order.user?.phone || order.user?.email }}</h2>
-    <h2 class="success">Tu factura se creó exitosamente.</h2>
-
-    <a
-      [href]="messageLink"
-      target="_blank"
-      class="bill-button"
-      (click)="notificationClicked()"
-    >
-      Confirmar por WhatsApp
-    </a>
-
-    <p class="bill-clarity">
-      Al “confirmar” se abrirá tu WhatsApp con la factura para {{ order?.items[0].saleflow.merchant.name }}.
-    </p>
-  </div> -->
-
-  <!-- <app-helper-headerv2
-    [mode]="'basic'"
-    bgColor="#2874AD"
-    [returnAble]="false"
-    [mainText]="{
-      text:
-        order?.items[0].saleflow.headline.length < 38
-          ? order?.items[0].saleflow.headline
-          : order?.items[0].saleflow.headline.split(' ')['0'],
-      fontSize: '21px',
-      fontFamily: 'SfProBold'
-    }"
-  ></app-helper-headerv2> -->
-
-  <!-- <div class="box-shadowing">
-    <app-item-reservation
-      [headline]="{
-        text: order ? formatId(order?.dateId) : ''
-      }"
-      [rightActive]="true"
-      [rightSubHeadline]="{
-        text: order?.user.name
-      }"
-      [subheadlines]="[
-        {
-          text: orderDate
-        },
-        {
-          text: orderStatus
-        }
-      ]"
-      [icon]="[
-        {
-          src: '/person.svg',
-          width: 13,
-          height: 17,
-          color:
-            'invert(35%) sepia(92%) saturate(490%) hue-rotate(164deg) brightness(93%) contrast(84%)',
-          callback: redirectToUserContact
-        }
-      ]"
-    ></app-item-reservation>
-  </div> -->
-
   <main class="information">
     <section class="top">
       <h2 class="top-h" *ngIf="order">
@@ -320,7 +253,7 @@
       *ngIf="
         (order?.items[0].post && post?.message) ||
         post?.from ||
-        post?.targets[0].name
+        (post?.targets.length && post?.targets[0].name)
       "
       style="margin-top: 32px"
     >
@@ -441,9 +374,8 @@
     </div>
   </footer>
 
-
   <!-- Aquí hubo un merge conflict -->
-  
+
   <!-- <app-sticky-button
   *ngIf="!merchant"
   [mode]="'fixed'"
@@ -453,5 +385,4 @@
   [text]="'VOLVER A LA TIENDA'"
   (click)="goToStore()"
   ></app-sticky-button> -->
-
 </div>

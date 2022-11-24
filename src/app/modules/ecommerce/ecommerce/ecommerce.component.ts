@@ -57,7 +57,8 @@ export class EcommerceComponent implements OnInit {
       props: {
         orderFinished: !(
           this.activePath === 'article-detail/:entity/:entityId' ||
-          this.activePath === 'store'
+          this.activePath === 'store' ||
+          this.headerService.checkoutRoute
         ),
         headerButton: this.activePath !== 'store' && 'Ver mas productos',
         headerCallback: () =>
