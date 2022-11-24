@@ -61,7 +61,7 @@
               <app-general-item
                 [tag]="tag"
                 [entity]="'TAG'"
-                [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+                [mainColor]="tag.status !== 'disabled' ? '#000000' : '#b17608'"
                 [tagsByIdsObject]="tagsByIdsObject"
                 [singleIconStyles]="{
                   filter:
@@ -87,6 +87,9 @@
                   '-webkit-box-orient': 'vertical',
                   overflow: 'hidden',
                   'word-break': 'break-all'
+                }"
+                [topInnerButtonStyles]="{
+                  backgroundColor: '#272727'
                 }"
               >
               </app-general-item>
@@ -118,7 +121,7 @@
               <app-general-item
                 [tag]="tag"
                 [entity]="'TAG'"
-                [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+                [mainColor]="tag.status !== 'disabled' ? '#000000' : '#b17608'"
                 [tagsByIdsObject]="tagsByIdsObject"
                 [singleIconStyles]="{
                   filter:
@@ -145,6 +148,9 @@
                   overflow: 'hidden',
                   'word-break': 'break-all'
                 }"
+                [topInnerButtonStyles]="{
+                  backgroundColor: '#272727'
+                }"
               >
               </app-general-item>
             </div>
@@ -169,7 +175,7 @@
               <app-general-item
                 [tag]="tag"
                 [entity]="'TAG'"
-                [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+                [mainColor]="tag.status !== 'disabled' ? '#000000' : '#b17608'"
                 [tagsByIdsObject]="tagsByIdsObject"
                 [showIconForTagStatus]="
                   tag.status === 'disabled' || tag.status === 'featured'
@@ -197,6 +203,9 @@
                   overflow: 'hidden',
                   'word-break': 'break-all'
                 }"
+                [topInnerButtonStyles]="{
+                  backgroundColor: '#272727'
+                }"
               >
               </app-general-item>
             </div>
@@ -216,7 +225,7 @@
             <app-general-item
               [tag]="tag"
               [entity]="'TAG'"
-              [mainColor]="tag.status !== 'disabled' ? '#272727' : '#b17608'"
+              [mainColor]="tag.status !== 'disabled' ? '#000000' : '#b17608'"
               [tagsByIdsObject]="tagsByIdsObject"
               [singleIconStyles]="{
                 filter:
@@ -245,6 +254,9 @@
                 'word-break': 'break-all'
               }"
               [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
+              [topInnerButtonStyles]="{
+                backgroundColor: '#272727'
+              }"
               (itemSelectedEvent)="selectTag($event, tag)"
             >
             </app-general-item>
@@ -270,7 +282,7 @@
                   [tag]="tag"
                   [entity]="'TAG'"
                   [mainColor]="
-                    tag.status !== 'disabled' ? '#272727' : '#b17608'
+                    tag.status !== 'disabled' ? '#000000' : '#b17608'
                   "
                   [tagsByIdsObject]="tagsByIdsObject"
                   [singleIconStyles]="{
@@ -301,6 +313,9 @@
                   [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
                   (itemSelectedEvent)="selectTag($event, tag)"
                   [showEntityButton]="false"
+                  [topInnerButtonStyles]="{
+                    backgroundColor: '#272727'
+                  }"
                 >
                 </app-general-item>
               </div>

@@ -4,15 +4,43 @@
   border-radius: 15px;
   background-size: cover;
   background-position: center;
+
+  &.selectedCard {
+    width: calc(100% - 6px);
+    height: calc(100% - 6px);
+    margin: auto;
+  }
 }
 
 .containerGradientBox {
-  padding: 9px 11px 18px 11px;
   height: 100.5%;
   border-radius: 15px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
+
+  .inner-tag-wrapper {
+    padding: 9px 11px 18px 11px;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &.selectedCard {
+    .inner-tag-wrapper {
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        margin: -3px; /* !importanté */
+        border-radius: 15px; /* !importanté */
+        background: linear-gradient(to top, #000000, #8aeb88 60%);
+      }
+    }
+  }
 
   &:hover {
     cursor: pointer;

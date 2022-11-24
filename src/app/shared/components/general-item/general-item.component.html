@@ -6,6 +6,9 @@
         'url(' + cardMainImage + ')' + ',url(/assets/images/noimage.png)'
     })
   "
+  [ngClass]="{
+    selectedCard: itemSelected
+  }"
 >
   <div
     class="containerGradientBox"
@@ -13,152 +16,159 @@
       backgroundImage:
         'linear-gradient(to top,' + mainColor + ', transparent 60%)'
     }"
+    [ngClass]="{
+      selectedCard: itemSelected
+    }"
   >
-    <div
-      class="topRightButton"
-      *ngIf="topRightButton"
-      (click)="triggerTopRightButtonClick()"
-    ></div>
-
-    <div
-      class="topInnerButtonsContainer"
-      [ngStyle]="topInnerButtonsContainerStyles"
-      *ngIf="topInnerButtons && topInnerButtons.length > 0"
-    >
-      <button
-        *ngFor="let button of topInnerButtons"
-        [ngStyle]="
-          !mainColor
-            ? topInnerButtonStyles
-            : spreadOperator(topInnerButtonStyles, {
-                backgroundColor: mainColor
-              })
-        "
-        class="topInnerButton"
-        (click)="button.clickEvent()"
-      >
-        {{ button.text }}
-      </button>
-    </div>
-
-    <div class="itemPresentationBox" [ngStyle]="itemPresentationBoxStyles">
-      <!--
-        Descomentar luego
-        <div class="input" *ngIf="entity === 'TAG'">Input #1 con valor largo</div>
-      -->
+    <div class="inner-tag-wrapper">
+      <div
+        class="topRightButton"
+        *ngIf="topRightButton"
+        (click)="triggerTopRightButtonClick()"
+      ></div>
 
       <div
-        class="icons-rows"
-        [ngStyle]="iconsRowsStyles"
-        *ngIf="shouldItemBeSelectectable"
+        class="topInnerButtonsContainer"
+        [ngStyle]="topInnerButtonsContainerStyles"
+        *ngIf="topInnerButtons && topInnerButtons.length > 0"
       >
+        <button
+          *ngFor="let button of topInnerButtons"
+          [ngStyle]="
+            !mainColor
+              ? topInnerButtonStyles
+              : !overwriteInnerButtonColor
+              ? spreadOperator(topInnerButtonStyles, {
+                  backgroundColor: mainColor
+                })
+              : topInnerButtonStyles
+          "
+          class="topInnerButton"
+          (click)="button.clickEvent()"
+        >
+          {{ button.text }}
+        </button>
+      </div>
+
+      <div class="itemPresentationBox" [ngStyle]="itemPresentationBoxStyles">
+        <!--
+          Descomentar luego
+          <div class="input" *ngIf="entity === 'TAG'">Input #1 con valor largo</div>
+        -->
+
         <div
-          [ngStyle]="selectionButtonStyles"
-          class="icon-filled selection-button"
-          (click)="selectItem()"
-          alt="hidden"
+          class="icons-rows"
+          [ngStyle]="iconsRowsStyles"
+          *ngIf="shouldItemBeSelectectable"
         >
           <div
-            class="inner-icon"
-            [ngClass]="{
-              visible: itemSelected
-            }"
-            [ngStyle]="
-              spreadOperator(selectionButtonIconStyles, {
-                backgroundImage: 'url(' + env + '/check-black.svg' + ')'
-              })
-            "
-          ></div>
+            [ngStyle]="selectionButtonStyles"
+            class="icon-filled selection-button"
+            (click)="selectItem()"
+            alt="hidden"
+          >
+            <div
+              class="inner-icon"
+              [ngClass]="{
+                visible: itemSelected
+              }"
+              [ngStyle]="
+                spreadOperator(selectionButtonIconStyles, {
+                  backgroundImage: 'url(' + env + '/check-black.svg' + ')'
+                })
+              "
+            ></div>
+          </div>
         </div>
-      </div>
 
-      <div
-        class="flex-container"
-        *ngIf="
-          (entity === 'ITEM' &&
-            showVisitorCounter &&
-            item.visitorCounter &&
-            item.visitorCounter.counter) ||
-          (showIconForItemStatus && statusIcon) ||
-          (showIconForTagStatus && statusIcon)
-        "
-      >
         <div
-          class="viewsCounter"
-          [ngStyle]="entity === 'ITEM' && viewsCounterStyles"
+          class="flex-container"
           *ngIf="
-            entity === 'ITEM' &&
-            showVisitorCounter &&
-            item.visitorCounter &&
-            item.visitorCounter.counter
+            (entity === 'ITEM' &&
+              showVisitorCounter &&
+              item.visitorCounter &&
+              item.visitorCounter.counter) ||
+            (showIconForItemStatus && statusIcon) ||
+            (showIconForTagStatus && statusIcon)
           "
         >
-          {{ item.visitorCounter.counter }} vistas
-        </div>
-
-        <div class="icons-rows" [ngStyle]="iconsRowsStyles">
-          <ng-container
+          <div
+            class="viewsCounter"
+            [ngStyle]="entity === 'ITEM' && viewsCounterStyles"
             *ngIf="
-              (showIconForItemStatus && statusIcon) ||
-              (showIconForTagStatus && statusIcon)
+              entity === 'ITEM' &&
+              showVisitorCounter &&
+              item.visitorCounter &&
+              item.visitorCounter.counter
             "
           >
-            <img
-              *ngIf="!shouldIconsHaveBackground"
-              class="icon"
-              [ngStyle]="singleIconStyles"
-              [src]="statusIcon"
-              alt="status"
-            />
+            {{ item.visitorCounter.counter }} vistas
+          </div>
 
-            <div
+          <div class="icons-rows" [ngStyle]="iconsRowsStyles">
+            <ng-container
               *ngIf="
-                (shouldIconsHaveBackground && showIconForItemStatus) ||
-                (shouldIconsHaveBackground && showIconForTagStatus)
+                (showIconForItemStatus && statusIcon) ||
+                (showIconForTagStatus && statusIcon)
               "
-              class="icon-filled"
-              alt="hidden"
-              [ngStyle]="{
-                backgroundColor: mainColor
-              }"
             >
+              <img
+                *ngIf="!shouldIconsHaveBackground"
+                class="icon"
+                [ngStyle]="singleIconStyles"
+                [src]="statusIcon"
+                alt="status"
+              />
+
               <div
-                class="inner-icon"
-                [ngStyle]="
-                  spreadOperator(singleIconStyles, {
-                    backgroundImage: 'url(' + statusIcon + ')'
-                  })
+                *ngIf="
+                  (shouldIconsHaveBackground && showIconForItemStatus) ||
+                  (shouldIconsHaveBackground && showIconForTagStatus)
                 "
-              ></div>
-            </div>
+                class="icon-filled"
+                alt="hidden"
+                [ngStyle]="{
+                  backgroundColor: mainColor
+                }"
+              >
+                <div
+                  class="inner-icon"
+                  [ngStyle]="
+                    spreadOperator(singleIconStyles, {
+                      backgroundImage: 'url(' + statusIcon + ')'
+                    })
+                  "
+                ></div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div
+          class="title"
+          [ngStyle]="titleStyles"
+          [ngClass]="{
+            'tag-title': entity === 'TAG'
+          }"
+        >
+          <ng-container [ngSwitch]="entity">
+            <ng-container *ngSwitchCase="'ITEM'">
+              {{ itemMainTitle }}
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'TAG'">
+              {{ tag.name }}
+            </ng-container>
           </ng-container>
         </div>
-      </div>
 
-      <div
-        class="title"
-        [ngStyle]="titleStyles"
-        [ngClass]="{
-          'tag-title': entity === 'TAG'
-        }"
-      >
-        <ng-container [ngSwitch]="entity">
-          <ng-container *ngSwitchCase="'ITEM'">
-            {{ itemMainTitle }}
-          </ng-container>
-
-          <ng-container *ngSwitchCase="'TAG'">
-            {{ tag.name }}
-          </ng-container>
-        </ng-container>
-      </div>
-
-      <div
-        class="tags"
-        [ngStyle]="tagsStyles"
-        *ngIf="entity === 'ITEM' && item.tags && item.tags.length"
-      >
-        {{ getTagSeparatedByComma() }}
+        <div
+          class="tags"
+          [ngStyle]="tagsStyles"
+          *ngIf="entity === 'ITEM' && item.tags && item.tags.length"
+        >
+          {{ getTagSeparatedByComma() }}
+        </div>
       </div>
     </div>
   </div>

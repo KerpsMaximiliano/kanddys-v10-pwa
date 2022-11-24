@@ -79,6 +79,7 @@ export class GeneralItemComponent implements OnInit {
   @Input() topRightButton: Button = null;
   @Input() topInnerButtons: Array<Button> = null;
   @Input() showEntityButton: boolean = true;
+  @Input() overwriteInnerButtonColor: boolean = true;
 
   env: string = environment.assetsUrl;
 
