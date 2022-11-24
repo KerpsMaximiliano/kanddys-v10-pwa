@@ -250,6 +250,19 @@ export class StoreComponent implements OnInit {
         limit: this.paginationState.pageSize,
       },
     });
+
+    const { listItems: allItems } = await this.saleflow.hotListItems({
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.item)),
+        },
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+      },
+    });
+
     // Obteniendo la lista de los items seleccionados
     const selectedItems = this.header.order?.products?.length
       ? this.header.order.products.map((subOrder) => subOrder.item)
@@ -291,7 +304,7 @@ export class StoreComponent implements OnInit {
     if (this.header.order?.products?.length) {
       let itemIDs: string[] = [];
       this.header.order.products.forEach((item) => {
-        if (!this.items.some((product) => product._id === item.item)) {
+        if (!allItems.some((product) => product._id === item.item)) {
           itemIDs.push(item.item);
           this.header.removeOrderProduct(item.item);
           this.header.removeItem(item.item);
