@@ -1,14 +1,19 @@
 <div class="container">
   <app-helper-headerv2
     [mode]="'basic'"
-    [returnAble]="false"
+    [returnAble]="redirectTo !== null && redirectTo !== ''"
+    (returnEvent)="returnEvent()"
     [bgColor]="changeColor ? changeColor : headerService.colorTheme"
-    [icon]="!merchant && merchantOwner? {
-      src: '/arrow-double-up.svg',
-      width: 17,
-      height: 21,
-      callback: changeView
-    } : null"
+    [icon]="
+      !merchant && merchantOwner
+        ? {
+            src: '/arrow-double-up.svg',
+            width: 17,
+            height: 21,
+            callback: changeView
+          }
+        : null
+    "
     [rightText]="
       loggedUser
         ? {
@@ -423,9 +428,7 @@
         />
       </div>
     </div>
-    <div class="tab-pages">
-      <div class="tab" *ngFor="let tab of tabs"></div>
-    </div>
+
     <div
       class="right-arrow"
       *ngIf="
@@ -441,9 +444,8 @@
     </div>
   </footer>
 
-
   <!-- Aquí hubo un merge conflict -->
-  
+
   <!-- <app-sticky-button
   *ngIf="!merchant"
   [mode]="'fixed'"
@@ -453,5 +455,4 @@
   [text]="'VOLVER A LA TIENDA'"
   (click)="goToStore()"
   ></app-sticky-button> -->
-
 </div>

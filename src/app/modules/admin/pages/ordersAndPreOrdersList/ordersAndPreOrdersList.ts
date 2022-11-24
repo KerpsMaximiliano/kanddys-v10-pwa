@@ -171,7 +171,7 @@ export class OrdersAndPreOrdersList implements OnInit {
         let tags: Array<Tag> =
           (await this.tagsService.tagsByUser({
             findBy: {
-              entity: 'order'
+              entity: 'order',
             },
             options: {
               limit: -1,
@@ -857,7 +857,11 @@ export class OrdersAndPreOrdersList implements OnInit {
         : this.router.url.split('?')[0]
     );
     this.savePageSnapshot();
-    this.router.navigate([`ecommerce/order-info/${orderId}`]);
+    this.router.navigate([`ecommerce/order-info/${orderId}`], {
+      queryParams: {
+        redirectTo: window.location.href.split('/').slice(3).join('/'),
+      },
+    });
   }
 
   getCreationDateDifferenceAsItsSaid(dateISOString) {
