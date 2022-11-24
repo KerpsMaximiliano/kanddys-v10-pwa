@@ -19,6 +19,7 @@ import {
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { NgNavigatorShareService } from 'ng-navigator-share';
+import { TagTypeDialogComponent } from 'src/app/shared/dialogs/tag-type-dialog/tag-type-dialog.component';
 
 type TypeOfTagsGrid = 'MOST_ASSIGNED' | 'MOST_RECENT' | 'ALL';
 
@@ -445,11 +446,13 @@ export class TagsComponent implements OnInit {
         this.openDeleteMultipleTagsDialog();
         break;
       default:
-        this.router.navigate(['admin/create-tag'], {
-          queryParams: {
-            redirectTo: window.location.href.split('/').slice(3).join('/'),
-          },
+        this.dialogService.open(TagTypeDialogComponent,{
+          type: 'fullscreen-translucent',
+          props: {
+
+          }
         });
+        break;
     }
   }
 

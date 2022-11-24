@@ -105,6 +105,7 @@ import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/co
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
 import { GeneralItemComponent } from './components/general-item/general-item.component';
+import { TagTypeDialogComponent } from './dialogs/tag-type-dialog/tag-type-dialog.component';
 
 const imports = [
   CommonModule,
@@ -218,6 +219,7 @@ const declarations = [
   GeneralItemComponent,
   AnexosDialogComponent,
   TagAsignationComponent,
+  TagTypeDialogComponent
 ];
 
 @NgModule({
