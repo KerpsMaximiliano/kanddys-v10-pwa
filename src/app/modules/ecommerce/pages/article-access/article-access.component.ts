@@ -111,7 +111,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    this.timeinterval = setInterval(() => {
      const t = this.getTimeRemaining(_Date);
       this.days = t.days;
-      this.hours = t.hours;
+      this.hours = `${t.days*24 + t.hours}`;
       this.minutes = t.minutes;
       this.seconds = t.seconds;
      if (t.total <= 0) {
@@ -178,6 +178,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
          'PostAccess',
          {}
       );
+      clearInterval(this.timeinterval);
       this.initializeClock();
    };
    generateMagicLink();
