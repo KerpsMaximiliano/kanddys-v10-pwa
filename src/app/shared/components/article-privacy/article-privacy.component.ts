@@ -238,7 +238,7 @@ export class ArticlePrivacyComponent implements OnInit {
             const { countryIso, nationalNumber, countryCode } =
               this._AuthService.getPhoneInformation(`${item['phone']}`);
             this.CountryISO = countryIso;
-            item[name] = `+${countryCode}${nationalNumber}`;
+            item[name] = `${nationalNumber}`;
           }
           controller.addControl(
             name,
@@ -370,21 +370,25 @@ export class ArticlePrivacyComponent implements OnInit {
         nickname,
         image: _image,
       };
-      const { createRecipient } = await this._RecipientsService.createRecipient(
-        body
-      );
-      const { _id } = createRecipient;
-      controller.get('_id').setValue(_id);
-      this._Recipients = this.controllers.value;
-      this.initControllers();
-      if (this.listadoSelection.includes('Nueva')) await this.addTag();
-      for (const tag of this.listadoSelection) {
-        const { recipientAddTag } =
-          await this._RecipientsService.recipientAddTag(tag, _id);
-        controller.get('tags').setValue(this.listadoSelection);
+      try{
+        const { createRecipient } = await this._RecipientsService.createRecipient(
+          body
+        );
+        const { _id } = createRecipient;
+        controller.get('_id').setValue(_id);
+        this._Recipients = this.controllers.value;
+        this.initControllers();
+        if (this.listadoSelection.includes('Nueva')) await this.addTag();
+        for (const tag of this.listadoSelection) {
+          const { recipientAddTag } =
+            await this._RecipientsService.recipientAddTag(tag, _id);
+          controller.get('tags').setValue(this.listadoSelection);
+        }
+        this.status = 'controller';
+        this.selected = ['Yo y mis invitados'];
+      } catch (error) {
+        this.status = 'controller';
       }
-      this.status = 'controller';
-      this.selected = ['Yo y mis invitados'];
     };
     const updateRecipient = async () => {
       let body: any = {
@@ -395,27 +399,20 @@ export class ArticlePrivacyComponent implements OnInit {
         nickname,
       };
       if (typeof _image !== 'string') body.image = _image;
-      const { updateRecipient } = await this._RecipientsService.updateRecipient(
-        body,
-        _id
-      );
-      this._Recipients = this.controllers.value;
-      for (const tag of this.listadoSelection) {
-        const { recipientRemoveTag } =
-          await this._RecipientsService.recipientRemoveTag(tag, _id);
-        const { recipientAddTag } =
-          await this._RecipientsService.recipientAddTag(tag, _id);
-        controller.get('tags').setValue(this.listadoSelection);
+      try{
+        const { updateRecipient } = await this._RecipientsService.updateRecipient(
+          body,
+          _id
+        );
+      } catch (error) {
+        this.status = 'controller';
       }
+      this._Recipients = this.controllers.value;
       this.status = 'controller';
       this.selected = ['Yo y mis invitados'];
     };
-    try {
-      if (!_id) createRecipient();
-      else updateRecipient();
-    } catch (error) {
-      console.log('error: ', error);
-    }
+    if (!_id) createRecipient();
+    else updateRecipient();
   }
 
   deleteSelected(): void {
