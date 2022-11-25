@@ -365,7 +365,7 @@ export class ArticlePrivacyComponent implements OnInit {
       const body = {
         name,
         lastName,
-        phone: phone.e164Number,
+        phone: phone?phone.e164Number:'',
         email,
         nickname,
         image: _image,
@@ -394,7 +394,7 @@ export class ArticlePrivacyComponent implements OnInit {
       let body: any = {
         name,
         lastName,
-        phone: phone.e164Number,
+        phone: phone?phone.e164Number:'',
         email,
         nickname,
       };
