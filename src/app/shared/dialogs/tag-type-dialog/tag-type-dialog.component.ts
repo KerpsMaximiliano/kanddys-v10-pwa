@@ -34,11 +34,13 @@ export class TagTypeDialogComponent implements OnInit {
   }
 
   async handleClick(option: string) {
+    const redirectTo = 'admin%2Ftags';
     const dict = {
       "Para articulos": () => {
         this._Router.navigate(["admin", "create-tag"], {
           queryParams: {
             entity: "item",
+            redirectTo
           },
         });
         this._DialogRef.close();
@@ -47,6 +49,7 @@ export class TagTypeDialogComponent implements OnInit {
         this._Router.navigate(["admin", "create-tag"], {
           queryParams: {
             entity: "order",
+            redirectTo
           },
         });
         this._DialogRef.close();
