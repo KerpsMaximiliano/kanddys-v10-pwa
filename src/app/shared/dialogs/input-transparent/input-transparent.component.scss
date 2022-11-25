@@ -63,7 +63,7 @@
          grid-template-columns: 10fr 2fr;
          align-items: center;
          gap: 20px;
-         padding-left: 18px;
+         padding: 0px 18px;
 
          input {
             background-color: transparent;
@@ -71,6 +71,7 @@
             font-size: 0.918rem;
             color: #A1A1A1;
             border: none;
+            width: 100%;
          }
 
          .fas.fa-chevron-right {
