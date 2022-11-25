@@ -337,16 +337,18 @@
       changeColor ? changeColor : headerService.colorTheme
     "
   >
-    <div
-      class="left-arrow"
-      *ngIf="this.orderInDayIndex > 0 || orderBeforeOrderDay"
-      (click)="goToNextOrPreviousOrder('PREVIOUS')"
-    >
-      <img
-        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-white.svg"
-        alt=""
-      />
-    </div>
+    <!--
+      <div
+        class="left-arrow"
+        *ngIf="this.orderInDayIndex > 0 || orderBeforeOrderDay"
+        (click)="goToNextOrPreviousOrder('PREVIOUS')"
+      >
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-white.svg"
+          alt=""
+        />
+      </div>
+    -->
 
     <div class="pages-tabs">
       <div class="images-container">
@@ -362,19 +364,21 @@
       </div>
     </div>
 
-    <div
-      class="right-arrow"
-      *ngIf="
-        this.orderInDayIndex < this.ordersInTheSameDay.length - 1 ||
-        orderAfterOrderDay
-      "
-      (click)="goToNextOrPreviousOrder('NEXT')"
-    >
-      <img
-        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-right-white.svg"
-        alt=""
-      />
-    </div>
+    <!--
+      <div
+        class="right-arrow"
+        *ngIf="
+          this.orderInDayIndex < this.ordersInTheSameDay.length - 1 ||
+          orderAfterOrderDay
+        "
+        (click)="goToNextOrPreviousOrder('NEXT')"
+      >
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-right-white.svg"
+          alt=""
+        />
+      </div>
+    -->
   </footer>
 
   <!-- Aquí hubo un merge conflict -->
