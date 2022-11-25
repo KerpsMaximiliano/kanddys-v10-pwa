@@ -38,3 +38,13 @@ export const entityTemplateSetData = gql`
     }
   }
 `;
+
+export const createEntityTemplate = gql`
+  mutation createEntityTemplate {
+    createEntityTemplate {
+      _id
+      reference
+      status
+    }
+  }
+`;

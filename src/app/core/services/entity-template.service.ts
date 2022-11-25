@@ -5,6 +5,7 @@ import {
   entityTemplate,
   entityTemplateSetData,
   entityTemplateByDateId,
+  createEntityTemplate,
 } from '../graphql/entity-template.gql';
 
 @Injectable({
@@ -45,6 +46,21 @@ export class EntityTemplateService {
       });
 
       return result?.entityTemplateSetData;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async createEntityTemplate(): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: createEntityTemplate,
+        variables: {  },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.createEntityTemplate;
     } catch (error) {
       console.log(error);
       return null;

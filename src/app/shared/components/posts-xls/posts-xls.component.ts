@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { ExportExcelService } from 'src/app/core/services/export-excel.service';
-import { PostsService } from 'src/app/core/services/posts.service';
 
 @Component({
   selector: 'app-posts-xls',
@@ -16,7 +16,7 @@ export class PostsXlsComponent implements OnInit {
   dataForExcel = [];
   empPerformance = [];
   constructor(
-    private _PostsService: PostsService,
+    private _EntityTemplateService: EntityTemplateService,
     public ete: ExportExcelService
   ) {}
 
@@ -27,8 +27,8 @@ export class PostsXlsComponent implements OnInit {
     let result = [];
     const createPosts = async () => {
       for (const item of this.fillList(+this.controller.value))
-        result.push(await this._PostsService.createPost({}));
-      result = result.map(({ createPost }) => createPost);
+        result.push(await this._EntityTemplateService.createEntityTemplate());
+      result = result.map((createEntityTemplate) => createEntityTemplate);
       this.exportToExcel(result);
     };
     createPosts();
