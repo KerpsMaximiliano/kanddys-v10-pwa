@@ -15,9 +15,83 @@ import { CustomizerValueService } from 'src/app/core/services/customizer-value.s
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
+
+const options = [
+  {
+    status: true,
+    click: true,
+    value: 'No tendrá mensaje de regalo',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+  },
+  // {
+  //   status: true,
+  //   click: true,
+  //   value: 'Con mensaje virtual e impreso',
+  //   valueStyles: {
+  //     'font-family': 'SfProBold',
+  //     'font-size': '13px',
+  //     color: '#202020',
+  //   },
+  //   subtexts: [
+  //     {
+  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
+  //       styles: {
+  //         fontFamily: 'SfProRegular',
+  //         fontSize: '1rem',
+  //         color: '#7B7B7B',
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   status: true,
+  //   click: true,
+  //   value: 'Mensaje virtual',
+  //   valueStyles: {
+  //     'font-family': 'SfProBold',
+  //     'font-size': '13px',
+  //     color: '#202020',
+  //   },
+  //   subtexts: [
+  //     {
+  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
+  //       styles: {
+  //         fontFamily: 'SfProRegular',
+  //         fontSize: '1rem',
+  //         color: '#7B7B7B',
+  //       },
+  //     },
+  //   ],
+  // },
+  {
+    status: true,
+    click: true,
+    value: 'Mensaje impreso',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Agregue texto a la tarjeta.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
+];
 
 @Component({
   selector: 'app-checkout',
@@ -49,6 +123,11 @@ export class CheckoutComponent implements OnInit {
   };
   logged: boolean;
   env: string = environment.assetsUrl;
+  options: OptionAnswerSelector[] = options;
+  selectedPostOption: number;
+  missingOrderData: boolean;
+  postSlideImage: string | ArrayBuffer;
+
   constructor(
     private dialogService: DialogService,
     public headerService: HeaderService,
@@ -64,14 +143,13 @@ export class CheckoutComponent implements OnInit {
 
   async setCustomizerPreview() {
     this.customizer =
-      this.headerService.customizer ||
-      this.headerService.getCustomizer(this.headerService.saleflow?._id);
+      this.headerService.customizer || this.headerService.getCustomizer();
     if (!this.customizer) return;
     this.customizerPreview = JSON.parse(localStorage.getItem('customizerFile'));
     this.items[0].images[0] = this.customizerPreview?.base64;
     this.payment =
       (this.items[0].qualityQuantity.price +
-        this.order.products[0].amount *
+        this.headerService.order.products[0].amount *
           this.items[0].params[0].values[0].price) *
       1.18;
     // Customizer data table
@@ -84,7 +162,8 @@ export class CheckoutComponent implements OnInit {
         value: printType,
       });
     const selectedQuality = this.items[0].params[1].values.find(
-      (value) => value._id === this.order.products[0].params[1].paramValue
+      (value) =>
+        value._id === this.headerService.order.products[0].params[1].paramValue
     )?.name;
     if (selectedQuality)
       this.customizerDetails.push({
@@ -153,22 +232,22 @@ export class CheckoutComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
-    await this.headerService.fetchSaleflow(saleflowId);
-    this.order = this.headerService.getOrder(this.headerService.saleflow._id);
-    this.items = this.headerService.getItems(this.headerService.saleflow._id);
+    this.items = this.headerService.getItems();
     if (!this.items?.length) this.editOrder('item');
-    this.post = this.headerService.getPost(this.headerService.saleflow._id);
-    this.deliveryLocation = this.headerService.getLocation(
-      this.headerService.saleflow._id
-    );
-    this.reservation = this.headerService.getReservation(
-      this.headerService.saleflow._id
-    ).reservation;
+    this.post = this.headerService.getPost();
+    if (this.post?.slides?.length) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.postSlideImage = reader.result;
+      };
+      reader.readAsDataURL(this.post.slides[0].media);
+    }
+    this.deliveryLocation = this.headerService.getLocation();
+    this.reservation = this.headerService.getReservation().reservation;
     if (this.reservation) {
       const fromDate = new Date(this.reservation.date.from);
       if (fromDate < new Date()) {
-        this.headerService.emptyReservation(this.headerService.saleflow._id);
+        this.headerService.emptyReservation();
         this.editOrder('reservation');
       }
       const untilDate = new Date(this.reservation.date.until);
@@ -196,6 +275,9 @@ export class CheckoutComponent implements OnInit {
     if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
       this.hasPaymentModule = true;
     this.checkLogged();
+    if (!this.headerService.orderInputComplete()) {
+      this.missingOrderData = true;
+    }
   }
 
   editOrder(
@@ -204,44 +286,40 @@ export class CheckoutComponent implements OnInit {
     this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
     switch (mode) {
       case 'item': {
-        this.router.navigate(
-          [`ecommerce/store/${this.headerService.saleflow._id}`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../store`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
         break;
       }
       case 'message': {
-        this.router.navigate(
-          [`ecommerce/${this.headerService.saleflow._id}/create-giftcard`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.post = null;
+        // this.headerService.emptyPost();
         break;
       }
       case 'address': {
-        this.router.navigate(
-          [`ecommerce/${this.headerService.saleflow._id}/new-address`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../new-address`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
         break;
       }
       case 'reservation': {
-        this.router.navigate([
-          `ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
-        ]);
+        this.router.navigate(
+          [
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+          ],
+          {
+            relativeTo: this.route,
+          }
+        );
         break;
       }
       case 'customizer': {
         this.router.navigate(
-          [
-            `ecommerce/provider-store/${this.headerService.saleflow._id}/${this.items[0]._id}/quantity-and-quality`,
-          ],
+          [`../provider-store/${this.items[0]._id}/quantity-and-quality`],
           {
+            relativeTo: this.route,
             replaceUrl: true,
           }
         );
@@ -282,6 +360,33 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrder = async () => {
+    if (this.missingOrderData) {
+      if (
+        this.headerService.saleflow?.module?.appointment?.isActive &&
+        this.headerService.saleflow.module?.appointment?.calendar?._id &&
+        !this.reservation
+      ) {
+        this.router.navigate(
+          [
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+          ],
+          {
+            relativeTo: this.route,
+          }
+        );
+        return;
+      }
+      if (
+        this.headerService.saleflow.module?.delivery &&
+        !this.deliveryLocation
+      ) {
+        this.router.navigate([`../new-address`], {
+          relativeTo: this.route,
+        });
+        return;
+      }
+      return;
+    }
     this.disableButton = true;
     lockUI();
     const userInput = JSON.parse(
@@ -299,9 +404,12 @@ export class CheckoutComponent implements OnInit {
       );
       localStorage.setItem('registered-user', JSON.stringify(user));
     }
-    this.order.products[0].saleflow = this.headerService.saleflow._id;
-    this.order.products[0].deliveryLocation = this.deliveryLocation;
-    if (this.reservation) this.order.products[0].reservation = this.reservation;
+    this.headerService.order.products[0].saleflow =
+      this.headerService.saleflow._id;
+    this.headerService.order.products[0].deliveryLocation =
+      this.deliveryLocation;
+    if (this.reservation)
+      this.headerService.order.products[0].reservation = this.reservation;
     // ---------------------- Managing Customizer ----------------------
     if (this.customizer) {
       localStorage.removeItem('customizerFile');
@@ -321,7 +429,7 @@ export class CheckoutComponent implements OnInit {
         await this.customizerValueService.createCustomizerValue(
           this.customizer
         );
-      this.order.products[0].customizer = customizerId;
+      this.headerService.order.products[0].customizer = customizerId;
       this.headerService.customizer = null;
       this.headerService.customizerData = null;
     }
@@ -330,34 +438,32 @@ export class CheckoutComponent implements OnInit {
     if (this.headerService.saleflow.module?.post) {
       const postResult = (await this.postsService.createPost(this.post))
         ?.createPost?._id;
-      this.order.products[0].post = postResult;
+      this.headerService.order.products[0].post = postResult;
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
     try {
       let createdOrder: string;
-      const anonymous = this.headerService.getOrderAnonymous(
-        this.headerService.saleflow._id
-      );
+      const anonymous = this.headerService.getOrderAnonymous();
       if (this.headerService.user && !anonymous) {
-        createdOrder = (await this.orderService.createOrder(this.order))
-          .createOrder._id;
+        createdOrder = (
+          await this.orderService.createOrder(this.headerService.order)
+        ).createOrder._id;
       } else {
-        createdOrder = (await this.orderService.createPreOrder(this.order))
-          ?.createPreOrder._id;
+        createdOrder = (
+          await this.orderService.createPreOrder(this.headerService.order)
+        )?.createPreOrder._id;
       }
-      this.headerService.deleteSaleflowOrder(this.headerService.saleflow._id);
-      this.headerService.resetIsComplete();
+      this.headerService.deleteSaleflowOrder();
+      this.headerService.resetOrderProgress();
       this.headerService.orderId = createdOrder;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
-        this.router.navigate(
-          [`/ecommerce/payments/${this.headerService.orderId}`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../payments/${this.headerService.orderId}`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
       } else {
         if (!this.headerService.user || anonymous) {
           this.router.navigate([`/auth/login`], {
@@ -368,7 +474,8 @@ export class CheckoutComponent implements OnInit {
           });
           return;
         }
-        this.router.navigate([`/ecommerce/order-detail/${createdOrder}`], {
+        this.router.navigate([`../../order-detail/${createdOrder}`], {
+          relativeTo: this.route,
           replaceUrl: true,
         });
         return;
@@ -383,9 +490,7 @@ export class CheckoutComponent implements OnInit {
 
   async checkLogged() {
     try {
-      const anonymous = this.headerService.getOrderAnonymous(
-        this.headerService.saleflow._id
-      );
+      const anonymous = this.headerService.getOrderAnonymous();
       const registeredUser = JSON.parse(
         localStorage.getItem('registered-user')
       ) as User;
@@ -396,6 +501,48 @@ export class CheckoutComponent implements OnInit {
     } catch (e) {
       console.log(e);
       return;
+    }
+  }
+
+  selectSelect(index: number) {
+    switch (index) {
+      case 0: {
+        this.post = {
+          message: '',
+          targets: [
+            {
+              name: '',
+              emailOrPhone: '',
+            },
+          ],
+          from: '',
+          socialNetworks: [
+            {
+              url: '',
+            },
+          ],
+        };
+        this.headerService.storePost(this.post);
+        break;
+      }
+      // case 1: {
+      //   break;
+      // }
+      // case 2: {
+      //   // this.router.navigate([`../create-article`], {
+      //   //   relativeTo: this.route,
+      //   //   replaceUrl: true,
+      //   // });
+      //   break;
+      // }
+      case 1: {
+        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
+        this.router.navigate([`../create-giftcard`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
+        break;
+      }
     }
   }
 

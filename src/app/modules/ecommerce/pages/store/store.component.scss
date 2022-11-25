@@ -7,20 +7,12 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: linear-gradient(
-    180deg,
-    white 50%,
-    rgba(213, 213, 213, 0.25) 100%
-  );
+  background-color: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
 }
 
 main {
   flex-grow: 1;
-  background: linear-gradient(
-    180deg,
-    white 50%,
-    rgba(213, 213, 213, 0.25) 100%
-  );
+  background: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
 }
 
 .top-input-area {
@@ -40,6 +32,7 @@ main {
     -webkit-box-shadow: inset 0px 3px 5px #d3d3d3;
     -moz-box-shadow: inset 0px 3px 5px #d3d3d3;
     -webkit-appearance: none;
+    appearance: none;
     font-family: "RobotoMedium";
     font-size: 1.063rem;
     color: #7b7b7b;
@@ -141,6 +134,7 @@ main {
       -webkit-box-shadow: 0px 4px 10px #ddd;
       -moz-box-shadow: 0px 4px 10px #ddd;
       -webkit-appearance: none;
+      appearance: none;
       border-radius: 10px;
       cursor: pointer;
 
@@ -201,18 +195,6 @@ main {
   font-size: 27px;
   color: #000000;
   margin: 35px 0 10px 8.25%;
-}
-
-// For saleflows with customizer
-
-.header-bg {
-  padding-bottom: 24px;
-  background: rgb(255, 255, 255);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(213, 213, 213, 0.25) 100%
-  );
 }
 
 .header-wrapper {
@@ -405,7 +387,6 @@ main {
   color: white;
   font-family: SfProBold;
   font-size: 21px;
-  background-color: rgb(40, 116, 173);
   position: fixed;
   top: 0;
   left: 0;
@@ -421,7 +402,7 @@ main {
   .user-area {
     display: flex;
     align-items: baseline;
-    
+
     span {
       max-width: 77px;
       font-size: 13px;
