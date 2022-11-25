@@ -22,7 +22,6 @@ import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-sh
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
@@ -60,7 +59,7 @@ export class OrderDetailComponent implements OnInit {
   order: ItemOrder;
   post: Post;
   payment: number;
-  merchant: boolean;
+  isMerchant: boolean;
   merchantOwner: boolean;
   changeColor: string;
   orderStatus: OrderStatusNameType;
@@ -72,7 +71,6 @@ export class OrderDetailComponent implements OnInit {
     time: string;
   };
   messageLink: string;
-  loggedUser: User;
   tags: Tag[];
   selectedTags: any = {};
   tabs: any[] = ['', '', '', '', ''];
@@ -137,8 +135,7 @@ export class OrderDetailComponent implements OnInit {
     public headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private merchantsService: MerchantsService,
-    private tagsService: TagsService,
-    private saleflowService: SaleFlowService
+    private tagsService: TagsService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -189,7 +186,7 @@ export class OrderDetailComponent implements OnInit {
         minute: '2-digit',
       })
       .toLocaleUpperCase();
-    this.checkUser();
+    this.headerService.user = await this.authService.me();
     await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
 
     if (this.order.items[0].post) {
@@ -436,7 +433,7 @@ export class OrderDetailComponent implements OnInit {
         .toISOString(),
     };
 
-    await this.getAdjacentOrders();
+    if (this.orderMerchant) await this.getAdjacentOrders();
     if (this.tagsAsignationOnStart) await this.tagDialog();
   }
 
@@ -626,8 +623,9 @@ export class OrderDetailComponent implements OnInit {
       props: {
         alternate: true,
         buttonText: 'Cerrar Sesión',
-        buttonCallback: () => {
-          this.authService.signoutThree();
+        buttonCallback: async () => {
+          await this.authService.signoutThree();
+          this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
         },
       },
       customClass: 'app-dialog',
@@ -683,32 +681,33 @@ export class OrderDetailComponent implements OnInit {
   }
 
   settingsDialog() {
+    const optionsList = [
+      {
+        text: 'Compartir',
+        callback: async () => {
+          await this.ngNavigatorShareService.share({
+            title: `Mi orden`,
+            url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow._id}`,
+          });
+        },
+      },
+    ];
+    if (this.merchantOwner && this.isMerchant) {
+      optionsList.push({
+        text: 'Vista del Visitante',
+        callback: async () => {
+          this.isMerchant = false;
+          this.changeColor = '#272727';
+        },
+      });
+    }
     this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       customClass: 'app-dialog',
       flags: ['no-header'],
       props: {
         title: 'Compartir esta Orden',
-        optionsList: [
-          {
-            text: 'Compartir',
-            callback: async () => {
-              await this.ngNavigatorShareService.share({
-                title: `Mi orden`,
-                url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow._id}`,
-              });
-            },
-          },
-          this.merchantOwner && this.merchant
-            ? {
-                text: 'Vista del Visitante',
-                callback: () => {
-                  this.merchant = false;
-                  this.changeColor = '#272727';
-                },
-              }
-            : null,
-        ],
+        optionsList,
       },
     });
   }
@@ -858,32 +857,25 @@ export class OrderDetailComponent implements OnInit {
     );
   }
 
-  async checkUser() {
-    const user = await this.authService.me();
-    if (user) this.loggedUser = user;
-    else return;
-  }
-
   changeView = () => {
-    if (this.merchantOwner && !this.merchant) {
-      this.merchant = true;
+    if (this.merchantOwner && !this.isMerchant) {
+      this.isMerchant = true;
       this.changeColor = '#2874AD';
-    } else return;
+    }
   };
 
   async isMerchantOwner(merchant: string) {
-    const ismerchant = await this.merchantsService.merchantDefault();
-    this.merchant = merchant === ismerchant?._id;
-    if (ismerchant) this.orderMerchant = ismerchant;
-    this.merchantOwner = true;
-    this.headerService.colorTheme = this.merchant ? '#2874AD' : '#272727';
+    this.orderMerchant = await this.merchantsService.merchantDefault();
+    this.isMerchant = merchant === this.orderMerchant?._id;
+    this.merchantOwner = merchant === this.orderMerchant?._id;
+    this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
 
   // async isMerchantOwner(merchant: string) {
   //   const ismerchant = await this.merchantsService.merchantDefault();
 
   //   console.log('ismerchant', ismerchant);
-  //   merchant === ismerchant?._id ? (this.merchant = true) : null;
+  //   merchant === ismerchant?._id ? (this.isMerchant = true) : null;
   // }
 
   // async addTag(tagId?: string) {
@@ -956,7 +948,7 @@ export class OrderDetailComponent implements OnInit {
   //   if (
   //     this.flowRoute.includes('admin/orders') &&
   //     this.flowRoute &&
-  //     this.merchant
+  //     this.isMerchant
   //   ) {
   //     this.router.navigate([this.flowRoute], {
   //       queryParams: {
@@ -965,12 +957,12 @@ export class OrderDetailComponent implements OnInit {
   //     });
   //     return;
   //   } else {
-  //     if (this.merchant && !this.flowRoute.includes('admin/orders')) {
+  //     if (this.isMerchant && !this.flowRoute.includes('admin/orders')) {
   //       this.router.navigate(['admin/orders']);
   //       return;
   //     }
 
-  //     if (this.flowRoute && !this.merchant) {
+  //     if (this.flowRoute && !this.isMerchant) {
   //       this.router.navigate([this.flowRoute]);
   //       return;
   //     } else {

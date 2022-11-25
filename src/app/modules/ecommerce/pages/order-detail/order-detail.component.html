@@ -5,7 +5,7 @@
     (returnEvent)="returnEvent()"
     [bgColor]="changeColor ? changeColor : headerService.colorTheme"
     [icon]="
-      !merchant && merchantOwner
+      merchantOwner && !isMerchant
         ? {
             src: '/arrow-double-up.svg',
             width: 17,
@@ -15,9 +15,12 @@
         : null
     "
     [rightText]="
-      loggedUser
+      headerService.user
         ? {
-            text: loggedUser?.name || loggedUser?.phone || loggedUser?.email
+            text:
+              headerService.user?.name ||
+              headerService.user?.phone ||
+              headerService.user?.email
           }
         : null
     "
@@ -31,7 +34,7 @@
       }
     ]"
     [mainText]="
-      !merchant
+      !isMerchant
         ? {
             text:
               order?.items[0].saleflow.headline?.length < 38
@@ -44,8 +47,7 @@
     "
     (agnosticAction)="openLogoutDialog()"
   ></app-helper-headerv2>
-
-  <div class="top-area" *ngIf="!notify && !merchant">
+  <div class="top-area" *ngIf="!notify && !isMerchant">
     <button class="top-button" (click)="buyAgain()">
       <span class="plus"> + </span> COMPRAR OTRA VEZ
     </button>
@@ -75,10 +77,10 @@
     <section class="top">
       <h2 class="top-h" *ngIf="order">
         FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
-        <button class="top-name" (click)="sendMessage()" *ngIf="merchant">
+        <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
           {{ order.user?.name || order.user?.phone || order.user?.email }}
         </button>
-        <span class="top-headline" *ngIf="!merchant">{{
+        <span class="top-headline" *ngIf="!isMerchant">{{
           order?.items[0].saleflow.headline
         }}</span>
       </h2>
@@ -376,7 +378,7 @@
   <!-- Aquí hubo un merge conflict -->
 
   <!-- <app-sticky-button
-  *ngIf="!merchant"
+  *ngIf="!isMerchant"
   [mode]="'fixed'"
   [bgColor]="'#2874AD'"
   [size]="'small'"

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -14,6 +15,7 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 export class EcommerceComponent implements OnInit {
   showCartButtons: boolean = false;
   activePath: string;
+  suscription: Subscription;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -36,11 +38,15 @@ export class EcommerceComponent implements OnInit {
           this.activePath = this.route.firstChild.routeConfig.path;
         });
     });
-    this.appService.events
+    this.suscription = this.appService.events
       .pipe(filter((e) => e.type === 'auth'))
       .subscribe((e) => {
-        if (e.data) this.setColorScheme();
+        this.setColorScheme();
       });
+  }
+
+  ngOnDestroy() {
+    this.suscription.unsubscribe();
   }
 
   setColorScheme() {
