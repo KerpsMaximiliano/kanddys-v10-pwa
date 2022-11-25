@@ -34,7 +34,7 @@ export class TagTypeDialogComponent implements OnInit {
   }
 
   async handleClick(option: string) {
-    const redirectTo = 'admin%2Ftags';
+    const redirectTo = 'admin/tags';
     const dict = {
       "Para articulos": () => {
         this._Router.navigate(["admin", "create-tag"], {
