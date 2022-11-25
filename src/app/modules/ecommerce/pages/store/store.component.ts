@@ -402,14 +402,13 @@ export class StoreComponent implements OnInit {
 
   onItemClick(id: string) {
     const itemData = this.items.find((item) => item._id === id);
-    if (!itemData) return;
-    if (itemData.category.length)
-      this.header.categoryId = itemData.category[0]?._id;
-    if (!this.header.saleflow.canBuyMultipleItems) {
-      this.header.emptyOrderProducts();
-      this.header.emptyItems();
-    }
-    if (itemData.customizerId) {
+    if (itemData?.customizerId) {
+      if (!this.header.saleflow.canBuyMultipleItems) {
+        this.header.emptyOrderProducts();
+        this.header.emptyItems();
+      }
+      if (itemData.category.length)
+        this.header.categoryId = itemData.category[0]?._id;
       let itemParams: ItemSubOrderParamsInput[];
       if (itemData.params.length > 0) {
         itemParams = [
@@ -435,12 +434,11 @@ export class StoreComponent implements OnInit {
       this.router.navigate([
         `/ecommerce/${this.header.saleflow._id}/provider-store/${itemData._id}`,
       ]);
+      return;
     }
     this.savePageSnapshot();
     this.router.navigate(
-      [
-        `/ecommerce/${this.header.saleflow._id}/article-detail/item/${itemData._id}`,
-      ],
+      [`/ecommerce/${this.header.saleflow._id}/article-detail/item/${id}`],
       {
         replaceUrl: this.header.checkoutRoute ? true : false,
         queryParams: {

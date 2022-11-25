@@ -294,7 +294,7 @@ export class CheckoutComponent implements OnInit {
       }
       case 'message': {
         this.post = null;
-        this.headerService.emptyPost();
+        // this.headerService.emptyPost();
         break;
       }
       case 'address': {

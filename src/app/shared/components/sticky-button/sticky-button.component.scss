@@ -40,7 +40,7 @@
     height: 38px;
     line-height: 1;
     cursor: default;
-    background-color: #AFAFAF;
+    background-color: #afafaf;
     z-index: 10;
     white-space: break-spaces;
     position: relative;
@@ -128,55 +128,54 @@
   }
 }
 
-.fixed-double{
-    width: 100%;
-    max-width: 500px;
-    position: fixed;
-    bottom: 0;
-    z-index: 1000;
-    background-color: #27a2ff;
+.fixed-double {
+  width: 100%;
+  max-width: 500px;
+  position: fixed;
+  bottom: 0;
+  z-index: 1000;
+  background-color: #27a2ff;
+  display: flex;
+  justify-content: space-around;
+
+  .added {
+    all: unset;
     display: flex;
-    justify-content: space-around;
-
-    .added{
-        all: unset;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 15%;
-        max-width: 75px;
-        height: 55px;
-        font-family: 'RobotoMedium';
-        font-size: 17px;
-        text-align: center;
-        color: #E9E371;
-        white-space: break-spaces;
-        cursor: pointer;
-        &.small {
-            height: 30px;
-            font-size: 17px;
-            padding: 0;
-        }
+    justify-content: center;
+    align-items: center;
+    width: 15%;
+    max-width: 75px;
+    height: 55px;
+    font-family: "RobotoMedium";
+    font-size: 17px;
+    text-align: center;
+    color: #e9e371;
+    white-space: break-spaces;
+    cursor: pointer;
+    &.small {
+      height: 30px;
+      font-size: 17px;
+      padding: 0;
     }
+  }
 
-    .double{
-        all: unset;
-        width: 50%;
-        max-width: 250px;
-        height: 55px;
-        font-family: 'RobotoMedium';
-        font-size: 17px;
-        text-align: center;
-        color: #E9E371;
-        white-space: break-spaces;
-        cursor: pointer;
-        &.small {
-            height: 30px;
-            font-size: 17px;
-            padding: 0;
-        }
+  .double {
+    all: unset;
+    width: 50%;
+    max-width: 250px;
+    height: 55px;
+    font-family: "RobotoMedium";
+    font-size: 17px;
+    text-align: center;
+    color: #e9e371;
+    white-space: break-spaces;
+    cursor: pointer;
+    &.small {
+      height: 30px;
+      font-size: 17px;
+      padding: 0;
     }
-    
+  }
 }
 
 .with-icon {
@@ -206,6 +205,13 @@
   .fixed-container {
     .button {
       font-size: 20px;
+    }
+  }
+  .fixed-double {
+    .double {
+      &.small {
+        font-size: 14px;
+      }
     }
   }
   .container {

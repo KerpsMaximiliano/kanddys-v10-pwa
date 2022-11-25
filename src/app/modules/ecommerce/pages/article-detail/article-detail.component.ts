@@ -211,6 +211,13 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   saveProduct() {
+    if (
+      !this.isItemInCart &&
+      !this.headerService.saleflow.canBuyMultipleItems
+    ) {
+      this.headerService.emptyOrderProducts();
+      this.headerService.emptyItems();
+    }
     const product: ItemSubOrderInput = {
       item: this.itemData._id,
       amount: 1,
@@ -331,24 +338,6 @@ export class ArticleDetailComponent implements OnInit {
             this.router.navigate([this.headerService.checkoutRoute], {
               replaceUrl: true,
             });
-            return;
-          }
-          if (this.headerService.saleflow.module?.post) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
-            ]);
-            return;
-          }
-          if (this.headerService.saleflow.module?.appointment?.calendar?._id) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
-            ]);
-            return;
-          }
-          if (this.headerService.saleflow.module?.delivery) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/new-address`,
-            ]);
             return;
           }
           this.router.navigate([

@@ -420,6 +420,25 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       'flowRoute',
       `${this.header.saleflow._id}/create-giftcard`
     );
+    const post = this.header.getPost();
+    if (post?.targets?.[0]?.name) {
+      this.formSteps[1].fieldsList[0].fieldControl.control = new FormControl(
+        post.targets[0].name,
+        Validators.pattern(/[\S]/)
+      );
+    }
+    if (post?.from) {
+      this.formSteps[1].fieldsList[1].fieldControl.control = new FormControl(
+        post.from,
+        Validators.pattern(/[\S]/)
+      );
+    }
+    if (post?.message) {
+      this.formSteps[1].fieldsList[2].fieldControl.control = new FormControl(
+        post.message,
+        Validators.pattern(/[\S]/)
+      );
+    }
   }
 
   ngOnDestroy(): void {
