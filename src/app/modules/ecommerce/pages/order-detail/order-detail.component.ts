@@ -625,6 +625,7 @@ export class OrderDetailComponent implements OnInit {
         buttonText: 'Cerrar Sesión',
         buttonCallback: async () => {
           await this.authService.signoutThree();
+          this.changeColor = null;
           this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
         },
       },

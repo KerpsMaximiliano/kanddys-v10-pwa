@@ -1,11 +1,13 @@
 <div class="container">
   <app-helper-headerv2
     [mode]="'basic'"
-    [returnAble]="redirectTo !== null && redirectTo !== ''"
+    [returnAble]="
+      redirectTo !== null && redirectTo !== '' && isMerchant && merchantOwner
+    "
     (returnEvent)="returnEvent()"
     [bgColor]="changeColor ? changeColor : headerService.colorTheme"
     [icon]="
-      merchantOwner && !isMerchant
+      !isMerchant && merchantOwner
         ? {
             src: '/arrow-double-up.svg',
             width: 17,
