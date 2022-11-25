@@ -106,8 +106,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
  }
 
  initializeClock():void {
-   const _Date = new Date();
-   _Date.setDate(_Date.getDate() + 30);
+   const _Date = new Date("December 22, 2022 00:00:00");
    this.timeinterval = setInterval(() => {
      const t = this.getTimeRemaining(_Date);
       this.days = t.days;
