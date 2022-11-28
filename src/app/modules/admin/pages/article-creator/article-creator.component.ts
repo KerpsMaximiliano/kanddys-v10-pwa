@@ -86,6 +86,8 @@ export class ArticleCreatorComponent implements OnInit {
   blockSubmitButton: boolean = false;
   selectedTags: Array<string>;
   tagsAsignationOnStart: boolean = false;
+  fromTemplate: string = null;
+
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -103,8 +105,9 @@ export class ArticleCreatorComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this._ActivatedRoute.queryParams.subscribe(async (queryParams) => {
-      const { entity = 'post' } = queryParams;
+      const { entity = 'post', fromTemplate } = queryParams;
       this.entity = entity;
+      this.fromTemplate = fromTemplate;
       this.initControllers();
     });
     if (this._ActivatedRoute.snapshot.paramMap.get('saleflowId')) {
@@ -415,6 +418,19 @@ export class ArticleCreatorComponent implements OnInit {
         });
       });
       this._ItemsService.itemImages = images;
+
+      if (this.fromTemplate) {
+        localStorage.setItem(
+          'entity-template-creation-data',
+          JSON.stringify({
+            entity: 'item',
+            entityTemplateId: this.fromTemplate,
+          })
+        );
+      } else {
+        localStorage.removeItem('entity-template-creation-data');
+      }
+
       this._Router.navigate([
         `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
       ]);

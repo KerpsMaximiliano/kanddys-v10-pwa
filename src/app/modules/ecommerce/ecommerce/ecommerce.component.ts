@@ -26,6 +26,7 @@ export class EcommerceComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async ({ saleflowId }) => {
+      console.log(saleflowId);
       await this.headerService.fetchSaleflow(saleflowId);
       this.setColorScheme();
       this.headerService.getOrder();

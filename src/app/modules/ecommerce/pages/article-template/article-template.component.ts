@@ -157,34 +157,17 @@ export class ArticleTemplateComponent implements OnInit {
         this.toastr.error('Simbolo vacio', null, { timeOut: 2000 });
       }
 
-      if(!entityTemplateToMimic) {
+      if (!entityTemplateToMimic) {
         this.toastr.error('Ocurrió un error', null, { timeOut: 2000 });
       }
     }
   }
 
   async createPostForEntityTemplate() {
-    const { createPost: createdPost } = await this.postsService.createPost({
-      title: 'post for entity template',
+    this.router.navigate(['admin/create-article'], {
+      queryParams: {
+        fromTemplate: this.entityTemplate._id,
+      },
     });
-
-    const result = await this.entityTemplateService.entityTemplateSetData(
-      this.entityTemplate._id,
-      {
-        entity: 'post',
-        reference: createdPost._id,
-      }
-    );
-
-    if (result) {
-      this.toastr.info('Se agregaron datos al simbolo', null, {
-        timeOut: 2000,
-      });
-
-      //lo redirije al detalle del simbolo
-      this.router.navigate([
-        `admin/article-detail/${result.entity}/${result.reference}`,
-      ]);
-    }
   }
 }
