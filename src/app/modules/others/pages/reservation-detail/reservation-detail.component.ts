@@ -40,7 +40,7 @@ export class ReservationDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private reservationsService: ReservationService,
     private calendarService: CalendarService,
-    private merchantsService: MerchantsService,
+    private merchantsService: MerchantsService
   ) {}
 
   ngOnInit(): void {
@@ -50,8 +50,17 @@ export class ReservationDetailComponent implements OnInit {
         params.reservationId
       );
       if (!this.reservation) return unlockUI();
-      this.calendar = (await this.calendarService.getCalendar(this.reservation.calendar._id, null, null, true))?.getCalendar;
-      this.merchant = await this.merchantsService.merchant(this.calendar?.merchant);
+      this.calendar = (
+        await this.calendarService.getCalendar(
+          this.reservation.calendar,
+          null,
+          null,
+          true
+        )
+      )?.getCalendar;
+      this.merchant = await this.merchantsService.merchant(
+        this.calendar?.merchant
+      );
       const fromDate = new Date(this.reservation.date.from);
       const day = fromDate.getDate();
       const weekDay = days[fromDate.getDay()];
@@ -64,7 +73,10 @@ export class ReservationDetailComponent implements OnInit {
         month,
         time: `De ${this.formatHour(
           this.reservation.date.from
-        )} a ${this.formatHour(this.reservation.date.until, this.reservation.breakTime)}`,
+        )} a ${this.formatHour(
+          this.reservation.date.until,
+          this.reservation.breakTime
+        )}`,
       };
       unlockUI();
     });

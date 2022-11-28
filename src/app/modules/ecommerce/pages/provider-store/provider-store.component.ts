@@ -179,10 +179,9 @@ export class ProviderStoreComponent implements OnInit {
             ) {
               this.header.order.products[0].deliveryLocation =
                 this.header.saleflow.module.delivery.pickUpLocations[0];
-              this.header.isComplete.delivery = true;
-              this.header.storeOrderProgress(this.header.saleflow._id);
+              this.header.orderProgress.delivery = true;
+              this.header.storeOrderProgress();
               this.header.storeLocation(
-                this.header.getSaleflow()._id,
                 this.header.saleflow.module.delivery.pickUpLocations[0]
               );
             }
@@ -229,32 +228,28 @@ export class ProviderStoreComponent implements OnInit {
     }
   }
 
-  async getData(saleflowId: string, itemId: string) {
+  async getData(itemId: string) {
     try {
-      const saleflow = (await this.saleflow.saleflow(saleflowId)).saleflow;
-      this.header.saleflow = saleflow;
-      this.header.storeSaleflow(saleflow);
-      const saleflowItem = saleflow.items.find(
+      const saleflowItem = this.header.saleflow.items.find(
         (item) => item.item._id === itemId
       );
-      if (saleflowItem)
-        this.getItemData(saleflowId, itemId, saleflowItem.customizer._id);
+      if (saleflowItem) this.getItemData(itemId, saleflowItem.customizer._id);
     } catch (error) {
       console.log(error);
       this.router.navigate([`/ecommerce/trivias`]);
     }
   }
 
-  async getItemData(saleflowId: string, itemId: string, customizerId: string) {
+  async getItemData(itemId: string, customizerId: string) {
     try {
       const item = await this.itemService.item(itemId);
-      this.header.emptyOrderProducts(saleflowId);
-      this.header.emptyItems(saleflowId);
-      this.header.resetIsComplete();
+      this.header.emptyOrderProducts();
+      this.header.emptyItems();
+      this.header.resetOrderProgress();
       item.customizerId = customizerId;
       this.header.items = [item];
       this.router.navigate([
-        `/ecommerce/provider-store/${this.header.saleflow?._id}/${this.header.items[0]._id}/quantity-and-quality`,
+        `/ecommerce/${this.header.saleflow._id}/provider-store/${this.header.items[0]._id}/quantity-and-quality`,
       ]);
       let itemParams: ItemSubOrderParamsInput[];
       if (item.params.length > 0) {
@@ -270,13 +265,13 @@ export class ProviderStoreComponent implements OnInit {
         customizer: customizerId,
         params: itemParams,
         amount: item.customizerId ? undefined : 1,
-        saleflow: saleflowId,
+        saleflow: this.header.saleflow._id,
       };
       this.header.order = {
         products: [product],
       };
-      this.header.storeOrderProduct(saleflowId, product);
-      this.header.storeItem(saleflowId, item);
+      this.header.storeOrderProduct(product);
+      this.header.storeItem(item);
       return lockUI(this.fillData());
     } catch (error) {
       console.log(error);
@@ -286,41 +281,10 @@ export class ProviderStoreComponent implements OnInit {
 
   async ngOnInit() {
     // if (this.header.orderId) return this.router.navigate([`/ecommerce/order-info/${this.header.orderId}`]);
-    let saleflowId: string;
-    let itemId: string;
-    this.route.params.subscribe((params) => {
-      saleflowId = params.saleflowId;
-      itemId = params.itemId;
-      this.header.flowRoute = `provider-store/${saleflowId}/${itemId}`;
-      localStorage.setItem(
-        'flowRoute',
-        `provider-store/${saleflowId}/${itemId}`
-      );
-    });
-    if (!this.header.saleflow) {
-      const saleflow = this.header.getSaleflow();
-      if (!saleflow) return this.getData(saleflowId, itemId);
-      this.header.saleflow = saleflow;
-      this.header.order = this.header.getOrder(saleflow._id);
-      if (!this.header.order) return this.getData(saleflowId, itemId);
-      this.header.getOrderProgress(saleflow._id);
-      const items: Item[] = this.header.getItems(saleflow._id);
-      if (
-        items &&
-        items.length > 0 &&
-        this.header.order.products.length > 0 &&
-        this.header.order.products[0].item === items[0]._id &&
-        items[0]._id === itemId
-      ) {
-        this.header.items = items;
-        return lockUI(this.fillData());
-      } else return this.getData(saleflowId, itemId);
-    }
-    if (this.header.saleflow._id !== saleflowId)
-      return this.getData(saleflowId, itemId);
-    this.header.order = this.header.getOrder(this.header.saleflow._id);
-    if (!this.header.order) return this.getData(saleflowId, itemId);
-    const items: Item[] = this.header.getItems(this.header.saleflow._id);
+    const itemId = this.route.snapshot.paramMap.get('itemId');
+    this.header.flowRoute = `provider-store/${itemId}`;
+    localStorage.setItem('flowRoute', `provider-store/${itemId}`);
+    const items: Item[] = this.header.getItems();
     if (
       items &&
       items.length > 0 &&
@@ -330,7 +294,7 @@ export class ProviderStoreComponent implements OnInit {
     ) {
       this.header.items = items;
       return lockUI(this.fillData());
-    } else return this.getData(saleflowId, itemId);
+    } else return this.getData(itemId);
   }
 
   changeOption(index: any) {
@@ -403,14 +367,14 @@ export class ProviderStoreComponent implements OnInit {
 
   goback() {
     /*if (this.header.categoryId) {
-      this.router.navigate([`ecommerce/category-items/${this.header.saleflow._id}/${this.header.categoryId}`])
+      this.router.navigate([`ecommerce/${this.header.saleflow._id}/category-items/${this.header.categoryId}`])
     } else {
       this.router.navigate([
         '/ecommerce/store/' + this.header.saleflow._id,
       ]);
     }*/
     //this.location.back();
-    this.router.navigate(['/ecommerce/store/' + this.header.saleflow._id]);
+    this.router.navigate([`/ecommerce/${this.header.saleflow._id}/store`]);
   }
 
   openImageDetail() {

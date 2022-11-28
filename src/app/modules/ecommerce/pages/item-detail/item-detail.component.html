@@ -22,7 +22,7 @@
     "
     [returnAble]="true"
     cartColor="blue"
-    bgColor="#2874ad"
+    [bgColor]="headerService.colorTheme"
     [color]="'#FFF'"
     filter="invert(100%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(105%) contrast(100%)"
     (returnEvent)="back()"
@@ -163,7 +163,7 @@
     [mode]="'fixed'"
     [text]="'AÑADIR AL CARRITO DE COMPRAS'"
     [size]="'small'"
-    [bgColor]="'#2874AD'"
+    [bgColor]="headerService.colorTheme"
     (click)="!previewMode && saveProduct()"
     [customLeftButtonStyles]="{
       'font-size': '17px',

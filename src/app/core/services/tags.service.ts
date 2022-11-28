@@ -12,6 +12,9 @@ import {
   tag,
   tags,
   addTagContainersPublic,
+  itemAddTag,
+  itemRemoveTag,
+  ordersByTag,
 } from '../graphql/tags.gql';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
@@ -44,7 +47,7 @@ export class TagsService {
     return result;
   }
 
-  async createTag(input: TagInput) {
+  async createTag(input: TagInput): Promise<Tag> {
     const result = await this.graphql.mutate({
       mutation: createTag,
       variables: { input },
@@ -55,17 +58,16 @@ export class TagsService {
 
     if (!result || result?.errors) return undefined;
 
-    console.log(result);
-    return result;
+    return result?.createTag;
   }
 
   async tagsByUser(
-    pagination: any = { paginate: { options: { limit: -1 } } }
+    paginate: PaginationInput = { options: { limit: -1 } }
   ): Promise<Tag[]> {
     try {
       const result = await this.graphql.query({
         query: tagsByUser,
-        variables: pagination,
+        variables: { paginate },
         fetchPolicy: 'no-cache',
       });
       if (!result) return undefined;
@@ -95,6 +97,35 @@ export class TagsService {
       const result = await this.graphql.mutate({
         mutation: addTagsInOrder,
         variables: { merchantId, tagId, orderId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemAddTag(tagId: string, id: string) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: itemAddTag,
+        variables: { tagId, id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemRemoveTag(tagId: string, id: string) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: itemRemoveTag,
+        variables: { tagId, id },
+        fetchPolicy: 'no-cache',
       });
       if (!result || result?.errors) return undefined;
       return result;
@@ -175,9 +206,27 @@ export class TagsService {
       const result = await this.graphql.query({
         query: tags,
         variables: { paginate },
-        fetchPolicy: 'no-cache'
+        fetchPolicy: 'no-cache',
       });
       return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async ordersByTag(
+    orderStatuses: Array<string>,
+    limit: number,
+    tagIds: Array<string>
+  ) {
+    try {
+      console.log({ orderStatus: orderStatuses, limit, tagId: tagIds });
+      const result = await this.graphql.query({
+        query: ordersByTag,
+        variables: { orderStatus: orderStatuses, limit, tagId: tagIds },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.ordersByTag;
     } catch (e) {
       console.log(e);
     }
