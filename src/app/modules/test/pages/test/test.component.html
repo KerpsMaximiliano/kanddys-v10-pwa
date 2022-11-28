@@ -257,4 +257,8 @@ headline="EXPUESTO EN TAB (S)"
     ></app-multistep-form>
 -->
 
-<div id="AmazonPayButton"></div>
+<div id="AmazonPayButton" *ngIf="!amazonCheckoutSessionId"></div>
+
+<button *ngIf="amazonCheckoutSessionId" id="changeButton1">cambiar direccion</button>
+
+<button *ngIf="amazonCheckoutSessionId" id="changeButton2">cambiar metodo de pago</button>

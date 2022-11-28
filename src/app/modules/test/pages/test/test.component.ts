@@ -20,6 +20,7 @@ import { FormStep, FormField } from 'src/app/core/types/multistep-form';
 import { FormControl } from '@angular/forms';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-test',
@@ -100,38 +101,68 @@ export class TestComponent implements OnInit {
       hideHeader: true,
     },
   ];
+  amazonCheckoutSessionId: string = null;
 
-  constructor(private dialog: DialogService) {}
+  constructor(private dialog: DialogService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    console.log();
-    const amazonPayButton = (window as any).amazon.Pay.renderButton(
-      '#AmazonPayButton',
-      {
-        // set checkout environment
-        merchantId: 'A3IR2015SQ6204',
-        publicKeyId: 'SANDBOX-AGYUSTTL5TIC6AQTPN5TWYCO',
-        ledgerCurrency: 'USD',
-        // customize the buyer experience
-        checkoutLanguage: 'en_US',
-        productType: 'PayAndShip',
-        placement: 'Cart',
-        buttonColor: 'Gold',
-        estimatedOrderAmount: { amount: '109.99', currencyCode: 'USD' },
-        // configure Create Checkout Session request
-        createCheckoutSessionConfig: {
-          payloadJSON: JSON.stringify({
-            webCheckoutDetails: {
-              checkoutReviewReturnUrl: 'https://kanddys.com/ecommerce/checkout',
-            },
-            storeId:
-              'amzn1.application-oa2-client.bfad20fb1a834bb6b7889d7e18a5c33f',
-            scopes: ['name', 'email', 'phoneNumber', 'billingAddress'],
-          }), // string generated in step 2
-          signature: `JUshdOuFPBPzEC6Lstp0L9ewu0sf1yc/x9xB8hc73hfH02aZJDB3nLMlqL9UjUMyjuMKyAGwDQvhP7xijWrWaeVrNaQLwp+DLFDE2nrQ26Ba0bX8L5iqET3/8Yx0voya9w9gOCYl2a7J4Etg4bNvX1j/dn5NSpMYzGxKsfNYYTmu/CPmJOonlukdN+Qc5iZsVUfDqFxkO2jH8L72SiK0yCOMqhRBiK6zr++NMtMSBjFmMpYdAFGj7rgaxE2Mf0u0BTlaf3kC0IJ1FpVQ4Tn1EKgN6MtXaDWCOc0tyymds2SUltM4k7WwLblwxlzYYsuYsHCQYZwTmXE54piGvv9h2Q==`, // signature generated in step 3
-        },
+    this.route.queryParams.subscribe((queryParams) => {
+      const { amazonCheckoutSessionId } = queryParams;
+      this.amazonCheckoutSessionId = amazonCheckoutSessionId;
+
+      if (!this.amazonCheckoutSessionId) {
+        setTimeout(() => {
+          const amazonPayButton = (window as any).amazon.Pay.renderButton(
+            '#AmazonPayButton',
+            {
+              // set checkout environment
+              merchantId: 'A3IR2015SQ6204',
+              publicKeyId: 'SANDBOX-AGYUSTTL5TIC6AQTPN5TWYCO',
+              ledgerCurrency: 'USD',
+              // customize the buyer experience
+              checkoutLanguage: 'en_US',
+              productType: 'PayAndShip',
+              placement: 'Cart',
+              buttonColor: 'Gold',
+              estimatedOrderAmount: { amount: '109.99', currencyCode: 'USD' },
+              // configure Create Checkout Session request
+              createCheckoutSessionConfig: {
+                payloadJSON: JSON.stringify({
+                  webCheckoutDetails: {
+                    checkoutReviewReturnUrl:
+                      'https://e83e-89-187-179-57.ngrok.io/test/test',
+                  },
+                  storeId:
+                    'amzn1.application-oa2-client.bfad20fb1a834bb6b7889d7e18a5c33f',
+                  deliverySpecifications: {
+                    addressRestrictions: {
+                      type: 'Allowed',
+                      restrictions: {
+                        US: {},
+                      },
+                    },
+                  },
+                  scopes: ['name', 'email', 'phoneNumber', 'billingAddress'],
+                }), // string generated in step 2
+                signature: `gBz5Imv+HwfGbsNEZUnK/4g7vkwk373rPP3eGYUtNpfoE/ckJfnmtLmTWct1nNIHZOEn8TuHeeDDupDg4C1UJ+FIgm19VPrGo1RunTk/Pathux7whyJaFLjh28l0qdZsrsWfiAO7+clMf5GR6pEaDElRSz7sbTrt3EBiS23d4yHXjSplLy+IFwfrXSbK9XhLSLcrIxNvjEwT/JrNDIolqaIF8Z0gnyGBvC9i5SIokGQ6spEuh9x31xbU5bo5kOd9DUhY7hMaIfjMFDFrNfsT590ytIuFlXc5v/lbsoaHDgQJPof3l2Il5romGkkM5XmolqfaORi2QxRxjco7TRbvCQ==`, // signature generated in step 3
+              },
+            }
+          );
+        }, 500)
+      } else {
+        setTimeout(() => {
+          (window as any).amazon.Pay.bindChangeAction('#changeButton1', {
+            amazonCheckoutSessionId: amazonCheckoutSessionId,
+            changeAction: 'changeAddress',
+          });
+
+          (window as any).amazon.Pay.bindChangeAction('#changeButton2', {
+            amazonCheckoutSessionId: amazonCheckoutSessionId,
+            changeAction: 'changePayment',
+          });
+        }, 500);
       }
-    );
+    });
   }
 
   openDialog() {
