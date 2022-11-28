@@ -1,6 +1,7 @@
 import { LocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
@@ -43,7 +44,7 @@ export class PaymentsComponent implements OnInit {
   post: Post;
   currentUser: User;
   onlinePaymentsOptions: WebformAnswerLayoutOption[] = [
-    {
+ /*   {
       type: 'WEBFORM-ANSWER',
       optionStyles: webformAnswerLayoutOptionDefaultStyles,
       selected: false,
@@ -76,7 +77,7 @@ export class PaymentsComponent implements OnInit {
           text: 'ID',
           styles: {
             paddingTop: '8px',
-            fontFamily: 'SfProBold'
+            fontFamily: 'SfProBold',
           },
         },
       },
@@ -112,7 +113,43 @@ export class PaymentsComponent implements OnInit {
           text: 'ID',
           styles: {
             paddingTop: '8px',
-            fontFamily: 'SfProBold'
+            fontFamily: 'SfProBold',
+          },
+        },
+      },
+    },*/
+    {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      optionIcon: 'azul',
+      callback: () => this.selectOnlinePayment(0),
+      texts: {
+        topRight: {
+          text: '',
+          styles: {
+            color: '#7B7B7B',
+          },
+        },
+        topLeft: {
+          text: 'Azul',
+          styles: {
+            paddingBottom: '8px',
+          },
+        },
+        middleTexts: [
+          {
+            text: 'ID',
+          },
+          {
+            text: 'ID',
+          },
+        ],
+        bottomLeft: {
+          text: 'ID',
+          styles: {
+            paddingTop: '8px',
+            fontFamily: 'SfProBold',
           },
         },
       },
@@ -314,6 +351,61 @@ export class PaymentsComponent implements OnInit {
           },
         });
       }
+    } else if (paymentOptionName === 'Azul') {
+      const clientURI = 'http://localhost:4200';
+
+      const requestData: any = {
+        MerchantName: "D'liciantus",
+        MerchantID: '39038540035',
+        MerchantType: 'Importadores y productores de flores y follajes',
+        CurrencyCode: '$',
+        OrderNumber: this.order._id,
+        //OrderNumber: formatID(this.order.dateId),
+        Amount: this.paymentAmount.toFixed(2).toString().replace('.', ''),
+        ITBIS: (this.paymentAmount * 0.18)
+          .toFixed(2)
+          .toString()
+          .replace('.', ''),
+        ApprovedUrl:
+          clientURI +
+          '/ecommerce/payments-redirection?typeOfPayment=azul&success=true',
+        DeclinedUrl:
+          clientURI +
+          '/ecommerce/payments-redirection?typeOfPayment=azul&success=false',
+        CancelUrl:
+          clientURI +
+          '/ecommerce/payments-redirection?typeOfPayment=azul&cancel=true',
+        UseCustomField1: '0',
+        CustomField1Label: 'Label1',
+        CustomField1Value: 'Custom1',
+        UseCustomField2: '0',
+        CustomField2Label: 'Label2',
+        CustomField2Value: 'Custom2',
+      };
+
+      const form = document.querySelector('#azulForm') as HTMLFormElement;
+
+      for (const key in requestData) {
+        document
+          .querySelector('#' + key)
+          .setAttribute('value', requestData[key]);
+      }
+
+      fetch('http://localhost:3500/azul/calculate-auth-hash', {
+        method: 'POST',
+        headers: {
+          'App-Key':
+            'a6c6d9880190ad2c4d477b89b44107b82b3e4902f293fe710d9a904de283f8f7',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      })
+        .then((response) => response.text())
+        .then((hash) => {
+          document.querySelector('#AuthHash').setAttribute('value', hash);
+
+          form.submit();
+        });
     }
   }
 

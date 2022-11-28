@@ -121,4 +121,88 @@
       color: '#FFFFFF'
     }"
   ></app-sticky-button>
+
+  <form
+    action="https://pruebas.azul.com.do/paymentpage/Default.aspx"
+    method="post"
+    id="azulForm"
+  >
+    <input
+      type="hidden"
+      id="MerchantID"
+      name="MerchantID"
+      value="39038540035"
+    />
+    <input
+      type="hidden"
+      id="MerchantName"
+      name="MerchantName"
+      value="D'liciantus"
+    />
+    <input
+      type="hidden"
+      id="MerchantType"
+      name="MerchantType"
+      value="Importadores y productores de flores y follajes"
+    />
+    <input type="hidden" id="CurrencyCode" name="CurrencyCode" value="$" />
+    <input type="hidden" id="OrderNumber" name="OrderNumber" value="2" />
+    <input type="hidden" id="Amount" name="Amount" value="9999" />
+    <input type="hidden" id="ITBIS" name="ITBIS" value="1800" />
+    <input
+      type="hidden"
+      id="ApprovedUrl"
+      name="ApprovedUrl"
+      value="http://localhost:5555/success.html"
+    />
+    <input
+      type="hidden"
+      id="DeclinedUrl"
+      name="DeclinedUrl"
+      value="http://localhost:5555/declined.html"
+    />
+    <input
+      type="hidden"
+      id="CancelUrl"
+      name="CancelUrl"
+      value="https://youtube.com"
+    />
+    <input
+      type="hidden"
+      id="UseCustomField1"
+      name="UseCustomField1"
+      value="1"
+    />
+    <input
+      type="hidden"
+      id="CustomField1Label"
+      name="CustomField1Label"
+      value="Custom1"
+    />
+    <input
+      type="hidden"
+      id="CustomField1Value"
+      name="CustomField1Value"
+      value="Value1"
+    />
+    <input
+      type="hidden"
+      id="UseCustomField2"
+      name="UseCustomField2"
+      value="1"
+    />
+    <input
+      type="hidden"
+      id="CustomField2Label"
+      name="CustomField2Label"
+      value="Custom2"
+    />
+    <input
+      type="hidden"
+      id="CustomField2Value"
+      name="CustomField2Value"
+      value="Value2"
+    />
+    <input type="hidden" id="AuthHash" name="AuthHash" value="......." />
+  </form>
 </div>

@@ -7,16 +7,59 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./payments-redirection.component.scss'],
 })
 export class PaymentsRedirectionComponent implements OnInit {
+  label: string = 'payments-redirection works!';
+  azulOrderQueryParams: Record<string, string> = null;
+  success: boolean = false;
+
   constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((queryParams) => {
-      let { typeOfPayment, success } = queryParams;
+      let { typeOfPayment, success, cancel, ...rest } = queryParams;
       success = Boolean(success);
+      this.success = success;
 
       if (!typeOfPayment) return this.router.navigate(['others/error-screen']);
+      if (typeOfPayment === 'azul' && success) {
+        this.label =
+          'El pago con azul se completó, estos son los datos: ' +
+          JSON.stringify(rest, null, 4);
 
-      if (typeOfPayment === 'stripe' && success) {
+        this.azulOrderQueryParams = rest;
+
+        fetch('http://localhost:3500/azul/calculate-response-hash', {
+          method: 'POST',
+          headers: {
+            'App-Key':
+              'a6c6d9880190ad2c4d477b89b44107b82b3e4902f293fe710d9a904de283f8f7',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            OrderNumber: rest['OrderNumber'],
+            Amount: rest['Amount'],
+            AuthorizationCode: rest['AuthorizationCode'],
+            DateTime: rest['DateTime'],
+            ResponseCode: rest['ResponseCode'],
+            ISOCode: rest['IsoCode'],
+            ResponseMessage: rest['ResponseMessage'],
+            ErrorDescription: rest['ErrorDescription'],
+            RRN: rest['RRN'],
+          }),
+        })
+          .then((response) => response.text())
+          .then((hash) => {
+            console.log('hash del back', hash);
+            console.log('hash del url', rest['AuthHash']);
+          });
+      } else if (typeOfPayment === 'azul' && !success) {
+        this.label =
+          'El pago con azul no se pudo completar, estos son los datos: ' +
+          JSON.stringify(rest, null, 4);
+      } else if (typeOfPayment === 'azul' && cancel) {
+        this.label =
+          'El pago con azul se cancelo, estos son los datos: ' +
+          JSON.stringify(rest);
+      } else if (typeOfPayment === 'stripe' && success) {
         const orderId = localStorage.getItem('stripe-payed-orderId');
 
         this.router.navigate(['ecommerce/order-info/' + orderId]);
@@ -30,5 +73,11 @@ export class PaymentsRedirectionComponent implements OnInit {
         });
       }
     });
+  }
+
+  redirectToOrderInfo() {
+    this.router.navigate([
+      'ecommerce/order-info/' + this.azulOrderQueryParams['OrderNumber'],
+    ]);
   }
 }
