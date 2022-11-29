@@ -29,17 +29,6 @@
   cursor: pointer;
 }
 
-.blocked-cta {
-  background: rgb(123, 123, 123);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  border: none;
-  height: 67px;
-  cursor: not-allowed;
-}
-
 .icon-container {
   display: flex;
   justify-content: flex-end;
@@ -57,7 +46,7 @@
 
 .save-text {
   color: #fff;
-  font-family: SfProBold;
-  font-size: 13px;
+  font-family: "SfProDisplay";
+  font-size: 14px;
   padding-left: 16px;
 }

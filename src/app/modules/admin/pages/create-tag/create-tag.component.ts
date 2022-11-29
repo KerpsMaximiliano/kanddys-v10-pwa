@@ -400,14 +400,30 @@ export class CreateTagComponent implements OnInit, OnDestroy {
     let result = null;
     if (!this.tagID || this.tagID.length < 1) {
       try {
-        const { createTag: createdTag } = await this.tagsService.createTag(
+        if (this.entity) {
+          data.entity = this.entity;
+        } else {
+          data.entity = 'item';
+        }
+
+        const createdTag = await this.tagsService.createTag(
           data
         );
 
         this.finishedMutation = true;
 
         if (this.orderID) {
-          this.router.navigate(['ecommerce/order-info/' + this.orderID]);
+          await this.tagsService.addTagsInOrder(
+            this.merchantDefault._id,
+            createdTag._id,
+            this.orderID
+          );
+
+          this.router.navigate(['ecommerce/order-info/' + this.orderID], {
+            queryParams: {
+              tagsAsignationOnStart: true,
+            },
+          });
         } else {
           if (this.entity === 'item') {
             const item = await this.itemsService.item(this.entityId);
@@ -423,7 +439,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
 
             this.headerService.flowRoute = null;
             localStorage.removeItem('flowRoute');
-            this.router.navigate(['admin/item-display/' + this.entityId], {
+            this.router.navigate(['admin/create-article/' + this.entityId], {
               queryParams: {
                 tagsAsignationOnStart: true,
               },
@@ -446,6 +462,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         this.toastr.info('Ocurrió un error al crear el tag', null, {
           timeOut: 1500,
         });
+        this.finishedMutation = true;
       }
     } else {
       data.merchant = this.merchantDefault._id;

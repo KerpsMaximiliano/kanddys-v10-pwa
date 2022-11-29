@@ -71,17 +71,17 @@
             </app-cart-button>
           </ng-container>
 
-          <span
-            class="text-icons"
-            *ngIf="rightText"
-            [ngStyle]="{
-              'font-size': rightText.fontSize ? rightText.fontSize : '',
-              'font-family': rightText.fontFamily ? rightText.fontFamily : '',
-              color: rightText.color ? rightText.color : color ? color : '',
-              cursor: rightText.pointer ? 'pointer' : 'unset'
-            }"
-            >{{ rightText.text }}</span
-          >
+          <button class="icons-text" *ngIf="rightText" (click)="neutralEvent()">
+            <span
+              class="text"
+              [ngStyle]="{
+                'font-size': rightText.fontSize ? rightText.fontSize : '',
+                'font-family': rightText.fontFamily ? rightText.fontFamily : '',
+                color: rightText.color ? rightText.color : color ? color : ''
+              }"
+              >{{ rightText.text }}</span
+            >
+          </button>
 
           <ng-container *ngFor="let icon of icons; index as i">
             <div

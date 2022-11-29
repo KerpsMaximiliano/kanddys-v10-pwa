@@ -20,11 +20,10 @@ button {
 	.header {
 		width: 100%;
 		height: 36px;
-		background-color: #2874ad;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 0 23px;
+		padding-right: 24px;
 
 		.back-btn {
 			color: #ffffff;
@@ -42,6 +41,7 @@ button {
 			font-size: 1.313rem;
 			font-weight: 500;
 			color: #ffffff;
+			margin: 0;
 		}
 
 		.right-area {
@@ -140,7 +140,6 @@ button {
 	}
 
 	.option-remove {
-		all: unset;
 		position: absolute;
 		top: 50%;
 		right: 0;

@@ -1,12 +1,7 @@
 <div class="container" [ngStyle]="{ bottom: solo ? '0px' : '14px' }">
   <button
     class="bubble"
-    [ngStyle]="{
-      'width.px': custom?.width ? custom.width : '',
-      'height.px': custom?.height ? custom.height : '',
-      left: custom?.left ? custom.left : '',
-      right: custom?.right ? custom.right : ''
-    }"
+    [ngStyle]="custom && custom"
     [style.flex-direction]="flexD"
     [ngClass]="{
       left: position === 'left',
@@ -18,7 +13,9 @@
       minis: position === 'minis',
       big: position === 'big',
       yellow: color === 'yellow',
-      blue: color === 'blue'
+      blue: color === 'blue',
+      black: color === 'black',
+      custom: custom && custom
     }"
   >
     <a *ngIf="return && !text && !cart">

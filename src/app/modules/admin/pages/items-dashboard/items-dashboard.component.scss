@@ -1,5 +1,10 @@
 @import "forms";
 
+.dashboard-page {
+  height: 100vh;
+  overflow-y: scroll;
+}
+
 .container {
   min-height: 100vh;
 }
@@ -217,7 +222,6 @@
   }
 
   .tag-id {
-    width: 81px;
     color: #7b7b7b;
     text-align: center;
     white-space: nowrap;
