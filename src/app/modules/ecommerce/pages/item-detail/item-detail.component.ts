@@ -102,7 +102,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
   previewItem() {
     if (!this.itemsService.temporalItem)
-      return this.router.navigate([`/admin/create-item`]);
+      return this.router.navigate([`/admin/create-article`]);
     this.item = this.itemsService.temporalItem;
     if (this.item.images.length > 1) {
       this.swiperConfig.pagination = {
@@ -315,10 +315,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
     if (this.previewMode) {
       if (this.item._id)
-        return this.router.navigate([`/admin/create-item/${this.item._id}`]);
+        return this.router.navigate([`/admin/create-article/${this.item._id}`]);
       else {
         if (!this.header.flowRoute)
-          return this.router.navigate([`/admin/create-item`]);
+          return this.router.navigate([`/admin/create-article`]);
         else return this.router.navigate([this.header.flowRoute]);
       }
     }

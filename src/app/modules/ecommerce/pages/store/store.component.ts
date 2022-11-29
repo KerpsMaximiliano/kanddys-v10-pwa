@@ -97,9 +97,10 @@ export class StoreComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 60,
+    pageSize: 5,
     status: 'loading',
   };
+  renderItemsPromise: Promise<any>;
 
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 'auto',
@@ -119,9 +120,14 @@ export class StoreComponent implements OnInit {
     spaceBetween: 0,
   };
 
-  @HostListener('window:scroll', [])
+  windowWidth: number = 0;
+
   async infinitePagination() {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    const page = document.querySelector('.store-page');
+    const pageScrollHeight = page.scrollHeight;
+    const verticalScroll = window.innerHeight + page.scrollTop;
+
+    if (verticalScroll >= pageScrollHeight) {
       await this.getItems();
     }
   }
@@ -152,6 +158,12 @@ export class StoreComponent implements OnInit {
       if (!this.header.storeTemporalData || !startOnSnapshot)
         this.executeProcessesAfterLoading();
       else this.getPageSnapshot();
+    });
+
+    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
     });
   }
 
@@ -283,6 +295,10 @@ export class StoreComponent implements OnInit {
           const saleflowItem = saleflowItems.find(
             (item) => item.item === this.items[i]._id
           );
+          const item = this.header.saleflow.items.find(
+            (saleflowItem) => saleflowItem.item._id === this.items[i]._id
+          );
+          item.item.status = this.items[i].status;
           this.items[i].customizerId = saleflowItem.customizer;
           this.items[i].index = saleflowItem.index;
           if (!this.items[i].customizerId)
@@ -472,9 +488,18 @@ export class StoreComponent implements OnInit {
         this.header.storeItem(this.saleflowData._id, itemData);
       }
       this.savePageSnapshot();
-      this.router.navigate([
-        `/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`,
-      ]);
+      this.router.navigate(
+        [
+          `/ecommerce/${this.saleflowData._id}/article-detail/item/${itemData._id}`,
+        ],
+        {
+          replaceUrl: this.header.checkoutRoute ? true : false,
+          queryParams: {
+            mode: 'saleflow',
+            id: this.saleflowData._id,
+          },
+        }
+      );
     }
   }
 
@@ -619,27 +644,30 @@ export class StoreComponent implements OnInit {
   }
 
   async getTags() {
-    const userTag = await this.tagsService.tags({
+    const tagsList = await this.tagsService.tagsByUser({
       findBy: {
-        user: this.saleflowData.merchant.owner._id,
+        entity: 'item',
         status: 'active',
       },
       options: {
-        limit: 60,
+        limit: -1,
       },
     });
-    this.tags = userTag.tags;
-    this.unselectedTags = [...this.tags];
 
-    for (const tag of this.tags) {
-      this.tagsHashTable[tag._id] = tag;
-      this.tagsByNameHashTable[tag.name] = tag;
-      tag.selected = false;
+    if (tagsList) {
+      this.tags = tagsList;
+      this.unselectedTags = [...this.tags];
+
+      for (const tag of this.tags) {
+        this.tagsHashTable[tag._id] = tag;
+        this.tagsByNameHashTable[tag.name] = tag;
+        tag.selected = false;
+      }
+
+      setTimeout(() => {
+        this.tagsSwiper.directiveRef.update();
+      }, 300);
     }
-
-    setTimeout(() => {
-      this.tagsSwiper.directiveRef.update();
-    }, 300);
   }
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
@@ -788,20 +816,27 @@ export class StoreComponent implements OnInit {
       }
     }
 
-    const items = await this.saleflow.listItems(pagination);
-    const itemsQueryResult = items.listItems.filter((item) => {
-      return item.status === 'active' || item.status === 'featured';
-    });
+    this.renderItemsPromise = this.saleflow.listItems(pagination, true);
+    this.renderItemsPromise
+      .then((response) => {
+        const items = response;
+        const itemsQueryResult = items.listItems.filter((item) => {
+          return item.status === 'active' || item.status === 'featured';
+        });
 
-    if (this.paginationState.page === 1) {
-      this.items = itemsQueryResult;
-    } else {
-      this.items = this.items.concat(itemsQueryResult);
-    }
+        if (this.paginationState.page === 1) {
+          this.items = itemsQueryResult;
+        } else {
+          this.items = this.items.concat(itemsQueryResult);
+        }
 
-    this.organizeItems(this.merchantService.merchantData);
+        this.organizeItems(this.merchantService.merchantData);
 
-    this.paginationState.status = 'complete';
+        this.paginationState.status = 'complete';
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   getSelectedTagsNames(selectedTags: Array<Tag>) {

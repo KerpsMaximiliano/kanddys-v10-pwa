@@ -225,15 +225,41 @@ export const ordersByMerchant = gql`
           name
           images
           pricing
+          tags
+          params {
+            _id
+            name
+            values {
+              _id
+              name
+              price
+            }
+          }
+        }
+        params {
+          param
+          paramValue
         }
         reservation {
           _id
         }
       }
       orderStatus
+      status {
+        status
+        access
+      }
       dateId
       createdAt
       tags
+    }
+  }
+`;
+
+export const ordersByMerchantHot = gql`
+  query ordersByMerchant($pagination: PaginationInput, $merchant: ObjectID!) {
+    ordersByMerchant(pagination: $pagination, merchant: $merchant) {
+      _id
     }
   }
 `;
@@ -329,7 +355,7 @@ export const usersOrderMerchant = gql`
 `;
 
 export const incomeMerchant = gql`
-  query incomeMerchant($merchantId: ObjectID!) {
-    incomeMerchant(merchantId: $merchantId)
+  query incomeMerchant($input: PaginationInput) {
+    incomeMerchant(input: $input)
   }
 `;

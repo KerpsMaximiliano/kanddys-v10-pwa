@@ -27,7 +27,10 @@ import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/ta
 import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { Tag } from 'src/app/core/models/tags';
-import { ExtendedTag } from 'src/app/modules/admin/pages/items-dashboard/items-dashboard.component';
+import {
+  ExtendedItem,
+  ExtendedTag,
+} from 'src/app/modules/admin/pages/items-dashboard/items-dashboard.component';
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -80,7 +83,14 @@ export class ItemDisplayComponent implements OnInit {
 
         lockUI();
         this.item = await this.itemsService.item(params.itemId);
-        const userTags = await this.tagsService.tagsByUser();
+        const userTags = await this.tagsService.tagsByUser({
+          findBy: {
+            entity: 'item',
+          },
+          options: {
+            limit: -1,
+          },
+        });
         this.userTags = userTags;
 
         if (!this.item) return this.redirect();
@@ -240,12 +250,12 @@ export class ItemDisplayComponent implements OnInit {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -259,7 +269,7 @@ export class ItemDisplayComponent implements OnInit {
             mode: 'func',
             func: () => {
               this.router.navigate([
-                `/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`,
+                `/ecommerce/${this.saleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
               ]);
             },
           },
@@ -310,8 +320,13 @@ export class ItemDisplayComponent implements OnInit {
         this.router.navigate([this.headerService.flowRoute]);
       } else {
         if (this.headerService.dashboardTemporalData) {
-          const { tagsList, tagsByNameHashTable, tagsHashTable } =
-            this.headerService.dashboardTemporalData;
+          const {
+            tagsList,
+            tagsByNameHashTable,
+            tagsHashTable,
+            allItems,
+            highlightedItems,
+          } = this.headerService.dashboardTemporalData;
 
           const newTags = this.userTags.filter(
             (tag) =>
@@ -332,11 +347,9 @@ export class ItemDisplayComponent implements OnInit {
             ] as Array<ExtendedTag>
           ).concat(newTags);
 
-          (
-            this.headerService.dashboardTemporalData[
-              'unselectedTags'
-            ] as Array<ExtendedTag>
-          ) = (
+          (this.headerService.dashboardTemporalData[
+            'unselectedTags'
+          ] as Array<ExtendedTag>) = (
             this.headerService.dashboardTemporalData[
               'unselectedTags'
             ] as Array<ExtendedTag>
@@ -345,10 +358,42 @@ export class ItemDisplayComponent implements OnInit {
           for (const tag of newTags) {
             this.headerService.dashboardTemporalData['tagsHashTable'][tag._id] =
               tag as Tag;
-            this.headerService.dashboardTemporalData['tagsHashTable'][
+            this.headerService.dashboardTemporalData['tagsByNameHashTable'][
               tag.name
             ] = tag as Tag;
           }
+
+          (
+            this.headerService.dashboardTemporalData[
+              'allItems'
+            ] as Array<ExtendedItem>
+          ).forEach((item, index) => {
+            if (item._id === this.item._id) {
+              for (const tagId of this.item.tags) {
+                item.tagsFilled.push(
+                  this.headerService.dashboardTemporalData['tagsHashTable'][
+                    tagId
+                  ]
+                );
+              }
+            }
+          });
+
+          (
+            this.headerService.dashboardTemporalData[
+              'highlightedItems'
+            ] as Array<ExtendedItem>
+          ).forEach((item, index) => {
+            if (item._id === this.item._id) {
+              for (const tagId of item.tags) {
+                item.tagsFilled.push(
+                  this.headerService.dashboardTemporalData['tagsHashTable'][
+                    tagId
+                  ]
+                );
+              }
+            }
+          });
         }
 
         this.router.navigate(['admin/entity-detail-metrics'], {
@@ -437,12 +482,12 @@ export class ItemDisplayComponent implements OnInit {
         text: 'Editar producto',
         callback: () => {
           if (this.item.params.length === 0) {
-            this.router.navigate([`admin/create-item/${this.item._id}`]);
+            this.router.navigate([`admin/create-article/${this.item._id}`]);
           } else if (
             this.item.params.length > 0 &&
             this.item.params[0].values.length > 0
           ) {
-            this.router.navigate([`admin/create-item/${this.item._id}`], {
+            this.router.navigate([`admin/create-article/${this.item._id}`], {
               queryParams: {
                 justdynamicmode: true,
               },
@@ -453,7 +498,7 @@ export class ItemDisplayComponent implements OnInit {
       {
         text: 'Adicionar nuevo Item',
         callback: () => {
-          this.router.navigate([`/admin/create-item`]);
+          this.router.navigate([`/admin/create-article`]);
         },
       },
     ];
@@ -474,23 +519,23 @@ export class ItemDisplayComponent implements OnInit {
     this.headerService.flowRoute = this.router.url;
 
     this.itemsService.temporalItem = null;
-    this.router.navigate(['/admin/create-item/' + this.item._id]);
+    this.router.navigate(['/admin/create-article/' + this.item._id]);
   };
 
   openTagsDialog = async () => {
     this.selectedTags = [];
-    const itemTags = (
-      await this.tagsService.tags({
-        options: {
-          limit: -1,
+
+    const itemTags = await this.tagsService.tagsByUser({
+      findBy: {
+        entity: 'item',
+        id: {
+          __in: this.item.tags,
         },
-        findBy: {
-          id: {
-            __in: this.item.tags,
-          },
-        },
-      })
-    ).tags;
+      },
+      options: {
+        limit: -1,
+      },
+    });
 
     this.dialogService.open(TagAsignationComponent, {
       type: 'fullscreen-translucent',
@@ -506,19 +551,31 @@ export class ItemDisplayComponent implements OnInit {
           itemTags && Array.isArray(itemTags)
             ? itemTags.map((tag) => tag._id)
             : null,
-        tagAction: async ({ selectedTags }) => {
-          this.selectedTags = selectedTags;
+        tagAction: async (params) => {
+          this.selectedTags = params;
+
+          const clickedTagId = params._id;
 
           try {
-            const response = await this.itemsService.updateItem(
-              {
-                tags: this.selectedTags,
-              },
-              this.item._id
-            );
+            if (!this.item.tags.includes(clickedTagId)) {
+              const { itemAddTag: result } = await this.tagsService.itemAddTag(
+                clickedTagId,
+                this.item._id
+              );
 
-            if (response) {
-              this.item.tags = this.selectedTags;
+              if (result) {
+                this.item.tags = result.tags;
+              }
+            } else {
+              const { itemRemoveTag: result } =
+                await this.tagsService.itemRemoveTag(
+                  clickedTagId,
+                  this.item._id
+                );
+
+              if (result) {
+                this.item.tags = result.tags;
+              }
             }
           } catch (error) {
             this.toastr.error('Error al asignar tags', null, {
@@ -534,7 +591,7 @@ export class ItemDisplayComponent implements OnInit {
 
   copyLink() {
     this.clipboard.copy(
-      `${this.URI}/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`
+      `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/article-detail/item/${this.item._id}`
     );
     this.toastr.info('Enlace del producto copiado en el clipboard', null, {
       timeOut: 2000,

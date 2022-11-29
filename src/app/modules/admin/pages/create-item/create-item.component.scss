@@ -328,3 +328,20 @@ footer {
     }
   }
 }
+
+.rotate-btn {
+  cursor: pointer;
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  padding: 8px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #000;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgb(228, 228, 228);
+    transition: all 0.2s;
+  }
+}

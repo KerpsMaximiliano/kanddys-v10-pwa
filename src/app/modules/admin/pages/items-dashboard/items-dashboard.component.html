@@ -1,241 +1,173 @@
-<div class="container">
-  <app-helper-headerv2
-    *ngIf="selectedTags.length === 0"
-    [mode]="headerConfiguration.mode"
-    [fixed]="headerConfiguration.fixed"
-    [mainText]="headerConfiguration.mainText"
-    [bgColor]="headerConfiguration.bgColor"
-    [returnAble]="headerConfiguration.returnable"
-    (returnEvent)="(headerConfiguration.returnEvent)"
-    [dots]="{
-      active: true
-    }"
-    (dotEvent)="openHeaderDialog()"
-  ></app-helper-headerv2>
+<div class="dashboard-page" (scroll)="infinitePagination()">
+  <div class="container">
+    <app-helper-headerv2
+      *ngIf="selectedTags.length === 0"
+      [mode]="headerConfiguration.mode"
+      [fixed]="headerConfiguration.fixed"
+      [mainText]="headerConfiguration.mainText"
+      [bgColor]="headerConfiguration.bgColor"
+      [returnAble]="headerConfiguration.returnable"
+      (returnEvent)="(headerConfiguration.returnEvent)"
+      [dots]="{
+        active: true
+      }"
+      (dotEvent)="openHeaderDialog()"
+    ></app-helper-headerv2>
 
-  <app-helper-headerv3
-    *ngIf="selectedTags.length > 0"
-    (arrowsClick)="resetSelectedTags()"
-    [showSearch]="!showSearchbar"
-    (searchClick)="makeSearchBarVisible()"
-  ></app-helper-headerv3>
+    <app-helper-headerv3
+      *ngIf="selectedTags.length > 0"
+      (arrowsClick)="resetSelectedTags()"
+      [showSearch]="!showSearchbar"
+      (searchClick)="makeSearchBarVisible()"
+    ></app-helper-headerv3>
 
-  <app-tags-selector
-    *ngIf="selectedTags.length > 0"
-    [tags]="selectedTagsPermanent"
-    [selectedTagsIds]="getActiveTagsFromSelectedTagsPermantent()"
-    [multipleTags]="true"
-    [selectedBackground]="'#ffffff'"
-    [background]="'rgb(40, 116, 173)'"
-    [selectedColor]="'#2874ad'"
-    [color]="'#fff'"
-    [fillSelectedTagsOnStart]="true"
-    [useIdToRemoveOrAddTags]="true"
-    [useAlternativeOutput]="true"
-    (tagSelect2)="selectTagFromHeader($event)"
-  ></app-tags-selector>
+    <app-tags-selector
+      *ngIf="selectedTags.length > 0"
+      [tags]="selectedTagsPermanent"
+      [selectedTagsIds]="getActiveTagsFromSelectedTagsPermantent()"
+      [multipleTags]="true"
+      [selectedBackground]="'#ffffff'"
+      [background]="'rgb(40, 116, 173)'"
+      [selectedColor]="'#2874ad'"
+      [color]="'#fff'"
+      [fillSelectedTagsOnStart]="true"
+      [useIdToRemoveOrAddTags]="true"
+      [useAlternativeOutput]="true"
+      (tagSelect2)="selectTagFromHeader($event)"
+    ></app-tags-selector>
 
-  <div class="helper-header-space" *ngIf="selectedTags.length === 0"></div>
+    <div class="helper-header-space" *ngIf="selectedTags.length === 0"></div>
 
-  <form class="search-bar-wrapper">
-    <input
-      type="text"
-      name="item-search"
-      class="input search-bar"
-      placeholder="Busca por tag, articulo, referencia..."
-      [formControl]="itemSearchbar"
-      *ngIf="showSearchbar"
-    />
+    <form class="search-bar-wrapper">
+      <input
+        type="text"
+        name="item-search"
+        class="input search-bar"
+        placeholder="Busca por tag, articulo, referencia..."
+        [formControl]="itemSearchbar"
+        *ngIf="showSearchbar"
+      />
 
-    <button *ngIf="showSearchbar" class="menu-btn">
-      <svg
-        class="menu-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        width="27"
-        height="27"
-        (click)="openOrCloseMenu()"
-      >
-        <path
-          d="M3.375 0A3.375 3.375 0 0 0 0 3.375v20.25A3.375 3.375 0 0 0 3.375 27h20.25A3.375 3.375 0 0 0 27 23.625V3.375A3.375 3.375 0 0 0 23.625 0H3.375Zm.844 8.438a.844.844 0 0 0 0 1.687H22.78a.844.844 0 0 0 0-1.688H4.22Zm2.531 5.906c0-.466.378-.844.844-.844h11.812a.844.844 0 0 1 0 1.688H7.594a.844.844 0 0 1-.844-.844Zm3.375 5.062c0-.466.378-.843.844-.843h5.062a.844.844 0 0 1 0 1.687H10.97a.844.844 0 0 1-.844-.844Z"
-          fill-rule="evenodd"
-          data-name="Path 28861"
-        />
-      </svg>
+      <button *ngIf="showSearchbar" class="menu-btn">
+        <svg
+          class="menu-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="27"
+          height="27"
+          (click)="openOrCloseMenu()"
+        >
+          <path
+            d="M3.375 0A3.375 3.375 0 0 0 0 3.375v20.25A3.375 3.375 0 0 0 3.375 27h20.25A3.375 3.375 0 0 0 27 23.625V3.375A3.375 3.375 0 0 0 23.625 0H3.375Zm.844 8.438a.844.844 0 0 0 0 1.687H22.78a.844.844 0 0 0 0-1.688H4.22Zm2.531 5.906c0-.466.378-.844.844-.844h11.812a.844.844 0 0 1 0 1.688H7.594a.844.844 0 0 1-.844-.844Zm3.375 5.062c0-.466.378-.843.844-.843h5.062a.844.844 0 0 1 0 1.687H10.97a.844.844 0 0 1-.844-.844Z"
+            fill-rule="evenodd"
+            data-name="Path 28861"
+          />
+        </svg>
 
-      <div
-        class="pointer"
-        [ngClass]="{
-          opened: menuOpened
-        }"
-        [ngStyle]="{
-          transitionDelay: menuOpened ? '0s' : '1.5s'
-        }"
-      ></div>
-
-      <div
-        class="menu-background-wrapper"
-        [ngClass]="{
-          show: menuOpened,
-          animationRunning:
-            executingMenuOpeningAnimation || executingMenuClosingAnimation
-        }"
-        [ngStyle]="{
-          height:
-            menuNavigationOptions[activeMenuOptionIndex].name === 'Items'
-              ? '580px'
-              : '413px'
-        }"
-      >
         <div
-          class="menu-background"
+          class="pointer"
           [ngClass]="{
             opened: menuOpened
           }"
           [ngStyle]="{
-            transition:
-              menuOpened && executingMenuClosingAnimation
-                ? '0.5s top ease-in, 1s transform ease-out 0s'
-                : '0.5s top ease-in, 1s transform ease-out 0.25s'
+            transitionDelay: menuOpened ? '0s' : '1.5s'
           }"
         ></div>
-      </div>
-    </button>
-  </form>
 
-  <div
-    class="menu-content"
-    [ngClass]="{
-      visible: menuOpened
-    }"
-  >
+        <div
+          class="menu-background-wrapper"
+          [ngClass]="{
+            show: menuOpened,
+            animationRunning:
+              executingMenuOpeningAnimation || executingMenuClosingAnimation
+          }"
+          [ngStyle]="{
+            height:
+              menuNavigationOptions[activeMenuOptionIndex].name === 'Items'
+                ? '580px'
+                : '413px'
+          }"
+        >
+          <div
+            class="menu-background"
+            [ngClass]="{
+              opened: menuOpened
+            }"
+            [ngStyle]="{
+              transition:
+                menuOpened && executingMenuClosingAnimation
+                  ? '0.5s top ease-in, 1s transform ease-out 0s'
+                  : '0.5s top ease-in, 1s transform ease-out 0.25s'
+            }"
+          ></div>
+        </div>
+      </button>
+    </form>
+
     <div
-      class="content"
+      class="menu-content"
       [ngClass]="{
-        visible:
-          menuOpened &&
-          !executingMenuOpeningAnimation &&
-          !executingMenuClosingAnimation &&
-          menuNavigationOptions[activeMenuOptionIndex].name === 'Items',
-        visible2:
-          menuOpened &&
-          !executingMenuOpeningAnimation &&
-          !executingMenuClosingAnimation &&
-          menuNavigationOptions[activeMenuOptionIndex].name !== 'Items',
-        animationRunning:
-          executingMenuOpeningAnimation || executingMenuClosingAnimation
-      }"
-      [ngStyle]="{
-        transition: '0.3s height linear'
+        visible: menuOpened
       }"
     >
       <div
-        class="navigation-wrapper"
+        class="content"
+        [ngClass]="{
+          visible:
+            menuOpened &&
+            !executingMenuOpeningAnimation &&
+            !executingMenuClosingAnimation &&
+            menuNavigationOptions[activeMenuOptionIndex].name === 'Items',
+          visible2:
+            menuOpened &&
+            !executingMenuOpeningAnimation &&
+            !executingMenuClosingAnimation &&
+            menuNavigationOptions[activeMenuOptionIndex].name !== 'Items',
+          animationRunning:
+            executingMenuOpeningAnimation || executingMenuClosingAnimation
+        }"
         [ngStyle]="{
-          display:
-            !menuOpened &&
-            !(executingMenuOpeningAnimation || executingMenuClosingAnimation)
-              ? 'none'
-              : 'block'
+          transition: '0.3s height linear'
         }"
       >
-        <swiper
-          [config]="menuNavigationSwiperConfig"
-          *ngIf="
-            !(
+        <div
+          class="navigation-wrapper"
+          [ngStyle]="{
+            display:
               !menuOpened &&
               !(executingMenuOpeningAnimation || executingMenuClosingAnimation)
-            )
-          "
+                ? 'none'
+                : 'block'
+          }"
         >
-          <div
-            class="menu-option swiper-slide"
-            style="width: 102px !important"
-            [ngClass]="{
-              selected: option.active
-            }"
-            *ngFor="let option of menuNavigationOptions; index as optionIndex"
-            (click)="changeToMenuOption(optionIndex)"
-          >
-            {{ option.name }}
-          </div>
-        </swiper>
-      </div>
-
-      <ng-container *ngIf="activeMenuOptionIndex !== null">
-        <ng-container
-          [ngSwitch]="menuNavigationOptions[activeMenuOptionIndex].name"
-        >
-          <div
-            class="metrics-grid"
-            [ngStyle]="{
-              display:
+          <swiper
+            [config]="menuNavigationSwiperConfig"
+            *ngIf="
+              !(
                 !menuOpened &&
                 !(
                   executingMenuOpeningAnimation || executingMenuClosingAnimation
                 )
-                  ? 'none'
-                  : 'grid'
-            }"
-            *ngSwitchCase="'Items'"
+              )
+            "
           >
-            <div class="card pointer" routerLink="/admin/merchant-items">
-              <h2 class="amount quantity">
-                {{ totalItemsCounter }}
-              </h2>
-              <h2 class="amount">EN TOTAL</h2>
-            </div>
-
             <div
-              class="card pointer"
-              routerLink="/admin/merchant-items"
-              [queryParams]="{ status: 'active' }"
+              class="menu-option swiper-slide"
+              style="width: 102px !important"
+              [ngClass]="{
+                selected: option.active
+              }"
+              *ngFor="let option of menuNavigationOptions; index as optionIndex"
+              (click)="changeToMenuOption(optionIndex)"
             >
-              <h2 class="amount quantity">
-                {{ activeItemsCounter }}
-              </h2>
-              <h2 class="amount">VISIBLES</h2>
+              {{ option.name }}
             </div>
+          </swiper>
+        </div>
 
-            <div
-              class="card pointer"
-              routerLink="/admin/merchant-items"
-              [queryParams]="{ status: 'disabled' }"
-            >
-              <h2 class="amount quantity">
-                {{ inactiveItemsCounter }}
-              </h2>
-              <h2 class="amount">INVISIBLES</h2>
-            </div>
-
-            <div
-              class="card pointer"
-              routerLink="/admin/merchant-items"
-              [queryParams]="{ status: 'featured' }"
-            >
-              <h2 class="amount quantity">
-                {{ featuredItemsCounter }}
-              </h2>
-              <h2 class="amount">DESTACADOS</h2>
-            </div>
-
-            <div class="card unset">
-              <h2 class="amount quantity">
-                {{
-                  ordersTotal && ordersTotal.selled ? ordersTotal.selled : "0"
-                }}
-              </h2>
-              <h2 class="amount">ARTICULOS VENDIDOS</h2>
-            </div>
-
-            <div class="card unset">
-              <h2 class="amount quantity">
-                {{ archivedItemsCounter }}
-              </h2>
-              <h2 class="amount">ARCHIVADOS</h2>
-            </div>
-          </div>
-
-          <ng-container *ngIf="saleflowCalendar">
+        <ng-container *ngIf="activeMenuOptionIndex !== null">
+          <ng-container
+            [ngSwitch]="menuNavigationOptions[activeMenuOptionIndex].name"
+          >
             <div
               class="metrics-grid"
               [ngStyle]="{
@@ -248,201 +180,380 @@
                     ? 'none'
                     : 'grid'
               }"
-              *ngSwitchCase="'Citas'"
+              *ngSwitchCase="'Items'"
             >
-              <div
-                class="card pointer"
-                [routerLink]="
-                  '/admin/entity-detail-metrics/reservations/' +
-                  saleflowCalendar._id +
-                  '/pasadas'
-                "
-              >
+              <div class="card pointer" routerLink="/admin/merchant-items">
                 <h2 class="amount quantity">
-                  {{
-                    saleflowCalendar.pastReservations
-                      ? saleflowCalendar.pastReservations.length
-                      : "0"
-                  }}
+                  {{ totalItemsCounter }}
                 </h2>
-                <h2 class="amount">PASADAS</h2>
+                <h2 class="amount">EN TOTAL</h2>
               </div>
 
               <div
                 class="card pointer"
-                [routerLink]="
-                  '/admin/entity-detail-metrics/reservations/' +
-                  saleflowCalendar._id +
-                  '/futuras'
-                "
+                routerLink="/admin/merchant-items"
+                [queryParams]="{ status: 'active' }"
               >
                 <h2 class="amount quantity">
+                  {{ activeItemsCounter }}
+                </h2>
+                <h2 class="amount">VISIBLES</h2>
+              </div>
+
+              <div
+                class="card pointer"
+                routerLink="/admin/merchant-items"
+                [queryParams]="{ status: 'disabled' }"
+              >
+                <h2 class="amount quantity">
+                  {{ inactiveItemsCounter }}
+                </h2>
+                <h2 class="amount">INVISIBLES</h2>
+              </div>
+
+              <div
+                class="card pointer"
+                routerLink="/admin/merchant-items"
+                [queryParams]="{ status: 'featured' }"
+              >
+                <h2 class="amount quantity">
+                  {{ featuredItemsCounter }}
+                </h2>
+                <h2 class="amount">DESTACADOS</h2>
+              </div>
+
+              <div class="card unset">
+                <h2 class="amount quantity">
                   {{
-                    saleflowCalendar.futureReservations
-                      ? saleflowCalendar.futureReservations.length
+                    ordersTotal && ordersTotal.selled ? ordersTotal.selled : "0"
+                  }}
+                </h2>
+                <h2 class="amount">ARTICULOS VENDIDOS</h2>
+              </div>
+
+              <div class="card unset">
+                <h2 class="amount quantity">
+                  {{ archivedItemsCounter }}
+                </h2>
+                <h2 class="amount">ARCHIVADOS</h2>
+              </div>
+            </div>
+
+            <ng-container *ngIf="saleflowCalendar">
+              <div
+                class="metrics-grid"
+                [ngStyle]="{
+                  display:
+                    !menuOpened &&
+                    !(
+                      executingMenuOpeningAnimation ||
+                      executingMenuClosingAnimation
+                    )
+                      ? 'none'
+                      : 'grid'
+                }"
+                *ngSwitchCase="'Citas'"
+              >
+                <div
+                  class="card pointer"
+                  [routerLink]="
+                    '/admin/entity-detail-metrics/reservations/' +
+                    saleflowCalendar._id +
+                    '/pasadas'
+                  "
+                >
+                  <h2 class="amount quantity">
+                    {{
+                      saleflowCalendar.pastReservations
+                        ? saleflowCalendar.pastReservations.length
+                        : "0"
+                    }}
+                  </h2>
+                  <h2 class="amount">PASADAS</h2>
+                </div>
+
+                <div
+                  class="card pointer"
+                  [routerLink]="
+                    '/admin/entity-detail-metrics/reservations/' +
+                    saleflowCalendar._id +
+                    '/futuras'
+                  "
+                >
+                  <h2 class="amount quantity">
+                    {{
+                      saleflowCalendar.futureReservations
+                        ? saleflowCalendar.futureReservations.length
+                        : "0"
+                    }}
+                  </h2>
+                  <h2 class="amount">FUTURAS</h2>
+                </div>
+
+                <div class="card pointer">
+                  <h2 class="amount quantity">
+                    {{
+                      !saleflowCalendar.noLimitsMode
+                        ? saleflowCalendar.slotsAvailable
+                        : "∞"
+                    }}
+                  </h2>
+                  <h2 class="amount">SLOTS DISPONIBLES</h2>
+                </div>
+              </div>
+            </ng-container>
+
+            <div
+              class="metrics-grid"
+              [ngStyle]="{
+                display:
+                  !menuOpened &&
+                  !(
+                    executingMenuOpeningAnimation ||
+                    executingMenuClosingAnimation
+                  )
+                    ? 'none'
+                    : 'grid'
+              }"
+              *ngSwitchCase="'Facturas'"
+            >
+              <div class="card unset">
+                <h2 class="amount quantity">
+                  ${{
+                    ordersTotal && ordersTotal.total
+                      ? ordersTotal.total.toLocaleString("es-MX")
                       : "0"
                   }}
                 </h2>
-                <h2 class="amount">FUTURAS</h2>
+                <h2 class="amount">INGRESOS TOTALES</h2>
               </div>
 
-              <div class="card pointer">
+              <div class="card pointer" routerLink="/admin/orders">
                 <h2 class="amount quantity">
                   {{
-                    !saleflowCalendar.noLimitsMode
-                      ? saleflowCalendar.slotsAvailable
-                      : "∞"
+                    ordersTotal && ordersTotal.length ? ordersTotal.length : "0"
                   }}
                 </h2>
-                <h2 class="amount">SLOTS DISPONIBLES</h2>
+
+                <h2 class="amount">FACTURAS</h2>
+              </div>
+
+              <div class="card unset">
+                <h2 class="amount quantity">
+                  {{ saleflowBuyers ? saleflowBuyers.length : "0" }}
+                </h2>
+
+                <h2 class="amount">COMPRADORES</h2>
               </div>
             </div>
           </ng-container>
-
-          <div
-            class="metrics-grid"
-            [ngStyle]="{
-              display:
-                !menuOpened &&
-                !(
-                  executingMenuOpeningAnimation || executingMenuClosingAnimation
-                )
-                  ? 'none'
-                  : 'grid'
-            }"
-            *ngSwitchCase="'Facturas'"
-          >
-            <div class="card unset">
-              <h2 class="amount quantity">
-                ${{
-                  ordersTotal && ordersTotal.total
-                    ? ordersTotal.total.toLocaleString("es-MX")
-                    : "0"
-                }}
-              </h2>
-              <h2 class="amount">INGRESOS TOTALES</h2>
-            </div>
-
-            <div class="card pointer" routerLink="/admin/orders">
-              <h2 class="amount quantity">
-                {{
-                  ordersTotal && ordersTotal.length ? ordersTotal.length : "0"
-                }}
-              </h2>
-
-              <h2 class="amount">FACTURAS</h2>
-            </div>
-
-            <div class="card unset">
-              <h2 class="amount quantity">
-                {{ saleflowBuyers ? saleflowBuyers.length : "0" }}
-              </h2>
-
-              <h2 class="amount">COMPRADORES</h2>
-            </div>
-          </div>
         </ng-container>
-      </ng-container>
+      </div>
     </div>
-  </div>
 
-  <!-- swiper de tags -->
-  <div class="swiper-container">
-    <swiper [config]="tagsSwiperConfig" *ngIf="tagsList.length > 0" #tagSwiper>
-      <div
-        class="tag-wrapper swiper-slide"
-        style="width: 81px !important; margin-right: 8px !important"
-        *ngFor="let tag of unselectedTags; let tagIndex = index"
+    <!-- swiper de tags -->
+    <div class="swiper-container">
+      <swiper
+        [config]="tagsSwiperConfig"
+        *ngIf="tagsList.length > 0"
+        #tagSwiper
       >
-        <ng-container *ngFor="let tag2 of tagsList; let tagIndex = index">
-          <ng-container *ngIf="tag2._id === tag._id">
-            <div
-              class="tag-image"
-              (click)="selectTag(tag, tagIndex)"
-              [ngStyle]="{
-                'background-image':
-                  tag.images?.length > 0
-                    ? 'url(' + tag.images[0] + ')'
-                    : 'url(/assets/images/noimage.png)'
-              }"
-            >
+        <div
+          class="tag-wrapper swiper-slide"
+          style="margin-right: 8px !important"
+          [ngStyle]="{
+            maxWidth: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)'
+          }"
+          *ngFor="let tag of unselectedTags; let tagIndex = index"
+        >
+          <ng-container *ngFor="let tag2 of tagsList; let tagIndex = index">
+            <ng-container *ngIf="tag2._id === tag._id">
               <div
-                class="badge"
-                *ngIf="tag.status === 'disabled'"
+                class="tag-image"
+                (click)="selectTag(tag, tagIndex)"
                 [ngStyle]="{
                   'background-image':
-                    'url(' + env + '/closed-eye-white.svg' + ')'
+                    tag.images?.length > 0
+                      ? 'url(' + tag.images[0] + ')'
+                      : 'url(/assets/images/noimage.png)',
+                  width: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
+                  height: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)'
                 }"
-              ></div>
-            </div>
+              >
+                <div
+                  class="badge"
+                  *ngIf="tag.status === 'disabled'"
+                  [ngStyle]="{
+                    'background-image':
+                      'url(' + env + '/closed-eye-white.svg' + ')'
+                  }"
+                ></div>
+              </div>
+            </ng-container>
           </ng-container>
-        </ng-container>
-        <div class="tag-id">#{{ tag.name }}</div>
-      </div>
-    </swiper>
-  </div>
-
-  <!-- HIGHLIGHTED ITEMS SWIPER-->
-  <section
-    class="highlited-items-area"
-    *ngIf="
-      highlightedItems.length > 0 &&
-      selectedTags.length === 0 &&
-      itemSearchbar.value === ''
-    "
-  >
-    <div class="title-and-options">
-      <h2 class="title">Destacados</h2>
-
-      <div class="dot-trio" (click)="openItemManagementDialog('featured')">
-        <div
-          class="dot"
-          [ngStyle]="{
-            'background-color': '#2874ad',
-            margin: '0 2.5px'
-          }"
-        >
-           
+          <div class="tag-id">#{{ tag.name }}</div>
         </div>
-        <div
-          class="dot"
-          [ngStyle]="{
-            'background-color': '#2874ad',
-            margin: '0 2.5px'
-          }"
-        >
-           
-        </div>
-        <div
-          class="dot"
-          [ngStyle]="{
-            'background-color': '#2874ad',
-            margin: '0 2.5px'
-          }"
-        >
-           
-        </div>
-      </div>
+      </swiper>
     </div>
 
-    <p class="subtitle" *ngIf="highlightedItems.length === 0">
-      No tienes items destacados
-    </p>
+    <!-- HIGHLIGHTED ITEMS SWIPER-->
+    <section
+      class="highlited-items-area"
+      *ngIf="
+        highlightedItems.length > 0 &&
+        selectedTags.length === 0 &&
+        itemSearchbar.value === ''
+      "
+    >
+      <div class="title-and-options">
+        <h2 class="title">Destacados</h2>
 
-    <div class="highlited-items-swiper" *ngIf="highlightedItems.length > 0">
-      <swiper [config]="highlightedConfigSwiper" #highlightedItemsSwiper>
+        <div class="dot-trio" (click)="openItemManagementDialog('featured')">
+          <div
+            class="dot"
+            [ngStyle]="{
+              'background-color': '#2874ad',
+              margin: '0 2.5px'
+            }"
+          >
+             
+          </div>
+          <div
+            class="dot"
+            [ngStyle]="{
+              'background-color': '#2874ad',
+              margin: '0 2.5px'
+            }"
+          >
+             
+          </div>
+          <div
+            class="dot"
+            [ngStyle]="{
+              'background-color': '#2874ad',
+              margin: '0 2.5px'
+            }"
+          >
+             
+          </div>
+        </div>
+      </div>
+
+      <p class="subtitle" *ngIf="highlightedItems.length === 0">
+        No tienes items destacados
+      </p>
+
+      <div class="highlited-items-swiper" *ngIf="highlightedItems.length > 0">
+        <swiper [config]="highlightedConfigSwiper" #highlightedItemsSwiper>
+          <div
+            *ngFor="let item of highlightedItems; let i = index"
+            class="swiper-slide"
+            [ngStyle]="{
+              width: 'auto',
+              paddingBottom: '10px',
+              paddingTop: '19px',
+              paddingRight: '16.5px'
+            }"
+          >
+            <app-saleflow-item
+              [itemIndex]="i"
+              [itemId]="item._id"
+              [menuCallback]="openItemOptionsDialog"
+              [type]="4"
+              [showViews]="true"
+              [viewsCounter]="
+                item.visitorCounter ? item.visitorCounter.counter : 0
+              "
+              [imgURL]="item.images ? item.images[0] : ''"
+              [price]="item.pricing"
+              [itemParams]="item.params"
+              [showPrice]="true"
+              [tags]="item.tagsFilled"
+              [dynamicStyles]="{
+                itemContainer: {
+                  minWidth: '242px',
+                  height: '344px',
+                  margin: '0px'
+                },
+                simpleCard: {
+                  height: '100%'
+                },
+                itemImg: {
+                  height: '76.1627%'
+                },
+                infoArea: {
+                  height: '23.8372%',
+                  padding: '18px 12px 20px 16px'
+                }
+              }"
+              (itemClicked)="goToDetail(item._id)"
+            ></app-saleflow-item>
+            <div class="blank-space"></div>
+          </div>
+        </swiper>
+      </div>
+    </section>
+
+    <!--SHOWS ITEMS GROUPED BY TAGS-->
+    <section class="items-by-tag-grid">
+      <div class="title-and-options" style="padding-top: 37px">
+        <h2 class="title">Todos los productos</h2>
+
+        <div class="dot-trio" (click)="openItemManagementDialog()">
+          <div
+            class="dot"
+            [ngStyle]="{
+              'background-color': '#2874ad',
+              margin: '0 2.5px'
+            }"
+          >
+             
+          </div>
+          <div
+            class="dot"
+            [ngStyle]="{
+              'background-color': '#2874ad',
+              margin: '0 2.5px'
+            }"
+          >
+             
+          </div>
+          <div
+            class="dot"
+            [ngStyle]="{
+              'background-color': '#2874ad',
+              margin: '0 2.5px'
+            }"
+          >
+             
+          </div>
+        </div>
+      </div>
+
+      <p
+        class="subtitle"
+        style="max-width: 334px"
+        *ngIf="allItems.length === 0"
+      >
+        No hay productos
+      </p>
+
+      <div class="saleflows-item-grid" *ngIf="allItems.length">
         <div
-          *ngFor="let item of highlightedItems; let i = index"
-          class="swiper-slide"
-          [ngStyle]="{
-            width: 'auto',
-            paddingBottom: '10px',
-            paddingTop: '19px',
-            paddingRight: '16.5px'
-          }"
+          class="capsize"
+          *ngIf="selectedTags.length === 0 && itemSearchbar.value === ''"
         >
           <app-saleflow-item
-            [itemIndex]="i"
+            [type]="'ADD_NEW_ITEM'"
+            (itemClicked)="goToCreateItem()"
+          ></app-saleflow-item>
+        </div>
+        <div
+          class="capsize"
+          *ngFor="let item of allItems; let itemIndex = index"
+        >
+          <app-saleflow-item
+            [itemIndex]="itemIndex"
             [itemId]="item._id"
             [menuCallback]="openItemOptionsDialog"
             [type]="4"
@@ -450,119 +561,34 @@
             [viewsCounter]="
               item.visitorCounter ? item.visitorCounter.counter : 0
             "
+            [inactive]="
+              item.status != 'active' && item.status != 'featured'
+                ? true
+                : false
+            "
             [imgURL]="item.images ? item.images[0] : ''"
             [price]="item.pricing"
-            [itemParams]="item.params"
             [showPrice]="true"
             [tags]="item.tagsFilled"
-            [dynamicStyles]="{
-              itemContainer: {
-                minWidth: '242px',
-                height: '344px',
-                margin: '0px'
-              },
-              simpleCard: {
-                height: '100%'
-              },
-              itemImg: {
-                height: '76.1627%'
-              },
-              infoArea: {
-                height: '23.8372%',
-                padding: '18px 12px 20px 16px'
-              }
-            }"
+            [itemParams]="item.params"
             (itemClicked)="goToDetail(item._id)"
+            [responsiveWidthVersion]="true"
+            [featured]="item.status === 'featured'"
           ></app-saleflow-item>
-          <div class="blank-space"></div>
-        </div>
-      </swiper>
-    </div>
-  </section>
-
-  <!--SHOWS ITEMS GROUPED BY TAGS-->
-  <section class="items-by-tag-grid">
-    <div class="title-and-options" style="padding-top: 37px">
-      <h2 class="title">Todos los productos</h2>
-
-      <div class="dot-trio" (click)="openItemManagementDialog()">
-        <div
-          class="dot"
-          [ngStyle]="{
-            'background-color': '#2874ad',
-            margin: '0 2.5px'
-          }"
-        >
-           
-        </div>
-        <div
-          class="dot"
-          [ngStyle]="{
-            'background-color': '#2874ad',
-            margin: '0 2.5px'
-          }"
-        >
-           
-        </div>
-        <div
-          class="dot"
-          [ngStyle]="{
-            'background-color': '#2874ad',
-            margin: '0 2.5px'
-          }"
-        >
-           
         </div>
       </div>
-    </div>
+    </section>
 
-    <p class="subtitle" style="max-width: 334px" *ngIf="allItems.length === 0">
-      No hay productos
-    </p>
-
-    <div class="saleflows-item-grid" *ngIf="allItems.length">
+    <!--
       <div
-        class="capsize"
-        *ngIf="selectedTags.length === 0 && itemSearchbar.value === ''"
+        class="create-btn"
+        [ngClass]="{
+          invisible: menuOpened
+        }"
+        (click)="goToCreateItem()"
       >
-        <app-saleflow-item
-          [type]="'ADD_NEW_ITEM'"
-          (itemClicked)="goToCreateItem()"
-        ></app-saleflow-item>
+        Crea
       </div>
-      <div class="capsize" *ngFor="let item of allItems; let itemIndex = index">
-        <app-saleflow-item
-          [itemIndex]="itemIndex"
-          [itemId]="item._id"
-          [menuCallback]="openItemOptionsDialog"
-          [type]="4"
-          [showViews]="true"
-          [viewsCounter]="item.visitorCounter ? item.visitorCounter.counter : 0"
-          [inactive]="
-            item.status != 'active' && item.status != 'featured' ? true : false
-          "
-          [imgURL]="item.images ? item.images[0] : ''"
-          [price]="item.pricing"
-          [showPrice]="true"
-          [tags]="item.tagsFilled"
-          [itemParams]="item.params"
-          (itemClicked)="goToDetail(item._id)"
-          [responsiveWidthVersion]="true"
-          [featured]="item.status === 'featured'"
-        ></app-saleflow-item>
-      </div>
-    </div>
-  </section>
-
-  <!--
-    <div
-      class="create-btn"
-      [ngClass]="{
-        invisible: menuOpened
-      }"
-      (click)="goToCreateItem()"
-    >
-      Crea
-    </div>
-  -->
+    -->
+  </div>
 </div>

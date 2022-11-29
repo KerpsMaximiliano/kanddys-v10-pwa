@@ -1,8 +1,6 @@
 <div class="container">
   <header class="header">
-    <a class="return-holder"
-      (click)="goBackToFlowRoute()"
-      *ngIf="flowRoute"
+    <a class="return-holder" (click)="goBackToFlowRoute()" *ngIf="flowRoute"
       ><i class="fas fa-chevron-left" [style.color]="'white'"></i>
     </a>
 
@@ -282,12 +280,51 @@
     </section>
   </main>
 
+  <qrcode
+    style="display: none"
+    *ngIf="order"
+    #qrcode
+    [qrdata]="URI + '/ecommerce/order-detail/' + order._id"
+    [elementType]="'img'"
+    [width]="40"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#000"
+  ></qrcode>
+
+  <footer class="footer-display" *ngIf="merchant">
+    <!-- TABS INICIO -->
+    <div class="pages-tabs">
+      <!-- IMAGENES INICIO-->
+      <div class="images-container">
+        <img
+          [src]="env + image.src"
+          *ngFor="let image of imageList"
+          class="image"
+          (click)="image.callback()"
+          [ngStyle]="{
+            filter: image.filter && image.filter
+          }"
+        />
+      </div>
+      <!-- FIN IMAGENES -->
+    </div>
+    <!-- FIN TABS -->
+    <!-- TABS INFERIORES -->
+    <!-- <div class="tab-pages"> 
+      <div class="tab" *ngFor="let tab of tabs"></div>
+    </div> -->
+    <!-- FIN TABS INFERIORES -->
+  </footer>
+
   <app-sticky-button
-    [mode]="'fixed'"
-    [bgColor]="'#2874AD'"
-    [size]="'small'"
-    [fontSize]="'1.25rem'"
-    [text]="'VOLVER A LA TIENDA'"
-    (click)="goToStore()"
-  ></app-sticky-button>
+  *ngIf="!merchant"
+  [mode]="'fixed'"
+  [bgColor]="'#2874AD'"
+  [size]="'small'"
+  [fontSize]="'1.25rem'"
+  [text]="'VOLVER A LA TIENDA'"
+  (click)="goToStore()"
+></app-sticky-button>
+
 </div>

@@ -179,7 +179,7 @@ export class TestComponent implements OnInit {
                     mode: 'func',
                     func() {
                         console.log('Este mueve la maraca');
-                        // this.router.navigate([`admin/create-item`]);
+                        // this.router.navigate([`admin/create-article`]);
                     },
                 },
                 {

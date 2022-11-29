@@ -62,7 +62,7 @@ export class TagManagementComponent implements OnInit {
           },
         },
       };
-      let tags: any = await this._TagsService.tagsByUser() || [];
+      let tags: any = (await this._TagsService.tagsByUser()) || [];
       tags = tags.map(({ name }) => name);
       this.tags = tags;
       this.status = 'controller';
@@ -84,7 +84,7 @@ export class TagManagementComponent implements OnInit {
     });
   }
 
-  resetControllers():void {
+  resetControllers(): void {
     this.controllers = new FormArray([]);
     this.images = [['']];
     this.initControllers();
@@ -150,9 +150,9 @@ export class TagManagementComponent implements OnInit {
       return result;
     });
     const submit = async () => {
-      for(const value of results){
-        const {createTag} = await this._TagsService.createTag(value);
-        const { name } = createTag;
+      for (const value of results) {
+        const createdTag = await this._TagsService.createTag(value);
+        const { name } = createdTag;
         this.tags.push(name || value.name);
       }
       this.resetControllers();

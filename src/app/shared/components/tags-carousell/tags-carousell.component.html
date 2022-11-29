@@ -1,8 +1,52 @@
-<div class="tags">
-<swiper [config]="swiperConfig">
-  <div *ngFor="let tag of tags" class="tag-container">
-    <div (click)="handleTag(tag)" class="circle"></div>
-    <p class="tag-title">{{tag}}</p>
-  </div>
-</swiper>
+<div class="tags" [style.background]="background">
+  <swiper [config]="swiperConfig">
+    <div class="spacer"></div>
+    <div
+      *ngFor="let tag of tags"
+      class="tag-container"
+      [style.minHeight]="!displayCircle ? '30px' : ''"
+      [style.maxHeight]="!displayCircle ? '30px' : ''"
+      [style.margin]="!displayCircle ? 'auto' : ''"
+      [style.display]="!displayCircle ? 'flex' : ''"
+      [style.alignItems]="!displayCircle ? 'center' : ''"
+      [style.justifyContent]="!displayCircle ? 'center' : ''"
+    >
+      <div
+        *ngIf="displayCircle"
+        (click)="handleTag(tag)"
+        class="circle"
+        [style.border]="
+          selectedTagsIds.includes(tag[_id])
+            ? borderWidth + ' solid ' + selectedBorder
+            : 'none'
+        "
+        [style.backgroundColor]="circleBackground"
+        [style.backgroundImage]="
+          tag.images && tag.images.length > 0
+            ? 'url(' + tag.images[0] + ')'
+            : null
+        "
+      >
+        <div
+          class="badge"
+          *ngIf="tag.status === 'disabled'"
+          [ngStyle]="{
+            'background-image': 'url(' + env + '/closed-eye-white.svg' + ')'
+          }"
+        ></div>
+      </div>
+      <p
+        class="tag-title"
+        [style.color]="tagTitleColor"
+        [style.fontSize]="fontSize"
+        [style.fontFamily]="fontFamily"
+        [style.color]="
+          selectedTagsIds.includes(tag[_id]) ? selectedFontColor : fontColor
+        "
+        (click)="handleTag(tag)"
+      >
+        {{ tag[property] }}
+      </p>
+    </div>
+  </swiper>
 </div>

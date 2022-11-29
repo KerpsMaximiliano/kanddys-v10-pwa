@@ -26,12 +26,14 @@
     [useIdToRemoveOrAddTags]="true"
     [color]="'#2874ad'"
     containerBackground="#f6f6f6"
+    selectedBackground="#fff"
+    selectedFilter="brightness(2)"
+    (tagSelect)="tagAction($event)"
     selectedBackground="#2874ad"
     selectedFilter="brightness(2)"
-    [outputAllSelectedTags]="true"
+    [outputAllSelectedTags]="outputAllSelectedTags"
     (tagSelect3)="selectTagHandler($event)"
   ></app-tags-selector>
-
   <!--
     <button class="save" *ngIf="blockCta" (click)="submit()">
       <img class="icon" src="{{ env }}/save.png" alt="" />
