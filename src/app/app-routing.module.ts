@@ -99,6 +99,14 @@ const routes: Routes = [
         (m) => m.AppointmentsModule
       ),
   },
+  {
+    path: 'qr',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/qr/qr.module').then((m) => m.QrModule),
+  },
   { path: '**', redirectTo, pathMatch: 'full' },
 ];
 
