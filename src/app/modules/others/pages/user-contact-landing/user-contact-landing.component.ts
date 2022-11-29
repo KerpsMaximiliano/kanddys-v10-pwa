@@ -404,28 +404,28 @@ export class UserContactLandingComponent implements OnInit {
   openShareDialog() {
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+        qrlink: `${this.URI}/ecommerce/${this.saleflow._id}/store`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/${this.saleflow._id}/store`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/${this.saleflow._id}/store`,
           },
           // {
           //   text: 'Descarga el qrCode',
           //   mode: 'qr',
-          //   link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+          //   link: `${this.URI}/ecommerce/${this.saleflow._id}/store`,
           // },
           {
             text: 'Ir a la vista del visitante',
             mode: 'func',
             func: () =>
-              this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
+              this.router.navigate([`/ecommerce/${this.saleflow._id}/store`]),
           },
         ],
       },
@@ -478,6 +478,6 @@ export class UserContactLandingComponent implements OnInit {
   };
 
   goToStore = () => {
-    this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]);
+    this.router.navigate([`/ecommerce/${this.saleflow._id}/store`]);
   };
 }

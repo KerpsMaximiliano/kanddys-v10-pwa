@@ -211,6 +211,13 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   saveProduct() {
+    if (
+      !this.isItemInCart &&
+      !this.headerService.saleflow.canBuyMultipleItems
+    ) {
+      this.headerService.emptyOrderProducts();
+      this.headerService.emptyItems();
+    }
     const product: ItemSubOrderInput = {
       item: this.itemData._id,
       amount: 1,
@@ -233,10 +240,7 @@ export class ArticleDetailComponent implements OnInit {
       this.paramFromSameItem(paramValue);
     }
 
-    this.headerService.storeOrderProduct(
-      this.headerService.saleflow._id,
-      product
-    );
+    this.headerService.storeOrderProduct(product);
     const itemParamValue: ItemParamValue = this.selectedParam
       ? {
           ...this.itemData.params[this.selectedParam.param].values[
@@ -255,7 +259,6 @@ export class ArticleDetailComponent implements OnInit {
       data: this.itemData._id,
     });
     this.headerService.storeItem(
-      this.headerService.saleflow._id,
       this.selectedParam ? itemParamValue : this.itemData
     );
     this.itemInCart();
@@ -263,21 +266,13 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   paramFromSameItem(id: string) {
-    const products = this.headerService.getItems(
-      this.headerService.saleflow._id
-    );
+    const products = this.headerService.getItems();
     products?.forEach((product) => {
       if (!product.params) {
         this.itemData.params[0].values.forEach((value) => {
           if (id != product._id && value._id == product._id) {
-            this.headerService.removeItem(
-              this.headerService.saleflow._id,
-              product._id
-            );
-            this.headerService.removeOrderProduct(
-              this.headerService.saleflow._id,
-              product._id
-            );
+            this.headerService.removeItem(product._id);
+            this.headerService.removeOrderProduct(product._id);
           }
         });
       }
@@ -286,9 +281,7 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   itemInCart() {
-    const productData = this.headerService.getItems(
-      this.headerService.saleflow._id
-    );
+    const productData = this.headerService.getItems();
     if (productData?.length) {
       this.isItemInCart = productData.some(
         (item) =>
@@ -335,7 +328,7 @@ export class ArticleDetailComponent implements OnInit {
         headerButton: 'Ver más productos',
         headerCallback: () =>
           this.router.navigate(
-            [`/ecommerce/store/${this.headerService.saleflow._id}`],
+            [`/ecommerce/${this.headerService.saleflow._id}/store`],
             {
               replaceUrl: this.headerService.checkoutRoute ? true : false,
             }
@@ -345,24 +338,6 @@ export class ArticleDetailComponent implements OnInit {
             this.router.navigate([this.headerService.checkoutRoute], {
               replaceUrl: true,
             });
-            return;
-          }
-          if (this.headerService.saleflow.module?.post) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
-            ]);
-            return;
-          }
-          if (this.headerService.saleflow.module?.appointment?.calendar?._id) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
-            ]);
-            return;
-          }
-          if (this.headerService.saleflow.module?.delivery) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/new-address`,
-            ]);
             return;
           }
           this.router.navigate([
@@ -389,7 +364,7 @@ export class ArticleDetailComponent implements OnInit {
     }
     this.itemsService.removeTemporalItem();
     this.router.navigate(
-      [`/ecommerce/store/${this.headerService.saleflow._id}`],
+      [`/ecommerce/${this.headerService.saleflow._id}/store`],
       {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
       }
@@ -403,8 +378,8 @@ export class ArticleDetailComponent implements OnInit {
           `${
             // // this.itemData.images.length < 3
             // //   ?
-            
-              '1'
+
+            '1'
             // // : this.getRandomArbitrary(0, this.itemData.images.length)
           }fr`
       )

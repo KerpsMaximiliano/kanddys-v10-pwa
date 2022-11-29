@@ -38,15 +38,38 @@ const routes: Routes = [
     component: RedirectionsComponent,
   },
   {
-    path: '',
+    path: 'item-detail',
+    component: ItemDetailComponent,
+  },
+  {
+    path: 'order-info/:orderId',
+    redirectTo: 'order-detail/:orderId',
+    pathMatch: 'full',
+  },
+  {
+    path: 'order-detail/:orderId',
+    component: OrderDetailComponent,
+  },
+  {
+    path: 'megaphone-v3/:saleflowId',
+    redirectTo: ':saleflowId/store',
+    pathMatch: 'full',
+  },
+  {
+    path: 'store/:saleflowId',
+    redirectTo: ':saleflowId/store',
+    pathMatch: 'full',
+  },
+  {
+    path: ':saleflowId',
     component: EcommerceComponent,
     children: [
       {
-        path: 'category-items/:id/:categoryId',
+        path: 'category-items/:categoryId',
         component: CategoryItemsComponent,
       },
       {
-        path: 'provider-store/:saleflowId/:itemId',
+        path: 'provider-store/:itemId',
         component: ProviderStoreComponent,
         children: [
           {
@@ -63,9 +86,8 @@ const routes: Routes = [
           },
         ],
       },
-      { path: 'megaphone-v3/:id', redirectTo: 'store/:id', pathMatch: 'full' },
       {
-        path: 'store/:id',
+        path: 'store',
         component: StoreComponent,
       },
       {
@@ -73,50 +95,38 @@ const routes: Routes = [
         component: CreateArticleComponent,
       },
       {
-        path: ':saleflowId/article-detail/:entity/:entityId',
+        path: 'article-detail/:entity/:entityId',
         component: ArticleDetailComponent,
       },
       {
-        path: 'order-info/:id',
-        component: OrderDetailComponent,
-      },
-      {
-        path: ':saleflowId/new-address',
+        path: 'new-address',
         component: NewAddressComponent,
       },
       {
-        path: 'item-detail',
+        path: 'item-detail/:itemId',
         component: ItemDetailComponent,
       },
       {
-        path: 'item-detail/:saleflow/:id',
-        component: ItemDetailComponent,
-      },
-      {
-        path: ':saleflowId/create-giftcard',
+        path: 'create-giftcard',
         component: CreateGiftcardComponent,
       },
       {
-        path: ':saleflowId/reservations/:calendarId',
+        path: 'reservations/:calendarId',
         component: ReservationsComponent,
       },
       {
-        path: 'order-detail/:id',
-        component: OrderDetailComponent,
-      },
-      {
-        path: ':saleflowId/checkout',
+        path: 'checkout',
         component: CheckoutComponent,
       },
       {
-        path: 'payments/:id',
+        path: 'payments/:orderId',
+        component: PaymentsComponent,
+      },
+      {
+        path: 'payments',
         component: PaymentsComponent,
       },
     ],
-  },
-  {
-    path: ':saleflowId/payments',
-    component: PaymentsComponent,
   },
 ];
 

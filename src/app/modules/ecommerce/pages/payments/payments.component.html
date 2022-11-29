@@ -1,5 +1,8 @@
 <div class="container">
-  <header class="header">
+  <header
+    class="header"
+    [ngStyle]="{ backgroundColor: headerService.colorTheme }"
+  >
     <div style="display: flex; align-items: center">
       <button (click)="onBackClick()" class="back-btn"><i class="fas fa-chevron-left"></i></button>
       <h1 class="method">Métodos de Pagos</h1>
@@ -82,7 +85,7 @@
         : ''
     "
     [size]="'small'"
-    [bgColor]="image ? '#2874AD' : '#A1A1A1'"
+    [bgColor]="image ? headerService.colorTheme : '#A1A1A1'"
     [customLeftButtonStyles]="{
       'letter-space': '1px',
       'font-family': 'RobotoMedium',

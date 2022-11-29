@@ -51,6 +51,8 @@ export class TagsSelectorComponent implements OnInit {
         selectedTags: this.tag,
       });
     }
+
+    this.tagSelected(tag, this.tag.includes(tag));
   }
 
   tagSelected(args: any, selected: boolean) {
@@ -60,8 +62,6 @@ export class TagsSelectorComponent implements OnInit {
         tag: args,
         selected,
       });
-
-    console.log(args);
   }
 
   constructor() {}

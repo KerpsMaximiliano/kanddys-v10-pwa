@@ -379,10 +379,8 @@ export class ArticleCreatorComponent implements OnInit {
         if (this.isOrder) {
           delete value.message;
           this._HeaderService.post = value;
-          this._HeaderService.isComplete.message = true;
-          this._HeaderService.storeOrderProgress(
-            this._HeaderService.saleflow._id
-          );
+          this._HeaderService.orderProgress.message = true;
+          this._HeaderService.storeOrderProgress();
           this._Router.navigate([
             `/ecommerce/${this._ActivatedRoute.snapshot.paramMap.get(
               'saleflowId'
