@@ -37,6 +37,10 @@ export const body = `
     name
     _id
   }
+  social {
+    name
+    url
+  }
 `;
 
 export const bodyWithoutShowItems = `

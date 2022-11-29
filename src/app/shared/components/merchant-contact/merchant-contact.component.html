@@ -1,0 +1,73 @@
+<div class="wrapper">
+  <div class="avatar-column">
+    <div
+      class="avatar-image"
+      [ngStyle]="{
+        'background-image':
+          'url(' +
+          headerService.merchantInfo?.image +
+          '), url(/assets/images/noimage.png)'
+      }"
+    ></div>
+  </div>
+  <div class="contact-column">
+    <div class="title-and-contact-icons">
+      <div class="title">
+        {{ headerService.merchantInfo?.name || "Tienda sin nombre" }}
+      </div>
+      <div class="contact-icons">
+        <a
+          *ngIf="headerService.merchantInfo.owner.phone"
+          target="_blank"
+          class="icon"
+          [href]="
+            'https://wa.me/' +
+            headerService.merchantInfo.owner.phone +
+            '?text=Hola%20' +
+            headerService.merchantInfo?.title
+          "
+        >
+          <img [src]="env + '/whatsapp_black.svg'" alt="whatsapp" />
+        </a>
+        <ng-container *ngFor="let social of headerService.merchantInfo?.social">
+          <a
+            class="icon"
+            *ngIf="social.name === 'location'"
+            [href]="social.url"
+            target="_blank"
+            ><img [src]="env + '/location_black.svg'" alt="location"
+          /></a>
+          <a
+            class="icon"
+            *ngIf="social.name === 'email'"
+            href="mailto:{{ social.url }}"
+            ><img [src]="env + '/send.svg'" alt="email"
+          /></a>
+          <a
+            class="icon"
+            *ngIf="social.name === 'phone'"
+            href="tel:+{{ social.url }}"
+            ><img [src]="env + '/telephone.svg'" alt="call"
+          /></a>
+
+          <div class="icon" *ngIf="social.name === 'linkedin'">
+            <img [src]="env + '/linkedin.svg'" alt="linkedin" />
+          </div>
+          <div class="icon" *ngIf="social.name === 'twitter'">
+            <img [src]="env + '/twitter.svg'" alt="twitter" />
+          </div>
+          <div class="icon" *ngIf="social.name === 'instagram'">
+            <img class="blue" [src]="env + '/instagram.svg'" alt="instagram" />
+          </div>
+          <div class="icon" *ngIf="social.name === 'tiktok'">
+            <img [src]="env + '/tiktok.svg'" alt="tiktok" />
+          </div>
+          <div class="icon" *ngIf="social.name === 'web'">
+            <img [src]="env + '/planet.svg'" alt="website" />
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="descriptions">{{ headerService.merchantInfo?.activity }}</div>
+  </div>
+</div>

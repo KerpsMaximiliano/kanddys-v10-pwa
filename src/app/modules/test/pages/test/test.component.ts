@@ -130,7 +130,7 @@ export class TestComponent implements OnInit {
                 payloadJSON: JSON.stringify({
                   webCheckoutDetails: {
                     checkoutReviewReturnUrl:
-                      'https://e83e-89-187-179-57.ngrok.io/test/test',
+                      'https://e747-37-19-200-2.ngrok.io/test/test',
                   },
                   storeId:
                     'amzn1.application-oa2-client.bfad20fb1a834bb6b7889d7e18a5c33f',
@@ -144,11 +144,11 @@ export class TestComponent implements OnInit {
                   },
                   scopes: ['name', 'email', 'phoneNumber', 'billingAddress'],
                 }), // string generated in step 2
-                signature: `gBz5Imv+HwfGbsNEZUnK/4g7vkwk373rPP3eGYUtNpfoE/ckJfnmtLmTWct1nNIHZOEn8TuHeeDDupDg4C1UJ+FIgm19VPrGo1RunTk/Pathux7whyJaFLjh28l0qdZsrsWfiAO7+clMf5GR6pEaDElRSz7sbTrt3EBiS23d4yHXjSplLy+IFwfrXSbK9XhLSLcrIxNvjEwT/JrNDIolqaIF8Z0gnyGBvC9i5SIokGQ6spEuh9x31xbU5bo5kOd9DUhY7hMaIfjMFDFrNfsT590ytIuFlXc5v/lbsoaHDgQJPof3l2Il5romGkkM5XmolqfaORi2QxRxjco7TRbvCQ==`, // signature generated in step 3
+                signature: `ff3AivsSKK8IKSQap1zsm/8tcjwFB1Cj/RQFCZ6NFNQwMR5d7opwrPQNxrOjSJIwvIk/5JakTYA6au+d2A7V/UUqd96z6KXYM1MVPthm7O1Qw7pxgzowuDFPPav55R8YyWmRMCzzNHGW/17qCLRAlr3xVJUzQNYibsQdqnODUAV8kPFLmC5QDIszmKvIJAUaiqfyeJFnPNv09HPnoMs3wCPj5J144WGEo/1XoffQtnUE/J4W/7Iujfe6lTf/Mvv7EqqB0Lx6xU1gI0n/tGj+1gPtUfF1P+YK8iMVT88NwF08VUC6ZWQajTkFHggZ2jkpjHamNWbLrfi2LfA9/eOHVA==`, // signature generated in step 3
               },
             }
           );
-        }, 500)
+        }, 500);
       } else {
         setTimeout(() => {
           (window as any).amazon.Pay.bindChangeAction('#changeButton1', {
@@ -163,6 +163,9 @@ export class TestComponent implements OnInit {
         }, 500);
       }
     });
+
+    //Si quisiera cambiar la cantidad de productos de la orden
+    //amazonPayButton.updateButtonInfo({"amount":"120.99","currencyCode":"USD"});
   }
 
   openDialog() {
