@@ -39,7 +39,7 @@ const routes: Routes = [
     component: RedirectionsComponent,
   },
   {
-    path: 'article-access/:postId',
+    path: 'article-access/:templateId',
     component: ArticleAccessComponent
   },
   {

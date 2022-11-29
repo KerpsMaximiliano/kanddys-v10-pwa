@@ -7,6 +7,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Target } from 'src/app/core/models/post';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { RecipientsService } from 'src/app/core/services/recipients.service';
+import { Recipient } from 'src/app/core/models/recipients';
 
 @Component({
   selector: 'app-article-access',
@@ -29,27 +32,49 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    activeIndex: number;
    check: OptionAnswerSelector[] = [];
    _Subscription: Subscription;
-   targets:Target[] = [];
-   postId:string;
+   targets:Recipient[] = [];
+   templateId:string;
 
   constructor(
    private dialog: DialogService,
    private _PostsService: PostsService,
    private _ActivatedRoute: ActivatedRoute,
-   private _AuthService: AuthService
+   private _AuthService: AuthService,
+   private _EntityTemplateService: EntityTemplateService,
+   private _RecipientsService: RecipientsService
    ) { }
 
   ngOnInit(): void {
-   this._Subscription = this._ActivatedRoute.params.subscribe(({ postId }) => {
-      this.postId = postId;
+   this._Subscription = this._ActivatedRoute.params.subscribe(({ templateId }) => {
+      this.templateId = templateId;
       const post = async () => {
-         const { post } = await this._PostsService.getSimplePost(postId);
-         const { targets }:any = post;
-         this.targets = targets;
-         for(const { emailOrPhone, nickname } of targets){
+         const { recipients } = await this._EntityTemplateService.entityTemplate(templateId);
+         console.log('recipients: ', recipients);
+         const _recipients = [];
+         for(const { recipient } of recipients){
+            console.log('recipient: ', recipient);
+            const pagination = {
+              paginate: {
+                findBy: {
+                  _id: {
+                     __in: [
+                        recipient
+                     ]
+                  },
+                },
+              },
+            };
+            const {recipients}: any = await this._RecipientsService.recipients(pagination);
+            const [data] = recipients;
+            console.log('data: ', data);
+            _recipients.push(data);
+         }
+         this.targets = _recipients;
+         for(const { email, phone, nickname } of _recipients){
             let aux = false;
-            const list = emailOrPhone.split('');
-            const isEmail = emailOrPhone.includes('@');
+            const data = phone || email;
+            const list = data.split('');
+            const isEmail = data.includes('@');
             const maskedContent = list.map(
                (character:string, index:number) => {
                if(character==='@')
@@ -84,7 +109,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
             this.check.push(content);
          }
       }
-      if(postId)
+      if(templateId)
          post();
    })
   }
@@ -169,14 +194,17 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    this.sentInvite = true;
    this.code = this.check[e].subtexts.length?this.check[e].subtexts[0].text:this.check[e].value; 
    const generateMagicLink = async () => {
-      const emailOrPhone = this.targets[e].emailOrPhone;
+      console.log('this.targets: ', this.targets);
+      const emailOrPhone = this.targets[e].phone || this.targets[e].email;
+      console.log('emailOrPhone: ', emailOrPhone);
       const result = await this._AuthService.generateMagicLink(
-      emailOrPhone,
+         emailOrPhone,
          'ecommerce/article-detail',
-         this.postId,
+         this.templateId,
          'PostAccess',
          {}
       );
+      console.log('result: ', result);
       clearInterval(this.timeinterval);
       this.initializeClock();
    };
