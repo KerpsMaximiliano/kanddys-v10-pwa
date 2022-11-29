@@ -154,7 +154,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        const { saleflowId, calendarId, reservationId } = routeParams;
+        const { merchantSlug, calendarId, reservationId } = routeParams;
         const { clientEmail, clientPhone } = queryParams;
 
         //this queryParams are here for the merchant to use
@@ -168,10 +168,9 @@ export class ReservationsCreatorComponent implements OnInit {
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
 
         // If true, this reservation is for an order
-        if (saleflowId) {
+        if (merchantSlug) {
           this.isOrder = true;
           this.stickyButtonText = 'Continuar al resumen de la factura';
-          await this.headerService.fetchSaleflow(saleflowId);
           this.headerService.colorTheme =
             this.headerService.user?._id ===
             this.headerService.saleflow?.merchant?.owner?._id
@@ -228,7 +227,7 @@ export class ReservationsCreatorComponent implements OnInit {
             return;
           }
           const date = this.headerService.getReservation()?.date;
-          if (!saleflowId || !date) {
+          if (!merchantSlug || !date) {
             const currentMonth =
               this.calendarsService.allMonths[currentDateObject.getMonth()];
 
@@ -845,7 +844,7 @@ export class ReservationsCreatorComponent implements OnInit {
       this.headerService.orderProgress.reservation = true;
       this.headerService.storeOrderProgress();
       this.router.navigate([
-        `/ecommerce/${this.headerService.saleflow._id}/new-address`,
+        `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
       ]);
       return;
     }

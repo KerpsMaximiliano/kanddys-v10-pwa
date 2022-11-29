@@ -798,7 +798,7 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
-          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/store`;
+          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/store`;
 
           await this.ngNavigatorShareService
             .share({
@@ -971,7 +971,7 @@ export class ItemsDashboardComponent implements OnInit {
         callback: async () => {
           if (item.status !== 'disabled') {
             this.router.navigate([
-              `/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${item._id}`,
+              `/ecommerce/item-detail/${this.saleflowService.saleflowData.merchant.slug}/${item._id}`,
             ]);
           } else {
             const { images, name, description, pricing, _id, ...rest } = item;

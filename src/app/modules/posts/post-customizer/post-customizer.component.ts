@@ -2601,13 +2601,13 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
         )
           this.router.navigate([
             `ecommerce/${
-              this.header.saleflow?._id || this.header.getSaleflow()?._id
+              this.header.saleflow?.merchant.slug || this.header.getSaleflow()?.merchant.slug
             }/provider-store/${this.itemId}/gift-message`,
           ]);
         else
           this.router.navigate([
             `ecommerce/${
-              this.header.saleflow?._id || this.header.getSaleflow()?._id
+              this.header.saleflow?.merchant.slug || this.header.getSaleflow()?.merchant.slug
             }/provider-store/${this.itemId}/user-info`,
           ]);
       } else {

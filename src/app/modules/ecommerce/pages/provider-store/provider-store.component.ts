@@ -249,7 +249,7 @@ export class ProviderStoreComponent implements OnInit {
       item.customizerId = customizerId;
       this.header.items = [item];
       this.router.navigate([
-        `/ecommerce/${this.header.saleflow._id}/provider-store/${this.header.items[0]._id}/quantity-and-quality`,
+        `/ecommerce/${this.header.saleflow.merchant.slug}/provider-store/${this.header.items[0]._id}/quantity-and-quality`,
       ]);
       let itemParams: ItemSubOrderParamsInput[];
       if (item.params.length > 0) {
@@ -374,7 +374,7 @@ export class ProviderStoreComponent implements OnInit {
       ]);
     }*/
     //this.location.back();
-    this.router.navigate([`/ecommerce/${this.header.saleflow._id}/store`]);
+    this.router.navigate([`/ecommerce/${this.header.saleflow.merchant.slug}/store`]);
   }
 
   openImageDetail() {
