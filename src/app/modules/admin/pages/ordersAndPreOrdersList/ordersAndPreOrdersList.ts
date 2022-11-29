@@ -168,7 +168,15 @@ export class OrdersAndPreOrdersList implements OnInit {
         this.ordersByMerchantSortOrder = sort;
 
         this.loadingStatus = 'loading';
-        let tags: Array<Tag> = (await this.tagsService.tagsByUser()) || [];
+        let tags: Array<Tag> =
+          (await this.tagsService.tagsByUser({
+            findBy: {
+              entity: 'order',
+            },
+            options: {
+              limit: -1,
+            },
+          })) || [];
         this.tags = tags;
         this.unselectedTags = [...this.tags];
 
@@ -248,18 +256,20 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.loadingStatus = 'complete';
 
     //Get income for tagGroups
-    this.getPermanentTagGroupsIncome(this.tagGroups, this.typeOfList).then((result) => {
-      if (!this.changedMenuOption) this.tagGroups = result;
-    });
+    this.getPermanentTagGroupsIncome(this.tagGroups, this.typeOfList).then(
+      (result) => {
+        if (!this.changedMenuOption) this.tagGroups = result;
+      }
+    );
 
-      this.permanentOrdersTagGroups = await this.getPermanentTagGroupsIncome(
-        JSON.parse(JSON.stringify(this.permanentOrdersTagGroups)),
-        'facturas'
-      );
-      this.permanentPreOrdersTagGroups = await this.getPermanentTagGroupsIncome(
-        JSON.parse(JSON.stringify(this.permanentPreOrdersTagGroups)),
-        'draft'
-      );
+    this.permanentOrdersTagGroups = await this.getPermanentTagGroupsIncome(
+      JSON.parse(JSON.stringify(this.permanentOrdersTagGroups)),
+      'facturas'
+    );
+    this.permanentPreOrdersTagGroups = await this.getPermanentTagGroupsIncome(
+      JSON.parse(JSON.stringify(this.permanentPreOrdersTagGroups)),
+      'draft'
+    );
 
     this.incomeLoadingStatus = 'complete';
   }
@@ -354,7 +364,6 @@ export class OrdersAndPreOrdersList implements OnInit {
           tags: [tagGroup.tag._id],
         },
       });
-
 
       tagGroup.income = income;
     }
@@ -848,7 +857,11 @@ export class OrdersAndPreOrdersList implements OnInit {
         : this.router.url.split('?')[0]
     );
     this.savePageSnapshot();
-    this.router.navigate([`ecommerce/order-info/${orderId}`]);
+    this.router.navigate([`ecommerce/order-info/${orderId}`], {
+      queryParams: {
+        redirectTo: window.location.href.split('/').slice(3).join('/'),
+      },
+    });
   }
 
   getCreationDateDifferenceAsItsSaid(dateISOString) {

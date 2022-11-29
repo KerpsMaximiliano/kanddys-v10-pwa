@@ -41,7 +41,7 @@ export class UserInfoComponent implements OnInit {
         }
       );
       this.router.navigate([`ecommerce/${this.header.saleflow._id}/checkout`]);
-      this.header.storeOrderAnonymous(this.header.saleflow._id);
+      this.header.storeOrderAnonymous();
       return;
     }
   }
@@ -58,7 +58,7 @@ export class UserInfoComponent implements OnInit {
       .subscribe((e) => {
         if (e.data)
           this.router.navigate([
-            `ecommerce/provider-store/${this.header.saleflow._id}/${this.header.items[0]._id}/${e.data}`,
+            `ecommerce/${this.header.saleflow._id}/provider-store/${this.header.items[0]._id}/${e.data}`,
           ]);
         sub.unsubscribe();
       });
@@ -70,7 +70,7 @@ export class UserInfoComponent implements OnInit {
       this.header.saleflow.module.delivery &&
       this.header.saleflow.module.delivery.isActive
     ) {
-      if (this.header.isComplete.delivery) {
+      if (this.header.orderProgress.delivery) {
         this.warningSteps.push({
           name: 'Entrega',
           url: 'pick-location',
@@ -85,7 +85,7 @@ export class UserInfoComponent implements OnInit {
       }
     }
     if (this.header.items.some((item) => item.customizerId)) {
-      if (this.header.isComplete.customizer) {
+      if (this.header.orderProgress.customizer) {
         this.warningSteps.push({
           name: 'Personalización',
           url: 'quantity-and-quality',
@@ -98,7 +98,7 @@ export class UserInfoComponent implements OnInit {
           status: false,
         });
       }
-      if (this.header.isComplete.qualityQuantity) {
+      if (this.header.orderProgress.qualityQuantity) {
         this.warningSteps.push({
           name: 'Calidades',
           url: 'quantity-and-quality',
@@ -116,7 +116,7 @@ export class UserInfoComponent implements OnInit {
       this.header.saleflow.module.appointment &&
       this.header.saleflow.module.appointment.isActive
     ) {
-      if (this.header.isComplete.reservation) {
+      if (this.header.orderProgress.reservation) {
         this.warningSteps.push({
           name: 'Reservación',
           url: `reservation/${this.header.saleflow._id}`,
@@ -131,7 +131,7 @@ export class UserInfoComponent implements OnInit {
       }
     }
     if (this.header.hasScenarios) {
-      if (this.header.isComplete.scenarios) {
+      if (this.header.orderProgress.scenarios) {
         this.warningSteps.push({
           name: 'Escenarios',
           url: 'select-pack',
@@ -149,7 +149,7 @@ export class UserInfoComponent implements OnInit {
       this.header.saleflow.module.post &&
       this.header.saleflow.module.post.isActive
     ) {
-      if (this.header.isComplete.message) {
+      if (this.header.orderProgress.message) {
         this.warningSteps.push({
           name: 'Mensaje',
           url: 'gift-message',

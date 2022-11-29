@@ -91,8 +91,8 @@ export class SaleFlow extends Model<SaleFlow> {
 }
 
 export class PaginationRangeInput {
-  from: string;
-  to: string;
+  from?: string;
+  to?: string;
 }
 
 export class PaginationOptionsInput {

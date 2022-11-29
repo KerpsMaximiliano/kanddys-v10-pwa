@@ -1,22 +1,26 @@
 <div class="store-page" (scroll)="infinitePagination()">
   <div class="component">
     <header>
-      <div class="header" *ngIf="selectedTags.length === 0">
+      <div
+        class="header"
+        [style.backgroundColor]="header.colorTheme"
+        *ngIf="selectedTags.length === 0"
+      >
         <div class="title">
           {{
-            saleflowData?.merchant?.name.length < 18
-              ? "Bienvenido a " + saleflowData?.merchant?.name
+            header.saleflow?.merchant?.name.length < 18
+              ? "Bienvenido a " + header.saleflow?.merchant?.name
               : "Bienvenido a " +
-                  saleflowData?.merchant?.name.slice(0, 18) +
+                  header.saleflow?.merchant?.name.slice(0, 18) +
                   ".." || "Tienda"
           }}
         </div>
 
         <div class="user-area" (click)="openUserManagementDialog()">
-          <span *ngIf="user">{{
-            (user.name || user.phone || user.email).length > 10
-              ? (user.name || user.phone || user.email).slice(0, 10) + ".."
-              : user.name || user.phone || user.email
+          <span *ngIf="header.user">{{
+            (header.user.name || header.user.phone || header.user.email).length > 10
+              ? (header.user.name || header.user.phone || header.user.email).slice(0, 10) + ".."
+              : header.user.name || header.user.phone || header.user.email
           }}</span>
           <img class="icon" [src]="env + '/user-white.svg'" />
         </div>
@@ -28,6 +32,9 @@
         (dotsClicked)="openUserManagementDialog()"
         [showSearch]="selectedTags.length > 0"
         (searchClick)="showSearchbar = true"
+        [containerStyles]="{
+          backgroundColor: header.colorTheme
+        }"
       ></app-helper-headerv3>
 
       <app-tags-selector
@@ -36,7 +43,8 @@
         [selectedTagsIds]="getActiveTagsFromSelectedTagsPermantent()"
         [multipleTags]="true"
         [selectedBackground]="'#ffffff'"
-        [background]="'rgb(40, 116, 173)'"
+        [background]="header.colorTheme"
+        [containerBackground]="header.colorTheme"
         [selectedColor]="'#2874ad'"
         [color]="'#fff'"
         [fillSelectedTagsOnStart]="true"
@@ -71,6 +79,9 @@
           <swiper [config]="swiperConfigTag" #tagsSwiper>
             <div
               class="tags-area swiper-slide"
+              [ngStyle]="{
+                maxWidth: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)'
+              }"
               *ngFor="let tag of unselectedTags"
             >
               <ng-container *ngFor="let tag2 of tags; let tagIndex = index">
@@ -79,6 +90,9 @@
                     (click)="selectTag(tag, tagIndex)"
                     class="tag-item"
                     [ngStyle]="{
+                      width: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
+                      height:
+                        'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
                       'background-image':
                         tag.images?.length > 0
                           ? 'url(' + tag.images[0] + ')'
@@ -129,7 +143,7 @@
                 [price]="item.pricing"
                 [itemParams]="item.params"
                 [showPrice]="true"
-                (itemClicked)="onItemClick(item._id, true)"
+                (itemClicked)="onItemClick(item._id)"
                 [dynamicStyles]="{
                   itemContainer: {
                     minWidth: '242px',
@@ -188,11 +202,11 @@
                   ? true
                   : false
               "
-              [imgURL]="item.images ? item.images[0] : ''"
+              [imgURL]="item.images?.length ? item.images[0] : ''"
               [price]="item.pricing"
               [showPrice]="true"
               [itemParams]="item.params"
-              (itemClicked)="onItemClick(item._id, true)"
+              (itemClicked)="onItemClick(item._id)"
               [responsiveWidthVersion]="true"
             ></app-saleflow-item>
           </div>

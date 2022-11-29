@@ -233,7 +233,7 @@ export class EntityDetailMetricsComponent implements OnInit {
         text: 'Crea un nuevo artículo',
         callback: () => {
           this.headerService.flowRoute = this.router.url;
-          this.router.navigate([`admin/create-item`]);
+          this.router.navigate([`admin/create-article`]);
         },
       },
       {
@@ -244,8 +244,9 @@ export class EntityDetailMetricsComponent implements OnInit {
               title: '',
               url:
                 environment.uri +
-                '/ecommerce/store/' +
-                this.saleflowService.saleflowData._id,
+                '/ecommerce/' +
+                this.saleflowService.saleflowData._id +
+                'store',
             })
             .then((response) => {
               console.log(response);
@@ -297,7 +298,7 @@ export class EntityDetailMetricsComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
-          const link = `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`;
+          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/store`;
 
           await this.ngNavigatorShareService
             .share({
@@ -334,13 +335,13 @@ export class EntityDetailMetricsComponent implements OnInit {
         text: 'Crea un nuevo artículo',
         callback: () => {
           this.headerService.flowRoute = this.router.url;
-          this.router.navigate([`admin/create-item`]);
+          this.router.navigate([`admin/create-article`]);
         },
       },
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
-          const link = `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`;
+          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/store`;
           await this.ngNavigatorShareService
             .share({
               title: '',
@@ -372,13 +373,13 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   onPencilClick = () => {
     this.headerService.flowRoute = this.router.url;
-    this.router.navigate(['admin/create-item']);
+    this.router.navigate(['admin/create-article']);
   };
 
   redirectToCreateItem = () => {
     this.headerService.flowRoute = this.router.url;
     this.itemsService.temporalItem = null;
-    this.router.navigate(['admin/create-item']);
+    this.router.navigate(['admin/create-article']);
   };
 
   redirectMerchantItems = (url: string) => {

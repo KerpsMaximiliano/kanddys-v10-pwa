@@ -101,6 +101,7 @@ import { TagsCarousellComponent } from './components/tags-carousell/tags-carouse
 import { HelperHeaderv3Component } from './components/helper-headerv3/helper-headerv3.component';
 import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
+import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
 import { InputTransparentComponent } from './dialogs/input-transparent/input-transparent.component';
 
@@ -213,6 +214,7 @@ const declarations = [
   FunctionalityParametersComponent,
   ConfirmActionDialogComponent,
   InputTransparentComponent,
+  AnexosDialogComponent
 ];
 
 @NgModule({
