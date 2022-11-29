@@ -1,22 +1,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { Item, ItemParamValue } from '../../../../core/models/item';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { AppService } from 'src/app/app.service';
-import { filter } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
 import { Subscription } from 'rxjs';
-import { SaleFlow } from 'src/app/core/models/saleflow';
+import { filter } from 'rxjs/operators';
+import { AppService } from 'src/app/app.service';
+import { ItemSubOrderInput } from 'src/app/core/models/order';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
-import { ItemSubOrderInput } from 'src/app/core/models/order';
-import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { Item, ItemParamValue } from '../../../../core/models/item';
 
 @Component({
   selector: 'app-item-detail',
@@ -27,13 +26,12 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   constructor(
     public itemsService: ItemsService,
     private route: ActivatedRoute,
-    private header: HeaderService,
+    public headerService: HeaderService,
     private router: Router,
     private dialog: DialogService,
     private appService: AppService
   ) {}
   item: Item;
-  saleflowData: SaleFlow;
   inCart: boolean;
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
@@ -53,12 +51,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   hasImage: boolean;
 
   ngOnInit(): void {
-    this.route.params.subscribe(async (params) => {
-      if (!params.saleflow || !params.id) return this.previewItem();
-      this.saleflowData = await this.header.fetchSaleflow(params.saleflow);
-      if (!this.saleflowData) return new Error(`Saleflow doesn't exist`);
+    this.route.params.subscribe(async ({ itemId }) => {
+      if (!itemId) return this.previewItem();
 
-      this.item = await this.itemsService.item(params.id);
+      this.item = await this.itemsService.item(itemId);
       if (
         !this.item ||
         (this.item.status !== 'active' && this.item.status !== 'featured')
@@ -83,9 +79,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       }
 
       const whatsappMessage = encodeURIComponent(
-        `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`
+        `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/${this.headerService.saleflow._id}/item-detail/${this.item._id}`
       );
-      this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
+      this.whatsappLink = `https://wa.me/${this.headerService.saleflow.merchant.owner.phone}?text=${whatsappMessage}`;
       this.itemInCart();
     });
 
@@ -119,7 +115,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   itemInCart() {
-    const productData = this.header.getItems(this.saleflowData._id);
+    const productData = this.headerService.getItems();
     if (productData?.length) {
       this.inCart = productData.some(
         (item) =>
@@ -133,15 +129,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   paramFromSameItem(id: string) {
-    const products = this.header.getItems(
-      this.header.saleflow?._id ?? this.header.getSaleflow()?._id
-    );
+    const products = this.headerService.getItems();
     products?.forEach((product) => {
       if (!product.params) {
         this.item.params[0].values.forEach((value) => {
           if (id != product._id && value._id == product._id) {
-            this.header.removeItem(this.saleflowData._id, product._id);
-            this.header.removeOrderProduct(this.saleflowData._id, product._id);
+            this.headerService.removeItem(product._id);
+            this.headerService.removeOrderProduct(product._id);
           }
         });
       }
@@ -156,36 +150,21 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       props: {
         headerButton: 'Ver más productos',
         headerCallback: () =>
-          this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`], {
-            replaceUrl: this.header.checkoutRoute ? true : false,
-          }),
+          this.router.navigate(
+            [`/ecommerce/${this.headerService.saleflow._id}/store`],
+            {
+              replaceUrl: this.headerService.checkoutRoute ? true : false,
+            }
+          ),
         footerCallback: () => {
-          if (this.header.checkoutRoute) {
-            this.router.navigate([this.header.checkoutRoute], {
+          if (this.headerService.checkoutRoute) {
+            this.router.navigate([this.headerService.checkoutRoute], {
               replaceUrl: true,
             });
             return;
           }
-          if (this.header.saleflow.module?.post) {
-            this.router.navigate([
-              `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-            ]);
-            return;
-          }
-          if (this.header.saleflow.module?.appointment?.calendar?._id) {
-            this.router.navigate([
-              `/ecommerce/${this.header.saleflow._id}/reservations/${this.header.saleflow.module.appointment.calendar._id}`,
-            ]);
-            return;
-          }
-          if (this.header.saleflow.module?.delivery) {
-            this.router.navigate([
-              `/ecommerce/${this.header.saleflow._id}/new-address`,
-            ]);
-            return;
-          }
           this.router.navigate([
-            `/ecommerce/${this.header.saleflow._id}/checkout`,
+            `/ecommerce/${this.headerService.saleflow._id}/checkout`,
           ]);
         },
       },
@@ -226,7 +205,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
         ]._id;
       this.paramFromSameItem(paramValue);
     }
-    this.header.storeOrderProduct(this.saleflowData._id, product);
+    this.headerService.storeOrderProduct(product);
     const itemParamValue: ItemParamValue = this.selectedParam
       ? {
           ...this.item.params[this.selectedParam.param].values[
@@ -244,8 +223,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       type: 'added-item',
       data: this.item._id,
     });
-    this.header.storeItem(
-      this.saleflowData._id,
+    this.headerService.storeItem(
       this.selectedParam ? itemParamValue : this.item
     );
     this.itemInCart();
@@ -256,9 +234,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     if (this.previewMode) return;
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${
-          this.item._id
-        }${
+        qrlink: `${this.URI}/ecommerce/${
+          this.headerService.saleflow._id
+        }/item-detail/${this.item._id}${
           this.selectedParam
             ? '?param=' +
               this.selectedParam.param +
@@ -270,9 +248,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${
-              this.item._id
-            }${
+            link: `${this.URI}/ecommerce/${
+              this.headerService.saleflow._id
+            }/item-detail/${this.item._id}${
               this.selectedParam
                 ? '?param=' +
                   this.selectedParam.param +
@@ -284,9 +262,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${
-              this.item._id
-            }${
+            link: `${this.URI}/ecommerce/${
+              this.headerService.saleflow._id
+            }/item-detail/${this.item._id}${
               this.selectedParam
                 ? '?param=' +
                   this.selectedParam.param +
@@ -309,17 +287,17 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   };
 
   back() {
-    if (!this.header.flowRoute) {
-      this.header.flowRoute = localStorage.getItem('flowRoute');
+    if (!this.headerService.flowRoute) {
+      this.headerService.flowRoute = localStorage.getItem('flowRoute');
     }
 
     if (this.previewMode) {
       if (this.item._id)
         return this.router.navigate([`/admin/create-article/${this.item._id}`]);
       else {
-        if (!this.header.flowRoute)
+        if (!this.headerService.flowRoute)
           return this.router.navigate([`/admin/create-article`]);
-        else return this.router.navigate([this.header.flowRoute]);
+        else return this.router.navigate([this.headerService.flowRoute]);
       }
     }
     if (this.selectedParam) {
@@ -327,12 +305,15 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       return;
     }
     this.itemsService.removeTemporalItem();
-    this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`], {
-      replaceUrl: this.header.checkoutRoute ? true : false,
-      queryParams: {
-        startOnSnapshot: true,
-      },
-    });
+    this.router.navigate(
+      [`/ecommerce/${this.headerService.saleflow._id}/store`],
+      {
+        replaceUrl: this.headerService.checkoutRoute ? true : false,
+        queryParams: {
+          startOnSnapshot: true,
+        },
+      }
+    );
   }
 
   selectParamValue(param: number, value: number) {

@@ -19,31 +19,21 @@
         : null
     "
     [multipleTags]="true"
+    containerBackground="#f6f6f6"
     [selectedBackground]="'#2874ad'"
     [background]="'#ffffff'"
     [selectedColor]="'#fff'"
     [fillSelectedTagsOnStart]="true"
     [useIdToRemoveOrAddTags]="true"
-    [color]="'#2874ad'"
-    containerBackground="#f6f6f6"
-    selectedBackground="#fff"
+    color="#2874ad"
     selectedFilter="brightness(2)"
+    [useIdToRemoveOrAddTags]="true"
     (tagSelect)="tagAction($event)"
-    selectedBackground="#2874ad"
-    selectedFilter="brightness(2)"
     [outputAllSelectedTags]="outputAllSelectedTags"
     (tagSelect3)="selectTagHandler($event)"
   ></app-tags-selector>
-  <!--
-    <button class="save" *ngIf="blockCta" (click)="submit()">
-      <img class="icon" src="{{ env }}/save.png" alt="" />
-      <span *ngIf="text" class="save-text">{{ text }}</span>
-    </button>
-  
-    <button class="blocked-cta" *ngIf="!blockCta">
-      <span *ngIf="text" class="save-text">{{
-        !untouchedActionText ? loadingText : untouchedActionText
-      }}</span>
-    </button>
-  -->
+  <!-- <button class="save" (click)="buttonAction()">
+    <img class="icon" src="{{ env }}/save.png" alt="" />
+    <span *ngIf="text" class="save-text">{{ text }}</span>
+  </button> -->
 </div>

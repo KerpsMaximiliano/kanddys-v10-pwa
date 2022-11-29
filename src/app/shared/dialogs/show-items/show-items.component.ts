@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+// import { Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
@@ -13,8 +13,8 @@ import { environment } from 'src/environments/environment';
 export class ShowItemsComponent implements OnInit {
   constructor(
     private ref: DialogRef,
-    private header: HeaderService,
-    private router: Router,
+    public header: HeaderService,
+    // private router: Router,
     private readonly app: AppService
   ) {}
 
@@ -29,9 +29,7 @@ export class ShowItemsComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.products.length === 0) {
-      this.products = this.header.getItems(
-        this.header.saleflow?._id ?? this.header.getSaleflow()?._id
-      );
+      this.products = this.header.getItems();
     }
     if (!this.products) return;
     this.price = this.products.reduce((prev, curr) => {
@@ -54,14 +52,8 @@ export class ShowItemsComponent implements OnInit {
 
   deleteItem(i: number) {
     let deletedID = this.products[i]._id;
-    this.header.removeOrderProduct(
-      this.header.saleflow?._id || this.header.getSaleflow()?._id,
-      this.products[i]._id
-    );
-    this.header.removeItem(
-      this.header.saleflow?._id || this.header.getSaleflow()?._id,
-      this.products[i]._id
-    );
+    this.header.removeOrderProduct(this.products[i]._id);
+    this.header.removeItem(this.products[i]._id);
     const index = this.products.findIndex(
       (product) => product._id === this.products[i]._id
     );

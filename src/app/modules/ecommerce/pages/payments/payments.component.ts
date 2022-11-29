@@ -163,7 +163,7 @@ export class PaymentsComponent implements OnInit {
     private router: Router,
     private postsService: PostsService,
     private merchantService: MerchantsService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     private location: LocationStrategy,
     private dialogService: DialogService
   ) {
@@ -175,15 +175,8 @@ export class PaymentsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.status = 'loading';
-    const orderId = this.route.snapshot.paramMap.get('id');
-    if (!orderId) {
-      const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
-      if (!saleflowId) {
-        this.router.navigate([`/home`]);
-        return;
-      }
-      await this.headerService.fetchSaleflow(saleflowId);
-    } else {
+    const orderId = this.route.snapshot.paramMap.get('orderId');
+    if (orderId) {
       const { orderStatus } = await this.orderService.getOrderStatus(orderId);
       if (orderStatus === 'draft')
         this.order = (await this.orderService.preOrder(orderId)).order;
@@ -246,7 +239,8 @@ export class PaymentsComponent implements OnInit {
   }
 
   orderCompleted(id?: string) {
-    this.router.navigate([`ecommerce/order-info/${id || this.order._id}`], {
+    this.router.navigate([`../../../order-detail/${id || this.order._id}`], {
+      relativeTo: this.route,
       replaceUrl: true,
       queryParams: { notify: 'true' },
     });
@@ -422,18 +416,18 @@ export class PaymentsComponent implements OnInit {
               color: '#FFF',
             },
             callback: () => {
-              this.router.navigate([
-                `/ecommerce/store/${this.headerService.saleflow._id}`,
-              ]);
+              this.router.navigate([`../../store`], {
+                relativeTo: this.route,
+              });
             },
           },
         ],
         topBtnCallback: () => {},
         bottomButtonText: 'Cancelar mi factura',
         bottomBtnCallback: () => {
-          this.router.navigate([
-            `/ecommerce/store/${this.headerService.saleflow._id}`,
-          ]);
+          this.router.navigate([`../../store`], {
+            relativeTo: this.route,
+          });
         },
       },
       customClass: 'app-dialog',

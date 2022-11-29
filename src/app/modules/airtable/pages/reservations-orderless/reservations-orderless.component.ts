@@ -425,7 +425,7 @@ export class ReservationOrderlessComponent implements OnInit {
     if (!this.dateFrom) this.dateFrom = this.datePreview.day;
     // End logic for default date
     this.header.datePreview = this.datePreview;
-    this.header.isComplete.reservation = true;
+    this.header.orderProgress.reservation = true;
   }
 
   zorroChange(string) {

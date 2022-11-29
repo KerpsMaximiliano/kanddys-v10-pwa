@@ -19,12 +19,12 @@ export class Session extends Model<Session> {
     localStorage.setItem(tokenKey, this.token);
   }
 
-  get(){
+  get() {
     return localStorage.getItem(tokenKey);
   }
 
   revoke() {
     // alert("La sesión está siendo revocada");
-    // localStorage.removeItem(tokenKey);
+    localStorage.removeItem(tokenKey);
   }
 }

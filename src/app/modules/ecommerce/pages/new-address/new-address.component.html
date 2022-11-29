@@ -1,5 +1,5 @@
 <div class="component">
-  <header>
+  <header [ngStyle]="{ backgroundColor: headerService.colorTheme }">
     <div>
       <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
       <h5>
@@ -14,15 +14,15 @@
     <button
       *ngIf="
         mode === 'normal' &&
-        saleflow?.module?.delivery?.deliveryLocation &&
+        headerService.saleflow?.module?.delivery?.deliveryLocation &&
         user
       "
       class="dot-trio"
       (click)="onOpenDialog()"
     >
-      <div class="dot"> </div>
-      <div class="dot"> </div>
-      <div class="dot"> </div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
     </button>
   </header>
   <main>
@@ -157,7 +157,7 @@
   *ngIf="mode === 'add' || editingId"
   [mode]="addressForm?.valid && !disableButton ? 'fixed' : 'disabled-fixed'"
   text="CONTINUAR"
-  bgColor="#2874AD"
+  [bgColor]="headerService.colorTheme"
   size="small"
   (click)="!disableButton && formSubmit()"
 ></app-sticky-button>
@@ -165,7 +165,7 @@
   *ngIf="mode === 'normal' && selectedDeliveryIndex != null"
   mode="fixed"
   text="CONTINUAR"
-  bgColor="#2874AD"
+  [bgColor]="headerService.colorTheme"
   size="small"
   (click)="selectAddress()"
 ></app-sticky-button>
@@ -173,7 +173,7 @@
   *ngIf="(mode === 'edit' && !editingId) || mode === 'delete'"
   mode="fixed"
   [backButton]="true"
-  bgColor="#2874AD"
+  [bgColor]="headerService.colorTheme"
   size="small"
   (click)="goBack()"
 ></app-sticky-button>
