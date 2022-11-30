@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -25,25 +26,46 @@ export class EcommerceComponent implements OnInit {
     public headerService: HeaderService,
     private appService: AppService,
     private _MerchantsService: MerchantsService,
-    private _SaleflowService: SaleFlowService
+    private _SaleflowService: SaleFlowService,
+    private _Location: Location
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(async ({ merchantSlug }) => {
-      const merchant = await this._MerchantsService.merchantBySlug(
-        merchantSlug
-      );
-      if (!merchant) {
-        // console.log('no hay merchant');
+      const saleflow = (await this._SaleflowService.saleflow(merchantSlug))
+        ?.saleflow;
+      if (saleflow) {
+        const url = this.router
+          .createUrlTree([
+            this._Location
+              .path()
+              .split('?')[0]
+              .replace(merchantSlug, saleflow.merchant.slug),
+          ])
+          .toString();
+
+        this.router.navigate([url], {
+          replaceUrl: true,
+          queryParamsHandling: 'preserve',
+        });
+        return;
       }
-      const saleflow = await this._SaleflowService.saleflowDefault(
-        merchant._id
-      );
       if (!saleflow) {
-        // .log('no hay saleflow');
+        const merchant = await this._MerchantsService.merchantBySlug(
+          merchantSlug
+        );
+        if (!merchant) {
+          // console.log('no hay merchant');
+        }
+        const saleflow = await this._SaleflowService.saleflowDefault(
+          merchant._id
+        );
+        if (!saleflow) {
+          // .log('no hay saleflow');
+        }
+        this.headerService.saleflow = saleflow;
+        this.headerService.storeSaleflow(saleflow);
       }
-      this.headerService.saleflow = saleflow;
-      this.headerService.storeSaleflow(saleflow);
       this.setColorScheme();
       this.headerService.getOrder();
       this.headerService.getItems();
