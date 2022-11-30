@@ -6,6 +6,7 @@ import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { QrCodeDialogComponent } from 'src/app/shared/dialogs/qr-code-dialog/qr-code-dialog.component';
@@ -65,7 +66,7 @@ export class ArticleTemplateComponent implements OnInit {
     private router: Router,
     private toastr: ToastrService,
     private entityTemplateService: EntityTemplateService,
-    private postsService: PostsService,
+    private headerService: HeaderService,
     private authService: AuthService
   ) {}
 
@@ -80,7 +81,7 @@ export class ArticleTemplateComponent implements OnInit {
 
         if (entityTemplate.reference && entityTemplate.entity) {
           this.router.navigate([
-            `admin/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
+            `ecommerce/${this.headerService.saleflow._id}/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
           ]);
         } else {
           this.entityTemplate = entityTemplate;

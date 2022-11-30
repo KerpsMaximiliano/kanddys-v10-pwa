@@ -7,6 +7,7 @@ import { AppService } from 'src/app/app.service';
 import { Item, ItemParamValue } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Tag } from 'src/app/core/models/tags';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -76,12 +77,13 @@ export class ArticleDetailComponent implements OnInit {
     private appService: AppService,
     private dialogService: DialogService,
     private ngNavigatorShareService: NgNavigatorShareService,
+    private entityTemplateService: EntityTemplateService,
     private saleflowService: SaleFlowService
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(async (routeParams) => {
-      const validEntities = ['item', 'post'];
+      const validEntities = ['item', 'post', 'template'];
       const { saleflowId, entity, entityId } = routeParams;
       if (!this.headerService.saleflow)
         await this.headerService.fetchSaleflow(saleflowId);
@@ -117,10 +119,26 @@ export class ArticleDetailComponent implements OnInit {
       }
 
       if (validEntities.includes(entity)) {
-        this.entityId = entityId;
-        this.entity = entity;
+        if (entity !== 'template') {
+          this.entityId = entityId;
+          this.entity = entity;
 
-        await this.getItemData();
+          await this.getItemData();
+        } else {
+          const entityTemplate =
+            await this.entityTemplateService.entityTemplate(entityId);
+
+          if (entityTemplate.reference && entityTemplate.entity) {
+            this.entityId = entityTemplate.reference;
+            this.entity = entityTemplate.entity as any;
+
+            await this.getItemData();
+          } else {
+            this.router.navigate([
+              'ecommerce/' + saleflowId + '/article-template/' + entityId,
+            ]);
+          }
+        }
         this.itemInCart();
       } else {
         this.router.navigate([`others/error-screen/`]);
