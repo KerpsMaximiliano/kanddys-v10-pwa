@@ -431,22 +431,20 @@ export class StoreComponent implements OnInit {
       };
       this.header.storeOrderProduct(product);
       this.header.storeItem(itemData);
-      this.router.navigate([
-        `/ecommerce/${this.header.saleflow._id}/provider-store/${itemData._id}`,
-      ]);
+      this.router.navigate([`../provider-store/${itemData._id}`], {
+        relativeTo: this.route,
+      });
       return;
     }
     this.savePageSnapshot();
-    this.router.navigate(
-      [`/ecommerce/${this.header.saleflow._id}/article-detail/item/${id}`],
-      {
-        replaceUrl: this.header.checkoutRoute ? true : false,
-        queryParams: {
-          mode: 'saleflow',
-          id: this.header.saleflow._id,
-        },
-      }
-    );
+    this.router.navigate([`../article-detail/item/${id}`], {
+      replaceUrl: this.header.checkoutRoute ? true : false,
+      relativeTo: this.route,
+      queryParams: {
+        mode: 'saleflow',
+        id: this.header.saleflow._id,
+      },
+    });
   }
 
   //Same dialog as openDialog() but with StoreShare
@@ -474,7 +472,7 @@ export class StoreComponent implements OnInit {
         func: async () => {
           this.router.navigate(['auth/login'], {
             queryParams: {
-              redirect: `ecommerce/${this.header.saleflow._id}/store`,
+              redirect: `ecommerce/${this.header.saleflow.merchant.slug}/store`,
             },
           });
         },

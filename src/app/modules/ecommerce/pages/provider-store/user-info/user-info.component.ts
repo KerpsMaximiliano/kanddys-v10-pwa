@@ -40,7 +40,7 @@ export class UserInfoComponent implements OnInit {
           positionClass: 'toast-top-center',
         }
       );
-      this.router.navigate([`ecommerce/${this.header.saleflow._id}/checkout`]);
+      this.router.navigate([`ecommerce/${this.header.saleflow.merchant.slug}/checkout`]);
       this.header.storeOrderAnonymous();
       return;
     }
@@ -58,7 +58,7 @@ export class UserInfoComponent implements OnInit {
       .subscribe((e) => {
         if (e.data)
           this.router.navigate([
-            `ecommerce/${this.header.saleflow._id}/provider-store/${this.header.items[0]._id}/${e.data}`,
+            `ecommerce/${this.header.saleflow.merchant.slug}/provider-store/${this.header.items[0]._id}/${e.data}`,
           ]);
         sub.unsubscribe();
       });

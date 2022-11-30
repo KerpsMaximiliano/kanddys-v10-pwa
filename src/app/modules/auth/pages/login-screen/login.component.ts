@@ -220,9 +220,12 @@ export class LoginComponent implements OnInit {
       if (this.auth === 'address') {
         const address = this.headerService.getLocation();
         if (!address) {
-          this.router.navigate([`ecommerce/${SaleFlow}/new-address`], {
-            replaceUrl: true,
-          });
+          this.router.navigate(
+            [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
+            {
+              replaceUrl: true,
+            }
+          );
         }
       }
 
@@ -257,7 +260,9 @@ export class LoginComponent implements OnInit {
     } else if (this.auth === 'payment') {
       if (!this.image) {
         this.router.navigate(
-          [`ecommerce/${this.saleflow._id}/payments/${this.orderId}`],
+          [
+            `ecommerce/${this.saleflow.merchant.slug}/payments/${this.orderId}`,
+          ],
           {
             replaceUrl: true,
           }
@@ -369,7 +374,7 @@ export class LoginComponent implements OnInit {
             // Se le envia el magic link para autenticar
             await this.authService.generateMagicLink(
               this.merchantNumber,
-              `ecommerce/${this.saleflow._id}/new-address`,
+              `ecommerce/${this.saleflow.merchant.slug}/new-address`,
               null,
               'NonExistingOrder',
               {
@@ -446,7 +451,9 @@ export class LoginComponent implements OnInit {
           };
           localStorage.setItem('registered-user', JSON.stringify(userInput));
           this.router.navigate(
-            [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+            [
+              `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+            ],
             {
               replaceUrl: true,
             }
@@ -472,12 +479,15 @@ export class LoginComponent implements OnInit {
             JSON.stringify(this.phoneNumber.value)
           );
           localStorage.setItem('registered-user', JSON.stringify(userInput));
-          this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
-            replaceUrl: true,
-            state: {
-              loggedIn: true,
-            },
-          });
+          this.router.navigate(
+            [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
+            {
+              replaceUrl: true,
+              state: {
+                loggedIn: true,
+              },
+            }
+          );
           this.status = 'ready';
           return;
         }
@@ -528,7 +538,9 @@ export class LoginComponent implements OnInit {
           const result = await this.usersService.addLocation(address);
           if (result) {
             this.router.navigate(
-              [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+              [
+                `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+              ],
               {
                 replaceUrl: true,
               }
@@ -539,7 +551,7 @@ export class LoginComponent implements OnInit {
         }
         if (this.auth === 'order') {
           /* && !this.toValidate*/ this.router.navigate(
-            [`ecommerce/${this.saleflow._id}/new-address`],
+            [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
             {
               replaceUrl: true,
               state: {
@@ -622,7 +634,9 @@ export class LoginComponent implements OnInit {
               }
             );
             this.router.navigate(
-              [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+              [
+                `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+              ],
               {
                 replaceUrl: true,
               }
@@ -640,12 +654,15 @@ export class LoginComponent implements OnInit {
               timeOut: 3000,
             }
           );
-          this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
-            replaceUrl: true,
-            state: {
-              loggedIn: true,
-            },
-          });
+          this.router.navigate(
+            [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
+            {
+              replaceUrl: true,
+              state: {
+                loggedIn: true,
+              },
+            }
+          );
           this.status = 'ready';
           return;
         }
@@ -695,7 +712,9 @@ export class LoginComponent implements OnInit {
         const result = await this.usersService.addLocation(address);
         if (result) {
           this.router.navigate(
-            [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+            [
+              `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+            ],
             {
               replaceUrl: true,
             }
@@ -705,12 +724,15 @@ export class LoginComponent implements OnInit {
         return;
       }
       if (this.auth === 'order') {
-        this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
-          replaceUrl: true,
-          state: {
-            loggedIn: true,
-          },
-        });
+        this.router.navigate(
+          [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
+          {
+            replaceUrl: true,
+            state: {
+              loggedIn: true,
+            },
+          }
+        );
         this.status = 'ready';
         return;
       }
@@ -849,7 +871,9 @@ export class LoginComponent implements OnInit {
             const result = await this.usersService.addLocation(address);
             if (result) {
               this.router.navigate(
-                [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+                [
+                  `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+                ],
                 {
                   replaceUrl: true,
                 }
@@ -859,7 +883,7 @@ export class LoginComponent implements OnInit {
           }
           if (this.auth === 'order') {
             this.router.navigate(
-              [`ecommerce/${this.saleflow._id}/new-address`],
+              [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
               {
                 replaceUrl: true,
                 state: {

@@ -283,7 +283,7 @@ export class CheckoutComponent implements OnInit {
   editOrder(
     mode: 'item' | 'message' | 'address' | 'reservation' | 'customizer'
   ) {
-    this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
+    this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
     switch (mode) {
       case 'item': {
         this.router.navigate([`../store`], {
@@ -536,7 +536,7 @@ export class CheckoutComponent implements OnInit {
       //   break;
       // }
       case 1: {
-        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
+        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
         this.router.navigate([`../create-giftcard`], {
           relativeTo: this.route,
           replaceUrl: true,
