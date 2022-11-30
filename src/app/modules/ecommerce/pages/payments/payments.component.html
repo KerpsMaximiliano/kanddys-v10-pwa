@@ -1,5 +1,5 @@
 <div class="container">
-  <header class="header">
+  <header class="header" [style.backgroundColor]="headerService.colorTheme">
     <button (click)="onBackClick()" class="back-btn">
       <img [src]="env + '/double-arrow-up.png'" alt="open info" />
     </button>
@@ -83,24 +83,30 @@
       </div>
     </ng-container>
   </div>
-  <div class="image-area" *ngIf="selectedBank">
-    <label for="Image" class="image-label">Comprobante de Pago</label>
-    <app-image-input
-      style="margin-left: 5px"
-      [allowedTypes]="['png', 'jpg', 'jpeg']"
-      [expandImage]="true"
-      (onFileInput)="onFileInput($event)"
-      [containerStyles]="{
-        width: '100%'
-      }"
-      [fileStyles]="{
-        width: '100%',
-        backgroundColor: 'white !important',
-        boxShadow: 'rgb(0 0 0 / 18%) 1px 6px 8px 0px inset',
-        border: 'none'
-      }"
-    ></app-image-input>
-  </div>
+
+  <ng-container *ngIf="selectedBank">
+    <div class="separator"></div>
+
+    <div class="image-area">
+      <label for="Image" class="image-label">Comprobante de Pago</label>
+      <app-image-input
+        style="margin-left: 5px"
+        [allowedTypes]="['png', 'jpg', 'jpeg']"
+        [expandImage]="true"
+        (onFileInput)="onFileInput($event)"
+        [containerStyles]="{
+          width: '100%'
+        }"
+        [fileStyles]="{
+          width: '100%',
+          backgroundColor: 'white !important',
+          boxShadow: 'rgb(0 0 0 / 18%) 1px 6px 8px 0px inset',
+          border: 'none'
+        }"
+      ></app-image-input>
+    </div>
+  </ng-container>
+
   <app-sticky-button
     *ngIf="selectedBank && (order || (!order && depositAmount > 0))"
     (click)="!disableButton && image && submitPayment()"
