@@ -4,11 +4,22 @@
       <div class="title">qrCode ID</div>
       <div class="image-container">
         <div class="qr-container" *ngIf="link">
+          <div style="visibility: hidden; position: absolute; z-index: -99;">
+            <qrcode
+              #qrcode
+              [qrdata]="link"
+              [elementType]="'img'"
+              [width]="70"
+              [style.margin-top.px]="-25"
+              [errorCorrectionLevel]="'M'"
+              [allowEmptyString]="true"
+              colorDark="#2874AD"
+            ></qrcode>
+          </div>
           <qrcode
-            #qrcode
             [qrdata]="link"
-            [elementType]="'img'"
-            [width]="50"
+            [elementType]="'svg'"
+            [width]="35"
             [style.margin-top.px]="-25"
             [errorCorrectionLevel]="'M'"
             [allowEmptyString]="true"
@@ -16,7 +27,7 @@
           ></qrcode>
         </div>
         <img
-          style="margin-left: 5px;"
+          style="margin-left: 5px"
           src="{{ env + '/' + 'merge-vertical-blue.png' }}"
           width="30"
           height="30"

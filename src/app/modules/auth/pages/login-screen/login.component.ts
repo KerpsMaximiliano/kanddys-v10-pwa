@@ -272,6 +272,37 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  redirectFromQueryParams() {
+    if (this.redirectionRoute.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
+      const routeParts = this.redirectionRoute.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return { [queryStringElements[0]]: queryStringElements[1] };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([this.redirectionRoute], {
+        replaceUrl: true,
+      });
+    }
+  }
+
   toggleLog() {
     this.loggin = !this.loggin;
     this.OTP = false;
@@ -546,9 +577,7 @@ export class LoginComponent implements OnInit {
         } NO LO BORRÉ PORQUE QUIZAS LO USEMOS LUEGO*/
 
         if (this.redirectionRoute) {
-          this.router.navigate([this.redirectionRoute], {
-            replaceUrl: true,
-          });
+          this.redirectFromQueryParams();
           return;
         }
 
@@ -633,9 +662,7 @@ export class LoginComponent implements OnInit {
         }
 
         if (this.redirectionRoute) {
-          this.router.navigate([this.redirectionRoute], {
-            replaceUrl: true,
-          });
+          this.redirectFromQueryParams();
           return;
         }
 
@@ -698,9 +725,7 @@ export class LoginComponent implements OnInit {
       }
 
       if (this.redirectionRoute) {
-        this.router.navigate([this.redirectionRoute], {
-          replaceUrl: true,
-        });
+        this.redirectFromQueryParams();
         return;
       }
 
@@ -844,9 +869,7 @@ export class LoginComponent implements OnInit {
             );
           } else {
             if (this.redirectionRoute) {
-              this.router.navigate([this.redirectionRoute], {
-                replaceUrl: true,
-              });
+              this.redirectFromQueryParams();
               return;
             }
 

@@ -73,8 +73,8 @@ export class ArticleTemplateComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (param) => {
       const { entityTemplateId } = param;
-
-      if (this.isUserLogged()) {
+      const logged = await this.isUserLogged();
+      if (logged) {
         const entityTemplate = await this.entityTemplateService.entityTemplate(
           entityTemplateId
         );
