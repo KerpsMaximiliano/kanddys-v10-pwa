@@ -82,10 +82,7 @@ export class ArticleDetailComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (routeParams) => {
       const validEntities = ['item', 'post'];
-      const { saleflowId, entity, entityId } = routeParams;
-      if (!this.headerService.saleflow)
-        await this.headerService.fetchSaleflow(saleflowId);
-
+      const { entity, entityId } = routeParams;
       if (
         !this.headerService.saleflow.items.some(
           (saleflowItem) => saleflowItem.item.status
@@ -306,7 +303,7 @@ export class ArticleDetailComponent implements OnInit {
         url:
           environment.uri +
           '/ecommerce/' +
-          this.headerService.saleflow._id +
+          this.headerService.saleflow.merchant.slug +
           '/article-detail/' +
           this.entity +
           '/' +
@@ -327,12 +324,10 @@ export class ArticleDetailComponent implements OnInit {
       props: {
         headerButton: 'Ver más productos',
         headerCallback: () =>
-          this.router.navigate(
-            [`/ecommerce/${this.headerService.saleflow._id}/store`],
-            {
-              replaceUrl: this.headerService.checkoutRoute ? true : false,
-            }
-          ),
+          this.router.navigate([`../../../store`], {
+            replaceUrl: this.headerService.checkoutRoute ? true : false,
+            relativeTo: this.route,
+          }),
         footerCallback: () => {
           if (this.headerService.checkoutRoute) {
             this.router.navigate([this.headerService.checkoutRoute], {
@@ -340,9 +335,9 @@ export class ArticleDetailComponent implements OnInit {
             });
             return;
           }
-          this.router.navigate([
-            `/ecommerce/${this.headerService.saleflow._id}/checkout`,
-          ]);
+          this.router.navigate([`../../../checkout`], {
+            relativeTo: this.route,
+          });
         },
       },
       customClass: 'app-dialog',
@@ -363,12 +358,10 @@ export class ArticleDetailComponent implements OnInit {
       return;
     }
     this.itemsService.removeTemporalItem();
-    this.router.navigate(
-      [`/ecommerce/${this.headerService.saleflow._id}/store`],
-      {
-        replaceUrl: this.headerService.checkoutRoute ? true : false,
-      }
-    );
+    this.router.navigate([`../../../store`], {
+      replaceUrl: this.headerService.checkoutRoute ? true : false,
+      relativeTo: this.route,
+    });
   }
 
   updateFrantions(): void {

@@ -10,7 +10,6 @@ import {
   ItemCategoryHeadline,
 } from 'src/app/core/models/item';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
-import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -274,29 +273,30 @@ export class CategoryItemsComponent implements OnInit {
       };
       this.header.storeOrderProduct(product);
       this.header.storeItem(itemData);
-      this.router.navigate([
-        `/ecommerce/${this.header.saleflow._id}/provider-store/${itemData._id}`,
-      ]);
+      this.router.navigate([`../../provider-store/${itemData._id}`], {
+        relativeTo: this.route,
+      });
     } else
-      this.router.navigate([
-        `/ecommerce/${this.header.saleflow._id}/item-detail/${itemData._id}`,
-      ]);
+      this.router.navigate([`../../item-detail/${itemData._id}`]),
+        {
+          relativeTo: this.route,
+        };
   }
 
   onShareClick = () => {
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/${this.header.saleflow._id}/category-items/${this.categoryId}`,
+        qrlink: `${this.URI}/ecommerce/${this.header.saleflow.merchant.slug}/category-items/${this.categoryId}`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/${this.header.saleflow._id}/category-items/${this.categoryId}`,
+            link: `${this.URI}/ecommerce/${this.header.saleflow.merchant.slug}/category-items/${this.categoryId}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/${this.header.saleflow._id}/category-items/${this.categoryId}`,
+            link: `${this.URI}/ecommerce/${this.header.saleflow.merchant.slug}/category-items/${this.categoryId}`,
           },
         ],
       },
@@ -307,9 +307,9 @@ export class CategoryItemsComponent implements OnInit {
         text: 'Ir a la vista del visitante',
         mode: 'func',
         func: () =>
-          this.router.navigate([
-            `/ecommerce/${this.header.saleflow._id}/category-items/${this.categoryId}`,
-          ]),
+          this.router.navigate([`../../category-items/${this.categoryId}`], {
+            relativeTo: this.route,
+          }),
       });
     }
 
@@ -324,6 +324,8 @@ export class CategoryItemsComponent implements OnInit {
   };
 
   goBack() {
-    this.router.navigate([`/ecommerce/${this.header.saleflow._id}/store`]);
+    this.router.navigate([`../../store`], {
+      relativeTo: this.route,
+    });
   }
 }

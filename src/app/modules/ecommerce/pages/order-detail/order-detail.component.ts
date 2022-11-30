@@ -645,8 +645,10 @@ export class OrderDetailComponent implements OnInit {
   };
 
   goToStore() {
-    let link = this.order.items[0].saleflow._id;
-    this.router.navigate([`ecommerce/${link}/store`]);
+    let link = this.order.items[0].saleflow.merchant.slug;
+    this.router.navigate([`../${link}/store`], {
+      relativeTo: this.route,
+    });
   }
 
   async tagDialog(tags?: string[]) {
@@ -851,7 +853,7 @@ export class OrderDetailComponent implements OnInit {
     this.headerService.storeOrderProgress();
 
     this.router.navigate(
-      [`../../${this.order.items[0].saleflow._id}/checkout`],
+      [`../../${this.headerService.saleflow.merchant.slug}/checkout`],
       {
         relativeTo: this.route,
       }
@@ -871,13 +873,6 @@ export class OrderDetailComponent implements OnInit {
     this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
-
-  // async isMerchantOwner(merchant: string) {
-  //   const ismerchant = await this.merchantsService.merchantDefault();
-
-  //   console.log('ismerchant', ismerchant);
-  //   merchant === ismerchant?._id ? (this.isMerchant = true) : null;
-  // }
 
   // async addTag(tagId?: string) {
   //   if (!this.selectedTags[tagId]) {

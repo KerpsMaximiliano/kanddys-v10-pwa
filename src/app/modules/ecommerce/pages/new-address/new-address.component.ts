@@ -298,9 +298,10 @@ export class NewAddressComponent implements OnInit {
       return;
     }
     this.router.navigate(
-      [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+      [`../checkout`],
       {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
+        relativeTo: this.route
       }
     );
   }
@@ -318,9 +319,10 @@ export class NewAddressComponent implements OnInit {
         positionClass: 'toast-top-center',
       });
       this.router.navigate(
-        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+        [`../checkout`],
         {
           replaceUrl: this.headerService.checkoutRoute ? true : false,
+          relativeTo: this.route
         }
       );
       return;
@@ -354,9 +356,10 @@ export class NewAddressComponent implements OnInit {
         }
       );
       this.router.navigate(
-        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+        [`../checkout`],
         {
           replaceUrl: true,
+          relativeTo: this.route
         }
       );
     }
@@ -426,8 +429,10 @@ export class NewAddressComponent implements OnInit {
   goBack() {
     if (this.mode === 'normal')
       return this.router.navigate([
-        `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
-      ]);
+        `../create-giftcard`,
+      ], {
+        relativeTo: this.route
+      });
     this.mode = 'normal';
     this.editingId = null;
     this.addressForm.reset({

@@ -107,7 +107,7 @@ export class ArticleCreatorComponent implements OnInit {
       this.entity = entity;
       this.initControllers();
     });
-    if (this._ActivatedRoute.snapshot.paramMap.get('saleflowId')) {
+    if (this._ActivatedRoute.snapshot.paramMap.get('merchantSlug')) {
       this.isOrder = true;
     }
     const itemId = this._ActivatedRoute.snapshot.paramMap.get('itemId');
@@ -382,9 +382,7 @@ export class ArticleCreatorComponent implements OnInit {
           this._HeaderService.orderProgress.message = true;
           this._HeaderService.storeOrderProgress();
           this._Router.navigate([
-            `/ecommerce/${this._ActivatedRoute.snapshot.paramMap.get(
-              'saleflowId'
-            )}/checkout`,
+            `/ecommerce/${this._HeaderService.saleflow.merchant.slug}/checkout`,
           ]);
           return;
         }
@@ -477,12 +475,12 @@ export class ArticleCreatorComponent implements OnInit {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -826,7 +824,7 @@ export class ArticleCreatorComponent implements OnInit {
         cancelButton: {
           text: 'Cerrar',
         },
-        linkToCopy: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+        linkToCopy: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

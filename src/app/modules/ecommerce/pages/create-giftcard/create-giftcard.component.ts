@@ -1,11 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 
 const lightLabelStyles = {
   fontFamily: 'RobotoRegular',
@@ -23,7 +21,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   constructor(
     private header: HeaderService,
     private router: Router,
-    private dialog: DialogService
+    private route: ActivatedRoute,
   ) {}
 
   storeEmptyMessageAndGoToShipmentDataForm(params) {
@@ -59,7 +57,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       });
       return { ok: true };
     }
-    this.router.navigate([`ecommerce/${this.header.saleflow._id}/new-address`]);
+    this.router.navigate([`../new-address`], {
+      relativeTo: this.route,
+    });
     return { ok: true };
   }
 
@@ -94,30 +94,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     return { ok: true };
   };
-
-  public continueOrder = () => {
-    this.router.navigate([
-      `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-    ]);
-  };
-
-  showShoppingCartDialog() {
-    this.dialog.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        headerButton: 'Ver mas productos',
-        orderFinished: true,
-        footerCallback: () =>
-          this.router.navigate([
-            `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-          ]),
-        headerCallback: () =>
-          this.router.navigate([`ecommerce/${this.header.saleflow._id}/store`]),
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
 
   addedScrollBlockerBefore = false;
   scrollBlockerBefore: any;
@@ -219,11 +195,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           params.unblockScrollBeforeCurrentStep();
         }
 
-        this.router.navigate([`ecommerce/${this.header.saleflow._id}/store`]);
-      },
-      showShoppingCartOnCurrentStep: true,
-      shoppingCartCallback: () => {
-        this.showShoppingCartDialog();
+        this.router.navigate([`../store`], {
+          relativeTo: this.route,
+        });
       },
       headerText: 'INFORMACIÓN DE LA ORDEN',
       stepButtonInvalidText: 'TOCA EN LA OPCION QUE PREFIERAS',
@@ -378,9 +352,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
                 ok: true,
               });
             }
-            this.router.navigate([
-              `ecommerce/${this.header.saleflow._id}/new-address`,
-            ]);
+            this.router.navigate([`../new-address`], {
+              relativeTo: this.route,
+            });
             return of({
               ok: true,
             });
@@ -395,10 +369,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       },
       customScrollToStep: (params) => {
         params.scrollToStep(1);
-      },
-      showShoppingCartOnCurrentStep: true,
-      shoppingCartCallback: () => {
-        this.showShoppingCartDialog();
       },
       headerText: 'Comprar más',
       headerTextSide: 'LEFT',
