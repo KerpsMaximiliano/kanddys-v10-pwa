@@ -53,6 +53,18 @@ const orderData = `
             _id
           }
         }
+        delivery {
+          isActive
+          deliveryLocation
+          pickUpLocations {
+            city
+            street
+            houseNumber
+            referencePoint
+            nickName
+            note
+          }
+        }
       }
     }
     post {
@@ -372,14 +384,8 @@ export const createPartialOCR = gql`
 `;
 
 export const orderSetStatus = gql`
-  mutation orderSetStatus(
-    $status: String!
-    $id: ObjectID!
-  ) {
-    orderSetStatus(
-      status: $status
-      id: $id
-    ) {
+  mutation orderSetStatus($status: String!, $id: ObjectID!) {
+    orderSetStatus(status: $status, id: $id) {
       _id
       status {
         status
