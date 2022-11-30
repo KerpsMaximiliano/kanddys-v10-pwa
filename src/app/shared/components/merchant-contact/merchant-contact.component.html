@@ -17,12 +17,12 @@
       </div>
       <div class="contact-icons">
         <a
-          *ngIf="headerService.merchantInfo.owner.phone"
+          *ngIf="headerService.merchantInfo?.owner.phone"
           target="_blank"
           class="icon"
           [href]="
             'https://wa.me/' +
-            headerService.merchantInfo.owner.phone +
+            headerService.merchantInfo?.owner.phone +
             '?text=Hola%20' +
             headerService.merchantInfo?.title
           "

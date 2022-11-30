@@ -224,6 +224,9 @@ export class StoreComponent implements OnInit {
     // Resetear status de la ultima orden creada
     this.header.orderId = null;
     this.getTags();
+    this.header.merchantInfo = await this.merchantService.merchant(
+      this.header.saleflow.merchant._id
+    );
     if (this.header.user)
       this.userDefaultMerchant = await this.merchantService.merchantDefault();
     // Determina si el usuario actual es el dueño de la tienda
