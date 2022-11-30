@@ -97,7 +97,7 @@ export class ExportExcelService {
     }
     );
 
-    worksheet.getColumn(1).width = 30;
+    worksheet.getColumn(1).width = 60;
     worksheet.getColumn(2).width = 30;
     worksheet.getColumn(3).width = 20;
     worksheet.addRow([]);
