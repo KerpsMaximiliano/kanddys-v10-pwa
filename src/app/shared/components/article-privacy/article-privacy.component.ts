@@ -203,14 +203,12 @@ export class ArticlePrivacyComponent implements OnInit {
       this.idMerchant = _id;
       const { recipients }: any = await this._RecipientsService.recipients();
       const pagination = {
-        paginate: {
-          options: {
-            sortBy: 'createdAt:desc',
-            limit: 20,
-          },
-          findBy: {
-            entity: 'recipient',
-          },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: 20,
+        },
+        findBy: {
+          entity: 'recipient',
         },
       };
       this.tags = (await this._TagsService.tagsByUser(pagination)) || [];
@@ -540,8 +538,8 @@ export class ArticlePrivacyComponent implements OnInit {
       entity: 'recipient',
       merchant: this.idMerchant,
     };
-    const { createTag } = await this._TagsService.createTag(_TagInput);
-    const { _id } = createTag;
+    const result = await this._TagsService.createTag(_TagInput);
+    const { _id } = result;
     this.tags.unshift({
       _id,
       name,
