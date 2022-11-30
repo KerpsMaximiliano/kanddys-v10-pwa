@@ -73,36 +73,18 @@ export class ArticleTemplateComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (param) => {
       const { entityTemplateId } = param;
-      const logged = await this.isUserLogged();
-      if (logged) {
-        const entityTemplate = await this.entityTemplateService.entityTemplate(
-          entityTemplateId
-        );
+      const entityTemplate = await this.entityTemplateService.entityTemplate(
+        entityTemplateId
+      );
 
-        if (entityTemplate.reference && entityTemplate.entity) {
-          this.router.navigate([
-            `ecommerce/${this.headerService.saleflow._id}/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
-          ]);
-        } else {
-          this.entityTemplate = entityTemplate;
-        }
+      if (entityTemplate.reference && entityTemplate.entity) {
+        this.router.navigate([
+          `ecommerce/${this.headerService.saleflow._id}/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
+        ]);
       } else {
-        this.router.navigate(['auth/login'], {
-          queryParams: {
-            redirect: window.location.href.split('/').slice(3).join('/'),
-          },
-        });
+        this.entityTemplate = entityTemplate;
       }
     });
-  }
-
-  async isUserLogged() {
-    this.user = await this.authService.me();
-    if (!this.user) {
-      return false;
-    }
-
-    return true;
   }
 
   handleOption(option: Options): void {

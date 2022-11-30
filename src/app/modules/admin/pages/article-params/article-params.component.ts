@@ -276,7 +276,7 @@ export class ArticleParamsComponent implements OnInit {
 
         if (entityTemplateData) {
           try {
-            const { entity,entityTemplateId } = entityTemplateData;
+            const { entity, entityTemplateId } = entityTemplateData;
 
             const result =
               await this._EntityTemplateService.entityTemplateSetData(
@@ -302,6 +302,32 @@ export class ArticleParamsComponent implements OnInit {
         );
 
         if ('_id' in createPreItem) {
+          const storedTemplateData = localStorage.getItem(
+            'entity-template-creation-data'
+          );
+          const entityTemplateData = storedTemplateData
+            ? JSON.parse(storedTemplateData)
+            : null;
+
+          if (entityTemplateData) {
+            try {
+              const { entity, entityTemplateId } = entityTemplateData;
+
+              const result =
+                await this._EntityTemplateService.entityTemplateSetData(
+                  entityTemplateId,
+                  {
+                    entity: 'item',
+                    reference: createPreItem?._id,
+                  }
+                );
+
+              localStorage.removeItem('entity-template-creation-data');
+            } catch (error) {
+              this._ToastrService.error('Ocurrió un error al crear el simbolo');
+            }
+          }
+
           localStorage.setItem('flowRoute', this._Router.url);
           this._Router.navigate([`/auth/login`], {
             queryParams: {
