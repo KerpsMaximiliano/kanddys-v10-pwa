@@ -408,13 +408,19 @@ export class PaymentsComponent implements OnInit {
           .replace('.', ''),
         ApprovedUrl:
           clientURI +
-          '/ecommerce/payments-redirection?typeOfPayment=azul&success=true',
+          '/ecommerce/' +
+          this.headerService.saleflow._id +
+          '/payments-redirection?typeOfPayment=azul&success=true',
         DeclinedUrl:
           clientURI +
-          '/ecommerce/payments-redirection?typeOfPayment=azul&success=false',
+          '/ecommerce/' +
+          this.headerService.saleflow._id +
+          '/payments-redirection?typeOfPayment=azul&success=false',
         CancelUrl:
           clientURI +
-          '/ecommerce/payments-redirection?typeOfPayment=azul&cancel=true',
+          '/ecommerce/' +
+          this.headerService.saleflow._id +
+          '/payments-redirection?typeOfPayment=azul&cancel=true',
         UseCustomField1: '0',
         CustomField1Label: 'Label1',
         CustomField1Value: 'Custom1',
