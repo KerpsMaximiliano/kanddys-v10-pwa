@@ -19,7 +19,6 @@ import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { PaymentsComponent } from './pages/payments/payments.component';
 import { StoreComponent } from './pages/store/store.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
-import { ArticleTemplateComponent } from './pages/article-template/article-template.component';
 import { AppointmentsModule } from '../appointments/appointments.module';
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
@@ -127,10 +126,7 @@ const routes: Routes = [
         path: 'payments',
         component: PaymentsComponent,
       },
-      {
-        path: 'article-template/:entityTemplateId',
-        component: ArticleTemplateComponent,
-      },
+
     ],
   },
 ];
@@ -155,7 +151,6 @@ const routes: Routes = [
     CheckoutComponent,
     PaymentsComponent,
     ReservationsComponent,
-    ArticleTemplateComponent,
     ArticleDetailComponent,
     CreateArticleComponent
   ],

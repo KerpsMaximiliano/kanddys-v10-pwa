@@ -620,12 +620,7 @@ export class ArticleCreatorComponent implements OnInit {
     if (!this.fromTemplate) {
       this._Router.navigate([`admin/items-dashboard`]);
     } else {
-      this._Router.navigate([
-        'ecommerce/' +
-          this._HeaderService.saleflow._id +
-          '/article-template/' +
-          this.fromTemplate,
-      ]);
+      this._Router.navigate(['qr/article-template/' + this.fromTemplate]);
     }
   }
 

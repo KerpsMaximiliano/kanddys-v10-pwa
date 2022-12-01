@@ -79,7 +79,7 @@ export class ArticleTemplateComponent implements OnInit {
 
       if (entityTemplate.reference && entityTemplate.entity) {
         this.router.navigate([
-          `qr/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
+          `ecommerce/${this.headerService.saleflow._id}/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
         ]);
       } else {
         this.entityTemplate = entityTemplate;
