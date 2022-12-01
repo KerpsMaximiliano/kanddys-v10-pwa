@@ -421,6 +421,24 @@ export class ArticleCreatorComponent implements OnInit {
     }
   }
 
+  navigateToArticlePrivacy():void {
+    const images = [];
+    this.controllers.controls.forEach((controller, i) => {
+      (controller.get('multimedia').value as File[]).forEach((value) => {
+        if (value?.type?.includes('image')) images.push(value);
+      });
+    });
+    const id = this._ActivatedRoute.snapshot.paramMap.get('itemId');
+    this._ItemsService.itemImages = images;
+    this._Router.navigate([
+      `/admin/article-privacy`,
+    ],{
+      queryParams: {
+        id
+      }
+    });
+  }
+
   removeFile(i: number, j: number): void {
     const controller = this.controllers.at(i).get('multimedia');
     controller.setValue(controller.value.filter((image, index) => index !== j));

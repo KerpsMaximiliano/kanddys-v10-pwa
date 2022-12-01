@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -22,13 +22,16 @@ import {
   SearchCountryField,
 } from 'ngx-intl-tel-input';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-article-privacy',
   templateUrl: './article-privacy.component.html',
   styleUrls: ['./article-privacy.component.scss'],
 })
-export class ArticlePrivacyComponent implements OnInit {
+export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   status: string = 'controller';
   options: string[] = ['A ver', 'A editar'];
   selected: string[] = ['A ver'];
@@ -187,42 +190,63 @@ export class ArticlePrivacyComponent implements OnInit {
   ];
   CountryISO = CountryISO.DominicanRepublic;
   PhoneNumberFormat = PhoneNumberFormat;
+  passwordSubscribe:Subscription;
+  id:string;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _DialogService: DialogService,
     private _RecipientsService: RecipientsService,
     private _TagsService: TagsService,
     private _MerchantsService: MerchantsService,
-    private _AuthService: AuthService
+    private _AuthService: AuthService,
+    private _ItemsService: ItemsService,
+    private _ActivatedRoute: ActivatedRoute,
+    private _Router: Router
   ) {}
 
   ngOnInit(): void {
-    this.filter = this._DomSanitizer.bypassSecurityTrustStyle('opacity(0.5)');
-    const recipients = async () => {
-      const { _id } = await this._MerchantsService.merchantDefault();
-      this.idMerchant = _id;
-      const { recipients }: any = await this._RecipientsService.recipients();
-      const pagination = {
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: 20,
-        },
-        findBy: {
-          entity: 'recipient',
-        },
+    this._ActivatedRoute.queryParams.subscribe(({ id }) => {
+      this.id = id;
+      this.filter = this._DomSanitizer.bypassSecurityTrustStyle('opacity(0.5)');
+      const recipients = async () => {
+        const { _id } = await this._MerchantsService.merchantDefault();
+        this.idMerchant = _id;
+        const { recipients }: any = await this._RecipientsService.recipients();
+        const pagination = {
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 20,
+          },
+          findBy: {
+            entity: 'recipient',
+          },
+        };
+        this.tags = (await this._TagsService.tagsByUser(pagination)) || [];
+        this._Recipients = recipients.filter((recipient: Recipient) =>
+          this.tags.some(
+            (tag: any) =>
+              tag.entity === 'recipient' && recipient.tags.includes(tag._id)
+          )
+        );
+        this.tempRecipients = this._Recipients;
+        this.initControllers(this._Recipients);
+        this.initControllers();
+        this.initPassword();
+        this.initPassword();
       };
-      this.tags = (await this._TagsService.tagsByUser(pagination)) || [];
-      this._Recipients = recipients.filter((recipient: Recipient) =>
-        this.tags.some(
-          (tag: any) =>
-            tag.entity === 'recipient' && recipient.tags.includes(tag._id)
-        )
-      );
-      this.tempRecipients = this._Recipients;
-      this.initControllers(this._Recipients);
-      this.initControllers();
-    };
-    recipients();
+      recipients();  
+    })
+  }
+  
+  ngOnDestroy(): void {
+    this.passwordSubscribe.unsubscribe();
+  }
+
+  initPassword(): void {
+    this.password.setValue(this._ItemsService.itemPassword);
+    this.passwordSubscribe = this.password.valueChanges.subscribe((value) => {
+      this._ItemsService.itemPassword = value;
+    });
   }
 
   initControllers(_Recipients: Recipient[] = [{} as Recipient]): void {
@@ -506,6 +530,12 @@ export class ArticlePrivacyComponent implements OnInit {
         this.paddingRight = '90px';
         this.textAlign = 'center';
         this.selected = ['A ver'];
+        break;
+      default:
+          const list = [`admin`,`create-article`];
+          if(this.id)
+            list.push(this.id);
+          this._Router.navigate(list);
         break;
     }
   }
