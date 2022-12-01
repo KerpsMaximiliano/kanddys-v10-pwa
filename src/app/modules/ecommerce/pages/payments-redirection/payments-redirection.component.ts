@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-payments-redirection',
@@ -11,7 +12,11 @@ export class PaymentsRedirectionComponent implements OnInit {
   azulOrderQueryParams: Record<string, string> = null;
   success: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private headerService: HeaderService
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((queryParams) => {

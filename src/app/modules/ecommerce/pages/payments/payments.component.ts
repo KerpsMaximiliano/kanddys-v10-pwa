@@ -165,34 +165,40 @@ export class PaymentsComponent implements OnInit {
         {
           src: 'https://cdn.visa.com/v2/assets/images/logos/visa/blue/logo.png',
           width: '55px',
-          height: '18px'
+          height: '18px',
         },
         {
           src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mastercard.svg',
           width: '50px',
-          height: '46px'
+          height: '46px',
         },
         {
           src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/Amex_logo_color.png',
           width: '50px',
-          height: '46px'
+          height: '46px',
         },
         {
           src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/discover_logo.jpg',
           width: '68px',
-          height: '34px'
+          height: '34px',
         },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/DCI_logo_all_black.svg',
+          width: '100px',
+          height: '25px',
+        },
+
         {
           src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/visa-secure_blu_2021.png',
           width: '45px',
-          height: '45px'
+          height: '45px',
         },
         {
           src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mc_idcheck_hrz_rgb_pos.png',
           width: '200px',
-          height: '50px'
+          height: '50px',
         },
-      ]
+      ],
     },
   ];
 
