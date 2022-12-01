@@ -228,7 +228,7 @@ export class TagsComponent implements OnInit {
         },
       },
       {
-        text: 'Archivar',
+        text: 'Archivar (Sin eliminar la data)',
         callback: async () => {
           try {
             const { updateTag: updatedTag } = await this.tagsService.updateTag(
