@@ -95,11 +95,11 @@ ul {
     z-index: 501;
     position: relative;
     padding: 8px 0;
-  
+
     p {
       margin: 0;
     }
-  
+
     .option-title {
       font-size: 0.75rem;
       padding-bottom: 0.5rem;
@@ -122,4 +122,16 @@ ul {
 
 .selector-option-content {
   display: flex;
+}
+
+.logos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+
+  .logo {
+    flex: 1;
+  }
 }

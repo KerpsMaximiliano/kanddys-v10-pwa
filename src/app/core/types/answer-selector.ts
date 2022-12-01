@@ -52,6 +52,11 @@ export interface WebformAnswerLayoutOption {
     bottomLeft: OptionText;
     middleTexts: OptionText[];
   };
+  logos?: Array<{
+    src: string;
+    width?: number | string;
+    height?: number | string;
+  }>;
 }
 
 //DEFAULT VALUES FOR TYPES

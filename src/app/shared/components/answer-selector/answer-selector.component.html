@@ -395,6 +395,19 @@
                 {{ option.texts.bottomLeft.text }}
               </div>
             </div>
+
+            <div class="logos" *ngIf="option.logos">
+              <ng-container *ngFor="let logo of option.logos">
+                <img
+                  class="logo"
+                  [src]="logo.src"
+                  [ngStyle]="{
+                    maxWidth: logo.width,
+                    maxHeight: logo.height
+                  }"
+                />
+              </ng-container>
+            </div>
           </div>
         </div>
       </div>

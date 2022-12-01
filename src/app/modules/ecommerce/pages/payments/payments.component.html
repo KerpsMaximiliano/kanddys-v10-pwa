@@ -7,14 +7,54 @@
   </header>
 
   <div class="payment-method" *ngIf="status === 'complete'">
-    <div class="order-amount" *ngIf="order">
-      <div class="amount-wrapper">
-        <h4 class="title">Subtotal</h4>
-        <h3 class="price">${{ paymentAmount | number: "1.2-2" }}</h3>
+    <!--
+      <div class="order-amount" *ngIf="order">
+        <div class="amount-wrapper">
+          <h4 class="title">Subtotal</h4>
+          <h3 class="price">${{ paymentAmount | number: "1.2-2" }}</h3>
+        </div>
+        <div class="amount-wrapper">
+          <h4 class="title">A saldar</h4>
+          <h3 class="price">${{ paymentAmount | number: "1.2-2" }}</h3>
+        </div>
       </div>
-      <div class="amount-wrapper">
-        <h4 class="title">A saldar</h4>
-        <h3 class="price">${{ paymentAmount | number: "1.2-2" }}</h3>
+    -->
+
+    <div class="amount-list">
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Subtotal a pagar</h3>
+        <h2 class="amount">RD $ 1,450.00</h2>
+      </div>
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Costo de envio</h3>
+        <h2 class="amount">RD $ 1,450.00</h2>
+      </div>
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Descuento</h3>
+        <h2 class="amount">RD $ 1,450.00</h2>
+      </div>
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Impuestos</h3>
+        <h2 class="amount">RD $ 1,450.00</h2>
+      </div>
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Total a pagar</h3>
+        <h2 class="amount">RD $ 1,450.00</h2>
+      </div>
+
+      <div class="refunds-policies">
+        <div class="labels">
+          <div class="accept-terms">Acepto las políticas de reembolso</div>
+          <div class="title">Políticas de reembolsos</div>
+        </div>
+
+        <div
+          class="checkbox"
+          [ngClass]="{
+            selected: acceptedRefundPolicies
+          }"
+          (click)="markOrUnmarkCheckbox()"
+        ></div>
       </div>
     </div>
 
@@ -27,6 +67,7 @@
       </div>
     </div>
     <span class="payment-selection"> Como prefieres pagar?</span>
+
     <ng-container *ngIf="!selectedBank">
       <app-answer-selector
         [values]="{
@@ -41,18 +82,19 @@
           marginTop: '19px'
         }"
       ></app-answer-selector>
+
+      <app-answer-selector
+        [complexOptions]="onlinePaymentsOptions"
+        [hasComplexOptionsLayout]="true"
+        [indicator]="true"
+        (onSelector)="selectOnlinePayment($event)"
+        [containerStyles]="{
+          margin: '-20px 0px 0px 0px'
+        }"
+      >
+      </app-answer-selector>
     </ng-container>
-    <app-answer-selector
-      *ngIf="!selectedBank"
-      [complexOptions]="onlinePaymentsOptions"
-      [hasComplexOptionsLayout]="true"
-      [indicator]="true"
-      (onSelector)="selectOnlinePayment($event)"
-      [containerStyles]="{
-        margin: '-20px 0px 0px 0px'
-      }"
-    >
-    </app-answer-selector>
+
     <ng-container *ngIf="selectedBank">
       <div class="option-content">
         <div class="option-icon-wrapper">

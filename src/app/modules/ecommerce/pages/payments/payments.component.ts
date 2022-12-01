@@ -43,8 +43,9 @@ export class PaymentsComponent implements OnInit {
   depositAmount: number;
   post: Post;
   currentUser: User;
+  acceptedRefundPolicies: boolean = false;
   onlinePaymentsOptions: WebformAnswerLayoutOption[] = [
- /*   {
+    /*   {
       type: 'WEBFORM-ANSWER',
       optionStyles: webformAnswerLayoutOptionDefaultStyles,
       selected: false,
@@ -132,7 +133,7 @@ export class PaymentsComponent implements OnInit {
           },
         },
         topLeft: {
-          text: 'Azul',
+          text: 'Tarjeta de crédito',
           styles: {
             paddingBottom: '8px',
           },
@@ -140,9 +141,15 @@ export class PaymentsComponent implements OnInit {
         middleTexts: [
           {
             text: 'ID',
+            styles: {
+              display: 'none',
+            },
           },
           {
             text: 'ID',
+            styles: {
+              display: 'none',
+            },
           },
         ],
         bottomLeft: {
@@ -150,9 +157,42 @@ export class PaymentsComponent implements OnInit {
           styles: {
             paddingTop: '8px',
             fontFamily: 'SfProBold',
+            display: 'none',
           },
         },
       },
+      logos: [
+        {
+          src: 'https://cdn.visa.com/v2/assets/images/logos/visa/blue/logo.png',
+          width: '55px',
+          height: '18px'
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mastercard.svg',
+          width: '50px',
+          height: '46px'
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/Amex_logo_color.png',
+          width: '50px',
+          height: '46px'
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/discover_logo.jpg',
+          width: '68px',
+          height: '34px'
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/visa-secure_blu_2021.png',
+          width: '45px',
+          height: '45px'
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mc_idcheck_hrz_rgb_pos.png',
+          width: '200px',
+          height: '50px'
+        },
+      ]
     },
   ];
 
@@ -345,7 +385,7 @@ export class PaymentsComponent implements OnInit {
           },
         });
       }
-    } else if (paymentOptionName === 'Azul') {
+    } else if (paymentOptionName === 'Tarjeta de crédito') {
       const clientURI = 'http://localhost:4200';
 
       const requestData: any = {
@@ -433,5 +473,9 @@ export class PaymentsComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  markOrUnmarkCheckbox() {
+    this.acceptedRefundPolicies = !this.acceptedRefundPolicies;
   }
 }
