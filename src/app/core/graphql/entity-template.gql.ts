@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const entityTemplate = gql`
-  query entityTemplate($id: ObjectID!) {
-    entityTemplate(id: $id) {
+  query entityTemplate($id: ObjectID!, $password: String) {
+    entityTemplate(id: $id, password: $password) {
       _id
       reference
       entity

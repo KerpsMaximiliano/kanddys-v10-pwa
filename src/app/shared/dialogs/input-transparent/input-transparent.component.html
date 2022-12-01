@@ -10,7 +10,7 @@
       <label for="input" name="Titulo" class="input-label">{{inputLabel}}</label>
       <div class="input">
          <input type="password" [formControl]="input" placeholder="Escribe..." (keydown)="fieldEvent($event.target)">
-         <button class="confirm" [style.background]="input.value.length>2?'#2874ad':'#c1c1c1'">
+         <button class="confirm" [style.background]="input.value.length>2?'#2874ad':'#c1c1c1'" (click)="submit()">
             <i class="fas fa-chevron-right"></i>
          </button>
       </div>

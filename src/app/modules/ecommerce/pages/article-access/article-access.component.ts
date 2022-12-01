@@ -49,10 +49,8 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
       this.templateId = templateId;
       const post = async () => {
          const { recipients } = await this._EntityTemplateService.entityTemplate(templateId);
-         console.log('recipients: ', recipients);
          const _recipients = [];
          for(const { recipient } of recipients){
-            console.log('recipient: ', recipient);
             const pagination = {
               paginate: {
                 findBy: {
@@ -66,7 +64,6 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
             };
             const {recipients}: any = await this._RecipientsService.recipients(pagination);
             const [data] = recipients;
-            console.log('data: ', data);
             _recipients.push(data);
          }
          this.targets = _recipients;
@@ -182,7 +179,8 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    this.dialog.open(InputTransparentComponent,{
       props:{
          title: 'Símbolo',
-         inputLabel: 'Clave de acceso:'
+         inputLabel: 'Clave de acceso:',
+         templateId: this.templateId
       },
       type: 'fullscreen-translucent',
       customClass: 'app-dialog',
@@ -194,9 +192,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    this.sentInvite = true;
    this.code = this.check[e].subtexts.length?this.check[e].subtexts[0].text:this.check[e].value; 
    const generateMagicLink = async () => {
-      console.log('this.targets: ', this.targets);
       const emailOrPhone = this.targets[e].phone || this.targets[e].email;
-      console.log('emailOrPhone: ', emailOrPhone);
       const result = await this._AuthService.generateMagicLink(
          emailOrPhone,
          'ecommerce/article-detail',
@@ -204,7 +200,6 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
          'PostAccess',
          {}
       );
-      console.log('result: ', result);
       clearInterval(this.timeinterval);
       this.initializeClock();
    };
