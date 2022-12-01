@@ -3,8 +3,13 @@ import { CommonModule } from '@angular/common';
 import { QrComponent } from './qr/qr.component';
 import { RouterModule, Routes } from '@angular/router';
 import { ArticleDetailComponent } from '../ecommerce/pages/article-detail/article-detail.component';
+import { PostsXlsComponent } from 'src/app/shared/components/posts-xls/posts-xls.component';
 
 const routes: Routes = [
+  {
+    path: 'posts-xls',
+    component: PostsXlsComponent,
+  },
   {
     path: ':qrId',
     component: QrComponent,
