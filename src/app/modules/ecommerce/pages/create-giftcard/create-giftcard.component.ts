@@ -223,7 +223,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             topLabelActionStyles: {
               display: 'block',
               color: '#27A2FF',
-              fontSize: '16px',
+              // fontSize: '16px',
               fontFamily: 'RobotoMedium',
               height: '164px',
               padding: '23px',

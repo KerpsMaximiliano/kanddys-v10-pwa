@@ -417,16 +417,6 @@ export class ItemsDashboardComponent implements OnInit {
           },
         };
       }
-
-      this.paginationState.status = 'complete';
-    }
-
-    if (
-      itemsQueryResult.length === 0 &&
-      this.itemSearchbar.value !== '' &&
-      !triggeredFromScroll
-    ) {
-      this.allItems = [];
     }
 
     this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
