@@ -76,7 +76,11 @@
     </div>
 
     <nav class="navigation">
-      <ul>
+      <ul
+        [ngStyle]="{
+          backgroundColor: headerService.colorTheme || '#2874ad'
+        }"
+      >
         <li>
           <div class="icon" (click)="redirect('/admin/entity-detail-metrics')">
             <img [src]="env + '/home.svg'" alt="home" />

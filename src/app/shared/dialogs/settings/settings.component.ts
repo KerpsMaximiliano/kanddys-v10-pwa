@@ -4,6 +4,7 @@ import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { environment } from 'src/environments/environment';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 export interface Button {
   text: string;
@@ -46,7 +47,8 @@ export class SettingsComponent implements OnInit {
     private ref: DialogRef,
     private router: Router,
     private toastr: ToastrService,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    public headerService: HeaderService
   ) {}
 
   ngOnInit(): void {
