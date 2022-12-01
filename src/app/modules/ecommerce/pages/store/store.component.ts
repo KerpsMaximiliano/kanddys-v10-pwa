@@ -74,7 +74,6 @@ export class StoreComponent implements OnInit {
   categorylessItems: Item[] = [];
   filteredCategoryLessItems: Item[] = [];
   categories: ItemCategory[] = [];
-  contactLandingRoute: string;
   highlightedItems: Item[] = [];
   // canOpenCart: boolean;
   itemCartAmount: number;
@@ -86,7 +85,6 @@ export class StoreComponent implements OnInit {
   selectedTags: Array<Tag> = [];
   selectedTagsPermanent: Array<Tag> = [];
   unselectedTags: Array<Tag> = [];
-  user: User = null;
   userDefaultMerchant: Merchant = null;
   showSearchbar: boolean = true;
   paginationState: {
@@ -95,9 +93,10 @@ export class StoreComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 60,
+    pageSize: 5,
     status: 'loading',
   };
+  renderItemsPromise: Promise<any>;
 
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 'auto',
@@ -117,9 +116,14 @@ export class StoreComponent implements OnInit {
     spaceBetween: 0,
   };
 
-  @HostListener('window:scroll', [])
+  windowWidth: number = 0;
+
   async infinitePagination() {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    const page = document.querySelector('.store-page');
+    const pageScrollHeight = page.scrollHeight;
+    const verticalScroll = window.innerHeight + page.scrollTop;
+
+    if (verticalScroll >= pageScrollHeight) {
       await this.getItems();
     }
   }
@@ -129,6 +133,7 @@ export class StoreComponent implements OnInit {
   constructor(
     private dialog: DialogService,
     private router: Router,
+    private route: ActivatedRoute,
     private merchantService: MerchantsService,
     public header: HeaderService,
     private saleflow: SaleFlowService,
@@ -140,34 +145,61 @@ export class StoreComponent implements OnInit {
     private location: Location
   ) {}
 
-  getCategories(
-    itemCategoriesList: ItemCategory[],
-    headlines: ItemCategoryHeadline
-  ) {
-    if (itemCategoriesList.length === 0) return;
-    const categories =
-      headlines?.itemsCategories.length > 0
-        ? headlines.itemsCategories
-            .map((value) =>
-              itemCategoriesList.find((element) => element._id === value)
-            )
-            .filter((value) => value)
-        : [];
-    return categories;
+  async ngOnInit(): Promise<void> {
+    this.route.queryParams.subscribe(async (queryParams) => {
+      let { startOnSnapshot } = queryParams;
+      startOnSnapshot = Boolean(startOnSnapshot);
+
+      if (!this.header.storeTemporalData || !startOnSnapshot)
+        this.executeProcessesAfterLoading();
+      else this.getPageSnapshot();
+    });
+
+    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+    });
+  }
+
+  async getHighlightedItems() {
+    const saleflowItems = this.header.saleflow.items.map((saleflowItem) => ({
+      item: saleflowItem.item._id,
+      customizer: saleflowItem.customizer?._id,
+      index: saleflowItem.index,
+    }));
+
+    const pagination: PaginationInput = {
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.item)),
+        },
+        status: 'featured',
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: 10,
+        page: 1,
+      },
+    };
+
+    const { listItems: highlightedItems } = await this.saleflow.listItems(
+      pagination
+    );
+
+    for (const item of highlightedItems) {
+      if (item.status === 'featured') {
+        this.highlightedItems.push(item);
+      }
+    }
   }
 
   async organizeItems() {
     // .sort((a, b) => a.pricing - b.pricing);
-    const highlightedItemsObject = {};
     this.highlightedItems = [];
 
     //Sets highlightedItems array
-    for (const item of this.items) {
-      if (item.status === 'featured') {
-        this.highlightedItems.push(item);
-        highlightedItemsObject[item._id] = true;
-      }
-    }
+    await this.getHighlightedItems();
 
     //************************* GROUPS ITEMS BY TAG***************//
     const tagsAndItemsHashtable: Record<string, Array<Item>> = {};
@@ -184,37 +216,18 @@ export class StoreComponent implements OnInit {
     //*************************                        END                   *****************************//
   }
 
-  async ngOnInit(): Promise<void> {
+  async executeProcessesAfterLoading() {
     this.status = 'loading';
     lockUI();
 
     // Resetear status de la ultima orden creada
     this.header.orderId = null;
-
     this.getTags();
-    // Obteniendo las categorias, el merchant de la tienda y el usuario actual
-    const [itemCategories, headlines] = await Promise.all([
-      this.item.itemCategories(this.header.saleflow.merchant._id, {
-        options: {
-          limit: 20,
-        },
-      }),
-      this.item.itemCategoryHeadlineByMerchant(
-        this.header.saleflow.merchant._id
-      ),
-    ]);
-    if (this.header.user) {
+    if (this.header.user)
       this.userDefaultMerchant = await this.merchantService.merchantDefault();
-    }
     // Determina si el usuario actual es el dueño de la tienda
-    if (this.header.user?._id === this.header.saleflow.merchant?.owner?._id) {
+    if (this.header.user?._id === this.header.saleflow.merchant?.owner?._id)
       this.admin = true;
-    }
-    this.categories = this.getCategories(
-      itemCategories.itemCategoriesList,
-      headlines[0]
-    );
-    this.contactLandingRoute = `user-contact-landing/${this.header.saleflow.merchant.owner._id}`;
     // Obteniendo el ID de los productos, los customizers y el orden
     const saleflowItems = this.header.saleflow.items.map((saleflowItem) => ({
       item: saleflowItem.item._id,
@@ -236,28 +249,58 @@ export class StoreComponent implements OnInit {
         limit: this.paginationState.pageSize,
       },
     });
-    // Obteniendo la lista de los items seleccionados
-    const selectedItems =
-      this.header.order?.products?.map((subOrder) => subOrder.item) || [];
-    // Filtrando los productos activos y destacados
-    this.items = items.listItems.filter((item) => {
-      return item.status === 'active' || item.status === 'featured';
+
+    const { listItems: allItems } = await this.saleflow.hotListItems({
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.item)),
+        },
+        $or: [
+          {
+            status: 'active',
+          },
+          {
+            status: 'featured',
+          },
+        ],
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+      },
     });
-    this.items.forEach((item) => {
+
+    // Obteniendo la lista de los items seleccionados
+    const selectedItems = this.header.order?.products?.length
+      ? this.header.order.products.map((subOrder) => subOrder.item)
+      : [];
+    // Filtrando los productos activos y destacados
+    this.items = items.listItems.filter(
+      (item) => item.status === 'active' || item.status === 'featured'
+    );
+
+    for (let i = 0; i < this.items.length; i++) {
       const saleflowItem = saleflowItems.find(
-        (saleflowItem) => saleflowItem.item === item._id
+        (item) => item.item === this.items[i]._id
       );
+      // Asignando el status a los items del saleflow
+      const item = this.header.saleflow.items.find(
+        (saleflowItem) => saleflowItem.item._id === this.items[i]._id
+      );
+      item.item.status = this.items[i].status;
       // Asignando customizer e index a los productos correspondientes
-      item.customizerId = saleflowItem.customizer;
-      item.index = saleflowItem.index;
+      this.items[i].customizerId = saleflowItem.customizer;
+      this.items[i].index = saleflowItem.index;
       // Si la tienda permite compra múltiple, marcar items seleccionados
       if (this.header.saleflow.canBuyMultipleItems)
-        item.isSelected = selectedItems.includes(item._id);
-      // Si el producto tiene precio extra, aplicar fórmula
-      if (item.hasExtraPrice)
-        item.totalPrice =
-          item.fixedQuantity * item.params[0].values[0].price + item.pricing;
-    });
+        this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
+      if (this.items[i].hasExtraPrice)
+        // Si el producto tiene precio extra, aplicar fórmula
+        this.items[i].totalPrice =
+          this.items[i].fixedQuantity *
+            this.items[i].params[0].values[0].price +
+          this.items[i].pricing;
+    }
     // Si todos los productos tienen un index, ordenar por index
     if (this.items.every((item) => item.index)) {
       this.items = this.items.sort((a, b) =>
@@ -268,7 +311,7 @@ export class StoreComponent implements OnInit {
     if (this.header.order?.products?.length) {
       let itemIDs: string[] = [];
       this.header.order.products.forEach((item) => {
-        if (!this.items.some((product) => product._id === item.item)) {
+        if (!allItems.some((product) => product._id === item.item)) {
           itemIDs.push(item.item);
           this.header.removeOrderProduct(item.item);
           this.header.removeItem(item.item);
@@ -278,24 +321,17 @@ export class StoreComponent implements OnInit {
         (product) => !itemIDs.includes(product.item)
       );
     }
-    // Organizando productos según su estado y categoría
     await this.organizeItems();
-    if (this.header.customizerData) this.header.customizerData = null;
-    // Marcar carga de la tienda como completada
 
+    // Detectando cambios en la barra de búsqueda
     this.searchBar.valueChanges.subscribe(async (change) => {
       await this.getItems(true);
-      /*
-      if (this.selectedTags.length === 0) await this.getItems(true);
-      else {
-        this.filterItemsBySearch(change);
-      }
-      */
     });
 
     this.status = 'complete';
     this.paginationState.status = 'complete';
     unlockUI();
+    if (this.header.customizerData) this.header.customizerData = null;
   }
 
   filterItemsPerSearchTerm(item: Item, searchTerm: string): boolean {
@@ -326,31 +362,52 @@ export class StoreComponent implements OnInit {
     return shouldIncludeItemInSearchResults;
   }
 
-  seeCategories(index: number | string) {
-    if (typeof index === 'string')
-      this.router.navigate([
-        `/ecommerce/${this.header.saleflow._id}/category-items/${index}`,
-      ]);
-    else
-      this.router.navigate([
-        `/ecommerce/${this.header.saleflow._id}/category-items/${
-          this.itemsByCategory[index].items[0].category.find(
-            (category) => category.name === this.itemsByCategory[index].label
-          )._id
-        }`,
-      ]);
+  // Logic for selecting items
+  toggleSelected(type: string, index: number, $event?: number) {
+    if (type === 'item') {
+      if (index != undefined) {
+        if ($event != undefined && this.itemsByCategory[index].items[$event]) {
+          const itemData = this.itemsByCategory[index].items[$event];
+          itemData.isSelected = !itemData.isSelected;
+          let itemParams: ItemSubOrderParamsInput[];
+          if (itemData.params.length > 0) {
+            itemParams = [
+              {
+                param: itemData.params[0]._id,
+                paramValue: itemData.params[0].values[0]._id,
+              },
+            ];
+          }
+          this.header.storeOrderProduct({
+            item: itemData._id,
+            customizer: itemData.customizerId,
+            params: itemParams,
+            amount: itemData.customizerId ? undefined : 1,
+            saleflow: this.header.saleflow._id,
+          });
+          this.header.storeItem(itemData);
+        } else {
+          this.items[index].isSelected = !this.items[index].isSelected;
+          this.header.storeOrderProduct({
+            item: this.items[index]._id,
+            amount: 1,
+            saleflow: this.header.saleflow._id,
+          });
+          this.header.storeItem(this.items[index]);
+        }
+      }
+    }
   }
 
   onItemClick(id: string) {
     const itemData = this.items.find((item) => item._id === id);
-    if (!itemData) return;
-    if (itemData.category.length)
-      this.header.categoryId = itemData.category[0]?._id;
-    if (!this.header.saleflow.canBuyMultipleItems) {
-      this.header.emptyOrderProducts();
-      this.header.emptyItems();
-    }
-    if (itemData.customizerId) {
+    if (itemData?.customizerId) {
+      if (!this.header.saleflow.canBuyMultipleItems) {
+        this.header.emptyOrderProducts();
+        this.header.emptyItems();
+      }
+      if (itemData.category.length)
+        this.header.categoryId = itemData.category[0]?._id;
       let itemParams: ItemSubOrderParamsInput[];
       if (itemData.params.length > 0) {
         itemParams = [
@@ -367,99 +424,25 @@ export class StoreComponent implements OnInit {
         amount: undefined,
         saleflow: this.header.saleflow._id,
       };
+      this.header.items = [itemData];
       this.header.order = {
         products: [product],
       };
       this.header.storeOrderProduct(product);
       this.header.storeItem(itemData);
-      this.router.navigate([
-        `/ecommerce/${this.header.saleflow._id}/provider-store/${itemData._id}`,
-      ]);
-    } else {
-      this.router.navigate(
-        [
-          `/ecommerce/${this.header.saleflow._id}/article-detail/item/${itemData._id}`,
-        ],
-        {
-          replaceUrl: this.header.checkoutRoute ? true : false,
-        }
-      );
-    }
-  }
-
-  onShareCallback = (url: string) => {
-    const list: StoreShareList[] = [
-      {
-        qrlink: `${this.URI}${url}`,
-        options: [
-          {
-            text: 'Copia el link',
-            mode: 'clipboard',
-            link: `${this.URI}${url}`,
-          },
-          {
-            text: 'Comparte el link',
-            mode: 'share',
-            link: `${this.URI}${url}`,
-          },
-        ],
-      },
-    ];
-    this.dialog.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        list,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
-
-  //Same dialog as openUserManagementDialog() but with SettingsComponent
-  openDialog() {
-    const list = [
-      {
-        text: 'Cerrar Sesión',
-        callback: async () => {
-          await this.authService.signout();
-        },
-      },
-    ];
-
-    if (!this.user) {
-      list.pop();
-      list.push({
-        text: 'Iniciar sesión',
-        callback: async () => {
-          this.router.navigate(['auth/login'], {
-            queryParams: {
-              redirect: 'ecommerce/store/' + this.header.saleflow._id,
-            },
-          });
-        },
+      this.router.navigate([`../provider-store/${itemData._id}`], {
+        relativeTo: this.route,
       });
+      return;
     }
-
-    if (this.userDefaultMerchant) {
-      list.unshift({
-        text: 'Ir a mi Dashboard',
-        callback: async () => {
-          this.router.navigate(['admin/entity-detail-metrics']);
-        },
-      });
-    }
-
-    this.dialog.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        title: 'Sobre las facturas',
-        cancelButton: {
-          text: 'Cerrar',
-        },
+    this.savePageSnapshot();
+    this.router.navigate([`../article-detail/item/${id}`], {
+      replaceUrl: this.header.checkoutRoute ? true : false,
+      relativeTo: this.route,
+      queryParams: {
+        mode: 'saleflow',
+        id: this.header.saleflow._id,
       },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
     });
   }
 
@@ -473,14 +456,14 @@ export class StoreComponent implements OnInit {
             text: 'Cerrar sesión',
             mode: 'func',
             func: async () => {
-              await this.authService.signout();
+              await this.authService.signoutThree();
             },
           },
         ],
       },
     ];
 
-    if (!this.user) {
+    if (!this.header.user) {
       list[0].options.pop();
       list[0].options.push({
         text: 'Iniciar sesión',
@@ -488,7 +471,7 @@ export class StoreComponent implements OnInit {
         func: async () => {
           this.router.navigate(['auth/login'], {
             queryParams: {
-              redirect: 'ecommerce/store/' + this.header.saleflow._id,
+              redirect: `ecommerce/${this.header.saleflow.merchant.slug}/store`,
             },
           });
         },
@@ -507,35 +490,39 @@ export class StoreComponent implements OnInit {
     });
   };
 
-  back() {
-    this.location.back();
-  }
-
   async getTags() {
-    const userTag = await this.tagsService.tags({
+    const { tags: tagsList } = await this.tagsService.tags({
       findBy: {
-        user: this.header.saleflow.merchant.owner._id,
+        entity: 'item',
         status: 'active',
+        user: this.header.saleflow.merchant.owner._id,
       },
       options: {
-        limit: 60,
+        limit: -1,
       },
     });
-    this.tags = userTag.tags;
-    this.unselectedTags = [...this.tags];
 
-    for (const tag of this.tags) {
-      this.tagsHashTable[tag._id] = tag;
-      this.tagsByNameHashTable[tag.name] = tag;
-      tag.selected = false;
+    if (tagsList) {
+      this.tags = tagsList;
+      this.unselectedTags = [...this.tags];
+
+      for (const tag of this.tags) {
+        this.tagsHashTable[tag._id] = tag;
+        this.tagsByNameHashTable[tag.name] = tag;
+        tag.selected = false;
+      }
+
+      setTimeout(() => {
+        this.tagsSwiper.directiveRef.update();
+      }, 300);
     }
-
-    setTimeout(() => {
-      this.tagsSwiper.directiveRef.update();
-    }, 300);
   }
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
+    if (this.selectedTags.length === 0) {
+      this.showSearchbar = false;
+    }
+
     if (this.tags[tagIndex].selected) {
       this.tags[tagIndex].selected = false;
       this.selectedTagsCounter--;
@@ -572,13 +559,9 @@ export class StoreComponent implements OnInit {
         (unselectedTag) => unselectedTag._id === tag._id
       );
 
-      if (unselectedTagIndexToDelete > 0) {
+      if (unselectedTagIndexToDelete >= 0) {
         this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
       }
-    }
-
-    if (this.selectedTags.length === 1) {
-      this.showSearchbar = false;
     }
 
     await this.getItems(true);
@@ -597,7 +580,7 @@ export class StoreComponent implements OnInit {
 
   async getItems(restartPagination = false) {
     this.paginationState.status = 'loading';
-    this.header.getOrder();
+    // this.header.getOrder();
 
     const saleflowItems = this.header.saleflow.items.map((saleflowItem) => ({
       item: saleflowItem.item._id,
@@ -681,20 +664,27 @@ export class StoreComponent implements OnInit {
       }
     }
 
-    const items = await this.saleflow.listItems(pagination);
-    const itemsQueryResult = items.listItems.filter((item) => {
-      return item.status === 'active' || item.status === 'featured';
-    });
+    this.renderItemsPromise = this.saleflow.listItems(pagination, true);
+    this.renderItemsPromise
+      .then((response) => {
+        const items = response;
+        const itemsQueryResult = items.listItems.filter((item) => {
+          return item.status === 'active' || item.status === 'featured';
+        });
 
-    if (this.paginationState.page === 1) {
-      this.items = itemsQueryResult;
-    } else {
-      this.items = this.items.concat(itemsQueryResult);
-    }
+        if (this.paginationState.page === 1) {
+          this.items = itemsQueryResult;
+        } else {
+          this.items = this.items.concat(itemsQueryResult);
+        }
 
-    this.organizeItems();
+        this.organizeItems();
 
-    this.paginationState.status = 'complete';
+        this.paginationState.status = 'complete';
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   getSelectedTagsNames(selectedTags: Array<Tag>) {
@@ -705,11 +695,54 @@ export class StoreComponent implements OnInit {
     this.selectedTags = [];
     this.selectedTagsCounter = 0;
     this.selectedTagsPermanent = [];
-    this.unselectedTags = this.tags;
     this.tags.forEach((tag) => (tag.selected = false));
-    this.unselectedTags = this.tags;
+    this.unselectedTags = [...this.tags];
     this.showSearchbar = true;
 
+    setTimeout(() => {
+      this.tagsSwiper.directiveRef.update();
+    }, 300);
+
     await this.getItems(true);
+  }
+
+  getPageSnapshot() {
+    for (const property of Object.keys(this.header.storeTemporalData)) {
+      if (property !== 'searchBar') {
+        this[property] = this.header.storeTemporalData[property];
+      } else {
+        this.searchBar.setValue(this.header.storeTemporalData[property]);
+      }
+    }
+
+    this.searchBar.valueChanges.subscribe(async (change) => {
+      await this.getItems(true);
+    });
+
+    this.header.storeTemporalData = null;
+  }
+
+  savePageSnapshot() {
+    this.header.storeTemporalData = {
+      saleflowData: this.header.saleflow,
+      items: this.items,
+      tags: this.tags,
+      tagsHashTable: this.tagsHashTable,
+      tagsByNameHashTable: this.tagsByNameHashTable,
+      highlightedItems: this.highlightedItems,
+      searchBar: this.searchBar.value,
+      selectedTagsCounter: this.selectedTagsCounter,
+      selectedTags: this.selectedTags,
+      selectedTagsPermanent: this.selectedTagsPermanent,
+      unselectedTags: this.unselectedTags,
+      user: this.header.user,
+      userDefaultMerchant: this.userDefaultMerchant,
+      showSearchbar: this.showSearchbar,
+      paginationState: this.paginationState,
+    };
+  }
+
+  getActiveTagsFromSelectedTagsPermantent(): Array<string> {
+    return this.tags.filter((tag) => tag.selected).map((tag) => tag._id);
   }
 }

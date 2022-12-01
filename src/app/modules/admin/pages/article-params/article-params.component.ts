@@ -11,6 +11,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anexos-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { Item } from 'src/app/core/models/item';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-article-params',
@@ -22,6 +23,7 @@ export class ArticleParamsComponent implements OnInit {
   selectedImages: (string | ArrayBuffer)[] = [];
   models: string[] = ['Modelo sin nombre'];
   options: string[] = ['Precio', 'Imagen o imágenes'];
+  default: boolean;
   searchValue: string;
   items: any;
   itemId: string;
@@ -51,7 +53,8 @@ export class ArticleParamsComponent implements OnInit {
     private _MerchantsService: MerchantsService,
     private _SaleflowService: SaleFlowService,
     private _Router: Router,
-    private _Route: ActivatedRoute
+    private _Route: ActivatedRoute,
+    private _ToastrService: ToastrService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -66,8 +69,25 @@ export class ArticleParamsComponent implements OnInit {
       }
       this.price.setValue(this.item.pricing);
       this.name.setValue(this.item.name);
-      if (this.item.name.trim()) this.models[0] = this.item.name;
+      if (this.item.name?.trim()) this.models[0] = this.item.name;
       else this.models[0] = 'Modelo sin nombre';
+      if (this.item.images.length && !this._ItemsService.itemImages.length) {
+        const multimedia: File[] = [];
+        this.item.images.forEach(async (image, index) => {
+          const response = await fetch(image);
+          const blob = await response.blob();
+          const file = new File([blob], `item_image_${index}.jpeg`, {
+            type: 'image/jpeg',
+          });
+          multimedia.push(file);
+        });
+        this._ItemsService.itemImages = multimedia;
+      }
+    } else {
+      if (this._ItemsService.itemName)
+        this.name.setValue(this._ItemsService.itemName);
+      if (this._ItemsService.itemPrice)
+        this.price.setValue(this._ItemsService.itemPrice);
     }
     this._MerchantsService.merchantData =
       await this._MerchantsService.merchantDefault();
@@ -88,6 +108,8 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   iconCallback = () => {
+    this._ItemsService.itemName = this.name.value;
+    this._ItemsService.itemPrice = this.price.value;
     this._Router.navigate([
       `admin/create-article${this.item ? '/' + this.item._id : ''}`,
     ]);
@@ -96,6 +118,12 @@ export class ArticleParamsComponent implements OnInit {
   dotsCallback = () => {
     // console.log('Dots');
   };
+
+  countDecimals(value: number) {
+    if (!value) return;
+    if (Math.floor(value) === value) return 0;
+    return value.toString().split('.')[1]?.length || 0;
+  }
 
   startDragging(e: MouseEvent, el: HTMLDivElement) {
     this.mouseDown = true;
@@ -121,6 +149,7 @@ export class ArticleParamsComponent implements OnInit {
     const items: {
       option: string;
       subOption: string;
+      index?: number;
       callback?: () => void;
     }[] = [];
     for (const item of this.items) {
@@ -128,8 +157,12 @@ export class ArticleParamsComponent implements OnInit {
         option: item.name,
         subOption: `$${item.pricing.toLocaleString('es-MX')}`,
         callback: () => {
+          this.models.pop();
+          this.models.push(item.name);
           this.name.setValue(item.name);
-          this.price.setValue(item.pricing);
+          this.changeModel(0);
+          this.default ? (this.default = false) : (this.default = true);
+          this.handleCurrencyInput(item.pricing);
         },
       });
     }
@@ -194,7 +227,8 @@ export class ArticleParamsComponent implements OnInit {
         purchaseLocations: [],
         showImages: this._ItemsService.itemImages.length > 0,
       };
-
+      this._ItemsService.itemPrice = null;
+      this._ItemsService.itemName = null;
       if (this.item) {
         delete itemInput.images;
         delete itemInput.merchant;
@@ -211,6 +245,8 @@ export class ArticleParamsComponent implements OnInit {
             this._ItemsService.itemImages,
             updatedItem._id
           );
+          this._ItemsService.itemImages = [];
+          this._ItemsService.changedImages = false;
         }
 
         this._ItemsService.removeTemporalItem();
@@ -226,7 +262,8 @@ export class ArticleParamsComponent implements OnInit {
           },
           this._SaleflowService.saleflowData._id
         );
-        this._Router.navigate([`/admin/options/${createItem._id}`]);
+        this._ToastrService.success('Producto creado satisfactoriamente!');
+        this._Router.navigate([`/admin/create-article/${createItem._id}`]);
       } else {
         const { createPreItem } = await this._ItemsService.createPreItem(
           itemInput

@@ -159,6 +159,7 @@ const declarations = [
   TagsSquareComponent,
   CtaButtonsComponent,
   MagicLinkDialogComponent,
+  TagAsignationComponent,
   HelperHeaderv2Component,
   ItemCardComponent,
   HeaderInfoComponent,
@@ -211,7 +212,6 @@ const declarations = [
   HelperHeaderv3Component,
   FunctionalityParametersComponent,
   ConfirmActionDialogComponent,
-  TagAsignationComponent,
   AnexosDialogComponent,
   MediaDialogComponent,
 ];

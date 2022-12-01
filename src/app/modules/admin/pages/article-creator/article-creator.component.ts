@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,19 +9,23 @@ import { PostInput } from 'src/app/core/models/post';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { TagsService } from 'src/app/core/services/tags.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
   SettingsComponent,
   SettingsDialogButton,
 } from 'src/app/shared/dialogs/settings/settings.component';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
 
 type Mode = 'symbols' | 'item';
 
@@ -35,6 +39,8 @@ export class ArticleCreatorComponent implements OnInit {
   URI: string = environment.uri;
   controllers: FormArray = new FormArray([]);
   multimedia: any = [];
+  urls: string[] = [];
+  display: string;
   types: any = [];
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = ['video/mp4', 'video/webm'];
@@ -60,10 +66,10 @@ export class ArticleCreatorComponent implements OnInit {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
-    navigation: {
+    /* navigation: {
       nextEl: '.swiper-button-next',
       prevEl: '.swiper-button-prev',
-    },
+    }, */
     autoplay: {
       delay: 10000,
       disableOnInteraction: false,
@@ -78,6 +84,9 @@ export class ArticleCreatorComponent implements OnInit {
   ctaDescription: string = '';
   item: Item;
   blockSubmitButton: boolean = false;
+  selectedTags: Array<string>;
+  tagsAsignationOnStart: boolean = false;
+  @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _ActivatedRoute: ActivatedRoute,
@@ -89,7 +98,8 @@ export class ArticleCreatorComponent implements OnInit {
     private _SaleflowService: SaleFlowService,
     private _DialogService: DialogService,
     private _ToastrService: ToastrService,
-    private _ImageCompress: NgxImageCompressService
+    private _ImageCompress: NgxImageCompressService,
+    private _TagsService: TagsService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -98,26 +108,48 @@ export class ArticleCreatorComponent implements OnInit {
       this.entity = entity;
       this.initControllers();
     });
-    if (this._ActivatedRoute.snapshot.paramMap.get('saleflowId')) {
+    if (this._ActivatedRoute.snapshot.paramMap.get('merchantSlug')) {
       this.isOrder = true;
     }
     const itemId = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (!this.item) this.goBack();
+      if (
+        this._ActivatedRoute.snapshot.queryParamMap.get('mode') ===
+          'new-item' &&
+        this.item.status === 'draft'
+      ) {
+        const authItem = await this._ItemsService.authItem(
+          this._MerchantsService.merchantData._id,
+          itemId
+        );
+
+        if (this._SaleflowService.saleflowData) {
+          await this._SaleflowService.addItemToSaleFlow(
+            {
+              item: itemId,
+            },
+            this._SaleflowService.saleflowData._id
+          );
+        }
+        this.item.merchant = authItem.merchant;
+        this.item.status = 'active';
+      }
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
         this._Router.navigate(['../../'], {
           relativeTo: this._ActivatedRoute,
         });
         return;
       }
-      if (this.item.images.length) {
-        const multimedia = [];
+      if (this.item.images.length && !this._ItemsService.itemImages.length) {
+        const multimedia: File[] = [];
         this.item.images.forEach(async (image, index) => {
           this.multimedia[0][index] = this._DomSanitizer
             .bypassSecurityTrustStyle(`url(
         ${image})
-        no-repeat center center / cover #e9e371`);
+        no-repeat center center / contain #2e2e2e`);
+          this.urls.push(image);
           this.types[0][index] = 'image/jpeg';
 
           const response = await fetch(image);
@@ -134,6 +166,28 @@ export class ArticleCreatorComponent implements OnInit {
         });
       }
     }
+    if (this._ItemsService.itemImages.length) {
+      this._ItemsService.itemImages?.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          this.multimedia[0][index] = this._DomSanitizer
+            .bypassSecurityTrustStyle(`url(
+      ${reader.result})
+      no-repeat center center / contain #2e2e2e`);
+          this.types[0][index] = 'image/jpeg';
+          if (index + 1 === this._ItemsService.itemImages.length) {
+            this.updateFrantions();
+            this.activeSlide = 0;
+          }
+        };
+      });
+      this.controllers
+        .at(0)
+        .get('multimedia')
+        .setValue(this._ItemsService.itemImages);
+    }
+    if (this.tagsAsignationOnStart) await this.openTagsDialog();
   }
 
   updateFrantions(): void {
@@ -141,15 +195,23 @@ export class ArticleCreatorComponent implements OnInit {
       .map(
         () =>
           `${
-            this.multimedia[0].length < 3
-              ? '1'
-              : this.getRandomArbitrary(0, this.multimedia[0].length)
+            // this.multimedia[0].length < 3
+            //   ?
+            '1'
+            // : this.getRandomArbitrary(0, this.multimedia[0].length)
           }fr`
       )
       .join(' ');
+    setTimeout(() => {
+      this.display = 'grid';
+    }, 900);
   }
 
-  getRandomArbitrary(min, max) {
+  updateCurrentSlideData(event: any) {
+    this.activeSlide = this.mediaSwiper.directiveRef.getIndex();
+  }
+
+  getRandomArbitrary(min: number, max: number) {
     return Math.random() * (max - min) + min;
   }
 
@@ -223,6 +285,8 @@ export class ArticleCreatorComponent implements OnInit {
           .bypassSecurityTrustStyle(`url(
         ${result})
         no-repeat center center / cover #e9e371`);
+        // Aquí hubo un merge conflict
+        this.urls[j] = result as string;
       } else if (this.audioFiles.includes(type)) {
         this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustUrl(
           URL.createObjectURL(file)
@@ -267,8 +331,49 @@ export class ArticleCreatorComponent implements OnInit {
     this.updateFrantions();
   }
 
+  rotateImg(i: number, j: number) {
+    const img = this.urls[i];
+    const imageElement = new Image();
+    imageElement.src = img as string;
+    imageElement.crossOrigin = 'anonymous';
+    imageElement.onload = async () => {
+      const angle = Math.PI / 2;
+      var newCanvas = document.createElement('canvas');
+      newCanvas.width = imageElement.height;
+      newCanvas.height = imageElement.width;
+      var newCtx = newCanvas.getContext('2d');
+      newCtx.save();
+      newCtx.translate(imageElement.height / 2, imageElement.width / 2);
+      newCtx.rotate(angle);
+      newCtx.drawImage(
+        imageElement,
+        -imageElement.width / 2,
+        -imageElement.height / 2
+      );
+      newCtx.restore();
+      const url = newCanvas.toDataURL('image/png');
+      this.urls[i] = url;
+      this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustStyle(`url(
+        ${url})
+        no-repeat center center / contain #2e2e2e`);
+      const file = await this.urltoFile(url, 'image.png');
+      const { type } = file;
+      const multimedia = this.controllers
+        .at(i)
+        .get('multimedia')
+        .value.map((image, index: number) => {
+          var formData = new FormData();
+          const { name } = file;
+          var blob = new Blob([JSON.stringify(file)], { type });
+          formData.append(name, blob);
+          return index === j ? file : image;
+        });
+      this.controllers.at(i).get('multimedia').setValue(multimedia);
+      if (this.item) this._ItemsService.changedImages = true;
+    };
+  }
+
   submit(): void {
-    // console.log(this.controllers.value);
     this.blockSubmitButton = true;
     if (this.mode === 'symbols') {
       // if (this.controllers.invalid) return;
@@ -282,9 +387,7 @@ export class ArticleCreatorComponent implements OnInit {
           this._HeaderService.orderProgress.message = true;
           this._HeaderService.storeOrderProgress();
           this._Router.navigate([
-            `/ecommerce/${this._ActivatedRoute.snapshot.paramMap.get(
-              'saleflowId'
-            )}/checkout`,
+            `/ecommerce/${this._HeaderService.saleflow.merchant.slug}/checkout`,
           ]);
           return;
         }
@@ -387,12 +490,12 @@ export class ArticleCreatorComponent implements OnInit {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -401,7 +504,7 @@ export class ArticleCreatorComponent implements OnInit {
               },
             },
           },
-          {
+          /*  {
             text: 'Ir a la vista del visitante',
             mode: 'func',
             func: () => {
@@ -409,7 +512,7 @@ export class ArticleCreatorComponent implements OnInit {
                 `/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
               ]);
             },
-          },
+          }, */
         ],
       },
     ];
@@ -451,6 +554,63 @@ export class ArticleCreatorComponent implements OnInit {
     }
   }
 
+  openTagsDialog = async () => {
+    this.selectedTags = [];
+    const userTags = await this._TagsService.tagsByUser();
+    const itemTags = (
+      await this._TagsService.tags({
+        options: {
+          limit: -1,
+        },
+        findBy: {
+          id: {
+            __in: this.item.tags,
+          },
+        },
+      })
+    ).tags;
+
+    this._DialogService.open(TagAsignationComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        tags: userTags,
+        //orderId: this.order._id,
+        entity: 'item',
+        entityId: this.item._id,
+        activeTags:
+          itemTags && Array.isArray(itemTags)
+            ? itemTags.map((tag) => tag._id)
+            : null,
+        tagAction: async ({ selectedTags }) => {
+          this.selectedTags = selectedTags;
+
+          try {
+            const response = await this._ItemsService.updateItem(
+              {
+                tags: this.selectedTags,
+              },
+              this.item._id
+            );
+
+            if (response) {
+              this.item.tags = this.selectedTags;
+
+              this._ToastrService.info('Tags asignados al item', null, {
+                timeOut: 1000,
+              });
+            }
+          } catch (error) {
+            this._ToastrService.error('Error al asignar tags', null, {
+              timeOut: 1000,
+            });
+          }
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
   goBack() {
     if (
       this._ActivatedRoute.snapshot.queryParamMap.get('symbols') === 'virtual'
@@ -465,6 +625,10 @@ export class ArticleCreatorComponent implements OnInit {
       this._Router.navigate([this._HeaderService.checkoutRoute]);
       return;
     }
+    this._ItemsService.itemImages = [];
+    this._ItemsService.itemName = null;
+    this._ItemsService.itemPrice = null;
+    this._ItemsService.changedImages = false;
     this._Router.navigate([`admin/items-dashboard`]);
   }
 
@@ -634,20 +798,35 @@ export class ArticleCreatorComponent implements OnInit {
         },
       },
       {
-        text: 'Eliminar',
+        text: 'Eliminar (eliminas la data)',
         callback: async () => {
           try {
-            const removeItemFromSaleFlow =
-              await this._SaleflowService.removeItemFromSaleFlow(
-                item._id,
-                this._SaleflowService.saleflowData._id
-              );
-            if (!removeItemFromSaleFlow) return;
-            const deleteItem = await this._ItemsService.deleteItem(item._id);
-            if (!deleteItem) return;
+            this._DialogService.open(SingleActionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                title: 'Borrar este artículo?',
+                buttonText: 'Sí, borrar',
+                mainText:
+                  'Al borrar este artículo se borrarán la data de ventas realizadas. Tienes la opción de poner invisible o archivarlo para no perder la data.',
+                mainButton: async () => {
+                  const removeItemFromSaleFlow =
+                    await this._SaleflowService.removeItemFromSaleFlow(
+                      item._id,
+                      this._SaleflowService.saleflowData._id
+                    );
+                  if (!removeItemFromSaleFlow) return;
+                  const deleteItem = await this._ItemsService.deleteItem(
+                    item._id
+                  );
+                  if (!deleteItem) return;
 
-            this._ToastrService.info('¡Item borrado exitosamente!');
-            this.goBack();
+                  this._ToastrService.info('¡Item borrado exitosamente!');
+                  this.goBack();
+                },
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
           } catch (error) {
             console.log(error);
             this._ToastrService.error(
@@ -673,6 +852,7 @@ export class ArticleCreatorComponent implements OnInit {
         cancelButton: {
           text: 'Cerrar',
         },
+        linkToCopy: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

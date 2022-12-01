@@ -95,7 +95,10 @@ export class HeaderService {
   newTempItemRoute: string = null;
   checkoutRoute: string;
   loadedMerchants = new EventEmitter();
-  colorTheme: '#272727' | '#2874AD' = '#2874AD';
+  colorTheme: '#2874AD' | '#272727' = '#272727';
+  ordersPageTemporalData: Record<string, any> = null;
+  dashboardTemporalData: Record<string, any> = null;
+  storeTemporalData: Record<string, any> = null;
 
   public session: Session;
   constructor(

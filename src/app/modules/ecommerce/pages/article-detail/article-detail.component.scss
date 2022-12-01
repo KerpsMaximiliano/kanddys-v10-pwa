@@ -441,7 +441,7 @@ audio {
   }
 
   .empty-space {
-    flex-basis: 11.48%;
+    // flex-basis: 11.48%;
   }
 
   .cart-button {
@@ -477,7 +477,7 @@ audio {
   }
 }
 
-:host ::ng-deep .swiper-button-next,
-:host ::ng-deep .swiper-button-prev {
-  display: none;
-}
+// :host ::ng-deep .swiper-button-next,
+// :host ::ng-deep .swiper-button-prev {
+//   display: none;
+// }

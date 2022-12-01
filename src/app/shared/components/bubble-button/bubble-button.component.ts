@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class BubbleButtonComponent implements OnInit {
   //Inputs
   @Input() color: 'yellow' | 'blue' | 'black' = 'yellow';
+  @Input() bgColor: string;
   @Input() position:
     | 'left'
     | 'right'
@@ -51,6 +52,8 @@ export class BubbleButtonComponent implements OnInit {
       case 'black':
         this.filterColor =
           'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
+
+        break;
     }
   }
 }

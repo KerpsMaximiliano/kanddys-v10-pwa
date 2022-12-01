@@ -5,15 +5,27 @@ button {
   background: #000000;
   height: 46px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   align-items: center;
 }
 .slide {
   background: #e9e371;
+  color: #2874ad;
   width: 100%;
   height: 100vh;
   display: block;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-family: "RobotoMedium";
   cursor: pointer;
+  img {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 3.5em;
+    filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg) brightness(80%) contrast(104%);
+  }
 }
 .bottom {
   width: 100%;
@@ -100,6 +112,8 @@ button {
 }
 .container {
   position: relative;
+  min-height: 100vh;
+  max-height: 100vh;
 }
 video {
   width: 100%;
@@ -164,11 +178,11 @@ audio {
 }
 .notification {
   margin: auto;
+  filter: invert(96%) sepia(96%) saturate(16%) hue-rotate(283deg) brightness(134%) contrast(104%);
   cursor: pointer;
 }
 
 .lines {
-  display: grid;
   gap: 2px;
   width: 100%;
   height: 8px;
@@ -193,6 +207,23 @@ audio {
   &:hover {
     background-color: lightgray;
     cursor: pointer;
+  }
+}
+
+.rotate-btn {
+  cursor: pointer;
+  position: absolute;
+  right: 16px;
+  bottom: 164px;
+  padding: 8px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #000;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgb(228, 228, 228);
+    transition: all 0.2s;
   }
 }
 

@@ -29,7 +29,7 @@
           *ngIf="
             currentUrl !==
             '/ecommerce/' +
-              header.saleflow._id +
+              header.saleflow.merchant.slug +
               '/provider-store/' +
               header.items[0]._id +
               '/payment-methods'
@@ -43,7 +43,7 @@
           *ngIf="
             currentUrl !==
             '/ecommerce/' +
-              header.saleflow._id +
+              header.saleflow.merchant.slug +
               '/provider-store/' +
               header.items[0]._id +
               '/payment-methods'

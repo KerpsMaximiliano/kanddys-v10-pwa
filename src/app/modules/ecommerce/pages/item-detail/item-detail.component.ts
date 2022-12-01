@@ -79,7 +79,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       }
 
       const whatsappMessage = encodeURIComponent(
-        `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/${this.headerService.saleflow._id}/item-detail/${this.item._id}`
+        `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/${this.headerService.saleflow.merchant.slug}/item-detail/${this.item._id}`
       );
       this.whatsappLink = `https://wa.me/${this.headerService.saleflow.merchant.owner.phone}?text=${whatsappMessage}`;
       this.itemInCart();
@@ -151,7 +151,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
         headerButton: 'Ver más productos',
         headerCallback: () =>
           this.router.navigate(
-            [`/ecommerce/${this.headerService.saleflow._id}/store`],
+            [`/ecommerce/${this.headerService.saleflow.merchant.slug}/store`],
             {
               replaceUrl: this.headerService.checkoutRoute ? true : false,
             }
@@ -164,7 +164,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
             return;
           }
           this.router.navigate([
-            `/ecommerce/${this.headerService.saleflow._id}/checkout`,
+            `/ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
           ]);
         },
       },
@@ -235,7 +235,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     const list: StoreShareList[] = [
       {
         qrlink: `${this.URI}/ecommerce/${
-          this.headerService.saleflow._id
+          this.headerService.saleflow.merchant.slug
         }/item-detail/${this.item._id}${
           this.selectedParam
             ? '?param=' +
@@ -249,7 +249,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
             text: 'Copia el link',
             mode: 'clipboard',
             link: `${this.URI}/ecommerce/${
-              this.headerService.saleflow._id
+              this.headerService.saleflow.merchant.slug
             }/item-detail/${this.item._id}${
               this.selectedParam
                 ? '?param=' +
@@ -263,7 +263,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
             text: 'Comparte el link',
             mode: 'share',
             link: `${this.URI}/ecommerce/${
-              this.headerService.saleflow._id
+              this.headerService.saleflow.merchant.slug
             }/item-detail/${this.item._id}${
               this.selectedParam
                 ? '?param=' +
@@ -306,9 +306,12 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     }
     this.itemsService.removeTemporalItem();
     this.router.navigate(
-      [`/ecommerce/${this.headerService.saleflow._id}/store`],
+      [`/ecommerce/${this.headerService.saleflow.merchant.slug}/store`],
       {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
+        queryParams: {
+          startOnSnapshot: true,
+        },
       }
     );
   }

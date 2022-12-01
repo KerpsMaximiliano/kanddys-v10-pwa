@@ -1,36 +1,50 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { formatID, unformatID } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput } from 'src/app/core/models/saleflow';
-import { CalendarService } from 'src/app/core/services/calendar.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { ReservationService } from 'src/app/core/services/reservations.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
-import { environment } from '../../../../../environments/environment';
+import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { SwiperOptions } from 'swiper';
 import * as moment from 'moment';
+import { Tag } from 'src/app/core/models/tags';
+import {
+  ItemOrder,
+  OrderStatusType2,
+  OrderSubtotal,
+} from 'src/app/core/models/order';
+import { environment } from '../../../../../environments/environment';
 import { OrderService } from 'src/app/core/services/order.service';
+import {
+  SettingsComponent,
+  Button as SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import SwiperCore, { Virtual } from 'swiper/core';
+
+SwiperCore.use([Virtual]);
+
+interface TagGroup {
+  tag: Tag;
+  orders: ItemOrder[];
+  income?: number;
+}
 
 @Component({
   selector: 'app-ordersAndPreOrdersList',
   templateUrl: './ordersAndPreOrdersList.component.html',
   styleUrls: ['./ordersAndPreOrdersList.component.scss'],
 })
-export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
-  status = 'loading';
-  controller: FormControl = new FormControl();
-  helperHeaderTextConfig: any = {
+export class OrdersAndPreOrdersList implements OnInit {
+  URI: string = environment.uri;
+  loadingStatus = 'loading';
+  incomeLoadingStatus = 'loading';
+  searchBar: FormControl = new FormControl();
+  headerText: any = {
     text: 'Facturas y Pre-facturas',
     fontSize: '21px',
     fontFamily: 'SfProBold',
@@ -38,458 +52,816 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   dots = {
     active: false,
   };
-  activeIndex: number;
-  options: OptionAnswerSelector[];
+  typeOfList: string;
+  tags: Array<Tag> = [];
+  showSearchbar: boolean = true;
+  selectedTags: Array<Tag> = [];
+  selectedTagsPermanent: Array<Tag> = [];
+  unselectedTags: Array<Tag> = [];
+  tagGroups: Array<TagGroup> = [];
+  permanentOrdersTagGroups: Array<TagGroup> = [];
+  permanentPreOrdersTagGroups: Array<TagGroup> = [];
+  highlightedOrders: Array<ItemOrder> = [];
+  highlightedOrdersPermanent: Array<ItemOrder> = [];
+  highlightedPreOrdersPermanent: Array<ItemOrder> = [];
+  highlightedOrdersIncome: number = 0;
+  tagsHashTable: Record<string, Tag> = {};
+  ordersList: ItemOrder[] = [];
+  ordersWithoutTags: ItemOrder[] = [];
+  ordersWithoutTagsPermanent: ItemOrder[] = [];
+  preordersWithoutTagsPermanent: ItemOrder[] = [];
+  ordersWithoutTagsIncome: number = 0;
+  ordersWithoutTagsIncomePermanent: number = 0;
+  preordersWithoutTagsIncomePermanent: number = 0;
+  defaultMerchant: Merchant;
+  ordersByMerchantLimit: number = 6000;
+  ordersByMerchantSortOrder: 'asc' | 'desc' = 'desc';
+  ordersByMerchantSortField: string = 'createdAt';
+  ordersIncomeForMatchingOrders: number = null;
+  matchingOrdersTotalCounter: number = 0;
   optionIndexArray: any[] = [];
-  editable: boolean = false;
   list: StoreShareList[];
   text2: string = '';
   buttons: string[] = ['facturas', 'pre - facturas'];
   calendar: string = '';
-  option: string;
-  invoiceListForOrders: any[] = [];
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
-    spaceBetween: 5,
+    spaceBetween: 0,
   };
-  ordersAmount: number = 0;
-  merchantIncome: number = 0;
-  tags: any[] = [];
   tagsCarousell: any[] = [];
   multipleTags: boolean = true;
-  subscription: Subscription;
   phone: string = '';
   limit: number;
   sort: string;
-  facturasTemp: any = [];
+  merchantIncome: number = 0;
   env = environment.assetsUrl;
+  ordersAmount: number = 0;
+  justShowHighlightedOrders: boolean;
+  justShowUntaggedOrders: boolean;
+  tagsByNameHashTable: Record<string, Tag> = {};
+  paginationState: {
+    pageSize: number;
+    page: number;
+    status: 'loading' | 'complete';
+  } = {
+    page: 1,
+    pageSize: 5,
+    status: 'complete',
+  };
+  renderItemsPromise: Promise<{ ordersByMerchant: Array<ItemOrder> }> = null;
+  changedMenuOption: boolean = false;
+
+  @ViewChild('highlightedOrdersSwiper')
+  highlightedOrdersSwiper: SwiperComponent;
+
+  async infinitePagination() {
+    const page = document.querySelector('.orders-page');
+    const pageScrollHeight = page.scrollHeight;
+    const verticalScroll = window.innerHeight + page.scrollTop;
+
+    if (verticalScroll >= pageScrollHeight) {
+      if (
+        this.paginationState.status === 'complete' &&
+        (this.selectedTags.length > 0 || this.searchBar.value !== '') &&
+        !this.justShowHighlightedOrders
+      ) {
+        this.loadOrdersAssociatedToTag(false, true);
+      }
+
+      if (
+        this.paginationState.status === 'complete' &&
+        (this.selectedTags.length > 0 || this.searchBar.value !== '') &&
+        this.justShowHighlightedOrders
+      ) {
+        this.loadHighlightedOrders(false, true);
+      }
+    }
+  }
 
   constructor(
-    private _MerchantsService: MerchantsService,
-    private _Router: Router,
-    private _DialogService: DialogService,
-    private _TagsService: TagsService,
-    private _ActivatedRoute: ActivatedRoute,
-    private ordersService: OrderService,
-    private headerService: HeaderService
+    private merchantsService: MerchantsService,
+    private router: Router,
+    private dialogService: DialogService,
+    private tagsService: TagsService,
+    private route: ActivatedRoute,
+    private headerService: HeaderService,
+    private ordersService: OrderService
   ) {}
 
   ngOnInit(): void {
-    this.invoiceListForOrders = [];
-    this.status = 'loading';
-    this.subscription = this._ActivatedRoute.queryParams.subscribe(
-      async (params) => {
-        this.status = 'loading';
-        let {
-          by = 1,
-          limit = null,
-          sort = 'desc',
-          at = 'createdAt',
-          type = 'facturas',
-          phone = '',
-          startDate = null,
-          endDate = null,
-        } = params;
-        phone = phone.replace('+', '');
-        this.phone = phone;
-        if (isNaN(+by)) {
-          by = 10;
-        }
-        if (isNaN(+limit)) {
-          limit = 50;
-        }
-        this.option = type.replace('%20');
-        this.helperHeaderTextConfig.text =
-          this.option[0].toUpperCase() + this.option.slice(1);
+    this.route.queryParams.subscribe(async (params) => {
+      this.loadingStatus = 'loading';
+      let {
+        at = 'createdAt',
+        type = 'facturas',
+        limit = 50,
+        sort = 'desc',
+        startOnSnapshot,
+      } = params;
+      startOnSnapshot = Boolean(startOnSnapshot);
 
-        this.invoiceListForOrders = [];
-        const atList = ['createdAt', 'updatedAt'];
-        if (!atList.includes(at)) {
-          at = 'createdAt';
-        }
-        const sortList = ['asc', 'desc'];
-        if (!sortList.includes(sort)) {
-          sort = 'desc';
-        }
-        this.limit = limit;
-        this.sort = sort;
-        const ordersByMerchant = async () => {
-          const { _id }: Merchant =
-            await this._MerchantsService.merchantDefault();
-          const pagination: PaginationInput = {
-            options: {
-              sortBy: `${at}:${sort}`,
-              limit: limit ? Number(limit) : 6000,
-            },
+      if (!this.headerService.ordersPageTemporalData || !startOnSnapshot) {
+        this.typeOfList = type;
+        this.ordersByMerchantLimit = limit;
+        this.ordersByMerchantSortField = at;
+        this.ordersByMerchantSortOrder = sort;
+
+        this.loadingStatus = 'loading';
+        let tags: Array<Tag> =
+          (await this.tagsService.tagsByUser({
             findBy: {
-              orderStatus:
-                this.option === 'facturas'
-                  ? ['in progress', 'to confirm', 'completed']
-                  : ['draft'],
+              entity: 'order',
             },
-          };
+            options: {
+              limit: -1,
+            },
+          })) || [];
+        this.tags = tags;
+        this.unselectedTags = [...this.tags];
 
-          if (startDate || endDate)
-            pagination.options.range = { from: null, to: null };
+        await this.inicializeOrdersWithoutTagsIncome();
+        await this.getHighlightedOrdersIncome();
 
-          if (startDate) {
-            const [year, month, day] = startDate.split('-');
-            let from = new Date(year, month - 1, day).toISOString();
-            from = from.split('T')[0] + 'T00:00:00.000Z';
+        //Fills an object or hash table for fast access to each tag by its id
 
-            pagination.options.range.from = from;
-          }
+        this.typeOfList = type.replace('%20');
 
-          if (endDate) {
-            const [year, month, day] = endDate.split('-');
-            let to = new Date(year, month - 1, day).toISOString();
-            to = to.split('T')[0] + 'T00:00:00.000Z';
+        this.defaultMerchant = this.merchantsService.merchantData;
 
-            pagination.options.range.to = to;
-          }
+        await this.loadOrders();
+      } else {
+        this.getPageSnapshot();
+      }
 
-          const { ordersByMerchant } =
-            await this._MerchantsService.ordersByMerchant(_id, pagination);
-          const _ordersByMerchant = ordersByMerchant.filter((order) => {
-            const result =
-              type === 'facturas'
-                ? order.orderStatus !== 'draft'
-                : order.orderStatus === 'draft';
-            return result;
-          });
-          let temp = _ordersByMerchant.map(
-            ({
-              createdAt,
-              subtotals,
-              dateId,
-              items,
-              user,
-              tags,
-              _id,
-              orderStatus,
-            }) => {
-              let userIdLabel: string = null;
+      this.searchBar.valueChanges.subscribe((change: string) => {
+        this.loadOrdersAssociatedToTag(true);
+      });
+    });
+  }
 
-              const result: any = {
-                createdAt: createdAt,
-                total: subtotals
-                  .map(({ amount }) => amount)
-                  .reduce((a, b) => a + b),
-                dateId: formatID(`${dateId}`),
-                products: items.map(({ item }) => {
-                  const { name } = item;
-                  return name;
-                }),
-                tags,
-                _id,
-              };
+  async loadOrders() {
+    const ordersByMerchantPerTagPromises = [];
+    const opposite =
+      this.typeOfList === 'facturas' ? 'prefacturas' : 'facturas';
+    //first loads orders by facturas or prefacturas
+    await this.organizeTagsGroups();
 
-              if (orderStatus !== 'draft' && user) {
-                result.phone = user.phone;
+    const tagsIds = this.tags.map((tag) => tag._id);
 
-                if (user && user.name && user.name !== '')
-                  userIdLabel = 'Usuario: ' + user.name;
-                else if (user && user.phone && user.phone !== '')
-                  userIdLabel = 'Usuario: ' + user.phone;
-                else if (user && user.email && user.email !== '')
-                  userIdLabel = 'Usuario: ' + user.email;
+    await this.loadFirstsOrdersForAllTagGroups(tagsIds, this.typeOfList);
 
-                result.userIdLabel = userIdLabel;
-              }
+    let highlightedOrders = await this.loadFirstsHighlightedOrders(
+      this.typeOfList
+    );
 
-              return result;
-            }
-          );
-          this.invoiceListForOrders = [];
-          while (temp.length) {
-            const facturas = [...temp.filter((item, index) => index < by)];
-            temp = temp.filter((item, index) => index >= by);
-            this.invoiceListForOrders.push({ facturas, tag: { _id: '' } });
-          }
-          let tags: any = (await this._TagsService.tagsByUser()) || [];
-          this.tagsCarousell = tags;
-          this.status = this.invoiceListForOrders.some(
-            ({ facturas }) => facturas.length
-          )
-            ? 'complete'
-            : 'empty';
-          this.facturasTemp = this.invoiceListForOrders;
-          this.controller.valueChanges.subscribe((value) => {
-            this.facturasTemp = this.invoiceListForOrders.map(
-              ({ facturas }) => ({
-                facturas: facturas.filter(
-                  ({ phone, tags, dateId, products }) => {
-                    const productNameMatches = products.map((product) => {
-                      return value && product
-                        ? product.toLowerCase().includes(value.toLowerCase())
-                        : (value && product === '') || !product
-                        ? false
-                        : true;
-                    });
+    if (highlightedOrders) {
+      this.highlightedOrders = highlightedOrders;
 
-                    return value
-                      ? `${phone}`.includes(value) ||
-                          dateId.includes(value) ||
-                          productNameMatches.includes(true)
-                      : true;
-                  }
-                ),
-                // this.tags.length
-                //   ? tags.some((tag) =>
-                //       this.tags.map(({ _id }) => _id).includes(tag)
-                //     )
-                //   :
-                tag: { _id: '' },
-              })
-            );
-            this.status = this.facturasTemp.some(
-              ({ facturas }) => facturas.length
-            )
-              ? 'complete'
-              : 'empty';
-          });
-        };
-        ordersByMerchant();
+      if (this.typeOfList === 'facturas')
+        this.highlightedOrdersPermanent = highlightedOrders;
+      else this.highlightedPreOrdersPermanent = highlightedOrders;
+    }
 
-        const ordersTotalResponse = await this.ordersService.ordersTotal(
-          ['in progress', 'to confirm', 'completed'],
-          this._MerchantsService.merchantData._id
-        );
+    this.ordersWithoutTags = await this.loadOrdersWithoutTags(this.typeOfList);
 
-        const incomeMerchantResponse =
-          await this._MerchantsService.incomeMerchant(
-            this._MerchantsService.merchantData._id
-          );
+    if (this.typeOfList === 'facturas') {
+      this.ordersWithoutTagsPermanent = [...this.ordersWithoutTags];
+    } else {
+      this.preordersWithoutTagsPermanent = [...this.ordersWithoutTags];
+    }
 
-        if (ordersTotalResponse && ordersTotalResponse !== null) {
-          this.ordersAmount = ordersTotalResponse.length;
-        }
+    //then does the same for the opposite(if typeOflist === facturas, its oposite is prefacturas)
 
-        if (incomeMerchantResponse && incomeMerchantResponse !== null) {
-          this.merchantIncome = incomeMerchantResponse;
-        }
+    await this.loadFirstsOrdersForAllTagGroups(tagsIds, opposite);
+
+    highlightedOrders = await this.loadFirstsHighlightedOrders(opposite);
+
+    if (highlightedOrders) {
+      if (opposite === 'facturas')
+        this.highlightedOrdersPermanent = highlightedOrders;
+      else this.highlightedPreOrdersPermanent = highlightedOrders;
+    }
+
+    const oppositeOrdersWithoutTags = await this.loadOrdersWithoutTags(
+      opposite
+    );
+
+    if (opposite === 'facturas') {
+      this.ordersWithoutTagsPermanent = [...oppositeOrdersWithoutTags];
+    } else {
+      this.preordersWithoutTagsPermanent = [...oppositeOrdersWithoutTags];
+    }
+
+    this.loadingStatus = 'complete';
+
+    //Get income for tagGroups
+    this.getPermanentTagGroupsIncome(this.tagGroups, this.typeOfList).then(
+      (result) => {
+        if (!this.changedMenuOption) this.tagGroups = result;
       }
     );
+
+    this.permanentOrdersTagGroups = await this.getPermanentTagGroupsIncome(
+      JSON.parse(JSON.stringify(this.permanentOrdersTagGroups)),
+      'facturas'
+    );
+    this.permanentPreOrdersTagGroups = await this.getPermanentTagGroupsIncome(
+      JSON.parse(JSON.stringify(this.permanentPreOrdersTagGroups)),
+      'draft'
+    );
+
+    this.incomeLoadingStatus = 'complete';
+  }
+
+  loadFirstsOrdersForAllTagGroups = async (
+    tagIds: Array<string>,
+    typeOfList: string
+  ): Promise<any> => {
+    const result = await this.tagsService.ordersByTag(
+      typeOfList === 'facturas'
+        ? ['in progress', 'to confirm', 'completed']
+        : ['draft'],
+      10,
+      tagIds
+    );
+
+    if (result) {
+      for (const tagAndOrders of result as Array<{
+        tag: string;
+        orders: Array<ItemOrder>;
+      }>) {
+        const { tag: tagId, orders } = tagAndOrders;
+        const tag = this.tagsHashTable[tagId];
+
+        const tagGroupInput = {
+          tag,
+          orders,
+          income: 0,
+        };
+        this.tagGroups.push(tagGroupInput);
+
+        if (typeOfList === 'facturas')
+          this.permanentOrdersTagGroups.push(tagGroupInput);
+        else this.permanentPreOrdersTagGroups.push(tagGroupInput);
+      }
+    }
+
+    return result;
+  };
+
+  loadFirstsHighlightedOrders = async (
+    typeOfList: string
+  ): Promise<Array<ItemOrder>> => {
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: 10,
+      },
+      findBy: {
+        orderStatus:
+          typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : 'draft',
+        'status.status': 'featured',
+        'status.access': this.merchantsService.merchantData.owner._id,
+      },
+    };
+
+    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination
+    );
+
+    return ordersByMerchant;
+  };
+
+  async organizeTagsGroups() {
+    this.tagGroups = [];
+    for await (const tag of this.tags) {
+      this.tagGroups.push({
+        tag,
+        orders: [],
+      });
+
+      this.tagsHashTable[tag._id] = tag;
+      this.tagsByNameHashTable[tag.name] = tag;
+    }
+  }
+
+  async getPermanentTagGroupsIncome(
+    tagGroups: Array<TagGroup>,
+    typeOfList: string
+  ): Promise<Array<TagGroup>> {
+    for await (const tagGroup of tagGroups) {
+      const income = await this.merchantsService.incomeMerchant({
+        findBy: {
+          merchant: this.merchantsService.merchantData._id,
+          orderStatus:
+            typeOfList === 'facturas'
+              ? ['in progress', 'to confirm', 'completed']
+              : 'draft',
+          tags: [tagGroup.tag._id],
+        },
+      });
+
+      tagGroup.income = income;
+    }
+
+    return tagGroups;
+  }
+
+  async loadOrdersWithoutTags(typeOfList: string): Promise<Array<ItemOrder>> {
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: 10,
+      },
+      findBy: {
+        orderStatus:
+          typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : 'draft',
+        tags: {
+          $size: 0,
+        },
+      },
+    };
+
+    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination
+    );
+
+    if (ordersByMerchant) {
+      return ordersByMerchant;
+    }
+
+    return [];
+  }
+
+  async loadOrdersAssociatedToTag(
+    restartPagination = false,
+    triggeredFromScroll = false
+  ) {
+    this.paginationState.status = 'loading';
+
+    if (restartPagination) {
+      this.paginationState.page = 1;
+    } else {
+      this.paginationState.page++;
+    }
+
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+      findBy: {
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : 'draft',
+      },
+    };
+
+    if (this.selectedTags.length && !this.justShowUntaggedOrders) {
+      ordersByMerchantPagination.findBy.tags = this.selectedTags.map(
+        (tag) => tag._id
+      );
+    }
+
+    if (this.justShowUntaggedOrders) {
+      ordersByMerchantPagination.findBy.tags = {
+        $size: 0,
+      };
+    }
+
+    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
+
+    //Search tagids that match the searchbar value
+    if (this.searchBar.value) {
+      Object.keys(this.tagsByNameHashTable).forEach((tagName) => {
+        if (
+          tagName
+            .toLowerCase()
+            .includes((this.searchBar.value as string).toLowerCase()) &&
+          (this.searchBar.value as string) !== ''
+        ) {
+          const tagId = this.tagsByNameHashTable[tagName]._id;
+
+          if (!selectedTagIds.includes(tagId)) {
+            selectedTagIds.push(tagId);
+          }
+        }
+      });
+    }
+
+    if (this.searchBar.value && this.searchBar.value !== '') {
+      ordersByMerchantPagination.findBy = {
+        ...ordersByMerchantPagination.findBy,
+        $or: [
+          {
+            name: {
+              __regex: {
+                pattern: (this.searchBar.value as string).trim(),
+                options: 'gi',
+              },
+            },
+          },
+          {
+            'params.values.name': {
+              __regex: {
+                pattern: (this.searchBar.value as string).trim(),
+                options: 'gi',
+              },
+            },
+          },
+          {
+            email: {
+              __regex: {
+                pattern: (this.searchBar.value as string).trim(),
+                options: 'gi',
+              },
+            },
+          },
+          {
+            phone: {
+              __regex: {
+                pattern: (this.searchBar.value as string).trim(),
+                options: 'gi',
+              },
+            },
+          },
+        ],
+      };
+    }
+
+    //Happens when the searchbar value matches a tag name
+    if (this.selectedTags.length === 0 && selectedTagIds.length > 0) {
+      ordersByMerchantPagination.findBy['$or'][2] = {
+        tags: {
+          $in: selectedTagIds,
+        },
+      };
+    }
+
+    if (this.selectedTags.length > 0 && selectedTagIds.length > 0) {
+      ordersByMerchantPagination.findBy.tags = {
+        $in: selectedTagIds,
+      };
+    }
+
+    const orderRefereceRegex =
+      /#?([0-9]{4})([0-9]{1,2})([0-9]{1,2})(N[0-9]{1,})/;
+
+    if (orderRefereceRegex.test(this.searchBar.value)) {
+      const [wholeDateId, year, month, day, number] = (
+        this.searchBar.value as string
+      ).match(orderRefereceRegex);
+
+      ordersByMerchantPagination.findBy['$or'].push({
+        dateId: unformatID(month, day, year, number),
+      });
+    }
+
+    this.renderItemsPromise = this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination,
+      true
+    );
+
+    this.renderItemsPromise.then(async ({ ordersByMerchant }) => {
+      if (
+        this.selectedTagsPermanent.length > 0 ||
+        (this.searchBar.value !== '' && this.searchBar.value !== null) ||
+        this.justShowHighlightedOrders ||
+        this.justShowUntaggedOrders
+      ) {
+        const paginationOptions = {
+          ...ordersByMerchantPagination.options,
+          limit: -1,
+        };
+        delete paginationOptions.page;
+
+        const pagination: PaginationInput = {
+          ...ordersByMerchantPagination,
+          options: paginationOptions,
+          findBy: {
+            ...ordersByMerchantPagination.findBy,
+            merchant: this.merchantsService.merchantData._id,
+          },
+        };
+
+        if (selectedTagIds.length > 0) {
+          pagination.findBy.tags = selectedTagIds;
+        }
+
+        const ordersIncomeForMatchingOrders =
+          await this.merchantsService.incomeMerchant(pagination);
+
+        if (typeof ordersIncomeForMatchingOrders === 'number')
+          this.ordersIncomeForMatchingOrders = ordersIncomeForMatchingOrders;
+
+        ordersByMerchantPagination.options.limit = -1;
+
+        const { ordersByMerchant } =
+          await this.merchantsService.hotOrdersByMerchant(
+            this.defaultMerchant._id,
+            ordersByMerchantPagination
+          );
+
+        if (ordersByMerchant)
+          this.matchingOrdersTotalCounter = ordersByMerchant.length;
+        else this.matchingOrdersTotalCounter = null;
+      } else {
+        this.matchingOrdersTotalCounter = null;
+      }
+
+      if (ordersByMerchant.length === 0 && this.paginationState.page !== 1)
+        this.paginationState.page--;
+
+      if (ordersByMerchant && ordersByMerchant.length > 0) {
+        if (this.paginationState.page === 1) {
+          this.ordersList = ordersByMerchant;
+        } else {
+          this.ordersList = this.ordersList.concat(ordersByMerchant);
+        }
+      }
+
+      if (
+        ordersByMerchant.length === 0 &&
+        this.searchBar.value !== '' &&
+        !triggeredFromScroll
+      ) {
+        this.ordersList = [];
+      }
+
+      this.paginationState.status = 'complete';
+    });
+  }
+
+  async loadHighlightedOrders(
+    restartPagination = false,
+    triggeredFromScroll = false
+  ) {
+    this.paginationState.status = 'loading';
+
+    if (restartPagination) {
+      this.paginationState.page = 1;
+    } else {
+      this.paginationState.page++;
+    }
+
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+      findBy: {
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : 'draft',
+        'status.status': 'featured',
+        'status.access': this.merchantsService.merchantData.owner._id,
+      },
+    };
+
+    if (this.selectedTags.length > 0) {
+      ordersByMerchantPagination.findBy.tags = this.selectedTags.map(
+        (tag) => tag._id
+      );
+    }
+
+    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination
+    );
+
+    if (ordersByMerchant.length === 0 && this.paginationState.page !== 1)
+      this.paginationState.page--;
+
+    if (ordersByMerchant && ordersByMerchant.length > 0) {
+      if (this.paginationState.page === 1) {
+        this.ordersList = ordersByMerchant;
+      } else {
+        this.ordersList = this.ordersList.concat(ordersByMerchant);
+      }
+
+      ordersByMerchantPagination.options.limit = -1;
+
+      const ordersIncomeForMatchingOrders =
+        await this.merchantsService.incomeMerchant({
+          ...ordersByMerchantPagination,
+          findBy: {
+            ...ordersByMerchantPagination.findBy,
+            merchant: this.defaultMerchant._id,
+          },
+        });
+
+      if (typeof ordersIncomeForMatchingOrders === 'number')
+        this.ordersIncomeForMatchingOrders = ordersIncomeForMatchingOrders;
+
+      const { ordersByMerchant: hotOrdersByMerchant } =
+        await this.merchantsService.hotOrdersByMerchant(
+          this.defaultMerchant._id,
+          ordersByMerchantPagination
+        );
+
+      if (hotOrdersByMerchant)
+        this.matchingOrdersTotalCounter = hotOrdersByMerchant.length;
+      else this.matchingOrdersTotalCounter = null;
+    }
+
+    if (
+      ordersByMerchant.length === 0 &&
+      this.searchBar.value !== '' &&
+      !triggeredFromScroll
+    ) {
+      this.ordersList = [];
+    }
+
+    this.paginationState.status = 'complete';
+  }
+
+  getIdsOfSelectedTags() {
+    return this.selectedTags.map((tag) => tag._id);
+  }
+
+  getTotalAmountOfMoneySpentInOrder(subtotals: Array<OrderSubtotal>): number {
+    return subtotals
+      .map(({ amount }) => amount)
+      .reduce((accumulator, orderAmount) => accumulator + orderAmount);
+  }
+
+  getTotalAmountOfMoneySpentOnEachTagGroup(orders: Array<ItemOrder>): number {
+    let total = 0;
+
+    orders.forEach((order) => {
+      total += this.getTotalAmountOfMoneySpentInOrder(order.subtotals);
+    });
+
+    return total;
+  }
+
+  getOrderTagList(tagsIds: Array<string>) {
+    return tagsIds
+      .filter(
+        (tagId) =>
+          this.tagsHashTable[tagId] && 'name' in this.tagsHashTable[tagId]
+      )
+      .map((tagId) => this.tagsHashTable[tagId].name)
+      .join(', ');
   }
 
   handleInputValue(value, _Router, option): void {}
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
-  handleController = (value: any): void => {
-    const loadData = async (value) => {
-      this.fillOptions(value);
-      this.status = this.invoiceListForOrders.some(
-        (facturas) => facturas.length
-      )
-        ? 'complete'
-        : 'empty';
-    };
-    loadData(value);
-  };
-
-  handleReservation = (reservation, value, index) => {
-    const { from } = reservation.date;
-    const { until } = reservation.date;
-    const starts = new Date(from);
-    const ends = new Date(until);
-    const day = starts.getDate();
-    const result = value ? `${day}` === value : true;
-    return result;
-  };
-
-  fillOptions(value?) {}
-
   navigate(): void {
-    if (this.editable) {
-      this.resetEdition();
-    } else this._Router.navigate([`/admin/entity-detail-metrics`]);
+    this.router.navigate([`/admin/items-dashboard`]);
   }
 
-  resetEdition(): void {
-    this.editable = false;
-    this.dots = { active: !this.editable };
-    this.optionIndexArray = [];
-    this.text2 = '';
-  }
+  async handleOption(option: string) {
+    this.changedMenuOption = true;
+    if (this.loadingStatus === 'complete') {
+      this.unselectedTags = [...this.tags];
+      this.showSearchbar = true;
+      this.selectedTags = [];
+      this.selectedTagsPermanent = [];
+      this.highlightedOrders = [];
+      this.highlightedOrdersIncome = 0;
+      this.tagsHashTable = {};
+      this.ordersList = [];
+      this.ordersWithoutTags = [];
+      this.typeOfList = option;
+      this.tagGroups = this.tagGroups.map((tagGroup) => ({
+        orders: [],
+        tag: tagGroup.tag,
+        income: 0,
+      }));
+      this.ordersWithoutTags = [];
+      this.selectedTags = [];
+      this.ordersList = [];
+      this.matchingOrdersTotalCounter = null;
+      this.ordersIncomeForMatchingOrders = null;
+      this.searchBar.setValue('');
+      this.incomeLoadingStatus = 'loading';
+      await this.getHighlightedOrdersIncome();
 
-  handleDotsEvent() {
-    this.list = [
-      {
-        title: 'RESERVACIONES',
-        options: [
-          {
-            text: 'BORRAR',
-            mode: 'func',
-            func: () => {
-              this.editable = true;
-              this.dots = {
-                active: !this.editable,
-              };
-            },
-          },
-        ],
-      },
-    ];
-    this._DialogService.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        mainButton: () => {},
-        title: 'Borrar Reservaciones?',
-        buttonText: 'Borrar reservaciones',
-        mainText:
-          'Al borrar las reservaciones las fechas involucradas volveran a estar disponibles.',
-        topButton: '',
-        list: this.list,
-        alternate: true,
-        hideCancelButtton: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '47px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
+      if (option === 'facturas') {
+        this.tagGroups = [...this.permanentOrdersTagGroups];
+        this.highlightedOrders = [...this.highlightedOrdersPermanent];
+        this.ordersWithoutTags = [...this.ordersWithoutTagsPermanent];
+        this.ordersWithoutTagsIncome = this.ordersWithoutTagsIncomePermanent;
+      } else {
+        this.tagGroups = [...this.permanentPreOrdersTagGroups];
+        this.highlightedOrders = [...this.highlightedPreOrdersPermanent];
+        this.ordersWithoutTags = [...this.preordersWithoutTagsPermanent];
+        this.ordersWithoutTagsIncome = this.preordersWithoutTagsIncomePermanent;
+      }
 
-  handleValue(id: string): void {
-    if (!this.editable) return;
-    if (this.optionIndexArray.includes(id))
-      this.optionIndexArray = this.optionIndexArray.filter((_id) => _id !== id);
-    else this.optionIndexArray.push(id);
-    this.text2 = this.optionIndexArray.length
-      ? 'BORRAR ESTAS RESREVACIONES'
-      : '';
-  }
-
-  handleSubmit(): void {
-    if (!this.optionIndexArray.length) return;
-    this._DialogService.open(SingleActionDialogComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        mainButton: () => {
-          this.status = 'loading';
-          let results = [];
-          const deleteReservations = async () => {};
-          deleteReservations();
-        },
-        title: 'Borrar Reservaciones?',
-        buttonText: 'Borrar reservaciones',
-        mainText:
-          'Al borrar las reservaciones las fechas involucradas volveran a estar disponibles.',
-        topButton: '',
-        list: this.list,
-        alternate: true,
-        hideCancelButtton: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '47px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
-  handleOption(option: string): void {
-    this.option = option;
-    this._Router.navigate([`/admin/orders`], {
-      queryParams: {
-        type: option,
-        // phone: this.phone,
-        limit: this.limit,
-        sort: this.sort,
-      },
-    });
-  }
-
-  returnScreen(): void {
-    this.resetEdition();
-  }
-
-  handleTag(tag): void {
-    if (this.tags.includes(tag))
-      this.tags = this.tags.filter((tg) => tg !== tag);
-    else {
-      const value = this.multipleTags ? [...this.tags, tag] : [tag];
-      this.tags = value;
+      this.incomeLoadingStatus = 'complete';
     }
-    this.helperHeaderTextConfig = {
-      text: this.tags.length
-        ? 'Ingreso: $IngresoID'
-        : 'Facturas y Pre-facturas',
-      fontSize: '21px',
-      fontFamily: 'SfPro',
-    };
-    let temp = this.invoiceListForOrders;
-    // while (temp.length) {
-    this.facturasTemp = [];
-    if (!this.tags.length) this.facturasTemp = this.invoiceListForOrders;
-    for (const _tag of this.tags) {
-      // const facturas = [
-      //   ...
-      let _facturas = [];
-      this.invoiceListForOrders.forEach(({ facturas }, index) => {
-        _facturas = [
-          ..._facturas,
-          ...facturas.filter((factura) => factura.tags.includes(_tag._id)),
-        ];
-      });
-      if (_facturas.length)
-        this.facturasTemp.push({ facturas: _facturas, tag: _tag });
-    }
-    this.status = this.facturasTemp.some(({ facturas }) => facturas.length)
-      ? 'complete'
-      : 'empty';
   }
 
-  resetTags(): void {
-    this.tags = [];
-    this.facturasTemp = this.invoiceListForOrders;
+  handleTag(selectedTag: Tag): void {
+    this.scrollToTheTopOfThePage();
+
+    if (this.selectedTags.map((tag) => tag._id).includes(selectedTag._id)) {
+      this.selectedTags = this.selectedTags.filter(
+        (tag) => tag._id !== selectedTag._id
+      );
+
+      if (this.selectedTags.length === 0) {
+        this.unselectedTags = [...this.tags];
+        this.selectedTagsPermanent = [];
+        this.showSearchbar = true;
+      }
+    } else {
+      const value = this.multipleTags
+        ? [...this.selectedTags, selectedTag]
+        : [selectedTag];
+      this.selectedTags = value;
+
+      if (
+        !this.selectedTagsPermanent.find((tag) => tag._id === selectedTag._id)
+      ) {
+        this.selectedTagsPermanent.push(selectedTag);
+      }
+
+      const unselectedTagIndexToDelete = this.unselectedTags.findIndex(
+        (unselectedTag) => {
+          return unselectedTag._id === selectedTag._id;
+        }
+      );
+
+      if (unselectedTagIndexToDelete >= 0) {
+        this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
+      }
+    }
+
+    if (this.selectedTags.length === 1) {
+      this.showSearchbar = false;
+    }
+
+    this.loadOrdersAssociatedToTag(true);
+  }
+
+  async selectTagFromHeader(eventData: { selected: boolean; tag: Tag }) {
+    this.handleTag(eventData.tag);
+  }
+
+  showHighlightedOrders() {
+    this.scrollToTheTopOfThePage();
+
+    this.justShowHighlightedOrders = true;
+
+    this.loadHighlightedOrders(true);
+  }
+
+  showOrdersUntagged() {
+    this.scrollToTheTopOfThePage();
+
+    this.justShowUntaggedOrders = true;
+    this.loadOrdersAssociatedToTag(true);
+  }
+
+  scrollToTheTopOfThePage() {
+    const scrollElem = document.querySelector('#top-of-the-page');
+    scrollElem.scrollIntoView();
+  }
+
+  resetSelectedTags(): void {
+    this.selectedTags = [];
+    this.selectedTagsPermanent = [];
+    this.unselectedTags = [...this.tags];
+    this.showSearchbar = true;
+    this.justShowHighlightedOrders = false;
+    this.justShowUntaggedOrders = false;
+    this.ordersIncomeForMatchingOrders = null;
+    this.matchingOrdersTotalCounter = 0;
+
+    this.loadOrdersAssociatedToTag(true);
   }
 
   goToOrderInfo(orderId: string) {
-    this.headerService.flowRoute = this._Router.url;
-    localStorage.setItem('flowRoute', this._Router.url);
-    this._Router.navigate([`ecommerce/order-detail/${orderId}`]);
+    this.headerService.flowRoute = !this.router.url.includes('?')
+      ? this.router.url
+      : this.router.url.split('?')[0];
+    localStorage.setItem(
+      'flowRoute',
+      !this.router.url.includes('?')
+        ? this.router.url
+        : this.router.url.split('?')[0]
+    );
+    this.savePageSnapshot();
+    this.router.navigate([`ecommerce/order-info/${orderId}`], {
+      queryParams: {
+        redirectTo: window.location.href.split('/').slice(3).join('/'),
+      },
+    });
   }
 
   getCreationDateDifferenceAsItsSaid(dateISOString) {
@@ -501,5 +873,290 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
 
     moment.locale('es');
     return moment([year, month, day, hour]).fromNow();
+  }
+
+  formatDateID(dateid: string) {
+    return formatID(dateid);
+  }
+
+  async highlightOrder(
+    order: ItemOrder,
+    ordersArray: Array<ItemOrder>,
+    orderIndex: number,
+    typeOfOrder: string
+  ) {
+    const list = [];
+
+    let foundMerchantObject = false;
+    order.status.forEach((userObject, statusIndex) => {
+      if (
+        userObject.access === this.merchantsService.merchantData.owner._id &&
+        userObject.status !== 'featured'
+      ) {
+        foundMerchantObject = true;
+        list.push({
+          text: 'Destacar orden',
+          callback: async () => {
+            const response = await this.ordersService.orderSetStatus(
+              'featured',
+              order._id
+            );
+
+            if (response) {
+              ordersArray[orderIndex].status.forEach((userObject) => {
+                if (
+                  userObject.access ===
+                  this.merchantsService.merchantData.owner._id
+                ) {
+                  userObject.status = 'featured';
+                }
+              });
+
+              await this.getHighlightedOrdersIncome();
+              this.highlightedOrders.push(order);
+            }
+
+            setTimeout(() => {
+              this.highlightedOrdersSwiper.directiveRef.update();
+            }, 300);
+          },
+        });
+      }
+
+      if (
+        userObject.access === this.merchantsService.merchantData.owner._id &&
+        userObject.status === 'featured'
+      ) {
+        foundMerchantObject = true;
+        list.push({
+          text: 'Dejar de destacar orden',
+          callback: async () => {
+            const response = await this.ordersService.orderSetStatus(
+              'active',
+              order._id
+            );
+
+            if (response) {
+              ordersArray[orderIndex].status.forEach((userObject) => {
+                if (
+                  userObject.access ===
+                  this.merchantsService.merchantData.owner._id
+                ) {
+                  userObject.status = 'active';
+                }
+              });
+
+              const indexToDelete = this.highlightedOrders.findIndex(
+                (highlightedOrder) => highlightedOrder._id === order._id
+              );
+
+              if (typeOfOrder === 'highlightedOrders') {
+                this.ordersWithoutTags.forEach((untaggedOrder) => {
+                  if (order._id === untaggedOrder._id) {
+                    untaggedOrder.status.forEach((userObject) => {
+                      if (
+                        userObject.access ===
+                        this.merchantsService.merchantData.owner._id
+                      ) {
+                        userObject.status = 'active';
+                      }
+                    });
+                  }
+                });
+
+                this.tagGroups.forEach((tagGroup) => {
+                  tagGroup.orders.forEach((groupOrder) => {
+                    if (order._id === groupOrder._id) {
+                      groupOrder.status.forEach((userObject) => {
+                        if (
+                          userObject.access ===
+                          this.merchantsService.merchantData.owner._id
+                        ) {
+                          userObject.status = 'active';
+                        }
+                      });
+                    }
+                  });
+                });
+              }
+
+              await this.getHighlightedOrdersIncome();
+              this.highlightedOrders.splice(indexToDelete, 1);
+            }
+
+            setTimeout(() => {
+              this.highlightedOrdersSwiper.directiveRef.update();
+            }, 300);
+          },
+        });
+      }
+    });
+
+    if (!foundMerchantObject) {
+      list.push({
+        text: 'Destacar orden',
+        callback: async () => {
+          const response = await this.ordersService.orderSetStatus(
+            'featured',
+            order._id
+          );
+
+          if (response) {
+            ordersArray[orderIndex].status.forEach((userObject) => {
+              if (
+                userObject.access ===
+                this.merchantsService.merchantData.owner._id
+              ) {
+                userObject.status = 'featured';
+              }
+            });
+
+            await this.getHighlightedOrdersIncome();
+            this.highlightedOrders.push(order);
+          }
+
+          setTimeout(() => {
+            this.highlightedOrdersSwiper.directiveRef.update();
+          }, 300);
+        },
+      });
+    }
+
+    this.dialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        title: 'Orden ' + formatID(order.dateId),
+        linkToCopy: this.URI + '/ecommerce/order-info/' + order._id,
+        optionsList: list,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  async getHighlightedOrdersIncome() {
+    const highlightedOrdersIncomeWithoutTags =
+      await this.merchantsService.incomeMerchant({
+        findBy: {
+          merchant: this.merchantsService.merchantData._id,
+          orderStatus:
+            this.typeOfList === 'facturas'
+              ? ['in progress', 'to confirm', 'completed']
+              : 'draft',
+          status: [{ status: 'featured' }],
+        },
+      });
+
+    if (typeof highlightedOrdersIncomeWithoutTags === 'number')
+      this.highlightedOrdersIncome = highlightedOrdersIncomeWithoutTags;
+  }
+
+  async inicializeOrdersWithoutTagsIncome() {
+    const opposite =
+      this.typeOfList === 'facturas' ? 'prefacturas' : 'facturas';
+    this.ordersWithoutTagsIncome = await this.getOrdersWithoutTagsIncome(
+      this.typeOfList
+    );
+    const oppositeWithoutTagsIncome = await this.getOrdersWithoutTagsIncome(
+      opposite
+    );
+
+    if (this.typeOfList === 'facturas') {
+      this.ordersWithoutTagsIncomePermanent = this.ordersWithoutTagsIncome;
+      this.preordersWithoutTagsIncomePermanent = oppositeWithoutTagsIncome;
+    } else {
+      this.preordersWithoutTagsIncomePermanent = this.ordersWithoutTagsIncome;
+      this.ordersWithoutTagsIncomePermanent = oppositeWithoutTagsIncome;
+    }
+  }
+
+  async getOrdersWithoutTagsIncome(typeOfList: string): Promise<number> {
+    const ordersIncomeWithoutTags = await this.merchantsService.incomeMerchant({
+      findBy: {
+        merchant: this.merchantsService.merchantData._id,
+        orderStatus:
+          typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : 'draft',
+        tags: [],
+      },
+    });
+
+    if (typeof ordersIncomeWithoutTags === 'number')
+      return ordersIncomeWithoutTags;
+
+    return 0;
+  }
+
+  changeOrderStatus(status: OrderStatusType2, order: ItemOrder) {
+    order.status.forEach((userObject) => {
+      if (userObject.access === this.merchantsService.merchantData.owner._id) {
+        userObject.status = status;
+      }
+    });
+  }
+
+  savePageSnapshot() {
+    this.headerService.ordersPageTemporalData = {
+      loadingStatus: this.loadingStatus,
+      searchBar: this.searchBar.value,
+      typeOfList: this.typeOfList,
+      tags: this.tags,
+      showSearchbar: this.showSearchbar,
+      selectedTags: this.selectedTags,
+      selectedTagsPermanent: this.selectedTagsPermanent,
+      unselectedTags: this.unselectedTags,
+      tagGroups: this.tagGroups,
+      permanentOrdersTagGroups: this.permanentOrdersTagGroups,
+      permanentPreOrdersTagGroups: this.permanentPreOrdersTagGroups,
+      highlightedOrders: this.highlightedOrders,
+      highlightedOrdersPermanent: this.highlightedOrdersPermanent,
+      highlightedPreOrdersPermanent: this.highlightedPreOrdersPermanent,
+      highlightedOrdersIncome: this.highlightedOrdersIncome,
+      tagsHashTable: this.tagsHashTable,
+      ordersList: this.ordersList,
+      ordersWithoutTags: this.ordersWithoutTags,
+      ordersWithoutTagsPermanent: this.ordersWithoutTagsPermanent,
+      preordersWithoutTagsPermanent: this.preordersWithoutTagsPermanent,
+      ordersWithoutTagsIncome: this.ordersWithoutTagsIncome,
+      ordersWithoutTagsIncomePermanent: this.ordersWithoutTagsIncomePermanent,
+      preordersWithoutTagsIncomePermanent:
+        this.preordersWithoutTagsIncomePermanent,
+      defaultMerchant: this.defaultMerchant,
+      ordersByMerchantLimit: this.ordersByMerchantLimit,
+      ordersByMerchantSortOrder: this.ordersByMerchantSortOrder,
+      ordersByMerchantSortField: this.ordersByMerchantSortField,
+      ordersIncomeForMatchingOrders: this.ordersIncomeForMatchingOrders,
+      matchingOrdersTotalCounter: this.matchingOrdersTotalCounter,
+      optionIndexArray: this.optionIndexArray,
+      list: this.list,
+      tagsCarousell: this.tagsCarousell,
+      merchantIncome: this.merchantIncome,
+      ordersAmount: this.ordersAmount,
+      justShowHighlightedOrders: this.justShowHighlightedOrders,
+      justShowUntaggedOrders: this.justShowUntaggedOrders,
+      paginationState: this.paginationState,
+      tagsByNameHashTable: this.tagsByNameHashTable,
+    };
+  }
+
+  getPageSnapshot() {
+    for (const property of Object.keys(
+      this.headerService.ordersPageTemporalData
+    )) {
+      if (property !== 'searchBar') {
+        this[property] = this.headerService.ordersPageTemporalData[property];
+      } else {
+        this.searchBar.setValue(
+          this.headerService.ordersPageTemporalData[property]
+        );
+      }
+    }
+
+    this.headerService.ordersPageTemporalData = null;
+  }
+
+  getActiveTagsFromSelectedTagsPermantent(): Array<string> {
+    return this.selectedTags.map((tag) => tag._id);
   }
 }

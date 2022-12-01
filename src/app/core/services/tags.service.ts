@@ -14,6 +14,7 @@ import {
   addTagContainersPublic,
   itemAddTag,
   itemRemoveTag,
+  ordersByTag,
 } from '../graphql/tags.gql';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
@@ -34,7 +35,9 @@ export class TagsService {
     const result = await this.graphql.mutate({
       mutation: updateTag,
       variables: { input, tagId },
-      context: { useMultipart: true },
+      context: {
+        useMultipart: true,
+      },
     });
     console.log('Intentando updateTags');
 
@@ -48,7 +51,9 @@ export class TagsService {
     const result = await this.graphql.mutate({
       mutation: createTag,
       variables: { input },
-      context: { useMultipart: true },
+      context: {
+        useMultipart: true,
+      },
     });
 
     if (!result || result?.errors) return undefined;
@@ -56,10 +61,13 @@ export class TagsService {
     return result?.createTag;
   }
 
-  async tagsByUser(): Promise<Tag[]> {
+  async tagsByUser(
+    paginate: PaginationInput = { options: { limit: -1 } }
+  ): Promise<Tag[]> {
     try {
       const result = await this.graphql.query({
         query: tagsByUser,
+        variables: { paginate },
         fetchPolicy: 'no-cache',
       });
       if (!result) return undefined;
@@ -89,6 +97,35 @@ export class TagsService {
       const result = await this.graphql.mutate({
         mutation: addTagsInOrder,
         variables: { merchantId, tagId, orderId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemAddTag(tagId: string, id: string) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: itemAddTag,
+        variables: { tagId, id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemRemoveTag(tagId: string, id: string) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: itemRemoveTag,
+        variables: { tagId, id },
+        fetchPolicy: 'no-cache',
       });
       if (!result || result?.errors) return undefined;
       return result;
@@ -164,42 +201,34 @@ export class TagsService {
     }
   }
 
-  async itemAddTag(tagId: string, id: string) {
+  async tags(paginate: PaginationInput) {
     try {
-      const result = await this.graphql.mutate({
-        mutation: itemAddTag,
-        variables: { tagId, id },
-      });
-      if (!result || result?.errors) return undefined;
-      return result;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async itemRemoveTag(tagId: string, id: string) {
-    try {
-      const result = await this.graphql.mutate({
-        mutation: itemRemoveTag,
-        variables: { tagId, id },
-      });
-      if (!result || result?.errors) return undefined;
-      return result;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async tags(paginate: PaginationInput){
-   try{
       const result = await this.graphql.query({
-         query: tags,
-         variables: { paginate },
-         fetchPolicy: 'no-cache'
+        query: tags,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
       });
       return result;
-   } catch (e) {
+    } catch (e) {
       console.log(e);
-   };
-  };
+    }
+  }
+
+  async ordersByTag(
+    orderStatuses: Array<string>,
+    limit: number,
+    tagIds: Array<string>
+  ) {
+    try {
+      console.log({ orderStatus: orderStatuses, limit, tagId: tagIds });
+      const result = await this.graphql.query({
+        query: ordersByTag,
+        variables: { orderStatus: orderStatuses, limit, tagId: tagIds },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.ordersByTag;
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }

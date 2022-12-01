@@ -382,6 +382,12 @@
     }"
     [text2]="'pago >'"
     size="small"
+    (right)="
+      !disableButton &&
+        ((headerService.saleflow.module?.post && post) ||
+          !headerService.saleflow.module?.post) &&
+        createOrder()
+    "
     (left)="
       !disableButton &&
         ((headerService.saleflow.module?.post && post) ||

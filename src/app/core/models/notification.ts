@@ -19,7 +19,7 @@ export class OffsetTimeInput {
 export class GenericTriggerInput {
   key: 'generic';
   value: 'create';
-};
+}
 
 export class StatusTriggerInput {
   key: 'status';
@@ -33,6 +33,7 @@ export class NotificationInput {
   entity: string;
   trigger: (GenericTriggerInput | StatusTriggerInput)[];
   offsetTime: OffsetTimeInput[];
+  _id?: string;
 }
 
 export class PhoneNumbers {
@@ -49,7 +50,7 @@ export class OffsetTime {
 export class GenericTrigger {
   key: 'generic';
   value: 'create';
-};
+}
 
 export class StatusTrigger {
   key: 'status';
@@ -73,5 +74,5 @@ export class NotificationChecker extends Model<NotificationChecker> {
   user: User;
   date: Date;
   status: string;
-  trigger: (GenericTrigger | StatusTrigger);
+  trigger: GenericTrigger | StatusTrigger;
 }

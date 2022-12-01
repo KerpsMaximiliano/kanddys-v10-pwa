@@ -103,8 +103,8 @@ export class CustomItemDetailComponent implements OnInit {
     this.header.storeOrderProgress();
     if (this.header.customizerData) this.header.customizerData = null;
     this.header.orderProgress.customizer = false;
-    this.router.navigate([
-      `ecommerce/${this.header.saleflow._id}/provider-store/${this.header.items[0]._id}/redirect-to-customizer`,
-    ]);
+    this.router.navigate([`../redirect-to-customizer`], {
+      relativeTo: this.route,
+    });
   }
 }

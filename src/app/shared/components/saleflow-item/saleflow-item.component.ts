@@ -140,7 +140,6 @@ export class SaleflowItemComponent implements OnInit {
   showTags(tags: Array<Tag>) {
     return tags
       .map((tag) => {
-
         return tag.name;
       })
       .join(', ');

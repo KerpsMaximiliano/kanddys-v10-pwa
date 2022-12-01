@@ -21,6 +21,7 @@ import gql from 'graphql-tag';
 export const body = `
   _id
   name
+  slug
   location
   email
   image
@@ -136,6 +137,18 @@ export const merchant = gql`
   }
 `;
 
+export const merchantByName = gql`
+  query merchantByName($name: String!) {
+    merchantByName(name: $name) { ${body} }
+  }
+`;
+
+export const merchantBySlug = gql`
+  query merchantBySlug($slug: String!) {
+    merchantBySlug(slug: $slug) { ${body} }
+  }
+`;
+
 export const isMerchant = gql`
   query isMerchant($user: String!) {
     isMerchant(user: $user)
@@ -221,15 +234,41 @@ export const ordersByMerchant = gql`
           name
           images
           pricing
+          tags
+          params {
+            _id
+            name
+            values {
+              _id
+              name
+              price
+            }
+          }
+        }
+        params {
+          param
+          paramValue
         }
         reservation {
           _id
         }
       }
       orderStatus
+      status {
+        status
+        access
+      }
       dateId
       createdAt
       tags
+    }
+  }
+`;
+
+export const ordersByMerchantHot = gql`
+  query ordersByMerchant($pagination: PaginationInput, $merchant: ObjectID!) {
+    ordersByMerchant(pagination: $pagination, merchant: $merchant) {
+      _id
     }
   }
 `;
@@ -325,7 +364,7 @@ export const usersOrderMerchant = gql`
 `;
 
 export const incomeMerchant = gql`
-  query incomeMerchant($merchantId: ObjectID!) {
-    incomeMerchant(merchantId: $merchantId)
+  query incomeMerchant($input: PaginationInput) {
+    incomeMerchant(input: $input)
   }
 `;

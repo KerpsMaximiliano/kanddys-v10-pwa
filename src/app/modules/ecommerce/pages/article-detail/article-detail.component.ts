@@ -9,6 +9,7 @@ import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
@@ -37,6 +38,11 @@ export class ArticleDetailComponent implements OnInit {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
+    autoplay: {
+      delay: 10000,
+      stopOnLastSlide: true,
+      disableOnInteraction: false,
+    },
   };
   currentMediaSlide: number = 0;
   entity: ValidEntities;
@@ -57,6 +63,7 @@ export class ArticleDetailComponent implements OnInit {
     spaceBetween: 0,
   };
   fractions: string = '';
+  timer: NodeJS.Timeout;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -68,25 +75,53 @@ export class ArticleDetailComponent implements OnInit {
     private router: Router,
     private appService: AppService,
     private dialogService: DialogService,
-    private ngNavigatorShareService: NgNavigatorShareService
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private saleflowService: SaleFlowService
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(async (routeParams) => {
-      this.route.queryParams.subscribe(async (queryParams) => {
-        const validEntities = ['item', 'post'];
-        const { entity, entityId } = routeParams;
+      const validEntities = ['item', 'post'];
+      const { entity, entityId } = routeParams;
+      if (
+        !this.headerService.saleflow.items.some(
+          (saleflowItem) => saleflowItem.item.status
+        )
+      ) {
+        const listItems = await this.saleflowService.listItems({
+          findBy: {
+            _id: {
+              __in: ([] = this.headerService.saleflow.items.map(
+                (items) => items.item._id
+              )),
+            },
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 60,
+          },
+        });
+        const items = listItems.listItems.filter((item) => {
+          return item.status === 'active' || item.status === 'featured';
+        });
 
-        if (validEntities.includes(entity)) {
-          this.entityId = entityId;
-          this.entity = entity;
-
-          await this.getItemData();
-          this.itemInCart();
-        } else {
-          this.router.navigate([`others/error-screen/`]);
+        for (let i = 0; i < items.length; i++) {
+          const item = this.headerService.saleflow.items.find(
+            (saleflowItem) => saleflowItem.item._id === items[i]._id
+          );
+          item.item.status = items[i].status;
         }
-      });
+      }
+
+      if (validEntities.includes(entity)) {
+        this.entityId = entityId;
+        this.entity = entity;
+
+        await this.getItemData();
+        this.itemInCart();
+      } else {
+        this.router.navigate([`others/error-screen/`]);
+      }
     });
   }
 
@@ -100,6 +135,7 @@ export class ArticleDetailComponent implements OnInit {
       });
 
       this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+      if (this.itemData.images?.length < 2) this.startTimeout();
     } catch (error) {
       console.error(error);
       this.router.navigate([`others/error-screen/`]);
@@ -128,11 +164,57 @@ export class ArticleDetailComponent implements OnInit {
     }
   }
 
+  startTimeout() {
+    this.timer = setTimeout(() => {
+      if (this.route.snapshot.queryParamMap.get('mode') === 'saleflow') {
+        let index = this.headerService.saleflow.items.findIndex(
+          (saleflowItem) => saleflowItem.item._id === this.itemData._id
+        );
+        for (let i = 1; i < this.headerService.saleflow.items.length; i++) {
+          if (index - i === -1) {
+            index = this.headerService.saleflow.items.length;
+            i = 0;
+            continue;
+          }
+          if (
+            this.headerService.saleflow.items[index - i].item.status ===
+              'active' ||
+            this.headerService.saleflow.items[index - i].item.status ===
+              'featured'
+          ) {
+            this.itemData = null;
+            this.router.navigate(
+              [`../${this.headerService.saleflow.items[index - i].item._id}`],
+              {
+                relativeTo: this.route,
+                queryParamsHandling: 'preserve',
+              }
+            );
+            break;
+          }
+        }
+      }
+    }, 10000);
+  }
+
   updateCurrentSlideData(event: any) {
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+    if (this.itemData.images.length === this.currentMediaSlide + 1) {
+      this.startTimeout();
+    } else if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
   }
 
   saveProduct() {
+    if (
+      !this.isItemInCart &&
+      !this.headerService.saleflow.canBuyMultipleItems
+    ) {
+      this.headerService.emptyOrderProducts();
+      this.headerService.emptyItems();
+    }
     const product: ItemSubOrderInput = {
       item: this.itemData._id,
       amount: 1,
@@ -221,7 +303,7 @@ export class ArticleDetailComponent implements OnInit {
         url:
           environment.uri +
           '/ecommerce/' +
-          this.headerService.saleflow._id +
+          this.headerService.saleflow.merchant.slug +
           '/article-detail/' +
           this.entity +
           '/' +
@@ -242,12 +324,10 @@ export class ArticleDetailComponent implements OnInit {
       props: {
         headerButton: 'Ver más productos',
         headerCallback: () =>
-          this.router.navigate(
-            [`/ecommerce/store/${this.headerService.saleflow._id}`],
-            {
-              replaceUrl: this.headerService.checkoutRoute ? true : false,
-            }
-          ),
+          this.router.navigate([`../../../store`], {
+            replaceUrl: this.headerService.checkoutRoute ? true : false,
+            relativeTo: this.route,
+          }),
         footerCallback: () => {
           if (this.headerService.checkoutRoute) {
             this.router.navigate([this.headerService.checkoutRoute], {
@@ -255,9 +335,9 @@ export class ArticleDetailComponent implements OnInit {
             });
             return;
           }
-          this.router.navigate([
-            `/ecommerce/${this.headerService.saleflow._id}/checkout`,
-          ]);
+          this.router.navigate([`../../../checkout`], {
+            relativeTo: this.route,
+          });
         },
       },
       customClass: 'app-dialog',
@@ -278,12 +358,10 @@ export class ArticleDetailComponent implements OnInit {
       return;
     }
     this.itemsService.removeTemporalItem();
-    this.router.navigate(
-      [`/ecommerce/store/${this.headerService.saleflow._id}`],
-      {
-        replaceUrl: this.headerService.checkoutRoute ? true : false,
-      }
-    );
+    this.router.navigate([`../../../store`], {
+      replaceUrl: this.headerService.checkoutRoute ? true : false,
+      relativeTo: this.route,
+    });
   }
 
   updateFrantions(): void {
@@ -291,9 +369,11 @@ export class ArticleDetailComponent implements OnInit {
       .map(
         () =>
           `${
-            this.itemData.images.length < 3
-              ? '1'
-              : this.getRandomArbitrary(0, this.itemData.images.length)
+            // // this.itemData.images.length < 3
+            // //   ?
+
+            '1'
+            // // : this.getRandomArbitrary(0, this.itemData.images.length)
           }fr`
       )
       .join(' ');

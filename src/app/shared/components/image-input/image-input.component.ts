@@ -7,6 +7,7 @@ import {
   ViewChild,
   AfterViewInit,
 } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { DomSanitizer } from '@angular/platform-browser';
 // import Swiper core and required modules
 import { SwiperOptions } from 'swiper';
@@ -50,6 +51,7 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
   } = null;
   @Input() containerStyles: Record<string, string> = null;
   @Input() fileStyles: Record<string, string> = null;
+  @Input() placeholderImageSize: 'SMALL' | 'LARGE' = 'LARGE';
   @Input() allowedTypes: string[] = [];
   @Input() small: boolean;
   @Input() multiple: boolean;
@@ -64,6 +66,7 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
   @Input() id: string = null;
   @Input() placeholderImage: boolean;
   @Input() blockMultipleFileInput: boolean;
+  @Input() circleInputMode: boolean = false;
   appendImageToTheEnd: boolean = false;
 
   public swiperConfig: SwiperOptions = {
@@ -93,6 +96,17 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {}
+
+  isImageObjectAnEmptyArray(image: string | ArrayBuffer) {
+    if (
+      Array.isArray(image) &&
+      image.length === 1 &&
+      (image[0] === '' || image[0] === null)
+    )
+      return true;
+
+    return false;
+  }
 
   sanitize(image: string | ArrayBuffer, expandImage) {
     return this._DomSanitizer.bypassSecurityTrustStyle(
@@ -211,7 +225,8 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
           }
 
           setTimeout(() => {
-            this.swiper.directiveRef.setIndex(this.imageField.length - 1);
+            if (this.swiper)
+              this.swiper.directiveRef.setIndex(this.imageField.length - 1);
           }, 300);
         };
 

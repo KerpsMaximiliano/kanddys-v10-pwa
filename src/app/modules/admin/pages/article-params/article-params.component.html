@@ -74,10 +74,23 @@
     <div class="price-form" *ngSwitchCase="'price'">
       <div class="price-input">
         <app-currency-input
+          *ngIf="!default"
           [fieldStyles]="{
             boxShadow: 'lightgrey 0px 3px 8px inset'
           }"
-          [initialValue]="price.value"
+          [initialValue]="
+            countDecimals(price.value) < 2 ? price.value * 100 : price.value
+          "
+          (onInputEvent)="handleCurrencyInput($event)"
+        ></app-currency-input>
+        <app-currency-input
+          *ngIf="default"
+          [fieldStyles]="{
+            boxShadow: 'lightgrey 0px 3px 8px inset'
+          }"
+          [initialValue]="
+            countDecimals(price.value) < 2 ? price.value * 100 : price.value
+          "
           (onInputEvent)="handleCurrencyInput($event)"
         ></app-currency-input>
       </div>
@@ -155,7 +168,7 @@
         [mode]="!blockSubmitButton ? 'fixed' : 'disabled-fixed'"
         [text]="'SALVAR EL ARTICULO PARA EMPEZAR A VENDER'"
         [bgColor]="!blockSubmitButton ? '#2874AD' : '#7B7B7B'"
-        [fontSize]="'1.063rem'"
+        [fontSize]="'1.02rem'"
         (click)="!blockSubmitButton && toSave()"
       ></app-sticky-button>
     </div>
