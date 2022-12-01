@@ -197,7 +197,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
          emailOrPhone,
          'ecommerce/article-detail',
          this.templateId,
-         'PostAccess',
+         'TemplateAccess',
          {}
       );
       clearInterval(this.timeinterval);
