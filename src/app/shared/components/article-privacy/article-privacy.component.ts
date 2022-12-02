@@ -257,10 +257,14 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       this.fields.forEach(
         ({ name, value, validators, type }: any, j: number) => {
           if (name === 'phone' && item['phone']) {
-            const { countryIso, nationalNumber, countryCode } =
+            try {
+              const { countryIso, nationalNumber, countryCode } =
               this._AuthService.getPhoneInformation(`${item['phone']}`);
-            this.CountryISO = countryIso;
-            item[name] = `${nationalNumber}`;
+              this.CountryISO = countryIso;
+              item[name] = `${nationalNumber}`; 
+            } catch (error) {
+              item[name] = ``; 
+            }
           }
           controller.addControl(
             name,
