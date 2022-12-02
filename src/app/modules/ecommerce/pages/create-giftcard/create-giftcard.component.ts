@@ -138,92 +138,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               marginTop: '48px',
             },
             fieldStyles: {
-              marginTop: '14px',
-            },
-          },
-        },
-      ],
-      customHelperHeaderConfig: {
-        bgcolor: this.header.colorTheme,
-      },
-      footerConfig: {
-        bgColor: this.header.colorTheme,
-      },
-      stepProcessingFunction: (params) => {
-        this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-        this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
-
-        if (params.scrollableForm) {
-          setTimeout(() => {
-            params.blockScrollBeforeCurrentStep();
-            this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-            this.removeScrollBlockerBefore =
-              params.unblockScrollBeforeCurrentStep;
-          }, 500);
-        }
-
-        if (
-          params.dataModel.value['1'].writeMessage ===
-          'Nosotros escribiremos el mensaje en una tarjetita'
-        )
-          return { ok: true };
-        else if (
-          params.dataModel.value['1'].writeMessage ===
-          'Sin mensaje y sin tarjetita'
-        ) {
-          this.storeEmptyMessageAndGoToShipmentDataForm(params);
-          return { ok: false };
-        } else if (
-          params.dataModel.value['1'].writeMessage ===
-          'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
-        ) {
-          return { ok: false };
-        }
-      },
-      customScrollToStepBackwards: (params) => {
-        if (this.scrollableForm) {
-          params.unblockScrollPastCurrentStep();
-          params.unblockScrollBeforeCurrentStep();
-        }
-
-        this.router.navigate([`../store`], {
-          relativeTo: this.route,
-        });
-      },
-      headerText: 'INFORMACIÓN DE LA ORDEN',
-      stepButtonInvalidText: 'TOCA EN LA OPCION QUE PREFIERAS',
-      stepButtonValidText: 'CONTINUAR',
-      headerMode: 'v2',
-      headerTextSide: 'LEFT',
-      headerTextStyles: {
-        marginLeft: '0px',
-        fontFamily: 'RobotoMedium',
-        fontWeight: 'normal',
-        fontSize: '17px',
-      },
-    },
-    {
-      fieldsList: [
-        {
-          name: 'receiver',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.pattern(/[\S]/)),
-          },
-          label: '¿Para quién es?',
-          placeholder: 'Type...',
-          topLabelAction: {
-            text: 'Sin mensaje de regalo',
-            clickable: true,
-            callback: (params) => {
-              this.storeEmptyMessageAndGoToShipmentDataForm(params);
-            },
-          },
-          styles: {
-            topLabelActionStyles: {
-              display: 'block',
-              color: '#27A2FF',
-              // fontSize: '16px',
+              boxShadow: '0px 4px 5px 0px #ddd inset',
+              color: '#0b1f38',
+              width: '100%',
               fontFamily: 'RobotoMedium',
               height: '164px',
               padding: '23px',
@@ -322,13 +239,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       ],
       customHelperHeaderConfig: {
         bgcolor: this.header.colorTheme,
-        justifyContent: 'center',
-        icon: {
-          src: '/arrow-double-up.svg',
-          width: 17,
-          height: 21,
-          cursor: 'pointer',
-        },
+        // justifyContent: 'center',
+        // icon: {
+        //   src: '/arrow-double-up.svg',
+        //   width: 17,
+        //   height: 21,
+        //   cursor: 'pointer',
+        // },
       },
       footerConfig: {
         bgColor: this.header.colorTheme,
@@ -420,18 +337,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         params.scrollToStep(1);
       },
       hideMainStepCTA: true,
-      /*       headerText: 'Comprar más',
-      headerText: 'Comprar más',
-      headerTextSide: 'LEFT',
-      stepButtonInvalidText: 'ADICIONA EL MENSAJE',
-      stepButtonValidText: 'CONTINUAR', */
       headerMode: 'v2',
       headerTextStyles: {
         marginLeft: '0px',
         fontFamily: 'RobotoMedium',
         fontWeight: 'normal',
         fontSize: '17px',
-      }
+      },
     },
   ];
 
@@ -449,12 +361,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     if (post?.targets?.[0]?.name) {
       this.formSteps[1].fieldsList[0].fieldControl.control = new FormControl(
         post.targets[0].name,
-        Validators.pattern(/[\S]/)
-      );
-    }
-    if (post?.from) {
-      this.formSteps[1].fieldsList[1].fieldControl.control = new FormControl(
-        post.from,
         Validators.pattern(/[\S]/)
       );
     }

@@ -744,7 +744,10 @@ export class OrderDetailComponent implements OnInit {
     let blobData = this.convertBase64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
       //IE
-      (window.navigator as any).msSaveOrOpenBlob(blobData, 'Qrcode');
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData,
+        this.formatId(this.order.dateId)
+      );
     } else {
       // chrome
       const blob = new Blob([blobData], { type: 'image/png' });
@@ -752,7 +755,7 @@ export class OrderDetailComponent implements OnInit {
       // window.open(url);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'Qrcode';
+      link.download = this.formatId(this.order.dateId);
       link.click();
     }
   }

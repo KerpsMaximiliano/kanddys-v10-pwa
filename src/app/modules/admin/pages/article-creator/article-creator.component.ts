@@ -2,9 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Item, ItemInput } from 'src/app/core/models/item';
 import { NgxImageCompressService } from 'ngx-image-compress';
 import { ToastrService } from 'ngx-toastr';
-import { Item, ItemInput } from 'src/app/core/models/item';
 import { PostInput } from 'src/app/core/models/post';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -79,9 +79,9 @@ export class ArticleCreatorComponent implements OnInit {
   isOrder: boolean;
   fractions: string = '1fr';
   activeSlide: number;
-  mode: Mode = 'symbols';
-  ctaText: string = 'SALVAR';
-  ctaDescription: string = '';
+  mode: Mode;
+  ctaText: string;
+  ctaDescription: string;
   item: Item;
   blockSubmitButton: boolean = false;
   selectedTags: Array<string>;
@@ -110,6 +110,14 @@ export class ArticleCreatorComponent implements OnInit {
     });
     if (this._ActivatedRoute.snapshot.paramMap.get('merchantSlug')) {
       this.isOrder = true;
+      this.mode = 'symbols';
+      this.ctaText = 'SALVAR';
+      this.ctaDescription = '';
+    } else {
+      this.mode = 'item';
+      this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
+      this.ctaDescription =
+        'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
     }
     const itemId = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     if (itemId) {
@@ -285,7 +293,6 @@ export class ArticleCreatorComponent implements OnInit {
           .bypassSecurityTrustStyle(`url(
         ${result})
         no-repeat center center / cover #e9e371`);
-        // Aquí hubo un merge conflict
         this.urls[j] = result as string;
       } else if (this.audioFiles.includes(type)) {
         this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustUrl(
@@ -329,6 +336,17 @@ export class ArticleCreatorComponent implements OnInit {
       this.activeSlide = this.multimedia[i].length - 1;
     }, 50);
     this.updateFrantions();
+  }
+
+  // Converts image to File
+  async urltoFile(
+    dataUrl: string,
+    fileName: string,
+    type?: string
+  ): Promise<File> {
+    const res: Response = await fetch(dataUrl);
+    const blob: Blob = await res.blob();
+    return new File([blob], fileName, { type: type || 'image/jpg' });
   }
 
   rotateImg(i: number, j: number) {
@@ -376,7 +394,7 @@ export class ArticleCreatorComponent implements OnInit {
   submit(): void {
     this.blockSubmitButton = true;
     if (this.mode === 'symbols') {
-      // if (this.controllers.invalid) return;
+      if (this.controllers.invalid) return;
       let result = [];
       const createPost = async (value: PostInput) => {
         if (this.isOrder) {
@@ -459,16 +477,6 @@ export class ArticleCreatorComponent implements OnInit {
     this.activeSlide = +activeSlide.id;
   }
 
-  async urltoFile(
-    dataUrl: string,
-    fileName: string,
-    type?: string
-  ): Promise<File> {
-    const res: Response = await fetch(dataUrl);
-    const blob: Blob = await res.blob();
-    return new File([blob], fileName, { type: type || 'image/jpg' });
-  }
-
   openShareDialog = () => {
     const styles = [
       { 'background-color': '#82F18D', color: '#174B72' },
@@ -539,7 +547,7 @@ export class ArticleCreatorComponent implements OnInit {
   };
 
   changeMode(mode: Mode) {
-    // this.mode = mode;
+    this.mode = mode;
     switch (mode) {
       case 'symbols':
         this.ctaText = 'SALVAR';
