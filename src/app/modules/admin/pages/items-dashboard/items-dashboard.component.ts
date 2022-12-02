@@ -967,7 +967,7 @@ export class ItemsDashboardComponent implements OnInit {
 
     const list: Array<SettingsDialogButton> = [
       {
-        text: 'Vista del visitante',
+        text: 'Vista del potencial comprador',
         callback: async () => {
           if (item.status !== 'disabled') {
             this.router.navigate(
