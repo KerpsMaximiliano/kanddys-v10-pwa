@@ -80,6 +80,9 @@ export class ArticleDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.get('mode') === 'preview') {
+      this.previewMode = true;
+    }
     this.route.params.subscribe(async (routeParams) => {
       const validEntities = ['item', 'post'];
       const { entity, entityId } = routeParams;
@@ -208,6 +211,7 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   saveProduct() {
+    if (this.previewMode) return;
     if (
       !this.isItemInCart &&
       !this.headerService.saleflow.canBuyMultipleItems
@@ -347,11 +351,7 @@ export class ArticleDetailComponent implements OnInit {
 
   back() {
     if (this.previewMode) {
-      if (this.itemData._id)
-        return this.router.navigate([
-          `/admin/create-article/${this.itemData._id}`,
-        ]);
-      else return this.router.navigate([`/admin/create-article`]);
+      return this.router.navigate([`/admin/entity-detail-metrics`]);
     }
     if (this.selectedParam) {
       this.selectedParam = null;

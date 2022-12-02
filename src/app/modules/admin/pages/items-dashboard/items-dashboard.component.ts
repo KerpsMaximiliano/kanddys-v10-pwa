@@ -970,28 +970,35 @@ export class ItemsDashboardComponent implements OnInit {
         text: 'Vista del visitante',
         callback: async () => {
           if (item.status !== 'disabled') {
-            this.router.navigate([
-              `/ecommerce/item-detail/${this.saleflowService.saleflowData.merchant.slug}/${item._id}`,
-            ]);
+            this.router.navigate(
+              [
+                `/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/article-detail/item/${item._id}`,
+              ],
+              {
+                queryParams: {
+                  mode: `preview`,
+                },
+              }
+            );
           } else {
-            const { images, name, description, pricing, _id, ...rest } = item;
-            const params = item.params;
-            params?.forEach((param) => {
-              param.values = param.values.filter(
-                (values) => values.name || values.price || values.description
-              );
-            });
-            this.itemsService.storeTemporalItem({
-              ...rest,
-              name,
-              description,
-              params,
-              images: images,
-              pricing,
-            });
-            this.headerService.flowRoute = this.router.url;
-            localStorage.setItem('flowRoute', this.headerService.flowRoute);
-            this.router.navigate(['/ecommerce/item-detail']);
+            // const { images, name, description, pricing, _id, ...rest } = item;
+            // const params = item.params;
+            // params?.forEach((param) => {
+            //   param.values = param.values.filter(
+            //     (values) => values.name || values.price || values.description
+            //   );
+            // });
+            // this.itemsService.storeTemporalItem({
+            //   ...rest,
+            //   name,
+            //   description,
+            //   params,
+            //   images: images,
+            //   pricing,
+            // });
+            // this.headerService.flowRoute = this.router.url;
+            // localStorage.setItem('flowRoute', this.headerService.flowRoute);
+            // this.router.navigate(['/ecommerce/item-detail']);
           }
         },
       },
