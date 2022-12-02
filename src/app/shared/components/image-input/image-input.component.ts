@@ -208,6 +208,8 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
         reader.readAsDataURL(file);
       }
 
+      (e.target as HTMLInputElement).value = null;
+
       if (this.max && this.imageField.length >= this.max) return;
       return;
     }

@@ -498,7 +498,10 @@
                   }"
                 >
                   <div
-                    *ngIf="currentField.shouldFormatNumber"
+                    *ngIf="
+                      currentField.shouldFormatNumber &&
+                      !currentField.shouldUseReusableCurrencyComponent
+                    "
                     [ngStyle]="{
                       display: 'flex',
                       alignItems: 'center',
@@ -526,11 +529,28 @@
                     ></div>
                   </div>
 
+                  <app-currency-input
+                    *ngIf="
+                      currentField.shouldUseReusableCurrencyComponent &&
+                      currentField.inputType === 'number' &&
+                      currentField.shouldFormatNumber
+                    "
+                    [inputId]="currentField.name"
+                    [inputName]="currentField.name"
+                    [fieldStyles]="{
+                      boxShadow: 'lightgrey 0px 3px 8px inset',
+                      height: '73px'
+                    }"
+                    [blockKeyboardNavigation]="true"
+                    (onInputEvent)="handleCurrencyInput(currentField, $event)"
+                  ></app-currency-input>
+
                   <input
                     [id]="currentField.name"
                     [name]="currentField.name"
                     [formControlName]="currentField.name"
                     [type]="currentField.inputType || 'text'"
+                    *ngIf="!currentField.shouldUseReusableCurrencyComponent"
                     [min]="
                       currentField.inputType === 'number' &&
                       currentField.onlyAllowPositiveNumbers
@@ -1487,6 +1507,12 @@
                 class="date-inputs"
                 [min]="currentField?.minDate"
                 [max]="currentField?.maxDate"
+                [ngClass]="{
+                  'has-value': currentField.fieldControl.control.value
+                    ? true
+                    : false
+                }"
+                [placeholder]="currentField.placeholder"
                 [ngStyle]="
                   currentField.styles.fieldStyles
                     ? currentField.styles.fieldStyles
@@ -1656,6 +1682,7 @@
               <swiper [config]="colorPickerSwiperConfig" class="color-picker">
                 <div
                   class="color-container"
+                  style="width: fit-content !important"
                   *ngFor="
                     let color of currentField.colorPickerConfiguration.options;
                     let currentColorIndex = index
