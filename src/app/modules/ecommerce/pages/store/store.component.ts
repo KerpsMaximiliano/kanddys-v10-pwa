@@ -523,6 +523,8 @@ export class StoreComponent implements OnInit {
       this.showSearchbar = false;
     }
 
+    console.log(this.tags[tagIndex].selected, "seleccionado");
+
     if (this.tags[tagIndex].selected) {
       this.tags[tagIndex].selected = false;
       this.selectedTagsCounter--;
