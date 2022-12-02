@@ -65,13 +65,12 @@ export class HelperHeaderComponent implements OnInit {
       //this.wallet = true;
     }
 
-    if (this.cart && this.headerService.saleflow?._id) this.getShoppinCartItems();
+    if (this.cart && this.headerService.saleflow?._id)
+      this.getShoppinCartItems();
   }
 
   getShoppinCartItems() {
-    const productData = this.headerService.getItems(
-      this.headerService.saleflow._id
-    );
+    const productData = this.headerService.getItems();
     this.cartAmount = productData?.length;
   }
 

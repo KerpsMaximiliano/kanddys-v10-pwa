@@ -78,6 +78,13 @@ export type OrderStatusType =
   | 'error'
   | 'draft';
 
+export type OrderStatusType2 =
+  | 'active'
+  | 'draft'
+  | 'disabled'
+  | 'featured'
+  | 'archived';
+
 export type OrderStatusNameType =
   | 'cancelado'
   | 'empezado'
@@ -105,6 +112,10 @@ export class ItemOrder extends Model<ItemOrder> {
   itemPackage: ItemPackage;
   merchants: Merchant[];
   tags: string[];
+  status?: Array<{
+    status: string;
+    access: string;
+  }>;
 }
 
 export class ItemOrderInput {

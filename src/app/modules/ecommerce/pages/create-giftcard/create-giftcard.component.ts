@@ -1,12 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { of } from 'rxjs';
-import { PostsService } from 'src/app/core/services/posts.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
-import { PostEditButtonsComponent } from 'src/app/shared/components/post-edit-buttons/post-edit-buttons.component';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
 
 const lightLabelStyles = {
@@ -26,8 +22,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     private header: HeaderService,
     private router: Router,
     private route: ActivatedRoute,
-    private dialog: DialogService,
-    private post: PostsService
   ) {}
 
   storeEmptyMessageAndGoToShipmentDataForm(params) {
@@ -48,25 +42,24 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     };
     this.header.post = emptyPost;
 
-    this.header.storePost(
-      this.header.saleflow?._id ?? this.header.getSaleflow()._id,
-      emptyPost
-    );
+    this.header.storePost(emptyPost);
 
     if (this.scrollableForm) {
       params.unblockScrollPastCurrentStep();
       params.unblockScrollBeforeCurrentStep();
     }
 
-    this.header.isComplete.message = true;
-    this.header.storeOrderProgress(this.header.saleflow._id);
+    this.header.orderProgress.message = true;
+    this.header.storeOrderProgress();
     if (this.header.checkoutRoute) {
       this.router.navigate([this.header.checkoutRoute], {
         replaceUrl: true,
       });
       return { ok: true };
     }
-    this.router.navigate([`ecommerce/${this.header.saleflow._id}/new-address`]);
+    this.router.navigate([`../new-address`], {
+      relativeTo: this.route,
+    });
     return { ok: true };
   }
 
@@ -101,30 +94,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     return { ok: true };
   };
-
-  public continueOrder = () => {
-    this.router.navigate([
-      `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-    ]);
-  };
-
-  showShoppingCartDialog() {
-    this.dialog.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        headerButton: 'Ver mas productos',
-        orderFinished: true,
-        footerCallback: () =>
-          this.router.navigate([
-            `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-          ]),
-        headerCallback: () =>
-          this.router.navigate([`ecommerce/store/${this.header.saleflow._id}`]),
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
 
   addedScrollBlockerBefore = false;
   scrollBlockerBefore: any;
@@ -183,6 +152,12 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           },
         },
       ],
+      customHelperHeaderConfig: {
+        bgcolor: this.header.colorTheme,
+      },
+      footerConfig: {
+        bgColor: this.header.colorTheme,
+      },
       stepProcessingFunction: (params) => {
         this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
         this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
@@ -220,11 +195,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           params.unblockScrollBeforeCurrentStep();
         }
 
-        this.router.navigate([`ecommerce/store/${this.header.saleflow._id}`]);
-      },
-      showShoppingCartOnCurrentStep: true,
-      shoppingCartCallback: () => {
-        this.showShoppingCartDialog();
+        this.router.navigate([`../store`], {
+          relativeTo: this.route,
+        });
       },
       headerText: 'INFORMACIÓN DE LA ORDEN',
       stepButtonInvalidText: 'TOCA EN LA OPCION QUE PREFIERAS',
@@ -316,6 +289,12 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           },
         },
       ],
+      customHelperHeaderConfig: {
+        bgcolor: this.header.colorTheme,
+      },
+      footerConfig: {
+        bgColor: this.header.colorTheme,
+      },
       customScrollToStepBackwards: (params) => {
         if (this.scrollableForm) {
           params.unblockScrollPastCurrentStep();
@@ -360,14 +339,11 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           };
 
           this.header.post = postInput;
-          this.header.storePost(
-            this.header.saleflow?._id ?? this.header.getSaleflow()._id,
-            postInput
-          );
+          this.header.storePost(postInput);
 
           try {
-            this.header.isComplete.message = true;
-            this.header.storeOrderProgress(this.header.saleflow._id);
+            this.header.orderProgress.message = true;
+            this.header.storeOrderProgress();
             if (this.header.checkoutRoute) {
               this.router.navigate([this.header.checkoutRoute], {
                 replaceUrl: true,
@@ -376,9 +352,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
                 ok: true,
               });
             }
-            this.router.navigate([
-              `ecommerce/${this.header.saleflow._id}/new-address`,
-            ]);
+            this.router.navigate([`../new-address`], {
+              relativeTo: this.route,
+            });
             return of({
               ok: true,
             });
@@ -393,10 +369,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       },
       customScrollToStep: (params) => {
         params.scrollToStep(1);
-      },
-      showShoppingCartOnCurrentStep: true,
-      shoppingCartCallback: () => {
-        this.showShoppingCartDialog();
       },
       headerText: 'Comprar más',
       headerTextSide: 'LEFT',
@@ -413,46 +385,29 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   ];
 
   async ngOnInit(): Promise<void> {
-    if (!this.header.saleflow) {
-      const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
-      const saleflow = await this.header.fetchSaleflow(saleflowId);
-      if (saleflow) {
-        this.header.flowRoute = `${this.header.saleflow._id}/create-giftcard`;
-        localStorage.setItem(
-          'flowRoute',
-          `${this.header.saleflow._id}/create-giftcard`
-        );
-        this.header.order = this.header.getOrder(saleflow._id);
-        if (!this.header.order) {
-          this.router.navigate([
-            `/ecommerce/store/${this.header.saleflow._id}`,
-          ]);
-          return;
-        }
-        this.header.getOrderProgress(saleflow._id);
-        const items = this.header.getItems(saleflow._id);
-        if (items && items.length > 0) this.header.items = items;
-        else
-          this.router.navigate([
-            `/ecommerce/store/${this.header.saleflow._id}`,
-          ]);
-      } else
-        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
-    } else {
-      this.header.flowRoute = `${this.header.saleflow._id}/create-giftcard`;
-      localStorage.setItem(
-        'flowRoute',
-        `${this.header.saleflow._id}/create-giftcard`
+    this.header.flowRoute = `create-giftcard`;
+    localStorage.setItem(
+      'flowRoute',
+      `${this.header.saleflow._id}/create-giftcard`
+    );
+    const post = this.header.getPost();
+    if (post?.targets?.[0]?.name) {
+      this.formSteps[1].fieldsList[0].fieldControl.control = new FormControl(
+        post.targets[0].name,
+        Validators.pattern(/[\S]/)
       );
-      this.header.order = this.header.getOrder(this.header.saleflow._id);
-      if (!this.header.order) {
-        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
-        return;
-      }
-      const items = this.header.getItems(this.header.saleflow._id);
-      if (items && items.length > 0) this.header.items = items;
-      else
-        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
+    }
+    if (post?.from) {
+      this.formSteps[1].fieldsList[1].fieldControl.control = new FormControl(
+        post.from,
+        Validators.pattern(/[\S]/)
+      );
+    }
+    if (post?.message) {
+      this.formSteps[1].fieldsList[2].fieldControl.control = new FormControl(
+        post.message,
+        Validators.pattern(/[\S]/)
+      );
     }
   }
 

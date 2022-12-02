@@ -1,0 +1,38 @@
+<div class="container">
+  <h2 class="title">{{ title }}</h2>
+  <div class="selector-container">
+    <div
+      class="option-container"
+      *ngFor="let option of options; index as i"
+      (click)="
+        option?.callback
+          ? handleValue(option?.callback())
+          : handleValue(callBack())
+      "
+    >
+      <div class="background"></div>
+      <h1 class="option-name">{{ option.option }}</h1>
+      <span class="sub-option">{{ option.subOption }}</span>
+    </div>
+  </div>
+</div>
+<!--
+   config anterior 
+   <app-answer-selector
+      [options]="options"
+      [activeOption]="activeIndex"
+      [indicator]="true"
+      [containerStyles]="{
+        margin: '0px'
+      }"
+      [optionContainerStyles]="{
+        marginBottom: '10px'
+      }"
+      [isMultipleOption]="true"
+      [isMultipleOption2]="true"
+      [editable]="true"
+      [activeMultipleOption]="optionIndexArray"
+      (activeMultipleOptionValue)="handleValue($event)"
+      [showSelectedFeedback]="true"
+    ></app-answer-selector> 
+-->

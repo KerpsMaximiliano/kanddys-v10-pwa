@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 export class TagsSelectorComponent implements OnInit {
   @Input('tags') tags: any[] = [];
   @Input('fillSelectedTagsOnStart') fillSelectedTagsOnStart: boolean;
-  @Input() tag: string[] = [];
+  @Input('selectedTagsIds') tag: string[] = [];
   @Input() activeTags: any[];
   @Input() useIdToRemoveOrAddTags: boolean = false;
   @Input('multipleTags') multipleTags: boolean = false;
@@ -51,6 +51,8 @@ export class TagsSelectorComponent implements OnInit {
         selectedTags: this.tag,
       });
     }
+
+    this.tagSelected(tag, this.tag.includes(tag));
   }
 
   tagSelected(args: any, selected: boolean) {

@@ -12,13 +12,20 @@ import { ReservationListComponent } from 'src/app/shared/components/reservation-
 import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
+import { ArticleCreatorComponent } from './pages/article-creator/article-creator.component';
+import { ArticleParamsComponent } from './pages/article-params/article-params.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 
 const routes: Routes = [
+  { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
   {
-    path: 'create-item',
-    component: CreateItemComponent,
+    path: 'create-article',
+    component: ArticleCreatorComponent,
+  },
+  {
+    path: 'article-params',
+    component: ArticleParamsComponent,
   },
   {
     path: '',
@@ -31,7 +38,16 @@ const routes: Routes = [
       },
       {
         path: 'create-item/:itemId',
-        component: CreateItemComponent,
+        redirectTo: 'create-article/:itemId',
+        pathMatch: 'full',
+      },
+      {
+        path: 'create-article/:itemId',
+        component: ArticleCreatorComponent,
+      },
+      {
+        path: 'article-params/:itemId',
+        component: ArticleParamsComponent,
       },
       /*{
         path: 'entity-detail-metrics',
@@ -106,9 +122,12 @@ const routes: Routes = [
     OrdersAndPreOrdersList,
     CalendarCreatorComponent,
     TimeBlockComponent,
+    ArticleCreatorComponent,
+    ArticleParamsComponent,
     ItemsDashboardComponent,
     CreateTagComponent,
   ],
+  exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
 export class AdminModule {}

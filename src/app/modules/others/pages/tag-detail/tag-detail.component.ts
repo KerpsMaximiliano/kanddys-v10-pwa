@@ -308,7 +308,7 @@ export class TagDetailComponent implements OnInit {
   }
 
   goToOderinfo(orderID:string){
-    this.router.navigate([`ecommerce/order-info/${orderID}`]);
+    this.router.navigate([`ecommerce/order-detail/${orderID}`]);
   }
 
   formatID(dateId: string) {
