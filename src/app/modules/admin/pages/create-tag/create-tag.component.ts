@@ -395,7 +395,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       isImageAFile = true;
     }
 
-    if (!isImageAFile && this.tagID) {
+    if (!isImageAFile && this.tagID && !images.value) {
       data.images = null;
     }
 

@@ -89,7 +89,7 @@
                   'word-break': 'break-all'
                 }"
                 [topInnerButtonStyles]="{
-                  backgroundColor: '#272727'
+                  backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
                 }"
               >
               </app-general-item>
@@ -149,7 +149,7 @@
                   'word-break': 'break-all'
                 }"
                 [topInnerButtonStyles]="{
-                  backgroundColor: '#272727'
+                  backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
                 }"
               >
               </app-general-item>
@@ -208,7 +208,7 @@
                   'word-break': 'break-all'
                 }"
                 [topInnerButtonStyles]="{
-                  backgroundColor: '#272727'
+                  backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
                 }"
               >
               </app-general-item>
@@ -259,7 +259,7 @@
               }"
               [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
               [topInnerButtonStyles]="{
-                backgroundColor: '#272727'
+                backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
               }"
               (itemSelectedEvent)="selectTag($event, tag)"
             >
@@ -318,7 +318,7 @@
                   (itemSelectedEvent)="selectTag($event, tag)"
                   [showEntityButton]="false"
                   [topInnerButtonStyles]="{
-                    backgroundColor: '#272727'
+                    backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
                   }"
                 >
                 </app-general-item>

@@ -713,7 +713,7 @@ export class TagsComponent implements OnInit {
 
     pagination.options = {
       sortBy: `counter:desc`,
-      limit: 10,
+      limit: -1,
     };
 
     pagination.findBy.counter = {
