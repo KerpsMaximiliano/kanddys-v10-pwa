@@ -564,7 +564,14 @@ export class ArticleCreatorComponent implements OnInit {
 
   openTagsDialog = async () => {
     this.selectedTags = [];
-    const userTags = await this._TagsService.tagsByUser();
+    const userTags = await this._TagsService.tagsByUser({
+      options: {
+        limit: -1,
+      },
+      findBy: {
+        entity: 'item'
+      },
+    });
     const itemTags = (
       await this._TagsService.tags({
         options: {
@@ -574,6 +581,7 @@ export class ArticleCreatorComponent implements OnInit {
           id: {
             __in: this.item.tags,
           },
+          entity: 'item'
         },
       })
     ).tags;
