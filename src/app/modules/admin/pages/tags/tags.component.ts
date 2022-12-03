@@ -694,10 +694,21 @@ export class TagsComponent implements OnInit {
         sortBy: `createdAt:desc`,
         limit: 10,
       },
+      findBy: {
+        '$or': [
+          {
+            entity: 'item'
+          },
+          {
+            entity: 'order'
+          },
+        ]
+      }
     };
 
     if (this.entityToFilterTagsBy) {
       pagination.findBy = {};
+      delete pagination.findBy['$or'];
       pagination.findBy.entity = this.entityToFilterTagsBy;
     }
 
