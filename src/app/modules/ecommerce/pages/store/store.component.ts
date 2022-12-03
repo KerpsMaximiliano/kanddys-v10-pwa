@@ -79,7 +79,6 @@ export class StoreComponent implements OnInit {
   itemCartAmount: number;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
-  viewtype: 'preview' | 'merchant';
   admin: boolean;
   searchBar: FormControl = new FormControl('');
   selectedTagsCounter: number = 0;
@@ -523,6 +522,8 @@ export class StoreComponent implements OnInit {
     if (this.selectedTags.length === 0) {
       this.showSearchbar = false;
     }
+
+    console.log(this.tags[tagIndex].selected, "seleccionado");
 
     if (this.tags[tagIndex].selected) {
       this.tags[tagIndex].selected = false;

@@ -522,6 +522,7 @@ export class HeaderService {
   emptyPost() {
     let { post, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+    this.post = null;
     localStorage.setItem(this.saleflow._id, JSON.stringify(rest));
   }
 
