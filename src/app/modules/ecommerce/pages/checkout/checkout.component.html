@@ -67,6 +67,7 @@
             "
           >
             <div class="image">
+              <!--*ngIf="type === 'image'" -->
               <img
                 [src]="
                   item.image || item.images?.length
@@ -87,7 +88,7 @@
           style="padding: 0 32px; align-items: center"
         >
           <p class="total">Total</p>
-          <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
+          <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
         </div>
       </div>
     </section>
@@ -207,40 +208,107 @@
       </div>
 
       <ng-container *ngIf="post">
-        <div *ngIf="post.slides?.length && postSlideImage">
-          <img [src]="postSlideImage" width="100%" />
-        </div>
-        <ng-container *ngIf="!post.slides?.length">
+        <div
+          class="items-container"
+          *ngIf="
+            post.slides?.length &&
+            (postSlideImages?.length ||
+              postSlideVideos?.length ||
+              postSlideAudio?.length)
+          "
+          style="margin-bottom: 8px"
+        >
           <div
-            class="message-box"
+            class="image-container"
+            #elemt
+            (mousedown)="startDragging($event, elemt)"
+            (mouseup)="stopDragging()"
+            (mouseleave)="stopDragging()"
+            (mousemove)="moveEvent($event, elemt)"
+          >
+            <button
+              *ngFor="let image of postSlideImages"
+              (click)="openImageModal(image)"
+            >
+              <div class="image">
+                <img
+                  [src]="image || '/assets/images/noimage.png'"
+                  alt="item image"
+                  class="item-image"
+                />
+              </div>
+            </button>
+            <button
+              *ngFor="let video of postSlideVideos"
+              class="video"
+              (click)="fullscreenDialog('video', video)"
+            >
+              <video
+                width="86px"
+                height="74px"
+                class="item-video"
+                autoplay
+                [muted]="'muted'"
+                #videoElem
+              >
+                <source [src]="video" />
+                Lo sentimos, no se puede mostrar el video
+              </video>
+            </button>
+
+            <button
+              class="video"
+              *ngFor="let audio of postSlideAudio"
+              (click)="fullscreenDialog('audio', audio)"
+            >
+              <div class="audio">
+                <audio class="item-audio" controls="controls">
+                  <source [src]="audio" />
+                  Lo sentimos, no se puede reproducir el audio
+                </audio>
+              </div>
+            </button>
+          </div>
+        </div>
+        <div
+          class="message-box"
+          *ngIf="
+            post?.message ||
+              post?.from ||
+              (post?.targets?.length && post.targets[0].name);
+            else noMessage
+          "
+        >
+          <section *ngIf="post.message">
+            <h3 class="sub">Mensaje a escribir:</h3>
+            <p class="message-text inner">
+              {{ post.message }}
+            </p>
+          </section>
+
+          <section *ngIf="post.targets?.length && post.targets[0]?.name">
+            <h3 class="sub">Título del sobre:</h3>
+            <p class="message-text inner">{{ post.targets[0]?.name }}</p>
+          </section>
+
+          <section *ngIf="post.from">
+            <h3 class="sub">De:</h3>
+            <p class="message-text inner">{{ post.from }}</p>
+          </section>
+        </div>
+        <ng-template #noMessage>
+          <div
+            class="items-container"
             *ngIf="
-              post?.message || post?.from || post?.targets[0].name;
-              else noMessage
+              !post.slides?.length ||
+              (!postSlideImages?.length &&
+                !postSlideVideos?.length &&
+                !postSlideAudio?.length)
             "
           >
-            <section *ngIf="post.message">
-              <h3 class="sub">Mensaje a escribir:</h3>
-              <p class="message-text inner">
-                {{ post.message }}
-              </p>
-            </section>
-
-            <section *ngIf="post.targets?.length && post.targets[0]?.name">
-              <h3 class="sub">Para:</h3>
-              <p class="message-text inner">{{ post.targets[0]?.name }}</p>
-            </section>
-
-            <section *ngIf="post.from">
-              <h3 class="sub">De:</h3>
-              <p class="message-text inner">{{ post.from }}</p>
-            </section>
+            <span class="address-name"> Sin mensaje de regalo </span>
           </div>
-          <ng-template #noMessage>
-            <div class="items-container">
-              <span class="address-name"> Sin mensaje de regalo </span>
-            </div>
-          </ng-template>
-        </ng-container>
+        </ng-template>
       </ng-container>
       <ng-container *ngIf="!post">
         <app-answer-selector

@@ -102,7 +102,11 @@
                 [style.background]="
                   imageFiles.includes(types[i][k]) ? multimedia[i][k] : ''
                 "
-              ><img src="{{ env + '/image.svg' }}" alt="" *ngIf="!imageFiles.includes(types[i][k])"></label>
+                ><img
+                  src="{{ env + '/image.svg' }}"
+                  alt=""
+                  *ngIf="!imageFiles.includes(types[i][k])"
+              /></label>
               <video
                 *ngIf="videoFiles.includes(types[i][k])"
                 controls
@@ -185,10 +189,9 @@
       <span>Citas</span>
       <span>Planilla</span>
     </div> -->
-    <div class="extra">
+    <div class="extra" *ngIf="ctaDescription">
       <div
         class="description"
-        *ngIf="ctaDescription"
         [ngStyle]="{ textAlign: mode === 'item' && item ? 'left' : 'center' }"
       >
         {{ ctaDescription }}

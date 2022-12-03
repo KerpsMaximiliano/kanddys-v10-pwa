@@ -11,15 +11,12 @@ import {
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { Questions } from '../../../../shared/components/form-questions/form-questions.component';
 import { Tag } from '../../../../core/models/tags';
-import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
-import { SetConfigComponent } from 'src/app/shared/dialogs/set-config/set-config.component';
 import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
-import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
 import { ReloadComponent } from 'src/app/shared/dialogs/reload/reload.component';
 import { FormStep, FormField } from 'src/app/core/types/multistep-form';
 import { FormControl } from '@angular/forms';
-import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 
 @Component({
   selector: 'app-test',
@@ -318,5 +315,19 @@ export class TestComponent implements OnInit {
   actionDialog(e: string) {
     console.log('Esta funcion esta aparte');
     console.log(e);
+  }
+
+  probando(){
+   this.dialog.open(MediaDialogComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+         inputType: 'audio',
+         src: 'Sway Female Ver  Michael Bublé.mp3',
+ 
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      notCancellable: true,
+    });
   }
 }

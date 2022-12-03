@@ -13,6 +13,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { SwiperOptions } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import SwiperCore, { Virtual } from 'swiper/core';
+import { NgxImageCompressService } from 'ngx-image-compress';
 
 SwiperCore.use([Virtual]);
 
@@ -76,7 +77,10 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
 
   @ViewChild('swiperRef') swiper: SwiperComponent;
 
-  constructor(protected _DomSanitizer: DomSanitizer) {}
+  constructor(
+    protected _DomSanitizer: DomSanitizer,
+    private _ImageCompress: NgxImageCompressService
+  ) {}
 
   ngOnInit(): void {
     if (this.allowedTypes.length > 0)
@@ -118,35 +122,56 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
     this.error = [];
   }
 
+  async urltoFile(
+    dataUrl: string,
+    fileName: string,
+    type?: string
+  ): Promise<File> {
+    const res: Response = await fetch(dataUrl);
+    const blob: Blob = await res.blob();
+    return new File([blob], fileName, { type: type || 'image/jpg' });
+  }
+
   fileProgress(e: Event, index: number) {
     const files = (e.target as HTMLInputElement).files;
+    if (!files.length) return;
+    if (
+      (this.allowedTypes.length > 0 &&
+        !this.allowedTypes.some((type) => files[0].type.includes(type))) ||
+      !files[0].type.includes('image/')
+    ) {
+      if (!this.imageField[index]) this.error[index] = true;
+      return;
+    }
+    let file: File;
+    const reader = new FileReader();
+    reader.readAsDataURL(files[0]);
+    reader.onload = async (e) => {
+      const compressedImage = await this._ImageCompress.compressFile(
+        reader.result as string,
+        -1,
+        50,
+        50
+      ); // 50% ratio, 50% quality
+      file = await this.urltoFile(
+        compressedImage,
+        files[0].name,
+        files[0].type
+      );
+      this.imageField[index] = compressedImage;
+      this.onFileInputBase64.emit({ image: compressedImage, index });
 
-    if (files.length > 0) {
-      if (
-        (this.allowedTypes.length > 0 &&
-          !this.allowedTypes.some((type) => files[0].type.includes(type))) ||
-        !files[0].type.includes('image/')
-      ) {
-        if (!this.imageField[index]) this.error[index] = true;
-        return;
-      }
       this.error[index] = false;
-      let emitData = this.multiple ? { image: files[0], index } : files[0];
+      let emitData = this.multiple ? { image: file, index } : file;
 
       this.onFileInput.emit(emitData);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.imageField[index] = reader.result;
-        this.onFileInputBase64.emit({ image: reader.result, index });
-      };
-      reader.readAsDataURL(files[0]);
       if (this.max && this.imageField.length >= this.max) return;
       if (this.multiple && this.imageField.length - 1 === index) {
         this.imageField.push('');
         this.error.push(false);
       }
       return;
-    }
+    };
   }
 
   fileProgressMultiple(e: Event) {
