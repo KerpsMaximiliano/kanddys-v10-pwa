@@ -292,7 +292,7 @@ export class ArticleCreatorComponent implements OnInit {
         this.multimedia[i][j] = this._DomSanitizer
           .bypassSecurityTrustStyle(`url(
         ${result})
-        no-repeat center center / cover #e9e371`);
+        no-repeat center center / contain #2e2e2e`);
         this.urls[j] = result as string;
       } else if (this.audioFiles.includes(type)) {
         this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustUrl(
@@ -350,7 +350,7 @@ export class ArticleCreatorComponent implements OnInit {
   }
 
   rotateImg(i: number, j: number) {
-    const img = this.urls[i];
+    const img = this.urls[j];
     const imageElement = new Image();
     imageElement.src = img as string;
     imageElement.crossOrigin = 'anonymous';
@@ -370,7 +370,7 @@ export class ArticleCreatorComponent implements OnInit {
       );
       newCtx.restore();
       const url = newCanvas.toDataURL('image/png');
-      this.urls[i] = url;
+      this.urls[j] = url;
       this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustStyle(`url(
         ${url})
         no-repeat center center / contain #2e2e2e`);
@@ -569,7 +569,7 @@ export class ArticleCreatorComponent implements OnInit {
         limit: -1,
       },
       findBy: {
-        entity: 'item'
+        entity: 'item',
       },
     });
     const itemTags = (
@@ -581,7 +581,7 @@ export class ArticleCreatorComponent implements OnInit {
           id: {
             __in: this.item.tags,
           },
-          entity: 'item'
+          entity: 'item',
         },
       })
     ).tags;
