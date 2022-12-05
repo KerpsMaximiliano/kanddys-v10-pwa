@@ -945,6 +945,11 @@ export class OrderDetailComponent implements OnInit {
   }
 
   goToPostDetail() {
+    this.headerService.flowRoute = window.location.href
+      .split('/')
+      .slice(3)
+      .join('/');
+
     this.router.navigate([
       '/ecommerce/' +
         this.order.items[0].saleflow.merchant.slug +

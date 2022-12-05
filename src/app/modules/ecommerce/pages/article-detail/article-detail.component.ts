@@ -252,7 +252,7 @@ export class ArticleDetailComponent implements OnInit {
   updateCurrentSlideData(event: any) {
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
 
-    if(this.entity === 'item') {
+    if (this.entity === 'item') {
       if (this.itemData.images.length === this.currentMediaSlide + 1) {
         this.startTimeout();
       } else if (this.timer) {
@@ -409,6 +409,13 @@ export class ArticleDetailComponent implements OnInit {
       this.selectedParam = null;
       return;
     }
+
+    if (this.headerService.flowRoute) {
+      this.router.navigate([this.headerService.flowRoute]);
+      this.headerService.flowRoute = null;
+      return;
+    }
+
     this.itemsService.removeTemporalItem();
     this.router.navigate([`../../../store`], {
       replaceUrl: this.headerService.checkoutRoute ? true : false,
