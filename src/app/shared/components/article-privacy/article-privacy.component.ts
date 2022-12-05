@@ -25,6 +25,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 
 @Component({
   selector: 'app-article-privacy',
@@ -187,7 +188,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       type: '',
     },
   ];
-  password: FormControl = new FormControl('', [Validators.required]);
+  password: FormControl = new FormControl('', [Validators.required,Validators.minLength(3)]);
   toDelete: number[] = [];
   toEntityTemplate: number[] = [];
   filter: SafeStyle;
@@ -212,7 +213,8 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     private _AuthService: AuthService,
     private _ItemsService: ItemsService,
     private _ActivatedRoute: ActivatedRoute,
-    private _Router: Router
+    private _Router: Router,
+    private _EntityTemplateService: EntityTemplateService
   ) {}
 
   ngOnInit(): void {
@@ -473,6 +475,18 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     };
     if (!_id) createRecipient();
     else updateRecipient();
+  }
+
+  submitPassword():void {
+    if(this.password.invalid) return;
+    const entityTemplateSetData = async () => {
+      const password:string = this.password.value;
+      const content: any = {
+        password
+      };
+      const result = await this._EntityTemplateService.entityTemplateSetData(this.id,content);
+    }
+    entityTemplateSetData();
   }
 
   deleteSelected(): void {

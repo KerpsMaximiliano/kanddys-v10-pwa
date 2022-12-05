@@ -254,12 +254,16 @@
       <p class="title">
         Escribe la clave que permitirá a los visitantes acceder al contenido:
       </p>
-      <input
-        [formControl]="password"
-        class="input"
-        placeholder="Escribe.."
-        type="password"
-      />
+      <div class="input">
+        <input
+          [formControl]="password"
+          placeholder="Escribe.."
+          type="password"
+        />
+        <button class="confirm" [style.background]="password.valid?'#2874ad':'#c1c1c1'" (click)="submitPassword()">
+          <i class="fas fa-chevron-right"></i>
+       </button>
+      </div>
       <p class="paragraph">
         Invitados reciben un link que le permite el acceso por un tiempo
         limitado. La clave no aplica para ellos.
