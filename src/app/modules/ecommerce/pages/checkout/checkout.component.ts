@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
@@ -18,6 +19,7 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { environment } from 'src/environments/environment';
 
 const options = [
@@ -31,46 +33,46 @@ const options = [
       color: '#202020',
     },
   },
-  // {
-  //   status: true,
-  //   click: true,
-  //   value: 'Con mensaje virtual e impreso',
-  //   valueStyles: {
-  //     'font-family': 'SfProBold',
-  //     'font-size': '13px',
-  //     color: '#202020',
-  //   },
-  //   subtexts: [
-  //     {
-  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
-  //       styles: {
-  //         fontFamily: 'SfProRegular',
-  //         fontSize: '1rem',
-  //         color: '#7B7B7B',
-  //       },
-  //     },
-  //   ],
-  // },
-  // {
-  //   status: true,
-  //   click: true,
-  //   value: 'Mensaje virtual',
-  //   valueStyles: {
-  //     'font-family': 'SfProBold',
-  //     'font-size': '13px',
-  //     color: '#202020',
-  //   },
-  //   subtexts: [
-  //     {
-  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
-  //       styles: {
-  //         fontFamily: 'SfProRegular',
-  //         fontSize: '1rem',
-  //         color: '#7B7B7B',
-  //       },
-  //     },
-  //   ],
-  // },
+  {
+    status: true,
+    click: true,
+    value: 'Con mensaje virtual e impreso',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
+  {
+    status: true,
+    click: true,
+    value: 'Mensaje virtual',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
   {
     status: true,
     click: true,
@@ -126,9 +128,12 @@ export class CheckoutComponent implements OnInit {
   options: OptionAnswerSelector[] = options;
   selectedPostOption: number;
   missingOrderData: boolean;
-  postSlideImage: string | ArrayBuffer;
+  postSlideImages: (string | ArrayBuffer)[] = [];
+  postSlideVideos: (string | ArrayBuffer)[] = [];
+  postSlideAudio: SafeUrl[] = [];
 
   constructor(
+    private _DomSanitizer: DomSanitizer,
     private dialogService: DialogService,
     public headerService: HeaderService,
     private customizerValueService: CustomizerValueService,
@@ -236,11 +241,33 @@ export class CheckoutComponent implements OnInit {
     if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost();
     if (this.post?.slides?.length) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.postSlideImage = reader.result;
-      };
-      reader.readAsDataURL(this.post.slides[0].media);
+      this.post.slides.forEach((slide) => {
+        if (slide.media?.type.includes('image')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideImages.push(reader.result);
+          };
+          reader.readAsDataURL(slide.media);
+        }
+        if (slide.media?.type.includes('video')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideVideos.push(reader.result);
+          };
+          reader.readAsDataURL(slide.media);
+        }
+        if (slide.media?.type.includes('audio')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideAudio.push(
+              this._DomSanitizer.bypassSecurityTrustUrl(
+                URL.createObjectURL(slide.media)
+              )
+            );
+          };
+          reader.readAsDataURL(slide.media);
+        }
+      });
     }
     this.deliveryLocation = this.headerService.getLocation();
     this.reservation = this.headerService.getReservation().reservation;
@@ -332,7 +359,7 @@ export class CheckoutComponent implements OnInit {
     this.location.back();
   };
 
-  openImageModal(imageSourceURL: string) {
+  openImageModal(imageSourceURL: string | ArrayBuffer) {
     this.dialogService.open(ImageViewComponent, {
       type: 'fullscreen-translucent',
       props: {
@@ -525,17 +552,25 @@ export class CheckoutComponent implements OnInit {
         this.headerService.storePost(this.post);
         break;
       }
-      // case 1: {
-      //   break;
-      // }
-      // case 2: {
-      //   // this.router.navigate([`../create-article`], {
-      //   //   relativeTo: this.route,
-      //   //   replaceUrl: true,
-      //   // });
-      //   break;
-      // }
       case 1: {
+        this.router.navigate([`../create-giftcard`], {
+          queryParams: {
+            symbols: 'virtual',
+          },
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
+        break;
+      }
+      case 2: {
+        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
+        this.router.navigate([`../create-article`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
+        break;
+      }
+      case 3: {
         this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
         this.router.navigate([`../create-giftcard`], {
           relativeTo: this.route,
@@ -544,6 +579,18 @@ export class CheckoutComponent implements OnInit {
         break;
       }
     }
+  }
+
+  fullscreenDialog(type?: string, src?: any) {
+    this.dialogService.open(MediaDialogComponent, {
+      props: {
+        inputType: type,
+        src: src,
+      },
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   mouseDown: boolean;

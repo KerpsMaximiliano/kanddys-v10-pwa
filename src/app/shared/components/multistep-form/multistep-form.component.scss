@@ -145,6 +145,7 @@ html {
   box-shadow: 0px 7px 25px -18px inset;
   margin: 0px;
   -webkit-appearance: none;
+  background-color: white !important;
 
   &:focus {
     border: 1px solid #31a4f9;
@@ -187,6 +188,15 @@ input[type="date"] {
 
   &::-webkit-date-and-time-value {
     margin: 0;
+  }
+}
+
+/* smartphones, touchscreens */
+@media (hover: none) and (pointer: coarse) {
+  /* ... */
+  input[type="date"]:not(.has-value):before {
+    color: lightgray;
+    content: attr(placeholder);
   }
 }
 

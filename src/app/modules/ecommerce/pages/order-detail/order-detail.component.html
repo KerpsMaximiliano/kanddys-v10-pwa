@@ -150,7 +150,7 @@
       <div class="items-container" style="margin-top: 5px">
         <div class="items-container space-between" style="padding: 10px 32px">
           <p class="total">Total:</p>
-          <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
+          <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
         </div>
       </div>
     </section>
@@ -188,7 +188,7 @@
       </div>
       <div class="items-container space-between" style="margin-top: 4px">
         <p class="total">Subtotal:</p>
-        <p class="amount">{{ payment | number: "1.2-2" }}</p>
+        <p class="amount">{{ payment | number : "1.2-2" }}</p>
       </div>
       <!--       <div class="items-container space-between" style="margin-top: 4px">
         <p class="total">Coins:</p>
@@ -196,7 +196,7 @@
       </div> -->
       <div class="items-container space-between" style="margin-top: 4px">
         <p class="total">Total Pagado:</p>
-        <p class="amount">{{ payment | number: "1.2-2" }}</p>
+        <p class="amount">{{ payment | number : "1.2-2" }}</p>
       </div>
     </section>
 
@@ -256,15 +256,17 @@
     <section
       class="section"
       *ngIf="
-        (order?.items[0].post && post?.message) ||
-        post?.from ||
-        (post?.targets.length && post?.targets[0].name)
+        order?.items[0].post &&
+        (post?.message ||
+          post?.from ||
+          (post?.targets?.length && post?.targets[0].name) ||
+          slides?.length)
       "
       style="margin-top: 32px"
     >
       <h2 class="section-title">Mensaje de regalo:</h2>
 
-      <div class="buttons-share" *ngIf="!notify">
+      <div class="buttons-share" *ngIf="slides?.length">
         <div class="buttons-area">
           <button class="btn">
             <img [src]="env + '/QR.svg'" width="34px" height="34px" />
@@ -284,7 +286,14 @@
         <h3 class="virtual">Mensaje Virtual</h3>
       </div>
 
-      <div class="message-box">
+      <div
+        class="message-box"
+        *ngIf="
+          post?.message ||
+          post?.from ||
+          (post?.targets?.length && post.targets[0].name)
+        "
+      >
         <section *ngIf="post.message">
           <h3 class="sub">Mensaje a escribir:</h3>
           <p class="message-text inner">
@@ -293,7 +302,7 @@
         </section>
 
         <section *ngIf="post.targets?.length && post.targets[0]?.name">
-          <h3 class="sub">Para:</h3>
+          <h3 class="sub">Título del sobre:</h3>
           <p class="message-text inner">{{ post.targets[0]?.name }}</p>
         </section>
 
