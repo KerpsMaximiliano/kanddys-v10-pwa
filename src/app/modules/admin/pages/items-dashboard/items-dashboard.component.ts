@@ -36,6 +36,8 @@ import {
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { ToastrService } from 'ngx-toastr';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 interface MenuOption {
   name: string;
@@ -177,7 +179,9 @@ export class ItemsDashboardComponent implements OnInit {
     private headerService: HeaderService,
     private route: ActivatedRoute,
     private ngNavigatorShareService: NgNavigatorShareService,
+    private entityTemplateService: EntityTemplateService,
     private toastr: ToastrService,
+    private clipboard: Clipboard,
     private dialog: DialogService
   ) {}
 
@@ -1102,6 +1106,30 @@ export class ItemsDashboardComponent implements OnInit {
             this.toastr.error('Ocurrio un error al crear el item', null, {
               timeOut: 1500,
             });
+          }
+        },
+      },
+      {
+        text: 'Simbolo ID',
+        callback: async () => {
+          try {
+            const result =
+              await this.entityTemplateService.entityTemplateByReference(
+                item._id,
+                'item'
+              );
+
+            this.clipboard.copy(result.dateId.split('/').join(''));
+
+            this.toastr.info('Simbolo ID copiado al portapapeles', null, {
+              timeOut: 1500,
+            });
+          } catch (error) {
+            this.toastr.info('Ocurrió un error', null, {
+              timeOut: 1500,
+            });
+
+            console.error(error);
           }
         },
       },
