@@ -266,8 +266,8 @@
     >
       <h2 class="section-title">Mensaje de regalo:</h2>
 
-      <div class="buttons-share" *ngIf="slides?.length">
-        <div class="buttons-area">
+      <div class="buttons-share" *ngIf="slides?.length" (click)="goToPostDetail()">
+        <div class="buttons-area" >
           <button class="btn">
             <img [src]="env + '/QR.svg'" width="34px" height="34px" />
           </button>

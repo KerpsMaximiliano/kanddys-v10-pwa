@@ -944,6 +944,15 @@ export class OrderDetailComponent implements OnInit {
     this.router.navigate([this.redirectTo]);
   }
 
+  goToPostDetail() {
+    this.router.navigate([
+      '/ecommerce/' +
+        this.order.items[0].saleflow.merchant.slug +
+        '/article-detail/post/' +
+        this.post._id,
+    ]);
+  }
+
   // goBackToFlowRoute() {
   //   if (
   //     this.flowRoute.includes('admin/orders') &&

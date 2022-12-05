@@ -307,6 +307,10 @@ a {
           display: flex;
           justify-content: space-between;
 
+          &:hover {
+            cursor: pointer;
+          }
+
           .btn {
             all: unset;
             display: flex;

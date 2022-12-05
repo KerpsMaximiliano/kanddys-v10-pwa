@@ -6,9 +6,11 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { AppService } from 'src/app/app.service';
 import { Item, ItemParamValue } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
+import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -21,6 +23,10 @@ SwiperCore.use([Virtual]);
 
 interface ExtendedTag extends Tag {
   selected?: boolean;
+}
+
+interface ExtendedSlide extends Slide {
+  isVideo?: boolean;
 }
 
 type TypesOfMenu = 'TAGS' | 'DESCRIPTION';
@@ -49,6 +55,8 @@ export class ArticleDetailComponent implements OnInit {
   entityId: string;
   itemData: Item = null;
   itemTags: Array<ExtendedTag> = [];
+  postData: Post = null;
+  postSlides: Array<ExtendedSlide> = [];
   selectedParam: {
     param: number;
     value: number;
@@ -63,6 +71,14 @@ export class ArticleDetailComponent implements OnInit {
     spaceBetween: 0,
   };
   fractions: string = '';
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  audioFiles: string[] = [
+    'audio/x-m4a',
+    'audio/ogg',
+    'audio/mpeg',
+    'audio/wav',
+  ];
   timer: NodeJS.Timeout;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
@@ -76,6 +92,7 @@ export class ArticleDetailComponent implements OnInit {
     private appService: AppService,
     private dialogService: DialogService,
     private ngNavigatorShareService: NgNavigatorShareService,
+    private postsService: PostsService,
     private saleflowService: SaleFlowService
   ) {}
 
@@ -120,8 +137,12 @@ export class ArticleDetailComponent implements OnInit {
         this.entityId = entityId;
         this.entity = entity;
 
-        await this.getItemData();
-        this.itemInCart();
+        if (entity === 'item') {
+          await this.getItemData();
+          this.itemInCart();
+        } else if (entity === 'post') {
+          await this.getPostData();
+        }
       } else {
         this.router.navigate([`others/error-screen/`]);
       }
@@ -143,6 +164,34 @@ export class ArticleDetailComponent implements OnInit {
       console.error(error);
       this.router.navigate([`others/error-screen/`]);
     }
+  }
+
+  async getPostData() {
+    try {
+      const { post } = await this.postsService.getPost(this.entityId);
+
+      if (post) {
+        this.postData = post;
+
+        const slides = await this.postsService.slidesByPost(post._id);
+        this.postSlides = slides;
+
+        for (const slide of this.postSlides) {
+          if (
+            slide.type === 'poster' &&
+            (slide.media.includes('mp4') || slide.media.includes('webm'))
+          ) {
+            slide.isVideo = true;
+          }
+        }
+
+        this.updateFrantions();
+
+        this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+
+        //if (this.postSlides.length < 2) this.startTimeout();
+      }
+    } catch (error) {}
   }
 
   async onTagClick(tag: ExtendedTag) {
@@ -202,11 +251,14 @@ export class ArticleDetailComponent implements OnInit {
 
   updateCurrentSlideData(event: any) {
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
-    if (this.itemData.images.length === this.currentMediaSlide + 1) {
-      this.startTimeout();
-    } else if (this.timer) {
-      clearTimeout(this.timer);
-      this.timer = null;
+
+    if(this.entity === 'item') {
+      if (this.itemData.images.length === this.currentMediaSlide + 1) {
+        this.startTimeout();
+      } else if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
     }
   }
 
@@ -365,7 +417,11 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   updateFrantions(): void {
-    this.fractions = this.itemData.images
+    this.fractions = (
+      (this.entity === 'item'
+        ? this.itemData.images
+        : this.postSlides) as Array<any>
+    )
       .map(
         () =>
           `${
