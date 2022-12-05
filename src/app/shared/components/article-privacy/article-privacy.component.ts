@@ -176,9 +176,20 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       validators: [],
       type: '',
     },
+    {
+      name: 'check',
+      label: '',
+      style: {
+        marginLeft: '36px',
+      },
+      value: 0,
+      validators: [],
+      type: '',
+    },
   ];
   password: FormControl = new FormControl('', [Validators.required]);
   toDelete: number[] = [];
+  toEntityTemplate: number[] = [];
   filter: SafeStyle;
   _Recipients: Recipient[];
   tempRecipients: Recipient[];
@@ -316,11 +327,34 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       this.controlIndex = index;
       this.selected = ['invites'];
     } else {
-      if (this.toDelete.includes(index))
-        this.toDelete = this.toDelete.filter((tg) => tg !== index);
-      else {
-        const value = [...this.toDelete, index];
-        this.toDelete = value;
+      const controller = this.controllers.at(index).get('check');
+      if(controller.value<2)
+        controller.setValue(controller.value+1);
+      else
+        controller.setValue(0);
+      switch(controller.value){
+        case 1:
+          if (this.toEntityTemplate.includes(index))
+            this.toEntityTemplate = this.toEntityTemplate.filter((tg) => tg !== index);
+          else {
+            const value = [...this.toEntityTemplate, index];
+            this.toEntityTemplate = value;
+          }
+          this.toDelete = this.toDelete.filter((tg) => tg !== index);
+          break;
+        case 2:
+          if (this.toDelete.includes(index))
+            this.toDelete = this.toDelete.filter((tg) => tg !== index);
+          else {
+            const value = [...this.toDelete, index];
+            this.toDelete = value;
+          }
+          this.toEntityTemplate = this.toEntityTemplate.filter((tg) => tg !== index);
+        break;
+        default:
+            this.toDelete = this.toDelete.filter((tg) => tg !== index);
+            this.toEntityTemplate = this.toEntityTemplate.filter((tg) => tg !== index);
+          break;
       }
     }
     this.text = 'Invitado con acceso';
@@ -509,6 +543,24 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  addRecipients():void{
+    const addToEntity = async () => {
+      this.status = 'loading';
+      for (const index of this.toEntityTemplate) {
+        const input = {
+          edit: false,
+          recipient: this.controllers.at(index).get('_id').value
+        };
+        try {
+          const result = await this._RecipientsService.entityTemplateAddRecipient(input, this.id);
+        } catch (error) {
+        }
+      }
+      this.status = 'controller';
+    }
+    addToEntity();
   }
 
   goBack(): void {

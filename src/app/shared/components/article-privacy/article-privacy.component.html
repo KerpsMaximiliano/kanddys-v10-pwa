@@ -94,12 +94,18 @@
                 >
                   <ng-container *ngIf="j === 0; else ex"> + </ng-container>
                   <ng-template #ex>
-                    <ng-container *ngIf="!toDelete.includes(j); else trash"
-                      >x</ng-container
-                    >
-                    <ng-template #trash
-                      ><img [src]="env + '/delete.png'" width="14" height="14"
-                    /></ng-template>
+                    <ng-container [ngSwitch]="controllers.at(j).get('check').value">
+                      <ng-container *ngSwitchCase="'0'">
+                        x
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'1'">
+                        <i class="fas fa-check-circle icon"></i>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'2'">
+                        <img [src]="env + '/delete.png'" width="14" height="14"
+                      />
+                      </ng-container>
+                    </ng-container>
                   </ng-template>
                 </button>
                 <p *ngIf="j !== 0" class="name-id">
@@ -119,6 +125,9 @@
           </p>
           <button *ngIf="toDelete.length" class="submit" (click)="deleteSelected()">
             Eliminar LOS MARCADOS CON
+          </button>
+          <button *ngIf="toEntityTemplate.length" class="submit" (click)="addRecipients()">
+            Agregar recipientes
           </button>
           <p
             *ngIf="toDelete.length"

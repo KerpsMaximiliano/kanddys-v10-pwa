@@ -65,3 +65,21 @@ export const recipientRemoveTag = gql`
     }
   }
 `;
+
+export const entityTemplateAddRecipient = gql`
+  mutation entityTemplateAddRecipient($input: RecipientsInput!, $entityTemplateId: ObjectID!) {
+    entityTemplateAddRecipient(input: $input, entityTemplateId: $entityTemplateId) {
+      _id
+      reference
+      entity
+      status
+      recipients {
+        recipient
+        edit
+      }
+      access
+      dateId
+      createdAt
+    }
+  }
+`;
