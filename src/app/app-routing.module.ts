@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ErrorScreenComponent } from './modules/others/pages/error-screen/error-screen.component';
 
 const redirectTo = 'admin/entity-detail-metrics';
 const routes: Routes = [
@@ -107,7 +108,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./modules/qr/qr.module').then((m) => m.QrModule),
   },
-  { path: '**', redirectTo, pathMatch: 'full' },
+  { path: '**', component: ErrorScreenComponent, pathMatch: 'full' },
 ];
 
 @NgModule({
