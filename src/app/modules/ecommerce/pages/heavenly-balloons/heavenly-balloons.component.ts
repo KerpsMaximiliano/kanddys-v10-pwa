@@ -100,6 +100,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       containerStyles: {
         minHeight: 'auto',
       },
+      allowSundays: true,
     },
     outputs: [
       {
