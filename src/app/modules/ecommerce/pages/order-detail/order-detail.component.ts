@@ -950,6 +950,8 @@ export class OrderDetailComponent implements OnInit {
       .slice(3)
       .join('/');
 
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
     this.router.navigate([
       '/ecommerce/' +
         this.order.items[0].saleflow.merchant.slug +

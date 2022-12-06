@@ -267,9 +267,19 @@ export class ArticleCreatorComponent implements OnInit {
     for (let f = 0; f < fileList.length; f++) {
       if (f > 0) this.addFile(i, j, k);
       const file = fileList.item(f);
+      /* DESCOMENTAR LUEGO
       if (
         !file ||
         ![...this.imageFiles, ...this.videoFiles, ...this.audioFiles].includes(
+          file.type
+        )
+      )
+        return;
+      */
+
+      if (
+        !file ||
+        ![...this.imageFiles].includes(
           file.type
         )
       )

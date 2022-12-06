@@ -26,6 +26,7 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import SwiperCore, { Virtual } from 'swiper/core';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 
 SwiperCore.use([Virtual]);
 
@@ -420,6 +421,10 @@ export class ArticleDetailComponent implements OnInit {
       return;
     }
 
+    if (!this.headerService.flowRoute && localStorage.getItem('flowRoute')) {
+      this.headerService.flowRoute = localStorage.getItem('flowRoute');
+    }
+
     if (
       this.headerService.flowRoute &&
       this.headerService.flowRoute.length > 1
@@ -442,6 +447,7 @@ export class ArticleDetailComponent implements OnInit {
       });
 
       this.headerService.flowRoute = null;
+      localStorage.removeItem('flowRoute');
       return;
     }
 
@@ -513,7 +519,7 @@ export class ArticleDetailComponent implements OnInit {
                 );
             }
 
-            this.clipboard.copy(result.dateId.split('/').join(''));
+            this.clipboard.copy(formatID(result.dateId).slice(1));
 
             this.toastr.info('Simbolo ID copiado al portapapeles', null, {
               timeOut: 1500,
@@ -534,7 +540,7 @@ export class ArticleDetailComponent implements OnInit {
       props: {
         optionsList: list,
         //qr code in the xd's too small to scanning to work
-        title: this.entity === 'item' ? this.itemData.name : 'Opciones de post',
+        title: this.entity === 'item' ? this.itemData.name : 'Opciones de mensaje virtual',
         cancelButton: {
           text: 'Cerrar',
         },
