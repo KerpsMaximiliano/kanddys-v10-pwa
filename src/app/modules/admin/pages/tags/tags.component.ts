@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
@@ -98,22 +98,37 @@ export class TagsComponent implements OnInit {
     private dialogService: DialogService,
     private toastr: ToastrService,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   async ngOnInit() {
-    const allTags = await this.tagsService.tagsByUser({
-      options: {
-        sortBy: `createdAt:desc`,
-        limit: -1,
-      },
+    this.route.queryParams.subscribe(async (queryParams) => {
+      const { selectedTagsFilter } = queryParams;
+      const allTags = await this.tagsService.tagsByUser({
+        options: {
+          sortBy: `createdAt:desc`,
+          limit: -1,
+        },
+      });
+
+      for (const tag of allTags) {
+        this.tagsByIdsObject[tag._id] = tag;
+      }
+
+      await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
+
+      this.selectedTagsFilter = selectedTagsFilter;
+
+      switch (selectedTagsFilter) {
+        case 'Artículos':
+          await this.changeStep(1);
+        case 'Facturas':
+          await this.changeStep(2);
+        default:
+          this.selectedTagsFilter = null;
+      }
     });
-
-    for (const tag of allTags) {
-      this.tagsByIdsObject[tag._id] = tag;
-    }
-
-    await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
   }
 
   async getTags(params: {
