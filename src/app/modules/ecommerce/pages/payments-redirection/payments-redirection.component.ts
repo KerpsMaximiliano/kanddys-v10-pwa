@@ -58,9 +58,9 @@ export class PaymentsRedirectionComponent implements OnInit {
             console.log('hash del back', hash);
             console.log('hash del url', rest['AuthHash']);
 
-            if(rest['IsoCode'] === '00') {
+            if (rest['IsoCode'] === '00') {
               //Cambiar igualdad
-              
+
               if (hash !== rest['AuthHash']) {
                 this.paymentLogService.createPaymentLogAzul({
                   ammount: Number(rest['Amount']) / 100,
@@ -70,6 +70,7 @@ export class PaymentsRedirectionComponent implements OnInit {
                   merchant: this.headerService.myMerchants[0]._id,
                   metadata: {
                     AzulOrderId: rest['AzulOrderId'],
+                    DateTime: rest['DateTime'],
                   },
                 });
               }
