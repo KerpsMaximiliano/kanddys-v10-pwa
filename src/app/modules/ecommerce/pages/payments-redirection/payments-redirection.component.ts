@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
 
 @Component({
   selector: 'app-payments-redirection',
@@ -15,6 +16,7 @@ export class PaymentsRedirectionComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private paymentLogService: PaymentLogsService,
     private headerService: HeaderService
   ) {}
 
@@ -55,6 +57,23 @@ export class PaymentsRedirectionComponent implements OnInit {
           .then((hash) => {
             console.log('hash del back', hash);
             console.log('hash del url', rest['AuthHash']);
+
+            if(rest['IsoCode'] === '00') {
+              //Cambiar igualdad
+              
+              if (hash !== rest['AuthHash']) {
+                this.paymentLogService.createPaymentLogAzul({
+                  ammount: Number(rest['Amount']) / 100,
+                  reason: 'payment',
+                  paymentMethod: 'azul',
+                  order: rest['OrderNumber'],
+                  merchant: this.headerService.myMerchants[0]._id,
+                  metadata: {
+                    AzulOrderId: rest['AzulOrderId'],
+                  },
+                });
+              }
+            }
           });
       } else if (typeOfPayment === 'azul' && !success) {
         this.label =

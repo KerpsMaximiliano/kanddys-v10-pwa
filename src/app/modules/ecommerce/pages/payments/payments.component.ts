@@ -448,6 +448,8 @@ export class PaymentsComponent implements OnInit {
       })
         .then((response) => response.text())
         .then((hash) => {
+          console.log("authhash", hash)
+
           document.querySelector('#AuthHash').setAttribute('value', hash);
 
           form.submit();
