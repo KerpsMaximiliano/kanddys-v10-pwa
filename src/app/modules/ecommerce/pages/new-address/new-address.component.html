@@ -150,7 +150,11 @@
     </ng-container>
   </main>
 
-  <h5 class="link">Política de entrega</h5>
+  <h5 class="link"
+    [ngStyle]="{
+      paddingBottom: (mode === 'normal' && selectedDeliveryIndex != null) ? '62px' : '32px'
+    }"
+  >Política de entrega</h5>
 </div>
 
 <app-sticky-button
