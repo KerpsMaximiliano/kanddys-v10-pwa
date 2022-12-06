@@ -141,7 +141,7 @@ export class LoginComponent implements OnInit {
         const flowRoute = localStorage.getItem('flowRoute');
         if (flowRoute && flowRoute.length > 1) {
           const [baseRoute, paramsString] = flowRoute.split('?');
-          const paramsArray = paramsString.split('&');
+          const paramsArray = paramsString ? paramsString.split('&') : [];
           const queryParams = {};
 
           paramsArray.forEach((param) => {

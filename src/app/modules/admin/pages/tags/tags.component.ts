@@ -20,6 +20,7 @@ import {
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { TagTypeDialogComponent } from 'src/app/shared/dialogs/tag-type-dialog/tag-type-dialog.component';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 type TypeOfTagsGrid = 'MOST_ASSIGNED' | 'MOST_RECENT' | 'ALL';
 
@@ -62,6 +63,7 @@ export class TagsComponent implements OnInit {
   isTagReorderingModeEnabled: boolean = false;
   URI: string = environment.uri;
   tagSelectionMode: 'HIGHLIGHT' | 'HIDE' | 'DELETE' = null;
+  enforceTagsStatus: string = null;
   paginationState: {
     pageSize: number;
     page: number;
@@ -99,18 +101,38 @@ export class TagsComponent implements OnInit {
     private toastr: ToastrService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private headerService: HeaderService
   ) {}
 
   async ngOnInit() {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { selectedTagsFilter } = queryParams;
-      const allTags = await this.tagsService.tagsByUser({
+      const { selectedTagsFilter, enforceTagsStatus } = queryParams;
+
+      const allTagsPagination: PaginationInput = {
         options: {
           sortBy: `createdAt:desc`,
           limit: -1,
         },
-      });
+      };
+
+      if (enforceTagsStatus) {
+        this.enforceTagsStatus = enforceTagsStatus;
+        allTagsPagination.findBy = {};
+
+        if (enforceTagsStatus === 'active')
+          allTagsPagination.findBy['$or'] = [
+            {
+              status: 'active',
+            },
+            {
+              status: 'featured',
+            },
+          ];
+        else allTagsPagination.findBy.status = enforceTagsStatus;
+      }
+
+      const allTags = await this.tagsService.tagsByUser(allTagsPagination);
 
       for (const tag of allTags) {
         this.tagsByIdsObject[tag._id] = tag;
@@ -158,6 +180,21 @@ export class TagsComponent implements OnInit {
     if (entity) {
       pagination.findBy = {};
       pagination.findBy.entity = entity;
+    }
+
+    if (this.enforceTagsStatus) {
+      if (!pagination.findBy) pagination.findBy = {};
+
+      if (this.enforceTagsStatus === 'active')
+        pagination.findBy['$or'] = [
+          {
+            status: 'active',
+          },
+          {
+            status: 'featured',
+          },
+        ];
+      else pagination.findBy.status = this.enforceTagsStatus;
     }
 
     if (sortCriteria) {
@@ -743,17 +780,55 @@ export class TagsComponent implements OnInit {
       pagination.findBy = {};
       delete pagination.findBy['$or'];
       pagination.findBy.entity = this.entityToFilterTagsBy;
+
+      if (this.enforceTagsStatus) {
+        if (this.enforceTagsStatus === 'active')
+          pagination.findBy['$or'] = [
+            {
+              status: 'active',
+            },
+            {
+              status: 'featured',
+            },
+          ];
+        else pagination.findBy.status = this.enforceTagsStatus;
+      }
+    } else {
+      if (this.enforceTagsStatus === 'active')
+        pagination.findBy['$or'] = [
+          {
+            entity: 'item',
+            status: 'active',
+          },
+          {
+            entity: 'order',
+            status: 'active',
+          },
+          {
+            entity: 'item',
+            status: 'featured',
+          },
+          {
+            entity: 'order',
+            status: 'featured',
+          },
+        ];
+      else pagination.findBy.status = this.enforceTagsStatus;
     }
 
     const mostRecentTags = await this.tagsService.tagsByUser(pagination);
     if (mostRecentTags) this.mostRecentTags = mostRecentTags;
 
     if (!pagination.findBy) pagination.findBy = {};
-    pagination.findBy.status = 'featured';
-    const highlightedTags = await this.tagsService.tagsByUser(pagination);
-    if (highlightedTags) this.highlightedTags = highlightedTags;
 
-    delete pagination.findBy.status;
+    if (!this.enforceTagsStatus || this.enforceTagsStatus !== 'disabled') {
+      pagination.findBy.status = 'featured';
+
+      const highlightedTags = await this.tagsService.tagsByUser(pagination);
+      if (highlightedTags) this.highlightedTags = highlightedTags;
+
+      delete pagination.findBy.status;
+    }
 
     pagination.options = {
       sortBy: `counter:desc`,
@@ -763,6 +838,46 @@ export class TagsComponent implements OnInit {
     pagination.findBy.counter = {
       $gt: 0,
     };
+
+    if (this.entityToFilterTagsBy) {
+      pagination.findBy = {};
+      delete pagination.findBy['$or'];
+      pagination.findBy.entity = this.entityToFilterTagsBy;
+
+      if (this.enforceTagsStatus) {
+        if (this.enforceTagsStatus === 'active')
+          pagination.findBy['$or'] = [
+            {
+              status: 'active',
+            },
+            {
+              status: 'featured',
+            },
+          ];
+        else pagination.findBy.status = this.enforceTagsStatus;
+      }
+    } else {
+      if (this.enforceTagsStatus === 'active')
+        pagination.findBy['$or'] = [
+          {
+            entity: 'item',
+            status: 'active',
+          },
+          {
+            entity: 'order',
+            status: 'active',
+          },
+          {
+            entity: 'item',
+            status: 'featured',
+          },
+          {
+            entity: 'order',
+            status: 'featured',
+          },
+        ];
+      else pagination.findBy.status = this.enforceTagsStatus;
+    }
 
     const mostAssignedTags = await this.tagsService.tagsByUser(pagination);
 
@@ -855,6 +970,37 @@ export class TagsComponent implements OnInit {
   }
 
   backButtonAction() {
+    if (
+      this.tagsDisplayMode === 'PER-SECTION' &&
+      this.tagSelectionMode === null
+    ) {
+      let flowRoute = this.headerService.flowRoute;
+
+      if (!flowRoute) {
+        flowRoute = localStorage.getItem('flowRoute');
+      }
+
+      if (flowRoute && flowRoute.length > 1) {
+        const [baseRoute, paramsString] = flowRoute.split('?');
+        const paramsArray = paramsString ? paramsString.split('&') : [];
+        const queryParams = {};
+
+        paramsArray.forEach((param) => {
+          const [key, value] = param.split('=');
+
+          queryParams[key] = value;
+        });
+
+        this.headerService.flowRoute = null;
+        localStorage.removeItem('flowRoute');
+        this.router.navigate([baseRoute], {
+          queryParams,
+        });
+
+        return;
+      }
+    }
+
     this.headerText = 'Tags';
     this.tagsDisplayMode = 'PER-SECTION';
     this.tagSelectionMode = null;

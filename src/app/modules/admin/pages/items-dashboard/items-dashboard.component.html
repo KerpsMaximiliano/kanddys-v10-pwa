@@ -368,8 +368,9 @@
             >
               <div
                 class="card pointer"
-                [routerLink]="['/admin/tags']"
-                [queryParams]="{ selectedTagsFilter: 'Artículos' }"
+                (click)="
+                  redirectTo('/admin/tags', { selectedTagsFilter: 'Artículos' })
+                "
               >
                 <h2 class="amount quantity">
                   {{ tagsMetrics.inItems }}
@@ -379,8 +380,9 @@
 
               <div
                 class="card pointer"
-                [routerLink]="['/admin/tags']"
-                [queryParams]="{ selectedTagsFilter: 'Facturas' }"
+                (click)="
+                  redirectTo('/admin/tags', { selectedTagsFilter: 'Facturas' })
+                "
               >
                 <h2 class="amount quantity">
                   {{ tagsMetrics.inOrders }}
@@ -388,22 +390,38 @@
                 <h2 class="amount">DE FACTURAS</h2>
               </div>
 
-              <div class="card pointer" [routerLink]="['/admin/tags']">
+              <div class="card pointer" (click)="redirectTo('/admin/tags', {})">
                 <h2 class="amount quantity">{{ tagsMetrics.total }}</h2>
                 <h2 class="amount">EN TOTAL</h2>
               </div>
 
-              <div class="card unset">
+              <div
+                class="card pointer"
+                (click)="
+                  redirectTo('/admin/tags', { enforceTagsStatus: 'active' })
+                "
+              >
                 <h2 class="amount quantity">{{ tagsMetrics.visible }}</h2>
                 <h2 class="amount">VISIBLES</h2>
               </div>
 
-              <div class="card unset">
+              <div
+                class="card pointer"
+                [routerLink]="['/admin/tags']"
+                (click)="
+                  redirectTo('/admin/tags', { enforceTagsStatus: 'disabled' })
+                "
+              >
                 <h2 class="amount quantity">{{ tagsMetrics.hidden }}</h2>
                 <h2 class="amount">INVISIBLES</h2>
               </div>
 
-              <div class="card unset">
+              <div
+                class="card pointer"
+                (click)="
+                  redirectTo('/admin/tags', { enforceTagsStatus: 'featured' })
+                "
+              >
                 <h2 class="amount quantity">{{ tagsMetrics.featured }}</h2>
                 <h2 class="amount">DESTACADOS</h2>
               </div>

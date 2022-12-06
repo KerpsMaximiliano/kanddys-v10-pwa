@@ -166,7 +166,7 @@ export class ItemsDashboardComponent implements OnInit {
     hidden: 0,
     featured: 0,
     archived: 0,
-    total: 0
+    total: 0,
   };
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
@@ -1347,5 +1347,17 @@ export class ItemsDashboardComponent implements OnInit {
 
   getActiveTagsFromSelectedTagsPermantent(): Array<string> {
     return this.tagsList.filter((tag) => tag.selected).map((tag) => tag._id);
+  }
+
+  redirectTo(route: string, queryParams: Record<string, any>) {
+    this.headerService.flowRoute = window.location.href
+      .split('/')
+      .slice(3)
+      .join('/');
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
+    this.router.navigate([route], {
+      queryParams,
+    });
   }
 }
