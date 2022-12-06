@@ -7,6 +7,7 @@ export class EntityTemplate extends Model<EntityTemplate> {
   dateId: string;
   user: string;
   recipients: any;
+  hasPassword: boolean;
 }
 
 export class EntityTemplateInput {

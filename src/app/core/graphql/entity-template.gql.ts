@@ -13,6 +13,7 @@ export const entityTemplate = gql`
          recipient
         edit 
       }
+      hasPassword
     }
   }
 `;

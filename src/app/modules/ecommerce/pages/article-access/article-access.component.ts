@@ -28,6 +28,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    startX: number;
    scrollLeft: number;
    options: string[] = ['Como Invitado', 'Con la clave', 'Solicita acceso'];
+   hasPassword:boolean = false;
    active: number = 0;
    activeIndex: number;
    check: OptionAnswerSelector[] = [];
@@ -48,7 +49,8 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    this._Subscription = this._ActivatedRoute.params.subscribe(({ templateId }) => {
       this.templateId = templateId;
       const post = async () => {
-         const { recipients } = await this._EntityTemplateService.entityTemplate(templateId);
+         const { recipients, hasPassword } = await this._EntityTemplateService.entityTemplate(templateId);
+         this.hasPassword = hasPassword;
          const _recipients = [];
          for(const { recipient } of recipients){
             const pagination = {
