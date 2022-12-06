@@ -88,6 +88,9 @@ export class ItemsDashboardComponent implements OnInit {
     },
     {
       name: 'Facturas',
+    },    
+    {
+      name: 'Tags',
     },
   ];
   allItems: ExtendedItem[] = [];

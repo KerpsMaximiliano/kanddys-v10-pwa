@@ -180,6 +180,12 @@ export class TagsComponent implements OnInit {
         tag.index = index;
       });
 
+      if (this.tagSelectionMode === 'HIDE') {
+        this.dependantGridOfTagsToShow = this.dependantGridOfTagsToShow.filter(
+          (tag) => tag.status !== 'disabled'
+        );
+      }
+
       this.paginationState.status = 'complete';
     }
   }
