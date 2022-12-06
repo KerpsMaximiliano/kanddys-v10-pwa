@@ -420,8 +420,27 @@ export class ArticleDetailComponent implements OnInit {
       return;
     }
 
-    if (this.headerService.flowRoute) {
-      this.router.navigate([this.headerService.flowRoute]);
+    if (
+      this.headerService.flowRoute &&
+      this.headerService.flowRoute.length > 1
+    ) {
+      const [baseRoute, paramsString] = this.headerService.flowRoute.split('?');
+      const paramsArray = paramsString ? paramsString.split('&') : [];
+      const queryParams = {};
+      paramsArray.forEach((param) => {
+        const [key, value] = param.split('=');
+
+        queryParams[key] = value;
+      });
+
+      localStorage.removeItem('flowRoute');
+
+      console.log(baseRoute, queryParams);
+
+      this.router.navigate([baseRoute], {
+        queryParams,
+      });
+
       this.headerService.flowRoute = null;
       return;
     }
