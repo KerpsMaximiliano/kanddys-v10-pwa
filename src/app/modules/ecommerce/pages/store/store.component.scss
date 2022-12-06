@@ -16,11 +16,12 @@
 
 main {
   flex-grow: 1;
-  background: linear-gradient(
-    180deg,
-    white 50%,
-    rgba(213, 213, 213, 0.25) 100%
-  );
+  // background: linear-gradient(
+  //   180deg,
+  //   white 50%,
+  //   rgba(213, 213, 213, 0.25) 100%
+  // );
+  background-color: #f6f6f6;
 }
 
 .top-input-area {
