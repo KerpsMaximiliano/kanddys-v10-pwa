@@ -1,0 +1,145 @@
+.container {
+  height: 100vh;
+  background: #f6f6f6;
+}
+.head {
+  background: #fff;
+  font-family: "SfProBold";
+  color: #272727;
+  font-size: 21px;
+  width: 100%;
+  padding: 0px 20px;
+  padding-bottom: 40px;
+  p {
+    margin: 0;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+}
+
+.icons-container {
+  height: 60%;
+  padding-top: 10px;
+  .fas.fa-chevron-up {
+    height: 9px;
+    display: block;
+    cursor: pointer;
+  }
+}
+
+.title {
+  font-family: "SfProBold";
+  font-size: 17px;
+  color: #272727;
+  margin-top: 30px;
+  margin-bottom: 33px;
+}
+
+.content {
+  max-width: 86%;
+  margin: auto;
+}
+
+.select-option {
+  display: grid;
+  grid-template-columns: 0.5fr 12fr;
+  align-items: center;
+  height: 58px;
+  color: #272727;
+  font-size: 17px;
+  font-family: "SfProRegular";
+  cursor: pointer;
+  border-radius: 9px;
+  background-size: 200% 100% !important;
+  transition: all 0.5s ease-out;
+  background: linear-gradient(to right, #82f18d 50%, transparent 50%);
+  margin-bottom: 14px;
+}
+
+.square-item {
+  display: inline-block;
+  background: #82f18d;
+  min-width: 18px;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.grid-content {
+  padding-left: 9px;
+  display: grid;
+  grid-template-columns: 0.8fr 10.2fr;
+}
+
+.text {
+  padding-left: 7px;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 69.0217%;
+
+  .base-input {
+    margin: 0px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 11px;
+    box-shadow: inset 0px 3px 5px #d3d3d3;
+    -webkit-box-shadow: inset 0px 3px 5px #d3d3d3;
+    -moz-box-shadow: inset 0px 3px 5px #d3d3d3;
+    -webkit-appearance: none;
+    font-family: "RobotoMedium";
+    font-size: 1.063rem;
+    color: #7b7b7b;
+    width: 100%;
+    padding-top: 29px;
+    padding-bottom: 27px;
+    padding-left: 16px;
+    font-size: 20px;
+
+    &::placeholder {
+      font-family: "RobotoMedium";
+      font-size: 1.063rem;
+      color: rgb(161, 161, 161, 60%);
+    }
+  }
+
+  .confirm {
+    all: unset;
+    position: absolute;
+    width: 45px;
+    height: 21px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2874ad;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #ffffff;
+    z-index: 2;
+    position: absolute;
+    /* right: 0; */
+    /* left: 0; */
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    right: 6%;
+
+    &.disabled {
+      background-color: #c1c1c1 !important;
+      cursor: not-allowed !important;
+    }
+  }
+}
+
+.head-grid {
+  display: grid;
+  grid-template-columns: 2fr 10fr;
+  gap: 3px;
+}
+
+.head-text {
+  font-family: "SfProBold";
+  font-size: 21px;
+  color: #272727;
+  margin-top: 10px;
+}

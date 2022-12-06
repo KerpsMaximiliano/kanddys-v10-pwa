@@ -12,6 +12,8 @@ import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anex
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { Item } from 'src/app/core/models/item';
 import { ToastrService } from 'ngx-toastr';
+import { PostsService } from 'src/app/core/services/posts.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 
 @Component({
   selector: 'app-article-params',
@@ -54,6 +56,8 @@ export class ArticleParamsComponent implements OnInit {
     private _SaleflowService: SaleFlowService,
     private _Router: Router,
     private _Route: ActivatedRoute,
+    private _PostsService: PostsService,
+    private _EntityTemplateService: EntityTemplateService,
     private _ToastrService: ToastrService
   ) {}
 
@@ -262,6 +266,34 @@ export class ArticleParamsComponent implements OnInit {
           },
           this._SaleflowService.saleflowData._id
         );
+
+        const storedTemplateData = localStorage.getItem(
+          'entity-template-creation-data'
+        );
+        const entityTemplateData = storedTemplateData
+          ? JSON.parse(storedTemplateData)
+          : null;
+
+        if (entityTemplateData) {
+          try {
+            const { entity, entityTemplateId } = entityTemplateData;
+
+            const result =
+              await this._EntityTemplateService.entityTemplateSetData(
+                entityTemplateId,
+                {
+                  entity: 'item',
+                  reference: createItem._id,
+                }
+              );
+
+            localStorage.removeItem('entity-template-creation-data');
+          } catch (error) {
+            this._ToastrService.error('Ocurrió un error al crear el simbolo');
+            return;
+          }
+        }
+
         this._ToastrService.success('Producto creado satisfactoriamente!');
         this._Router.navigate([`/admin/create-article/${createItem._id}`]);
       } else {
@@ -270,6 +302,32 @@ export class ArticleParamsComponent implements OnInit {
         );
 
         if ('_id' in createPreItem) {
+          const storedTemplateData = localStorage.getItem(
+            'entity-template-creation-data'
+          );
+          const entityTemplateData = storedTemplateData
+            ? JSON.parse(storedTemplateData)
+            : null;
+
+          if (entityTemplateData) {
+            try {
+              const { entity, entityTemplateId } = entityTemplateData;
+
+              const result =
+                await this._EntityTemplateService.entityTemplateSetData(
+                  entityTemplateId,
+                  {
+                    entity: 'item',
+                    reference: createPreItem?._id,
+                  }
+                );
+
+              localStorage.removeItem('entity-template-creation-data');
+            } catch (error) {
+              this._ToastrService.error('Ocurrió un error al crear el simbolo');
+            }
+          }
+
           localStorage.setItem('flowRoute', this._Router.url);
           this._Router.navigate([`/auth/login`], {
             queryParams: {

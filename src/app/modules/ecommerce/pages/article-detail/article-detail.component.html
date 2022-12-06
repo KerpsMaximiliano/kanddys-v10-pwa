@@ -94,6 +94,7 @@
         </h3>
         <button
           (click)="saveProduct()"
+          *ngIf="doesModuleDependOnSaleflow"
           [ngClass]="{
             inCart: isItemInCart
           }"

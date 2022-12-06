@@ -1,0 +1,99 @@
+.container {
+  width: 90%;
+  height: 100vh;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+.base-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  visibility: visible;
+  border-radius: 10px;
+  padding: 0px 20px;
+  width: auto;
+  height: 53px;
+  font-family: RobotoMedium;
+  font-size: 16px;
+  border: none;
+  color: #0b1f38;
+  box-shadow: 0px 7px 25px -18px inset;
+  margin: 4px auto;
+  display: inline;
+  margin-left: 0;
+  width: 100%;
+  margin: auto 0;
+  margin-top: 3px;
+  &:focus {
+    border: 1px solid dodgerblue;
+  }
+}
+.bottom-btn {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+@media (min-width: 505px) {
+  .header,
+  .bottom-btn {
+    width: 500px;
+  }
+}
+
+.header-container {
+  background: #2874ad;
+  padding-bottom: 9px;
+}
+.header-grid {
+  background: #2874ad;
+  display: grid;
+  grid-template-columns: 1fr 9fr 1fr;
+  padding: 8px 17px 0px 10px;
+
+  &.search {
+    grid-template-columns: 1fr 9fr 1fr 1fr;
+  }
+
+  .search {
+    cursor: pointer;
+    display: flex;
+    margin-left: auto;
+
+    img {
+      height: 23px;
+      width: 23px;
+    }
+  }
+}
+.header-text {
+  font-size: 21px;
+  font-family: SfPro;
+  color: rgb(255, 255, 255);
+  cursor: unset;
+}
+.dots {
+  margin-top: 2px;
+}
+
+.dot-trio {
+  // width: 23px;
+  // height: 5px;
+  padding: 5px;
+  display: flex;
+  justify-content: space-evenly;
+  cursor: pointer;
+  border-radius: 10px;
+
+  &:hover,
+  &:active {
+    background-color: #2c89d1;
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    margin-bottom: 3px;
+  }
+}

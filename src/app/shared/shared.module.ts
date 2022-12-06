@@ -102,6 +102,8 @@ import { HelperHeaderv3Component } from './components/helper-headerv3/helper-hea
 import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
+import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
+import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
 
@@ -212,8 +214,11 @@ const declarations = [
   HelperHeaderv3Component,
   FunctionalityParametersComponent,
   ConfirmActionDialogComponent,
+  QrCodeDialogComponent,
+  PostsXlsComponent,
   AnexosDialogComponent,
-  MediaDialogComponent,
+  TagAsignationComponent,
+  MediaDialogComponent
 ];
 
 @NgModule({
