@@ -773,11 +773,11 @@ export class TagsComponent implements OnInit {
 
     switch (type) {
       case 'MOST_RECENT':
-        sortCriteria = 'createdAt:desc';
+        sortCriteria = 'index:desc';
         this.headerText = 'Tags recientes';
         break;
       case 'MOST_ASSIGNED':
-        sortCriteria = 'counter:desc';
+        sortCriteria = 'index:desc';
         this.headerText = 'Tags más asignados';
         break;
     }
@@ -810,8 +810,13 @@ export class TagsComponent implements OnInit {
     this.dependantGridOfTagsToShow[event.container.data.index] =
       event.previousContainer.data.tag;
 
-    const currentIndex = Number(event.container.id.split('-')[3]);
-    const previousIndex = Number(event.previousContainer.id.split('-')[3]);
+    const currentIndex = event.container.data.index;
+    const previousIndex = event.previousContainer.data.index;
+
+    this.dependantGridOfTagsToShow[event.previousContainer.data.index].index =
+      event.previousContainer.data.index;
+    this.dependantGridOfTagsToShow[event.container.data.index].index =
+      event.container.data.index;
 
     await this.tagsService.updateTag(
       {
@@ -820,18 +825,12 @@ export class TagsComponent implements OnInit {
       event.previousContainer.data.tag._id
     );
 
-    this.dependantGridOfTagsToShow[event.previousContainer.data.index].index =
-      currentIndex;
-
     await this.tagsService.updateTag(
       {
         index: previousIndex,
       },
       event.container.data.tag._id
     );
-
-    this.dependantGridOfTagsToShow[event.container.data.index].index =
-      previousIndex;
   }
 
   backButtonAction() {
