@@ -88,7 +88,7 @@ export class ItemsDashboardComponent implements OnInit {
     },
     {
       name: 'Facturas',
-    },    
+    },
     {
       name: 'Tags',
     },
@@ -151,6 +151,23 @@ export class ItemsDashboardComponent implements OnInit {
     status: 'complete',
   };
   windowWidth: number = 0;
+  tagsMetrics: {
+    inItems: number;
+    inOrders: number;
+    visible: number;
+    hidden: number;
+    featured: number;
+    archived: number;
+    total: number;
+  } = {
+    inItems: 0,
+    inOrders: 0,
+    visible: 0,
+    hidden: 0,
+    featured: 0,
+    archived: 0,
+    total: 0
+  };
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
   @ViewChild('highlightedItemsSwiper') highlightedItemsSwiper: SwiperComponent;
@@ -233,7 +250,14 @@ export class ItemsDashboardComponent implements OnInit {
   async inicializeTags() {
     const tagsList = await this.tagsService.tagsByUser({
       findBy: {
-        entity: 'item',
+        $or: [
+          {
+            entity: 'item',
+          },
+          {
+            entity: 'order',
+          },
+        ],
       },
       options: {
         limit: -1,
@@ -241,13 +265,27 @@ export class ItemsDashboardComponent implements OnInit {
     });
 
     if (tagsList) {
-      this.tagsList = tagsList;
+      this.tagsList = tagsList.filter((tag) => tag.entity === 'item');
       this.unselectedTags = [...this.tagsList];
 
       for (const tag of this.tagsList) {
         this.tagsHashTable[tag._id] = tag;
         this.tagsByNameHashTable[tag.name] = tag;
       }
+
+      for (const tag of tagsList) {
+        if (tag.status === 'disabled') this.tagsMetrics.hidden++;
+        else if (tag.status === 'active') this.tagsMetrics.visible++;
+        else if (tag.status === 'featured') {
+          this.tagsMetrics.visible++;
+          this.tagsMetrics.featured++;
+        }
+
+        if (tag.entity === 'item') this.tagsMetrics.inItems++;
+        if (tag.entity === 'order') this.tagsMetrics.inOrders++;
+      }
+
+      this.tagsMetrics.total = tagsList.length;
     }
 
     this.tagsLoaded = true;

@@ -81,10 +81,11 @@
               executingMenuOpeningAnimation || executingMenuClosingAnimation
           }"
           [ngStyle]="{
-            height:
-              menuNavigationOptions[activeMenuOptionIndex].name === 'Items'
-                ? '580px'
-                : '413px'
+            height: ['Items', 'Tags'].includes(
+              menuNavigationOptions[activeMenuOptionIndex].name
+            )
+              ? '580px'
+              : '413px'
           }"
         >
           <div
@@ -116,12 +117,16 @@
             menuOpened &&
             !executingMenuOpeningAnimation &&
             !executingMenuClosingAnimation &&
-            menuNavigationOptions[activeMenuOptionIndex].name === 'Items',
+            ['Items', 'Tags'].includes(
+              menuNavigationOptions[activeMenuOptionIndex].name
+            ),
           visible2:
             menuOpened &&
             !executingMenuOpeningAnimation &&
             !executingMenuClosingAnimation &&
-            menuNavigationOptions[activeMenuOptionIndex].name !== 'Items',
+            !['Items', 'Tags'].includes(
+              menuNavigationOptions[activeMenuOptionIndex].name
+            ),
           animationRunning:
             executingMenuOpeningAnimation || executingMenuClosingAnimation
         }"
@@ -344,6 +349,55 @@
                 </h2>
 
                 <h2 class="amount">COMPRADORES</h2>
+              </div>
+            </div>
+
+            <div
+              class="metrics-grid"
+              [ngStyle]="{
+                display:
+                  !menuOpened &&
+                  !(
+                    executingMenuOpeningAnimation ||
+                    executingMenuClosingAnimation
+                  )
+                    ? 'none'
+                    : 'grid'
+              }"
+              *ngSwitchCase="'Tags'"
+            >
+              <div class="card pointer">
+                <h2 class="amount quantity">
+                  {{ tagsMetrics.inItems }}
+                </h2>
+                <h2 class="amount">DE ITEMS</h2>
+              </div>
+
+              <div class="card pointer">
+                <h2 class="amount quantity">
+                  {{ tagsMetrics.inOrders }}
+                </h2>
+                <h2 class="amount">DE FACTURAS</h2>
+              </div>
+
+              <div class="card pointer">
+                <h2 class="amount quantity">{{ tagsMetrics.visible }}</h2>
+                <h2 class="amount">VISIBLES</h2>
+              </div>
+
+              <div class="card pointer">
+                <h2 class="amount quantity">{{ tagsMetrics.hidden }}</h2>
+                <h2 class="amount">INVISIBLES</h2>
+              </div>
+
+              <div class="card pointer">
+                <h2 class="amount quantity">{{ tagsMetrics.featured }}</h2>
+                <h2 class="amount">DESTACADOS</h2>
+              </div>
+
+              <div class="card pointer">
+                <h2 class="amount quantity">{{ tagsMetrics.total }}</h2>
+                <h2 class="amount">EN TOTAL</h2>
               </div>
             </div>
           </ng-container>
