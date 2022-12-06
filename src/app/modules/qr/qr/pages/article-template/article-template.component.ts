@@ -106,8 +106,28 @@ export class ArticleTemplateComponent implements OnInit {
 
   async saveExistingTemplateDataInCurrentTemplate(option: Options) {
     if (this.selectedOption.text === 'Adjunta un Símbolo existente') {
-      const entityTemplateDateIdToMimic =
-        this.entityTemplateReferenceInput.value;
+      let entityTemplateDateIdToMimic = this.entityTemplateReferenceInput.value;
+
+      entityTemplateDateIdToMimic = entityTemplateDateIdToMimic
+        .split('')
+        .filter((char) => {
+          return [
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '0',
+            'N',
+          ].includes(char);
+        })
+        .join('');
+
+      console.log(entityTemplateDateIdToMimic);
 
       const entityTemplateToMimic =
         await this.entityTemplateService.entityTemplateByDateId(
