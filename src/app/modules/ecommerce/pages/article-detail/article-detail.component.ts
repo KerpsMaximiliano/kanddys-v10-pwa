@@ -125,7 +125,12 @@ export class ArticleDetailComponent implements OnInit {
           this.entityId = entityId;
           this.entity = entity;
 
-          await this.getItemData();
+          if (entity === 'item') {
+            await this.getItemData();
+            this.itemInCart();
+          } else if (entity === 'post') {
+            await this.getPostData();
+          }
         } else {
           const entityTemplate =
             await this.entityTemplateService.entityTemplate(entityId);
@@ -147,12 +152,6 @@ export class ArticleDetailComponent implements OnInit {
           }
         }
 
-        if (entity === 'item') {
-          await this.getItemData();
-          this.itemInCart();
-        } else if (entity === 'post') {
-          await this.getPostData();
-        }
         if (this.headerService.saleflow && this.headerService.saleflow._id)
           this.itemInCart();
       } else {
@@ -173,7 +172,6 @@ export class ArticleDetailComponent implements OnInit {
       this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
       if (this.itemData.images?.length < 2) this.startTimeout();
     } catch (error) {
-      console.error(error);
       this.router.navigate([`others/error-screen/`]);
     }
   }
