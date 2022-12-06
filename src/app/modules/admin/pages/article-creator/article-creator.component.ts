@@ -26,6 +26,8 @@ import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/ta
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 type Mode = 'symbols' | 'item';
 
@@ -99,7 +101,9 @@ export class ArticleCreatorComponent implements OnInit {
     private _DialogService: DialogService,
     private _ToastrService: ToastrService,
     private _ImageCompress: NgxImageCompressService,
-    private _TagsService: TagsService
+    private _TagsService: TagsService,
+    private _EntityTemplateService: EntityTemplateService,
+    private _Clipboard: Clipboard
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -856,6 +860,37 @@ export class ArticleCreatorComponent implements OnInit {
         },
       },
     ];
+
+    if (this.item) {
+      list.push({
+        text: 'Simbolo ID',
+        callback: async () => {
+          try {
+            const result =
+              await this._EntityTemplateService.entityTemplateByReference(
+                item._id,
+                'item'
+              );
+
+            this._Clipboard.copy(result.dateId.split('/').join(''));
+
+            this._ToastrService.info(
+              'Simbolo ID copiado al portapapeles',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
+          } catch (error) {
+            this._ToastrService.info('Ocurrió un error', null, {
+              timeOut: 1500,
+            });
+
+            console.error(error);
+          }
+        },
+      });
+    }
 
     this._DialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',

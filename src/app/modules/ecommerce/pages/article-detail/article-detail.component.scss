@@ -131,7 +131,7 @@
     object-fit: cover;
     margin-bottom: 63px;
     margin: 0px;
-    padding: 0px;  
+    padding: 0px;
   }
 
   audio {
@@ -247,6 +247,23 @@ audio {
 .notification {
   margin: auto;
   cursor: pointer;
+}
+
+.dot-trio {
+  background-color: white;
+  height: 28px;
+  width: 28px;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: auto;
+
+  &:hover {
+    background-color: lightgray;
+    cursor: pointer;
+  }
 }
 
 .lines {

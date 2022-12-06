@@ -21,11 +21,12 @@
     src="{{ env }}/d.png"
     class="notification"
   /> -->
-  <img
-    (click)="share()"
-    src="{{ env }}/share-outline.png"
-    class="notification"
-  />
+
+  <div
+    class="dot-trio"
+    (click)="moreOptions()"
+  ></div>
+
   <div></div>
   <span class="text"></span>
   <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
@@ -206,10 +207,7 @@
           ></video>
         </ng-container>
 
-        <div
-          *ngIf="slide.type === 'audio'"
-          class="audio"
-        >
+        <div *ngIf="slide.type === 'audio'" class="audio">
           <div class="audio-container">
             <svg
               class="audio-file"

@@ -1,19 +1,26 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
 import { Item, ItemParamValue } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
@@ -93,6 +100,9 @@ export class ArticleDetailComponent implements OnInit {
     private dialogService: DialogService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private postsService: PostsService,
+    private entityTemplateService: EntityTemplateService,
+    private toastr: ToastrService,
+    private clipboard: Clipboard,
     private saleflowService: SaleFlowService
   ) {}
 
@@ -444,5 +454,64 @@ export class ArticleDetailComponent implements OnInit {
 
   getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
+  }
+
+  moreOptions() {
+    const list: Array<SettingsDialogButton> = [
+      {
+        text: 'Comparte el link',
+        callback: async () => {
+          this.share();
+        },
+      },
+      {
+        text: 'Simbolo ID',
+        callback: async () => {
+          try {
+            let result = null;
+
+            if (this.entity === 'item')
+              result =
+                await this.entityTemplateService.entityTemplateByReference(
+                  this.itemData._id,
+                  'item'
+                );
+            else if (this.entity === 'post') {
+              result =
+                await this.entityTemplateService.entityTemplateByReference(
+                  this.postData._id,
+                  'post'
+                );
+            }
+
+            this.clipboard.copy(result.dateId.split('/').join(''));
+
+            this.toastr.info('Simbolo ID copiado al portapapeles', null, {
+              timeOut: 1500,
+            });
+          } catch (error) {
+            this.toastr.info('Ocurrió un error', null, {
+              timeOut: 1500,
+            });
+
+            console.error(error);
+          }
+        },
+      },
+    ];
+
+    this.dialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        //qr code in the xd's too small to scanning to work
+        title: this.entity === 'item' ? this.itemData.name : 'Opciones de post',
+        cancelButton: {
+          text: 'Cerrar',
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }
