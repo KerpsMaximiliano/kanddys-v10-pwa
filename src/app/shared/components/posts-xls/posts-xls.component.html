@@ -1,0 +1,36 @@
+<div class="header-container">
+  <div class="header-grid" [style.cursor]="'initial'" (click)="submit()">
+    <div class="arrows">
+      <img src="{{ env }}/arrow-double-up.svg" alt="button" />
+    </div>
+    <div class="header-text">Selecciones</div>
+    <div class="dots">
+      <div class="dot-trio">
+        <div class="dot" *ngFor="let dot of ['', '', '']"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <input
+    [formControl]="controller"
+    class="base-input"
+    type="text"
+    placeholder="Cantidad"
+  />
+</div>
+<div class="bottom-btn">
+  <div class="header-container">
+    <div class="header-grid" [style.cursor]="'pointer'">
+      <div class="arrows" (click)="submit()">
+        <img src="{{ env }}/arrow-double-up.svg" alt="button" />
+      </div>
+      <div class="header-text" (click)="submit()">Generar</div>
+      <div class="dots">
+        <div class="dot-trio">
+          <div class="dot" *ngFor="let dot of ['', '', '']"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

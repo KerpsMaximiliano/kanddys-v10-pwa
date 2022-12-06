@@ -99,6 +99,7 @@ export class HeaderService {
   ordersPageTemporalData: Record<string, any> = null;
   dashboardTemporalData: Record<string, any> = null;
   storeTemporalData: Record<string, any> = null;
+  entityTemplateTemporalData: Record<string, any> = null;
 
   public session: Session;
   constructor(

@@ -6,7 +6,7 @@ import {
   entityTemplateSetData,
   entityTemplateByDateId,
   entityTemplateByReference,
-  createEntityTemplate,
+  createEntityTemplate
 } from '../graphql/entity-template.gql';
 
 @Injectable({

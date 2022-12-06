@@ -126,6 +126,7 @@ const routes: Routes = [
         path: 'payments',
         component: PaymentsComponent,
       },
+
     ],
   },
 ];
@@ -151,7 +152,7 @@ const routes: Routes = [
     PaymentsComponent,
     ReservationsComponent,
     ArticleDetailComponent,
-    CreateArticleComponent,
+    CreateArticleComponent
   ],
   imports: [
     CommonModule,
