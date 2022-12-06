@@ -166,6 +166,20 @@ export class TagsComponent implements OnInit {
           this.dependantGridOfTagsToShow.concat(tagsByUserResult);
       }
 
+      this.dependantGridOfTagsToShow.sort((a, b) => {
+        if (a.index === null && b.index === null) return 0;
+        else if (a.index === null || b.index === null) {
+          if (a.index === null) return 1;
+          else return -1;
+        } else {
+          return a.index - b.index;
+        }
+      });
+
+      this.dependantGridOfTagsToShow.forEach((tag, index) => {
+        tag.index = index;
+      });
+
       this.paginationState.status = 'complete';
     }
   }
@@ -446,11 +460,9 @@ export class TagsComponent implements OnInit {
         this.openDeleteMultipleTagsDialog();
         break;
       default:
-        this.dialogService.open(TagTypeDialogComponent,{
+        this.dialogService.open(TagTypeDialogComponent, {
           type: 'fullscreen-translucent',
-          props: {
-
-          }
+          props: {},
         });
         break;
     }
@@ -695,15 +707,15 @@ export class TagsComponent implements OnInit {
         limit: 10,
       },
       findBy: {
-        '$or': [
+        $or: [
           {
-            entity: 'item'
+            entity: 'item',
           },
           {
-            entity: 'order'
+            entity: 'order',
           },
-        ]
-      }
+        ],
+      },
     };
 
     if (this.entityToFilterTagsBy) {
@@ -792,11 +804,34 @@ export class TagsComponent implements OnInit {
     }
   }
 
-  dropTagDraggable(event: CdkDragDrop<{ tag: Tag; index: number }>) {
+  async dropTagDraggable(event: CdkDragDrop<{ tag: Tag; index: number }>) {
     this.dependantGridOfTagsToShow[event.previousContainer.data.index] =
       event.container.data.tag;
     this.dependantGridOfTagsToShow[event.container.data.index] =
       event.previousContainer.data.tag;
+
+    const currentIndex = Number(event.container.id.split('-')[3]);
+    const previousIndex = Number(event.previousContainer.id.split('-')[3]);
+
+    await this.tagsService.updateTag(
+      {
+        index: currentIndex,
+      },
+      event.previousContainer.data.tag._id
+    );
+
+    this.dependantGridOfTagsToShow[event.previousContainer.data.index].index =
+      currentIndex;
+
+    await this.tagsService.updateTag(
+      {
+        index: previousIndex,
+      },
+      event.container.data.tag._id
+    );
+
+    this.dependantGridOfTagsToShow[event.container.data.index].index =
+      previousIndex;
   }
 
   backButtonAction() {

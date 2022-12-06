@@ -33,6 +33,7 @@ export const tagsByUser = gql`
       createdAt
       counter
       entity
+      index
     }
   }
 `;

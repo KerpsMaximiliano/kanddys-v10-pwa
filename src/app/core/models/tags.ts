@@ -21,6 +21,7 @@ export class Tag extends Model<Tag> {
   notifications: string[];
   merchant: string;
   entity?: string;
+  index?: number;
   containers?: TagContainers[];
 }
 
@@ -34,5 +35,6 @@ export class TagInput {
   notifyMerchantOrder?: boolean;
   status?: string;
   merchant?: string;
+  index?: number;
   entity?: TagEntityEnum;
 }
