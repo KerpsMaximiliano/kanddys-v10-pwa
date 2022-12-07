@@ -120,6 +120,7 @@ export class LoginComponent implements OnInit {
     private saleflowsService: SaleFlowService,
     private location: Location,
     private usersService: UsersService,
+    private postsService: PostsService,
     private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
   ) {
     this.image = this.router.getCurrentNavigation().extras.state?.image;
@@ -260,9 +261,7 @@ export class LoginComponent implements OnInit {
     } else if (this.auth === 'payment') {
       if (!this.image) {
         this.router.navigate(
-          [
-            `ecommerce/${this.saleflow.merchant.slug}/payments/${this.orderId}`,
-          ],
+          [`ecommerce/${this.saleflow.merchant.slug}/payments/${this.orderId}`],
           {
             replaceUrl: true,
           }
@@ -451,9 +450,7 @@ export class LoginComponent implements OnInit {
           };
           localStorage.setItem('registered-user', JSON.stringify(userInput));
           this.router.navigate(
-            [
-              `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
-            ],
+            [`ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`],
             {
               replaceUrl: true,
             }
@@ -712,9 +709,7 @@ export class LoginComponent implements OnInit {
         const result = await this.usersService.addLocation(address);
         if (result) {
           this.router.navigate(
-            [
-              `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
-            ],
+            [`ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`],
             {
               replaceUrl: true,
             }
@@ -1061,6 +1056,11 @@ export class LoginComponent implements OnInit {
         order._id
       );
     }
+
+    if (order.items[0].post) {
+      this.postsService.postAddUser(order.items[0].post._id, id);
+    }
+
     this.router.navigate([`ecommerce/order-detail/${order._id}`], {
       queryParams: { notify: 'true' },
     });
