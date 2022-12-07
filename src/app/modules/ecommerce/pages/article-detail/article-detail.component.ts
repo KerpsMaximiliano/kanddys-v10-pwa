@@ -10,7 +10,6 @@ import { Item, ItemParamValue } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
-import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -18,6 +17,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import {
   SettingsComponent,
   SettingsDialogButton,
@@ -431,7 +431,6 @@ export class ArticleDetailComponent implements OnInit {
     ) {
       const [baseRoute, paramsString] = this.headerService.flowRoute.split('?');
 
-
       const paramsArray = paramsString ? paramsString.split('&') : [];
       const queryParams = {};
       paramsArray.forEach((param) => {
@@ -505,25 +504,32 @@ export class ArticleDetailComponent implements OnInit {
           try {
             let result = null;
 
-            if (this.entity === 'item')
-              result =
-                await this.entityTemplateService.entityTemplateByReference(
-                  this.itemData._id,
-                  'item'
+            result = await this.entityTemplateService.entityTemplateByReference(
+              this.entity === 'item' ? this.itemData._id : this.postData._id,
+              this.entity
+            );
+
+            let createdEntityTemplate =
+              await this.entityTemplateService.createEntityTemplate();
+
+            if (createdEntityTemplate) {
+              createdEntityTemplate =
+                await this.entityTemplateService.entityTemplateSetData(
+                  createdEntityTemplate._id,
+                  {
+                    entity: result.entity,
+                    reference: result.reference,
+                  }
                 );
-            else if (this.entity === 'post') {
-              result =
-                await this.entityTemplateService.entityTemplateByReference(
-                  this.postData._id,
-                  'post'
-                );
+
+              this.clipboard.copy(
+                formatID(createdEntityTemplate.dateId, true).slice(1)
+              );
+
+              this.toastr.info('Simbolo ID copiado al portapapeles', null, {
+                timeOut: 1500,
+              });
             }
-
-            this.clipboard.copy(formatID(result.dateId, true).slice(1));
-
-            this.toastr.info('Simbolo ID copiado al portapapeles', null, {
-              timeOut: 1500,
-            });
           } catch (error) {
             this.toastr.info('Ocurrió un error', null, {
               timeOut: 1500,
