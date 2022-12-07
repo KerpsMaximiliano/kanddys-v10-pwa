@@ -37,6 +37,11 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
+        path: 'items-dashboard',
+        redirectTo: 'entity-detail-metrics',
+        pathMatch: 'full'
+      },
+      {
         path: 'create-item/:itemId',
         redirectTo: 'create-article/:itemId',
         pathMatch: 'full',

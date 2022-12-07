@@ -194,6 +194,16 @@ export class ItemsDashboardComponent implements OnInit {
 
       await this.verifyIfUserIsLogged();
 
+      if (
+        !this.headerService.dashboardTemporalData &&
+        localStorage.getItem('dashboardTemporalData')
+      ) {
+        console.log('startOnSnaphot', startOnSnapshot);
+        this.headerService.dashboardTemporalData = JSON.parse(
+          localStorage.getItem('dashboardTemporalData')
+        );
+      }
+
       if (!this.headerService.dashboardTemporalData || !startOnSnapshot) {
         await this.inicializeTags();
         await this.inicializeItems(true, false, true);
@@ -679,6 +689,14 @@ export class ItemsDashboardComponent implements OnInit {
       showSearchbar: this.showSearchbar,
       paginationState: this.paginationState,
     };
+
+    localStorage.setItem(
+      'dashboardTemporalData',
+      JSON.stringify(this.headerService.dashboardTemporalData)
+    );
+
+    this.headerService.flowRoute = this.router.url + '?startOnSnapshot=true';
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
   }
 
   getPageSnapshot() {
@@ -695,6 +713,7 @@ export class ItemsDashboardComponent implements OnInit {
     }
 
     this.headerService.dashboardTemporalData = null;
+    localStorage.removeItem('dashboardTemporalData');
   }
 
   goToCreateTag(tagId: string) {

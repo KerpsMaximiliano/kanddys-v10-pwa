@@ -28,6 +28,7 @@ import Swiper, { SwiperOptions } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 
 type Mode = 'symbols' | 'item';
 
@@ -277,13 +278,7 @@ export class ArticleCreatorComponent implements OnInit {
         return;
       */
 
-      if (
-        !file ||
-        ![...this.imageFiles].includes(
-          file.type
-        )
-      )
-        return;
+      if (!file || ![...this.imageFiles].includes(file.type)) return;
       this.loadFile(file, i, k + f);
     }
   }
@@ -676,6 +671,19 @@ export class ArticleCreatorComponent implements OnInit {
     this._ItemsService.itemPrice = null;
     this._ItemsService.changedImages = false;
     if (!this.fromTemplate) {
+      if (
+        this._HeaderService.dashboardTemporalData ||
+        localStorage.getItem('dashboardTemporalData')
+      ) {
+        this._Router.navigate([`admin/items-dashboard`], {
+          queryParams: {
+            startOnSnapshot: true,
+          },
+        });
+
+        return;
+      }
+
       this._Router.navigate([`admin/items-dashboard`]);
     } else {
       this._Router.navigate(['qr/article-template/' + this.fromTemplate]);
@@ -902,7 +910,8 @@ export class ArticleCreatorComponent implements OnInit {
                 'item'
               );
 
-            this._Clipboard.copy(result.dateId.split('/').join(''));
+
+            this._Clipboard.copy(formatID(result.dateId, true).slice(1));
 
             this._ToastrService.info(
               'Simbolo ID copiado al portapapeles',

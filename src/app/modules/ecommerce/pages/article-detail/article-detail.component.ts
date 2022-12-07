@@ -430,6 +430,8 @@ export class ArticleDetailComponent implements OnInit {
       this.headerService.flowRoute.length > 1
     ) {
       const [baseRoute, paramsString] = this.headerService.flowRoute.split('?');
+
+
       const paramsArray = paramsString ? paramsString.split('&') : [];
       const queryParams = {};
       paramsArray.forEach((param) => {
@@ -439,8 +441,6 @@ export class ArticleDetailComponent implements OnInit {
       });
 
       localStorage.removeItem('flowRoute');
-
-      console.log(baseRoute, queryParams);
 
       this.router.navigate([baseRoute], {
         queryParams,
@@ -519,7 +519,7 @@ export class ArticleDetailComponent implements OnInit {
                 );
             }
 
-            this.clipboard.copy(formatID(result.dateId).slice(1));
+            this.clipboard.copy(formatID(result.dateId, true).slice(1));
 
             this.toastr.info('Simbolo ID copiado al portapapeles', null, {
               timeOut: 1500,
@@ -540,7 +540,10 @@ export class ArticleDetailComponent implements OnInit {
       props: {
         optionsList: list,
         //qr code in the xd's too small to scanning to work
-        title: this.entity === 'item' ? this.itemData.name : 'Opciones de mensaje virtual',
+        title:
+          this.entity === 'item'
+            ? this.itemData.name
+            : 'Opciones de mensaje virtual',
         cancelButton: {
           text: 'Cerrar',
         },

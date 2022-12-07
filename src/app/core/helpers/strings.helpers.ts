@@ -21,12 +21,18 @@ export function isEmail(str: string): boolean {
 }
 
 // String formatter for the dateId field of the ItemOrder model
-export function formatID(dateId: string): string {
+export function formatID(dateId: string, padZeroes = false): string {
   const splits = dateId.split('/');
   const year = splits[2].substring(0, 4);
   const number = splits[2].substring(4);
-  const month = splits[0];
-  const day = splits[1];
+  let month = splits[0];
+  let day = splits[1];
+
+  if (padZeroes) {
+    month = String(month).length < 2 ? '0' + month : month;
+    day = String(day).length < 2 ? '0' + day : day;
+  }
+
   return `#${year}${month}${day}${number}`;
 }
 
