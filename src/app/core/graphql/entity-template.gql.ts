@@ -29,3 +29,16 @@ export const entityTemplateSetData = gql`
     }
   }
 `;
+
+export const entityTemplateAuthSetData = gql`
+  mutation entityTemplateAuthSetData($id: ObjectID!, $input: EntityTemplateInput!) {
+    entityTemplateAuthSetData(id: $id, input: $input) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+    }
+  }
+`;

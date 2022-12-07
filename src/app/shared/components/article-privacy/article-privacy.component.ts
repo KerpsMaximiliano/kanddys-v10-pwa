@@ -485,7 +485,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       const content: any = {
         password
       };
-      const result = await this._EntityTemplateService.entityTemplateSetData(this.id,content);
+      const result = await this._EntityTemplateService.entityTemplateAuthSetData(this.id,content);
     }
     entityTemplateSetData();
   }

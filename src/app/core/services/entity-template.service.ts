@@ -3,6 +3,7 @@ import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { EntityTemplate, EntityTemplateInput } from '../models/entity-template';
 import {
   entityTemplate,
+  entityTemplateAuthSetData,
   entityTemplateSetData,
 } from '../graphql/entity-template.gql';
 
@@ -37,6 +38,24 @@ export class EntityTemplateService {
       });
 
       return result?.entityTemplateSetData;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async entityTemplateAuthSetData(
+    id: string,
+    input: EntityTemplateInput
+  ): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateAuthSetData,
+        variables: { id, input },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.entityTemplateAuthSetData;
     } catch (error) {
       console.log(error);
       return null;
