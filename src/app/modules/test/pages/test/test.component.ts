@@ -17,6 +17,13 @@ import { FormStep, FormField } from 'src/app/core/types/multistep-form';
 import { FormControl } from '@angular/forms';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { ItemInput } from 'src/app/core/models/item';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 
 @Component({
   selector: 'app-test',
@@ -24,310 +31,78 @@ import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-
   styleUrls: ['./test.component.scss'],
 })
 export class TestComponent implements OnInit {
+  imageField: (string | ArrayBuffer)[] = [''];
+  merchant: Merchant;
+  saleflow: SaleFlow;
 
-  textSample: string = 'Al borrar las reservaciones las fechas involucradas volverán a estar disponible.';
-  hourRangeInDays = {
-    MONDAY: [
-      { from: 9, to: 11 },
-      { from: 14, to: 18 },
-    ],
-    TUESDAY: [
-      { from: 9, to: 11 },
-      { from: 14, to: 18 },
-    ],
-    WEDNESDAY: [
-      { from: 9, to: 11 },
-      { from: 14, to: 18 },
-    ],
-    THURSDAY: [
-      { from: 9, to: 11 },
-      { from: 14, to: 18 },
-    ],
-    FRIDAY: [
-      { from: 9, to: 11 },
-      { from: 14, to: 18 },
-    ],
-    SATURDAY: [
-      { from: 9, to: 11 },
-      { from: 14, to: 15 },
-    ],
-  };
+  constructor(
+    private dialog: DialogService,
+    private itemsService: ItemsService,
+    private merchantService: MerchantsService,
+    private saleflowService: SaleFlowService
+  ) {}
 
-  formSteps: Array<FormStep> = [
-    {
-      fieldsList: [
-        {
-          name: 'referenceImage',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl(['']),
-          },
-          label: 'Foto de referencia',
-          placeholder: 'sube una imagen',
-          styles: {
-            labelStyles: {
-              paddingBottom: '26px',
-            },
-            subLabelStyles: {
-              color: '#7B7B7B',
-              fontFamily: 'RobotoRegular',
-              fontSize: '16px',
-              fontWeight: 500,
-              padding: '0px',
-              margin: '0px',
-              marginBottom: '18px',
-            },
-            fieldStyles: {
-              width: '157px',
-              height: '137px',
-              padding: '34px',
-              textAlign: 'center',
-            },
-            containerStyles: {
-              marginTop: '0px',
-              paddingBottom: '60px',
-            },
-            innerContainerStyles: {
-              width: '157px',
-              textAlign: 'center',
-            },
-          },
-        },
-      ],
-      hideHeader: true,
-    },
-  ];
-
-  constructor(private dialog: DialogService) {}
-
-  ngOnInit(): void {}
-
-  openDialog() {
-    /*   const list: StoreShareList[] = [
-        {
-            title: 'ITEM ID',
-            label: 'VISIBLE',
-            options: [
-                {
-                    text: 'CREA UN NUEVO ARTICULO',
-                    mode: 'func',
-                    func() {
-                        console.log('Este mueve la maraca');
-                        // this.router.navigate([`admin/create-article`]);
-                    },
-                },
-                {
-                    text: 'VENDE ONLINE. COMPARTE EL LINK',
-                    icon: {
-                        src: '/upload.svg',
-                        alt: 'icono de de compartir',
-                        size:{
-                            width: 14,
-                            height: 14
-                        }
-                    },
-                    mode: 'clipboard'
-                },
-                {
-                    text: 'CERRAR SESIÓN',
-                    mode: 'func',
-                    func() {
-                        console.log('aqui cierra sesión');
-                        //this.authService.signout();
-                    }
-                }
-            ]
-        },
-    ];
-
-    this.dialog.open(StoreShareComponent, {
-        type: 'fullscreen-translucent',
-        props: {
-          list,
-          alternate: false
-        },
-        customClass: 'app-dialog',
-        flags: ['no-header'],
-    });*/
-    
-
-    /* this.dialog.open(GeneralFormSubmissionDialogComponent, {
-      type: 'centralized-fullscreen',
-      props: {
-        icon: 'sadFace.svg',
-        message: 'Ocurrió un problema',
-        showCloseButton: true
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-    
-    this.dialog.open(SingleActionDialogComponent, {
-      type: 'centralized-fullscreen',
-      props:{
-         title: 'Borrar Reservaciones?',
-         buttonText: 'Borrar Reservación',
-         mainText: this.textSample,
-         mainButton: this.actionDialog
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header']
-    })
-    
-    */
-
-    this.dialog.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        title: 'NameID',
-        cancelButton: {
-          text: 'cancelar',
-          callback: () => {
-            console.log('cliqueado el boton de cancelar');
-          },
-        },
-        mainText: this.textSample,
-        indexValue: 2,
-        qrCode: 'https://www.google.com',
-        optionsList: [
-          {
-            text: 'CTAID',
-            callback: () => {
-              console.log('CLICKING IT 1');
-            },
-          },
-          {
-            text: 'CTAID',
-            callback: () => {
-              console.log('CLICKING IT 2');
-            },
-          },
-          {
-            text: 'CTAID',
-            callback: () => {
-              console.log('CLICKING IT 3');
-            },
-          },
-          {
-            text: 'CTAID',
-            callback: () => {
-              console.log('CLICKING IT 4');
-            },
-          },
-          {
-            text: 'CTAID',
-            callback: () => {
-              console.log('CLICKING IT 5');
-            },
-          },
-        ],
-        statuses: [
-          {
-            text: 'opcion 1',
-            backgroundColor: 'limegreen',
-            color: 'blue',
-            asyncCallback: () => {
-              return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  console.log('pasaron 2 seg');
-                  resolve(true);
-                }, 2000);
-              });
-            },
-          },
-          {
-            text: 'opcion 2',
-            backgroundColor: 'yellow',
-            color: 'red',
-            asyncCallback: () => {
-              return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  console.log('pasó 1 seg');
-                  resolve(true);
-                }, 1000);
-              });
-            },
-          },
-          {
-            text: 'opcion 3',
-            backgroundColor: 'orange',
-            color: 'red',
-            asyncCallback: () => {
-              return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  console.log('pasaron 4 segundos');
-                  resolve(true);
-                }, 4000);
-              });
-            },
-          },
-        ],
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
+  async ngOnInit() {
+    this.merchant = await this.merchantService.merchantDefault();
+    this.saleflow = await this.saleflowService.saleflowDefault(
+      this.merchant._id
+    );
   }
 
-  openDeleteDialog() {
-    const list: StoreShareList[] = [
-      {
-        title: `Hay una nueva versión disponible`,
-        description:
-          'Se ha encontrado una nueva version de la pagina. ¿Desea actualizar?',
-        message: 'Recargar Página',
-        messageCallback: async () => {
-          this.reload();
-        },
-      },
-    ];
+  fileProgressMultiple(e: Event) {
+    const fileList = (e.target as HTMLInputElement).files;
 
-    this.dialog.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        list,
-        alternate: true,
-        buttonText: 'Cerrar',
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      notCancellable: true,
-    });
+    if (fileList.length > 0) {
+      this.imageField = [];
+
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList.item(i);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imageField[i] = reader.result;
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      (e.target as HTMLInputElement).value = null;
+      return;
+    }
   }
 
-  reloadDialog() {
-    this.dialog.open(ReloadComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        closeEvent: () => {
-          this.reload();
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      notCancellable: true,
-    });
-  }
+  async createItemForEachLoadedImage() {
+    let productIndex = 0;
+    for await (const image of this.imageField) {
+      try {
+        const itemInput: ItemInput = {
+          name: 'Producto sin nombre #' + productIndex,
+          description: null,
+          pricing: 1,
+          images: [base64ToFile(image as string)],
+          merchant: this.merchant?._id,
+          content: [],
+          currencies: [],
+          hasExtraPrice: false,
+          purchaseLocations: [],
+        };
 
-  reload() {
-    window.location.reload();
-  }
+        const { createItem } = await this.itemsService.createItem(itemInput);
 
-  actionDialog(e: string) {
-    console.log('Esta funcion esta aparte');
-    console.log(e);
-  }
+        await this.saleflowService.addItemToSaleFlow(
+          {
+            item: createItem._id,
+          },
+          this.saleflow._id
+        );
+        productIndex++;
+      } catch (error) {
+        console.log(error);
+      }
+    }
 
-  probando(){
-   this.dialog.open(MediaDialogComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-         inputType: 'audio',
-         src: 'Sway Female Ver  Michael Bublé.mp3',
- 
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      notCancellable: true,
-    });
+    if (productIndex === this.imageField.length) {
+      alert('productos creados exitosamente');
+    }
   }
 }

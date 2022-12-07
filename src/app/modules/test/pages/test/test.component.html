@@ -256,3 +256,25 @@ headline="EXPUESTO EN TAB (S)"
       [usesGoogleMaps]="true"
     ></app-multistep-form>
 -->
+
+<h3>Selecciona varias imagenes</h3>
+
+<input
+  type="file"
+  name=""
+  id=""
+  multiple
+  accept="image/*"
+  (change)="fileProgressMultiple($event)"
+/>
+
+<span *ngIf="imageField.length > 0 && imageField[0] !== ''"
+  >Se han cargado {{ imageField.length }} imágenes</span
+>
+
+<button
+  *ngIf="imageField.length > 0 && imageField[0] !== ''"
+  (click)="createItemForEachLoadedImage()"
+>
+  Crear los productos para cada imagen
+</button>
