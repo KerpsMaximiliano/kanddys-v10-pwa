@@ -177,15 +177,24 @@ export class TagsComponent implements OnInit {
       },
     };
 
+    pagination.findBy = {};
     if (entity) {
-      pagination.findBy = {};
       pagination.findBy.entity = entity;
+    } else {
+      pagination.findBy['$or'] = [
+        {
+          entity: 'item',
+        },
+        {
+          entity: 'order',
+        },
+      ];
     }
 
     if (this.enforceTagsStatus) {
       if (!pagination.findBy) pagination.findBy = {};
 
-      if (this.enforceTagsStatus === 'active')
+      if (this.enforceTagsStatus === 'active') {
         pagination.findBy['$or'] = [
           {
             status: 'active',
@@ -194,7 +203,20 @@ export class TagsComponent implements OnInit {
             status: 'featured',
           },
         ];
-      else pagination.findBy.status = this.enforceTagsStatus;
+
+        if (!entity) {
+          pagination.findBy['$or'][0].entity = 'item';
+          pagination.findBy['$or'][1].entity = 'item';
+          pagination.findBy['$or'][2].entity = {
+            status: 'active',
+            entity: 'order',
+          };
+          pagination.findBy['$or'][3].entity = {
+            status: 'featured',
+            entity: 'order',
+          };
+        }
+      } else pagination.findBy.status = this.enforceTagsStatus;
     }
 
     if (sortCriteria) {
