@@ -110,7 +110,7 @@ const routes: Routes = [
         component: CreateTagComponent,
       },
       {
-        path: 'article-privacy',
+        path: 'article-privacy/:templateId',
         component: ArticlePrivacyComponent,
       },
     ],

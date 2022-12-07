@@ -431,12 +431,8 @@ export class ArticleCreatorComponent implements OnInit {
     const id = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     this._ItemsService.itemImages = images;
     this._Router.navigate([
-      `/admin/article-privacy`,
-    ],{
-      queryParams: {
-        id
-      }
-    });
+      `/admin/article-privacy`, id,
+    ]);
   }
 
   removeFile(i: number, j: number): void {

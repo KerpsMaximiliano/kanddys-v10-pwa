@@ -99,7 +99,7 @@
                         x
                       </ng-container>
                       <ng-container *ngSwitchCase="'1'">
-                        <i class="fas fa-check-circle icon"></i>
+                        <img class="check" [src]="env + '/check%20%281%29.png'" />
                       </ng-container>
                       <ng-container *ngSwitchCase="'2'">
                         <img [src]="env + '/delete.png'" width="14" height="14"
@@ -124,7 +124,7 @@
             limitado. La clave no aplica para ellos.
           </p>
           <button *ngIf="toDelete.length" class="submit" (click)="deleteSelected()">
-            Eliminar LOS MARCADOS CON
+            Eliminar LOS MARCADOS CON <img [src]="env + '/delete.png'" width="14" height="14" style="position: relative;left: 6px;top: 1px;">
           </button>
           <button *ngIf="toEntityTemplate.length" class="submit" (click)="addRecipients()">
             Agregar recipientes
@@ -281,7 +281,7 @@
         <div class="square-item"></div>
         <div>
           <div class="grid-content">
-            <img [src]="env + '/' + item.img" width="22" height="22" />
+            <img class="grid-img" [src]="env + '/' + item.img" width="22" height="22" />
             <span class="text">
               {{
                 i === 2

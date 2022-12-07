@@ -218,8 +218,8 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this._ActivatedRoute.queryParams.subscribe(({ id }) => {
-      this.id = id;
+    this._ActivatedRoute.params.subscribe(({ templateId }) => {
+      this.id = templateId;
       this.filter = this._DomSanitizer.bypassSecurityTrustStyle('opacity(0.5)');
       const recipients = async () => {
         const { _id } = await this._MerchantsService.merchantDefault();
@@ -269,27 +269,28 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       const controller: FormGroup = new FormGroup({});
       this.fields.forEach(
         ({ name, value, validators, type }: any, j: number) => {
-          if (name === 'phone' && item['phone']) {
+          let _value = item[name];
+          if (name === 'phone' && _value) {
             try {
               const { countryIso, nationalNumber, countryCode } =
-              this._AuthService.getPhoneInformation(`${item['phone']}`);
+              this._AuthService.getPhoneInformation(`${_value}`);
               this.CountryISO = countryIso;
-              item[name] = `${nationalNumber}`; 
+              _value = `${nationalNumber}`; 
             } catch (error) {
-              item[name] = ``; 
+              _value = ``; 
             }
           }
           controller.addControl(
             name,
             new FormControl(
-              name === 'image' ? [item[name]] : item[name] || value,
+              name === 'image' ? [_value] : _value || value,
               validators
             )
           );
-          if (name === 'image' && item[name]) {
+          if (name === 'image' && _value) {
             this.multimedia[0].push(
               this._DomSanitizer.bypassSecurityTrustStyle(`url(
-            ${item[name]})
+            ${_value})
             no-repeat center center / cover #e9e371`)
             );
           }
@@ -490,9 +491,18 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   }
 
   deleteSelected(): void {
+    const id = '';
+    const [index] = this.toDelete;
+    const control = this.controllers.at(index);
     const list = [
       {
-        title: 'Borrar a NameID de la lista?',
+        title: this.toDelete.length>1?'Borrar todos los recipientes de la lista?':`Borrar a ${
+          control.get("name").value ||
+          control.get("nickname").value ||
+          control.get("email").value ||
+          control.get("phone").value.e164Number ||
+          control.get("phone").value
+        } de la lista?`,
         titleStyles: {
           fontFamily: 'SfProBold',
           color: '#4f4f4f',
