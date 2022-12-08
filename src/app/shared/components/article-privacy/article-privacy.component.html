@@ -19,9 +19,9 @@
   >
     <p
       *ngFor="let option of options"
-      [style.color]="selected.includes(option) ? '#272727' : '#7b7b7b'"
+      [style.color]="selectedTab.includes(option) ? '#272727' : '#7b7b7b'"
       class="option"
-      (click)="handleOption(option)"
+      (click)="handleOptionTab(option)"
     >
       {{ option }}
     </p>
@@ -74,11 +74,9 @@
                 role="group"
                 class="mutimedia-container"
                 [style.display]="
-                  listadoSelection
-                    ? checkList(control) || j === 0
-                      ? 'initial'
-                      : 'none'
-                    : 'initial'
+                  checkList(control)
+                  ? (true?'initial':'none')
+                  : (j === 0?'initial':'none')
                 "
               >
                 <div
@@ -302,6 +300,9 @@
                   class="invite"
                   [style.left]="'-' + (i + 1) * 4 + 'px'"
                   [style.background]="multimedia[i][0]"
+                  [style.display]="
+                    control.get('hasEntity').value&&(selectedTab.includes('A editar')?control.get('edit').value:!control.get('edit').value)?'initial':'none'
+                  "
                 ></div>
               </ng-container>
             </ng-container>

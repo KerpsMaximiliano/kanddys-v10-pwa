@@ -36,6 +36,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   status: string = 'controller';
   options: string[] = ['A ver', 'A editar'];
   selected: string[] = ['A ver'];
+  selectedTab: string[] = ['A ver'];
   icons: string[] = ['up', 'up'];
   text: string = 'Acceso';
   paddingRight: string = '100px';
@@ -188,6 +189,26 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       type: '',
     },
     {
+      name: 'edit',
+      label: '',
+      style: {
+        marginLeft: '36px',
+      },
+      value: false,
+      validators: [],
+      type: '',
+    },
+    {
+      name: 'hasEntity',
+      label: '',
+      style: {
+        marginLeft: '36px',
+      },
+      value: false,
+      validators: [],
+      type: '',
+    },
+    {
       name: 'check',
       label: '',
       style: {
@@ -258,7 +279,6 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
         this.initControllers(this._Recipients);
         this.initControllers();
         this.initPassword();
-        this.initPassword();
       };
       recipients();  
     })
@@ -301,6 +321,15 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
                 item['check'] = checked? 1 : 0;
                 _value = checked;
                 break;
+              case 'edit':
+                const recipient = this.entityTemplateRecipients.find(({recipient}) => recipient===item['_id']) || {};
+                console.log('recipient: ', recipient);
+                _value = recipient.edit;
+                break;
+              case 'hasEntity':
+                const flag = this.entityTemplateRecipients.map(({recipient}) => recipient).includes(item['_id']);
+                _value = flag;
+                break;
           }
           controller.addControl(
             name,
@@ -336,6 +365,10 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
 
   handleOption(option: string): void {
     this.selected = [option];
+  }
+
+  handleOptionTab(option: string): void {
+    this.selectedTab = [option];
   }
 
   handleSelection(choice: string): void {
@@ -599,9 +632,10 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     const addToEntity = async () => {
       this.status = 'loading';
       for (const index of this.toEntityTemplate) {
+        const edit:boolean = this.selectedTab.includes('A editar');
         this.controllers.at(index).get('checked').setValue(true);
         const input = {
-          edit: false,
+          edit,
           recipient: this.controllers.at(index).get('_id').value
         };
         try {
@@ -614,6 +648,8 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
           if(access==='public'){
             const result2 = await this._EntityTemplateService.entityTemplateAuthSetData(this.id,content);
           }
+          this.controllers.at(index).get('edit').setValue(edit);
+          this.controllers.at(index).get('hasEntity').setValue(true);
         } catch (error) {
         }
       }
