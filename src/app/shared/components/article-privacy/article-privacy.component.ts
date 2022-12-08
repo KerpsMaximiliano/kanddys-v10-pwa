@@ -323,7 +323,6 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
                 break;
               case 'edit':
                 const recipient = this.entityTemplateRecipients.find(({recipient}) => recipient===item['_id']) || {};
-                console.log('recipient: ', recipient);
                 _value = recipient.edit;
                 break;
               case 'hasEntity':
