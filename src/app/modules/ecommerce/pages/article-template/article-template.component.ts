@@ -82,7 +82,6 @@ export class ArticleTemplateComponent implements OnInit {
 
         if (entity === 'entity-template') entity = 'template';
 
-        alert("llegando")
         this.router.navigate([
           `qr/article-detail/${entity}/${entityTemplate.reference}`,
         ]);
