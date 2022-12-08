@@ -113,6 +113,7 @@ export class ArticleDetailComponent implements OnInit {
     private toastr: ToastrService,
     private clipboard: Clipboard,
     private saleflowService: SaleFlowService,
+    private merchantsService: MerchantsService,
     private authService: AuthService
   ) {}
 
@@ -471,12 +472,25 @@ export class ArticleDetailComponent implements OnInit {
         relativeTo: this.route,
       });
     } else {
-      const itemSaleflow = await this.saleflowService.saleflowDefault(
-        this.itemData.merchant._id
-      );
+      if (this.itemData) {
+        const itemSaleflow = await this.saleflowService.saleflowDefault(
+          this.itemData.merchant._id
+        );
 
-      if (itemSaleflow)
-        this.router.navigate(['ecommerce/store/' + itemSaleflow._id]);
+        if (itemSaleflow)
+          this.router.navigate(['ecommerce/store/' + itemSaleflow._id]);
+      } else if (this.postData && this.postData.author) {
+        const authorMerchant = await this.merchantsService.merchantDefault(
+          this.postData.author._id
+        );
+
+        const saleflowDefault = await this.saleflowService.saleflowDefault(
+          authorMerchant._id
+        );
+
+        if (saleflowDefault)
+          this.router.navigate(['ecommerce/store/' + saleflowDefault._id]);
+      }
     }
   }
 
