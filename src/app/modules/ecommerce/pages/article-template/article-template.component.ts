@@ -78,8 +78,13 @@ export class ArticleTemplateComponent implements OnInit {
       );
 
       if (entityTemplate.reference && entityTemplate.entity) {
+        let entity = entityTemplate.entity;
+
+        if (entity === 'entity-template') entity = 'template';
+
+        alert("llegando")
         this.router.navigate([
-          `qr/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
+          `qr/article-detail/${entity}/${entityTemplate.reference}`,
         ]);
       } else {
         this.entityTemplate = entityTemplate;

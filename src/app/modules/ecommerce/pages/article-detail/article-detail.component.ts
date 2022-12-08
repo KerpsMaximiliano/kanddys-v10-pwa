@@ -147,9 +147,9 @@ export class ArticleDetailComponent implements OnInit {
             this.entityId = entityTemplate.reference;
             this.entity = entityTemplate.entity as any;
 
-            if (entity === 'item') {
+            if (this.entity === 'item') {
               await this.getItemData();
-            } else if (entity === 'post') {
+            } else if (this.entity === 'post') {
               await this.getPostData();
             }
           } else {
@@ -545,7 +545,7 @@ export class ArticleDetailComponent implements OnInit {
               timeOut: 1500,
             });
           } catch (error) {
-            this.toastr.info('Ocurrió un error', null, {
+            this.toastr.error('Ocurrió un error', null, {
               timeOut: 1500,
             });
 
