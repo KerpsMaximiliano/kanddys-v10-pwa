@@ -448,7 +448,7 @@ export class PaymentsComponent implements OnInit {
       })
         .then((response) => response.text())
         .then((hash) => {
-          console.log("authhash", hash)
+          console.log('authhash', hash);
 
           document.querySelector('#AuthHash').setAttribute('value', hash);
 
@@ -491,5 +491,15 @@ export class PaymentsComponent implements OnInit {
 
   markOrUnmarkCheckbox() {
     this.acceptedRefundPolicies = !this.acceptedRefundPolicies;
+  }
+
+  fillIndexesUpTo(arrayLength: number) {
+    const array = [];
+
+    for (let i = 0; i < arrayLength; i++) {
+      array.push(i);
+    }
+
+    return array;
   }
 }

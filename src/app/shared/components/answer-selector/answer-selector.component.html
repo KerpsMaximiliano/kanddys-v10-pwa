@@ -200,9 +200,16 @@
             <div class="selector-flex-wrapper">
               <div
                 class="selector-option"
-                [ngClass]="{ active: i === activeOption }"
+                [ngClass]="{
+                  active: i === activeOption,
+                  disabledOption: blockIndexes && blockIndexes.includes(i)
+                }"
                 [ngStyle]="itemStyles ? itemStyles : null"
-                (click)="clickSelector(i)"
+                (click)="
+                  !blockIndexes || (blockIndexes && !blockIndexes.includes(i))
+                    ? clickSelector(i)
+                    : null
+                "
               >
                 <div class="background"></div>
                 <div class="option-content">
@@ -249,7 +256,16 @@
             : 'selector-option'
         "
         [ngStyle]="itemStyles ? itemStyles : null"
-        (click)="option.callback ? option.callback() : null"
+        (click)="
+          option.callback &&
+          (!blockIndexes ||
+            (blockIndexes && !blockIndexes.includes(optionIndex)))
+            ? option.callback()
+            : null
+        "
+        [ngClass]="{
+          disabledOption: blockIndexes && blockIndexes.includes(optionIndex)
+        }"
       >
         <div class="background"></div>
 
