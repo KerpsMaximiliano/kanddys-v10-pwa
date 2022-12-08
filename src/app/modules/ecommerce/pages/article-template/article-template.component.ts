@@ -78,8 +78,12 @@ export class ArticleTemplateComponent implements OnInit {
       );
 
       if (entityTemplate.reference && entityTemplate.entity) {
+        let entity = entityTemplate.entity;
+
+        if (entity === 'entity-template') entity = 'template';
+
         this.router.navigate([
-          `qr/article-detail/${entityTemplate.entity}/${entityTemplate.reference}`,
+          `qr/article-detail/${entity}/${entityTemplate.reference}`,
         ]);
       } else {
         this.entityTemplate = entityTemplate;
@@ -106,42 +110,47 @@ export class ArticleTemplateComponent implements OnInit {
 
   async saveExistingTemplateDataInCurrentTemplate(option: Options) {
     if (this.selectedOption.text === 'Adjunta un Símbolo existente') {
-      const entityTemplateDateIdToMimic =
-        this.entityTemplateReferenceInput.value;
+      try {
+        const entityTemplateDateIdToMimic =
+          this.entityTemplateReferenceInput.value;
 
-      const entityTemplateToMimic =
-        await this.entityTemplateService.entityTemplateByDateId(
-          entityTemplateDateIdToMimic
-        );
+        const entityTemplateToMimic =
+          await this.entityTemplateService.entityTemplateByDateId(
+            entityTemplateDateIdToMimic
+          );
 
-      if (
-        entityTemplateToMimic &&
-        entityTemplateToMimic.entity &&
-        entityTemplateToMimic.reference
-      ) {
-        await this.entityTemplateService.entityTemplateSetData(
-          this.entityTemplate._id,
-          {
-            entity: entityTemplateToMimic.entity,
-            reference: entityTemplateToMimic.reference,
-          }
-        );
+        if (
+          entityTemplateToMimic &&
+          entityTemplateToMimic.entity &&
+          entityTemplateToMimic.reference
+        ) {
+          await this.entityTemplateService.entityTemplateSetData(
+            this.entityTemplate._id,
+            {
+              entity: entityTemplateToMimic.entity,
+              reference: entityTemplateToMimic.reference,
+            }
+          );
 
-        this.toastr.info('Se agregaron datos al simbolo', null, {
-          timeOut: 2000,
-        });
-        this.selectedOption = null;
-      }
+          this.toastr.info('Se agregaron datos al simbolo', null, {
+            timeOut: 2000,
+          });
+          this.selectedOption = null;
+        }
 
-      if (
-        entityTemplateToMimic &&
-        (!entityTemplateToMimic.entity || !entityTemplateToMimic.reference)
-      ) {
-        this.toastr.error('Simbolo vacio', null, { timeOut: 2000 });
-      }
+        if (
+          entityTemplateToMimic &&
+          (!entityTemplateToMimic.entity || !entityTemplateToMimic.reference)
+        ) {
+          this.toastr.error('Simbolo vacio', null, { timeOut: 2000 });
+        }
 
-      if (!entityTemplateToMimic) {
+        if (!entityTemplateToMimic) {
+          this.toastr.error('Ocurrió un error', null, { timeOut: 2000 });
+        }
+      } catch (error) {
         this.toastr.error('Ocurrió un error', null, { timeOut: 2000 });
+        console.error(error);
       }
     }
   }

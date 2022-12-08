@@ -137,29 +137,38 @@ export class StoreComponent implements OnInit {
     private merchantService: MerchantsService,
     public header: HeaderService,
     private saleflow: SaleFlowService,
-    private item: ItemsService,
     private authService: AuthService,
-    private appService: AppService,
-    private orderService: OrderService,
-    private tagsService: TagsService,
-    private location: Location
+    private tagsService: TagsService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.route.queryParams.subscribe(async (queryParams) => {
-      let { startOnSnapshot } = queryParams;
-      startOnSnapshot = Boolean(startOnSnapshot);
+    setTimeout(() => {
+      this.route.queryParams.subscribe(async (queryParams) => {
+        let { startOnSnapshot } = queryParams;
+        startOnSnapshot = Boolean(startOnSnapshot);
+        localStorage.removeItem('flowRoute');
+        this.header.flowRoute = null;
 
-      if (!this.header.storeTemporalData || !startOnSnapshot)
-        this.executeProcessesAfterLoading();
-      else this.getPageSnapshot();
-    });
+        if (
+          !this.header.storeTemporalData &&
+          localStorage.getItem('storeTemporalData')
+        ) {
+          this.header.storeTemporalData = JSON.parse(
+            localStorage.getItem('storeTemporalData')
+          );
+        }
 
-    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+        if (!this.header.storeTemporalData || !startOnSnapshot)
+          this.executeProcessesAfterLoading();
+        else this.getPageSnapshot();
+      });
 
-    window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-    });
+
+      window.addEventListener('resize', () => {
+        this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+      });
+    }, 300);
   }
 
   async getHighlightedItems() {
@@ -523,7 +532,7 @@ export class StoreComponent implements OnInit {
       this.showSearchbar = false;
     }
 
-    console.log(this.tags[tagIndex].selected, "seleccionado");
+    console.log(this.tags[tagIndex].selected, 'seleccionado');
 
     if (this.tags[tagIndex].selected) {
       this.tags[tagIndex].selected = false;
@@ -722,6 +731,7 @@ export class StoreComponent implements OnInit {
     });
 
     this.header.storeTemporalData = null;
+    localStorage.removeItem('storeTemporalData');
   }
 
   savePageSnapshot() {
@@ -742,6 +752,14 @@ export class StoreComponent implements OnInit {
       showSearchbar: this.showSearchbar,
       paginationState: this.paginationState,
     };
+
+    localStorage.setItem(
+      'storeTemporalData',
+      JSON.stringify(this.header.storeTemporalData)
+    );
+
+    this.header.flowRoute = this.router.url + '?startOnSnapshot=true';
+    localStorage.setItem('flowRoute', this.header.flowRoute);
   }
 
   getActiveTagsFromSelectedTagsPermantent(): Array<string> {

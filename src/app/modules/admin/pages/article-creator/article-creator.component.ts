@@ -26,6 +26,9 @@ import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/ta
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 
 type Mode = 'symbols' | 'item';
 
@@ -101,7 +104,9 @@ export class ArticleCreatorComponent implements OnInit {
     private _DialogService: DialogService,
     private _ToastrService: ToastrService,
     private _ImageCompress: NgxImageCompressService,
-    private _TagsService: TagsService
+    private _TagsService: TagsService,
+    private _EntityTemplateService: EntityTemplateService,
+    private _Clipboard: Clipboard
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -263,6 +268,7 @@ export class ArticleCreatorComponent implements OnInit {
     for (let f = 0; f < fileList.length; f++) {
       if (f > 0) this.addFile(i, j, k);
       const file = fileList.item(f);
+      /* DESCOMENTAR LUEGO
       if (
         !file ||
         ![...this.imageFiles, ...this.videoFiles, ...this.audioFiles].includes(
@@ -270,6 +276,9 @@ export class ArticleCreatorComponent implements OnInit {
         )
       )
         return;
+      */
+
+      if (!file || ![...this.imageFiles].includes(file.type)) return;
       this.loadFile(file, i, k + f);
     }
   }
@@ -663,6 +672,19 @@ export class ArticleCreatorComponent implements OnInit {
     this._ItemsService.itemPrice = null;
     this._ItemsService.changedImages = false;
     if (!this.fromTemplate) {
+      if (
+        this._HeaderService.dashboardTemporalData ||
+        localStorage.getItem('dashboardTemporalData')
+      ) {
+        this._Router.navigate([`admin/items-dashboard`], {
+          queryParams: {
+            startOnSnapshot: true,
+          },
+        });
+
+        return;
+      }
+
       this._Router.navigate([`admin/items-dashboard`]);
     } else {
       this._Router.navigate(['qr/article-template/' + this.fromTemplate]);
@@ -877,6 +899,38 @@ export class ArticleCreatorComponent implements OnInit {
         },
       },
     ];
+
+    if (this.item) {
+      list.push({
+        text: 'Simbolo ID',
+        callback: async () => {
+          try {
+            const result =
+              await this._EntityTemplateService.entityTemplateByReference(
+                item._id,
+                'item'
+              );
+
+
+            this._Clipboard.copy(formatID(result.dateId, true).slice(1));
+
+            this._ToastrService.info(
+              'Simbolo ID copiado al portapapeles',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
+          } catch (error) {
+            this._ToastrService.info('Ocurrió un error', null, {
+              timeOut: 1500,
+            });
+
+            console.error(error);
+          }
+        },
+      });
+    }
 
     this._DialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',

@@ -944,6 +944,22 @@ export class OrderDetailComponent implements OnInit {
     this.router.navigate([this.redirectTo]);
   }
 
+  goToPostDetail() {
+    this.headerService.flowRoute = window.location.href
+      .split('/')
+      .slice(3)
+      .join('/');
+
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
+    this.router.navigate([
+      '/ecommerce/' +
+        this.order.items[0].saleflow.merchant.slug +
+        '/article-detail/post/' +
+        this.post._id,
+    ]);
+  }
+
   // goBackToFlowRoute() {
   //   if (
   //     this.flowRoute.includes('admin/orders') &&

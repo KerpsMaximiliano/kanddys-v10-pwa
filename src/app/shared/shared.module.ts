@@ -102,6 +102,7 @@ import { HelperHeaderv3Component } from './components/helper-headerv3/helper-hea
 import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
+import { InputTransparentComponent } from './dialogs/input-transparent/input-transparent.component';
 import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
 import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
@@ -214,9 +215,10 @@ const declarations = [
   HelperHeaderv3Component,
   FunctionalityParametersComponent,
   ConfirmActionDialogComponent,
+  InputTransparentComponent,
+  AnexosDialogComponent,
   QrCodeDialogComponent,
   PostsXlsComponent,
-  AnexosDialogComponent,
   TagAsignationComponent,
   MediaDialogComponent
 ];
@@ -226,6 +228,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}

@@ -2,7 +2,11 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="
-      redirectTo !== null && redirectTo !== '' && isMerchant && merchantOwner
+      redirectTo &&
+      redirectTo !== null &&
+      redirectTo !== '' &&
+      isMerchant &&
+      merchantOwner
     "
     (returnEvent)="returnEvent()"
     [bgColor]="changeColor ? changeColor : headerService.colorTheme"
@@ -266,7 +270,11 @@
     >
       <h2 class="section-title">Mensaje de regalo:</h2>
 
-      <div class="buttons-share" *ngIf="slides?.length">
+      <div
+        class="buttons-share"
+        *ngIf="slides?.length"
+        (click)="goToPostDetail()"
+      >
         <div class="buttons-area">
           <button class="btn">
             <img [src]="env + '/QR.svg'" width="34px" height="34px" />

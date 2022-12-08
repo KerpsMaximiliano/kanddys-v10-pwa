@@ -16,6 +16,7 @@ import { ReloadComponent } from 'src/app/shared/dialogs/reload/reload.component'
 import { FormStep, FormField } from 'src/app/core/types/multistep-form';
 import { FormControl } from '@angular/forms';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { InputTransparentComponent } from 'src/app/shared/dialogs/input-transparent/input-transparent.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { ItemInput } from 'src/app/core/models/item';
