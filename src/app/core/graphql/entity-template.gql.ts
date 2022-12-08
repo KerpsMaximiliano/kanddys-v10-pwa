@@ -61,3 +61,15 @@ export const createEntityTemplate = gql`
     }
   }
 `;
+
+export const preCreateEntityTemplate = gql`
+  mutation preCreateEntityTemplate {
+    preCreateEntityTemplate {
+      _id
+      reference
+      status
+    }
+  }
+`;
+
+

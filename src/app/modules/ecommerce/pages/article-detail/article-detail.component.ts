@@ -27,6 +27,9 @@ import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import SwiperCore, { Virtual } from 'swiper/core';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { User } from 'src/app/core/models/user';
 
 SwiperCore.use([Virtual]);
 
@@ -90,6 +93,9 @@ export class ArticleDetailComponent implements OnInit {
   ];
   doesModuleDependOnSaleflow: boolean = false;
   timer: NodeJS.Timeout;
+  entityTemplate: EntityTemplate = null;
+  user: User;
+  logged: boolean = false;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -107,7 +113,7 @@ export class ArticleDetailComponent implements OnInit {
     private toastr: ToastrService,
     private clipboard: Clipboard,
     private saleflowService: SaleFlowService,
-    private merchantsService: MerchantsService
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -135,12 +141,17 @@ export class ArticleDetailComponent implements OnInit {
         } else {
           const entityTemplate =
             await this.entityTemplateService.entityTemplate(entityId);
+          this.entityTemplate = entityTemplate;
 
           if (entityTemplate.reference && entityTemplate.entity) {
             this.entityId = entityTemplate.reference;
             this.entity = entityTemplate.entity as any;
 
-            await this.getItemData();
+            if (entity === 'item') {
+              await this.getItemData();
+            } else if (entity === 'post') {
+              await this.getPostData();
+            }
           } else {
             const redirectionRoute = this.headerService.saleflow._id
               ? 'ecommerce/' +
@@ -158,6 +169,8 @@ export class ArticleDetailComponent implements OnInit {
       } else {
         this.router.navigate([`others/error-screen/`]);
       }
+
+      await this.verifyIfUserIsLogged();
     });
   }
 
@@ -509,27 +522,28 @@ export class ArticleDetailComponent implements OnInit {
               this.entity
             );
 
-            let createdEntityTemplate =
-              await this.entityTemplateService.createEntityTemplate();
+            let createdEntityTemplate = this.logged
+              ? await this.entityTemplateService.createEntityTemplate()
+              : await this.entityTemplateService.precreateEntityTemplate();
 
             if (createdEntityTemplate) {
               createdEntityTemplate =
                 await this.entityTemplateService.entityTemplateSetData(
                   createdEntityTemplate._id,
                   {
-                    entity: result.entity,
-                    reference: result.reference,
+                    entity: 'entity-template',
+                    reference: result._id,
                   }
                 );
 
               this.clipboard.copy(
                 formatID(createdEntityTemplate.dateId, true).slice(1)
               );
-
-              this.toastr.info('Simbolo ID copiado al portapapeles', null, {
-                timeOut: 1500,
-              });
             }
+
+            this.toastr.info('Simbolo ID copiado al portapapeles', null, {
+              timeOut: 1500,
+            });
           } catch (error) {
             this.toastr.info('Ocurrió un error', null, {
               timeOut: 1500,
@@ -557,5 +571,14 @@ export class ArticleDetailComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  async verifyIfUserIsLogged() {
+    this.user = await this.authService.me();
+    if (!this.user) {
+      this.logged = false;
+      return;
+    }
+    this.logged = true;
   }
 }
