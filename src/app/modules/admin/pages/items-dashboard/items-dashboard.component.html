@@ -81,10 +81,14 @@
               executingMenuOpeningAnimation || executingMenuClosingAnimation
           }"
           [ngStyle]="{
-            height: ['Items', 'Tags'].includes(
+            height: ['Items'].includes(
               menuNavigationOptions[activeMenuOptionIndex].name
             )
               ? '580px'
+              : ['Tags'].includes(
+                  menuNavigationOptions[activeMenuOptionIndex].name
+                )
+              ? '731px'
               : '413px'
           }"
         >
@@ -117,7 +121,7 @@
             menuOpened &&
             !executingMenuOpeningAnimation &&
             !executingMenuClosingAnimation &&
-            ['Items', 'Tags'].includes(
+            ['Items'].includes(
               menuNavigationOptions[activeMenuOptionIndex].name
             ),
           visible2:
@@ -125,6 +129,13 @@
             !executingMenuOpeningAnimation &&
             !executingMenuClosingAnimation &&
             !['Items', 'Tags'].includes(
+              menuNavigationOptions[activeMenuOptionIndex].name
+            ),
+          visible3:
+            menuOpened &&
+            !executingMenuOpeningAnimation &&
+            !executingMenuClosingAnimation &&
+            ['Tags'].includes(
               menuNavigationOptions[activeMenuOptionIndex].name
             ),
           animationRunning:
@@ -366,6 +377,11 @@
               }"
               *ngSwitchCase="'Tags'"
             >
+              <div class="card pointer" (click)="redirectTo('/admin/tags', {})">
+                <h2 class="amount quantity">{{ tagsMetrics.total }}</h2>
+                <h2 class="amount">EN TOTAL</h2>
+              </div>
+
               <div
                 class="card pointer"
                 (click)="
@@ -388,11 +404,6 @@
                   {{ tagsMetrics.inOrders }}
                 </h2>
                 <h2 class="amount">DE FACTURAS</h2>
-              </div>
-
-              <div class="card pointer" (click)="redirectTo('/admin/tags', {})">
-                <h2 class="amount quantity">{{ tagsMetrics.total }}</h2>
-                <h2 class="amount">EN TOTAL</h2>
               </div>
 
               <div
@@ -424,6 +435,16 @@
               >
                 <h2 class="amount quantity">{{ tagsMetrics.featured }}</h2>
                 <h2 class="amount">DESTACADOS</h2>
+              </div>
+
+              <div
+                class="card pointer"
+                (click)="
+                  redirectTo('/admin/tags', { enforceTagsStatus: 'archived' })
+                "
+              >
+                <h2 class="amount quantity">{{ tagsMetrics.archived }}</h2>
+                <h2 class="amount">ARCHIVADOS</h2>
               </div>
             </div>
           </ng-container>

@@ -201,3 +201,26 @@ export const ordersByTag = gql`
     }
   }
 `;
+
+export const tagArchived = gql`
+  query tagArchived($paginate: PaginationInput) {
+    tagArchived(paginate: $paginate) {
+      _id
+      name
+      images
+      status
+      createdAt
+      counter
+      entity
+      index
+    }
+  }
+`;
+
+export const hotTagsArchived = gql`
+  query tagArchived($paginate: PaginationInput) {
+    tagArchived(paginate: $paginate) {
+      _id
+    }
+  }
+`;

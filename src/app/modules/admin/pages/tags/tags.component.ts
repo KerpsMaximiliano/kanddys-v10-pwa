@@ -145,10 +145,16 @@ export class TagsComponent implements OnInit {
       switch (selectedTagsFilter) {
         case 'Artículos':
           await this.changeStep(1);
+          break;
         case 'Facturas':
           await this.changeStep(2);
+          break;
         default:
           this.selectedTagsFilter = null;
+      }
+
+      if (enforceTagsStatus) {
+        await this.showTagsOfType();
       }
     });
   }
@@ -207,11 +213,12 @@ export class TagsComponent implements OnInit {
         if (!entity) {
           pagination.findBy['$or'][0].entity = 'item';
           pagination.findBy['$or'][1].entity = 'item';
-          pagination.findBy['$or'][2].entity = {
+
+          pagination.findBy['$or'][2] = {
             status: 'active',
             entity: 'order',
           };
-          pagination.findBy['$or'][3].entity = {
+          pagination.findBy['$or'][3] = {
             status: 'featured',
             entity: 'order',
           };
@@ -991,7 +998,12 @@ export class TagsComponent implements OnInit {
     );
   }
 
-  backButtonAction() {
+  async backButtonAction() {
+    if(this.enforceTagsStatus) {
+      this.enforceTagsStatus = null;
+      await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
+    }
+
     if (
       this.tagsDisplayMode === 'PER-SECTION' &&
       this.tagSelectionMode === null

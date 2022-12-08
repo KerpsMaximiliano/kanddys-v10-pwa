@@ -288,6 +288,10 @@ export class ItemsDashboardComponent implements OnInit {
       this.tagsMetrics.total = tagsList.length;
     }
 
+    const tagsArchived = await this.tagsService.hotTagsArchived();
+
+    this.tagsMetrics.archived = tagsArchived.length;
+
     this.tagsLoaded = true;
   }
 
