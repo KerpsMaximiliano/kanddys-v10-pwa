@@ -178,6 +178,16 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       type: '',
     },
     {
+      name: 'checked',
+      label: '',
+      style: {
+        marginLeft: '36px',
+      },
+      value: false,
+      validators: [],
+      type: '',
+    },
+    {
       name: 'check',
       label: '',
       style: {
@@ -204,6 +214,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   PhoneNumberFormat = PhoneNumberFormat;
   passwordSubscribe:Subscription;
   id:string;
+  entityTemplateRecipients:any;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _DialogService: DialogService,
@@ -222,6 +233,8 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       this.id = templateId;
       this.filter = this._DomSanitizer.bypassSecurityTrustStyle('opacity(0.5)');
       const recipients = async () => {
+        const entityTemplateRecipients = (await this._EntityTemplateService.entityTemplate(templateId)) || {} as any;
+        this.entityTemplateRecipients = entityTemplateRecipients.recipients || [];
         const { _id } = await this._MerchantsService.merchantDefault();
         this.idMerchant = _id;
         const { recipients }: any = await this._RecipientsService.recipients();
@@ -270,15 +283,24 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       this.fields.forEach(
         ({ name, value, validators, type }: any, j: number) => {
           let _value = item[name];
-          if (name === 'phone' && _value) {
-            try {
-              const { countryIso, nationalNumber, countryCode } =
-              this._AuthService.getPhoneInformation(`${_value}`);
-              this.CountryISO = countryIso;
-              _value = `${nationalNumber}`; 
-            } catch (error) {
-              _value = ``; 
-            }
+          switch(name){
+            case 'phone':
+              if(_value){
+                try {
+                  const { countryIso, nationalNumber, countryCode } =
+                  this._AuthService.getPhoneInformation(`${_value}`);
+                  this.CountryISO = countryIso;
+                  _value = `${nationalNumber}`; 
+                } catch (error) {
+                  _value = ``; 
+                }
+              }
+              break;
+              case 'checked':
+                const checked = this.entityTemplateRecipients.map(({recipient}) => recipient).includes(item['_id']);
+                item['check'] = checked? 1 : 0;
+                _value = checked;
+                break;
           }
           controller.addControl(
             name,
@@ -330,18 +352,20 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       this.controlIndex = index;
       this.selected = ['invites'];
     } else {
-      const controller = this.controllers.at(index).get('check');
-      if(controller.value<2)
-        controller.setValue(controller.value+1);
+      const controller = this.controllers.at(index);
+      if(controller.get('check').value<2)
+        controller.get('check').setValue(controller.get('check').value+1);
       else
-        controller.setValue(0);
-      switch(controller.value){
+        controller.get('check').setValue(0);
+      switch(controller.get('check').value){
         case 1:
           if (this.toEntityTemplate.includes(index))
             this.toEntityTemplate = this.toEntityTemplate.filter((tg) => tg !== index);
           else {
-            const value = [...this.toEntityTemplate, index];
-            this.toEntityTemplate = value;
+            if(!controller.get('checked').value){
+              const value = [...this.toEntityTemplate, index];
+              this.toEntityTemplate = value;
+            }
           }
           this.toDelete = this.toDelete.filter((tg) => tg !== index);
           break;
@@ -575,6 +599,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     const addToEntity = async () => {
       this.status = 'loading';
       for (const index of this.toEntityTemplate) {
+        this.controllers.at(index).get('checked').setValue(true);
         const input = {
           edit: false,
           recipient: this.controllers.at(index).get('_id').value
@@ -584,6 +609,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
         } catch (error) {
         }
       }
+      this.toEntityTemplate = [];
       this.status = 'controller';
     }
     addToEntity();
