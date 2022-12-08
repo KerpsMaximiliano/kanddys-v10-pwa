@@ -22,18 +22,34 @@ export function isEmail(str: string): boolean {
 
 // String formatter for the dateId field of the ItemOrder model
 export function formatID(dateId: string, padZeroes = false): string {
-  const splits = dateId.split('/');
-  const year = splits[2].substring(0, 4);
-  const number = splits[2].substring(4);
-  let month = splits[0];
-  let day = splits[1];
+  if (/[0-9]{4}[-][0-9]{1,2}[-][0-9]{1,2}N[0-9]{1,}/.test(dateId)) {
+    const splits = dateId.split('-');
+    const year = splits[0];
+    const numberStart = splits[2].search('N');
+    const number = splits[2].slice(numberStart);
+    let month = splits[1];
+    let day = splits[2].slice(0, numberStart);
 
-  if (padZeroes) {
-    month = String(month).length < 2 ? '0' + month : month;
-    day = String(day).length < 2 ? '0' + day : day;
+    if (padZeroes) {
+      month = String(month).length < 2 ? '0' + month : month;
+      day = String(day).length < 2 ? '0' + day : day;
+    }
+
+    return `#${year}${month}${day}${number}`;
+  } else if (/[0-9]{1,2}[\/][0-9]{1,2}[\/][0-9]{4}N[0-9]{1,}/.test(dateId)) {
+    const splits = dateId.split('/');
+    const year = splits[2].substring(0, 4);
+    const number = splits[2].substring(4);
+    let month = splits[0];
+    let day = splits[1];
+
+    if (padZeroes) {
+      month = String(month).length < 2 ? '0' + month : month;
+      day = String(day).length < 2 ? '0' + day : day;
+    }
+
+    return `#${year}${month}${day}${number}`;
   }
-
-  return `#${year}${month}${day}${number}`;
 }
 
 export function unformatID(
