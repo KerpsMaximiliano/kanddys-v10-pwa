@@ -105,6 +105,7 @@
             [formControl]="name"
             (input)="onChangeName($event)"
             placeholder="Modelo sin nombre..."
+            (input)="handleNameInput($event)"
           />
           <button class="list-button" (click)="openDialog()">
             <i class="fas fa-list"></i>
@@ -112,7 +113,7 @@
         </div>
       </div>
 
-      <app-sticky-button
+      <!-- <app-sticky-button
         [mode]="price.valid && name.valid ? 'fixed' : 'disabled-fixed'"
         [text]="
           price.valid && name.valid
@@ -122,7 +123,7 @@
         [bgColor]="price.valid && name.valid ? '#2874AD' : '#7B7B7B'"
         [fontSize]="'1.063rem'"
         (click)="price.valid && name.valid && toSave()"
-      ></app-sticky-button>
+      ></app-sticky-button> -->
     </div>
 
     <div class="image-selector" *ngSwitchCase="'images'">
@@ -164,13 +165,13 @@
         </div>
       </div>
 
-      <app-sticky-button
+      <!-- <app-sticky-button
         [mode]="!blockSubmitButton ? 'fixed' : 'disabled-fixed'"
         [text]="'SALVAR EL ARTICULO PARA EMPEZAR A VENDER'"
         [bgColor]="!blockSubmitButton ? '#2874AD' : '#7B7B7B'"
         [fontSize]="'1.02rem'"
         (click)="!blockSubmitButton && toSave()"
-      ></app-sticky-button>
+      ></app-sticky-button> -->
     </div>
 
     <div class="save" *NgSwitchCase="'save'">

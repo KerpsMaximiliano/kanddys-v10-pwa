@@ -5,6 +5,7 @@ import { ErrorScreenComponent } from './modules/others/pages/error-screen/error-
 const redirectTo = 'admin/entity-detail-metrics';
 const routes: Routes = [
   { path: '', redirectTo, pathMatch: 'full' },
+  { path: 'admin/items-dashboard', redirectTo, pathMatch: 'full' },
   // { path: 'invitation/community/:identifier', component: InvitationComponent },
   // {
   //   path: 'partner/receipts/:id',
