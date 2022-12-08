@@ -194,7 +194,7 @@
         class="description"
         [ngStyle]="{ textAlign: mode === 'item' && item ? 'left' : 'center' }"
       >
-        {{ ctaDescription }}
+        {{ item ? 'El visitante te paga RD$' + (item.pricing | number: "1.2-2") + '.' : 'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.' }}
       </div>
       <button
         *ngIf="mode === 'item' && item"
