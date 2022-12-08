@@ -18,6 +18,7 @@ import {
   deleteTag,
   tagArchived,
   hotTagsArchived,
+  tagsArchived,
 } from '../graphql/tags.gql';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
@@ -259,6 +260,22 @@ export class TagsService {
       console.log(e);
     }
   }
+
+  async tagsArchived(
+    paginate: PaginationInput = { options: { limit: -1 } }
+  ): Promise<Array<Tag>> {
+    try {
+      const result = await this.graphql.query({
+        query: tagsArchived,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.tagArchived;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
 
   async hotTagsArchived(
     paginate: PaginationInput = { options: { limit: -1 } }

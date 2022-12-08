@@ -62,8 +62,9 @@ export class TagsComponent implements OnInit {
   isTagSelectionModeEnabled: boolean = false;
   isTagReorderingModeEnabled: boolean = false;
   URI: string = environment.uri;
-  tagSelectionMode: 'HIGHLIGHT' | 'HIDE' | 'DELETE' = null;
+  tagSelectionMode: 'HIGHLIGHT' | 'HIDE' | 'DELETE' | 'UNARCHIVE' = null;
   enforceTagsStatus: string = null;
+  justShowArchivedTags: boolean = false;
   paginationState: {
     pageSize: number;
     page: number;
@@ -107,7 +108,9 @@ export class TagsComponent implements OnInit {
 
   async ngOnInit() {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { selectedTagsFilter, enforceTagsStatus } = queryParams;
+      const { selectedTagsFilter, enforceTagsStatus, justShowArchivedTags } =
+        queryParams;
+      this.justShowArchivedTags = Boolean(justShowArchivedTags);
 
       const allTagsPagination: PaginationInput = {
         options: {
@@ -132,29 +135,35 @@ export class TagsComponent implements OnInit {
         else allTagsPagination.findBy.status = enforceTagsStatus;
       }
 
-      const allTags = await this.tagsService.tagsByUser(allTagsPagination);
+      const allTags = !this.justShowArchivedTags
+        ? await this.tagsService.tagsByUser(allTagsPagination)
+        : await this.tagsService.tagsArchived(allTagsPagination);
 
       for (const tag of allTags) {
         this.tagsByIdsObject[tag._id] = tag;
       }
 
-      await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
+      if (!this.justShowArchivedTags) {
+        await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
 
-      this.selectedTagsFilter = selectedTagsFilter;
+        this.selectedTagsFilter = selectedTagsFilter;
 
-      switch (selectedTagsFilter) {
-        case 'Artículos':
-          await this.changeStep(1);
-          break;
-        case 'Facturas':
-          await this.changeStep(2);
-          break;
-        default:
-          this.selectedTagsFilter = null;
-      }
+        switch (selectedTagsFilter) {
+          case 'Artículos':
+            await this.changeStep(1);
+            break;
+          case 'Facturas':
+            await this.changeStep(2);
+            break;
+          default:
+            this.selectedTagsFilter = null;
+        }
 
-      if (enforceTagsStatus) {
-        await this.showTagsOfType();
+        if (enforceTagsStatus) {
+          await this.showTagsOfType();
+        }
+      } else {
+        this.showTagsOfType();
       }
     });
   }
@@ -230,7 +239,9 @@ export class TagsComponent implements OnInit {
       pagination.options.sortBy = sortCriteria;
     }
 
-    const tagsByUserResult = await this.tagsService.tagsByUser(pagination);
+    const tagsByUserResult = !this.justShowArchivedTags
+      ? await this.tagsService.tagsByUser(pagination)
+      : await this.tagsService.tagsArchived(pagination);
 
     if (tagsByUserResult.length === 0 && this.paginationState.page === 1) {
       this.dependantGridOfTagsToShow = [];
@@ -313,107 +324,91 @@ export class TagsComponent implements OnInit {
   };
 
   async openSingleTagOptionsDialog(tag: Tag) {
-    const list: Array<SettingsDialogButton> = [
-      {
-        text: 'Renombrar',
-        callback: async () => {
-          try {
-            this.router.navigate(['admin/create-tag/' + tag._id], {
-              queryParams: {
-                redirectTo: window.location.href.split('/').slice(3).join('/'),
-              },
-            });
-          } catch (error) {
-            console.log(error);
-          }
-        },
-      },
-      {
-        text: 'Archivar (Sin eliminar la data)',
-        callback: async () => {
-          try {
-            const { updateTag: updatedTag } = await this.tagsService.updateTag(
-              {
-                status: 'archived',
-              },
-              tag._id
-            );
-
-            if (updatedTag && updatedTag._id) {
-              delete this.tagsByIdsObject[tag._id];
-
-              const mostAssignedTagsIndex = this.mostAssignedTags.findIndex(
-                (tagInList) => tagInList._id === tag._id
-              );
-
-              if (mostAssignedTagsIndex >= 0) {
-                this.mostAssignedTags.splice(mostAssignedTagsIndex, 1);
-                this.mostAssignedTagsSwiper.directiveRef.update();
-              }
-
-              const recentTagsIndex = this.mostRecentTags.findIndex(
-                (tagInList) => tagInList._id === tag._id
-              );
-
-              if (recentTagsIndex >= 0) {
-                this.mostRecentTags.splice(recentTagsIndex, 1);
-                this.recentTagsSwiper.directiveRef.update();
-              }
-
-              this.toastr.info('Tag archivado exitosamente', null, {
-                timeOut: 1500,
+    if (!this.justShowArchivedTags) {
+      const list: Array<SettingsDialogButton> = [
+        {
+          text: 'Renombrar',
+          callback: async () => {
+            try {
+              this.router.navigate(['admin/create-tag/' + tag._id], {
+                queryParams: {
+                  redirectTo: window.location.href
+                    .split('/')
+                    .slice(3)
+                    .join('/'),
+                },
               });
+            } catch (error) {
+              console.log(error);
             }
-          } catch (error) {
-            console.log('ocurrio un error', error);
-          }
+          },
         },
-      },
-      {
-        text: 'Eliminar',
-        callback: async () => {
-          try {
-            await this.openDeleteSingleTagDialog(tag);
-          } catch (error) {}
-        },
-      },
-    ];
+        {
+          text: 'Archivar (Sin eliminar la data)',
+          callback: async () => {
+            try {
+              const { updateTag: updatedTag } =
+                await this.tagsService.updateTag(
+                  {
+                    status: 'archived',
+                  },
+                  tag._id
+                );
 
-    const toggleStatus = () => {
-      return new Promise((resolve, reject) => {
-        let previousStatus = tag.status;
+              if (updatedTag && updatedTag._id) {
+                delete this.tagsByIdsObject[tag._id];
 
-        this.toggleActivateTag(tag).then((newStatus) => {
-          newStatus === 'disabled'
-            ? (number = 2)
-            : newStatus === 'active'
-            ? (number = 0)
-            : (number = 1);
+                const mostAssignedTagsIndex = this.mostAssignedTags.findIndex(
+                  (tagInList) => tagInList._id === tag._id
+                );
 
-          if (newStatus === 'featured' && previousStatus !== 'featured') {
-            this.highlightedTags.push(tag);
+                if (mostAssignedTagsIndex >= 0) {
+                  this.mostAssignedTags.splice(mostAssignedTagsIndex, 1);
+                  this.mostAssignedTagsSwiper.directiveRef.update();
+                }
 
-            setTimeout(() => {
-              if (
-                this.highlightedTagsSwiper &&
-                this.highlightedTagsSwiper.directiveRef
-              )
-                this.highlightedTagsSwiper.directiveRef.update();
-            }, 300);
-          } else if (
-            newStatus !== 'featured' &&
-            previousStatus === 'featured'
-          ) {
-            const highlightedTagsIndex = this.highlightedTags.findIndex(
-              (tagInList) => tagInList._id === tag._id
-            );
+                const recentTagsIndex = this.mostRecentTags.findIndex(
+                  (tagInList) => tagInList._id === tag._id
+                );
 
-            if (highlightedTagsIndex >= 0) {
-              this.highlightedTags.splice(highlightedTagsIndex, 1);
-              this.highlightedTagsSwiper.directiveRef.update();
+                if (recentTagsIndex >= 0) {
+                  this.mostRecentTags.splice(recentTagsIndex, 1);
+                  this.recentTagsSwiper.directiveRef.update();
+                }
+
+                this.toastr.info('Tag archivado exitosamente', null, {
+                  timeOut: 1500,
+                });
+              }
+            } catch (error) {
+              console.log('ocurrio un error', error);
             }
+          },
+        },
+        {
+          text: 'Eliminar',
+          callback: async () => {
+            try {
+              await this.openDeleteSingleTagDialog(tag);
+            } catch (error) {}
+          },
+        },
+      ];
 
-            if (this.highlightedTags.length > 0) {
+      const toggleStatus = () => {
+        return new Promise((resolve, reject) => {
+          let previousStatus = tag.status;
+
+          this.toggleActivateTag(tag).then((newStatus) => {
+            newStatus === 'disabled'
+              ? (number = 2)
+              : newStatus === 'active'
+              ? (number = 0)
+              : (number = 1);
+
+            if (newStatus === 'featured' && previousStatus !== 'featured') {
+              this.highlightedTags.push(tag);
+
               setTimeout(() => {
                 if (
                   this.highlightedTagsSwiper &&
@@ -421,118 +416,205 @@ export class TagsComponent implements OnInit {
                 )
                   this.highlightedTagsSwiper.directiveRef.update();
               }, 300);
+            } else if (
+              newStatus !== 'featured' &&
+              previousStatus === 'featured'
+            ) {
+              const highlightedTagsIndex = this.highlightedTags.findIndex(
+                (tagInList) => tagInList._id === tag._id
+              );
+
+              if (highlightedTagsIndex >= 0) {
+                this.highlightedTags.splice(highlightedTagsIndex, 1);
+                this.highlightedTagsSwiper.directiveRef.update();
+              }
+
+              if (this.highlightedTags.length > 0) {
+                setTimeout(() => {
+                  if (
+                    this.highlightedTagsSwiper &&
+                    this.highlightedTagsSwiper.directiveRef
+                  )
+                    this.highlightedTagsSwiper.directiveRef.update();
+                }, 300);
+              }
             }
-          }
 
-          resolve(true);
+            resolve(true);
+          });
         });
-      });
-    };
+      };
 
-    let number: number =
-      tag.status === 'disabled' ? 2 : tag.status === 'active' ? 0 : 1;
-    const statuses = [
-      {
-        text: 'VISIBLE (NO DESTACADO)',
-        backgroundColor: '#82F18D',
-        color: '#174B72',
-        asyncCallback: toggleStatus,
-      },
-      {
-        text: 'VISIBLE (Y DESTACADO)',
-        backgroundColor: '#82F18D',
-        color: '#174B72',
-        asyncCallback: toggleStatus,
-      },
-      {
-        text: 'INVISIBLE',
-        backgroundColor: '#B17608',
-        color: 'white',
-        asyncCallback: toggleStatus,
-      },
-    ];
-
-    this.dialogService.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        statuses,
-        //qr code in the xd's too small to scanning to work
-        indexValue: number,
-        title: tag.name ? tag.name : 'Tag sin nombre',
-        cancelButton: {
-          text: 'Cerrar',
+      let number: number =
+        tag.status === 'disabled' ? 2 : tag.status === 'active' ? 0 : 1;
+      const statuses = [
+        {
+          text: 'VISIBLE (NO DESTACADO)',
+          backgroundColor: '#82F18D',
+          color: '#174B72',
+          asyncCallback: toggleStatus,
         },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
+        {
+          text: 'VISIBLE (Y DESTACADO)',
+          backgroundColor: '#82F18D',
+          color: '#174B72',
+          asyncCallback: toggleStatus,
+        },
+        {
+          text: 'INVISIBLE',
+          backgroundColor: '#B17608',
+          color: 'white',
+          asyncCallback: toggleStatus,
+        },
+      ];
+
+      this.dialogService.open(SettingsComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          optionsList: list,
+          statuses,
+          //qr code in the xd's too small to scanning to work
+          indexValue: number,
+          title: tag.name ? tag.name : 'Tag sin nombre',
+          cancelButton: {
+            text: 'Cerrar',
+          },
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+    } else {
+      const list: Array<SettingsDialogButton> = [
+        {
+          text: 'Dejar de archivar',
+          asyncCallback: async (...params) => {
+            const updated = await this.tagsService.updateTag(
+              {
+                status: 'active',
+              },
+              tag._id
+            );
+
+            if (updated?.updateTag) {
+              this.toastr.info('Tag desarchivado exitosamente', null, {
+                timeOut: 1500,
+              });
+
+              delete this.tagsByIdsObject[tag._id];
+
+              this.dependantGridOfTagsToShow =
+                this.dependantGridOfTagsToShow.filter(
+                  (tagInList) => tagInList._id !== tag._id
+                );
+            }
+          },
+        },
+      ];
+
+      this.dialogService.open(SettingsComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          optionsList: list,
+          title: tag.name ? tag.name : 'Tag sin nombre',
+          cancelButton: {
+            text: 'Cerrar',
+          },
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+    }
   }
 
   async openGeneralTagsManagementDialog() {
-    const list: Array<SettingsDialogButton> = [
-      {
-        text: 'Destacar',
-        asyncCallback: async (params) => {
-          this.isTagSelectionModeEnabled = true;
-          this.tagSelectionMode = 'HIGHLIGHT';
+    if (!this.justShowArchivedTags) {
+      const list: Array<SettingsDialogButton> = [
+        {
+          text: 'Destacar',
+          asyncCallback: async (params) => {
+            this.isTagSelectionModeEnabled = true;
+            this.tagSelectionMode = 'HIGHLIGHT';
 
-          await this.showTagsOfType();
+            await this.showTagsOfType();
+          },
         },
-      },
-      {
-        text: 'Esconder',
-        asyncCallback: async (params) => {
-          this.isTagSelectionModeEnabled = true;
-          this.tagSelectionMode = 'HIDE';
+        {
+          text: 'Esconder',
+          asyncCallback: async (params) => {
+            this.isTagSelectionModeEnabled = true;
+            this.tagSelectionMode = 'HIDE';
 
-          await this.showTagsOfType();
+            await this.showTagsOfType();
+          },
         },
-      },
-      {
-        text: 'Borrar',
-        asyncCallback: async (params) => {
-          this.isTagSelectionModeEnabled = true;
-          this.tagSelectionMode = 'DELETE';
+        {
+          text: 'Borrar',
+          asyncCallback: async (params) => {
+            this.isTagSelectionModeEnabled = true;
+            this.tagSelectionMode = 'DELETE';
 
-          await this.showTagsOfType();
+            await this.showTagsOfType();
+          },
         },
-      },
-      {
-        text: 'Cambiar el orden de los tags',
-        asyncCallback: async (params) => {
-          this.isTagReorderingModeEnabled = true;
-          await this.showTagsOfType();
+        {
+          text: 'Cambiar el orden de los tags',
+          asyncCallback: async (params) => {
+            this.isTagReorderingModeEnabled = true;
+            await this.showTagsOfType();
+          },
         },
-      },
-    ];
+      ];
 
-    if (this.entityToFilterTagsBy) {
-      list.unshift({
-        text: 'Adicionar',
-        callback: (...params) => {
-          this.router.navigate(['admin/create-tag'], {
-            queryParams: {
-              entity: this.entityToFilterTagsBy,
-              redirectTo: window.location.href.split('/').slice(3).join('/'),
-            },
-          });
+      if (this.entityToFilterTagsBy) {
+        list.unshift({
+          text: 'Adicionar',
+          callback: (...params) => {
+            this.router.navigate(['admin/create-tag'], {
+              queryParams: {
+                entity: this.entityToFilterTagsBy,
+                redirectTo: window.location.href.split('/').slice(3).join('/'),
+              },
+            });
+          },
+        });
+      }
+
+      this.dialogService.open(SettingsComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          optionsList: list,
+          title: 'Gestión de Tags',
+          cancelButton: {
+            text: 'Cerrar',
+          },
         },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+    } else {
+      const list: Array<SettingsDialogButton> = [
+        {
+          text: 'Dejar de archivar varios tags',
+          asyncCallback: async (params) => {
+            this.isTagSelectionModeEnabled = true;
+            this.tagSelectionMode = 'UNARCHIVE';
+          },
+        },
+      ];
+
+      this.dialogService.open(SettingsComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          optionsList: list,
+          title: 'Gestión de Tags',
+          cancelButton: {
+            text: 'Cerrar',
+          },
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
       });
     }
-
-    this.dialogService.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        title: 'Gestión de Tags',
-        cancelButton: {
-          text: 'Cerrar',
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
   }
 
   async ctaEventHandler() {
@@ -999,14 +1081,15 @@ export class TagsComponent implements OnInit {
   }
 
   async backButtonAction() {
-    if(this.enforceTagsStatus) {
+    if (this.enforceTagsStatus) {
       this.enforceTagsStatus = null;
       await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
     }
 
     if (
-      this.tagsDisplayMode === 'PER-SECTION' &&
-      this.tagSelectionMode === null
+      (this.tagsDisplayMode === 'PER-SECTION' &&
+        this.tagSelectionMode === null) ||
+      this.justShowArchivedTags
     ) {
       let flowRoute = this.headerService.flowRoute;
 
@@ -1069,7 +1152,9 @@ export class TagsComponent implements OnInit {
         this.entityToFilterTagsBy = null;
     }
 
-    await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
+    if (!this.justShowArchivedTags)
+      await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
+    else await this.showTagsOfType();
   }
 
   startDragging(e: MouseEvent, el: HTMLDivElement) {

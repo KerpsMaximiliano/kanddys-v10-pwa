@@ -89,7 +89,8 @@
                   'word-break': 'break-all'
                 }"
                 [topInnerButtonStyles]="{
-                  backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
+                  backgroundColor:
+                    tag.status !== 'disabled' ? '#272727' : '#b17608'
                 }"
               >
               </app-general-item>
@@ -149,7 +150,8 @@
                   'word-break': 'break-all'
                 }"
                 [topInnerButtonStyles]="{
-                  backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
+                  backgroundColor:
+                    tag.status !== 'disabled' ? '#272727' : '#b17608'
                 }"
               >
               </app-general-item>
@@ -208,7 +210,8 @@
                   'word-break': 'break-all'
                 }"
                 [topInnerButtonStyles]="{
-                  backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
+                  backgroundColor:
+                    tag.status !== 'disabled' ? '#272727' : '#b17608'
                 }"
               >
               </app-general-item>
@@ -259,7 +262,8 @@
               }"
               [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
               [topInnerButtonStyles]="{
-                backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
+                backgroundColor:
+                  tag.status !== 'disabled' ? '#272727' : '#b17608'
               }"
               (itemSelectedEvent)="selectTag($event, tag)"
             >
@@ -318,7 +322,8 @@
                   (itemSelectedEvent)="selectTag($event, tag)"
                   [showEntityButton]="false"
                   [topInnerButtonStyles]="{
-                    backgroundColor: tag.status !== 'disabled' ? '#272727' : '#b17608'
+                    backgroundColor:
+                      tag.status !== 'disabled' ? '#272727' : '#b17608'
                   }"
                 >
                 </app-general-item>
@@ -340,7 +345,11 @@
   <div class="blank-space"></div>
 
   <div class="fixed-buttons" *ngIf="!isTagReorderingModeEnabled">
-    <button class="create" (click)="ctaEventHandler()">
+    <button
+      class="create"
+      (click)="ctaEventHandler()"
+      *ngIf="!(tagSelectionMode !== 'UNARCHIVE' && justShowArchivedTags)"
+    >
       {{
         tagSelectionMode === "HIGHLIGHT"
           ? "DESTACAR"
@@ -348,6 +357,8 @@
           ? "ESCONDER"
           : tagSelectionMode === "DELETE"
           ? "BORRAR"
+          : tagSelectionMode === "UNARCHIVE"
+          ? "DEJAR DE ARCHIVAR"
           : "CREAR"
       }}
     </button>

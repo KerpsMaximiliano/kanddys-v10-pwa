@@ -440,7 +440,7 @@
               <div
                 class="card pointer"
                 (click)="
-                  redirectTo('/admin/tags', { enforceTagsStatus: 'archived' })
+                  redirectTo('/admin/tags', { justShowArchivedTags: true })
                 "
               >
                 <h2 class="amount quantity">{{ tagsMetrics.archived }}</h2>

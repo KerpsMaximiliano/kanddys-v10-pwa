@@ -288,7 +288,19 @@ export class ItemsDashboardComponent implements OnInit {
       this.tagsMetrics.total = tagsList.length;
     }
 
-    const tagsArchived = await this.tagsService.hotTagsArchived();
+    const tagsArchived = await this.tagsService.hotTagsArchived({
+      options: { limit: -1 },
+      findBy: {
+        $or: [
+          {
+            entity: 'item',
+          },
+          {
+            entity: 'order',
+          },
+        ],
+      },
+    });
 
     this.tagsMetrics.archived = tagsArchived.length;
 
