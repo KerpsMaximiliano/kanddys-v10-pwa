@@ -81,7 +81,7 @@ export class ArticleDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (routeParams) => {
-      const validEntities = ['item', 'post'];
+      const validEntities = ['item', 'post', 'entity-template'];
       const { saleflowId, entity, entityId } = routeParams;
       if (!this.headerService.saleflow)
         await this.headerService.fetchSaleflow(saleflowId);

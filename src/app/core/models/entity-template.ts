@@ -8,6 +8,7 @@ export class EntityTemplate extends Model<EntityTemplate> {
   user: string;
   recipients: any;
   hasPassword: boolean;
+  access: string;
 }
 
 export class EntityTemplateInput {

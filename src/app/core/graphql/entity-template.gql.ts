@@ -14,6 +14,7 @@ export const entityTemplate = gql`
         edit 
       }
       hasPassword
+      access
     }
   }
 `;

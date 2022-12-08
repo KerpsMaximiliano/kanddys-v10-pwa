@@ -3,13 +3,16 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { InputTransparentComponent } from 'src/app/shared/dialogs/input-transparent/input-transparent.component';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { PostsService } from 'src/app/core/services/posts.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Target } from 'src/app/core/models/post';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { RecipientsService } from 'src/app/core/services/recipients.service';
 import { Recipient } from 'src/app/core/models/recipients';
+import { UsersService } from 'src/app/core/services/users.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 @Component({
   selector: 'app-article-access',
@@ -42,14 +45,24 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    private _ActivatedRoute: ActivatedRoute,
    private _AuthService: AuthService,
    private _EntityTemplateService: EntityTemplateService,
-   private _RecipientsService: RecipientsService
+   private _RecipientsService: RecipientsService,
+   private _Router: Router,
+   private _UsersService: UsersService,
+   private _MerchantsService: MerchantsService,
+   private _SaleFlowService: SaleFlowService
    ) { }
 
   ngOnInit(): void {
    this._Subscription = this._ActivatedRoute.params.subscribe(({ templateId }) => {
       this.templateId = templateId;
       const post = async () => {
-         const { recipients, hasPassword } = await this._EntityTemplateService.entityTemplate(templateId);
+         const _merchantDefault = await this._MerchantsService.merchantDefault();
+         const _saleflowDefault = await this._SaleFlowService.saleflowDefault(
+            _merchantDefault._id
+          );
+         const { recipients, hasPassword, access } = await this._EntityTemplateService.entityTemplate(templateId);
+         if(access==='public')
+            this._Router.navigate(['ecommerce', _saleflowDefault._id, 'article-detail', 'entity-template', this.templateId]);
          this.hasPassword = hasPassword;
          const _recipients = [];
          for(const { recipient } of recipients){
