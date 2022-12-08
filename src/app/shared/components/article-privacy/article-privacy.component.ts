@@ -606,6 +606,14 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
         };
         try {
           const result = await this._RecipientsService.entityTemplateAddRecipient(input, this.id);
+          const _access = 'private';
+          const content: any = {
+            access: _access
+          };
+          const { access } = (await this._EntityTemplateService.entityTemplate(this.id)) || {} as any;
+          if(access==='public'){
+            const result2 = await this._EntityTemplateService.entityTemplateAuthSetData(this.id,content);
+          }
         } catch (error) {
         }
       }
