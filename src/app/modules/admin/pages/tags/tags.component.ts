@@ -163,7 +163,7 @@ export class TagsComponent implements OnInit {
           await this.showTagsOfType();
         }
       } else {
-        this.showTagsOfType();
+        await this.showTagsOfType();
       }
     });
   }
@@ -488,25 +488,7 @@ export class TagsComponent implements OnInit {
         {
           text: 'Dejar de archivar',
           asyncCallback: async (...params) => {
-            const updated = await this.tagsService.updateTag(
-              {
-                status: 'active',
-              },
-              tag._id
-            );
-
-            if (updated?.updateTag) {
-              this.toastr.info('Tag desarchivado exitosamente', null, {
-                timeOut: 1500,
-              });
-
-              delete this.tagsByIdsObject[tag._id];
-
-              this.dependantGridOfTagsToShow =
-                this.dependantGridOfTagsToShow.filter(
-                  (tagInList) => tagInList._id !== tag._id
-                );
-            }
+            await this.unarchiveTag(tag);
           },
         },
       ];
@@ -624,6 +606,9 @@ export class TagsComponent implements OnInit {
         break;
       case 'HIDE':
         await this.hideMultipleTags();
+        break;
+      case 'UNARCHIVE':
+        await this.unarchiveMultipleTags();
         break;
       case 'DELETE':
         this.openDeleteMultipleTagsDialog();
@@ -822,6 +807,34 @@ export class TagsComponent implements OnInit {
         });
       }
     });
+  };
+
+  unarchiveMultipleTags = async () => {
+    if (this.selectedTags.length > 0) {
+      const arrayOfMutationsForHightlightTagsPromises = [];
+
+      this.selectedTags.forEach((tag, index) => {
+        arrayOfMutationsForHightlightTagsPromises.push(
+          this.unarchiveTag(tag, true)
+        );
+      });
+
+      Promise.all(arrayOfMutationsForHightlightTagsPromises)
+        .then(async (arrayOfResults) => {
+          this.toastr.info('Tags desarchivados', null, {
+            timeOut: 1500,
+          });
+          await this.showTagsOfType();
+          this.tagSelectionMode = null;
+          this.selectedTags = [];
+        })
+        .catch((arrayOfErrors) => {
+          this.toastr.error('No se pudo desarchivar los tags', null, {
+            timeOut: 1500,
+          });
+          console.log(arrayOfErrors);
+        });
+    }
   };
 
   hideMultipleTags = async () => {
@@ -1029,6 +1042,22 @@ export class TagsComponent implements OnInit {
         break;
     }
 
+    if (this.justShowArchivedTags) {
+      this.headerText = 'Tags archivados';
+    }
+
+    switch (this.enforceTagsStatus) {
+      case 'disabled':
+        this.headerText = 'Tags invisibles';
+        break;
+      case 'active':
+        this.headerText = 'Tags visibles';
+        break;
+      case 'featured':
+        this.headerText = 'Tags destacados';
+        break;
+    }
+
     this.tagsSortCriteria = sortCriteria;
 
     await this.getTags({
@@ -1129,6 +1158,41 @@ export class TagsComponent implements OnInit {
     clickEvent: (params: Tag) => {
       this.openSingleTagOptionsDialog(params);
     },
+  };
+
+  unarchiveTag = async (tag: Tag, multiple: boolean = false): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      const updated = await this.tagsService.updateTag(
+        {
+          status: 'active',
+        },
+        tag._id
+      );
+
+      if (updated?.updateTag) {
+        if (!multiple) {
+          this.toastr.info('Tag desarchivado exitosamente', null, {
+            timeOut: 1500,
+          });
+        }
+
+        delete this.tagsByIdsObject[tag._id];
+
+        this.dependantGridOfTagsToShow = this.dependantGridOfTagsToShow.filter(
+          (tagInList) => tagInList._id !== tag._id
+        );
+
+        resolve({
+          success: true,
+          id: tag._id,
+        });
+      } else {
+        reject({
+          success: false,
+          id: tag._id,
+        });
+      }
+    });
   };
 
   async changeStep(indexToSelect: number) {
