@@ -11,7 +11,7 @@
       text
     }}</span>
   </div>
-  <div
+  <!-- <div
     *ngIf="
       options.includes(selected[0]) || selected[0] === 'Solo yo' || !selected[0]
     "
@@ -25,7 +25,49 @@
     >
       {{ option }}
     </p>
+  </div> -->
+
+  <div class="top">
+    <svg
+      class="eye"
+      xmlns="http://www.w3.org/2000/svg"
+      width="20.302"
+      height="13.957"
+      viewBox="0 0 20.302 13.957"
+    >
+      <g id="eye" transform="translate(0 -5.625)">
+        <path
+          id="Path_28951"
+          data-name="Path 28951"
+          d="M20.3,12.6S16.5,5.625,10.151,5.625,0,12.6,0,12.6s3.807,6.979,10.151,6.979S20.3,12.6,20.3,12.6Zm-18.814,0A16.665,16.665,0,0,0,3.595,15.2a9.455,9.455,0,0,0,6.556,3.117A9.462,9.462,0,0,0,16.708,15.2,16.665,16.665,0,0,0,18.815,12.6a16.664,16.664,0,0,0-2.106-2.592,9.465,9.465,0,0,0-6.557-3.117,9.462,9.462,0,0,0-6.557,3.117A16.664,16.664,0,0,0,1.487,12.6Z"
+          fill-rule="evenodd"
+        />
+        <path
+          id="Path_28952"
+          data-name="Path 28952"
+          d="M14.566,11.394a3.172,3.172,0,1,0,3.172,3.172,3.172,3.172,0,0,0-3.172-3.172Zm-4.441,3.172a4.441,4.441,0,1,1,4.441,4.441A4.441,4.441,0,0,1,10.125,14.566Z"
+          transform="translate(-4.415 -1.962)"
+          fill-rule="evenodd"
+        />
+      </g>
+    </svg>
+    <p class="top-text">A ver</p>
+    <svg
+      class="edit-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      width="20.302"
+      height="16.023"
+      viewBox="0 0 20.302 16.023"
+    >
+      <path
+        id="edit"
+        d="M10.105,12.017l1.32-1.32L9.7,8.967l-1.32,1.32v.637H9.468v1.093h.637Zm5.007-8.193a.235.235,0,0,0-.376.011L10.754,7.818a.258.258,0,1,0,.364.364L15.1,4.2a.235.235,0,0,0,.011-.376Zm.91,6.76v2.162a3.284,3.284,0,0,1-3.277,3.278H3.278a3.156,3.156,0,0,1-2.316-.962A3.16,3.16,0,0,1,0,12.746V3.278A3.156,3.156,0,0,1,.962.962,3.16,3.16,0,0,1,3.278,0h9.468a3.129,3.129,0,0,1,1.331.284.347.347,0,0,1,.205.262.355.355,0,0,1-.1.33l-.557.557a.333.333,0,0,1-.364.091,2.017,2.017,0,0,0-.512-.069H3.278a1.753,1.753,0,0,0-1.286.535,1.753,1.753,0,0,0-.535,1.286v9.468a1.753,1.753,0,0,0,.535,1.286,1.753,1.753,0,0,0,1.286.535h9.468a1.826,1.826,0,0,0,1.821-1.821V11.312a.341.341,0,0,1,.1-.25l.728-.728a.342.342,0,0,1,.4-.08.33.33,0,0,1,.228.33Zm-1.093-8.4,3.278,3.278L10.56,13.11H7.283V9.832Zm5.053,1.5L18.936,4.734,15.658,1.456,16.705.41a1.1,1.1,0,0,1,1.548,0l1.73,1.73a1.054,1.054,0,0,1,.319.774,1.054,1.054,0,0,1-.319.774Z"
+        fill="#7b7b7b"
+      />
+    </svg>
+    <p class="top-text2">A editar</p>
   </div>
+
   <div
     *ngIf="['Yo y mis invitados'].includes(selected[0])"
     class="swiper-container"
@@ -56,10 +98,8 @@
     <div class="invites-choice" *ngSwitchCase="'Yo y mis invitados'">
       <ng-container [ngSwitch]="status">
         <div *ngSwitchCase="'loading'" class="loading">Cargando...</div>
-        <ng-container
-        *ngSwitchDefault>
-          <div
-            class="images-grid">
+        <ng-container *ngSwitchDefault>
+          <div class="images-grid">
             <ng-container
               *ngFor="
                 let control of controllers.controls.length
@@ -70,13 +110,19 @@
             >
               <div
                 id="0{{ j }}"
-                attr.aria-label="{{ j + 1 }} / {{ controllers.controls.length }}"
+                attr.aria-label="{{ j + 1 }} / {{
+                  controllers.controls.length
+                }}"
                 role="group"
                 class="mutimedia-container"
                 [style.display]="
                   checkList(control)
-                  ? (true?'initial':'none')
-                  : (j === 0?'initial':'none')
+                    ? true
+                      ? 'initial'
+                      : 'none'
+                    : j === 0
+                    ? 'initial'
+                    : 'none'
                 "
               >
                 <div
@@ -92,16 +138,22 @@
                 >
                   <ng-container *ngIf="j === 0; else ex"> + </ng-container>
                   <ng-template #ex>
-                    <ng-container [ngSwitch]="controllers.at(j).get('check').value">
-                      <ng-container *ngSwitchCase="'0'">
-                        x
-                      </ng-container>
+                    <ng-container
+                      [ngSwitch]="controllers.at(j).get('check').value"
+                    >
+                      <ng-container *ngSwitchCase="'0'"> x </ng-container>
                       <ng-container *ngSwitchCase="'1'">
-                        <img class="check" [src]="env + '/check%20%281%29.png'" />
+                        <img
+                          class="check"
+                          [src]="env + '/check%20%281%29.png'"
+                        />
                       </ng-container>
                       <ng-container *ngSwitchCase="'2'">
-                        <img [src]="env + '/delete.png'" width="14" height="14"
-                      />
+                        <img
+                          [src]="env + '/delete.png'"
+                          width="14"
+                          height="14"
+                        />
                       </ng-container>
                     </ng-container>
                   </ng-template>
@@ -111,7 +163,8 @@
                     control.get("name").value ||
                       control.get("nickname").value ||
                       control.get("email").value ||
-                      control.get("phone").value.e164Number || control.get("phone").value
+                      control.get("phone").value.e164Number ||
+                      control.get("phone").value
                   }}
                 </p>
               </div>
@@ -121,10 +174,24 @@
             Invitados reciben un link que le permite el acceso por un tiempo
             limitado. La clave no aplica para ellos.
           </p>
-          <button *ngIf="toDelete.length" class="submit" (click)="deleteSelected()">
-            Eliminar LOS MARCADOS CON <img [src]="env + '/delete.png'" width="14" height="14" style="position: relative;left: 6px;top: 1px;">
+          <button
+            *ngIf="toDelete.length"
+            class="submit"
+            (click)="deleteSelected()"
+          >
+            Eliminar LOS MARCADOS CON
+            <img
+              [src]="env + '/delete.png'"
+              width="14"
+              height="14"
+              style="position: relative; left: 6px; top: 1px"
+            />
           </button>
-          <button *ngIf="toEntityTemplate.length" class="submit" (click)="addRecipients()">
+          <button
+            *ngIf="toEntityTemplate.length"
+            class="submit"
+            (click)="addRecipients()"
+          >
             Agregar recipientes
           </button>
           <p
@@ -258,9 +325,13 @@
           placeholder="Escribe.."
           type="password"
         />
-        <button class="confirm" [style.background]="password.valid?'#2874ad':'#c1c1c1'" (click)="submitPassword()">
+        <button
+          class="confirm"
+          [style.background]="password.valid ? '#2874ad' : '#c1c1c1'"
+          (click)="submitPassword()"
+        >
           <i class="fas fa-chevron-right"></i>
-       </button>
+        </button>
       </div>
       <p class="paragraph">
         Invitados reciben un link que le permite el acceso por un tiempo
@@ -279,7 +350,31 @@
         <div class="square-item"></div>
         <div>
           <div class="grid-content">
-            <img class="grid-img" [src]="env + '/' + item.img" width="22" height="22" />
+            <img
+              *ngIf="i !== 0"
+              class="grid-img"
+              [src]="env + '/' + item.img"
+              width="22"
+              height="22"
+            />
+            <svg
+              *ngIf="i === 0"
+              class="grid-img"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18.303"
+              height="21.353"
+              viewBox="0 0 18.303 21.353"
+            >
+              <path
+                id="Path_28884"
+                data-name="Path 28884"
+                d="M19.752,11.4a3.05,3.05,0,0,1,3.05,3.05v6.1a3.05,3.05,0,0,1-3.05,3.05H7.55a3.05,3.05,0,0,1-3.05-3.05v-6.1A3.05,3.05,0,0,1,7.55,11.4V8.351a6.1,6.1,0,0,1,12.2,0Zm-6.1-7.118a4.067,4.067,0,0,1,4.067,4.067V11.4H9.584V8.351a4.067,4.067,0,0,1,4.067-4.067Zm6.1,9.151H7.55a1.017,1.017,0,0,0-1.017,1.017v6.1A1.017,1.017,0,0,0,7.55,21.569h12.2a1.017,1.017,0,0,0,1.017-1.017v-6.1A1.017,1.017,0,0,0,19.752,13.435Z"
+                transform="translate(-4.5 -2.25)"
+                fill="#272727"
+                fill-rule="evenodd"
+              />
+            </svg>
+
             <span class="text">
               {{
                 i === 2
@@ -295,13 +390,18 @@
               *ngFor="let control of controllers.controls; let i = index"
             >
               <ng-container *ngIf="control.valid && i > 0">
-                <span *ngIf="i === 1" class="invites-text">Invitados</span>
+                <!-- <span *ngIf="i === 1" class="invites-text">Invitados</span> -->
                 <div
                   class="invite"
                   [style.left]="'-' + (i + 1) * 4 + 'px'"
                   [style.background]="multimedia[i][0]"
                   [style.display]="
-                    control.get('hasEntity').value&&(selectedTab.includes('A editar')?control.get('edit').value:!control.get('edit').value)?'initial':'none'
+                    control.get('hasEntity').value &&
+                    (selectedTab.includes('A editar')
+                      ? control.get('edit').value
+                      : !control.get('edit').value)
+                      ? 'initial'
+                      : 'none'
                   "
                 ></div>
               </ng-container>
@@ -311,4 +411,7 @@
       </div>
     </div>
   </ng-container>
+  <p class="bottom-text">
+    Tienes la opción de <span>adicionar una clave...</span>
+  </p>
 </div>

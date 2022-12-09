@@ -44,7 +44,8 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   list = [
     {
       text: 'Solo yo',
-      img: 'closed-eye.svg',
+      // img: 'closed-eye.svg',
+      img: 'padlock%20%281%29.png',
       callback: (text: string) => {
         this.text = 'Acceso';
         this.icons = ['up', 'up'];
@@ -219,7 +220,10 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       type: '',
     },
   ];
-  password: FormControl = new FormControl('', [Validators.required,Validators.minLength(3)]);
+  password: FormControl = new FormControl('', [
+    Validators.required,
+    Validators.minLength(3),
+  ]);
   toDelete: number[] = [];
   toEntityTemplate: number[] = [];
   filter: SafeStyle;
@@ -233,9 +237,9 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   ];
   CountryISO = CountryISO.DominicanRepublic;
   PhoneNumberFormat = PhoneNumberFormat;
-  passwordSubscribe:Subscription;
-  id:string;
-  entityTemplateRecipients:any;
+  passwordSubscribe: Subscription;
+  id: string;
+  entityTemplateRecipients: any;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _DialogService: DialogService,
@@ -254,8 +258,11 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       this.id = templateId;
       this.filter = this._DomSanitizer.bypassSecurityTrustStyle('opacity(0.5)');
       const recipients = async () => {
-        const entityTemplateRecipients = (await this._EntityTemplateService.entityTemplate(templateId)) || {} as any;
-        this.entityTemplateRecipients = entityTemplateRecipients.recipients || [];
+        const entityTemplateRecipients =
+          (await this._EntityTemplateService.entityTemplate(templateId)) ||
+          ({} as any);
+        this.entityTemplateRecipients =
+          entityTemplateRecipients.recipients || [];
         const { _id } = await this._MerchantsService.merchantDefault();
         this.idMerchant = _id;
         const { recipients }: any = await this._RecipientsService.recipients();
@@ -280,10 +287,10 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
         this.initControllers();
         this.initPassword();
       };
-      recipients();  
-    })
+      recipients();
+    });
   }
-  
+
   ngOnDestroy(): void {
     this.passwordSubscribe.unsubscribe();
   }
@@ -303,32 +310,39 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       this.fields.forEach(
         ({ name, value, validators, type }: any, j: number) => {
           let _value = item[name];
-          switch(name){
+          switch (name) {
             case 'phone':
-              if(_value){
+              if (_value) {
                 try {
                   const { countryIso, nationalNumber, countryCode } =
-                  this._AuthService.getPhoneInformation(`${_value}`);
+                    this._AuthService.getPhoneInformation(`${_value}`);
                   this.CountryISO = countryIso;
-                  _value = `${nationalNumber}`; 
+                  _value = `${nationalNumber}`;
                 } catch (error) {
-                  _value = ``; 
+                  _value = ``;
                 }
               }
               break;
-              case 'checked':
-                const checked = this.entityTemplateRecipients.map(({recipient}) => recipient).includes(item['_id']);
-                item['check'] = checked? 1 : 0;
-                _value = checked;
-                break;
-              case 'edit':
-                const recipient = this.entityTemplateRecipients.find(({recipient}) => recipient===item['_id']) || {};
-                _value = recipient.edit;
-                break;
-              case 'hasEntity':
-                const flag = this.entityTemplateRecipients.map(({recipient}) => recipient).includes(item['_id']);
-                _value = flag;
-                break;
+            case 'checked':
+              const checked = this.entityTemplateRecipients
+                .map(({ recipient }) => recipient)
+                .includes(item['_id']);
+              item['check'] = checked ? 1 : 0;
+              _value = checked;
+              break;
+            case 'edit':
+              const recipient =
+                this.entityTemplateRecipients.find(
+                  ({ recipient }) => recipient === item['_id']
+                ) || {};
+              _value = recipient.edit;
+              break;
+            case 'hasEntity':
+              const flag = this.entityTemplateRecipients
+                .map(({ recipient }) => recipient)
+                .includes(item['_id']);
+              _value = flag;
+              break;
           }
           controller.addControl(
             name,
@@ -385,16 +399,17 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       this.selected = ['invites'];
     } else {
       const controller = this.controllers.at(index);
-      if(controller.get('check').value<2)
-        controller.get('check').setValue(controller.get('check').value+1);
-      else
-        controller.get('check').setValue(0);
-      switch(controller.get('check').value){
+      if (controller.get('check').value < 2)
+        controller.get('check').setValue(controller.get('check').value + 1);
+      else controller.get('check').setValue(0);
+      switch (controller.get('check').value) {
         case 1:
           if (this.toEntityTemplate.includes(index))
-            this.toEntityTemplate = this.toEntityTemplate.filter((tg) => tg !== index);
+            this.toEntityTemplate = this.toEntityTemplate.filter(
+              (tg) => tg !== index
+            );
           else {
-            if(!controller.get('checked').value){
+            if (!controller.get('checked').value) {
               const value = [...this.toEntityTemplate, index];
               this.toEntityTemplate = value;
             }
@@ -408,11 +423,15 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
             const value = [...this.toDelete, index];
             this.toDelete = value;
           }
-          this.toEntityTemplate = this.toEntityTemplate.filter((tg) => tg !== index);
-        break;
+          this.toEntityTemplate = this.toEntityTemplate.filter(
+            (tg) => tg !== index
+          );
+          break;
         default:
-            this.toDelete = this.toDelete.filter((tg) => tg !== index);
-            this.toEntityTemplate = this.toEntityTemplate.filter((tg) => tg !== index);
+          this.toDelete = this.toDelete.filter((tg) => tg !== index);
+          this.toEntityTemplate = this.toEntityTemplate.filter(
+            (tg) => tg !== index
+          );
           break;
       }
     }
@@ -484,15 +503,14 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       const body = {
         name,
         lastName,
-        phone: phone?phone.e164Number:'',
+        phone: phone ? phone.e164Number : '',
         email,
         nickname,
         image: _image,
       };
-      try{
-        const { createRecipient } = await this._RecipientsService.createRecipient(
-          body
-        );
+      try {
+        const { createRecipient } =
+          await this._RecipientsService.createRecipient(body);
         const { _id } = createRecipient;
         controller.get('_id').setValue(_id);
         this._Recipients = this.controllers.value;
@@ -513,16 +531,14 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       let body: any = {
         name,
         lastName,
-        phone: phone?phone.e164Number:'',
+        phone: phone ? phone.e164Number : '',
         email,
         nickname,
       };
       if (typeof _image !== 'string') body.image = _image;
-      try{
-        const { updateRecipient } = await this._RecipientsService.updateRecipient(
-          body,
-          _id
-        );
+      try {
+        const { updateRecipient } =
+          await this._RecipientsService.updateRecipient(body, _id);
       } catch (error) {
         this.status = 'controller';
       }
@@ -534,17 +550,21 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     else updateRecipient();
   }
 
-  submitPassword():void {
-    if(this.password.invalid) return;
+  submitPassword(): void {
+    if (this.password.invalid) return;
     const entityTemplateSetData = async () => {
-      const password:string = this.password.value;
+      const password: string = this.password.value;
       const access = 'private';
       const content: any = {
         password,
-        access
+        access,
       };
-      const result = await this._EntityTemplateService.entityTemplateAuthSetData(this.id,content);
-    }
+      const result =
+        await this._EntityTemplateService.entityTemplateAuthSetData(
+          this.id,
+          content
+        );
+    };
     entityTemplateSetData();
   }
 
@@ -554,13 +574,16 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     const control = this.controllers.at(index);
     const list = [
       {
-        title: this.toDelete.length>1?'Borrar todos los recipientes de la lista?':`Borrar a ${
-          control.get("name").value ||
-          control.get("nickname").value ||
-          control.get("email").value ||
-          control.get("phone").value.e164Number ||
-          control.get("phone").value
-        } de la lista?`,
+        title:
+          this.toDelete.length > 1
+            ? 'Borrar todos los recipientes de la lista?'
+            : `Borrar a ${
+                control.get('name').value ||
+                control.get('nickname').value ||
+                control.get('email').value ||
+                control.get('phone').value.e164Number ||
+                control.get('phone').value
+              } de la lista?`,
         titleStyles: {
           fontFamily: 'SfProBold',
           color: '#4f4f4f',
@@ -627,34 +650,43 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     });
   }
 
-  addRecipients():void{
+  addRecipients(): void {
     const addToEntity = async () => {
       this.status = 'loading';
       for (const index of this.toEntityTemplate) {
-        const edit:boolean = this.selectedTab.includes('A editar');
+        const edit: boolean = this.selectedTab.includes('A editar');
         this.controllers.at(index).get('checked').setValue(true);
         const input = {
           edit,
-          recipient: this.controllers.at(index).get('_id').value
+          recipient: this.controllers.at(index).get('_id').value,
         };
         try {
-          const result = await this._RecipientsService.entityTemplateAddRecipient(input, this.id);
+          const result =
+            await this._RecipientsService.entityTemplateAddRecipient(
+              input,
+              this.id
+            );
           const _access = 'private';
           const content: any = {
-            access: _access
+            access: _access,
           };
-          const { access } = (await this._EntityTemplateService.entityTemplate(this.id)) || {} as any;
-          if(access==='public'){
-            const result2 = await this._EntityTemplateService.entityTemplateAuthSetData(this.id,content);
+          const { access } =
+            (await this._EntityTemplateService.entityTemplate(this.id)) ||
+            ({} as any);
+          if (access === 'public') {
+            const result2 =
+              await this._EntityTemplateService.entityTemplateAuthSetData(
+                this.id,
+                content
+              );
           }
           this.controllers.at(index).get('edit').setValue(edit);
           this.controllers.at(index).get('hasEntity').setValue(true);
-        } catch (error) {
-        }
+        } catch (error) {}
       }
       this.toEntityTemplate = [];
       this.status = 'controller';
-    }
+    };
     addToEntity();
   }
 
@@ -683,10 +715,9 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
         this.selected = ['A ver'];
         break;
       default:
-          const list = [`admin`,`create-article`];
-          if(this.id)
-            list.push(this.id);
-          this._Router.navigate(list);
+        const list = [`admin`, `create-article`];
+        if (this.id) list.push(this.id);
+        this._Router.navigate(list);
         break;
     }
   }
@@ -702,15 +733,15 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
 
   checkList(control: AbstractControl): boolean {
     return control
-    .get('tags')
-    .value.some((r) => this.listadoSelection.includes(r));
+      .get('tags')
+      .value.some((r) => this.listadoSelection.includes(r));
   }
 
   async addTag(): Promise<void> {
     const max = Math.max(
-      ...(this.tags.length?this.tags.map(
-        ({ name }) => +name.split('#').find((str) => +str) || 1
-      ):[0])
+      ...(this.tags.length
+        ? this.tags.map(({ name }) => +name.split('#').find((str) => +str) || 1)
+        : [0])
     );
     const index = max + 1;
     const name = `Listado #${index}`;

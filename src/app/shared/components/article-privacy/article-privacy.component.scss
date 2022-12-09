@@ -205,13 +205,13 @@
   height: 68px;
   border: none;
   .fas.fa-chevron-right {
-     width: 5px;
-     height: 9px;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     padding-right: 11px;
-     padding-top: 6px;
+    width: 5px;
+    height: 9px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 11px;
+    padding-top: 6px;
   }
   input {
     background-color: transparent;
@@ -347,7 +347,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  min-width: 113px!important;
+  min-width: 113px !important;
 }
 
 form {
@@ -371,7 +371,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -395,4 +395,45 @@ input[type=number] {
   cursor: pointer;
   color: #ffffff;
   z-index: 2;
+}
+
+.top {
+  background-color: #ffffff;
+  margin-top: 2px;
+  padding: 12px 32px;
+
+  svg {
+    display: inline-block;
+    position: absolute;
+    margin-top: 2px;
+  }
+  p {
+    margin: 0;
+    display: inline-block;
+    margin-left: 27px;
+    margin-right: 6px;
+  }
+
+  .top-text2 {
+    position: absolute;
+    margin-left: 78px;
+  }
+
+  .edit-icon {
+    margin-top: 0;
+    margin-left: 50px;
+  }
+}
+
+.bottom-text {
+  margin: 0;
+  font-family: SFProRegular;
+  font-size: 15px;
+  color: #272727;
+  margin-left: 33px;
+  margin-top: -10px;
+
+  span {
+    font-family: SFProBold;
+  }
 }
