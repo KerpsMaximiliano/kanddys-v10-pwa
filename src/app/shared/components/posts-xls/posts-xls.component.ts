@@ -53,6 +53,7 @@ export class PostsXlsComponent implements OnInit {
 
         return {
           ...createEntityTemplate,
+          qrCode: null,
           _id: `${window.location.origin}/qr/detail/${createEntityTemplate._id}`,
         };
       });
@@ -62,12 +63,27 @@ export class PostsXlsComponent implements OnInit {
       const photoZip = jzipInstance.folder('qrcodes');
 
       setTimeout(() => {
+        const qrCodesImages: Array<{
+          image: {
+            base64: string;
+            extension: 'png' | 'jpeg';
+          };
+          cellRange: string;
+        }> = [];
+
         let index = 0;
         for (const linkElement of this.qrElements.toArray()) {
           const dataURI = linkElement.nativeElement.querySelector('img').src;
           let blobData = this.convertBase64ToBlob(dataURI);
-          console.log(dataURI);
-          console.log(blobData);
+
+          qrCodesImages.push({
+            cellRange: 'D' + (8 + index) + ':' + 'D' + (8 + index),
+            image: {
+              base64: dataURI,
+              extension: 'png',
+            },
+          });
+
           photoZip.file('qrcode' + index + '.png', blobData, {
             binary: true,
           });
@@ -77,9 +93,9 @@ export class PostsXlsComponent implements OnInit {
         photoZip.generateAsync({ type: 'blob' }).then(function (blob) {
           fs.saveAs(blob, 'qrCodes.zip');
         });
-      }, 1000);
 
-      this.exportToExcel(result);
+        this.exportToExcel(result, qrCodesImages);
+      }, 1000);
     };
     createPosts();
   }
@@ -89,7 +105,16 @@ export class PostsXlsComponent implements OnInit {
     return result;
   }
 
-  exportToExcel(list) {
+  exportToExcel(
+    list,
+    imagesData?: Array<{
+      image: {
+        base64: string;
+        extension: 'png' | 'jpeg';
+      };
+      cellRange: string;
+    }>
+  ) {
     list.forEach((row: any) => {
       this.dataForExcel.push(Object.values(row));
     });
@@ -100,7 +125,7 @@ export class PostsXlsComponent implements OnInit {
       headers: Object.keys(list[0]),
     };
 
-    this.ete.exportExcel(reportData);
+    this.ete.exportExcel(reportData, imagesData);
   }
 
   downloadLinksZipFile() {
