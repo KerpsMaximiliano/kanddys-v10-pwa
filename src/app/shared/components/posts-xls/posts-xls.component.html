@@ -25,7 +25,8 @@
       <div class="arrows" (click)="submit()">
         <img src="{{ env }}/arrow-double-up.svg" alt="button" />
       </div>
-      <div class="header-text" (click)="submit()">Generar</div>
+      <div class="header-text" (click)="submit()">Generar archivo .xsl</div>
+      <div class="header-text" (click)="generateZipFileForQrCodes()">Generar zip con qrCodes</div>
       <div class="dots">
         <div class="dot-trio">
           <div class="dot" *ngFor="let dot of ['', '', '']"></div>
@@ -47,6 +48,6 @@
     [style.margin-top.px]="-25"
     [errorCorrectionLevel]="'M'"
     [allowEmptyString]="true"
-    colorDark="#2874AD"
+    colorDark="#000000"
   ></qrcode>
 </div>

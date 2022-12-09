@@ -46,9 +46,13 @@
 }
 .header-grid {
   background: #2874ad;
-  display: grid;
-  grid-template-columns: 1fr 9fr 1fr;
+  display: flex;
   padding: 8px 17px 0px 10px;
+  justify-content: space-between;
+
+  .arrows {
+    padding-right: 0.5rem;
+  }
 
   &.search {
     grid-template-columns: 1fr 9fr 1fr 1fr;
@@ -72,13 +76,13 @@
   cursor: unset;
 }
 .dots {
-  margin-top: 2px;
+  padding: 5px 0px;
 }
 
 .dot-trio {
   // width: 23px;
   // height: 5px;
-  padding: 5px;
+  padding: 0px;
   display: flex;
   justify-content: space-evenly;
   cursor: pointer;
@@ -95,5 +99,6 @@
     border-radius: 50%;
     background-color: #ffffff;
     margin-bottom: 3px;
+    margin-right: 2px;
   }
 }

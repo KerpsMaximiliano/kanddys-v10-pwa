@@ -104,18 +104,23 @@ export class ExportExcelService {
     });
 
     if (images && images.length > 0) {
+      let index = 0;
       for (const image of images) {
         let myImage = workbook.addImage({
           base64: image.image.base64,
           extension: image.image.extension,
         });
         worksheet.addImage(myImage, image.cellRange);
+        const row = worksheet.getRow(8 + index);
+        row.height = 120;
+        index++;
       }
     }
 
     worksheet.getColumn(1).width = 60;
     worksheet.getColumn(2).width = 30;
     worksheet.getColumn(3).width = 20;
+    worksheet.getColumn(4).width = 30;
     worksheet.addRow([]);
 
     //Footer Row

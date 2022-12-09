@@ -46,6 +46,7 @@ export class PostsXlsComponent implements OnInit {
           await this._EntityTemplateService.createEntityTemplate();
         result.push(entityTemplate);
       }
+      this.linksInXls = []
       result = result.map((createEntityTemplate) => {
         this.linksInXls.push(
           `${window.location.origin}/qr/detail/${createEntityTemplate._id}`
@@ -57,10 +58,6 @@ export class PostsXlsComponent implements OnInit {
           _id: `${window.location.origin}/qr/detail/${createEntityTemplate._id}`,
         };
       });
-
-      const jzipInstance = new JSZIP();
-
-      const photoZip = jzipInstance.folder('qrcodes');
 
       setTimeout(() => {
         const qrCodesImages: Array<{
@@ -74,7 +71,6 @@ export class PostsXlsComponent implements OnInit {
         let index = 0;
         for (const linkElement of this.qrElements.toArray()) {
           const dataURI = linkElement.nativeElement.querySelector('img').src;
-          let blobData = this.convertBase64ToBlob(dataURI);
 
           qrCodesImages.push({
             cellRange: 'D' + (8 + index) + ':' + 'D' + (8 + index),
@@ -83,21 +79,67 @@ export class PostsXlsComponent implements OnInit {
               extension: 'png',
             },
           });
-
-          photoZip.file('qrcode' + index + '.png', blobData, {
-            binary: true,
-          });
           index++;
         }
-
-        photoZip.generateAsync({ type: 'blob' }).then(function (blob) {
-          fs.saveAs(blob, 'qrCodes.zip');
-        });
 
         this.exportToExcel(result, qrCodesImages);
       }, 1000);
     };
     createPosts();
+  }
+
+  async generateZipFileForQrCodes() {
+    if (this.controller.invalid) return;
+
+    let result = [];
+    for await (const item of this.fillList(+this.controller.value)) {
+      const entityTemplate =
+        await this._EntityTemplateService.createEntityTemplate();
+      result.push(entityTemplate);
+    }
+    this.linksInXls = []
+    result.forEach((createEntityTemplate) => {
+      this.linksInXls.push(
+        `${window.location.origin}/qr/detail/${createEntityTemplate._id}`
+      );
+    });
+
+    const jzipInstance = new JSZIP();
+
+    const photoZip = jzipInstance.folder('qrcodes');
+
+    setTimeout(() => {
+      const qrCodesImages: Array<{
+        image: {
+          base64: string;
+          extension: 'png' | 'jpeg';
+        };
+        cellRange: string;
+      }> = [];
+
+      let index = 0;
+      for (const linkElement of this.qrElements.toArray()) {
+        const dataURI = linkElement.nativeElement.querySelector('img').src;
+        let blobData = this.convertBase64ToBlob(dataURI);
+
+        qrCodesImages.push({
+          cellRange: 'D' + (8 + index) + ':' + 'D' + (8 + index),
+          image: {
+            base64: dataURI,
+            extension: 'png',
+          },
+        });
+
+        photoZip.file('qrcode' + index + '.png', blobData, {
+          binary: true,
+        });
+        index++;
+      }
+
+      photoZip.generateAsync({ type: 'blob' }).then(function (blob) {
+        fs.saveAs(blob, 'qrCodes.zip');
+      });
+    }, 1000);
   }
 
   fillList(n: number): any[] {
