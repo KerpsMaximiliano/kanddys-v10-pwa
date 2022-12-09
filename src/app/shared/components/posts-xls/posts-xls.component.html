@@ -34,3 +34,19 @@
     </div>
   </div>
 </div>
+
+<div
+  style="visibility: hidden; position: absolute; z-index: -99"
+  *ngFor="let link of linksInXls; let i as linkIndex"
+>
+  <qrcode
+    #qrcode
+    [qrdata]="link"
+    [elementType]="'img'"
+    [width]="70"
+    [style.margin-top.px]="-25"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#2874AD"
+  ></qrcode>
+</div>

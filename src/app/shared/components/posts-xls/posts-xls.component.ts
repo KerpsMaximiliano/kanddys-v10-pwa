@@ -1,8 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChildren,
+  QueryList,
+  ElementRef,
+} from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { ExportExcelService } from 'src/app/core/services/export-excel.service';
 import { environment } from 'src/environments/environment';
+import * as JSZIP from 'jszip';
+import * as fs from 'file-saver';
 
 @Component({
   selector: 'app-posts-xls',
@@ -17,6 +25,11 @@ export class PostsXlsComponent implements OnInit {
   env: string = environment.assetsUrl;
   dataForExcel = [];
   empPerformance = [];
+  linksInXls: Array<string> = [];
+
+  @ViewChildren('qrcode', { read: ElementRef })
+  qrElements: QueryList<ElementRef>;
+
   constructor(
     private _EntityTemplateService: EntityTemplateService,
     public ete: ExportExcelService
@@ -28,9 +41,44 @@ export class PostsXlsComponent implements OnInit {
     if (this.controller.invalid) return;
     let result = [];
     const createPosts = async () => {
-      for (const item of this.fillList(+this.controller.value))
-        result.push(await this._EntityTemplateService.createEntityTemplate());
-      result = result.map((createEntityTemplate) => ({...createEntityTemplate,_id: `${window.location.origin}/qr/detail/${createEntityTemplate._id}`}));
+      for await (const item of this.fillList(+this.controller.value)) {
+        const entityTemplate =
+          await this._EntityTemplateService.createEntityTemplate();
+        result.push(entityTemplate);
+      }
+      result = result.map((createEntityTemplate) => {
+        this.linksInXls.push(
+          `${window.location.origin}/qr/detail/${createEntityTemplate._id}`
+        );
+
+        return {
+          ...createEntityTemplate,
+          _id: `${window.location.origin}/qr/detail/${createEntityTemplate._id}`,
+        };
+      });
+
+      const jzipInstance = new JSZIP();
+
+      const photoZip = jzipInstance.folder('qrcodes');
+
+      setTimeout(() => {
+        let index = 0;
+        for (const linkElement of this.qrElements.toArray()) {
+          const dataURI = linkElement.nativeElement.querySelector('img').src;
+          let blobData = this.convertBase64ToBlob(dataURI);
+          console.log(dataURI);
+          console.log(blobData);
+          photoZip.file('qrcode' + index + '.png', blobData, {
+            binary: true,
+          });
+          index++;
+        }
+
+        photoZip.generateAsync({ type: 'blob' }).then(function (blob) {
+          fs.saveAs(blob, 'qrCodes.zip');
+        });
+      }, 1000);
+
       this.exportToExcel(result);
     };
     createPosts();
@@ -53,5 +101,38 @@ export class PostsXlsComponent implements OnInit {
     };
 
     this.ete.exportExcel(reportData);
+  }
+
+  downloadLinksZipFile() {
+    const photoZip = JSZIP.folder('qrcodes');
+
+    let index = 0;
+    for (const link of this.linksInXls) {
+      //photoZip.file("qrcode_" + index + ".png", )
+      index++;
+    }
+
+    JSZIP.generateAsync({ type: 'base64' }).then(function (blob) {});
+    /*
+    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    fs.saveAs(blob, title + '.xlsx');
+    */
+  }
+
+  private convertBase64ToBlob(Base64Image: any) {
+    // SPLIT INTO TWO PARTS
+    const parts = Base64Image.split(';base64,');
+    // HOLD THE CONTENT TYPE
+    const imageType = parts[0].split(':')[1];
+    // DECODE BASE64 STRING
+    const decodedData = window.atob(parts[1]);
+    // CREATE UNIT8ARRAY OF SIZE SAME AS ROW DATA LENGTH
+    const uInt8Array = new Uint8Array(decodedData.length);
+    // INSERT ALL CHARACTER CODE INTO UINT8ARRAY
+    for (let i = 0; i < decodedData.length; ++i) {
+      uInt8Array[i] = decodedData.charCodeAt(i);
+    }
+    // RETURN BLOB IMAGE AFTER CONVERSION
+    return new Blob([uInt8Array], { type: imageType });
   }
 }
