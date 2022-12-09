@@ -182,36 +182,38 @@ export class ItemsDashboardComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.route.queryParams.subscribe(async (queryParams) => {
-      let { startOnSnapshot } = queryParams;
-      startOnSnapshot = Boolean(startOnSnapshot);
-      localStorage.removeItem('flowRoute');
-      this.headerService.flowRoute = null;
+    setTimeout(() => {
+      this.route.queryParams.subscribe(async (queryParams) => {
+        let { startOnSnapshot } = queryParams;
+        startOnSnapshot = Boolean(startOnSnapshot);
+        localStorage.removeItem('flowRoute');
+        this.headerService.flowRoute = null;
 
-      await this.verifyIfUserIsLogged();
+        await this.verifyIfUserIsLogged();
 
-      if (!this.headerService.dashboardTemporalData || !startOnSnapshot) {
-        await this.inicializeTags();
-        await this.inicializeItems(true, false, true);
-        await this.inicializeHighlightedItems();
-        await this.inicializeArchivedItems();
-        await this.getOrdersTotal();
-        await this.getMerchantBuyers();
-        await this.inicializeSaleflowCalendar();
-      } else {
-        this.getPageSnapshot();
-      }
-    });
+        if (!this.headerService.dashboardTemporalData || !startOnSnapshot) {
+          await this.inicializeTags();
+          await this.inicializeItems(true, false, true);
+          await this.inicializeHighlightedItems();
+          await this.inicializeArchivedItems();
+          await this.getOrdersTotal();
+          await this.getMerchantBuyers();
+          await this.inicializeSaleflowCalendar();
+        } else {
+          this.getPageSnapshot();
+        }
+      });
 
-    this.itemSearchbar.valueChanges.subscribe((change) =>
-      this.inicializeItems(true, false)
-    );
+      this.itemSearchbar.valueChanges.subscribe((change) =>
+        this.inicializeItems(true, false)
+      );
 
-    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-
-    window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-    });
+
+      window.addEventListener('resize', () => {
+        this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+      });
+    }, 500);
   }
 
   async verifyIfUserIsLogged() {
@@ -233,8 +235,8 @@ export class ItemsDashboardComponent implements OnInit {
         entity: 'item',
       },
       options: {
-        limit: -1
-      }
+        limit: -1,
+      },
     });
 
     if (tagsList) {

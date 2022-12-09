@@ -536,7 +536,8 @@ export class ArticleCreatorComponent implements OnInit {
       //   break;
       case 'item': {
         this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
-        this.ctaDescription =
+        this.ctaDescription = this.item ? 
+          `El visitante te paga RD$${this.item.pricing}.` :
           'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
         break;
       }
