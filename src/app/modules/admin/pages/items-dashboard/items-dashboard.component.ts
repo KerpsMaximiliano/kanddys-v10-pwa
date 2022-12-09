@@ -36,8 +36,6 @@ import {
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { ToastrService } from 'ngx-toastr';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
-import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
-import { Clipboard } from '@angular/cdk/clipboard';
 
 interface MenuOption {
   name: string;
@@ -179,53 +177,43 @@ export class ItemsDashboardComponent implements OnInit {
     private headerService: HeaderService,
     private route: ActivatedRoute,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private entityTemplateService: EntityTemplateService,
     private toastr: ToastrService,
-    private clipboard: Clipboard,
     private dialog: DialogService
   ) {}
 
   async ngOnInit() {
-    this.route.queryParams.subscribe(async (queryParams) => {
-      let { startOnSnapshot } = queryParams;
-      startOnSnapshot = Boolean(startOnSnapshot);
-      localStorage.removeItem('flowRoute');
-      this.headerService.flowRoute = null;
+    setTimeout(() => {
+      this.route.queryParams.subscribe(async (queryParams) => {
+        let { startOnSnapshot } = queryParams;
+        startOnSnapshot = Boolean(startOnSnapshot);
+        localStorage.removeItem('flowRoute');
+        this.headerService.flowRoute = null;
 
-      await this.verifyIfUserIsLogged();
+        await this.verifyIfUserIsLogged();
 
-      if (
-        !this.headerService.dashboardTemporalData &&
-        localStorage.getItem('dashboardTemporalData')
-      ) {
-        console.log('startOnSnaphot', startOnSnapshot);
-        this.headerService.dashboardTemporalData = JSON.parse(
-          localStorage.getItem('dashboardTemporalData')
-        );
-      }
+        if (!this.headerService.dashboardTemporalData || !startOnSnapshot) {
+          await this.inicializeTags();
+          await this.inicializeItems(true, false, true);
+          await this.inicializeHighlightedItems();
+          await this.inicializeArchivedItems();
+          await this.getOrdersTotal();
+          await this.getMerchantBuyers();
+          await this.inicializeSaleflowCalendar();
+        } else {
+          this.getPageSnapshot();
+        }
+      });
 
-      if (!this.headerService.dashboardTemporalData || !startOnSnapshot) {
-        await this.inicializeTags();
-        await this.inicializeItems(true, false, true);
-        await this.inicializeHighlightedItems();
-        await this.inicializeArchivedItems();
-        await this.getOrdersTotal();
-        await this.getMerchantBuyers();
-        await this.inicializeSaleflowCalendar();
-      } else {
-        this.getPageSnapshot();
-      }
-    });
+      this.itemSearchbar.valueChanges.subscribe((change) =>
+        this.inicializeItems(true, false)
+      );
 
-    this.itemSearchbar.valueChanges.subscribe((change) =>
-      this.inicializeItems(true, false)
-    );
-
-    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-
-    window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-    });
+
+      window.addEventListener('resize', () => {
+        this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+      });
+    }, 1000);
   }
 
   async verifyIfUserIsLogged() {
@@ -689,14 +677,6 @@ export class ItemsDashboardComponent implements OnInit {
       showSearchbar: this.showSearchbar,
       paginationState: this.paginationState,
     };
-
-    localStorage.setItem(
-      'dashboardTemporalData',
-      JSON.stringify(this.headerService.dashboardTemporalData)
-    );
-
-    this.headerService.flowRoute = this.router.url + '?startOnSnapshot=true';
-    localStorage.setItem('flowRoute', this.headerService.flowRoute);
   }
 
   getPageSnapshot() {
@@ -713,7 +693,6 @@ export class ItemsDashboardComponent implements OnInit {
     }
 
     this.headerService.dashboardTemporalData = null;
-    localStorage.removeItem('dashboardTemporalData');
   }
 
   goToCreateTag(tagId: string) {
@@ -990,38 +969,31 @@ export class ItemsDashboardComponent implements OnInit {
 
     const list: Array<SettingsDialogButton> = [
       {
-        text: 'Vista del potencial comprador',
+        text: 'Vista del visitante',
         callback: async () => {
           if (item.status !== 'disabled') {
-            this.router.navigate(
-              [
-                `/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/article-detail/item/${item._id}`,
-              ],
-              {
-                queryParams: {
-                  mode: `preview`,
-                },
-              }
-            );
+            this.router.navigate([
+              `/ecommerce/item-detail/${this.saleflowService.saleflowData.merchant.slug}/${item._id}`,
+            ]);
           } else {
-            // const { images, name, description, pricing, _id, ...rest } = item;
-            // const params = item.params;
-            // params?.forEach((param) => {
-            //   param.values = param.values.filter(
-            //     (values) => values.name || values.price || values.description
-            //   );
-            // });
-            // this.itemsService.storeTemporalItem({
-            //   ...rest,
-            //   name,
-            //   description,
-            //   params,
-            //   images: images,
-            //   pricing,
-            // });
-            // this.headerService.flowRoute = this.router.url;
-            // localStorage.setItem('flowRoute', this.headerService.flowRoute);
-            // this.router.navigate(['/ecommerce/item-detail']);
+            const { images, name, description, pricing, _id, ...rest } = item;
+            const params = item.params;
+            params?.forEach((param) => {
+              param.values = param.values.filter(
+                (values) => values.name || values.price || values.description
+              );
+            });
+            this.itemsService.storeTemporalItem({
+              ...rest,
+              name,
+              description,
+              params,
+              images: images,
+              pricing,
+            });
+            this.headerService.flowRoute = this.router.url;
+            localStorage.setItem('flowRoute', this.headerService.flowRoute);
+            this.router.navigate(['/ecommerce/item-detail']);
           }
         },
       },
@@ -1125,30 +1097,6 @@ export class ItemsDashboardComponent implements OnInit {
             this.toastr.error('Ocurrio un error al crear el item', null, {
               timeOut: 1500,
             });
-          }
-        },
-      },
-      {
-        text: 'Simbolo ID',
-        callback: async () => {
-          try {
-            const result =
-              await this.entityTemplateService.entityTemplateByReference(
-                item._id,
-                'item'
-              );
-
-            this.clipboard.copy(result.dateId.split('/').join(''));
-
-            this.toastr.info('Simbolo ID copiado al portapapeles', null, {
-              timeOut: 1500,
-            });
-          } catch (error) {
-            this.toastr.info('Ocurrió un error', null, {
-              timeOut: 1500,
-            });
-
-            console.error(error);
           }
         },
       },
