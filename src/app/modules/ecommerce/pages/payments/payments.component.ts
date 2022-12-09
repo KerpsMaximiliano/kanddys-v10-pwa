@@ -3,12 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Integration } from 'src/app/core/models/integration';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
 import { Post } from 'src/app/core/models/post';
 import { User } from 'src/app/core/models/user';
 import { Bank } from 'src/app/core/models/wallet';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { IntegrationsService } from 'src/app/core/services/integrations.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -45,80 +47,6 @@ export class PaymentsComponent implements OnInit {
   currentUser: User;
   acceptedRefundPolicies: boolean = false;
   onlinePaymentsOptions: WebformAnswerLayoutOption[] = [
-    /*   {
-      type: 'WEBFORM-ANSWER',
-      optionStyles: webformAnswerLayoutOptionDefaultStyles,
-      selected: false,
-      optionIcon: 'stripe',
-      callback: () => this.selectOnlinePayment(0),
-      texts: {
-        topRight: {
-          text: '',
-          styles: {
-            color: '#7B7B7B',
-            display: 'none',
-          },
-        },
-        topLeft: {
-          text: 'Stripe',
-          styles: {
-            paddingBottom: '8px',
-            width: '100%',
-          },
-        },
-        middleTexts: [
-          {
-            text: 'ID',
-          },
-          {
-            text: 'ID',
-          },
-        ],
-        bottomLeft: {
-          text: 'ID',
-          styles: {
-            paddingTop: '8px',
-            fontFamily: 'SfProBold',
-          },
-        },
-      },
-    },
-    {
-      type: 'WEBFORM-ANSWER',
-      optionStyles: webformAnswerLayoutOptionDefaultStyles,
-      selected: false,
-      optionIcon: 'paypal',
-      callback: () => this.selectOnlinePayment(1),
-      texts: {
-        topRight: {
-          text: '',
-          styles: {
-            color: '#7B7B7B',
-          },
-        },
-        topLeft: {
-          text: 'Paypal',
-          styles: {
-            paddingBottom: '8px',
-          },
-        },
-        middleTexts: [
-          {
-            text: 'ID',
-          },
-          {
-            text: 'ID',
-          },
-        ],
-        bottomLeft: {
-          text: 'ID',
-          styles: {
-            paddingTop: '8px',
-            fontFamily: 'SfProBold',
-          },
-        },
-      },
-    },*/
     {
       type: 'WEBFORM-ANSWER',
       optionStyles: webformAnswerLayoutOptionDefaultStyles,
@@ -200,7 +128,82 @@ export class PaymentsComponent implements OnInit {
         },
       ],
     },
+    /*   {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      optionIcon: 'stripe',
+      callback: () => this.selectOnlinePayment(0),
+      texts: {
+        topRight: {
+          text: '',
+          styles: {
+            color: '#7B7B7B',
+            display: 'none',
+          },
+        },
+        topLeft: {
+          text: 'Stripe',
+          styles: {
+            paddingBottom: '8px',
+            width: '100%',
+          },
+        },
+        middleTexts: [
+          {
+            text: 'ID',
+          },
+          {
+            text: 'ID',
+          },
+        ],
+        bottomLeft: {
+          text: 'ID',
+          styles: {
+            paddingTop: '8px',
+            fontFamily: 'SfProBold',
+          },
+        },
+      },
+    },
+    {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      optionIcon: 'paypal',
+      callback: () => this.selectOnlinePayment(1),
+      texts: {
+        topRight: {
+          text: '',
+          styles: {
+            color: '#7B7B7B',
+          },
+        },
+        topLeft: {
+          text: 'Paypal',
+          styles: {
+            paddingBottom: '8px',
+          },
+        },
+        middleTexts: [
+          {
+            text: 'ID',
+          },
+          {
+            text: 'ID',
+          },
+        ],
+        bottomLeft: {
+          text: 'ID',
+          styles: {
+            paddingTop: '8px',
+            fontFamily: 'SfProBold',
+          },
+        },
+      },
+    },*/
   ];
+  integrations: Integration = null;
 
   constructor(
     private walletService: WalletService,
@@ -211,7 +214,8 @@ export class PaymentsComponent implements OnInit {
     private merchantService: MerchantsService,
     public headerService: HeaderService,
     private location: LocationStrategy,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private integrationsService: IntegrationsService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -253,6 +257,23 @@ export class PaymentsComponent implements OnInit {
         this.post = (
           await this.postsService.getPost(this.order.items[0].post._id)
         ).post;
+      }
+
+      const integrationsArray = await this.integrationsService.integrations({
+        findBy: {
+          entity: 'merchant',
+          merchant: this.merchant._id,
+        },
+      });
+
+      if (integrationsArray && integrationsArray.length > 0) {
+        this.integrations = integrationsArray[0];
+
+        if (!this.integrations.azul || !this.integrations.azul.id) {
+          this.onlinePaymentsOptions.pop();
+        }
+      } else {
+        this.onlinePaymentsOptions.pop();
       }
     }
     const exchangeData = await this.walletService.exchangeData(
@@ -396,7 +417,7 @@ export class PaymentsComponent implements OnInit {
 
       const requestData: any = {
         MerchantName: "D'liciantus",
-        MerchantID: '39038540035',
+        MerchantID: this.integrations.azul.id,
         MerchantType: 'Importadores y productores de flores y follajes',
         CurrencyCode: '$',
         OrderNumber: this.order._id,
