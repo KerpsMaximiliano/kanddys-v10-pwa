@@ -56,13 +56,13 @@ export class PostsXlsComponent implements OnInit {
         this.linksInXls = [];
         result = result.map((createEntityTemplate) => {
           this.linksInXls.push(
-            `${window.location.origin}/qr/detail/${createEntityTemplate._id}`
+            `${window.location.origin}/qr/article-template/${createEntityTemplate._id}`
           );
 
           return {
             ...createEntityTemplate,
             qrCode: null,
-            _id: `${window.location.origin}/qr/detail/${createEntityTemplate._id}`,
+            _id: `${window.location.origin}/qr/article-template/${createEntityTemplate._id}`,
           };
         });
 
@@ -114,8 +114,14 @@ export class PostsXlsComponent implements OnInit {
       this.linksInXls = [];
       result.forEach((createEntityTemplate) => {
         this.linksInXls.push(
-          `${window.location.origin}/qr/detail/${createEntityTemplate._id}`
+          `${window.location.origin}/qr/article-template/${createEntityTemplate._id}`
         );
+
+        return {
+          ...createEntityTemplate,
+          qrCode: null,
+          _id: `${window.location.origin}/qr/article-template/${createEntityTemplate._id}`,
+        };
       });
 
       const jzipInstance = new JSZIP();
