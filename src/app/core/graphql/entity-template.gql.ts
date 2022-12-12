@@ -10,8 +10,9 @@ export const entityTemplate = gql`
       status
       user
       recipients{
-         recipient
-        edit 
+        _id
+        recipient
+        edit
       }
       access
     }
@@ -40,6 +41,24 @@ export const entityTemplateAuthSetData = gql`
       dateId
       status
       user
+    }
+  }
+`;
+
+export const entityTemplateRemoveRecipient = gql`
+  mutation entityTemplateRemoveRecipient($idRecipients: ObjectID!, $entityTemplateId: ObjectID!) {
+    entityTemplateRemoveRecipient(idRecipients: $idRecipients, entityTemplateId: $entityTemplateId) {
+      _id
+      reference
+      entity
+      status
+      recipients {
+        recipient
+        edit
+      }
+      access
+      dateId
+      createdAt
     }
   }
 `;

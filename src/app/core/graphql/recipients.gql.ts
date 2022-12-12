@@ -74,6 +74,7 @@ export const entityTemplateAddRecipient = gql`
       entity
       status
       recipients {
+        _id
         recipient
         edit
       }

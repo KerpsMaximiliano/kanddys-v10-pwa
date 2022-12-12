@@ -4,6 +4,7 @@ import { EntityTemplate, EntityTemplateInput } from '../models/entity-template';
 import {
   entityTemplate,
   entityTemplateAuthSetData,
+  entityTemplateRemoveRecipient,
   entityTemplateSetData,
 } from '../graphql/entity-template.gql';
 
@@ -59,6 +60,19 @@ export class EntityTemplateService {
     } catch (error) {
       console.log(error);
       return null;
+    }
+  }
+
+  async entityTemplateRemoveRecipient(idRecipients: string, entityTemplateId: string) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateRemoveRecipient,
+        variables: { idRecipients, entityTemplateId },
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
     }
   }
 }
