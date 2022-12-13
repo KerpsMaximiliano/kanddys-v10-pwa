@@ -62,3 +62,22 @@ export const entityTemplateRemoveRecipient = gql`
     }
   }
 `;
+
+export const entityTemplateUpdateRecipient = gql`
+  mutation entityTemplateUpdateRecipient($entityTemplateId: ObjectID!, $idRecipients: ObjectID!, $input: RecipientsInput!) {
+    entityTemplateUpdateRecipient(entityTemplateId: $entityTemplateId, idRecipients: $idRecipients, input: $input) {
+      _id
+      reference
+      entity
+      status
+      recipients {
+        _id
+        recipient
+        edit
+      }
+      access
+      dateId
+      createdAt
+    }
+  }
+`;

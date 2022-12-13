@@ -6,7 +6,9 @@ import {
   entityTemplateAuthSetData,
   entityTemplateRemoveRecipient,
   entityTemplateSetData,
+  entityTemplateUpdateRecipient,
 } from '../graphql/entity-template.gql';
+import { RecipientInput } from '../models/recipients';
 
 @Injectable({
   providedIn: 'root',
@@ -68,6 +70,19 @@ export class EntityTemplateService {
       const result = await this.graphql.mutate({
         mutation: entityTemplateRemoveRecipient,
         variables: { idRecipients, entityTemplateId },
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async entityTemplateUpdateRecipient(entityTemplateId: string, idRecipients: string, input: RecipientInput) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateUpdateRecipient,
+        variables: { entityTemplateId, idRecipients, input },
       });
       if (!result || result?.errors) return undefined;
       return result;
