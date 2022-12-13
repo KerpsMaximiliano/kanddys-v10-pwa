@@ -51,7 +51,13 @@
         />
       </g>
     </svg>
-    <p (click)="handleOptionTab('A ver')" class="top-text" [style.color]="selectedTab.includes('A ver') ? '#272727' : '#7b7b7b'">A ver</p>
+    <p
+      (click)="handleOptionTab('A ver')"
+      class="top-text"
+      [style.color]="selectedTab.includes('A ver') ? '#272727' : '#7b7b7b'"
+    >
+      A ver
+    </p>
     <svg
       class="edit-icon"
       xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +71,13 @@
         fill="#7b7b7b"
       />
     </svg>
-    <p (click)="handleOptionTab('A editar')" class="top-text2" [style.color]="selectedTab.includes('A editar') ? '#272727' : '#7b7b7b'">A editar</p>
+    <p
+      (click)="handleOptionTab('A editar')"
+      class="top-text2"
+      [style.color]="selectedTab.includes('A editar') ? '#272727' : '#7b7b7b'"
+    >
+      A editar
+    </p>
   </div>
 
   <div
@@ -386,7 +398,6 @@
                 <!-- <span *ngIf="i === 1" class="invites-text">Invitados</span> -->
                 <div
                   class="invite"
-                  [style.left]="'-' + (i + 1) * 4 + 'px'"
                   [style.background]="multimedia[i][0]"
                   [style.display]="
                     control.get('hasEntity').value &&
