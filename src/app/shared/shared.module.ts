@@ -107,6 +107,7 @@ import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.c
 import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
+import { AnexoChoicesComponent } from './components/anexo-choices/anexo-choices.component';
 
 const imports = [
   CommonModule,
@@ -220,7 +221,8 @@ const declarations = [
   QrCodeDialogComponent,
   PostsXlsComponent,
   TagAsignationComponent,
-  MediaDialogComponent
+  MediaDialogComponent,
+  AnexoChoicesComponent,
 ];
 
 @NgModule({
@@ -228,6 +230,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: []
+  providers: [],
 })
 export class SharedModule {}
