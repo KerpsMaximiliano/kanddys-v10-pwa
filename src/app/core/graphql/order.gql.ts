@@ -343,6 +343,14 @@ export const ordersByItem = gql`
   }
 `;
 
+export const ordersByItemHot = gql`
+  query ordersByItem($paginate: PaginationInput!) {
+    ordersByItem(paginate: $paginate) {
+      _id
+    }
+  }
+`;
+
 export const createOCR = gql`
   mutation createOCR($input: OCRInput!) {
     createOCR(input: $input) {
@@ -373,14 +381,8 @@ export const createPartialOCR = gql`
 `;
 
 export const orderSetStatus = gql`
-  mutation orderSetStatus(
-    $status: String!
-    $id: ObjectID!
-  ) {
-    orderSetStatus(
-      status: $status
-      id: $id
-    ) {
+  mutation orderSetStatus($status: String!, $id: ObjectID!) {
+    orderSetStatus(status: $status, id: $id) {
       _id
       status {
         status
