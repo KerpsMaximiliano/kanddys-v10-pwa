@@ -25,7 +25,7 @@ export class ArticleParamsComponent implements OnInit {
   steps: 'price' | 'images' | 'save' = 'price';
   selectedImages: (string | ArrayBuffer)[] = [];
   models: string[] = ['Modelo sin nombre'];
-  options: string[] = ['Precio', 'Imagen o imágenes'];
+  options: string[] = ['Perfil del Articulo', 'Perfil de las Facturas'];
   default: boolean;
   searchValue: string;
   items: any;
@@ -48,6 +48,9 @@ export class ArticleParamsComponent implements OnInit {
   updated: boolean = false;
   blockSubmitButton: boolean = false;
   parseFloat = parseFloat;
+
+  card1: boolean = false;
+  card2: boolean = false;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
@@ -477,5 +480,13 @@ export class ArticleParamsComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  card1Clicked() {
+    this.card1 = !this.card1;
+  }
+
+  card2Clicked() {
+    this.card2 = !this.card2;
   }
 }
