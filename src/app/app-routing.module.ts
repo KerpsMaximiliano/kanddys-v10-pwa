@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ErrorScreenComponent } from './modules/others/pages/error-screen/error-screen.component';
 
 const redirectTo = 'admin/entity-detail-metrics';
 const routes: Routes = [
   { path: '', redirectTo, pathMatch: 'full' },
+  { path: 'admin/items-dashboard', redirectTo, pathMatch: 'full' },
   // { path: 'invitation/community/:identifier', component: InvitationComponent },
   // {
   //   path: 'partner/receipts/:id',
@@ -99,7 +101,15 @@ const routes: Routes = [
         (m) => m.AppointmentsModule
       ),
   },
-  { path: '**', redirectTo, pathMatch: 'full' },
+  {
+    path: 'qr',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/qr/qr.module').then((m) => m.QrModule),
+  },
+  { path: '**', component: ErrorScreenComponent, pathMatch: 'full' },
 ];
 
 @NgModule({

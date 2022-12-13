@@ -102,10 +102,14 @@ import { TagsCarousellComponent } from './components/tags-carousell/tags-carouse
 import { HelperHeaderv3Component } from './components/helper-headerv3/helper-headerv3.component';
 import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
-import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
 import { GeneralItemComponent } from './components/general-item/general-item.component';
 import { TagTypeDialogComponent } from './dialogs/tag-type-dialog/tag-type-dialog.component';
+import { InputTransparentComponent } from './dialogs/input-transparent/input-transparent.component';
+import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
+import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
+import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
+import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
 
 const imports = [
   CommonModule,
@@ -210,16 +214,19 @@ const declarations = [
   MetricsReservationComponent,
   ReservationListComponent,
   TagManagementComponent,
-  TagAsignationComponent,
   TagsSelectorComponent,
   TagsCarousellComponent,
   HelperHeaderv3Component,
   FunctionalityParametersComponent,
   ConfirmActionDialogComponent,
   GeneralItemComponent,
+  InputTransparentComponent,
   AnexosDialogComponent,
+  QrCodeDialogComponent,
+  PostsXlsComponent,
   TagAsignationComponent,
-  TagTypeDialogComponent
+  TagTypeDialogComponent,
+  MediaDialogComponent
 ];
 
 @NgModule({
@@ -227,6 +234,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}

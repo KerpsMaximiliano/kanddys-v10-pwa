@@ -38,6 +38,7 @@ const orderData = `
       merchant {
         _id
         name
+        slug
         owner {
           _id
           phone
