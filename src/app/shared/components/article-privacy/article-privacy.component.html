@@ -51,7 +51,7 @@
         />
       </g>
     </svg>
-    <p class="top-text">A ver</p>
+    <p (click)="handleOptionTab('A ver')" class="top-text" [style.color]="selectedTab.includes('A ver') ? '#272727' : '#7b7b7b'">A ver</p>
     <svg
       class="edit-icon"
       xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +65,7 @@
         fill="#7b7b7b"
       />
     </svg>
-    <p class="top-text2">A editar</p>
+    <p (click)="handleOptionTab('A editar')" class="top-text2" [style.color]="selectedTab.includes('A editar') ? '#272727' : '#7b7b7b'">A editar</p>
   </div>
 
   <div
@@ -186,13 +186,6 @@
               height="14"
               style="position: relative; left: 6px; top: 1px"
             />
-          </button>
-          <button
-            *ngIf="toEntityTemplate.length"
-            class="submit"
-            (click)="addRecipients()"
-          >
-            Agregar recipientes
           </button>
           <p
             *ngIf="toDelete.length"

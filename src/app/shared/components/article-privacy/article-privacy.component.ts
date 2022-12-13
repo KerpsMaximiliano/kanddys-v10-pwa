@@ -651,7 +651,6 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
 
   addRecipients(): void {
     const addToEntity = async () => {
-      this.status = 'loading';
       for (const index of this.toEntityTemplate) {
         const edit: boolean = this.selectedTab.includes('A editar');
         this.controllers.at(index).get('checked').setValue(true);
@@ -660,6 +659,9 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
           recipient: this.controllers.at(index).get('_id').value,
         };
         try {
+          if(this.controllers.at(index).get('hasEntity').value){
+            await this.removeRecipients(index);
+          }
           const {entityTemplateAddRecipient} =
             await this._RecipientsService.entityTemplateAddRecipient(
               input,
@@ -686,22 +688,21 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
         } catch (error) {}
       }
       this.toEntityTemplate = [];
-      this.status = 'controller';
     };
     addToEntity();
   }
 
   removeRecipients(index:number):void{
     const removeToEntity = async () => {
-      this.status = 'loading';
       this.controllers.at(index).get('checked').setValue(true);
       const recipient = this.controllers.at(index).get('entityRecipientId').value;
-      try {
-        const result = await this._EntityTemplateService.entityTemplateRemoveRecipient(recipient, this.id);
-      } catch (error) {
+      if(recipient){
+        try {
+          const result = await this._EntityTemplateService.entityTemplateRemoveRecipient(recipient, this.id);
+        } catch (error) {
+        }
       }
       this.toEntityTemplate = [];
-      this.status = 'controller';
     }
     removeToEntity();
   }
