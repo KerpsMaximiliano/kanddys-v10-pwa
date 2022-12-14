@@ -98,6 +98,20 @@ body {
   }
 }
 
+.ui-blocker {
+  @include flex(column nowrap, center, center);
+  @include bounds(0, 0, 0, 0);
+  position: absolute;
+  background: get-color("dark", 0.3);
+  color: get-color("light");
+  backdrop-filter: blur(9px);
+  font-size: 6rem;
+  z-index: 100000;
+  i {
+    animation-duration: 1.6s;
+  }
+}
+
 @supports (-moz-appearance: none) {
   .transparent {
     .backdrop {

@@ -11,6 +11,10 @@ export class CurrencyInputComponent implements OnInit {
   formattedPricing = '$0.00';
   @Input() initialValue: number;
   @Input() fieldStyles: Record<string, any> = null;
+  @Input() inputId: string = 'pricing';
+  @Input() inputName: string = 'pricing';
+  @Input() required: boolean = true;
+  @Input() blockKeyboardNavigation: boolean = false;
   @Output() onInputEvent = new EventEmitter<number>();
 
   constructor(private decimalPipe: DecimalPipe) {}

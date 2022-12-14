@@ -327,6 +327,7 @@ export class PaymentsComponent implements OnInit {
           ).authOrder;
           localStorage.removeItem('registered-user');
         } else {
+          unlockUI();
           this.router.navigate([`/auth/login`], {
             queryParams: {
               orderId: this.order._id,

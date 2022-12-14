@@ -6,6 +6,7 @@ import { User } from './user';
 export class Merchant extends Model<Merchant> {
   owner?: User;
   name: string;
+  slug: string;
   clientMaxBalance: number;
   location?: { lat: number; long: number };
   title?: string;
@@ -16,23 +17,23 @@ export class Merchant extends Model<Merchant> {
   website?: string;
   facebook?: string;
   instagram?: string;
-  category?: String
+  category?: String;
   active?: boolean;
   ipUser?: string;
   hasOwner?: boolean;
   approved?: boolean;
   customFee?: number;
-  itemNickname?: String
-  packageNickname?: String
+  itemNickname?: String;
+  packageNickname?: String;
   social: SocialMediaModel[];
   showItems: boolean;
   airtableConfiguration: AirtableConfiguration;
   tags?: string[];
-  reference?: String
+  reference?: String;
   minPaymentQantity?: number;
   collaborationPaymentAmount?: number;
   receiveNotifications?: boolean;
-  notes?: String
+  notes?: String;
 }
 
 export class EmployeeContract extends Model<EmployeeContract> {
@@ -59,12 +60,12 @@ export class MerchantInput {
   itemNickname?: string;
   packageNickname?: string;
   social?: SocialMediaModelInput[];
-  showItems?: Boolean
-  airtableConfiguration?: AirtableConfigurationInput
+  showItems?: Boolean;
+  airtableConfiguration?: AirtableConfigurationInput;
   tags?: string[];
   reference?: string;
   minPaymentQantity?: number;
   collaborationPaymentAmount?: number;
-  receiveNotifications?: Boolean
+  receiveNotifications?: Boolean;
   notes?: string;
 }

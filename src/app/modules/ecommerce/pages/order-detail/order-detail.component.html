@@ -2,7 +2,11 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="
-      redirectTo !== null && redirectTo !== '' && isMerchant && merchantOwner
+      redirectTo &&
+      redirectTo !== null &&
+      redirectTo !== '' &&
+      isMerchant &&
+      merchantOwner
     "
     (returnEvent)="returnEvent()"
     [bgColor]="changeColor ? changeColor : headerService.colorTheme"
@@ -287,15 +291,21 @@
     <section
       class="section"
       *ngIf="
-        (order?.items[0].post && post?.message) ||
-        post?.from ||
-        (post?.targets.length && post?.targets[0].name)
+        order?.items[0].post &&
+        (post?.message ||
+          post?.from ||
+          (post?.targets?.length && post?.targets[0].name) ||
+          slides?.length)
       "
       style="margin-top: 32px"
     >
       <h2 class="section-title">Mensaje de regalo:</h2>
 
-      <div class="buttons-share" *ngIf="!notify">
+      <div
+        class="buttons-share"
+        *ngIf="slides?.length"
+        (click)="goToPostDetail()"
+      >
         <div class="buttons-area">
           <button class="btn">
             <img [src]="env + '/QR.svg'" width="34px" height="34px" />
@@ -315,7 +325,14 @@
         <h3 class="virtual">Mensaje Virtual</h3>
       </div>
 
-      <div class="message-box">
+      <div
+        class="message-box"
+        *ngIf="
+          post?.message ||
+          post?.from ||
+          (post?.targets?.length && post.targets[0].name)
+        "
+      >
         <section *ngIf="post.message">
           <h3 class="sub">Mensaje a escribir:</h3>
           <p class="message-text inner">
@@ -324,7 +341,7 @@
         </section>
 
         <section *ngIf="post.targets?.length && post.targets[0]?.name">
-          <h3 class="sub">Para:</h3>
+          <h3 class="sub">Título del sobre:</h3>
           <p class="message-text inner">{{ post.targets[0]?.name }}</p>
         </section>
 

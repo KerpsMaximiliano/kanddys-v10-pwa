@@ -257,8 +257,24 @@ headline="EXPUESTO EN TAB (S)"
     ></app-multistep-form>
 -->
 
-<div id="AmazonPayButton" *ngIf="!amazonCheckoutSessionId"></div>
+<h3>Selecciona varias imagenes</h3>
 
-<button *ngIf="amazonCheckoutSessionId" id="changeButton1">cambiar direccion</button>
+<input
+  type="file"
+  name=""
+  id=""
+  multiple
+  accept="image/*"
+  (change)="fileProgressMultiple($event)"
+/>
 
-<button *ngIf="amazonCheckoutSessionId" id="changeButton2">cambiar metodo de pago</button>
+<span *ngIf="imageField.length > 0 && imageField[0] !== ''"
+  >Se han cargado {{ imageField.length }} imágenes</span
+>
+
+<button
+  *ngIf="imageField.length > 0 && imageField[0] !== ''"
+  (click)="createItemForEachLoadedImage()"
+>
+  Crear los productos para cada imagen
+</button>

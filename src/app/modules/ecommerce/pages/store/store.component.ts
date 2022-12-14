@@ -79,7 +79,6 @@ export class StoreComponent implements OnInit {
   itemCartAmount: number;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
-  viewtype: 'preview' | 'merchant';
   admin: boolean;
   searchBar: FormControl = new FormControl('');
   selectedTagsCounter: number = 0;
@@ -138,29 +137,38 @@ export class StoreComponent implements OnInit {
     private merchantService: MerchantsService,
     public header: HeaderService,
     private saleflow: SaleFlowService,
-    private item: ItemsService,
     private authService: AuthService,
-    private appService: AppService,
-    private orderService: OrderService,
-    private tagsService: TagsService,
-    private location: Location
+    private tagsService: TagsService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.route.queryParams.subscribe(async (queryParams) => {
-      let { startOnSnapshot } = queryParams;
-      startOnSnapshot = Boolean(startOnSnapshot);
+    setTimeout(() => {
+      this.route.queryParams.subscribe(async (queryParams) => {
+        let { startOnSnapshot } = queryParams;
+        startOnSnapshot = Boolean(startOnSnapshot);
+        localStorage.removeItem('flowRoute');
+        this.header.flowRoute = null;
 
-      if (!this.header.storeTemporalData || !startOnSnapshot)
-        this.executeProcessesAfterLoading();
-      else this.getPageSnapshot();
-    });
+        if (
+          !this.header.storeTemporalData &&
+          localStorage.getItem('storeTemporalData')
+        ) {
+          this.header.storeTemporalData = JSON.parse(
+            localStorage.getItem('storeTemporalData')
+          );
+        }
 
-    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+        if (!this.header.storeTemporalData || !startOnSnapshot)
+          this.executeProcessesAfterLoading();
+        else this.getPageSnapshot();
+      });
 
-    window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-    });
+
+      window.addEventListener('resize', () => {
+        this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+      });
+    }, 300);
   }
 
   async getHighlightedItems() {
@@ -434,22 +442,20 @@ export class StoreComponent implements OnInit {
       };
       this.header.storeOrderProduct(product);
       this.header.storeItem(itemData);
-      this.router.navigate([
-        `/ecommerce/${this.header.saleflow._id}/provider-store/${itemData._id}`,
-      ]);
+      this.router.navigate([`../provider-store/${itemData._id}`], {
+        relativeTo: this.route,
+      });
       return;
     }
     this.savePageSnapshot();
-    this.router.navigate(
-      [`/ecommerce/${this.header.saleflow._id}/article-detail/item/${id}`],
-      {
-        replaceUrl: this.header.checkoutRoute ? true : false,
-        queryParams: {
-          mode: 'saleflow',
-          id: this.header.saleflow._id,
-        },
-      }
-    );
+    this.router.navigate([`../article-detail/item/${id}`], {
+      replaceUrl: this.header.checkoutRoute ? true : false,
+      relativeTo: this.route,
+      queryParams: {
+        mode: 'saleflow',
+        id: this.header.saleflow._id,
+      },
+    });
   }
 
   //Same dialog as openDialog() but with StoreShare
@@ -477,7 +483,7 @@ export class StoreComponent implements OnInit {
         func: async () => {
           this.router.navigate(['auth/login'], {
             queryParams: {
-              redirect: `ecommerce/${this.header.saleflow._id}/store`,
+              redirect: `ecommerce/${this.header.saleflow.merchant.slug}/store`,
             },
           });
         },
@@ -528,6 +534,8 @@ export class StoreComponent implements OnInit {
     if (this.selectedTags.length === 0) {
       this.showSearchbar = false;
     }
+
+    console.log(this.tags[tagIndex].selected, 'seleccionado');
 
     if (this.tags[tagIndex].selected) {
       this.tags[tagIndex].selected = false;
@@ -726,6 +734,7 @@ export class StoreComponent implements OnInit {
     });
 
     this.header.storeTemporalData = null;
+    localStorage.removeItem('storeTemporalData');
   }
 
   savePageSnapshot() {
@@ -746,6 +755,14 @@ export class StoreComponent implements OnInit {
       showSearchbar: this.showSearchbar,
       paginationState: this.paginationState,
     };
+
+    localStorage.setItem(
+      'storeTemporalData',
+      JSON.stringify(this.header.storeTemporalData)
+    );
+
+    this.header.flowRoute = this.router.url + '?startOnSnapshot=true';
+    localStorage.setItem('flowRoute', this.header.flowRoute);
   }
 
   getActiveTagsFromSelectedTagsPermantent(): Array<string> {

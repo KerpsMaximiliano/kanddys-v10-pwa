@@ -10,6 +10,7 @@ import {
   commentsByPost,
   updatePost,
   updateSlide,
+  postAddUser,
 } from '../graphql/posts.gql';
 import { Post, PostInput, Slide, SlideInput } from '../models/post';
 
@@ -17,12 +18,12 @@ export interface PostContent {
   _id?: string;
   type: 'audio' | 'poster' | 'text';
   audio?: {
-    blob: Blob | string,
+    blob: Blob | string;
     title?: string;
   };
-  poster?: File,
+  poster?: File;
   imageUrl?: string | ArrayBuffer;
-  text?: string
+  text?: string;
 }
 
 @Injectable({
@@ -34,7 +35,7 @@ export class PostsService {
   post: PostInput;
   content: PostContent;
 
-  async createPost(input: PostInput): Promise<{createPost: { _id: string }}> {
+  async createPost(input: PostInput): Promise<{ createPost: { _id: string } }> {
     let value = await this.graphql.mutate({
       mutation: createPost,
       variables: { input },
@@ -44,7 +45,24 @@ export class PostsService {
     return value;
   }
 
-  async updatePost(input: PostInput, id: string): Promise<{updatePost: { _id: string }}> {
+  async postAddUser(postId: string, userId: string): Promise<Post> {
+    try {
+      let value = await this.graphql.mutate({
+        mutation: postAddUser,
+        variables: { postId, userId },
+        fetchPolicy: 'no-cache',
+      });
+
+      return value?.postAddUser;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async updatePost(
+    input: PostInput,
+    id: string
+  ): Promise<{ updatePost: { _id: string } }> {
     let value = await this.graphql.mutate({
       mutation: updatePost,
       variables: { input, id },
@@ -93,7 +111,7 @@ export class PostsService {
       fetchPolicy: 'no-cache',
     });
 
-    if(!value || value?.errors) return undefined;
+    if (!value || value?.errors) return undefined;
     return value.slidesbyPost;
   }
 

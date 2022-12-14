@@ -52,17 +52,17 @@ const routes: Routes = [
     component: OrderDetailComponent,
   },
   {
-    path: 'megaphone-v3/:saleflowId',
-    redirectTo: ':saleflowId/store',
+    path: 'megaphone-v3/:merchantSlug',
+    redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
   },
   {
-    path: 'store/:saleflowId',
-    redirectTo: ':saleflowId/store',
+    path: 'store/:merchantSlug',
+    redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
   },
   {
-    path: ':saleflowId',
+    path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
       {
@@ -135,6 +135,7 @@ const routes: Routes = [
         path: 'payments',
         component: PaymentsComponent,
       },
+
     ],
   },
 ];
@@ -161,7 +162,7 @@ const routes: Routes = [
     ReservationsComponent,
     PaymentsRedirectionComponent,
     ArticleDetailComponent,
-    CreateArticleComponent,
+    CreateArticleComponent
   ],
   imports: [
     CommonModule,

@@ -43,6 +43,7 @@ export interface FormField {
   onlyAllowPositiveNumbers?: boolean;
   phoneCountryCode?: CountryISO;
   formattedValue?: string;
+  shouldUseReusableCurrencyComponent?: boolean;
   lastInputWasADot?: boolean;
   fileObjects?: File[];
   enabledOnInit?: 'ENABLED' | 'DISABLED';

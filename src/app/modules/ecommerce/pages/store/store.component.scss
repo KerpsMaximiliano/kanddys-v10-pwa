@@ -12,7 +12,12 @@
 
 main {
   flex-grow: 1;
-  background: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
+  // background: linear-gradient(
+  //   180deg,
+  //   white 50%,
+  //   rgba(213, 213, 213, 0.25) 100%
+  // );
+  background-color: #f6f6f6;
 }
 
 .top-input-area {
@@ -378,7 +383,6 @@ main {
 
 .header {
   height: 36px;
-  background-color: #272727;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -21,6 +21,7 @@ import gql from 'graphql-tag';
 export const body = `
   _id
   name
+  slug
   location
   email
   image
@@ -137,6 +138,18 @@ export const hotMerchants = gql`
 export const merchant = gql`
   query merchant($id: ObjectID!) {
     merchant(id: $id) { ${body} }
+  }
+`;
+
+export const merchantByName = gql`
+  query merchantByName($name: String!) {
+    merchantByName(name: $name) { ${body} }
+  }
+`;
+
+export const merchantBySlug = gql`
+  query merchantBySlug($slug: String!) {
+    merchantBySlug(slug: $slug) { ${body} }
   }
 `;
 

@@ -298,9 +298,17 @@ a {
         margin: 16px 0 21px;
         padding: 16px 5% 6px;
 
+        &:hover {
+          cursor: pointer;
+        }
+
         .buttons-area {
           display: flex;
           justify-content: space-between;
+
+          &:hover {
+            cursor: pointer;
+          }
 
           .btn {
             all: unset;

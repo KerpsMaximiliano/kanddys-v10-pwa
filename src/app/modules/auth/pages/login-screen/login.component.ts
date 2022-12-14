@@ -24,7 +24,6 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { UsersService } from 'src/app/core/services/users.service';
-import { WalletService } from 'src/app/core/services/wallet.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
@@ -36,7 +35,6 @@ type AuthTypes =
   | 'address'
   | 'anonymous'
   | 'payment'
-  | 'payment-with-stripe'
   | 'merchant';
 
 interface ValidateData {
@@ -109,7 +107,6 @@ export class LoginComponent implements OnInit {
     CountryISO.UnitedStates,
   ];
   PhoneNumberFormat = PhoneNumberFormat;
-  onlinePaymentType: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -123,8 +120,8 @@ export class LoginComponent implements OnInit {
     private saleflowsService: SaleFlowService,
     private location: Location,
     private usersService: UsersService,
-    private dialog: DialogService, // private saleflowService: SaleFlowService, // private item: ItemsService
-    private walletService: WalletService
+    private postsService: PostsService,
+    private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
   ) {
     this.image = this.router.getCurrentNavigation().extras.state?.image;
   }
@@ -133,9 +130,6 @@ export class LoginComponent implements OnInit {
     this.orderId = this.route.snapshot.queryParamMap.get('orderId');
     this.itemId = this.route.snapshot.queryParamMap.get('itemId');
     this.action = this.route.snapshot.queryParamMap.get('action');
-    this.onlinePaymentType = this.route.snapshot.queryParamMap.get(
-      'onlinePayment'
-    ) as any;
     this.redirectionRoute = this.route.snapshot.queryParamMap.get('redirect');
     this.doesItemHasParams = Boolean(
       this.route.snapshot.queryParamMap.get('hasParams')
@@ -227,9 +221,12 @@ export class LoginComponent implements OnInit {
       if (this.auth === 'address') {
         const address = this.headerService.getLocation();
         if (!address) {
-          this.router.navigate([`ecommerce/${SaleFlow}/new-address`], {
-            replaceUrl: true,
-          });
+          this.router.navigate(
+            [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
+            {
+              replaceUrl: true,
+            }
+          );
         }
       }
 
@@ -264,7 +261,7 @@ export class LoginComponent implements OnInit {
     } else if (this.auth === 'payment') {
       if (!this.image) {
         this.router.navigate(
-          [`ecommerce/${this.saleflow._id}/payments/${this.orderId}`],
+          [`ecommerce/${this.saleflow.merchant.slug}/payments/${this.orderId}`],
           {
             replaceUrl: true,
           }
@@ -276,6 +273,37 @@ export class LoginComponent implements OnInit {
       this.auth = 'phone';
       this.loggin = false;
       unlockUI();
+    }
+  }
+
+  redirectFromQueryParams() {
+    if (this.redirectionRoute.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
+      const routeParts = this.redirectionRoute.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return { [queryStringElements[0]]: queryStringElements[1] };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([this.redirectionRoute], {
+        replaceUrl: true,
+      });
     }
   }
 
@@ -345,7 +373,7 @@ export class LoginComponent implements OnInit {
             // Se le envia el magic link para autenticar
             await this.authService.generateMagicLink(
               this.merchantNumber,
-              `ecommerce/${this.saleflow._id}/new-address`,
+              `ecommerce/${this.saleflow.merchant.slug}/new-address`,
               null,
               'NonExistingOrder',
               {
@@ -353,7 +381,6 @@ export class LoginComponent implements OnInit {
               }
             );
           }
-
 
           if (this.action === 'precreateitem') {
             await this.authService.generateMagicLink(
@@ -423,7 +450,7 @@ export class LoginComponent implements OnInit {
           };
           localStorage.setItem('registered-user', JSON.stringify(userInput));
           this.router.navigate(
-            [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+            [`ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`],
             {
               replaceUrl: true,
             }
@@ -449,12 +476,15 @@ export class LoginComponent implements OnInit {
             JSON.stringify(this.phoneNumber.value)
           );
           localStorage.setItem('registered-user', JSON.stringify(userInput));
-          this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
-            replaceUrl: true,
-            state: {
-              loggedIn: true,
-            },
-          });
+          this.router.navigate(
+            [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
+            {
+              replaceUrl: true,
+              state: {
+                loggedIn: true,
+              },
+            }
+          );
           this.status = 'ready';
           return;
         }
@@ -505,7 +535,9 @@ export class LoginComponent implements OnInit {
           const result = await this.usersService.addLocation(address);
           if (result) {
             this.router.navigate(
-              [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+              [
+                `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+              ],
               {
                 replaceUrl: true,
               }
@@ -516,7 +548,7 @@ export class LoginComponent implements OnInit {
         }
         if (this.auth === 'order') {
           /* && !this.toValidate*/ this.router.navigate(
-            [`ecommerce/${this.saleflow._id}/new-address`],
+            [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
             {
               replaceUrl: true,
               state: {
@@ -554,9 +586,7 @@ export class LoginComponent implements OnInit {
         } NO LO BORRÉ PORQUE QUIZAS LO USEMOS LUEGO*/
 
         if (this.redirectionRoute) {
-          this.router.navigate([this.redirectionRoute], {
-            replaceUrl: true,
-          });
+          this.redirectFromQueryParams();
           return;
         }
 
@@ -601,7 +631,9 @@ export class LoginComponent implements OnInit {
               }
             );
             this.router.navigate(
-              [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+              [
+                `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+              ],
               {
                 replaceUrl: true,
               }
@@ -619,12 +651,15 @@ export class LoginComponent implements OnInit {
               timeOut: 3000,
             }
           );
-          this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
-            replaceUrl: true,
-            state: {
-              loggedIn: true,
-            },
-          });
+          this.router.navigate(
+            [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
+            {
+              replaceUrl: true,
+              state: {
+                loggedIn: true,
+              },
+            }
+          );
           this.status = 'ready';
           return;
         }
@@ -641,9 +676,7 @@ export class LoginComponent implements OnInit {
         }
 
         if (this.redirectionRoute) {
-          this.router.navigate([this.redirectionRoute], {
-            replaceUrl: true,
-          });
+          this.redirectFromQueryParams();
           return;
         }
 
@@ -676,7 +709,7 @@ export class LoginComponent implements OnInit {
         const result = await this.usersService.addLocation(address);
         if (result) {
           this.router.navigate(
-            [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+            [`ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`],
             {
               replaceUrl: true,
             }
@@ -686,16 +719,18 @@ export class LoginComponent implements OnInit {
         return;
       }
       if (this.auth === 'order') {
-        this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
-          replaceUrl: true,
-          state: {
-            loggedIn: true,
-          },
-        });
+        this.router.navigate(
+          [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
+          {
+            replaceUrl: true,
+            state: {
+              loggedIn: true,
+            },
+          }
+        );
         this.status = 'ready';
         return;
       }
-
       if (this.orderId) {
         this.authOrder(signin.user._id);
         return;
@@ -707,9 +742,7 @@ export class LoginComponent implements OnInit {
       }
 
       if (this.redirectionRoute) {
-        this.router.navigate([this.redirectionRoute], {
-          replaceUrl: true,
-        });
+        this.redirectFromQueryParams();
         return;
       }
 
@@ -833,7 +866,9 @@ export class LoginComponent implements OnInit {
             const result = await this.usersService.addLocation(address);
             if (result) {
               this.router.navigate(
-                [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+                [
+                  `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+                ],
                 {
                   replaceUrl: true,
                 }
@@ -843,7 +878,7 @@ export class LoginComponent implements OnInit {
           }
           if (this.auth === 'order') {
             this.router.navigate(
-              [`ecommerce/${this.saleflow._id}/new-address`],
+              [`ecommerce/${this.saleflow.merchant.slug}/new-address`],
               {
                 replaceUrl: true,
                 state: {
@@ -853,9 +888,7 @@ export class LoginComponent implements OnInit {
             );
           } else {
             if (this.redirectionRoute) {
-              this.router.navigate([this.redirectionRoute], {
-                replaceUrl: true,
-              });
+              this.redirectFromQueryParams();
               return;
             }
 
@@ -1024,19 +1057,11 @@ export class LoginComponent implements OnInit {
       );
     }
 
-    if (this.onlinePaymentType === 'payment-with-stripe') {
-      const result = await this.walletService.payOrderWithStripe(this.orderId);
-
-      if (result) {
-        localStorage.setItem('stripe_checkout_session_id', result.id);
-        localStorage.setItem('stripe-payed-orderId', this.orderId);
-        window.location.href = result.url;
-
-        return;
-      }
+    if (order.items[0].post) {
+      this.postsService.postAddUser(order.items[0].post._id, id);
     }
 
-    this.router.navigate([`ecommerce/order-info/${order._id}`], {
+    this.router.navigate([`ecommerce/order-detail/${order._id}`], {
       queryParams: { notify: 'true' },
     });
   }
