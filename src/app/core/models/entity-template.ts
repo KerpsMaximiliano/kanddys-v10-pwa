@@ -17,5 +17,5 @@ export class EntityTemplateInput {
   status?: string;
   dateId?: string;
   user?: string;
-  recipients: any;
+  recipients?: any;
 }
