@@ -21,6 +21,7 @@ import {
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { TagTypeDialogComponent } from 'src/app/shared/dialogs/tag-type-dialog/tag-type-dialog.component';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
 
 type TypeOfTagsGrid = 'MOST_ASSIGNED' | 'MOST_RECENT' | 'ALL';
 
@@ -614,9 +615,138 @@ export class TagsComponent implements OnInit {
         this.openDeleteMultipleTagsDialog();
         break;
       default:
-        this.dialogService.open(TagTypeDialogComponent, {
+        this.dialogService.open(ItemListSelectorComponent, {
+          props: {
+            title: 'Tipo de Tag',
+            subTitle: 'Que tipo de grupo necesitas',
+            webformOptions: [
+              {
+                type: 'WEBFORM-ANSWER',
+                optionStyles: 'webformAnswerLayoutOptionDefaultStyles',
+                selected: false,
+                optionIcon:
+                  'https://upload.wikimedia.org/wikipedia/en/c/c6/The_Legend_of_Zelda_Breath_of_the_Wild.jpg',
+                optionIconStyles: {
+                  width: '43px',
+                  height: '63px',
+                },
+                callback: () => null,
+                texts: {
+                  topRight: {
+                    text: '',
+                  },
+                  topLeft: {
+                    text: 'De compradores',
+                    styles: {
+                      paddingBottom: '8px',
+                      width: '100%',
+                      'font-family': 'SfProBold',
+                      'font-size': '1.063rem',
+                      color: '#272727',
+                    }, //Estilos a cambiar para que quede como en la imagen
+                  },
+                  middleTexts: [
+                    {
+                      text: 'Los agrupa según tus parámetros',
+                      styles: {
+                        fontFamily: 'SfProRegular',
+                        fontSize: '1rem',
+                        color: '#4F4F4F',
+                      },
+                    },
+                  ],
+                  bottomLeft: {
+                    text: '',
+                  },
+                },
+              },
+              {
+                type: 'WEBFORM-ANSWER',
+                optionStyles: 'webformAnswerLayoutOptionDefaultStyles',
+                selected: false,
+                optionIcon:
+                  'https://upload.wikimedia.org/wikipedia/en/c/c6/The_Legend_of_Zelda_Breath_of_the_Wild.jpg',
+                optionIconStyles: {
+                  width: '43px',
+                  height: '63px',
+                },
+                callback: () => null,
+                texts: {
+                  topRight: {
+                    text: '',
+                  },
+                  topLeft: {
+                    text: 'De Artículos',
+                    styles: {
+                      paddingBottom: '8px',
+                      width: '100%',
+                      'font-family': 'SfProBold',
+                      'font-size': '1.063rem',
+                      color: '#272727',
+                    },
+                  },
+                  middleTexts: [
+                    {
+                      text: 'Los agrupa según tus parámetros',
+                      styles: {
+                        fontFamily: 'SfProRegular',
+                        fontSize: '1rem',
+                        color: '#4F4F4F',
+                      },
+                    }, //Estilos a cambiar para que quede como en la imagen
+                  ],
+                  bottomLeft: {
+                    text: '',
+                  }, //Para que esten vacios
+                },
+              },
+              {
+                type: 'WEBFORM-ANSWER',
+                optionStyles: 'webformAnswerLayoutOptionDefaultStyles',
+                selected: false,
+                optionIcon:
+                  'https://upload.wikimedia.org/wikipedia/en/c/c6/The_Legend_of_Zelda_Breath_of_the_Wild.jpg',
+                optionIconStyles: {
+                  width: '43px',
+                  height: '63px',
+                },
+                callback: () => null,
+                texts: {
+                  topRight: {
+                    text: '',
+                  },
+                  topLeft: {
+                    text: 'De Facturas',
+                    styles: {
+                      paddingBottom: '8px',
+                      width: '100%',
+                      'font-family': 'SfProBold',
+                      'font-size': '1.063rem',
+                      color: '#272727',
+                    },
+                  },
+                  middleTexts: [
+                    {
+                      text: 'Los agrupa según tus parámetros',
+                      styles: {
+                        fontFamily: 'SfProRegular',
+                        fontSize: '1rem',
+                        color: '#4F4F4F',
+                      },
+                    },
+                  ],
+                  bottomLeft: {
+                    text: '',
+                  },
+                },
+              },
+            ],
+            footer: '',
+          },
           type: 'fullscreen-translucent',
-          props: {},
+          customClass: 'app-dialog',
+          flags: ['no-header'],
+          notCancellable: true,
         });
         break;
     }

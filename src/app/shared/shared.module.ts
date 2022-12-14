@@ -10,7 +10,7 @@ import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxPrintModule } from 'ngx-print';
 import { SwiperModule } from 'ngx-swiper-wrapper';
-import { DragDropModule } from '@angular/cdk/drag-drop'
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { environment } from './../../environments/environment';
 import { DialogModule } from './../libs/dialog/dialog.module';
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
@@ -110,6 +110,7 @@ import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.c
 import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
+import { ItemListSelectorComponent } from './dialogs/item-list-selector/item-list-selector.component';
 
 const imports = [
   CommonModule,
@@ -124,7 +125,7 @@ const imports = [
   NgxIntlTelInputModule,
   ClipboardModule,
   GooglePlaceModule,
-  DragDropModule
+  DragDropModule,
 ];
 const declarations = [
   // Pages
@@ -226,7 +227,8 @@ const declarations = [
   PostsXlsComponent,
   TagAsignationComponent,
   TagTypeDialogComponent,
-  MediaDialogComponent
+  MediaDialogComponent,
+  ItemListSelectorComponent,
 ];
 
 @NgModule({
@@ -234,6 +236,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: []
+  providers: [],
 })
 export class SharedModule {}
