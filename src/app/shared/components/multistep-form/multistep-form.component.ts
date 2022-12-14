@@ -185,7 +185,7 @@ export class MultistepFormComponent
   headerHeightTracker: number = 60;
   finishedExecutingStepProcessingFunction = true;
   colorPickerSwiperConfig: SwiperOptions = {
-    slidesPerView: 5,
+    slidesPerView: 'auto',
   };
   googleMapsApiLoaded: Observable<boolean>;
   location = null;
@@ -693,7 +693,11 @@ export class MultistepFormComponent
 
       //Previene las situaciones en las que el user pulsa la tecla izq. o derecha, y el input type number
       //ocasiona el el numero formateado se desconfigure
-      if (['ArrowLeft', 'ArrowRight', '+', '-', 'e'].includes(e.key)) {
+      if (
+        ['ArrowLeft', 'ArrowRight', '+', '-', 'e', 'Unidentified'].includes(
+          e.key
+        )
+      ) {
         e.preventDefault();
       }
     }
@@ -714,7 +718,7 @@ export class MultistepFormComponent
 
       //Previene las situaciones en las que el user pulsa la tecla izq. o derecha, y el input type number
       //ocasiona el el numero formateado se desconfigure
-      if (['+', '-', 'e'].includes(e.key)) {
+      if (['+', '-', 'e', 'Unidentified'].includes(e.key)) {
         e.preventDefault();
       }
     }
@@ -867,5 +871,9 @@ export class MultistepFormComponent
       else currentField.fieldControl.control.setValue('');
       //console.log('after', 'option', option, 'selected', currentField.fieldControl.control.value)
     }
+  }
+
+  handleCurrencyInput(currentField: FormField, amount: number) {
+    currentField.fieldControl.control.setValue(amount);
   }
 }

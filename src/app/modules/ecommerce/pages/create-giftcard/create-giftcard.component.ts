@@ -1,11 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 
 const lightLabelStyles = {
   fontFamily: 'RobotoRegular',
@@ -23,8 +21,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   constructor(
     private header: HeaderService,
     private router: Router,
-    private dialog: DialogService
+    private route: ActivatedRoute
   ) {}
+
+  virtual: boolean = false;
 
   storeEmptyMessageAndGoToShipmentDataForm(params) {
     const emptyPost = {
@@ -53,13 +53,23 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     this.header.orderProgress.message = true;
     this.header.storeOrderProgress();
+    if (this.virtual) {
+      this.header.checkoutRoute = `ecommerce/${this.header.saleflow._id}/checkout`;
+      this.router.navigate([`../create-article`], {
+        relativeTo: this.route,
+        replaceUrl: true,
+      });
+      return { ok: true };
+    }
     if (this.header.checkoutRoute) {
       this.router.navigate([this.header.checkoutRoute], {
         replaceUrl: true,
       });
       return { ok: true };
     }
-    this.router.navigate([`ecommerce/${this.header.saleflow._id}/new-address`]);
+    this.router.navigate([`../new-address`], {
+      relativeTo: this.route,
+    });
     return { ok: true };
   }
 
@@ -95,30 +105,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     return { ok: true };
   };
 
-  public continueOrder = () => {
-    this.router.navigate([
-      `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-    ]);
-  };
-
-  showShoppingCartDialog() {
-    this.dialog.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        headerButton: 'Ver mas productos',
-        orderFinished: true,
-        footerCallback: () =>
-          this.router.navigate([
-            `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-          ]),
-        headerCallback: () =>
-          this.router.navigate([`ecommerce/${this.header.saleflow._id}/store`]),
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
   addedScrollBlockerBefore = false;
   scrollBlockerBefore: any;
   removeScrollBlockerBefore: any;
@@ -127,175 +113,29 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     {
       fieldsList: [
         {
-          name: 'writeMessage',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          selectionOptions: [
-            'Sin mensaje y sin tarjetita',
-            // 'Recibes la tarjetita vacía y escribes tu el mensajito',
-            'Nosotros escribiremos el mensaje en una tarjetita',
-            // 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
-          ],
-          changeCallbackFunction: (change, params) => {
-            this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
-              change,
-              {
-                emitEvent: false,
-              }
-            );
-
-            this.formSteps[0].stepProcessingFunction(params);
-            if (
-              change === 'Nosotros escribiremos el mensaje en una tarjetita'
-            ) {
-              params.scrollToStep(1);
-            }
-            if (
-              change ===
-              'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
-            ) {
-              this.router.navigate(['others/post-edit'], {
-                queryParams: { viewtype: 'order' },
-              });
-            }
-          },
-          label: '¿Que tipo de mensajito de regalo prefieres?',
-          inputType: 'radio',
-          styles: {
-            containerStyles: {
-              marginTop: '32px',
-            },
-            labelStyles: {
-              fontFamily: 'RobotoBold',
-            },
-            fieldStyles: {
-              marginTop: '14px',
-            },
-          },
-        },
-      ],
-      customHelperHeaderConfig: {
-        bgcolor: this.header.colorTheme,
-      },
-      footerConfig: {
-        bgColor: this.header.colorTheme,
-      },
-      stepProcessingFunction: (params) => {
-        this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-        this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
-
-        if (params.scrollableForm) {
-          setTimeout(() => {
-            params.blockScrollBeforeCurrentStep();
-            this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-            this.removeScrollBlockerBefore =
-              params.unblockScrollBeforeCurrentStep;
-          }, 500);
-        }
-
-        if (
-          params.dataModel.value['1'].writeMessage ===
-          'Nosotros escribiremos el mensaje en una tarjetita'
-        )
-          return { ok: true };
-        else if (
-          params.dataModel.value['1'].writeMessage ===
-          'Sin mensaje y sin tarjetita'
-        ) {
-          this.storeEmptyMessageAndGoToShipmentDataForm(params);
-          return { ok: false };
-        } else if (
-          params.dataModel.value['1'].writeMessage ===
-          'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
-        ) {
-          return { ok: false };
-        }
-      },
-      customScrollToStepBackwards: (params) => {
-        if (this.scrollableForm) {
-          params.unblockScrollPastCurrentStep();
-          params.unblockScrollBeforeCurrentStep();
-        }
-
-        this.router.navigate([`ecommerce/${this.header.saleflow._id}/store`]);
-      },
-      showShoppingCartOnCurrentStep: true,
-      shoppingCartCallback: () => {
-        this.showShoppingCartDialog();
-      },
-      headerText: 'INFORMACIÓN DE LA ORDEN',
-      stepButtonInvalidText: 'TOCA EN LA OPCION QUE PREFIERAS',
-      stepButtonValidText: 'CONTINUAR',
-      headerMode: 'v2',
-      headerTextSide: 'LEFT',
-      headerTextStyles: {
-        marginLeft: '0px',
-        fontFamily: 'RobotoMedium',
-        fontWeight: 'normal',
-        fontSize: '17px',
-      },
-    },
-    {
-      fieldsList: [
-        {
-          name: 'receiver',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.pattern(/[\S]/)),
-          },
-          label: '¿Para quién es?',
-          placeholder: 'Type...',
-          topLabelAction: {
-            text: 'Sin mensaje de regalo',
-            clickable: true,
-            callback: (params) => {
-              this.storeEmptyMessageAndGoToShipmentDataForm(params);
-            },
-          },
-          styles: {
-            topLabelActionStyles: {
-              display: 'block',
-              color: '#27A2FF',
-              fontSize: '16px',
-              fontFamily: 'RobotoMedium',
-              cursor: 'pointer',
-              margin: '0px',
-              marginTop: '32px',
-              marginBottom: '24px',
-            },
-            labelStyles: lightLabelStyles,
-          },
-        },
-        {
-          name: 'sender',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.pattern(/[\S]/)),
-          },
-          label: '¿De parte de quién o quienes?',
-          placeholder: 'Type...',
-          styles: {
-            containerStyles: {
-              marginTop: '32px',
-              marginBottom: '32px',
-            },
-            labelStyles: lightLabelStyles,
-          },
-        },
-        {
           name: 'message',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.pattern(/[\S]/)),
+            control: new FormControl('', [
+              Validators.required,
+              Validators.pattern(/[\S]/),
+            ]),
           },
-          label: '¿Que mensaje escribiremos?',
+          changeCallbackFunction: (...params) => {
+            if (
+              params[0].trim() &&
+              params[1].dataModel.value['1']['receiver'].trim()
+            )
+              this.formSteps[0].fieldsList[2].disabled = false;
+            else this.formSteps[0].fieldsList[2].disabled = true;
+          },
+          label: 'Mensaje de Regalo (impreso o escrito a mano):',
           inputType: 'textarea',
-          placeholder: 'Type your message here...',
+          placeholder: 'Type..',
           styles: {
             containerStyles: {
-              marginBottom: '30px',
+              marginBottom: '57px',
+              marginTop: '48px',
             },
             fieldStyles: {
               boxShadow: '0px 4px 5px 0px #ddd inset',
@@ -314,9 +154,98 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             labelStyles: lightLabelStyles,
           },
         },
+        {
+          name: 'receiver',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', [
+              Validators.pattern(/[\S]/),
+              Validators.required,
+            ]),
+          },
+          changeCallbackFunction: (...params) => {
+            if (
+              params[0].trim() &&
+              params[1].dataModel.value['1']['message'].trim()
+            )
+              this.formSteps[0].fieldsList[2].disabled = false;
+            else this.formSteps[0].fieldsList[2].disabled = true;
+          },
+          label: 'Nombre del sobre:',
+          placeholder: 'Type..',
+          styles: {
+            labelStyles: lightLabelStyles,
+          },
+        },
+        {
+          inputType: 'button',
+          name: 'confirmButton',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(),
+          },
+          label: 'Adicione el contenido',
+          disabled: true,
+          styles: {
+            containerStyles: {
+              width: '89%',
+              maxWidth: '445px',
+              margin: '42.3vh auto 43px',
+              display: 'flex',
+              justifyContent: 'center',
+            },
+            fieldStyles: {
+              width: '90%',
+              maxWidth: '325px',
+              height: '37px',
+              borderRadius: '19px',
+              backgroundColor: '#2874AD',
+              fontFamily: 'SfProBold',
+              fontSize: '1rem',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+            },
+            hoverStyles: {
+              width: '90%',
+              height: '37px',
+              borderRadius: '19px',
+              backgroundColor: '#2874AD',
+              fontFamily: 'SfProBold',
+              fontSize: '1rem',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+            },
+            disabledStyles: {
+              width: '90%',
+              maxWidth: '325px',
+              height: '37px',
+              borderRadius: '19px',
+              backgroundColor: '#7B7B7B',
+              fontFamily: 'SfProBold',
+              fontSize: '1rem',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+            },
+            labelStyles: {
+              fontFamily: 'SfPrBold',
+              fontSize: '13px',
+              color: '#fff',
+            },
+          },
+        },
       ],
       customHelperHeaderConfig: {
         bgcolor: this.header.colorTheme,
+        // justifyContent: 'center',
+        // icon: {
+        //   src: '/arrow-double-up.svg',
+        //   width: 17,
+        //   height: 21,
+        //   cursor: 'pointer',
+        // },
       },
       footerConfig: {
         bgColor: this.header.colorTheme,
@@ -326,20 +255,22 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           params.unblockScrollPastCurrentStep();
           params.unblockScrollBeforeCurrentStep();
         }
-        this.formSteps[0].fieldsList[0].fieldControl.control.setValue('', {
-          emitEvent: false,
-        });
 
-        params.scrollToStep(0, false);
+        this.router.navigate(
+          [`ecommerce/${this.header.saleflow._id}/checkout`],
+          {
+            replaceUrl: true,
+          }
+        );
       },
       asyncStepProcessingFunction: {
         //esto deberia estar en el step 4, el de editar, está en el 2, porque se quizo quitar la foto de este flow
         type: 'promise',
         function: async (params) => {
           if (
-            params.dataModel.value['2']['message'] === '' &&
-            params.dataModel.value['2']['receiver'] === '' &&
-            params.dataModel.value['2']['sender'] === ''
+            params.dataModel.value['1']['message'] === '' &&
+            params.dataModel.value['1']['receiver'] === '' /* &&
+            params.dataModel.value['1']['sender'] === '' */
           ) {
             this.storeEmptyMessageAndGoToShipmentDataForm(params);
             return of({
@@ -348,14 +279,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           }
 
           const postInput = {
-            message: params.dataModel.value['2']['message']?.trim(),
+            message: params.dataModel.value['1']['message']?.trim(),
             targets: [
               {
-                name: params.dataModel.value['2']['receiver']?.trim(),
+                name: params.dataModel.value['1']['receiver']?.trim(),
                 emailOrPhone: '',
               },
             ],
-            from: params.dataModel.value['2']['sender']?.trim(),
+            // from: params.dataModel.value['2']['sender']?.trim(),
             // multimedia: this.header.flowImage,
             socialNetworks: [
               {
@@ -370,6 +301,15 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           try {
             this.header.orderProgress.message = true;
             this.header.storeOrderProgress();
+            if (this.virtual) {
+              this.header.checkoutRoute = `ecommerce/${this.header.saleflow._id}/checkout`;
+              this.router.navigate([`../create-article`], {
+                queryParamsHandling: 'preserve',
+                relativeTo: this.route,
+                replaceUrl: true,
+              });
+              return { ok: true };
+            }
             if (this.header.checkoutRoute) {
               this.router.navigate([this.header.checkoutRoute], {
                 replaceUrl: true,
@@ -378,9 +318,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
                 ok: true,
               });
             }
-            this.router.navigate([
-              `ecommerce/${this.header.saleflow._id}/new-address`,
-            ]);
+            this.router.navigate([`../new-address`], {
+              relativeTo: this.route,
+            });
             return of({
               ok: true,
             });
@@ -396,14 +336,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       customScrollToStep: (params) => {
         params.scrollToStep(1);
       },
-      showShoppingCartOnCurrentStep: true,
-      shoppingCartCallback: () => {
-        this.showShoppingCartDialog();
-      },
-      headerText: 'Comprar más',
-      headerTextSide: 'LEFT',
-      stepButtonInvalidText: 'ADICIONA EL MENSAJE',
-      stepButtonValidText: 'CONTINUAR',
+      hideMainStepCTA: true,
       headerMode: 'v2',
       headerTextStyles: {
         marginLeft: '0px',
@@ -415,6 +348,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   ];
 
   async ngOnInit(): Promise<void> {
+    const symbols = this.route.snapshot.queryParamMap.get('symbols');
+    if (symbols === 'virtual') {
+      this.virtual = true;
+    }
     this.header.flowRoute = `create-giftcard`;
     localStorage.setItem(
       'flowRoute',
@@ -424,12 +361,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     if (post?.targets?.[0]?.name) {
       this.formSteps[1].fieldsList[0].fieldControl.control = new FormControl(
         post.targets[0].name,
-        Validators.pattern(/[\S]/)
-      );
-    }
-    if (post?.from) {
-      this.formSteps[1].fieldsList[1].fieldControl.control = new FormControl(
-        post.from,
         Validators.pattern(/[\S]/)
       );
     }

@@ -4,6 +4,10 @@ import { EntityTemplate, EntityTemplateInput } from '../models/entity-template';
 import {
   entityTemplate,
   entityTemplateSetData,
+  entityTemplateByDateId,
+  entityTemplateByReference,
+  createEntityTemplate,
+  preCreateEntityTemplate
 } from '../graphql/entity-template.gql';
 
 @Injectable({
@@ -25,6 +29,29 @@ export class EntityTemplateService {
     return result?.entityTemplate;
   }
 
+  async entityTemplateByDateId(dateId: string): Promise<EntityTemplate> {
+    const result = await this.graphql.query({
+      query: entityTemplateByDateId,
+      variables: { dateId },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result?.entityTemplateByDateId;
+  }
+
+  async entityTemplateByReference(
+    reference: string,
+    entity: string
+  ): Promise<EntityTemplate> {
+    const result = await this.graphql.mutate({
+      mutation: entityTemplateByReference,
+      variables: { reference, entity },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result?.entityTemplateByReference;
+  }
+
   async entityTemplateSetData(
     id: string,
     input: EntityTemplateInput
@@ -37,6 +64,36 @@ export class EntityTemplateService {
       });
 
       return result?.entityTemplateSetData;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async createEntityTemplate(): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: createEntityTemplate,
+        variables: {},
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.createEntityTemplate;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async precreateEntityTemplate(): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: preCreateEntityTemplate,
+        variables: {},
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.preCreateEntityTemplate;
     } catch (error) {
       console.log(error);
       return null;

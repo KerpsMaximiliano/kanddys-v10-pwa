@@ -16,7 +16,11 @@
     />
     <img
       *ngIf="tg.status !== 'active'"
-      [src]="!tag.includes(tg._id) ? env + '/closed-eye-blue.svg' : env + '/closed-eye-white.svg'"
+      [src]="
+        !tag.includes(tg._id)
+          ? env + '/closed-eye-blue.svg'
+          : env + '/closed-eye-white.svg'
+      "
       alt=""
       [style.filter]="tag.includes(tg._id) ? selectedFilter : ''"
       class="image"

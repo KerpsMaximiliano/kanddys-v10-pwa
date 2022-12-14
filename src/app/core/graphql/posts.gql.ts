@@ -1,64 +1,63 @@
 import gql from 'graphql-tag';
 
 export const createPost = gql`
-mutation createPost($input:PostInput!){
-    createPost(input:$input){
-        _id,
-        password
-    } 
-}
+  mutation createPost($input: PostInput!) {
+    createPost(input: $input) {
+      _id
+      password
+    }
+  }
 `;
 
 export const updatePost = gql`
-  mutation updatePost($input:PostInput!, $id: ObjectID!){
-    updatePost(input:$input, id: $id){
+  mutation updatePost($input: PostInput!, $id: ObjectID!) {
+    updatePost(input: $input, id: $id) {
       _id
-    } 
+    }
   }
 `;
 
 export const updateSlide = gql`
-  mutation updateSlide($input: SlideInput!, $id: ObjectID!){
-    updateSlide(input: $input, id: $id){
+  mutation updateSlide($input: SlideInput!, $id: ObjectID!) {
+    updateSlide(input: $input, id: $id) {
       _id
-    } 
+    }
   }
 `;
 
 export const getPostByPassword = gql`
-query getPost($password:String!){
-  getPostByPassword(password:$password
-  ){
- _id,
- occasion,
- headline
- targets{
-   name,
-   emailOrPhone
- }
-  } 
-}
+  query getPost($password: String!) {
+    getPostByPassword(password: $password) {
+      _id
+      occasion
+      headline
+      targets {
+        name
+        emailOrPhone
+      }
+    }
+  }
 `;
 
 export const post = gql`
-query post($id:ObjectID!){
-  post(id:$id) {
-    _id,
-    author {
+  query post($id: ObjectID!) {
+    post(id: $id) {
       _id
+      author {
+        _id
+      }
+      message
+      from
+      multimedia
+      socialNetworks {
+        url
+      }
+      targets {
+        name
+        emailOrPhone
+      }
     }
-    message,
-    from,
-    multimedia,
-    socialNetworks{
-      url
-    }
-    targets{
-      name,
-      emailOrPhone
-    }
-  } 
-}
+  }
 `;
 
 export const getSimplePost = gql`
@@ -75,56 +74,66 @@ query post($id:ObjectID!){
 `;
 
 export const slidesByPost = gql`
-query slidesbyPost($postId:ObjectID!){
-  slidesbyPost(postId:$postId
-  ){
-    _id
-    type
-    title
-    text
-    media
-    index
-  } 
-}
+  query slidesbyPost($postId: ObjectID!) {
+    slidesbyPost(postId: $postId) {
+      _id
+      type
+      title
+      text
+      media
+      index
+    }
+  }
 `;
 
 export const assignPostToCode = gql`
-mutation assignPostToCode($code:String!,$postId:ObjectID!){
-  assignPostToCode(code:$code,postId:$postId
-  ){
-    code
-    
-  } 
-}
+  mutation assignPostToCode($code: String!, $postId: ObjectID!) {
+    assignPostToCode(code: $code, postId: $postId) {
+      code
+    }
+  }
 `;
-
 
 export const createCommentInPost = gql`
-mutation createCommentInPost($input:CommentInput!){
-  createCommentInPost(input:$input){
-    _id
-    
-  } 
-}
+  mutation createCommentInPost($input: CommentInput!) {
+    createCommentInPost(input: $input) {
+      _id
+    }
+  }
 `;
-
-
 
 export const commentsByPost = gql`
-query commentsByPost($postId:ObjectID!){
-  commentsByPost(postId:$postId){
-    _id,
-    content,
-    rating,
-    createdAt
-    user{
-      image,
-      name
+  query commentsByPost($postId: ObjectID!) {
+    commentsByPost(postId: $postId) {
+      _id
+      content
+      rating
+      createdAt
+      user {
+        image
+        name
+      }
     }
-    
-  } 
-}
+  }
 `;
 
-
-
+export const postAddUser = gql`
+  mutation postAddUser($postId: ObjectID!, $userId: ObjectID!) {
+    postAddUser(postId: $postId, userId: $userId) {
+      _id
+      author {
+        _id
+      }
+      message
+      from
+      multimedia
+      socialNetworks {
+        url
+      }
+      targets {
+        name
+        emailOrPhone
+      }
+    }
+  }
+`;

@@ -245,7 +245,7 @@ export class EntityDetailMetricsComponent implements OnInit {
               url:
                 environment.uri +
                 '/ecommerce/' +
-                this.saleflowService.saleflowData._id +
+                this.saleflowService.saleflowData.merchant.slug +
                 'store',
             })
             .then((response) => {
@@ -298,7 +298,7 @@ export class EntityDetailMetricsComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
-          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/store`;
+          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/store`;
 
           await this.ngNavigatorShareService
             .share({
@@ -341,7 +341,7 @@ export class EntityDetailMetricsComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
-          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/store`;
+          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/store`;
           await this.ngNavigatorShareService
             .share({
               title: '',

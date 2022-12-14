@@ -19,6 +19,38 @@ export const entityTemplate = gql`
   }
 `;
 
+export const entityTemplateByDateId = gql`
+  query entityTemplateByDateId($dateId: String!) {
+    entityTemplateByDateId(dateId: $dateId) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+    }
+  }
+`;
+
+export const entityTemplateByReference = gql`
+  mutation entityTemplateByReference($reference: ObjectID!, $entity: String!) {
+    entityTemplateByReference(reference: $reference, entity: $entity) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+      recipients{
+         recipient
+        edit 
+      }
+      hasPassword
+      access
+    }
+  }
+`;
+
 export const entityTemplateSetData = gql`
   mutation entityTemplateSetData($id: ObjectID!, $input: EntityTemplateInput!) {
     entityTemplateSetData(id: $id, input: $input) {
@@ -31,3 +63,25 @@ export const entityTemplateSetData = gql`
     }
   }
 `;
+
+export const createEntityTemplate = gql`
+  mutation createEntityTemplate {
+    createEntityTemplate {
+      _id
+      reference
+      status
+    }
+  }
+`;
+
+export const preCreateEntityTemplate = gql`
+  mutation preCreateEntityTemplate {
+    preCreateEntityTemplate {
+      _id
+      reference
+      status
+    }
+  }
+`;
+
+
