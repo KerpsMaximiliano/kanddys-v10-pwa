@@ -108,6 +108,7 @@ import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
 import { AnexoChoicesComponent } from './components/anexo-choices/anexo-choices.component';
+import { BiosBannerComponent } from './components/bios-banner/bios-banner.component';
 
 const imports = [
   CommonModule,
@@ -223,6 +224,7 @@ const declarations = [
   TagAsignationComponent,
   MediaDialogComponent,
   AnexoChoicesComponent,
+  BiosBannerComponent
 ];
 
 @NgModule({

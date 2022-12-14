@@ -44,8 +44,8 @@ export class ArticleCreatorComponent implements OnInit {
   price: string = '0.00';
   views: string = '0.00';
   sales: string = '0.00';
-  infoMissing: 'contact' | 'delivery' | 'payment' | 'banner' = 'contact';
-  viewType: 'preview' | 'edit' | 'saved' = 'edit';
+  infoMissing: 'contact' | 'delivery' | 'payment' | 'banner' = 'banner';
+  viewType: 'preview' | 'edit' | 'saved' = 'preview';
   multimedia: any = [];
   urls: string[] = [];
   display: string;

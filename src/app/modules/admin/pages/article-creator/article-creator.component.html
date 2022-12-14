@@ -244,13 +244,13 @@
     <div
       class="bottom-button-banner"
       *ngIf="viewType === 'preview'"
-      [ngClass]="{ withBanner: infoMissing === 'banner' }"
     >
       <ng-container *ngIf="infoMissing === 'banner'">
-        <!-- <app-bios-banner></app-bios-banner> -->
+        <app-bios-banner></app-bios-banner>
       </ng-container>
       <button
         class="button"
+        [ngClass]="{ withBanner: infoMissing === 'banner' }"
         (click)="mode === 'item' && item ? openShareDialog() : submit()"
       >
         <div [ngSwitch]="infoMissing">
@@ -272,6 +272,6 @@
         </div>
       </button>
     </div>
-    <!-- <app-bios-banner *ngIf="viewType !== 'preview'"> </app-bios-banner> -->
+    <app-bios-banner *ngIf="viewType !== 'preview'"> </app-bios-banner>
   </div>
 </div>
