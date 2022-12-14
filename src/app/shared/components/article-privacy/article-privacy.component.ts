@@ -394,7 +394,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   setCheck():void{
     this.controllers.controls.forEach((control:FormGroup) => {
       const result = (control.get('edit').value&&this.selectedTab.includes('A editar')?1:(!control.get('edit').value&&!this.selectedTab.includes('A editar')?1:0));
-      control.get('check').setValue(result);
+      control.get('check').setValue(!control.get('hasEntity').value?0:result);
     });
     // .setValue(this.controllers.value.map((value) => {
     //   const result = (value.edit&&this.selectedTab.includes('A editar')?1:(!value.edit&&!this.selectedTab.includes('A editar')?1:0));
