@@ -1,5 +1,5 @@
 <div class="container">
-  <div
+  <!-- <div
     class="nav"
     [ngStyle]="{
       gridTemplateColumns:
@@ -19,25 +19,25 @@
           style="color: rgb(255, 255, 255); display: block"
         ></i>
       </button>
-    </div>
+    </div> -->
     <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
     <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-    <img
+    <!-- <img
       *ngIf="mode === 'item' && item"
       src="{{ env }}/save-blue.png"
       class="notification"
       alt=""
       (click)="openTagsDialog()"
-    />
+    /> -->
     <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
     <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
     <!-- <span class="text">VISTA</span> -->
-    <div
+<!--     <div
       class="dot-trio"
       *ngIf="mode === 'item' && item"
       (click)="openItemOptionsDialog()"
-    ></div>
-  </div>
+    ></div> -->
+  <!-- </div> -->
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
       <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">
@@ -62,26 +62,29 @@
               (mouseup)="handleSlide($event)"
             >
               <div class="grid">
+                <!-- AREA DE BOTONES, CAMBIAR -->
+                <div class="buttons-edit" *ngIf="viewType === 'edit'">
+                  <button class="arrows">
+                    <img
+                      [src]="env + '/arrow-double-up.svg'"
+                      alt="Flechas dobles apuntando hacia arriba"
+                    />
+                  </button>
+                  <button class="edit-button">Editar</button>
+                </div>
                 <div
-                  [style.visibility]="controller.valid ? 'initial' : 'hidden'"
-                  class="col"
+                  class="buttons-edit"
+                  style="justify-content: flex-end; margin-top: 35px"
+                  *ngIf="viewType === 'saved'"
                 >
-                  <button class="grid-btn" (click)="removeFile(i, k)">
-                    <span class="icon">x</span>
-                    <span class="copy">SLIDE</span>
-                  </button>
+                  <button class="comitions">Comisiones para vender mas</button>
+                  <button class="edit-button">Editar</button>
                 </div>
-                <div class="col">
-                  <button
-                    *ngIf="controller.valid"
-                    class="grid-btn"
-                    (click)="addFile(i, j, k)"
-                  >
-                    <span class="icon">+</span>
-                    <span class="copy">SLIDE</span>
-                  </button>
-                </div>
+                <button class="fixed-button" *ngIf="viewType === 'preview'" (click)="removeFile(i, k)">
+                  Cancelar cambios
+                </button>
               </div>
+              <!-- AREA DE BOTONES, CAMBIAR -->
               <input
                 id="{{ i }}{{ k }}"
                 class="hidden"
@@ -165,6 +168,13 @@
     </ng-container>
   </ng-container>
   <div class="fixed">
+    <!-- AREGAR AREA TEXTOS -->
+    <div class="bottom-swiper">
+      <div class="text-icons">
+        <label for="Upper text" class="main-text">Texto (opcional) </label>
+        <label for="Lower text" class="second-text">Texto (opcional) </label>
+      </div>
+    </div>
     <div
       class="lines"
       [style]="{
@@ -190,26 +200,78 @@
       <span>Citas</span>
       <span>Planilla</span>
     </div> -->
-    <div class="extra" *ngIf="ctaDescription">
-      <div
-        class="description"
-        [ngStyle]="{ textAlign: mode === 'item' && item ? 'left' : 'center' }"
-      >
-        {{ item ? 'El visitante te paga RD$' + (item.pricing | number: "1.2-2") + '.' : 'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.' }}
+    <div class="button-display-area">
+      <!--FOR EDIT & OTHER-->
+      <ng-container *ngIf="viewType !== 'preview'">
+        <div class="sales-price">
+          <div class="sales-flex">
+            <span class="price" style="margin-right: 31px"
+              >{{ views }} vistas</span
+            >
+            <span class="price" style="margin-right: 31px"
+              >{{ sales }} ventas</span
+            >
+          </div>
+          <span class="price">RD$ {{ price }}</span>
+        </div>
+
+        <button class="big-button">
+          <img [src]="env + '/bookmark-plus.svg'" alt="" />
+          Adiciona tags para organizar tus items.
+        </button>
+      </ng-container>
+      <!--FOR EDIT & OTHER-->
+      <span class="price" *ngIf="viewType === 'preview'">RD$ {{ price }}</span>
+      <div class="buttons-display" *ngIf="viewType === 'preview'">
+        <button class="round-button">
+          <img [src]="env + '/unlock.svg'" />
+        </button>
+        <button class="round-button">
+          <img [src]="env + '/screen-cut.svg'" />
+        </button>
+        <button class="round-button">
+          <img [src]="env + '/cog-wheel.svg'" />
+        </button>
+        <button
+          class="save-button"
+          [ngClass]="{ activated: infoMissing === 'banner' }"
+        >
+          SALVAR
+        </button>
       </div>
+    </div>
+
+    <div
+      class="bottom-button-banner"
+      *ngIf="viewType === 'preview'"
+      [ngClass]="{ withBanner: infoMissing === 'banner' }"
+    >
+      <ng-container *ngIf="infoMissing === 'banner'">
+        <!-- <app-bios-banner></app-bios-banner> -->
+      </ng-container>
       <button
-        *ngIf="mode === 'item' && item"
-        class="grid-btn"
-        (click)="submit()"
+        class="button"
+        (click)="mode === 'item' && item ? openShareDialog() : submit()"
       >
-        EDITAR
+        <div [ngSwitch]="infoMissing">
+          <div style="color: #202020" *ngSwitchCase="'contact'">
+            <span>Adiciona la información publica de tu contacto</span>
+          </div>
+          <div style="color: #202020" *ngSwitchCase="'delivery'">
+            <span>Adiciona la información de tus entregas</span>
+          </div>
+          <div style="color: #202020" *ngSwitchCase="'payment'">
+            <span
+              >Adiciona la información de donde recibirás el dinero del
+              pago</span
+            >
+          </div>
+          <div style="color: #202020" *ngSwitchCase="'banner'">
+            <span>Opcional: Edita el banner</span>
+          </div>
+        </div>
       </button>
     </div>
-    <button
-      class="button"
-      (click)="mode === 'item' && item ? openShareDialog() : submit()"
-    >
-      {{ mode === "item" && item ? "Compartir" : ctaText }}
-    </button>
+    <!-- <app-bios-banner *ngIf="viewType !== 'preview'"> </app-bios-banner> -->
   </div>
 </div>

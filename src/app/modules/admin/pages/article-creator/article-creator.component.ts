@@ -41,6 +41,11 @@ export class ArticleCreatorComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
   controllers: FormArray = new FormArray([]);
+  price: string = '0.00';
+  views: string = '0.00';
+  sales: string = '0.00';
+  infoMissing: 'contact' | 'delivery' | 'payment' | 'banner' = 'contact';
+  viewType: 'preview' | 'edit' | 'saved' = 'edit';
   multimedia: any = [];
   urls: string[] = [];
   display: string;
