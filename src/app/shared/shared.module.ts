@@ -109,6 +109,7 @@ import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.com
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
 import { AnexoChoicesComponent } from './components/anexo-choices/anexo-choices.component';
 import { BiosBannerComponent } from './components/bios-banner/bios-banner.component';
+import { ItemListSelectorComponent } from './dialogs/item-list-selector/item-list-selector.component';
 
 const imports = [
   CommonModule,
@@ -224,7 +225,8 @@ const declarations = [
   TagAsignationComponent,
   MediaDialogComponent,
   AnexoChoicesComponent,
-  BiosBannerComponent
+  BiosBannerComponent,
+  ItemListSelectorComponent
 ];
 
 @NgModule({

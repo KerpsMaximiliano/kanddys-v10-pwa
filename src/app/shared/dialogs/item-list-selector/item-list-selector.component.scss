@@ -1,0 +1,186 @@
+.container{
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   .main-container{
+      width: 85%;
+      max-height: 80vh;
+      overflow: scroll;
+      display: flex;
+      flex-direction: column;
+      background-color: #FFFFFF;
+      margin-top: 25px;
+      padding: 35px 5.5% 32px;
+      border-radius: 12px;
+
+      .headline-subtitle{
+         width: 100%;
+         display: flex;
+         flex-direction: column;
+         justify-content: center;
+         align-items: flex-start;
+
+         .title{
+            font-family: 'SfProBold';
+            font-size: 1.438rem;
+            color: #4F4F4F;
+            margin: 0 0 6px;
+            line-height: 32px;
+         }
+
+         .subtitle{
+            font-family: 'SfProRegular';
+            font-size: 1.063rem;
+            color: #272727;
+            margin: 0 0 20px;
+            line-height: 21px;
+         }
+      }
+
+      /* .answer-container{
+         max-height: 60vh;
+         overflow: scroll;
+      } */
+
+      .title-input{
+         width: 100%;
+         display: flex;
+         flex-direction: column;
+         justify-content: flex-start;
+         margin-top: 18px;
+
+         &:first-child{
+            margin-top: 12px;
+         }
+
+         .input-label{
+            font-family: 'SfProBold';
+            font-size: 1.063rem;
+            font-weight: 500;
+            color: #272727;
+            margin-bottom: 9px;
+         }
+
+         .input-textarea{
+            background-color: #FFFFFF;
+            font-family: 'RobotoMedium';
+            font-size: 1.063rem;
+            color: #7B7B7B;
+            padding: 20px 3.75% 10px;
+            resize: none;
+            border: none;
+            border-radius: 9px;
+            box-shadow: inset 0 3px 7px 3px rgba(0, 0, 0, 20%);
+
+            &::placeholder{
+               font-family: 'RobotoMedium';
+               font-size: 1.063rem;
+               color: rgba(112, 112, 112, 60%);
+            }
+         }
+
+         .input-content{
+            width: 56.65%;
+            min-height: 66px;
+            font-family: 'RobotoMedium';
+            font-size: 1.063rem;
+            color: #7B7B7B;
+            text-indent: 16px;
+            border: none;
+            border-radius: 9px;
+            background-color: #FFFFFF;
+            box-shadow: inset 0 3px 7px 3px rgba(0, 0, 0, 20%);
+
+            &::placeholder{
+               font-family: 'RobotoMedium';
+               font-size: 1.063rem;
+               color: rgba(112, 112, 112, 60%);
+            }
+         }
+
+      }
+
+      .footer-background{
+         width: 100%;
+         background-color: #E9E9E9;
+         border-radius: 12px;
+         padding: 17px 15px 15px;
+
+         .footer{
+            font-family: 'SfProRegular';
+            font-size: 1.063rem;
+            color: #272727;
+            margin: 0 0 5px;
+         }
+      }
+
+      .footer{
+         font-family: 'SfProRegular';
+         font-size: 1.063rem;
+         color: #272727;
+         margin: 26px 0 5px;
+      }
+
+      .footer-button{
+         width: 56.65%;
+         background-color: #272727;
+         font-size: 0.8125rem;
+         color: #82F18D;
+         margin: 20px 0;
+         padding: 5px 10px;
+         border: 1px solid #707070;
+         border-radius: 12px;
+         cursor: pointer;
+      }
+   }
+
+   .final{
+      border: solid 5px #8AEB89;
+      position: absolute;
+      top: 25vh;
+      margin: 0;
+
+      .footer-container{
+         display: flex;
+         flex-direction: column;
+
+         .footer-title{
+            font-family: 'SfProRegular';
+            font-size: 1.063rem;
+            font-weight: 500;
+            color: #272727;
+            margin: 15px 0 11px;
+         }
+
+         .footer{
+            font-family: 'SfProRegular';
+            font-size: 1.063rem;
+            color: #272727;
+            margin: 0 0 6px;
+            line-height: 21px;
+         }
+      }
+
+      .footer-button{
+         width: 90%;
+         background-color: #272727;
+         font-size: 0.8125rem;
+         color: #82F18D;
+         margin: 10px 0;
+         padding: 5px 10px;
+         border: 1px solid #707070;
+         border-radius: 12px;
+         cursor: pointer;
+      }
+   }
+}
+
+.cta{
+   all: unset;
+   font-family: 'SfProRegular';
+   font-size: 1.063rem;
+   color: #2874AD;
+   background-color: transparent;
+   cursor: pointer;
+}

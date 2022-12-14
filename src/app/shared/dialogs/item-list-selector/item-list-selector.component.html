@@ -1,0 +1,105 @@
+<div class="container">
+  <div class="main-container" *ngIf="!final">
+    <div class="headline-subtitle">
+      <h1 class="title">{{ title }}</h1>
+      <p *ngIf="subTitle" class="subtitle">
+        {{ subTitle }}
+      </p>
+    </div>
+
+    <div
+      class="answer-container"
+      *ngIf="webformOptions"
+    >
+      <app-answer-selector
+        [complexOptions]="webformOptions"
+        [hasComplexOptionsLayout]="true"
+        [indicator]="true"
+        [showSelectedFeedback]="true"
+        [showDescription]="false"
+        (onSelector)="selectedOption($event)"
+        [containerStyles]="{
+          margin: '0px',
+          paddingBottom: '16px'
+        }"
+      ></app-answer-selector>
+    </div>
+
+    <ng-container *ngIf="inputs">
+      <div class="title-input" *ngFor="let input of inputs">
+        <label
+          for="Entrada de informacion"
+          class="input-label"
+          *ngIf="input.label"
+          >{{ input.label }}</label
+        >
+
+        <input
+          class="input-content"
+          [type]="input.type"
+          [placeholder]="input.placeholder"
+          [ngStyle]="input.inputStyles ? input.inputStyles : null"
+          *ngIf="input.type !== 'textarea'"
+        />
+
+        <textarea
+          class="input-textarea"
+          name="data-in"
+          id="input-textarea"
+          [placeholder]="input.placeholder"
+          [cols]="!input.cols ? 30 : input.cols"
+          [rows]="!input.rows ? 6 : input.rows"
+          *ngIf="input.type === 'textarea'"
+        ></textarea>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="footer">
+      <div
+        class="footer-background"
+        [ngStyle]="footerBackgroundStyles"
+        *ngIf="footerBackground"
+      >
+        <p class="footer">{{ footer }}</p>
+      </div>
+      <p class="footer" *ngIf="!footerBackground">{{ footer }}</p>
+    </ng-container>
+
+    <button
+      class="footer-button"
+      *ngIf="footerButton"
+      [ngStyle]="footerButton.buttonStyles"
+    >
+      {{ footerButton.text }}
+    </button>
+  </div>
+
+  <div class="main-container final" *ngIf="final">
+    <div class="headline-subtitle">
+      <h1 class="title">{{ title }}</h1>
+      <p *ngIf="subTitle" class="subtitle">
+        {{ subTitle }}
+        <button
+          [ngStyle]="cta.styles && cta.styles"
+          class="cta"
+          (click)="cta.callback()"
+        >
+          {{ cta.text }}
+        </button>
+      </p>
+    </div>
+
+    <div class="footer-container" *ngIf="footer || footerTitle">
+      <h2 class="footer-title">{{ footerTitle }}</h2>
+      <p class="footer">{{ footer }}</p>
+    </div>
+
+    <button
+      class="footer-button"
+      *ngIf="footerButton"
+      [ngStyle]="footerButton.buttonStyles"
+    >
+      {{ footerButton.text }}
+    </button>
+  </div>
+</div>
