@@ -59,7 +59,7 @@
   <ng-container *ngIf="sentInvite">
       <div class="sent-invite">
          <h1 class="invite">{{code}}</h1>
-         <p class="time">Tiempo remitente del simbolo <ng-container *ngIf="hours&&minutes&&seconds">{{ hours | number }}:{{ minutes }}:{{ seconds }}</ng-container></p>
+         <!-- <p class="time">Tiempo remitente del simbolo <ng-container *ngIf="hours&&minutes&&seconds">{{ hours | number }}:{{ minutes }}:{{ seconds }}</ng-container></p> -->
          
          <p class="info">Tu invitación con el enlace de acceso fue enviado a tu {{ code.includes('@')?'correo':'telefono' }}.</p>
       </div>

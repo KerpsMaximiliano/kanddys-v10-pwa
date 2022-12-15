@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 
@@ -14,10 +15,12 @@ export class InputTransparentComponent implements OnInit {
   @Input() templateId: string;
   @Output() fieldValue = new EventEmitter<any>();
   input = new FormControl('', [Validators.required, Validators.minLength(3)]);
+  status:string = 'complete';
 
   constructor(
     private ref: DialogRef,
-    private _EntityTemplateService: EntityTemplateService
+    private _EntityTemplateService: EntityTemplateService,
+    private _Router: Router
   ) {}
 
   close(){
@@ -32,9 +35,16 @@ export class InputTransparentComponent implements OnInit {
 
   submit(): void {
     const submit = async () => {
+      this.status = 'loading';
       const result = await this._EntityTemplateService.entityTemplate(this.templateId,this.input.value);
-      console.log('result: ', result);
+      if(result){
+        const { _id, entity } = result;
+        if(entity&&_id)
+          this._Router.navigate(['ecommerce','article-detail',entity,_id]);
+      }
+      this.status = 'complete';
     }
-    submit();
+    if(this.status!=='loading')
+      submit();
   }
 }

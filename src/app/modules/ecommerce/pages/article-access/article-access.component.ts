@@ -60,7 +60,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
          const _saleflowDefault = await this._SaleFlowService.saleflowDefault(
             _merchantDefault._id
           );
-         const { recipients, hasPassword, access } = await this._EntityTemplateService.entityTemplate(templateId);
+         const { recipients, hasPassword, access } = (await this._EntityTemplateService.entityTemplate(templateId)) || { recipients: [] };
          if(access==='public')
             this._Router.navigate(['ecommerce', _saleflowDefault._id, 'article-detail', 'entity-template', this.templateId]);
          this.hasPassword = hasPassword;
@@ -81,8 +81,8 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
             const [data] = recipients;
             _recipients.push(data);
          }
-         this.targets = _recipients;
-         for(const { email, phone, nickname } of _recipients){
+         this.targets = _recipients.filter((recipient) => recipient);
+         for(const { email, phone, nickname } of this.targets){
             let aux = false;
             const data = phone || email;
             const list = data.split('');
