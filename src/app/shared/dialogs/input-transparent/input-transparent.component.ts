@@ -38,9 +38,10 @@ export class InputTransparentComponent implements OnInit {
       this.status = 'loading';
       const result = await this._EntityTemplateService.entityTemplate(this.templateId,this.input.value);
       if(result){
-        const { _id, entity } = result;
-        if(entity&&_id)
-          this._Router.navigate(['ecommerce','article-detail',entity,_id]);
+        const { entity, reference } = result;
+        if(entity&&reference)
+          this._Router.navigate(['qr', 'article-detail', entity, reference]);
+          this.ref.close();
       }
       this.status = 'complete';
     }

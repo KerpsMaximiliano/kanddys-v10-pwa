@@ -56,13 +56,9 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    this._Subscription = this._ActivatedRoute.params.subscribe(({ templateId }) => {
       this.templateId = templateId;
       const post = async () => {
-         const _merchantDefault = await this._MerchantsService.merchantDefault();
-         const _saleflowDefault = await this._SaleFlowService.saleflowDefault(
-            _merchantDefault._id
-          );
          const { recipients, hasPassword, access } = (await this._EntityTemplateService.entityTemplate(templateId)) || { recipients: [] };
          if(access==='public')
-            this._Router.navigate(['ecommerce', _saleflowDefault._id, 'article-detail', 'entity-template', this.templateId]);
+            this._Router.navigate(['qr', 'article-detail', 'entity-template', this.templateId]);
          this.hasPassword = hasPassword;
          const _recipients = [];
          for(const { recipient } of recipients){
@@ -77,7 +73,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
                 },
               },
             };
-            const {recipients}: any = await this._RecipientsService.recipients(pagination);
+            const {recipients}: any = (await this._RecipientsService.recipients(pagination)) || {recipients:[]};
             const [data] = recipients;
             _recipients.push(data);
          }
