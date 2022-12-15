@@ -134,6 +134,7 @@
         border-radius: 17px;
         position: relative;
         cursor: pointer;
+        box-shadow: 0px 3px 6px #70707063;
       }
     }
 
@@ -236,6 +237,23 @@
 .fa-list {
   color: #7b7b7b;
   font-size: 0.8rem;
+}
+
+.corner-btn2 {
+  all: unset;
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  top: -4px;
+  right: -5px;
+  border-radius: 50%;
+  display: flex;
+  background-color: #fff;
+  border: 1px solid #7b7b7b;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1;
 }
 
 .corner-btn {

@@ -191,11 +191,7 @@
         multiple
         [accept]="['.png', '.jpg', '.jpeg']"
       />
-      <label
-        [style.background]="sanitize('')"
-        for="filemultiple"
-        class="add-image"
-      >
+      <label for="filemultiple" class="add-image">
         <div class="corner-btn add"></div>
       </label>
       <!-- <button class="add-image">
@@ -211,7 +207,51 @@
           [style.background]="sanitize(item)"
           (click)="openImageModal(item)"
         ></button>
-        <button class="corner-btn delete" (click)="deleteImage(i)"></button>
+        <!-- <button class="corner-btn delete" (click)="deleteImage(i)"></button> -->
+        <div class="corner-btn2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="6"
+            viewBox="0 0 22 6"
+          >
+            <g
+              id="Group_71232"
+              data-name="Group 71232"
+              transform="translate(-387 -78)"
+            >
+              <g id="Group_71368" data-name="Group 71368">
+                <circle
+                  id="Ellipse_5107"
+                  data-name="Ellipse 5107"
+                  cx="3"
+                  cy="3"
+                  r="3"
+                  transform="translate(387 78)"
+                  fill="#272727"
+                />
+                <circle
+                  id="Ellipse_5108"
+                  data-name="Ellipse 5108"
+                  cx="3"
+                  cy="3"
+                  r="3"
+                  transform="translate(395 78)"
+                  fill="#272727"
+                />
+                <circle
+                  id="Ellipse_5109"
+                  data-name="Ellipse 5109"
+                  cx="3"
+                  cy="3"
+                  r="3"
+                  transform="translate(403 78)"
+                  fill="#272727"
+                />
+              </g>
+            </g>
+          </svg>
+        </div>
       </div>
     </div>
 
