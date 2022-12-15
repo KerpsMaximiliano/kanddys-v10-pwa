@@ -183,7 +183,7 @@ export class ArticleDetailComponent implements OnInit {
       this.itemTags?.forEach((tag) => {
         tag.selected = this.itemData.tags?.includes(tag._id);
       });
-
+      console.log(this.itemData)
       this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
       if (this.itemData.images?.length < 2) this.startTimeout();
     } catch (error) {

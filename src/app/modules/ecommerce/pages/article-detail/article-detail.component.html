@@ -1,38 +1,8 @@
-<!--HEADER MENU-->
-<div class="header">
-  <div class="notification" (click)="back()">
-    <div>
-      <i
-        class="fas fa-chevron-up"
-        aria-hidden="true"
-        style="color: rgb(255, 255, 255); display: block"
-      ></i>
-      <i
-        class="fas fa-chevron-up"
-        aria-hidden="true"
-        style="color: rgb(255, 255, 255); display: block"
-      ></i>
-    </div>
-  </div>
-  <div></div>
-  <div></div>
-  <!-- <img
-    (click)="openMenu('DESCRIPTION')"
-    src="{{ env }}/d.png"
-    class="notification"
-  /> -->
-
-  <div
-    class="dot-trio"
-    (click)="moreOptions()"
-  ></div>
-
-  <div></div>
-  <span class="text"></span>
-  <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
-</div>
 
 <div class="container" *ngIf="itemData">
+  <button class="fixed-top-button">
+    <img [src]="env + '/arrow-double-up.svg'" alt="Flecha doble hacia arriba">
+  </button>
   <div class="media-swiper-wrapper">
     <swiper
       [config]="swiperConfig"
@@ -47,7 +17,7 @@
             backgroundImage: 'url(' + image + ')',
             backgroundSize: 'contain',
             height: 'calc(100vh - (179px))',
-            backgroundColor: '#2e2e2e'
+            backgroundColor: '#E9E371'
           }"
         ></div>
       </ng-container>
@@ -60,6 +30,25 @@
       opened: menuOpened
     }"
   >
+  <div class="text-icons-container">
+    <div class="top-section">
+      <label for="Nombre" class="top-text">{{itemData.name ? itemData.name : 'Sin nombre 1243'}}</label>
+
+      <div class="icons-flex">
+        <button class="round-button">
+          <img [src]="env + '/heart.svg'" alt="Corazón">
+        </button>
+        <button class="round-button">
+          <img [src]="env + '/speech-bubble.svg'" alt="Burbuja de diálogo">
+        </button>
+        <button class="round-button">
+          <img [src]="env + '/upload.svg'" alt="Contenedor con flecha saliendo">
+        </button>
+      </div>
+    </div>
+    
+    <p class="bottom-text">Aqui va el texto escrito (si los tiene). Mostraremos las primeras dos lineas y acaba en un texto que deberia de cortarse para cerciorar...</p>
+  </div>
     <div class="inner-wrapper-top">
       <div
         class="current-media-shown-indicators"
@@ -336,3 +325,4 @@
     </div>
   </div>
 </div>
+<app-bios-banner style="z-index: 999; position: fixed; bottom: 0;"></app-bios-banner>
