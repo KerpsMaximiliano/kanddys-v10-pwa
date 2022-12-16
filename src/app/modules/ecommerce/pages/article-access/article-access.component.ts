@@ -189,11 +189,10 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    this.sentInvite = true;
    this.code = this.check[e].subtexts.length?this.check[e].subtexts[0].text:this.check[e].value; 
    const generateMagicLink = async () => {
-      const { entity, reference } = await this._EntityTemplateService.entityTemplateRecipient(this.templateId);
       const emailOrPhone = this.targets[e].phone || this.targets[e].email;
       const result = await this._AuthService.generateMagicLink(
          emailOrPhone.replace('+',''),
-         `qr/article-detail/${entity}/${reference}`,
+         'qr/article-detail',
          this.templateId,
          'TemplateAccess',
          {}
