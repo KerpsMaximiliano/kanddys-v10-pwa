@@ -71,6 +71,7 @@ export class OrderDetailComponent implements OnInit {
     time: string;
   };
   messageLink: string;
+  orderItems: any[] = ['',''];
   tags: Tag[];
   selectedTags: any = {};
   tabs: any[] = ['', '', '', '', ''];
