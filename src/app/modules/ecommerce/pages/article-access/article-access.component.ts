@@ -60,23 +60,9 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
          if(access==='public')
             this._Router.navigate(['qr', 'article-detail', 'entity-template', this.templateId]);
          this.hasPassword = hasPassword;
-         const _recipients = [];
-         for(const { recipient } of recipients){
-            const pagination = {
-              paginate: {
-                findBy: {
-                  _id: {
-                     __in: [
-                        recipient
-                     ]
-                  },
-                },
-              },
-            };
-            const {recipients}: any = (await this._RecipientsService.recipients(pagination)) || {recipients:[]};
-            const [data] = recipients;
-            _recipients.push(data);
-         }
+         const data = recipients.map(({recipient}) => recipient);
+         const { recipientsById }:any = (await this._RecipientsService.recipientsById(data)) || {recipients:[]};
+         const _recipients = recipientsById;
          this.targets = _recipients.filter((recipient) => recipient);
          for(const { email, phone, nickname } of this.targets){
             let aux = false;

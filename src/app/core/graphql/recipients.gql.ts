@@ -27,6 +27,22 @@ export const recipients = gql`
   }
 `;
 
+export const recipientsById = gql`
+  query recipientsById($ids: [ObjectID!]!) {
+    recipientsById(ids: $ids) {
+      _id
+      createdAt
+      updatedAt
+      phone
+      email
+      nickname
+      user
+      tags
+      image
+    }
+  }
+`;
+
 export const deleteRecipient = gql`
   mutation deleteRecipient($id: ObjectID!) {
     deleteRecipient(id: $id)
