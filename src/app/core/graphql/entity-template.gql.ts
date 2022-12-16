@@ -19,6 +19,23 @@ export const entityTemplate = gql`
   }
 `;
 
+export const entityTemplateRecipient = gql`
+  query entityTemplateRecipient($id: ObjectID!) {
+    entityTemplateRecipient(id: $id) {
+      _id
+      entity
+      reference
+      recipients{
+        _id
+        edit
+        recipient
+      }
+      access
+      hasPassword
+    }
+  }
+`;
+
 export const entityTemplateByDateId = gql`
   query entityTemplateByDateId($dateId: String!) {
     entityTemplateByDateId(dateId: $dateId) {
