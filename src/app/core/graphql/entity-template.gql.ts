@@ -1,14 +1,37 @@
 import gql from 'graphql-tag';
 
 export const entityTemplate = gql`
-  query entityTemplate($id: ObjectID!) {
-    entityTemplate(id: $id) {
+  query entityTemplate($id: ObjectID!, $password: String) {
+    entityTemplate(id: $id, password: $password) {
       _id
       reference
       entity
       dateId
       status
       user
+      recipients{
+         recipient
+        edit 
+      }
+      hasPassword
+      access
+    }
+  }
+`;
+
+export const entityTemplateRecipient = gql`
+  query entityTemplateRecipient($id: ObjectID!) {
+    entityTemplateRecipient(id: $id) {
+      _id
+      entity
+      reference
+      recipients{
+        _id
+        edit
+        recipient
+      }
+      access
+      hasPassword
     }
   }
 `;
@@ -35,6 +58,12 @@ export const entityTemplateByReference = gql`
       dateId
       status
       user
+      recipients{
+         recipient
+        edit 
+      }
+      hasPassword
+      access
     }
   }
 `;

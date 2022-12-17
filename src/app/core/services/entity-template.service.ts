@@ -7,7 +7,8 @@ import {
   entityTemplateByDateId,
   entityTemplateByReference,
   createEntityTemplate,
-  preCreateEntityTemplate
+  preCreateEntityTemplate,
+  entityTemplateRecipient
 } from '../graphql/entity-template.gql';
 
 @Injectable({
@@ -16,14 +17,30 @@ import {
 export class EntityTemplateService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async entityTemplate(id: string): Promise<EntityTemplate> {
+  async entityTemplate(id: string, password?: string): Promise<EntityTemplate> {
+    let variables:any = { id };
+    if(password)
+      variables.password = password;
     const result = await this.graphql.query({
       query: entityTemplate,
-      variables: { id },
+      variables,
       fetchPolicy: 'no-cache',
     });
     if (!result) return;
     return result?.entityTemplate;
+  }
+
+  async entityTemplateRecipient(id: string, password?: string): Promise<EntityTemplate> {
+    let variables:any = { id };
+    if(password)
+      variables.password = password;
+    const result = await this.graphql.query({
+      query: entityTemplateRecipient,
+      variables,
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result?.entityTemplateRecipient;
   }
 
   async entityTemplateByDateId(dateId: string): Promise<EntityTemplate> {

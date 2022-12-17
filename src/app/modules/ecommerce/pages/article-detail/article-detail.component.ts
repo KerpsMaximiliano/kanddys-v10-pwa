@@ -546,7 +546,7 @@ export class ArticleDetailComponent implements OnInit {
                   createdEntityTemplate._id,
                   {
                     entity: 'entity-template',
-                    reference: result._id,
+                    reference: result._id
                   }
                 );
 
