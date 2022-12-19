@@ -1,8 +1,22 @@
 <div class="tags-grid" [style.background]="containerBackground">
   <button
     *ngFor="let tg of tags"
-    [style.background]="tag.includes(tg._id) ? selectedBackground : background"
-    [style.color]="tag.includes(tg._id) ? selectedColor : color"
+    [style.background]="
+      !tag.includes(tg._id) && tg.notify
+        ? notificationBackground
+        : !tag.includes(tg._id) && !tg.notify && tg.status !== 'active'
+        ? inactiveBackground
+        : tag.includes(tg._id)
+        ? selectedBackground
+        : background
+    "
+    [style.color]="
+      !tg.notify && tg.status !== 'active'
+        ? inactiveColor
+        : tag.includes(tg._id)
+        ? selectedColor
+        : color
+    "
     class="tag"
     (click)="setTag(tg)"
   >
@@ -18,8 +32,8 @@
       *ngIf="tg.status !== 'active'"
       [src]="
         !tag.includes(tg._id)
-          ? env + '/closed-eye-blue.svg'
-          : env + '/closed-eye-white.svg'
+          ? env + '/closed-eye-white.svg'
+          : env + '/closed-eye-blue.svg'
       "
       alt=""
       [style.filter]="tag.includes(tg._id) ? selectedFilter : ''"

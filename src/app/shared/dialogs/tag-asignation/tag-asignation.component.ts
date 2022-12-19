@@ -19,8 +19,13 @@ export class TagAsignationComponent implements OnInit {
   env: string = environment.assetsUrl;
   @Input() tags: Tag[] = [];
   @Input() activeTags: Tag[];
-  background: string = '#2874ad';
-  @Input('text') text: string = '';
+  @Input('backgroundColor') background: string = '#F6F6F6';
+  @Input('textColor') textColor: string = '#272727';
+  @Input() iconColor: string = 'brightness(8)';
+  @Input() selectedBG: string = '#82F18D';
+  @Input() bgColor: string = '#FFFFFF';
+  @Input() selectedColor: string = '#FFFFFF';
+  @Input() color: string = '#272727';
   @Input() orderId: string = null;
   @Input() public tagAction: (args?: any) => any;
   @Input() entity: 'item' | 'order' = 'order';

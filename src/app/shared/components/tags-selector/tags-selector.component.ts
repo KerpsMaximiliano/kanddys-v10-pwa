@@ -15,6 +15,10 @@ export class TagsSelectorComponent implements OnInit {
   @Input('multipleTags') multipleTags: boolean = false;
   @Input('containerBackground') containerBackground: string = '#2874ad';
   @Input('background') background: string = '#fff';
+  @Input() inactiveBackground: string;
+  @Input() inactiveColor: string = '';
+  @Input() notificationBackground: string = 'rgba(123, 123, 123, 37%)';
+  @Input() notificationColor: string = 'rgba(123, 123, 123, 37%)';
   @Input('selectedBackground') selectedBackground: string = '#2874ad';
   @Input('selectedFilter') selectedFilter: string = 'brightness(2)';
   @Input('color') color: string = '#fff';
