@@ -36,6 +36,8 @@ import {
   ordersByMerchantHot,
   merchantByName,
   merchantBySlug,
+  viewsMerchants,
+  viewsMerchant,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -388,5 +390,33 @@ export class MerchantsService {
     });
     if (!response || response?.errors) return undefined;
     return response?.incomeMerchant;
+  }
+
+  async viewsMerchants(paginate: PaginationInput): Promise<any> {
+    try {
+      const result = await this.graphql.query({
+        query: viewsMerchants,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return;
+      return result.viewsMerchants;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async viewsMerchant(id: string): Promise<any> {
+    try {
+      const result = await this.graphql.query({
+        query: viewsMerchant,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return;
+      return result.viewsMerchant;
+    } catch (error) {
+      return error;
+    }
   }
 }

@@ -214,9 +214,7 @@
       </div>
 
       <ul class="footer-links">
-        <li class="link">Políticas de reembolsos</li>
-        <li class="link">Políticas de entregas</li>
-        <li class="link">Políticas de seguridad</li>
+        <li *ngFor="let term of terms" [routerLink]="'/ecommerce/terms-of-use/'+term._id" class="link">{{ term.text }}</li>
       </ul>
 
       <div class="blank-footer"></div>

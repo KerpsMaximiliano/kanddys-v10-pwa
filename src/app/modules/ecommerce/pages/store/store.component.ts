@@ -129,6 +129,7 @@ export class StoreComponent implements OnInit {
   }
 
   @ViewChild('tagsSwiper') tagsSwiper: SwiperComponent;
+  terms:any[] = [];
 
   constructor(
     private dialog: DialogService,
@@ -168,6 +169,25 @@ export class StoreComponent implements OnInit {
       window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
       });
+      const viewsMerchants = (async () => {
+        const pagination:PaginationInput = {
+          findBy: {
+            type: 'refund'
+          },
+        };
+        const types: any[] = [
+          { type: "refund", text: "Políticas de reembolsos" },
+          { type: "delivery", text: "Políticas de entregas" },
+          { type: "security", text: "Políticas de seguridad" },
+        ];
+        for (const { type, text } of types) {
+          pagination.findBy.type = type;
+          const [{ _id, description }] = (await this.merchantService.viewsMerchants(
+            pagination
+          )) || { _id: "" };
+          this.terms.push({ _id, text });
+        }
+      })();
     }, 300);
   }
 

@@ -24,6 +24,7 @@ import { PaymentsRedirectionComponent } from './pages/payments-redirection/payme
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
+import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 
 const routes: Routes = [
   {
@@ -60,6 +61,10 @@ const routes: Routes = [
     path: 'store/:merchantSlug',
     redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
+  },
+  {
+    path: 'terms-of-use/:viewsMerchantId',
+    component: TermsOfUseComponent,
   },
   {
     path: ':merchantSlug',
@@ -162,7 +167,8 @@ const routes: Routes = [
     ReservationsComponent,
     PaymentsRedirectionComponent,
     ArticleDetailComponent,
-    CreateArticleComponent
+    CreateArticleComponent,
+    TermsOfUseComponent
   ],
   imports: [
     CommonModule,

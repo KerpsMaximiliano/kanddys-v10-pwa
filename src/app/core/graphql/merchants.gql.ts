@@ -372,3 +372,33 @@ export const incomeMerchant = gql`
     incomeMerchant(input: $input)
   }
 `;
+
+export const viewsMerchants = gql`
+  query viewsMerchants($paginate: PaginationInput) {
+    viewsMerchants(paginate: $paginate){
+      _id
+      merchant
+      type
+      description
+      numeration{
+        value
+      }
+      socialMedia{
+        name
+        url
+      }
+    }
+  }
+`;
+
+export const viewsMerchant = gql`
+  query viewsMerchant($id: ObjectID!) {
+    viewsMerchant(id: $id){
+      _id
+      description
+      numeration{
+        value
+      }
+    }
+  }
+`;
