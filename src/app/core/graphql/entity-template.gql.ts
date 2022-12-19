@@ -73,6 +73,7 @@ export const entityTemplateAuthSetData = gql`
       dateId
       status
       user
+      access
     }
   }
 `;

@@ -45,18 +45,28 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     {
       text: 'Solo yo',
       // img: 'closed-eye.svg',
-      img: 'padlock%20%281%29.png',
+      img: {img:'padlock%20%281%29.png',width:''},
       callback: (text: string) => {
         this.text = 'Acceso';
         this.icons = ['up', 'up'];
         this.paddingRight = '90px';
         this.textAlign = 'center';
         this.handleSelection(text);
+        (async () => {
+          const content: any = {
+            access: this.access==='private'?'public':'private',
+          };
+          const { access } = await this._EntityTemplateService.entityTemplateAuthSetData(
+            this.id,
+            content
+          );
+          this.access = access;
+        })();
       },
     },
     {
       text: 'Yo y mis invitados',
-      img: 'padlock%20%281%29.png',
+      img: {img:'padlock%20%281%29.png',width:'16'},
       invites: true,
       callback: (text: string) => {
         this.text = 'Lista de Invitados';
@@ -70,7 +80,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     },
     {
       text: 'Todos con el link. Tienes la opción de adicionar una clave.. Adicionar',
-      img: 'open-padlock.png',
+      img: {img:'open-padlock.png',width:'21'},
       callback: (text: string) => {
         this.text = 'Clave del Símbolo';
         this.icons = ['left'];
@@ -251,6 +261,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   passwordSubscribe: Subscription;
   id: string;
   entityTemplateRecipients: any;
+  access:string = '';
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _DialogService: DialogService,
@@ -272,6 +283,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
         const entityTemplateRecipients =
           (await this._EntityTemplateService.entityTemplate(templateId)) ||
           ({} as any);
+        this.access = entityTemplateRecipients.access;
         this.entityTemplateRecipients =
           entityTemplateRecipients.recipients || [];
         const { _id } = await this._MerchantsService.merchantDefault();
@@ -466,6 +478,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
 
   loadFile(event: any, i: number, j: number) {
     const [file] = event.target.files;
+    if(!file) return;
     const { type } = file;
     if (
       !file ||
@@ -508,15 +521,23 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   submit(): void {
     this.status = 'loading';
     const controller: AbstractControl = this.controllers.at(this.controlIndex);
-    if (controller.invalid) return;
+    const flag = this.controllers.value.filter((control,index:number) => index!==this.controlIndex).find((item,index:number) => {
+      const result = (item.phone?.number?.replace('-','') || item.phone)===controller.get('phone').value?.number.replace('-','') || item.email===controller.get('email').value;
+      return result;
+    });
+    if (controller.invalid || flag){
+      this.status = 'controller';
+      return;
+    }
     const { name, lastName, _id, phone, email, nickname, image } =
       controller.value;
     const [_image] = image;
+    const _phone = phone ? phone.e164Number.replace('+','').replace('-','') : '';
     const createRecipient = async () => {
       const body = {
         name,
         lastName,
-        phone: phone ? phone.e164Number : '',
+        phone: _phone,
         email,
         nickname,
         image: _image,
@@ -544,7 +565,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       let body: any = {
         name,
         lastName,
-        phone: phone ? phone.e164Number : '',
+        phone: _phone,
         email,
         nickname,
       };

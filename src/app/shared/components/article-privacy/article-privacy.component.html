@@ -34,6 +34,7 @@
       width="20.302"
       height="13.957"
       viewBox="0 0 20.302 13.957"
+      (click)="handleOptionTab('A ver')"
     >
       <g id="eye" transform="translate(0 -5.625)">
         <path
@@ -64,6 +65,7 @@
       width="20.302"
       height="16.023"
       viewBox="0 0 20.302 16.023"
+      (click)="handleOptionTab('A editar')"
     >
       <path
         id="edit"
@@ -283,6 +285,7 @@
                 type="file"
                 [id]="j"
                 (change)="loadFile($event, controlIndex, j)"
+                accept="image/png, image/jpg, image/jpeg"
               />
               <label
                 for="{{ j }}"
@@ -348,7 +351,8 @@
         *ngFor="let item of list; let i = index"
         class="select-option"
         [style.backgroundPosition]="
-          selected.includes(item.text) ? 'left bottom' : 'right bottom'
+          i>0?(selected.includes(item.text) ? 'left bottom' : 'right bottom'):
+          (access==='private' ? 'left bottom' : 'right bottom')
         "
         (click)="item.callback(item.text)"
       >
@@ -358,9 +362,9 @@
             <img
               *ngIf="i !== 0"
               class="grid-img"
-              [src]="env + '/' + item.img"
-              width="22"
-              height="22"
+              [src]="env + '/' + item.img.img"
+              [width]="item.img.width"
+              height="auto"
             />
             <svg
               *ngIf="i === 0"
@@ -413,9 +417,9 @@
           </div>
         </div>
       </div>
+      <p class="bottom-text">
+        Tienes la opción de <span>adicionar una clave...</span>
+      </p>
     </div>
   </ng-container>
-  <p class="bottom-text">
-    Tienes la opción de <span>adicionar una clave...</span>
-  </p>
 </div>
