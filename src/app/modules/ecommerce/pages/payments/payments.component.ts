@@ -8,6 +8,7 @@ import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
 import { Post } from 'src/app/core/models/post';
 import { User } from 'src/app/core/models/user';
+import { ViewsMerchant } from 'src/app/core/models/views-merchant';
 import { Bank } from 'src/app/core/models/wallet';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { IntegrationsService } from 'src/app/core/services/integrations.service';
@@ -204,6 +205,7 @@ export class PaymentsComponent implements OnInit {
     },*/
   ];
   integrations: Integration = null;
+  viewMerchantForRefund: ViewsMerchant = null;
 
   constructor(
     private walletService: WalletService,
@@ -288,6 +290,17 @@ export class PaymentsComponent implements OnInit {
     this.currentUser =
       this.order?.user || this.headerService.user || registeredUser;
     this.status = 'complete';
+
+    const viewsMerchants = await this.merchantService.viewsMerchants({
+      findBy: {
+        merchant: this.headerService.saleflow.merchant._id,
+        type: 'refund',
+      },
+    });
+
+    if (viewsMerchants && viewsMerchants.length > 0) {
+      this.viewMerchantForRefund = viewsMerchants[0];
+    }
   }
 
   onFileInput(file: File | { image: File; index: number }) {

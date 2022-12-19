@@ -42,10 +42,17 @@
         <h2 class="amount">RD $ {{ paymentAmount | number : "1.2-2" }}</h2>
       </div>
 
-      <div class="refunds-policies">
+      <div class="refunds-policies" *ngIf="viewMerchantForRefund">
         <div class="labels">
           <div class="accept-terms">Acepto las políticas de reembolso</div>
-          <div class="title">Políticas de reembolsos</div>
+          <div
+            class="title"
+            [routerLink]="
+              '/ecommerce/terms-of-use/' + viewMerchantForRefund._id
+            "
+          >
+            Políticas de reembolsos
+          </div>
         </div>
 
         <div
