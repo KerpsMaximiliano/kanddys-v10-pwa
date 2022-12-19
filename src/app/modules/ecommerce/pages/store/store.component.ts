@@ -182,10 +182,14 @@ export class StoreComponent implements OnInit {
         ];
         for (const { type, text } of types) {
           pagination.findBy.type = type;
+          /*
           const [{ _id, description }] = (await this.merchantService.viewsMerchants(
             pagination
           )) || { _id: "" };
+          
+
           this.terms.push({ _id, text });
+          */
         }
       })();
     }, 300);

@@ -150,11 +150,17 @@
     </ng-container>
   </main>
 
-  <h5 class="link"
+  <h5
+    class="link"
+    *ngIf="viewMerchantForDelivery"
     [ngStyle]="{
-      paddingBottom: (mode === 'normal' && selectedDeliveryIndex != null) ? '62px' : '32px'
+      paddingBottom:
+        mode === 'normal' && selectedDeliveryIndex != null ? '62px' : '32px'
     }"
-  >Política de entrega</h5>
+    [routerLink]="'/ecommerce/terms-of-use/' + viewMerchantForDelivery._id"
+  >
+    Política de entrega
+  </h5>
 </div>
 
 <app-sticky-button

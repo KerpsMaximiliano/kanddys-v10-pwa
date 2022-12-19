@@ -7,6 +7,7 @@ import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import { Tag } from '../models/tags';
 import { User } from '../models/user';
+import { ViewsMerchant } from '../models/views-merchant';
 import { ListParams } from '../types/general.types';
 import {
   merchant,
@@ -392,7 +393,7 @@ export class MerchantsService {
     return response?.incomeMerchant;
   }
 
-  async viewsMerchants(paginate: PaginationInput): Promise<any> {
+  async viewsMerchants(paginate: PaginationInput): Promise<Array<ViewsMerchant>> {
     try {
       const result = await this.graphql.query({
         query: viewsMerchants,
@@ -406,7 +407,7 @@ export class MerchantsService {
     }
   }
 
-  async viewsMerchant(id: string): Promise<any> {
+  async viewsMerchant(id: string): Promise<ViewsMerchant> {
     try {
       const result = await this.graphql.query({
         query: viewsMerchant,
