@@ -61,6 +61,7 @@ export interface HelperHeaderInput {
   styleUrls: ['./helper-headerv2.component.scss'],
 })
 export class HelperHeaderv2Component implements OnInit {
+
   @Input() bgColor: string = '#2874AD';
   @Input() mode:
     | 'basic'
@@ -91,6 +92,7 @@ export class HelperHeaderv2Component implements OnInit {
   @Input() rightText?: Text;
   @Input() public rightTextCallback: () => void;
   @Input() rightTextStyles: Record<string, any>;
+  @Input() basicRightButtonStyles: Record<string, any> | null = null;
   @Input() extraTexts?: ExtraText;
   @Input() icon?: {
     src: string;

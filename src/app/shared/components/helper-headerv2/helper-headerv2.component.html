@@ -71,7 +71,7 @@
             </app-cart-button>
           </ng-container>
 
-          <button class="icons-text" *ngIf="rightText" (click)="neutralEvent()">
+          <button *ngIf="rightText" [ngStyle]="basicRightButtonStyles" (click)="neutralEvent()">
             <span
               class="text"
               [ngStyle]="{
