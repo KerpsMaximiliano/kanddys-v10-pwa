@@ -84,3 +84,19 @@ export const entityTemplateAddRecipient = gql`
     }
   }
 `;
+
+export const recipientsById = gql`
+  query recipientsById($ids: [ObjectID!]!) {
+    recipientsById(ids: $ids) {
+      _id
+      createdAt
+      updatedAt
+      phone
+      email
+      nickname
+      user
+      tags
+      image
+    }
+  }
+`;

@@ -20,6 +20,7 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { StoreComponent } from './pages/store/store.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { AppointmentsModule } from '../appointments/appointments.module';
+import { ArticleAccessComponent } from './pages/article-access/article-access.component';
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
@@ -38,6 +39,10 @@ const routes: Routes = [
     component: RedirectionsComponent,
   },
   {
+    path: 'article-access/:templateId',
+    component: ArticleAccessComponent
+  },
+  {
     path: 'item-detail',
     component: ItemDetailComponent,
   },
@@ -51,17 +56,17 @@ const routes: Routes = [
     component: OrderDetailComponent,
   },
   {
-    path: 'megaphone-v3/:saleflowId',
-    redirectTo: ':saleflowId/store',
+    path: 'megaphone-v3/:merchantSlug',
+    redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
   },
   {
-    path: 'store/:saleflowId',
-    redirectTo: ':saleflowId/store',
+    path: 'store/:merchantSlug',
+    redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
   },
   {
-    path: ':saleflowId',
+    path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
       {
@@ -126,6 +131,7 @@ const routes: Routes = [
         path: 'payments',
         component: PaymentsComponent,
       },
+
     ],
   },
 ];
@@ -150,8 +156,9 @@ const routes: Routes = [
     CheckoutComponent,
     PaymentsComponent,
     ReservationsComponent,
+    ArticleAccessComponent,
     ArticleDetailComponent,
-    CreateArticleComponent,
+    CreateArticleComponent
   ],
   imports: [
     CommonModule,

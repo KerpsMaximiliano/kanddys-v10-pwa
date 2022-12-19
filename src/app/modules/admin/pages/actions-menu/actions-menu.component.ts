@@ -217,7 +217,7 @@ export class ActionsMenuComponent implements OnInit {
       }
       case 3:
         this.router.navigate([
-          `/ecommerce/${this.saleflowService.saleflowData._id}/store`,
+          `/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/store`,
         ]);
         break;
       case 4:

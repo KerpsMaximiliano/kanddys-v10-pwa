@@ -182,36 +182,38 @@ export class ItemsDashboardComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.route.queryParams.subscribe(async (queryParams) => {
-      let { startOnSnapshot } = queryParams;
-      startOnSnapshot = Boolean(startOnSnapshot);
-      localStorage.removeItem('flowRoute');
-      this.headerService.flowRoute = null;
+    setTimeout(() => {
+      this.route.queryParams.subscribe(async (queryParams) => {
+        let { startOnSnapshot } = queryParams;
+        startOnSnapshot = Boolean(startOnSnapshot);
+        localStorage.removeItem('flowRoute');
+        this.headerService.flowRoute = null;
 
-      await this.verifyIfUserIsLogged();
+        await this.verifyIfUserIsLogged();
 
-      if (!this.headerService.dashboardTemporalData || !startOnSnapshot) {
-        await this.inicializeTags();
-        await this.inicializeItems(true, false, true);
-        await this.inicializeHighlightedItems();
-        await this.inicializeArchivedItems();
-        await this.getOrdersTotal();
-        await this.getMerchantBuyers();
-        await this.inicializeSaleflowCalendar();
-      } else {
-        this.getPageSnapshot();
-      }
-    });
+        if (!this.headerService.dashboardTemporalData || !startOnSnapshot) {
+          await this.inicializeTags();
+          await this.inicializeItems(true, false, true);
+          await this.inicializeHighlightedItems();
+          await this.inicializeArchivedItems();
+          await this.getOrdersTotal();
+          await this.getMerchantBuyers();
+          await this.inicializeSaleflowCalendar();
+        } else {
+          this.getPageSnapshot();
+        }
+      });
 
-    this.itemSearchbar.valueChanges.subscribe((change) =>
-      this.inicializeItems(true, false)
-    );
+      this.itemSearchbar.valueChanges.subscribe((change) =>
+        this.inicializeItems(true, false)
+      );
 
-    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-
-    window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-    });
+
+      window.addEventListener('resize', () => {
+        this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+      });
+    }, 1000);
   }
 
   async verifyIfUserIsLogged() {
@@ -798,7 +800,7 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
-          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/store`;
+          const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/store`;
 
           await this.ngNavigatorShareService
             .share({
@@ -971,7 +973,7 @@ export class ItemsDashboardComponent implements OnInit {
         callback: async () => {
           if (item.status !== 'disabled') {
             this.router.navigate([
-              `/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${item._id}`,
+              `/ecommerce/item-detail/${this.saleflowService.saleflowData.merchant.slug}/${item._id}`,
             ]);
           } else {
             const { images, name, description, pricing, _id, ...rest } = item;

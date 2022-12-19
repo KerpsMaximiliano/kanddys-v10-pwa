@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SaleFlow } from 'src/app/core/models/saleflow';
@@ -12,6 +13,8 @@ import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anex
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { Item } from 'src/app/core/models/item';
 import { ToastrService } from 'ngx-toastr';
+import { PostsService } from 'src/app/core/services/posts.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 
 @Component({
   selector: 'app-article-params',
@@ -42,6 +45,7 @@ export class ArticleParamsComponent implements OnInit {
     Validators.minLength(2),
     Validators.pattern(/[\S]/),
   ]);
+  updated: boolean = false;
   blockSubmitButton: boolean = false;
   parseFloat = parseFloat;
 
@@ -54,6 +58,8 @@ export class ArticleParamsComponent implements OnInit {
     private _SaleflowService: SaleFlowService,
     private _Router: Router,
     private _Route: ActivatedRoute,
+    private _PostsService: PostsService,
+    private _EntityTemplateService: EntityTemplateService,
     private _ToastrService: ToastrService
   ) {}
 
@@ -107,12 +113,70 @@ export class ArticleParamsComponent implements OnInit {
     });
   }
 
-  iconCallback = () => {
-    this._ItemsService.itemName = this.name.value;
-    this._ItemsService.itemPrice = this.price.value;
-    this._Router.navigate([
-      `admin/create-article${this.item ? '/' + this.item._id : ''}`,
-    ]);
+  iconCallback = async () => {
+    // this._ItemsService.itemName = this.name.value;
+    // this._ItemsService.itemPrice = this.price.value;
+
+    const itemInput = {
+      name: this.name.value || null,
+      // description: description || null,
+      pricing: this.price.value,
+      images: this._ItemsService.itemImages,
+      merchant: this._MerchantsService.merchantData?._id,
+      content: [],
+      currencies: [],
+      hasExtraPrice: false,
+      purchaseLocations: [],
+      showImages: this._ItemsService.itemImages.length > 0,
+    };
+    this._ItemsService.itemPrice = null;
+    this._ItemsService.itemName = null;
+
+    if (this.item) {
+      if (this.updated || this._ItemsService.changedImages) {
+        lockUI();
+        delete itemInput.images;
+        delete itemInput.merchant;
+        const { updateItem: updatedItem } = await this._ItemsService.updateItem(
+          itemInput,
+          this.item._id
+        );
+        if (this._ItemsService.changedImages) {
+          await this._ItemsService.deleteImageItem(
+            this.item.images,
+            updatedItem._id
+          );
+          await this._ItemsService.addImageItem(
+            this._ItemsService.itemImages,
+            updatedItem._id
+          );
+          this._ItemsService.itemImages = [];
+          this._ItemsService.changedImages = false;
+        }
+      }
+      unlockUI();
+      this._ItemsService.removeTemporalItem();
+      this._Router.navigate([
+        `admin/create-article${this.item ? '/' + this.item._id : ''}`,
+      ]);
+    } else {
+      if (this.price.value) {
+        lockUI();
+        console.log(this.price.value);
+        const { createItem } = await this._ItemsService.createItem(itemInput);
+        await this._SaleflowService.addItemToSaleFlow(
+          {
+            item: createItem._id,
+          },
+          this._SaleflowService.saleflowData._id
+        );
+        unlockUI();
+        this._ToastrService.success('Producto creado satisfactoriamente!');
+        this._Router.navigate([`/admin/create-article/${createItem._id}`]);
+      } else {
+        this._Router.navigate([`/admin/create-article`]);
+      }
+    }
   };
 
   dotsCallback = () => {
@@ -262,6 +326,34 @@ export class ArticleParamsComponent implements OnInit {
           },
           this._SaleflowService.saleflowData._id
         );
+
+        const storedTemplateData = localStorage.getItem(
+          'entity-template-creation-data'
+        );
+        const entityTemplateData = storedTemplateData
+          ? JSON.parse(storedTemplateData)
+          : null;
+
+        if (entityTemplateData) {
+          try {
+            const { entity, entityTemplateId } = entityTemplateData;
+
+            const result =
+              await this._EntityTemplateService.entityTemplateSetData(
+                entityTemplateId,
+                {
+                  entity: 'item',
+                  reference: createItem._id,
+                }
+              );
+
+            localStorage.removeItem('entity-template-creation-data');
+          } catch (error) {
+            this._ToastrService.error('Ocurrió un error al crear el simbolo');
+            return;
+          }
+        }
+
         this._ToastrService.success('Producto creado satisfactoriamente!');
         this._Router.navigate([`/admin/create-article/${createItem._id}`]);
       } else {
@@ -270,6 +362,32 @@ export class ArticleParamsComponent implements OnInit {
         );
 
         if ('_id' in createPreItem) {
+          const storedTemplateData = localStorage.getItem(
+            'entity-template-creation-data'
+          );
+          const entityTemplateData = storedTemplateData
+            ? JSON.parse(storedTemplateData)
+            : null;
+
+          if (entityTemplateData) {
+            try {
+              const { entity, entityTemplateId } = entityTemplateData;
+
+              const result =
+                await this._EntityTemplateService.entityTemplateSetData(
+                  entityTemplateId,
+                  {
+                    entity: 'item',
+                    reference: createPreItem?._id,
+                  }
+                );
+
+              localStorage.removeItem('entity-template-creation-data');
+            } catch (error) {
+              this._ToastrService.error('Ocurrió un error al crear el simbolo');
+            }
+          }
+
           localStorage.setItem('flowRoute', this._Router.url);
           this._Router.navigate([`/auth/login`], {
             queryParams: {
@@ -342,7 +460,12 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   handleCurrencyInput(value: number) {
+    this.updated = true;
     this.price.setValue(value);
+  }
+
+  handleNameInput(value: any) {
+    this.updated = true;
   }
 
   openImageModal(imageSourceURL: string | ArrayBuffer) {

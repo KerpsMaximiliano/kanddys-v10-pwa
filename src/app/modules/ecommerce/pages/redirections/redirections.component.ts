@@ -9,6 +9,7 @@ import { analizeMagicLink } from 'src/app/core/graphql/auth.gql';
 import { Session } from 'src/app/core/models/session';
 import { from } from 'rxjs';
 import { Observable } from 'apollo-link';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 
 @Component({
   selector: 'app-redirections',
@@ -24,7 +25,8 @@ export class RedirectionsComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private header: HeaderService,
-    private appService: AppService
+    private appService: AppService,
+    private _EntityTemplateService: EntityTemplateService
   ) {}
 
   ngOnInit(): void {
@@ -88,7 +90,21 @@ export class RedirectionsComponent implements OnInit {
             queryParams: redirectURL.queryParams,
           });
         } else {
-          this.router.navigate([redirectionRoute]);
+          (async () => {
+            const list = redirectionRoute.split('/');
+            const text = list[list.length-1];
+            const {
+              entity,
+              reference
+            } = (await this._EntityTemplateService.entityTemplateRecipient(text)) || {
+              entity: '',
+              reference: ''
+            };
+            if(entity&&reference)
+              this.router.navigate(['qr', 'article-detail', entity, reference]);
+            else
+              this.router.navigate([redirectionRoute]);
+          })();
 
           unlockUI();
         }

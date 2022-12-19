@@ -5,8 +5,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
 import { ItemOrder, OrderStatusNameType } from 'src/app/core/models/order';
-import { Post, PostInput } from 'src/app/core/models/post';
-import { User } from 'src/app/core/models/user';
+import { Post, PostInput, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
@@ -58,6 +57,7 @@ export class OrderDetailComponent implements OnInit {
   customizer: CustomizerValue;
   order: ItemOrder;
   post: Post;
+  slides: Slide[];
   payment: number;
   isMerchant: boolean;
   merchantOwner: boolean;
@@ -193,6 +193,7 @@ export class OrderDetailComponent implements OnInit {
       this.post = (
         await this.postsService.getPost(this.order.items[0].post._id)
       ).post;
+      this.slides = await this.postsService.slidesByPost(this.post._id);
     }
     if (this.order.items[0].customizer) {
       this.payment =
@@ -645,8 +646,10 @@ export class OrderDetailComponent implements OnInit {
   };
 
   goToStore() {
-    let link = this.order.items[0].saleflow._id;
-    this.router.navigate([`ecommerce/${link}/store`]);
+    let link = this.order.items[0].saleflow.merchant.slug;
+    this.router.navigate([`../${link}/store`], {
+      relativeTo: this.route,
+    });
   }
 
   async tagDialog(tags?: string[]) {
@@ -742,7 +745,10 @@ export class OrderDetailComponent implements OnInit {
     let blobData = this.convertBase64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
       //IE
-      (window.navigator as any).msSaveOrOpenBlob(blobData, 'Qrcode');
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData,
+        this.formatId(this.order.dateId)
+      );
     } else {
       // chrome
       const blob = new Blob([blobData], { type: 'image/png' });
@@ -750,7 +756,7 @@ export class OrderDetailComponent implements OnInit {
       // window.open(url);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'Qrcode';
+      link.download = this.formatId(this.order.dateId);
       link.click();
     }
   }
@@ -851,7 +857,7 @@ export class OrderDetailComponent implements OnInit {
     this.headerService.storeOrderProgress();
 
     this.router.navigate(
-      [`../../${this.order.items[0].saleflow._id}/checkout`],
+      [`../../${this.headerService.saleflow.merchant.slug}/checkout`],
       {
         relativeTo: this.route,
       }
@@ -871,13 +877,6 @@ export class OrderDetailComponent implements OnInit {
     this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
-
-  // async isMerchantOwner(merchant: string) {
-  //   const ismerchant = await this.merchantsService.merchantDefault();
-
-  //   console.log('ismerchant', ismerchant);
-  //   merchant === ismerchant?._id ? (this.isMerchant = true) : null;
-  // }
 
   // async addTag(tagId?: string) {
   //   if (!this.selectedTags[tagId]) {
@@ -943,6 +942,22 @@ export class OrderDetailComponent implements OnInit {
 
   returnEvent() {
     this.router.navigate([this.redirectTo]);
+  }
+
+  goToPostDetail() {
+    this.headerService.flowRoute = window.location.href
+      .split('/')
+      .slice(3)
+      .join('/');
+
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
+    this.router.navigate([
+      '/ecommerce/' +
+        this.order.items[0].saleflow.merchant.slug +
+        '/article-detail/post/' +
+        this.post._id,
+    ]);
   }
 
   // goBackToFlowRoute() {

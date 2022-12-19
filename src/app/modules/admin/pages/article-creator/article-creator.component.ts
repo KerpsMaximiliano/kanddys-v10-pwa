@@ -3,6 +3,7 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Item, ItemInput } from 'src/app/core/models/item';
+import { NgxImageCompressService } from 'ngx-image-compress';
 import { ToastrService } from 'ngx-toastr';
 import { PostInput } from 'src/app/core/models/post';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -25,6 +26,9 @@ import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/ta
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 
 type Mode = 'symbols' | 'item';
 
@@ -78,14 +82,15 @@ export class ArticleCreatorComponent implements OnInit {
   isOrder: boolean;
   fractions: string = '1fr';
   activeSlide: number;
-  mode: Mode = 'item';
-  ctaText: string = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
-  ctaDescription: string =
-    'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
+  mode: Mode;
+  ctaText: string;
+  ctaDescription: string;
   item: Item;
   blockSubmitButton: boolean = false;
   selectedTags: Array<string>;
   tagsAsignationOnStart: boolean = false;
+  fromTemplate: string = null;
+
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -98,17 +103,29 @@ export class ArticleCreatorComponent implements OnInit {
     private _SaleflowService: SaleFlowService,
     private _DialogService: DialogService,
     private _ToastrService: ToastrService,
-    private _TagsService: TagsService
+    private _ImageCompress: NgxImageCompressService,
+    private _TagsService: TagsService,
+    private _EntityTemplateService: EntityTemplateService,
+    private _Clipboard: Clipboard
   ) {}
 
   async ngOnInit(): Promise<void> {
     this._ActivatedRoute.queryParams.subscribe(async (queryParams) => {
-      const { entity = 'post' } = queryParams;
+      const { entity = 'post', fromTemplate } = queryParams;
       this.entity = entity;
+      this.fromTemplate = fromTemplate;
       this.initControllers();
     });
-    if (this._ActivatedRoute.snapshot.paramMap.get('saleflowId')) {
+    if (this._ActivatedRoute.snapshot.paramMap.get('merchantSlug')) {
       this.isOrder = true;
+      this.mode = 'symbols';
+      this.ctaText = 'SALVAR';
+      this.ctaDescription = '';
+    } else {
+      this.mode = 'item';
+      this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
+      this.ctaDescription =
+        'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
     }
     const itemId = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     if (itemId) {
@@ -251,6 +268,7 @@ export class ArticleCreatorComponent implements OnInit {
     for (let f = 0; f < fileList.length; f++) {
       if (f > 0) this.addFile(i, j, k);
       const file = fileList.item(f);
+      /* DESCOMENTAR LUEGO
       if (
         !file ||
         ![...this.imageFiles, ...this.videoFiles, ...this.audioFiles].includes(
@@ -258,6 +276,9 @@ export class ArticleCreatorComponent implements OnInit {
         )
       )
         return;
+      */
+
+      if (!file || ![...this.imageFiles].includes(file.type)) return;
       this.loadFile(file, i, k + f);
     }
   }
@@ -266,12 +287,20 @@ export class ArticleCreatorComponent implements OnInit {
     const reader = new FileReader();
     reader.readAsDataURL(file);
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const { type } = file;
-      const result = reader.result;
+      let result = reader.result;
       if (this.videoFiles.includes(type))
         this.multimedia[i][j] = (<FileReader>e.target).result;
       else if (this.imageFiles.includes(type)) {
+        const compressedImage = await this._ImageCompress.compressFile(
+          reader.result as string,
+          -1,
+          50,
+          50
+        ); // 50% ratio, 50% quality
+        result = compressedImage;
+        file = await this.urltoFile(compressedImage, file.name, type);
         this.multimedia[i][j] = this._DomSanitizer
           .bypassSecurityTrustStyle(`url(
         ${result})
@@ -322,14 +351,18 @@ export class ArticleCreatorComponent implements OnInit {
   }
 
   // Converts image to File
-  async urltoFile(dataUrl: string, fileName: string): Promise<File> {
+  async urltoFile(
+    dataUrl: string,
+    fileName: string,
+    type?: string
+  ): Promise<File> {
     const res: Response = await fetch(dataUrl);
     const blob: Blob = await res.blob();
-    return new File([blob], fileName, { type: 'image/png' });
+    return new File([blob], fileName, { type: type || 'image/jpg' });
   }
 
   rotateImg(i: number, j: number) {
-    const img = this.urls[i];
+    const img = this.urls[j];
     const imageElement = new Image();
     imageElement.src = img as string;
     imageElement.crossOrigin = 'anonymous';
@@ -349,7 +382,7 @@ export class ArticleCreatorComponent implements OnInit {
       );
       newCtx.restore();
       const url = newCanvas.toDataURL('image/png');
-      this.urls[i] = url;
+      this.urls[j] = url;
       this.multimedia[i][j] = this._DomSanitizer.bypassSecurityTrustStyle(`url(
         ${url})
         no-repeat center center / contain #2e2e2e`);
@@ -377,14 +410,14 @@ export class ArticleCreatorComponent implements OnInit {
       let result = [];
       const createPost = async (value: PostInput) => {
         if (this.isOrder) {
-          delete value.message;
-          this._HeaderService.post = value;
+          this._HeaderService.post = {
+            ...this._HeaderService.post,
+            slides: value.slides,
+          };
           this._HeaderService.orderProgress.message = true;
           this._HeaderService.storeOrderProgress();
           this._Router.navigate([
-            `/ecommerce/${this._ActivatedRoute.snapshot.paramMap.get(
-              'saleflowId'
-            )}/checkout`,
+            `/ecommerce/${this._HeaderService.saleflow.merchant.slug}/checkout`,
           ]);
           return;
         }
@@ -415,6 +448,19 @@ export class ArticleCreatorComponent implements OnInit {
         });
       });
       this._ItemsService.itemImages = images;
+
+      if (this.fromTemplate) {
+        localStorage.setItem(
+          'entity-template-creation-data',
+          JSON.stringify({
+            entity: 'item',
+            entityTemplateId: this.fromTemplate,
+          })
+        );
+      } else {
+        localStorage.removeItem('entity-template-creation-data');
+      }
+
       this._Router.navigate([
         `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
       ]);
@@ -491,12 +537,12 @@ export class ArticleCreatorComponent implements OnInit {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -540,15 +586,16 @@ export class ArticleCreatorComponent implements OnInit {
   };
 
   changeMode(mode: Mode) {
-    // this.mode = mode;
+    this.mode = mode;
     switch (mode) {
-      // case 'symbols':
-      //   this.ctaText = 'SALVAR';
-      //   this.ctaDescription = '';
-      //   break;
+      case 'symbols':
+        this.ctaText = 'SALVAR';
+        this.ctaDescription = '';
+        break;
       case 'item': {
         this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
-        this.ctaDescription =
+        this.ctaDescription = this.item ? 
+          `El visitante te paga RD$${this.item.pricing}.` :
           'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
         break;
       }
@@ -557,7 +604,14 @@ export class ArticleCreatorComponent implements OnInit {
 
   openTagsDialog = async () => {
     this.selectedTags = [];
-    const userTags = await this._TagsService.tagsByUser();
+    const userTags = await this._TagsService.tagsByUser({
+      options: {
+        limit: -1,
+      },
+      findBy: {
+        entity: 'item',
+      },
+    });
     const itemTags = (
       await this._TagsService.tags({
         options: {
@@ -567,6 +621,7 @@ export class ArticleCreatorComponent implements OnInit {
           id: {
             __in: this.item.tags,
           },
+          entity: 'item',
         },
       })
     ).tags;
@@ -613,11 +668,41 @@ export class ArticleCreatorComponent implements OnInit {
   };
 
   goBack() {
+    if (
+      this._ActivatedRoute.snapshot.queryParamMap.get('symbols') === 'virtual'
+    ) {
+      this._Router.navigate([`../create-giftcard`], {
+        relativeTo: this._ActivatedRoute,
+        replaceUrl: true,
+      });
+      return;
+    }
+    if (this._HeaderService.checkoutRoute) {
+      this._Router.navigate([this._HeaderService.checkoutRoute]);
+      return;
+    }
     this._ItemsService.itemImages = [];
     this._ItemsService.itemName = null;
     this._ItemsService.itemPrice = null;
     this._ItemsService.changedImages = false;
-    this._Router.navigate([`admin/items-dashboard`]);
+    if (!this.fromTemplate) {
+      if (
+        this._HeaderService.dashboardTemporalData ||
+        localStorage.getItem('dashboardTemporalData')
+      ) {
+        this._Router.navigate([`admin/items-dashboard`], {
+          queryParams: {
+            startOnSnapshot: true,
+          },
+        });
+
+        return;
+      }
+
+      this._Router.navigate([`admin/items-dashboard`]);
+    } else {
+      this._Router.navigate(['qr/article-template/' + this.fromTemplate]);
+    }
   }
 
   toggleActivateItem = async (item: Item): Promise<string> => {
@@ -829,6 +914,38 @@ export class ArticleCreatorComponent implements OnInit {
       },
     ];
 
+    if (this.item) {
+      list.push({
+        text: 'Simbolo ID',
+        callback: async () => {
+          try {
+            const result =
+              await this._EntityTemplateService.entityTemplateByReference(
+                item._id,
+                'item'
+              );
+
+
+            this._Clipboard.copy(formatID(result.dateId, true).slice(1));
+
+            this._ToastrService.info(
+              'Simbolo ID copiado al portapapeles',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
+          } catch (error) {
+            this._ToastrService.info('Ocurrió un error', null, {
+              timeOut: 1500,
+            });
+
+            console.error(error);
+          }
+        },
+      });
+    }
+
     this._DialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
@@ -840,7 +957,7 @@ export class ArticleCreatorComponent implements OnInit {
         cancelButton: {
           text: 'Cerrar',
         },
-        linkToCopy: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+        linkToCopy: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

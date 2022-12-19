@@ -1,0 +1,102 @@
+.main-container{
+   width: 100%;
+   background-color: transparent;
+   padding: 0 0 30px;
+   position: absolute;
+   top: 0;
+   min-height: 100vh;
+
+   .header-display{
+      width: 100%;
+      height: 46px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000000;
+      border-bottom: 1px solid #FFFFFF;
+
+      .title{
+         font-family: 'RobotoLight';
+         font-size: 1.81rem;
+         color: #FFFFFF;
+         margin: 0;
+      }
+
+      .close{
+         all: unset;
+         width: 16px;
+         height: 16px;
+         position: absolute;
+         right: 20px;
+         cursor: pointer;
+
+         .fa-times{
+            font-size: 1rem;
+            color: #FFFFFF;
+         }
+      }      
+   }
+
+   .input-area{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      margin-top: 28px;
+      padding: 0 5.5%;
+
+      .input-label{
+         font-family: 'SfProBold';
+         font-size: 0.918rem;
+         color: #A1A1A1;
+         margin-bottom: 18px;
+      }
+
+      .input{
+         width: 100%;
+         height: 78px;
+         border-radius: 9px;
+         border: 1px solid #A1A1A1;
+         background-color: transparent;
+         text-indent: 15px;
+         display: grid;
+         grid-template-columns: 10fr 2fr;
+         align-items: center;
+         gap: 20px;
+         padding: 0px 18px;
+
+         input {
+            background-color: transparent;
+            font-family: 'SfProMedium';
+            font-size: 0.918rem;
+            color: #A1A1A1;
+            border: none;
+            width: 100%;
+         }
+
+         .fas.fa-chevron-right {
+            width: 5px;
+            height: 9px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-right: 11px;
+            padding-top: 8px;
+         }
+      }
+   }
+}
+
+.confirm {
+   all: unset;
+   width: 45px;
+   height: 21px;
+   padding-bottom: 3px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   border-radius: 6px;
+   cursor: pointer;
+   color: #ffffff;
+   z-index: 2;
+}

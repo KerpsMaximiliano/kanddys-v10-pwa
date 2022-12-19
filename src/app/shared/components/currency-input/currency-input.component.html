@@ -11,12 +11,13 @@
     #input
     class="formatted-input"
     type="number"
-    id="pricing"
+    [id]="inputId"
     inputmode="numeric"
     pattern="[0-9]*"
-    name="pricing"
+    [name]="inputName"
     [defaultValue]="initialValue"
-    required
+    [required]="required"
+    [tabIndex]="blockKeyboardNavigation ? -1 : null"
     (focus)="curencyFocused = true"
     (blur)="curencyFocused = false"
     (input)="formatNumber($event, true, input)"
