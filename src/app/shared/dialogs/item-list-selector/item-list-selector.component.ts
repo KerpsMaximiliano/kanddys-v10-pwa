@@ -1,25 +1,23 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { WebformAnswerLayoutOption } from 'src/app/core/types/answer-selector';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
-import {
-  OptionAnswerSelector,
-  WebformAnswerLayoutOption,
-  webformAnswerLayoutOptionDefaultStyles,
-} from 'src/app/core/types/answer-selector';
 
-export interface Inputs{
-   label?: string;
-   type: string;
-   cols?: number;
-   rows?: number;
-   placeholder: string;
-   inputStyles?: Record <string, string | number>;
+export interface Inputs {
+  label?: string;
+  type: string;
+  name: string;
+  cols?: number;
+  rows?: number;
+  placeholder: string;
+  inputStyles?: Record<string, string | number>;
 }
 
-export interface FooterButton{
-   text?: string;
-   icon?: string;
-   buttonStyles?: Record <string, string | number>;
-   callback(...params): any;
+export interface FooterButton {
+  text?: string;
+  icon?: string;
+  buttonStyles?: Record<string, string | number>;
+  callback(...params): any;
 }
 
 @Component({
@@ -29,33 +27,43 @@ export interface FooterButton{
 })
 export class ItemListSelectorComponent implements OnInit {
   activeIndex: number;
-  @Input() title: string = 'Tipo de Tag';
-  @Input() subTitle: string = 'Que tipo de grupo necesitas?';
-  @Input() cta: {text: string; styles?: Record<string, any>; callback?: () => void | Promise<any>};
+  @Input() title: string;
+  @Input() subTitle: string;
+  @Input() cta: {
+    text: string;
+    styles?: Record<string, any>;
+    callback?: () => void | Promise<any>;
+  };
   @Input() final: boolean;
   @Input() inputs: Inputs[];
   @Input() footerTitle: string;
-  @Input() footer: string = 'El conteo se reinicia cuando el comprador recibe “La Sorpresa” o al vencimiento (30 días).';
+  @Input() footer: string;
   @Input() footerBackground: boolean;
   @Input() footerBackgroundStyles: Record<string, string | number>;
   @Input() footerButton: FooterButton;
   @Input() webformOptions: WebformAnswerLayoutOption[];
+  form: FormGroup;
 
   constructor(private ref: DialogRef) {}
 
   ngOnInit(): void {
-    console.log(this.webformOptions)
+    if (this.inputs?.length) {
+      this.form = new FormGroup({});
+      this.inputs.forEach((input) => {
+        this.form.addControl(input.name, new FormControl());
+      });
+    }
   }
 
   selectedOption(e: number) {
-    console.log(e);
+    this.ref.close();
   }
 
   close() {
-    this.ref.close();
+    this.ref.close(this.form?.value);
   }
 }
- /* [
+/* [
    {
      type: 'WEBFORM-ANSWER',
      optionStyles: webformAnswerLayoutOptionDefaultStyles,

@@ -1,41 +1,41 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SwiperComponent, SwiperConfig } from 'ngx-swiper-wrapper';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { ToastrService } from 'ngx-toastr';
+import { filter } from 'rxjs/operators';
+import { Calendar } from 'src/app/core/models/calendar';
 import { Item, ItemInput, ItemStatus } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
+import { Reservation } from 'src/app/core/models/reservation';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { CalendarsService } from 'src/app/core/services/calendars.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { OrderService } from 'src/app/core/services/order.service';
+import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import {
-  HelperHeaderInput,
-  Text,
-} from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
-import { SwiperOptions } from 'swiper';
-import { environment } from 'src/environments/environment';
-import { CalendarsService } from 'src/app/core/services/calendars.service';
-import { Calendar } from 'src/app/core/models/calendar';
-import { ReservationService } from 'src/app/core/services/reservations.service';
-import { PaginationInput } from 'src/app/core/models/saleflow';
-import { Reservation } from 'src/app/core/models/reservation';
-import { OrderService } from 'src/app/core/services/order.service';
-import { FormControl } from '@angular/forms';
-import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
+  HelperHeaderInput
+} from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
+import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
 import {
   SettingsComponent,
-  SettingsDialogButton,
+  SettingsDialogButton
 } from 'src/app/shared/dialogs/settings/settings.component';
-import { NgNavigatorShareService } from 'ng-navigator-share';
-import { ToastrService } from 'ngx-toastr';
-import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import {
+  StoreShareComponent,
+  StoreShareList
+} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 
 interface MenuOption {
   name: string;
@@ -795,6 +795,104 @@ export class ItemsDashboardComponent implements OnInit {
     });
   };
 
+  openArticleForm() {
+    const dialogref = this.dialog.open(ItemListSelectorComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        title: '¿Que monto te pagarán por el artículo?',
+        inputs: [
+          {
+            label: 'Pesos Dominicanos',
+            type: 'number',
+            placeholder: '$00.00',
+            name: 'pricing',
+          },
+        ],
+        footer:
+          'El costo mensual es de US$0.97 para mantener las facturas y la base de datos incluyendo loscompradores para futuras campañas',
+        footerBackground: true,
+        footerTitle: 'Vender es gratis.',
+        cta: {
+          text: 'Continuar',
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+    const sub = dialogref.events
+      .pipe(filter((e) => e.type === 'result'))
+      .subscribe((e) => {
+        const { pricing } = e.data;
+        if (pricing) {
+          this.itemsService.itemPrice = parseFloat(pricing);
+          sub.unsubscribe();
+          this.dialog.open(ItemListSelectorComponent, {
+            type: 'fullscreen-translucent',
+            props: {
+              title: '¿Exhibirás lo que vendes con imagen(es)?',
+              webformOptions: [
+                {
+                  type: 'WEBFORM-ANSWER',
+                  selected: false,
+                  texts: {
+                    topLeft: {
+                      text: 'Si',
+                      callback: () => {
+                        this.goToCreateItem();
+                      },
+                    },
+                  },
+                },
+                {
+                  type: 'WEBFORM-ANSWER',
+                  selected: false,
+                  texts: {
+                    topLeft: {
+                      text: 'No',
+                      callback: async () => {
+                        const itemInput: ItemInput = {
+                          name: null,
+                          description: null,
+                          pricing: this.itemsService.itemPrice,
+                          images: [],
+                          merchant: this.merchantsService.merchantData._id,
+                          content: [],
+                          currencies: [],
+                          hasExtraPrice: false,
+                          purchaseLocations: [],
+                          showImages: false,
+                          tags: [],
+                        };
+                        const { createItem } =
+                          await this.itemsService.createItem(itemInput);
+                        await this.saleflowService.addItemToSaleFlow(
+                          {
+                            item: createItem._id,
+                          },
+                          this.saleflowService.saleflowData._id
+                        );
+                        this.toastr.success(
+                          'Producto creado satisfactoriamente!'
+                        );
+                        this.router.navigate([
+                          `/admin/create-article/${createItem._id}`,
+                        ]);
+                        console.log(createItem);
+                      },
+                    },
+                  },
+                },
+              ],
+              footerBackground: true,
+              footerTitle: 'Vender es gratis.',
+            },
+            customClass: 'app-dialog',
+            flags: ['no-header'],
+          });
+        }
+      });
+  }
+
   openHeaderDialog() {
     const list: Array<SettingsDialogButton> = [
       {
@@ -813,6 +911,12 @@ export class ItemsDashboardComponent implements OnInit {
             .catch((error) => {
               console.log(error);
             });
+        },
+      },
+      {
+        text: 'Adiciona un artículo',
+        callback: () => {
+          this.openArticleForm();
         },
       },
       {

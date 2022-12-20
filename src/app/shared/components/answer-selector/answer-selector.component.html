@@ -211,7 +211,9 @@
                     <li>Tipo de cuenta: {{ item.typeAccount }}</li>
                     <li>{{ item.ownerAccount }}</li>
                     <li>Cuenta: {{ item.account }}</li>
-                    <li *ngIf="item.routingNumber" >RNC: {{ item.routingNumber }}</li>
+                    <li *ngIf="item.routingNumber">
+                      RNC: {{ item.routingNumber }}
+                    </li>
                   </ul>
                   <p class="option-footer">{{ item.bankName }}</p>
                 </div>
@@ -240,14 +242,18 @@
         <div
           *ngIf="option.type === 'WEBFORM-ANSWER'"
           class="selector-option-content"
+          (click)="clickSelector(optionIndex)"
         >
           <div
             class="top"
             [ngStyle]="
-              option.optionStyles['TOP'] ? option.optionStyles['TOP'] : null
+              option.optionStyles && option.optionStyles['TOP']
+                ? option.optionStyles['TOP']
+                : null
             "
           >
             <div
+              *ngIf="option.texts.topLeft?.text"
               class="top-left"
               [ngStyle]="
                 option.texts.topLeft.styles ? option.texts.topLeft.styles : null
@@ -257,6 +263,7 @@
               {{ option.texts.topLeft.text }}
             </div>
             <div
+              *ngIf="option.texts.topRight?.text"
               class="top-right"
               [ngStyle]="
                 option.texts.topRight.styles
@@ -271,7 +278,7 @@
           <div
             class="middle"
             [ngStyle]="
-              option.optionStyles['MIDDLE']
+              option.optionStyles && option.optionStyles['MIDDLE']
                 ? option.optionStyles['MIDDLE']
                 : null
             "
@@ -288,12 +295,13 @@
           <div
             class="bottom"
             [ngStyle]="
-              option.optionStyles['BOTTOM']
+              option.optionStyles && option.optionStyles['BOTTOM']
                 ? option.optionStyles['BOTTOM']
                 : null
             "
           >
             <div
+              *ngIf="option.texts.bottomLeft?.text"
               class="bottom-left"
               [ngStyle]="
                 option.texts.bottomLeft.styles

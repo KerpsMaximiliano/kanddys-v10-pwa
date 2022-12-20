@@ -41,7 +41,7 @@ export class ArticleCreatorComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
   controllers: FormArray = new FormArray([]);
-  price: string = '0.00';
+  price: number;
   views: string = '0.00';
   sales: string = '0.00';
   infoMissing: 'contact' | 'delivery' | 'payment' | 'banner' = 'contact';
@@ -136,6 +136,7 @@ export class ArticleCreatorComponent implements OnInit {
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (!this.item) this.goBack();
+      this.price = this.item.pricing;
       if (
         this._ActivatedRoute.snapshot.queryParamMap.get('mode') ===
           'new-item' &&
@@ -408,7 +409,7 @@ export class ArticleCreatorComponent implements OnInit {
     };
   }
 
-  submit(): void {
+  async submit(): Promise<void> {
     this.blockSubmitButton = true;
     if (this.mode === 'symbols') {
       if (this.controllers.invalid) return;
@@ -454,6 +455,30 @@ export class ArticleCreatorComponent implements OnInit {
       });
       this._ItemsService.itemImages = images;
 
+      const itemInput = {
+        name: null,
+        description: null,
+        pricing: this._ItemsService.itemPrice,
+        images: this._ItemsService.itemImages,
+        merchant: this._MerchantsService.merchantData?._id,
+        content: [],
+        currencies: [],
+        hasExtraPrice: false,
+        purchaseLocations: [],
+        showImages: this._ItemsService.itemImages.length > 0,
+      };
+      this._ItemsService.itemPrice = null;
+      this._ItemsService.itemName = null;
+      const { createItem } = await this._ItemsService.createItem(itemInput);
+      await this._SaleflowService.addItemToSaleFlow(
+        {
+          item: createItem._id,
+        },
+        this._SaleflowService.saleflowData._id
+      );
+      this._ToastrService.success('Producto creado satisfactoriamente!');
+      this._Router.navigate([`/admin/create-article/${createItem._id}`]);
+      return;
       if (this.fromTemplate) {
         localStorage.setItem(
           'entity-template-creation-data',
@@ -466,9 +491,9 @@ export class ArticleCreatorComponent implements OnInit {
         localStorage.removeItem('entity-template-creation-data');
       }
 
-      this._Router.navigate([
-        `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
-      ]);
+      // this._Router.navigate([
+      //   `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
+      // ]);
     }
   }
 
@@ -585,9 +610,9 @@ export class ArticleCreatorComponent implements OnInit {
         break;
       case 'item': {
         this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
-        this.ctaDescription = this.item ? 
-          `El visitante te paga RD$${this.item.pricing}.` :
-          'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
+        this.ctaDescription = this.item
+          ? `El visitante te paga RD$${this.item.pricing}.`
+          : 'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
         break;
       }
     }
@@ -915,7 +940,6 @@ export class ArticleCreatorComponent implements OnInit {
                 item._id,
                 'item'
               );
-
 
             this._Clipboard.copy(formatID(result.dateId, true).slice(1));
 

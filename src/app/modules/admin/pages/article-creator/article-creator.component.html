@@ -20,19 +20,19 @@
         ></i>
       </button>
     </div> -->
-    <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-    <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-    <!-- <img
+  <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
+  <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
+  <!-- <img
       *ngIf="mode === 'item' && item"
       src="{{ env }}/save-blue.png"
       class="notification"
       alt=""
       (click)="openTagsDialog()"
     /> -->
-    <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
-    <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
-    <!-- <span class="text">VISTA</span> -->
-<!--     <div
+  <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
+  <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
+  <!-- <span class="text">VISTA</span> -->
+  <!--     <div
       class="dot-trio"
       *ngIf="mode === 'item' && item"
       (click)="openItemOptionsDialog()"
@@ -80,7 +80,11 @@
                   <button class="comitions">Comisiones para vender mas</button>
                   <button class="edit-button">Editar</button>
                 </div>
-                <button class="fixed-button" *ngIf="viewType === 'preview'" (click)="removeFile(i, k)">
+                <button
+                  class="fixed-button"
+                  *ngIf="viewType === 'preview'"
+                  (click)="removeFile(i, k)"
+                >
                   Cancelar cambios
                 </button>
               </div>
@@ -212,7 +216,7 @@
               >{{ sales }} ventas</span
             >
           </div>
-          <span class="price">RD$ {{ price }}</span>
+          <span class="price">RD$ {{ price | number : "1.2-2" }}</span>
         </div>
 
         <button class="big-button">
@@ -234,17 +238,17 @@
         </button>
         <button
           class="save-button"
-          [ngClass]="{ activated: infoMissing === 'banner' }"
+          [ngClass]="{
+            activated: infoMissing === 'banner' || urls?.length
+          }"
+          (click)="submit()"
         >
           SALVAR
         </button>
       </div>
     </div>
 
-    <div
-      class="bottom-button-banner"
-      *ngIf="viewType === 'preview'"
-    >
+    <div class="bottom-button-banner" *ngIf="viewType === 'preview'">
       <ng-container *ngIf="infoMissing === 'banner'">
         <app-bios-banner></app-bios-banner>
       </ng-container>
