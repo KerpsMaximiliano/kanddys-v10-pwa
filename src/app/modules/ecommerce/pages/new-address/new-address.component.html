@@ -157,7 +157,7 @@
       paddingBottom:
         mode === 'normal' && selectedDeliveryIndex != null ? '62px' : '32px'
     }"
-    [routerLink]="'/ecommerce/terms-of-use/' + viewMerchantForDelivery._id"
+    (click)="goToShippingPolicies()"
   >
     Política de entrega
   </h5>

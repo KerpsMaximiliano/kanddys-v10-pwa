@@ -473,4 +473,13 @@ export class NewAddressComponent implements OnInit {
       flags: ['no-header'],
     });
   }
+
+  goToShippingPolicies() {
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
+    this.router.navigate([
+      '/ecommerce/terms-of-use/' + this.viewMerchantForDelivery._id,
+    ]);
+  }
 }
