@@ -522,7 +522,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     this.status = 'loading';
     const controller: AbstractControl = this.controllers.at(this.controlIndex);
     const flag = this.controllers.value.filter((control,index:number) => index!==this.controlIndex).find((item,index:number) => {
-      const result = (item.phone?.number?.replace('-','') || item.phone)===controller.get('phone').value?.number.replace('-','') || item.email===controller.get('email').value;
+      const result = (item.phone?.number?.replace('-','') || item.phone)===controller.get('phone').value?.number.replace('-','') || item.email&&(item.email===controller.get('email').value);
       return result;
     });
     if (controller.invalid || flag){

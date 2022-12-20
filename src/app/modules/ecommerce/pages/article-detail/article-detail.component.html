@@ -15,7 +15,15 @@
     </div>
   </div>
   <div></div>
-  <div></div>
+  <div>
+    <img
+      *ngIf="logged&&isProductMine&&entity==='post'"
+      src="{{ env }}/padlock.png"
+      class="notification"
+      alt="padlock"
+      (click)="navigate()"
+    />
+  </div>
   <!-- <img
     (click)="openMenu('DESCRIPTION')"
     src="{{ env }}/d.png"
