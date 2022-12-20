@@ -24,6 +24,7 @@ import * as moment from 'moment';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
 
 interface Image {
   src: string;
@@ -71,7 +72,7 @@ export class OrderDetailComponent implements OnInit {
     time: string;
   };
   messageLink: string;
-  orderItems: any[] = ['',''];
+  orderItems: any[] = ['', ''];
   tags: Tag[];
   selectedTags: any = {};
   tabs: any[] = ['', '', '', '', ''];
@@ -120,6 +121,7 @@ export class OrderDetailComponent implements OnInit {
   orderSaleflow: SaleFlow;
   orderMerchant: Merchant;
   orderInDayIndex: number = null;
+  payedWithAzul: boolean = false;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
@@ -136,6 +138,7 @@ export class OrderDetailComponent implements OnInit {
     public headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private merchantsService: MerchantsService,
+    private paymentLogService: PaymentLogsService,
     private tagsService: TagsService
   ) {
     history.pushState(null, null, window.location.href);
@@ -165,6 +168,18 @@ export class OrderDetailComponent implements OnInit {
     if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
 
     this.order = (await this.orderService.order(orderId))?.order;
+
+    if (!this.order.ocr) {
+      const result = await this.paymentLogService.paymentLogsByOrder({
+        findBy: {
+          order: this.order._id,
+        },
+      });
+
+      if (result && result.length > 0 && result[0].paymentMethod === 'azul') {
+        this.payedWithAzul = true;
+      }
+    }
 
     if (!this.order) {
       this.router.navigate([`others/error-screen/`], {

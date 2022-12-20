@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { createPaymentLogAzul } from '../graphql/paymentLogs.gql';
+import {
+  createPaymentLogAzul,
+  paymentlogByOrder,
+} from '../graphql/paymentLogs.gql';
 import { PaymentLogInput } from '../models/paymentLog';
+import { PaginationInput } from '../models/saleflow';
 
 @Injectable({
   providedIn: 'root',
@@ -24,5 +28,18 @@ export class PaymentLogsService {
     }
   }
 
- 
+  async paymentLogsByOrder(paginate: PaginationInput) {
+    try {
+      const result = await this.graphql.query({
+        query: paymentlogByOrder,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.paymentlogByOrder;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }

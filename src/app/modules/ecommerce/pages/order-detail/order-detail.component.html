@@ -82,7 +82,7 @@
       Comprar otra cosa</a
     >
   </div>
-  <main class="information" [ngStyle]="{'margin-top': notify ? '13px': ''}">
+  <main class="information" [ngStyle]="{ 'margin-top': notify ? '13px' : '' }">
     <section class="top">
       <h2 class="top-h" *ngIf="order">
         FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
@@ -194,7 +194,11 @@
 
     <section class="section" style="margin-top: 50px">
       <h2 class="section-title">Sobre el pago:</h2>
-      <div class="items-container" style="margin-top: 5px" *ngIf="order?.ocr">
+      <div
+        class="items-container"
+        style="margin-top: 5px"
+        *ngIf="order?.ocr || payedWithAzul"
+      >
         <div
           class="image-container"
           #elemt
@@ -203,13 +207,16 @@
           (mouseleave)="stopDragging()"
           (mousemove)="moveEvent($event, elemt)"
         >
-          <button (click)="order.ocr && openImageModal(order.ocr.image)">
+          <button (click)="order.ocr ? openImageModal(order.ocr.image) : null">
             <div
               class="image"
               [ngStyle]="{
-                'background-image': order.ocr.image
-                  ? 'url(' + order.ocr.image + ') '
-                  : 'url(/assets/images/noimage.png)'
+                'background-image':
+                  order.ocr && order.ocr.image
+                    ? 'url(' + order.ocr.image + ') '
+                    : payedWithAzul
+                    ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
+                    : 'url(/assets/images/noimage.png)'
               }"
             >
               <!-- <img
@@ -223,6 +230,7 @@
           </button>
         </div>
       </div>
+
       <div class="items-container space-between" style="margin-top: 4px">
         <p class="total">Subtotal a pagar:</p>
         <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
