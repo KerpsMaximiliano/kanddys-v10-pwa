@@ -70,6 +70,7 @@ export class StoreShareComponent implements OnInit {
   @Input() buttonText: string = 'Cancel';
   @Input() public buttonCallback: () => void;
   @Input() hideCancelButtton: boolean = false;
+  @Input() relativePositioning: boolean = false;
   @Input() dynamicStyles: {
     container?: Record<string, string | number>;
     titleWrapper?: Record<string, string | number>;
@@ -94,7 +95,7 @@ export class StoreShareComponent implements OnInit {
   constructor(
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
-    private ref: DialogRef,
+    //private ref: DialogRef,
     private toastr: ToastrService
   ) {
     // this.onResize(); /* actualiza dinamicamente el tamaño del qr */
@@ -168,7 +169,7 @@ export class StoreShareComponent implements OnInit {
   }
 
   close() {
-    this.ref.close();
+    //this.ref.close();
   }
 
   inputFunc(callback: () => void) {

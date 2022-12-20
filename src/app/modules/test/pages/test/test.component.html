@@ -257,24 +257,8 @@ headline="EXPUESTO EN TAB (S)"
     ></app-multistep-form>
 -->
 
-<h3>Selecciona varias imagenes</h3>
+<button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
 
-<input
-  type="file"
-  name=""
-  id=""
-  multiple
-  accept="image/*"
-  (change)="fileProgressMultiple($event)"
-/>
-
-<span *ngIf="imageField.length > 0 && imageField[0] !== ''"
-  >Se han cargado {{ imageField.length }} imágenes</span
->
-
-<button
-  *ngIf="imageField.length > 0 && imageField[0] !== ''"
-  (click)="createItemForEachLoadedImage()"
->
-  Crear los productos para cada imagen
-</button>
+<app-dialog-flow
+  [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+></app-dialog-flow>
