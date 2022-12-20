@@ -11,7 +11,6 @@ import { User } from 'src/app/core/models/user';
 import { ViewsMerchant } from 'src/app/core/models/views-merchant';
 import { Bank } from 'src/app/core/models/wallet';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { IntegrationsService } from 'src/app/core/services/integrations.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -204,7 +203,6 @@ export class PaymentsComponent implements OnInit {
       },
     },*/
   ];
-  integrations: Integration = null;
   viewMerchantForRefund: ViewsMerchant = null;
 
   constructor(
@@ -216,8 +214,7 @@ export class PaymentsComponent implements OnInit {
     private merchantService: MerchantsService,
     public headerService: HeaderService,
     private location: LocationStrategy,
-    private dialogService: DialogService,
-    private integrationsService: IntegrationsService
+    private dialogService: DialogService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -259,23 +256,6 @@ export class PaymentsComponent implements OnInit {
         this.post = (
           await this.postsService.getPost(this.order.items[0].post._id)
         ).post;
-      }
-
-      const integrationsArray = await this.integrationsService.integrations({
-        findBy: {
-          entity: 'merchant',
-          merchant: this.merchant._id,
-        },
-      });
-
-      if (integrationsArray && integrationsArray.length > 0) {
-        this.integrations = integrationsArray[0];
-
-        if (!this.integrations.azul || !this.integrations.azul.id) {
-          this.onlinePaymentsOptions.pop();
-        }
-      } else {
-        this.onlinePaymentsOptions.pop();
       }
     }
     const exchangeData = await this.walletService.exchangeData(
@@ -431,7 +411,7 @@ export class PaymentsComponent implements OnInit {
 
       const requestData: any = {
         MerchantName: "D'liciantus",
-        MerchantID: this.integrations.azul.id,
+        MerchantID: this.headerService.saleflow.merchant._id,
         MerchantType: 'Importadores y productores de flores y follajes',
         CurrencyCode: '$',
         OrderNumber: this.order._id,
@@ -481,11 +461,12 @@ export class PaymentsComponent implements OnInit {
         },
         body: JSON.stringify(requestData),
       })
-        .then((response) => response.text())
-        .then((hash) => {
-          console.log('authhash', hash);
-
-          document.querySelector('#AuthHash').setAttribute('value', hash);
+        .then((response) => response.json())
+        .then((data) => {
+          document.querySelector('#AuthHash').setAttribute('value', data.hash);
+          document
+            .querySelector('#MerchantID')
+            .setAttribute('value', data.azulMerchantID);
 
           form.submit();
         });
