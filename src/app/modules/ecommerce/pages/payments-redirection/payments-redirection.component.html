@@ -5,7 +5,7 @@
 
   <div class="message">{{ label }}</div>
 
-  <button (click)="redirectToOrderInfo()">
+  <button (click)="success ? redirectToOrderInfo() : goBackToPaymentSelection()">
     {{ success ? "Ir al detalle de la factura" : "Volver a la orden" }}
   </button>
 </div>

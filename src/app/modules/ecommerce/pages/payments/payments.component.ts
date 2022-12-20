@@ -11,6 +11,7 @@ import { User } from 'src/app/core/models/user';
 import { ViewsMerchant } from 'src/app/core/models/views-merchant';
 import { Bank } from 'src/app/core/models/wallet';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { IntegrationsService } from 'src/app/core/services/integrations.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -204,6 +205,7 @@ export class PaymentsComponent implements OnInit {
     },*/
   ];
   viewMerchantForRefund: ViewsMerchant = null;
+  azulPaymentsSupported: boolean = false;
 
   constructor(
     private walletService: WalletService,
@@ -214,6 +216,7 @@ export class PaymentsComponent implements OnInit {
     private merchantService: MerchantsService,
     public headerService: HeaderService,
     private location: LocationStrategy,
+    private integrationService: IntegrationsService,
     private dialogService: DialogService
   ) {
     history.pushState(null, null, window.location.href);
@@ -280,6 +283,16 @@ export class PaymentsComponent implements OnInit {
 
     if (viewsMerchants && viewsMerchants.length > 0) {
       this.viewMerchantForRefund = viewsMerchants[0];
+    }
+
+    this.azulPaymentsSupported =
+      await this.integrationService.integrationPaymentMethod(
+        'azul',
+        this.headerService.saleflow.merchant._id
+      );
+
+    if (!this.azulPaymentsSupported) {
+      this.onlinePaymentsOptions.pop();
     }
   }
 

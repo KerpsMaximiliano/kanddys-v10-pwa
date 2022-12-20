@@ -15,3 +15,15 @@ export const integrations = gql`
     }
   }
 `;
+
+export const integrationPaymentMethod = gql`
+  query integrationPaymentMethod(
+    $paymentMethod: String!
+    $merchantId: ObjectID!
+  ) {
+    integrationPaymentMethod(
+      paymentMethod: $paymentMethod
+      merchantId: $merchantId
+    )
+  }
+`;

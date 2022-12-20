@@ -29,11 +29,13 @@ export class PaymentsRedirectionComponent implements OnInit {
       success = Boolean(success);
       this.success = success === true && rest['IsoCode'] === '00';
 
+      if (typeOfPayment === 'azul') {
+        this.azulOrderQueryParams = rest;
+      }
+
       if (!typeOfPayment) return this.router.navigate(['others/error-screen']);
       if (typeOfPayment === 'azul' && this.success) {
         this.label = 'El pago se completó';
-
-        this.azulOrderQueryParams = rest;
 
         fetch('http://localhost:3500/azul/calculate-response-hash', {
           method: 'POST',
@@ -94,11 +96,19 @@ export class PaymentsRedirectionComponent implements OnInit {
       } else if (typeOfPayment === 'stripe' && !success) {
         const orderId = localStorage.getItem('stripe-payed-orderId');
 
-        this.router.navigate(['payments/637289ea18c8811f24ae983f/' + orderId], {
-          queryParams: {
-            paymentFailed: true,
-          },
-        });
+        this.router.navigate(
+          [
+            'ecommerce/' +
+              this.headerService.saleflow.merchant.slug +
+              '/payments/' +
+              orderId,
+          ],
+          {
+            queryParams: {
+              paymentFailed: true,
+            },
+          }
+        );
       }
     });
   }
@@ -107,5 +117,21 @@ export class PaymentsRedirectionComponent implements OnInit {
     this.router.navigate([
       'ecommerce/order-info/' + this.azulOrderQueryParams['OrderNumber'],
     ]);
+  }
+
+  goBackToPaymentSelection() {
+    this.router.navigate(
+      [
+        'ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/payments/' +
+          this.azulOrderQueryParams['OrderNumber'],
+      ],
+      {
+        queryParams: {
+          paymentFailed: true,
+        },
+      }
+    );
   }
 }
