@@ -22,17 +22,15 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  HelperHeaderInput
-} from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
+import { HelperHeaderInput } from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
 import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
 import {
   SettingsComponent,
-  SettingsDialogButton
+  SettingsDialogButton,
 } from 'src/app/shared/dialogs/settings/settings.component';
 import {
   StoreShareComponent,
-  StoreShareList
+  StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
@@ -808,10 +806,6 @@ export class ItemsDashboardComponent implements OnInit {
             name: 'pricing',
           },
         ],
-        footer:
-          'El costo mensual es de US$0.97 para mantener las facturas y la base de datos incluyendo loscompradores para futuras campañas',
-        footerBackground: true,
-        footerTitle: 'Vender es gratis.',
         cta: {
           text: 'Continuar',
         },
@@ -824,71 +818,9 @@ export class ItemsDashboardComponent implements OnInit {
       .subscribe((e) => {
         const { pricing } = e.data;
         if (pricing) {
+          this.goToCreateItem();
           this.itemsService.itemPrice = parseFloat(pricing);
           sub.unsubscribe();
-          this.dialog.open(ItemListSelectorComponent, {
-            type: 'fullscreen-translucent',
-            props: {
-              title: '¿Exhibirás lo que vendes con imagen(es)?',
-              webformOptions: [
-                {
-                  type: 'WEBFORM-ANSWER',
-                  selected: false,
-                  texts: {
-                    topLeft: {
-                      text: 'Si',
-                      callback: () => {
-                        this.goToCreateItem();
-                      },
-                    },
-                  },
-                },
-                {
-                  type: 'WEBFORM-ANSWER',
-                  selected: false,
-                  texts: {
-                    topLeft: {
-                      text: 'No',
-                      callback: async () => {
-                        const itemInput: ItemInput = {
-                          name: null,
-                          description: null,
-                          pricing: this.itemsService.itemPrice,
-                          images: [],
-                          merchant: this.merchantsService.merchantData._id,
-                          content: [],
-                          currencies: [],
-                          hasExtraPrice: false,
-                          purchaseLocations: [],
-                          showImages: false,
-                          tags: [],
-                        };
-                        const { createItem } =
-                          await this.itemsService.createItem(itemInput);
-                        await this.saleflowService.addItemToSaleFlow(
-                          {
-                            item: createItem._id,
-                          },
-                          this.saleflowService.saleflowData._id
-                        );
-                        this.toastr.success(
-                          'Producto creado satisfactoriamente!'
-                        );
-                        this.router.navigate([
-                          `/admin/create-article/${createItem._id}`,
-                        ]);
-                        console.log(createItem);
-                      },
-                    },
-                  },
-                },
-              ],
-              footerBackground: true,
-              footerTitle: 'Vender es gratis.',
-            },
-            customClass: 'app-dialog',
-            flags: ['no-header'],
-          });
         }
       });
   }

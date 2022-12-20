@@ -187,6 +187,8 @@ export class ArticleCreatorComponent implements OnInit {
           }
         });
       }
+    } else {
+      this.price = this._ItemsService.itemPrice;
     }
     if (this._ItemsService.itemImages.length) {
       this._ItemsService.itemImages?.forEach((file, index) => {
@@ -491,9 +493,9 @@ export class ArticleCreatorComponent implements OnInit {
         localStorage.removeItem('entity-template-creation-data');
       }
 
-      // this._Router.navigate([
-      //   `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
-      // ]);
+      this._Router.navigate([
+        `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
+      ]);
     }
   }
 
