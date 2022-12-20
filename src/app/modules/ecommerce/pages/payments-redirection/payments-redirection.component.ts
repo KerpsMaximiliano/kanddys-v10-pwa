@@ -31,7 +31,7 @@ export class PaymentsRedirectionComponent implements OnInit {
 
       if (!typeOfPayment) return this.router.navigate(['others/error-screen']);
       if (typeOfPayment === 'azul' && this.success) {
-        this.label = 'El pago se completó' + JSON.stringify(rest, null, 4);
+        this.label = 'El pago se completó';
 
         this.azulOrderQueryParams = rest;
 
