@@ -32,10 +32,8 @@ import { SaleFlow } from 'src/app/core/models/saleflow';
   styleUrls: ['./test.component.scss'],
 })
 export class TestComponent implements OnInit {
-  imageField: (string | ArrayBuffer)[] = [''];
-  merchant: Merchant;
-  saleflow: SaleFlow;
-
+  openedDialogFlow: boolean = false;
+  
   constructor(
     private dialog: DialogService,
     private itemsService: ItemsService,
@@ -44,66 +42,5 @@ export class TestComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.merchant = await this.merchantService.merchantDefault();
-    this.saleflow = await this.saleflowService.saleflowDefault(
-      this.merchant._id
-    );
-  }
-
-  fileProgressMultiple(e: Event) {
-    const fileList = (e.target as HTMLInputElement).files;
-
-    if (fileList.length > 0) {
-      this.imageField = [];
-
-      for (let i = 0; i < fileList.length; i++) {
-        const file = fileList.item(i);
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.imageField[i] = reader.result;
-        };
-
-        reader.readAsDataURL(file);
-      }
-
-      (e.target as HTMLInputElement).value = null;
-      return;
-    }
-  }
-
-  async createItemForEachLoadedImage() {
-    let productIndex = 0;
-    for await (const image of this.imageField) {
-      try {
-        const itemInput: ItemInput = {
-          name: 'Producto sin nombre #' + productIndex,
-          description: null,
-          pricing: 1,
-          images: [base64ToFile(image as string)],
-          merchant: this.merchant?._id,
-          content: [],
-          currencies: [],
-          hasExtraPrice: false,
-          purchaseLocations: [],
-        };
-
-        const { createItem } = await this.itemsService.createItem(itemInput);
-
-        await this.saleflowService.addItemToSaleFlow(
-          {
-            item: createItem._id,
-          },
-          this.saleflow._id
-        );
-        productIndex++;
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    if (productIndex === this.imageField.length) {
-      alert('productos creados exitosamente');
-    }
   }
 }

@@ -110,6 +110,8 @@ import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.compon
 import { AnexoChoicesComponent } from './components/anexo-choices/anexo-choices.component';
 import { BiosBannerComponent } from './components/bios-banner/bios-banner.component';
 import { ItemListSelectorComponent } from './dialogs/item-list-selector/item-list-selector.component';
+import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.component';
+import { BlankComponent } from './dialogs/blank/blank.component';
 
 const imports = [
   CommonModule,
@@ -226,7 +228,9 @@ const declarations = [
   MediaDialogComponent,
   AnexoChoicesComponent,
   BiosBannerComponent,
-  ItemListSelectorComponent
+  DialogFlowComponent,
+  ItemListSelectorComponent,
+  BlankComponent,
 ];
 
 @NgModule({
