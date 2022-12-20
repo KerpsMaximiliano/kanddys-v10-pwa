@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-payments-redirection',
@@ -12,6 +13,8 @@ export class PaymentsRedirectionComponent implements OnInit {
   label: string = 'payments-redirection works!';
   azulOrderQueryParams: Record<string, string> = null;
   success: boolean = false;
+  env: string = environment.assetsUrl;
+  icon: string = 'check-circle.svg';
 
   constructor(
     private route: ActivatedRoute,
@@ -24,13 +27,11 @@ export class PaymentsRedirectionComponent implements OnInit {
     this.route.queryParams.subscribe((queryParams) => {
       let { typeOfPayment, success, cancel, ...rest } = queryParams;
       success = Boolean(success);
-      this.success = success;
+      this.success = success === true && rest['IsoCode'] === '00';
 
       if (!typeOfPayment) return this.router.navigate(['others/error-screen']);
-      if (typeOfPayment === 'azul' && success) {
-        this.label =
-          'El pago con azul se completó, estos son los datos: ' +
-          JSON.stringify(rest, null, 4);
+      if (typeOfPayment === 'azul' && this.success) {
+        this.label = 'El pago se completó' + JSON.stringify(rest, null, 4);
 
         this.azulOrderQueryParams = rest;
 
@@ -76,14 +77,16 @@ export class PaymentsRedirectionComponent implements OnInit {
               }
             }
           });
-      } else if (typeOfPayment === 'azul' && !success) {
+      } else if (typeOfPayment === 'azul' && !this.success) {
+        this.icon = 'sadFace.svg';
+
         this.label =
-          'El pago con azul no se pudo completar, estos son los datos: ' +
-          JSON.stringify(rest, null, 4);
+          'El pago con azul no se pudo completar, razón: ' +
+          rest['ErrorDescription'];
       } else if (typeOfPayment === 'azul' && cancel) {
-        this.label =
-          'El pago con azul se cancelo, estos son los datos: ' +
-          JSON.stringify(rest);
+        this.icon = 'sadFace.svg';
+
+        this.label = 'El pago se canceló';
       } else if (typeOfPayment === 'stripe' && success) {
         const orderId = localStorage.getItem('stripe-payed-orderId');
 

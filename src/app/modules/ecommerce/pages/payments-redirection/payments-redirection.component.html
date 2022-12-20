@@ -1,3 +1,11 @@
-<pre id="json" style="max-width: 500px">{{ label }}</pre>
+<div class="page">
+  <div class="icon">
+    <img [src]="env + '/' + icon" alt="" />
+  </div>
 
-<button (click)="redirectToOrderInfo()" *ngIf="success">Ir a order info</button>
+  <div class="message">{{ label }}</div>
+
+  <button (click)="redirectToOrderInfo()">
+    {{ success ? "Ir a order info" : "Volver a la orden" }}
+  </button>
+</div>
