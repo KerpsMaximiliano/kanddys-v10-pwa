@@ -100,7 +100,7 @@
   .image-selector {
     display: flex;
     flex-direction: column;
-    margin-top: 32px;
+    margin-top: 15px;
 
     .image-label {
       font-size: 1.063rem;
@@ -120,18 +120,19 @@
       grid-template-columns: repeat(auto-fill, 6rem);
       row-gap: 16px;
       -moz-column-gap: 18px;
-      column-gap: 4%;
+      column-gap: 5%;
       margin: 0 5%;
       padding: 5px 0 10px;
       overflow-y: scroll;
 
       .add-image {
         all: unset;
-        width: 85px;
-        height: 92px;
-        background-color: #fff;
+        width: 26vw;
+        max-width: 112px;
+        height: 141px;
+        background-color: #272727d9;
         border: 1px solid #707070;
-        border-radius: 17px;
+        border-radius: 15px;
         position: relative;
         cursor: pointer;
         box-shadow: 0px 3px 6px #70707063;
@@ -140,8 +141,9 @@
 
     .image-container {
       position: relative;
-      width: 85px;
-      height: 92px;
+      width: 26vw;
+      max-width: 112px;
+      height: 141px;
       background-color: #e9e371;
       border-radius: 17px;
 
@@ -197,6 +199,28 @@
           transform: rotate(-45deg);
         }
       }
+
+      .shadow-name{
+        width: 100%;
+        height: 30%;
+        position: absolute;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        background: linear-gradient(0deg, black, transparent);
+        border-bottom-right-radius: 15px;
+        border-bottom-left-radius: 15px;
+        z-index: 10;
+
+        &::after{
+          content: "Cover";
+          font-family: 'SfProMedium';
+          font-size: 0.963rem;
+          color: #ffffff;
+          margin-bottom: 8px;
+        }
+      }
     }
   }
 
@@ -241,15 +265,15 @@
 
 .corner-btn2 {
   all: unset;
-  width: 28px;
-  height: 28px;
+  width: 23px;
+  height: 23px;
   position: absolute;
-  top: -4px;
-  right: -5px;
+  top: 0px;
+  right: 0px;
   border-radius: 50%;
   display: flex;
   background-color: #fff;
-  border: 1px solid #7b7b7b;
+  border: 1px solid #F0F0F0;
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -257,16 +281,14 @@
 }
 
 .corner-btn {
-  all: unset;
-  width: 28px;
-  height: 28px;
+  width: 100%;
+  height: 75%;
   position: absolute;
-  top: -4px;
-  right: -5px;
-  border-radius: 50%;
+  bottom: 0px;
+  border-radius: 15px;
+  background: linear-gradient(0deg, rgb(0,0,0), transparent);
   display: flex;
-  background-color: #fff;
-  border: 1px solid #7b7b7b;
+  flex-direction: column-reverse;
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -277,11 +299,6 @@
       transform: rotate(0deg);
       -ms-transform: rotate(0deg);
       -webkit-transform: rotate(0deg);
-    }
-    &::after {
-      transform: rotate(-90deg);
-      -ms-transform: rotate(-90deg);
-      -webkit-transform: rotate(-90deg);
     }
   }
 
@@ -299,28 +316,20 @@
   }
 
   &::before {
-    content: "";
-    height: 3px;
-    background-color: #272727;
+    content: "Adiciona";
+    font-family: 'SFProBold';
+    font-size: 15px;
+    color: #fff;
     position: relative;
-    display: block;
-    top: 0%;
-    left: 7px;
-    width: 15px;
-    margin-left: -10px;
   }
 
   &::after {
-    content: "";
-    height: 3px;
-    background-color: #272727;
+    content: "+";
     position: relative;
-    display: block;
-    top: 11%;
-    left: 4px;
-    width: 15px;
-    margin-left: -12px;
-    margin-top: -7px;
+    margin-bottom: 22px;
+    font-size: 3rem;
+    color: white;
+    font-family: SfProBold;
   }
 }
 
@@ -438,4 +447,46 @@
   position: absolute;
   margin-left: 90%;
   cursor: pointer;
+}
+
+.name-bar, .description-bar, .price-bar{
+  background-color: #ffffff;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.name-bar, .description-bar{
+  width: 95%;
+  padding: 15px 5% 15px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 6px auto;
+}
+
+.price-bar{
+  width: 40.6%;
+  display: flex;
+  justify-content: center;
+  font-size: 0.963rem;
+  font-family: 'SfProBold';
+  color: #7B7B7B;
+  margin-left: auto;
+  margin-right: 2.5%;
+  padding: 7px 5%;
+  border-radius: 7px !important;
+}
+
+.name-bar{
+  font-size: 1.063rem;
+  font-family: 'SfProMedium';
+  color: #272727;
+  font-weight: 500;
+}
+
+.description-bar{
+  font-size: 1.063rem;
+  font-family: 'SfProLight';
+  color: #272727;
 }
