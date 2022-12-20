@@ -1,6 +1,8 @@
 <div class="header">
   <div class="arrow-container">
-    <img [src]="env + '/arrow-double-up.svg'" alt="">
+    <img [src]="env + '/arrow-double-up.svg'" alt=""
+      (click)="goBack()"
+    >
   </div>
   <p></p>
 </div>

@@ -45,12 +45,7 @@
       <div class="refunds-policies" *ngIf="viewMerchantForRefund">
         <div class="labels">
           <div class="accept-terms">Acepto las políticas de reembolso</div>
-          <div
-            class="title"
-            [routerLink]="
-              '/ecommerce/terms-of-use/' + viewMerchantForRefund._id
-            "
-          >
+          <div class="title" (click)="goToRefundPolicies()">
             Políticas de reembolsos
           </div>
         </div>
@@ -186,12 +181,7 @@
     method="post"
     id="azulForm"
   >
-    <input
-      type="hidden"
-      id="MerchantID"
-      name="MerchantID"
-      value="...."
-    />
+    <input type="hidden" id="MerchantID" name="MerchantID" value="...." />
     <input
       type="hidden"
       id="MerchantName"

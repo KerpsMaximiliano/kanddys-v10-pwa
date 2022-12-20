@@ -531,4 +531,13 @@ export class PaymentsComponent implements OnInit {
 
     return array;
   }
+
+  goToRefundPolicies() {
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
+    this.router.navigate([
+      '/ecommerce/terms-of-use/' + this.viewMerchantForRefund._id,
+    ]);
+  }
 }
