@@ -2231,6 +2231,11 @@ export class HeavenlyBalloonsComponent implements OnInit {
         },
       },
       footerConfig,
+      customScrollToStepBackwards: (params) => {
+        this.whatsAppMessageParts.pop();
+
+        params.scrollToStep(5);
+      },
       stepButtonInvalidText: 'INGRESA LOS DATOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN',
     },
