@@ -19,13 +19,14 @@ export class TagAsignationComponent implements OnInit {
   env: string = environment.assetsUrl;
   @Input() tags: Tag[] = [];
   @Input() activeTags: Tag[];
-  @Input('backgroundColor') background: string = '#F6F6F6';
-  @Input('textColor') textColor: string = '#272727';
-  @Input() iconColor: string = 'brightness(8)';
-  @Input() selectedBG: string = '#82F18D';
-  @Input() bgColor: string = '#FFFFFF';
-  @Input() selectedColor: string = '#FFFFFF';
-  @Input() color: string = '#272727';
+  @Input() colorTheme: 'client' | 'admin' = 'client';
+  @Input('backgroundColor') background: string;
+  @Input('textColor') textColor: string;
+  @Input() iconColor: string ;
+  @Input() selectedBG: string;
+  @Input() selectedColor: string;
+  @Input() bgColor: string;
+  @Input() color: string;
   @Input() orderId: string = null;
   @Input() public tagAction: (args?: any) => any;
   @Input() entity: 'item' | 'order' = 'order';
@@ -42,7 +43,25 @@ export class TagAsignationComponent implements OnInit {
     private headerService: HeaderService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if(this.colorTheme === 'client'){
+      this.iconColor = 'brightness(8)';
+      this.selectedBG = '#82F18D';
+      this.selectedColor = '#272727';
+      this.bgColor = 'rgba(123, 123, 123, 0.37)';
+      this.color= '#FFFFFF';
+      this.background = '#272727';
+      this.textColor = '#FFFFFF'
+    } else{
+      this.background = '#F6F6F6';
+      this.textColor = '#272727';
+      this.iconColor = 'brightness(0)'
+      this.selectedBG = '#82F18D';
+      this.selectedColor = '#272727';
+      this.bgColor = '#FFFFFF';
+      this.color = '#FFFFFF';
+    }
+  }
 
   goToCreateTag() {
     if (this.headerService.flowRoute)

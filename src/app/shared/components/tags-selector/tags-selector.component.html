@@ -11,7 +11,7 @@
         : background
     "
     [style.color]="
-      !tg.notify && tg.status !== 'active'
+    !tag.includes(tg._id) && !tg.notify && tg.status !== 'active'
         ? inactiveColor
         : tag.includes(tg._id)
         ? selectedColor
