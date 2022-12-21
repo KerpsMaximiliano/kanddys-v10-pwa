@@ -1,11 +1,12 @@
-<div class="body-container">
+<div class="body-container" [style.backgroundColor]="background">
   <div class="text-grid">
-    <h4 class="title">Tags previamente usados</h4>
+    <h4 class="title" [style.color]="textColor && textColor">Tags previamente usados</h4>
     <div class="icon-container">
       <img
         class="icon-blue"
         src="{{ env }}/bookmark-plus.svg"
-        alt=""
+        alt="banderita con icono de mas"
+        [ngStyle]="{filter: iconColor}"
         (click)="goToCreateTag()"
       />
     </div>
@@ -19,15 +20,16 @@
         : null
     "
     [multipleTags]="true"
-    containerBackground="#f6f6f6"
-    [selectedBackground]="'#2874ad'"
-    [background]="'#ffffff'"
-    [selectedColor]="'#fff'"
+    [containerBackground]="background"
+    [selectedBackground]="selectedBG"
+    [background]="bgColor"
+    [selectedColor]="selectedColor"
     [fillSelectedTagsOnStart]="true"
     [useIdToRemoveOrAddTags]="true"
-    color="#2874ad"
-    selectedFilter="brightness(2)"
-    [useIdToRemoveOrAddTags]="true"
+    [color]="color"
+    [inactiveBackground]="colorTheme === 'client' ? 'rgba(123,123,123, 37%)' : '#B17608'"
+    [inactiveColor]="'#FFFFFF'"
+    selectedFilter="brightness(8)"
     (tagSelect)="tagAction($event)"
     [outputAllSelectedTags]="outputAllSelectedTags"
     (tagSelect3)="selectTagHandler($event)"
@@ -36,4 +38,11 @@
     <img class="icon" src="{{ env }}/save.png" alt="" />
     <span *ngIf="text" class="save-text">{{ text }}</span>
   </button> -->
+  <div class="return-section">
+    <button class="bottom-button">
+      <i class="fas fa-chevron-down"></i>
+      <i class="fas fa-chevron-down" style="top: 12px;"></i>
+    </button>
+    <span class="bottom-text">Vuelve a la factura</span>
+  </div>
 </div>

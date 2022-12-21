@@ -17,6 +17,7 @@ import { ArticleParamsComponent } from './pages/article-params/article-params.co
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 import { TagsComponent } from './pages/tags/tags.component';
+import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -114,6 +115,10 @@ const routes: Routes = [
         path: 'create-tag/:tagId',
         component: CreateTagComponent,
       },
+      {
+        path: 'manage-tag',
+        component: ManageTagComponent,
+      },
     ],
   },
   {
@@ -137,6 +142,7 @@ const routes: Routes = [
     ItemsDashboardComponent,
     CreateTagComponent,
     TagsComponent,
+    ManageTagComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

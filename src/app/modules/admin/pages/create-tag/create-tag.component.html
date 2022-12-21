@@ -1,32 +1,17 @@
-<div style="min-height: 100vh; padding-bottom: 30px">
+<div class="page-container">
   <app-helper-headerv2
-    [mode]="'basic'"
-    [mainText]="{
-      text: 'Creando un nuevo tag',
-      fontSize: '21px',
-      fontFamily: 'SfProBold'
-    }"
-    [returnAble]="false"
+    [bgColor]="'#ffffff'"
     [icon]="{
-      src: '/arrow-double-up.svg',
-      width: 17,
-      height: 21,
-      callback: goBack2
-    }"
-    [rightText]="{
-      text: user? user?.name || user?.phone || user?.phone : ''
-    }"
-    [icons]="[
-      {
-        src: '/person.svg',
-        width: '13px',
-        height: '17px',
-        callback: openDialog,
-        color: 'brightness(2)'
-      }
-    ]"
-    [bgColor]="'#2874AD'"
-  ></app-helper-headerv2>
+        callback: goBack2,
+        filter: 'invert(100%) sepia(25%) saturate(50%) hue-rotate(10deg) brightness(100%) contrast(100%)',
+        height: 21,
+        src: '/arrow-double-up.svg',
+        width: 16
+      }"
+    [mainText]="{ color: '#000000', fontFamily: 'SfProBold', fontSize: '21px', text: 'Tag de Compradores' }"
+    [mode]="'basic'"
+    [returnAble]="false">
+  </app-helper-headerv2>
 
   <div
     class="options-container"
@@ -34,79 +19,65 @@
     (mousedown)="startDragging($event, elemt)"
     (mouseup)="stopDragging()"
     (mouseleave)="stopDragging()"
-    (mousemove)="moveEvent($event, elemt)"
-  >
-    <button
-      class="option"
-      *ngFor="let item of options; index as i"
-      [ngClass]="{ active: active === i }"
-      (click)="changeStep(i)"
-    >{{item}}</button>
+    (mousemove)="moveEvent($event, elemt)">
+      <button
+        class="option"
+        *ngFor="let item of options; index as i"
+        [ngClass]="{ active: active === i }"
+        (click)="changeStep(i)">
+          {{ item }} 
+      </button>
   </div>
 
   <form [formGroup]="createTagForm">
-    <div class="inputs-wrapper-flex">
+    <div class="inputs-container">
       <div class="image-input">
-        <label for="image" class="input-label">Imagen</label>
+        <label class="input-label"> Imagen </label>
 
-        <app-image-input
-          [id]="'tag-image'"
-          [useSwiper]="false"
-          [allowedTypes]="['png', 'jpg', 'jpeg']"
-          [multiple]="true"
-          [imageField]="!tagID ? [''] : [createTagForm.controls.images.value]"
-          [placeholderImage]="true"
-          [expandImage]="true"
-          [uploadImagesWithoutPlaceholderBox]="true"
-          [circleInputMode]="true"
-          [allowDeletion]="true"
-          [max]="1"
-          [containerStyles]="{
-            width: '66px',
-            height: '66px'
-          }"
-          [placeholderImageSize]="'SMALL'"
-          (onFileInputMultiple)="handleImageInput($event, 'ADD')"
-          (onFileDeletion)="handleImageInput($event, 'DELETE')"
-        ></app-image-input>
+        <div class="input-container">
+          <app-image-input
+            [allowDeletion]="true"
+            [allowedTypes]="['png', 'jpg', 'jpeg']" 
+            [circleInputMode]="false"
+            [containerStyles]="{ display: 'flex', height: '190px', width: 'auto' }"
+            [fileStyles]="{ border: 'none', borderBottomLeftRadius: '0px', borderBottomRightRadius: '0px', boxShadow: 'inset 0px 0px 9px 0px rgba(0,0,0,0.2)', width: '100%' }"
+            [expandImage]="true"
+            [id]="'tag-image'"
+            [innerLabel]="'Adiciona la imagen'"
+            [imageField]="!tagID ? [''] : [createTagForm.controls.images.value]"
+            [max]="1"
+            [multiple]="true"
+            [placeholderImage]="false"
+            [placeholderImageSize]="'SMALL'"
+            [uploadImagesWithoutPlaceholderBox]="true"
+            [useSwiper]="false"
+            (onFileInputMultiple)="handleImageInput($event, 'ADD')"
+            (onFileDeletion)="handleImageInput($event, 'DELETE')">
+          </app-image-input>
+        </div>
       </div>
 
       <div class="name-input">
-        <label for="name" class="input-label"> Nombre Hashtag</label>
-        <input
-          class="input customWidth"
-          type="text"
-          formControlName="name"
-          placeholder="Escribe..."
-        />
+        <label class="input-label"> Nombre </label>
+        <div class="input-container end">
+          <input class="input" placeholder="Escribe" type="text">
+          <small class="small">40 max</small>
+        </div>
       </div>
+    </div>
 
-      <div class="visibility-input">
-        <label for="visibility" class="input-label"
-          >Visibilidad del visitante</label
-        >
+    <div class="visibility-input">
+      <label for="visibility" class="input-label"> Visibilidad del visitante </label>
 
-        <button class="icon">
-          <img
-            [src]="visibilityImage"
-            alt="hide-tag"
-            (click)="changeVisibility()"
-          />
-        </button>
-      </div>
+      <button class="icon">
+        <img [src]="visibilityImage" alt="hide-tag" (click)="changeVisibility()"/>
+      </button>
+    </div>
 
-      <div class="textarea-area">
-        <label for="note" class="input-label">Nota</label>
+    <div class="textarea-container">
+      <label for="note" class="input-label"> Nota </label>
 
-        <textarea
-          name="note"
-          id="note"
-          cols="30"
-          rows="14"
-          class="textarea"
-          placeholder="Escribe..."
-        ></textarea>
-      </div>
+      <textarea class="textarea" name="note" id="note" class="textarea" placeholder="Escribe"></textarea>
     </div>
 
     <!-- <div
@@ -128,7 +99,7 @@
       ></app-answer-selector>
     </div> -->
   </form>
-
+<!-- 
   <app-sticky-button
     *ngIf="finishedMutation"
     [mode]="'double'"
@@ -182,6 +153,6 @@
       cursor: 'pointer'
     }"
     (left)="(null)"
-    size="small"
-  ></app-sticky-button>
+    size="small">
+  </app-sticky-button> -->
 </div>
