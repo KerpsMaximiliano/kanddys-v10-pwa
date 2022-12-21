@@ -16,14 +16,51 @@
 .dialog {
   position: relative;
   height: fit-content !important;
+
+  .dialog-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+  }
+
+  .dynamic-component {
+    position: relative;
+
+    .navigation {
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      margin: auto;
+      display: flex;
+
+      .current-dialog-indicator {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid white;
+        margin-left: 3px;
+
+        &.active {
+          background-color: white;
+        }
+      }
+    }
+  }
 }
 
 .flow-contents {
+  position: absolute;
   opacity: 0;
   transition: 0.5s opacity ease-in-out;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -5;
 
   &.visible {
     opacity: 1;
+    z-index: 99;
   }
 }
 
@@ -34,14 +71,16 @@
   }
 
   100% {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.4);
     z-index: 5;
+    backdrop-filter: blur(2px);
   }
 }
 
 @keyframes lightenOverlay {
   0% {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
     z-index: 5;
   }
 
