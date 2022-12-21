@@ -177,8 +177,7 @@
                     control.get("name").value ||
                       control.get("nickname").value ||
                       control.get("email").value ||
-                      control.get("phone").value.e164Number ||
-                      control.get("phone").value
+                      control.get("currentPhone").value
                   }}
                 </p>
               </div>
@@ -335,7 +334,7 @@
         />
         <button
           class="confirm"
-          [style.background]="password.valid ? '#2874ad' : '#c1c1c1'"
+          [style.background]="password.valid&&status!=='loading' ? '#2874ad' : '#c1c1c1'"
           (click)="submitPassword()"
         >
           <i class="fas fa-chevron-right"></i>

@@ -26,6 +26,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-article-privacy',
@@ -147,6 +148,16 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       type: 'text',
     },
     {
+      name: 'currentPhone',
+      label: '',
+      style: {
+        marginLeft: '36px',
+      },
+      value: '',
+      validators: [],
+      type: 'tel',
+    },
+    {
       name: 'phone',
       label: '',
       style: {
@@ -262,6 +273,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   id: string;
   entityTemplateRecipients: any;
   access:string = '';
+  hasPassword:boolean;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _DialogService: DialogService,
@@ -272,7 +284,8 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     private _ItemsService: ItemsService,
     private _ActivatedRoute: ActivatedRoute,
     private _Router: Router,
-    private _EntityTemplateService: EntityTemplateService
+    private _EntityTemplateService: EntityTemplateService,
+    private _ToastrService: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -284,6 +297,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
           (await this._EntityTemplateService.entityTemplate(templateId)) ||
           ({} as any);
         this.access = entityTemplateRecipients.access;
+        this.hasPassword = entityTemplateRecipients.hasPassword
         this.entityTemplateRecipients =
           entityTemplateRecipients.recipients || [];
         const { _id } = await this._MerchantsService.merchantDefault();
@@ -333,7 +347,10 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       this.fields.forEach(
         ({ name, value, validators, type }: any, j: number) => {
           let _value = item[name];
-          switch (name) {
+          switch (name) {            
+            case 'currentPhone':
+              _value = item['phone'];
+              break;
             case 'phone':
               if (_value) {
                 try {
@@ -521,10 +538,31 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
   submit(): void {
     this.status = 'loading';
     const controller: AbstractControl = this.controllers.at(this.controlIndex);
+    let [_emailR, _phoneR] = [false,false];
     const flag = this.controllers.value.filter((control,index:number) => index!==this.controlIndex).find((item,index:number) => {
-      const result = (item.phone?.number?.replace('-','') || item.phone)===controller.get('phone').value?.number.replace('-','') || item.email&&(item.email===controller.get('email').value);
+      _phoneR = (item.phone?.number?.replace('-','') || item.phone)===controller.get('phone').value?.number.replace('-','');
+      _emailR = item.email&&(item.email===controller.get('email').value);
+      const result = _phoneR || _emailR;
       return result;
     });
+    if(flag){
+      if(_emailR)
+        this._ToastrService.error(
+          `El email ya ha sido registrado.`,
+          null,
+          {
+            timeOut: 1500,
+          }
+        );
+      if(_phoneR)
+      this._ToastrService.error(
+        `El telefono ya ha sido registrado.`,
+        null,
+        {
+          timeOut: 1500,
+        }
+      );
+    }
     if (controller.invalid || flag){
       this.status = 'controller';
       return;
@@ -533,6 +571,7 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
       controller.value;
     const [_image] = image;
     const _phone = phone ? phone.e164Number.replace('+','').replace('-','') : '';
+    controller.get('currentPhone').setValue(_phone);
     const createRecipient = async () => {
       const body = {
         name,
@@ -586,7 +625,8 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
 
   submitPassword(): void {
     if (this.password.invalid) return;
-    const entityTemplateSetData = async () => {
+    (async () => {
+      this.status = 'loading';
       const password: string = this.password.value;
       const access = 'private';
       const content: any = {
@@ -598,8 +638,9 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
           this.id,
           content
         );
-    };
-    entityTemplateSetData();
+      this._ToastrService.success(`La contraseña se ${this.hasPassword?'guardó':'actualizó'} exitosamente.`);
+      this.status = 'controller';
+    })();
   }
 
   deleteSelected(): void {
