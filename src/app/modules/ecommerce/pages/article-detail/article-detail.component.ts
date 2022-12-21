@@ -196,7 +196,7 @@ export class ArticleDetailComponent implements OnInit {
       const { post } = await this.postsService.getPost(this.entityId);
       const { author } = post;
       const { _id } = author;
-      this.isProductMine = _id === this.user._id;
+      this.isProductMine = _id === this.user?._id;
       if (post) {
         this.postData = post;
 
