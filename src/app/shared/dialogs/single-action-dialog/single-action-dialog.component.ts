@@ -14,6 +14,10 @@ export class SingleActionDialogComponent implements OnInit {
    @Input() mainText: string;
    @Input() topButton: boolean;
    @Input() public mainButton: () => void;
+   @Input() btnColor: string = '#FFFFFF';
+   @Input() btnBackgroundColor: string = '#2874AD';
+   @Input() btnFontFamily: string = 'SfProRegular';
+   @Input() btnFontSize: string = '1.063rem';
 
   constructor(
    private ref : DialogRef
