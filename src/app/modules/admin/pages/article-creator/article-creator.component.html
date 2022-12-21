@@ -29,7 +29,13 @@
       alt=""
       (click)="openTagsDialog()"
     />
-    <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
+    <!-- <img
+      *ngIf="mode === 'item' && item"
+      src="{{ env }}/padlock%20%281%29.png"
+      class="notification"
+      alt=""
+      (click)="navigateToArticlePrivacy()"
+    /> -->
     <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
     <!-- <span class="text">VISTA</span> -->
     <div

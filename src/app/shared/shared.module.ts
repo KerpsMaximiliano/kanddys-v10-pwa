@@ -102,6 +102,7 @@ import { HelperHeaderv3Component } from './components/helper-headerv3/helper-hea
 import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
+import { ArticlePrivacyComponent } from './components/article-privacy/article-privacy.component';
 import { InputTransparentComponent } from './dialogs/input-transparent/input-transparent.component';
 import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
 import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
@@ -215,11 +216,11 @@ const declarations = [
   HelperHeaderv3Component,
   FunctionalityParametersComponent,
   ConfirmActionDialogComponent,
-  InputTransparentComponent,
+  ArticlePrivacyComponent,
   AnexosDialogComponent,
+  InputTransparentComponent,
   QrCodeDialogComponent,
   PostsXlsComponent,
-  TagAsignationComponent,
   MediaDialogComponent
 ];
 
