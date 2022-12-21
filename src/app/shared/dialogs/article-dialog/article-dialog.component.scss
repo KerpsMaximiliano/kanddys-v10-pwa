@@ -1,0 +1,33 @@
+.container {
+  width: 100%;
+  padding: 20px 0px;
+  padding-left: 30px;
+  padding-right: 27px;
+  position: absolute;
+  bottom: 0px;
+  background: #fff;
+}
+
+h1 {
+  font-family: "SfProRegular";
+  color: #000;
+  font-size: 31px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  li {
+    span {
+      display: block;
+      margin: 10px 0px;
+      font-family: "SfProRegular";
+      font-size: 22px;
+    }
+  }
+}
+
+hr {
+  width: 100%;
+  border: 1px solid #b3b3b3;
+}
