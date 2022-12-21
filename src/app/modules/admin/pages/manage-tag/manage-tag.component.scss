@@ -1,18 +1,17 @@
 @import "forms";
 
 .page-container {
-    min-height: 100vh;
-    padding-bottom: 30px;
+  min-height: 100vh;
+  padding-bottom: 30px;
 }
 
 .options-container {
     align-items: center;
     background-color: #fff;
     display: flex;
-    justify-content: space-around;
     margin-bottom: 3px;
     overflow-x: scroll;
-    padding: 0.5rem 0;
+    padding: 0.5rem 2.5rem;
     width: 100%;
 
     .option {
@@ -22,11 +21,15 @@
         font-family: 'SfProLight';
         font-size: 17px;
     }
+
+    :not(:last-child) {
+        padding-right: 3rem;
+    }
 }
 
 form {
     height: max-content;
-    margin: 2rem 3rem;
+    margin: 2rem 2.5rem;
 
     @media (max-width: 399px) {
         margin: 2rem 1rem;
@@ -38,11 +41,11 @@ form {
 
     .inputs-container {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
     }
 
     .image-input, .name-input {
-        flex-basis: 45%;
+        flex-basis: 48.5%;
         width: 100%;
     }
 
@@ -54,6 +57,7 @@ form {
         position: relative;
 
         .textarea {
+            border: none;
             border-radius: 0;
             box-shadow: inset 0px 0px 9px 0px rgba(0,0,0,0.2);
             color: #000000;
@@ -98,6 +102,12 @@ form {
 
     textarea::placeholder {
         font-size: 17px;
+    }
+
+    .textarea-container textarea {
+        border: none;
+        border-radius: 9px;
+        height: 130px;
     }
 }
 
