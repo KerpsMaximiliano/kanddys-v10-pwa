@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-blank',
@@ -8,10 +8,21 @@ import { Component, OnInit, Input } from '@angular/core';
 export class BlankComponent implements OnInit {
   @Input() containerStyles: Record<string, any> = {
     height: '200px',
-    width: '90%',
   };
+  @Output() threeClicksDetected = new EventEmitter();
+  clickTriggerCounter: number = 0;
 
   constructor() {}
 
   ngOnInit(): void {}
+
+  addToCounter() {
+    this.clickTriggerCounter++;
+
+    console.log(this.clickTriggerCounter + " clicks")
+
+    if (this.clickTriggerCounter === 3) {
+      this.threeClicksDetected.emit(true);
+    }
+  }
 }
