@@ -684,7 +684,8 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
             this.toDelete = [];
             this.status = 'controller';
           })();
-        }
+        },
+        btnBackgroundColor: '#272727'
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
