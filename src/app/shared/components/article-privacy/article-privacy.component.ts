@@ -685,7 +685,9 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
             this.status = 'controller';
           })();
         },
-        btnBackgroundColor: '#272727'
+        btnBackgroundColor: '#272727',
+        btnMaxWidth: '133px',
+        btnPadding: '7px 2px'
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
