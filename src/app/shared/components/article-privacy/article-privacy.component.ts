@@ -27,6 +27,7 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { ToastrService } from 'ngx-toastr';
+import { SingleActionDialogComponent } from '../../dialogs/single-action-dialog/single-action-dialog.component';
 
 @Component({
   selector: 'app-article-privacy',
@@ -647,78 +648,43 @@ export class ArticlePrivacyComponent implements OnInit, OnDestroy {
     const id = '';
     const [index] = this.toDelete;
     const control = this.controllers.at(index);
-    const list = [
-      {
-        title:
-          this.toDelete.length > 1
-            ? 'Borrar todos los recipientes de la lista?'
-            : `Borrar a ${
-                control.get('name').value ||
-                control.get('nickname').value ||
-                control.get('email').value ||
-                control.get('phone').value.e164Number ||
-                control.get('phone').value
-              } de la lista?`,
-        titleStyles: {
-          fontFamily: 'SfProBold',
-          color: '#4f4f4f',
-          textAlign: 'center',
-          fontSize: '23px',
-        },
-        options: [
-          {
-            text: 'Si, borrar',
-            mode: 'func',
-            dynamicStyles: {
-              description: {
-                fontFamily: 'SfProDisplay',
-                border: 'none',
-                background: '#000',
-                textAlign: 'center',
-                color: '#fff!important',
-                width: '133px',
-                height: '30px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '30px',
-                margin: 'auto',
-              },
-            },
-            func: () => {
-              this.status = 'loading';
-              const deleteRecipient = async () => {
-                for (const index of this.toDelete) {
-                  const result = await this._RecipientsService.deleteRecipient(
-                    this.controllers.at(index).get('_id').value
-                  );
-                }
-                this.controllers = new FormArray(
-                  this.controllers.controls.filter(
-                    (control: FormGroup, index) =>
-                      !this.toDelete.includes(index)
-                  )
-                );
-                this.multimedia = this.multimedia.filter(
-                  (item, j: number) => !this.toDelete.includes(j)
-                );
-                this.types = this.types.filter(
-                  (item, j: number) => !this.toDelete.includes(j)
-                );
-                this.toDelete = [];
-                this.status = 'controller';
-              };
-              deleteRecipient();
-            },
-          },
-        ],
-      },
-    ];
-    this._DialogService.open(StoreShareComponent, {
+    this._DialogService.open(SingleActionDialogComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list,
-        hideCancelButtton: true,
+        title: this.toDelete.length > 1
+        ? 'Borrar todos los recipientes de la lista?'
+        : `Borrar a ${
+            control.get('name').value ||
+            control.get('nickname').value ||
+            control.get('email').value ||
+            control.get('phone').value.e164Number ||
+            control.get('currentPhone').value
+          } de la lista?`,
+        buttonText: 'Si, borrar',
+        mainButton: ()=>{
+          this.status = 'loading';
+          (async () => {
+            for (const index of this.toDelete) {
+              const result = await this._RecipientsService.deleteRecipient(
+                this.controllers.at(index).get('_id').value
+              );
+            }
+            this.controllers = new FormArray(
+              this.controllers.controls.filter(
+                (control: FormGroup, index) =>
+                  !this.toDelete.includes(index)
+              )
+            );
+            this.multimedia = this.multimedia.filter(
+              (item, j: number) => !this.toDelete.includes(j)
+            );
+            this.types = this.types.filter(
+              (item, j: number) => !this.toDelete.includes(j)
+            );
+            this.toDelete = [];
+            this.status = 'controller';
+          })();
+        }
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
