@@ -1,104 +1,36 @@
 <div class="container">
-  <!-- <app-helper-headerv2
-    [mode]="'basic'"
-    [icon]="
-      steps !== 'save'
-        ? {
-            src: '/arrow-double-up.svg',
-            width: 17,
-            height: 21,
-            callback: iconCallback
-          }
-        : null
-    "
-    [mainText]="{
-      text:
-        steps !== 'save'
-          ? 'Artículo para vender'
-          : 'Guardando el artículo que se venderá',
-      fontSize: '1.313rem',
-      fontFamily: 'SfProBold'
-    }"
-    [dots]="
-      steps !== 'save'
-        ? {
-            active: true,
-            func: dotsCallback
-          }
-        : null
-    "
-    [returnAble]="steps !== 'save' ? false : true"
-    (return)="goBack()"
-  ></app-helper-headerv2> -->
+  <app-helper-headerv2
+  [mode]="'basic'"
+  [icon]="{
+    src: '/arrow-double-up.svg',
+    width: 17,
+    height: 21,
+    callback: stopDragging,
+    filter: 'brightness(0)'
+  }"
+  [rightText]="{
+    text: 'PREVIEW',
+    fontSize: '0.963rem',
+    fontFamily: 'SfProBold',
+    color: '#272727',
+    pointer: true
+  }"
+  [icons]="[{
+    src: '/bookmark-plus.svg',
+    color: 'brightness(0)',
+    margin: '1px',
+    callback: stopDragging
+  }]"
+  [dots]="{
+    active: true,
+    color: '#272727'
+  }"
+  [returnAble]="false"
+  [bgColor]="'#FFFFFF'"
+  ></app-helper-headerv2>
 
-  <div class="header">
-    <svg
-      class="arrow"
-      xmlns="http://www.w3.org/2000/svg"
-      width="6.904"
-      height="11.809"
-      viewBox="0 0 6.904 11.809"
-    >
-      <path
-        id="Path_28690"
-        data-name="Path 28690"
-        d="M2810.275,742.885l4.49,4.49-4.49,4.49"
-        transform="translate(2815.765 753.28) rotate(180)"
-        fill="none"
-        stroke="#7b7b7b"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-      />
-    </svg>
-    <p class="title">Editando el articulo</p>
-    <svg
-      class="dots"
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="6"
-      viewBox="0 0 22 6"
-    >
-      <g
-        id="Group_71232"
-        data-name="Group 71232"
-        transform="translate(-387 -78)"
-      >
-        <g id="Group_71368" data-name="Group 71368">
-          <circle
-            id="Ellipse_5107"
-            data-name="Ellipse 5107"
-            cx="3"
-            cy="3"
-            r="3"
-            transform="translate(387 78)"
-            fill="#272727"
-          />
-          <circle
-            id="Ellipse_5108"
-            data-name="Ellipse 5108"
-            cx="3"
-            cy="3"
-            r="3"
-            transform="translate(395 78)"
-            fill="#272727"
-          />
-          <circle
-            id="Ellipse_5109"
-            data-name="Ellipse 5109"
-            cx="3"
-            cy="3"
-            r="3"
-            transform="translate(403 78)"
-            fill="#272727"
-          />
-        </g>
-      </g>
-    </svg>
-  </div>
-
-  <div class="top-headers" *ngIf="steps !== 'save'">
-    <!-- <div
+  <!-- <div class="top-headers" *ngIf="steps !== 'save'">
+    // <div
       class="second-header"
       #elemt
       (mousedown)="startDragging($event, elemt)"
@@ -115,7 +47,7 @@
           {{ item }}
         </div>
       </ng-container>
-    </div> -->
+    </div> //
     <div
       class="second-header"
       #elemt
@@ -134,53 +66,10 @@
         </div>
       </ng-container>
     </div>
-  </div>
+  </div> -->
 
   <div class="image-selector">
-    <label for="Selector de imagenes" class="image-label"
-      >Fotos y Videos:</label
-    >
-    <svg
-      class="random"
-      xmlns="http://www.w3.org/2000/svg"
-      width="28.052"
-      height="24.547"
-      viewBox="0 0 28.052 24.547"
-    >
-      <g
-        id="Group_72232"
-        data-name="Group 72232"
-        transform="translate(-196 -12.313)"
-      >
-        <path
-          id="Path_28817"
-          data-name="Path 28817"
-          d="M28.381,2.506a.877.877,0,0,1,1.241,0L34,6.889A.877.877,0,0,1,34,8.13l-4.383,4.383a.878.878,0,0,1-1.241-1.241l3.763-3.763L28.38,3.746a.877.877,0,0,1,0-1.241Zm0,14.025a.877.877,0,0,1,1.241,0L34,20.914a.877.877,0,0,1,0,1.241l-4.383,4.383A.878.878,0,1,1,28.381,25.3l3.763-3.763L28.38,17.772a.877.877,0,0,1,0-1.241Z"
-          transform="translate(189.789 10.064)"
-          fill="#272727"
-          fill-rule="evenodd"
-        />
-        <g id="Group_72229" data-name="Group 72229">
-          <path
-            id="Path_28818"
-            data-name="Path 28818"
-            d="M0,8.752a.877.877,0,0,1,.877-.877H4.383c5.352,0,8,3.958,10.266,7.408l.14.216a25.176,25.176,0,0,0,3.387,4.451,6.41,6.41,0,0,0,4.614,1.95H26.3a.877.877,0,1,1,0,1.753H22.791a8.148,8.148,0,0,1-5.822-2.433,26.3,26.3,0,0,1-3.6-4.7l-.184-.279c-2.338-3.562-4.509-6.616-8.8-6.616H.877A.877.877,0,0,1,0,8.752Z"
-            transform="translate(196 8.821)"
-            fill="#272727"
-            fill-rule="evenodd"
-          />
-          <path
-            id="Path_28819"
-            data-name="Path 28819"
-            d="M0,22.777a.877.877,0,0,0,.877.877H4.383c5.352,0,8-3.958,10.266-7.408l.14-.216a25.177,25.177,0,0,1,3.387-4.451,6.411,6.411,0,0,1,4.614-1.95H26.3a.877.877,0,1,0,0-1.753H22.791a8.148,8.148,0,0,0-5.822,2.433,26.3,26.3,0,0,0-3.6,4.7l-.184.279c-2.338,3.562-4.509,6.616-8.8,6.616H.877A.877.877,0,0,0,0,22.777Z"
-            transform="translate(196 8.821)"
-            fill="#272727"
-            fill-rule="evenodd"
-          />
-        </g>
-      </g>
-    </svg>
-
+    
     <div class="image-area">
       <input
         id="filemultiple"
@@ -194,9 +83,6 @@
       <label for="filemultiple" class="add-image">
         <div class="corner-btn add"></div>
       </label>
-      <!-- <button class="add-image">
-          
-        </button> -->
 
       <div
         class="image-container"
@@ -208,11 +94,14 @@
           (click)="openImageModal(item)"
         ></button>
         <!-- <button class="corner-btn delete" (click)="deleteImage(i)"></button> -->
-        <div class="corner-btn2">
+        <div
+        class="corner-btn2"
+        (click)="openAuxDialog(i)"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="6"
+            width="18"
+            height="5"
             viewBox="0 0 22 6"
           >
             <g
@@ -252,6 +141,7 @@
             </g>
           </svg>
         </div>
+        <div class="shadow-name"></div>
       </div>
     </div>
 
@@ -265,7 +155,10 @@
   </div>
 
   <div [ngSwitch]="steps" *ngIf="!itemId || (itemId && item)">
-    <p class="subtitle">Precio:</p>
+    <div class="name-bar" style="margin-top: 12px;">Nombre del producto (opcional)</div>
+    <div class="description-bar">Descripción del producto <br>(opcional)</div>
+    <div class="price-bar">RD$ 1,275.00</div>
+    <!--  <p class="subtitle">Precio:</p>
     <div class="price-form" *ngSwitchCase="'price'">
       <div class="price-input">
         <app-currency-input
@@ -387,37 +280,7 @@
       </div>
 
       <button class="btn">PREVIEW</button>
-
-      <!-- <div class="name-area">
-        <label for="name" class="name-label">Nombre del modelo</label>
-
-        <div class="input-button">
-          <input
-            type="text"
-            class="name-input"
-            [formControl]="name"
-            (input)="onChangeName($event)"
-            placeholder="Modelo sin nombre..."
-            (input)="handleNameInput($event)"
-          />
-          <button class="list-button" (click)="openDialog()">
-            <i class="fas fa-list"></i>
-          </button>
-        </div>
-      </div> -->
-
-      <!-- <app-sticky-button
-        [mode]="price.valid && name.valid ? 'fixed' : 'disabled-fixed'"
-        [text]="
-          price.valid && name.valid
-            ? 'ADICIONA LA IMAGEN'
-            : 'ADICIONA EL PRECIO'
-        "
-        [bgColor]="price.valid && name.valid ? '#2874AD' : '#7B7B7B'"
-        [fontSize]="'1.063rem'"
-        (click)="price.valid && name.valid && toSave()"
-      ></app-sticky-button> -->
-    </div>
+    </div> -->
 
     <div class="save" *NgSwitchCase="'save'">
       <label for="Save input" class="save-input"

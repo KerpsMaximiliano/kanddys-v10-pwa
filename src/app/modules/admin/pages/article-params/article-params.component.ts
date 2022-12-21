@@ -15,6 +15,9 @@ import { Item } from 'src/app/core/models/item';
 import { ToastrService } from 'ngx-toastr';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { ArticleDialogComponent } from 'src/app/shared/dialogs/article-dialog/article-dialog.component';
+import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 
 @Component({
   selector: 'app-article-params',
@@ -488,5 +491,52 @@ export class ArticleParamsComponent implements OnInit {
 
   card2Clicked() {
     this.card2 = !this.card2;
+  }
+
+  openAuxDialog(index: number):void {
+    const list = [
+      {
+        text: 'Textos del Articulo',
+        callback: async () => {
+          
+        },
+      },
+      {
+        text: 'Eliminar',
+        callback: async () => {
+          this.dialog.open(SingleActionDialogComponent, {
+            type: 'fullscreen-translucent',
+            props: {
+              title: 'Eliminar este slide del simbolo',
+              buttonText: 'Si, borrar',
+              mainButton: ()=>{
+                this.deleteImage(index);
+              },
+              btnBackgroundColor: '#272727',
+              btnMaxWidth: '133px',
+              btnPadding: '7px 2px'
+            }
+          });
+        },
+      },
+      {
+        text: 'Cambiar el orden de los slides',
+        callback: async () => {
+          
+        },
+      }
+    ];
+    this.dialog.open(SettingsComponent, {
+       type: 'fullscreen-translucent',
+       props: {
+          optionsList: list,
+          closeEvent: ()=> {
+          },
+          shareBtn: false,
+          title: ''
+       },
+       customClass: 'app-dialog',
+       flags: ['no-header']
+    });
   }
 }

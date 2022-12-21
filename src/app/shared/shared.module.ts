@@ -112,6 +112,7 @@ import { BiosBannerComponent } from './components/bios-banner/bios-banner.compon
 import { ItemListSelectorComponent } from './dialogs/item-list-selector/item-list-selector.component';
 import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.component';
 import { BlankComponent } from './dialogs/blank/blank.component';
+import { ArticleDialogComponent } from './dialogs/article-dialog/article-dialog.component';
 
 const imports = [
   CommonModule,
@@ -231,6 +232,7 @@ const declarations = [
   DialogFlowComponent,
   ItemListSelectorComponent,
   BlankComponent,
+  ArticleDialogComponent
 ];
 
 @NgModule({

@@ -91,7 +91,8 @@
                 'background-color': icon.highlight?.highlighted
                   ? icon.highlight?.color
                   : 'transparent',
-                borderRadius: '50%'
+                borderRadius: '50%',
+                margin: icon.margin && icon?.margin
               }"
             >
               <img
@@ -106,7 +107,6 @@
                       : icon.color
                       ? icon.color
                       : 'none',
-                  margin: icon.margin && icon?.margin,
                   cursor: 'pointer'
                 }"
                 (click)="icon.highlight?.active ? highlight(i) : null"

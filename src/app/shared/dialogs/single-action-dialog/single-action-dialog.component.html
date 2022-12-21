@@ -6,7 +6,16 @@
     <span class="info-title" *ngIf="extraTitle">{{extraTitle}}</span>
     <h1 class="title">{{ title }}</h1>
 
-    <button class="center-button" (click)="buttonAction()">{{ buttonText }}</button>
+    <button
+    class="center-button"
+    [style.color]="btnColor"
+    [style.Background]="btnBackgroundColor"
+    [style.fontFamily]="btnFontFamily"
+    [style.fontSize]="btnFontSize"
+    [style.maxWidth]="btnMaxWidth"
+    [style.width]="btnWidth"
+    [style.padding]="btnPadding"
+    (click)="buttonAction()">{{ buttonText }}</button>
 
     <p class="main-text">{{ mainText }}</p>
   </div>
