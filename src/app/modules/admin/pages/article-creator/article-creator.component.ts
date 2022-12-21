@@ -29,6 +29,7 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 
 type Mode = 'symbols' | 'item';
 
@@ -95,8 +96,13 @@ export class ArticleCreatorComponent implements OnInit {
   selectedTags: Array<string>;
   tagsAsignationOnStart: boolean = false;
   fromTemplate: string = null;
-
+  editMode = false;
+  editingImage: number;
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
+  imageElement: HTMLImageElement;
+  canvasElement: HTMLCanvasElement;
+  public context: CanvasRenderingContext2D;
+
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _ActivatedRoute: ActivatedRoute,
@@ -231,7 +237,11 @@ export class ArticleCreatorComponent implements OnInit {
     }, 900);
   }
 
-  updateCurrentSlideData(event: any) {
+  swiperI: number = 0;
+  swiperJ: number = 0;
+  updateCurrentSlideData(event: any, i: number, j: number) {
+    this.swiperI = i;
+    this.swiperJ = j;
     this.activeSlide = this.mediaSwiper.directiveRef.getIndex();
   }
 
@@ -411,8 +421,126 @@ export class ArticleCreatorComponent implements OnInit {
     };
   }
 
+  imageSizeChange: number = 100;
+  imageRotationChange: number = 0;
+  imageRotation: number;
+
+  rotateImage() {
+    this.imageRotation = this.imageRotationChange * (Math.PI / 180);
+    this.drawImage();
+  }
+
+  resizeImage() {
+    this.drawImage();
+  }
+
+  drawImage() {
+    this.context.clearRect(
+      0,
+      0,
+      this.canvasElement.width,
+      this.canvasElement.height
+    );
+    this.context.translate(
+      this.canvasElement.width / 2,
+      this.canvasElement.height / 2
+    );
+    this.context.rotate(this.imageRotation);
+    this.context.drawImage(
+      this.imageElement,
+      (-this.imageElement.width * (this.imageSizeChange / 100)) / 2,
+      (-this.imageElement.height * (this.imageSizeChange / 100)) / 2,
+      this.imageElement.width * (this.imageSizeChange / 100),
+      this.imageElement.height * (this.imageSizeChange / 100)
+    );
+    this.context.rotate(-this.imageRotation);
+    this.context.translate(
+      -(this.canvasElement.width / 2),
+      -(this.canvasElement.height / 2)
+    );
+  }
+
+  imageSizes: {
+    width: number;
+    height: number;
+  }[] = [];
+
+  enterEdit(i: number, j: number) {
+    this.editMode = true;
+    this.editingImage = j;
+    const img = this.urls[j];
+    this.imageElement = new Image();
+    this.imageElement.src = img as string;
+    this.imageElement.crossOrigin = 'anonymous';
+    this.canvasElement = null;
+    this.context = null;
+    this.imageElement.onload = async () => {
+      if (!this.imageSizes[j]?.width || !this.imageSizes[j]?.height) {
+        this.imageSizes[j] = {
+          width: this.imageElement.width,
+          height: this.imageElement.height,
+        };
+      }
+      this.canvasElement = document.createElement('canvas');
+      const totalSize = Math.max(
+        this.imageElement.width,
+        this.imageElement.height
+      );
+      this.canvasElement.width = this.imageSizes[j].width * 1.25;
+      this.canvasElement.height = this.imageSizes[j].height * 1.25;
+      this.context = this.canvasElement.getContext('2d');
+      this.drawImage();
+      const url = this.canvasElement.toDataURL('image/png');
+      this.openImageModal(url);
+    };
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this._DialogService.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
   async submit(): Promise<void> {
     this.blockSubmitButton = true;
+    if (this.editMode) {
+      if (!this.imageRotation) {
+        this.canvasElement.width = this.imageElement.width;
+        this.canvasElement.height = this.imageElement.height;
+        this.drawImage();
+      }
+      this.imageSizeChange = 100;
+      this.imageRotationChange = 0;
+      this.imageRotation = null;
+      this.editMode = false;
+      const url = this.canvasElement.toDataURL('image/png');
+      this.urls[this.editingImage] = url;
+      this.multimedia[0][this.editingImage] = this._DomSanitizer
+        .bypassSecurityTrustStyle(`url(
+        ${url})
+        no-repeat center center / contain #2e2e2e`);
+      const file = await this.urltoFile(url, 'image.png');
+      const { type } = file;
+      const multimedia = this.controllers
+        .at(0)
+        .get('multimedia')
+        .value.map((image, index: number) => {
+          var formData = new FormData();
+          const { name } = file;
+          var blob = new Blob([JSON.stringify(file)], { type });
+          formData.append(name, blob);
+          return index === this.editingImage ? file : image;
+        });
+      this.controllers.at(0).get('multimedia').setValue(multimedia);
+      if (this.item) this._ItemsService.changedImages = true;
+      this.openImageModal(url);
+      return;
+    }
     if (this.mode === 'symbols') {
       if (this.controllers.invalid) return;
       let result = [];
@@ -457,6 +585,40 @@ export class ArticleCreatorComponent implements OnInit {
       });
       this._ItemsService.itemImages = images;
 
+      if (this.item) {
+        const itemInput = {
+          name: this.item.name || null,
+          description: this.item.description,
+          pricing: this.item.pricing,
+          content: [],
+          currencies: [],
+          hasExtraPrice: false,
+          purchaseLocations: [],
+          showImages: this._ItemsService.itemImages.length > 0,
+        };
+        const { updateItem: updatedItem } = await this._ItemsService.updateItem(
+          itemInput,
+          this.item._id
+        );
+        if (this._ItemsService.changedImages) {
+          await this._ItemsService.deleteImageItem(
+            this.item.images,
+            updatedItem._id
+          );
+          await this._ItemsService.addImageItem(
+            this._ItemsService.itemImages,
+            updatedItem._id
+          );
+          this._ItemsService.itemImages = [];
+          this._ItemsService.changedImages = false;
+        }
+
+        this._ItemsService.removeTemporalItem();
+        // this._Router.navigate([`/admin/merchant-items`]);
+        this._ToastrService.success('Producto actualizado satisfactoriamente!');
+        // this._Router.navigate([`/admin/create-article/${updatedItem._id}`]);
+        return;
+      }
       const itemInput = {
         name: null,
         description: null,
@@ -471,6 +633,7 @@ export class ArticleCreatorComponent implements OnInit {
       };
       this._ItemsService.itemPrice = null;
       this._ItemsService.itemName = null;
+
       const { createItem } = await this._ItemsService.createItem(itemInput);
       await this._SaleflowService.addItemToSaleFlow(
         {
@@ -497,6 +660,10 @@ export class ArticleCreatorComponent implements OnInit {
         `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
       ]);
     }
+  }
+
+  restart() {
+    // console.log('asd');
   }
 
   removeFile(i: number, j: number): void {

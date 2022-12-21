@@ -46,7 +46,8 @@
             *ngIf="controller.get(field.name).value.length"
             [config]="swiperConfig"
             #mediaSwiper
-            (slideChange)="updateCurrentSlideData($event)"
+            (slideChange)="updateCurrentSlideData($event, i, j)"
+            [ngStyle]="{ display: editMode ? 'none' : 'inline' }"
           >
             <div
               *ngFor="
@@ -157,16 +158,29 @@
                   </audio>
                 </div>
               </div>
-              <button
-                *ngIf="controller.valid"
-                class="rotate-btn"
-                type="button"
-                (click)="rotateImg(i, k)"
-              >
-                <i class="fa fa-repeat" aria-hidden="true"></i>
-              </button>
             </div>
           </swiper>
+          <div
+            *ngIf="editMode"
+            style="
+              height: calc(100vh - 46px);
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            "
+          >
+            <div style="display: flex; justify-content: center">
+              <img
+                [src]="urls[editingImage]"
+                alt=""
+                srcset=""
+                style="z-index: -1"
+                [style.transform]="'scale(' + imageSizeChange / 100 + ')'"
+                [style.rotate]="imageRotation + 'rad'"
+                width="100%"
+              />
+            </div>
+          </div>
         </ng-container>
       </div>
     </ng-container>
@@ -185,6 +199,7 @@
         'grid-template-columns': '' + fractions + '',
         display: display ? display : 'none'
       }"
+      *ngIf="!editMode"
     >
       <div
         *ngFor="let media of multimedia[0]; let i = index"
@@ -204,7 +219,7 @@
       <span>Citas</span>
       <span>Planilla</span>
     </div> -->
-    <div class="button-display-area">
+    <div class="button-display-area" *ngIf="!editMode">
       <!--FOR EDIT & OTHER-->
       <ng-container *ngIf="viewType !== 'preview'">
         <div class="sales-price">
@@ -230,7 +245,7 @@
         <button class="round-button">
           <img [src]="env + '/unlock.svg'" />
         </button>
-        <button class="round-button">
+        <button class="round-button" (click)="enterEdit(swiperI, activeSlide)">
           <img [src]="env + '/screen-cut.svg'" />
         </button>
         <button class="round-button">
@@ -247,8 +262,68 @@
         </button>
       </div>
     </div>
+    <div *ngIf="editMode">
+      <div class="range-slider">
+        <i
+          class="fa fa-compress"
+          aria-hidden="true"
+          style="color: #fff; font-size: 26px; width: 26px"
+        ></i>
+        <input
+          type="range"
+          value="100"
+          min="100"
+          max="200"
+          name="imageSize"
+          [(ngModel)]="imageSizeChange"
+          (ngModelChange)="resizeImage()"
+        />
+      </div>
+      <div class="range-slider">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="26.225"
+          height="26.303"
+          viewBox="0 0 26.225 26.303"
+        >
+          <g id="crop-rotate" transform="translate(-1.222 -1.123)">
+            <path
+              id="Path_28922"
+              data-name="Path 28922"
+              d="M2.975,14.275A11.371,11.371,0,0,1,14.314,2.917V5.2l6.12-4.082H14.315l-.018,0A13.179,13.179,0,0,0,1.222,14.275Z"
+              fill="#fff"
+            />
+            <path
+              id="Path_28923"
+              data-name="Path 28923"
+              d="M16.266,29.363V27.644l-6.119,3.507h6.119A13.2,13.2,0,0,0,29.417,18H27.663A11.41,11.41,0,0,1,16.266,29.363Z"
+              transform="translate(-1.97 -3.725)"
+              fill="#fff"
+            />
+            <path
+              id="Path_28924"
+              data-name="Path 28924"
+              d="M20.348,10.191h-8.4V8.438H10.191v1.753H8.438v1.753h1.753v9.644H19.4v1.753h1.753V21.589H22.9V19.835H21.151V14.061L19.4,15.815v4.02H12.9L22.9,9.827V8.876h-1.24Zm-8.4,8.4v-6.65H18.6Z"
+              transform="translate(-1.593 -1.614)"
+              fill="#fff"
+            />
+          </g>
+        </svg>
+        <input
+          type="range"
+          name="imageRotation"
+          min="-180"
+          max="180"
+          [(ngModel)]="imageRotationChange"
+          (ngModelChange)="rotateImage()"
+        />
+      </div>
+    </div>
 
-    <div class="bottom-button-banner" *ngIf="viewType === 'preview'">
+    <div
+      class="bottom-button-banner"
+      *ngIf="viewType === 'preview' && !editMode"
+    >
       <ng-container *ngIf="infoMissing === 'banner'">
         <app-bios-banner></app-bios-banner>
       </ng-container>
@@ -274,6 +349,12 @@
             <span>Opcional: Edita el banner</span>
           </div>
         </div>
+      </button>
+    </div>
+    <div class="edit-footer" *ngIf="editMode">
+      <button class="footer-save" (click)="submit()">SALVAR AJUSTES</button>
+      <button class="footer-restart" (click)="restart()">
+        Reiniciar ajustes de este Slide
       </button>
     </div>
     <app-bios-banner *ngIf="viewType !== 'preview'"> </app-bios-banner>

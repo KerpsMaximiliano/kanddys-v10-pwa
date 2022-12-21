@@ -48,7 +48,6 @@ button {
   }
 }
 .extra {
-  background: #2e2e2e;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -107,6 +106,7 @@ button {
   bottom: 0px;
   max-width: 100%;
   z-index: 1;
+  background: #2e2e2e;
 }
 .hidden {
   display: none;
@@ -211,25 +211,7 @@ audio {
   }
 }
 
-.rotate-btn {
-  cursor: pointer;
-  position: fixed;
-  right: 16px;
-  bottom: 325px;
-  padding: 8px;
-  border-radius: 50%;
-  background-color: #fff;
-  color: #000;
-  transition: all 0.2s;
-  z-index: 2;
-
-  &:hover {
-    background-color: rgb(228, 228, 228);
-    transition: all 0.2s;
-  }
-}
-
-.bottom-swiper{
+.bottom-swiper {
   width: 100%;
   height: calc(100vh - 87.6vh);
   position: absolute;
@@ -239,69 +221,70 @@ audio {
   background-image: linear-gradient(transparent, black);
   z-index: 1;
 
-  .text-icons{
+  .text-icons {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     z-index: 1;
-  
-    .texts-column{
-       display: inherit;
-       flex-direction: column !important;
-       width: 50%;
+
+    .texts-column {
+      display: inherit;
+      flex-direction: column !important;
+      width: 50%;
     }
-    
-    .icons-flex{
-       display: flex;
-       justify-content: space-around;
-       align-items: center;
-       margin-right: 10px;
-    
-       .icon{
-          all: unset;
-          width: fit-content;
-          height: fit-content;
-          margin-right: 30px;
-          padding: 3.5px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          border-radius: 50%;
-          cursor: pointer;
-      
-          svg,img{
-             width: 26px;
-             height: 28px;
-             filter: brightness(5);
-          }
-       }
+
+    .icons-flex {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-right: 10px;
+
+      .icon {
+        all: unset;
+        width: fit-content;
+        height: fit-content;
+        margin-right: 30px;
+        padding: 3.5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        cursor: pointer;
+
+        svg,
+        img {
+          width: 26px;
+          height: 28px;
+          filter: brightness(5);
+        }
+      }
     }
   }
 }
 
-.main-text{
+.main-text {
   position: absolute;
   top: 52%;
   font-size: 1.313rem;
-  font-family: 'SfProBold';
-  color: #FFFFFF;
+  font-family: "SfProBold";
+  color: #ffffff;
   margin-left: 3.23%;
   margin-bottom: 4px;
   cursor: pointer;
 }
 
-.second-text{
+.second-text {
   position: absolute;
   top: 78%;
   font-size: 0.963rem;
-  font-family: 'SfProLight';
-  color: #FFFFFF;
+  font-family: "SfProLight";
+  color: #ffffff;
   margin-left: 3.23%;
   margin-bottom: 7px;
   cursor: pointer;
 }
 
-.button-display-area{
+.button-display-area {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -309,112 +292,112 @@ audio {
   background-color: #000000;
   padding: 22px 3.5% 10px;
 
-  .sales-price{
-     width: 100%;
-     display: flex;
-     justify-content: space-between;
-     padding: 0 3.5%;
+  .sales-price {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 3.5%;
 
-     .sales-flex{
-        display: flex;
-     }
+    .sales-flex {
+      display: flex;
+    }
   }
 
-  .big-button{
-     all: unset;
-     width: 91%;
-     min-height: 59px;
-     max-width: 459px;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     border-radius: 4px;
-     margin: 0 3.5% 11px;
-     padding: 12px 20px 5px;
-     background-color: rgba(123, 123, 123, 37%);
-     color: #FFFFFF;
-     font-family: 'SfProRegular';
-     font-size: 19px;
-     text-align: center;
-     cursor: pointer;
+  .big-button {
+    all: unset;
+    width: 91%;
+    min-height: 59px;
+    max-width: 459px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    margin: 0 3.5% 11px;
+    padding: 12px 20px 5px;
+    background-color: rgba(123, 123, 123, 37%);
+    color: #ffffff;
+    font-family: "SfProRegular";
+    font-size: 19px;
+    text-align: center;
+    cursor: pointer;
 
-     img{
-        filter: brightness(10);
-        margin-right: 17px;
-        width: 30px;
-        height: 33px;
-     }
+    img {
+      filter: brightness(10);
+      margin-right: 17px;
+      width: 30px;
+      height: 33px;
+    }
   }
 
-  .buttons-display{
-     width: 100%;
-     display: flex;
-     justify-content: flex-end;
+  .buttons-display {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
 
-     .round-button{
-        width: 56px;
-        height: 56px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 13px;
-        background-color: #272727;
-        border-radius: 50%;
-        cursor: pointer;
-        
-        img{
-           width: 26px;
-           height: 26px;
-           filter: brightness(4);
-        }
-     }
+    .round-button {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 13px;
+      background-color: #272727;
+      border-radius: 50%;
+      cursor: pointer;
+
+      img {
+        width: 26px;
+        height: 26px;
+        filter: brightness(4);
+      }
+    }
   }
 
-  .save-button{
-     width: 26.65%;
-     max-width: 114px;
-     max-height: 56px;
-     text-align: center;
-     margin-left: 7%;
-     padding: 15px 22px;
-     background-color: #A1A1A1;
-     font-family: 'SfProBold';
-     font-size: 19px;
-     color: #272727;
-     border-radius: 4px;
-     cursor: pointer;
+  .save-button {
+    width: 26.65%;
+    max-width: 114px;
+    max-height: 56px;
+    text-align: center;
+    margin-left: 7%;
+    padding: 15px 22px;
+    background-color: #a1a1a1;
+    font-family: "SfProBold";
+    font-size: 19px;
+    color: #272727;
+    border-radius: 4px;
+    cursor: pointer;
 
-     &.activated{
-      background-color: #82F18D !important;
-     }
-  }
-}
-
-.bottom-button-banner{
-  width: 100%;      
-
-  .button{
-     all: unset;
-     width: 100%;
-     height: 55px;
-     font-family: 'SfProMedium';
-     font-size: 1.25rem;
-     text-align: center;
-     background-color: #82F18D;
-     color: #272727;
-     padding: 18px 0;
-     cursor: pointer;
+    &.activated {
+      background-color: #82f18d !important;
+    }
   }
 }
 
-.price{
+.bottom-button-banner {
+  width: 100%;
+
+  .button {
+    all: unset;
+    width: 100%;
+    height: 55px;
+    font-family: "SfProMedium";
+    font-size: 1.25rem;
+    text-align: center;
+    background-color: #82f18d;
+    color: #272727;
+    padding: 18px 0;
+    cursor: pointer;
+  }
+}
+
+.price {
   font-size: 1.063rem;
-  font-family: 'SfProBold';
-  color: #FFFFFF;
+  font-family: "SfProBold";
+  color: #ffffff;
   margin-bottom: 20px;
 }
 
-.buttons-edit{
+.buttons-edit {
   width: 100%;
   position: absolute;
   display: flex;
@@ -423,69 +406,69 @@ audio {
   padding: 20px 6% 0 2%;
   z-index: 2;
 
-  .comitions{
-     max-width: 244px;
-     height: 28px;
-     background-color: #82F18D;
-     border: none;
-     color: #272727;
-     font-family: 'SfProBold';
-     font-size: 0.963rem;
-     text-align: center;
-     border-radius: 19px;
-     margin-right: 10px;
-     padding: 5px 16px;
-     top: 35px;
-     cursor: pointer;
-     z-index: 2;
+  .comitions {
+    max-width: 244px;
+    height: 28px;
+    background-color: #82f18d;
+    border: none;
+    color: #272727;
+    font-family: "SfProBold";
+    font-size: 0.963rem;
+    text-align: center;
+    border-radius: 19px;
+    margin-right: 10px;
+    padding: 5px 16px;
+    top: 35px;
+    cursor: pointer;
+    z-index: 2;
   }
 
-  .edit-button{
-     width: 76px;
-     height: 26px;
-     background-color: #FFFFFF;
-     border: none;
-     color: #7B7B7B;
-     font-family: 'SfProBold';
-     text-align: center;
-     font-size: 0.963rem;
-     border-radius: 19px;
-     padding: 5px 10px;
-     left: 3.78%;
-     top: 35px;
-     cursor: pointer;
-     z-index: 2;
+  .edit-button {
+    width: 76px;
+    height: 26px;
+    background-color: #ffffff;
+    border: none;
+    color: #7b7b7b;
+    font-family: "SfProBold";
+    text-align: center;
+    font-size: 0.963rem;
+    border-radius: 19px;
+    padding: 5px 10px;
+    left: 3.78%;
+    top: 35px;
+    cursor: pointer;
+    z-index: 2;
   }
 
-  .arrows{
-     width: 35px;
-     min-height: 37px;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     background-color: #272727;
-     margin-top: 6px;
-     border: none;
-     border-radius: 50%;
-     box-shadow: 0 3px 6px 3px rgba(0 ,0 , 0, 16%);
-     cursor: pointer;
+  .arrows {
+    width: 35px;
+    min-height: 37px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #272727;
+    margin-top: 6px;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 16%);
+    cursor: pointer;
 
-     img{
-        width: 17px;
-        height: 21px;
-        filter: invert(85%) sepia(92%) saturate(338%) hue-rotate(53deg) brightness(4) contrast(90%);
-     }
+    img {
+      width: 17px;
+      height: 21px;
+      filter: invert(85%) sepia(92%) saturate(338%) hue-rotate(53deg) brightness(4) contrast(90%);
+    }
   }
 }
 
-.fixed-button{
+.fixed-button {
   width: 40%;
   max-width: 170px;
   position: absolute;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border: none;
-  color: #7B7B7B;
-  font-family: 'SfProBold';
+  color: #7b7b7b;
+  font-family: "SfProBold";
   font-size: 0.963rem;
   text-align: center;
   border-radius: 19px;
@@ -494,12 +477,90 @@ audio {
   top: 35px;
   cursor: pointer;
   z-index: 2;
- }
+}
 
- .withBanner{
+.withBanner {
   height: auto !important;
   padding: 5px 0 !important;
- }
+}
 // .media-placeholder {
 //   height: 100vh !important;
 // }
+
+.range-slider {
+  padding: 12px 0;
+  display: flex;
+  justify-content: space-evenly;
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 90%;
+    background: transparent;
+    background-image: url("/assets/images/Polygon 36.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    direction: rtl;
+  }
+
+  input[type="range"]:focus {
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 18px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    border: 1px solid #ffffff;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+  }
+
+  input[type="range"]::-ms-thumb {
+    border: 1px solid #e2e2e2;
+    border-radius: 50%;
+    background: #4c4779;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    border: 1px solid #e2e2e2;
+    border-radius: 50%;
+    background: #4c4779;
+    cursor: pointer;
+  }
+}
+
+.edit-footer {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  gap: 12px;
+}
+
+.footer-save {
+  border: solid 1px #272727;
+  font-family: SfProBold;
+  font-size: 15px;
+  color: #272727;
+  padding: 8px;
+  border-radius: 16px;
+  width: 80%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.footer-restart {
+  font-family: SfProLight;
+  color: #7b7b7b;
+  font-size: 15px;
+  cursor: pointer;
+}
