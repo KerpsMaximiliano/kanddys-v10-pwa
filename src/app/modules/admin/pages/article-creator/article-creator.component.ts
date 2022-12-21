@@ -43,6 +43,7 @@ export class ArticleCreatorComponent implements OnInit {
   URI: string = environment.uri;
   controllers: FormArray = new FormArray([]);
   price: number;
+  testBool: boolean = false;
   views: string = '0.00';
   sales: string = '0.00';
   infoMissing: 'contact' | 'delivery' | 'payment' | 'banner' = 'contact';
