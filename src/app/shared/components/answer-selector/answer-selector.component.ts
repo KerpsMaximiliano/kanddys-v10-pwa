@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   BankAnswers,
   ComplexOptionAnswerSelector,
   OptionAnswerSelector,
 } from 'src/app/core/types/answer-selector';
+import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 
 @Component({
   selector: 'app-answer-selector',
@@ -36,7 +38,7 @@ export class AnswerSelectorComponent {
 
   @Output() onSelector = new EventEmitter<number>();
 
-  constructor() {}
+  constructor(private _Router: Router, private _DialogRef: DialogRef) {}
 
   activateOption(option: number) {
     if (option === this.activeOption) return;
@@ -51,7 +53,9 @@ export class AnswerSelectorComponent {
       this.activeMultipleOption.push(option);
       this.activeMultipleOption.sort();
     } else {
-      this.activeMultipleOption = this.activeMultipleOption.filter((item) =>item!==option);
+      this.activeMultipleOption = this.activeMultipleOption.filter(
+        (item) => item !== option
+      );
       this.activeMultipleOption.sort();
     }
     this.activeMultipleOptionValue.emit(this.activeMultipleOption);
@@ -78,5 +82,33 @@ export class AnswerSelectorComponent {
 
   getObjectKeysAsArray(object) {
     return Object.keys(object);
+  }
+
+  async handleClick(option: string) {
+    const redirectTo = 'admin/tags';
+    const dict = {
+      'De Artículos': () => {
+        this._Router.navigate(['admin', 'create-tag'], {
+          queryParams: {
+            entity: 'item',
+            redirectTo,
+          },
+        });
+        this._DialogRef.close();
+      },
+      'De Facturas': () => {
+        this._Router.navigate(['admin', 'create-tag'], {
+          queryParams: {
+            entity: 'order',
+            redirectTo,
+          },
+        });
+        this._DialogRef.close();
+      },
+      'De Compradores': () => {
+        this._DialogRef.close();
+      },
+    };
+    dict[option]();
   }
 }

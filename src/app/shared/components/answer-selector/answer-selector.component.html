@@ -211,7 +211,9 @@
                     <li>Tipo de cuenta: {{ item.typeAccount }}</li>
                     <li>{{ item.ownerAccount }}</li>
                     <li>Cuenta: {{ item.account }}</li>
-                    <li *ngIf="item.routingNumber" >RNC: {{ item.routingNumber }}</li>
+                    <li *ngIf="item.routingNumber">
+                      RNC: {{ item.routingNumber }}
+                    </li>
                   </ul>
                   <p class="option-footer">{{ item.bankName }}</p>
                 </div>
@@ -240,6 +242,7 @@
         <div
           *ngIf="option.type === 'WEBFORM-ANSWER'"
           class="selector-option-content"
+          (click)="handleClick(option.texts.topLeft.text)"
         >
           <div
             class="top"

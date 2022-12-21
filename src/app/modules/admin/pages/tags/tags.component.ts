@@ -615,6 +615,12 @@ export class TagsComponent implements OnInit {
         this.openDeleteMultipleTagsDialog();
         break;
       default:
+        // this.dialogService.open(TagTypeDialogComponent, {
+        //   type: 'fullscreen-translucent',
+        //   props: {},
+        // });
+        // break;
+
         this.dialogService.open(ItemListSelectorComponent, {
           props: {
             title: 'Tipo de Tag',
