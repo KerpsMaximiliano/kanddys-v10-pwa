@@ -976,6 +976,12 @@ export class OrderDetailComponent implements OnInit {
     ]);
   }
 
+  returnToStore() {
+    this.router.navigate([
+      'ecommerce/' + this.order.items[0].saleflow.merchant.slug + '/store',
+    ]);
+  }
+
   // goBackToFlowRoute() {
   //   if (
   //     this.flowRoute.includes('admin/orders') &&

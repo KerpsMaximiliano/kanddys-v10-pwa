@@ -35,8 +35,27 @@ export class TermsOfUseComponent implements OnInit {
   }
 
   goBack() {
-    if (this._HeaderService.flowRoute) {
-      this._Router.navigate([this._HeaderService.flowRoute]);
+    const flowRoute = this._HeaderService.flowRoute
+      ? this._HeaderService.flowRoute
+      : localStorage.getItem('flowRoute');
+
+    if (flowRoute && flowRoute.length > 0) {
+      const [baseRoute, paramsString] = flowRoute.split('?');
+      const paramsArray = paramsString.split('&');
+      const queryParams = {};
+
+      paramsArray.forEach((param) => {
+        const [key, value] = param.split('=');
+
+        queryParams[key] = value;
+      });
+
+      console.log(queryParams, baseRoute);
+
+      localStorage.removeItem('flowRoute');
+      this._Router.navigate([baseRoute], {
+        queryParams,
+      });
     }
   }
 }

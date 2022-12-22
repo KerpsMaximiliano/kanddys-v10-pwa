@@ -18,8 +18,13 @@
 
         <div class="user-area" (click)="openUserManagementDialog()">
           <span *ngIf="header.user">{{
-            (header.user.name || header.user.phone || header.user.email).length > 10
-              ? (header.user.name || header.user.phone || header.user.email).slice(0, 10) + ".."
+            (header.user.name || header.user.phone || header.user.email)
+              .length > 10
+              ? (
+                  header.user.name ||
+                  header.user.phone ||
+                  header.user.email
+                ).slice(0, 10) + ".."
               : header.user.name || header.user.phone || header.user.email
           }}</span>
           <img class="icon" [src]="env + '/user-white.svg'" />
@@ -214,7 +219,13 @@
       </div>
 
       <ul class="footer-links">
-        <li *ngFor="let term of terms" [routerLink]="'/ecommerce/terms-of-use/'+term._id" class="link">{{ term.text }}</li>
+        <li
+          *ngFor="let term of terms"
+          class="link"
+          (click)="redirectToTermsOfUse(term)"
+        >
+          {{ term.text }}
+        </li>
       </ul>
 
       <div class="blank-footer"></div>

@@ -714,8 +714,6 @@ export class StoreComponent implements OnInit {
           this.items = this.items.concat(itemsQueryResult);
         }
 
-        this.organizeItems();
-
         this.paginationState.status = 'complete';
       })
       .catch((err) => {
@@ -789,5 +787,14 @@ export class StoreComponent implements OnInit {
 
   getActiveTagsFromSelectedTagsPermantent(): Array<string> {
     return this.tags.filter((tag) => tag.selected).map((tag) => tag._id);
+  }
+
+  redirectToTermsOfUse(term: any) {
+    this.header.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.header.flowRoute);
+
+    this.savePageSnapshot();
+
+    this.router.navigate(['/ecommerce/terms-of-use/' + term._id]);
   }
 }

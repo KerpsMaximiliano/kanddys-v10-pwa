@@ -24,6 +24,7 @@ import {
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ConfirmActionDialogComponent } from 'src/app/shared/dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { environment } from 'src/environments/environment';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-payments',
@@ -217,7 +218,8 @@ export class PaymentsComponent implements OnInit {
     public headerService: HeaderService,
     private location: LocationStrategy,
     private integrationService: IntegrationsService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private toastrService: ToastrService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -444,6 +446,14 @@ export class PaymentsComponent implements OnInit {
   }
 
   redirectToAzulPaymentPage() {
+    this.toastrService.info('Redigiendo a la página de pago', null, {
+      timeOut: 1500,
+    });
+    
+    lockUI();
+
+ 
+
     const clientURI = `${environment.uri}`;
 
     const requestData: any = {

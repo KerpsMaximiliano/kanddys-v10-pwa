@@ -67,11 +67,10 @@ a {
     .top-button {
       all: unset;
       font-family: "SfProMedium";
-      font-size: 1.063REM;
-      color: #2874AD;
+      font-size: 1.063rem;
+      color: #2874ad;
       cursor: pointer;
       z-index: 1;
-
     }
 
     .coins-info {
@@ -109,7 +108,7 @@ a {
     background-color: #ffffff;
     padding: 29px 5% 23px;
 
-   /*  .user-name {
+    /*  .user-name {
       font-family: "RobotoRegular";
       font-size: 1.063rem;
       color: #7b7b7b;
@@ -126,7 +125,7 @@ a {
 
     .bill-button {
       width: 85%;
-      background-color: #82F18D;
+      background-color: #82f18d;
       font-family: "SfProBold";
       font-size: 1.063rem;
       color: #272727;
@@ -144,7 +143,6 @@ a {
       text-align: center;
       margin: 0 auto;
     }
-
   }
 
   .information {
@@ -520,11 +518,15 @@ table {
   right: 15px;
 }
 
-.new-order{
+.new-order {
   font-family: "SfProMedium";
   font-size: 1.063rem;
-  color: #2874AD;
+  color: #2874ad;
   text-align: center;
   margin: 10px auto 0;
   text-decoration: none;
+
+  &:hover {
+    cursor: pointer;
+  }
 }

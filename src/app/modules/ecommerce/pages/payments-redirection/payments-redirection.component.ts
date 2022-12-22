@@ -132,9 +132,14 @@ export class PaymentsRedirectionComponent implements OnInit {
   }
 
   redirectToOrderInfo() {
-    this.router.navigate([
-      'ecommerce/order-info/' + this.azulOrderQueryParams['OrderNumber'],
-    ]);
+    this.router.navigate(
+      ['ecommerce/order-info/' + this.azulOrderQueryParams['OrderNumber']],
+      {
+        queryParams: {
+          notify: true,
+        },
+      }
+    );
   }
 
   goBackToPaymentSelection() {
