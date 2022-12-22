@@ -48,6 +48,10 @@ export class ArticleParamsComponent implements OnInit {
     Validators.minLength(2),
     Validators.pattern(/[\S]/),
   ]);
+  description = new FormControl('', [
+    Validators.minLength(2),
+    Validators.pattern(/[\S]/),
+  ]);
   updated: boolean = false;
   blockSubmitButton: boolean = false;
   parseFloat = parseFloat;
@@ -81,6 +85,7 @@ export class ArticleParamsComponent implements OnInit {
       }
       this.price.setValue(this.item.pricing);
       this.name.setValue(this.item.name);
+      this.description.setValue(this.item.description);
       if (this.item.name?.trim()) this.models[0] = this.item.name;
       else this.models[0] = 'Modelo sin nombre';
       if (this.item.images.length && !this._ItemsService.itemImages.length) {
@@ -120,12 +125,15 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   iconCallback = async () => {
-    // this._ItemsService.itemName = this.name.value;
-    // this._ItemsService.itemPrice = this.price.value;
+    this._ItemsService.itemName = this.name.value;
+    this._ItemsService.itemPrice = this.price.value;
+    if (this.name.dirty || this.description.dirty) {
+      this.updated = true;
+    }
 
     const itemInput = {
       name: this.name.value || null,
-      // description: description || null,
+      description: this.description.value || null,
       pricing: this.price.value,
       images: this._ItemsService.itemImages,
       merchant: this._MerchantsService.merchantData?._id,
@@ -287,7 +295,7 @@ export class ArticleParamsComponent implements OnInit {
       this.blockSubmitButton = true;
       const itemInput = {
         name: this.name.value || null,
-        // description: description || null,
+        description: this.description.value || null,
         pricing: this.price.value,
         images: this._ItemsService.itemImages,
         merchant: this._MerchantsService.merchantData?._id,
@@ -493,13 +501,11 @@ export class ArticleParamsComponent implements OnInit {
     this.card2 = !this.card2;
   }
 
-  openAuxDialog(index: number):void {
+  openAuxDialog(index: number): void {
     const list = [
       {
         text: 'Textos del Articulo',
-        callback: async () => {
-          
-        },
+        callback: async () => {},
       },
       {
         text: 'Eliminar',
@@ -509,34 +515,31 @@ export class ArticleParamsComponent implements OnInit {
             props: {
               title: 'Eliminar este slide del simbolo',
               buttonText: 'Si, borrar',
-              mainButton: ()=>{
+              mainButton: () => {
                 this.deleteImage(index);
               },
               btnBackgroundColor: '#272727',
               btnMaxWidth: '133px',
-              btnPadding: '7px 2px'
-            }
+              btnPadding: '7px 2px',
+            },
           });
         },
       },
       {
         text: 'Cambiar el orden de los slides',
-        callback: async () => {
-          
-        },
-      }
+        callback: async () => {},
+      },
     ];
     this.dialog.open(SettingsComponent, {
-       type: 'fullscreen-translucent',
-       props: {
-          optionsList: list,
-          closeEvent: ()=> {
-          },
-          shareBtn: false,
-          title: ''
-       },
-       customClass: 'app-dialog',
-       flags: ['no-header']
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        closeEvent: () => {},
+        shareBtn: false,
+        title: '',
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
     });
   }
 }

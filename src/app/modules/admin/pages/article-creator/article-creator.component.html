@@ -189,8 +189,12 @@
     <!-- AREGAR AREA TEXTOS -->
     <div class="bottom-swiper">
       <div class="text-icons">
-        <label for="Upper text" class="main-text">Texto (opcional) </label>
-        <label for="Lower text" class="second-text">Texto (opcional) </label>
+        <label for="Upper text" class="main-text"
+          >{{ item?.name || "Nombre (opcional)" }}
+        </label>
+        <label for="Lower text" class="second-text"
+          >{{ item?.description || "Descripcion del articulo (opcional)" }}
+        </label>
       </div>
     </div>
     <div
@@ -240,7 +244,9 @@
         </button>
       </ng-container>
       <!--FOR EDIT & OTHER-->
-      <span class="price" *ngIf="viewType === 'preview'">RD$ {{ price }}</span>
+      <span class="price" *ngIf="viewType === 'preview'"
+        >RD$ {{ price | number : "1.2-2" }}</span
+      >
       <div class="buttons-display" *ngIf="viewType === 'preview'">
         <button class="round-button">
           <img [src]="env + '/unlock.svg'" />
@@ -248,7 +254,7 @@
         <button class="round-button" (click)="enterEdit(swiperI, activeSlide)">
           <img [src]="env + '/screen-cut.svg'" />
         </button>
-        <button class="round-button">
+        <button class="round-button" (click)="submit(true)">
           <img [src]="env + '/cog-wheel.svg'" />
         </button>
         <button

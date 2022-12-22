@@ -1,32 +1,35 @@
 <div class="container">
   <app-helper-headerv2
-  [mode]="'basic'"
-  [icon]="{
-    src: '/arrow-double-up.svg',
-    width: 17,
-    height: 21,
-    callback: stopDragging,
-    filter: 'brightness(0)'
-  }"
-  [rightText]="{
-    text: 'PREVIEW',
-    fontSize: '0.963rem',
-    fontFamily: 'SfProBold',
-    color: '#272727',
-    pointer: true
-  }"
-  [icons]="[{
-    src: '/bookmark-plus.svg',
-    color: 'brightness(0)',
-    margin: '1px',
-    callback: stopDragging
-  }]"
-  [dots]="{
-    active: true,
-    color: '#272727'
-  }"
-  [returnAble]="false"
-  [bgColor]="'#FFFFFF'"
+    [mode]="'basic'"
+    [icon]="{
+      src: '/arrow-double-up.svg',
+      width: 17,
+      height: 21,
+      callback: iconCallback,
+      filter: 'brightness(0)'
+    }"
+    [rightText]="{
+      text: 'PREVIEW',
+      fontSize: '0.963rem',
+      fontFamily: 'SfProBold',
+      color: '#272727',
+      pointer: true
+    }"
+    [icons]="[
+      {
+        src: '/bookmark-plus.svg',
+        color: 'brightness(0)',
+        margin: '1px',
+        callback: iconCallback
+      }
+    ]"
+    [dots]="{
+      active: true,
+      color: '#272727'
+    }"
+    [returnAble]="false"
+    [bgColor]="'#FFFFFF'"
+    (return)="goBack()"
   ></app-helper-headerv2>
 
   <!-- <div class="top-headers" *ngIf="steps !== 'save'">
@@ -69,7 +72,6 @@
   </div> -->
 
   <div class="image-selector">
-    
     <div class="image-area">
       <input
         id="filemultiple"
@@ -94,10 +96,7 @@
           (click)="openImageModal(item)"
         ></button>
         <!-- <button class="corner-btn delete" (click)="deleteImage(i)"></button> -->
-        <div
-        class="corner-btn2"
-        (click)="openAuxDialog(i)"
-        >
+        <div class="corner-btn2" (click)="openAuxDialog(i)">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"
@@ -155,9 +154,36 @@
   </div>
 
   <div [ngSwitch]="steps" *ngIf="!itemId || (itemId && item)">
-    <div class="name-bar" style="margin-top: 12px;">Nombre del producto (opcional)</div>
-    <div class="description-bar">Descripción del producto <br>(opcional)</div>
-    <div class="price-bar">RD$ 1,275.00</div>
+    <input
+      type="text"
+      class="name-bar"
+      style="margin-top: 12px"
+      [formControl]="name"
+      placeholder="Nombre del producto (opcional)"
+    />
+    <textarea
+      class="description-bar"
+      name=""
+      id=""
+      cols="30"
+      rows="2"
+      placeholder="Descripción del producto (opcional)"
+      [formControl]="description"
+    ></textarea>
+    <div class="price-bar">
+      <app-currency-input
+        *ngIf="!default"
+        [fieldStyles]="{
+          boxShadow: 'none',
+          backgroundColor: 'white',
+          borderRadius: '6px'
+        }"
+        [initialValue]="
+          countDecimals(price.value) < 2 ? price.value * 100 : price.value
+        "
+        (onInputEvent)="handleCurrencyInput($event)"
+      ></app-currency-input>
+    </div>
     <!--  <p class="subtitle">Precio:</p>
     <div class="price-form" *ngSwitchCase="'price'">
       <div class="price-input">

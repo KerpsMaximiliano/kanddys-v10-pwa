@@ -506,7 +506,7 @@ export class ArticleCreatorComponent implements OnInit {
     });
   }
 
-  async submit(): Promise<void> {
+  async submit(settings?: boolean): Promise<void> {
     this.blockSubmitButton = true;
     if (this.editMode) {
       if (!this.imageRotation) {
@@ -584,6 +584,12 @@ export class ArticleCreatorComponent implements OnInit {
         });
       });
       this._ItemsService.itemImages = images;
+      if (settings) {
+        this._Router.navigate([
+          `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
+        ]);
+        return;
+      }
 
       if (this.item) {
         const itemInput = {
@@ -655,10 +661,6 @@ export class ArticleCreatorComponent implements OnInit {
       } else {
         localStorage.removeItem('entity-template-creation-data');
       }
-
-      this._Router.navigate([
-        `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
-      ]);
     }
   }
 

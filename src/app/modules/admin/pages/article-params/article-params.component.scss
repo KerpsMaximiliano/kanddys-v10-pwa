@@ -200,7 +200,7 @@
         }
       }
 
-      .shadow-name{
+      .shadow-name {
         width: 100%;
         height: 30%;
         position: absolute;
@@ -213,9 +213,9 @@
         border-bottom-left-radius: 15px;
         z-index: 10;
 
-        &::after{
+        &::after {
           content: "Cover";
-          font-family: 'SfProMedium';
+          font-family: "SfProMedium";
           font-size: 0.963rem;
           color: #ffffff;
           margin-bottom: 8px;
@@ -273,7 +273,7 @@
   border-radius: 50%;
   display: flex;
   background-color: #fff;
-  border: 1px solid #F0F0F0;
+  border: 1px solid #f0f0f0;
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -286,7 +286,7 @@
   position: absolute;
   bottom: 0px;
   border-radius: 15px;
-  background: linear-gradient(0deg, rgb(0,0,0), transparent);
+  background: linear-gradient(0deg, rgb(0, 0, 0), transparent);
   display: flex;
   flex-direction: column-reverse;
   justify-content: center;
@@ -317,7 +317,7 @@
 
   &::before {
     content: "Adiciona";
-    font-family: 'SFProBold';
+    font-family: "SFProBold";
     font-size: 15px;
     color: #fff;
     position: relative;
@@ -449,14 +449,17 @@
   cursor: pointer;
 }
 
-.name-bar, .description-bar, .price-bar{
-  background-color: #ffffff;
+.name-bar,
+.description-bar,
+.price-bar {
   border-radius: 4px;
   margin-bottom: 6px;
-  cursor: pointer;
+  border: none;
 }
 
-.name-bar, .description-bar{
+.name-bar,
+.description-bar {
+  background-color: #ffffff;
   width: 95%;
   padding: 15px 5% 15px;
   display: flex;
@@ -465,28 +468,25 @@
   margin: 6px auto;
 }
 
-.price-bar{
+.price-bar {
   width: 40.6%;
-  display: flex;
-  justify-content: center;
   font-size: 0.963rem;
-  font-family: 'SfProBold';
-  color: #7B7B7B;
+  font-family: "SfProBold";
+  color: #7b7b7b;
   margin-left: auto;
   margin-right: 2.5%;
-  padding: 7px 5%;
-  border-radius: 7px !important;
+  height: 34px;
 }
 
-.name-bar{
+.name-bar {
   font-size: 1.063rem;
-  font-family: 'SfProMedium';
+  font-family: "SfProMedium";
   color: #272727;
   font-weight: 500;
 }
 
-.description-bar{
+.description-bar {
   font-size: 1.063rem;
-  font-family: 'SfProLight';
+  font-family: "SfProLight";
   color: #272727;
 }
