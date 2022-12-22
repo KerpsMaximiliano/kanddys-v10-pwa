@@ -225,12 +225,14 @@ export class StoreComponent implements OnInit {
     }
   }
 
-  async organizeItems() {
+  async organizeItems(preventFetchingHighlightedItems = false) {
     // .sort((a, b) => a.pricing - b.pricing);
     this.highlightedItems = [];
 
-    //Sets highlightedItems array
-    await this.getHighlightedItems();
+    if (!preventFetchingHighlightedItems) {
+      //Sets highlightedItems array
+      await this.getHighlightedItems();
+    }
 
     //************************* GROUPS ITEMS BY TAG***************//
     const tagsAndItemsHashtable: Record<string, Array<Item>> = {};
@@ -713,6 +715,8 @@ export class StoreComponent implements OnInit {
         } else {
           this.items = this.items.concat(itemsQueryResult);
         }
+
+        this.organizeItems(true);
 
         this.paginationState.status = 'complete';
       })
