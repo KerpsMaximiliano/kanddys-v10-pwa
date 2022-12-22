@@ -49,7 +49,7 @@ export class PaymentsRedirectionComponent implements OnInit {
           await this.ordersService.order(rest['OrderNumber'])
         ).order;
 
-        fetch('http://localhost:3500/azul/calculate-response-hash', {
+        fetch(environment.api.url + '/azul/calculate-response-hash', {
           method: 'POST',
           headers: {
             'App-Key':
