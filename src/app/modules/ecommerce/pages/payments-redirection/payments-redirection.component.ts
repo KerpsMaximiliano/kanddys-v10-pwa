@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ItemOrder } from 'src/app/core/models/order';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { OrderService } from 'src/app/core/services/order.service';
 import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
 import { environment } from 'src/environments/environment';
 
@@ -17,16 +19,18 @@ export class PaymentsRedirectionComponent implements OnInit {
   env: string = environment.assetsUrl;
   icon: string = 'check-circle.svg';
   orderId: string = null;
+  order: ItemOrder = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private paymentLogService: PaymentLogsService,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private ordersService: OrderService
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((queryParams) => {
+    this.route.queryParams.subscribe(async (queryParams) => {
       let { typeOfPayment, success, cancel, orderId, ...rest } = queryParams;
       success = Boolean(success);
       cancel = Boolean(cancel);
@@ -41,6 +45,10 @@ export class PaymentsRedirectionComponent implements OnInit {
       if (typeOfPayment === 'azul' && this.success) {
         this.label = 'El pago se completó';
 
+        this.order = (
+          await this.ordersService.order(rest['OrderNumber'])
+        ).order;
+
         fetch('http://localhost:3500/azul/calculate-response-hash', {
           method: 'POST',
           headers: {
@@ -49,6 +57,7 @@ export class PaymentsRedirectionComponent implements OnInit {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            MerchantID: this.headerService.saleflow.merchant._id,
             OrderNumber: rest['OrderNumber'],
             Amount: rest['Amount'],
             AuthorizationCode: rest['AuthorizationCode'],
@@ -65,7 +74,10 @@ export class PaymentsRedirectionComponent implements OnInit {
             console.log('hash del back', hash);
             console.log('hash del url', rest['AuthHash']);
 
-            if (rest['IsoCode'] === '00') {
+            if (
+              rest['IsoCode'] === '00' &&
+              this.order.orderStatus !== 'completed'
+            ) {
               //Cambiar igualdad
 
               if (hash !== rest['AuthHash']) {
@@ -74,7 +86,8 @@ export class PaymentsRedirectionComponent implements OnInit {
                   reason: 'payment',
                   paymentMethod: 'azul',
                   order: rest['OrderNumber'],
-                  merchant: this.headerService.myMerchants[0]._id,
+                  merchant: this.headerService.saleflow.merchant._id,
+                  user: this.order.user._id,
                   metadata: {
                     AzulOrderId: rest['AzulOrderId'],
                     DateTime: rest['DateTime'],

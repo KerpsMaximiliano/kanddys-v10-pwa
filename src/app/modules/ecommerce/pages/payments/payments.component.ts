@@ -432,6 +432,8 @@ export class PaymentsComponent implements OnInit {
         this.router.navigate(['auth/login'], {
           queryParams: {
             orderId: this.order._id,
+            auth: 'payment',
+            paymentWithAzul: true,
             redirect:
               window.location.href.split('/').slice(3).join('/') +
               '?redirectToAzul=true',
