@@ -21,6 +21,7 @@ import { StoreComponent } from './pages/store/store.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { AppointmentsModule } from '../appointments/appointments.module';
 import { PaymentsRedirectionComponent } from './pages/payments-redirection/payments-redirection.component';
+import { ArticleAccessComponent } from './pages/article-access/article-access.component';
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
@@ -38,6 +39,10 @@ const routes: Routes = [
   {
     path: 'redirections',
     component: RedirectionsComponent,
+  },
+  {
+    path: 'article-access/:templateId',
+    component: ArticleAccessComponent
   },
   {
     path: 'item-detail',
@@ -166,6 +171,7 @@ const routes: Routes = [
     PaymentsComponent,
     ReservationsComponent,
     PaymentsRedirectionComponent,
+    ArticleAccessComponent,
     ArticleDetailComponent,
     CreateArticleComponent,
     TermsOfUseComponent
