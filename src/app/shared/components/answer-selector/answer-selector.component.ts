@@ -83,32 +83,4 @@ export class AnswerSelectorComponent {
   getObjectKeysAsArray(object) {
     return Object.keys(object);
   }
-
-  async handleClick(option: string) {
-    const redirectTo = 'admin/tags';
-    const dict = {
-      'De Artículos': () => {
-        this._Router.navigate(['admin', 'create-tag'], {
-          queryParams: {
-            entity: 'item',
-            redirectTo,
-          },
-        });
-        this._DialogRef.close();
-      },
-      'De Facturas': () => {
-        this._Router.navigate(['admin', 'create-tag'], {
-          queryParams: {
-            entity: 'order',
-            redirectTo,
-          },
-        });
-        this._DialogRef.close();
-      },
-      'De Compradores': () => {
-        this._DialogRef.close();
-      },
-    };
-    dict[option]();
-  }
 }

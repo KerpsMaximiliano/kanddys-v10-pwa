@@ -235,6 +235,7 @@
             : 'selector-option'
         "
         [ngStyle]="itemStyles ? itemStyles : null"
+        (click)="clickSelector(optionIndex)"
       >
         <div class="background"></div>
 
@@ -242,7 +243,6 @@
         <div
           *ngIf="option.type === 'WEBFORM-ANSWER'"
           class="selector-option-content"
-          (click)="handleClick(option.texts.topLeft.text)"
         >
           <div
             class="top"
@@ -255,7 +255,6 @@
               [ngStyle]="
                 option.texts.topLeft.styles ? option.texts.topLeft.styles : null
               "
-              (click)="option.texts.topLeft.callback()"
             >
               {{ option.texts.topLeft.text }}
             </div>
@@ -266,7 +265,6 @@
                   ? option.texts.topRight.styles
                   : null
               "
-              (click)="option.texts.topRight.callback()"
             >
               {{ option.texts.topRight.text }}
             </div>
@@ -283,7 +281,6 @@
               class="middle-text"
               *ngFor="let textObject of option.texts.middleTexts"
               [ngStyle]="textObject.styles ? textObject.styles : null"
-              (click)="textObject.callback()"
             >
               {{ textObject.text }}
             </div>
@@ -303,7 +300,6 @@
                   ? option.texts.bottomLeft.styles
                   : null
               "
-              (click)="option.texts.bottomLeft.callback()"
             >
               {{ option.texts.bottomLeft.text }}
             </div>

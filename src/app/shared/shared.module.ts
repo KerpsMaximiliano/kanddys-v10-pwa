@@ -111,6 +111,7 @@ import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
 import { ItemListSelectorComponent } from './dialogs/item-list-selector/item-list-selector.component';
+import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
 
 const imports = [
   CommonModule,
@@ -229,6 +230,7 @@ const declarations = [
   TagTypeDialogComponent,
   MediaDialogComponent,
   ItemListSelectorComponent,
+  TagsDialogComponent,
 ];
 
 @NgModule({
