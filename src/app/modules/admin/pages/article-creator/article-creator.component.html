@@ -195,6 +195,10 @@
         <label for="Lower text" class="second-text"
           >{{ item?.description || "Descripcion del articulo (opcional)" }}
         </label>
+
+        <button class="icon-button-texts">
+          <img [src]="env + '/screen-cut.svg'" />
+        </button>
       </div>
     </div>
     <div
@@ -247,17 +251,17 @@
       <span class="price" *ngIf="viewType === 'preview'"
         >RD$ {{ price | number : "1.2-2" }}</span
       >
-      <div class="buttons-display" *ngIf="viewType === 'preview'">
-        <button class="round-button">
+      <div class="buttons-display center" *ngIf="viewType === 'preview'">
+        <!-- QUIZAS BORRAR DESPUES <button class="round-button">
           <img [src]="env + '/unlock.svg'" />
         </button>
-        <button class="round-button" (click)="enterEdit(swiperI, activeSlide)">
-          <img [src]="env + '/screen-cut.svg'" />
-        </button>
         <button class="round-button" (click)="submit(true)">
+          <img [src]="env + '/screen-cut.svg'" />
+        </button> -->
+        <button class="round-button" (click)="enterEdit(swiperI, activeSlide)">
           <img [src]="env + '/cog-wheel.svg'" />
         </button>
-        <button
+       <!-- QUIZAS BORRAR DESPUES <button
           class="save-button"
           [ngClass]="{
             activated: infoMissing === 'banner' || urls?.length
@@ -265,7 +269,7 @@
           (click)="submit()"
         >
           SALVAR
-        </button>
+        </button> -->
       </div>
     </div>
     <div *ngIf="editMode">
