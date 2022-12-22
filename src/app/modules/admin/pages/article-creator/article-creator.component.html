@@ -40,7 +40,11 @@
   <!-- </div> -->
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
-      <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type" [ngClass]="{'disabled':testBool}">
+      <div
+        id="{{ i }}-{{ j }}"
+        [ngSwitch]="field.type"
+        [ngClass]="{ disabled: ['disabled', 'archived'].includes(item.status) }"
+      >
         <div class="grid">
           <!-- AREA DE BOTONES, CAMBIAR -->
           <div class="buttons-edit" *ngIf="viewType === 'edit'">
@@ -60,10 +64,7 @@
             <button class="comitions">Comisiones para vender mas</button>
             <button class="edit-button">Editar</button>
           </div>
-          <button
-            class="fixed-button"
-            *ngIf="viewType === 'preview'"
-          >
+          <button class="fixed-button" *ngIf="viewType === 'preview'">
             Cancelar cambios
           </button>
         </div>
@@ -88,7 +89,6 @@
               role="group"
               (mouseup)="handleSlide($event)"
             >
-              
               <!-- AREA DE BOTONES, CAMBIAR -->
               <input
                 id="{{ i }}{{ k }}"
@@ -261,7 +261,7 @@
         <button class="round-button" (click)="enterEdit(swiperI, activeSlide)">
           <img [src]="env + '/cog-wheel.svg'" />
         </button>
-       <!-- QUIZAS BORRAR DESPUES <button
+        <!-- QUIZAS BORRAR DESPUES <button
           class="save-button"
           [ngClass]="{
             activated: infoMissing === 'banner' || urls?.length
