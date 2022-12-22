@@ -1061,6 +1061,10 @@ export class LoginComponent implements OnInit {
       this.postsService.postAddUser(order.items[0].post._id, id);
     }
 
+    if (this.redirectionRoute) {
+      return this.redirectFromQueryParams();
+    }
+
     this.router.navigate([`ecommerce/order-detail/${order._id}`], {
       queryParams: { notify: 'true' },
     });

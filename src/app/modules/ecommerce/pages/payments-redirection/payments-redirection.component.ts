@@ -13,8 +13,10 @@ export class PaymentsRedirectionComponent implements OnInit {
   label: string = 'payments-redirection works!';
   azulOrderQueryParams: Record<string, string> = null;
   success: boolean = false;
+  cancel: boolean = false;
   env: string = environment.assetsUrl;
   icon: string = 'check-circle.svg';
+  orderId: string = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,9 +27,11 @@ export class PaymentsRedirectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((queryParams) => {
-      let { typeOfPayment, success, cancel, ...rest } = queryParams;
+      let { typeOfPayment, success, cancel, orderId, ...rest } = queryParams;
       success = Boolean(success);
+      cancel = Boolean(cancel);
       this.success = success === true && rest['IsoCode'] === '00';
+      this.cancel = cancel;
 
       if (typeOfPayment === 'azul') {
         this.azulOrderQueryParams = rest;
@@ -79,14 +83,15 @@ export class PaymentsRedirectionComponent implements OnInit {
               }
             }
           });
-      } else if (typeOfPayment === 'azul' && !this.success) {
+      } else if (typeOfPayment === 'azul' && !this.success && !cancel) {
         this.icon = 'sadFace.svg';
 
         this.label =
           'El pago con azul no se pudo completar, razón: ' +
           rest['ErrorDescription'];
-      } else if (typeOfPayment === 'azul' && cancel) {
+      } else if (typeOfPayment === 'azul' && cancel && orderId) {
         this.icon = 'sadFace.svg';
+        this.orderId = orderId;
 
         this.label = 'El pago se canceló';
       } else if (typeOfPayment === 'stripe' && success) {
@@ -120,12 +125,16 @@ export class PaymentsRedirectionComponent implements OnInit {
   }
 
   goBackToPaymentSelection() {
+    const orderNumber = !this.cancel
+      ? this.azulOrderQueryParams['OrderNumber']
+      : this.orderId;
+
     this.router.navigate(
       [
         'ecommerce/' +
           this.headerService.saleflow.merchant.slug +
           '/payments/' +
-          this.azulOrderQueryParams['OrderNumber'],
+          orderNumber,
       ],
       {
         queryParams: {

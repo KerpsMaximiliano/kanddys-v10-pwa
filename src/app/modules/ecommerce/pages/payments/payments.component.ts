@@ -228,6 +228,9 @@ export class PaymentsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.status = 'loading';
     const orderId = this.route.snapshot.paramMap.get('orderId');
+    const redirectToAzulPaymentsPage = Boolean(
+      this.route.snapshot.queryParamMap.get('redirectToAzul')
+    );
     if (orderId) {
       const { orderStatus } = await this.orderService.getOrderStatus(orderId);
       if (orderStatus === 'draft')
@@ -293,6 +296,10 @@ export class PaymentsComponent implements OnInit {
 
     if (!this.azulPaymentsSupported) {
       this.onlinePaymentsOptions.pop();
+    }
+
+    if (redirectToAzulPaymentsPage) {
+      this.redirectToAzulPaymentPage();
     }
   }
 
@@ -420,70 +427,79 @@ export class PaymentsComponent implements OnInit {
         });
       }
     } else if (paymentOptionName === 'Tarjeta de crédito') {
-      const clientURI = `${environment.uri}`;
-
-      const requestData: any = {
-        MerchantName: "D'liciantus",
-        MerchantID: this.headerService.saleflow.merchant._id,
-        MerchantType: 'Importadores y productores de flores y follajes',
-        CurrencyCode: '$',
-        OrderNumber: this.order._id,
-        //OrderNumber: formatID(this.order.dateId),
-        Amount: this.paymentAmount.toFixed(2).toString().replace('.', ''),
-        ITBIS: (this.paymentAmount * 0.18)
-          .toFixed(2)
-          .toString()
-          .replace('.', ''),
-        ApprovedUrl:
-          clientURI +
-          '/ecommerce/' +
-          this.headerService.saleflow._id +
-          '/payments-redirection?typeOfPayment=azul&success=true',
-        DeclinedUrl:
-          clientURI +
-          '/ecommerce/' +
-          this.headerService.saleflow._id +
-          '/payments-redirection?typeOfPayment=azul&success=false',
-        CancelUrl:
-          clientURI +
-          '/ecommerce/' +
-          this.headerService.saleflow._id +
-          '/payments-redirection?typeOfPayment=azul&cancel=true',
-        UseCustomField1: '0',
-        CustomField1Label: 'Label1',
-        CustomField1Value: 'Custom1',
-        UseCustomField2: '0',
-        CustomField2Label: 'Label2',
-        CustomField2Value: 'Custom2',
-      };
-
-      const form = document.querySelector('#azulForm') as HTMLFormElement;
-
-      for (const key in requestData) {
-        document
-          .querySelector('#' + key)
-          .setAttribute('value', requestData[key]);
-      }
-
-      fetch(`${environment.api.url}/azul/calculate-auth-hash`, {
-        method: 'POST',
-        headers: {
-          'App-Key':
-            `${environment.api.key}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          document.querySelector('#AuthHash').setAttribute('value', data.hash);
-          document
-            .querySelector('#MerchantID')
-            .setAttribute('value', data.azulMerchantID);
-
-          form.submit();
+      if (this.currentUser) this.redirectToAzulPaymentPage();
+      else {
+        this.router.navigate(['auth/login'], {
+          queryParams: {
+            orderId: this.order._id,
+            redirect:
+              window.location.href.split('/').slice(3).join('/') +
+              '?redirectToAzul=true',
+          },
         });
+      }
     }
+  }
+
+  redirectToAzulPaymentPage() {
+    const clientURI = `${environment.uri}`;
+
+    const requestData: any = {
+      MerchantName: "D'liciantus",
+      MerchantID: this.headerService.saleflow.merchant._id,
+      MerchantType: 'Importadores y productores de flores y follajes',
+      CurrencyCode: '$',
+      OrderNumber: this.order._id,
+      //OrderNumber: formatID(this.order.dateId),
+      Amount: this.paymentAmount.toFixed(2).toString().replace('.', ''),
+      ITBIS: (this.paymentAmount * 0.18).toFixed(2).toString().replace('.', ''),
+      ApprovedUrl:
+        clientURI +
+        '/ecommerce/' +
+        this.headerService.saleflow._id +
+        '/payments-redirection?typeOfPayment=azul&success=true',
+      DeclinedUrl:
+        clientURI +
+        '/ecommerce/' +
+        this.headerService.saleflow._id +
+        '/payments-redirection?typeOfPayment=azul&success=false',
+      CancelUrl:
+        clientURI +
+        '/ecommerce/' +
+        this.headerService.saleflow._id +
+        '/payments-redirection?typeOfPayment=azul&cancel=true&orderId=' +
+        this.order._id,
+      UseCustomField1: '0',
+      CustomField1Label: 'Label1',
+      CustomField1Value: 'Custom1',
+      UseCustomField2: '0',
+      CustomField2Label: 'Label2',
+      CustomField2Value: 'Custom2',
+    };
+
+    const form = document.querySelector('#azulForm') as HTMLFormElement;
+
+    for (const key in requestData) {
+      document.querySelector('#' + key).setAttribute('value', requestData[key]);
+    }
+
+    fetch(`${environment.api.url}/azul/calculate-auth-hash`, {
+      method: 'POST',
+      headers: {
+        'App-Key': `${environment.api.key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        document.querySelector('#AuthHash').setAttribute('value', data.hash);
+        document
+          .querySelector('#MerchantID')
+          .setAttribute('value', data.azulMerchantID);
+
+        form.submit();
+      });
   }
 
   onBackClick() {
