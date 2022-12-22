@@ -420,7 +420,7 @@ export class PaymentsComponent implements OnInit {
         });
       }
     } else if (paymentOptionName === 'Tarjeta de crédito') {
-      const clientURI = 'http://localhost:4200';
+      const clientURI = `${environment.uri}`;
 
       const requestData: any = {
         MerchantName: "D'liciantus",
@@ -465,11 +465,11 @@ export class PaymentsComponent implements OnInit {
           .setAttribute('value', requestData[key]);
       }
 
-      fetch('http://localhost:3500/azul/calculate-auth-hash', {
+      fetch(`${environment.api.url}/azul/calculate-auth-hash`, {
         method: 'POST',
         headers: {
           'App-Key':
-            'a6c6d9880190ad2c4d477b89b44107b82b3e4902f293fe710d9a904de283f8f7',
+            `${environment.api.key}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestData),
