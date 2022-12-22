@@ -40,7 +40,33 @@
   <!-- </div> -->
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
-      <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">
+      <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type" [ngClass]="{'disabled':testBool}">
+        <div class="grid">
+          <!-- AREA DE BOTONES, CAMBIAR -->
+          <div class="buttons-edit" *ngIf="viewType === 'edit'">
+            <button class="arrows">
+              <img
+                [src]="env + '/arrow-double-up.svg'"
+                alt="Flechas dobles apuntando hacia arriba"
+              />
+            </button>
+            <button class="edit-button">Editar</button>
+          </div>
+          <div
+            class="buttons-edit"
+            style="justify-content: flex-end; margin-top: 35px"
+            *ngIf="viewType === 'saved'"
+          >
+            <button class="comitions">Comisiones para vender mas</button>
+            <button class="edit-button">Editar</button>
+          </div>
+          <button
+            class="fixed-button"
+            *ngIf="viewType === 'preview'"
+          >
+            Cancelar cambios
+          </button>
+        </div>
         <ng-container *ngSwitchCase="'file'">
           <swiper
             *ngIf="controller.get(field.name).value.length"
@@ -62,33 +88,7 @@
               role="group"
               (mouseup)="handleSlide($event)"
             >
-              <div class="grid">
-                <!-- AREA DE BOTONES, CAMBIAR -->
-                <div class="buttons-edit" *ngIf="viewType === 'edit'">
-                  <button class="arrows">
-                    <img
-                      [src]="env + '/arrow-double-up.svg'"
-                      alt="Flechas dobles apuntando hacia arriba"
-                    />
-                  </button>
-                  <button class="edit-button">Editar</button>
-                </div>
-                <div
-                  class="buttons-edit"
-                  style="justify-content: flex-end; margin-top: 35px"
-                  *ngIf="viewType === 'saved'"
-                >
-                  <button class="comitions">Comisiones para vender mas</button>
-                  <button class="edit-button">Editar</button>
-                </div>
-                <button
-                  class="fixed-button"
-                  *ngIf="viewType === 'preview'"
-                  (click)="removeFile(i, k)"
-                >
-                  Cancelar cambios
-                </button>
-              </div>
+              
               <!-- AREA DE BOTONES, CAMBIAR -->
               <input
                 id="{{ i }}{{ k }}"
