@@ -31,6 +31,8 @@ export class PaymentsRedirectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
+      history.pushState(null, '');
+      
       let { typeOfPayment, success, cancel, orderId, ...rest } = queryParams;
       success = Boolean(success);
       cancel = Boolean(cancel);
