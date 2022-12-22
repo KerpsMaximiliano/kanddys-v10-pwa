@@ -103,6 +103,7 @@ import { FunctionalityParametersComponent } from './components/functionality-par
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
 import { MerchantContactComponent } from './components/merchant-contact/merchant-contact.component';
+import { ArticlePrivacyComponent } from './components/article-privacy/article-privacy.component';
 import { InputTransparentComponent } from './dialogs/input-transparent/input-transparent.component';
 import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
 import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
@@ -218,10 +219,10 @@ const declarations = [
   ConfirmActionDialogComponent,
   MerchantContactComponent,
   InputTransparentComponent,
+  ArticlePrivacyComponent,
   AnexosDialogComponent,
   QrCodeDialogComponent,
   PostsXlsComponent,
-  TagAsignationComponent,
   MediaDialogComponent
 ];
 

@@ -10,6 +10,7 @@ import {
   commentsByPost,
   updatePost,
   updateSlide,
+  getSimplePost,
   postAddUser,
 } from '../graphql/posts.gql';
 import { Post, PostInput, Slide, SlideInput } from '../models/post';
@@ -96,6 +97,17 @@ export class PostsService {
   async getPost(id: string): Promise<{ post: Post }> {
     let value = await this.graphql.query({
       query: post,
+      variables: { id },
+      fetchPolicy: 'no-cache',
+    });
+
+    // console.log(value);
+    return value;
+  }
+
+  async getSimplePost(id: string): Promise<{ post: Post }> {
+    let value = await this.graphql.query({
+      query: getSimplePost,
       variables: { id },
       fetchPolicy: 'no-cache',
     });
