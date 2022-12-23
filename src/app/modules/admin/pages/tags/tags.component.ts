@@ -730,7 +730,6 @@ export class TagsComponent implements OnInit {
           type: 'fullscreen-translucent',
           customClass: 'app-dialog',
           flags: ['no-header'],
-          notCancellable: true,
         });
 
         // this.dialogService.open(ItemListSelectorComponent, {
