@@ -24,7 +24,11 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
 import { TagsDialogComponent } from 'src/app/shared/dialogs/tags-dialog/tags-dialog.component';
 
-type TypeOfTagsGrid = 'MOST_ASSIGNED' | 'MOST_RECENT' | 'ALL';
+type TypeOfTagsGrid =
+  | 'MOST_ASSIGNED'
+  | 'MOST_RECENT'
+  | 'HIGHLIGHTED_ITEMS'
+  | 'ALL';
 
 @Component({
   selector: 'app-tags',
@@ -76,6 +80,7 @@ export class TagsComponent implements OnInit {
     pageSize: 5,
     status: 'complete',
   };
+  showMostAssignedTags: boolean = false;
 
   async infinitePagination() {
     const page = document.querySelector('.tags-page');
@@ -241,6 +246,12 @@ export class TagsComponent implements OnInit {
       pagination.options.sortBy = sortCriteria;
     }
 
+    if (this.showMostAssignedTags) {
+      pagination.findBy.counter = {
+        $gt: 0,
+      };
+    }
+
     const tagsByUserResult = !this.justShowArchivedTags
       ? await this.tagsService.tagsByUser(pagination)
       : await this.tagsService.tagsArchived(pagination);
@@ -277,6 +288,12 @@ export class TagsComponent implements OnInit {
       if (this.tagSelectionMode === 'HIDE') {
         this.dependantGridOfTagsToShow = this.dependantGridOfTagsToShow.filter(
           (tag) => tag.status !== 'disabled'
+        );
+      }
+
+      if (this.tagSelectionMode === 'HIGHLIGHT') {
+        this.dependantGridOfTagsToShow = this.dependantGridOfTagsToShow.filter(
+          (tag) => tag.status !== 'featured'
         );
       }
 
@@ -1150,10 +1167,6 @@ export class TagsComponent implements OnInit {
       limit: -1,
     };
 
-    pagination.findBy.counter = {
-      $gt: 0,
-    };
-
     if (this.entityToFilterTagsBy) {
       pagination.findBy = {};
       delete pagination.findBy['$or'];
@@ -1194,6 +1207,10 @@ export class TagsComponent implements OnInit {
       else pagination.findBy.status = this.enforceTagsStatus;
     }
 
+    pagination.findBy.counter = {
+      $gt: 0,
+    };
+
     const mostAssignedTags = await this.tagsService.tagsByUser(pagination);
 
     if (mostAssignedTags) this.mostAssignedTags = mostAssignedTags;
@@ -1228,8 +1245,14 @@ export class TagsComponent implements OnInit {
         this.headerText = 'Tags recientes';
         break;
       case 'MOST_ASSIGNED':
+        this.showMostAssignedTags = true;
         sortCriteria = 'index:desc';
         this.headerText = 'Tags más asignados';
+        break;
+      case 'HIGHLIGHTED_ITEMS':
+        this.enforceTagsStatus = 'featured';
+        sortCriteria = 'index:desc';
+        this.headerText = 'Tags destacados';
         break;
     }
 
@@ -1338,9 +1361,15 @@ export class TagsComponent implements OnInit {
       }
     }
 
+    if (this.showMostAssignedTags) {
+      this.showMostAssignedTags = false;
+    }
+
     this.headerText = 'Tags';
     this.tagsDisplayMode = 'PER-SECTION';
     this.tagSelectionMode = null;
+    this.isTagSelectionModeEnabled = false;
+    this.isTagReorderingModeEnabled = false;
     this.selectedTags = [];
     this.dependantGridOfTagsToShow = null;
   }
@@ -1407,9 +1436,17 @@ export class TagsComponent implements OnInit {
         this.entityToFilterTagsBy = null;
     }
 
-    if (!this.justShowArchivedTags)
+    if (!this.justShowArchivedTags) {
       await this.getMostRecentPlusHighlightedPlusMostAssignedTags();
-    else await this.showTagsOfType();
+
+      if (this.tagsDisplayMode === 'GRID') {
+        let type: TypeOfTagsGrid = 'ALL';
+
+        if (this.enforceTagsStatus === 'featured') type = 'HIGHLIGHTED_ITEMS';
+
+        this.showTagsOfType(type);
+      }
+    } else await this.showTagsOfType();
   }
 
   startDragging(e: MouseEvent, el: HTMLDivElement) {

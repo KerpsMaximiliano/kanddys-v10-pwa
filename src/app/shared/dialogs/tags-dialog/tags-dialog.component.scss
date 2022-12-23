@@ -3,7 +3,9 @@
 }
 
 .container {
-  margin-top: 40%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   padding: 35px 31px;
   margin-left: 40px;
   width: 84%;
