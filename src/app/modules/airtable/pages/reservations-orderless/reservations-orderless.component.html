@@ -144,6 +144,7 @@
           (selectedMonth)="
             !timeOfDayMode ? test2($event) : selectedDate($event)
           "
+          (changedMonth)="updateMonth()"
           [allowSundays]="allowSundays"
         >
         </app-calendar>

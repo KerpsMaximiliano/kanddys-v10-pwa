@@ -106,10 +106,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
       {
         name: 'onTimeOfDaySelection',
         callback: (timeOfDay) => {
-          if ('timeOfDay' in timeOfDay && 'dayName' in timeOfDay) {
+          if (
+            'timeOfDay' in timeOfDay &&
+            'dayName' in timeOfDay &&
+            timeOfDay.timeOfDay &&
+            timeOfDay.dayName
+          ) {
             this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
               timeOfDay
             );
+          } else {
+            this.formSteps[5].fieldsList[0].fieldControl.control.setValue(null);
           }
         },
       },
@@ -2140,7 +2147,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             if (reservation) {
               const deliveryISOString = new Date(
-                new Date().getFullYear(),
+                reservation.year,
                 reservation.monthNumber - 1,
                 reservation.dayNumber
               ).toISOString();
@@ -2148,6 +2155,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
 
             if (window.navigator.onLine) {
+
               data = {
                 data: encodeURIComponent(
                   JSON.stringify({
