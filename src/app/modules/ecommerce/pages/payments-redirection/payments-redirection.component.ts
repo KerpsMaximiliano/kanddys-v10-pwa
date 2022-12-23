@@ -43,7 +43,7 @@ export class PaymentsRedirectionComponent implements OnInit {
       blockURL = Boolean(blockURL);
 
       if (!blockURL) {
-        return this.router.navigate([this.router.url.split('?')[0]], {
+        this.router.navigate([this.router.url.split('?')[0]], {
           queryParams: {
             ...queryParams,
             blockURL: true,
@@ -99,7 +99,7 @@ export class PaymentsRedirectionComponent implements OnInit {
             ) {
               //Cambiar igualdad
 
-              if (hash !== rest['AuthHash']) {
+              if (hash !== rest['AuthHash'] && this.order.orderStatus !== 'paid') {
                 this.paymentLogService.createPaymentLogAzul({
                   ammount: Number(rest['Amount']) / 100,
                   reason: 'payment',
