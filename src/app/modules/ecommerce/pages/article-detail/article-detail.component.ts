@@ -339,7 +339,7 @@ export class ArticleDetailComponent implements OnInit {
       this.selectedParam ? itemParamValue : this.itemData
     );
     this.itemInCart();
-    this.showItems();
+    //this.showItems();
   }
 
   paramFromSameItem(id: string) {

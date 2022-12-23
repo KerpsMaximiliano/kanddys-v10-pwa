@@ -57,7 +57,7 @@ export class EcommerceComponent implements OnInit {
         if (!merchant) {
           // console.log('no hay merchant');
         }
-        console.log(merchant)
+        console.log(merchant);
 
         const saleflow = await this._SaleflowService.saleflowDefault(
           merchant._id
@@ -98,7 +98,12 @@ export class EcommerceComponent implements OnInit {
         : '#272727';
   }
 
-  showShoppingCartDialog = () => {
+  goToCheckout = () => {
+    this.router.navigate([
+      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+    ]);
+
+    /*
     this.dialogService.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: {
@@ -126,6 +131,6 @@ export class EcommerceComponent implements OnInit {
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
-    });
+    });*/
   };
 }
