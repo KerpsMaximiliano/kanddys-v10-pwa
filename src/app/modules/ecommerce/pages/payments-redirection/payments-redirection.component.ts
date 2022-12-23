@@ -1,3 +1,4 @@
+import { LocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemOrder } from 'src/app/core/models/order';
@@ -26,14 +27,30 @@ export class PaymentsRedirectionComponent implements OnInit {
     private router: Router,
     private paymentLogService: PaymentLogsService,
     private headerService: HeaderService,
+    private location: LocationStrategy,
     private ordersService: OrderService
-  ) {}
+  ) {
+    history.pushState(null, null, window.location.href);
+    this.location.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
-      history.pushState(null, '');
-      
-      let { typeOfPayment, success, cancel, orderId, ...rest } = queryParams;
+      let { typeOfPayment, success, cancel, orderId, blockURL, ...rest } =
+        queryParams;
+      blockURL = Boolean(blockURL);
+
+      if (!blockURL) {
+        this.router.navigate([this.router.url.split('?')[0]], {
+          queryParams: {
+            ...queryParams,
+            blockURL: true,
+          },
+        });
+      }
+
       success = Boolean(success);
       cancel = Boolean(cancel);
       this.success = success === true && rest['IsoCode'] === '00';
