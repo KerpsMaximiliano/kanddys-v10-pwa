@@ -20,10 +20,10 @@ import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/a
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
-  {
-    path: 'create-article',
-    component: ArticleCreatorComponent,
-  },
+  // {
+  //   path: 'create-article',
+  //   component: ArticleCreatorComponent,
+  // },
   {
     path: 'article-params',
     component: ArticleParamsComponent,

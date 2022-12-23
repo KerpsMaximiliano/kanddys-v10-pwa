@@ -88,17 +88,20 @@ export class ArticleParamsComponent implements OnInit {
       this.description.setValue(this.item.description);
       if (this.item.name?.trim()) this.models[0] = this.item.name;
       else this.models[0] = 'Modelo sin nombre';
-      if (this.item.images.length && !this._ItemsService.itemImages.length) {
-        const multimedia: File[] = [];
-        this.item.images.forEach(async (image, index) => {
-          const response = await fetch(image);
-          const blob = await response.blob();
-          const file = new File([blob], `item_image_${index}.jpeg`, {
-            type: 'image/jpeg',
+      if (this.item.images.length) {
+        if (!this._ItemsService.itemImages.length) {
+          const imagesPromises = this.item.images.map(async (image, index) => {
+            const response = await fetch(image);
+            const blob = await response.blob();
+            return new File([blob], `item_image_${index}.jpeg`, {
+              type: 'image/jpeg',
+            });
           });
-          multimedia.push(file);
-        });
-        this._ItemsService.itemImages = multimedia;
+          Promise.all(imagesPromises).then((result) => {
+            this._ItemsService.itemImages = result;
+            if (!this.selectedImages.length) this.loadImages();
+          });
+        } else this.loadImages();
       }
     } else {
       if (this._ItemsService.itemName)
@@ -115,6 +118,9 @@ export class ArticleParamsComponent implements OnInit {
         );
       if (this._SaleflowService.saleflowData) this.obtainLasts();
     }
+  }
+
+  loadImages() {
     this._ItemsService.itemImages?.forEach((file) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -176,7 +182,6 @@ export class ArticleParamsComponent implements OnInit {
     } else {
       if (this.price.value) {
         lockUI();
-        console.log(this.price.value);
         const { createItem } = await this._ItemsService.createItem(itemInput);
         await this._SaleflowService.addItemToSaleFlow(
           {
@@ -187,8 +192,6 @@ export class ArticleParamsComponent implements OnInit {
         unlockUI();
         this._ToastrService.success('Producto creado satisfactoriamente!');
         this._Router.navigate([`/admin/create-article/${createItem._id}`]);
-      } else {
-        this._Router.navigate([`/admin/create-article`]);
       }
     }
   };

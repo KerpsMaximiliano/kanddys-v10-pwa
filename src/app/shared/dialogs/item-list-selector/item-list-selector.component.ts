@@ -55,6 +55,10 @@ export class ItemListSelectorComponent implements OnInit {
     }
   }
 
+  onCurrencyInput(name: string, value: number) {
+    this.form.get(name).patchValue(value);
+  }
+
   selectedOption(e: number) {
     this.ref.close();
   }

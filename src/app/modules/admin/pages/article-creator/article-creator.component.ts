@@ -491,9 +491,20 @@ export class ArticleCreatorComponent implements OnInit {
       this.canvasElement.height = this.imageSizes[j].height * 1.25;
       this.context = this.canvasElement.getContext('2d');
       this.drawImage();
-      const url = this.canvasElement.toDataURL('image/png');
-      this.openImageModal(url);
+      // const url = this.canvasElement.toDataURL('image/png');
+      // this.openImageModal(url);
     };
+  }
+
+  cancelEdit() {
+    this.editMode = false;
+    this.editingImage = null;
+    this.imageElement = null;
+    this.canvasElement = null;
+    this.context = null;
+    this.imageSizeChange = 100;
+    this.imageRotation = null;
+    this.imageRotationChange = 0;
   }
 
   openImageModal(imageSourceURL: string) {
@@ -537,6 +548,7 @@ export class ArticleCreatorComponent implements OnInit {
           formData.append(name, blob);
           return index === this.editingImage ? file : image;
         });
+      this.editingImage = null;
       this.controllers.at(0).get('multimedia').setValue(multimedia);
       if (this.item) this._ItemsService.changedImages = true;
       this.openImageModal(url);
@@ -593,21 +605,19 @@ export class ArticleCreatorComponent implements OnInit {
       }
 
       if (this.item) {
-        const itemInput = {
-          name: this.item.name || null,
-          description: this.item.description,
-          pricing: this.item.pricing,
-          content: [],
-          currencies: [],
-          hasExtraPrice: false,
-          purchaseLocations: [],
-          showImages: this._ItemsService.itemImages.length > 0,
-        };
-        const { updateItem: updatedItem } = await this._ItemsService.updateItem(
-          itemInput,
-          this.item._id
-        );
         if (this._ItemsService.changedImages) {
+          const itemInput = {
+            // name: this.item.name || null,
+            // description: this.item.description,
+            // pricing: this.item.pricing,
+            // content: [],
+            // currencies: [],
+            // hasExtraPrice: false,
+            // purchaseLocations: [],
+            showImages: this._ItemsService.itemImages.length > 0,
+          };
+          const { updateItem: updatedItem } =
+            await this._ItemsService.updateItem(itemInput, this.item._id);
           await this._ItemsService.deleteImageItem(
             this.item.images,
             updatedItem._id
@@ -618,38 +628,14 @@ export class ArticleCreatorComponent implements OnInit {
           );
           this._ItemsService.itemImages = [];
           this._ItemsService.changedImages = false;
+          this._ItemsService.removeTemporalItem();
+          this._ToastrService.success(
+            'Producto actualizado satisfactoriamente!'
+          );
         }
-
-        this._ItemsService.removeTemporalItem();
-        // this._Router.navigate([`/admin/merchant-items`]);
-        this._ToastrService.success('Producto actualizado satisfactoriamente!');
-        // this._Router.navigate([`/admin/create-article/${updatedItem._id}`]);
+        this._Router.navigate([`/admin/article-params/${this.item._id}`]);
         return;
       }
-      const itemInput = {
-        name: null,
-        description: null,
-        pricing: this._ItemsService.itemPrice,
-        images: this._ItemsService.itemImages,
-        merchant: this._MerchantsService.merchantData?._id,
-        content: [],
-        currencies: [],
-        hasExtraPrice: false,
-        purchaseLocations: [],
-        showImages: this._ItemsService.itemImages.length > 0,
-      };
-      this._ItemsService.itemPrice = null;
-      this._ItemsService.itemName = null;
-
-      const { createItem } = await this._ItemsService.createItem(itemInput);
-      await this._SaleflowService.addItemToSaleFlow(
-        {
-          item: createItem._id,
-        },
-        this._SaleflowService.saleflowData._id
-      );
-      this._ToastrService.success('Producto creado satisfactoriamente!');
-      this._Router.navigate([`/admin/create-article/${createItem._id}`]);
       return;
       if (this.fromTemplate) {
         localStorage.setItem(
@@ -663,10 +649,6 @@ export class ArticleCreatorComponent implements OnInit {
         localStorage.removeItem('entity-template-creation-data');
       }
     }
-  }
-
-  restart() {
-    // console.log('asd');
   }
 
   removeFile(i: number, j: number): void {

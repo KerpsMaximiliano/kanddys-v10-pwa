@@ -37,8 +37,15 @@
           [formControlName]="input.name"
           [placeholder]="input.placeholder"
           [ngStyle]="input.inputStyles ? input.inputStyles : null"
-          *ngIf="input.type !== 'textarea'"
+          *ngIf="input.type !== 'textarea' && input.type !== 'currency'"
         />
+
+        <div style="height: 48px; margin-bottom: 12px">
+          <app-currency-input
+            *ngIf="input.type === 'currency'"
+            (onInputEvent)="onCurrencyInput(input.name, $event)"
+          ></app-currency-input>
+        </div>
 
         <textarea
           class="input-textarea"
