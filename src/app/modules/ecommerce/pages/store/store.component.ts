@@ -129,6 +129,7 @@ export class StoreComponent implements OnInit {
   }
 
   @ViewChild('tagsSwiper') tagsSwiper: SwiperComponent;
+  terms: any[] = [];
 
   constructor(
     private dialog: DialogService,
@@ -168,6 +169,27 @@ export class StoreComponent implements OnInit {
       window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
       });
+      const viewsMerchants = (async () => {
+        const pagination: PaginationInput = {
+          findBy: {
+            type: 'refund',
+          },
+        };
+        const types: any[] = [
+          { type: 'refund', text: 'Políticas de reembolsos' },
+          { type: 'delivery', text: 'Políticas de entregas' },
+          { type: 'security', text: 'Políticas de seguridad' },
+        ];
+        for (const { type, text } of types) {
+          pagination.findBy.type = type;
+          const [{ _id, description }] =
+            ((await this.merchantService.viewsMerchants(
+              pagination
+            )) as any) || { _id: '' };
+
+          this.terms.push({ _id, text });
+        }
+      })();
     }, 300);
   }
 
@@ -203,12 +225,14 @@ export class StoreComponent implements OnInit {
     }
   }
 
-  async organizeItems() {
+  async organizeItems(preventFetchingHighlightedItems = false) {
     // .sort((a, b) => a.pricing - b.pricing);
     this.highlightedItems = [];
 
-    //Sets highlightedItems array
-    await this.getHighlightedItems();
+    if (!preventFetchingHighlightedItems) {
+      //Sets highlightedItems array
+      await this.getHighlightedItems();
+    }
 
     //************************* GROUPS ITEMS BY TAG***************//
     const tagsAndItemsHashtable: Record<string, Array<Item>> = {};
@@ -232,6 +256,9 @@ export class StoreComponent implements OnInit {
     // Resetear status de la ultima orden creada
     this.header.orderId = null;
     this.getTags();
+    this.header.merchantInfo = await this.merchantService.merchant(
+      this.header.saleflow.merchant._id
+    );
     if (this.header.user)
       this.userDefaultMerchant = await this.merchantService.merchantDefault();
     // Determina si el usuario actual es el dueño de la tienda
@@ -689,7 +716,7 @@ export class StoreComponent implements OnInit {
           this.items = this.items.concat(itemsQueryResult);
         }
 
-        this.organizeItems();
+        this.organizeItems(true);
 
         this.paginationState.status = 'complete';
       })
@@ -764,5 +791,14 @@ export class StoreComponent implements OnInit {
 
   getActiveTagsFromSelectedTagsPermantent(): Array<string> {
     return this.tags.filter((tag) => tag.selected).map((tag) => tag._id);
+  }
+
+  redirectToTermsOfUse(term: any) {
+    this.header.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.header.flowRoute);
+
+    this.savePageSnapshot();
+
+    this.router.navigate(['/ecommerce/terms-of-use/' + term._id]);
   }
 }

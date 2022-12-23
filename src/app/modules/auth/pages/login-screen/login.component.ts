@@ -107,6 +107,7 @@ export class LoginComponent implements OnInit {
     CountryISO.UnitedStates,
   ];
   PhoneNumberFormat = PhoneNumberFormat;
+  paymentWithAzul: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -131,6 +132,9 @@ export class LoginComponent implements OnInit {
     this.itemId = this.route.snapshot.queryParamMap.get('itemId');
     this.action = this.route.snapshot.queryParamMap.get('action');
     this.redirectionRoute = this.route.snapshot.queryParamMap.get('redirect');
+    this.paymentWithAzul = Boolean(
+      this.route.snapshot.queryParamMap.get('paymentWithAzul')
+    );
     this.doesItemHasParams = Boolean(
       this.route.snapshot.queryParamMap.get('hasParams')
     );
@@ -1044,7 +1048,7 @@ export class LoginComponent implements OnInit {
     const order = (await this.orderService.authOrder(this.orderId, id))
       .authOrder;
     localStorage.removeItem('registered-user');
-    if (this.auth === 'payment') {
+    if (this.auth === 'payment' && !this.paymentWithAzul) {
       await this.orderService.payOrder(
         {
           image: this.image,
@@ -1059,6 +1063,10 @@ export class LoginComponent implements OnInit {
 
     if (order.items[0].post) {
       this.postsService.postAddUser(order.items[0].post._id, id);
+    }
+
+    if (this.redirectionRoute) {
+      return this.redirectFromQueryParams();
     }
 
     this.router.navigate([`ecommerce/order-detail/${order._id}`], {

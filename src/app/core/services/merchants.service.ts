@@ -7,6 +7,7 @@ import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import { Tag } from '../models/tags';
 import { User } from '../models/user';
+import { ViewsMerchant } from '../models/views-merchant';
 import { ListParams } from '../types/general.types';
 import {
   merchant,
@@ -36,6 +37,8 @@ import {
   ordersByMerchantHot,
   merchantByName,
   merchantBySlug,
+  viewsMerchants,
+  viewsMerchant,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -388,5 +391,33 @@ export class MerchantsService {
     });
     if (!response || response?.errors) return undefined;
     return response?.incomeMerchant;
+  }
+
+  async viewsMerchants(paginate: PaginationInput): Promise<Array<ViewsMerchant>> {
+    try {
+      const result = await this.graphql.query({
+        query: viewsMerchants,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return;
+      return result.viewsMerchants;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async viewsMerchant(id: string): Promise<ViewsMerchant> {
+    try {
+      const result = await this.graphql.query({
+        query: viewsMerchant,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return;
+      return result.viewsMerchant;
+    } catch (error) {
+      return error;
+    }
   }
 }
