@@ -522,6 +522,8 @@ export class ArticleParamsComponent implements OnInit {
               btnMaxWidth: '133px',
               btnPadding: '7px 2px',
             },
+            customClass: 'app-dialog',
+            flags: ['no-header'],
           });
         },
       },
