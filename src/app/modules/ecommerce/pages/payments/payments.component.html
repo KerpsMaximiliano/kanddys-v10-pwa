@@ -80,7 +80,9 @@
         [indicator]="true"
         (onSelector)="selectBank($event)"
         [blockIndexes]="
-          acceptedRefundPolicies ? [] : fillIndexesUpTo(banks.length)
+          acceptedRefundPolicies || !viewMerchantForRefund
+            ? []
+            : fillIndexesUpTo(banks.length)
         "
         [containerStyles]="{
           margin: '0px',
@@ -93,7 +95,11 @@
         [hasComplexOptionsLayout]="true"
         [indicator]="true"
         (onSelector)="selectOnlinePayment($event)"
-        [blockIndexes]="acceptedRefundPolicies ? [] : fillIndexesUpTo(1)"
+        [blockIndexes]="
+          acceptedRefundPolicies || !viewMerchantForRefund
+            ? []
+            : fillIndexesUpTo(1)
+        "
         [containerStyles]="{
           margin: '-20px 0px 0px 0px'
         }"
