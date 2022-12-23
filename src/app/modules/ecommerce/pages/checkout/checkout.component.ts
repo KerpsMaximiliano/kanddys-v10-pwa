@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -143,6 +144,7 @@ export class CheckoutComponent implements OnInit {
     private location: Location,
     private router: Router,
     private route: ActivatedRoute,
+    private toastr: ToastrService,
     private authService: AuthService
   ) {}
 
@@ -463,9 +465,33 @@ export class CheckoutComponent implements OnInit {
     // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
     // ---------------------- Managing Post ----------------------------
     if (this.headerService.saleflow.module?.post) {
-      const postResult = (await this.postsService.createPost(this.post))
-        ?.createPost?._id;
-      this.headerService.order.products[0].post = postResult;
+      try {
+        const postResult = (await this.postsService.createPost(this.post))
+          ?.createPost?._id;
+        this.headerService.order.products[0].post = postResult;
+      } catch (error) {
+        const post: PostInput = this.headerService.getPost();
+
+        try {
+          this.post = post;
+
+          const postResult = (await this.postsService.createPost(this.post))
+            ?.createPost?._id;
+          this.headerService.order.products[0].post = postResult;
+        } catch (error) {
+          this.toastr.error('Ocurrió un error, intente más tarde', null, {
+            timeOut: 5000,
+          });
+
+          unlockUI();
+
+          this.disableButton = false;
+
+          return;
+
+          console.error(error);
+        }
+      }
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
     try {
