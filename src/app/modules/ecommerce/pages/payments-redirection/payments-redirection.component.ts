@@ -43,7 +43,7 @@ export class PaymentsRedirectionComponent implements OnInit {
       blockURL = Boolean(blockURL);
 
       if (!blockURL) {
-        this.router.navigate([this.router.url.split('?')[0]], {
+        return this.router.navigate([this.router.url.split('?')[0]], {
           queryParams: {
             ...queryParams,
             blockURL: true,
