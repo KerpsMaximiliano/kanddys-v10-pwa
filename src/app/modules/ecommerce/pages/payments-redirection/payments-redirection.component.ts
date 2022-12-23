@@ -40,16 +40,6 @@ export class PaymentsRedirectionComponent implements OnInit {
     this.route.queryParams.subscribe(async (queryParams) => {
       let { typeOfPayment, success, cancel, orderId, blockURL, ...rest } =
         queryParams;
-      blockURL = Boolean(blockURL);
-
-      if (!blockURL) {
-        this.router.navigate([this.router.url.split('?')[0]], {
-          queryParams: {
-            ...queryParams,
-            blockURL: true,
-          },
-        });
-      }
 
       success = Boolean(success);
       cancel = Boolean(cancel);
