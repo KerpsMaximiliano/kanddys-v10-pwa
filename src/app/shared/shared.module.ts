@@ -105,6 +105,7 @@ import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/co
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
 import { GeneralItemComponent } from './components/general-item/general-item.component';
 import { TagTypeDialogComponent } from './dialogs/tag-type-dialog/tag-type-dialog.component';
+import { ArticlePrivacyComponent } from './components/article-privacy/article-privacy.component';
 import { InputTransparentComponent } from './dialogs/input-transparent/input-transparent.component';
 import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
 import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
@@ -223,6 +224,7 @@ const declarations = [
   ConfirmActionDialogComponent,
   GeneralItemComponent,
   InputTransparentComponent,
+  ArticlePrivacyComponent,
   AnexosDialogComponent,
   QrCodeDialogComponent,
   PostsXlsComponent,
@@ -230,7 +232,7 @@ const declarations = [
   TagTypeDialogComponent,
   MediaDialogComponent,
   ItemListSelectorComponent,
-  TagsDialogComponent,
+  TagsDialogComponent
 ];
 
 @NgModule({

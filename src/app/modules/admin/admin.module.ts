@@ -18,6 +18,7 @@ import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
+import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -118,6 +119,10 @@ const routes: Routes = [
       {
         path: 'manage-tag',
         component: ManageTagComponent,
+      }
+      {
+        path: 'article-privacy/:templateId',
+        component: ArticlePrivacyComponent,
       },
     ],
   },
