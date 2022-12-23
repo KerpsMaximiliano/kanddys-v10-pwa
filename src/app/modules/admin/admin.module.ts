@@ -119,7 +119,7 @@ const routes: Routes = [
       {
         path: 'manage-tag',
         component: ManageTagComponent,
-      }
+      },
       {
         path: 'article-privacy/:templateId',
         component: ArticlePrivacyComponent,
