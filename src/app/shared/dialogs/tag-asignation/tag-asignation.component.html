@@ -1,12 +1,14 @@
 <div class="body-container" [style.backgroundColor]="background">
   <div class="text-grid">
-    <h4 class="title" [style.color]="textColor && textColor">Tags previamente usados</h4>
+    <h4 class="title" [style.color]="textColor && textColor">
+      Tags previamente usados
+    </h4>
     <div class="icon-container">
       <img
         class="icon-blue"
         src="{{ env }}/bookmark-plus.svg"
         alt="banderita con icono de mas"
-        [ngStyle]="{filter: iconColor}"
+        [ngStyle]="{ filter: iconColor }"
         (click)="goToCreateTag()"
       />
     </div>
@@ -27,9 +29,11 @@
     [fillSelectedTagsOnStart]="true"
     [useIdToRemoveOrAddTags]="true"
     [color]="color"
-    [inactiveBackground]="colorTheme === 'client' ? 'rgba(123,123,123, 37%)' : '#B17608'"
+    [inactiveBackground]="
+      colorTheme === 'client' ? 'rgba(123,123,123, 37%)' : '#B17608'
+    "
     [inactiveColor]="'#FFFFFF'"
-    selectedFilter="brightness(8)"
+    selectedFilter="invert(100%) sepia(100%) saturate(0%) hue-rotate(212deg) brightness(103%) contrast(103%)"
     (tagSelect)="tagAction($event)"
     [outputAllSelectedTags]="outputAllSelectedTags"
     (tagSelect3)="selectTagHandler($event)"
@@ -41,8 +45,8 @@
   <div class="return-section">
     <button class="bottom-button">
       <i class="fas fa-chevron-down"></i>
-      <i class="fas fa-chevron-down" style="top: 12px;"></i>
+      <i class="fas fa-chevron-down" style="top: 12px"></i>
     </button>
-    <span class="bottom-text">Vuelve a la factura</span>
+    <span class="bottom-text">Vuelve {{ entity === "item" ? "al producto" : "a la factura" }}</span>
   </div>
 </div>

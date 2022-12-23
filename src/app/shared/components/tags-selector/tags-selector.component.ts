@@ -48,6 +48,8 @@ export class TagsSelectorComponent implements OnInit {
       }
     }
 
+    console.log('sacar todos los tags', this.outputAllSelectedTags);
+
     if (!this.outputAllSelectedTags)
       this.tagSelected(tag, this.tag.includes(tag));
     else {
@@ -82,5 +84,11 @@ export class TagsSelectorComponent implements OnInit {
     this.tags.forEach((tag) => {
       this.activeTags.includes(tag[id]) ? this.tag.push(tag[id]) : null;
     });
+  }
+
+  getTagIcon(status: string) {
+    return status === 'disabled'
+      ? this.env + '/closed-eye-black.svg'
+      : this.env + '/binoculars-fill-black.svg';
   }
 }

@@ -127,6 +127,7 @@ export const tag = gql`
       name
       status
       images
+      notes
       notifications
     }
   }

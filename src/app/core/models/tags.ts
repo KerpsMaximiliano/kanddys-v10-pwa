@@ -15,6 +15,7 @@ export class TagContainersInput {
 export class Tag extends Model<Tag> {
   counter: number;
   name: string;
+  notes?: string;
   user?: string;
   status: string;
   images?: [string];
@@ -29,6 +30,7 @@ type TagEntityEnum = 'user' | 'order' | 'item' | 'recipient' | 'merchant';
 
 export class TagInput {
   name?: string;
+  notes?: string;
   images?: File[];
   notify?: boolean;
   notifyUserOrder?: boolean;

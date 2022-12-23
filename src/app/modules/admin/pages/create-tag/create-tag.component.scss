@@ -16,9 +16,9 @@
 
   .option {
     all: unset;
-    color: #7B7B7B;
+    color: #7b7b7b;
     cursor: pointer;
-    font-family: 'SfProLight';
+    font-family: "SfProLight";
     font-size: 17px;
   }
 
@@ -44,13 +44,14 @@ form {
     justify-content: space-around;
   }
 
-  .image-input, .name-input {
+  .image-input,
+  .name-input {
     flex-basis: 48.5%;
     width: 100%;
   }
 
   .input-container {
-    background-color: #E9E9E9;
+    background-color: #e9e9e9;
     border-radius: 9px;
     display: flex;
     flex-direction: column;
@@ -60,14 +61,14 @@ form {
 
     .input {
       border-radius: 0;
-      box-shadow: inset 0px 0px 9px 0px rgba(0,0,0,0.2);
+      box-shadow: inset 0px 0px 9px 0px rgba(0, 0, 0, 0.2);
       height: 100px;
       padding-bottom: 50px;
     }
 
     .small {
       bottom: 10px;
-      color: #7B7B7B;
+      color: #7b7b7b;
       font-family: "SfProLight";
       font-size: 13px;
       position: absolute;
@@ -85,7 +86,7 @@ form {
   }
 
   .name-input:hover {
-    border-color: #31A4F9;
+    border-color: #31a4f9;
   }
 
   .input-label {
@@ -123,7 +124,7 @@ form {
 
   .textarea {
     border: none;
-    box-shadow: inset 0px 0px 9px 0px rgba(0,0,0,0.2);
+    box-shadow: inset 0px 0px 9px 0px rgba(0, 0, 0, 0.2);
   }
 
   textarea::placeholder {
@@ -148,5 +149,5 @@ form {
 }
 
 .active {
-  color: #2874AD;
+  color: #2874ad;
 }

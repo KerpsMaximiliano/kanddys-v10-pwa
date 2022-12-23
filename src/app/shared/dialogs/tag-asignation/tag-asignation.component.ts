@@ -22,7 +22,7 @@ export class TagAsignationComponent implements OnInit {
   @Input() colorTheme: 'client' | 'admin' = 'client';
   @Input('backgroundColor') background: string;
   @Input('textColor') textColor: string;
-  @Input() iconColor: string ;
+  @Input() iconColor: string;
   @Input() selectedBG: string;
   @Input() selectedColor: string;
   @Input() bgColor: string;
@@ -44,22 +44,22 @@ export class TagAsignationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if(this.colorTheme === 'client'){
+    if (this.colorTheme === 'client') {
       this.iconColor = 'brightness(8)';
       this.selectedBG = '#82F18D';
       this.selectedColor = '#272727';
       this.bgColor = 'rgba(123, 123, 123, 0.37)';
-      this.color= '#FFFFFF';
+      this.color = '#FFFFFF';
       this.background = '#272727';
-      this.textColor = '#FFFFFF'
-    } else{
+      this.textColor = '#FFFFFF';
+    } else {
       this.background = '#F6F6F6';
       this.textColor = '#272727';
-      this.iconColor = 'brightness(0)'
+      this.iconColor = 'brightness(0)';
       this.selectedBG = '#82F18D';
       this.selectedColor = '#272727';
-      this.bgColor = '#FFFFFF';
-      this.color = '#FFFFFF';
+      this.bgColor = '#cecece';
+      this.color = '#272727';
     }
   }
 
@@ -100,6 +100,9 @@ export class TagAsignationComponent implements OnInit {
   selectTagHandler(eventData: any) {
     this.untouchedActionText = null;
     this.blockCta = true;
+
+    console.log('data de evento', eventData);
+
     this.tagAction(eventData);
   }
 

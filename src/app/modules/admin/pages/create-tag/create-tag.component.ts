@@ -58,9 +58,11 @@ export class CreateTagComponent implements OnInit, OnDestroy {
     name: new FormControl('', [
       Validators.required,
       Validators.pattern(/[\S]/),
+      Validators.maxLength(40),
     ]),
     visibility: new FormControl('active', [Validators.required]),
     images: new FormControl(null),
+    notes: new FormControl(''),
   });
   convertedDefaultImageToBase64: boolean = false;
   optionalFunctionalityList: WebformAnswerLayoutOption[] = [];
@@ -80,6 +82,8 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   redirectTo: string;
   routeParamsSubscription: Subscription;
   routeQueryParamsSubscription: Subscription;
+  changedSomeValue: boolean = false;
+  initialState: string = null;
 
   constructor(
     private tagsService: TagsService,
@@ -112,11 +116,33 @@ export class CreateTagComponent implements OnInit, OnDestroy {
             this.setOptionalFunctionalityList();
             await this.verifyIfUserIsLogged();
 
+            this.createTagForm.controls.name.valueChanges.subscribe(
+              (change) => {
+                if (change.length > 40) {
+                  this.createTagForm.controls.name.setValue(
+                    this.createTagForm.controls.name.value.slice(0, 40),
+                    {
+                      emitEvent: false,
+                    }
+                  );
+                }
+              }
+            );
+
             this.hasTemporalTag = Boolean(
               localStorage.getItem('preloadTemporalNotificationAndTemporalTag')
             );
             if (this.tagID || this.hasTemporalTag || this.logged)
-              this.inicializeExistingTagData();
+              await this.inicializeExistingTagData();
+
+            this.initialState = JSON.stringify(this.createTagForm.value);
+            this.createTagForm.valueChanges.subscribe((change) => {
+              if (JSON.stringify(change) !== this.initialState) {
+                this.changedSomeValue = true;
+              } else {
+                this.changedSomeValue = false;
+              }
+            });
           }
         );
       }
@@ -124,7 +150,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   }
 
   async inicializeExistingTagData() {
-    const { name, visibility, images } = this.createTagForm.controls;
+    const { name, visibility, images, notes } = this.createTagForm.controls;
     if (this.tagID) {
       const { tag } = await this.tagsService.tag(this.tagID);
 
@@ -201,6 +227,8 @@ export class CreateTagComponent implements OnInit, OnDestroy {
 
       if (!this.hasTemporalTag) {
         name.setValue(tag.name);
+
+        notes.setValue(tag.notes);
 
         tag.status === 'active'
           ? this.setTagAsVisible()
@@ -363,7 +391,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   }
 
   async save() {
-    const { name, visibility, images } = this.createTagForm.controls;
+    const { name, visibility, images, notes } = this.createTagForm.controls;
     this.finishedMutation = false;
 
     if (this.logged === false) {
@@ -379,6 +407,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
 
     const data: TagInput = {
       name: name.value,
+      notes: notes.value,
       status: visibility.value,
       merchant: this.merchantDefault._id,
     };
@@ -823,6 +852,10 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   }
 
   goBack2 = () => {
+    if (this.createTagForm.status === 'VALID' && this.changedSomeValue) {
+      this.save();
+    }
+
     if (this.redirectTo) {
       this.router.navigate([this.redirectTo]);
     } else if (this.entity === 'item') {
@@ -830,7 +863,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       localStorage.removeItem('flowRoute');
       this.router.navigate(['admin/create-article/' + this.entityId]);
     } else if (this.entity === 'order') {
-      this.router.navigate(['ecommerce/order-detail/' + this.entityId]);
+      this.router.navigate(['ecommerce/order-detail/' + this.orderID]);
     } else {
       this.router.navigate(['admin/entity-detail-metrics']);
     }

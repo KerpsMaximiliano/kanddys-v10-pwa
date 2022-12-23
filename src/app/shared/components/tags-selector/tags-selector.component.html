@@ -11,7 +11,7 @@
         : background
     "
     [style.color]="
-    !tag.includes(tg._id) && !tg.notify && tg.status !== 'active'
+      !tag.includes(tg._id) && !tg.notify && tg.status !== 'active'
         ? inactiveColor
         : tag.includes(tg._id)
         ? selectedColor
@@ -30,13 +30,10 @@
     />
     <img
       *ngIf="tg.status !== 'active'"
-      [src]="
-        !tag.includes(tg._id)
-          ? env + '/closed-eye-white.svg'
-          : env + '/closed-eye-blue.svg'
-      "
-      alt=""
-      [style.filter]="tag.includes(tg._id) ? selectedFilter : ''"
+      [src]="getTagIcon(tg.status)"
+      [ngStyle]="{
+        filter: !tag.includes(tg._id) ? selectedFilter : null
+      }"
       class="image"
     />
   </button>
