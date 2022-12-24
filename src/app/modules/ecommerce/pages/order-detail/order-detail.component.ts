@@ -670,6 +670,7 @@ export class OrderDetailComponent implements OnInit {
         text: 'SALVAR TAGS SELECCIOANDOS EN LA ORDEN',
         tags: this.tags,
         orderId: this.order._id,
+        colorTheme: 'admin',
         activeTags:
           this.order.tags &&
           (this.order.tags !== null ||
