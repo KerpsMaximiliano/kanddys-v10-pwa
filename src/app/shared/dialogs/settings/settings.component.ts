@@ -21,6 +21,7 @@ export interface SettingsDialogButton extends Button {}
 })
 export class SettingsComponent implements OnInit {
   @Input() title: string = 'TITULO';
+  @Input() titleStyles: Record<string, any> = null;
   @Input() cancelButton: Button = {
     text: 'Cerrar',
   };
@@ -36,6 +37,8 @@ export class SettingsComponent implements OnInit {
     callbackParams?: Array<any>;
   }> = [];
   @Input() indexValue: number;
+  @Input() hideNavigation: boolean = false;
+  @Input() hideCloseBtn: boolean = false;
   @Input() linkToCopy: string = null;
   currentStatusIndex: number = 0;
   env: string = environment.assetsUrl;

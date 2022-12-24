@@ -29,6 +29,7 @@ export class TagAsignationComponent implements OnInit {
   @Input('untouchedActionText') untouchedActionText: string = null;
   @Input() outputAllSelectedTags: boolean = false;
   @Input() public ctaAction: (args?: any) => any;
+  @Input() redirectToArticleParams: boolean = false;
   blockCta: boolean = false;
 
   constructor(
@@ -48,12 +49,17 @@ export class TagAsignationComponent implements OnInit {
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
     if (this.orderId) {
+      const queryParams: any = {
+        orderId: this.orderId,
+        entity: this.entity,
+        entityId: this.entityId,
+      };
+
+      if (this.redirectToArticleParams)
+        queryParams.redirectToArticleParams = true;
+
       this.router.navigate(['admin/create-tag'], {
-        queryParams: {
-          orderId: this.orderId,
-          entity: this.entity,
-          entityId: this.entityId,
-        },
+        queryParams,
       });
     } else {
       const queryParams: any = {
@@ -61,6 +67,9 @@ export class TagAsignationComponent implements OnInit {
       };
 
       if (this.entityId) queryParams.entityId = this.entityId;
+
+      if (this.redirectToArticleParams)
+        queryParams.redirectToArticleParams = true;
 
       this.router.navigate(['admin/create-tag'], {
         queryParams,

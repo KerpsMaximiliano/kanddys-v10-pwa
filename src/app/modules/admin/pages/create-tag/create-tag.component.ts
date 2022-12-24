@@ -77,6 +77,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   active: number = 0;
   entity: 'item' | 'order' = 'order';
   entityId: string = null;
+  redirectToArticleParams: boolean = false;
   routeParamsSubscription: Subscription;
   routeQueryParamsSubscription: Subscription;
 
@@ -100,12 +101,14 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         this.routeQueryParamsSubscription = this.route.queryParams.subscribe(
           async (queryParams) => {
             const { tagId } = routeParams;
-            const { orderId, entity, entityId } = queryParams;
+            const { orderId, entity, entityId, redirectToArticleParams } =
+              queryParams;
 
             this.tagID = tagId;
             this.orderID = orderId;
             this.entity = entity;
             this.entityId = entityId;
+            this.redirectToArticleParams = Boolean(redirectToArticleParams);
 
             this.setOptionalFunctionalityList();
             await this.verifyIfUserIsLogged();
@@ -406,9 +409,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
           data.entity = 'item';
         }
 
-        const createdTag = await this.tagsService.createTag(
-          data
-        );
+        const createdTag = await this.tagsService.createTag(data);
 
         this.finishedMutation = true;
 
@@ -439,11 +440,16 @@ export class CreateTagComponent implements OnInit, OnDestroy {
 
             this.headerService.flowRoute = null;
             localStorage.removeItem('flowRoute');
-            this.router.navigate(['admin/create-article/' + this.entityId], {
-              queryParams: {
-                tagsAsignationOnStart: true,
-              },
-            });
+
+            if (!this.redirectToArticleParams) {
+              this.router.navigate(['admin/create-article/' + this.entityId], {
+                queryParams: {
+                  tagsAsignationOnStart: true,
+                },
+              });
+            } else {
+              this.router.navigate(['admin/article-params/' + this.entityId]);
+            }
           }
           if (!this.entity) this.router.navigate(['admin/items-dashboard']);
         }

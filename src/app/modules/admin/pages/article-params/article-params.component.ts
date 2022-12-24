@@ -16,8 +16,13 @@ import { ToastrService } from 'ngx-toastr';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { ArticleDialogComponent } from 'src/app/shared/dialogs/article-dialog/article-dialog.component';
-import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
+import { TagsService } from 'src/app/core/services/tags.service';
 
 @Component({
   selector: 'app-article-params',
@@ -55,6 +60,7 @@ export class ArticleParamsComponent implements OnInit {
   updated: boolean = false;
   blockSubmitButton: boolean = false;
   parseFloat = parseFloat;
+  selectedTags: Array<string>;
 
   card1: boolean = false;
   card2: boolean = false;
@@ -70,7 +76,9 @@ export class ArticleParamsComponent implements OnInit {
     private _Route: ActivatedRoute,
     private _PostsService: PostsService,
     private _EntityTemplateService: EntityTemplateService,
-    private _ToastrService: ToastrService
+    private _DialogService: DialogService,
+    private _ToastrService: ToastrService,
+    private _TagsService: TagsService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -539,6 +547,210 @@ export class ArticleParamsComponent implements OnInit {
         closeEvent: () => {},
         shareBtn: false,
         title: '',
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  toggleActivateItem = async (item: Item): Promise<string> => {
+    try {
+      this._ItemsService.updateItem(
+        {
+          status:
+            item.status === 'disabled'
+              ? 'active'
+              : item.status === 'active'
+              ? 'featured'
+              : 'disabled',
+        },
+        item._id
+      );
+
+      item.status =
+        item.status === 'disabled'
+          ? 'active'
+          : item.status === 'active'
+          ? 'featured'
+          : 'disabled';
+
+      return item.status;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  openOptionsForThisArticle() {
+    const toggleStatus = () => {
+      return new Promise((resolve, reject) => {
+        this.toggleActivateItem(this.item).then((newStatus) => {
+          newStatus === 'disabled'
+            ? (number = 2)
+            : newStatus === 'active'
+            ? (number = 0)
+            : (number = 1);
+
+          resolve(true);
+        });
+      });
+    };
+
+    let number: number =
+      this.item.status === 'disabled'
+        ? 2
+        : this.item.status === 'active'
+        ? 0
+        : 1;
+    const statuses = [
+      {
+        text: 'VISIBLE (NO DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'VISIBLE (Y DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'INVISIBLE',
+        backgroundColor: '#B17608',
+        color: 'white',
+        asyncCallback: toggleStatus,
+      },
+    ];
+
+    const list: Array<SettingsDialogButton> = [
+      {
+        text: 'Crea un nuevo artículo',
+        callback: async () => {
+          this._Router.navigate([`admin/create-article`]);
+        },
+      },
+      {
+        text: 'Archiva este artículo',
+        callback: async () => {
+          const response = await this._ItemsService.updateItem(
+            {
+              status: 'archived',
+            },
+            this.item._id
+          );
+
+          this._ToastrService.info('¡Item archivado exitosamente!');
+
+          this._Router.navigate([`admin/entity-detail-metrics`]);
+        },
+      },
+      {
+        text: 'Elimina este artículo',
+        callback: async () => {
+          const removeItemFromSaleFlow =
+            await this._SaleflowService.removeItemFromSaleFlow(
+              this.item._id,
+              this._SaleflowService.saleflowData._id
+            );
+
+          if (!removeItemFromSaleFlow) return;
+          const deleteItem = await this._ItemsService.deleteItem(this.item._id);
+          if (!deleteItem) return;
+          else {
+            this._ToastrService.info('¡Item eliminado exitosamente!');
+
+            this._SaleflowService.saleflowData =
+              await this._SaleflowService.saleflowDefault(
+                this._MerchantsService.merchantData._id
+              );
+
+            this._Router.navigate(['/admin/entity-detail-metrics']);
+          }
+        },
+      },
+      {
+        text: 'Adiciona un tag a este artículo',
+        callback: async () => {
+          const userTags = await this._TagsService.tagsByUser({
+            options: {
+              limit: -1,
+            },
+            findBy: {
+              entity: 'item',
+            },
+          });
+
+          const itemTags = (
+            await this._TagsService.tags({
+              options: {
+                limit: -1,
+              },
+              findBy: {
+                id: {
+                  __in: this.item.tags,
+                },
+                entity: 'item',
+              },
+            })
+          ).tags;
+
+          this._DialogService.open(TagAsignationComponent, {
+            type: 'fullscreen-translucent',
+            props: {
+              tags: userTags,
+              //orderId: this.order._id,
+              entity: 'item',
+              entityId: this.item._id,
+              redirectToArticleParams: true,
+              outputAllSelectedTags: true,
+              activeTags:
+                itemTags && Array.isArray(itemTags)
+                  ? itemTags.map((tag) => tag._id)
+                  : null,
+              tagAction: async ({ selectedTags }) => {
+                this.selectedTags = selectedTags;
+
+                try {
+                  const response = await this._ItemsService.updateItem(
+                    {
+                      tags: this.selectedTags,
+                    },
+                    this.item._id
+                  );
+
+                  if (response) {
+                    this.item.tags = this.selectedTags;
+                  }
+                } catch (error) {
+                  this._ToastrService.error('Error al asignar tags', null, {
+                    timeOut: 1000,
+                  });
+                }
+              },
+            },
+            customClass: 'app-dialog',
+            flags: ['no-header'],
+          });
+        },
+      },
+    ];
+
+    list.forEach((option) => (option.styles = { color: '#383838' }));
+
+    this.dialog.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        statuses,
+        indexValue: number,
+        optionsList: list,
+        hideNavigation: true,
+        hideCloseBtn: true,
+        closeEvent: () => {},
+        shareBtn: false,
+        title: this.item.name,
+        titleStyles: {
+          fontFamily: 'SfProRegular',
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
