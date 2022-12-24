@@ -448,11 +448,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
             this.orderID
           );
 
-          this.router.navigate(['ecommerce/order-info/' + this.orderID], {
-            queryParams: {
-              tagsAsignationOnStart: true,
-            },
-          });
+          this.goBack();
         } else {
           if (this.entity === 'item') {
             if (this.entityId) {
@@ -467,22 +463,17 @@ export class CreateTagComponent implements OnInit, OnDestroy {
                 this.entityId
               );
 
-              this.headerService.flowRoute = null;
-              localStorage.removeItem('flowRoute');
-              this.router.navigate(['admin/item-display/' + this.entityId], {
-                queryParams: {
-                  tagsAsignationOnStart: true,
-                },
-              });
+              return this.goBack();
             }
           }
 
           if (
             (this.entity === 'order' || this.entity === 'item') &&
             !this.entityId &&
-            !this.orderID
+            !this.orderID &&
+            this.redirectTo
           ) {
-            this.router.navigate([this.redirectTo]);
+            return this.router.navigate([this.redirectTo]);
           }
 
           if (!this.entity) this.router.navigate(['admin/items-dashboard']);
@@ -766,60 +757,30 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       queryParams: {},
     };
 
-    const flowRoute2 = localStorage.getItem('flowRoute2');
     let flowRoute = this.headerService.flowRoute;
 
     if (!flowRoute) {
       flowRoute = localStorage.getItem('flowRoute');
     }
 
-    if (!flowRoute) {
-      if (flowRoute2) {
-        this.headerService.flowRoute = flowRoute2;
-      } else {
-        let flowRoute = localStorage.getItem('flowRoute');
+    if (flowRoute && flowRoute.length > 1) {
+      const [baseRoute, paramsString] = flowRoute.split('?');
+      const paramsArray = paramsString ? paramsString.split('&') : [];
+      const queryParams = {};
 
-        if (!flowRoute)
-          this.headerService.flowRoute = 'admin/entity-detail-metrics';
-        else this.headerService.flowRoute = flowRoute;
-      }
-    } else {
-      if (!flowRoute.includes('create-tag'))
-        this.headerService.flowRoute = flowRoute;
-      else this.headerService.flowRoute = 'admin/entity-detail-metrics';
+      paramsArray.forEach((param) => {
+        const [key, value] = param.split('=');
+
+        queryParams[key] = decodeURIComponent(value);
+      });
+
+      localStorage.removeItem('flowRoute');
+      this.router.navigate([baseRoute], {
+        queryParams,
+      });
     }
 
-    const redirectionRoute = this.headerService.flowRoute;
-
-    if (redirectionRoute.includes('?')) {
-      const routeParts = redirectionRoute.split('?');
-      const redirectionURL = routeParts[0];
-      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
-        const queryStringElements = queryString.split('=');
-
-        return { [queryStringElements[0]]: queryStringElements[1] };
-      });
-
-      redirectURL.url = redirectionURL;
-      redirectURL.queryParams = {};
-
-      routeQueryStrings.forEach((queryString) => {
-        const key = Object.keys(queryString)[0];
-        redirectURL.queryParams[key] = queryString[key];
-      });
-
-      this.router.navigate([redirectURL.url], {
-        queryParams: redirectURL.queryParams,
-      });
-    } else {
-      this.router.navigate([redirectionRoute]);
-    }
-
-    this.headerService.flowRoute = null;
-    this.tagsService.temporalTag = null;
-    //this.notificationService.temporalNotification = null;
-
-    if (redirectionRoute.includes('items-dashboard')) {
+    if (flowRoute && flowRoute.includes('items-dashboard')) {
       localStorage.removeItem('flowRoute');
       localStorage.removeItem('flowRoute2');
       localStorage.removeItem('temporalTag');
@@ -828,12 +789,16 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       localStorage.removeItem('preloadTemporalNotificationAndTemporalTag');
     }
 
-    if (redirectionRoute.includes('order-info')) {
+    if (flowRoute && flowRoute.includes('order-info')) {
       localStorage.removeItem('temporalTag');
       localStorage.removeItem('existingTagId');
       localStorage.removeItem('temporalNotification');
       localStorage.removeItem('preloadTemporalNotificationAndTemporalTag');
     }
+
+    this.headerService.flowRoute = null;
+    this.tagsService.temporalTag = null;
+    //this.notificationService.temporalNotification = null;
   }
 
   stopDragging() {
@@ -854,18 +819,20 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   goBack2 = () => {
     if (this.createTagForm.status === 'VALID' && this.changedSomeValue) {
       this.save();
+    } else {
+      if (this.entity === 'item') {
+        this.headerService.flowRoute = null;
+        localStorage.removeItem('flowRoute');
+        this.router.navigate(['admin/create-article/' + this.entityId]);
+      } else if (this.entity === 'order') {
+        this.router.navigate(['ecommerce/order-detail/' + this.orderID]);
+      } else {
+        this.router.navigate(['admin/entity-detail-metrics']);
+      }
     }
 
     if (this.redirectTo) {
       this.router.navigate([this.redirectTo]);
-    } else if (this.entity === 'item') {
-      this.headerService.flowRoute = null;
-      localStorage.removeItem('flowRoute');
-      this.router.navigate(['admin/create-article/' + this.entityId]);
-    } else if (this.entity === 'order') {
-      this.router.navigate(['ecommerce/order-detail/' + this.orderID]);
-    } else {
-      this.router.navigate(['admin/entity-detail-metrics']);
     }
   };
 

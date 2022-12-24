@@ -1,9 +1,8 @@
-
 .tags-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 9px 4px;
-  padding: 30px 22px 33px 0;
+  padding: 30px 22px 33px 18px;
 }
 
 .tag {
@@ -13,12 +12,12 @@
   border-radius: 4px;
   padding: 4px 9px;
   border: none;
-  font-family: 'SfProBold';
+  font-family: "SfProBold";
   cursor: pointer;
 }
 
-.image{
-   width: 17px;
-   height: 17px;
-   margin-left: 9.5px;
+.image {
+  width: 17px;
+  height: 17px;
+  margin-left: 9.5px;
 }
