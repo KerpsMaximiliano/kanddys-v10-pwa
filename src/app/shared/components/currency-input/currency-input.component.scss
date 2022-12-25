@@ -78,3 +78,14 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+.inner-label{
+  position: absolute;
+  top: 13px;
+  left: 15px;
+  font-family: "SfProMedium";
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #272727;
+  z-index: 51;
+}

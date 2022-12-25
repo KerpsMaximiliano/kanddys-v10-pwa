@@ -13,6 +13,7 @@ export class CurrencyInputComponent implements OnInit {
   @Input() fieldStyles: Record<string, any> = null;
   @Input() inputId: string = 'pricing';
   @Input() inputName: string = 'pricing';
+  @Input() innerLabel: string;
   @Input() required: boolean = true;
   @Input() blockKeyboardNavigation: boolean = false;
   @Output() onInputEvent = new EventEmitter<number>();

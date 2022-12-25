@@ -40,9 +40,13 @@
           *ngIf="input.type !== 'textarea' && input.type !== 'currency'"
         />
 
-        <div style="height: 48px; margin-bottom: 12px">
+        <div style="height: 48px; margin-bottom: 12px" *ngIf="input.type === 'currency'">
           <app-currency-input
             *ngIf="input.type === 'currency'"
+            [fieldStyles]="{
+              padding: '18px 20px 0'
+            }"
+            [innerLabel]="input.innerLabel"
             (onInputEvent)="onCurrencyInput(input.name, $event)"
           ></app-currency-input>
         </div>
