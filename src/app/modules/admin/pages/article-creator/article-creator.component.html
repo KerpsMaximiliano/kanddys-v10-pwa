@@ -199,7 +199,11 @@
           >{{ item?.description || "Descripcion del articulo (opcional)" }}
         </label>
 
-        <button class="icon-button-texts">
+        <button
+          class="icon-button-texts"
+          (click)="enterEdit(swiperI, activeSlide)"
+          *ngIf="!editMode"
+        >
           <img [src]="env + '/screen-cut.svg'" />
         </button>
       </div>
@@ -261,7 +265,7 @@
         <button class="round-button" (click)="submit(true)">
           <img [src]="env + '/screen-cut.svg'" />
         </button> -->
-        <button class="round-button" (click)="enterEdit(swiperI, activeSlide)">
+        <button class="round-button" (click)="submit()">
           <img [src]="env + '/cog-wheel.svg'" />
         </button>
         <!-- QUIZAS BORRAR DESPUES <button
@@ -366,7 +370,7 @@
     </div>
     <div class="edit-footer" *ngIf="editMode">
       <button class="footer-save" (click)="submit()">SALVAR AJUSTES</button>
-      <button class="footer-restart" (click)="restart()">
+      <button class="footer-restart" (click)="cancelEdit()">
         Reiniciar ajustes de este Slide
       </button>
     </div>
