@@ -38,12 +38,15 @@
       (click)="openItemOptionsDialog()"
     ></div> -->
   <!-- </div> -->
+  <div class="disabled" *ngIf="['disabled', 'archived'].includes(item.status)">
+    <img [src]="env + '/closed-eye-white.svg'" alt="Ojo cerrado" class="hidden-img">
+    <span class="disabled-span">Invisible para visitantes</span>
+  </div>
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
       <div
         id="{{ i }}-{{ j }}"
         [ngSwitch]="field.type"
-        [ngClass]="{ disabled: ['disabled', 'archived'].includes(item.status) }"
       >
         <div class="grid">
           <!-- AREA DE BOTONES, CAMBIAR -->
