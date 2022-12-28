@@ -22,21 +22,22 @@
         <div class="image2" [style.background]="image2" [ngStyle]="image2Styles"></div>
       </div>
     </div>
-    <div class="footer-container" [style.background]="footerBackground">
+    <div class="footer-container" [ngStyle]="footerStyles">
       <span
         *ngFor="let text of footerTexts"
         class="footerText"
         [style.color]="footerTextColor"
+        [style.size]="footerTextSize"
         >{{ text }}</span
       >
     </div>
-    <button
-      (click)="onClick()"
-      class="btn"
-      [style.color]="btnColor"
-      [style.background]="btnBackground"
-    >
-      {{ btnText }}
-    </button>
   </div>
+  <button
+    (click)="onClick()"
+    class="btn"
+    [style.color]="btnColor"
+    [style.background]="btnBackground"
+  >
+    {{ btnText }}
+  </button>
 </div>
