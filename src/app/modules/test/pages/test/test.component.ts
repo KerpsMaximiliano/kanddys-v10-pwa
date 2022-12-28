@@ -60,7 +60,7 @@ export class TestComponent implements OnInit {
         },
         fields:{
           styles: {
-
+            
           },
           list: [
             {

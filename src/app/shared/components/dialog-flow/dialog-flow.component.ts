@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, Output, ViewChild, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  ViewChild,
+  EventEmitter,
+} from '@angular/core';
 import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
 import { SwiperOptions, Swiper } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
@@ -46,7 +53,15 @@ export class DialogFlowComponent implements OnInit {
       } else {
         this.dialogs[index].inputs.containerStyles.opacity = '1';
       }
+
+      this.dialogs[index].shouldRerender = true;
     });
+
+    setTimeout(() => {
+      allSlides.forEach((slide, index) => {
+        this.dialogs[index].shouldRerender = false;
+      });
+    }, 100);
   }
 
   changeActiveDialog(eventData: Swiper) {
