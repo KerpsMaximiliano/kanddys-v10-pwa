@@ -30,7 +30,7 @@ export class DialogFlowComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.applyTransparencyToSlidesThatArentActive();
-      this.swiperConfig.allowSlideNext = false;
+      // this.swiperConfig.allowSlideNext = false;
       this.saveConfigRef.emit(this.swiperConfig);
     }, 100);
   }
