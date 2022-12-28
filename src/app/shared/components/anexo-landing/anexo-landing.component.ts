@@ -17,10 +17,11 @@ export class AnexoLandingComponent implements OnInit {
     'automatizados',
   ];
   @Input('subHeadlineColor') subHeadlineColor: string = '#ffffff';
-  @Input('image') image: any =
-    'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
-  @Input('image2') image2: any =
-    'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
+  @Input('image') image: any = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
+  @Input('image2') image2: any = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
+  @Input() imageStyles: Record<string, string | number> = null;
+  @Input() image2Styles: Record<string, string | number> = null;
+  
   @Input('footerTexts') footerTexts: string[] = [
     'Cada facturas con las',
     'repsuestas que necesitas',

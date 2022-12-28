@@ -18,8 +18,8 @@
         >
       </h2>
       <div class="images-container">
-        <div class="image" [style.background]="image"></div>
-        <div class="image2" [style.background]="image2"></div>
+        <div class="image" [style.background]="image" [ngStyle]="imageStyles"></div>
+        <div class="image2" [style.background]="image2" [ngStyle]="image2Styles"></div>
       </div>
     </div>
     <div class="footer-container" [style.background]="footerBackground">
