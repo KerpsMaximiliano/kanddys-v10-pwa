@@ -13,6 +13,7 @@
 -->
 <!-- <app-magic-link-dialog></app-magic-link-dialog> 
    <app-short-calendar></app-short-calendar>-->
+<!-- <button (click)="blehblehbleh()">Dialog de prueba</button> -->
 <!-- <button (click)="reloadDialog()">Abrir el dialog</button> -->
 <!-- <app-short-calendar></app-short-calendar>
       <div style="display: flex;
@@ -264,3 +265,58 @@ headline="EXPUESTO EN TAB (S)"
   [dialogs]="dialogs"
   (saveConfigRef)="swiperConfig = $event"
 ></app-dialog-flow>
+
+<app-anexo-landing
+[imageStyles]="{
+    height: '190px',
+    width: '130px',
+    transform: 'rotate(-14deg)',
+    top: '-10px',
+    left: '-20px'
+}"
+[image2Styles]="{
+    height: '210px',
+    transform: 'rotate(2deg)',
+    top: '-10px'
+}"
+[footerStyles]="{
+    position: 'relative',
+    top: '-20px',
+    borderRadius: '10px',
+    width: '190px',
+    background: '#bdbdbd',
+    margin: 'auto'
+}"
+[footerTexts]="[
+    'Aumenta la frecuencia de',
+    'las compras de tus clientes'
+]"
+[footerTextColor]="'#fff'"
+></app-anexo-landing>
+<app-anexo-landing
+[imageStyles]="{
+    height: '170px',
+    transform: 'rotate(-10deg)',
+    top: '-13px',
+    width: '130px'
+}"
+[image2Styles]="{
+    height: '120px',
+    transform: 'rotate(5deg)',
+    zIndex: '2',
+    top: '-10px'
+}"
+[footerStyles]="{
+    position: 'relative',
+    top: '-20px',
+    borderRadius: '10px',
+    width: '180px',
+    background: '#bdbdbd',
+    margin: 'auto'
+}"
+[footerTexts]="[
+    'Respuestas rapidas ahorran',
+    'Ttiempo y venden mas.'
+]"
+[footerTextColor]="'#fff'"
+></app-anexo-landing>

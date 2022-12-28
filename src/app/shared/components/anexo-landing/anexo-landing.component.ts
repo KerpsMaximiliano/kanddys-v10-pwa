@@ -17,15 +17,20 @@ export class AnexoLandingComponent implements OnInit {
     'automatizados',
   ];
   @Input('subHeadlineColor') subHeadlineColor: string = '#ffffff';
-  @Input('image') image: any =
-    'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
-  @Input('image2') image2: any =
-    'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
+  @Input('image') image: any = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
+  @Input('image2') image2: any = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
+  @Input() imageStyles: Record<string, string | number> = null;
+  @Input() image2Styles: Record<string, string | number> = null;
+  @Input() footerStyles: Record<string, string | number> = {
+    background: '#000'
+  };
+  
   @Input('footerTexts') footerTexts: string[] = [
     'Cada facturas con las',
     'repsuestas que necesitas',
     'del comprador.',
   ];
+  @Input('footerTextSize') footerTextSize: string = '16px';
   @Input('btnText') btnText: string = 'Empezar mi base de datos';
   @Input('btnColor') btnColor: string = '#2874ad';
   @Input('btnBackground') btnBackground: string = '#ffffff';

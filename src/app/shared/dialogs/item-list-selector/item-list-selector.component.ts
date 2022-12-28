@@ -6,6 +6,7 @@ import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 export interface Inputs {
   label?: string;
   type: string;
+  innerLabel?: string;
   name: string;
   cols?: number;
   rows?: number;
@@ -53,6 +54,10 @@ export class ItemListSelectorComponent implements OnInit {
         this.form.addControl(input.name, new FormControl());
       });
     }
+  }
+
+  onCurrencyInput(name: string, value: number) {
+    this.form.get(name).patchValue(value);;
   }
 
   selectedOption(e: number) {
