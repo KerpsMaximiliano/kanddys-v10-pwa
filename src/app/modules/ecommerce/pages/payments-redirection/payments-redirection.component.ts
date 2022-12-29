@@ -89,7 +89,7 @@ export class PaymentsRedirectionComponent implements OnInit {
             ) {
               //Cambiar igualdad
 
-              if (hash !== rest['AuthHash'] && this.order.orderStatus !== 'paid') {
+              if (hash === rest['AuthHash'] && this.order.orderStatus !== 'paid') {
                 this.paymentLogService.createPaymentLogAzul({
                   ammount: Number(rest['Amount']) / 100,
                   reason: 'payment',
