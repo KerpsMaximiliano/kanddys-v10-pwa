@@ -258,14 +258,6 @@ headline="EXPUESTO EN TAB (S)"
     ></app-multistep-form>
 -->
 
-<button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
-
-<app-dialog-flow
-  [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
-  [dialogs]="dialogs"
-  (saveConfigRef)="swiperConfig = $event"
-></app-dialog-flow>
-
 <app-anexo-landing
 [textContainer]="{
     position: 'relative',
@@ -283,18 +275,20 @@ headline="EXPUESTO EN TAB (S)"
     color: '#fff'
 }"
 [imageStyles]="{
-    height: '222px',
-    width: '130px',
-    transform: 'rotate(-4deg)',
+    height: '217.84px',
+    width: '136.35px',
+    transform: 'rotate(-2deg)',
     top: '10px',
-    left: '-27px'
+    left: '-27px',
+    zIndex: '3'
 }"
 [image2Styles]="{
-    height: '193px',
-    width: '126px',
-    transform: 'rotate(4deg)',
+    height: '179.27px',
+    width: '112.01px',
+    transform: 'rotate(8deg)',
     top: '51px',
-    left: '93px'
+    left: '93px',
+    zIndex: '1'
 }"
 [footerStyles]="{
     position: 'relative',
@@ -305,7 +299,8 @@ headline="EXPUESTO EN TAB (S)"
     margin: 'auto',
     color: 'rgb(39, 39, 39)',
     fontFamily: 'SfProLight',
-    fontSize: '15px'
+    fontSize: '15px',
+    zIndex: '2'
 }"
 [footerTexts]="[
     'Aumenta la frecuencia de',
@@ -327,16 +322,17 @@ headline="EXPUESTO EN TAB (S)"
     'WhatsApp e Instagram'
 ]"
 [imageStyles]="{
-    height: '170px',
-    transform: 'rotate(-4deg)',
+    height: '173.84px',
+    transform: 'rotate(-2deg)',
     top: '7px',
-    width: '130px',
-    left: '-20px'
+    width: '108.81px',
+    left: '-20px',
+    zIndex: '1'
 }"
 [image2Styles]="{
-    height: '120px',
-    width: '133px',
-    transform: 'rotate(4deg)',
+    height: '124px',
+    width: '127px',
+    transform: 'rotate(3deg)',
     zIndex: '2',
     top: '7px'
 }"
