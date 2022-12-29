@@ -47,16 +47,20 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       inputs: {
         containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
           padding: '10px 20px 10px 12px',
-          background: '#fff',
-          borderRadius: '8px'
+          paddingLeft: '31px',
+          paddingRight: '30.3px',
+          paddingBottom: '34.6px'
         },
         header: {
           styles: {
             fontSize: '22px',
             fontFamily: 'SfProBold',
           },
-          text: 'Quien recibira'
+          text: '¿Quién recibirá?'
         },
         fields:{
           styles: {
@@ -81,46 +85,16 @@ export class TestComponent implements OnInit {
               },
               placeholder: 'Escribe para quien es. Este nombre estara escrito en el sobre.',
               styles:{
+                border: 'none',
+                borderRadius: '20px',
+                boxShadow: 'rgb(228 228 228) 0px 3px 5px 0px inset',
                 display: 'block',
                 fontFamily: 'SfProRegular',
                 fontSize: '17px',
-                padding: '22px 20px',
                 minHeight: '130px',
                 resize: 'none',
                 width: '100%',
-                borderRadius: '20px',
-                border: 'none',
-                boxShadow: '0px 0px 10px 0px #a9a9a9 inset'
-              }
-            },
-            {
-              name: 'tester',
-              value:'',
-              validators: [
-                Validators.required
-              ],
-              type:'textarea',
-              label:{
-                styles:{
-                  display: 'block',
-                  fontSize: '19px',
-                  fontFamily: '"SfProRegular"',
-                  margin: '10px 0px'
-                },
-                text:''
-              },
-              placeholder: 'Escribe para quien es. Este nombre estara escrito en el sobre.',
-              styles:{
-                display: 'block',
-                fontFamily: 'SfProRegular',
-                fontSize: '17px',
-                padding: '22px 20px',
-                minHeight: '130px',
-                resize: 'none',
-                width: '100%',
-                borderRadius: '20px',
-                border: 'none',
-                boxShadow: '0px 0px 10px 0px #a9a9a9 inset'
+                padding: '26px 26.3px 37.6px 16px'
               }
             }
           ]
@@ -140,9 +114,10 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       inputs: {
         containerStyles: {
-          padding: '10px 20px 10px 12px',
-          background: '#fff',
-          borderRadius: '8px'
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '31px 30.3px 30.6px 31px'
         },
         header: {
           styles: {
@@ -174,16 +149,16 @@ export class TestComponent implements OnInit {
               },
               placeholder: 'Este (os) nombres (s) estaran escritos debajo del mensaje.',
               styles:{
+                border: 'none',
+                borderRadius: '20px',
+                boxShadow: 'rgb(169, 169, 169) 0px 0px 10px 0px inset',
                 display: 'block',
                 fontFamily: 'SfProRegular',
                 fontSize: '17px',
-                padding: '22px 20px',
                 minHeight: '130px',
+                padding: '26px 26.3px 56.6px 16px',
                 resize: 'none',
-                width: '100%',
-                borderRadius: '20px',
-                border: 'none',
-                boxShadow: '0px 0px 10px 0px #a9a9a9 inset'
+                width: '100%'
               }
             }
           ]
@@ -194,9 +169,10 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       inputs: {
         containerStyles: {
-          padding: '10px 20px 10px 12px',
-          background: '#fff',
-          borderRadius: '8px'
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '30px 55.6px 23.6px 22px'
         },
         header: {
           styles: {
@@ -207,7 +183,7 @@ export class TestComponent implements OnInit {
         },
         fields:{
           styles: {
-
+            paddingTop: '20px'
           },
           list: [
             {
@@ -240,7 +216,6 @@ export class TestComponent implements OnInit {
                 ],
               },
               styles: {
-                padding: '12px 10px'
               },
               prop: 'text'
             }
@@ -253,14 +228,16 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       inputs: {
         containerStyles: {
-          padding: '10px 20px 10px 12px',
-          background: '#fff',
-          borderRadius: '8px'
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '37.1px 23.6px 31px 29.6px'
         },
         header: {
           styles: {
             fontSize: '22px',
             fontFamily: 'SfProBold',
+            marginBottom: '18px'
           },
           text: 'Que mensaje escribiremos?'
         },
@@ -310,7 +287,7 @@ export class TestComponent implements OnInit {
                   display: 'block',
                   fontSize: '19px',
                   fontFamily: '"SfProRegular"',
-                  margin: '10px 0px'
+                  margin: '9px 0px'
                 },
                 text:'Privado'
               },
@@ -318,15 +295,19 @@ export class TestComponent implements OnInit {
               disclaimer: {
                 text: 'Quien Recibira ID escaneara un qrCode y le llegara el acceso a su Whatsapp',
                 styles: {
-                  
+                  fontFamily: '"SfProLight"',
+                  paddingLeft: '43px',
+                  marginTop: '0px',
+                  color: '#7b7b7b'
                 }
               },
               stylesGrid:{
+                alignItems: 'center',
                 display: 'grid',
-                gap: '14px',
+                gap: '8px',
                 gridTemplateColumns: '1fr 11fr',
-                padding: '10px 5px',
-                alignItems: 'center'
+                padding: '10px 5px 0px',
+                paddingTop: '30.9px'
               },
               styles: {
                 height: '17px'
@@ -348,14 +329,16 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       inputs: {
         containerStyles: {
-          padding: '10px 20px 10px 12px',
-          background: '#fff',
-          borderRadius: '8px'
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '37.1px 23.6px 31px 29.6px'
         },
         header: {
           styles: {
             fontSize: '22px',
             fontFamily: 'SfProBold',
+            marginBottom: '18px'
           },
           text: 'Que mensaje escribiremos?'
         },
@@ -409,15 +392,19 @@ export class TestComponent implements OnInit {
               disclaimer: {
                 text: 'Son como los Stories pero no hay que bajar ningun App.',
                 styles: {
-                  
+                  fontFamily: '"SfProLight"',
+                  paddingLeft: '43px',
+                  marginTop: '0px',
+                  color: '#7b7b7b'
                 }
               },
               stylesGrid:{
+                alignItems: 'center',
                 display: 'grid',
-                gap: '14px',
+                gap: '8px',
                 gridTemplateColumns: '1fr 11fr',
-                padding: '10px 5px',
-                alignItems: 'center'
+                padding: '10px 5px 0px',
+                paddingTop: '30.9px'
               },
               styles: {
                 height: '17px'
