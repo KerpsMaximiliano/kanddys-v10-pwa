@@ -267,56 +267,93 @@ headline="EXPUESTO EN TAB (S)"
 ></app-dialog-flow>
 
 <app-anexo-landing
+[textContainer]="{
+    position: 'relative',
+    top: '5px'
+}"
+[contentStyles]="{
+    background: '#f24940',
+    height: '348px'
+}"
+[headlineStyles]="{
+    fontFamily: 'SfProLight',
+    fontSize: '16px',
+    marginTop: '0px',
+    marginBottom: '0px',
+    color: '#fff'
+}"
 [imageStyles]="{
-    height: '190px',
+    height: '222px',
     width: '130px',
-    transform: 'rotate(-14deg)',
-    top: '-10px',
-    left: '-20px'
+    transform: 'rotate(-4deg)',
+    top: '10px',
+    left: '-27px'
 }"
 [image2Styles]="{
-    height: '210px',
-    transform: 'rotate(2deg)',
-    top: '-10px'
+    height: '193px',
+    width: '126px',
+    transform: 'rotate(4deg)',
+    top: '51px',
+    left: '93px'
 }"
 [footerStyles]="{
     position: 'relative',
-    top: '-20px',
+    top: '37px',
     borderRadius: '10px',
     width: '190px',
-    background: '#bdbdbd',
-    margin: 'auto'
+    background: 'rgb(246, 246, 246)',
+    margin: 'auto',
+    color: 'rgb(39, 39, 39)',
+    fontFamily: 'SfProLight',
+    fontSize: '15px'
 }"
 [footerTexts]="[
     'Aumenta la frecuencia de',
     'las compras de tus clientes'
 ]"
-[footerTextColor]="'#fff'"
 ></app-anexo-landing>
 <app-anexo-landing
+[headlines]="[
+    'Automatiza las ventas del'
+]"
+[headlineStyles]="{
+    fontFamily: 'SfProLight',
+    fontSize: '16px',
+    marginTop: '0px',
+    marginBottom: '0px',
+    color: '#fff'
+}"
+[subHeadlines]="[
+    'WhatsApp e Instagram'
+]"
 [imageStyles]="{
     height: '170px',
-    transform: 'rotate(-10deg)',
-    top: '-13px',
-    width: '130px'
+    transform: 'rotate(-4deg)',
+    top: '7px',
+    width: '130px',
+    left: '-20px'
 }"
 [image2Styles]="{
     height: '120px',
-    transform: 'rotate(5deg)',
+    width: '133px',
+    transform: 'rotate(4deg)',
     zIndex: '2',
-    top: '-10px'
+    top: '7px'
 }"
 [footerStyles]="{
     position: 'relative',
-    top: '-20px',
+    top: '17px',
     borderRadius: '10px',
-    width: '180px',
-    background: '#bdbdbd',
-    margin: 'auto'
+    width: '190px',
+    background: 'rgb(246, 246, 246)',
+    margin: 'auto',
+    color: 'rgb(39, 39, 39)',
+    fontFamily: 'SfProLight',
+    fontSize: '14px',
+    padding: '8px 13px'
 }"
 [footerTexts]="[
     'Respuestas rapidas ahorran',
-    'Ttiempo y venden mas.'
+    'tiempo y venden mas.'
 ]"
-[footerTextColor]="'#fff'"
 ></app-anexo-landing>

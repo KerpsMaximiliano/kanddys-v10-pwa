@@ -1,33 +1,37 @@
 <div class="container">
-  <div class="content" [style.background]="background">
+  <div class="content" [style]="contentStyles">
     <div class="upper">
-      <h1>
-        <span
-          class="headline"
-          *ngFor="let headline of headlines"
-          [style.color]="headlineColor"
-          >{{ headline }}</span
-        >
-      </h1>
-      <h2>
-        <span
-          class="subHeadline"
-          *ngFor="let subHeadline of subHeadlines"
-          [style.color]="subHeadlineColor"
-          >{{ subHeadline }}</span
-        >
-      </h2>
+      <div [style]="textContainer">
+        <h1 [style]="headlineStyles">
+          <span
+            class="headline"
+            *ngFor="let headline of headlines"
+            >{{ headline }}</span
+          >
+        </h1>
+        <h2 [style]="subHeadlineStyles">
+          <span class="subHeadline" *ngFor="let subHeadline of subHeadlines">{{
+            subHeadline
+          }}</span>
+        </h2>
+      </div>
       <div class="images-container">
-        <div class="image" [style.background]="image" [ngStyle]="imageStyles"></div>
-        <div class="image2" [style.background]="image2" [ngStyle]="image2Styles"></div>
+        <div
+          class="image"
+          [style.background]="image"
+          [ngStyle]="imageStyles"
+        ></div>
+        <div
+          class="image2"
+          [style.background]="image2"
+          [ngStyle]="image2Styles"
+        ></div>
       </div>
     </div>
     <div class="footer-container" [ngStyle]="footerStyles">
       <span
         *ngFor="let text of footerTexts"
         class="footerText"
-        [style.color]="footerTextColor"
-        [style.size]="footerTextSize"
         >{{ text }}</span
       >
     </div>

@@ -7,22 +7,41 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./anexo-landing.component.scss'],
 })
 export class AnexoLandingComponent implements OnInit {
-  @Input('background') background: string = '#f24940';
+  @Input('contentStyles') contentStyles: Record<string, string | number> = {
+    background: '#f24940',
+    minHeight: '348px'
+  };
+  @Input('textContainer') textContainer: Record<string, string | number> = {}
   @Input('footerBackground') footerBackground: string = '#272727';
-  @Input('footerTextColor') footerTextColor: string = '#ffffff';
-  @Input('headlines') headlines: string[] = ['WhatsApp en esteroides'];
-  @Input('headlineColor') headlineColor: string = '#ffffff';
+  @Input('headlines') headlines: string[] = ['Asignas el Gol con el'];
+  @Input('headlineStyles') headlineStyles: Record<string, string | number> = {
+    fontFamily: 'SfProLight',
+    fontSize: '16px',
+    color: '#ffffff'
+  };
   @Input('subHeadlines') subHeadlines: string[] = [
-    'Seguimiento',
-    'automatizados',
+    'Programa de Fidelidad',
   ];
-  @Input('subHeadlineColor') subHeadlineColor: string = '#ffffff';
+  @Input('subHeadlineStyles') subHeadlineStyles: Record<string, string | number> = {
+    fontFamily: '"SfProBold"',
+    fontSize: '16px',
+    marginTop: '0px',
+    color: '#fff'
+  };
   @Input('image') image: any = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
   @Input('image2') image2: any = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.png';
   @Input() imageStyles: Record<string, string | number> = null;
   @Input() image2Styles: Record<string, string | number> = null;
   @Input() footerStyles: Record<string, string | number> = {
-    background: '#000'
+    position: 'relative',
+    top: '-20px',
+    borderRadius: '10px',
+    width: '190px',
+    background: '#f6f6f6',
+    margin: 'auto',
+    color: '#272727',
+    fontFamily: 'SfProLight',
+    fontSize: '15px'
   };
   
   @Input('footerTexts') footerTexts: string[] = [
@@ -30,7 +49,6 @@ export class AnexoLandingComponent implements OnInit {
     'repsuestas que necesitas',
     'del comprador.',
   ];
-  @Input('footerTextSize') footerTextSize: string = '16px';
   @Input('btnText') btnText: string = 'Empezar mi base de datos';
   @Input('btnColor') btnColor: string = '#2874ad';
   @Input('btnBackground') btnBackground: string = '#ffffff';
