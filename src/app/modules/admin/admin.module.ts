@@ -17,6 +17,7 @@ import { ArticleParamsComponent } from './pages/article-params/article-params.co
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/anexo-choices.component';
+import { FacturaPreviewComponent } from './pages/factura-preview/factura-preview.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -122,6 +123,10 @@ const routes: Routes = [
         path: 'article-choices',
         component: AnexoChoicesComponent,
       },
+      {
+        path: 'factura-preview',
+        component: FacturaPreviewComponent,
+      },
     ],
   },
 ];
@@ -139,7 +144,7 @@ const routes: Routes = [
     ArticleCreatorComponent,
     ArticleParamsComponent,
     ItemsDashboardComponent,
-    CreateTagComponent,
+    CreateTagComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
