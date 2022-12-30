@@ -144,7 +144,8 @@ const routes: Routes = [
     ArticleCreatorComponent,
     ArticleParamsComponent,
     ItemsDashboardComponent,
-    CreateTagComponent
+    CreateTagComponent,
+    FacturaPreviewComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

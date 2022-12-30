@@ -1,11 +1,38 @@
 <div *ngIf="mode === 'fullImg'">
   <div class="container">
+    <div class="img-container">
+      <swiper
+        [config]="swiperConfig"
+        #mediaSwiper
+        (slideChange)="updateCurrentSlideData($event)"
+      >
+        <ng-container *ngFor="let slide of post.slides">
+          <div class="img-content" [style.background]="slide.media"></div>
+        </ng-container>
+      </swiper>
+    </div>
     <button class="topBtn">Cancelar Mensaje</button>
     <div class="text">
-      <p class="title">Felicidades por tu tesis !!</p>
-      <p class="subtitle">
-        Hace 13 años de esta foto, la recuerdo como si fuera ayer
+      <p class="title" (click)="handleMode()">{{ post.title }}</p>
+      <p class="subtitle" (click)="handleMode()">
+        {{ post.message }}
       </p>
+      <div
+        class="current-media-shown-indicators"
+        [style]="{
+          'grid-template-columns': '' + fractions + ''
+        }"
+      >
+        <ng-container *ngIf="post.slides.length > 0">
+          <div
+            class="indicator"
+            [ngClass]="{
+              active: i === currentMediaSlide
+            }"
+            *ngFor="let slide of post.slides; let i = index"
+          ></div>
+        </ng-container>
+      </div>
     </div>
   </div>
 
@@ -131,7 +158,8 @@
 <!-- ---------------------------GRADIENT & SOLID BACKGROUND MODE ------------------------------ -->
 
 <div *ngIf="mode === 'gradientImg' || mode === 'solidBg'">
-  <div [ngClass]="mode === 'gradientImg' ? 'container2' : 'container3'">
+  <div [ngClass]="mode === 'gradientImg' ? 'container2' : 'container3'"
+  [style.background]="post.slides[0].media">
     <button class="topBtn">Cancelar Mensaje</button>
     <p class="title2">Felicidades por tu tesis !!</p>
     <p class="subtitle2">
@@ -158,11 +186,6 @@
   </div>
 
   <div class="bottom">
-    <div class="l1"></div>
-    <div class="l2"></div>
-    <div class="l3"></div>
-    <div class="l4"></div>
-    <div class="l5"></div>
     <div class="flex">
       <div class="circle">
         <svg
