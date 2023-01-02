@@ -64,6 +64,12 @@ export class DialogFlowComponent implements OnInit {
     }, 100);
   }
 
+  tapEvent(tappedDialogIndex: number) {
+    if(tappedDialogIndex !== this.currentDialogIndex) {
+      this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex)
+    }
+  }
+
   changeActiveDialog(eventData: Swiper) {
     this.currentDialogIndex = eventData.activeIndex;
 
