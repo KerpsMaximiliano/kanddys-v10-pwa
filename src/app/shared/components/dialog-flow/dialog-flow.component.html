@@ -48,6 +48,10 @@
           ></div>
         </div>
 
+        <div class="postLabel" *ngIf="dialog.postLabel && (currentDialogIndex !== dialogIndex)">{{
+          dialog.postLabel
+        }}</div>
+
         <app-dynamic-component
           [component]="dialog.component"
           [componentInputs]="dialog.inputs"
