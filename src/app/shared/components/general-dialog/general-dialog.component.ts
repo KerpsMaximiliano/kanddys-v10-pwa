@@ -6,8 +6,15 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { Subscription } from 'rxjs';
+
+enum FormType {
+  text='text',
+  checkbox='checkbox',
+  area='area',
+  selection='selection'
+}
 
 @Component({
   selector: 'app-general-dialog',
@@ -15,9 +22,46 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./general-dialog.component.scss'],
 })
 export class GeneralDialogComponent implements OnInit, OnDestroy {
-  @Input('containerStyles') containerStyles: any;
-  @Input('header') header: any = {};
-  @Input('fields') fields: any = {};
+  @Input('containerStyles') containerStyles: Record<string, string>;
+  @Input('header') header: {
+    styles?: Record<string, string>,
+    text?: string
+  } = {};
+  @Input('fields') fields: {
+    styles?: Record<string, string>,
+    list?: Array<{
+      type: FormType,
+      stylesGrid: Record<string, string>,
+      placeholder: string,
+      styles: Record<string, string>,
+      name: string,
+      label: {
+        styles: Record<string, string>,
+        text: string
+      },
+      disclaimer: {
+        styles: Record<string, string>,
+        text: string
+      },
+      selection: {
+        selection: {
+          ['prop']: string
+        },
+        styles: Record<string, string>,
+        list: Array<{
+          text: string,
+          subText: {
+            text: string,
+            styles: Record<string, string>
+          },
+          styles: Record<string, string>,
+        }>
+      },
+      prop: string,
+      value: any,
+      validators: ValidatorFn[]
+    }>
+  } = {};
   @Input('isMultiple') isMultiple: boolean = false;
   @Output('data') data: EventEmitter<any> = new EventEmitter();
   selected: string[] = [];
