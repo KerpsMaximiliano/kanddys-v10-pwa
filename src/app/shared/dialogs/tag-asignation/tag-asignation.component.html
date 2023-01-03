@@ -42,7 +42,7 @@
     <img class="icon" src="{{ env }}/save.png" alt="" />
     <span *ngIf="text" class="save-text">{{ text }}</span>
   </button> -->
-  <div class="return-section">
+  <div class="return-section" (click)="close()">
     <button class="bottom-button">
       <i class="fas fa-chevron-down"></i>
       <i class="fas fa-chevron-down" style="top: 12px"></i>

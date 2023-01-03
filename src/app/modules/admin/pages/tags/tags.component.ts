@@ -1240,7 +1240,7 @@ export class TagsComponent implements OnInit {
 
     switch (type) {
       case 'MOST_RECENT':
-        sortCriteria = 'index:desc';
+        sortCriteria = 'createdAt:desc';
         this.headerText = 'Tags recientes';
         break;
       case 'MOST_ASSIGNED':
