@@ -19,6 +19,7 @@ import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/anexo-choices.component';
 import { FacturaPreviewComponent } from './pages/factura-preview/factura-preview.component';
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
+import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -132,6 +133,10 @@ const routes: Routes = [
         path: 'post-edition',
         component: PostEditionComponent,
       },
+      {
+        path: 'bios-edit',
+        component: BiosEditComponent,
+      },
     ],
   },
 ];
@@ -152,6 +157,7 @@ const routes: Routes = [
     CreateTagComponent,
     FacturaPreviewComponent,
     PostEditionComponent,
+    BiosEditComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
