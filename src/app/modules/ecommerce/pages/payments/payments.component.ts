@@ -1,20 +1,30 @@
 import { LocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Integration } from 'src/app/core/models/integration';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
 import { Post } from 'src/app/core/models/post';
 import { User } from 'src/app/core/models/user';
+import { ViewsMerchant } from 'src/app/core/models/views-merchant';
 import { Bank } from 'src/app/core/models/wallet';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { IntegrationsService } from 'src/app/core/services/integrations.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
+import {
+  OptionAnswerSelector,
+  WebformAnswerLayoutOption,
+  webformAnswerLayoutOptionDefaultStyles,
+} from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ConfirmActionDialogComponent } from 'src/app/shared/dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { environment } from 'src/environments/environment';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-payments',
@@ -37,6 +47,166 @@ export class PaymentsComponent implements OnInit {
   depositAmount: number;
   post: Post;
   currentUser: User;
+  acceptedRefundPolicies: boolean = false;
+  onlinePaymentsOptions: WebformAnswerLayoutOption[] = [
+    {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      optionIcon: 'azul',
+      callback: () => this.selectOnlinePayment(0),
+      texts: {
+        topRight: {
+          text: '',
+          styles: {
+            color: '#7B7B7B',
+          },
+        },
+        topLeft: {
+          text: 'Tarjeta de crédito',
+          styles: {
+            paddingBottom: '8px',
+          },
+        },
+        middleTexts: [
+          {
+            text: 'ID',
+            styles: {
+              display: 'none',
+            },
+          },
+          {
+            text: 'ID',
+            styles: {
+              display: 'none',
+            },
+          },
+        ],
+        bottomLeft: {
+          text: 'ID',
+          styles: {
+            paddingTop: '8px',
+            fontFamily: 'SfProBold',
+            display: 'none',
+          },
+        },
+      },
+      logos: [
+        {
+          src: 'https://cdn.visa.com/v2/assets/images/logos/visa/blue/logo.png',
+          width: '55px',
+          height: '18px',
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mastercard.svg',
+          width: '50px',
+          height: '46px',
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/Amex_logo_color.png',
+          width: '50px',
+          height: '46px',
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/discover_logo.jpg',
+          width: '68px',
+          height: '34px',
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/DCI_logo_all_black.svg',
+          width: '100px',
+          height: '25px',
+        },
+
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/visa-secure_blu_2021.png',
+          width: '45px',
+          height: '45px',
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mc_idcheck_hrz_rgb_pos.png',
+          width: '200px',
+          height: '50px',
+        },
+      ],
+    },
+    /*   {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      optionIcon: 'stripe',
+      callback: () => this.selectOnlinePayment(0),
+      texts: {
+        topRight: {
+          text: '',
+          styles: {
+            color: '#7B7B7B',
+            display: 'none',
+          },
+        },
+        topLeft: {
+          text: 'Stripe',
+          styles: {
+            paddingBottom: '8px',
+            width: '100%',
+          },
+        },
+        middleTexts: [
+          {
+            text: 'ID',
+          },
+          {
+            text: 'ID',
+          },
+        ],
+        bottomLeft: {
+          text: 'ID',
+          styles: {
+            paddingTop: '8px',
+            fontFamily: 'SfProBold',
+          },
+        },
+      },
+    },
+    {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      optionIcon: 'paypal',
+      callback: () => this.selectOnlinePayment(1),
+      texts: {
+        topRight: {
+          text: '',
+          styles: {
+            color: '#7B7B7B',
+          },
+        },
+        topLeft: {
+          text: 'Paypal',
+          styles: {
+            paddingBottom: '8px',
+          },
+        },
+        middleTexts: [
+          {
+            text: 'ID',
+          },
+          {
+            text: 'ID',
+          },
+        ],
+        bottomLeft: {
+          text: 'ID',
+          styles: {
+            paddingTop: '8px',
+            fontFamily: 'SfProBold',
+          },
+        },
+      },
+    },*/
+  ];
+  viewMerchantForRefund: ViewsMerchant = null;
+  azulPaymentsSupported: boolean = false;
 
   constructor(
     private walletService: WalletService,
@@ -47,7 +217,9 @@ export class PaymentsComponent implements OnInit {
     private merchantService: MerchantsService,
     public headerService: HeaderService,
     private location: LocationStrategy,
-    private dialogService: DialogService
+    private integrationService: IntegrationsService,
+    private dialogService: DialogService,
+    private toastrService: ToastrService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -58,6 +230,9 @@ export class PaymentsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.status = 'loading';
     const orderId = this.route.snapshot.paramMap.get('orderId');
+    const redirectToAzulPaymentsPage = Boolean(
+      this.route.snapshot.queryParamMap.get('redirectToAzul')
+    );
     if (orderId) {
       const { orderStatus } = await this.orderService.getOrderStatus(orderId);
       if (orderStatus === 'draft')
@@ -91,17 +266,43 @@ export class PaymentsComponent implements OnInit {
         ).post;
       }
     }
-    this.banks = (
-      await this.walletService.exchangeData(
-        this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      )
-    )?.ExchangeData?.bank;
+    const exchangeData = await this.walletService.exchangeData(
+      this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+    );
+
+    this.banks = exchangeData?.ExchangeData?.bank;
+
     const registeredUser = JSON.parse(
       localStorage.getItem('registered-user')
     ) as User;
     this.currentUser =
       this.order?.user || this.headerService.user || registeredUser;
     this.status = 'complete';
+
+    const viewsMerchants = await this.merchantService.viewsMerchants({
+      findBy: {
+        merchant: this.headerService.saleflow.merchant._id,
+        type: 'refund',
+      },
+    });
+
+    if (viewsMerchants && viewsMerchants.length > 0) {
+      this.viewMerchantForRefund = viewsMerchants[0];
+    }
+
+    this.azulPaymentsSupported =
+      await this.integrationService.integrationPaymentMethod(
+        'azul',
+        this.headerService.saleflow.merchant._id
+      );
+
+    if (!this.azulPaymentsSupported) {
+      this.onlinePaymentsOptions.pop();
+    }
+
+    if (redirectToAzulPaymentsPage) {
+      this.redirectToAzulPaymentPage();
+    }
   }
 
   onFileInput(file: File | { image: File; index: number }) {
@@ -186,6 +387,133 @@ export class PaymentsComponent implements OnInit {
     ).authOrder;
   }
 
+  async selectOnlinePayment(paymentIndex: number) {
+    const paymentOptionName =
+      this.onlinePaymentsOptions[paymentIndex].texts.topLeft.text;
+
+    if (paymentOptionName === 'Stripe') {
+      if (this.currentUser) {
+        const result = await this.walletService.payOrderWithStripe(
+          this.order._id
+        );
+
+        if (result) {
+          localStorage.setItem('stripe_checkout_session_id', result.id);
+          localStorage.setItem('stripe-payed-orderId', this.order._id);
+          window.location.href = result.url;
+        }
+      } else {
+        this.router.navigate([`/auth/login`], {
+          queryParams: {
+            orderId: this.order._id,
+            onlinePayment: 'payment-with-stripe',
+          },
+        });
+      }
+    } else if (paymentOptionName === 'Paypal') {
+      if (this.currentUser) {
+        const result = await this.walletService.payOrderWithElectronicPayments(
+          'paypal',
+          this.order._id
+        );
+
+        if (result) {
+          window.location.href = result;
+        }
+      } else {
+        this.router.navigate([`/auth/login`], {
+          queryParams: {
+            orderId: this.order._id,
+            onlinePayment: 'payment-with-stripe',
+          },
+        });
+      }
+    } else if (paymentOptionName === 'Tarjeta de crédito') {
+      if (this.currentUser) this.redirectToAzulPaymentPage();
+      else {
+        this.router.navigate(['auth/login'], {
+          queryParams: {
+            orderId: this.order._id,
+            auth: 'payment',
+            paymentWithAzul: true,
+            redirect:
+              window.location.href.split('/').slice(3).join('/') +
+              '?redirectToAzul=true',
+          },
+        });
+      }
+    }
+  }
+
+  redirectToAzulPaymentPage() {
+    this.toastrService.info('Redigiendo a la página de pago', null, {
+      timeOut: 1500,
+    });
+    
+    lockUI();
+
+ 
+
+    const clientURI = `${environment.uri}`;
+
+    const requestData: any = {
+      MerchantName: "D'liciantus",
+      MerchantID: this.headerService.saleflow.merchant._id,
+      MerchantType: 'Importadores y productores de flores y follajes',
+      CurrencyCode: '$',
+      OrderNumber: this.order._id,
+      //OrderNumber: formatID(this.order.dateId),
+      Amount: this.paymentAmount.toFixed(2).toString().replace('.', ''),
+      ITBIS: (this.paymentAmount * 0.18).toFixed(2).toString().replace('.', ''),
+      ApprovedUrl:
+        clientURI +
+        '/ecommerce/' +
+        this.headerService.saleflow._id +
+        '/payments-redirection?typeOfPayment=azul&success=true',
+      DeclinedUrl:
+        clientURI +
+        '/ecommerce/' +
+        this.headerService.saleflow._id +
+        '/payments-redirection?typeOfPayment=azul&success=false',
+      CancelUrl:
+        clientURI +
+        '/ecommerce/' +
+        this.headerService.saleflow._id +
+        '/payments-redirection?typeOfPayment=azul&cancel=true&orderId=' +
+        this.order._id,
+      UseCustomField1: '0',
+      CustomField1Label: 'Label1',
+      CustomField1Value: 'Custom1',
+      UseCustomField2: '0',
+      CustomField2Label: 'Label2',
+      CustomField2Value: 'Custom2',
+    };
+
+    const form = document.querySelector('#azulForm') as HTMLFormElement;
+
+    for (const key in requestData) {
+      document.querySelector('#' + key).setAttribute('value', requestData[key]);
+    }
+
+    fetch(`${environment.api.url}/azul/calculate-auth-hash`, {
+      method: 'POST',
+      headers: {
+        'App-Key': `${environment.api.key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        document.querySelector('#AuthHash').setAttribute('value', data.hash);
+        document
+          .querySelector('#MerchantID')
+          .setAttribute('value', data.azulMerchantID);
+
+        form.submit();
+      });
+  }
+
   onBackClick() {
     this.dialogService.open(ConfirmActionDialogComponent, {
       type: 'fullscreen-translucent',
@@ -216,5 +544,28 @@ export class PaymentsComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  markOrUnmarkCheckbox() {
+    this.acceptedRefundPolicies = !this.acceptedRefundPolicies;
+  }
+
+  fillIndexesUpTo(arrayLength: number) {
+    const array = [];
+
+    for (let i = 0; i < arrayLength; i++) {
+      array.push(i);
+    }
+
+    return array;
+  }
+
+  goToRefundPolicies() {
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
+    this.router.navigate([
+      '/ecommerce/terms-of-use/' + this.viewMerchantForRefund._id,
+    ]);
   }
 }

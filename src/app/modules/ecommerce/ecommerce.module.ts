@@ -20,10 +20,12 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { StoreComponent } from './pages/store/store.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { AppointmentsModule } from '../appointments/appointments.module';
+import { PaymentsRedirectionComponent } from './pages/payments-redirection/payments-redirection.component';
 import { ArticleAccessComponent } from './pages/article-access/article-access.component';
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
+import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 
 const routes: Routes = [
   {
@@ -66,6 +68,10 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'terms-of-use/:viewsMerchantId',
+    component: TermsOfUseComponent,
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -102,6 +108,14 @@ const routes: Routes = [
       {
         path: 'article-detail/:entity/:entityId',
         component: ArticleDetailComponent,
+      },
+      {
+        path: 'order-info/:id',
+        component: OrderDetailComponent,
+      },
+      {
+        path: 'payments-redirection',
+        component: PaymentsRedirectionComponent,
       },
       {
         path: 'new-address',
@@ -156,9 +170,11 @@ const routes: Routes = [
     CheckoutComponent,
     PaymentsComponent,
     ReservationsComponent,
+    PaymentsRedirectionComponent,
     ArticleAccessComponent,
     ArticleDetailComponent,
-    CreateArticleComponent
+    CreateArticleComponent,
+    TermsOfUseComponent
   ],
   imports: [
     CommonModule,
