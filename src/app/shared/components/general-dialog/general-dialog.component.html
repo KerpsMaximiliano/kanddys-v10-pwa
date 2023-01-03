@@ -1,5 +1,6 @@
 <div [style]="containerStyles">
   <h1 [style]="header.styles">{{ header.text }}</h1>
+  <p [style]="title.styles">{{ title.text }}</p>
   <form [formGroup]="controller" [style]="fields.styles">
     <ng-container *ngFor="let field of fields.list">
       <ng-container [ngSwitch]="field.type">
@@ -35,6 +36,9 @@
                 <span [style]="field.selection.styles">{{ item.text }}</span>
                 <span *ngIf="item.subText" [style]="item.subText.styles">{{
                   item.subText.text
+                }}</span>
+                <span *ngIf="item.subText" [style]="item.subText.styles">{{
+                  item.subText.text2
                 }}</span>
               </div>
             </div>

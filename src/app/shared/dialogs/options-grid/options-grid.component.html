@@ -1,0 +1,27 @@
+<div class="container" *ngIf="mode === 'default'">
+  <h2 class="title">{{ title }}</h2>
+  <div class="cards">
+    <div
+      class="card"
+      [ngClass]="
+        item.length <= 8
+          ? 'card third'
+          : item.length > 8 && item.length <= 17
+          ? 'card mid'
+          : 'card full'
+      "
+      *ngFor="let item of words; index as i"
+    >
+      <span>{{ item }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="container" *ngIf="mode === 'time'">
+  <h2 class="title">{{ title }}</h2>
+  <div class="cards">
+    <div class="card2" *ngFor="let item of words; index as i">
+      <span>{{ item }}</span>
+    </div>
+  </div>
+</div>

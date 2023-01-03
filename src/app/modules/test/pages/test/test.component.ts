@@ -42,64 +42,123 @@ export class TestComponent implements OnInit {
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
+
+  title = '¿Cuál(es) seria el motivo?';
+  title2 = '¿Que emoción(es) quieres transmitir con el mensaje?';
+  title3 = '¿El tiempo del motivo?';
+
+  words = [
+    'Bodas',
+    'Bautizos',
+    'Navidad',
+    'Madres',
+    'Padres',
+    'New Born',
+    'Cumpleaños',
+    'Aniversarios',
+    'Condolencias',
+    'Boda de Oro',
+    'San Valentín',
+    'Boda de Plata',
+    'Comuniones',
+    'Día del Maestro',
+    'Promoción',
+    'Día de la Madre',
+    'Dia del Trabajador',
+    'Graduación',
+    'Dia de Santo',
+    'Día de la madre Soltera',
+    'Día de la Madrina',
+    'Mostrar Afecto',
+  ];
+
+  words2 = [
+    'Alegría',
+    'Tristeza',
+    'Euforia',
+    'Sorpresa',
+    'Amor',
+    'Sutil',
+    'Melancolía',
+    'Preocupación',
+    'Gratitud',
+    'Pasión',
+    'Apoyo',
+    'Esperanza',
+    'Satisfacción',
+    'Aceptación',
+    'Curiosidad',
+    'Devoción',
+    'Orgullo',
+    'Paz',
+    'Compasión',
+    'Vergüenza',
+    'Optimismo',
+    'Resentimiento',
+  ];
+
+  words3 = ['Ya pasó', 'Pasará', 'Es cuando reciba el mensaje'];
+
   dialogs: Array<EmbeddedComponent> = [
     {
       component: GeneralDialogComponent,
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
+          borderRadius: '12px',
           opacity: '1',
-          padding: '10px 20px 10px 12px',
+          padding: '37px 20px 38.5px 12px',
           paddingLeft: '31px',
           paddingRight: '30.3px',
-          paddingBottom: '34.6px'
+          paddingBottom: '34.6px',
         },
         header: {
           styles: {
-            fontSize: '22px',
+            fontSize: '23px',
             fontFamily: 'SfProBold',
+            color: '#4F4F4F',
+            marginTop: '0px',
+            marginBottom: '18.5px',
           },
-          text: '¿Quién recibirá?'
+          text: '¿Quién recibirá?',
         },
-        fields:{
-          styles: {
-            
-          },
+        fields: {
+          styles: {},
           list: [
             {
               name: 'test',
-              value:'',
-              validators: [
-                Validators.required
-              ],
-              type:'textarea',
-              label:{
-                styles:{
+              value: '',
+              validators: [Validators.required],
+              type: 'textarea',
+              label: {
+                styles: {
                   display: 'block',
-                  fontSize: '19px',
-                  fontFamily: '"SfProRegular"',
-                  margin: '10px 0px'
+                  fontSize: '17px',
+                  fontFamily: '"SFProRegular"',
+                  // color: '#A1A1A1',
+                  margin: '10px 0px',
                 },
-                text:''
+                text: '',
               },
-              placeholder: 'Escribe para quien es. Este nombre estara escrito en el sobre.',
-              styles:{
+              placeholder:
+                'Escribe para quien es. Este nombre estara escrito en el sobre.',
+              styles: {
                 border: 'none',
-                borderRadius: '20px',
-                boxShadow: 'rgb(228 228 228) 0px 3px 5px 0px inset',
+                borderRadius: '9px',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
                 display: 'block',
-                fontFamily: 'SfProRegular',
+                fontFamily: 'RobotoMedium',
                 fontSize: '17px',
                 minHeight: '130px',
                 resize: 'none',
                 width: '100%',
-                padding: '26px 26.3px 37.6px 16px'
-              }
-            }
-          ]
+                padding: '22px 26.3px 105.6px 16px',
+                color: '#A1A1A1',
+              },
+            },
+          ],
         },
-        isMultiple: true
+        isMultiple: true,
       },
       outputs: [
         {
@@ -115,53 +174,54 @@ export class TestComponent implements OnInit {
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
+          borderRadius: '12px',
           opacity: '1',
-          padding: '31px 30.3px 30.6px 31px'
+          padding: '37px 20px 38.5px 12px',
+          paddingLeft: '31px',
+          paddingRight: '30.3px',
+          paddingBottom: '34.6px',
         },
         header: {
           styles: {
             fontSize: '22px',
             fontFamily: 'SfProBold',
           },
-          text: 'Departe de quien o quienes?'
+          text: 'Departe de quien o quienes?',
         },
-        fields:{
-          styles: {
-
-          },
+        fields: {
+          styles: {},
           list: [
             {
               name: 'test2',
-              value:'',
-              validators: [
-                Validators.required
-              ],
-              type:'textarea',
-              label:{
-                styles:{
+              value: '',
+              validators: [Validators.required],
+              type: 'textarea',
+              label: {
+                styles: {
                   display: 'block',
                   fontSize: '19px',
                   fontFamily: '"SfProRegular"',
-                  margin: '10px 0px'
+                  margin: '10px 0px',
                 },
-                text:''
+                text: '',
               },
-              placeholder: 'Este (os) nombres (s) estaran escritos debajo del mensaje.',
-              styles:{
+              placeholder:
+                'Este (os) nombres (s) estaran escritos debajo del mensaje.',
+              styles: {
                 border: 'none',
-                borderRadius: '20px',
-                boxShadow: 'rgb(169, 169, 169) 0px 0px 10px 0px inset',
+                borderRadius: '9px',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
                 display: 'block',
-                fontFamily: 'SfProRegular',
+                fontFamily: 'RobotoMedium',
                 fontSize: '17px',
                 minHeight: '130px',
-                padding: '26px 26.3px 56.6px 16px',
                 resize: 'none',
-                width: '100%'
-              }
-            }
-          ]
+                width: '100%',
+                padding: '26px 26.3px 56.6px 16px',
+                color: '#A1A1A1',
+              },
+            },
+          ],
         },
       },
     },
@@ -172,54 +232,54 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '8px',
           opacity: '1',
-          padding: '30px 55.6px 23.6px 22px'
+          padding: '37px 55.6px 23.6px 22px',
         },
         header: {
           styles: {
-            fontSize: '22px',
+            fontSize: '21px',
             fontFamily: 'SfProBold',
+            color: '#4F4F4F',
+            margin: '0',
           },
-          text: 'El mensaje'
+          text: 'El mensaje',
         },
-        fields:{
+        fields: {
           styles: {
-            paddingTop: '20px'
+            paddingTop: '20px',
           },
           list: [
             {
               name: 'test3',
-              value:'',
-              validators: [
-                Validators.required
-              ],
-              type:'selection',
-              selection:{
+              value: '',
+              validators: [Validators.required],
+              type: 'selection',
+              selection: {
                 styles: {
                   display: 'block',
-                  fontFamily: '"SfProRegular"'
+                  fontFamily: '"SfProRegular"',
                 },
-                list:[
+                list: [
                   {
-                    text:'Quiero ver el draft de opciones de inteligencia artificial',
+                    text: 'Quiero ver el draft de opciones de inteligencia artificial',
                     subText: {
                       text: 'TRY IT. FREE.HOT FEATURE',
                       styles: {
                         color: '#91812f',
                         display: 'block',
-                        fontFamily: '"SfProBold"'
-                      }
-                    }
+                        fontFamily: '"SfProBold"',
+                        fontSize: '13px',
+                      },
+                    },
                   },
                   {
-                    text:'Lo escribire directo de mi cabeza.'
-                  }
+                    text: 'Lo escribire directo de mi cabeza.',
+                  },
                 ],
               },
-              styles: {
-              },
-              prop: 'text'
-            }
-          ]
+              // styles: {},
+              prop: 'text',
+            },
+          ],
         },
         isMultiple: true,
       },
@@ -231,65 +291,69 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '8px',
           opacity: '1',
-          padding: '37.1px 23.6px 31px 29.6px'
+          padding: '37.1px 31px 30px 31px',
         },
         header: {
           styles: {
-            fontSize: '22px',
+            fontSize: '23px',
             fontFamily: 'SfProBold',
-            marginBottom: '18px'
+            marginBottom: '12.5px',
+            marginTop: '0',
           },
-          text: 'Que mensaje escribiremos?'
+          text: 'Que mensaje escribiremos?',
         },
-        fields:{
-          styles: {
-
-          },
+        fields: {
+          styles: {},
           list: [
             {
               name: 'test4',
-              value:'',
-              validators: [
-                Validators.required
-              ],
-              type:'textarea',
-              label:{
-                styles:{
+              value: '',
+              validators: [Validators.required],
+              type: 'textarea',
+              label: {
+                styles: {
+                  border: 'none',
+                  borderRadius: '9px',
+                  boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
                   display: 'block',
-                  fontSize: '19px',
-                  fontFamily: '"SfProRegular"',
-                  margin: '10px 0px'
+                  fontFamily: 'RobotoMedium',
+                  fontSize: '17px',
+                  minHeight: '130px',
+                  resize: 'none',
+                  width: '100%',
+                  padding: '26px 26.3px 56.6px 16px',
+                  color: '#A1A1A1',
                 },
-                text:''
+                text: '',
               },
-              placeholder: 'Escribe para quien es. Este nombre estara escrito en el sobre.',
-              styles:{
+              placeholder: 'Escribe...',
+              styles: {
+                border: 'none',
+                borderRadius: '9px',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
                 display: 'block',
-                fontFamily: 'SfProRegular',
+                fontFamily: 'RobotoMedium',
                 fontSize: '17px',
-                padding: '22px 20px',
                 minHeight: '130px',
                 resize: 'none',
                 width: '100%',
-                borderRadius: '20px',
-                border: 'none',
-                boxShadow: '0px 0px 10px 0px #a9a9a9 inset'
-              }
+                padding: '26px 26.3px 56.6px 16px',
+                color: '#A1A1A1',
+              },
             },
             {
               name: 'test5',
-              value:'',
-              validators: [
-              ],
-              type:'checkbox',
-              label:{
-                styles:{
+              value: '',
+              validators: [],
+              type: 'checkbox',
+              label: {
+                styles: {
                   display: 'block',
-                  fontSize: '19px',
-                  fontFamily: '"SfProRegular"',
-                  margin: '9px 0px'
+                  fontSize: '20px',
+                  fontFamily: '"RobotoMedium"',
+                  margin: '9px 0px',
                 },
-                text:'Privado'
+                text: 'Privado',
               },
               placeholder: 'tester',
               disclaimer: {
@@ -298,22 +362,22 @@ export class TestComponent implements OnInit {
                   fontFamily: '"SfProLight"',
                   paddingLeft: '43px',
                   marginTop: '0px',
-                  color: '#7b7b7b'
-                }
+                  color: '#7b7b7b',
+                  fontStyle: 'italic',
+                },
               },
-              stylesGrid:{
+              stylesGrid: {
                 alignItems: 'center',
                 display: 'grid',
                 gap: '8px',
                 gridTemplateColumns: '1fr 11fr',
-                padding: '10px 5px 0px',
-                paddingTop: '30.9px'
+                padding: '30px 5px 0px',
               },
               styles: {
-                height: '17px'
-              }
-            }
-          ]
+                height: '17px',
+              },
+            },
+          ],
         },
       },
       outputs: [
@@ -332,85 +396,81 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '8px',
           opacity: '1',
-          padding: '37.1px 23.6px 31px 29.6px'
+          padding: '37.1px 23.6px 56.6px 31px',
         },
         header: {
           styles: {
             fontSize: '22px',
             fontFamily: 'SfProBold',
-            marginBottom: '18px'
+            marginBottom: '12.5px',
+            marginTop: '0',
           },
-          text: 'Que mensaje escribiremos?'
+          text: 'Cual es el Whatsapp de QuienRecibiraID?',
         },
-        fields:{
-          styles: {
-
-          },
+        fields: {
+          styles: {},
           list: [
             {
               name: 'test6',
-              value:'',
-              validators: [
-                Validators.required
-              ],
-              type:'text',
-              label:{
-                styles:{
+              value: '',
+              validators: [Validators.required],
+              type: 'text',
+              label: {
+                styles: {
                   display: 'block',
-                  fontSize: '19px',
-                  fontFamily: '"SfProRegular"',
-                  margin: '10px 0px'
+                  fontSize: '17px',
+                  fontFamily: '"RobotoMedium"',
+                  margin: '10px 0px',
                 },
-                text:'Cual es el Whatsapp de QuienRecibiraID?'
+                text: '',
               },
-              placeholder: 'Escribe..',
+              placeholder: 'Escribe...',
               styles: {
                 width: '100%',
-                padding: '20px 20px',
+                padding: '26px 16px 16px',
                 border: 'none',
-                boxShadow: '0px 4px 10px 0px #bfbfbf inset',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
                 borderRadius: '10px',
-                fontFamily: '"SfProRegular"'
-              }
+                fontFamily: '"RobotoMedium"',
+              },
             },
-            {
-              name: 'test7',
-              value:'',
-              validators: [
-              ],
-              type:'checkbox',
-              label:{
-                styles:{
-                  display: 'block',
-                  fontSize: '19px',
-                  fontFamily: '"SfProRegular"',
-                  margin: '10px 0px'
-                },
-                text:'Quiero incluir fotos, videos, musica.'
-              },
-              placeholder: 'tester',
-              disclaimer: {
-                text: 'Son como los Stories pero no hay que bajar ningun App.',
-                styles: {
-                  fontFamily: '"SfProLight"',
-                  paddingLeft: '43px',
-                  marginTop: '0px',
-                  color: '#7b7b7b'
-                }
-              },
-              stylesGrid:{
-                alignItems: 'center',
-                display: 'grid',
-                gap: '8px',
-                gridTemplateColumns: '1fr 11fr',
-                padding: '10px 5px 0px',
-                paddingTop: '30.9px'
-              },
-              styles: {
-                height: '17px'
-              }
-            }
-          ]
+            // {
+            //   name: 'test7',
+            //   value: '',
+            //   validators: [],
+            //   type: 'checkbox',
+            //   label: {
+            //     styles: {
+            //       display: 'block',
+            //       fontSize: '19px',
+            //       fontFamily: '"SfProRegular"',
+            //       margin: '10px 0px',
+            //     },
+            //     text: 'Quiero incluir fotos, videos, musica.',
+            //   },
+            //   placeholder: 'tester',
+            //   disclaimer: {
+            //     text: 'Son como los Stories pero no hay que bajar ningun App.',
+            //     styles: {
+            //       fontFamily: '"SfProLight"',
+            //       paddingLeft: '43px',
+            //       marginTop: '0px',
+            //       color: '#7b7b7b',
+            //     },
+            //   },
+            //   stylesGrid: {
+            //     alignItems: 'center',
+            //     display: 'grid',
+            //     gap: '8px',
+            //     gridTemplateColumns: '1fr 11fr',
+            //     padding: '10px 5px 0px',
+            //     paddingTop: '30.9px',
+            //   },
+            //   styles: {
+            //     height: '17px',
+            //   },
+            // },
+          ],
         },
       },
       outputs: [
@@ -422,8 +482,191 @@ export class TestComponent implements OnInit {
         },
       ],
     },
-  ];
+    {
+      component: GeneralDialogComponent,
+      inputs: {
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '37px 36.6px 25px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '21px',
+            fontFamily: 'SfProBold',
+            marginBottom: '12.5px',
+            marginTop: '0',
+            color: '#FC2727',
+          },
+          text: '¿Quieres  agregar algo más?',
+        },
+        fields: {
+          list: [
+            // {
+            //   name: 'test9',
+            //   value: '',
+            //   validators: [Validators.required],
+            //   type: 'text',
+            //   label: {
+            //     styles: {
+            //       display: 'block',
+            //       fontSize: '15px',
+            //       fontFamily: '"SFProLight"',
+            //       margin: '0',
+            //       color: '#7B7B7B',
+            //     },
+            //     text: 'Es privado. Opcional: te notifican al escanearlo.',
+            //   },
+            // },
 
+            {
+              name: 'test8',
+              value: '',
+              validators: [Validators.required],
+              type: 'selection',
+              selection: {
+                styles: {
+                  display: 'block',
+                  fontFamily: '"SfProBold"',
+                  fontSize: '17px',
+                  color: '#272727',
+                },
+                list: [
+                  {
+                    text: 'Si',
+                    subText: {
+                      text: 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.',
+                      text2: 'No hay que bajar ningún app',
+                      styles: {
+                        color: '#7B7B7B',
+                        display: 'block',
+                        fontFamily: '"SfProRegular"',
+                        fontStyle: 'italic',
+                        fontSize: '15px',
+                        marginBottom: '15px',
+                        marginTop: '5px',
+                        paddingRight: '15px',
+                      },
+                    },
+                  },
+                  {
+                    text: 'Si, el Giftcard de los Spas',
+                    subText: {
+                      text: 'Válido en mas de 40 Spas de Santo Domingo.',
+                      styles: {
+                        color: '#7B7B7B',
+                        display: 'block',
+                        fontFamily: '"SfProRegular"',
+                        fontStyle: 'italic',
+                        fontSize: '15px',
+                        marginBottom: '15px',
+                        marginTop: '5px',
+                        paddingRight: '50px',
+                      },
+                    },
+                  },
+                ],
+              },
+              // styles: {},
+              prop: 'text',
+            },
+          ],
+        },
+        isMultiple: true,
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: GeneralDialogComponent,
+      inputs: {
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '37px 36.6px 70.4px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '21px',
+            fontFamily: 'SfProBold',
+            marginBottom: '6px',
+            marginTop: '0',
+            color: '#4F4F4F',
+          },
+          text: '¿Quieres  agregar un QR?',
+        },
+        title: {
+          styles: {
+            fontSize: '15px',
+            color: '#7B7B7B',
+            fontStyle: 'italic',
+            margin: '0',
+            marginBottom: '37.5px',
+          },
+          text: 'Es privado. Opcional: te notifican al escanearlo.',
+        },
+        fields: {
+          list: [
+            {
+              name: 'test8',
+              value: '',
+              validators: [Validators.required],
+              type: 'selection',
+              selection: {
+                styles: {
+                  display: 'block',
+                  fontFamily: '"SfProBold"',
+                  fontSize: '17px',
+                  color: '#272727',
+                },
+                list: [
+                  {
+                    text: 'Si',
+                    subText: {
+                      text: 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.',
+
+                      styles: {
+                        color: '#7B7B7B',
+                        display: 'block',
+                        fontFamily: '"SfProRegular"',
+                        fontStyle: 'italic',
+                        fontSize: '15px',
+                        marginBottom: '15px',
+                        marginTop: '5px',
+                        paddingRight: '15px',
+                      },
+                    },
+                  },
+                  {
+                    text: 'No',
+                  },
+                ],
+              },
+              // styles: {},
+              prop: 'text',
+            },
+          ],
+        },
+        isMultiple: true,
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+  ];
 
   constructor(
     private dialog: DialogService,

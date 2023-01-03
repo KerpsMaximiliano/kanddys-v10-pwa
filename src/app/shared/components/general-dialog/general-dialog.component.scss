@@ -6,7 +6,7 @@
   display: grid;
   grid-template-columns: 0.3fr 11.8fr;
   align-items: center;
-  height: 58px;
+  min-height: 58px;
   color: #272727;
   font-size: 17px;
   font-family: "SfProDisplay";
@@ -28,4 +28,8 @@
 
 .grid-content {
   padding-left: 20px;
+}
+
+input::placeholder {
+  opacity: 0.6;
 }

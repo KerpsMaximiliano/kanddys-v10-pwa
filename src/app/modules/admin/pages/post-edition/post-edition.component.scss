@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+}
+
+.container {
+  height: 100vh;
+
+  .header {
+    background-color: #ffffff;
+    padding: 10.5px 0;
+    display: flex;
+
+    .arrows {
+      margin-left: 16px;
+    }
+  }
+}

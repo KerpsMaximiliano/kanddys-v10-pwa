@@ -115,6 +115,7 @@ import { BlankComponent } from './dialogs/blank/blank.component';
 import { ArticleDialogComponent } from './dialogs/article-dialog/article-dialog.component';
 import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.component';
 import { GeneralDialogComponent } from './components/general-dialog/general-dialog.component';
+import { OptionsGridComponent } from './dialogs/options-grid/options-grid.component';
 
 const imports = [
   CommonModule,
@@ -236,7 +237,8 @@ const declarations = [
   BlankComponent,
   ArticleDialogComponent,
   AnexoLandingComponent,
-  GeneralDialogComponent
+  GeneralDialogComponent,
+  OptionsGridComponent,
 ];
 
 @NgModule({
