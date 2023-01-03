@@ -76,7 +76,11 @@
     </div>
 
     <nav class="navigation">
-      <ul>
+      <ul
+        [ngStyle]="{
+          backgroundColor: headerService.colorTheme || '#2874ad'
+        }"
+      >
         <li>
           <div class="icon" (click)="redirect('/admin/entity-detail-metrics')">
             <img [src]="env + '/home.svg'" alt="home" />
@@ -98,13 +102,13 @@
           <span class="text">Facturas</span>
         </li>
 
+        <li class="icon" (click)="redirect('/admin/tags')">
+          <div class="icon">
+            <img [src]="env + '/bookmark-checked.svg'" alt="tags" />
+          </div>
+          <span class="text">Tags</span>
+        </li>
         <!--
-          <li class="disabled">
-            <div class="icon">
-              <img [src]="env + '/search-white.svg'" alt="search" />
-            </div>
-            <span class="text">Buscar</span>
-          </li>
   
           <li class="disabled">
             <div class="icon">

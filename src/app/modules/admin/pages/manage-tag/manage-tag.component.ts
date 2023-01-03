@@ -1,20 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ValidationErrors,
-  Validator,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
-import {
-  NotificationInput,
-  OffsetTimeInput,
-} from 'src/app/core/models/notification';
+import { NotificationInput } from 'src/app/core/models/notification';
 import { TagInput } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -22,18 +11,12 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import {
-  WebformAnswerLayoutOption,
-  webformAnswerLayoutOptionDefaultStyles,
-} from 'src/app/core/types/answer-selector';
+import { WebformAnswerLayoutOption, webformAnswerLayoutOptionDefaultStyles } from 'src/app/core/types/answer-selector';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { Subscription } from 'rxjs';
 
@@ -44,12 +27,15 @@ export function imagesValidator(): ValidatorFn {
   };
 }
 
+
+
 @Component({
-  selector: 'app-create-tag',
-  templateUrl: './create-tag.component.html',
-  styleUrls: ['./create-tag.component.scss'],
+  selector: 'app-manage-tag',
+  templateUrl: './manage-tag.component.html',
+  styleUrls: ['./manage-tag.component.scss']
 })
-export class CreateTagComponent implements OnInit, OnDestroy {
+export class ManageTagComponent implements OnInit, OnDestroy {
+
   env: string = environment.assetsUrl;
   user: User;
   logged: boolean;
@@ -58,11 +44,9 @@ export class CreateTagComponent implements OnInit, OnDestroy {
     name: new FormControl('', [
       Validators.required,
       Validators.pattern(/[\S]/),
-      Validators.maxLength(40),
     ]),
     visibility: new FormControl('active', [Validators.required]),
     images: new FormControl(null),
-    notes: new FormControl(''),
   });
   convertedDefaultImageToBase64: boolean = false;
   optionalFunctionalityList: WebformAnswerLayoutOption[] = [];
@@ -82,8 +66,6 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   redirectTo: string;
   routeParamsSubscription: Subscription;
   routeQueryParamsSubscription: Subscription;
-  changedSomeValue: boolean = false;
-  initialState: string = null;
 
   constructor(
     private tagsService: TagsService,
@@ -96,7 +78,6 @@ export class CreateTagComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private route: ActivatedRoute,
     private itemsService: ItemsService,
-    private location: Location
   ) {}
 
   async ngOnInit() {
@@ -116,33 +97,11 @@ export class CreateTagComponent implements OnInit, OnDestroy {
             this.setOptionalFunctionalityList();
             await this.verifyIfUserIsLogged();
 
-            this.createTagForm.controls.name.valueChanges.subscribe(
-              (change) => {
-                if (change.length > 40) {
-                  this.createTagForm.controls.name.setValue(
-                    this.createTagForm.controls.name.value.slice(0, 40),
-                    {
-                      emitEvent: false,
-                    }
-                  );
-                }
-              }
-            );
-
             this.hasTemporalTag = Boolean(
               localStorage.getItem('preloadTemporalNotificationAndTemporalTag')
             );
             if (this.tagID || this.hasTemporalTag || this.logged)
-              await this.inicializeExistingTagData();
-
-            this.initialState = JSON.stringify(this.createTagForm.value);
-            this.createTagForm.valueChanges.subscribe((change) => {
-              if (JSON.stringify(change) !== this.initialState) {
-                this.changedSomeValue = true;
-              } else {
-                this.changedSomeValue = false;
-              }
-            });
+              this.inicializeExistingTagData();
           }
         );
       }
@@ -150,7 +109,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   }
 
   async inicializeExistingTagData() {
-    const { name, visibility, images, notes } = this.createTagForm.controls;
+    const { name, visibility, images } = this.createTagForm.controls;
     if (this.tagID) {
       const { tag } = await this.tagsService.tag(this.tagID);
 
@@ -228,8 +187,6 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       if (!this.hasTemporalTag) {
         name.setValue(tag.name);
 
-        notes.setValue(tag.notes);
-
         tag.status === 'active'
           ? this.setTagAsVisible()
           : this.setTagAsInvisible();
@@ -238,104 +195,12 @@ export class CreateTagComponent implements OnInit, OnDestroy {
           images.setValue(tag.images[0]);
         }
       } else {
-        /*
-        let temporalTag = this.tagsService.temporalTag;
-        console.log(temporalTag.images);
 
-        name.setValue(temporalTag.name);
-
-        temporalTag.status === 'active'
-          ? this.setTagAsVisible()
-          : this.setTagAsInvisible();
-
-        if (temporalTag.images) {
-          const reader = new FileReader();
-          reader.readAsDataURL(temporalTag.images as unknown as File); //Im so sorry xd
-          reader.onload = () => {
-            images.setValue(reader.result);
-            this.convertedDefaultImageToBase64 = true;
-          };
-          reader.onerror = (error) => {
-            this.convertedDefaultImageToBase64 = false;
-            console.log('Error: ', error);
-          };
-        }
-        */
       }
     } else if (this.hasTemporalTag) {
-      /*
-      let temporalTag = this.tagsService.temporalTag;
-      let temporalNotification = this.notificationService.temporalNotification;
 
-      if (!temporalTag)
-        temporalTag = JSON.parse(localStorage.getItem('temporalTag'));
-      if (!temporalNotification)
-        temporalNotification = JSON.parse(
-          localStorage.getItem('temporalNotification')
-        );
-
-      name.setValue(temporalTag.name);
-
-      temporalTag.status === 'active'
-        ? this.setTagAsVisible()
-        : this.setTagAsInvisible();
-
-      if (temporalTag.images) {
-        const reader = new FileReader();
-        reader.readAsDataURL(temporalTag.images as unknown as File); //Im so sorry xd
-        reader.onload = () => {
-          images.setValue(reader.result);
-          this.convertedDefaultImageToBase64 = true;
-        };
-        reader.onerror = (error) => {
-          console.log('Error: ', error);
-          this.convertedDefaultImageToBase64 = false;
-        };
-      }
-
-      this.notificationToAdd = temporalNotification;
-
-      this.optionalFunctionalityList[0].texts.middleTexts[0].text =
-        temporalNotification.message;
-      this.optionalFunctionalityList[0].texts.middleTexts.push({
-        text: '',
-        callback: () =>
-          this.saveTemporalTagAndRedirectToForm('/admin/automated-message'),
-      });
-      this.optionalFunctionalityList[0].texts.middleTexts[1].text =
-        'Receptores: ';
-      this.optionalFunctionalityList[0].texts.middleTexts[1].text +=
-        temporalNotification.phoneNumbers
-          .map((phoneObject) => phoneObject.phoneNumber)
-          .join(', ');
-      */
     } else if (this.logged) {
-      /*
-      let temporalTag = this.tagsService.temporalTag;
 
-      if (!temporalTag) {
-        temporalTag = JSON.parse(localStorage.getItem('temporalTag'));
-      }
-
-      name.setValue(temporalTag?.name);
-
-      temporalTag.status === 'active'
-        ? this.setTagAsVisible()
-        : this.setTagAsInvisible();
-
-      if (temporalTag.images) {
-        const reader = new FileReader();
-        reader.readAsDataURL(temporalTag.images as unknown as File); //Im so sorry xd
-        reader.onload = () => {
-          images.setValue(reader.result);
-          this.convertedDefaultImageToBase64 = true;
-        };
-        reader.onerror = (error) => {
-          console.log('Error: ', error);
-          this.convertedDefaultImageToBase64 = false;
-        };
-      }
-      */
     }
   }
 
@@ -391,7 +256,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   }
 
   async save() {
-    const { name, visibility, images, notes } = this.createTagForm.controls;
+    const { name, visibility, images } = this.createTagForm.controls;
     this.finishedMutation = false;
 
     if (this.logged === false) {
@@ -407,7 +272,6 @@ export class CreateTagComponent implements OnInit, OnDestroy {
 
     const data: TagInput = {
       name: name.value,
-      notes: notes.value,
       status: visibility.value,
       merchant: this.merchantDefault._id,
     };
@@ -448,7 +312,11 @@ export class CreateTagComponent implements OnInit, OnDestroy {
             this.orderID
           );
 
-          this.goBack();
+          this.router.navigate(['ecommerce/order-info/' + this.orderID], {
+            queryParams: {
+              tagsAsignationOnStart: true,
+            },
+          });
         } else {
           if (this.entity === 'item') {
             if (this.entityId) {
@@ -463,17 +331,22 @@ export class CreateTagComponent implements OnInit, OnDestroy {
                 this.entityId
               );
 
-              return this.goBack();
+              this.headerService.flowRoute = null;
+              localStorage.removeItem('flowRoute');
+              this.router.navigate(['admin/item-display/' + this.entityId], {
+                queryParams: {
+                  tagsAsignationOnStart: true,
+                },
+              });
             }
           }
 
           if (
             (this.entity === 'order' || this.entity === 'item') &&
             !this.entityId &&
-            !this.orderID &&
-            this.redirectTo
+            !this.orderID
           ) {
-            return this.router.navigate([this.redirectTo]);
+            this.router.navigate([this.redirectTo]);
           }
 
           if (!this.entity) this.router.navigate(['admin/items-dashboard']);
@@ -482,12 +355,6 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         this.toastr.info('Tag creado exitosamente', null, {
           timeOut: 1500,
         });
-        /*
-          localStorage.removeItem('temporalTag');
-          localStorage.removeItem('logged');
-          localStorage.removeItem('temporalNotification');
-          localStorage.removeItem('preloadTemporalNotificationAndTemporalTag');
-        */
       } catch (error) {
         console.error(error);
         this.toastr.info('Ocurrió un error al crear el tag', null, {
@@ -498,26 +365,11 @@ export class CreateTagComponent implements OnInit, OnDestroy {
     } else {
       delete data.merchant;
 
-      /*
-      if (this.notificationService.temporalNotification) {
-        const notificationId =
-          this.notificationService.temporalNotification._id;
-        delete this.notificationService.temporalNotification._id;
-        await this.notificationService.updateNotification(
-          this.notificationService.temporalNotification,
-          notificationId
-        );
-      }*/
-
       result = await this.tagsService.updateTag(data, this.tagID);
 
       this.finishedMutation = true;
 
       if (result) {
-        /*
-        this.notificationService.temporalNotification = null;
-        */
-
         if (this.redirectTo && !this.entity) {
           this.router.navigate([this.redirectTo]);
         } else if (this.orderID) {
@@ -543,45 +395,6 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   }
 
   setOptionalFunctionalityList() {
-    /*
-    this.optionalFunctionalityList.push({
-      type: 'WEBFORM-ANSWER',
-      optionStyles: webformAnswerLayoutOptionDefaultStyles,
-      selected: false,
-      texts: {
-        topRight: {
-          text: 'TriggerID',
-          styles: {
-            color: '#7B7B7B',
-          },
-          callback: () => {},
-        },
-        topLeft: {
-          text: 'Sin mensaje',
-          styles: {
-            paddingBottom: '8px',
-          },
-          callback: () => {},
-        },
-        middleTexts: [
-          {
-            text: 'ID',
-            callback: () => {},
-          },
-          {
-            text: 'ID',
-            callback: () => {},
-          },
-        ],
-        bottomLeft: {
-          text: 'ID',
-          styles: {
-            paddingTop: '10px',
-          },
-          callback: () => {},
-        },
-      },
-    });*/
 
     this.optionalFunctionalityList.push({
       type: 'WEBFORM-ANSWER',
@@ -740,14 +553,6 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       localStorage.setItem('temporalTag', JSON.stringify(temporalTag));
     }
 
-    /*
-    if (this.tagID && this.notificationService.temporalNotification) {
-      localStorage.setItem(
-        'temporalNotification',
-        JSON.stringify(this.notificationService.temporalNotification)
-      );
-    }*/
-
     redirectionRoute ? this.router.navigate([redirectionRoute]) : null;
   }
 
@@ -757,30 +562,60 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       queryParams: {},
     };
 
+    const flowRoute2 = localStorage.getItem('flowRoute2');
     let flowRoute = this.headerService.flowRoute;
 
     if (!flowRoute) {
       flowRoute = localStorage.getItem('flowRoute');
     }
 
-    if (flowRoute && flowRoute.length > 1) {
-      const [baseRoute, paramsString] = flowRoute.split('?');
-      const paramsArray = paramsString ? paramsString.split('&') : [];
-      const queryParams = {};
+    if (!flowRoute) {
+      if (flowRoute2) {
+        this.headerService.flowRoute = flowRoute2;
+      } else {
+        let flowRoute = localStorage.getItem('flowRoute');
 
-      paramsArray.forEach((param) => {
-        const [key, value] = param.split('=');
-
-        queryParams[key] = decodeURIComponent(value);
-      });
-
-      localStorage.removeItem('flowRoute');
-      this.router.navigate([baseRoute], {
-        queryParams,
-      });
+        if (!flowRoute)
+          this.headerService.flowRoute = 'admin/entity-detail-metrics';
+        else this.headerService.flowRoute = flowRoute;
+      }
+    } else {
+      if (!flowRoute.includes('create-tag'))
+        this.headerService.flowRoute = flowRoute;
+      else this.headerService.flowRoute = 'admin/entity-detail-metrics';
     }
 
-    if (flowRoute && flowRoute.includes('items-dashboard')) {
+    const redirectionRoute = this.headerService.flowRoute;
+
+    if (redirectionRoute.includes('?')) {
+      const routeParts = redirectionRoute.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return { [queryStringElements[0]]: queryStringElements[1] };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+      });
+    } else {
+      this.router.navigate([redirectionRoute]);
+    }
+
+    this.headerService.flowRoute = null;
+    this.tagsService.temporalTag = null;
+    //this.notificationService.temporalNotification = null;
+
+    if (redirectionRoute.includes('items-dashboard')) {
       localStorage.removeItem('flowRoute');
       localStorage.removeItem('flowRoute2');
       localStorage.removeItem('temporalTag');
@@ -789,16 +624,12 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       localStorage.removeItem('preloadTemporalNotificationAndTemporalTag');
     }
 
-    if (flowRoute && flowRoute.includes('order-info')) {
+    if (redirectionRoute.includes('order-info')) {
       localStorage.removeItem('temporalTag');
       localStorage.removeItem('existingTagId');
       localStorage.removeItem('temporalNotification');
       localStorage.removeItem('preloadTemporalNotificationAndTemporalTag');
     }
-
-    this.headerService.flowRoute = null;
-    this.tagsService.temporalTag = null;
-    //this.notificationService.temporalNotification = null;
   }
 
   stopDragging() {
@@ -817,22 +648,16 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   }
 
   goBack2 = () => {
-    if (this.createTagForm.status === 'VALID' && this.changedSomeValue) {
-      this.save();
-    } else {
-      if (this.entity === 'item') {
-        this.headerService.flowRoute = null;
-        localStorage.removeItem('flowRoute');
-        this.router.navigate(['admin/create-article/' + this.entityId]);
-      } else if (this.entity === 'order') {
-        this.router.navigate(['ecommerce/order-detail/' + this.orderID]);
-      } else {
-        this.router.navigate(['admin/entity-detail-metrics']);
-      }
-    }
-
     if (this.redirectTo) {
       this.router.navigate([this.redirectTo]);
+    } else if (this.entity === 'item') {
+      this.headerService.flowRoute = null;
+      localStorage.removeItem('flowRoute');
+      this.router.navigate(['admin/create-article/' + this.entityId]);
+    } else if (this.entity === 'order') {
+      this.router.navigate(['ecommerce/order-detail/' + this.entityId]);
+    } else {
+      this.router.navigate(['admin/entity-detail-metrics']);
     }
   };
 

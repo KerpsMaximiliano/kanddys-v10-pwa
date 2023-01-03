@@ -144,6 +144,18 @@
       height: 601px;
       display: block;
     }
+
+    &.visible2,
+    &.animationRunning {
+      height: 437px;
+      display: block;
+    }
+
+    &.visible3,
+    &.animationRunning {
+      height: 765px;
+      display: block;
+    }
   }
 }
 

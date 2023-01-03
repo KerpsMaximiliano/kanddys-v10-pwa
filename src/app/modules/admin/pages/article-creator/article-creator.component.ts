@@ -631,8 +631,10 @@ export class ArticleCreatorComponent implements OnInit {
       props: {
         tags: userTags,
         //orderId: this.order._id,
+        colorTheme: 'admin',
         entity: 'item',
         entityId: this.item._id,
+        outputAllSelectedTags: true,
         activeTags:
           itemTags && Array.isArray(itemTags)
             ? itemTags.map((tag) => tag._id)
@@ -650,10 +652,6 @@ export class ArticleCreatorComponent implements OnInit {
 
             if (response) {
               this.item.tags = this.selectedTags;
-
-              this._ToastrService.info('Tags asignados al item', null, {
-                timeOut: 1000,
-              });
             }
           } catch (error) {
             this._ToastrService.error('Error al asignar tags', null, {

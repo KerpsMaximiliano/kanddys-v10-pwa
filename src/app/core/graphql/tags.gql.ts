@@ -9,6 +9,12 @@ export const updateTag = gql`
   }
 `;
 
+export const deleteTag = gql`
+  mutation deleteTag($tagId: ObjectID!) {
+    deleteTag(tagId: $tagId)
+  }
+`;
+
 export const createTag = gql`
   mutation createTag($input: TagInput!) {
     createTag(input: $input) {
@@ -24,7 +30,10 @@ export const tagsByUser = gql`
       name
       images
       status
+      createdAt
+      counter
       entity
+      index
     }
   }
 `;
@@ -118,6 +127,7 @@ export const tag = gql`
       name
       status
       images
+      notes
       notifications
     }
   }
@@ -189,6 +199,44 @@ export const ordersByTag = gql`
         createdAt
         tags
       }
+    }
+  }
+`;
+
+export const tagArchived = gql`
+  query tagArchived($paginate: PaginationInput) {
+    tagArchived(paginate: $paginate) {
+      _id
+      name
+      images
+      status
+      createdAt
+      counter
+      entity
+      index
+    }
+  }
+`;
+
+export const tagsArchived = gql`
+  query tagArchived($paginate: PaginationInput) {
+    tagArchived(paginate: $paginate) {
+      _id
+      name
+      images
+      status
+      createdAt
+      counter
+      entity
+      index
+    }
+  }
+`;
+
+export const hotTagsArchived = gql`
+  query tagArchived($paginate: PaginationInput) {
+    tagArchived(paginate: $paginate) {
+      _id
     }
   }
 `;

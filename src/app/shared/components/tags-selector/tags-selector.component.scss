@@ -1,4 +1,3 @@
-
 .tags-grid {
   display: flex;
   flex-wrap: wrap;
@@ -10,15 +9,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 30px;
-  padding: 4px;
+  border-radius: 4px;
+  padding: 4px 9px;
   border: none;
-  font-family: 'SfProMedium';
+  font-family: "SfProBold";
   cursor: pointer;
 }
 
-.image{
-   width: 17px;
-   height: 17px;
-   margin-left: 9.5px;
+.image {
+  width: 17px;
+  height: 17px;
+  margin-left: 9.5px;
 }
