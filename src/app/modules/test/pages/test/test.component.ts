@@ -168,6 +168,7 @@ export class TestComponent implements OnInit {
           },
         },
       ],
+      postLabel: 'El mensaje incluirá un qrCode para ver el Story.'
     },
     {
       component: GeneralDialogComponent,
@@ -224,6 +225,7 @@ export class TestComponent implements OnInit {
           ],
         },
       },
+      postLabel: 'Mensajito de prueba que se ve despues de pasar el 2do dialog.'
     },
     {
       component: GeneralDialogComponent,
