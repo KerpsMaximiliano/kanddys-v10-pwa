@@ -654,7 +654,12 @@ export class TagsComponent implements OnInit {
                   width: '43px',
                   height: '63px',
                 },
-                callback: () => null,
+                callback: () => this.router.navigate(['admin/create-tag'], {
+                  queryParams: {
+                    entity: 'item',
+                    redirectTo: window.location.href.split('/').slice(3).join('/'),
+                  }
+                }),
                 texts: {
                   topRight: {
                     text: '',
@@ -694,7 +699,12 @@ export class TagsComponent implements OnInit {
                   width: '43px',
                   height: '63px',
                 },
-                callback: () => null,
+                callback: () => this.router.navigate(['admin/create-tag'], {
+                  queryParams: {
+                    entity: 'order',
+                    redirectTo: window.location.href.split('/').slice(3).join('/'),
+                  }
+                }),
                 texts: {
                   topRight: {
                     text: '',

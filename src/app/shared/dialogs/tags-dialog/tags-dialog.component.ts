@@ -44,4 +44,8 @@ export class TagsDialogComponent implements OnInit {
     });
     this._DialogRef.close();
   }
+
+  close() {
+    this._DialogRef.close();
+  }
 }
