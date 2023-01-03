@@ -91,10 +91,6 @@ button {
   cursor: pointer;
   box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 15%);
 }
-.icon {
-  color: #272727;
-  font-size: 25px;
-}
 .copy {
   position: relative;
   top: -2px;
@@ -233,7 +229,7 @@ audio {
       width: 50%;
     }
 
-    .icon-button-texts{
+    .icon-button-texts {
       border: none;
       position: absolute;
       top: 55px;
@@ -241,7 +237,7 @@ audio {
       padding: 3px;
       cursor: pointer;
 
-      img{
+      img {
         width: 24px;
         height: 24px;
         filter: brightness(3);
@@ -253,26 +249,6 @@ audio {
       justify-content: space-around;
       align-items: center;
       margin-right: 10px;
-
-      .icon {
-        all: unset;
-        width: fit-content;
-        height: fit-content;
-        margin-right: 30px;
-        padding: 3.5px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        cursor: pointer;
-
-        svg,
-        img {
-          width: 26px;
-          height: 28px;
-          filter: brightness(5);
-        }
-      }
     }
   }
 }
@@ -364,7 +340,7 @@ audio {
       justify-content: center;
       align-items: center;
       // margin: 0 auto;
-      background-color: #82F18D;
+      background-color: #82f18d;
       border-radius: 28px;
       cursor: pointer;
 
@@ -376,7 +352,7 @@ audio {
     }
   }
 
-  .center{
+  .center {
     justify-content: center !important;
   }
 
@@ -421,7 +397,6 @@ audio {
   font-size: 1.063rem;
   font-family: "SfProBold";
   color: #ffffff;
-  margin-bottom: 20px;
 }
 
 .buttons-edit {
@@ -489,21 +464,18 @@ audio {
 }
 
 .fixed-button {
-  width: 40%;
-  max-width: 170px;
   position: absolute;
-  background-color: #ffffff;
+  top: 38px;
+  left: 16px;
   border: none;
-  color: #7b7b7b;
-  font-family: "SfProBold";
-  font-size: 0.963rem;
-  text-align: center;
-  border-radius: 19px;
-  padding: 5px 10px;
-  left: 3.78%;
-  top: 35px;
+  border-radius: 50%;
   cursor: pointer;
   z-index: 2;
+  background-color: #272727;
+  box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 16%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .withBanner {
@@ -592,9 +564,9 @@ audio {
   cursor: pointer;
 }
 
-.disabled{
+.disabled {
   width: 100%;
-  height: calc(100% - 236px);
+  height: calc(100% - 91px);
   position: absolute;
   top: 0;
   left: 0;
@@ -602,21 +574,29 @@ audio {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 24px;
   background-color: #b17608b5;
   padding-top: 10vh;
   z-index: 2;
-  
-  .hidden-img{
+
+  .hidden-img {
     width: 47px;
     height: 36px;
   }
-  
-  .disabled-span{
+
+  .disabled-span {
     max-width: 50%;
     font-size: 1.938rem;
     font-family: "SfProBold";
     text-align: center;
     color: #fff;
     z-index: 2;
+  }
+}
+
+.icon {
+  &.green {
+    filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%) hue-rotate(62deg) brightness(99%)
+      contrast(91%);
   }
 }

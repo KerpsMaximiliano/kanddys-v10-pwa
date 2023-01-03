@@ -32,6 +32,7 @@
 
       <div
         class="dynamic-component"
+        (click)="tapEvent(dialogIndex)"
         [ngStyle]="{
           width: '82.47%',
           margin: 'auto'
@@ -46,6 +47,10 @@
             }"
           ></div>
         </div>
+
+        <div class="postLabel" *ngIf="dialog.postLabel && (currentDialogIndex !== dialogIndex)">{{
+          dialog.postLabel
+        }}</div>
 
         <app-dynamic-component
           [component]="dialog.component"

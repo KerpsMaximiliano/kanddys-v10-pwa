@@ -545,7 +545,7 @@
         >
           <app-saleflow-item
             [type]="'ADD_NEW_ITEM'"
-            (itemClicked)="openArticleForm()"
+            (itemClicked)="openedDialogFlow = !openedDialogFlow"
           ></app-saleflow-item>
         </div>
         <div
@@ -592,3 +592,10 @@
     -->
   </div>
 </div>
+
+<app-dialog-flow
+  [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+  [dialogs]="dialogs"
+  (saveConfigRef)="swiperConfig = $event"
+  [allowSlideNext]="false"
+></app-dialog-flow>

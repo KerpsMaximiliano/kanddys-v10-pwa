@@ -1,7 +1,6 @@
-
 <div class="container" *ngIf="itemData">
-  <button class="fixed-top-button">
-    <img [src]="env + '/arrow-double-up.svg'" alt="Flecha doble hacia arriba">
+  <button class="fixed-top-button" (click)="back()">
+    <img [src]="env + '/arrow-double-up.svg'" alt="Flecha doble hacia arriba" />
   </button>
   <div class="media-swiper-wrapper">
     <swiper
@@ -30,25 +29,46 @@
       opened: menuOpened
     }"
   >
-  <div class="text-icons-container">
-    <div class="top-section">
-      <label for="Nombre" class="top-text">{{itemData.name ? itemData.name : 'Sin nombre 1243'}}</label>
-
-      <div class="icons-flex">
-        <button class="round-button">
-          <img [src]="env + '/heart.svg'" alt="Corazón">
-        </button>
-        <button class="round-button">
-          <img [src]="env + '/speech-bubble.svg'" alt="Burbuja de diálogo">
-        </button>
-        <button class="round-button">
-          <img [src]="env + '/upload.svg'" alt="Contenedor con flecha saliendo">
-        </button>
+    <div class="text-icons-container">
+      <div class="top-section">
+        <p class="top-text" (click)="openInfoDialog()">
+          {{
+            itemData.name?.length > 30
+              ? (itemData.name.trim() | slice : 0 : 30) + "..."
+              : itemData.name
+          }}
+        </p>
+        <div class="icons-flex">
+          <button class="round-button">
+            <img [src]="env + '/heart.svg'" alt="Corazón" />
+          </button>
+          <button class="round-button">
+            <img [src]="env + '/speech-bubble.svg'" alt="Burbuja de diálogo" />
+          </button>
+          <button class="round-button">
+            <img
+              [src]="env + '/upload.svg'"
+              alt="Contenedor con flecha saliendo"
+            />
+          </button>
+        </div>
       </div>
+
+      <p
+        class="bottom-text"
+        *ngIf="itemData.description"
+        (click)="openInfoDialog()"
+      >
+        {{
+          itemData.description.length > 100
+            ? (itemData.description.trim() | slice : 0 : 100) + "..."
+            : itemData.description
+        }}
+        <span *ngIf="itemData.description.length > 100" style="color: #82f18d"
+          >Ver más</span
+        >
+      </p>
     </div>
-    
-    <p class="bottom-text">Aqui va el texto escrito (si los tiene). Mostraremos las primeras dos lineas y acaba en un texto que deberia de cortarse para cerciorar...</p>
-  </div>
     <div class="inner-wrapper-top">
       <div
         class="current-media-shown-indicators"
@@ -325,4 +345,6 @@
     </div>
   </div>
 </div>
-<app-bios-banner style="z-index: 999; position: fixed; bottom: 0;"></app-bios-banner>
+<app-bios-banner
+  style="z-index: 999; position: fixed; bottom: 0"
+></app-bios-banner>

@@ -1,0 +1,81 @@
+<div class="dialog-container">
+  <div class="main-container">
+    <div class="content">
+      <h1 class="title" *ngIf="header">
+        {{ header }}
+      </h1>
+      <div class="sections-container">
+        <section class="benefits" *ngIf="benefits">
+          <h2 class="benefits-title">{{ benefits.title }}</h2>
+
+          <div class="benefits-list">
+            <div
+              class="list-element"
+              *ngFor="let listElement of benefits.benefitsList"
+            >
+              <img
+                [src]="env + listElement.img.src"
+                alt="variado"
+                class="li-image"
+                [width]="listElement.img.width"
+                [height]="listElement.img.height"
+                [style.filter]="listElement.img.filter"
+              />
+              <p class="li-text" [ngStyle]="listElement.textStyles">
+                - {{ listElement.text }}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="howto-list" *ngIf="howItWorks">
+          <h2 class="howto-title">{{ howItWorks.title }}</h2>
+
+          <ol class="howto-ol" [ngStyle]="howItWorks.listStyles">
+            <li *ngFor="let olElement of howItWorks.listElement">
+              {{ olElement }}
+            </li>
+          </ol>
+
+          <span
+            class="howto-span"
+            [ngStyle]="howItWorks.textStyles"
+            *ngFor="let extraText of howItWorks.extraTexts"
+            >- {{ extraText }}</span
+          >
+        </section>
+
+        <section class="symbols-section" *ngIf="symbols">
+          <h2 class="symbols-title">{{ symbols.title }}</h2>
+
+          <p class="symbols-text" [ngStyle]="symbols.textStyles">
+            {{ symbols.text }}
+          </p>
+        </section>
+
+        <section class="action-section" *ngIf="actions">
+          <h2 class="action-title">{{ actions.title }}</h2>
+
+          <span
+            class="actions-span"
+            *ngFor="let actionText of actions.text"
+            [ngStyle]="actions.textStyles"
+            >- {{ actionText }}</span
+          >
+        </section>
+      </div>
+    </div>
+
+    <div class="bottom-area">
+      <div class="buttons">
+        <button class="arrow" (click)="close()"></button>
+        <button class="share">
+          <img
+            [src]="env + '/upload.svg'"
+            alt="Imagen de un contenedor con una flecha saliendo de él"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

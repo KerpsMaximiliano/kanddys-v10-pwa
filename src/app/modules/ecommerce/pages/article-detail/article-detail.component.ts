@@ -30,6 +30,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
+import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
 
 SwiperCore.use([Virtual]);
 
@@ -172,6 +173,29 @@ export class ArticleDetailComponent implements OnInit {
       }
 
       await this.verifyIfUserIsLogged();
+    });
+  }
+
+  openInfoDialog() {
+    const props: any = {
+      symbols: {
+        title: this.itemData.name || 'Sin nombre',
+      },
+    };
+    if (this.itemData.description) {
+      props.symbols.text = this.itemData.description;
+    }
+    if (this.itemData.content?.length) {
+      props.actions = {
+        title: 'Lo incluido:',
+        text: this.itemData.content,
+      };
+    }
+    this.dialogService.open(InfoDialogComponent, {
+      type: 'fullscreen-translucent',
+      props,
+      customClass: 'app-dialog',
+      flags: ['no-header'],
     });
   }
 
@@ -427,7 +451,9 @@ export class ArticleDetailComponent implements OnInit {
 
   async back() {
     if (this.previewMode) {
-      return this.router.navigate([`/admin/entity-detail-metrics`]);
+      return this.router.navigate([
+        `/admin/article-params/${this.itemData._id}`,
+      ]);
     }
     if (this.selectedParam) {
       this.selectedParam = null;

@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, Output, ViewChild, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  ViewChild,
+  EventEmitter,
+} from '@angular/core';
 import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
 import { SwiperOptions, Swiper } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
@@ -21,6 +28,7 @@ export class DialogFlowComponent implements OnInit {
     watchSlidesVisibility: true,
   };
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
+  @Input() allowSlideNext = true;
   currentDialogIndex: number = 0;
 
   @ViewChild('dialogSwiper') dialogSwiper: SwiperComponent;
@@ -30,23 +38,33 @@ export class DialogFlowComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.applyTransparencyToSlidesThatArentActive();
-      this.swiperConfig.allowSlideNext = false;
+      this.swiperConfig.allowSlideNext = this.allowSlideNext;
       this.saveConfigRef.emit(this.swiperConfig);
     }, 100);
   }
 
   applyTransparencyToSlidesThatArentActive() {
-    const allSlides = document.querySelectorAll('.swiper-slide');
-
-    allSlides.forEach((slide, index) => {
-      const dialogHTMLElement = slide;
-
+    this.dialogs.forEach((slide, index) => {
       if (index !== this.currentDialogIndex) {
         this.dialogs[index].inputs.containerStyles.opacity = '0.5';
       } else {
         this.dialogs[index].inputs.containerStyles.opacity = '1';
       }
+
+      this.dialogs[index].shouldRerender = false;
     });
+
+    setTimeout(() => {
+      this.dialogs.forEach((slide, index) => {
+        this.dialogs[index].shouldRerender = false;
+      });
+    }, 100);
+  }
+
+  tapEvent(tappedDialogIndex: number) {
+    if (tappedDialogIndex !== this.currentDialogIndex) {
+      this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex);
+    }
   }
 
   changeActiveDialog(eventData: Swiper) {

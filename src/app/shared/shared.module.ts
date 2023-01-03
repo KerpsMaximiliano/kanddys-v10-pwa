@@ -114,6 +114,8 @@ import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.compon
 import { BlankComponent } from './dialogs/blank/blank.component';
 import { ArticleDialogComponent } from './dialogs/article-dialog/article-dialog.component';
 import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.component';
+import { ItemImagesComponent } from './dialogs/create-item-flow/item-images/item-images.component';
+import { InfoDialogComponent } from './dialogs/info-dialog/info-dialog.component';
 
 const imports = [
   CommonModule,
@@ -234,7 +236,9 @@ const declarations = [
   ItemListSelectorComponent,
   BlankComponent,
   ArticleDialogComponent,
-  AnexoLandingComponent
+  AnexoLandingComponent,
+  ItemImagesComponent,
+  InfoDialogComponent,
 ];
 
 @NgModule({

@@ -266,6 +266,19 @@ export class ArticleParamsComponent implements OnInit {
     });
   }
 
+  previewItem = () => {
+    this._Router.navigate(
+      [
+        `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
+      ],
+      {
+        queryParams: {
+          mode: 'preview',
+        },
+      }
+    );
+  };
+
   obtainLasts() {
     this._Route.params.subscribe(async (params) => {
       const saleflowItems = this._SaleflowService.saleflowData.items.map(

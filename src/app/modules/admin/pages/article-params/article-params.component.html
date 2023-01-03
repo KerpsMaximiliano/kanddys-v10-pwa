@@ -28,6 +28,7 @@
       color: '#272727'
     }"
     (dotEvent)="openOptionsForThisArticle()"
+    (agnosticAction)="previewItem()"
     [returnAble]="false"
     [bgColor]="'#FFFFFF'"
     (return)="goBack()"
@@ -177,12 +178,14 @@
         [fieldStyles]="{
           boxShadow: 'none',
           backgroundColor: 'white',
-          borderRadius: '6px'
+          borderRadius: '6px',
+          color: '#7B7B7B'
         }"
         [initialValue]="
           countDecimals(price.value) < 2 ? price.value * 100 : price.value
         "
         (onInputEvent)="handleCurrencyInput($event)"
+        currencyLabel="RD$"
       ></app-currency-input>
     </div>
     <!--  <p class="subtitle">Precio:</p>

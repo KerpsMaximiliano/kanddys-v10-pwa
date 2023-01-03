@@ -45,6 +45,16 @@
         }
       }
     }
+
+    .postLabel {
+      position: absolute;
+      font-family: SfProLight;
+      font-style: italic;
+      bottom: 12.7px;
+      left: 26.1px;
+      color: #272727;
+      z-index: 999;
+    }
   }
 }
 

@@ -139,6 +139,8 @@ export interface EmbeddedComponent {
   afterIndex?: number;
   beforeIndex?: number;
   shouldRerender?: boolean;
+  postLabel?: string;
+  preLabel?: string;
 }
 
 export interface PromiseFunction {

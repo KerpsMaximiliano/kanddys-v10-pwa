@@ -38,16 +38,17 @@
       (click)="openItemOptionsDialog()"
     ></div> -->
   <!-- </div> -->
-  <div class="disabled" *ngIf="['disabled', 'archived'].includes(item.status)">
-    <img [src]="env + '/closed-eye-white.svg'" alt="Ojo cerrado" class="hidden-img">
+  <div class="disabled" *ngIf="['disabled', 'archived'].includes(item?.status)">
+    <img
+      [src]="env + '/closed-eye-white.svg'"
+      alt="Ojo cerrado"
+      class="hidden-img"
+    />
     <span class="disabled-span">Invisible para visitantes</span>
   </div>
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
-      <div
-        id="{{ i }}-{{ j }}"
-        [ngSwitch]="field.type"
-      >
+      <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">
         <div class="grid">
           <!-- AREA DE BOTONES, CAMBIAR -->
           <div class="buttons-edit" *ngIf="viewType === 'edit'">
@@ -67,8 +68,13 @@
             <button class="comitions">Comisiones para vender mas</button>
             <button class="edit-button">Editar</button>
           </div>
-          <button class="fixed-button" *ngIf="viewType === 'preview'">
-            Cancelar cambios
+          <button
+            class="fixed-button"
+            *ngIf="viewType === 'preview'"
+            (click)="submit()"
+            style="padding: 6px"
+          >
+            <img class="icon green" [src]="env + '/cog-wheel.svg'" />
           </button>
         </div>
         <ng-container *ngSwitchCase="'file'">
@@ -265,9 +271,9 @@
         <button class="round-button" (click)="submit(true)">
           <img [src]="env + '/screen-cut.svg'" />
         </button> -->
-        <button class="round-button" (click)="submit()">
+        <!-- <button class="round-button" (click)="submit()">
           <img [src]="env + '/cog-wheel.svg'" />
-        </button>
+        </button> -->
         <!-- QUIZAS BORRAR DESPUES <button
           class="save-button"
           [ngClass]="{

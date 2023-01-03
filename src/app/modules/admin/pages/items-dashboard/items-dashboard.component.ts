@@ -21,8 +21,10 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
+import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HelperHeaderInput } from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
+import { ItemImagesComponent } from 'src/app/shared/dialogs/create-item-flow/item-images/item-images.component';
 import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
 import {
   SettingsComponent,
@@ -149,6 +151,77 @@ export class ItemsDashboardComponent implements OnInit {
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
   @ViewChild('highlightedItemsSwiper') highlightedItemsSwiper: SwiperComponent;
+
+  swiperConfig: SwiperOptions = {
+    allowSlideNext: false,
+  };
+  openedDialogFlow: boolean = false;
+  dialogs: Array<EmbeddedComponent> = [
+    {
+      component: ItemListSelectorComponent,
+      inputs: {
+        containerStyles: {},
+        title: '¿Que monto te pagarán por el artículo?',
+        inputs: [
+          {
+            label: 'Pesos Dominicanos',
+            type: 'currency',
+            name: 'pricing',
+          },
+        ],
+      },
+      outputs: [
+        {
+          name: 'formOutput',
+          callback: ({ pricing }: { pricing: number }) => {
+            if (pricing > 0) this.swiperConfig.allowSlideNext = true;
+            else this.swiperConfig.allowSlideNext = false;
+            this._ItemsService.itemPrice = pricing;
+          },
+        },
+      ],
+    },
+    {
+      component: ItemImagesComponent,
+      inputs: {
+        containerStyles: {},
+      },
+      outputs: [
+        {
+          name: 'enteredImages',
+          callback: async (images: File[]) => {
+            if (!this._ItemsService.itemPrice) return;
+            this.openedDialogFlow = false;
+            const itemInput = {
+              name: null,
+              description: null,
+              pricing: this._ItemsService.itemPrice,
+              images: images,
+              merchant: this._MerchantsService.merchantData?._id,
+              content: [],
+              currencies: [],
+              hasExtraPrice: false,
+              purchaseLocations: [],
+              showImages: images.length > 0,
+            };
+            this._ItemsService.itemPrice = null;
+
+            const { createItem } = await this._ItemsService.createItem(
+              itemInput
+            );
+            await this._SaleflowService.addItemToSaleFlow(
+              {
+                item: createItem._id,
+              },
+              this._SaleflowService.saleflowData._id
+            );
+            this._ToastrService.success('Producto creado satisfactoriamente!');
+            this.router.navigate([`admin/create-article/${createItem._id}`]);
+          },
+        },
+      ],
+    },
+  ];
 
   async infinitePagination() {
     const page = document.querySelector('.dashboard-page');
@@ -709,18 +782,7 @@ export class ItemsDashboardComponent implements OnInit {
             text: 'ADICIONAR',
             mode: 'func',
             func: () => {
-              //this.headerService.flowRoute = this.router.url;
-              // const routerConfig: any = {
-              //   queryParams: {
-              //     from: 'dashboard',
-              //   },
-              // };
-
-              // if (section === 'featured')
-              //   routerConfig.queryParams.initialStatus = 'featured';
-
-              // this.router.navigate(['admin/create-article'], routerConfig);
-              this.openArticleForm();
+              this.openedDialogFlow = !this.openedDialogFlow;
             },
           },
           {
@@ -788,61 +850,6 @@ export class ItemsDashboardComponent implements OnInit {
     });
   };
 
-  openArticleForm() {
-    const dialogref = this.dialog.open(ItemListSelectorComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        title: '¿Que monto te pagarán por el artículo?',
-        inputs: [
-          {
-            label: 'Pesos Dominicanos',
-            type: 'currency',
-            placeholder: '$00.00',
-            name: 'pricing',
-          },
-        ],
-        cta: {
-          text: 'Continuar',
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-    const sub = dialogref.events
-      .pipe(filter((e) => e.type === 'result'))
-      .subscribe(async (e) => {
-        const { pricing } = e.data;
-        if (pricing) {
-          const itemInput = {
-            name: null,
-            description: null,
-            pricing: parseFloat(pricing),
-            images: [],
-            merchant: this._MerchantsService.merchantData?._id,
-            content: [],
-            currencies: [],
-            hasExtraPrice: false,
-            purchaseLocations: [],
-            showImages: false,
-          };
-          this._ItemsService.itemPrice = null;
-          this._ItemsService.itemName = null;
-
-          const { createItem } = await this._ItemsService.createItem(itemInput);
-          await this._SaleflowService.addItemToSaleFlow(
-            {
-              item: createItem._id,
-            },
-            this._SaleflowService.saleflowData._id
-          );
-          this._ToastrService.success('Producto creado satisfactoriamente!');
-          this.router.navigate([`admin/create-article/${createItem._id}`]);
-          this._ItemsService.itemPrice = parseFloat(pricing);
-          sub.unsubscribe();
-        }
-      });
-  }
-
   openHeaderDialog() {
     const list: Array<SettingsDialogButton> = [
       {
@@ -866,7 +873,7 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'Adiciona un artículo',
         callback: () => {
-          this.openArticleForm();
+          this.openedDialogFlow = !this.openedDialogFlow;
         },
       },
       {
