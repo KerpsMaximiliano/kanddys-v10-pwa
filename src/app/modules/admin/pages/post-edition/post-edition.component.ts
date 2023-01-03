@@ -13,6 +13,60 @@ export class PostEditionComponent implements OnInit {
   @Input() from: string = 'James Bond';
   default: boolean = false;
 
+  tags = [
+    //   counter: number;
+    // name: string;
+    // user?: string;
+    // status: string;
+    // images?: [string];
+    // notifications: string[];
+    // merchant: string;
+    // entity?: string;
+    // containers?: TagContainers[];
+    {
+      counter: 1,
+      name: 'First',
+      status: 'status',
+      notifications: ['hola', 'chao'],
+      merchant: 'Hola',
+    },
+    {
+      counter: 2,
+      name: 'Second',
+      status: 'status',
+      notifications: ['hola', 'chao'],
+      merchant: 'Hola2',
+    },
+    {
+      counter: 3,
+      name: 'Third',
+      status: 'status',
+      notifications: ['hola', 'chao'],
+      merchant: 'Hola3',
+    },
+    {
+      counter: 1,
+      name: 'First',
+      status: 'status',
+      notifications: ['hola', 'chao'],
+      merchant: 'Hola',
+    },
+    {
+      counter: 2,
+      name: 'Second',
+      status: 'status',
+      notifications: ['hola', 'chao'],
+      merchant: 'Hola2',
+    },
+    {
+      counter: 3,
+      name: 'Third',
+      status: 'status',
+      notifications: ['hola', 'chao'],
+      merchant: 'Hola3',
+    },
+  ];
+
   constructor() {}
 
   ngOnInit(): void {}

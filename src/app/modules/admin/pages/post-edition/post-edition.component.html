@@ -170,7 +170,19 @@
         la Inteligencia Artificial.
     </textarea>
 
-    <div class="content" *ngIf="default !== true"></div>
+    <div class="cards" *ngIf="default !== true">
+      <div class="card" *ngFor="let item of tags; index as i">
+        <app-general-item
+          [tag]="tags"
+          [entity]="'TAG'"
+          [mainColor]="'#b17608'"
+          [showIconForTagStatus]="true"
+          [statusIcon]="null"
+          [textColor]="'#272727'"
+        >
+        </app-general-item>
+      </div>
+    </div>
 
     <div class="wrapper">
       <p class="title">Contenido del Sobre</p>
