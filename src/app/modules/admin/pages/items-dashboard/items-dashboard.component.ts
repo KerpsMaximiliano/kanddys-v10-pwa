@@ -705,6 +705,7 @@ export class ItemsDashboardComponent implements OnInit {
   goToDetail(id: string) {
     this.savePageSnapshot();
     this.router.navigate([`admin/create-article/${id}`]);
+    this._ItemsService.itemImages = [];
   }
 
   savePageSnapshot() {
