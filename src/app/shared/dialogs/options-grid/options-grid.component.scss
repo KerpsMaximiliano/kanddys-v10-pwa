@@ -14,7 +14,8 @@
     text-align: center;
   }
 
-  .cards {
+  .cards,
+  .cards2 {
     // display: grid;
     // grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
     //grid-template-columns: repeat(auto-fit, minmax(33%, 100%));
@@ -60,9 +61,10 @@
 }
 
 .container {
-  .cards {
+  .cards2 {
+    justify-content: left;
     .card2 {
-      width: fit-content;
+      flex-grow: 0;
     }
   }
 }

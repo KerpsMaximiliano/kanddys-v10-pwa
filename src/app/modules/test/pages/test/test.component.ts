@@ -98,7 +98,29 @@ export class TestComponent implements OnInit {
     'Resentimiento',
   ];
 
-  words3 = ['Ya pasó', 'Pasará', 'Es cuando reciba el mensaje'];
+  words3 = [
+    'Ya pasó',
+    'Pasará',
+    'Es cuando reciba el mensaje',
+    'Omitir "el tiempo"',
+  ];
+
+  words4 = [
+    'Mi Hijo',
+    'Mi Amigo',
+    'Mi Papá',
+    'Mi Primo',
+    'Vecino',
+    'Cuñado',
+    'Mi Hermano',
+    'Mi Abuelo',
+    'Compañero de Trabajo',
+    'Mi Jefe',
+    'Suegra',
+    'Nuero',
+    'Mi compadre',
+    'Mi Comadre',
+  ];
 
   dialogs: Array<EmbeddedComponent> = [
     {
@@ -674,8 +696,73 @@ export class TestComponent implements OnInit {
     {
       component: OptionsGridComponent,
       inputs: {
+        mode: 'default',
         words: this.words,
         title: this.title,
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: OptionsGridComponent,
+      inputs: {
+        mode: 'default',
+        words: this.words2,
+        title: this.title2,
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: OptionsGridComponent,
+      inputs: {
+        mode: 'time',
+        words: ['Hombre', 'Mujer'],
+        title: '¿Que es RecipienteID?',
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: OptionsGridComponent,
+      inputs: {
+        mode: 'time',
+        words: this.words3,
+        title: this.title3,
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: OptionsGridComponent,
+      inputs: {
+        mode: 'default',
+        words: this.words4,
+        title: 'Más de RecipienteID',
       },
       outputs: [
         {
