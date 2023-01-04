@@ -117,6 +117,7 @@ import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.
 import { GeneralDialogComponent } from './components/general-dialog/general-dialog.component';
 import { OptionsGridComponent } from './dialogs/options-grid/options-grid.component';
 import { GeneralItemComponent } from './components/general-item/general-item.component';
+import { MerchantContactComponent } from './components/merchant-contact/merchant-contact.component';
 
 const imports = [
   CommonModule,
@@ -241,6 +242,7 @@ const declarations = [
   GeneralDialogComponent,
   OptionsGridComponent,
   GeneralItemComponent,
+  MerchantContactComponent
 ];
 
 @NgModule({
