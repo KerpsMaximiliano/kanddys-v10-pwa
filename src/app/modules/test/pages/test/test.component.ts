@@ -876,6 +876,12 @@ export class TestComponent implements OnInit {
         mode: 'default',
         words: this.words,
         title: this.title,
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          // padding: '37px 36.6px 70.4px 31px',
+        },
       },
       outputs: [
         {
@@ -892,6 +898,7 @@ export class TestComponent implements OnInit {
         mode: 'default',
         words: this.words2,
         title: this.title2,
+        containerStyles: {},
       },
       outputs: [
         {
@@ -908,6 +915,7 @@ export class TestComponent implements OnInit {
         mode: 'time',
         words: ['Hombre', 'Mujer'],
         title: '¿Que es RecipienteID?',
+        containerStyles: {},
       },
       outputs: [
         {
@@ -924,6 +932,9 @@ export class TestComponent implements OnInit {
         mode: 'time',
         words: this.words3,
         title: this.title3,
+        containerStyles: {
+          opacity: '1',
+        },
       },
       outputs: [
         {
@@ -940,6 +951,9 @@ export class TestComponent implements OnInit {
         mode: 'default',
         words: this.words4,
         title: 'Más de RecipienteID',
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+        },
       },
       outputs: [
         {
