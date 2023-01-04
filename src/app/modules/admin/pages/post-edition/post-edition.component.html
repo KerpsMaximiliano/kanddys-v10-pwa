@@ -173,7 +173,7 @@
     <div class="cards" *ngIf="default !== true">
       <div class="card" *ngFor="let item of tags; index as i">
         <app-general-item
-          [tag]="tags"
+          [tag]="item"
           [entity]="'TAG'"
           [mainColor]="'#b17608'"
           [showIconForTagStatus]="true"
