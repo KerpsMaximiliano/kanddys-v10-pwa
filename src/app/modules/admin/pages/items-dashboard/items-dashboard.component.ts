@@ -164,9 +164,9 @@ export class ItemsDashboardComponent implements OnInit {
         title: '¿Que monto te pagarán por el artículo?',
         inputs: [
           {
-            label: 'Pesos Dominicanos',
             type: 'currency',
             name: 'pricing',
+            innerLabel: 'Pesos Dominicanos',
           },
         ],
       },

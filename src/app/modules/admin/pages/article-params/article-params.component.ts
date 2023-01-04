@@ -204,6 +204,69 @@ export class ArticleParamsComponent implements OnInit {
     }
   };
 
+  openTagDialog = async () => {
+    const userTags = await this._TagsService.tagsByUser({
+      options: {
+        limit: -1,
+      },
+      findBy: {
+        entity: 'item',
+      },
+    });
+
+    const itemTags = (
+      await this._TagsService.tags({
+        options: {
+          limit: -1,
+        },
+        findBy: {
+          id: {
+            __in: this.item.tags,
+          },
+          entity: 'item',
+        },
+      })
+    ).tags;
+
+    this._DialogService.open(TagAsignationComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        tags: userTags,
+        //orderId: this.order._id,
+        entity: 'item',
+        entityId: this.item._id,
+        redirectToArticleParams: true,
+        outputAllSelectedTags: true,
+        activeTags:
+          itemTags && Array.isArray(itemTags)
+            ? itemTags.map((tag) => tag._id)
+            : null,
+        tagAction: async ({ selectedTags }) => {
+          this.selectedTags = selectedTags;
+
+          try {
+            const response = await this._ItemsService.updateItem(
+              {
+                tags: this.selectedTags,
+              },
+              this.item._id
+            );
+
+            if (response) {
+              this.item.tags = this.selectedTags;
+            }
+          } catch (error) {
+            this._ToastrService.error('Error al asignar tags', null, {
+              timeOut: 1000,
+            });
+          }
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
   dotsCallback = () => {
     // console.log('Dots');
   };
@@ -686,68 +749,7 @@ export class ArticleParamsComponent implements OnInit {
       },
       {
         text: 'Adiciona un tag a este artículo',
-        callback: async () => {
-          const userTags = await this._TagsService.tagsByUser({
-            options: {
-              limit: -1,
-            },
-            findBy: {
-              entity: 'item',
-            },
-          });
-
-          const itemTags = (
-            await this._TagsService.tags({
-              options: {
-                limit: -1,
-              },
-              findBy: {
-                id: {
-                  __in: this.item.tags,
-                },
-                entity: 'item',
-              },
-            })
-          ).tags;
-
-          this._DialogService.open(TagAsignationComponent, {
-            type: 'fullscreen-translucent',
-            props: {
-              tags: userTags,
-              //orderId: this.order._id,
-              entity: 'item',
-              entityId: this.item._id,
-              redirectToArticleParams: true,
-              outputAllSelectedTags: true,
-              activeTags:
-                itemTags && Array.isArray(itemTags)
-                  ? itemTags.map((tag) => tag._id)
-                  : null,
-              tagAction: async ({ selectedTags }) => {
-                this.selectedTags = selectedTags;
-
-                try {
-                  const response = await this._ItemsService.updateItem(
-                    {
-                      tags: this.selectedTags,
-                    },
-                    this.item._id
-                  );
-
-                  if (response) {
-                    this.item.tags = this.selectedTags;
-                  }
-                } catch (error) {
-                  this._ToastrService.error('Error al asignar tags', null, {
-                    timeOut: 1000,
-                  });
-                }
-              },
-            },
-            customClass: 'app-dialog',
-            flags: ['no-header'],
-          });
-        },
+        callback: async () => this.openTagDialog(),
       },
     ];
 

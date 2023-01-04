@@ -20,7 +20,7 @@
         src: '/bookmark-plus.svg',
         color: 'brightness(0)',
         margin: '1px',
-        callback: iconCallback
+        callback: openTagDialog
       }
     ]"
     [dots]="{
@@ -179,7 +179,7 @@
           boxShadow: 'none',
           backgroundColor: 'white',
           borderRadius: '6px',
-          color: '#7B7B7B'
+          padding: '8px 20px'
         }"
         [initialValue]="
           countDecimals(price.value) < 2 ? price.value * 100 : price.value

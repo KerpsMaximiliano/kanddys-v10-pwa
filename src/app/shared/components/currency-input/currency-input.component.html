@@ -1,18 +1,15 @@
-<div class="price-wrapper">
-  <div class="formatted-price" [ngStyle]="fieldStyles">
-    {{ currencyLabel }} {{ formattedPricing }}
-    <div
-      class="cursor blinking-cursor"
-      [ngClass]="{ 'blinking-cursor': curencyFocused }"
-      style="width: 1px; height: 1rem"
-    ></div>
+<div class="input-wrapper">
+  <div class="currency-wrapper" [ngStyle]="fieldStyles">
+    <span class="inner-label" *ngIf="innerLabel">{{ innerLabel }}</span>
+    <div class="formatted-price">
+      {{ currencyLabel }} {{ formattedPricing }}
+      <div
+        class="cursor blinking-cursor"
+        [ngClass]="{ 'blinking-cursor': curencyFocused }"
+        style="width: 1px; height: 1rem"
+      ></div>
+    </div>
   </div>
-  <label
-    for="Texto intterno"
-    class="inner-label"
-    *ngIf="innerLabel && innerLabel"
-    >{{ innerLabel }}</label
-  >
   <input
     #input
     class="formatted-input"
