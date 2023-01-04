@@ -30,6 +30,7 @@ import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
 import { BlankComponent } from 'src/app/shared/dialogs/blank/blank.component';
 import { SwiperOptions } from 'swiper';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
+import { OptionsGridComponent } from 'src/app/shared/dialogs/options-grid/options-grid.component';
 
 @Component({
   selector: 'app-test',
@@ -168,7 +169,7 @@ export class TestComponent implements OnInit {
           },
         },
       ],
-      postLabel: 'El mensaje incluirá un qrCode para ver el Story.'
+      postLabel: 'El mensaje incluirá un qrCode para ver el Story.',
     },
     {
       component: GeneralDialogComponent,
@@ -225,7 +226,8 @@ export class TestComponent implements OnInit {
           ],
         },
       },
-      postLabel: 'Mensajito de prueba que se ve despues de pasar el 2do dialog.'
+      postLabel:
+        'Mensajito de prueba que se ve despues de pasar el 2do dialog.',
     },
     {
       component: GeneralDialogComponent,
@@ -658,6 +660,21 @@ export class TestComponent implements OnInit {
           ],
         },
         isMultiple: true,
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: OptionsGridComponent,
+      inputs: {
+        words: this.words,
+        title: this.title,
       },
       outputs: [
         {
