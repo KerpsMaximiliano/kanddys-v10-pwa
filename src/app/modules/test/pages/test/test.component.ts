@@ -103,6 +103,7 @@ export class TestComponent implements OnInit {
     {
       component: GeneralDialogComponent,
       inputs: {
+        omitTabFocus: false,
         containerStyles: {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
