@@ -74,6 +74,7 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
   } = {};
   @Input('isMultiple') isMultiple: boolean = false;
   @Output('data') data: EventEmitter<any> = new EventEmitter();
+  @Input('omitTabFocus') omitTabFocus:boolean = true;
   selected: string[] = [];
   controller: FormGroup;
   sub: Subscription;
