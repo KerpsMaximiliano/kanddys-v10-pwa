@@ -657,9 +657,15 @@ export class TestComponent implements OnInit {
                 list: [
                   {
                     text: 'Si',
+                    // barStyle: {
+                    //   display: 'inline-block',
+                    //   background: '#FC2727',
+                    //   width: ' 100%',
+                    //   height: ' 100%',
+                    //   borderRadius: '4px',
+                    // },
                     subText: {
                       text: 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.',
-
                       styles: {
                         color: '#7B7B7B',
                         display: 'block',
@@ -674,6 +680,177 @@ export class TestComponent implements OnInit {
                   },
                   {
                     text: 'No',
+                  },
+                ],
+              },
+              // styles: {},
+              prop: 'text',
+            },
+          ],
+        },
+        isMultiple: true,
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: GeneralDialogComponent,
+      inputs: {
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '37px 36.6px 70.4px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '21px',
+            fontFamily: 'SfProBold',
+            marginBottom: '6px',
+            marginTop: '0',
+            color: '#4F4F4F',
+          },
+          text: '¿Deseas incluir alguna otra cosa?',
+        },
+        title: {
+          styles: {
+            fontSize: '15px',
+            color: '#7B7B7B',
+            fontStyle: 'italic',
+            margin: '0',
+            marginBottom: '37.5px',
+          },
+          text: '',
+        },
+        fields: {
+          list: [
+            {
+              name: 'test8',
+              value: '',
+              validators: [Validators.required],
+              type: 'selection',
+              selection: {
+                styles: {
+                  display: 'block',
+                  fontFamily: '"SfProBold"',
+                  fontSize: '17px',
+                  color: '#272727',
+                },
+                list: [
+                  {
+                    text: 'No',
+                  },
+                  {
+                    text: 'Fotos, videos de mi device',
+                  },
+                  {
+                    text: 'Imagen de la IA',
+                  },
+                  {
+                    text: 'Una canción o voice',
+                  },
+                ],
+              },
+              // styles: {},
+              prop: 'text',
+            },
+          ],
+        },
+        isMultiple: true,
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: GeneralDialogComponent,
+      inputs: {
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '37px 36.6px 70.4px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '21px',
+            fontFamily: 'SfProBold',
+            marginBottom: '6px',
+            marginTop: '0',
+            color: '#4F4F4F',
+          },
+          text: '¿Que deseas incluir?',
+        },
+        title: {
+          styles: {
+            fontSize: '15px',
+            color: '#7B7B7B',
+            fontStyle: 'italic',
+            margin: '0',
+            marginBottom: '37.5px',
+          },
+          text: '',
+        },
+        fields: {
+          list: [
+            {
+              name: 'test8',
+              value: '',
+              validators: [Validators.required],
+              type: 'selection',
+              selection: {
+                styles: {
+                  display: 'block',
+                  fontFamily: '"SfProBold"',
+                  fontSize: '17px',
+                  color: '#272727',
+                },
+                list: [
+                  {
+                    text: 'Un chiste de la IA',
+                  },
+                  {
+                    text: 'Fotos, videos de mi device',
+                  },
+                  {
+                    text: 'Imagen de la IA',
+                  },
+                  {
+                    text: 'Una canción o voice',
+                  },
+                  {
+                    text: 'Si, el Giftcard de los Spas',
+                    barStyle: {
+                      display: 'inline-block',
+                      background: '#FC2727',
+                      width: ' 100%',
+                      height: ' 100%',
+                      borderRadius: '4px',
+                    },
+                    subText: {
+                      text: 'Válido en más de 40 Spas de Santo Domingo.',
+                      styles: {
+                        color: '#FC2727',
+                        display: 'block',
+                        fontFamily: '"SfProRegular"',
+                        fontStyle: 'italic',
+                        fontSize: '15px',
+                        marginBottom: '15px',
+                        marginTop: '5px',
+                        paddingRight: '15px',
+                      },
+                    },
                   },
                 ],
               },

@@ -2,12 +2,12 @@
   <h1 [style]="header.styles">{{ header.text }}</h1>
   <p [style]="title.styles">{{ title.text }}</p>
   <form [formGroup]="controller" [style]="fields.styles">
-    <ng-container *ngFor="let field of fields.list;let i = index;">
+    <ng-container *ngFor="let field of fields.list; let i = index">
       <ng-container [ngSwitch]="field.type">
         <div *ngSwitchCase="'checkbox'">
           <div [style]="field.stylesGrid">
             <input
-              [tabindex]="omitTabFocus?-1:i"
+              [tabindex]="omitTabFocus ? -1 : i"
               [type]="field.type"
               [placeholder]="field.placeholder"
               [style]="field.styles"
@@ -30,7 +30,7 @@
             "
             (click)="setSelected(item[field.prop], controller.get(field.name))"
           >
-            <div class="square-item"></div>
+            <div [style]="item.barStyle" class="square-item"></div>
 
             <div>
               <div class="grid-content">
@@ -50,7 +50,7 @@
             {{ field.label.text }}
           </label>
           <textarea
-            [tabindex]="omitTabFocus?-1:i"
+            [tabindex]="omitTabFocus ? -1 : i"
             [placeholder]="field.placeholder"
             [style]="field.styles"
             [formControlName]="field.name"
@@ -61,7 +61,7 @@
             {{ field.label.text }}
           </label>
           <input
-            [tabindex]="omitTabFocus?-1:i"
+            [tabindex]="omitTabFocus ? -1 : i"
             type="text"
             [placeholder]="field.placeholder"
             [style]="field.styles"
