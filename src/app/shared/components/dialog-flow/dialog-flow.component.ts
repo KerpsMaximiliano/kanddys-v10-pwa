@@ -43,10 +43,11 @@ export class DialogFlowComponent implements OnInit {
   }
 
   applyTransparencyToSlidesThatArentActive() {
-    const allSlides = document.querySelectorAll('.swiper-slide');
-
-    allSlides.forEach((slide, index) => {
+    this.dialogs.forEach((slide, index) => {
       const dialogHTMLElement = slide;
+
+      if (!this.dialogs[index].inputs) this.dialogs[index].inputs = {};
+      if (!this.dialogs[index].inputs.containerStyles) this.dialogs[index].inputs.containerStyles = {};
 
       if (index !== this.currentDialogIndex) {
         this.dialogs[index].inputs.containerStyles.opacity = '0.5';
@@ -58,15 +59,15 @@ export class DialogFlowComponent implements OnInit {
     });
 
     setTimeout(() => {
-      allSlides.forEach((slide, index) => {
+      this.dialogs.forEach((slide, index) => {
         this.dialogs[index].shouldRerender = false;
       });
     }, 100);
   }
 
   tapEvent(tappedDialogIndex: number) {
-    if(tappedDialogIndex !== this.currentDialogIndex) {
-      this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex)
+    if (tappedDialogIndex !== this.currentDialogIndex) {
+      this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex);
     }
   }
 
