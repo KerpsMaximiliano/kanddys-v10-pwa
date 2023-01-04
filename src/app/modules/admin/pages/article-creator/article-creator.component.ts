@@ -47,7 +47,7 @@ export class ArticleCreatorComponent implements OnInit {
   views: string = '0.00';
   sales: string = '0.00';
   infoMissing: 'contact' | 'delivery' | 'payment' | 'banner' = 'contact';
-  viewType: 'preview' | 'edit' | 'saved' = 'preview';
+  viewType: 'preview' | 'saved' = 'preview';
   multimedia: any = [];
   urls: string[] = [];
   display: string;
@@ -171,31 +171,31 @@ export class ArticleCreatorComponent implements OnInit {
         });
         return;
       }
-      if (this.item.images.length && !this._ItemsService.itemImages.length) {
-        const multimedia: File[] = [];
-        this.item.images.forEach(async (image, index) => {
-          this.multimedia[0][index] = this._DomSanitizer
-            .bypassSecurityTrustStyle(`url(
-        ${image})
-        no-repeat center center / contain #2e2e2e`);
-          this.urls.push(image);
-          this.types[0][index] = 'image/jpeg';
+      if (this.item.images.length) {
+        this.urls = [...this.item.images];
+        if (!this._ItemsService.itemImages.length) {
+          const multimedia: File[] = [];
+          this.item.images.forEach(async (image, index) => {
+            this.multimedia[0][index] = this._DomSanitizer
+              .bypassSecurityTrustStyle(`url(
+          ${image})
+          no-repeat center center / contain #2e2e2e`);
+            this.types[0][index] = 'image/jpeg';
 
-          const response = await fetch(image);
-          const blob = await response.blob();
-          const file = new File([blob], `item_image_${index}.jpeg`, {
-            type: 'image/jpeg',
+            const response = await fetch(image);
+            const blob = await response.blob();
+            const file = new File([blob], `item_image_${index}.jpeg`, {
+              type: 'image/jpeg',
+            });
+            multimedia.push(file);
+            if (index + 1 === this.item.images.length) {
+              this.controllers.at(0).get('multimedia').setValue(multimedia);
+              this.updateFrantions();
+              this.activeSlide = 0;
+            }
           });
-          multimedia.push(file);
-          if (index + 1 === this.item.images.length) {
-            this.controllers.at(0).get('multimedia').setValue(multimedia);
-            this.updateFrantions();
-            this.activeSlide = 0;
-          }
-        });
+        }
       }
-    } else {
-      this.price = this._ItemsService.itemPrice;
     }
     if (this._ItemsService.itemImages.length) {
       this._ItemsService.itemImages?.forEach((file, index) => {
@@ -424,7 +424,7 @@ export class ArticleCreatorComponent implements OnInit {
 
   imageSizeChange: number = 100;
   imageRotationChange: number = 0;
-  imageRotation: number;
+  imageRotation: number = 0;
 
   rotateImage() {
     this.imageRotation = this.imageRotationChange * (Math.PI / 180);
@@ -469,7 +469,9 @@ export class ArticleCreatorComponent implements OnInit {
   enterEdit(i: number, j: number) {
     this.editMode = true;
     this.editingImage = j;
+    console.log(this.urls);
     const img = this.urls[j];
+    console.log(img);
     this.imageElement = new Image();
     this.imageElement.src = img as string;
     this.imageElement.crossOrigin = 'anonymous';
@@ -496,15 +498,24 @@ export class ArticleCreatorComponent implements OnInit {
     };
   }
 
+  resetSliders() {
+    this.imageSizeChange = 100;
+    this.imageRotation = 0;
+    this.imageRotationChange = 0;
+  }
+
   cancelEdit() {
     this.editMode = false;
     this.editingImage = null;
     this.imageElement = null;
     this.canvasElement = null;
     this.context = null;
-    this.imageSizeChange = 100;
-    this.imageRotation = null;
-    this.imageRotationChange = 0;
+    this.resetSliders();
+  }
+
+  resetEdit() {
+    this.resetSliders();
+    this.drawImage();
   }
 
   openImageModal(imageSourceURL: string) {
@@ -531,27 +542,46 @@ export class ArticleCreatorComponent implements OnInit {
       this.imageRotation = null;
       this.editMode = false;
       const url = this.canvasElement.toDataURL('image/png');
-      this.urls[this.editingImage] = url;
-      this.multimedia[0][this.editingImage] = this._DomSanitizer
-        .bypassSecurityTrustStyle(`url(
-        ${url})
-        no-repeat center center / contain #2e2e2e`);
       const file = await this.urltoFile(url, 'image.png');
-      const { type } = file;
-      const multimedia = this.controllers
-        .at(0)
-        .get('multimedia')
-        .value.map((image, index: number) => {
-          var formData = new FormData();
-          const { name } = file;
-          var blob = new Blob([JSON.stringify(file)], { type });
-          formData.append(name, blob);
-          return index === this.editingImage ? file : image;
+      this.urls[this.editingImage] = url;
+      console.log({ ...this.item });
+      console.log(this.item.images[this.editingImage]);
+      const itemWithDeletedImage = await this._ItemsService.deleteImageItem(
+        [this.item.images[this.editingImage]],
+        this.item._id
+      );
+      console.log(itemWithDeletedImage);
+      const itemWithAddedImage = await this._ItemsService.addImageItem(
+        [file],
+        this.item._id
+      );
+      this.urls[this.editingImage] = url;
+      console.log(itemWithAddedImage);
+
+      const newItem = await this._ItemsService.item(this.item._id);
+      this.item.images = [...newItem.images];
+      this.urls = newItem.images;
+
+      const multimedia: File[] = [];
+      this.item.images.forEach(async (image, index) => {
+        this.multimedia[0][index] = this._DomSanitizer
+          .bypassSecurityTrustStyle(`url(
+        ${image})
+        no-repeat center center / contain #2e2e2e`);
+        this.types[0][index] = 'image/jpeg';
+
+        const response = await fetch(image);
+        const blob = await response.blob();
+        const file = new File([blob], `item_image_${index}.jpeg`, {
+          type: 'image/jpeg',
         });
-      this.editingImage = null;
-      this.controllers.at(0).get('multimedia').setValue(multimedia);
-      if (this.item) this._ItemsService.changedImages = true;
-      this.openImageModal(url);
+        multimedia.push(file);
+        if (index + 1 === this.item.images.length) {
+          this.controllers.at(0).get('multimedia').setValue(multimedia);
+          this.updateFrantions();
+          this.activeSlide = 0;
+        }
+      });
       return;
     }
     if (this.mode === 'symbols') {
@@ -607,13 +637,6 @@ export class ArticleCreatorComponent implements OnInit {
       if (this.item) {
         if (this._ItemsService.changedImages) {
           const itemInput = {
-            // name: this.item.name || null,
-            // description: this.item.description,
-            // pricing: this.item.pricing,
-            // content: [],
-            // currencies: [],
-            // hasExtraPrice: false,
-            // purchaseLocations: [],
             showImages: this._ItemsService.itemImages.length > 0,
           };
           const { updateItem: updatedItem } =
@@ -853,7 +876,6 @@ export class ArticleCreatorComponent implements OnInit {
     }
     this._ItemsService.itemImages = [];
     this._ItemsService.itemName = null;
-    this._ItemsService.itemPrice = null;
     this._ItemsService.changedImages = false;
     if (!this.fromTemplate) {
       if (
