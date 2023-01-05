@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { LinkInput } from 'src/app/core/models/LinkInput';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
@@ -11,7 +13,8 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
   templateUrl: './bios-edit.component.html',
   styleUrls: ['./bios-edit.component.scss'],
 })
-export class BiosEditComponent implements OnInit {
+export class BiosEditComponent implements OnInit, OnDestroy {
+  status:string;
   name: string = 'Merchant ID';
   bio: string =
     'Servicios de Asesoría Fiscal • 15 años de experiencia como Gerente Local y Proceso Fiscales en DGII •';
@@ -34,22 +37,53 @@ export class BiosEditComponent implements OnInit {
   fileLogo:any;
   links:any = [];
   contactId:string;
+  sub:Subscription;
+  linkIndex:number;
 
   constructor(
     private router: Router,
     private _ContactService: ContactService,
     private _MerchantService: MerchantsService,
-    private _DomSanitizer: DomSanitizer
+    private _DomSanitizer: DomSanitizer,
+    private _ActivatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    (async () => {
-      this.initController();
-      const { _id } = await this._MerchantService.merchantDefault();
-      this.controller.get('merchant').setValue(_id);
-
-    })();
+    this.sub = this._ActivatedRoute.queryParams.subscribe(({ contactId }) => {
+      (async () => {
+        if(contactId)
+          this.contactId = contactId;
+        this.initController();
+        const _merchantDefault = await this._MerchantService.merchantDefault();
+        if(contactId) {
+          const { _id } = _merchantDefault;
+          const paginate:PaginationInput = {
+            findBy:{
+              _id: contactId
+            }
+          }
+          const [{ name, description, link, image }] = await this._ContactService.contacts(paginate);
+          this.controller.get('merchant').setValue(_id);
+          this.controller.get('name').setValue(name);
+          this.controller.get('description').setValue(description);
+          this.links = link;
+          this.logo = this.formatImage(image);
+        }else {
+          const { _id, image, name, bio, social } = _merchantDefault;
+          this.logo = this.formatImage(image);
+          this.controller.get('merchant').setValue(_id);
+          this.controller.get('name').setValue(name);
+          this.controller.get('description').setValue(bio);
+          this.links = social;
+        }
+      })();
+    })
   }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+  }
+
   initController():void {
     const fields = [
       {
@@ -66,11 +100,11 @@ export class BiosEditComponent implements OnInit {
       },
       {
         name: 'tag',
-        validators: [Validators.required]
+        validators: []
       },
       {
         name: 'contact',
-        validators: [Validators.required]
+        validators: []
       }
     ];
     for(const { name, validators } of fields)
@@ -86,10 +120,7 @@ export class BiosEditComponent implements OnInit {
     reader.onload = async (e) => {
       const { type } = file;
       let result = reader.result;
-      this.src = this._DomSanitizer
-        .bypassSecurityTrustStyle(`url(
-      ${result})
-      no-repeat center center / cover #fff`);
+      this.src = result;
     };
   }
 
@@ -115,19 +146,48 @@ export class BiosEditComponent implements OnInit {
     this.router.navigate(['admin/bios-main']);
   }
   backToMain() {
+    if(this.linkIndex===null&&this.enlace&&this.controller.get('tag').valid&&this.controller.get('contact').valid&&this.src){
+      const _link:any = {
+        image: this.src,
+        _image: this.file,
+        name: this.controller.get('tag').value,
+        value: this.controller.get('contact').value
+      };
+      this.links = [...this.links, _link];
+      for(const name of ['tag','contact'])
+        this.controller.get(name).setValue('');
+      this.file = '';
+      this.src = '';
+    }else if(this.linkIndex!==null&&this.enlace&&this.controller.get('tag').valid&&this.controller.get('contact').valid&&this.src){
+      const _link:any = {
+        _id: this.links[this.linkIndex]._id,
+        image: this.src,
+        _image: this.file,
+        name: this.controller.get('tag').value,
+        value: this.controller.get('contact').value
+      };
+      this.links[this.linkIndex] = _link;
+      for(const name of ['tag','contact'])
+        this.controller.get(name).setValue('');
+      this.file = '';
+      this.src = '';
+    }
     this.enlace = false;
     this.direcciones = false;
     this.publicName = false;
     this.bioDescription = false;
     this.main = true;
+    this.linkIndex==null
   }
   add() {
     this.enlace = true;
     this.main = false;
+    this.linkIndex = null;
   }
 
   submit():void {
-    if(this.controller.invalid || !this.fileLogo || !this.file) return;
+    if(this.controller.invalid || this.status) return;
+    this.status = 'Cargando...';
     (async () => {
       const {
         name,
@@ -143,20 +203,44 @@ export class BiosEditComponent implements OnInit {
       if(!this.contactId){
         const { _id } = await this._ContactService.createContact(value);
         this.contactId = _id;
+        await this.setLinks();
+        this.router.navigate(['admin','bios-edit'],{
+          queryParams: {
+            contactId: this.contactId
+          }
+        });
+      }else{
+        const result = await this._ContactService.updateContact(this.contactId, value);
+        await this.setLinks();
       }
-      const _link:LinkInput = {
-        image: this.file,
-        name: this.controller.get('tag').value,
-        value: this.controller.get('contact').value
-      };
-      const { link } = await this._ContactService.contactAddLink(_link, this.contactId);
-      const [result] = link;
-      this.links = link;
-      for(const name of ['tag','contact'])
-        this.controller.get(name).setValue('');
-      this.file = '';
-      this.src = '';
     })();
+  }
+
+  async setLinks():Promise<void>{
+    for(let link of this.links){
+      if(!link._id){
+        const _link:LinkInput = {
+          image: link._image,
+          name: link.name,
+          value: link.value
+        };
+        const result = await this._ContactService.contactAddLink(_link, this.contactId);
+      }else {
+        let _link:any = {
+          name: link.name,
+          value: link.value
+        };
+        if(link._image)
+          _link.image = link._image;
+        const result = await this._ContactService.contactUpdateLink(_link, link._id, this.contactId);
+      }
+      // this.links = [...this.links, result];
+    }
+    for(const name of ['tag','contact'])
+      this.controller.get(name).setValue('');
+    this.file = '';
+    this.src = '';
+    this.status = '';
   }
 
   formatImage(image:string):SafeStyle {
@@ -243,5 +327,19 @@ export class BiosEditComponent implements OnInit {
   resetSrc():void {
     this.file = '';
     this.src = '';
+  }
+
+  navigateToLink(index:number):void {
+    this.enlace = true;
+    this.direcciones = false;
+    this.publicName = false;
+    this.bioDescription = false;
+    this.main = false;
+    const link = this.links[index];
+    this.controller.get('tag').setValue(link.name);
+    this.controller.get('contact').setValue(link.value);
+    const image = link._image || link.image;
+    this.src = image;
+    this.linkIndex = index;
   }
 }
