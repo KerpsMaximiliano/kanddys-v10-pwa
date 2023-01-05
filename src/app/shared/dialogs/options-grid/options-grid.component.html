@@ -5,6 +5,7 @@
   <div class="cards">
     <div
       class="card"
+      (click)="cardClicked(item)"
       [ngClass]="
         item.length <= 8
           ? 'card third'
@@ -24,7 +25,11 @@
     {{ title }}
   </h2>
   <div class="cards2">
-    <div class="card2" *ngFor="let item of words; index as i">
+    <div
+      class="card2"
+      (click)="cardClicked(item)"
+      *ngFor="let item of words; index as i"
+    >
       <span>{{ item }}</span>
     </div>
   </div>

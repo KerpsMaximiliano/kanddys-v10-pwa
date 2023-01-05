@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-options-grid',
@@ -11,8 +11,13 @@ export class OptionsGridComponent implements OnInit {
   @Input() mode = 'default';
   @Input('containerStyles') containerStyles: Record<string, string>;
   @Input() titleCenter: boolean = true;
+  @Output() optionClick = new EventEmitter();
 
   constructor() {}
 
   ngOnInit(): void {}
+
+  cardClicked(text: string) {
+    this.optionClick.emit(text);
+  }
 }

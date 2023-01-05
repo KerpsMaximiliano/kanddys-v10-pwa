@@ -19,6 +19,7 @@ import { BlankComponent } from '../../dialogs/blank/blank.component';
 export class DialogFlowComponent implements OnInit {
   @Input() dialogs: Array<EmbeddedComponent> = [];
   @Output() saveConfigRef = new EventEmitter();
+  @Output() moveToDialogRef = new EventEmitter();
   swiperConfig: SwiperOptions = {
     direction: 'vertical',
     centeredSlides: true,
@@ -39,6 +40,7 @@ export class DialogFlowComponent implements OnInit {
       this.applyTransparencyToSlidesThatArentActive();
       // this.swiperConfig.allowSlideNext = false;
       this.saveConfigRef.emit(this.swiperConfig);
+      this.moveToDialogRef.emit(this.moveToDialogByIndex.bind(this));
     }, 100);
   }
 
@@ -47,7 +49,8 @@ export class DialogFlowComponent implements OnInit {
       const dialogHTMLElement = slide;
 
       if (!this.dialogs[index].inputs) this.dialogs[index].inputs = {};
-      if (!this.dialogs[index].inputs.containerStyles) this.dialogs[index].inputs.containerStyles = {};
+      if (!this.dialogs[index].inputs.containerStyles)
+        this.dialogs[index].inputs.containerStyles = {};
 
       if (index !== this.currentDialogIndex) {
         this.dialogs[index].inputs.containerStyles.opacity = '0.5';
@@ -66,14 +69,18 @@ export class DialogFlowComponent implements OnInit {
   }
 
   tapEvent(tappedDialogIndex: number) {
-    if (tappedDialogIndex !== this.currentDialogIndex) {
-      this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex);
-    }
+    this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex);
   }
 
   changeActiveDialog(eventData: Swiper) {
     this.currentDialogIndex = eventData.activeIndex;
 
     this.applyTransparencyToSlidesThatArentActive();
+  }
+
+  moveToDialogByIndex(dialogNumber: number) {
+    setTimeout(() => {
+      this.dialogSwiper.directiveRef.setIndex(dialogNumber);
+    }, 100);
   }
 }

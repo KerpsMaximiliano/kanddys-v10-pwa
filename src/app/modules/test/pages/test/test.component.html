@@ -264,6 +264,7 @@ headline="EXPUESTO EN TAB (S)"
   [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
   [dialogs]="dialogs"
   (saveConfigRef)="swiperConfig = $event"
+  (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
 ></app-dialog-flow>
 
 <!-- <app-options-grid [words]="words" [title]="title"></app-options-grid> -->

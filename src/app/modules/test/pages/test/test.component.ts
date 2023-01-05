@@ -43,6 +43,7 @@ export class TestComponent implements OnInit {
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
+  dialogFlowFunctions: Record<string, any> = {};
 
   title = '¿Cuál(es) seria el motivo?';
   title2 = '¿Que emoción(es) quieres transmitir con el mensaje?';
@@ -138,9 +139,11 @@ export class TestComponent implements OnInit {
       },
       outputs: [
         {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
+          name: 'optionClick',
+          callback: (option: string) => {
             this.swiperConfig.allowSlideNext = true;
+
+            this.dialogFlowFunctions.moveToDialogByIndex(3);
           },
         },
       ],
