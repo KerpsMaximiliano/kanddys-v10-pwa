@@ -636,10 +636,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 label: 'Girasol',
               },
               {
-                color: '#FFFDD0',
-                label: 'Crema',
-              },
-              {
                 color: 'red',
                 label: 'Roja',
               },
@@ -712,6 +708,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
           colorPickerConfiguration: {
             options: [
+              {
+                color: '#FFFDD0',
+                label: 'Crema',
+              },
               {
                 color: 'red',
                 label: 'Roja',
