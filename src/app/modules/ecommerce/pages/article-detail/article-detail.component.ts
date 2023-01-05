@@ -97,6 +97,7 @@ export class ArticleDetailComponent implements OnInit {
   entityTemplate: EntityTemplate = null;
   user: User;
   logged: boolean = false;
+  isProductMine:boolean = false;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -123,6 +124,7 @@ export class ArticleDetailComponent implements OnInit {
       this.previewMode = true;
     }
     this.route.params.subscribe(async (routeParams) => {
+      await this.verifyIfUserIsLogged();
       const validEntities = ['item', 'post', 'template'];
       const { entity, entityId } = routeParams;
 
@@ -171,8 +173,6 @@ export class ArticleDetailComponent implements OnInit {
       } else {
         this.router.navigate([`others/error-screen/`]);
       }
-
-      await this.verifyIfUserIsLogged();
     });
   }
 
@@ -223,7 +223,9 @@ export class ArticleDetailComponent implements OnInit {
   async getPostData() {
     try {
       const { post } = await this.postsService.getPost(this.entityId);
-
+      const { author } = post;
+      const { _id } = author;
+      this.isProductMine = _id === this.user?._id;
       if (post) {
         this.postData = post;
 
@@ -577,7 +579,7 @@ export class ArticleDetailComponent implements OnInit {
                   createdEntityTemplate._id,
                   {
                     entity: 'entity-template',
-                    reference: result._id,
+                    reference: result._id
                   }
                 );
 
@@ -625,5 +627,13 @@ export class ArticleDetailComponent implements OnInit {
       return;
     }
     this.logged = true;
+  }
+
+  navigate():void {
+    (async () => {
+      const { _id } = await this.entityTemplateService.entityTemplateByReference(this.entityId,this.entity);
+      const route = ['ecommerce', 'article-privacy', _id];
+      this.router.navigate(route);
+    })()
   }
 }

@@ -45,12 +45,18 @@ export interface WebformAnswerLayoutOption {
   optionStyles?: Record<WebformAnswerLayoutParts, any>;
   selected?: boolean;
   callback?(...params): any;
+  optionIcon?: string;
   texts: {
     topLeft: OptionText;
     topRight: OptionText;
     bottomLeft: OptionText;
     middleTexts: OptionText[];
   };
+  logos?: Array<{
+    src: string;
+    width?: number | string;
+    height?: number | string;
+  }>;
 }
 
 //DEFAULT VALUES FOR TYPES

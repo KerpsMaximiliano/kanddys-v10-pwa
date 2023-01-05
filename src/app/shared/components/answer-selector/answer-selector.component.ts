@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   BankAnswers,
   ComplexOptionAnswerSelector,
   OptionAnswerSelector,
 } from 'src/app/core/types/answer-selector';
+import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 
 @Component({
   selector: 'app-answer-selector',
@@ -36,7 +38,7 @@ export class AnswerSelectorComponent {
 
   @Output() onSelector = new EventEmitter<number>();
 
-  constructor() {}
+  constructor(private _Router: Router, private _DialogRef: DialogRef) {}
 
   activateOption(option: number) {
     if (option === this.activeOption) return;

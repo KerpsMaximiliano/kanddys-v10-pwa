@@ -63,6 +63,7 @@ export class ItemsService {
   itemPrice: number;
   itemName: string;
   itemDesc: string;
+  itemPassword: string;
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;

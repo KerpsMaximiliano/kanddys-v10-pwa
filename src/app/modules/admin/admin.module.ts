@@ -17,6 +17,9 @@ import { ArticleParamsComponent } from './pages/article-params/article-params.co
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/anexo-choices.component';
+import { TagsComponent } from './pages/tags/tags.component';
+import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
+import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -122,7 +125,19 @@ const routes: Routes = [
         path: 'article-choices',
         component: AnexoChoicesComponent,
       },
+      {
+        path: 'manage-tag',
+        component: ManageTagComponent,
+      },
+      {
+        path: 'article-privacy/:templateId',
+        component: ArticlePrivacyComponent,
+      },
     ],
+  },
+  {
+    path: 'tags',
+    component: TagsComponent
   },
 ];
 
@@ -140,6 +155,8 @@ const routes: Routes = [
     ArticleParamsComponent,
     ItemsDashboardComponent,
     CreateTagComponent,
+    TagsComponent,
+    ManageTagComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

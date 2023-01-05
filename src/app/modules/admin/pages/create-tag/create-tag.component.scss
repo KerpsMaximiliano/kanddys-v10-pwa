@@ -1,109 +1,153 @@
 @import "forms";
 
-.options-container{
-   width: 100%;
-   display: flex;
-   justify-content: space-around;
-   align-items: center;
-   background-color: #fff;
-   overflow-x: scroll;
-   margin-bottom: 3px;
-   padding: 5px 0;
+.page-container {
+  min-height: 100vh;
+  padding-bottom: 30px;
+}
 
-   .option{
-      all: unset;
-      font-family: 'SfProRegular';
-      font-size: 1.063rem;
-      color: #7B7B7B;
-      margin-right: 4%;
-      margin-left: 2%;
-      cursor: pointer;
-   }
+.options-container {
+  align-items: center;
+  background-color: #fff;
+  display: flex;
+  margin-bottom: 3px;
+  overflow-x: scroll;
+  padding: 0.5rem 2.5rem;
+  width: 100%;
+
+  .option {
+    all: unset;
+    color: #7b7b7b;
+    cursor: pointer;
+    font-family: "SfProLight";
+    font-size: 17px;
+  }
+
+  :not(:last-child) {
+    padding-right: 3rem;
+  }
 }
 
 form {
   height: max-content;
-  padding: 29px 16px 0px 18px;
+  margin: 2rem 2.5rem;
+
+  @media (max-width: 399px) {
+    margin: 2rem 1rem;
+  }
+
+  @media (min-width: 400px) and (max-width: 430px) {
+    margin: 2rem;
+  }
+
+  .inputs-container {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .image-input,
+  .name-input {
+    flex-basis: 48.5%;
+    width: 100%;
+  }
+
+  .input-container {
+    background-color: #e9e9e9;
+    border-radius: 9px;
+    display: flex;
+    flex-direction: column;
+    height: 225px;
+    margin-bottom: 3rem;
+    position: relative;
+
+    .input {
+      border-radius: 0;
+      box-shadow: inset 0px 0px 9px 0px rgba(0, 0, 0, 0.2);
+      height: 100px;
+      padding-bottom: 50px;
+    }
+
+    .small {
+      bottom: 10px;
+      color: #7b7b7b;
+      font-family: "SfProLight";
+      font-size: 13px;
+      position: absolute;
+      right: 15px;
+    }
+
+    input::placeholder {
+      font-family: "RobotoMedium";
+      font-size: 17px;
+    }
+  }
+
+  .end {
+    justify-content: flex-end;
+  }
+
+  .name-input:hover {
+    border-color: #31a4f9;
+  }
 
   .input-label {
     color: #7b7b7b;
     font-family: RobotoMedium;
-    font-weight: normal;
     font-size: 17px;
-    margin-bottom: 16px;
+    font-weight: normal;
+    margin-bottom: 0.5rem;
   }
 
-  .inputs-wrapper-flex {
+  .visibility-input {
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    border: none;
-    padding-bottom: 50px;
+    margin-bottom: 3rem;
 
-    .name-input {
-      //min-width: 188px;
-      width: 47.71%;
-      margin-bottom: 47px;
-      margin-top: 15px;
-    }
+    .icon {
+      all: unset;
+      cursor: pointer;
+      height: 28px;
+      margin-left: 19px;
+      margin-top: 11px;
+      width: 35px;
 
-    .image-input{
-      margin-bottom: 47px;
-    }
+      img {
+        height: 100%;
+        width: 100%;
+      }
 
-    .visibility-input {
-      width: 38.3%;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 47.5px;
-
-      .icon {
-        all: unset;
-        width: 35px;
-        height: 28px;
-        margin-top: 11px;
-        margin-left: 19px;
+      & {
         cursor: pointer;
-
-        img {
-          width: 100%;
-          height: 100%;
-        }
-
-        & {
-          cursor: pointer;
-        }
       }
-    }
-
-    .textarea-area{
-      display: flex;
-      flex-direction: column;
-
-      .textarea{
-         width: 97.5%;
-         max-height: 169px;
-         border-radius: 9px;
-         resize: none;
-         box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 14%);
-      }
-    }
-
-   }
-
-  .optional-functionality {
-    padding: 0px;
-    padding-top: 54px;
-
-    .input-label {
-      margin: 0px;
-      padding: 0px;
-      margin-bottom: 15px;
     }
   }
+
+  .textarea {
+    border: none;
+    box-shadow: inset 0px 0px 9px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  textarea::placeholder {
+    font-size: 17px;
+  }
+
+  .textarea-container textarea {
+    border-radius: 9px;
+    height: 130px;
+  }
+
+  // .optional-functionality {
+  //   padding: 0px;
+  //   padding-top: 54px;
+
+  //   .input-label {
+  //     margin: 0px;
+  //     padding: 0px;
+  //     margin-bottom: 15px;
+  //   }
+  // }
 }
 
-.active{
-   color: #2874AD;
+.active {
+  color: #2874ad;
 }

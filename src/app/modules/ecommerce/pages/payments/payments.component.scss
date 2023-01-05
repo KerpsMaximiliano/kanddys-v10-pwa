@@ -1,164 +1,279 @@
 button {
-	all: unset;
+  all: unset;
 }
 .payment-selection {
-	font-family: "RobotoMedium";
-	font-size: 17px;
-	color: #7b7b7b;
-	margin-bottom: 24px;
-	display: inline-block;
+  font-family: SfProBold;
+  font-size: 17px;
+  color: #272727;
+  margin: 0px;
+  display: inline-block;
 }
 .amount-input {
-	margin-top: 24px;
-	margin-bottom: 32px;
+  margin-top: 24px;
+  margin-bottom: 32px;
 }
 .container {
-	width: 100%;
-	min-height: 100vh;
-	padding-bottom: 80px;
+  width: 100%;
+  min-height: 100vh;
+  padding-bottom: 80px;
 
-	.header {
-		width: 100%;
-		height: 36px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding-right: 24px;
+  .header {
+    width: 100%;
+    height: 36px;
+    background-color: #2874ad;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 
-		.back-btn {
-			color: #ffffff;
-			padding: 10px;
-			cursor: pointer;
-			margin-right: 8px;
+    .back-btn {
+      position: absolute;
+      color: #ffffff;
+      left: 16px;
+      cursor: pointer;
 
-			&:hover {
-				opacity: 0.75;
-			}
-		}
+      &:hover {
+        opacity: 0.75;
+      }
+    }
 
-		.method {
-			font-family: "SfProBold";
-			font-size: 1.313rem;
-			font-weight: 500;
-			color: #ffffff;
-			margin: 0;
-		}
+    .method {
+      font-family: "SfProBold";
+      font-size: 1.313rem;
+      font-weight: 500;
+      color: #ffffff;
+      margin: 0px;
+    }
 
-		.right-area {
-			display: flex;
-			align-items: flex-end;
+    .right-area {
+      display: flex;
+      align-items: flex-end;
 
-			.header-text {
-				font-family: "RobotoRegular";
-				font-size: 0.875rem;
-				color: #ffffff;
-				margin-right: 6px;
-			}
+      .header-text {
+        font-family: "RobotoRegular";
+        font-size: 0.875rem;
+        color: #ffffff;
+        margin-right: 6px;
+      }
 
-			img {
-				width: 14px;
-				filter: brightness(2);
-			}
-		}
-	}
+      img {
+        width: 14px;
+        filter: brightness(2);
+      }
+    }
+  }
 
-	.total-paid {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		margin: 29px 0 58px;
-		text-align: center;
+  .total-paid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 29px 0 58px;
+    text-align: center;
 
-		.paid {
-			font-family: "RobotoMedium";
-			font-size: 2.75rem;
-			color: #7b7b7b;
-			margin: 0;
-		}
+    .paid {
+      font-family: "RobotoMedium";
+      font-size: 2.75rem;
+      color: #7b7b7b;
+      margin: 0;
+    }
 
-		.total {
-			font-family: "RobotoLight";
-			font-size: 0.875rem;
-			color: #000000;
-			margin: 2px 0;
-		}
-	}
+    .total {
+      font-family: "RobotoLight";
+      font-size: 0.875rem;
+      color: #000000;
+      margin: 2px 0;
+    }
+  }
 
-	.payment-method {
-		margin-left: 8%;
-		margin-right: 8%;
-		margin-bottom: 32px;
-	}
+  .payment-method {
+    margin-left: 7.71%;
+    margin-right: 10.04%;
+    margin-bottom: 32px;
+  }
 
-	.image-area {
-		display: flex;
-		flex-direction: column;
-		margin-left: 7%;
+  .amount-list {
+    display: flex;
+    flex-direction: column;
+    margin-top: 27px;
+    margin-bottom: 46px;
 
-		.image-label {
-			font-family: "RobotoMedium";
-			font-size: 1rem;
-			color: #7b7b7b;
-			margin-bottom: 15px;
-		}
-	}
+    .amount-flex-wrapper {
+      padding-top: 11px;
+      padding-bottom: 12px;
+      padding-left: 33px;
+      padding-right: 33px;
+      width: 100%;
+      background-color: #ffffff;
+      border-radius: 5px;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .label {
+        font-family: SfProBold;
+        font-size: 13px;
+        color: black;
+        margin: 0px;
+        padding: 0px;
+      }
+
+      .amount {
+        font-family: SfProBold;
+        font-size: 17px;
+        color: black;
+        margin: 0px;
+        padding: 0px;
+      }
+    }
+  }
+
+  .separator {
+    margin: 0px;
+    margin: 0px 22px;
+    height: 0.5px;
+    border-top: 0.1px solid lightgray;
+    margin-bottom: 35px;
+  }
+
+  .image-area {
+    display: flex;
+    flex-direction: column;
+    margin-left: 7%;
+    margin-left: 7.71%;
+    margin-right: 10.04%;
+
+    .image-label {
+      font-family: SfProBold;
+      font-size: 17px;
+      color: #272727;
+      margin: 0px;
+      display: inline-block;
+      margin-bottom: 18px;
+    }
+  }
 }
 .option-content {
-	background-color: #82f18d;
-	padding: 8px 32px;
-	border-radius: 5px;
-	position: relative;
+  background-color: #82f18d;
+  padding: 17px 12px 17px 27px;
+  margin-top: 29px;
+  border-radius: 5px;
+  position: relative;
+  display: flex;
 
-	p {
-		margin: 0;
-	}
+  .option-icon-wrapper {
+    width: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 
-	.option-title {
-		font-size: 0.75rem;
-		padding-bottom: 0.5rem;
-		font-family: SfProBold;
-		color: #000000;
-	}
-	ul {
-		padding: 0;
-		margin: 0;
+    .option-icon {
+      width: 22px;
+      height: 22px;
+    }
+  }
 
-		li {
-			list-style: none;
-			font-size: 1rem;
-			font-family: SfProRegular;
-			color: #7b7b7b;
-		}
-	}
-	.option-footer {
-		padding-top: 0.5rem;
-		font-size: 1rem;
-		font-family: SfProBold;
-		color: #174b72;
-	}
+  .texts {
+    p {
+      margin: 0;
+    }
 
-	.option-remove {
-		position: absolute;
-		top: 50%;
-		right: 0;
-		transform: translate(50%, -50%);
-		cursor: pointer;
-		background-color: #ffffff;
-		border: solid 1px #82f18d;
-		color: #2874ad;
-		padding: 4px 8px;
-		border-radius: 50%;
-		font-size: 13px;
+    .option-title {
+      font-size: 0.75rem;
+      padding-bottom: 0.5rem;
+      font-family: SfProBold;
+      color: #000000;
+    }
+    ul {
+      padding: 0;
+      margin: 0;
 
-		&:hover,
-		&:active {
-			background-color: #f8f8f8;
-		}
-	}
+      li {
+        list-style: none;
+        font-size: 1rem;
+        font-family: SfProRegular;
+        color: #7b7b7b;
+      }
+    }
+    .option-footer {
+      padding-top: 0.5rem;
+      font-size: 1rem;
+      font-family: SfProBold;
+      color: #174b72;
+    }
+
+    .option-remove {
+      all: unset;
+      position: absolute;
+      top: 50%;
+      right: -19px;
+      transform: translate(50%, -50%);
+      cursor: pointer;
+      background-color: #ffffff;
+      border: solid 1px #232323;
+      color: #2874ad;
+      padding: 4px 8px;
+      border-radius: 50%;
+      font-size: 13px;
+
+      &:hover,
+      &:active {
+        background-color: #f8f8f8;
+      }
+    }
+  }
 }
 a.disabled {
-	pointer-events: none;
-	cursor: default;
+  pointer-events: none;
+  cursor: default;
+}
+
+.refunds-policies {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 27px;
+
+  .labels {
+    display: flex;
+    flex-direction: column;
+
+    .accept-terms {
+      font-family: SfProBold;
+      font-size: 13px;
+      color: #272727;
+      margin-bottom: 8px;
+    }
+
+    .title {
+      font-family: RobotoMedium;
+      font-size: 12px;
+      color: #a1a1a1;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .checkbox {
+    border-radius: 9px;
+    box-shadow: 0px 3px 5px inset lightgrey;
+    background-color: white;
+    width: 33px;
+    height: 33px;
+
+    &.selected {
+      background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/white-checkmark.svg);
+      background-size: cover;
+      background-position: center;
+    }
+
+    &:hover {
+      cursor: pointer;
+      background-color: darken($color: white, $amount: 2);
+    }
+  }
 }

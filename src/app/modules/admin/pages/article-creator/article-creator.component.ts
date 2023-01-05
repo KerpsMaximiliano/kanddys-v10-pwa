@@ -674,6 +674,20 @@ export class ArticleCreatorComponent implements OnInit {
     }
   }
 
+  navigateToArticlePrivacy():void {
+    const images = [];
+    this.controllers.controls.forEach((controller, i) => {
+      (controller.get('multimedia').value as File[]).forEach((value) => {
+        if (value?.type?.includes('image')) images.push(value);
+      });
+    });
+    const id = this._ActivatedRoute.snapshot.paramMap.get('itemId');
+    this._ItemsService.itemImages = images;
+    this._Router.navigate([
+      `/admin/article-privacy`, id,
+    ]);
+  }
+
   removeFile(i: number, j: number): void {
     const controller = this.controllers.at(i).get('multimedia');
     controller.setValue(controller.value.filter((image, index) => index !== j));
@@ -824,8 +838,10 @@ export class ArticleCreatorComponent implements OnInit {
       props: {
         tags: userTags,
         //orderId: this.order._id,
+        colorTheme: 'admin',
         entity: 'item',
         entityId: this.item._id,
+        outputAllSelectedTags: true,
         activeTags:
           itemTags && Array.isArray(itemTags)
             ? itemTags.map((tag) => tag._id)
@@ -843,10 +859,6 @@ export class ArticleCreatorComponent implements OnInit {
 
             if (response) {
               this.item.tags = this.selectedTags;
-
-              this._ToastrService.info('Tags asignados al item', null, {
-                timeOut: 1000,
-              });
             }
           } catch (error) {
             this._ToastrService.error('Error al asignar tags', null, {

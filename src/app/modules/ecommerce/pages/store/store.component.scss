@@ -420,3 +420,30 @@ main {
     }
   }
 }
+
+.footer-links {
+  list-style: none;
+  background-color: black;
+  margin: 0px;
+  padding: 0px 6.54%;
+  padding-top: 20px;
+  padding-bottom: 70px;
+
+  .link {
+    font-size: 19px;
+    color: white;
+    font-family: RobotoMedium;
+    line-height: 24px;
+    width: fit-content;
+
+    &:hover {
+      cursor: pointer;
+      color: darken($color: #a1a1a1, $amount: 15);
+    }
+  }
+}
+
+.blank-footer {
+  height: 90px;
+  width: 100%;
+}
