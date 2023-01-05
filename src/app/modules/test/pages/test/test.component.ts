@@ -125,104 +125,6 @@ export class TestComponent implements OnInit {
 
   dialogs: Array<EmbeddedComponent> = [
     {
-      component: OptionsGridComponent,
-      inputs: {
-        mode: 'default',
-        words: this.words,
-        title: this.title,
-        containerStyles: {
-          background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
-          opacity: '1',
-          // padding: '37px 36.6px 70.4px 31px',
-        },
-      },
-      outputs: [
-        {
-          name: 'optionClick',
-          callback: (option: string) => {
-            this.swiperConfig.allowSlideNext = true;
-
-            this.dialogFlowFunctions.moveToDialogByIndex(3);
-          },
-        },
-      ],
-    },
-    {
-      component: OptionsGridComponent,
-      inputs: {
-        mode: 'default',
-        words: this.words2,
-        title: this.title2,
-        containerStyles: {},
-      },
-      outputs: [
-        {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
-          },
-        },
-      ],
-    },
-    {
-      component: OptionsGridComponent,
-      inputs: {
-        mode: 'time',
-        words: ['Hombre', 'Mujer'],
-        title: '¿Que es RecipienteID?',
-        titleCenter: false,
-        containerStyles: {},
-      },
-      outputs: [
-        {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
-          },
-        },
-      ],
-    },
-    {
-      component: OptionsGridComponent,
-      inputs: {
-        mode: 'time',
-        words: this.words3,
-        title: this.title3,
-        containerStyles: {
-          opacity: '1',
-        },
-      },
-      outputs: [
-        {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
-          },
-        },
-      ],
-    },
-    {
-      component: OptionsGridComponent,
-      inputs: {
-        mode: 'default',
-        words: this.words4,
-        title: 'Más de RecipienteID',
-        titleCenter: false,
-        containerStyles: {
-          background: 'rgb(255, 255, 255)',
-        },
-      },
-      outputs: [
-        {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
-          },
-        },
-      ],
-    },
-    {
       component: GeneralDialogComponent,
       inputs: {
         omitTabFocus: false,
@@ -516,6 +418,104 @@ export class TestComponent implements OnInit {
       ],
     },
     {
+      component: OptionsGridComponent,
+      inputs: {
+        mode: 'default',
+        words: this.words,
+        title: this.title,
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          // padding: '37px 36.6px 70.4px 31px',
+        },
+      },
+      outputs: [
+        {
+          name: 'optionClick',
+          callback: (option: string) => {
+            this.swiperConfig.allowSlideNext = true;
+
+            this.dialogFlowFunctions.moveToDialogByIndex(3);
+          },
+        },
+      ],
+    },
+    {
+      component: OptionsGridComponent,
+      inputs: {
+        mode: 'default',
+        words: this.words2,
+        title: this.title2,
+        containerStyles: {},
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: OptionsGridComponent,
+      inputs: {
+        mode: 'time',
+        words: this.words3,
+        title: this.title3,
+        containerStyles: {
+          opacity: '1',
+        },
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: OptionsGridComponent,
+      inputs: {
+        mode: 'time',
+        words: ['Hombre', 'Mujer'],
+        title: '¿Que es RecipienteID?',
+        titleCenter: false,
+        containerStyles: {},
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: OptionsGridComponent,
+      inputs: {
+        mode: 'default',
+        words: this.words4,
+        title: 'Más de RecipienteID',
+        titleCenter: false,
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+        },
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
       component: GeneralDialogComponent,
       inputs: {
         containerStyles: {
@@ -608,6 +608,7 @@ export class TestComponent implements OnInit {
         },
       ],
     },
+    /*
     {
       component: GeneralDialogComponent,
       inputs: {
@@ -709,7 +710,7 @@ export class TestComponent implements OnInit {
           },
         },
       ],
-    },
+    },*/
     {
       component: GeneralDialogComponent,
       inputs: {
@@ -779,80 +780,6 @@ export class TestComponent implements OnInit {
                   },
                   {
                     text: 'No',
-                  },
-                ],
-              },
-              // styles: {},
-              prop: 'text',
-            },
-          ],
-        },
-        isMultiple: true,
-      },
-      outputs: [
-        {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
-          },
-        },
-      ],
-    },
-    {
-      component: GeneralDialogComponent,
-      inputs: {
-        containerStyles: {
-          background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
-          opacity: '1',
-          padding: '37px 36.6px 70.4px 31px',
-        },
-        header: {
-          styles: {
-            fontSize: '21px',
-            fontFamily: 'SfProBold',
-            marginBottom: '6px',
-            marginTop: '0',
-            color: '#4F4F4F',
-          },
-          text: '¿Deseas incluir alguna otra cosa?',
-        },
-        title: {
-          styles: {
-            fontSize: '15px',
-            color: '#7B7B7B',
-            fontStyle: 'italic',
-            margin: '0',
-            marginBottom: '37.5px',
-          },
-          text: '',
-        },
-        fields: {
-          list: [
-            {
-              name: 'test8',
-              value: '',
-              validators: [Validators.required],
-              type: 'selection',
-              selection: {
-                styles: {
-                  display: 'block',
-                  fontFamily: '"SfProBold"',
-                  fontSize: '17px',
-                  color: '#272727',
-                },
-                list: [
-                  {
-                    text: 'No',
-                  },
-                  {
-                    text: 'Fotos, videos de mi device',
-                  },
-                  {
-                    text: 'Imagen de la IA',
-                  },
-                  {
-                    text: 'Una canción o voice',
                   },
                 ],
               },
