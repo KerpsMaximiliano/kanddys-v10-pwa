@@ -1,5 +1,7 @@
 <div class="container" [ngStyle]="containerStyles" *ngIf="mode === 'default'">
-  <h2 class="title">{{ title }}</h2>
+  <h2 [ngClass]="titleCenter === false ? 'title' : 'title-center'">
+    {{ title }}
+  </h2>
   <div class="cards">
     <div
       class="card"
@@ -18,7 +20,9 @@
 </div>
 
 <div class="container" [ngStyle]="containerStyles" *ngIf="mode === 'time'">
-  <h2 class="title">{{ title }}</h2>
+  <h2 [ngClass]="titleCenter === false ? 'title' : 'title-center'">
+    {{ title }}
+  </h2>
   <div class="cards2">
     <div class="card2" *ngFor="let item of words; index as i">
       <span>{{ item }}</span>

@@ -10,6 +10,7 @@ export class OptionsGridComponent implements OnInit {
   @Input() title = '';
   @Input() mode = 'default';
   @Input('containerStyles') containerStyles: Record<string, string>;
+  @Input() titleCenter: boolean = true;
 
   constructor() {}
 
