@@ -30,6 +30,7 @@ import { EntityTemplateService } from 'src/app/core/services/entity-template.ser
 import { Clipboard } from '@angular/cdk/clipboard';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 type Mode = 'symbols' | 'item';
 
@@ -469,9 +470,7 @@ export class ArticleCreatorComponent implements OnInit {
   enterEdit(i: number, j: number) {
     this.editMode = true;
     this.editingImage = j;
-    console.log(this.urls);
     const img = this.urls[j];
-    console.log(img);
     this.imageElement = new Image();
     this.imageElement.src = img as string;
     this.imageElement.crossOrigin = 'anonymous';
@@ -544,20 +543,16 @@ export class ArticleCreatorComponent implements OnInit {
       const url = this.canvasElement.toDataURL('image/png');
       const file = await this.urltoFile(url, 'image.png');
       this.urls[this.editingImage] = url;
-      console.log({ ...this.item });
-      console.log(this.item.images[this.editingImage]);
+      lockUI();
       const itemWithDeletedImage = await this._ItemsService.deleteImageItem(
         [this.item.images[this.editingImage]],
         this.item._id
       );
-      console.log(itemWithDeletedImage);
       const itemWithAddedImage = await this._ItemsService.addImageItem(
         [file],
         this.item._id
       );
       this.urls[this.editingImage] = url;
-      console.log(itemWithAddedImage);
-
       const newItem = await this._ItemsService.item(this.item._id);
       this.item.images = [...newItem.images];
       this.urls = newItem.images;
@@ -578,8 +573,13 @@ export class ArticleCreatorComponent implements OnInit {
         multimedia.push(file);
         if (index + 1 === this.item.images.length) {
           this.controllers.at(0).get('multimedia').setValue(multimedia);
+          setTimeout(() => {
+            const _Swiper = new Swiper('.swiper');
+            _Swiper.slideTo(this.item.images.length);
+            this.activeSlide = this.item.images.length - 1;
+          }, 50);
           this.updateFrantions();
-          this.activeSlide = 0;
+          unlockUI();
         }
       });
       return;

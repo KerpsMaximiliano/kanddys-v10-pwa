@@ -15,6 +15,10 @@ export class TagsSelectorComponent implements OnInit {
   @Input('multipleTags') multipleTags: boolean = false;
   @Input('containerBackground') containerBackground: string = '#2874ad';
   @Input('background') background: string = '#fff';
+  @Input() inactiveBackground: string;
+  @Input() inactiveColor: string = '';
+  @Input() notificationBackground: string = 'rgba(123, 123, 123, 37%)';
+  @Input() notificationColor: string = 'rgba(123, 123, 123, 37%)';
   @Input('selectedBackground') selectedBackground: string = '#2874ad';
   @Input('selectedFilter') selectedFilter: string = 'brightness(2)';
   @Input('color') color: string = '#fff';
@@ -43,6 +47,8 @@ export class TagsSelectorComponent implements OnInit {
         this.tag = value;
       }
     }
+
+    console.log('sacar todos los tags', this.outputAllSelectedTags);
 
     if (!this.outputAllSelectedTags)
       this.tagSelected(tag, this.tag.includes(tag));
@@ -78,5 +84,11 @@ export class TagsSelectorComponent implements OnInit {
     this.tags.forEach((tag) => {
       this.activeTags.includes(tag[id]) ? this.tag.push(tag[id]) : null;
     });
+  }
+
+  getTagIcon(status: string) {
+    return status === 'disabled'
+      ? this.env + '/closed-eye-black.svg'
+      : this.env + '/binoculars-fill-black.svg';
   }
 }

@@ -101,7 +101,7 @@ export class ArticleDetailComponent implements OnInit {
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
   constructor(
-    private itemsService: ItemsService,
+    private _ItemsService: ItemsService,
     private tagsService: TagsService,
     public headerService: HeaderService,
     private route: ActivatedRoute,
@@ -201,7 +201,13 @@ export class ArticleDetailComponent implements OnInit {
 
   async getItemData() {
     try {
-      this.itemData = await this.itemsService.item(this.entityId);
+      this.itemData = await this._ItemsService.item(this.entityId);
+      if (this.previewMode) {
+        this.itemData.name = this._ItemsService.itemName;
+        this.itemData.description = this._ItemsService.itemDesc;
+        this.itemData.pricing = this._ItemsService.itemPrice;
+        this.itemData.images = [...this._ItemsService.itemUrls];
+      }
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
       this.itemTags?.forEach((tag) => {
@@ -489,7 +495,7 @@ export class ArticleDetailComponent implements OnInit {
       return;
     }
 
-    this.itemsService.removeTemporalItem();
+    this._ItemsService.removeTemporalItem();
 
     if (this.headerService.saleflow) {
       this.router.navigate([`../../../store`], {

@@ -19,8 +19,14 @@ export class TagAsignationComponent implements OnInit {
   env: string = environment.assetsUrl;
   @Input() tags: Tag[] = [];
   @Input() activeTags: Tag[];
-  background: string = '#2874ad';
-  @Input('text') text: string = '';
+  @Input() colorTheme: 'client' | 'admin' = 'client';
+  @Input('backgroundColor') background: string;
+  @Input('textColor') textColor: string;
+  @Input() iconColor: string;
+  @Input() selectedBG: string;
+  @Input() selectedColor: string;
+  @Input() bgColor: string;
+  @Input() color: string;
   @Input() orderId: string = null;
   @Input() public tagAction: (args?: any) => any;
   @Input() entity: 'item' | 'order' = 'order';
@@ -29,7 +35,6 @@ export class TagAsignationComponent implements OnInit {
   @Input('untouchedActionText') untouchedActionText: string = null;
   @Input() outputAllSelectedTags: boolean = false;
   @Input() public ctaAction: (args?: any) => any;
-  @Input() redirectToArticleParams: boolean = false;
   blockCta: boolean = false;
 
   constructor(
@@ -38,7 +43,25 @@ export class TagAsignationComponent implements OnInit {
     private headerService: HeaderService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this.colorTheme === 'client') {
+      this.iconColor = 'brightness(8)';
+      this.selectedBG = '#82F18D';
+      this.selectedColor = '#272727';
+      this.bgColor = 'rgba(123, 123, 123, 0.37)';
+      this.color = '#FFFFFF';
+      this.background = '#272727';
+      this.textColor = '#FFFFFF';
+    } else {
+      this.background = '#F6F6F6';
+      this.textColor = '#272727';
+      this.iconColor = 'brightness(0)';
+      this.selectedBG = '#82F18D';
+      this.selectedColor = '#272727';
+      this.bgColor = '#cecece';
+      this.color = '#272727';
+    }
+  }
 
   goToCreateTag() {
     if (this.headerService.flowRoute)
@@ -49,17 +72,12 @@ export class TagAsignationComponent implements OnInit {
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
     if (this.orderId) {
-      const queryParams: any = {
-        orderId: this.orderId,
-        entity: this.entity,
-        entityId: this.entityId,
-      };
-
-      if (this.redirectToArticleParams)
-        queryParams.redirectToArticleParams = true;
-
       this.router.navigate(['admin/create-tag'], {
-        queryParams,
+        queryParams: {
+          orderId: this.orderId,
+          entity: this.entity,
+          entityId: this.entityId,
+        },
       });
     } else {
       const queryParams: any = {
@@ -67,9 +85,6 @@ export class TagAsignationComponent implements OnInit {
       };
 
       if (this.entityId) queryParams.entityId = this.entityId;
-
-      if (this.redirectToArticleParams)
-        queryParams.redirectToArticleParams = true;
 
       this.router.navigate(['admin/create-tag'], {
         queryParams,
@@ -85,6 +100,9 @@ export class TagAsignationComponent implements OnInit {
   selectTagHandler(eventData: any) {
     this.untouchedActionText = null;
     this.blockCta = true;
+
+    console.log('data de evento', eventData);
+
     this.tagAction(eventData);
   }
 

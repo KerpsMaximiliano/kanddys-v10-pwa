@@ -3,9 +3,9 @@ import { FormControl, Validators } from '@angular/forms';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
-import { SaleFlow } from 'src/app/core/models/saleflow';
+// import { SaleFlow } from 'src/app/core/models/saleflow';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { HeaderService } from 'src/app/core/services/header.service';
+// import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -13,9 +13,9 @@ import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anex
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { Item } from 'src/app/core/models/item';
 import { ToastrService } from 'ngx-toastr';
-import { PostsService } from 'src/app/core/services/posts.service';
+// import { PostsService } from 'src/app/core/services/posts.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
-import { ArticleDialogComponent } from 'src/app/shared/dialogs/article-dialog/article-dialog.component';
+// import { ArticleDialogComponent } from 'src/app/shared/dialogs/article-dialog/article-dialog.component';
 import {
   SettingsComponent,
   SettingsDialogButton,
@@ -69,12 +69,12 @@ export class ArticleParamsComponent implements OnInit {
     protected _DomSanitizer: DomSanitizer,
     private dialog: DialogService,
     private _ItemsService: ItemsService,
-    private _HeaderService: HeaderService,
+    // private _HeaderService: HeaderService,
     private _MerchantsService: MerchantsService,
     private _SaleflowService: SaleFlowService,
     private _Router: Router,
     private _Route: ActivatedRoute,
-    private _PostsService: PostsService,
+    // private _PostsService: PostsService,
     private _EntityTemplateService: EntityTemplateService,
     private _DialogService: DialogService,
     private _ToastrService: ToastrService,
@@ -111,12 +111,13 @@ export class ArticleParamsComponent implements OnInit {
           });
         } else this.loadImages();
       }
-    } else {
-      if (this._ItemsService.itemName)
-        this.name.setValue(this._ItemsService.itemName);
-      if (this._ItemsService.itemPrice)
-        this.price.setValue(this._ItemsService.itemPrice);
     }
+    if (this._ItemsService.itemName)
+      this.name.setValue(this._ItemsService.itemName);
+    if (this._ItemsService.itemDesc)
+      this.description.setValue(this._ItemsService.itemDesc);
+    if (this._ItemsService.itemPrice)
+      this.price.setValue(this._ItemsService.itemPrice);
     this._MerchantsService.merchantData =
       await this._MerchantsService.merchantDefault();
     if (this._MerchantsService.merchantData) {
@@ -330,6 +331,10 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   previewItem = () => {
+    this._ItemsService.itemName = this.name.value;
+    this._ItemsService.itemDesc = this.description.value;
+    this._ItemsService.itemPrice = this.price.value;
+    this._ItemsService.itemUrls = this.selectedImages as string[];
     this._Router.navigate(
       [
         `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
@@ -506,10 +511,22 @@ export class ArticleParamsComponent implements OnInit {
     this.steps = 'price';
   }
 
-  deleteImage(index: number) {
+  async deleteImage(index: number) {
     this.selectedImages.splice(index, 1);
     this._ItemsService.itemImages.splice(index, 1);
     this._ItemsService.changedImages = true;
+    if (this.item.images.length === 1) {
+      await this._ItemsService.updateItem(
+        {
+          showImages: false,
+        },
+        this.item._id
+      );
+    }
+    await this._ItemsService.deleteImageItem(
+      [this.item.images[index]],
+      this.item._id
+    );
   }
 
   changeModel(index: number) {

@@ -12,6 +12,7 @@ export class CurrencyInputComponent implements OnInit {
   @Input() initialValue: number;
   @Input() currencyLabel: string;
   @Input() fieldStyles: Record<string, any> = null;
+  @Input() placeholderColor: string;
   @Input() inputId: string = 'pricing';
   @Input() inputName: string = 'pricing';
   @Input() innerLabel: string;

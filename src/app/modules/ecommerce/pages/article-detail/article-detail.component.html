@@ -15,7 +15,7 @@
           [ngStyle]="{
             backgroundImage: 'url(' + image + ')',
             backgroundSize: 'contain',
-            height: 'calc(100vh - (179px))',
+            height: 'calc(100vh - (223px))',
             backgroundColor: '#E9E371'
           }"
         ></div>
@@ -31,7 +31,7 @@
   >
     <div class="text-icons-container">
       <div class="top-section">
-        <p class="top-text" (click)="openInfoDialog()">
+        <p class="top-text" (click)="openInfoDialog()" *ngIf="itemData.name">
           {{
             itemData.name?.length > 30
               ? (itemData.name.trim() | slice : 0 : 30) + "..."
