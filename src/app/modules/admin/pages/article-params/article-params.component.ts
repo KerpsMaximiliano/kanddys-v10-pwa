@@ -234,6 +234,7 @@ export class ArticleParamsComponent implements OnInit {
       props: {
         tags: userTags,
         //orderId: this.order._id,
+        colorTheme: 'admin',
         entity: 'item',
         entityId: this.item._id,
         redirectToArticleParams: true,
