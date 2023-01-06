@@ -495,7 +495,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   ''
                 );
 
-                this.formSteps[3].fieldsList[1].label = 'Color de globos';
+                this.formSteps[3].fieldsList[1].label = 'Color de globos (*)';
               } else {
                 this.choosedFloralArrangement = true;
                 this.choosedHeliumBalloons = false;
