@@ -118,6 +118,8 @@ import { GeneralDialogComponent } from './components/general-dialog/general-dial
 import { OptionsGridComponent } from './dialogs/options-grid/options-grid.component';
 import { GeneralItemComponent } from './components/general-item/general-item.component';
 import { MerchantContactComponent } from './components/merchant-contact/merchant-contact.component';
+import { QrEditComponent } from './components/qr-edit/qr-edit.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 const imports = [
   CommonModule,
@@ -132,6 +134,7 @@ const imports = [
   NgxIntlTelInputModule,
   ClipboardModule,
   GooglePlaceModule,
+  DragDropModule
 ];
 const declarations = [
   // Pages
@@ -242,7 +245,8 @@ const declarations = [
   GeneralDialogComponent,
   OptionsGridComponent,
   GeneralItemComponent,
-  MerchantContactComponent
+  MerchantContactComponent,
+  QrEditComponent
 ];
 
 @NgModule({

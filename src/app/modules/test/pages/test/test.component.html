@@ -258,16 +258,18 @@ headline="EXPUESTO EN TAB (S)"
     ></app-multistep-form>
 -->
 
-<button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
+<!--<button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
 
 <app-dialog-flow
   [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
   [dialogs]="dialogs"
   (saveConfigRef)="swiperConfig = $event"
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
-></app-dialog-flow>
+></app-dialog-flow>-->
 
 <!-- <app-options-grid [words]="words" [title]="title"></app-options-grid> -->
 
 <!--<app-merchant-contact></app-merchant-contact>-->
 <!--<app-merchant-contact [imgBanner] = "'logo.png'"></app-merchant-contact>-->
+
+<app-qr-edit></app-qr-edit>

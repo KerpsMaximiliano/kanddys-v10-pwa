@@ -1,0 +1,230 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+.container{
+    background-color: #f6f6f6;
+    min-height: 100vh; 
+}
+.header{
+    padding: 10px;
+    height: 40px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+
+    .icon{
+        font-size: 35px;
+    }
+}
+.itemsGrid{
+    padding: 0 5%;
+    row-gap: 36px;
+    column-gap: 5%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+}
+.itemContainer{
+    position: relative;
+    width: 112px;
+    height: 150px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    
+    >*{
+        position: absolute;
+    }
+
+    .imgBox{
+        top: 0;
+        width: 100%;
+        height: 140px;
+        border-radius: 15px;
+        filter: drop-shadow(0px 3px 3.5px rgba(0,0,0,0.16));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #272727;
+
+        p{
+            width:auto;
+            height: auto;
+            font-size: 53px;
+            line-height: 42px;
+            font-family: "SfProBold";
+            color: #ffffff;
+        }
+    }
+    .labelBox{
+        padding-top: 0;
+        bottom: 0;
+        width: 100%;
+        height: 88px;
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+        background-image: linear-gradient(180deg, rgba(39,39,39,0) 0%, #211f1f 64%, #000000 100%);
+    }
+    .text{
+        top: 24px;
+        left: 9px;
+        width: 92px;
+        height: 92px;
+        font-size: 13px;
+        letter-spacing: 0px;
+        line-height: 15px;
+        color: #ffffff;
+        font-weight: 300;
+        font-family: "SfProLight";
+        overflow: hidden;
+    }
+    .label{
+        bottom: 10px;
+        width: 100%;
+        padding: 0 10px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 15px;
+        line-height: 14px;
+        color: #f6f6f6;
+        font-weight: 500;
+        font-family: "SfProMedium";
+        text-align: center;
+    }
+    .circleButton{
+        width: 24px;
+        height: 24px;
+        background-color: #ffffff;
+        border: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        right: 0;
+        border-radius: 50%;
+
+        .dots{
+            max-height: 4px;
+            width: auto;
+            filter: invert(13%) sepia(95%) saturate(4%) hue-rotate(30deg) brightness(88%) contrast(97%);
+            
+        }
+    }
+
+    &.add{     
+        .label{
+            bottom: 14px;
+        }
+    }
+}
+.tags-grid-drag-and-drop {
+    display: grid;
+    -moz-column-gap: 11px;
+    column-gap: 11px;
+    grid-template-columns: repeat(3, 28.5%);
+    /* padding: 0px 21px; */
+    /* margin: 0px 21px; */
+    justify-content: center;
+    margin-top: 23px;
+  
+    .tag-wrapper {
+      height: 211px;
+    }
+}
+.inner-drag-wrapper {
+    width: 100%;
+    height: 190px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+  
+    .drag-handler {
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      right: 0px;
+      width: 36px;
+      height: auto;
+      margin: auto;
+      filter: invert(12%) sepia(10%) saturate(12%) hue-rotate(346deg) brightness(101%) contrast(93%);
+    }
+}
+
+@media(max-width:414px){
+
+    .tags-grid-drag-and-drop{
+        .tag-wrapper {
+            height: 170px;
+          }
+    }
+
+    .inner-drag-wrapper{
+        height: 150px;
+        .drag-handler{
+            width: 27px;
+        }
+    }
+
+    .itemsGrid{
+        row-gap: 27px;
+    }
+    .itemContainer{
+        position: relative;
+        width: 84px;
+        height: 112px;
+        border-top-left-radius: 9px;
+        border-top-right-radius: 9px;
+        border-bottom-left-radius: 11px;
+        border-bottom-right-radius: 11px;
+    
+        .imgBox{
+            height: 105px;
+            border-radius: 11px;
+    
+            p{
+                font-size: 40px;
+                line-height: 30px;
+            }
+        }
+        .labelBox{
+            height: 66px;
+            border-bottom-left-radius: 9px;
+            border-bottom-right-radius: 9px;
+        }
+        .text{
+            top: 20px;
+            left: 8px;
+            width: 68px;
+            height: 68px;
+            font-size: 10px;
+            line-height: 11px;
+            font-weight: 224;
+        }
+        .label{
+            bottom: 7px;
+            padding: 0 7px;
+            font-size: 11px;
+            line-height: 11px;
+            font-weight: 370;
+        }
+        .circleButton{
+            width: 20px;
+            height: 20px;
+    
+            .dots{
+                max-height: 4px;
+            }
+        }
+        &.add{     
+            .label{
+                bottom: 11px;
+            }
+        }
+    }
+}
