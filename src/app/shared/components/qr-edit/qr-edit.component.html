@@ -25,13 +25,14 @@
   <div class="tags-grid-drag-and-drop" cdkDropListGroup>
     <div class="tag-wrapper" style="width: 100%; margin: 0px; padding: 0px">
       <div class="inner-drag-wrapper">
-        <div class="itemContainer add">
+        <input type="file" id="file" [style.display]="'none'" (change)="loadFile($event)" accept="image/png, image/jpg, image/jpeg">
+        <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
           <div class="labelBox"></div>
           <div class="imgBox">
             <p>+</p>
           </div>
           <div class="label">Adiciona</div>
-        </div>
+        </label>
       </div>
     </div>
     <div
@@ -47,7 +48,7 @@
           <div class="imgBox"[ngStyle]="{background: 'url(' + gridItem.background + ') #272727 no-repeat  center/cover'}"></div>
           <div class="labelBox"></div>
           <p class="text">{{gridItem.text}}</p>
-          <div class="label">{{gridItem.label}}</div>
+          <div class="label">{{gridItem.title}}</div>
           <div class="circleButton">
             <img class="icon" [src]="environment + '/dots-black.svg'">
           </div>
