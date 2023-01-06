@@ -98,7 +98,7 @@ export class CustomItemDetailComponent implements OnInit {
       }
     }
     this.header.addParams(this.header.order.products[0].params[1]);
-    this.header.storeAmount(this.header.order.products[0].amount);
+    // this.header.storeAmount(this.header.order.products[0].amount);
     this.header.orderProgress.qualityQuantity = true;
     this.header.storeOrderProgress();
     if (this.header.customizerData) this.header.customizerData = null;

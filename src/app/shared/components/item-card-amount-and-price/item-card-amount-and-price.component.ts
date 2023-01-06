@@ -155,7 +155,7 @@ export class ItemCardAmountAndPriceComponent implements OnInit {
           this.price * this.header.order.products[0].amount;
       }
     }
-    this.header.storeAmount(this.header.order.products[0].amount);
+    // this.header.storeAmount(this.header.order.products[0].amount);
   }
 
   toggleAnimation() {
