@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { PostInput } from 'src/app/core/models/post';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { SwiperOptions } from 'swiper';
 
 
@@ -16,8 +18,9 @@ export class PostPreviewComponent implements OnInit {
 
   currentMediaSlide: number = 0;
   fractions: string = '';
-  mode: string = 'fullImg';
+  mode: string = 'solidBg';
   post: PostInput;
+  slideDescription: string = "";
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
@@ -26,9 +29,17 @@ export class PostPreviewComponent implements OnInit {
   };
 
   
-  constructor(private _DomSanitizer: DomSanitizer) {}
+  constructor(
+    private _DomSanitizer: DomSanitizer,
+    private gpt3Service: Gpt3Service,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.get('mode') === 'solidBg') {
+      this.mode = 'solidBg';
+      this.slideDescription = this.gpt3Service.gpt3Response;
+    }
     const src: string = 'https://wallpapercave.com/wp/wp9100440.jpg';
     const _post: any = {
       message: 'Hace 13 años de esta foto, la recuerdo como si fuera ayer',
