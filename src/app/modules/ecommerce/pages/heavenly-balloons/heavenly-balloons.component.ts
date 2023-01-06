@@ -164,6 +164,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               width: 'calc(100% / 2)',
               paddingRight: '6px',
               paddingLeft: '33px',
+              paddingBottom: '33px',
               marginTop: '36px',
               // width: '83.70%',
             },
@@ -235,6 +236,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '100%',
+              display: 'none',
               padding: '0px 33px',
             },
             fieldStyles: {
@@ -258,6 +260,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '100%',
+              display: 'none',
               padding: '0px 33px',
             },
             fieldStyles: {
@@ -328,7 +331,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       hideHeader: true,
       styles: {
         padding: '0px',
-        paddingBottom: '4rem',
+        paddingBottom: '14rem',
       },
       footerConfig,
       stepProcessingFunction: (params) => {
@@ -492,7 +495,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   ''
                 );
 
-                this.formSteps[3].fieldsList[1].label = 'Color de globos';
+                this.formSteps[3].fieldsList[1].label = 'Color de globos (*)';
               } else {
                 this.choosedFloralArrangement = true;
                 this.choosedHeliumBalloons = false;
@@ -511,13 +514,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   ''
                 );
 
-                this.formSteps[3].fieldsList[1].label = 'Color de rosas';
+                this.formSteps[3].fieldsList[1].label =
+                  'Color de rosas (*) Puedes seleccionar máximo 2 colores';
               }
 
               this.formSteps[3].fieldsList[4].label =
-                'Describe aquí todos los detalles de tu orden de ' +
-                change +
-                ' (*)';
+                'Describe aquí todos los detalles de tu orden de ' + change;
               this.formSteps[3].fieldsList[5].label =
                 '¿Deseas incluir una tarjeta de dedicatoria a tu orden de ' +
                 change +
@@ -1260,6 +1262,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
           changeCallbackFunction: (change, params) => {
             const { deliveryMethod: pastValue } = params.dataModel.value['6'];
 
+            /*
+            this.formSteps[5].fieldsList[4].fieldControl.control.setValidators(
+              Validators.compose([Validators.required])
+            );
+            this.formSteps[5].fieldsList[4].fieldControl.control.updateValueAndValidity();
+            */
+
             if (
               change !== 'Pickup' &&
               (pastValue === '' || pastValue === 'Pickup')
@@ -1299,21 +1308,30 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
                   Validators.required
                 );
-                this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
                   Validators.compose([
                     Validators.required,
                     Validators.pattern(/[\S]/),
                   ])
                 );
-                this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
+
                 this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
                   Validators.compose([
                     Validators.required,
                     Validators.pattern(/[\S]/),
                   ])
                 );
-                this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
+
+                this.formSteps[5].fieldsList[4].fieldControl.control.setValidators(
+                  Validators.compose([Validators.required])
+                );
+
+                setTimeout(() => {
+                  this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[5].fieldsList[4].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                }, 500);
               });
             } else if (
               change === 'Pickup' &&
@@ -1365,7 +1383,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[3].fieldControl.control.setValue(
                   '',
                   {
@@ -1375,7 +1392,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[6].fieldControl.control.setValue(
                   '',
                   {
@@ -1385,7 +1401,16 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                this.formSteps[5].fieldsList[4].fieldControl.control.setValidators(
+                  []
+                );
+
+                setTimeout(() => {
+                  this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[5].fieldsList[4].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                }, 500);
               });
             }
           },
@@ -1467,15 +1492,24 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'location',
           fieldControl: {
             type: 'single',
-            control: new FormControl(''),
+            control: new FormControl('', Validators.required),
           },
-          label:
-            'Locación/Ubicación GPS(Esto ayudara al mensajero a hacer la entrega más precisa)',
+          label: 'Link de la Locación/Ubicación GPS (*)',
+          sublabel: 'Esto ayudara al mensajero a hacer la entrega más precisa',
           placeholder: 'Escribe aquí...',
           styles: {
             labelStyles: {
               ...labelStyles,
               paddingTop: '65px',
+              paddingBottom: '0px',
+            },
+            subLabelStyles: {
+              display: 'block',
+              fontFamily: 'RobotoRegular',
+              color: '#141414',
+              fontSize: '16px',
+              opacity: '0.64',
+              fontWeight: 'normal',
               paddingBottom: '26px',
             },
             containerStyles: {
