@@ -34,6 +34,8 @@ import { OptionsGridComponent } from 'src/app/shared/dialogs/options-grid/option
 import { PostInput } from 'src/app/core/models/post';
 import { EntityTemplateInput } from 'src/app/core/models/entity-template';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-test',
@@ -936,12 +938,37 @@ export class TestComponent implements OnInit {
     },
   ];
 
+  joke: string = "";
+
   constructor(
     private dialogFlowService: DialogFlowService,
     private itemsService: ItemsService,
     private merchantService: MerchantsService,
-    private saleflowService: SaleFlowService
+    private saleflowService: SaleFlowService,
+    private gpt3Service: Gpt3Service,
+    private router: Router
   ) {}
 
   async ngOnInit() {}
+
+  async generateGPT3Response() {
+    // const templateID = "63b7976096612318e8983786"; Chiste sobre {subject}
+    const templateID = "63b7b91296612318e898379d";
+    const templateObject = {
+      subject1: "maracuchos"
+    }
+    const response = await this.gpt3Service.generateResponseForTemplate(templateObject, templateID);
+    this.gpt3Service.gpt3Response = response;
+
+    this.router.navigate(
+      [
+        `admin/post-preview`,
+      ],
+      {
+        queryParams: {
+          mode: 'solidBg',
+        },
+      }
+    );
+  }
 }
