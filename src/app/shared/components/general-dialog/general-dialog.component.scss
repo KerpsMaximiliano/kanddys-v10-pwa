@@ -2,11 +2,17 @@
   margin: 20px 20px;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: #a1a1a1;
+  opacity: 0.6;
+}
+
 .select-option {
   display: grid;
   grid-template-columns: 0.3fr 11.8fr;
   align-items: center;
-  min-height: 58px;
+  min-height: 28.55px;
   color: #272727;
   font-size: 17px;
   font-family: "SfProDisplay";

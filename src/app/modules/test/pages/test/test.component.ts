@@ -144,10 +144,7 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
           opacity: '1',
-          padding: '37px 20px 38.5px 12px',
-          paddingLeft: '31px',
-          paddingRight: '30.3px',
-          paddingBottom: '34.6px',
+          padding: '37.1px 23.6px 38.6px 31px',
         },
         header: {
           styles: {
@@ -172,7 +169,7 @@ export class TestComponent implements OnInit {
                   display: 'block',
                   fontSize: '17px',
                   fontFamily: '"SFProRegular"',
-                  // color: '#A1A1A1',
+                  color: '#A1A1A1',
                   margin: '10px 0px',
                 },
                 text: '',
@@ -232,15 +229,14 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
           opacity: '1',
-          padding: '37px 20px 38.5px 12px',
-          paddingLeft: '31px',
-          paddingRight: '30.3px',
-          paddingBottom: '34.6px',
+          padding: '37.1px 23.6px 30.6px 31px',
         },
         header: {
           styles: {
-            fontSize: '22px',
+            fontSize: '23px',
             fontFamily: 'SfProBold',
+            color: '#4F4F4F',
+            marginBottom: '12.5px',
           },
           text: 'Departe de quien o quienes?',
         },
@@ -255,9 +251,10 @@ export class TestComponent implements OnInit {
               label: {
                 styles: {
                   display: 'block',
-                  fontSize: '19px',
-                  fontFamily: '"SfProRegular"',
-                  margin: '10px 0px',
+                  fontSize: '17px',
+                  fontFamily: '"RobotoMedium"',
+                  paddingTop: '26px',
+                  paddingLeft: '16px',
                 },
                 text: '',
               },
@@ -289,22 +286,23 @@ export class TestComponent implements OnInit {
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
+          borderRadius: '12px',
           opacity: '1',
-          padding: '37px 55.6px 23.6px 22px',
+          padding: '37px 29.6px 13.2px 22px',
         },
         header: {
           styles: {
             fontSize: '21px',
             fontFamily: 'SfProBold',
             color: '#4F4F4F',
-            margin: '0',
+            marginBottom: '25px',
+            marginTop: '0',
           },
           text: 'El mensaje',
         },
         fields: {
           styles: {
-            paddingTop: '20px',
+            // paddingTop: '20px',
           },
           list: [
             {
@@ -335,7 +333,7 @@ export class TestComponent implements OnInit {
                   },
                 ],
               },
-              // styles: {},
+
               prop: 'text',
             },
           ],
@@ -349,9 +347,9 @@ export class TestComponent implements OnInit {
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
+          borderRadius: '12px',
           opacity: '1',
-          padding: '37.1px 31px 30px 31px',
+          padding: '37.1px 30.3px 29.6px 31px',
         },
         header: {
           styles: {
@@ -359,8 +357,9 @@ export class TestComponent implements OnInit {
             fontFamily: 'SfProBold',
             marginBottom: '12.5px',
             marginTop: '0',
+            color: '#4F4F4F',
           },
-          text: 'Que mensaje escribiremos?',
+          text: '¿Que mensaje escribiremos?',
         },
         fields: {
           styles: {},
@@ -560,7 +559,7 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '8px',
           opacity: '1',
-          padding: '37.1px 23.6px 56.6px 31px',
+          padding: '37.1px 23.6px 52.6px 31px',
         },
         header: {
           styles: {
@@ -594,7 +593,7 @@ export class TestComponent implements OnInit {
                 padding: '26px 16px 16px',
                 border: 'none',
                 boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
-                borderRadius: '10px',
+                borderRadius: '9px',
                 fontFamily: '"RobotoMedium"',
               },
             },
@@ -668,22 +667,22 @@ export class TestComponent implements OnInit {
         },
         fields: {
           list: [
-            // {
-            //   name: 'test9',
-            //   value: '',
-            //   validators: [Validators.required],
-            //   type: 'text',
-            //   label: {
-            //     styles: {
-            //       display: 'block',
-            //       fontSize: '15px',
-            //       fontFamily: '"SFProLight"',
-            //       margin: '0',
-            //       color: '#7B7B7B',
-            //     },
-            //     text: 'Es privado. Opcional: te notifican al escanearlo.',
-            //   },
-            // },
+            {
+              name: 'test9',
+              value: '',
+              validators: [Validators.required],
+              type: 'text',
+              label: {
+                styles: {
+                  display: 'block',
+                  fontSize: '15px',
+                  fontFamily: '"SFProLight"',
+                  margin: '0',
+                  color: '#7B7B7B',
+                },
+                text: 'Es privado. Opcional: te notifican al escanearlo.',
+              },
+            },
 
             {
               name: 'test8',
@@ -733,7 +732,7 @@ export class TestComponent implements OnInit {
                   },
                 ],
               },
-              // styles: {},
+              styles: {},
               prop: 'text',
             },
           ],
@@ -757,7 +756,7 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '8px',
           opacity: '1',
-          padding: '37px 36.6px 70.4px 31px',
+          padding: '37px 36.6px 50.4px 31px',
         },
         header: {
           styles: {
@@ -846,13 +845,13 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '8px',
           opacity: '1',
-          padding: '37px 36.6px 70.4px 31px',
+          padding: '37px 36.6px 18.9px 31px',
         },
         header: {
           styles: {
             fontSize: '21px',
             fontFamily: 'SfProBold',
-            marginBottom: '6px',
+            marginBottom: '21.2px',
             marginTop: '0',
             color: '#4F4F4F',
           },
@@ -864,7 +863,6 @@ export class TestComponent implements OnInit {
             color: '#7B7B7B',
             fontStyle: 'italic',
             margin: '0',
-            marginBottom: '37.5px',
           },
           text: '',
         },
@@ -938,7 +936,7 @@ export class TestComponent implements OnInit {
     },
   ];
 
-  joke: string = "";
+  joke: string = '';
 
   constructor(
     private dialogFlowService: DialogFlowService,
@@ -953,22 +951,20 @@ export class TestComponent implements OnInit {
 
   async generateGPT3Response() {
     // const templateID = "63b7976096612318e8983786"; Chiste sobre {subject}
-    const templateID = "63b7b91296612318e898379d";
+    const templateID = '63b7b91296612318e898379d';
     const templateObject = {
-      subject1: "maracuchos"
-    }
-    const response = await this.gpt3Service.generateResponseForTemplate(templateObject, templateID);
+      subject1: 'maracuchos',
+    };
+    const response = await this.gpt3Service.generateResponseForTemplate(
+      templateObject,
+      templateID
+    );
     this.gpt3Service.gpt3Response = response;
 
-    this.router.navigate(
-      [
-        `admin/post-preview`,
-      ],
-      {
-        queryParams: {
-          mode: 'solidBg',
-        },
-      }
-    );
+    this.router.navigate([`admin/post-preview`], {
+      queryParams: {
+        mode: 'solidBg',
+      },
+    });
   }
 }
