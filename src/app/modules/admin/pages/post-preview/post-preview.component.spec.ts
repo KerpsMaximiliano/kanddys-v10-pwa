@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FacturaPreviewComponent } from './factura-preview.component';
+import { PostPreviewComponent } from './post-preview.component';
 
-describe('FacturaPreviewComponent', () => {
-  let component: FacturaPreviewComponent;
-  let fixture: ComponentFixture<FacturaPreviewComponent>;
+describe('PostPreviewComponent', () => {
+  let component: PostPreviewComponent;
+  let fixture: ComponentFixture<PostPreviewComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FacturaPreviewComponent ]
+      declarations: [ PostPreviewComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FacturaPreviewComponent);
+    fixture = TestBed.createComponent(PostPreviewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

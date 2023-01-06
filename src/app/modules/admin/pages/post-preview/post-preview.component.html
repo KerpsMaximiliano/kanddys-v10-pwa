@@ -1,0 +1,135 @@
+<ng-container *ngIf="mode === 'fullImg'">
+    <div class="container">
+        <div class="img-container">
+            <swiper [config]="swiperConfig" #mediaSwiper (slideChange)="updateCurrentSlideData($event)">
+                <ng-container *ngFor="let slide of post.slides">
+                    <div class="img-content" [style.background]="slide.media"></div>
+                </ng-container>
+            </swiper>
+        </div>
+    
+        <div class="divTopBtn">
+            <button class="topBtn">
+                <svg id="Grupo_73130" data-name="Grupo 73130" xmlns="http://www.w3.org/2000/svg" width="21.55" height="21.55" viewBox="0 0 21.55 21.55"><g id="settings-line" transform="translate(0)"><path id="Trazado_28931" data-name="Trazado 28931" d="M15.814,11a4.714,4.714,0,1,0,4.714,4.714A4.685,4.685,0,0,0,15.814,11Zm0,8.081a3.367,3.367,0,1,1,3.367-3.367A3.335,3.335,0,0,1,15.814,19.081Z" transform="translate(-4.972 -4.939)" fill="#82f18d"/><path id="Trazado_28932" data-name="Trazado 28932" d="M22.742,10.553l-1.886-.606-.4-1.01L21.4,7.186a1.132,1.132,0,0,0-.2-1.28L19.577,4.29a1.132,1.132,0,0,0-1.28-.2l-1.751.943-1.01-.4L14.93,2.741A1.1,1.1,0,0,0,13.92,2H11.63a.944.944,0,0,0-.943.808l-.606,1.886A2.975,2.975,0,0,0,9,5.1L7.253,4.155a1.132,1.132,0,0,0-1.28.2L4.357,5.973a1.132,1.132,0,0,0-.2,1.28l.875,1.684c-.135.337-.269.741-.4,1.078l-1.886.606A1.1,1.1,0,0,0,2,11.63v2.29a1.073,1.073,0,0,0,.808,1.01l1.886.606.4,1.01L4.155,18.3a1.132,1.132,0,0,0,.2,1.28l1.616,1.616a1.132,1.132,0,0,0,1.28.2L9,20.452l1.01.4.606,1.953a1.1,1.1,0,0,0,1.01.741h2.29a1.1,1.1,0,0,0,1.01-.741l.606-1.953,1.01-.4L18.3,21.4a1.132,1.132,0,0,0,1.28-.2l1.616-1.616a1.132,1.132,0,0,0,.2-1.28l-.943-1.751.4-1.01,1.953-.606a1.1,1.1,0,0,0,.741-1.01V11.63a1.153,1.153,0,0,0-.808-1.078ZM22.2,13.718l-2.424.741-.067.337-.606,1.414-.2.337,1.212,2.222-1.347,1.347L16.546,18.9l-.337.2a6.393,6.393,0,0,1-1.414.606l-.337.067L13.718,22.2H11.832l-.741-2.424-.337-.067-1.414-.606L9,18.9,6.781,20.116,5.435,18.769l1.212-2.222-.2-.337A6.393,6.393,0,0,1,5.839,14.8l-.067-.337-2.424-.741V11.832l2.29-.673.135-.337a5.716,5.716,0,0,1,.606-1.482L6.579,9,5.435,6.781,6.781,5.435,8.937,6.647l.337-.2a5.716,5.716,0,0,1,1.482-.606l.337-.135.741-2.357h1.886L14.459,5.7l.337.135a6.393,6.393,0,0,1,1.414.606l.337.2,2.222-1.212,1.347,1.347L18.9,9l.2.337a6.393,6.393,0,0,1,.606,1.414l.067.337,2.424.741Z" transform="translate(-2 -2)" fill="#82f18d"/></g></svg>
+            </button>
+        </div>
+    
+        <div class="content-container" [ngStyle]="{ 'background-image': 'linear-gradient(to bottom, rgba(72, 72, 72, 0), rgba(0, 0, 0))' }">
+            <div class="content">
+                <div class="texts-container">
+                    <p class="title" (click)="handleMode()"> {{ post.title }} </p>
+                    <p class="subtitle" (click)="handleMode()"> {{ post.message }} </p>
+                </div>
+
+                <div class="icons-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28.378" height="26.606" viewBox="0 0 28.378 26.606"><g id="heart" transform="translate(79 0)"><path id="Trazado_28864" data-name="Trazado 28864" d="M14.19,4.874,12.918,3.567C9.933.5,4.459,1.558,2.483,5.415c-.928,1.815-1.137,4.434.557,7.777,1.632,3.219,5.027,7.075,11.149,11.275,6.123-4.2,9.516-8.057,11.149-11.275,1.694-3.346,1.486-5.964.557-7.777C23.921,1.558,18.447.5,15.461,3.565Zm0,21.731c-27.2-17.971-8.373-32-.312-24.578.106.1.211.2.312.3q.15-.157.312-.3C22.562-5.4,41.386,8.633,14.19,26.605Z" transform="translate(-79 0)" fill="#fff" fill-rule="evenodd"/></g></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28.51" height="26.605" viewBox="0 0 28.51 26.605"><g id="Grupo_72832" data-name="Grupo 72832" transform="translate(-383 -13.313)"><path id="Trazado_28852" data-name="Trazado 28852" d="M4.772,21.662a1.782,1.782,0,0,1,.512,1.427,19.547,19.547,0,0,1-.71,3.564,21.034,21.034,0,0,0,4.693-1.591,1.782,1.782,0,0,1,1.265-.131,14.362,14.362,0,0,0,3.723.484c7.12,0,12.473-5,12.473-10.691S21.375,4.032,14.255,4.032s-12.473,5-12.473,10.691a9.79,9.79,0,0,0,2.99,6.938ZM3.894,28.62q-.633.125-1.27.23a.463.463,0,0,1-.486-.645q.237-.56.435-1.135l.006-.017a18.634,18.634,0,0,0,.934-4.132A11.572,11.572,0,0,1,0,14.723C0,7.834,6.382,2.25,14.255,2.25S28.51,7.834,28.51,14.723,22.128,27.2,14.255,27.2a16.144,16.144,0,0,1-4.182-.546,24.362,24.362,0,0,1-6.179,1.969Z" transform="translate(383 11.063)" fill="#fff" fill-rule="evenodd"/><path id="Trazado_28853" data-name="Trazado 28853" d="M9,12.141a.891.891,0,0,1,.891-.891H22.364a.891.891,0,1,1,0,1.782H9.891A.891.891,0,0,1,9,12.141ZM9,16.6a.891.891,0,0,1,.891-.891H22.364a.891.891,0,1,1,0,1.782H9.891A.891.891,0,0,1,9,16.6ZM9,21.05a.891.891,0,0,1,.891-.891h7.127a.891.891,0,1,1,0,1.782H9.891A.891.891,0,0,1,9,21.05Z" transform="translate(381.128 9.19)" fill="#fff" fill-rule="evenodd"/></g></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="21.966" height="28.105" viewBox="0 0 21.966 28.105"><g id="Grupo_72833" data-name="Grupo 72833" transform="translate(-390.25 -493.947)"><path id="Trazado_28821" data-name="Trazado 28821" d="M22.1,13.5h2.559a2.559,2.559,0,0,1,2.559,2.559V28.338A2.559,2.559,0,0,1,24.657,30.9H9.309A2.559,2.559,0,0,1,6.75,28.338V16.059A2.559,2.559,0,0,1,9.309,13.5h2.559" transform="translate(384.25 490.406)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path id="Trazado_28822" data-name="Trazado 28822" d="M22.608,8.491,17.491,3.375,12.375,8.491" transform="translate(383.741 491.322)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path id="Trazado_28823" data-name="Trazado 28823" d="M18,20.834V3.375" transform="translate(383.232 491.322)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></g></svg>     
+                </div>
+            </div>
+
+            <div class="current-media-shown-indicators" [style]="{ 'grid-template-columns': '' + fractions + '' }">
+                <ng-container *ngIf="post.slides.length > 0">
+                    <div class="indicator" 
+                        [ngClass]="{ active: i === currentMediaSlide }" 
+                        *ngFor="let slide of post.slides; let i = index">
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-content">
+        <div class="flex">
+            <div class="icons-container">
+                <svg class="display" xmlns="http://www.w3.org/2000/svg" width="26.201" height="26.202" viewBox="0 0 26.201 26.202"><g id="Group_73082" data-name="Group 73082" transform="translate(1.125 1.125)"><g id="crop-outline" transform="translate(0 0)"><path id="Path_28918" data-name="Path 28918" d="M10.125,3.375V19.036A2.764,2.764,0,0,0,12.889,21.8h15.66" transform="translate(-4.598 -3.375)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25"/><path id="Path_28919" data-name="Path 28919" d="M23.837,19.337V12.889a2.764,2.764,0,0,0-2.764-2.764H14.625" transform="translate(-5.413 -4.598)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25"/><path id="Path_28920" data-name="Path 28920" d="M25.875,25.875V31.4" transform="translate(-7.451 -7.45)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25"/><path id="Path_28921" data-name="Path 28921" d="M8.9,10.125H3.375" transform="translate(-3.375 -4.598)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25"/></g></g></svg>
+            </div>
+
+            <div class="texts-container">
+                <p> (Sin GiftCard de Spas) </p>
+            </div>
+        </div>
+    </div>
+</ng-container>
+
+<!-- ---------------------------GRADIENT & SOLID BACKGROUND MODE ------------------------------ -->
+
+<ng-container *ngIf="mode === 'gradientImg' || mode === 'solidBg'">
+    <div 
+        [ngClass]="mode === 'gradientImg' ? 'container2' : 'container3'" 
+        [style.background]="post.slides[0].media"
+        [ngStyle]="{ background: mode === 'solidBg' ? 'rgb(39, 39, 39)' : post.slides[0].media }">
+        <div class="divTopBtn">
+            <button class="topBtn">
+            <svg id="Grupo_73130" data-name="Grupo 73130" xmlns="http://www.w3.org/2000/svg" width="21.55" height="21.55" viewBox="0 0 21.55 21.55"><g id="settings-line" transform="translate(0)"><path id="Trazado_28931" data-name="Trazado 28931" d="M15.814,11a4.714,4.714,0,1,0,4.714,4.714A4.685,4.685,0,0,0,15.814,11Zm0,8.081a3.367,3.367,0,1,1,3.367-3.367A3.335,3.335,0,0,1,15.814,19.081Z" transform="translate(-4.972 -4.939)" fill="#82f18d"/><path id="Trazado_28932" data-name="Trazado 28932" d="M22.742,10.553l-1.886-.606-.4-1.01L21.4,7.186a1.132,1.132,0,0,0-.2-1.28L19.577,4.29a1.132,1.132,0,0,0-1.28-.2l-1.751.943-1.01-.4L14.93,2.741A1.1,1.1,0,0,0,13.92,2H11.63a.944.944,0,0,0-.943.808l-.606,1.886A2.975,2.975,0,0,0,9,5.1L7.253,4.155a1.132,1.132,0,0,0-1.28.2L4.357,5.973a1.132,1.132,0,0,0-.2,1.28l.875,1.684c-.135.337-.269.741-.4,1.078l-1.886.606A1.1,1.1,0,0,0,2,11.63v2.29a1.073,1.073,0,0,0,.808,1.01l1.886.606.4,1.01L4.155,18.3a1.132,1.132,0,0,0,.2,1.28l1.616,1.616a1.132,1.132,0,0,0,1.28.2L9,20.452l1.01.4.606,1.953a1.1,1.1,0,0,0,1.01.741h2.29a1.1,1.1,0,0,0,1.01-.741l.606-1.953,1.01-.4L18.3,21.4a1.132,1.132,0,0,0,1.28-.2l1.616-1.616a1.132,1.132,0,0,0,.2-1.28l-.943-1.751.4-1.01,1.953-.606a1.1,1.1,0,0,0,.741-1.01V11.63a1.153,1.153,0,0,0-.808-1.078ZM22.2,13.718l-2.424.741-.067.337-.606,1.414-.2.337,1.212,2.222-1.347,1.347L16.546,18.9l-.337.2a6.393,6.393,0,0,1-1.414.606l-.337.067L13.718,22.2H11.832l-.741-2.424-.337-.067-1.414-.606L9,18.9,6.781,20.116,5.435,18.769l1.212-2.222-.2-.337A6.393,6.393,0,0,1,5.839,14.8l-.067-.337-2.424-.741V11.832l2.29-.673.135-.337a5.716,5.716,0,0,1,.606-1.482L6.579,9,5.435,6.781,6.781,5.435,8.937,6.647l.337-.2a5.716,5.716,0,0,1,1.482-.606l.337-.135.741-2.357h1.886L14.459,5.7l.337.135a6.393,6.393,0,0,1,1.414.606l.337.2,2.222-1.212,1.347,1.347L18.9,9l.2.337a6.393,6.393,0,0,1,.606,1.414l.067.337,2.424.741Z" transform="translate(-2 -2)" fill="#82f18d"/></g></svg>
+            </button>
+        </div>
+
+        <div class="content-container" 
+            [ngStyle]="{ 
+                backgroundImage: mode === 'gradientImg' 
+                    ? 'linear-gradient(to bottom, rgba(72, 72, 72, 0), rgba(0, 0, 0))'
+                    : 'none'
+            }">
+            <div class="text2" (click)="handleMode()">
+                <p class="title2" (click)="handleMode()"> Felicidades por tu tesis!! </p>
+                <p class="subtitle2">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor, dolorem.
+                    Ea molestias dolores nulla voluptas recusandae eius inventore repellendus
+                    sint maxime quibusdam, temporibus veritatis ducimus nihil itaque dolorem
+                    rem quas. Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
+                    
+                    <br><br>
+        
+                    Qui, quasi, non repellendus neque, illum impedit voluptas asperiores dolore
+                    quam fugit cupiditate accusamus aliquam ex velit iusto iure quibusdam
+                    distinctio quae. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Cumque, libero alias quis modi cum et. 
+                    
+                    <br><br>
+        
+                    Optio reiciendis enim nostrum molestias obcaecati. Lorem ipsum dolor sit amet 
+                    consectetur adipisicing elit. Totam sapiente unde nemo, nam exercitationem accusamus! 
+                    Corporis, reiciendis. Ea, fugit rerum inventore dolor sequi ipsum, possimus similique laborum
+                    quisquam quibusdam veniam! Lorem ipsum dolor sit amet consectetur,
+                    adipisicing elit. Hic, voluptatum nostrum!
+                </p>
+            </div>
+        </div>
+
+        <div class="bottom-container">
+            <div class="icons-container2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28.378" height="26.606" viewBox="0 0 28.378 26.606"><g id="heart" transform="translate(79 0)"><path id="Trazado_28864" data-name="Trazado 28864" d="M14.19,4.874,12.918,3.567C9.933.5,4.459,1.558,2.483,5.415c-.928,1.815-1.137,4.434.557,7.777,1.632,3.219,5.027,7.075,11.149,11.275,6.123-4.2,9.516-8.057,11.149-11.275,1.694-3.346,1.486-5.964.557-7.777C23.921,1.558,18.447.5,15.461,3.565Zm0,21.731c-27.2-17.971-8.373-32-.312-24.578.106.1.211.2.312.3q.15-.157.312-.3C22.562-5.4,41.386,8.633,14.19,26.605Z" transform="translate(-79 0)" fill="#fff" fill-rule="evenodd"/></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="28.51" height="26.605" viewBox="0 0 28.51 26.605"><g id="Grupo_72832" data-name="Grupo 72832" transform="translate(-383 -13.313)"><path id="Trazado_28852" data-name="Trazado 28852" d="M4.772,21.662a1.782,1.782,0,0,1,.512,1.427,19.547,19.547,0,0,1-.71,3.564,21.034,21.034,0,0,0,4.693-1.591,1.782,1.782,0,0,1,1.265-.131,14.362,14.362,0,0,0,3.723.484c7.12,0,12.473-5,12.473-10.691S21.375,4.032,14.255,4.032s-12.473,5-12.473,10.691a9.79,9.79,0,0,0,2.99,6.938ZM3.894,28.62q-.633.125-1.27.23a.463.463,0,0,1-.486-.645q.237-.56.435-1.135l.006-.017a18.634,18.634,0,0,0,.934-4.132A11.572,11.572,0,0,1,0,14.723C0,7.834,6.382,2.25,14.255,2.25S28.51,7.834,28.51,14.723,22.128,27.2,14.255,27.2a16.144,16.144,0,0,1-4.182-.546,24.362,24.362,0,0,1-6.179,1.969Z" transform="translate(383 11.063)" fill="#fff" fill-rule="evenodd"/><path id="Trazado_28853" data-name="Trazado 28853" d="M9,12.141a.891.891,0,0,1,.891-.891H22.364a.891.891,0,1,1,0,1.782H9.891A.891.891,0,0,1,9,12.141ZM9,16.6a.891.891,0,0,1,.891-.891H22.364a.891.891,0,1,1,0,1.782H9.891A.891.891,0,0,1,9,16.6ZM9,21.05a.891.891,0,0,1,.891-.891h7.127a.891.891,0,1,1,0,1.782H9.891A.891.891,0,0,1,9,21.05Z" transform="translate(381.128 9.19)" fill="#fff" fill-rule="evenodd"/></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="21.966" height="28.105" viewBox="0 0 21.966 28.105"><g id="Grupo_72833" data-name="Grupo 72833" transform="translate(-390.25 -493.947)"><path id="Trazado_28821" data-name="Trazado 28821" d="M22.1,13.5h2.559a2.559,2.559,0,0,1,2.559,2.559V28.338A2.559,2.559,0,0,1,24.657,30.9H9.309A2.559,2.559,0,0,1,6.75,28.338V16.059A2.559,2.559,0,0,1,9.309,13.5h2.559" transform="translate(384.25 490.406)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path id="Trazado_28822" data-name="Trazado 28822" d="M22.608,8.491,17.491,3.375,12.375,8.491" transform="translate(383.741 491.322)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path id="Trazado_28823" data-name="Trazado 28823" d="M18,20.834V3.375" transform="translate(383.232 491.322)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></g></svg>     
+            </div>
+        
+            <div class="current-media-shown-indicators"
+                *ngIf="mode !== 'solidBg'"
+                [style]="{ 'grid-template-columns': '' + fractions + '' }">
+                <ng-container *ngIf="post.slides.length > 0">
+                    <div class="indicator" 
+                        [ngClass]="{ active: i === currentMediaSlide }" 
+                        *ngFor="let slide of post.slides; let i = index">
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-content">
+        <div class="flex" [ngStyle]="{ margin: mode === 'solidBg' ? '2rem 0rem' : '0rem' }">
+            <div class="icons-container">
+                <ng-container *ngIf="mode !== 'solidBg'">
+                    <svg class="display" xmlns="http://www.w3.org/2000/svg" width="26.201" height="26.202" viewBox="0 0 26.201 26.202"><g id="Group_73082" data-name="Group 73082" transform="translate(1.125 1.125)"><g id="crop-outline" transform="translate(0 0)"><path id="Path_28918" data-name="Path 28918" d="M10.125,3.375V19.036A2.764,2.764,0,0,0,12.889,21.8h15.66" transform="translate(-4.598 -3.375)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25"/><path id="Path_28919" data-name="Path 28919" d="M23.837,19.337V12.889a2.764,2.764,0,0,0-2.764-2.764H14.625" transform="translate(-5.413 -4.598)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25"/><path id="Path_28920" data-name="Path 28920" d="M25.875,25.875V31.4" transform="translate(-7.451 -7.45)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25"/><path id="Path_28921" data-name="Path 28921" d="M8.9,10.125H3.375" transform="translate(-3.375 -4.598)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25"/></g></g></svg>
+                </ng-container>
+            </div>
+
+            <div class="texts-container2">
+                <ng-container *ngIf="mode !== 'solidBg'">
+                    <svg id="Grupo_73130" data-name="Grupo 73130" xmlns="http://www.w3.org/2000/svg" width="34.828" height="34.828" viewBox="0 0 34.828 34.828"><g id="settings-line" transform="translate(0)"><path id="Trazado_28931" data-name="Trazado 28931" d="M18.719,11a7.619,7.619,0,1,0,7.619,7.619A7.572,7.572,0,0,0,18.719,11Zm0,13.061a5.442,5.442,0,1,1,5.442-5.442A5.389,5.389,0,0,1,18.719,24.061Z" transform="translate(-1.196 -1.205)" fill="#272727"/><path id="Trazado_28932" data-name="Trazado 28932" d="M35.522,15.822l-3.047-.98-.653-1.633,1.524-2.83a1.83,1.83,0,0,0-.327-2.068L30.407,5.7a1.83,1.83,0,0,0-2.068-.327L25.509,6.9l-1.633-.653L22.9,3.2A1.769,1.769,0,0,0,21.264,2h-3.7A1.526,1.526,0,0,0,16.04,3.306l-.98,3.047a4.809,4.809,0,0,0-1.741.653l-2.83-1.524a1.83,1.83,0,0,0-2.068.327L5.809,8.421a1.83,1.83,0,0,0-.327,2.068L6.9,13.21c-.218.544-.435,1.2-.653,1.741l-3.047.98A1.769,1.769,0,0,0,2,17.564v3.7A1.733,1.733,0,0,0,3.306,22.9l3.047.98.653,1.633-1.524,2.83a1.83,1.83,0,0,0,.327,2.068l2.612,2.612a1.83,1.83,0,0,0,2.068.327l2.83-1.524,1.633.653.98,3.156a1.769,1.769,0,0,0,1.633,1.2h3.7a1.769,1.769,0,0,0,1.633-1.2l.98-3.156,1.633-.653,2.83,1.524a1.83,1.83,0,0,0,2.068-.327l2.612-2.612a1.83,1.83,0,0,0,.327-2.068l-1.524-2.83.653-1.633,3.156-.98a1.769,1.769,0,0,0,1.2-1.633v-3.7a1.863,1.863,0,0,0-1.306-1.741Zm-.871,5.115-3.918,1.2-.109.544-.98,2.286-.327.544L31.278,29.1,29.1,31.278l-3.592-1.959-.544.327a10.332,10.332,0,0,1-2.286.98l-.544.109-1.2,3.918H17.89l-1.2-3.918-.544-.109-2.286-.98-.544-.327L9.728,31.278,7.551,29.1,9.51,25.509l-.327-.544a10.332,10.332,0,0,1-.98-2.286l-.109-.544-3.918-1.2V17.89l3.7-1.088.218-.544a9.238,9.238,0,0,1,.98-2.394l.327-.544L7.551,9.728,9.728,7.551,13.21,9.51l.544-.327a9.238,9.238,0,0,1,2.394-.98l.544-.218,1.2-3.809h3.047l1.2,3.809.544.218a10.332,10.332,0,0,1,2.286.98l.544.327L29.1,7.551l2.177,2.177-1.959,3.592.327.544a10.332,10.332,0,0,1,.98,2.286l.109.544,3.918,1.2Z" transform="translate(-2 -2)" fill="#272727"/></g></svg>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-container>
