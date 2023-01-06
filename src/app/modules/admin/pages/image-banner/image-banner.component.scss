@@ -1,0 +1,34 @@
+.page-container {
+    min-height: 100vh;
+}
+
+.content-container {
+    margin: 30px 17px 0px;
+
+    .input-container {
+        margin-bottom: 42px;
+
+        .input-label {
+            color: #7b7b7b;
+            display: block;
+            font-family: RobotoMedium;
+            font-size: 17px;
+            margin: 0px 0px 12px 8px;
+        }
+
+        .input-text {
+            border: none;
+            border-radius: 10px;
+            box-shadow: lightgrey 0px 3px 7px inset;
+            color: #0b1f38;
+            font-family: RobotoMedium;
+            font-size: 1rem;
+            padding: 0px 20px;
+            width: 100%;
+        }
+    
+        .input-text::placeholder {
+            color: #A1A1A1;
+        }
+    }
+}

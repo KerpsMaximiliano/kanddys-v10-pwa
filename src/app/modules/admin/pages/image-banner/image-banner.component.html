@@ -1,0 +1,49 @@
+<div class="page-container">
+    <app-helper-headerv2
+        [bgColor]="'#ffffff'"
+        [icon]="{
+            filter: 'invert(100%) sepia(25%) saturate(50%) hue-rotate(10deg) brightness(100%) contrast(100%)',
+            height: 21,
+            src: '/arrow-double-up.svg',
+            width: 16
+        }"
+        [mainText]="{ color: '#000000', fontFamily: 'SfProBold', fontSize: '17px', text: 'Una imagen' }"
+        [mode]="'basic'"
+        [returnAble]="false">
+    </app-helper-headerv2>
+
+    <form class="content-container" [formGroup]="createTagForm">
+        <div class="input-container">
+            <label class="input-label"> URL </label>
+            <div class="input-container">
+                <input 
+                    autocomplete="off"
+                    class="input-text" 
+                    id="name" 
+                    name="name" 
+                    placeholder="Escribe o pega"
+                    type="text"
+                    [style.height.px]="65"
+                />
+            </div>
+        </div>
+    
+        <div class="input-container">
+            <label class="input-label"> Imagen </label>
+        
+            <div class="input-text">
+                <div [ngStyle]="{ height: '120px' }">
+                    <app-general-item
+                        [iconsRowsStyles]="{ display: 'none' }"
+                        [mainColor]="'#FFFDFD'"
+                        [removeBackgroundImage]="true"
+                        [showVisitorCounter]="false"
+                        [stylePreset]="['small-card']"
+                        [tagsStyles]="{ display: 'none' }"
+                        [textColor]="'#000000'">
+                    </app-general-item>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -74,6 +74,7 @@ export class GeneralItemComponent implements OnInit {
   @Input() itemPresentationBoxBottomRowStyles: CSSStyles = null;
   @Input() viewsCounterStyles: CSSStyles = null;
   @Input() textColor: string = '#fff';
+  @Input() removeBackgroundImage: boolean = false;
 
   //buttons
   @Input() topRightButton: Button = null;
