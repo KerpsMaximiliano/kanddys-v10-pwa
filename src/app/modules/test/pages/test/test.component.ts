@@ -26,11 +26,14 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
-import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { BlankComponent } from 'src/app/shared/dialogs/blank/blank.component';
 import { SwiperOptions } from 'swiper';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
 import { OptionsGridComponent } from 'src/app/shared/dialogs/options-grid/options-grid.component';
+import { PostInput } from 'src/app/core/models/post';
+import { EntityTemplateInput } from 'src/app/core/models/entity-template';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 @Component({
   selector: 'app-test',
@@ -44,6 +47,12 @@ export class TestComponent implements OnInit {
   swiperConfig: SwiperOptions = null;
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
   dialogFlowFunctions: Record<string, any> = {};
+  temporalPost: PostInput = null;
+  temporalEntityTemplate: EntityTemplateInput = null;
+  receiverData: {
+    name: string;
+    phone: string;
+  };
 
   title = '¿Cuál(es) seria el motivo?';
   title2 = '¿Que emoción(es) quieres transmitir con el mensaje?';
@@ -123,9 +132,10 @@ export class TestComponent implements OnInit {
     'Mi Comadre',
   ];
 
-  dialogs: Array<EmbeddedComponent> = [
+  dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
+      componentId: 'whoReceives',
       inputs: {
         omitTabFocus: false,
         containerStyles: {
@@ -151,7 +161,7 @@ export class TestComponent implements OnInit {
           styles: {},
           list: [
             {
-              name: 'test',
+              name: 'receiverName',
               value: '',
               validators: [Validators.required],
               type: 'textarea',
@@ -188,8 +198,25 @@ export class TestComponent implements OnInit {
       outputs: [
         {
           name: 'data',
-          callback: (value) => {
-            this.swiperConfig.allowSlideNext = true;
+          callback: (params) => {
+            const { fields, value } = params;
+            const { receiverName } = value;
+
+            if (receiverName.length > 0) {
+              this.receiverData = receiverName;
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.receiverData = null;
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            this.dialogFlowService.saveGeneralDialogData(
+              this.receiverData,
+              'flow1',
+              'whoReceives',
+              'receiverName',
+              fields
+            );
           },
         },
       ],
@@ -197,6 +224,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: GeneralDialogComponent,
+      componentId: 'whoSends',
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -255,6 +283,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: GeneralDialogComponent,
+      componentId: 'messageTypeDialog',
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -314,6 +343,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: GeneralDialogComponent,
+      componentId: 'messageDialog',
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -419,6 +449,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: OptionsGridComponent,
+      componentId: 'motiveDialog',
       inputs: {
         mode: 'default',
         words: this.words,
@@ -443,6 +474,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: OptionsGridComponent,
+      componentId: 'sentimentDialog',
       inputs: {
         mode: 'default',
         words: this.words2,
@@ -460,6 +492,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: OptionsGridComponent,
+      componentId: 'timingDialog',
       inputs: {
         mode: 'time',
         words: this.words3,
@@ -479,6 +512,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: OptionsGridComponent,
+      componentId: 'recipientGenderDialog',
       inputs: {
         mode: 'time',
         words: ['Hombre', 'Mujer'],
@@ -497,6 +531,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: OptionsGridComponent,
+      componentId: 'recipientRelationshipDialog',
       inputs: {
         mode: 'default',
         words: this.words4,
@@ -517,6 +552,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: GeneralDialogComponent,
+      componentId: 'whatsappNumberDialog',
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -713,6 +749,7 @@ export class TestComponent implements OnInit {
     },*/
     {
       component: GeneralDialogComponent,
+      componentId: 'wantToAddQr',
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -801,6 +838,7 @@ export class TestComponent implements OnInit {
     },
     {
       component: GeneralDialogComponent,
+      componentId: 'includedDialog',
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -899,7 +937,7 @@ export class TestComponent implements OnInit {
   ];
 
   constructor(
-    private dialog: DialogService,
+    private dialogFlowService: DialogFlowService,
     private itemsService: ItemsService,
     private merchantService: MerchantsService,
     private saleflowService: SaleFlowService

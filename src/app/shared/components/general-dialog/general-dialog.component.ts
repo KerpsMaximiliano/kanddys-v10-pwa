@@ -13,6 +13,7 @@ import {
   ValidatorFn,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 enum FormType {
   text = 'text',
@@ -28,6 +29,7 @@ enum FormType {
 })
 export class GeneralDialogComponent implements OnInit, OnDestroy {
   @Input('containerStyles') containerStyles: Record<string, string>;
+  @Input('dialogId') dialogId: string;
   @Input('header') header: {
     styles?: Record<string, string>;
     text?: string;
@@ -80,7 +82,7 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
   controller: FormGroup;
   sub: Subscription;
 
-  constructor() {}
+  constructor(private dialogFlowService: DialogFlowService) {}
 
   ngOnInit(): void {
     this.initControllers();
@@ -108,8 +110,10 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
     }
     this.sub = this.controller.valueChanges.subscribe((value) => {
       if (this.controller.valid) {
-        console.log('value: ', value);
-        this.data.emit(value);
+        this.data.emit({
+          value,
+          fields: this.fields.list,
+        });
       }
     });
   }

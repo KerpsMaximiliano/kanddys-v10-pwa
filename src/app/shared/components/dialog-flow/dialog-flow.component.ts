@@ -6,10 +6,14 @@ import {
   ViewChild,
   EventEmitter,
 } from '@angular/core';
-import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions, Swiper } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { BlankComponent } from '../../dialogs/blank/blank.component';
+import {
+  DialogFlowService,
+  EmbeddedDialog,
+} from 'src/app/core/services/dialog-flow.service';
 
 @Component({
   selector: 'app-dialog-flow',
@@ -17,7 +21,9 @@ import { BlankComponent } from '../../dialogs/blank/blank.component';
   styleUrls: ['./dialog-flow.component.scss'],
 })
 export class DialogFlowComponent implements OnInit {
-  @Input() dialogs: Array<EmbeddedComponent> = [];
+  @Input() dialogFlowId: string = null;
+  @Input() dialogs: Array<EmbeddedComponentWithId> = [];
+  @Input() allowSlideNext = true;
   @Output() saveConfigRef = new EventEmitter();
   @Output() moveToDialogRef = new EventEmitter();
   swiperConfig: SwiperOptions = {
@@ -33,12 +39,26 @@ export class DialogFlowComponent implements OnInit {
 
   @ViewChild('dialogSwiper') dialogSwiper: SwiperComponent;
 
-  constructor() {}
+  constructor(private service: DialogFlowService) {}
 
   ngOnInit(): void {
+    if (!this.dialogFlowId) throw Error('Dialog flow has no id');
+    else {
+      if (!this.service.dialogsFlows[this.dialogFlowId]) {
+        this.service.dialogsFlows[this.dialogFlowId] = {};
+
+        this.dialogs.forEach((dialog) => {
+          this.service.dialogsFlows[this.dialogFlowId][dialog.componentId] = {
+            dialogId: dialog.componentId,
+            fields: {},
+          };
+        });
+      }
+    }
+
     setTimeout(() => {
       this.applyTransparencyToSlidesThatArentActive();
-      // this.swiperConfig.allowSlideNext = false;
+      this.swiperConfig.allowSlideNext = this.allowSlideNext;
       this.saveConfigRef.emit(this.swiperConfig);
       this.moveToDialogRef.emit(this.moveToDialogByIndex.bind(this));
     }, 100);
