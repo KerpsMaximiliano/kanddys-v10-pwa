@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CalendarService } from 'src/app/core/services/calendar.service';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-calendar',
@@ -9,6 +10,7 @@ import { CalendarService } from 'src/app/core/services/calendar.service';
 export class CalendarComponent implements OnInit {
   @Output() selectedDate = new EventEmitter<any>();
   @Output() selectedMonth = new EventEmitter<any>();
+  @Output() changedMonth = new EventEmitter<boolean>();
 
   constructor(public calendar: CalendarService) {}
 
@@ -36,6 +38,11 @@ export class CalendarComponent implements OnInit {
   @Input() time: string;
   @Input() weekDay: string;
   @Input() allowSundays: boolean = false;
+  swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: false,
+    spaceBetween: 30,
+  };
 
   ngOnInit(): void {
     /*
@@ -44,10 +51,10 @@ export class CalendarComponent implements OnInit {
     if (this.monthNameSelected) {
       for (let i = 0; i < this.calendar.months.length; i++) {
         if (this.calendar.months[i].name === this.monthNameSelected) {
-          this.getMonthId(i)
+          this.getMonthId(i);
         }
       }
-    }else{
+    } else {
       this.getMonthId(0);
     }
   }
@@ -71,6 +78,9 @@ export class CalendarComponent implements OnInit {
   }
 
   getMonthId(id) {
+    this.indexI = null;
+    this.indexJ = null;
+
     this.calendar.showDays = false;
     this.calendar.monthIndex = id;
     this.realMonthIndex = id;
@@ -114,36 +124,73 @@ export class CalendarComponent implements OnInit {
     if (this.monthNameSelected) {
       for (let i = 0; i < this.filteredDays.length; i++) {
         for (let j = 0; j < this.filteredDays[i].length; j++) {
-          if (this.filteredDays[i][j].dayNumber == this.dateNumber) {
-            this.clicked(i,j);
+          if (this.filteredDays[i][j].dayNumber == this.lowestDay) {
+            this.indexI = i;
+            this.indexJ = j;
+            this.clicked(i, j);
             break;
           }
         }
       }
-    } 
+    }
     setTimeout((x) => (this.calendar.showDays = true));
+
+    this.changedMonth.emit(true);
   }
 
   clicked(i: number, j: number) {
     this.indexI = i;
     this.indexJ = j;
 
-    if(this.filteredDays[i][j].weekDayNumber !== 0 || (this.filteredDays[i][j].weekDayNumber === 0 && this.allowSundays)) {
+    console.log(this.indexI, this.indexJ);
 
+    if (
+      this.filteredDays[i][j].weekDayNumber !== 0 ||
+      (this.filteredDays[i][j].weekDayNumber === 0 && this.allowSundays)
+    ) {
       this.filteredDays[i][j].indexI = i;
       this.filteredDays[i][j].indexJ = j;
 
       this.calendar.months[this.calendar.monthIndex].indexI = i;
       this.calendar.months[this.calendar.monthIndex].indexJ = j;
-      
+
+      let year = this.calendar.years.filter((year) => year.selected);
+
       this.selectedMonth.emit({
         calendar: this.calendar.months[this.calendar.monthIndex],
-        day: this.filteredDays[i][j]
+        day: this.filteredDays[i][j],
+        year,
       });
+    } else {
+      console.log('Los domingos no pana');
     }
-    
-    else {
-      console.log('Los domingos no pana')
-    }
+  }
+
+  changeToYear(yearIndex: number) {
+    this.calendar.years.forEach((year, index) => {
+      if (yearIndex === index) {
+        if (!year.selected) {
+          this.calendar.setInitalState(true, true);
+          year.selected = true;
+
+          if (yearIndex === 0) this.calendar.getToday();
+          else {
+            this.calendar.setDate(
+              0,
+              1,
+              this.calendar.years[yearIndex].yearNumber,
+              false
+            );
+          }
+
+          this.indexI = null;
+          this.indexJ = null;
+        }
+      } else {
+        year.selected = false;
+      }
+    });
+
+    this.getMonthId(0);
   }
 }

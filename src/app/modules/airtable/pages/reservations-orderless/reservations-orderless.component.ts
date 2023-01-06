@@ -414,6 +414,11 @@ export class ReservationOrderlessComponent implements OnInit {
       this.datePreview.hour
     } - ${this.formatDayHourToAmOrPm(hourStringIn24HourFormat, true)}`;
 
+    console.log({
+      message: this.reservationMessage,
+      data: this.datePreview,
+    });
+
     this.onReservation.emit({
       message: this.reservationMessage,
       data: this.datePreview,
@@ -511,6 +516,12 @@ export class ReservationOrderlessComponent implements OnInit {
 
   selectTimeOfDay(change: string) {
     this.timeOfDay = change;
+
+    console.log({
+      timeOfDay: this.timeOfDay,
+      ...this.selectedDateObject,
+    });
+
     this.onTimeOfDaySelection.emit({
       timeOfDay: this.timeOfDay,
       ...this.selectedDateObject,
@@ -523,6 +534,7 @@ export class ReservationOrderlessComponent implements OnInit {
       monthName: change.calendar.name,
       dayNumber: change.day.dayNumber,
       dayName: change.day.dayName,
+      year: this.calendar.years.find((year) => year.selected).yearNumber,
     };
 
     if (this.timeOfDay)
@@ -530,6 +542,29 @@ export class ReservationOrderlessComponent implements OnInit {
         ...this.selectedDateObject,
         timeOfDay: this.timeOfDay,
       });
+  }
+
+  updateMonth() {
+    this.selectedDateObject = {
+      monthNumber: null,
+      monthName: null,
+      dayNumber: null,
+      dayName: null,
+      year: this.calendar.years.find((year) => year.selected).yearNumber,
+    };
+
+    if (this.timeOfDay) {
+      this.timeOfDay = null;
+      this.onTimeOfDaySelection.emit({
+        ...this.selectedDateObject,
+        timeOfDay: this.timeOfDay,
+      });
+    } else {
+      this.onReservation.emit({
+        message: null,
+        data: null,
+      });
+    }
   }
 
   formatDayHourToAmOrPm(
@@ -800,8 +835,6 @@ export class ReservationOrderlessComponent implements OnInit {
   test2(e) {
     //this.getMonthId(0);
     this.activeHour = null;
-    console.log('Dia seleccionado');
-    console.log(this.activeHour);
 
     this.getDayId(
       e.calendar.dates.findIndex(
