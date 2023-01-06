@@ -1,6 +1,6 @@
 <div class="container">
   <div class="header">
-    <i class="far fa-angle-double-up icon "></i>
+    <i class="far fa-angle-double-up icon" [style.cursor]="'pointer'" (click)="submit()"></i>
   </div>
 
     <!--<div class="itemsGrid">
@@ -25,13 +25,14 @@
   <div class="tags-grid-drag-and-drop" cdkDropListGroup>
     <div class="tag-wrapper" style="width: 100%; margin: 0px; padding: 0px">
       <div class="inner-drag-wrapper">
-        <div class="itemContainer add">
+        <input type="file" id="file" [style.display]="'none'" (change)="loadFile($event)" [accept]="availableFiles">
+        <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
           <div class="labelBox"></div>
           <div class="imgBox">
             <p>+</p>
           </div>
           <div class="label">Adiciona</div>
-        </div>
+        </label>
       </div>
     </div>
     <div
@@ -44,10 +45,11 @@
       <div class="inner-drag-wrapper" cdkDrag>
         <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
         <div class="itemContainer">
-          <div class="imgBox"[ngStyle]="{background: 'url(' + gridItem.background + ') #272727 no-repeat  center/cover'}"></div>
+          <div *ngIf="imageFiles.includes(gridItem._type)" class="imgBox"[ngStyle]="{background: 'url(' + gridItem.background + ') #272727 no-repeat  center/cover'}"></div>
+          <video [src]="gridItem.background" controls *ngIf="videoFiles.includes(gridItem._type)" src="videoFiles.background"></video>
           <div class="labelBox"></div>
           <p class="text">{{gridItem.text}}</p>
-          <div class="label">{{gridItem.label}}</div>
+          <div class="label">{{gridItem.title}}</div>
           <div class="circleButton">
             <img class="icon" [src]="environment + '/dots-black.svg'">
           </div>

@@ -131,6 +131,7 @@ export class CheckoutComponent implements OnInit {
   postSlideImages: (string | ArrayBuffer)[] = [];
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
+  itemsReady = false;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -145,96 +146,6 @@ export class CheckoutComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService
   ) {}
-
-  async setCustomizerPreview() {
-    this.customizer =
-      this.headerService.customizer || this.headerService.getCustomizer();
-    if (!this.customizer) return;
-    this.customizerPreview = JSON.parse(localStorage.getItem('customizerFile'));
-    this.items[0].images[0] = this.customizerPreview?.base64;
-    this.payment =
-      (this.items[0].qualityQuantity.price +
-        this.headerService.order.products[0].amount *
-          this.items[0].params[0].values[0].price) *
-      1.18;
-    // Customizer data table
-    const printType = this.items[0].params[0].values.find(
-      (value) => value._id === this.items[0].params[0].values[0]._id
-    )?.name;
-    if (printType)
-      this.customizerDetails.push({
-        name: 'Tipo de impresión',
-        value: printType,
-      });
-    const selectedQuality = this.items[0].params[1].values.find(
-      (value) =>
-        value._id === this.headerService.order.products[0].params[1].paramValue
-    )?.name;
-    if (selectedQuality)
-      this.customizerDetails.push({
-        name: 'Calidad de servilleta',
-        value: selectedQuality,
-      });
-    const backgroundColor = this.customizer.backgroundColor.color.name;
-    if (backgroundColor) {
-      this.customizerDetails.push({
-        name: 'Color de fondo',
-        value: backgroundColor,
-      });
-    }
-    if (this.customizer.texts.length) {
-      this.customizerDetails.push({
-        name: 'Texto',
-        value: this.customizer.texts.reduce(
-          (prev, curr) => prev + curr.text,
-          ''
-        ),
-      });
-      let selectedTypography = this.customizer.texts[0].font;
-      switch (selectedTypography) {
-        case 'Dorsa':
-          selectedTypography = 'Empire';
-          break;
-        case 'Commercial-Script':
-          selectedTypography = 'Classic';
-          break;
-      }
-      if (selectedTypography) {
-        this.customizerDetails.push({
-          name: 'Nombre de tipografía',
-          value: selectedTypography,
-        });
-      }
-      const typographyColorCode = this.customizer.texts[0].color.name;
-      const typographyColorName = this.customizer.texts[0].color.nickname;
-      if (typographyColorCode && typographyColorName) {
-        this.customizerDetails.push({
-          name: 'Color de tipografía',
-          value: typographyColorName,
-        });
-        this.customizerDetails.push({
-          name: 'Código de color de tipografía',
-          value: typographyColorCode,
-        });
-      }
-    }
-    if (this.customizer.stickers.length) {
-      const stickerColorCode =
-        this.customizer.stickers[0].svgOptions.color.name;
-      const stickerColorName =
-        this.customizer.stickers[0].svgOptions.color.nickname;
-      if (stickerColorName) {
-        this.customizerDetails.push({
-          name: 'Color de sticker',
-          value: stickerColorName,
-        });
-        this.customizerDetails.push({
-          name: 'Código de color de sticker',
-          value: stickerColorCode,
-        });
-      }
-    }
-  }
 
   async ngOnInit(): Promise<void> {
     this.items = this.headerService.getItems();
@@ -293,12 +204,7 @@ export class CheckoutComponent implements OnInit {
       };
     }
     this.headerService.checkoutRoute = null;
-    this.setCustomizerPreview();
-    if (!this.customizer)
-      this.payment = this.items?.reduce(
-        (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),
-        0
-      );
+    if (!this.customizer) this.updatePayment();
     if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
       this.hasPaymentModule = true;
     this.checkLogged();
@@ -386,6 +292,31 @@ export class CheckoutComponent implements OnInit {
     return result;
   }
 
+  deleteProduct(i: number) {
+    let deletedID = this.items[i]._id;
+    const index = this.items.findIndex((product) => product._id === deletedID);
+    if (index >= 0) this.items.splice(index, 1);
+    this.headerService.removeOrderProduct(deletedID);
+    this.headerService.removeItem(deletedID);
+    this.updatePayment();
+  }
+
+  updatePayment() {
+    this.payment = this.items?.reduce(
+      (prev, curr, currIndex) =>
+        prev +
+        ('pricing' in curr ? curr.pricing : curr.price) *
+          this.headerService.order.products[currIndex].amount,
+      0
+    );
+  }
+
+  changeAmount(index: number, type: 'add' | 'subtract') {
+    const product = this.headerService.order.products[index];
+    this.headerService.changeItemAmount(product.item, type);
+    this.updatePayment();
+  }
+
   createOrder = async () => {
     if (this.missingOrderData) {
       if (
@@ -463,6 +394,22 @@ export class CheckoutComponent implements OnInit {
     // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
     // ---------------------- Managing Post ----------------------------
     if (this.headerService.saleflow.module?.post) {
+      this.post = {
+        message: '',
+        targets: [
+          {
+            name: '',
+            emailOrPhone: '',
+          },
+        ],
+        from: '',
+        socialNetworks: [
+          {
+            url: '',
+          },
+        ],
+      };
+      this.headerService.storePost(this.post);
       const postResult = (await this.postsService.createPost(this.post))
         ?.createPost?._id;
       this.headerService.order.products[0].post = postResult;
@@ -528,56 +475,6 @@ export class CheckoutComponent implements OnInit {
     } catch (e) {
       console.log(e);
       return;
-    }
-  }
-
-  selectSelect(index: number) {
-    switch (index) {
-      case 0: {
-        this.post = {
-          message: '',
-          targets: [
-            {
-              name: '',
-              emailOrPhone: '',
-            },
-          ],
-          from: '',
-          socialNetworks: [
-            {
-              url: '',
-            },
-          ],
-        };
-        this.headerService.storePost(this.post);
-        break;
-      }
-      case 1: {
-        this.router.navigate([`../create-giftcard`], {
-          queryParams: {
-            symbols: 'virtual',
-          },
-          relativeTo: this.route,
-          replaceUrl: true,
-        });
-        break;
-      }
-      case 2: {
-        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
-        this.router.navigate([`../create-article`], {
-          relativeTo: this.route,
-          replaceUrl: true,
-        });
-        break;
-      }
-      case 3: {
-        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
-        this.router.navigate([`../create-giftcard`], {
-          relativeTo: this.route,
-          replaceUrl: true,
-        });
-        break;
-      }
     }
   }
 
