@@ -7,8 +7,8 @@ import { AppService } from 'src/app/app.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
+// import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+// import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 
 @Component({
   selector: 'app-ecommerce',
@@ -22,7 +22,7 @@ export class EcommerceComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private dialogService: DialogService,
+    // private dialogService: DialogService,
     public headerService: HeaderService,
     private appService: AppService,
     private _MerchantsService: MerchantsService,
