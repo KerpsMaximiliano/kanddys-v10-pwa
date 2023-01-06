@@ -207,80 +207,51 @@ audio {
   }
 }
 
-.bottom-swiper {
+.text-icons-container {
   width: 100%;
-  height: calc(100vh - 87.6vh);
-  position: absolute;
+  min-height: 120px;
   display: flex;
   flex-direction: column;
-  top: calc(88vh - 100vh);
-  background-image: linear-gradient(transparent, black);
-  z-index: 1;
+  align-items: flex-start;
+  justify-content: flex-end;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 1) 100%);
+  padding: 0 3% 10px;
 
-  .text-icons {
+  .top-section {
+    width: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
-    z-index: 1;
+    align-items: baseline;
+    margin-bottom: 5px;
 
-    .texts-column {
-      display: inherit;
-      flex-direction: column !important;
-      width: 50%;
+    .top-text {
+      font-family: "SfProBold";
+      font-size: 1.313rem;
+      color: #ffffff;
+      margin: 0;
     }
+  }
 
-    .icon-button-texts {
-      border: none;
-      position: absolute;
-      top: 55px;
-      right: 3.45%;
-      padding: 3px;
-      cursor: pointer;
-
-      img {
-        width: 24px;
-        height: 24px;
-        filter: brightness(3);
-      }
-    }
-
-    .icons-flex {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-right: 10px;
-    }
+  .bottom-text {
+    max-width: 100%;
+    font-family: "SfProRegular";
+    font-size: 1rem;
+    color: #ffffff;
+    margin: 0;
+    cursor: pointer;
   }
 }
 
-.main-text {
-  max-width: 85%;
-  position: absolute;
-  top: 52%;
-  font-size: 1.313rem;
-  font-family: "SfProBold";
-  color: #ffffff;
-  margin-left: 3.23%;
-  margin-bottom: 4px;
+.icon-button-texts {
+  border: none;
+  padding: 3px;
   cursor: pointer;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
 
-.second-text {
-  max-width: 85%;
-  position: absolute;
-  top: 78%;
-  font-size: 0.963rem;
-  font-family: "SfProLight";
-  color: #ffffff;
-  margin-left: 3.23%;
-  margin-bottom: 7px;
-  cursor: pointer;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(3);
+  }
 }
 
 .button-display-area {
@@ -402,7 +373,6 @@ audio {
 .fixed-button {
   position: absolute;
   top: 38px;
-  left: 16px;
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -412,6 +382,13 @@ audio {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &.left {
+    left: 16px;
+  }
+  &.right {
+    right: 16px;
+  }
 }
 
 .withBanner {
@@ -502,7 +479,7 @@ audio {
 
 .disabled {
   width: 100%;
-  height: calc(100% - 91px);
+  height: 100%;
   position: absolute;
   top: 0;
   left: 0;

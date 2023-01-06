@@ -76,7 +76,7 @@
 }
 
 .slide {
-  background: #e9e371;
+  background: #2e2e2e;
   width: 100%;
   height: 100vh;
   display: block;
@@ -175,17 +175,17 @@
 .container {
   // padding-top: 46px;
   position: relative;
-  height: calc(100vh - (223px));
-  background-color: #e9e371;
+  height: calc(100vh - (209px));
+  background-color: #2e2e2e;
 
   .entity-image {
     height: calc(100vh - (179px));
     width: 100%;
     background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/noimage.png);
-    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: #e9e371;
+    background-color: #2e2e2e;
+    background-size: "contain";
   }
 
   video {
@@ -379,13 +379,6 @@ audio {
   left: 16px;
 }
 
-.yellow-square {
-  background: #e9e371;
-  width: 90%;
-  height: 81px;
-  border-radius: 4px;
-}
-
 .heart-icon {
   padding-left: 10px;
 }
@@ -394,13 +387,14 @@ audio {
 .bottom-user-actions-panel {
   position: fixed;
   z-index: 1;
-  bottom: 86px;
+  bottom: 133px;
   left: 0;
   right: 0;
   max-width: 500px;
   margin: auto;
   transition: 0.3s transform linear;
   transform: translateY(133px);
+  background-color: #2e2e2e;
 
   &.opened {
     transform: translateY(0px);

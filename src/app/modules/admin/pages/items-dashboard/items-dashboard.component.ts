@@ -21,7 +21,7 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HelperHeaderInput } from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
 import { ItemImagesComponent } from 'src/app/shared/dialogs/create-item-flow/item-images/item-images.component';
@@ -176,9 +176,10 @@ export class ItemsDashboardComponent implements OnInit {
     allowSlideNext: false,
   };
   openedDialogFlow: boolean = false;
-  dialogs: Array<EmbeddedComponent> = [
+  dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: ItemListSelectorComponent,
+      componentId: 'itemPricing',
       inputs: {
         containerStyles: {},
         title: '¿Que monto te pagarán por el artículo?',
@@ -203,6 +204,7 @@ export class ItemsDashboardComponent implements OnInit {
     },
     {
       component: ItemImagesComponent,
+      componentId: 'itemImages',
       inputs: {
         containerStyles: {},
       },

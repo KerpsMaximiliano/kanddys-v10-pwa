@@ -12,7 +12,7 @@
       <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">
         <div class="grid">
           <button
-            class="fixed-button"
+            class="fixed-button left"
             *ngIf="editMode"
             style="padding: 6px"
             (click)="cancelEdit()"
@@ -26,7 +26,21 @@
             />
           </button>
           <button
-            class="fixed-button"
+            class="fixed-button left"
+            *ngIf="viewType === 'preview' && !editMode"
+            (click)="goBack()"
+            style="padding: 6px"
+          >
+            <img
+              class="icon green"
+              [src]="env + '/arrow-double-up.svg'"
+              width="28"
+              height="28"
+              alt="Volver"
+            />
+          </button>
+          <button
+            class="fixed-button right"
             *ngIf="viewType === 'preview' && !editMode"
             (click)="submit()"
             style="padding: 6px"
@@ -67,9 +81,9 @@
               <label
                 [style.height]="
                   types[i][k] === ''
-                    ? 'calc(100vh - 164px)'
+                    ? 'calc(100vh - 140px)'
                     : imageFiles.includes(types[i][k])
-                    ? 'calc(100vh - 164px)'
+                    ? 'calc(100vh - 140px)'
                     : '0'
                 "
                 for="{{ i }}{{ k }}"
@@ -153,7 +167,7 @@
   </ng-container>
   <div class="fixed">
     <!-- AREGAR AREA TEXTOS -->
-    <div class="bottom-swiper">
+    <!-- <div class="bottom-swiper">
       <div class="text-icons">
         <label for="Upper text" class="main-text"
           >{{ item?.name || "Nombre (opcional)" }}
@@ -170,6 +184,24 @@
           <img [src]="env + '/screen-cut.svg'" />
         </button>
       </div>
+    </div> -->
+    <div class="text-icons-container" *ngIf="!editMode">
+      <div class="top-section">
+        <p class="top-text">
+          {{ item?.name || "Nombre (opcional)" }}
+        </p>
+        <button
+          class="icon-button-texts"
+          (click)="enterEdit(swiperI, activeSlide)"
+          *ngIf="!editMode"
+        >
+          <img [src]="env + '/screen-cut.svg'" />
+        </button>
+      </div>
+
+      <p class="bottom-text">
+        {{ item?.description || "Descripcion del articulo (opcional)" }}
+      </p>
     </div>
     <div
       class="lines"
@@ -209,7 +241,7 @@
       <span class="price" *ngIf="viewType === 'preview'"
         >RD$ {{ price | number : "1.2-2" }}</span
       >
-      <div class="buttons-display center" *ngIf="viewType === 'preview'"></div>
+      <!-- <div class="buttons-display center" *ngIf="viewType === 'preview'"></div> -->
     </div>
     <div *ngIf="editMode">
       <div class="range-slider">
@@ -269,7 +301,7 @@
       </div>
     </div>
 
-    <div
+    <!-- <div
       class="bottom-button-banner"
       *ngIf="viewType === 'preview' && !editMode"
     >
@@ -299,13 +331,13 @@
           </div>
         </div>
       </button>
-    </div>
+    </div> -->
     <div class="edit-footer" *ngIf="editMode">
       <button class="footer-save" (click)="submit()">SALVAR AJUSTES</button>
       <button class="footer-restart" (click)="resetEdit()">
         Reiniciar ajustes de este Slide
       </button>
     </div>
-    <app-bios-banner *ngIf="viewType !== 'preview'"> </app-bios-banner>
+    <!-- <app-bios-banner *ngIf="viewType !== 'preview'"> </app-bios-banner> -->
   </div>
 </div>

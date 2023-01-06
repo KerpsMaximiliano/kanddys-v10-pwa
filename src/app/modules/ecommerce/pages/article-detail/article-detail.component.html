@@ -1,6 +1,6 @@
 <div class="container" *ngIf="itemData">
   <button class="fixed-top-button" (click)="back()">
-    <img [src]="env + '/arrow-double-up.svg'" alt="Flecha doble hacia arriba" />
+    <img [src]="env + '/arrow-double-up.svg'" alt="Volver" />
   </button>
   <div class="media-swiper-wrapper">
     <swiper
@@ -14,9 +14,7 @@
           *ngFor="let image of itemData.images"
           [ngStyle]="{
             backgroundImage: 'url(' + image + ')',
-            backgroundSize: 'contain',
-            height: 'calc(100vh - (223px))',
-            backgroundColor: '#E9E371'
+            height: 'calc(100vh - (209px))'
           }"
         ></div>
       </ng-container>
@@ -39,13 +37,13 @@
           }}
         </p>
         <div class="icons-flex">
-          <button class="round-button">
+          <!-- <button class="round-button">
             <img [src]="env + '/heart.svg'" alt="Corazón" />
           </button>
           <button class="round-button">
             <img [src]="env + '/speech-bubble.svg'" alt="Burbuja de diálogo" />
-          </button>
-          <button class="round-button">
+          </button> -->
+          <button class="round-button" (click)="share()">
             <img
               [src]="env + '/upload.svg'"
               alt="Contenedor con flecha saliendo"
@@ -121,8 +119,8 @@
       <div class="empty-space"></div>
     </div>
 
-    <div class="inner-wrapper-bottom">
-      <!-- ******************************************* TAG SWIPER ***************************************-->
+    <!-- ******************************************* TAG SWIPER ***************************************-->
+    <!-- <div class="inner-wrapper-bottom">
       <div class="content-wrapper">
         <swiper
           [config]="swiperConfigTag"
@@ -156,8 +154,8 @@
           </p>
         </div>
       </div>
-      <!-- **************************************** END TAG SWIPER ***************************************-->
-    </div>
+    </div> -->
+    <!-- **************************************** END TAG SWIPER ***************************************-->
 
     <!--
       <div
@@ -345,6 +343,6 @@
     </div>
   </div>
 </div>
-<app-bios-banner
+<!-- <app-bios-banner
   style="z-index: 999; position: fixed; bottom: 0"
-></app-bios-banner>
+></app-bios-banner> -->

@@ -206,6 +206,10 @@ export class ArticleParamsComponent implements OnInit {
   };
 
   openTagDialog = async () => {
+    this._ItemsService.itemName = this.name.value;
+    this._ItemsService.itemDesc = this.description.value;
+    this._ItemsService.itemPrice = this.price.value;
+    this._ItemsService.itemUrls = this.selectedImages as string[];
     const userTags = await this._TagsService.tagsByUser({
       options: {
         limit: -1,
@@ -743,26 +747,42 @@ export class ArticleParamsComponent implements OnInit {
       },
       {
         text: 'Elimina este artículo',
-        callback: async () => {
-          const removeItemFromSaleFlow =
-            await this._SaleflowService.removeItemFromSaleFlow(
-              this.item._id,
-              this._SaleflowService.saleflowData._id
-            );
+        callback: () => {
+          this.dialog.open(SingleActionDialogComponent, {
+            type: 'fullscreen-translucent',
+            props: {
+              title: 'Elimina este artículo',
+              buttonText: 'Si, borrar',
+              mainButton: async () => {
+                const removeItemFromSaleFlow =
+                  await this._SaleflowService.removeItemFromSaleFlow(
+                    this.item._id,
+                    this._SaleflowService.saleflowData._id
+                  );
 
-          if (!removeItemFromSaleFlow) return;
-          const deleteItem = await this._ItemsService.deleteItem(this.item._id);
-          if (!deleteItem) return;
-          else {
-            this._ToastrService.info('¡Item eliminado exitosamente!');
+                if (!removeItemFromSaleFlow) return;
+                const deleteItem = await this._ItemsService.deleteItem(
+                  this.item._id
+                );
+                if (!deleteItem) return;
+                else {
+                  this._ToastrService.info('¡Item eliminado exitosamente!');
 
-            this._SaleflowService.saleflowData =
-              await this._SaleflowService.saleflowDefault(
-                this._MerchantsService.merchantData._id
-              );
+                  this._SaleflowService.saleflowData =
+                    await this._SaleflowService.saleflowDefault(
+                      this._MerchantsService.merchantData._id
+                    );
 
-            this._Router.navigate(['/admin/entity-detail-metrics']);
-          }
+                  this._Router.navigate(['/admin/entity-detail-metrics']);
+                }
+              },
+              btnBackgroundColor: '#272727',
+              btnMaxWidth: '133px',
+              btnPadding: '7px 2px',
+            },
+            customClass: 'app-dialog',
+            flags: ['no-header'],
+          });
         },
       },
       {

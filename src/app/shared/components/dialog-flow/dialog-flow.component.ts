@@ -6,10 +6,14 @@ import {
   ViewChild,
   EventEmitter,
 } from '@angular/core';
-import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions, Swiper } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { BlankComponent } from '../../dialogs/blank/blank.component';
+import {
+  DialogFlowService,
+  EmbeddedDialog,
+} from 'src/app/core/services/dialog-flow.service';
 
 @Component({
   selector: 'app-dialog-flow',
@@ -17,8 +21,11 @@ import { BlankComponent } from '../../dialogs/blank/blank.component';
   styleUrls: ['./dialog-flow.component.scss'],
 })
 export class DialogFlowComponent implements OnInit {
-  @Input() dialogs: Array<EmbeddedComponent> = [];
+  @Input() dialogFlowId: string = null;
+  @Input() dialogs: Array<EmbeddedComponentWithId> = [];
+  @Input() allowSlideNext = true;
   @Output() saveConfigRef = new EventEmitter();
+  @Output() moveToDialogRef = new EventEmitter();
   swiperConfig: SwiperOptions = {
     direction: 'vertical',
     centeredSlides: true,
@@ -28,23 +35,43 @@ export class DialogFlowComponent implements OnInit {
     watchSlidesVisibility: true,
   };
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
-  @Input() allowSlideNext = true;
   currentDialogIndex: number = 0;
 
   @ViewChild('dialogSwiper') dialogSwiper: SwiperComponent;
 
-  constructor() {}
+  constructor(private service: DialogFlowService) {}
 
   ngOnInit(): void {
+    if (!this.dialogFlowId) throw Error('Dialog flow has no id');
+    else {
+      if (!this.service.dialogsFlows[this.dialogFlowId]) {
+        this.service.dialogsFlows[this.dialogFlowId] = {};
+
+        this.dialogs.forEach((dialog) => {
+          this.service.dialogsFlows[this.dialogFlowId][dialog.componentId] = {
+            dialogId: dialog.componentId,
+            fields: {},
+          };
+        });
+      }
+    }
+
     setTimeout(() => {
       this.applyTransparencyToSlidesThatArentActive();
       this.swiperConfig.allowSlideNext = this.allowSlideNext;
       this.saveConfigRef.emit(this.swiperConfig);
+      this.moveToDialogRef.emit(this.moveToDialogByIndex.bind(this));
     }, 100);
   }
 
   applyTransparencyToSlidesThatArentActive() {
     this.dialogs.forEach((slide, index) => {
+      const dialogHTMLElement = slide;
+
+      if (!this.dialogs[index].inputs) this.dialogs[index].inputs = {};
+      if (!this.dialogs[index].inputs.containerStyles)
+        this.dialogs[index].inputs.containerStyles = {};
+
       if (index !== this.currentDialogIndex) {
         this.dialogs[index].inputs.containerStyles.opacity = '0.5';
       } else {
@@ -62,14 +89,18 @@ export class DialogFlowComponent implements OnInit {
   }
 
   tapEvent(tappedDialogIndex: number) {
-    if (tappedDialogIndex !== this.currentDialogIndex) {
-      this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex);
-    }
+    this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex);
   }
 
   changeActiveDialog(eventData: Swiper) {
     this.currentDialogIndex = eventData.activeIndex;
 
     this.applyTransparencyToSlidesThatArentActive();
+  }
+
+  moveToDialogByIndex(dialogNumber: number) {
+    setTimeout(() => {
+      this.dialogSwiper.directiveRef.setIndex(dialogNumber);
+    }, 100);
   }
 }
