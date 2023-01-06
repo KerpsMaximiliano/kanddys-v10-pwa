@@ -214,6 +214,11 @@ export class CalendarService {
   lastTodayHours: number;
   availableHours: boolean = false;
   availableMonths: boolean = false;
+  years: Array<{
+    yearNumber: number;
+    selected: boolean;
+  }> = [];
+
   getToday() {
     this.month = new Date().getMonth();
     this.monthDay = new Date().getDate();
@@ -221,8 +226,16 @@ export class CalendarService {
     this.getDaysArray(this.year, this.month, this.monthDay);
   }
 
-  setDate(month: number, day: number, year: number) {
-    this.getToday();
+  setDate(
+    month: number,
+    day: number,
+    year: number,
+    startAtToday: boolean = true
+  ) {
+    if (startAtToday) this.getToday();
+    else {
+      this.getDaysArray(year, month, day);
+    }
 
     this.month = month;
     this.monthDay = day;
@@ -274,6 +287,8 @@ export class CalendarService {
 
   handleActiveDays(from: string, to: string, chunkSize: number, mode: string) {
     let brakes = false;
+
+    console.log("ejecutandose", from, to)
 
     if (mode === 'standar' || !mode) {
       let hour;
@@ -575,7 +590,7 @@ export class CalendarService {
     return result.getCalendarsByMerchant;
   }
 
-  setInitalState() {
+  setInitalState(avoidYearsCreation: boolean = false, avoidResetingTodayHours: boolean = false) {
     this.monthDay = undefined;
     this.month = undefined;
     this.year = undefined;
@@ -733,9 +748,23 @@ export class CalendarService {
     this.calendar = null;
     this.hours = [];
     this.allHours = [];
-    this.todayHours = [];
+
+    if(!avoidResetingTodayHours) {
+      this.todayHours = [];
+    }
     this.lastHour = undefined;
     this.availableHours = false;
     this.availableMonths = false;
+
+    if(!avoidYearsCreation) {
+      const currentYear = new Date().getFullYear();
+      this.years = [];
+      for (let yearsToAdd = 0; yearsToAdd < 10; yearsToAdd++) {
+        this.years.push({
+          selected: yearsToAdd === 0,
+          yearNumber: currentYear + yearsToAdd,
+        });
+      }
+    }
   }
 }

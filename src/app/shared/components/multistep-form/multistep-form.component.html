@@ -1652,7 +1652,9 @@
             </ng-container>
 
             <!-- COLOR PICKER -->
-            <div *ngIf="currentField.inputType === 'color-picker'">
+            <div *ngIf="currentField.inputType === 'color-picker'"
+              [ngStyle]="currentField.styles.containerStyles"
+            >
               <label
                 [for]="currentField.name"
                 class="input-label"

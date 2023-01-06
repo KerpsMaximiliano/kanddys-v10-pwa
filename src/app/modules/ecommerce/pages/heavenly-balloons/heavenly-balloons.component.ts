@@ -88,6 +88,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/merchants-images/heavenlyballoons.webp';
   multistepFormData: any = null;
   loading: boolean = true;
+  choosedFloralArrangement = false;
+  choosedHeliumBalloons = false;
 
   reservationOrderlessComponent = {
     afterIndex: 0,
@@ -106,10 +108,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
       {
         name: 'onTimeOfDaySelection',
         callback: (timeOfDay) => {
-          if ('timeOfDay' in timeOfDay && 'dayName' in timeOfDay) {
+          if (
+            'timeOfDay' in timeOfDay &&
+            'dayName' in timeOfDay &&
+            timeOfDay.timeOfDay &&
+            timeOfDay.dayName
+          ) {
             this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
               timeOfDay
             );
+          } else {
+            this.formSteps[5].fieldsList[0].fieldControl.control.setValue(null);
           }
         },
       },
@@ -144,6 +153,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
             text: 'Sobre ti',
             clickable: false,
           },
+          topSubLabelAction: {
+            text: 'Ingresa la información de quién realiza el pedido',
+            clickable: false,
+          },
           placeholder: 'Me llamo..',
           styles: {
             containerStyles: {
@@ -157,6 +170,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
             topLabelActionStyles: {
               fontFamily: 'RobotoBold',
               fontSize: '24px',
+            },
+            topSubLabelActionStyles: {
+              display: 'block',
+              fontFamily: 'RobotoRegular',
+              color: '#141414',
+              fontSize: '16px',
+              opacity: '0.64',
+              width: '200%',
             },
             fieldStyles: {
               width: '100%',
@@ -363,19 +384,29 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl(
               '',
               Validators.compose([
+                Validators.required,
                 Validators.pattern(
                   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                 ),
               ])
             ),
           },
-          label: 'Correo electrónico',
+          label: 'Correo electrónico (*)',
           placeholder: 'example@domain',
           inputType: 'email',
+          sublabel: 'Para informarle sobre el estatus de su orden',
           styles: {
             labelStyles: {
               ...labelStyles,
               paddingTop: '65px',
+            },
+            subLabelStyles: {
+              fontFamily: 'RobotoRegular',
+              color: '#141414',
+              fontSize: '16px',
+              fontWeight: 'lighter',
+              opacity: '0.64',
+              margin: '0px',
             },
             containerStyles: {
               paddingBottom: '4rem',
@@ -428,7 +459,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required),
           },
-          selectionOptions: ['Arreglo de flores', 'Otro'],
+          selectionOptions: [
+            'Arreglo de flores',
+            'Globos de helio',
+            'Bouquet de globo',
+            'Decoración de evento',
+            'Otros (Art. personalizádos, Boxes, Art. de fiestas)',
+          ],
           changeCallbackFunction: (change, params) => {
             const whatsappMessagePartsOfThe3rdStep = [];
 
@@ -439,7 +476,53 @@ export class HeavenlyBalloonsComponent implements OnInit {
             if (this.whatsAppMessageParts.length < 3)
               this.whatsAppMessageParts.push(whatsappMessagePartsOfThe3rdStep);
 
-            if (change === 'Arreglo de flores') {
+            if (['Globos de helio', 'Arreglo de flores'].includes(change)) {
+              if (change.toLowerCase().includes('Globos'.toLowerCase())) {
+                this.choosedFloralArrangement = false;
+                this.choosedHeliumBalloons = true;
+                this.formSteps[3].fieldsList[0].styles.containerStyles.display =
+                  'none';
+                this.formSteps[3].fieldsList[2].styles.containerStyles.display =
+                  'none';
+                this.formSteps[3].fieldsList[2].fieldControl.control.setValidators(
+                  Validators.compose([])
+                );
+                this.formSteps[3].fieldsList[1].colorPickerConfiguration.maximumNumberOfSelections = 100;
+                this.formSteps[3].fieldsList[2].fieldControl.control.setValue(
+                  ''
+                );
+
+                this.formSteps[3].fieldsList[1].label = 'Color de globos';
+              } else {
+                this.choosedFloralArrangement = true;
+                this.choosedHeliumBalloons = false;
+                this.formSteps[3].fieldsList[0].styles.containerStyles.display =
+                  'block';
+                this.formSteps[3].fieldsList[2].styles.containerStyles.display =
+                  'block';
+                this.formSteps[3].fieldsList[2].fieldControl.control.setValidators(
+                  Validators.compose([
+                    Validators.required,
+                    Validators.minLength(1),
+                  ])
+                );
+                this.formSteps[3].fieldsList[1].colorPickerConfiguration.maximumNumberOfSelections = 2;
+                this.formSteps[3].fieldsList[2].fieldControl.control.setValue(
+                  ''
+                );
+
+                this.formSteps[3].fieldsList[1].label = 'Color de rosas';
+              }
+
+              this.formSteps[3].fieldsList[4].label =
+                'Describe aquí todos los detalles de tu orden de ' +
+                change +
+                ' (*)';
+              this.formSteps[3].fieldsList[5].label =
+                '¿Deseas incluir una tarjeta de dedicatoria a tu orden de ' +
+                change +
+                ' ?';
+
               this.formSteps[4].fieldsList.forEach((field, index) => {
                 if (index !== this.formSteps[4].fieldsList.length - 1)
                   field.fieldControl.control.setValue('');
@@ -452,6 +535,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
               params.scrollToStep(3);
               this.choosedFlowers = true;
             } else {
+              this.choosedFloralArrangement = false;
+              this.choosedHeliumBalloons = false;
               this.formSteps[3].fieldsList.forEach((field, index) => {
                 if ([1, 2].includes(index)) {
                   field.fieldControl.control.setValue([]);
@@ -466,6 +551,22 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   field.fileObjects = [];
                 } else field.fieldControl.control.setValue('');
               });
+
+              if (
+                change !== 'Otros (Art. personalizádos, Boxes, Art. de fiestas)'
+              ) {
+                this.formSteps[4].fieldsList[0].label =
+                  'Describe aquí todos los detalles de tu ' + change + ' (*)';
+                this.formSteps[4].fieldsList[1].label =
+                  '¿Deseas incluir una tarjeta de dedicatoria a tu ' +
+                  change +
+                  ' ?';
+              } else {
+                this.formSteps[4].fieldsList[0].label =
+                  'Describe aquí todos los detalles de tu orden (*)';
+                this.formSteps[4].fieldsList[1].label =
+                  '¿Deseas incluir una tarjeta de dedicatoria a tu orden ?';
+              }
 
               params.scrollToStep(4);
               this.choosedFlowers = false;
@@ -531,6 +632,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
           colorPickerConfiguration: {
             options: [
               {
+                color: '#ffeb96',
+                label: 'Girasol',
+              },
+              {
                 color: 'red',
                 label: 'Roja',
               },
@@ -585,6 +690,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: 'Color de rosas (*), Puedes seleccionar máximo 2 colores',
           inputType: 'color-picker',
           styles: {
+            containerStyles: {},
             labelStyles: {
               ...labelStyles,
               paddingBottom: '26px',
@@ -602,6 +708,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
           colorPickerConfiguration: {
             options: [
+              {
+                color: '#FFFDD0',
+                label: 'Crema',
+              },
               {
                 color: 'red',
                 label: 'Roja',
@@ -669,6 +779,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: 'Color de Lazos (*), Puede seleccionar 1',
           inputType: 'color-picker',
           styles: {
+            containerStyles: {},
             labelStyles: {
               ...labelStyles,
               paddingBottom: '26px',
@@ -682,9 +793,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl(''),
           },
           label: 'Mensaje en el globo',
-          placeholder: 'Escribe aquí',
+          placeholder: 'Feliz cumpleaños mami',
           inputType: 'textarea',
           styles: {
+            containerStyles: {},
             labelStyles: {
               ...labelStyles,
               paddingBottom: '26px',
@@ -704,7 +816,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl(''),
           },
           label: 'Describe aquí todos los detalles adicionales de tu arreglo',
-          placeholder: 'Escribe aquí',
+          placeholder: '2 chocolates Hersheys',
           inputType: 'textarea',
           styles: {
             labelStyles: {
@@ -815,6 +927,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
             ),
           },
           label: 'Foto de referencia (*)',
+          sublabel:
+            'Imagen del arreglo que desea ordenar, nos servirá como referencia para hacer su pedido',
           inputType: 'file3',
           fileObjects: [],
           placeholder: 'sube una imagen',
@@ -830,7 +944,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               fontWeight: 500,
               padding: '0px',
               margin: '0px',
-              marginBottom: '18px',
+              marginBottom: '26px',
             },
             fieldStyles: {
               width: '157px',
@@ -868,9 +982,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
           );
         }
 
-        if (rosesColor !== '') {
+        if (this.choosedFloralArrangement && rosesColor !== '') {
           whatsappMessagePartsOfThe4thStep.push(
             `*Color de rosas:*\n${rosesColor
+              .map((color) => color.label)
+              .join(', ')}\n\n`
+          );
+        }
+
+        if (this.choosedHeliumBalloons && rosesColor !== '') {
+          whatsappMessagePartsOfThe4thStep.push(
+            `*Color de globos:*\n${rosesColor
               .map((color) => color.label)
               .join(', ')}\n\n`
           );
@@ -1028,13 +1150,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
             ),
           },
           label: 'Foto de referencia (*)',
+          sublabel:
+            'Imagen del arreglo que desea ordenar, nos servirá como referencia para hacer su pedido',
           inputType: 'file3',
           fileObjects: [],
           placeholder: 'sube una imagen',
           styles: {
             labelStyles: {
               ...labelStyles,
-              paddingBottom: '26px',
             },
             subLabelStyles: {
               color: '#7B7B7B',
@@ -1043,7 +1166,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               fontWeight: 500,
               padding: '0px',
               margin: '0px',
-              marginBottom: '18px',
+              marginBottom: '26px',
             },
             fieldStyles: {
               width: '157px',
@@ -1392,7 +1515,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'Nombre del Remitente',
+          label: 'Nombre de quien envía',
           placeholder: 'Escribe aquí',
           styles: {
             labelStyles: {
@@ -1411,7 +1534,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'Nombre del Destinatario (*)',
+          label: 'Nombre de quien recibe (*)',
           placeholder: 'Escribe aquí',
           styles: {
             labelStyles: {
@@ -1430,7 +1553,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'Teléfono del destinatario',
+          label: 'Teléfono de quien recibe',
           inputType: 'phone',
           phoneCountryCode: CountryISO.DominicanRepublic,
           styles: {
@@ -2050,8 +2173,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
               balloonMessage,
               howManyRoses,
               ribbonColor,
-              rosesColor,
+              rosesColor: [],
+              balloonsColor: [],
             };
+
+            if (this.choosedFloralArrangement) {
+              data.rosesColor = rosesColor;
+            } else if (this.choosedHeliumBalloons) {
+              data.balloonsColor = rosesColor; //rosesColor its for both balloons and flowers
+            }
 
             const arrayOfReferenceImageFiles = [];
             const arrayOfProofOfPaymentFiles = [];
@@ -2061,7 +2191,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 .length > 0 &&
               this.formSteps[3].fieldsList[7].fieldControl.control.value[0] !==
                 '' &&
-              whatWouldYouOrder === 'Arreglo de flores'
+              ['Globos de helio', 'Arreglo de flores'].includes(
+                whatWouldYouOrder
+              )
             ) {
               this.formSteps[3].fieldsList[7].fieldControl.control.value.forEach(
                 (base64string) => {
@@ -2076,7 +2208,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 .length > 0 &&
               this.formSteps[4].fieldsList[3].fieldControl.control.value[0] !==
                 '' &&
-              whatWouldYouOrder === 'Otro'
+              !['Globos de helio', 'Arreglo de flores'].includes(
+                whatWouldYouOrder
+              )
             ) {
               this.formSteps[4].fieldsList[3].fieldControl.control.value.forEach(
                 (base64string) => {
@@ -2140,7 +2274,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             if (reservation) {
               const deliveryISOString = new Date(
-                new Date().getFullYear(),
+                reservation.year,
                 reservation.monthNumber - 1,
                 reservation.dayNumber
               ).toISOString();
@@ -2229,6 +2363,11 @@ export class HeavenlyBalloonsComponent implements OnInit {
             return { ok: false };
           }
         },
+      },
+      customScrollToStepBackwards: (params) => {
+        this.whatsAppMessageParts.pop();
+
+        params.scrollToStep(5);
       },
       footerConfig,
       stepButtonInvalidText: 'INGRESA LOS DATOS',
