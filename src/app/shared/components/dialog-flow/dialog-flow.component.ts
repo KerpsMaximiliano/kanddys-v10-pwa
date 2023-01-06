@@ -78,7 +78,7 @@ export class DialogFlowComponent implements OnInit {
         this.dialogs[index].inputs.containerStyles.opacity = '1';
       }
 
-      this.dialogs[index].shouldRerender = false;
+      this.dialogs[index].shouldRerender = true;
     });
 
     setTimeout(() => {

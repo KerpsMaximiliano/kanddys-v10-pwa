@@ -140,8 +140,6 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   iconCallback = async () => {
-    this._ItemsService.itemName = this.name.value;
-    this._ItemsService.itemPrice = this.price.value;
     if (this.name.dirty || this.description.dirty) {
       this.updated = true;
     }
@@ -164,6 +162,7 @@ export class ArticleParamsComponent implements OnInit {
     if (this.item) {
       if (this.updated || this._ItemsService.changedImages) {
         lockUI();
+        if (!itemInput.pricing) delete itemInput.pricing;
         delete itemInput.images;
         delete itemInput.merchant;
         const { updateItem: updatedItem } = await this._ItemsService.updateItem(
@@ -188,20 +187,6 @@ export class ArticleParamsComponent implements OnInit {
       this._Router.navigate([
         `admin/create-article${this.item ? '/' + this.item._id : ''}`,
       ]);
-    } else {
-      if (this.price.value) {
-        lockUI();
-        const { createItem } = await this._ItemsService.createItem(itemInput);
-        await this._SaleflowService.addItemToSaleFlow(
-          {
-            item: createItem._id,
-          },
-          this._SaleflowService.saleflowData._id
-        );
-        unlockUI();
-        this._ToastrService.success('Producto creado satisfactoriamente!');
-        this._Router.navigate([`/admin/create-article/${createItem._id}`]);
-      }
     }
   };
 
@@ -381,135 +366,6 @@ export class ArticleParamsComponent implements OnInit {
     const value = (e.target as HTMLInputElement).value;
     if (value.trim()) this.models[0] = value;
     else this.models[0] = 'Modelo sin nombre';
-  }
-
-  async toSave() {
-    if (this.steps === 'price') {
-      this.changeStep(1);
-      return;
-    }
-    if (this.steps === 'images') {
-      this.blockSubmitButton = true;
-      const itemInput = {
-        name: this.name.value || null,
-        description: this.description.value || null,
-        pricing: this.price.value,
-        images: this._ItemsService.itemImages,
-        merchant: this._MerchantsService.merchantData?._id,
-        content: [],
-        currencies: [],
-        hasExtraPrice: false,
-        purchaseLocations: [],
-        showImages: this._ItemsService.itemImages.length > 0,
-      };
-      this._ItemsService.itemPrice = null;
-      this._ItemsService.itemName = null;
-      if (this.item) {
-        delete itemInput.images;
-        delete itemInput.merchant;
-        const { updateItem: updatedItem } = await this._ItemsService.updateItem(
-          itemInput,
-          this.item._id
-        );
-        if (this._ItemsService.changedImages) {
-          await this._ItemsService.deleteImageItem(
-            this.item.images,
-            updatedItem._id
-          );
-          await this._ItemsService.addImageItem(
-            this._ItemsService.itemImages,
-            updatedItem._id
-          );
-          this._ItemsService.itemImages = [];
-          this._ItemsService.changedImages = false;
-        }
-
-        this._ItemsService.removeTemporalItem();
-        this._Router.navigate([`/admin/merchant-items`]);
-        return;
-      }
-
-      if (this._MerchantsService.merchantData) {
-        const { createItem } = await this._ItemsService.createItem(itemInput);
-        await this._SaleflowService.addItemToSaleFlow(
-          {
-            item: createItem._id,
-          },
-          this._SaleflowService.saleflowData._id
-        );
-
-        const storedTemplateData = localStorage.getItem(
-          'entity-template-creation-data'
-        );
-        const entityTemplateData = storedTemplateData
-          ? JSON.parse(storedTemplateData)
-          : null;
-
-        if (entityTemplateData) {
-          try {
-            const { entity, entityTemplateId } = entityTemplateData;
-
-            const result =
-              await this._EntityTemplateService.entityTemplateSetData(
-                entityTemplateId,
-                {
-                  entity: 'item',
-                  reference: createItem._id,
-                }
-              );
-
-            localStorage.removeItem('entity-template-creation-data');
-          } catch (error) {
-            this._ToastrService.error('Ocurrió un error al crear el simbolo');
-            return;
-          }
-        }
-
-        this._ToastrService.success('Producto creado satisfactoriamente!');
-        this._Router.navigate([`/admin/create-article/${createItem._id}`]);
-      } else {
-        const { createPreItem } = await this._ItemsService.createPreItem(
-          itemInput
-        );
-
-        if ('_id' in createPreItem) {
-          const storedTemplateData = localStorage.getItem(
-            'entity-template-creation-data'
-          );
-          const entityTemplateData = storedTemplateData
-            ? JSON.parse(storedTemplateData)
-            : null;
-
-          if (entityTemplateData) {
-            try {
-              const { entity, entityTemplateId } = entityTemplateData;
-
-              const result =
-                await this._EntityTemplateService.entityTemplateSetData(
-                  entityTemplateId,
-                  {
-                    entity: 'item',
-                    reference: createPreItem?._id,
-                  }
-                );
-
-              localStorage.removeItem('entity-template-creation-data');
-            } catch (error) {
-              this._ToastrService.error('Ocurrió un error al crear el simbolo');
-            }
-          }
-
-          localStorage.setItem('flowRoute', this._Router.url);
-          this._Router.navigate([`/auth/login`], {
-            queryParams: {
-              itemId: createPreItem?._id,
-              hasParams: '',
-              action: 'precreateitem',
-            },
-          });
-        }
-      }
-    }
   }
 
   goBack() {

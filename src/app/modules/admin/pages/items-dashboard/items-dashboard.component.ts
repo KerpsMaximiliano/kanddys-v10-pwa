@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { ToastrService } from 'ngx-toastr';
-import { filter } from 'rxjs/operators';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Calendar } from 'src/app/core/models/calendar';
 import { Item, ItemInput, ItemStatus } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
@@ -213,7 +213,7 @@ export class ItemsDashboardComponent implements OnInit {
           name: 'enteredImages',
           callback: async (images: File[]) => {
             if (!this._ItemsService.itemPrice) return;
-            this.openedDialogFlow = false;
+            lockUI();
             const itemInput = {
               name: null,
               description: null,
@@ -238,6 +238,7 @@ export class ItemsDashboardComponent implements OnInit {
               this._SaleflowService.saleflowData._id
             );
             this._ToastrService.success('Producto creado satisfactoriamente!');
+            unlockUI();
             this.router.navigate([`admin/create-article/${createItem._id}`]);
           },
         },

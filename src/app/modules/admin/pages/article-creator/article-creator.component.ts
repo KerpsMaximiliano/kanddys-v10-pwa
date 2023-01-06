@@ -32,8 +32,6 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
-type Mode = 'symbols' | 'item';
-
 @Component({
   selector: 'app-article-creator',
   templateUrl: './article-creator.component.html',
@@ -90,9 +88,6 @@ export class ArticleCreatorComponent implements OnInit {
   isOrder: boolean;
   fractions: string = '1fr';
   activeSlide: number;
-  mode: Mode;
-  ctaText: string;
-  ctaDescription: string;
   item: Item;
   blockSubmitButton: boolean = false;
   selectedTags: Array<string>;
@@ -131,41 +126,12 @@ export class ArticleCreatorComponent implements OnInit {
     });
     if (this._ActivatedRoute.snapshot.paramMap.get('merchantSlug')) {
       this.isOrder = true;
-      this.mode = 'symbols';
-      this.ctaText = 'SALVAR';
-      this.ctaDescription = '';
-    } else {
-      this.mode = 'item';
-      this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
-      this.ctaDescription =
-        'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
     }
     const itemId = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (!this.item) this.goBack();
       this.price = this.item.pricing;
-      if (
-        this._ActivatedRoute.snapshot.queryParamMap.get('mode') ===
-          'new-item' &&
-        this.item.status === 'draft'
-      ) {
-        const authItem = await this._ItemsService.authItem(
-          this._MerchantsService.merchantData._id,
-          itemId
-        );
-
-        if (this._SaleflowService.saleflowData) {
-          await this._SaleflowService.addItemToSaleFlow(
-            {
-              item: itemId,
-            },
-            this._SaleflowService.saleflowData._id
-          );
-        }
-        this.item.merchant = authItem.merchant;
-        this.item.status = 'active';
-      }
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
         this._Router.navigate(['../../'], {
           relativeTo: this._ActivatedRoute,
@@ -584,7 +550,7 @@ export class ArticleCreatorComponent implements OnInit {
       });
       return;
     }
-    if (this.mode === 'symbols') {
+    if (this.isOrder) {
       if (this.controllers.invalid) return;
       let result = [];
       const createPost = async (value: PostInput) => {
@@ -619,7 +585,7 @@ export class ArticleCreatorComponent implements OnInit {
       });
       this.blockSubmitButton = false;
     }
-    if (this.mode === 'item') {
+    if (!this.isOrder) {
       const images = [];
       this.controllers.controls.forEach((controller, i) => {
         (controller.get('multimedia').value as File[]).forEach((value) => {
@@ -674,7 +640,7 @@ export class ArticleCreatorComponent implements OnInit {
     }
   }
 
-  navigateToArticlePrivacy():void {
+  navigateToArticlePrivacy(): void {
     const images = [];
     this.controllers.controls.forEach((controller, i) => {
       (controller.get('multimedia').value as File[]).forEach((value) => {
@@ -683,9 +649,7 @@ export class ArticleCreatorComponent implements OnInit {
     });
     const id = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     this._ItemsService.itemImages = images;
-    this._Router.navigate([
-      `/admin/article-privacy`, id,
-    ]);
+    this._Router.navigate([`/admin/article-privacy`, id]);
   }
 
   removeFile(i: number, j: number): void {
@@ -791,23 +755,6 @@ export class ArticleCreatorComponent implements OnInit {
       flags: ['no-header'],
     });
   };
-
-  changeMode(mode: Mode) {
-    this.mode = mode;
-    switch (mode) {
-      case 'symbols':
-        this.ctaText = 'SALVAR';
-        this.ctaDescription = '';
-        break;
-      case 'item': {
-        this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
-        this.ctaDescription = this.item
-          ? `El visitante te paga RD$${this.item.pricing}.`
-          : 'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
-        break;
-      }
-    }
-  }
 
   openTagsDialog = async () => {
     this.selectedTags = [];

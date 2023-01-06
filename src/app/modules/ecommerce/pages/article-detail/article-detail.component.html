@@ -29,7 +29,7 @@
   >
     <div class="text-icons-container">
       <div class="top-section">
-        <p class="top-text" (click)="openInfoDialog()" *ngIf="itemData.name">
+        <p class="top-text" (click)="openInfoDialog()">
           {{
             itemData.name?.length > 30
               ? (itemData.name.trim() | slice : 0 : 30) + "..."

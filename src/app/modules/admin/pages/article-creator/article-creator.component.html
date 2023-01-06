@@ -28,7 +28,7 @@
           <button
             class="fixed-button left"
             *ngIf="viewType === 'preview' && !editMode"
-            (click)="goBack()"
+            (click)="isOrder ? submit() : goBack()"
             style="padding: 6px"
           >
             <img
@@ -41,7 +41,7 @@
           </button>
           <button
             class="fixed-button right"
-            *ngIf="viewType === 'preview' && !editMode"
+            *ngIf="viewType === 'preview' && !editMode && !isOrder"
             (click)="submit()"
             style="padding: 6px"
           >
@@ -81,9 +81,13 @@
               <label
                 [style.height]="
                   types[i][k] === ''
-                    ? 'calc(100vh - 140px)'
+                    ? !isOrder
+                      ? 'calc(100vh - 140px)'
+                      : '100vh'
                     : imageFiles.includes(types[i][k])
-                    ? 'calc(100vh - 140px)'
+                    ? !isOrder
+                      ? 'calc(100vh - 140px)'
+                      : '100vh'
                     : '0'
                 "
                 for="{{ i }}{{ k }}"
@@ -165,26 +169,7 @@
       </div>
     </ng-container>
   </ng-container>
-  <div class="fixed">
-    <!-- AREGAR AREA TEXTOS -->
-    <!-- <div class="bottom-swiper">
-      <div class="text-icons">
-        <label for="Upper text" class="main-text"
-          >{{ item?.name || "Nombre (opcional)" }}
-        </label>
-        <label for="Lower text" class="second-text"
-          >{{ item?.description || "Descripcion del articulo (opcional)" }}
-        </label>
-
-        <button
-          class="icon-button-texts"
-          (click)="enterEdit(swiperI, activeSlide)"
-          *ngIf="!editMode"
-        >
-          <img [src]="env + '/screen-cut.svg'" />
-        </button>
-      </div>
-    </div> -->
+  <div class="fixed" *ngIf="!isOrder">
     <div class="text-icons-container" *ngIf="!editMode">
       <div class="top-section">
         <p class="top-text">
@@ -300,38 +285,6 @@
         />
       </div>
     </div>
-
-    <!-- <div
-      class="bottom-button-banner"
-      *ngIf="viewType === 'preview' && !editMode"
-    >
-      <ng-container *ngIf="infoMissing === 'banner'">
-        <app-bios-banner></app-bios-banner>
-      </ng-container>
-      <button
-        class="button"
-        [ngClass]="{ withBanner: infoMissing === 'banner' }"
-        (click)="mode === 'item' && item ? openShareDialog() : submit()"
-      >
-        <div [ngSwitch]="infoMissing">
-          <div style="color: #202020" *ngSwitchCase="'contact'">
-            <span>Adiciona la información publica de tu contacto</span>
-          </div>
-          <div style="color: #202020" *ngSwitchCase="'delivery'">
-            <span>Adiciona la información de tus entregas</span>
-          </div>
-          <div style="color: #202020" *ngSwitchCase="'payment'">
-            <span
-              >Adiciona la información de donde recibirás el dinero del
-              pago</span
-            >
-          </div>
-          <div style="color: #202020" *ngSwitchCase="'banner'">
-            <span>Opcional: Edita el banner</span>
-          </div>
-        </div>
-      </button>
-    </div> -->
     <div class="edit-footer" *ngIf="editMode">
       <button class="footer-save" (click)="submit()">SALVAR AJUSTES</button>
       <button class="footer-restart" (click)="resetEdit()">
