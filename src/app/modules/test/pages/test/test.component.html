@@ -1,4 +1,6 @@
-<div class="page">
+<!--
+    <div class="page">
+-->
   <!-- <app-threejs-canvas></app-threejs-canvas> -->
   <!-- <app-multistep-form></app-multistep-form> -->
   <!-- <app-saleflow-item
@@ -259,17 +261,19 @@ headline="EXPUESTO EN TAB (S)"
     ></app-multistep-form>
 -->
 
-  <div>
-    <button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
-  </div>
-  <app-dialog-flow
-    [dialogFlowId]="'flow1'"
-    [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
-    [dialogs]="dialogs"
-    [allowSlideNext]="false"
-    (saveConfigRef)="swiperConfig = $event"
-    (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
-  ></app-dialog-flow>
+<!--
+    <div>
+      <button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
+    </div>
+    <app-dialog-flow
+      [dialogFlowId]="'flow1'"
+      [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+      [dialogs]="dialogs"
+      [allowSlideNext]="false"
+      (saveConfigRef)="swiperConfig = $event"
+      (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+    ></app-dialog-flow>
+-->
 
   <!-- <app-options-grid [words]="words" [title]="title"></app-options-grid> -->
 
@@ -279,7 +283,10 @@ headline="EXPUESTO EN TAB (S)"
   <button (click)="generateGPT3Response()">
     Click para obtener un chiste malo
   </button> -->
+
+  <!--
 </div>
+  -->
 <!--<button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
 
 <button (click)="generateGPT3Response()">Click para obtener un chiste malo</button>
