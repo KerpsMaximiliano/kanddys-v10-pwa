@@ -24,6 +24,8 @@
                     placeholder="Escribe o pega"
                     type="text"
                     [style.height.px]="65"
+                    [style.paddingLeft.px]="20"
+                    [style.paddingRight.px]="20"
                 />
             </div>
         </div>
@@ -32,17 +34,25 @@
             <label class="input-label"> Imagen </label>
         
             <div class="input-text">
-                <div [ngStyle]="{ height: '120px' }">
-                    <app-general-item
-                        [iconsRowsStyles]="{ display: 'none' }"
-                        [mainColor]="'#FFFDFD'"
-                        [removeBackgroundImage]="true"
-                        [showVisitorCounter]="false"
-                        [stylePreset]="['small-card']"
-                        [tagsStyles]="{ display: 'none' }"
-                        [textColor]="'#000000'">
-                    </app-general-item>
-                </div>
+                <app-image-input
+                    [allowDeletion]="false"
+                    [allowedTypes]="['png', 'jpg', 'jpeg']"
+                    [circleInputMode]="false"
+                    [containerStyles]="{ height: '120px', width: '100%' }"
+                    [fileStyles]="{ background: 'white', border: 'none', borderRadius: '9px', height: '120px', width: '100%' }"
+                    [expandImage]="true"
+                    [id]="'tag-image'"
+                    [innerLabel]="''"
+                    [max]="1"
+                    [multiple]="true"
+                    [placeholderImage]="false"
+                    [placeholderImageSize]="'SMALL'"
+                    [uploadImagesWithoutPlaceholderBox]="true"
+                    [useSwiper]="false"
+                    (onFileInputMultiple)="handleImageInput($event, 'ADD')"
+                    (onFileDeletion)="handleImageInput($event, 'DELETE')"
+                >
+                </app-image-input>
             </div>
         </div>
     </form>
