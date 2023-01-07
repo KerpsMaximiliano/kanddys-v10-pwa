@@ -48,6 +48,11 @@
       overflow: hidden;
       flex-grow: 1;
       margin-bottom: 5px;
+
+      &.active {
+        background-color: #82f18d;
+        color: #272727;
+      }
     }
     .full {
       width: 86%;

@@ -51,10 +51,6 @@ export class TestComponent implements OnInit {
   dialogFlowFunctions: Record<string, any> = {};
   temporalPost: PostInput = null;
   temporalEntityTemplate: EntityTemplateInput = null;
-  receiverData: {
-    name: string;
-    phone: string;
-  };
 
   title = '¿Cuál(es) seria el motivo?';
   title2 = '¿Que emoción(es) quieres transmitir con el mensaje?';
@@ -134,6 +130,11 @@ export class TestComponent implements OnInit {
     'Mi Comadre',
   ];
 
+  motiveWordsObjects: Array<{ text: string; active: boolean }> = [];
+  sentimentWordsObjects: Array<{ text: string; active: boolean }> = [];
+  timingWordsObjects: Array<{ text: string; active: boolean }> = [];
+  receiverGenderWordsObjects: Array<{ text: string; active: boolean }> = [];
+
   dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
@@ -202,15 +203,13 @@ export class TestComponent implements OnInit {
             const { receiverName } = value;
 
             if (receiverName.length > 0) {
-              this.receiverData = receiverName;
               this.swiperConfig.allowSlideNext = true;
             } else {
-              this.receiverData = null;
               this.swiperConfig.allowSlideNext = false;
             }
 
             this.dialogFlowService.saveGeneralDialogData(
-              this.receiverData,
+              receiverName,
               'flow1',
               'whoReceives',
               'receiverName',
@@ -244,7 +243,7 @@ export class TestComponent implements OnInit {
           styles: {},
           list: [
             {
-              name: 'test2',
+              name: 'senderName',
               value: '',
               validators: [Validators.required],
               type: 'textarea',
@@ -279,6 +278,30 @@ export class TestComponent implements OnInit {
       },
       postLabel:
         'Mensajito de prueba que se ve despues de pasar el 2do dialog.',
+      outputs: [
+        {
+          name: 'data',
+          callback: (params) => {
+            console.log(params);
+            const { fields, value } = params;
+            const { senderName } = value;
+
+            if (senderName.length > 0) {
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            this.dialogFlowService.saveGeneralDialogData(
+              senderName,
+              'flow1',
+              'whoSends',
+              'senderName',
+              fields
+            );
+          },
+        },
+      ],
     },
     {
       component: GeneralDialogComponent,
@@ -306,7 +329,7 @@ export class TestComponent implements OnInit {
           },
           list: [
             {
-              name: 'test3',
+              name: 'messageType',
               value: '',
               validators: [Validators.required],
               type: 'selection',
@@ -338,8 +361,48 @@ export class TestComponent implements OnInit {
             },
           ],
         },
-        isMultiple: true,
+        isMultiple: false,
       },
+      outputs: [
+        {
+          name: 'data',
+          callback: (params) => {
+            const { value, fields } = params;
+            const { messageType } = value;
+            let typeOfMessageValue = messageType[0];
+
+            if (typeOfMessageValue && typeOfMessageValue.length > 0) {
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            if (
+              typeOfMessageValue
+                .toLowerCase()
+                .includes('inteligencia artificial')
+            ) {
+              typeOfMessageValue = 'AI';
+              this.dialogFlowFunctions.moveToDialogByIndex(4);
+            } else {
+              typeOfMessageValue = 'Manual';
+              this.dialogFlowFunctions.moveToDialogByIndex(3);
+
+              setTimeout(() => {
+                this.swiperConfig.allowSlideNext = false;
+              }, 500);
+            }
+
+            this.dialogFlowService.saveGeneralDialogData(
+              typeOfMessageValue,
+              'flow1',
+              'messageTypeDialog',
+              'messageType',
+              fields
+            );
+          },
+        },
+      ],
     },
     {
       component: GeneralDialogComponent,
@@ -454,6 +517,7 @@ export class TestComponent implements OnInit {
       inputs: {
         mode: 'default',
         words: this.words,
+        wordsObjects: this.motiveWordsObjects,
         title: this.title,
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -465,10 +529,22 @@ export class TestComponent implements OnInit {
       outputs: [
         {
           name: 'optionClick',
-          callback: (option: string) => {
-            this.swiperConfig.allowSlideNext = true;
+          callback: (data: {
+            text: string;
+            wordsObjects: Array<{ text: string; active: boolean }>;
+          }) => {
+            const { text, wordsObjects } = data;
 
-            this.dialogFlowFunctions.moveToDialogByIndex(3);
+            this.motiveWordsObjects = wordsObjects;
+
+            this.dialogFlowService.saveData(
+              text,
+              'flow1',
+              'motiveDialog',
+              'motive'
+            );
+
+            this.swiperConfig.allowSlideNext = true;
           },
         },
       ],
@@ -479,13 +555,27 @@ export class TestComponent implements OnInit {
       inputs: {
         mode: 'default',
         words: this.words2,
+        wordsObjects: this.sentimentWordsObjects,
         title: this.title2,
         containerStyles: {},
       },
       outputs: [
         {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
+          name: 'optionClick',
+          callback: (data: {
+            text: string;
+            wordsObjects: Array<{ text: string; active: boolean }>;
+          }) => {
+            const { text, wordsObjects } = data;
+
+            this.sentimentWordsObjects = wordsObjects;
+            this.dialogFlowService.saveData(
+              text,
+              'flow1',
+              'sentimentDialog',
+              'sentiment'
+            );
+
             this.swiperConfig.allowSlideNext = true;
           },
         },
@@ -497,6 +587,7 @@ export class TestComponent implements OnInit {
       inputs: {
         mode: 'time',
         words: this.words3,
+        wordsObjects: this.timingWordsObjects,
         title: this.title3,
         containerStyles: {
           opacity: '1',
@@ -504,8 +595,22 @@ export class TestComponent implements OnInit {
       },
       outputs: [
         {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
+          name: 'optionClick',
+          callback: (data: {
+            text: string;
+            wordsObjects: Array<{ text: string; active: boolean }>;
+          }) => {
+            const { text, wordsObjects } = data;
+
+            console.log(data, 'timing');
+            this.timingWordsObjects = wordsObjects;
+            this.dialogFlowService.saveData(
+              text,
+              'flow1',
+              'timingDialog',
+              'timing'
+            );
+
             this.swiperConfig.allowSlideNext = true;
           },
         },
@@ -516,15 +621,28 @@ export class TestComponent implements OnInit {
       componentId: 'recipientGenderDialog',
       inputs: {
         mode: 'time',
-        words: ['Hombre', 'Mujer'],
+        words: this.receiverGenderWordsObjects,
         title: '¿Que es RecipienteID?',
         titleCenter: false,
         containerStyles: {},
       },
       outputs: [
         {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
+          name: 'optionClick',
+          callback: (data: {
+            text: string;
+            wordsObjects: Array<{ text: string; active: boolean }>;
+          }) => {
+            const { text, wordsObjects } = data;
+
+            this.receiverGenderWordsObjects = wordsObjects
+            this.dialogFlowService.saveData(
+              text,
+              'flow1',
+              'recipientGenderDialog',
+              'recipientGender'
+            );
+
             this.swiperConfig.allowSlideNext = true;
           },
         },

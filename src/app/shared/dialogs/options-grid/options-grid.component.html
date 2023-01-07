@@ -6,16 +6,15 @@
     <div
       class="card"
       (click)="cardClicked(item)"
-      [ngClass]="
-        item.length <= 8
-          ? 'card third'
-          : item.length > 8 && item.length <= 17
-          ? 'card mid'
-          : 'card full'
-      "
-      *ngFor="let item of words; index as i"
+      [ngClass]="{
+        'third': item.text.length <= 8,
+        'mid': item.text.length > 8 && item.text.length <= 17,
+        'full': item.text.length > 17,
+        active: item.active
+      }"
+      *ngFor="let item of wordsObjects; index as i"
     >
-      <span>{{ item }}</span>
+      <span>{{ item.text }}</span>
     </div>
   </div>
 </div>
@@ -27,10 +26,13 @@
   <div class="cards2">
     <div
       class="card2"
+      [ngClass]="{
+        active: item.active
+      }"
       (click)="cardClicked(item)"
-      *ngFor="let item of words; index as i"
+      *ngFor="let item of wordsObjects; index as i"
     >
-      <span>{{ item }}</span>
+      <span>{{ item.text }}</span>
     </div>
   </div>
 </div>
