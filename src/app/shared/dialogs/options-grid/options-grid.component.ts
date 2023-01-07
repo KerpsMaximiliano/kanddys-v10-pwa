@@ -14,6 +14,10 @@ export class OptionsGridComponent implements OnInit {
   @Input() title = '';
   @Input() mode = 'default';
   @Input('containerStyles') containerStyles: Record<string, string>;
+  @Input('submitButton') submitButton: {
+    text: string;
+    styles: Record<string, any>;
+  };
   @Input() titleCenter: boolean = true;
   @Input() uniqueSelection: boolean = true;
   @Output() optionClick = new EventEmitter();

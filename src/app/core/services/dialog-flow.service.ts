@@ -3,6 +3,10 @@ import { Injectable } from '@angular/core';
 export interface EmbeddedDialog {
   dialogId: string;
   fields: Record<string, any>;
+  snapshotState?: {
+    lastDialogIndex: number;
+    dialogToReturnToIndex: number;
+  };
 }
 
 @Injectable({

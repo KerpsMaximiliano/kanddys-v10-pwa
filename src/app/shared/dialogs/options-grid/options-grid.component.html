@@ -7,9 +7,9 @@
       class="card"
       (click)="cardClicked(item)"
       [ngClass]="{
-        'third': item.text.length <= 8,
-        'mid': item.text.length > 8 && item.text.length <= 17,
-        'full': item.text.length > 17,
+        third: item.text.length <= 8,
+        mid: item.text.length > 8 && item.text.length <= 17,
+        full: item.text.length > 17,
         active: item.active
       }"
       *ngFor="let item of wordsObjects; index as i"
@@ -17,6 +17,10 @@
       <span>{{ item.text }}</span>
     </div>
   </div>
+
+  <button *ngIf="submitButton" [ngStyle]="submitButton.styles">
+    {{ submitButton.text }}
+  </button>
 </div>
 
 <div class="container" [ngStyle]="containerStyles" *ngIf="mode === 'time'">

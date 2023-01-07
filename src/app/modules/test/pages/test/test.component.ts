@@ -134,6 +134,8 @@ export class TestComponent implements OnInit {
   sentimentWordsObjects: Array<{ text: string; active: boolean }> = [];
   timingWordsObjects: Array<{ text: string; active: boolean }> = [];
   receiverGenderWordsObjects: Array<{ text: string; active: boolean }> = [];
+  receiverRelationshipWordsObjects: Array<{ text: string; active: boolean }> =
+    [];
 
   dialogs: Array<EmbeddedComponentWithId> = [
     {
@@ -199,10 +201,10 @@ export class TestComponent implements OnInit {
         {
           name: 'data',
           callback: (params) => {
-            const { fields, value } = params;
+            const { fields, value, valid } = params;
             const { receiverName } = value;
 
-            if (receiverName.length > 0) {
+            if (valid) {
               this.swiperConfig.allowSlideNext = true;
             } else {
               this.swiperConfig.allowSlideNext = false;
@@ -428,7 +430,7 @@ export class TestComponent implements OnInit {
           styles: {},
           list: [
             {
-              name: 'test4',
+              name: 'message',
               value: '',
               validators: [Validators.required],
               type: 'textarea',
@@ -504,9 +506,27 @@ export class TestComponent implements OnInit {
       },
       outputs: [
         {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
+          name: 'data',
+          callback: (params) => {
+            const { value, fields } = params;
+            const { message } = value;
+            let messageValue = message;
+
+            console.log(params);
+
+            if (messageValue && messageValue.length > 0) {
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            this.dialogFlowService.saveGeneralDialogData(
+              messageValue,
+              'flow1',
+              'messageDialog',
+              'message',
+              fields
+            );
           },
         },
       ],
@@ -621,7 +641,8 @@ export class TestComponent implements OnInit {
       componentId: 'recipientGenderDialog',
       inputs: {
         mode: 'time',
-        words: this.receiverGenderWordsObjects,
+        words: ['Hombre', 'Mujer'],
+        wordsObjects: this.receiverGenderWordsObjects,
         title: '¿Que es RecipienteID?',
         titleCenter: false,
         containerStyles: {},
@@ -635,7 +656,7 @@ export class TestComponent implements OnInit {
           }) => {
             const { text, wordsObjects } = data;
 
-            this.receiverGenderWordsObjects = wordsObjects
+            this.receiverGenderWordsObjects = wordsObjects;
             this.dialogFlowService.saveData(
               text,
               'flow1',
@@ -650,10 +671,11 @@ export class TestComponent implements OnInit {
     },
     {
       component: OptionsGridComponent,
-      componentId: 'recipientRelationshipDialog',
+      componentId: 'receiverRelationshipDialog',
       inputs: {
         mode: 'default',
         words: this.words4,
+        wordsObjects: this.receiverRelationshipWordsObjects,
         title: 'Más de RecipienteID',
         titleCenter: false,
         containerStyles: {
@@ -662,8 +684,21 @@ export class TestComponent implements OnInit {
       },
       outputs: [
         {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
+          name: 'optionClick',
+          callback: (data: {
+            text: string;
+            wordsObjects: Array<{ text: string; active: boolean }>;
+          }) => {
+            const { text, wordsObjects } = data;
+
+            this.receiverRelationshipWordsObjects = wordsObjects;
+            this.dialogFlowService.saveData(
+              text,
+              'flow1',
+              'receiverRelationshipDialog',
+              'receiverRelationship'
+            );
+
             this.swiperConfig.allowSlideNext = true;
           },
         },
