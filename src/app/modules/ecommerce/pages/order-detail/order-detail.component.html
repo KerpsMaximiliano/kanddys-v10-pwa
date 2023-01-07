@@ -21,12 +21,12 @@
         : null
     "
     [rightText]="
-      headerService.user
+      order.user
         ? {
             text:
-              headerService.user?.name ||
-              headerService.user?.phone ||
-              headerService.user?.email
+              order.user?.name ||
+              order.user?.phone ||
+              order.user?.email
           }
         : null
     "
@@ -36,7 +36,7 @@
         width: '13px',
         height: '17px',
         color: 'brightness(3)',
-        callback: redirectToUserContact
+        callback: null
       }
     ]"
     [mainText]="
