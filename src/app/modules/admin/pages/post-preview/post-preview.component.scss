@@ -73,7 +73,7 @@
     .content-container {
         display: flex;
         flex-direction: column;
-        height: 72.5vh;
+        height: 80vh;
         overflow-y: scroll;
         padding: 30px 15px 0px;
         position: relative;
@@ -84,7 +84,6 @@
         display: flex;
         flex-direction: column;
         height: 47.5vh;
-        justify-content: flex-end;
         overflow-y: scroll;
 
         .title2 {
@@ -100,6 +99,7 @@
             cursor: pointer;
             font-family: SFProRegular;
             font-size: 15px;
+            overflow-y: scroll;
             margin: 5px 15px 0px 0px;
         }
     }
@@ -115,7 +115,6 @@
     .icons-container2 {
         display: flex;
         justify-content: flex-end;
-        margin-bottom: 25px;
 
         svg:not(:last-child) {
             margin-right: 30px;
@@ -158,7 +157,7 @@
         .texts-container2 {
             display: flex;
             justify-content: center;
-            margin: 7px 0px;
+            margin: 0px 0px 20px;
         }
     }
 }
