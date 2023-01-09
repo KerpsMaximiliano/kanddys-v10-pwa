@@ -109,7 +109,7 @@ export class TestComponent implements OnInit {
   words3 = [
     'Ya pasó',
     'Pasará',
-    'Es cuando reciba el mensaje',
+    'En cuando reciba el mensaje',
     'Omitir "el tiempo"',
   ];
 
@@ -137,11 +137,14 @@ export class TestComponent implements OnInit {
   receiverRelationshipWordsObjects: Array<{ text: string; active: boolean }> =
     [];
 
+  temporalDialogs: Array<EmbeddedComponentWithId> = [];
+
   dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
       componentId: 'whoReceives',
       inputs: {
+        dialogId: 'whoReceives',
         omitTabFocus: false,
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -226,6 +229,7 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       componentId: 'whoSends',
       inputs: {
+        dialogId: 'whoSends',
         containerStyles: {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
@@ -284,7 +288,6 @@ export class TestComponent implements OnInit {
         {
           name: 'data',
           callback: (params) => {
-            console.log(params);
             const { fields, value, valid } = params;
             const { senderName } = value;
 
@@ -309,6 +312,7 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       componentId: 'messageTypeDialog',
       inputs: {
+        dialogId: 'messageTypeDialog',
         containerStyles: {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
@@ -380,17 +384,24 @@ export class TestComponent implements OnInit {
             } else {
               this.swiperConfig.allowSlideNext = false;
             }
-            
+
             if (
               typeOfMessageValue
                 .toLowerCase()
                 .includes('inteligencia artificial')
             ) {
               typeOfMessageValue = 'AI';
+
+              if (this.dialogs.length === 4) {
+                this.dialogs = this.dialogs.concat(this.temporalDialogs);
+              }
+
               this.dialogFlowFunctions.moveToDialogByIndex(4);
             } else {
               typeOfMessageValue = 'Manual';
               this.dialogFlowFunctions.moveToDialogByIndex(3);
+
+              this.temporalDialogs = this.dialogs.splice(4);
 
               setTimeout(() => {
                 this.swiperConfig.allowSlideNext = false;
@@ -412,6 +423,7 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       componentId: 'messageDialog',
       inputs: {
+        dialogId: 'messageDialog',
         containerStyles: {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
@@ -538,6 +550,7 @@ export class TestComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'motiveDialog',
       inputs: {
+        dialogId: 'motiveDialog',
         mode: 'default',
         words: this.words,
         wordsObjects: this.motiveWordsObjects,
@@ -722,8 +735,36 @@ export class TestComponent implements OnInit {
         },
         {
           name: 'buttonClicked',
-          callback: (data: Array<{ text: string; active: boolean }>) => {
-            console.log('boton clickeado');
+          callback: async (data: Array<{ text: string; active: boolean }>) => {
+            const motive =
+              this.dialogFlowService.dialogsFlows['flow1'].motiveDialog.fields
+                .motive;
+            const sentiment =
+              this.dialogFlowService.dialogsFlows['flow1'].sentimentDialog
+                .fields.sentiment;
+            const timing =
+              this.dialogFlowService.dialogsFlows['flow1'].timingDialog.fields
+                .timing;
+            const recipientGender =
+              this.dialogFlowService.dialogsFlows['flow1'].recipientGenderDialog
+                .fields.recipientGender;
+            const receiverRelationship =
+              this.dialogFlowService.dialogsFlows['flow1']
+                .receiverRelationshipDialog.fields.receiverRelationship;
+
+            const response = await this.gpt3Service.generateResponseForTemplate(
+              {
+                motive,
+                target: receiverRelationship,
+                sentiment,
+                timing,
+              },
+              '63b39747a7c7f937902117c2'
+            );
+
+            console.log('respuesta', response);
+
+            //this.router.navigate(['ecommerce/text-edition-and-preview']);
           },
         },
       ],

@@ -23,6 +23,7 @@ import { AppointmentsModule } from '../appointments/appointments.module';
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
+import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
 
 const routes: Routes = [
   {
@@ -59,6 +60,10 @@ const routes: Routes = [
     path: 'store/:merchantSlug',
     redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
+  },
+  {
+    path: 'text-edition-and-preview',
+    component: TextEditionAndPreviewComponent
   },
   {
     path: ':merchantSlug',

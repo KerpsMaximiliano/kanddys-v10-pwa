@@ -47,7 +47,9 @@ export class DialogFlowComponent implements OnInit {
       if (!this.service.dialogsFlows[this.dialogFlowId]) {
         this.service.dialogsFlows[this.dialogFlowId] = {};
 
-        this.dialogs.forEach((dialog) => {
+        this.dialogs.forEach((dialog, index) => {
+          if (index === 0) this.service.activeDialogId = dialog.componentId;
+
           this.service.dialogsFlows[this.dialogFlowId][dialog.componentId] = {
             dialogId: dialog.componentId,
             swiperConfig: JSON.parse(JSON.stringify(this.swiperConfig)),
@@ -68,9 +70,7 @@ export class DialogFlowComponent implements OnInit {
   }
 
   applyTransparencyToSlidesThatArentActive() {
-    this.dialogs.forEach((slide, index) => {
-      const dialogHTMLElement = slide;
-
+    this.dialogs.forEach((dialog, index) => {
       if (!this.dialogs[index].inputs) this.dialogs[index].inputs = {};
       if (!this.dialogs[index].inputs.containerStyles)
         this.dialogs[index].inputs.containerStyles = {};
@@ -79,6 +79,7 @@ export class DialogFlowComponent implements OnInit {
         this.dialogs[index].inputs.containerStyles.opacity = '0.5';
       } else {
         this.dialogs[index].inputs.containerStyles.opacity = '1';
+        this.service.activeDialogId = dialog.componentId;
       }
 
       this.dialogs[index].shouldRerender = true;
