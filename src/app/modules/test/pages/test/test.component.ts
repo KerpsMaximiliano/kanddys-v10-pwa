@@ -339,6 +339,7 @@ export class TestComponent implements OnInit {
                 styles: {
                   display: 'block',
                   fontFamily: '"SfProRegular"',
+                  marginLeft: '10px',
                 },
                 list: [
                   {
@@ -350,6 +351,7 @@ export class TestComponent implements OnInit {
                         display: 'block',
                         fontFamily: '"SfProBold"',
                         fontSize: '13px',
+                        marginLeft: '10px',
                       },
                     },
                   },
@@ -945,6 +947,7 @@ export class TestComponent implements OnInit {
                   fontFamily: '"SfProBold"',
                   fontSize: '17px',
                   color: '#272727',
+                  marginLeft: '19.5px',
                 },
                 list: [
                   {
@@ -967,6 +970,7 @@ export class TestComponent implements OnInit {
                         marginBottom: '15px',
                         marginTop: '5px',
                         paddingRight: '15px',
+                        marginLeft: '19.5px',
                       },
                     },
                   },
@@ -1033,6 +1037,7 @@ export class TestComponent implements OnInit {
                   fontFamily: '"SfProBold"',
                   fontSize: '17px',
                   color: '#272727',
+                  marginLeft: '19.5px',
                 },
                 list: [
                   {
@@ -1067,6 +1072,7 @@ export class TestComponent implements OnInit {
                         marginBottom: '15px',
                         marginTop: '5px',
                         paddingRight: '15px',
+                        marginLeft: '19.5px',
                       },
                     },
                   },
