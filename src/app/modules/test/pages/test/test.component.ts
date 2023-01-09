@@ -264,7 +264,7 @@ export class TestComponent implements OnInit {
               styles: {
                 border: 'none',
                 borderRadius: '9px',
-                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                boxShadow: 'rgba(228 228 228) 0px 3px 7px inset',
                 display: 'block',
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
@@ -414,7 +414,7 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
           opacity: '1',
-          padding: '37.1px 30.3px 29.6px 31px',
+          padding: '37.1px 23.6px 29.6px 31px',
         },
         header: {
           styles: {
@@ -423,6 +423,7 @@ export class TestComponent implements OnInit {
             marginBottom: '12.5px',
             marginTop: '0',
             color: '#4F4F4F',
+            width: '50%',
           },
           text: '¿Que mensaje escribiremos?',
         },
@@ -454,7 +455,7 @@ export class TestComponent implements OnInit {
               styles: {
                 border: 'none',
                 borderRadius: '9px',
-                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px inset',
                 display: 'block',
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
@@ -495,7 +496,7 @@ export class TestComponent implements OnInit {
                 display: 'grid',
                 gap: '8px',
                 gridTemplateColumns: '1fr 11fr',
-                padding: '30px 5px 0px',
+                padding: '30.9px 5px 0px',
               },
               styles: {
                 height: '17px',
