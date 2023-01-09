@@ -120,6 +120,8 @@ import { GeneralItemComponent } from './components/general-item/general-item.com
 import { MerchantContactComponent } from './components/merchant-contact/merchant-contact.component';
 import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { DataDisplayComponent } from './components/data-display/data-display.component';
+import { PostHeaderComponent } from './components/post-header/post-header.component';
 
 const imports = [
   CommonModule,
@@ -134,7 +136,7 @@ const imports = [
   NgxIntlTelInputModule,
   ClipboardModule,
   GooglePlaceModule,
-  DragDropModule
+  DragDropModule,
 ];
 const declarations = [
   // Pages
@@ -246,7 +248,9 @@ const declarations = [
   OptionsGridComponent,
   GeneralItemComponent,
   MerchantContactComponent,
-  QrEditComponent
+  QrEditComponent,
+  DataDisplayComponent,
+  PostHeaderComponent,
 ];
 
 @NgModule({

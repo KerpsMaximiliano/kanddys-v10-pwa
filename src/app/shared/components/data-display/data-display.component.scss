@@ -1,0 +1,24 @@
+* {
+  margin: 0;
+}
+
+.data {
+  padding: 35px 25px;
+  width: 100%;
+  border: none;
+  border-radius: 7px;
+  box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+  margin-bottom: 43px;
+  background-color: #ffffff;
+  font-size: 17px;
+  font-family: SFProRegular;
+  color: #000000;
+
+  .bold {
+    font-family: SFProBold;
+    margin-bottom: 35px;
+  }
+  .bold-bottom {
+    font-family: SFProBold;
+  }
+}
