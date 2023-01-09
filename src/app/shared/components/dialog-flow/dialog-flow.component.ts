@@ -50,11 +50,14 @@ export class DialogFlowComponent implements OnInit {
         this.dialogs.forEach((dialog) => {
           this.service.dialogsFlows[this.dialogFlowId][dialog.componentId] = {
             dialogId: dialog.componentId,
+            swiperConfig: JSON.parse(JSON.stringify(this.swiperConfig)),
             fields: {},
           };
         });
       }
     }
+
+    this.service.swiperConfig = this.swiperConfig;
 
     setTimeout(() => {
       this.applyTransparencyToSlidesThatArentActive();

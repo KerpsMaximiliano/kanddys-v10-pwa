@@ -264,7 +264,7 @@ export class TestComponent implements OnInit {
               styles: {
                 border: 'none',
                 borderRadius: '9px',
-                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                boxShadow: 'rgba(228 228 228) 0px 3px 7px inset',
                 display: 'block',
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
@@ -285,10 +285,10 @@ export class TestComponent implements OnInit {
           name: 'data',
           callback: (params) => {
             console.log(params);
-            const { fields, value } = params;
+            const { fields, value, valid } = params;
             const { senderName } = value;
 
-            if (senderName.length > 0) {
+            if (valid) {
               this.swiperConfig.allowSlideNext = true;
             } else {
               this.swiperConfig.allowSlideNext = false;
@@ -339,6 +339,7 @@ export class TestComponent implements OnInit {
                 styles: {
                   display: 'block',
                   fontFamily: '"SfProRegular"',
+                  marginLeft: '10px',
                 },
                 list: [
                   {
@@ -350,6 +351,7 @@ export class TestComponent implements OnInit {
                         display: 'block',
                         fontFamily: '"SfProBold"',
                         fontSize: '13px',
+                        marginLeft: '10px',
                       },
                     },
                   },
@@ -369,16 +371,16 @@ export class TestComponent implements OnInit {
         {
           name: 'data',
           callback: (params) => {
-            const { value, fields } = params;
+            const { value, fields, valid } = params;
             const { messageType } = value;
             let typeOfMessageValue = messageType[0];
 
-            if (typeOfMessageValue && typeOfMessageValue.length > 0) {
+            if (valid) {
               this.swiperConfig.allowSlideNext = true;
             } else {
               this.swiperConfig.allowSlideNext = false;
             }
-
+            
             if (
               typeOfMessageValue
                 .toLowerCase()
@@ -414,7 +416,7 @@ export class TestComponent implements OnInit {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
           opacity: '1',
-          padding: '37.1px 30.3px 29.6px 31px',
+          padding: '37.1px 23.6px 29.6px 31px',
         },
         header: {
           styles: {
@@ -423,6 +425,7 @@ export class TestComponent implements OnInit {
             marginBottom: '12.5px',
             marginTop: '0',
             color: '#4F4F4F',
+            width: '50%',
           },
           text: '¿Que mensaje escribiremos?',
         },
@@ -454,7 +457,7 @@ export class TestComponent implements OnInit {
               styles: {
                 border: 'none',
                 borderRadius: '9px',
-                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px inset',
                 display: 'block',
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
@@ -495,7 +498,7 @@ export class TestComponent implements OnInit {
                 display: 'grid',
                 gap: '8px',
                 gridTemplateColumns: '1fr 11fr',
-                padding: '30px 5px 0px',
+                padding: '30.9px 5px 0px',
               },
               styles: {
                 height: '17px',
@@ -678,6 +681,21 @@ export class TestComponent implements OnInit {
         wordsObjects: this.receiverRelationshipWordsObjects,
         title: 'Más de RecipienteID',
         titleCenter: false,
+        submitButton: {
+          text: 'Generar mensajes',
+          styles: {
+            border: 'none',
+            padding: '5px 20px',
+            cursor: 'pointer',
+            margin: 'auto',
+            fontFamily: 'SfProBold',
+            borderRadius: '3px',
+            fontSize: '18px',
+            display: 'flex',
+            marginTop: '1rem',
+            backgroundColor: 'yellowgreen',
+          },
+        },
         containerStyles: {
           background: 'rgb(255, 255, 255)',
         },
@@ -700,6 +718,12 @@ export class TestComponent implements OnInit {
             );
 
             this.swiperConfig.allowSlideNext = true;
+          },
+        },
+        {
+          name: 'buttonClicked',
+          callback: (data: Array<{ text: string; active: boolean }>) => {
+            console.log('boton clickeado');
           },
         },
       ],
@@ -944,6 +968,7 @@ export class TestComponent implements OnInit {
                   fontFamily: '"SfProBold"',
                   fontSize: '17px',
                   color: '#272727',
+                  marginLeft: '19.5px',
                 },
                 list: [
                   {
@@ -966,6 +991,7 @@ export class TestComponent implements OnInit {
                         marginBottom: '15px',
                         marginTop: '5px',
                         paddingRight: '15px',
+                        marginLeft: '19.5px',
                       },
                     },
                   },
@@ -1032,6 +1058,7 @@ export class TestComponent implements OnInit {
                   fontFamily: '"SfProBold"',
                   fontSize: '17px',
                   color: '#272727',
+                  marginLeft: '19.5px',
                 },
                 list: [
                   {
@@ -1066,6 +1093,7 @@ export class TestComponent implements OnInit {
                         marginBottom: '15px',
                         marginTop: '5px',
                         paddingRight: '15px',
+                        marginLeft: '19.5px',
                       },
                     },
                   },

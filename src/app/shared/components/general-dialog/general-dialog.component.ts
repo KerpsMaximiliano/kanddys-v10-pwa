@@ -86,6 +86,15 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initControllers();
+
+    console.log("Valido ", this.controller.valid)
+    setTimeout(() => {
+      if (this.controller.valid) {
+        this.dialogFlowService.swiperConfig.allowSlideNext = true;
+      } else {
+        this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      }
+    }, 500);
   }
 
   ngOnDestroy(): void {
