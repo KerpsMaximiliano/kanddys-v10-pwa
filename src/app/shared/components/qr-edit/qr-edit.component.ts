@@ -3,6 +3,7 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { environment } from 'src/environments/environment';
 import { PostInput, SlideInput } from 'src/app/core/models/post';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-qr-edit',
@@ -23,7 +24,8 @@ export class QrEditComponent implements OnInit {
   ];
 
   constructor(
-    private _PostsService: PostsService
+    private _PostsService: PostsService,
+    private _Router: Router
   ) { }
 
   ngOnInit(): void {
@@ -66,6 +68,8 @@ export class QrEditComponent implements OnInit {
   }
 
   submit():void{
+    this._Router.navigate(['admin','post-edition']);
+    return;
     (async () => {
       const slides = this.gridArray.map(({text,title,media,type,index}) => {
         const result = {

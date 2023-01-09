@@ -21,6 +21,7 @@ import { PostEditionComponent } from './pages/post-edition/post-edition.componen
 import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { ImageBannerComponent } from './pages/image-banner/image-banner.component';
+import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -141,6 +142,10 @@ const routes: Routes = [
       {
         path: 'image-banner',
         component: ImageBannerComponent
+      },
+      {
+        path: 'qr-edit',
+        component: QrEditComponent
       }
     ],
   },
