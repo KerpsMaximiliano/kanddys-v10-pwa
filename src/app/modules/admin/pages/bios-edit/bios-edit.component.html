@@ -51,7 +51,12 @@
   <div *ngIf="main === true && enlace === false">
     <div class="logo-container">
       <div class="logo" [style.background]="logo"></div>
-      <input id="imageLogo" type="file" style="display:none;" (change)="loadFileLogo($event)">
+      <input
+        id="imageLogo"
+        type="file"
+        style="display: none"
+        (change)="loadFileLogo($event)"
+      />
       <label for="imageLogo" class="edit-logo">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -69,75 +74,87 @@
       </label>
     </div>
     <div class="content">
-      <p class="content-title">Public Name</p>
-      <svg
-        (click)="edit2()"
-        class="edit-content"
-        xmlns="http://www.w3.org/2000/svg"
-        width="14.789"
-        height="14.763"
-        viewBox="0 0 14.789 14.763"
-      >
-        <path
-          id="edit-line"
-          d="M16.834,4.809l-2.7-2.714a.952.952,0,0,0-1.343,0L3.218,11.653l-.874,3.772a.948.948,0,0,0,.92,1.15.984.984,0,0,0,.2,0L7.275,15.7l9.559-9.549A.952.952,0,0,0,16.834,4.809ZM6.815,14.873l-3.574.75.814-3.505,7.162-7.135,2.76,2.76Zm7.779-7.8-2.76-2.76,1.6-1.592,2.714,2.76Z"
-          transform="translate(-2.322 -1.817)"
-          fill="#272727"
-        />
-      </svg>
-      <p class="text">{{ controller.get('name').value || name }}</p>
+      <div class="flex">
+        <p class="content-title">Public Name</p>
+        <svg
+          (click)="edit2()"
+          class="edit-content"
+          xmlns="http://www.w3.org/2000/svg"
+          width="14.789"
+          height="14.763"
+          viewBox="0 0 14.789 14.763"
+        >
+          <path
+            id="edit-line"
+            d="M16.834,4.809l-2.7-2.714a.952.952,0,0,0-1.343,0L3.218,11.653l-.874,3.772a.948.948,0,0,0,.92,1.15.984.984,0,0,0,.2,0L7.275,15.7l9.559-9.549A.952.952,0,0,0,16.834,4.809ZM6.815,14.873l-3.574.75.814-3.505,7.162-7.135,2.76,2.76Zm7.779-7.8-2.76-2.76,1.6-1.592,2.714,2.76Z"
+            transform="translate(-2.322 -1.817)"
+            fill="#272727"
+          />
+        </svg>
+      </div>
+      <p class="text">{{ controller.get("name").value || name }}</p>
 
       <!-- ------------------ -->
 
-      <p class="content-title">Bio</p>
-      <svg
-        (click)="edit3()"
-        class="edit-content2"
-        xmlns="http://www.w3.org/2000/svg"
-        width="14.789"
-        height="14.763"
-        viewBox="0 0 14.789 14.763"
-      >
-        <path
-          id="edit-line"
-          d="M16.834,4.809l-2.7-2.714a.952.952,0,0,0-1.343,0L3.218,11.653l-.874,3.772a.948.948,0,0,0,.92,1.15.984.984,0,0,0,.2,0L7.275,15.7l9.559-9.549A.952.952,0,0,0,16.834,4.809ZM6.815,14.873l-3.574.75.814-3.505,7.162-7.135,2.76,2.76Zm7.779-7.8-2.76-2.76,1.6-1.592,2.714,2.76Z"
-          transform="translate(-2.322 -1.817)"
-          fill="#272727"
-        />
-      </svg>
-      <p class="text">{{ controller.get('description').value || bio }}</p>
+      <div class="flex">
+        <p class="content-title">Bio</p>
+        <svg
+          (click)="edit3()"
+          class="edit-content"
+          xmlns="http://www.w3.org/2000/svg"
+          width="14.789"
+          height="14.763"
+          viewBox="0 0 14.789 14.763"
+        >
+          <path
+            id="edit-line"
+            d="M16.834,4.809l-2.7-2.714a.952.952,0,0,0-1.343,0L3.218,11.653l-.874,3.772a.948.948,0,0,0,.92,1.15.984.984,0,0,0,.2,0L7.275,15.7l9.559-9.549A.952.952,0,0,0,16.834,4.809ZM6.815,14.873l-3.574.75.814-3.505,7.162-7.135,2.76,2.76Zm7.779-7.8-2.76-2.76,1.6-1.592,2.714,2.76Z"
+            transform="translate(-2.322 -1.817)"
+            fill="#272727"
+          />
+        </svg>
+      </div>
+      <p class="text">{{ controller.get("description").value || bio }}</p>
 
       <!-- -------- -->
 
-      <p class="content-title">Dirección</p>
-      <svg
-        (click)="edit()"
-        class="edit-content3"
-        xmlns="http://www.w3.org/2000/svg"
-        width="14.789"
-        height="14.763"
-        viewBox="0 0 14.789 14.763"
-      >
-        <path
-          id="edit-line"
-          d="M16.834,4.809l-2.7-2.714a.952.952,0,0,0-1.343,0L3.218,11.653l-.874,3.772a.948.948,0,0,0,.92,1.15.984.984,0,0,0,.2,0L7.275,15.7l9.559-9.549A.952.952,0,0,0,16.834,4.809ZM6.815,14.873l-3.574.75.814-3.505,7.162-7.135,2.76,2.76Zm7.779-7.8-2.76-2.76,1.6-1.592,2.714,2.76Z"
-          transform="translate(-2.322 -1.817)"
-          fill="#272727"
-        />
-      </svg>
+      <div class="flex">
+        <p class="content-title">Dirección</p>
+        <svg
+          (click)="edit()"
+          class="edit-content"
+          xmlns="http://www.w3.org/2000/svg"
+          width="14.789"
+          height="14.763"
+          viewBox="0 0 14.789 14.763"
+        >
+          <path
+            id="edit-line"
+            d="M16.834,4.809l-2.7-2.714a.952.952,0,0,0-1.343,0L3.218,11.653l-.874,3.772a.948.948,0,0,0,.92,1.15.984.984,0,0,0,.2,0L7.275,15.7l9.559-9.549A.952.952,0,0,0,16.834,4.809ZM6.815,14.873l-3.574.75.814-3.505,7.162-7.135,2.76,2.76Zm7.779-7.8-2.76-2.76,1.6-1.592,2.714,2.76Z"
+            transform="translate(-2.322 -1.817)"
+            fill="#272727"
+          />
+        </svg>
+      </div>
       <p class="text">{{ direc1 }}</p>
       <p class="text">{{ direc2 }}</p>
     </div>
 
     <div class="media">
       <p class="subtitle">Enlaces, cuentas sociales, telefonos, emails:</p>
-      <div class="links-container" *ngFor="let link of links; let i = index" (click)="navigateToLink(i)">
+      <div
+        class="links-container"
+        *ngFor="let link of links; let i = index"
+        (click)="navigateToLink(i)"
+      >
         <div class="square" [style.background]="formatImage(link.image)"></div>
         <div class="input">{{ link.value }}</div>
       </div>
       <button class="add" (click)="add()">Adiciona otro enlace</button>
 
-      <button class="mainBtn" (click)="submit()">{{ status || 'SALVAR CAMBIOS' }}</button>
+      <button class="mainBtn" (click)="submit()">
+        {{ status || "SALVAR CAMBIOS" }}
+      </button>
     </div>
   </div>
 
@@ -145,10 +162,17 @@
 
   <div class="enlaces" *ngIf="enlace === true">
     <p class="title">Imagen de la Etiqueta</p>
-    <input id="image" type="file" style="display:none;" (change)="loadFile($event)">
+    <input
+      id="image"
+      type="file"
+      style="display: none"
+      (change)="loadFile($event)"
+    />
+
     <label class="add-square" [style.background]="formatImage(src)" for="image">
       <div class="add-circle"><span>+</span></div>
     </label>
+
     <div class="socials">
       <div [ngClass]="clicked ? 'clicked' : 'social'">
         <svg
@@ -228,13 +252,18 @@
     </div>
 
     <p class="title2">Nombre de la Etiqueta</p>
-    <input [formControl]="AbstractControl('tag')" type="text" class="input" placeholder="Escribe" />
+    <input
+      [formControl]="AbstractControl('tag')"
+      type="text"
+      class="input2"
+      placeholder="Escribe"
+    />
 
     <p class="title2">Contacto</p>
     <input
       [formControl]="AbstractControl('contact')"
       type="text"
-      class="input2"
+      class="input3"
       placeholder="Url, email, telefono, social media link"
     />
   </div>
@@ -255,12 +284,21 @@
   <!----------PUBLIC NAME------------>
   <div class="direcciones" *ngIf="publicName">
     <p class="title">NAME</p>
-    <input [formControl]="AbstractControl('name')" type="text" placeholder="Escribe" class="address-input" />
+    <input
+      [formControl]="AbstractControl('name')"
+      type="text"
+      placeholder="Escribe"
+      class="address-input"
+    />
   </div>
 
   <!----------PUBLIC NAME------------>
   <div class="direcciones" *ngIf="bioDescription">
     <p class="title">BIO</p>
-    <textarea [formControl]="AbstractControl('description')" class="area" placeholder="Escribe..."></textarea>
+    <textarea
+      [formControl]="AbstractControl('description')"
+      class="area"
+      placeholder="Escribe..."
+    ></textarea>
   </div>
 </div>

@@ -55,32 +55,22 @@
     padding-left: 21px;
     padding-top: 45px;
 
-    svg {
-      cursor: pointer;
-    }
+    .flex {
+      display: flex;
+      .content-title {
+        display: inline-block;
+        font-size: 17px;
+        font-weight: 900;
+        font-family: "SFPro";
+        color: #272727;
+        margin-top: 45px;
+      }
 
-    .content-title {
-      display: inline-block;
-      font-size: 17px;
-      font-weight: 900;
-      font-family: "SFPro";
-      color: #272727;
-      margin-top: 45px;
-    }
-
-    .edit-content {
-      margin-left: 75%;
-      margin-bottom: -2px;
-    }
-
-    .edit-content2 {
-      margin-left: 90%;
-      margin-bottom: -2px;
-    }
-
-    .edit-content3 {
-      margin-left: 80%;
-      margin-bottom: -2px;
+      .edit-content {
+        margin-left: auto;
+        margin-top: 45px;
+        cursor: pointer;
+      }
     }
 
     .text {
@@ -138,8 +128,7 @@
       border: none;
       background-color: transparent;
       font-size: 17px;
-      font-family: SFPro;
-      font-weight: 300;
+      font-family: SFProLight;
       color: #7b7b7b;
       float: right;
       margin-top: 10px;
@@ -219,15 +208,16 @@
         cursor: pointer;
       }
       .right {
-        margin-left: 60px;
+        margin-left: 45px;
       }
       .right2 {
-        margin-left: 120px;
+        margin-left: 105px;
       }
       .right3 {
-        margin-left: 180px;
+        margin-left: 165px;
       }
-      .social {
+      .social,
+      .social1 {
         position: absolute;
         // margin-top: 50px;
         margin-top: -10px;
@@ -237,7 +227,12 @@
         vertical-align: middle;
         margin-left: 45px;
       }
-      .clicked {
+
+      .social1 {
+        margin-left: 32px;
+      }
+      .clicked,
+      .clicked1 {
         position: absolute;
         // margin-top: 50px;
         margin-top: -10px;
@@ -248,29 +243,42 @@
         vertical-align: middle;
         margin-left: 45px;
       }
+      .clicked1 {
+        margin-left: 32px;
+      }
     }
 
-    .input,
-    .input2 {
-      height: 60px;
+    .input2,
+    .input3 {
       width: 206px;
       border: none;
-      border-radius: 15px;
+      border-radius: 9px;
       background-color: #ffffff;
-      box-shadow: 0px 3px 6px #70707063 inset;
+      box-shadow: 0px 3px 7px #70707063 inset;
       padding-left: 17px;
       margin-bottom: 15px;
     }
 
+    .input2 {
+      padding-bottom: 13.1px;
+      padding-top: 23px;
+    }
+
+    .input3 {
+      padding-top: 21.2px;
+      padding-bottom: 12.2px;
+    }
+
     .input::placeholder,
-    .input2::placeholder {
+    .input2::placeholder,
+    .input3::placeholder {
       color: #a1a1a1;
       font-size: 17px;
       font-family: RobotoMedium;
       opacity: 0.6;
     }
 
-    .input2 {
+    .input3 {
       width: 95%;
     }
   }
@@ -305,7 +313,7 @@
 }
 
 .area {
-  width: 95%!important;
+  width: 95% !important;
   resize: none;
   border: 0;
   box-shadow: 0px 6px 12px 0px #e6e6e6 inset;
@@ -320,4 +328,34 @@
   display: grid;
   grid-template-columns: 2fr 10fr;
   margin: 20px 0px;
+}
+
+@media (max-width: 451px) {
+  .container {
+    .media {
+      .input {
+        width: 75%;
+      }
+    }
+  }
+}
+
+@media (max-width: 370px) {
+  .container {
+    .media {
+      .input {
+        width: 70%;
+      }
+    }
+  }
+}
+
+@media (max-width: 320px) {
+  .container {
+    .media {
+      .input {
+        width: 62.5%;
+      }
+    }
+  }
 }
