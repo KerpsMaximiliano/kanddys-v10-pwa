@@ -285,10 +285,10 @@ export class TestComponent implements OnInit {
           name: 'data',
           callback: (params) => {
             console.log(params);
-            const { fields, value } = params;
+            const { fields, value, valid } = params;
             const { senderName } = value;
 
-            if (senderName.length > 0) {
+            if (valid) {
               this.swiperConfig.allowSlideNext = true;
             } else {
               this.swiperConfig.allowSlideNext = false;
@@ -369,16 +369,16 @@ export class TestComponent implements OnInit {
         {
           name: 'data',
           callback: (params) => {
-            const { value, fields } = params;
+            const { value, fields, valid } = params;
             const { messageType } = value;
             let typeOfMessageValue = messageType[0];
 
-            if (typeOfMessageValue && typeOfMessageValue.length > 0) {
+            if (valid) {
               this.swiperConfig.allowSlideNext = true;
             } else {
               this.swiperConfig.allowSlideNext = false;
             }
-
+            
             if (
               typeOfMessageValue
                 .toLowerCase()
@@ -678,6 +678,21 @@ export class TestComponent implements OnInit {
         wordsObjects: this.receiverRelationshipWordsObjects,
         title: 'Más de RecipienteID',
         titleCenter: false,
+        submitButton: {
+          text: 'Generar mensajes',
+          styles: {
+            border: 'none',
+            padding: '5px 20px',
+            cursor: 'pointer',
+            margin: 'auto',
+            fontFamily: 'SfProBold',
+            borderRadius: '3px',
+            fontSize: '18px',
+            display: 'flex',
+            marginTop: '1rem',
+            backgroundColor: 'yellowgreen',
+          },
+        },
         containerStyles: {
           background: 'rgb(255, 255, 255)',
         },
@@ -700,6 +715,12 @@ export class TestComponent implements OnInit {
             );
 
             this.swiperConfig.allowSlideNext = true;
+          },
+        },
+        {
+          name: 'buttonClicked',
+          callback: (data: Array<{ text: string; active: boolean }>) => {
+            console.log('boton clickeado');
           },
         },
       ],
