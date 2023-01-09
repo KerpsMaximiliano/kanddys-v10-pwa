@@ -160,7 +160,6 @@ const routes: Routes = [
     ArticleParamsComponent,
     ItemsDashboardComponent,
     CreateTagComponent,
-    PostEditionComponent,
     BiosEditComponent,
     PostPreviewComponent,
     ImageBannerComponent

@@ -120,6 +120,11 @@ import { GeneralItemComponent } from './components/general-item/general-item.com
 import { MerchantContactComponent } from './components/merchant-contact/merchant-contact.component';
 import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { PostEditionComponent } from '../modules/admin/pages/post-edition/post-edition.component';
+import { InvitesNotificationsComponent } from './components/invites-notifications/invites-notifications.component';
+import { QrContentComponent } from './components/qr-content/qr-content.component';
+import { EnvelopeContentComponent } from './components/envelope-content/envelope-content.component';
+import { EnvelopeDataComponent } from './components/envelope-data/envelope-data.component';
 
 const imports = [
   CommonModule,
@@ -246,7 +251,12 @@ const declarations = [
   OptionsGridComponent,
   GeneralItemComponent,
   MerchantContactComponent,
-  QrEditComponent
+  QrEditComponent,
+  PostEditionComponent,
+  InvitesNotificationsComponent,
+  QrContentComponent,
+  EnvelopeContentComponent,
+  EnvelopeDataComponent
 ];
 
 @NgModule({

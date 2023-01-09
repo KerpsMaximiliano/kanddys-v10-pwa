@@ -1,0 +1,15 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+  margin-bottom: 8px;
+  .title {
+    font-size: 17px;
+    font-family: RobotoMedium;
+    color: #7b7b7b;
+  }
+  .edit {
+    margin-left: auto;
+    cursor: pointer;
+  }
+}
