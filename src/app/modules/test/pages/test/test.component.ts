@@ -57,77 +57,75 @@ export class TestComponent implements OnInit {
   title3 = '¿El tiempo del motivo?';
 
   words = [
-    'Bodas',
-    'Bautizos',
-    'Navidad',
-    'Madres',
-    'Padres',
-    'New Born',
-    'Cumpleaños',
-    'Aniversarios',
-    'Condolencias',
-    'Boda de Oro',
-    'San Valentín',
-    'Boda de Plata',
-    'Comuniones',
-    'Día del Maestro',
-    'Promoción',
-    'Día de la Madre',
-    'Dia del Trabajador',
-    'Graduación',
-    'Dia de Santo',
-    'Día de la madre Soltera',
-    'Día de la Madrina',
-    'Mostrar Afecto',
+    { keyword: 'wedding', text: 'Bodas' },
+    { keyword: 'baptism', text: 'Bautizos' },
+    { keyword: 'christmas', text: 'Navidad' },
+    { keyword: 'mothersDay', text: 'Madres' },
+    { keyword: 'fathersDay', text: 'Padres' },
+    { keyword: 'newborn', text: 'New Born' },
+    { keyword: 'birthday', text: 'Cumpleaños' },
+    { keyword: 'anniversary', text: 'Aniversarios' },
+    { keyword: 'condolences', text: 'Condolencias' },
+    { keyword: 'goldenWedding', text: 'Boda de Oro' },
+    { keyword: 'valentinesDay', text: 'San Valentín' },
+    { keyword: 'silverWedding', text: 'Boda de Plata' },
+    { keyword: 'communion', text: 'Comuniones' },
+    { keyword: 'teachersDay', text: 'Día del Maestro' },
+    { keyword: 'prommotion', text: 'Promoción' },
+    { keyword: 'mothersDay', text: 'Día de la Madre' },
+    { keyword: 'workersDay', text: 'Dia del Trabajador' },
+    { keyword: 'graduation', text: 'Graduación' },
+    { keyword: 'singleMothersDay', text: 'Día de la madre Soltera' },
+    { keyword: 'stepmotherDay', text: 'Día de la Madrina' },
+    { keyword: 'showAffection', text: 'Mostrar Afecto' },
   ];
 
   words2 = [
-    'Alegría',
-    'Tristeza',
-    'Euforia',
-    'Sorpresa',
-    'Amor',
-    'Sutil',
-    'Melancolía',
-    'Preocupación',
-    'Gratitud',
-    'Pasión',
-    'Apoyo',
-    'Esperanza',
-    'Satisfacción',
-    'Aceptación',
-    'Curiosidad',
-    'Devoción',
-    'Orgullo',
-    'Paz',
-    'Compasión',
-    'Vergüenza',
-    'Optimismo',
-    'Resentimiento',
+    { keyword: 'happiness', text: 'Alegría' },
+    { keyword: 'sadness', text: 'Tristeza' },
+    { keyword: 'euphoria', text: 'Euforia' },
+    { keyword: 'surprise', text: 'Sorpresa' },
+    { keyword: 'love', text: 'Amor' },
+    { keyword: 'subtle', text: 'Sutil' },
+    { keyword: 'melancholia', text: 'Melancolía' },
+    { keyword: 'concern', text: 'Preocupación' },
+    { keyword: 'gratitude', text: 'Gratitud' },
+    { keyword: 'passion', text: 'Pasión' },
+    { keyword: 'support', text: 'Apoyo' },
+    { keyword: 'hope', text: 'Esperanza' },
+    { keyword: 'satisfaction', text: 'Satisfacción' },
+    { keyword: 'acceptance', text: 'Aceptación' },
+    { keyword: 'curiosity', text: 'Curiosidad' },
+    { keyword: 'devotion', text: 'Devoción' },
+    { keyword: 'pride', text: 'Orgullo' },
+    { keyword: 'peace', text: 'Paz' },
+    { keyword: 'compassion', text: 'Compasión' },
+    { keyword: 'embarrassment', text: 'Vergüenza' },
+    { keyword: 'optimism', text: 'Optimismo' },
+    { keyword: 'resentment', text: 'Resentimiento' },
   ];
 
   words3 = [
-    'Ya pasó',
-    'Pasará',
-    'En cuando reciba el mensaje',
-    'Omitir "el tiempo"',
+    { keyword: 'past', text: 'Ya pasó' },
+    { keyword: 'future', text: 'Pasará' },
+    { keyword: 'instant', text: 'En cuando reciba el mensaje' },
   ];
 
   words4 = [
-    'Mi Hijo',
-    'Mi Amigo',
-    'Mi Papá',
-    'Mi Primo',
-    'Vecino',
-    'Cuñado',
-    'Mi Hermano',
-    'Mi Abuelo',
-    'Compañero de Trabajo',
-    'Mi Jefe',
-    'Suegra',
-    'Nuero',
-    'Mi compadre',
-    'Mi Comadre',
+    { text: 'Mi Hijo', keyword: 'son' },
+    { text: 'Mi Amigo', keyword: 'friend' },
+    { text: 'Mi Papá', keyword: 'dad' },
+    { text: 'Mi Primo', keyword: 'cousin' },
+    { text: 'Vecino', keyword: 'neighbor' },
+    { text: 'Cuñado', keyword: 'brotherinlaw' },
+    { text: 'Mi Hermano', keyword: 'brother' },
+    { text: 'Mi Abuelo', keyword: 'grandfather' },
+    { text: 'Compañero de Trabajo', keyword: 'coworker' },
+    { text: 'Mi Jefe', keyword: 'boss' },
+    { text: 'Suegra', keyword: 'motherinlaw' },
+    { text: 'Nuero', keyword: 'soninlaw' },
+    { text: 'Mi compadre', keyword: 'buddy' },
+    { text: 'Mi Comadre', keyword: 'midwife' },
   ];
 
   motiveWordsObjects: Array<{ text: string; active: boolean }> = [];
@@ -567,14 +565,19 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
             this.motiveWordsObjects = wordsObjects;
 
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'motiveDialog',
               'motive'
@@ -600,13 +603,18 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
             this.sentimentWordsObjects = wordsObjects;
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'sentimentDialog',
               'sentiment'
@@ -634,14 +642,18 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
-            console.log(data, 'timing');
             this.timingWordsObjects = wordsObjects;
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'timingDialog',
               'timing'
@@ -657,7 +669,10 @@ export class TestComponent implements OnInit {
       componentId: 'recipientGenderDialog',
       inputs: {
         mode: 'time',
-        words: ['Hombre', 'Mujer'],
+        words: [
+          { keyword: 'male', text: 'Hombre' },
+          { keyword: 'female', text: 'Mujer' },
+        ],
         wordsObjects: this.receiverGenderWordsObjects,
         title: '¿Que es RecipienteID?',
         titleCenter: false,
@@ -668,13 +683,18 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
             this.receiverGenderWordsObjects = wordsObjects;
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'recipientGenderDialog',
               'recipientGender'
@@ -718,13 +738,18 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
             this.receiverRelationshipWordsObjects = wordsObjects;
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'receiverRelationshipDialog',
               'receiverRelationship'
@@ -735,7 +760,9 @@ export class TestComponent implements OnInit {
         },
         {
           name: 'buttonClicked',
-          callback: async (data: Array<{ text: string; active: boolean }>) => {
+          callback: async (
+            data: Array<{ text: string; keyword: string; active: boolean }>
+          ) => {
             const motive =
               this.dialogFlowService.dialogsFlows['flow1'].motiveDialog.fields
                 .motive;
@@ -752,6 +779,14 @@ export class TestComponent implements OnInit {
               this.dialogFlowService.dialogsFlows['flow1']
                 .receiverRelationshipDialog.fields.receiverRelationship;
 
+            console.log({
+              motive,
+              target: receiverRelationship,
+              sentiment,
+              timing,
+            });
+
+            /*
             const response = await this.gpt3Service.generateResponseForTemplate(
               {
                 motive,
@@ -760,9 +795,7 @@ export class TestComponent implements OnInit {
                 timing,
               },
               '63b39747a7c7f937902117c2'
-            );
-
-            console.log('respuesta', response);
+            );*/
 
             //this.router.navigate(['ecommerce/text-edition-and-preview']);
           },
