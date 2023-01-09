@@ -36,6 +36,7 @@ import { EntityTemplateInput } from 'src/app/core/models/entity-template';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { Router } from '@angular/router';
+import { PostsService } from 'src/app/core/services/posts.service';
 
 @Component({
   selector: 'app-test',
@@ -779,14 +780,6 @@ export class TestComponent implements OnInit {
               this.dialogFlowService.dialogsFlows['flow1']
                 .receiverRelationshipDialog.fields.receiverRelationship;
 
-            console.log({
-              motive,
-              target: receiverRelationship,
-              sentiment,
-              timing,
-            });
-
-            /*
             const response = await this.gpt3Service.generateResponseForTemplate(
               {
                 motive,
@@ -794,10 +787,18 @@ export class TestComponent implements OnInit {
                 sentiment,
                 timing,
               },
-              '63b39747a7c7f937902117c2'
-            );*/
+              '63bc8d232dd73440dc8c7536'
+            );
 
-            //this.router.navigate(['ecommerce/text-edition-and-preview']);
+            this.postsService.post = {
+              message: response,
+            };
+
+            this.router.navigate(['ecommerce/text-edition-and-preview'], {
+              queryParams: {
+                type: 'post',
+              },
+            });
           },
         },
       ],
@@ -1195,9 +1196,7 @@ export class TestComponent implements OnInit {
 
   constructor(
     private dialogFlowService: DialogFlowService,
-    private itemsService: ItemsService,
-    private merchantService: MerchantsService,
-    private saleflowService: SaleFlowService,
+    private postsService: PostsService,
     private gpt3Service: Gpt3Service,
     private router: Router
   ) {}
