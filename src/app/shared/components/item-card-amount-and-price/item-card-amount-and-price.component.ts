@@ -138,8 +138,8 @@ export class ItemCardAmountAndPriceComponent implements OnInit {
         this.header.order.products[0].amount *
           this.itemData.params[0].values[0].price;
       this.itemData.total = total * 1.18;
-      this.header.emptyItems(this.header.saleflow._id);
-      this.header.storeItem(this.header.saleflow._id, this.itemData);
+      this.header.emptyItems();
+      this.header.storeItem(this.itemData);
     } else if (bool) {
       if (this.header.order.products[0].amount > 0) {
         this.header.order.products[0].amount =
@@ -155,10 +155,7 @@ export class ItemCardAmountAndPriceComponent implements OnInit {
           this.price * this.header.order.products[0].amount;
       }
     }
-    this.header.storeAmount(
-      this.header.saleflow._id,
-      this.header.order.products[0].amount
-    );
+    // this.header.storeAmount(this.header.order.products[0].amount);
   }
 
   toggleAnimation() {

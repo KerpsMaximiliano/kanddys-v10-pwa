@@ -7,10 +7,9 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   Item,
   ItemCategory,
-  ItemCategoryHeadline
+  ItemCategoryHeadline,
 } from 'src/app/core/models/item';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
-import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -21,7 +20,7 @@ import { environment } from 'src/environments/environment';
 import { OrderService } from 'src/app/core/services/order.service';
 import {
   StoreShareComponent,
-  StoreShareList
+  StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 
 @Component({
@@ -33,7 +32,6 @@ export class CategoryItemsComponent implements OnInit {
   URI: string = environment.uri;
   items: Item[] = [];
   originalItems: Item[] = [];
-  saleflow: SaleFlow;
   categoryId: string;
   categoryName: string;
   iconImage: string;
@@ -116,7 +114,7 @@ export class CategoryItemsComponent implements OnInit {
     this.deleteEvent = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
-        let productData: Item[] = this.header.getItems(this.saleflow._id);
+        let productData: Item[] = this.header.getItems();
         const selectedItems = productData?.length
           ? productData.map((item) => item._id)
           : [];
@@ -125,41 +123,37 @@ export class CategoryItemsComponent implements OnInit {
             item.isSelected = selectedItems.includes(item._id);
         });
       });
-    this.header.resetIsComplete();
+    this.header.resetOrderProgress();
     if (this.header.customizerData) this.header.customizerData = null;
-    this.route.params.subscribe(async (params) => {
+    this.route.params.subscribe(async ({ categoryId }) => {
       lockUI();
-      this.saleflow = await this.header.fetchSaleflow(params.id);
-      this.categoryId = params.categoryId;
-      // this.route.queryParams.subscribe(async (queries) => {
-      //   if (queries.edit) {
+      this.categoryId = categoryId;
       const user = await this.authService.me();
       if (user) {
         const merchants = await this.merchantService.myMerchants();
         if (merchants?.length > 0) {
           const merchant = merchants.find(
-            (element) => element._id === this.saleflow.merchant._id
+            (element) => element._id === this.header.saleflow.merchant._id
           );
           if (merchant) this.isMerchant = true;
         }
       }
       //   }
       // });
-      const orderData = this.header.getOrder(this.saleflow._id);
       let saleflowItems: {
         item: string;
         customizer: string;
         index: number;
       }[] = [];
       let items: Item[] = [];
-      const merchantId = this.saleflow.merchant._id;
+      const merchantId = this.header.saleflow.merchant._id;
 
-      if (this.saleflow.items.length !== 0) {
-        for (let i = 0; i < this.saleflow.items.length; i++) {
+      if (this.header.saleflow.items.length !== 0) {
+        for (let i = 0; i < this.header.saleflow.items.length; i++) {
           saleflowItems.push({
-            item: this.saleflow.items[i].item._id,
-            customizer: this.saleflow.items[i].customizer?._id,
-            index: this.saleflow.items[i].index,
+            item: this.header.saleflow.items[i].item._id,
+            customizer: this.header.saleflow.items[i].customizer?._id,
+            index: this.header.saleflow.items[i].index,
           });
         }
         if (saleflowItems.some((item) => item.customizer))
@@ -167,18 +161,18 @@ export class CategoryItemsComponent implements OnInit {
       }
 
       const selectedItems =
-        orderData?.products?.length > 0
-          ? orderData.products.map((subOrder) => subOrder.item)
+        this.header.order?.products?.length > 0
+          ? this.header.order.products.map((subOrder) => subOrder.item)
           : [];
       items = (
         await this.item.itemsByCategory(
-          params.categoryId,
+          categoryId,
           {
             options: {
               limit: 100,
             },
           },
-          this.saleflow._id
+          this.header.saleflow._id
         )
       ).filter((item) => item.status == 'active');
       for (let i = 0; i < items.length; i++) {
@@ -203,7 +197,7 @@ export class CategoryItemsComponent implements OnInit {
       // if(!this.hasCustomizer) {
       //   const bestSellersIds = await this.item.bestSellersByMerchant(
       //     15,
-      //     this.saleflow.merchant._id
+      //     this.header.saleflow.merchant._id
       //   );
       //   bestSellersIds.forEach((id) => {
       //     const item = items.find((item) => item._id === id);
@@ -222,7 +216,7 @@ export class CategoryItemsComponent implements OnInit {
         })
       ).itemCategoriesList;
       this.categoryName = itemCategoriesList.find(
-        (category) => category._id === params.categoryId
+        (category) => category._id === categoryId
       )?.name;
       const headlines = await this.item.itemCategoryHeadlineByMerchant(
         merchantId
@@ -230,7 +224,7 @@ export class CategoryItemsComponent implements OnInit {
       await this.getCategories(itemCategoriesList, headlines);
       if (this.isMerchant) {
         const totalByItems = await this.item.totalByItem(
-          this.saleflow.merchant._id,
+          this.header.saleflow.merchant._id,
           items.map((item) => item._id)
         );
         for (let i = 0; i < items.length; i++) {
@@ -255,8 +249,8 @@ export class CategoryItemsComponent implements OnInit {
       type === 'slider' ? this.bestSellers[index] : this.items[index];
     this.header.items = [itemData];
     if (itemData.customizerId) {
-      this.header.emptyOrderProducts(this.saleflow._id);
-      this.header.emptyItems(this.saleflow._id);
+      this.header.emptyOrderProducts();
+      this.header.emptyItems();
       let itemParams: ItemSubOrderParamsInput[];
       if (itemData.params.length > 0) {
         itemParams = [
@@ -271,40 +265,38 @@ export class CategoryItemsComponent implements OnInit {
         customizer: itemData.customizerId,
         params: itemParams,
         amount: itemData.customizerId ? undefined : 1,
-        saleflow: this.saleflow._id,
+        saleflow: this.header.saleflow._id,
         name: itemData.name,
       };
       this.header.order = {
         products: [product],
       };
-      this.header.storeOrderProduct(this.saleflow._id, product);
-      this.header.storeItem(this.saleflow._id, itemData);
-      this.router.navigate([
-        `/ecommerce/provider-store/${this.saleflow._id}/${itemData._id}`,
-      ]);
+      this.header.storeOrderProduct(product);
+      this.header.storeItem(itemData);
+      this.router.navigate([`../../provider-store/${itemData._id}`], {
+        relativeTo: this.route,
+      });
     } else
-      this.router.navigate(
-        ['/ecommerce/item-detail/' + this.saleflow._id + '/' + itemData._id],
+      this.router.navigate([`../../item-detail/${itemData._id}`]),
         {
-          queryParams: { viewtype: this.isMerchant ? 'merchant' : 'community' },
-        }
-      );
+          relativeTo: this.route,
+        };
   }
 
   onShareClick = () => {
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
+        qrlink: `${this.URI}/ecommerce/${this.header.saleflow.merchant.slug}/category-items/${this.categoryId}`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
+            link: `${this.URI}/ecommerce/${this.header.saleflow.merchant.slug}/category-items/${this.categoryId}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
+            link: `${this.URI}/ecommerce/${this.header.saleflow.merchant.slug}/category-items/${this.categoryId}`,
           },
         ],
       },
@@ -315,9 +307,9 @@ export class CategoryItemsComponent implements OnInit {
         text: 'Ir a la vista del visitante',
         mode: 'func',
         func: () =>
-          this.router.navigate([
-            `/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
-          ]),
+          this.router.navigate([`../../category-items/${this.categoryId}`], {
+            relativeTo: this.route,
+          }),
       });
     }
 
@@ -332,6 +324,8 @@ export class CategoryItemsComponent implements OnInit {
   };
 
   goBack() {
-    this.router.navigate(['/ecommerce/store/' + this.saleflow._id]);
+    this.router.navigate([`../../store`], {
+      relativeTo: this.route,
+    });
   }
 }

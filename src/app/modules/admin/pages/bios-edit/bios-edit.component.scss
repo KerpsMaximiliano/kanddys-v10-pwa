@@ -1,0 +1,323 @@
+* {
+  margin: 0;
+}
+
+.container {
+  min-height: 100vh;
+  .header {
+    padding: 16.5px 15px;
+    background-color: #ffffff;
+
+    .arrow {
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    p {
+      margin-left: 11px;
+      display: inline-block;
+      color: #7b7b7b;
+      font-size: 15px;
+      font-weight: bold;
+    }
+  }
+  .logo-container {
+    margin-top: 28px;
+
+    .logo {
+      margin: 0 auto;
+      height: 81px;
+      width: 81px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      box-shadow: 0px 3px 6px #70707063;
+      cursor: pointer;
+    }
+    .edit-logo {
+      margin-left: 53.271%;
+      height: 27px;
+      width: 27px;
+      border: 1px solid #707070;
+      border-radius: 50%;
+      margin-top: -81px;
+      display: block;
+      background: #fff;
+      cursor: pointer;
+
+      svg {
+        margin: 5px;
+      }
+    }
+  }
+
+  .content {
+    padding-right: 28px;
+    padding-left: 21px;
+    padding-top: 45px;
+
+    svg {
+      cursor: pointer;
+    }
+
+    .content-title {
+      display: inline-block;
+      font-size: 17px;
+      font-weight: 900;
+      font-family: "SFPro";
+      color: #272727;
+      margin-top: 45px;
+    }
+
+    .edit-content {
+      margin-left: 75%;
+      margin-bottom: -2px;
+    }
+
+    .edit-content2 {
+      margin-left: 90%;
+      margin-bottom: -2px;
+    }
+
+    .edit-content3 {
+      margin-left: 80%;
+      margin-bottom: -2px;
+    }
+
+    .text {
+      margin: 0;
+      font-family: SFProDisplay;
+      font-size: 17px;
+      font-weight: 300;
+      color: #4f4f4f;
+    }
+  }
+
+  .media {
+    padding-left: 21px;
+    padding-right: 25px;
+    .subtitle {
+      margin-top: 55px;
+      font-weight: 900;
+      font-size: 17px;
+      font-family: SFPro;
+      color: #272727;
+      margin-bottom: 21px;
+    }
+
+    .square {
+      height: 72px;
+      width: 68px;
+      border-radius: 6px;
+      background-color: #ffffff;
+      box-shadow: 0px 3px 6px #70707063;
+      display: inline-block;
+      border: none;
+    }
+    .input {
+      height: 72px;
+      width: 80%;
+      margin-left: 13px;
+      border-radius: 6px;
+      background-color: #ffffff;
+      box-shadow: 0px 3px 6px #70707063;
+      display: inline-block;
+      border: none;
+      padding-left: 27px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .input::placeholder {
+      font-size: 17px;
+      font-family: SFPro;
+      font-weight: 900;
+      color: #272727;
+    }
+
+    .add {
+      border: none;
+      background-color: transparent;
+      font-size: 17px;
+      font-family: SFPro;
+      font-weight: 300;
+      color: #7b7b7b;
+      float: right;
+      margin-top: 10px;
+      cursor: pointer;
+      margin-bottom: 75px;
+    }
+
+    .mainBtn {
+      width: 68.45%;
+      height: 40px;
+      font-family: SFProDisplay;
+      font-size: 15px;
+      font-weight: bold;
+      color: #272727;
+      box-shadow: 0px 3px 6px #70707063;
+      border-radius: 19px;
+      background-color: #ffffff;
+      border: none;
+      display: block;
+      margin: 0 auto;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 75px;
+    }
+  }
+
+  .enlaces {
+    padding-left: 16px;
+    .title {
+      font-family: RobotoMedium;
+      font-size: 17px;
+      color: #7b7b7b;
+      margin-top: 35px;
+      margin-bottom: 17.5px;
+    }
+
+    .title2 {
+      font-family: RobotoMedium;
+      font-size: 17px;
+      color: #7b7b7b;
+      margin-top: 45px;
+      margin-bottom: 18px;
+    }
+
+    .add-square {
+      height: 80.5px;
+      width: 74px;
+      border-radius: 17px;
+      border: solid 1px #707070;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .add-circle {
+      height: 24.5px;
+      width: 24.5px;
+      border-radius: 50%;
+      border: solid 1px #707070;
+      display: inline-block;
+      //margin-top: -50px;
+      margin-left: 50px;
+      background-color: #ffffff;
+      font-size: 20px;
+      font-family: SFProDisplay;
+      color: #272727;
+      font-weight: bold;
+      cursor: pointer;
+
+      span {
+        margin-left: 5px;
+      }
+    }
+
+    .socials {
+      display: inline-block;
+      svg {
+        cursor: pointer;
+      }
+      .right {
+        margin-left: 60px;
+      }
+      .right2 {
+        margin-left: 120px;
+      }
+      .right3 {
+        margin-left: 180px;
+      }
+      .social {
+        position: absolute;
+        // margin-top: 50px;
+        margin-top: -10px;
+        padding: 12.5px;
+        border: none;
+        border-radius: 50%;
+        vertical-align: middle;
+        margin-left: 45px;
+      }
+      .clicked {
+        position: absolute;
+        // margin-top: 50px;
+        margin-top: -10px;
+        padding: 12.5px;
+        border: none;
+        border-radius: 50%;
+        background-color: #82f18d;
+        vertical-align: middle;
+        margin-left: 45px;
+      }
+    }
+
+    .input,
+    .input2 {
+      height: 60px;
+      width: 206px;
+      border: none;
+      border-radius: 15px;
+      background-color: #ffffff;
+      box-shadow: 0px 3px 6px #70707063 inset;
+      padding-left: 17px;
+      margin-bottom: 15px;
+    }
+
+    .input::placeholder,
+    .input2::placeholder {
+      color: #a1a1a1;
+      font-size: 17px;
+      font-family: RobotoMedium;
+      opacity: 0.6;
+    }
+
+    .input2 {
+      width: 95%;
+    }
+  }
+
+  .direcciones {
+    padding-top: 35px;
+    padding-left: 16px;
+    .title {
+      font-family: RobotoMedium;
+      font-size: 17px;
+      color: #7b7b7b;
+      margin-bottom: 18px;
+    }
+
+    .address-input {
+      height: 60px;
+      width: 206px;
+      border: none;
+      border-radius: 15px;
+      background-color: #ffffff;
+      box-shadow: 0px 3px 6px #70707063 inset;
+      padding-left: 17px;
+      margin-bottom: 15px;
+    }
+    .address-input::placeholder {
+      color: #a1a1a1;
+      font-size: 17px;
+      font-family: RobotoMedium;
+      opacity: 0.6;
+    }
+  }
+}
+
+.area {
+  width: 95%!important;
+  resize: none;
+  border: 0;
+  box-shadow: 0px 6px 12px 0px #e6e6e6 inset;
+  border-radius: 20px;
+  padding: 20px 20px;
+  font-size: 16px;
+  font-family: "SfProRegular";
+  min-height: 200px;
+}
+
+.links-container {
+  display: grid;
+  grid-template-columns: 2fr 10fr;
+  margin: 20px 0px;
+}

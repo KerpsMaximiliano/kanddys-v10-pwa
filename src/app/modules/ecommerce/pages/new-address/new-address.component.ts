@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,7 +6,6 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   DeliveryLocation,
   DeliveryLocationInput,
-  SaleFlow,
 } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -36,11 +34,10 @@ export class NewAddressComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private dialogService: DialogService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     private authService: AuthService,
     private fb: FormBuilder,
     private usersService: UsersService,
-    private location: Location,
     private toastr: ToastrService
   ) {
     this.addressForm = fb.group({
@@ -60,7 +57,7 @@ export class NewAddressComponent implements OnInit {
       note: fb.control(null, Validators.pattern(/[\S]/)),
       save: fb.control(false),
     });
-    this.loggedIn = this.router.getCurrentNavigation().extras.state?.loggedIn;
+    this.loggedIn = this.router.getCurrentNavigation()?.extras?.state?.loggedIn;
     this.registered = JSON.parse(
       localStorage.getItem('registered-user')
     ) as User;
@@ -96,61 +93,62 @@ export class NewAddressComponent implements OnInit {
       ],
     },
   ];
-  saleflow: SaleFlow;
   selectedDeliveryIndex: number;
   // selectedAuthIndex: number;
   magicLinkLocation: DeliveryLocationInput;
 
   async ngOnInit(): Promise<void> {
-    const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
     const magicLinkData = this.route.snapshot.queryParamMap.get('data');
     if (magicLinkData) {
       const orderData = JSON.parse(
         decodeURIComponent(magicLinkData)
       ) as SaleflowData;
-      if (orderData?.order?.products?.[0]?.saleflow === saleflowId) {
-        localStorage.setItem(saleflowId, JSON.stringify(orderData));
+      if (
+        orderData?.order?.products?.[0]?.saleflow ===
+        this.headerService.saleflow._id
+      ) {
+        localStorage.setItem(
+          this.headerService.saleflow._id,
+          JSON.stringify(orderData)
+        );
         this.magicLinkLocation = orderData.deliveryLocation;
         this.router.navigate([], {
           relativeTo: this.route,
         });
       }
     }
-    this.saleflow = await this.headerService.fetchSaleflow(saleflowId);
-    this.headerService.order = this.headerService.getOrder(this.saleflow._id);
-    if (!this.headerService.order) {
-      this.router.navigate([
-        `/ecommerce/store/${this.headerService.saleflow._id}`,
-      ]);
-    }
     this.checkAddresses();
     this.user = await this.authService.me();
-    if (this.saleflow.module?.delivery?.pickUpLocations?.length) {
-      this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
-      this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
-        this.addressesOptions.push({
-          status: true,
-          id: pickup._id,
-          value: 'Pick Up. Pasaré a recoger',
-          valueStyles: {
-            fontFamily: 'SfProBold',
-            fontSize: '0.875rem',
-            color: '#000000',
-          },
-          subtexts: [
-            {
-              text: pickup.nickName,
-              styles: {
-                fontFamily: 'SfProRegular',
-                fontSize: '1rem',
-              },
+    if (this.headerService.saleflow.module?.delivery?.pickUpLocations?.length) {
+      this.addresses.push(
+        ...this.headerService.saleflow.module.delivery.pickUpLocations
+      );
+      this.headerService.saleflow.module.delivery.pickUpLocations?.forEach(
+        (pickup) => {
+          this.addressesOptions.push({
+            status: true,
+            id: pickup._id,
+            value: 'Pick Up. Pasaré a recoger',
+            valueStyles: {
+              fontFamily: 'SfProBold',
+              fontSize: '0.875rem',
+              color: '#000000',
             },
-          ],
-        });
-      });
+            subtexts: [
+              {
+                text: pickup.nickName,
+                styles: {
+                  fontFamily: 'SfProRegular',
+                  fontSize: '1rem',
+                },
+              },
+            ],
+          });
+        }
+      );
     }
     // if (!this.user) return;
-    if (!this.saleflow.module?.delivery?.deliveryLocation) return;
+    if (!this.headerService.saleflow.module?.delivery?.deliveryLocation) return;
     this.newAddressOption.push({
       status: true,
       value: 'Adiciona una nueva dirección',
@@ -291,32 +289,23 @@ export class NewAddressComponent implements OnInit {
 
   selectAddress(save?: boolean) {
     const { _id, ...addressInput } = this.addresses[this.selectedDeliveryIndex];
-    this.headerService.order.products.forEach((product) => {
-      product.deliveryLocation = addressInput;
-    });
-    this.headerService.storeLocation(
-      this.headerService.getSaleflow()._id,
-      addressInput
-    );
-    this.headerService.isComplete.delivery = true;
-    this.headerService.storeOrderProgress(
-      this.headerService.saleflow?._id || this.headerService.getSaleflow()?._id
-    );
+    this.headerService.order.products[0].deliveryLocation = addressInput;
+    this.headerService.storeLocation(addressInput);
+    this.headerService.orderProgress.delivery = true;
+    this.headerService.storeOrderProgress();
     if (save && !this.headerService.user) {
       this.authSelect('address');
       return;
     }
-    this.router.navigate(
-      [`ecommerce/${this.headerService.saleflow._id}/checkout`],
-      {
-        replaceUrl: this.headerService.checkoutRoute ? true : false,
-      }
-    );
+    this.router.navigate([`../checkout`], {
+      replaceUrl: this.headerService.checkoutRoute ? true : false,
+      relativeTo: this.route,
+    });
   }
 
   authSelect(auth: 'order' | 'address') {
     this.router.navigate([`auth/login`], {
-      queryParams: { auth, saleflow: this.saleflow._id },
+      queryParams: { auth, saleflow: this.headerService.saleflow._id },
     });
   }
 
@@ -326,12 +315,10 @@ export class NewAddressComponent implements OnInit {
         timeOut: 3000,
         positionClass: 'toast-top-center',
       });
-      this.router.navigate(
-        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
-        {
-          replaceUrl: this.headerService.checkoutRoute ? true : false,
-        }
-      );
+      this.router.navigate([`../checkout`], {
+        replaceUrl: this.headerService.checkoutRoute ? true : false,
+        relativeTo: this.route,
+      });
       return;
     }
     if (
@@ -351,15 +338,9 @@ export class NewAddressComponent implements OnInit {
       this.headerService.order.products.forEach((product) => {
         product.deliveryLocation = addressInput;
       });
-      this.headerService.storeLocation(
-        this.headerService.getSaleflow()._id,
-        addressInput
-      );
-      this.headerService.isComplete.delivery = true;
-      this.headerService.storeOrderProgress(
-        this.headerService.saleflow?._id ||
-          this.headerService.getSaleflow()?._id
-      );
+      this.headerService.storeLocation(addressInput);
+      this.headerService.orderProgress.delivery = true;
+      this.headerService.storeOrderProgress();
       this.toastr.info(
         'Se ha seleccionado la única opción para pick-up',
         'Esta tienda no contiene delivery',
@@ -368,12 +349,10 @@ export class NewAddressComponent implements OnInit {
           positionClass: 'toast-top-center',
         }
       );
-      this.router.navigate(
-        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
-        {
-          replaceUrl: true,
-        }
-      );
+      this.router.navigate([`../checkout`], {
+        replaceUrl: true,
+        relativeTo: this.route,
+      });
     }
   }
 
@@ -440,9 +419,9 @@ export class NewAddressComponent implements OnInit {
 
   goBack() {
     if (this.mode === 'normal')
-      return this.router.navigate([
-        `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
-      ]);
+      return this.router.navigate([`../checkout`], {
+        relativeTo: this.route,
+      });
     this.mode = 'normal';
     this.editingId = null;
     this.addressForm.reset({

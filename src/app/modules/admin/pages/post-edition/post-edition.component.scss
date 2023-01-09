@@ -1,0 +1,131 @@
+* {
+  margin: 0;
+}
+
+.container {
+  height: 100vh;
+
+  .header {
+    background-color: #ffffff;
+    padding: 10.5px 0;
+    display: flex;
+    align-items: center;
+
+    svg {
+      cursor: pointer;
+    }
+
+    .arrows {
+      margin-left: 16px;
+    }
+    p {
+      margin-left: auto;
+      margin-right: 14.5px;
+      font-family: SFProBold;
+      font-size: 15px;
+      color: #272727;
+    }
+    .save {
+      margin-right: 14.5px;
+    }
+    .dots {
+      margin-right: 19px;
+    }
+  }
+
+  .content {
+    padding: 35px 25px;
+
+    .wrapper {
+      display: flex;
+      align-items: center;
+      margin-left: 5px;
+      margin-bottom: 8px;
+      .title {
+        font-size: 17px;
+        font-family: RobotoMedium;
+        color: #7b7b7b;
+      }
+      .edit {
+        margin-left: auto;
+        cursor: pointer;
+      }
+    }
+
+    textarea {
+      height: 100px;
+      width: 100%;
+      font-family: SFProRegular;
+      color: #000000;
+      font-size: 17px;
+      padding: 28.5px 25px;
+      resize: none;
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+      margin-bottom: 43px;
+      overflow: hidden;
+    }
+
+    .cards {
+      width: 100%;
+      background-color: #ffffff;
+      border-radius: 7px;
+      border: none;
+      box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+      margin-bottom: 43px;
+      padding: 18.5px 20px 17.5px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+
+      .card {
+        height: 141.05px;
+        width: 100%;
+        max-width: 125px;
+        margin-bottom: 5px;
+      }
+    }
+
+    .italic {
+      font-family: SFProLight;
+      color: #7b7b7b;
+      font-style: italic;
+    }
+
+    .data {
+      padding: 35px 25px;
+      width: 100%;
+      //height: 315px;
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+      margin-bottom: 43px;
+      background-color: #ffffff;
+
+      p {
+        font-size: 17px;
+        font-family: SFProRegular;
+        color: #000000;
+      }
+      .bold {
+        font-weight: 600;
+        margin-bottom: 35px;
+      }
+      .bold-bottom {
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    .content {
+      .cards {
+        padding: 18.5px 16px 17.5px;
+        gap: 5px;
+      }
+    }
+  }
+}

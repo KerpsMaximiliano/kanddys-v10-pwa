@@ -101,8 +101,25 @@ import { TagsCarousellComponent } from './components/tags-carousell/tags-carouse
 import { HelperHeaderv3Component } from './components/helper-headerv3/helper-headerv3.component';
 import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
-import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
+import { InputTransparentComponent } from './dialogs/input-transparent/input-transparent.component';
+import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
+import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
+import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
+import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
+import { AnexoChoicesComponent } from './components/anexo-choices/anexo-choices.component';
+import { BiosBannerComponent } from './components/bios-banner/bios-banner.component';
+import { ItemListSelectorComponent } from './dialogs/item-list-selector/item-list-selector.component';
+import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.component';
+import { BlankComponent } from './dialogs/blank/blank.component';
+import { ArticleDialogComponent } from './dialogs/article-dialog/article-dialog.component';
+import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.component';
+import { GeneralDialogComponent } from './components/general-dialog/general-dialog.component';
+import { OptionsGridComponent } from './dialogs/options-grid/options-grid.component';
+import { GeneralItemComponent } from './components/general-item/general-item.component';
+import { MerchantContactComponent } from './components/merchant-contact/merchant-contact.component';
+import { QrEditComponent } from './components/qr-edit/qr-edit.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 const imports = [
   CommonModule,
@@ -117,6 +134,7 @@ const imports = [
   NgxIntlTelInputModule,
   ClipboardModule,
   GooglePlaceModule,
+  DragDropModule
 ];
 const declarations = [
   // Pages
@@ -206,14 +224,29 @@ const declarations = [
   MetricsReservationComponent,
   ReservationListComponent,
   TagManagementComponent,
-  TagAsignationComponent,
   TagsSelectorComponent,
   TagsCarousellComponent,
   HelperHeaderv3Component,
   FunctionalityParametersComponent,
   ConfirmActionDialogComponent,
+  InputTransparentComponent,
   AnexosDialogComponent,
+  QrCodeDialogComponent,
+  PostsXlsComponent,
   TagAsignationComponent,
+  MediaDialogComponent,
+  AnexoChoicesComponent,
+  BiosBannerComponent,
+  DialogFlowComponent,
+  ItemListSelectorComponent,
+  BlankComponent,
+  ArticleDialogComponent,
+  AnexoLandingComponent,
+  GeneralDialogComponent,
+  OptionsGridComponent,
+  GeneralItemComponent,
+  MerchantContactComponent,
+  QrEditComponent
 ];
 
 @NgModule({

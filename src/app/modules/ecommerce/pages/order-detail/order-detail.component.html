@@ -1,18 +1,63 @@
 <div class="container">
-  <header class="header">
-    <a class="return-holder" (click)="goBackToFlowRoute()" *ngIf="flowRoute"
-      ><i class="fas fa-chevron-left" [style.color]="'white'"></i>
-    </a>
-
-    <h1 class="merchant-name">{{ order?.items[0].saleflow.merchant.name }}</h1>
-
-    <div class="right-area">
-      <span class="header-text" *ngIf="order">
-        {{ order.user?.name || order.user?.phone || order.user?.email }}
-      </span>
-      <img [src]="env + '/person.svg'" (click)="(redirectToUserContact)" />
-    </div>
-  </header>
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="
+      redirectTo &&
+      redirectTo !== null &&
+      redirectTo !== '' &&
+      isMerchant &&
+      merchantOwner
+    "
+    (returnEvent)="returnEvent()"
+    [bgColor]="changeColor ? changeColor : headerService.colorTheme"
+    [icon]="
+      !isMerchant && merchantOwner
+        ? {
+            src: '/arrow-double-up.svg',
+            width: 17,
+            height: 21,
+            callback: changeView
+          }
+        : null
+    "
+    [rightText]="
+      headerService.user
+        ? {
+            text:
+              headerService.user?.name ||
+              headerService.user?.phone ||
+              headerService.user?.email
+          }
+        : null
+    "
+    [icons]="[
+      {
+        src: '/person.svg',
+        width: '13px',
+        height: '17px',
+        color: 'brightness(3)',
+        callback: redirectToUserContact
+      }
+    ]"
+    [mainText]="
+      !isMerchant
+        ? {
+            text:
+              order?.items[0].saleflow.headline?.length < 38
+                ? order?.items[0].saleflow.headline
+                : order?.items[0].saleflow.headline.split(' ')['0'],
+            fontSize: '21px',
+            fontFamily: 'SfProBold'
+          }
+        : null
+    "
+    (agnosticAction)="openLogoutDialog()"
+  ></app-helper-headerv2>
+  <div class="top-area" *ngIf="!notify && !isMerchant">
+    <button class="top-button" (click)="buyAgain()">
+      <span class="plus"> + </span> COMPRAR OTRA VEZ
+    </button>
+  </div>
 
   <div class="bill-area" *ngIf="notify">
     <h2 class="user-name">
@@ -34,60 +79,21 @@
       {{ order?.items[0].saleflow.merchant.name }}.
     </p>
   </div>
-  <!-- <app-helper-headerv2
-    [mode]="'basic'"
-    bgColor="#2874AD"
-    [returnAble]="false"
-    [mainText]="{
-      text:
-        order?.items[0].saleflow.headline.length < 38
-          ? order?.items[0].saleflow.headline
-          : order?.items[0].saleflow.headline.split(' ')['0'],
-      fontSize: '21px',
-      fontFamily: 'SfProBold'
-    }"
-  ></app-helper-headerv2> -->
-
-  <!-- <div class="box-shadowing">
-    <app-item-reservation
-      [headline]="{
-        text: order ? formatId(order?.dateId) : ''
-      }"
-      [rightActive]="true"
-      [rightSubHeadline]="{
-        text: order?.user.name
-      }"
-      [subheadlines]="[
-        {
-          text: orderDate
-        },
-        {
-          text: orderStatus
-        }
-      ]"
-      [icon]="[
-        {
-          src: '/person.svg',
-          width: 13,
-          height: 17,
-          color:
-            'invert(35%) sepia(92%) saturate(490%) hue-rotate(164deg) brightness(93%) contrast(84%)',
-          callback: redirectToUserContact
-        }
-      ]"
-    ></app-item-reservation>
-  </div> -->
-
   <main class="information">
     <section class="top">
       <h2 class="top-h" *ngIf="order">
-        FACTURA {{ formatId(order.dateId) }} EN <br />
-        <span class="top-name">{{ order?.items[0].saleflow.headline }}</span>
+        FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
+        <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
+          {{ order.user?.name || order.user?.phone || order.user?.email }}
+        </button>
+        <span class="top-headline" *ngIf="!isMerchant">{{
+          order?.items[0].saleflow.headline
+        }}</span>
       </h2>
 
       <div class="info-display">
         <span class="info" style="margin-left: 0">{{ orderDate }}</span>
-        <span class="info">{{ orderStatus | titlecase }}</span>
+        <!-- <span class="info">{{ orderStatus | titlecase }}</span> -->
       </div>
     </section>
     <section class="section">
@@ -148,7 +154,7 @@
       <div class="items-container" style="margin-top: 5px">
         <div class="items-container space-between" style="padding: 10px 32px">
           <p class="total">Total:</p>
-          <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
+          <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
         </div>
       </div>
     </section>
@@ -184,6 +190,18 @@
           </button>
         </div>
       </div>
+      <div class="items-container space-between" style="margin-top: 4px">
+        <p class="total">Subtotal:</p>
+        <p class="amount">{{ payment | number : "1.2-2" }}</p>
+      </div>
+      <!--       <div class="items-container space-between" style="margin-top: 4px">
+        <p class="total">Coins:</p>
+        <p class="amount">- {{ payment | number: "1.2-2" }}</p>
+      </div> -->
+      <div class="items-container space-between" style="margin-top: 4px">
+        <p class="total">Total Pagado:</p>
+        <p class="amount">{{ payment | number : "1.2-2" }}</p>
+      </div>
     </section>
 
     <section class="section" *ngIf="order?.items[0].deliveryLocation">
@@ -194,14 +212,19 @@
       <div class="items-container column">
         <p
           class="address-name"
-          *ngIf="order.items[0].deliveryLocation.nickName"
+          *ngIf="
+            (order.items[0].deliveryLocation.nickName &&
+              headerService.user?._id === order.user._id) ||
+            (order.items[0].deliveryLocation.nickName &&
+              !order.items[0].deliveryLocation.street)
+          "
         >
           {{ order.items[0].deliveryLocation.nickName }}
         </p>
         <p
           [ngClass]="{
-            added: order.items[0].deliveryLocation.nickName,
-            'address-name': !order.items[0].deliveryLocation.nickName
+            added: headerService.user?._id === order.user._id,
+            'address-name': headerService.user?._id !== order.user._id
           }"
           *ngIf="order.items[0].deliveryLocation.street"
         >
@@ -237,15 +260,48 @@
     <section
       class="section"
       *ngIf="
-        (order?.items[0].post && post?.message) ||
-        post?.from ||
-        post?.targets[0].name
+        order?.items[0].post &&
+        (post?.message ||
+          post?.from ||
+          (post?.targets?.length && post?.targets[0].name) ||
+          slides?.length)
       "
       style="margin-top: 32px"
     >
       <h2 class="section-title">Mensaje de regalo:</h2>
 
-      <div class="message-box">
+      <div
+        class="buttons-share"
+        *ngIf="slides?.length"
+        (click)="goToPostDetail()"
+      >
+        <div class="buttons-area">
+          <button class="btn">
+            <img [src]="env + '/QR.svg'" width="34px" height="34px" />
+          </button>
+          <button class="btn">
+            <img [src]="env + '/print.svg'" width="34px" height="34px" />
+          </button>
+          <button class="btn">
+            <img
+              [src]="env + '/download.svg'"
+              width="34px"
+              height="34px"
+              style="filter: brightness(0)"
+            />
+          </button>
+        </div>
+        <h3 class="virtual">Mensaje Virtual</h3>
+      </div>
+
+      <div
+        class="message-box"
+        *ngIf="
+          post?.message ||
+          post?.from ||
+          (post?.targets?.length && post.targets[0].name)
+        "
+      >
         <section *ngIf="post.message">
           <h3 class="sub">Mensaje a escribir:</h3>
           <p class="message-text inner">
@@ -254,7 +310,7 @@
         </section>
 
         <section *ngIf="post.targets?.length && post.targets[0]?.name">
-          <h3 class="sub">Para:</h3>
+          <h3 class="sub">Título del sobre:</h3>
           <p class="message-text inner">{{ post.targets[0]?.name }}</p>
         </section>
 
@@ -292,10 +348,26 @@
     colorDark="#000"
   ></qrcode>
 
-  <footer class="footer-display" *ngIf="merchant">
-    <!-- TABS INICIO -->
+  <footer
+    class="footer-display"
+    [style.backgroundColor]="
+      changeColor ? changeColor : headerService.colorTheme
+    "
+  >
+    <!--
+      <div
+        class="left-arrow"
+        *ngIf="this.orderInDayIndex > 0 || orderBeforeOrderDay"
+        (click)="goToNextOrPreviousOrder('PREVIOUS')"
+      >
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-white.svg"
+          alt=""
+        />
+      </div>
+    -->
+
     <div class="pages-tabs">
-      <!-- IMAGENES INICIO-->
       <div class="images-container">
         <img
           [src]="env + image.src"
@@ -307,24 +379,34 @@
           }"
         />
       </div>
-      <!-- FIN IMAGENES -->
     </div>
-    <!-- FIN TABS -->
-    <!-- TABS INFERIORES -->
-    <!-- <div class="tab-pages"> 
-      <div class="tab" *ngFor="let tab of tabs"></div>
-    </div> -->
-    <!-- FIN TABS INFERIORES -->
+
+    <!--
+      <div
+        class="right-arrow"
+        *ngIf="
+          this.orderInDayIndex < this.ordersInTheSameDay.length - 1 ||
+          orderAfterOrderDay
+        "
+        (click)="goToNextOrPreviousOrder('NEXT')"
+      >
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-right-white.svg"
+          alt=""
+        />
+      </div>
+    -->
   </footer>
 
-  <app-sticky-button
-  *ngIf="!merchant"
+  <!-- Aquí hubo un merge conflict -->
+
+  <!-- <app-sticky-button
+  *ngIf="!isMerchant"
   [mode]="'fixed'"
   [bgColor]="'#2874AD'"
   [size]="'small'"
   [fontSize]="'1.25rem'"
   [text]="'VOLVER A LA TIENDA'"
   (click)="goToStore()"
-></app-sticky-button>
-
+  ></app-sticky-button> -->
 </div>

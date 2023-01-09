@@ -4,7 +4,7 @@
     [mode]="'basic'"
     [returnAble]="true"
     (returnEvent)="back()"
-    bgColor="#2874AD"
+    [bgColor]="headerService.colorTheme"
     [mainText]="{
       text: '',
       fontSize: '21px',
@@ -12,8 +12,14 @@
     }"
   ></app-helper-headerv2>
 
-  <header class="header" *ngIf="logged || headerService.user">
-    <a> <i class="fas fa-chevron-left" (click)="back()"></i></a>
+  <header
+    class="header"
+    *ngIf="logged || headerService.user"
+    [ngStyle]="{ backgroundColor: headerService.colorTheme }"
+  >
+    <a> <i class="far fa-angle-double-up" (click)="back()"></i></a>
+
+    <img [src]="env + '/carrito_blanco.svg'" alt="Icono de un carrito" />
 
     <div class="right-area">
       <span class="header-text">{{
@@ -23,40 +29,55 @@
     </div>
   </header>
 
+  <section class="top">
+    <p class="msj">Excelente! Mira como va tu factura.</p>
+    <button
+      class="confirmButton"
+      [ngStyle]="{
+        backgroundColor: !itemsReady || missingOrderData ? '#e9e9e9' : '#82F18D'
+      }"
+      [disabled]="!itemsReady || missingOrderData"
+      (click)="createOrder()"
+    >
+      Confirmar y pagar
+    </button>
+    <a class="bannerLink">Incluir mensaje de regalo</a>
+  </section>
+
   <main class="information">
-    <section class="top">
-      <h2 class="top-h">
-        PRE-FACTURA EN <br />
-        <span class="top-name">{{
-          headerService.saleflow?.merchant?.name
-        }}</span>
-      </h2>
-    </section>
     <section class="section">
-      <div class="between">
-        <h2 class="section-title">Articulos facturados:</h2>
-        <button (click)="editOrder('item')">
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+      <div class="between" style="margin-bottom: 30px">
+        <h2 class="section-title" style="margin-bottom: 0px">
+          Articulos facturados:
+        </h2>
+        <button (click)="itemsReady = !itemsReady" *ngIf="itemsReady">
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
+        </button>
+        <button
+          class="btn-green"
+          (click)="itemsReady = !itemsReady"
+          *ngIf="!itemsReady"
+        >
+          Listo
         </button>
       </div>
 
-      <div class="items-container">
+      <div class="flexBox">
         <div
-          class="image-container"
-          #elemt
-          (mousedown)="startDragging($event, elemt)"
-          (mouseup)="stopDragging()"
-          (mouseleave)="stopDragging()"
-          (mousemove)="moveEvent($event, elemt)"
+          *ngFor="let item of items; index as i"
+          class="items-container flexBox"
         >
-          <button
-            *ngFor="let item of items"
-            (click)="
-              (item.image || item.images?.length) &&
-                openImageModal(item.image || item.images[0])
-            "
-          >
-            <div class="image">
+          <div class="productData">
+            <button
+              (click)="
+                (item.image || item.images?.length) &&
+                  openImageModal(item.image || item.images[0])
+              "
+            >
               <img
                 [src]="
                   item.image || item.images?.length
@@ -65,10 +86,57 @@
                 "
                 (error)="item.image = '/assets/images/noimage.png'"
                 alt="item image"
-                class="item-image"
+                class="itemImg"
               />
+            </button>
+            <div class="rightSection">
+              <div class="title">
+                <p>{{ !itemsReady ? "Cantidad" : item.name }}</p>
+                <p>
+                  <span style="margin-right: 8px" *ngIf="itemsReady">
+                    {{ headerService.order.products[i].amount }}x
+                  </span>
+                  ${{
+                    item.pricing * headerService.order.products[i].amount
+                      | number : "1.2-2"
+                  }}
+                </p>
+              </div>
+              <div class="rightBottom" *ngIf="!itemsReady">
+                <div class="countBox">
+                  <button
+                    class="cube sign"
+                    (click)="changeAmount(i, 'subtract')"
+                  >
+                    -
+                  </button>
+                  <div class="cube number">
+                    {{ headerService.order.products[i].amount }}
+                  </div>
+                  <button class="cube sign" (click)="changeAmount(i, 'add')">
+                    +
+                  </button>
+                </div>
+                <button class="iconBtn" (click)="deleteProduct(i)">
+                  <i class="far fa-trash-alt"></i>
+                </button>
+              </div>
             </div>
-          </button>
+          </div>
+          <!-- <div class="questionSection">
+            <div class="questionBox">
+              <div class="question">
+                Pregunta acaba en 2 puntitos cuando no quepa
+              </div>
+              <a href="" class="link">Responder</a>
+              <div class="questionBox">
+                <div class="question">
+                  Pregunta acaba en 2 puntitos cuando no quepa
+                </div>
+                <a href="" class="link">Responder</a>
+              </div>
+            </div>
+          </div> -->
         </div>
       </div>
       <div class="items-container" style="margin-top: 4px">
@@ -77,12 +145,15 @@
           style="padding: 0 32px; align-items: center"
         >
           <p class="total">Total</p>
-          <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
+          <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
         </div>
       </div>
     </section>
 
-    <section class="section" *ngIf="deliveryLocation">
+    <section
+      class="section"
+      *ngIf="headerService.saleflow?.module?.delivery?.isActive"
+    >
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">
           Lugar de
@@ -96,15 +167,16 @@
               1 || headerService.saleflow?.module?.delivery?.deliveryLocation
           "
         >
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
         </button>
       </div>
 
-      <div class="items-container column">
-        <p
-          class="address-name"
-          *ngIf="deliveryLocation.nickName"
-        >
+      <div class="items-container column" *ngIf="deliveryLocation">
+        <p class="address-name" *ngIf="deliveryLocation.nickName">
           {{ deliveryLocation.nickName }}
         </p>
         <p
@@ -128,26 +200,54 @@
           {{ deliveryLocation.city }}, República Dominicana
         </p>
       </div>
+      <button
+        class="items-container column pointer green"
+        *ngIf="!deliveryLocation"
+        (click)="editOrder('address')"
+      >
+        <p class="address-name">Selecciona una dirección...</p>
+      </button>
     </section>
 
-    <section class="section" *ngIf="reservation && date">
+    <section
+      class="section"
+      *ngIf="
+        headerService.saleflow?.module?.appointment?.isActive &&
+        headerService.saleflow?.module?.appointment?.calendar?._id
+      "
+    >
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Fecha de la sesión:</h2>
 
         <button (click)="editOrder('reservation')">
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
         </button>
       </div>
 
-      <div class="items-container" style="padding: 10px 32px">
+      <div
+        class="items-container"
+        style="padding: 10px 32px"
+        *ngIf="reservation && date"
+      >
         <p class="amount">
           {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
           {{ date.time }}
         </p>
       </div>
+      <button
+        class="items-container column pointer green"
+        *ngIf="!reservation && !date"
+        (click)="editOrder('reservation')"
+      >
+        <p class="address-name">Haz una reservación...</p>
+      </button>
     </section>
 
-    <section
+    <!-- <section
       class="section"
       *ngIf="headerService.saleflow?.module?.post?.isActive"
       style="margin-top: 32px"
@@ -155,47 +255,139 @@
       <div class="between">
         <h2 class="section-title">Mensaje de regalo:</h2>
 
-        <button (click)="editOrder('message')">
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        <button (click)="editOrder('message')" *ngIf="post">
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
         </button>
       </div>
 
-      <div
-        class="message-box"
-        *ngIf="
-          post?.message || post?.from || post?.targets[0].name;
-          else noMessage
-        "
-      >
-        <section *ngIf="post.message">
-          <h3 class="sub">Mensaje a escribir:</h3>
-          <p class="message-text inner">
-            {{ post.message }}
-          </p>
-        </section>
+      <ng-container *ngIf="post">
+        <div
+          class="items-container"
+          *ngIf="
+            post.slides?.length &&
+            (postSlideImages?.length ||
+              postSlideVideos?.length ||
+              postSlideAudio?.length)
+          "
+          style="margin-bottom: 8px"
+        >
+          <div
+            class="image-container"
+            #elemt
+            (mousedown)="startDragging($event, elemt)"
+            (mouseup)="stopDragging()"
+            (mouseleave)="stopDragging()"
+            (mousemove)="moveEvent($event, elemt)"
+          >
+            <button
+              *ngFor="let image of postSlideImages"
+              (click)="openImageModal(image)"
+            >
+              <div class="image">
+                <img
+                  [src]="image || '/assets/images/noimage.png'"
+                  alt="item image"
+                  class="item-image"
+                />
+              </div>
+            </button>
+            <button
+              *ngFor="let video of postSlideVideos"
+              class="video"
+              (click)="fullscreenDialog('video', video)"
+            >
+              <video
+                width="86px"
+                height="74px"
+                class="item-video"
+                autoplay
+                [muted]="'muted'"
+                #videoElem
+              >
+                <source [src]="video" />
+                Lo sentimos, no se puede mostrar el video
+              </video>
+            </button>
 
-        <section *ngIf="post.targets?.length && post.targets[0]?.name">
-          <h3 class="sub">Para:</h3>
-          <p class="message-text inner">{{ post.targets[0]?.name }}</p>
-        </section>
-
-        <section *ngIf="post.from">
-          <h3 class="sub">De:</h3>
-          <p class="message-text inner">{{ post.from }}</p>
-        </section>
-      </div>
-      <ng-template #noMessage>
-        <div class="items-container">
-          <span class="address-name"> Sin mensaje de regalo </span>
+            <button
+              class="video"
+              *ngFor="let audio of postSlideAudio"
+              (click)="fullscreenDialog('audio', audio)"
+            >
+              <div class="audio">
+                <audio class="item-audio" controls="controls">
+                  <source [src]="audio" />
+                  Lo sentimos, no se puede reproducir el audio
+                </audio>
+              </div>
+            </button>
+          </div>
         </div>
-      </ng-template>
-    </section>
+        <div
+          class="message-box"
+          *ngIf="
+            post?.message ||
+              post?.from ||
+              (post?.targets?.length && post.targets[0].name);
+            else noMessage
+          "
+        >
+          <section *ngIf="post.message">
+            <h3 class="sub">Mensaje a escribir:</h3>
+            <p class="message-text inner">
+              {{ post.message }}
+            </p>
+          </section>
+
+          <section *ngIf="post.targets?.length && post.targets[0]?.name">
+            <h3 class="sub">Título del sobre:</h3>
+            <p class="message-text inner">{{ post.targets[0]?.name }}</p>
+          </section>
+
+          <section *ngIf="post.from">
+            <h3 class="sub">De:</h3>
+            <p class="message-text inner">{{ post.from }}</p>
+          </section>
+        </div>
+        <ng-template #noMessage>
+          <div
+            class="items-container"
+            *ngIf="
+              !post.slides?.length ||
+              (!postSlideImages?.length &&
+                !postSlideVideos?.length &&
+                !postSlideAudio?.length)
+            "
+          >
+            <span class="address-name"> Sin mensaje de regalo </span>
+          </div>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="!post">
+        <app-answer-selector
+          [options]="options"
+          [indicator]="true"
+          (onSelector)="selectSelect($event)"
+          [containerStyles]="{
+            margin: '0px'
+          }"
+        ></app-answer-selector>
+      </ng-container>
+    </section> -->
     <section class="section" *ngIf="customizer" style="margin-top: 32px">
       <div class="between">
         <h2 class="section-title">Personalización:</h2>
 
         <button (click)="editOrder('customizer')">
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
         </button>
       </div>
       <div class="items-container" style="flex-direction: column">
@@ -216,32 +408,61 @@
     </section>
   </main>
 
-  <app-sticky-button
-    [mode]="!disableButton ? 'double' : 'disabled-fixed'"
+  <!-- <app-sticky-button
+    [mode]="
+      !disableButton &&
+      ((headerService.saleflow.module?.post && post) ||
+        !headerService.saleflow.module?.post)
+        ? 'double'
+        : 'disabled-fixed'
+    "
     [extra]="{
-      bgColor: '#2874AD',
+      bgColor: headerService.colorTheme,
       return: true,
       returnCallback: back
     }"
     [color]="'#FFF'"
     [fontSize]="'17px'"
     [bgColor]="'#A1A1A1'"
-    [text]="'CONFIRMAR' + (hasPaymentModule ? ' Y PASAR A PAGAR' : '')"
+    [text]="missingOrderData ? 'LLEVAME A LLENAR LO INCOMPLETO' : 'CONFIRMAR'"
     [customLeftButtonStyles]="{
       width: '84.65%',
       'max-width': 'none',
       'border-left': '1px solid #FFFFFF',
-      backgroundColor: '#2874ad',
+      backgroundColor: headerService.colorTheme,
       color: '#FFFFFF',
       cursor: 'pointer'
     }"
     [customRightButtonStyles]="{
-      width: '1px',
-      heigth: '1px',
-      cursor: 'unset'
+      width: '75px',
+      heigth: 'auto',
+      cursor: 'pointer',
+      backgroundColor: headerService.colorTheme,
+      color: '#FFFFFF',
+      fontSize: '12px'
     }"
-    [text2]="''"
+    [text2]="'pago >'"
     size="small"
-    (left)="!disableButton && createOrder()"
+    (right)="
+      !disableButton &&
+        ((headerService.saleflow.module?.post && post) ||
+          !headerService.saleflow.module?.post) &&
+        createOrder()
+    "
+    (left)="
+      !disableButton &&
+        ((headerService.saleflow.module?.post && post) ||
+          !headerService.saleflow.module?.post) &&
+        createOrder()
+    "
+  ></app-sticky-button> -->
+  <app-sticky-button
+    mode="fixed"
+    color="#FFFFFF"
+    fontSize="17px"
+    bgColor="#272727"
+    text="VER MAS ARTICULOS"
+    size="small"
+    (click)="editOrder('item')"
   ></app-sticky-button>
 </div>

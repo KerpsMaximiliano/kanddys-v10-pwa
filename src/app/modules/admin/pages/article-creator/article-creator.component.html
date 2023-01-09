@@ -1,5 +1,5 @@
 <div class="container">
-  <div
+  <!-- <div
     class="nav"
     [ngStyle]="{
       gridTemplateColumns:
@@ -19,34 +19,65 @@
           style="color: rgb(255, 255, 255); display: block"
         ></i>
       </button>
-    </div>
-    <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-    <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-    <img
+    </div> -->
+  <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
+  <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
+  <!-- <img
       *ngIf="mode === 'item' && item"
       src="{{ env }}/save-blue.png"
       class="notification"
       alt=""
       (click)="openTagsDialog()"
-    />
-    <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
-    <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
-    <!-- <span class="text">VISTA</span> -->
-    <div
+    /> -->
+  <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
+  <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
+  <!-- <span class="text">VISTA</span> -->
+  <!--     <div
       class="dot-trio"
       *ngIf="mode === 'item' && item"
       (click)="openItemOptionsDialog()"
-    ></div>
+    ></div> -->
+  <!-- </div> -->
+  <div class="disabled" *ngIf="['disabled', 'archived'].includes(item.status)">
+    <img [src]="env + '/closed-eye-white.svg'" alt="Ojo cerrado" class="hidden-img">
+    <span class="disabled-span">Invisible para visitantes</span>
   </div>
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
-      <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">
+      <div
+        id="{{ i }}-{{ j }}"
+        [ngSwitch]="field.type"
+      >
+        <div class="grid">
+          <!-- AREA DE BOTONES, CAMBIAR -->
+          <div class="buttons-edit" *ngIf="viewType === 'edit'">
+            <button class="arrows">
+              <img
+                [src]="env + '/arrow-double-up.svg'"
+                alt="Flechas dobles apuntando hacia arriba"
+              />
+            </button>
+            <button class="edit-button">Editar</button>
+          </div>
+          <div
+            class="buttons-edit"
+            style="justify-content: flex-end; margin-top: 35px"
+            *ngIf="viewType === 'saved'"
+          >
+            <button class="comitions">Comisiones para vender mas</button>
+            <button class="edit-button">Editar</button>
+          </div>
+          <button class="fixed-button" *ngIf="viewType === 'preview'">
+            Cancelar cambios
+          </button>
+        </div>
         <ng-container *ngSwitchCase="'file'">
           <swiper
             *ngIf="controller.get(field.name).value.length"
             [config]="swiperConfig"
             #mediaSwiper
-            (slideChange)="updateCurrentSlideData($event)"
+            (slideChange)="updateCurrentSlideData($event, i, j)"
+            [ngStyle]="{ display: editMode ? 'none' : 'inline' }"
           >
             <div
               *ngFor="
@@ -61,31 +92,12 @@
               role="group"
               (mouseup)="handleSlide($event)"
             >
-              <div class="grid">
-                <div
-                  [style.visibility]="controller.valid ? 'initial' : 'hidden'"
-                  class="col"
-                >
-                  <button class="grid-btn" (click)="removeFile(i, k)">
-                    <span class="icon">x</span>
-                    <span class="copy">SLIDE</span>
-                  </button>
-                </div>
-                <div class="col">
-                  <button
-                    *ngIf="controller.valid"
-                    class="grid-btn"
-                    (click)="addFile(i, j, k)"
-                  >
-                    <span class="icon">+</span>
-                    <span class="copy">SLIDE</span>
-                  </button>
-                </div>
-              </div>
+              <!-- AREA DE BOTONES, CAMBIAR -->
               <input
                 id="{{ i }}{{ k }}"
                 class="hidden"
                 type="file"
+                accept="image/*"
                 multiple
                 (change)="onFileInput($event, i, j, k)"
               />
@@ -102,7 +114,11 @@
                 [style.background]="
                   imageFiles.includes(types[i][k]) ? multimedia[i][k] : ''
                 "
-              ><img src="{{ env + '/image.svg' }}" alt="" *ngIf="!imageFiles.includes(types[i][k])"></label>
+                ><img
+                  src="{{ env + '/image.svg' }}"
+                  alt=""
+                  *ngIf="!imageFiles.includes(types[i][k])"
+              /></label>
               <video
                 *ngIf="videoFiles.includes(types[i][k])"
                 controls
@@ -145,27 +161,60 @@
                   </audio>
                 </div>
               </div>
-              <button
-                *ngIf="controller.valid"
-                class="rotate-btn"
-                type="button"
-                (click)="rotateImg(i, k)"
-              >
-                <i class="fa fa-repeat" aria-hidden="true"></i>
-              </button>
             </div>
           </swiper>
+          <div
+            *ngIf="editMode"
+            style="
+              height: calc(100vh - 46px);
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            "
+          >
+            <div style="display: flex; justify-content: center">
+              <img
+                [src]="urls[editingImage]"
+                alt=""
+                srcset=""
+                style="z-index: -1"
+                [style.transform]="'scale(' + imageSizeChange / 100 + ')'"
+                [style.rotate]="imageRotation + 'rad'"
+                width="100%"
+              />
+            </div>
+          </div>
         </ng-container>
       </div>
     </ng-container>
   </ng-container>
   <div class="fixed">
+    <!-- AREGAR AREA TEXTOS -->
+    <div class="bottom-swiper">
+      <div class="text-icons">
+        <label for="Upper text" class="main-text"
+          >{{ item?.name || "Nombre (opcional)" }}
+        </label>
+        <label for="Lower text" class="second-text"
+          >{{ item?.description || "Descripcion del articulo (opcional)" }}
+        </label>
+
+        <button
+          class="icon-button-texts"
+          (click)="enterEdit(swiperI, activeSlide)"
+          *ngIf="!editMode"
+        >
+          <img [src]="env + '/screen-cut.svg'" />
+        </button>
+      </div>
+    </div>
     <div
       class="lines"
       [style]="{
         'grid-template-columns': '' + fractions + '',
         display: display ? display : 'none'
       }"
+      *ngIf="!editMode"
     >
       <div
         *ngFor="let media of multimedia[0]; let i = index"
@@ -185,27 +234,146 @@
       <span>Citas</span>
       <span>Planilla</span>
     </div> -->
-    <div class="extra">
-      <div
-        class="description"
-        *ngIf="ctaDescription"
-        [ngStyle]="{ textAlign: mode === 'item' && item ? 'left' : 'center' }"
+    <div class="button-display-area" *ngIf="!editMode">
+      <!--FOR EDIT & OTHER-->
+      <ng-container *ngIf="viewType !== 'preview'">
+        <div class="sales-price">
+          <div class="sales-flex">
+            <span class="price" style="margin-right: 31px"
+              >{{ views }} vistas</span
+            >
+            <span class="price" style="margin-right: 31px"
+              >{{ sales }} ventas</span
+            >
+          </div>
+          <span class="price">RD$ {{ price | number : "1.2-2" }}</span>
+        </div>
+
+        <button class="big-button">
+          <img [src]="env + '/bookmark-plus.svg'" alt="" />
+          Adiciona tags para organizar tus items.
+        </button>
+      </ng-container>
+      <!--FOR EDIT & OTHER-->
+      <span class="price" *ngIf="viewType === 'preview'"
+        >RD$ {{ price | number : "1.2-2" }}</span
       >
-        {{ item ? 'El visitante te paga RD$' + (item.pricing | number: "1.2-2") + '.' : 'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.' }}
+      <div class="buttons-display center" *ngIf="viewType === 'preview'">
+        <!-- QUIZAS BORRAR DESPUES <button class="round-button">
+          <img [src]="env + '/unlock.svg'" />
+        </button>
+        <button class="round-button" (click)="submit(true)">
+          <img [src]="env + '/screen-cut.svg'" />
+        </button> -->
+        <button class="round-button" (click)="submit()">
+          <img [src]="env + '/cog-wheel.svg'" />
+        </button>
+        <!-- QUIZAS BORRAR DESPUES <button
+          class="save-button"
+          [ngClass]="{
+            activated: infoMissing === 'banner' || urls?.length
+          }"
+          (click)="submit()"
+        >
+          SALVAR
+        </button> -->
       </div>
+    </div>
+    <div *ngIf="editMode">
+      <div class="range-slider">
+        <i
+          class="fa fa-compress"
+          aria-hidden="true"
+          style="color: #fff; font-size: 26px; width: 26px"
+        ></i>
+        <input
+          type="range"
+          value="100"
+          min="100"
+          max="200"
+          name="imageSize"
+          [(ngModel)]="imageSizeChange"
+          (ngModelChange)="resizeImage()"
+        />
+      </div>
+      <div class="range-slider">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="26.225"
+          height="26.303"
+          viewBox="0 0 26.225 26.303"
+        >
+          <g id="crop-rotate" transform="translate(-1.222 -1.123)">
+            <path
+              id="Path_28922"
+              data-name="Path 28922"
+              d="M2.975,14.275A11.371,11.371,0,0,1,14.314,2.917V5.2l6.12-4.082H14.315l-.018,0A13.179,13.179,0,0,0,1.222,14.275Z"
+              fill="#fff"
+            />
+            <path
+              id="Path_28923"
+              data-name="Path 28923"
+              d="M16.266,29.363V27.644l-6.119,3.507h6.119A13.2,13.2,0,0,0,29.417,18H27.663A11.41,11.41,0,0,1,16.266,29.363Z"
+              transform="translate(-1.97 -3.725)"
+              fill="#fff"
+            />
+            <path
+              id="Path_28924"
+              data-name="Path 28924"
+              d="M20.348,10.191h-8.4V8.438H10.191v1.753H8.438v1.753h1.753v9.644H19.4v1.753h1.753V21.589H22.9V19.835H21.151V14.061L19.4,15.815v4.02H12.9L22.9,9.827V8.876h-1.24Zm-8.4,8.4v-6.65H18.6Z"
+              transform="translate(-1.593 -1.614)"
+              fill="#fff"
+            />
+          </g>
+        </svg>
+        <input
+          type="range"
+          name="imageRotation"
+          min="-180"
+          max="180"
+          [(ngModel)]="imageRotationChange"
+          (ngModelChange)="rotateImage()"
+        />
+      </div>
+    </div>
+
+    <div
+      class="bottom-button-banner"
+      *ngIf="viewType === 'preview' && !editMode"
+    >
+      <ng-container *ngIf="infoMissing === 'banner'">
+        <app-bios-banner></app-bios-banner>
+      </ng-container>
       <button
-        *ngIf="mode === 'item' && item"
-        class="grid-btn"
-        (click)="submit()"
+        class="button"
+        [ngClass]="{ withBanner: infoMissing === 'banner' }"
+        (click)="mode === 'item' && item ? openShareDialog() : submit()"
       >
-        EDITAR
+        <div [ngSwitch]="infoMissing">
+          <div style="color: #202020" *ngSwitchCase="'contact'">
+            <span>Adiciona la información publica de tu contacto</span>
+          </div>
+          <div style="color: #202020" *ngSwitchCase="'delivery'">
+            <span>Adiciona la información de tus entregas</span>
+          </div>
+          <div style="color: #202020" *ngSwitchCase="'payment'">
+            <span
+              >Adiciona la información de donde recibirás el dinero del
+              pago</span
+            >
+          </div>
+          <div style="color: #202020" *ngSwitchCase="'banner'">
+            <span>Opcional: Edita el banner</span>
+          </div>
+        </div>
       </button>
     </div>
-    <button
-      class="button"
-      (click)="mode === 'item' && item ? openShareDialog() : submit()"
-    >
-      {{ mode === "item" && item ? "Compartir" : ctaText }}
-    </button>
+    <div class="edit-footer" *ngIf="editMode">
+      <button class="footer-save" (click)="submit()">SALVAR AJUSTES</button>
+      <button class="footer-restart" (click)="cancelEdit()">
+        Reiniciar ajustes de este Slide
+      </button>
+    </div>
+    <app-bios-banner *ngIf="viewType !== 'preview'"> </app-bios-banner>
   </div>
 </div>

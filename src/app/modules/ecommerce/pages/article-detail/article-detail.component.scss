@@ -1,16 +1,80 @@
-.header {
-  background: #000000;
-  height: 46px;
+.fixed-top-button {
+  width: 38px;
+  height: 36px;
+  position: absolute;
+  top: 38px;
+  left: 3.12%;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  padding: 3px;
+  cursor: pointer;
+  z-index: 3;
+
+  img {
+    width: 23px;
+    height: 23px;
+  }
+}
+
+.text-icons-container {
+  width: 100%;
+  min-height: 120px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: fixed;
-  z-index: 1000;
-  top: 0;
-  left: 0;
-  right: 0;
-  max-width: 500px;
-  margin: auto;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 1) 100%);
+  padding: 0 3% 10px;
+
+  .top-section {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 5px;
+
+    .top-text {
+      width: 70%;
+      font-family: "SfProBold";
+      font-size: 1.313rem;
+      color: #ffffff;
+    }
+
+    .icons-flex {
+      width: 30%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .round-button {
+        width: fit-content;
+        height: fit-content;
+        padding: 3px;
+        background-color: transparent;
+        border: none;
+        border-radius: 50%;
+
+        img {
+          width: 28px;
+          height: 27px;
+          filter: brightness(10);
+        }
+      }
+    }
+  }
+
+  .bottom-text {
+    max-width: 100%;
+    max-height: 40px;
+    font-family: "SfProRegular";
+    font-size: 0.985rem;
+    color: #ffffff;
+    white-space: break-spaces;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin: 0;
+  }
 }
 
 .slide {
@@ -111,9 +175,10 @@
 }
 
 .container {
-  margin-top: 46px;
+  // padding-top: 46px;
   position: relative;
   height: calc(100vh - (179px));
+  background-color: #e9e371;
 
   .entity-image {
     height: calc(100vh - (179px));
@@ -122,6 +187,63 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-color: #e9e371;
+  }
+
+  video {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    object-fit: cover;
+    margin-bottom: 63px;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  audio {
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+  }
+
+  &.post-data {
+    .audio {
+      height: calc(100vh - 49px) !important;
+      overflow-y: hidden;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  .audio {
+    height: calc(100vh - (179px));
+    overflow-y: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .audio-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .audio-file {
+    position: absolute;
+    top: 160px;
+  }
+  .icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
   }
 }
 
@@ -131,6 +253,8 @@ video {
   z-index: 0;
   height: 100vh;
   object-fit: cover;
+  margin: 0px;
+  padding: 0px;
 }
 
 .swiper-button-next,
@@ -141,7 +265,7 @@ video {
 audio {
   width: 100%;
   position: absolute;
-  bottom: 70px;
+  bottom: 0px;
   left: 0px;
 }
 
@@ -153,7 +277,7 @@ audio {
 }
 
 .audio-container {
-  height: 100vh;
+  height: 100%;
   position: relative;
   width: 100%;
   display: flex;
@@ -189,6 +313,23 @@ audio {
 .notification {
   margin: auto;
   cursor: pointer;
+}
+
+.dot-trio {
+  background-color: white;
+  height: 28px;
+  width: 28px;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: auto;
+
+  &:hover {
+    background-color: lightgray;
+    cursor: pointer;
+  }
 }
 
 .lines {
@@ -253,10 +394,9 @@ audio {
 
 /* ACTIONS*/
 .bottom-user-actions-panel {
-  background: #000000;
   position: fixed;
   z-index: 1;
-  bottom: 0;
+  bottom: 86px;
   left: 0;
   right: 0;
   max-width: 500px;
@@ -269,6 +409,7 @@ audio {
   }
 
   .inner-wrapper-top {
+    background-color: #000;
     min-height: 133px;
     position: relative;
     height: 100%;
@@ -300,6 +441,7 @@ audio {
 
   .inner-wrapper-bottom {
     min-height: 133px;
+    background-color: #000;
 
     .content-wrapper {
       width: 100%;
@@ -385,7 +527,7 @@ audio {
     flex-direction: column;
     justify-content: center;
     color: white;
-    font-family: 'SfProBold';
+    font-family: "SfProBold";
 
     .item-price {
       font-size: 17px;
@@ -440,9 +582,9 @@ audio {
     }
   }
 
-  .empty-space {
-    // flex-basis: 11.48%;
-  }
+  // .empty-space {
+  // flex-basis: 11.48%;
+  // }
 
   .cart-button {
     position: absolute;

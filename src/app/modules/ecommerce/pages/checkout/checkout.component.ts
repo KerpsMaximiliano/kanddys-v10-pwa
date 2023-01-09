@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
@@ -15,9 +16,84 @@ import { CustomizerValueService } from 'src/app/core/services/customizer-value.s
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { environment } from 'src/environments/environment';
+
+const options = [
+  {
+    status: true,
+    click: true,
+    value: 'No tendrá mensaje de regalo',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+  },
+  {
+    status: true,
+    click: true,
+    value: 'Con mensaje virtual e impreso',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
+  {
+    status: true,
+    click: true,
+    value: 'Mensaje virtual',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
+  {
+    status: true,
+    click: true,
+    value: 'Mensaje impreso',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Agregue texto a la tarjeta.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
+];
 
 @Component({
   selector: 'app-checkout',
@@ -49,7 +125,16 @@ export class CheckoutComponent implements OnInit {
   };
   logged: boolean;
   env: string = environment.assetsUrl;
+  options: OptionAnswerSelector[] = options;
+  selectedPostOption: number;
+  missingOrderData: boolean;
+  postSlideImages: (string | ArrayBuffer)[] = [];
+  postSlideVideos: (string | ArrayBuffer)[] = [];
+  postSlideAudio: SafeUrl[] = [];
+  itemsReady = false;
+
   constructor(
+    private _DomSanitizer: DomSanitizer,
     private dialogService: DialogService,
     public headerService: HeaderService,
     private customizerValueService: CustomizerValueService,
@@ -62,113 +147,45 @@ export class CheckoutComponent implements OnInit {
     private authService: AuthService
   ) {}
 
-  async setCustomizerPreview() {
-    this.customizer =
-      this.headerService.customizer ||
-      this.headerService.getCustomizer(this.headerService.saleflow?._id);
-    if (!this.customizer) return;
-    this.customizerPreview = JSON.parse(localStorage.getItem('customizerFile'));
-    this.items[0].images[0] = this.customizerPreview?.base64;
-    this.payment =
-      (this.items[0].qualityQuantity.price +
-        this.order.products[0].amount *
-          this.items[0].params[0].values[0].price) *
-      1.18;
-    // Customizer data table
-    const printType = this.items[0].params[0].values.find(
-      (value) => value._id === this.items[0].params[0].values[0]._id
-    )?.name;
-    if (printType)
-      this.customizerDetails.push({
-        name: 'Tipo de impresión',
-        value: printType,
-      });
-    const selectedQuality = this.items[0].params[1].values.find(
-      (value) => value._id === this.order.products[0].params[1].paramValue
-    )?.name;
-    if (selectedQuality)
-      this.customizerDetails.push({
-        name: 'Calidad de servilleta',
-        value: selectedQuality,
-      });
-    const backgroundColor = this.customizer.backgroundColor.color.name;
-    if (backgroundColor) {
-      this.customizerDetails.push({
-        name: 'Color de fondo',
-        value: backgroundColor,
-      });
-    }
-    if (this.customizer.texts.length) {
-      this.customizerDetails.push({
-        name: 'Texto',
-        value: this.customizer.texts.reduce(
-          (prev, curr) => prev + curr.text,
-          ''
-        ),
-      });
-      let selectedTypography = this.customizer.texts[0].font;
-      switch (selectedTypography) {
-        case 'Dorsa':
-          selectedTypography = 'Empire';
-          break;
-        case 'Commercial-Script':
-          selectedTypography = 'Classic';
-          break;
-      }
-      if (selectedTypography) {
-        this.customizerDetails.push({
-          name: 'Nombre de tipografía',
-          value: selectedTypography,
-        });
-      }
-      const typographyColorCode = this.customizer.texts[0].color.name;
-      const typographyColorName = this.customizer.texts[0].color.nickname;
-      if (typographyColorCode && typographyColorName) {
-        this.customizerDetails.push({
-          name: 'Color de tipografía',
-          value: typographyColorName,
-        });
-        this.customizerDetails.push({
-          name: 'Código de color de tipografía',
-          value: typographyColorCode,
-        });
-      }
-    }
-    if (this.customizer.stickers.length) {
-      const stickerColorCode =
-        this.customizer.stickers[0].svgOptions.color.name;
-      const stickerColorName =
-        this.customizer.stickers[0].svgOptions.color.nickname;
-      if (stickerColorName) {
-        this.customizerDetails.push({
-          name: 'Color de sticker',
-          value: stickerColorName,
-        });
-        this.customizerDetails.push({
-          name: 'Código de color de sticker',
-          value: stickerColorCode,
-        });
-      }
-    }
-  }
-
   async ngOnInit(): Promise<void> {
-    const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
-    await this.headerService.fetchSaleflow(saleflowId);
-    this.order = this.headerService.getOrder(this.headerService.saleflow._id);
-    this.items = this.headerService.getItems(this.headerService.saleflow._id);
+    this.items = this.headerService.getItems();
     if (!this.items?.length) this.editOrder('item');
-    this.post = this.headerService.getPost(this.headerService.saleflow._id);
-    this.deliveryLocation = this.headerService.getLocation(
-      this.headerService.saleflow._id
-    );
-    this.reservation = this.headerService.getReservation(
-      this.headerService.saleflow._id
-    ).reservation;
+    this.post = this.headerService.getPost();
+    if (this.post?.slides?.length) {
+      this.post.slides.forEach((slide) => {
+        if (slide.media?.type.includes('image')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideImages.push(reader.result);
+          };
+          reader.readAsDataURL(slide.media);
+        }
+        if (slide.media?.type.includes('video')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideVideos.push(reader.result);
+          };
+          reader.readAsDataURL(slide.media);
+        }
+        if (slide.media?.type.includes('audio')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideAudio.push(
+              this._DomSanitizer.bypassSecurityTrustUrl(
+                URL.createObjectURL(slide.media)
+              )
+            );
+          };
+          reader.readAsDataURL(slide.media);
+        }
+      });
+    }
+    this.deliveryLocation = this.headerService.getLocation();
+    this.reservation = this.headerService.getReservation().reservation;
     if (this.reservation) {
       const fromDate = new Date(this.reservation.date.from);
       if (fromDate < new Date()) {
-        this.headerService.emptyReservation(this.headerService.saleflow._id);
+        this.headerService.emptyReservation();
         this.editOrder('reservation');
       }
       const untilDate = new Date(this.reservation.date.until);
@@ -187,61 +204,55 @@ export class CheckoutComponent implements OnInit {
       };
     }
     this.headerService.checkoutRoute = null;
-    this.setCustomizerPreview();
-    if (!this.customizer)
-      this.payment = this.items?.reduce(
-        (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),
-        0
-      );
+    if (!this.customizer) this.updatePayment();
     if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
       this.hasPaymentModule = true;
     this.checkLogged();
+    if (!this.headerService.orderInputComplete()) {
+      this.missingOrderData = true;
+    }
   }
 
   editOrder(
     mode: 'item' | 'message' | 'address' | 'reservation' | 'customizer'
   ) {
-    this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
+    this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
     switch (mode) {
       case 'item': {
-        this.router.navigate(
-          [`ecommerce/store/${this.headerService.saleflow._id}`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../store`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
         break;
       }
       case 'message': {
-        this.router.navigate(
-          [`ecommerce/${this.headerService.saleflow._id}/create-giftcard`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.post = null;
+        // this.headerService.emptyPost();
         break;
       }
       case 'address': {
-        this.router.navigate(
-          [`ecommerce/${this.headerService.saleflow._id}/new-address`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../new-address`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
         break;
       }
       case 'reservation': {
-        this.router.navigate([
-          `ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
-        ]);
+        this.router.navigate(
+          [
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+          ],
+          {
+            relativeTo: this.route,
+          }
+        );
         break;
       }
       case 'customizer': {
         this.router.navigate(
-          [
-            `ecommerce/provider-store/${this.headerService.saleflow._id}/${this.items[0]._id}/quantity-and-quality`,
-          ],
+          [`../provider-store/${this.items[0]._id}/quantity-and-quality`],
           {
+            relativeTo: this.route,
             replaceUrl: true,
           }
         );
@@ -254,7 +265,7 @@ export class CheckoutComponent implements OnInit {
     this.location.back();
   };
 
-  openImageModal(imageSourceURL: string) {
+  openImageModal(imageSourceURL: string | ArrayBuffer) {
     this.dialogService.open(ImageViewComponent, {
       type: 'fullscreen-translucent',
       props: {
@@ -281,7 +292,59 @@ export class CheckoutComponent implements OnInit {
     return result;
   }
 
+  deleteProduct(i: number) {
+    let deletedID = this.items[i]._id;
+    const index = this.items.findIndex((product) => product._id === deletedID);
+    if (index >= 0) this.items.splice(index, 1);
+    this.headerService.removeOrderProduct(deletedID);
+    this.headerService.removeItem(deletedID);
+    this.updatePayment();
+  }
+
+  updatePayment() {
+    this.payment = this.items?.reduce(
+      (prev, curr, currIndex) =>
+        prev +
+        ('pricing' in curr ? curr.pricing : curr.price) *
+          this.headerService.order.products[currIndex].amount,
+      0
+    );
+  }
+
+  changeAmount(index: number, type: 'add' | 'subtract') {
+    const product = this.headerService.order.products[index];
+    this.headerService.changeItemAmount(product.item, type);
+    this.updatePayment();
+  }
+
   createOrder = async () => {
+    if (this.missingOrderData) {
+      if (
+        this.headerService.saleflow?.module?.appointment?.isActive &&
+        this.headerService.saleflow.module?.appointment?.calendar?._id &&
+        !this.reservation
+      ) {
+        this.router.navigate(
+          [
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+          ],
+          {
+            relativeTo: this.route,
+          }
+        );
+        return;
+      }
+      if (
+        this.headerService.saleflow.module?.delivery &&
+        !this.deliveryLocation
+      ) {
+        this.router.navigate([`../new-address`], {
+          relativeTo: this.route,
+        });
+        return;
+      }
+      return;
+    }
     this.disableButton = true;
     lockUI();
     const userInput = JSON.parse(
@@ -299,9 +362,12 @@ export class CheckoutComponent implements OnInit {
       );
       localStorage.setItem('registered-user', JSON.stringify(user));
     }
-    this.order.products[0].saleflow = this.headerService.saleflow._id;
-    this.order.products[0].deliveryLocation = this.deliveryLocation;
-    if (this.reservation) this.order.products[0].reservation = this.reservation;
+    this.headerService.order.products[0].saleflow =
+      this.headerService.saleflow._id;
+    this.headerService.order.products[0].deliveryLocation =
+      this.deliveryLocation;
+    if (this.reservation)
+      this.headerService.order.products[0].reservation = this.reservation;
     // ---------------------- Managing Customizer ----------------------
     if (this.customizer) {
       localStorage.removeItem('customizerFile');
@@ -321,43 +387,57 @@ export class CheckoutComponent implements OnInit {
         await this.customizerValueService.createCustomizerValue(
           this.customizer
         );
-      this.order.products[0].customizer = customizerId;
+      this.headerService.order.products[0].customizer = customizerId;
       this.headerService.customizer = null;
       this.headerService.customizerData = null;
     }
     // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
     // ---------------------- Managing Post ----------------------------
     if (this.headerService.saleflow.module?.post) {
+      this.post = {
+        message: '',
+        targets: [
+          {
+            name: '',
+            emailOrPhone: '',
+          },
+        ],
+        from: '',
+        socialNetworks: [
+          {
+            url: '',
+          },
+        ],
+      };
+      this.headerService.storePost(this.post);
       const postResult = (await this.postsService.createPost(this.post))
         ?.createPost?._id;
-      this.order.products[0].post = postResult;
+      this.headerService.order.products[0].post = postResult;
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
     try {
       let createdOrder: string;
-      const anonymous = this.headerService.getOrderAnonymous(
-        this.headerService.saleflow._id
-      );
+      const anonymous = this.headerService.getOrderAnonymous();
       if (this.headerService.user && !anonymous) {
-        createdOrder = (await this.orderService.createOrder(this.order))
-          .createOrder._id;
+        createdOrder = (
+          await this.orderService.createOrder(this.headerService.order)
+        ).createOrder._id;
       } else {
-        createdOrder = (await this.orderService.createPreOrder(this.order))
-          ?.createPreOrder._id;
+        createdOrder = (
+          await this.orderService.createPreOrder(this.headerService.order)
+        )?.createPreOrder._id;
       }
-      this.headerService.deleteSaleflowOrder(this.headerService.saleflow._id);
-      this.headerService.resetIsComplete();
+      this.headerService.deleteSaleflowOrder();
+      this.headerService.resetOrderProgress();
       this.headerService.orderId = createdOrder;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
-        this.router.navigate(
-          [`/ecommerce/payments/${this.headerService.orderId}`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../payments/${this.headerService.orderId}`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
       } else {
         if (!this.headerService.user || anonymous) {
           this.router.navigate([`/auth/login`], {
@@ -368,7 +448,8 @@ export class CheckoutComponent implements OnInit {
           });
           return;
         }
-        this.router.navigate([`/ecommerce/order-detail/${createdOrder}`], {
+        this.router.navigate([`../../order-detail/${createdOrder}`], {
+          relativeTo: this.route,
           replaceUrl: true,
         });
         return;
@@ -383,9 +464,7 @@ export class CheckoutComponent implements OnInit {
 
   async checkLogged() {
     try {
-      const anonymous = this.headerService.getOrderAnonymous(
-        this.headerService.saleflow._id
-      );
+      const anonymous = this.headerService.getOrderAnonymous();
       const registeredUser = JSON.parse(
         localStorage.getItem('registered-user')
       ) as User;
@@ -397,6 +476,18 @@ export class CheckoutComponent implements OnInit {
       console.log(e);
       return;
     }
+  }
+
+  fullscreenDialog(type?: string, src?: any) {
+    this.dialogService.open(MediaDialogComponent, {
+      props: {
+        inputType: type,
+        src: src,
+      },
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   mouseDown: boolean;

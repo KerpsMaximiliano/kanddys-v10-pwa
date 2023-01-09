@@ -139,6 +139,12 @@ export interface EmbeddedComponent {
   afterIndex?: number;
   beforeIndex?: number;
   shouldRerender?: boolean;
+  postLabel?: string;
+  preLabel?: string;
+}
+
+export interface EmbeddedComponentWithId extends EmbeddedComponent {
+  componentId: string;
 }
 
 export interface PromiseFunction {

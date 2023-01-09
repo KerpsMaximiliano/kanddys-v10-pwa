@@ -1,0 +1,74 @@
+<div [style]="containerStyles">
+  <h1 [style]="header.styles">{{ header.text }}</h1>
+  <p [style]="title.styles">{{ title.text }}</p>
+  <form [formGroup]="controller" [style]="fields.styles">
+    <ng-container *ngFor="let field of fields.list; let i = index">
+      <ng-container [ngSwitch]="field.type">
+        <div *ngSwitchCase="'checkbox'">
+          <div [style]="field.stylesGrid">
+            <input
+              [tabindex]="omitTabFocus ? -1 : i"
+              [type]="field.type"
+              [placeholder]="field.placeholder"
+              [style]="field.styles"
+              (change)="checkboxChange($event, controller.get(field.name))"
+            />
+            <label [style]="field.label.styles">
+              {{ field.label.text }}
+            </label>
+          </div>
+          <p [style]="field.disclaimer.styles">{{ field.disclaimer.text }}</p>
+        </div>
+        <div [style]="field.styles" *ngSwitchCase="'selection'">
+          <div
+            *ngFor="let item of field.selection.list; let i = index"
+            class="select-option"
+            [style.backgroundPosition]="
+              selected.includes(item[field.prop])
+                ? 'left bottom'
+                : 'right bottom'
+            "
+            (click)="setSelected(item[field.prop], controller.get(field.name))"
+          >
+            <div [style]="item.barStyle" class="square-item"></div>
+
+            <div>
+              <div class="grid-content">
+                <span [style]="field.selection.styles">{{ item.text }}</span>
+                <span *ngIf="item.subText" [style]="item.subText.styles">{{
+                  item.subText.text
+                }}</span>
+                <span *ngIf="item.subText" [style]="item.subText.styles">{{
+                  item.subText.text2
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngSwitchCase="'textarea'">
+          <label *ngIf="field.label.text" [style]="field.label.styles">
+            {{ field.label.text }}
+          </label>
+          <textarea
+            [tabindex]="omitTabFocus ? -1 : i"
+            [placeholder]="field.placeholder"
+            [style]="field.styles"
+            [formControlName]="field.name"
+          ></textarea>
+        </div>
+        <div *ngSwitchDefault>
+          <label [style]="field.label.styles">
+            {{ field.label.text }}
+          </label>
+          <input
+            [tabindex]="omitTabFocus ? -1 : i"
+            type="text"
+            [placeholder]="field.placeholder"
+            [style]="field.styles"
+            [formControlName]="field.name"
+          />
+        </div>
+      </ng-container>
+    </ng-container>
+  </form>
+</div>

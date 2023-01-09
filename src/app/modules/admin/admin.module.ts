@@ -16,13 +16,18 @@ import { ArticleCreatorComponent } from './pages/article-creator/article-creator
 import { ArticleParamsComponent } from './pages/article-params/article-params.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
+import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/anexo-choices.component';
+import { PostEditionComponent } from './pages/post-edition/post-edition.component';
+import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
+import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
+import { ImageBannerComponent } from './pages/image-banner/image-banner.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
-  {
-    path: 'create-article',
-    component: ArticleCreatorComponent,
-  },
+  // {
+  //   path: 'create-article',
+  //   component: ArticleCreatorComponent,
+  // },
   {
     path: 'article-params',
     component: ArticleParamsComponent,
@@ -34,6 +39,11 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: 'admin/entity-detail-metrics',
+        pathMatch: 'full',
+      },
+      {
+        path: 'items-dashboard',
+        redirectTo: 'entity-detail-metrics',
         pathMatch: 'full',
       },
       {
@@ -108,6 +118,30 @@ const routes: Routes = [
         path: 'create-tag/:tagId',
         component: CreateTagComponent,
       },
+      {
+        path: 'article-choices/:articleId',
+        component: AnexoChoicesComponent,
+      },
+      {
+        path: 'article-choices',
+        component: AnexoChoicesComponent,
+      },
+      {
+        path: 'post-edition',
+        component: PostEditionComponent,
+      },
+      {
+        path: 'bios-edit',
+        component: BiosEditComponent,
+      },
+      {
+        path: 'post-preview',
+        component: PostPreviewComponent
+      },
+      {
+        path: 'image-banner',
+        component: ImageBannerComponent
+      }
     ],
   },
 ];
@@ -126,6 +160,10 @@ const routes: Routes = [
     ArticleParamsComponent,
     ItemsDashboardComponent,
     CreateTagComponent,
+    PostEditionComponent,
+    BiosEditComponent,
+    PostPreviewComponent,
+    ImageBannerComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

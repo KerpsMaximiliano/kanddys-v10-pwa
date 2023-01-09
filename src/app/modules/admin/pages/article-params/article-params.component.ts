@@ -13,6 +13,11 @@ import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anex
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { Item } from 'src/app/core/models/item';
 import { ToastrService } from 'ngx-toastr';
+import { PostsService } from 'src/app/core/services/posts.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { ArticleDialogComponent } from 'src/app/shared/dialogs/article-dialog/article-dialog.component';
+import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 
 @Component({
   selector: 'app-article-params',
@@ -23,7 +28,7 @@ export class ArticleParamsComponent implements OnInit {
   steps: 'price' | 'images' | 'save' = 'price';
   selectedImages: (string | ArrayBuffer)[] = [];
   models: string[] = ['Modelo sin nombre'];
-  options: string[] = ['Precio', 'Imagen o imágenes'];
+  options: string[] = ['Perfil del Articulo', 'Perfil de las Facturas'];
   default: boolean;
   searchValue: string;
   items: any;
@@ -43,9 +48,16 @@ export class ArticleParamsComponent implements OnInit {
     Validators.minLength(2),
     Validators.pattern(/[\S]/),
   ]);
+  description = new FormControl('', [
+    Validators.minLength(2),
+    Validators.pattern(/[\S]/),
+  ]);
   updated: boolean = false;
   blockSubmitButton: boolean = false;
   parseFloat = parseFloat;
+
+  card1: boolean = false;
+  card2: boolean = false;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
@@ -56,6 +68,8 @@ export class ArticleParamsComponent implements OnInit {
     private _SaleflowService: SaleFlowService,
     private _Router: Router,
     private _Route: ActivatedRoute,
+    private _PostsService: PostsService,
+    private _EntityTemplateService: EntityTemplateService,
     private _ToastrService: ToastrService
   ) {}
 
@@ -71,19 +85,23 @@ export class ArticleParamsComponent implements OnInit {
       }
       this.price.setValue(this.item.pricing);
       this.name.setValue(this.item.name);
+      this.description.setValue(this.item.description);
       if (this.item.name?.trim()) this.models[0] = this.item.name;
       else this.models[0] = 'Modelo sin nombre';
-      if (this.item.images.length && !this._ItemsService.itemImages.length) {
-        const multimedia: File[] = [];
-        this.item.images.forEach(async (image, index) => {
-          const response = await fetch(image);
-          const blob = await response.blob();
-          const file = new File([blob], `item_image_${index}.jpeg`, {
-            type: 'image/jpeg',
+      if (this.item.images.length) {
+        if (!this._ItemsService.itemImages.length) {
+          const imagesPromises = this.item.images.map(async (image, index) => {
+            const response = await fetch(image);
+            const blob = await response.blob();
+            return new File([blob], `item_image_${index}.jpeg`, {
+              type: 'image/jpeg',
+            });
           });
-          multimedia.push(file);
-        });
-        this._ItemsService.itemImages = multimedia;
+          Promise.all(imagesPromises).then((result) => {
+            this._ItemsService.itemImages = result;
+            if (!this.selectedImages.length) this.loadImages();
+          });
+        } else this.loadImages();
       }
     } else {
       if (this._ItemsService.itemName)
@@ -100,6 +118,9 @@ export class ArticleParamsComponent implements OnInit {
         );
       if (this._SaleflowService.saleflowData) this.obtainLasts();
     }
+  }
+
+  loadImages() {
     this._ItemsService.itemImages?.forEach((file) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -110,12 +131,15 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   iconCallback = async () => {
-    // this._ItemsService.itemName = this.name.value;
-    // this._ItemsService.itemPrice = this.price.value;
+    this._ItemsService.itemName = this.name.value;
+    this._ItemsService.itemPrice = this.price.value;
+    if (this.name.dirty || this.description.dirty) {
+      this.updated = true;
+    }
 
     const itemInput = {
       name: this.name.value || null,
-      // description: description || null,
+      description: this.description.value || null,
       pricing: this.price.value,
       images: this._ItemsService.itemImages,
       merchant: this._MerchantsService.merchantData?._id,
@@ -158,7 +182,6 @@ export class ArticleParamsComponent implements OnInit {
     } else {
       if (this.price.value) {
         lockUI();
-        console.log(this.price.value);
         const { createItem } = await this._ItemsService.createItem(itemInput);
         await this._SaleflowService.addItemToSaleFlow(
           {
@@ -169,8 +192,6 @@ export class ArticleParamsComponent implements OnInit {
         unlockUI();
         this._ToastrService.success('Producto creado satisfactoriamente!');
         this._Router.navigate([`/admin/create-article/${createItem._id}`]);
-      } else {
-        this._Router.navigate([`/admin/create-article`]);
       }
     }
   };
@@ -277,7 +298,7 @@ export class ArticleParamsComponent implements OnInit {
       this.blockSubmitButton = true;
       const itemInput = {
         name: this.name.value || null,
-        // description: description || null,
+        description: this.description.value || null,
         pricing: this.price.value,
         images: this._ItemsService.itemImages,
         merchant: this._MerchantsService.merchantData?._id,
@@ -322,6 +343,34 @@ export class ArticleParamsComponent implements OnInit {
           },
           this._SaleflowService.saleflowData._id
         );
+
+        const storedTemplateData = localStorage.getItem(
+          'entity-template-creation-data'
+        );
+        const entityTemplateData = storedTemplateData
+          ? JSON.parse(storedTemplateData)
+          : null;
+
+        if (entityTemplateData) {
+          try {
+            const { entity, entityTemplateId } = entityTemplateData;
+
+            const result =
+              await this._EntityTemplateService.entityTemplateSetData(
+                entityTemplateId,
+                {
+                  entity: 'item',
+                  reference: createItem._id,
+                }
+              );
+
+            localStorage.removeItem('entity-template-creation-data');
+          } catch (error) {
+            this._ToastrService.error('Ocurrió un error al crear el simbolo');
+            return;
+          }
+        }
+
         this._ToastrService.success('Producto creado satisfactoriamente!');
         this._Router.navigate([`/admin/create-article/${createItem._id}`]);
       } else {
@@ -330,6 +379,32 @@ export class ArticleParamsComponent implements OnInit {
         );
 
         if ('_id' in createPreItem) {
+          const storedTemplateData = localStorage.getItem(
+            'entity-template-creation-data'
+          );
+          const entityTemplateData = storedTemplateData
+            ? JSON.parse(storedTemplateData)
+            : null;
+
+          if (entityTemplateData) {
+            try {
+              const { entity, entityTemplateId } = entityTemplateData;
+
+              const result =
+                await this._EntityTemplateService.entityTemplateSetData(
+                  entityTemplateId,
+                  {
+                    entity: 'item',
+                    reference: createPreItem?._id,
+                  }
+                );
+
+              localStorage.removeItem('entity-template-creation-data');
+            } catch (error) {
+              this._ToastrService.error('Ocurrió un error al crear el simbolo');
+            }
+          }
+
           localStorage.setItem('flowRoute', this._Router.url);
           this._Router.navigate([`/auth/login`], {
             queryParams: {
@@ -415,6 +490,58 @@ export class ArticleParamsComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  card1Clicked() {
+    this.card1 = !this.card1;
+  }
+
+  card2Clicked() {
+    this.card2 = !this.card2;
+  }
+
+  openAuxDialog(index: number): void {
+    const list = [
+      {
+        text: 'Textos del Articulo',
+        callback: async () => {},
+      },
+      {
+        text: 'Eliminar',
+        callback: async () => {
+          this.dialog.open(SingleActionDialogComponent, {
+            type: 'fullscreen-translucent',
+            props: {
+              title: 'Eliminar este slide del simbolo',
+              buttonText: 'Si, borrar',
+              mainButton: () => {
+                this.deleteImage(index);
+              },
+              btnBackgroundColor: '#272727',
+              btnMaxWidth: '133px',
+              btnPadding: '7px 2px',
+            },
+            customClass: 'app-dialog',
+            flags: ['no-header'],
+          });
+        },
+      },
+      {
+        text: 'Cambiar el orden de los slides',
+        callback: async () => {},
+      },
+    ];
+    this.dialog.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        closeEvent: () => {},
+        shareBtn: false,
+        title: '',
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

@@ -60,8 +60,6 @@ export class TagsSelectorComponent implements OnInit {
         tag: args,
         selected,
       });
-
-    console.log(args);
   }
 
   constructor() {}

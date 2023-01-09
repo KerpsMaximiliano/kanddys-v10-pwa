@@ -1,0 +1,42 @@
+<div class="container" [ngStyle]="containerStyles" *ngIf="mode === 'default'">
+  <h2 [ngClass]="titleCenter === false ? 'title' : 'title-center'">
+    {{ title }}
+  </h2>
+  <div class="cards">
+    <div
+      class="card"
+      (click)="cardClicked(item)"
+      [ngClass]="{
+        third: item.text.length <= 8,
+        mid: item.text.length > 8 && item.text.length <= 17,
+        full: item.text.length > 17,
+        active: item.active
+      }"
+      *ngFor="let item of wordsObjects; index as i"
+    >
+      <span>{{ item.text }}</span>
+    </div>
+  </div>
+
+  <button *ngIf="submitButton" [ngStyle]="submitButton.styles">
+    {{ submitButton.text }}
+  </button>
+</div>
+
+<div class="container" [ngStyle]="containerStyles" *ngIf="mode === 'time'">
+  <h2 [ngClass]="titleCenter === false ? 'title' : 'title-center'">
+    {{ title }}
+  </h2>
+  <div class="cards2">
+    <div
+      class="card2"
+      [ngClass]="{
+        active: item.active
+      }"
+      (click)="cardClicked(item)"
+      *ngFor="let item of wordsObjects; index as i"
+    >
+      <span>{{ item.text }}</span>
+    </div>
+  </div>
+</div>

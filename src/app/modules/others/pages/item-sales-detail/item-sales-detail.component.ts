@@ -18,7 +18,7 @@ import { SwiperOptions } from 'swiper';
 @Component({
   selector: 'app-item-sales-detail',
   templateUrl: './item-sales-detail.component.html',
-  styleUrls: ['./item-sales-detail.component.scss']
+  styleUrls: ['./item-sales-detail.component.scss'],
 })
 export class ItemSalesDetailComponent implements OnInit {
   itemData: Item;
@@ -27,15 +27,16 @@ export class ItemSalesDetailComponent implements OnInit {
     freeMode: true,
     spaceBetween: 5,
   };
-  tabs: string[] = ["0 Compradores", "0 Ventas"];
+  tabs: string[] = ['0 Compradores', '0 Ventas'];
   dummyOrders: ItemList[] = [
     {
       visible: true,
       id: 'adsadasdasdsa',
-      image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
+      image:
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
       title: '$9000',
       subtitle: 'Custom Field',
-      text_left: 'Hace 2 dias' ,
+      text_left: 'Hace 2 dias',
       text_right: '4 etiqueta(s)',
       text_style: true,
       phone: '534534534534675',
@@ -43,15 +44,16 @@ export class ItemSalesDetailComponent implements OnInit {
       description2: 'dasdasdas',
       description: 'gdgdfgfdg',
       text_middle: 'ddddddd',
-      bonus: '50'
+      bonus: '50',
     },
     {
       visible: true,
       id: 'adsadasdasdsa',
-      image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
+      image:
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
       title: '$9000',
       subtitle: 'Custom Field',
-      text_left: 'Hace 2 dias' ,
+      text_left: 'Hace 2 dias',
       text_right: '4 etiqueta(s)',
       text_style: true,
       phone: '534534534534675',
@@ -60,10 +62,11 @@ export class ItemSalesDetailComponent implements OnInit {
     {
       visible: true,
       id: 'adsadasdasdsa',
-      image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
+      image:
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
       title: '$9000',
       subtitle: 'Custom Field',
-      text_left: 'Hace 2 dias' ,
+      text_left: 'Hace 2 dias',
       text_right: '4 etiqueta(s)',
       text_style: true,
       phone: '534534534534675',
@@ -89,30 +92,33 @@ export class ItemSalesDetailComponent implements OnInit {
     private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location,
-  ) { }
+    private location: Location
+  ) {}
 
   async ngOnInit(): Promise<void> {
     // this.itemData = await this.itemService.item("628d47985d291213549ccb50");
 
-    await this.authService.me().then(data => {
+    await this.authService.me().then((data) => {
       if (data && data != undefined) {
         this.isLogged = true;
         this.currentUser = data;
-      };
+      }
     });
 
-    if(!this.isLogged) return this.redirect();
-    this.route.params.subscribe(async routeParams => {
+    if (!this.isLogged) return this.redirect();
+    this.route.params.subscribe(async (routeParams) => {
       const itemId = routeParams.itemId;
       await Promise.all([
         this.getItem(itemId),
         this.getOrdersByItem(itemId),
-        this.getBuyersByItem(itemId)
+        this.getBuyersByItem(itemId),
       ]);
       this.canShowItems = true;
       this.filterData();
-      this.tabs = [`${this.buyersByItem.length} Compradores`, `${this.ordersByItem.length} Ventas`];
+      this.tabs = [
+        `${this.buyersByItem.length} Compradores`,
+        `${this.ordersByItem.length} Ventas`,
+      ];
     });
   }
 
@@ -130,7 +136,8 @@ export class ItemSalesDetailComponent implements OnInit {
   async getItem(itemID: string) {
     try {
       this.itemData = await this.itemService.item(itemID);
-      if (this.itemData.merchant.owner._id !== this.currentUser._id) this.redirect("error");
+      if (this.itemData.merchant.owner._id !== this.currentUser._id)
+        this.redirect('error');
     } catch (error) {
       console.log(error);
     }
@@ -138,7 +145,13 @@ export class ItemSalesDetailComponent implements OnInit {
 
   async getOrdersByItem(itemID: string) {
     try {
-      this.ordersByItem = (await this.ordersService.ordersByItem(itemID)).ordersByItem; 
+      this.ordersByItem = (
+        await this.ordersService.ordersByItem({
+          findBy: {
+            item: itemID,
+          },
+        })
+      ).ordersByItem;
     } catch (error) {
       console.log(error);
     }
@@ -146,49 +159,48 @@ export class ItemSalesDetailComponent implements OnInit {
 
   async getBuyersByItem(itemID: string) {
     try {
-      this.buyersByItem = (await this.usersService.buyersByItem(itemID)).buyersByItem;
+      this.buyersByItem = (
+        await this.usersService.buyersByItem(itemID)
+      ).buyersByItem;
     } catch (error) {
       console.log(error);
     }
   }
 
   filterData() {
-   this.ordersList = this.ordersByItem.map(order => ({
-    visible: true,
-    id: order._id,
-    // image: order.items[0].item?.images[0],
-    title: formatID(order.dateId),
-    text_left: `${moment().diff(order.createdAt, "days")}`,
-    text_middle: `${order.subtotals[0].amount}`,
-    description: 'Custom Field 1',
-    description2: 'Custom Field 2',
-   }));
+    this.ordersList = this.ordersByItem.map((order) => ({
+      visible: true,
+      id: order._id,
+      // image: order.items[0].item?.images[0],
+      title: formatID(order.dateId),
+      text_left: `${moment().diff(order.createdAt, 'days')}`,
+      text_middle: `${order.subtotals[0].amount}`,
+      description: 'Custom Field 1',
+      description2: 'Custom Field 2',
+    }));
 
-   this.buyersList = this.buyersByItem.map(buyer => ( {
-    visible: true,
-    id: buyer._id,
-    image: buyer.image,
-    title: buyer.name || buyer.phone || buyer.email,
-    text_left: `${moment().diff(buyer.createdAt, "days")}`,
-    description: 'Custom Field 1',
-    description2: 'Custom Field 2',
-   }));
+    this.buyersList = this.buyersByItem.map((buyer) => ({
+      visible: true,
+      id: buyer._id,
+      image: buyer.image,
+      title: buyer.name || buyer.phone || buyer.email,
+      text_left: `${moment().diff(buyer.createdAt, 'days')}`,
+      description: 'Custom Field 1',
+      description2: 'Custom Field 2',
+    }));
   }
 
   tabTrigger(e) {
-    if ((String(e)).includes('Compradores')) 
-      this.currentTab = 'Compradores';
-    else if ((String(e)).includes('Ventas')) 
-      this.currentTab = 'Ventas';
+    if (String(e).includes('Compradores')) this.currentTab = 'Compradores';
+    else if (String(e).includes('Ventas')) this.currentTab = 'Ventas';
   }
 
   redirect(customRoute?: string) {
-    if(customRoute == "error") this.router.navigate(['/others/error-screen']);
+    if (customRoute == 'error') this.router.navigate(['/others/error-screen']);
     else this.router.navigate(['/']);
   }
 
   back() {
     this.location.back();
   }
- 
 }

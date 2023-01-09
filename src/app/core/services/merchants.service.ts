@@ -34,6 +34,8 @@ import {
   incomeMerchant,
   merchantDefault2,
   ordersByMerchantHot,
+  merchantByName,
+  merchantBySlug,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -66,6 +68,34 @@ export class MerchantsService {
         if (!merchantResult) return;
         return new Merchant(merchantResult.merchant);
       }
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async merchantByName(name: string): Promise<Merchant> {
+    try {
+      const result = await this.graphql.query({
+        query: merchantByName,
+        variables: { name },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return;
+      return new Merchant(result.merchantByName);
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async merchantBySlug(slug: string): Promise<Merchant> {
+    try {
+      const result = await this.graphql.query({
+        query: merchantBySlug,
+        variables: { slug },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return;
+      return new Merchant(result.merchantBySlug);
     } catch (error) {
       return error;
     }
