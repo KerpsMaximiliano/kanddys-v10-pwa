@@ -14,7 +14,7 @@
         display: flex;
         height: 37px;
         justify-content: center;
-        left: 20px;
+        left: 18px;
         position: relative;
         top: 30px;
         width: 35px;
@@ -33,12 +33,13 @@
 
         .content {
             display: flex;
-            padding: 0px 0px 5px 10px;
+            padding: 0px 0px 5px 0px;
 
             .texts-container {
                 display: flex;
                 flex-basis: 60%;
                 flex-direction: column;
+                padding-left: 15px;
             }
 
             .icons-container {
@@ -79,8 +80,11 @@
         top: 40px;
     }
 
-    .text2 {
+    .content {
+        display: flex;
+        flex-direction: column;
         height: 47.5vh;
+        justify-content: flex-end;
         overflow-y: scroll;
 
         .title2 {
@@ -88,7 +92,7 @@
             cursor: pointer;
             font-family: SFProBold;
             font-size: 21px;
-            margin: 0px 0px 10px 15px;
+            margin: 0px 0px 10px 0px;
         }
 
         .subtitle2 {
@@ -96,7 +100,7 @@
             cursor: pointer;
             font-family: SFProRegular;
             font-size: 15px;
-            margin: 5px 30px 0px 15px;
+            margin: 5px 15px 0px 0px;
         }
     }
 

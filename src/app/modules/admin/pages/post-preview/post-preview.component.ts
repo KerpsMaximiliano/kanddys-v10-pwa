@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { SwiperComponent } from 'ngx-swiper-wrapper';
-import { PostInput } from 'src/app/core/models/post';
+import { SwiperComponent } from 'ngx-swiper-wrapper';import { PostInput } from 'src/app/core/models/post';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { SwiperOptions } from 'swiper';
 
@@ -18,7 +17,7 @@ export class PostPreviewComponent implements OnInit {
 
   currentMediaSlide: number = 0;
   fractions: string = '';
-  mode: string = 'solidBg';
+  mode: string = 'fullImg';
   post: PostInput;
   slideDescription: string = "";
 
