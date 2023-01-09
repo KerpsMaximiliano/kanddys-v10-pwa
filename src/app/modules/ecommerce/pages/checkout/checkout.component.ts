@@ -299,6 +299,7 @@ export class CheckoutComponent implements OnInit {
     this.headerService.removeOrderProduct(deletedID);
     this.headerService.removeItem(deletedID);
     this.updatePayment();
+    if (!this.items.length) this.editOrder('item');
   }
 
   updatePayment() {
