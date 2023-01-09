@@ -55,6 +55,7 @@
         id="imageLogo"
         type="file"
         style="display: none"
+        [accept]="accept"
         (change)="loadFileLogo($event)"
       />
       <label for="imageLogo" class="edit-logo">
@@ -148,7 +149,7 @@
         (click)="navigateToLink(i)"
       >
         <div class="square" [style.background]="formatImage(link.image)"></div>
-        <div class="input">{{ link.value }}</div>
+        <div class="input">{{ link.value || link.name }}</div>
       </div>
       <button class="add" (click)="add()">Adiciona otro enlace</button>
 
@@ -167,6 +168,7 @@
       type="file"
       style="display: none"
       (change)="loadFile($event)"
+      [accept]="accept"
     />
 
     <label class="add-square" [style.background]="formatImage(src)" for="image">

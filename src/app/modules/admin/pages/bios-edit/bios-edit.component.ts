@@ -39,6 +39,8 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   contactId:string;
   sub:Subscription;
   linkIndex:number;
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
+  accept:string;
 
   constructor(
     private router: Router,
@@ -51,6 +53,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sub = this._ActivatedRoute.queryParams.subscribe(({ contactId }) => {
       (async () => {
+        this.accept = this.imageFiles.join(', ');
         if(contactId)
           this.contactId = contactId;
         this.initController();
@@ -146,7 +149,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     this.router.navigate(['admin/bios-main']);
   }
   backToMain() {
-    if(this.linkIndex===null&&this.enlace&&this.controller.get('tag').valid&&this.controller.get('contact').valid&&this.src){
+    if(this.linkIndex===null&&this.enlace&&this.controller.get('tag').value&&this.controller.get('contact').value&&this.src){
       const _link:any = {
         image: this.src,
         _image: this.file,
@@ -186,6 +189,8 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   }
 
   submit():void {
+    console.log('this.controller.touched: ', this.controller.touched);
+    if(!this.controller.touched)  return;
     if(this.controller.invalid || this.status) return;
     this.status = 'Cargando...';
     (async () => {
@@ -284,6 +289,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked4 = false;
     }
     this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
   }
   isClicked2() {
     this.resetSrc();
@@ -296,6 +302,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked4 = false;
     }
     this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
+    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
   }
 
   isClicked3() {
@@ -309,6 +316,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked4 = false;
     }
     this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
+    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
   }
 
   isClicked4() {
@@ -322,6 +330,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked3 = false;
     }
     this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
   }
 
   resetSrc():void {
@@ -338,7 +347,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     const link = this.links[index];
     this.controller.get('tag').setValue(link.name);
     this.controller.get('contact').setValue(link.value);
-    const image = link._image || link.image;
+    const image = link.image;
     this.src = image;
     this.linkIndex = index;
   }

@@ -1,0 +1,30 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+  margin-bottom: 8px;
+  .title {
+    font-size: 17px;
+    font-family: RobotoMedium;
+    color: #7b7b7b;
+  }
+  .edit {
+    margin-left: auto;
+    cursor: pointer;
+  }
+}
+
+textarea {
+  height: 100px;
+  width: 100%;
+  font-family: SFProRegular;
+  color: #000000;
+  font-size: 17px;
+  padding: 28.5px 25px;
+  resize: none;
+  border: none;
+  border-radius: 7px;
+  box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+  margin-bottom: 43px;
+  overflow: hidden;
+}
