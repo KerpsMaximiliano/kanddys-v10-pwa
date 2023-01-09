@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { SwiperOptions, Swiper } from 'swiper';
 
 export interface EmbeddedDialog {
   dialogId: string;
   fields: Record<string, any>;
+  swiperConfig?: SwiperOptions;
   snapshotState?: {
     lastDialogIndex: number;
     dialogToReturnToIndex: number;
@@ -14,6 +16,7 @@ export interface EmbeddedDialog {
 })
 export class DialogFlowService {
   dialogsFlows: Record<string, Record<string, EmbeddedDialog>> = {};
+  swiperConfig: SwiperOptions = null;
 
   constructor() {}
 

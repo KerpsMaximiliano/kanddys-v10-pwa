@@ -20,6 +20,7 @@ export class OptionsGridComponent implements OnInit {
   };
   @Input() titleCenter: boolean = true;
   @Input() uniqueSelection: boolean = true;
+  @Output() buttonClicked = new EventEmitter();
   @Output() optionClick = new EventEmitter();
 
   constructor() {}
@@ -50,5 +51,9 @@ export class OptionsGridComponent implements OnInit {
       text: wordObject.text,
       wordsObjects: this.wordsObjects,
     });
+  }
+
+  submitButtonClicked() {
+    this.buttonClicked.emit(this.wordsObjects);
   }
 }

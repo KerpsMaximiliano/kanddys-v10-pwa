@@ -18,7 +18,11 @@
     </div>
   </div>
 
-  <button *ngIf="submitButton" [ngStyle]="submitButton.styles">
+  <button
+    *ngIf="submitButton"
+    [ngStyle]="submitButton.styles"
+    (click)="submitButtonClicked()"
+  >
     {{ submitButton.text }}
   </button>
 </div>
