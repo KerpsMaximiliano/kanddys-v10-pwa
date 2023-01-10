@@ -34,6 +34,10 @@ export class PostsService {
 
   post: PostInput;
   content: PostContent;
+  postMessageOptions: Array<{
+    title: string;
+    message: string;
+  }> = [];
 
   async createPost(input: PostInput): Promise<{ createPost: { _id: string } }> {
     let value = await this.graphql.mutate({

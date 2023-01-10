@@ -37,6 +37,7 @@ import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { Router } from '@angular/router';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-test',
@@ -780,6 +781,8 @@ export class TestComponent implements OnInit {
               this.dialogFlowService.dialogsFlows['flow1']
                 .receiverRelationshipDialog.fields.receiverRelationship;
 
+            lockUI();
+
             const response = await this.gpt3Service.generateResponseForTemplate(
               {
                 motive,
@@ -787,18 +790,61 @@ export class TestComponent implements OnInit {
                 sentiment,
                 timing,
               },
-              '63bc8d232dd73440dc8c7536'
+              '63bd15b25169e824f0b11266'
             );
 
-            this.postsService.post = {
-              message: response,
-            };
+            let message;
+            let title;
+            let scannedTitle = false;
+            const parts = response.split('\n');
+
+            const options: Array<{
+              message: string;
+              title: string;
+            }> = [];
+            let optionNumber = 1;
+
+            parts.forEach((line) => {
+              if (optionNumber < 5) {
+                if (
+                  !line.includes('Opción') &&
+                  line.includes(':') &&
+                  !scannedTitle
+                ) {
+                  const [, realTitle] = line.split(':');
+                  title = realTitle;
+                  scannedTitle = true;
+                } else if (
+                  !line.includes('Opción') &&
+                  line.includes(':') &&
+                  scannedTitle
+                ) {
+                  const [, realMessage] = line.split(':');
+                  options.push({
+                    message: realMessage,
+                    title,
+                  });
+                  title = null;
+                  optionNumber += 1;
+                  scannedTitle = false;
+                }
+              }
+            });
+
+            this.postsService.postMessageOptions = options;
+
+            localStorage.setItem(
+              'temporal-post-options',
+              JSON.stringify(options)
+            );
 
             this.router.navigate(['ecommerce/text-edition-and-preview'], {
               queryParams: {
                 type: 'post',
               },
             });
+
+            unlockUI();
           },
         },
       ],

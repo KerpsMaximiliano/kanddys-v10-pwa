@@ -157,7 +157,8 @@ const routes: Routes = [
     PaymentsComponent,
     ReservationsComponent,
     ArticleDetailComponent,
-    CreateArticleComponent
+    CreateArticleComponent,
+    TextEditionAndPreviewComponent
   ],
   imports: [
     CommonModule,

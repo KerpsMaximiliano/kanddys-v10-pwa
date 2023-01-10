@@ -1,15 +1,44 @@
-<div class="header">
-  <div class="arrow-container">
-    <img [src]="env + '/arrow-double-up.svg'" alt=""
-      (click)="goBack()"
-    >
+<div class="page">
+  <div class="top-wrapper">
+    <swiper [config]="swiperConfig" #dialogSwiper>
+      <div
+        class="top"
+        *ngFor="let option of postService.postMessageOptions; index as i"
+      >
+        <nav class="header">
+          <button class="cancel">Cancelar mensaje</button>
+
+          <div class="options">
+            Opción {{ i + 1 }} de {{ postService.postMessageOptions.length }}
+          </div>
+        </nav>
+
+        <div class="content">
+          <ng-container *ngIf="mode === 'PREVIEW'">
+            <div class="title">{{ option.title || "titulo" }}</div>
+            <div class="paragraphs">
+              {{ option.message }}
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="mode === 'EDIT'">
+            <input type="text" class="title-edit" />
+
+            <textarea class="paragraphs-edit"> </textarea>
+          </ng-container>
+        </div>
+      </div>
+    </swiper>
   </div>
-  <p></p>
-</div>
-<div class="container">
-  <p class="description">{{ description }}</p>
-  <ul class="numerations">
-    <li *ngFor="let item of numeration" class="numeration">
-    </li>
-  </ul>
+  <div class="bottom">
+    <div class="bars">
+      <div class="bar"></div>
+      <div class="bar active"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+
+    <span class="edit-btn" (click)="switchToMode('EDIT')">Editar</span>
+    <button class="save-btn">Salvar texto</button>
+  </div>
 </div>
