@@ -1,0 +1,95 @@
+<div class="cropper">
+  <div class="cropper__imageContainer">
+    <button
+      class="fixed-button left"
+      style="padding: 6px"
+      (click)="exportCanvas()"
+    >
+      <img
+        class="icon green"
+        [src]="env + '/arrow-double-up.svg'"
+        alt="Back"
+        height="28"
+        width="28"
+      />
+    </button>
+    <div class="cropper__image">
+      <img #image [src]="imgUrl" (load)="imageLoaded($event)" />
+    </div>
+    <div class="text-icons-container">
+      <button (click)="setDragMode('move')" class="action_buttons">
+        <i class="fa fa-arrows" aria-hidden="true"></i>
+      </button>
+      <button (click)="setDragMode('crop')" class="action_buttons">
+        <i class="fa fa-crop" aria-hidden="true"></i>
+      </button>
+      <button (click)="flipCanvas('horizontal')" class="action_buttons">
+        <i class="fa fa-arrows-h" aria-hidden="true"></i>
+      </button>
+      <button (click)="flipCanvas('vertical')" class="action_buttons">
+        <i class="fa fa-arrows-v" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="cropper__zoomSlider">
+      <div class="range-slider">
+        <i
+          class="fa fa-compress"
+          aria-hidden="true"
+          style="color: #fff; font-size: 26px; width: 26px"
+        ></i>
+        <input
+          type="range"
+          [min]="0.2651515"
+          [max]="1"
+          [step]="0.0001"
+          [value]="0.2651515"
+          (input)="updateValue($event)"
+        />
+      </div>
+      <div class="range-slider">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="26.225"
+          height="26.303"
+          viewBox="0 0 26.225 26.303"
+        >
+          <g id="crop-rotate" transform="translate(-1.222 -1.123)">
+            <path
+              id="Path_28922"
+              data-name="Path 28922"
+              d="M2.975,14.275A11.371,11.371,0,0,1,14.314,2.917V5.2l6.12-4.082H14.315l-.018,0A13.179,13.179,0,0,0,1.222,14.275Z"
+              fill="#fff"
+            />
+            <path
+              id="Path_28923"
+              data-name="Path 28923"
+              d="M16.266,29.363V27.644l-6.119,3.507h6.119A13.2,13.2,0,0,0,29.417,18H27.663A11.41,11.41,0,0,1,16.266,29.363Z"
+              transform="translate(-1.97 -3.725)"
+              fill="#fff"
+            />
+            <path
+              id="Path_28924"
+              data-name="Path 28924"
+              d="M20.348,10.191h-8.4V8.438H10.191v1.753H8.438v1.753h1.753v9.644H19.4v1.753h1.753V21.589H22.9V19.835H21.151V14.061L19.4,15.815v4.02H12.9L22.9,9.827V8.876h-1.24Zm-8.4,8.4v-6.65H18.6Z"
+              transform="translate(-1.593 -1.614)"
+              fill="#fff"
+            />
+          </g>
+        </svg>
+        <input
+          type="range"
+          min="-180"
+          max="180"
+          [step]="1"
+          [value]="0"
+          (input)="updateRotation($event)"
+        />
+      </div>
+    </div>
+  </div>
+  <!-- <div class="cropper__actions">
+    <button (click)="close()" class="cropper__button cropper__button--cancel">
+      Cancel
+    </button>
+  </div> -->
+</div>

@@ -31,6 +31,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { CroppResult } from 'src/app/shared/components/image-editor/image-editor.component';
 
 @Component({
   selector: 'app-article-creator',
@@ -94,7 +95,8 @@ export class ArticleCreatorComponent implements OnInit {
   tagsAsignationOnStart: boolean = false;
   fromTemplate: string = null;
   editMode = false;
-  editingImage: number;
+  editingImageIndex: number;
+  editingImage: string;
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
   imageElement: HTMLImageElement;
   canvasElement: HTMLCanvasElement;
@@ -434,33 +436,9 @@ export class ArticleCreatorComponent implements OnInit {
   }[] = [];
 
   enterEdit(i: number, j: number) {
+    this.editingImageIndex = j;
+    this.editingImage = this.urls[j];
     this.editMode = true;
-    this.editingImage = j;
-    const img = this.urls[j];
-    this.imageElement = new Image();
-    this.imageElement.src = img as string;
-    this.imageElement.crossOrigin = 'anonymous';
-    this.canvasElement = null;
-    this.context = null;
-    this.imageElement.onload = async () => {
-      if (!this.imageSizes[j]?.width || !this.imageSizes[j]?.height) {
-        this.imageSizes[j] = {
-          width: this.imageElement.width,
-          height: this.imageElement.height,
-        };
-      }
-      this.canvasElement = document.createElement('canvas');
-      const totalSize = Math.max(
-        this.imageElement.width,
-        this.imageElement.height
-      );
-      this.canvasElement.width = this.imageSizes[j].width * 1.25;
-      this.canvasElement.height = this.imageSizes[j].height * 1.25;
-      this.context = this.canvasElement.getContext('2d');
-      this.drawImage();
-      // const url = this.canvasElement.toDataURL('image/png');
-      // this.openImageModal(url);
-    };
   }
 
   resetSliders() {
@@ -469,14 +447,14 @@ export class ArticleCreatorComponent implements OnInit {
     this.imageRotationChange = 0;
   }
 
-  cancelEdit() {
-    this.editMode = false;
-    this.editingImage = null;
-    this.imageElement = null;
-    this.canvasElement = null;
-    this.context = null;
-    this.resetSliders();
-  }
+  // cancelEdit() {
+  //   this.editMode = false;
+  //   this.editingImageIndex = null;
+  //   this.imageElement = null;
+  //   this.canvasElement = null;
+  //   this.context = null;
+  //   this.resetSliders();
+  // }
 
   resetEdit() {
     this.resetSliders();
@@ -494,62 +472,50 @@ export class ArticleCreatorComponent implements OnInit {
     });
   }
 
+  async onEditSubmit(result: CroppResult) {
+    const file = new File([result.blob], 'image.jpg', {
+      type: 'image/jpg',
+    });
+    lockUI();
+    await this._ItemsService.deleteImageItem(
+      [this.item.images[this.editingImageIndex]],
+      this.item._id
+    );
+    await this._ItemsService.addImageItem([file], this.item._id);
+
+    const newItem = await this._ItemsService.item(this.item._id);
+    this.item.images = [...newItem.images];
+    this.urls = newItem.images;
+    this.editMode = false;
+    const multimedia: File[] = [];
+    this.item.images.forEach(async (image, index) => {
+      this.multimedia[0][index] = this._DomSanitizer
+        .bypassSecurityTrustStyle(`url(
+          ${image})
+          no-repeat center center / contain #2e2e2e`);
+      this.types[0][index] = 'image/jpeg';
+
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const file = new File([blob], `item_image_${index}.jpeg`, {
+        type: 'image/jpeg',
+      });
+      multimedia.push(file);
+      if (index + 1 === this.item.images.length) {
+        this.controllers.at(0).get('multimedia').setValue(multimedia);
+        setTimeout(() => {
+          const _Swiper = new Swiper('.swiper');
+          _Swiper.slideTo(this.item.images.length);
+          this.activeSlide = this.item.images.length - 1;
+        }, 50);
+        this.updateFrantions();
+        unlockUI();
+      }
+    });
+  }
+
   async submit(settings?: boolean): Promise<void> {
     this.blockSubmitButton = true;
-    if (this.editMode) {
-      if (!this.imageRotation) {
-        this.canvasElement.width = this.imageElement.width;
-        this.canvasElement.height = this.imageElement.height;
-        this.drawImage();
-      }
-      this.imageSizeChange = 100;
-      this.imageRotationChange = 0;
-      this.imageRotation = null;
-      this.editMode = false;
-      const url = this.canvasElement.toDataURL('image/png');
-      const file = await this.urltoFile(url, 'image.png');
-      this.urls[this.editingImage] = url;
-      lockUI();
-      const itemWithDeletedImage = await this._ItemsService.deleteImageItem(
-        [this.item.images[this.editingImage]],
-        this.item._id
-      );
-      const itemWithAddedImage = await this._ItemsService.addImageItem(
-        [file],
-        this.item._id
-      );
-      this.urls[this.editingImage] = url;
-      const newItem = await this._ItemsService.item(this.item._id);
-      this.item.images = [...newItem.images];
-      this.urls = newItem.images;
-
-      const multimedia: File[] = [];
-      this.item.images.forEach(async (image, index) => {
-        this.multimedia[0][index] = this._DomSanitizer
-          .bypassSecurityTrustStyle(`url(
-        ${image})
-        no-repeat center center / contain #2e2e2e`);
-        this.types[0][index] = 'image/jpeg';
-
-        const response = await fetch(image);
-        const blob = await response.blob();
-        const file = new File([blob], `item_image_${index}.jpeg`, {
-          type: 'image/jpeg',
-        });
-        multimedia.push(file);
-        if (index + 1 === this.item.images.length) {
-          this.controllers.at(0).get('multimedia').setValue(multimedia);
-          setTimeout(() => {
-            const _Swiper = new Swiper('.swiper');
-            _Swiper.slideTo(this.item.images.length);
-            this.activeSlide = this.item.images.length - 1;
-          }, 50);
-          this.updateFrantions();
-          unlockUI();
-        }
-      });
-      return;
-    }
     if (this.isOrder) {
       if (this.controllers.invalid) return;
       let result = [];
@@ -626,17 +592,17 @@ export class ArticleCreatorComponent implements OnInit {
         return;
       }
       return;
-      if (this.fromTemplate) {
-        localStorage.setItem(
-          'entity-template-creation-data',
-          JSON.stringify({
-            entity: 'item',
-            entityTemplateId: this.fromTemplate,
-          })
-        );
-      } else {
-        localStorage.removeItem('entity-template-creation-data');
-      }
+      // if (this.fromTemplate) {
+      //   localStorage.setItem(
+      //     'entity-template-creation-data',
+      //     JSON.stringify({
+      //       entity: 'item',
+      //       entityTemplateId: this.fromTemplate,
+      //     })
+      //   );
+      // } else {
+      //   localStorage.removeItem('entity-template-creation-data');
+      // }
     }
   }
 
