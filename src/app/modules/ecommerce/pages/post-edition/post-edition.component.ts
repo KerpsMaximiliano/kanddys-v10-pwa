@@ -28,7 +28,7 @@ export class PostEditionComponent implements OnInit {
     const storedPost = localStorage.getItem('post');
     this.postInput = storedPost
       ? JSON.parse(storedPost)
-      : this.postsService.post;
+      : this.postsService.post || {};
 
     if (storedPost) {
       this.postsService.post = JSON.parse(storedPost);

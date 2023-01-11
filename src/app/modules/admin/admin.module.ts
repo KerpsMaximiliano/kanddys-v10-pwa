@@ -20,6 +20,7 @@ import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/a
 import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 import { ImageBannerComponent } from './pages/image-banner/image-banner.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { PostEditionComponent } from '../ecommerce/pages/post-edition/post-edition.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -136,6 +137,10 @@ const routes: Routes = [
       {
         path: 'qr-edit',
         component: QrEditComponent
+      },
+      {
+        path: 'post-edition',
+        component: PostEditionComponent,
       }
     ],
   },
