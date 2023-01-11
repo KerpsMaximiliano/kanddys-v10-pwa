@@ -6,6 +6,7 @@
     width="14.789"
     height="14.763"
     viewBox="0 0 14.789 14.763"
+    (click)="openedDialogFlow=!openedDialogFlow"
   >
     <path
       id="edit-line"
@@ -15,4 +16,15 @@
     />
   </svg>
 </div>
-<app-bios-banner></app-bios-banner>
+<app-bios-banner
+[username]="name"
+[text]="description"
+[image]="image"></app-bios-banner>
+<app-dialog-flow
+  [dialogFlowId]="'flow1'"
+  [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+  [dialogs]="dialogs"
+  [allowSlideNext]="false"
+  (saveConfigRef)="swiperConfig = $event"
+  (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+></app-dialog-flow>

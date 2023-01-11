@@ -1,4 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { SafeStyle } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 type CSSStyles = Record<string, string | number>;
 @Component({
@@ -8,12 +11,16 @@ type CSSStyles = Record<string, string | number>;
 })
 export class BiosBannerComponent implements OnInit {
 
+  @Input() image: SafeStyle = '';
   @Input() biosBannerStyles: CSSStyles = {};
   @Input() username: string = 'User ID';
 
-  text: string = 'Servicios de Asesoría Fiscal • 15 años de experiencia como Gerente Local y Proceso.. ';
+  @Input() text: string = 'Servicios de Asesoría Fiscal • 15 años de experiencia como Gerente Local y Proceso.. ';
   
-  constructor() {}
+  constructor(
+    private _ActivatedRoute: ActivatedRoute
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 }

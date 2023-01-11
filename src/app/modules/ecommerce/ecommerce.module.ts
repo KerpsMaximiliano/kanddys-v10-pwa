@@ -24,6 +24,7 @@ import { ArticleDetailComponent } from './pages/article-detail/article-detail.co
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
 import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
+import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
 
 const routes: Routes = [
   {
@@ -131,6 +132,10 @@ const routes: Routes = [
         path: 'payments',
         component: PaymentsComponent,
       },
+      {
+        path: 'image-banner',
+        component: ImageBannerComponent,
+      }
 
     ],
   },
