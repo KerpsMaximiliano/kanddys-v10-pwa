@@ -421,6 +421,97 @@ export class TestComponent implements OnInit {
     },
     {
       component: GeneralDialogComponent,
+      componentId: 'messageTitleDialog',
+      inputs: {
+        dialogId: 'messageTitleDialog',
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '12px',
+          opacity: '1',
+          padding: '37.1px 23.6px 29.6px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '23px',
+            fontFamily: 'SfProBold',
+            marginBottom: '12.5px',
+            marginTop: '0',
+            color: '#4F4F4F',
+            width: '50%',
+          },
+          text: 'Titulo del sobre',
+        },
+        fields: {
+          styles: {},
+          list: [
+            {
+              name: 'messageTitle',
+              value: '',
+              validators: [Validators.required],
+              type: 'textarea',
+              label: {
+                styles: {
+                  border: 'none',
+                  borderRadius: '9px',
+                  boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                  display: 'block',
+                  fontFamily: 'RobotoMedium',
+                  fontSize: '17px',
+                  minHeight: '130px',
+                  resize: 'none',
+                  width: '100%',
+                  padding: '26px 26.3px 56.6px 16px',
+                  color: '#A1A1A1',
+                },
+                text: '',
+              },
+              placeholder: 'Escribe...',
+              styles: {
+                border: 'none',
+                borderRadius: '9px',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px inset',
+                display: 'block',
+                fontFamily: 'RobotoMedium',
+                fontSize: '17px',
+                minHeight: '130px',
+                resize: 'none',
+                width: '100%',
+                padding: '26px 26.3px 56.6px 16px',
+                color: '#A1A1A1',
+              },
+            },
+          ],
+        },
+      },
+      outputs: [
+        {
+          name: 'data',
+          callback: (params) => {
+            const { value, fields } = params;
+            const { message } = value;
+            let messageValue = message;
+
+            console.log(params);
+
+            if (messageValue && messageValue.length > 0) {
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            this.dialogFlowService.saveGeneralDialogData(
+              messageValue,
+              'flow1',
+              'messageDialog',
+              'message',
+              fields
+            );
+          },
+        },
+      ],
+    },
+    {
+      component: GeneralDialogComponent,
       componentId: 'messageDialog',
       inputs: {
         dialogId: 'messageDialog',
@@ -1261,7 +1352,7 @@ export class TestComponent implements OnInit {
     );
     this.gpt3Service.gpt3Response = response;
 
-    this.router.navigate([`admin/post-preview`], {
+    this.router.navigate([`ecommerce/post-preview`], {
       queryParams: {
         mode: 'solidBg',
       },

@@ -68,7 +68,7 @@ export class QrEditComponent implements OnInit {
   }
 
   submit():void{
-    this._Router.navigate(['admin','post-edition']);
+    this._Router.navigate(['ecommerce','post-edition']);
     return;
     (async () => {
       const slides = this.gridArray.map(({text,title,media,type,index}) => {

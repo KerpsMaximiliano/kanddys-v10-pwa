@@ -48,7 +48,6 @@
       .title-edit {
         font-family: SfProBold;
         font-size: 21px;
-        margin-top: 17px;
         border: none;
         background-color: #272727;
         color: white;
@@ -95,6 +94,10 @@
       font-family: SfProBold;
       color: white;
       font-size: 22px;
+
+      &.selected {
+        color: gray;
+      }
     }
 
     .bars {

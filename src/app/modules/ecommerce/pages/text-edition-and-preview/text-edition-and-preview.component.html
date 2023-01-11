@@ -1,6 +1,10 @@
 <div class="page">
   <div class="top-wrapper">
-    <swiper [config]="swiperConfig" #dialogSwiper>
+    <swiper
+      [config]="swiperConfig"
+      #dialogSwiper
+      (slideChange)="changeSlide($event)"
+    >
       <div
         class="top"
         *ngFor="let option of postService.postMessageOptions; index as i"
@@ -21,24 +25,37 @@
             </div>
           </ng-container>
 
-          <ng-container *ngIf="mode === 'EDIT'">
-            <input type="text" class="title-edit" />
+          <form [formGroup]="messageForm" *ngIf="mode === 'EDIT'">
+            <input type="text" formControlName="title" class="title-edit" />
 
-            <textarea class="paragraphs-edit"> </textarea>
-          </ng-container>
+            <textarea formControlName="message" class="paragraphs-edit">
+            </textarea>
+          </form>
         </div>
       </div>
     </swiper>
   </div>
   <div class="bottom">
     <div class="bars">
-      <div class="bar"></div>
-      <div class="bar active"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
+      <div
+        class="bar"
+        *ngFor="let option of postService.postMessageOptions; index as i"
+        [ngClass]="{
+          active: currentMessageIndex === i
+        }"
+      ></div>
     </div>
 
-    <span class="edit-btn" (click)="switchToMode('EDIT')">Editar</span>
-    <button class="save-btn">Salvar texto</button>
+    <span
+      class="edit-btn"
+      (click)="switchToMode('EDIT')"
+      [ngClass]="{
+        selected: mode === 'EDIT'
+      }"
+      >Editar</span
+    >
+    <button class="save-btn"
+      (click)="saveMessage()"
+    >Salvar texto</button>
   </div>
 </div>

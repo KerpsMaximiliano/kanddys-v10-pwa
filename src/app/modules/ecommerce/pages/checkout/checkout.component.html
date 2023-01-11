@@ -41,7 +41,11 @@
     >
       Confirmar y pagar
     </button>
-    <a class="bannerLink">Incluir mensaje de regalo</a>
+    <a class="bannerLink" (click)="createOrEditMessage()">{{
+      !postsService.post
+        ? "Incluir mensaje de regalo"
+        : "Editar mensaje de regalo"
+    }}</a>
   </section>
 
   <main class="information">
@@ -466,3 +470,12 @@
     (click)="editOrder('item')"
   ></app-sticky-button>
 </div>
+
+<app-dialog-flow
+  [dialogFlowId]="'flow1'"
+  [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+  [dialogs]="dialogs"
+  [allowSlideNext]="false"
+  (saveConfigRef)="swiperConfig = $event"
+  (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+></app-dialog-flow>

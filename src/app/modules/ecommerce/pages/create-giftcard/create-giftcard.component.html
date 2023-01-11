@@ -1,7 +1,30 @@
-<app-multistep-form
-  [steps]="formSteps"
-  [scrollableForm]="scrollableForm"
-  [disableSmoothScroll]="true"
-  [showStepNumbers]="false"
->
-</app-multistep-form>
+<div class="page">
+  <div class="header">
+    <img
+      [src]="env + '/arrow-double-up-black.svg'"
+      alt="go back"
+      class="icon"
+    />
+  </div>
+
+  <div class="content">
+    <label for="message"> Mensaje de Regalo (impreso o escrito a mano): </label>
+    <div class="top-area">
+      <textarea
+        id="message"
+        placeholder="Escribe aquí el mensaje..."
+        class="gift-message"
+      ></textarea>
+
+      <div class="from-flex">
+        <label for="from">De parte de: </label>
+        <input type="text" id="from" class="from-input" />
+      </div>
+    </div>
+
+    <div class="bottom">
+      <label for="title"> Titulo del sobre </label>
+      <input type="text" id="title" class="message-title" />
+    </div>
+  </div>
+</div>

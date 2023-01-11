@@ -13,6 +13,7 @@ import {
   postAddUser,
 } from '../graphql/posts.gql';
 import { Post, PostInput, Slide, SlideInput } from '../models/post';
+import { EmbeddedComponentWithId } from '../types/multistep-form';
 
 export interface PostContent {
   _id?: string;
@@ -34,6 +35,9 @@ export class PostsService {
 
   post: PostInput;
   content: PostContent;
+  dialogs: Array<EmbeddedComponentWithId> = [];
+  temporalDialogs: Array<EmbeddedComponentWithId> = [];
+  temporalDialogs2: Array<EmbeddedComponentWithId> = [];
   postMessageOptions: Array<{
     title: string;
     message: string;

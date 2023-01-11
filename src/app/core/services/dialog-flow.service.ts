@@ -17,6 +17,7 @@ export interface FlowSnapshot {
 export class DialogFlowService {
   dialogsFlows: Record<string, Record<string, EmbeddedDialog>> = {};
   activeDialogId: string = null;
+  previouslyActiveDialogId: string = null;
   swiperConfig: SwiperOptions = null;
 
   constructor() {}

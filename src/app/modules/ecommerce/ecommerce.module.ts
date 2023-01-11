@@ -24,6 +24,8 @@ import { ArticleDetailComponent } from './pages/article-detail/article-detail.co
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
 import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
+import { PostEditionComponent } from './pages/post-edition/post-edition.component';
+import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 
 const routes: Routes = [
   {
@@ -63,7 +65,7 @@ const routes: Routes = [
   },
   {
     path: 'text-edition-and-preview',
-    component: TextEditionAndPreviewComponent
+    component: TextEditionAndPreviewComponent,
   },
   {
     path: ':merchantSlug',
@@ -131,7 +133,14 @@ const routes: Routes = [
         path: 'payments',
         component: PaymentsComponent,
       },
-
+      {
+        path: 'post-edition',
+        component: PostEditionComponent,
+      },
+      {
+        path: 'post-preview',
+        component: PostPreviewComponent,
+      },
     ],
   },
 ];
@@ -158,7 +167,7 @@ const routes: Routes = [
     ReservationsComponent,
     ArticleDetailComponent,
     CreateArticleComponent,
-    TextEditionAndPreviewComponent
+    TextEditionAndPreviewComponent,
   ],
   imports: [
     CommonModule,

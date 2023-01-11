@@ -17,9 +17,7 @@ import { ArticleParamsComponent } from './pages/article-params/article-params.co
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/anexo-choices.component';
-import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
-import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { ImageBannerComponent } from './pages/image-banner/image-banner.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 
@@ -128,16 +126,8 @@ const routes: Routes = [
         component: AnexoChoicesComponent,
       },
       {
-        path: 'post-edition',
-        component: PostEditionComponent,
-      },
-      {
         path: 'bios-edit',
         component: BiosEditComponent,
-      },
-      {
-        path: 'post-preview',
-        component: PostPreviewComponent
       },
       {
         path: 'image-banner',
@@ -166,7 +156,6 @@ const routes: Routes = [
     ItemsDashboardComponent,
     CreateTagComponent,
     BiosEditComponent,
-    PostPreviewComponent,
     ImageBannerComponent
   ],
   exports: [ArticleCreatorComponent],

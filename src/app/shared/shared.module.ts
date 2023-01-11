@@ -120,11 +120,12 @@ import { GeneralItemComponent } from './components/general-item/general-item.com
 import { MerchantContactComponent } from './components/merchant-contact/merchant-contact.component';
 import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { PostEditionComponent } from '../modules/admin/pages/post-edition/post-edition.component';
+import { PostEditionComponent } from '../modules/ecommerce/pages/post-edition/post-edition.component';
 import { InvitesNotificationsComponent } from './components/invites-notifications/invites-notifications.component';
 import { QrContentComponent } from './components/qr-content/qr-content.component';
 import { EnvelopeContentComponent } from './components/envelope-content/envelope-content.component';
 import { EnvelopeDataComponent } from './components/envelope-data/envelope-data.component';
+import { PostPreviewComponent } from '../modules/ecommerce/pages/post-preview/post-preview.component';
 
 const imports = [
   CommonModule,
@@ -139,7 +140,7 @@ const imports = [
   NgxIntlTelInputModule,
   ClipboardModule,
   GooglePlaceModule,
-  DragDropModule
+  DragDropModule,
 ];
 const declarations = [
   // Pages
@@ -253,10 +254,11 @@ const declarations = [
   MerchantContactComponent,
   QrEditComponent,
   PostEditionComponent,
+  PostPreviewComponent,
   InvitesNotificationsComponent,
   QrContentComponent,
   EnvelopeContentComponent,
-  EnvelopeDataComponent
+  EnvelopeDataComponent,
 ];
 
 @NgModule({

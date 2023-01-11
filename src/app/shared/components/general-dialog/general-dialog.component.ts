@@ -14,12 +14,18 @@ import {
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import {
+  SearchCountryField,
+  CountryISO,
+  PhoneNumberFormat,
+} from 'ngx-intl-tel-input';
 
 enum FormType {
   text = 'text',
   checkbox = 'checkbox',
   area = 'area',
   selection = 'selection',
+  phone = 'phone',
 }
 
 @Component({
@@ -81,6 +87,7 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
   selected: string[] = [];
   controller: FormGroup;
   sub: Subscription;
+  PhoneNumberFormat = PhoneNumberFormat;
 
   constructor(private dialogFlowService: DialogFlowService) {}
 

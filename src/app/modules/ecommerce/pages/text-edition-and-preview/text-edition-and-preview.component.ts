@@ -6,6 +6,7 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { environment } from 'src/environments/environment';
 import { FormBuilder } from '@angular/forms';
 import { SwiperOptions, Swiper } from 'swiper';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 @Component({
   selector: 'app-text-edition-and-preview',
@@ -13,10 +14,11 @@ import { SwiperOptions, Swiper } from 'swiper';
   styleUrls: ['./text-edition-and-preview.component.scss'],
 })
 export class TextEditionAndPreviewComponent implements OnInit {
+  URI: string = environment.uri;
+  env: string = environment.assetsUrl;
   title: string;
   description: string;
   numeration = [];
-  env: string = environment.assetsUrl;
   currentMessageIndex: number = 0;
   mode: 'PREVIEW' | 'EDIT' = 'PREVIEW';
   swiperConfig: SwiperOptions = {
@@ -27,7 +29,9 @@ export class TextEditionAndPreviewComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     public postService: PostsService,
-    private fb: FormBuilder
+    private headerService: HeaderService,
+    private fb: FormBuilder,
+    private dialogFlowService: DialogFlowService
   ) {}
 
   messageForm = this.fb.group({
@@ -60,8 +64,75 @@ export class TextEditionAndPreviewComponent implements OnInit {
 
     if (this.mode === 'EDIT') {
       this.messageForm.patchValue({
-        title: this.title,
-        message: this.description,
+        title:
+          this.postService.postMessageOptions[this.currentMessageIndex].title,
+        message:
+          this.postService.postMessageOptions[this.currentMessageIndex].message,
+      });
+    }
+  }
+
+  changeSlide(eventData: Swiper) {
+    const currentDialogIndex = eventData.activeIndex;
+    this.currentMessageIndex = currentDialogIndex;
+
+    if (this.mode === 'EDIT') {
+      this.messageForm.patchValue({
+        title: this.postService.postMessageOptions[currentDialogIndex].title,
+        message:
+          this.postService.postMessageOptions[currentDialogIndex].message,
+      });
+    }
+  }
+
+  saveMessage() {
+    if (!this.postService.post) this.postService.post = {};
+    if (this.mode === 'EDIT') {
+      const title = this.messageForm.get('title').value;
+      const message = this.messageForm.get('message').value;
+
+      this.postService.post.message = message;
+      this.postService.post.title = title;
+    } else {
+      this.postService.post.message = this.description;
+      this.postService.post.title = this.title;
+    }
+
+    this.dialogFlowService.previouslyActiveDialogId =
+      this.dialogFlowService.activeDialogId;
+
+    this.redirectFromQueryParams();
+  }
+
+  redirectFromQueryParams() {
+    const redirectionRoute = this.headerService.flowRoute;
+
+    if (redirectionRoute.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
+      const routeParts = redirectionRoute.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return { [queryStringElements[0]]: queryStringElements[1] };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([redirectionRoute], {
+        replaceUrl: true,
       });
     }
   }
