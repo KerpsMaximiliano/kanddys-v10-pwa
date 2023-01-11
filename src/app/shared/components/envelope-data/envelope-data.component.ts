@@ -11,20 +11,21 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Subscription } from 'rxjs';
 
+type CSSStyles = Record<string, string | number>;
 @Component({
   selector: 'app-envelope-data',
   templateUrl: './envelope-data.component.html',
-  styleUrls: ['./envelope-data.component.scss']
+  styleUrls: ['./envelope-data.component.scss'],
 })
 export class EnvelopeDataComponent implements OnInit, OnDestroy {
-  @Input() title:string = 'Contenido del Sobre';
-  name:string;
-  description:string;
-  image:SafeStyle;
+  @Input() biosBannerStyles: CSSStyles = {};
+  name: string;
+  description: string;
+  image: SafeStyle;
   swiperConfig: SwiperOptions = null;
   temporalDialogs: Array<EmbeddedComponentWithId> = [];
   dialogFlowFunctions: Record<string, any> = {};
-  openedDialogFlow:boolean = false;
+  openedDialogFlow: boolean = false;
   dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
@@ -73,7 +74,7 @@ export class EnvelopeDataComponent implements OnInit, OnDestroy {
                         display: 'block',
                         fontFamily: 'RobotoItalic',
                         fontSize: '14px',
-                        marginLeft: '10px'
+                        marginLeft: '10px',
                       },
                     },
                   },
@@ -86,7 +87,7 @@ export class EnvelopeDataComponent implements OnInit, OnDestroy {
                         display: 'block',
                         fontFamily: 'RobotoItalic',
                         fontSize: '14px',
-                        marginLeft: '10px'
+                        marginLeft: '10px',
                       },
                     },
                   },
@@ -102,16 +103,15 @@ export class EnvelopeDataComponent implements OnInit, OnDestroy {
       outputs: [
         {
           name: 'data',
-          callback: ({value}) => {
+          callback: ({ value }) => {
             const { messageType } = value;
             const [result] = messageType || [''];
-            switch(result){
+            switch (result) {
               case 'Una imagen':
                 let queryParams = {};
-                if(this.bannerId)
-                  queryParams['bannerId'] = this.bannerId;
-                this._Router.navigate(['ecommerce', 'image-banner'],{
-                  queryParams
+                if (this.bannerId) queryParams['bannerId'] = this.bannerId;
+                this._Router.navigate(['ecommerce', 'image-banner'], {
+                  queryParams,
                 });
                 break;
               case 'Mi perfil':
@@ -120,10 +120,10 @@ export class EnvelopeDataComponent implements OnInit, OnDestroy {
           },
         },
       ],
-    }
+    },
   ];
-  sub:Subscription;
-  bannerId:string;
+  sub: Subscription;
+  bannerId: string;
 
   constructor(
     private _BannersService: BannersService,
@@ -132,7 +132,7 @@ export class EnvelopeDataComponent implements OnInit, OnDestroy {
     private _Router: Router,
     private _AuthService: AuthService,
     private _ActivatedRoute: ActivatedRoute
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.sub = this._ActivatedRoute.queryParams.subscribe(({ bannerId }) => {
@@ -145,23 +145,21 @@ export class EnvelopeDataComponent implements OnInit, OnDestroy {
             sortBy: 'createdAt:desc',
           },
           findBy: {
-            user: _id
-          }
-        }
-        const [result]:any = await this._BannersService.banners(paginate);
-        const {name, description, image} = result || {};
+            user: _id,
+          },
+        };
+        const [result]: any = await this._BannersService.banners(paginate);
+        const { name, description, image } = result || {};
         this.name = name;
         this.description = description;
-        this.image = this._DomSanitizer
-        .bypassSecurityTrustStyle(`url(
+        this.image = this._DomSanitizer.bypassSecurityTrustStyle(`url(
         ${image})
         no-repeat center center / cover #fff`);
       })();
     });
   }
 
-  ngOnDestroy():void {
+  ngOnDestroy(): void {
     this.sub.unsubscribe();
   }
-
 }

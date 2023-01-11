@@ -4,10 +4,10 @@ import { Tag } from 'src/app/core/models/tags';
 @Component({
   selector: 'app-qr-content',
   templateUrl: './qr-content.component.html',
-  styleUrls: ['./qr-content.component.scss']
+  styleUrls: ['./qr-content.component.scss'],
 })
 export class QrContentComponent implements OnInit {
-  default:boolean = false;
+  default: boolean = false;
 
   tags: Tag[] = [
     {
@@ -90,9 +90,7 @@ export class QrContentComponent implements OnInit {
     },
   ];
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

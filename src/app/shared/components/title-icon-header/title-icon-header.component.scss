@@ -1,0 +1,23 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+  .title {
+    font-size: 17px;
+    font-family: RobotoMedium;
+    color: #7b7b7b;
+    margin: 0;
+    font-weight: normal;
+  }
+  .edit {
+    all: unset;
+    padding: 8px;
+    margin-left: auto;
+    cursor: pointer;
+
+    img {
+      filter: brightness(0) saturate(100) invert(8%) sepia(0%) saturate(814%) hue-rotate(154deg) brightness(98%)
+        contrast(83%);
+    }
+  }
+}

@@ -1,9 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { PostInput } from 'src/app/core/models/post';
-import { Tag } from 'src/app/core/models/tags';
+// import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-post-edition',
@@ -11,7 +12,8 @@ import { PostsService } from 'src/app/core/services/posts.service';
   styleUrls: ['./post-edition.component.scss'],
 })
 export class PostEditionComponent implements OnInit {
-  data: PostInput = {
+  env: string = environment.assetsUrl;
+  postInput: PostInput = {
     title: 'test',
     message: 'test2',
     from: 'tester',
@@ -24,7 +26,9 @@ export class PostEditionComponent implements OnInit {
 
   ngOnInit(): void {
     const storedPost = localStorage.getItem('post');
-    this.data = storedPost ? JSON.parse(storedPost) : this.postsService.post;
+    this.postInput = storedPost
+      ? JSON.parse(storedPost)
+      : this.postsService.post;
 
     if (storedPost) {
       this.postsService.post = JSON.parse(storedPost);
@@ -53,5 +57,9 @@ export class PostEditionComponent implements OnInit {
     return this.router.navigate([
       'ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
     ]);
+  }
+
+  doSomething() {
+    //
   }
 }
