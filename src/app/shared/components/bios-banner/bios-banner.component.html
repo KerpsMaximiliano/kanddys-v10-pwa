@@ -1,11 +1,11 @@
 <div class="banner-container" [ngStyle]="biosBannerStyles">
   <div class="circle-container">
-    <div class="circle"></div>
+    <div class="circle" [style.background]="image"></div>
   </div>
 
   <div class="infouser-container">
     <div class="title-container">
-      <p class="title"> {{ username }} </p>
+      <p class="title"> {{ username || 'Mi Nombre' }} </p>
 
       <div class="icons-container">
         <svg class="left" xmlns="http://www.w3.org/2000/svg" width="19.846" height="19.999" viewBox="0 0 19.846 19.999">
@@ -23,7 +23,7 @@
     </div>
 
     <div class="text"> 
-      <p> {{ text }} </p>
+      <p> {{ text || 'Servicios de Asesoría Fiscal • 15 años de experiencia como Gerente Local y Proceso.. ' }} </p>
     </div>
   </div>
 </div>

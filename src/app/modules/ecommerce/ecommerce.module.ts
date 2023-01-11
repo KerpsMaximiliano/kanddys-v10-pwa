@@ -26,6 +26,7 @@ import { AdminModule } from '../admin/admin.module';
 import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
+import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
 
 const routes: Routes = [
   {
@@ -141,6 +142,10 @@ const routes: Routes = [
         path: 'post-preview',
         component: PostPreviewComponent,
       },
+      {
+        path: 'image-banner',
+        component: ImageBannerComponent,
+      }
     ],
   },
 ];
