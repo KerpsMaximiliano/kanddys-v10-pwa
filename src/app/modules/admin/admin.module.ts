@@ -137,10 +137,6 @@ const routes: Routes = [
       {
         path: 'qr-edit',
         component: QrEditComponent
-      },
-      {
-        path: 'post-edition',
-        component: PostEditionComponent,
       }
     ],
   },

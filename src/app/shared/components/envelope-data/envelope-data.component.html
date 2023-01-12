@@ -1,14 +1,5 @@
 <app-bios-banner
-  [username]="name"
-  [text]="description"
-  [image]="image"
-  [biosBannerStyles]="biosBannerStyles"
-></app-bios-banner>
-<app-dialog-flow
-  [dialogFlowId]="'flow1'"
-  [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
-  [dialogs]="dialogs"
-  [allowSlideNext]="false"
-  (saveConfigRef)="swiperConfig = $event"
-  (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
-></app-dialog-flow>
+[username]="name"
+[text]="description"
+[image]="image"
+[type]="type"></app-bios-banner>

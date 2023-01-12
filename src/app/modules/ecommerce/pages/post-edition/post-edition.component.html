@@ -59,6 +59,14 @@
         title="Contenido del sobre"
         (iconClicked)="doSomething()"
       ></app-title-icon-header>
+      <app-dialog-flow
+        [dialogFlowId]="'flow1'"
+        [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+        [dialogs]="dialogs"
+        [allowSlideNext]="false"
+        (saveConfigRef)="swiperConfig = $event"
+        (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+      ></app-dialog-flow>
       <app-card>
         <app-envelope-content [post]="postInput"></app-envelope-content>
       </app-card>
@@ -68,9 +76,12 @@
         title="Banner"
         (iconClicked)="doSomething()"
       ></app-title-icon-header>
-      <app-envelope-data
-        [biosBannerStyles]="{ borderRadius: '8px' }"
-      ></app-envelope-data>
+      <ng-container *ngIf="banner">
+        <app-envelope-data
+          [biosBannerStyles]="{ borderRadius: '8px' }"
+          [banner]="banner"
+        ></app-envelope-data>
+      </ng-container>
     </div>
   </div>
 </div>

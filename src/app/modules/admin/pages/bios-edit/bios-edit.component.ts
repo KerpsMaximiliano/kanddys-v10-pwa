@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { LinkInput } from 'src/app/core/models/LinkInput';
 import { PaginationInput } from 'src/app/core/models/saleflow';
+import { BannersService } from 'src/app/core/services/banners.service';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
@@ -18,8 +19,6 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   name: string = 'Merchant ID';
   bio: string =
     'Servicios de Asesoría Fiscal • 15 años de experiencia como Gerente Local y Proceso Fiscales en DGII •';
-  direc1: string = 'Direccion ID';
-  direc2: string = 'Direccion ID';
   main: boolean = true;
   enlace: boolean = false;
   direcciones: boolean = false;
@@ -47,7 +46,8 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     private _ContactService: ContactService,
     private _MerchantService: MerchantsService,
     private _DomSanitizer: DomSanitizer,
-    private _ActivatedRoute: ActivatedRoute
+    private _ActivatedRoute: ActivatedRoute,
+    private _BannersService: BannersService
   ) {}
 
   ngOnInit(): void {
@@ -108,6 +108,10 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       {
         name: 'contact',
         validators: []
+      },
+      {
+        name: 'location',
+        validators: [Validators.required]
       }
     ];
     for(const { name, validators } of fields)
@@ -175,12 +179,29 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.file = '';
       this.src = '';
     }
+    const flag = this.links.find(({name}) => name==='location');
+    const value = this.controller.get('location').value;
+    if(flag){
+      this.links = this.links.filter(({name}) => name!=='location');
+      const location = {
+        _id: flag._id,
+        name: "location",
+        value
+      };
+      this.links.push(location);
+    }else{
+      const location = {
+        name: "location",
+        value
+      };
+      this.links.push(location);
+    }
     this.enlace = false;
     this.direcciones = false;
     this.publicName = false;
     this.bioDescription = false;
     this.main = true;
-    this.linkIndex==null
+    this.linkIndex==null;
   }
   add() {
     this.enlace = true;
@@ -189,7 +210,6 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   }
 
   submit():void {
-    console.log('this.controller.touched: ', this.controller.touched);
     if(!this.controller.touched)  return;
     if(this.controller.invalid || this.status) return;
     this.status = 'Cargando...';
@@ -202,12 +222,20 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       const value = {
         name,
         description,
-        merchant,
+        // merchant,
         image: this.fileLogo
       };
       if(!this.contactId){
-        const { _id } = await this._ContactService.createContact(value);
-        this.contactId = _id;
+        const { _id: contact } = await this._ContactService.createContact(value);
+        this.contactId = contact;
+        const banner = {
+          image: this.fileLogo,
+          name,
+          description,
+          type: 'standard',
+          contact
+        };
+        const createBanner = await this._BannersService.createBanner(banner);
         await this.setLinks();
         this.router.navigate(['admin','bios-edit'],{
           queryParams: {
