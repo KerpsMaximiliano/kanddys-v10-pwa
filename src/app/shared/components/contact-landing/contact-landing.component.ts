@@ -7,14 +7,16 @@ interface Contact {
   imgURL?: string;
   ID: string;
   bio?: string;
+  
 }
 
 @Component({
   selector: 'app-contact-landing',
   templateUrl: './contact-landing.component.html',
-  styleUrls: ['./contact-landing.component.scss'],
+  styleUrls: ['./contact-landing.component.scss']
 })
 export class ContactLandingComponent implements OnInit {
+
   environment: string = environment.assetsUrl;
 
   @Input() img: string;
@@ -23,19 +25,23 @@ export class ContactLandingComponent implements OnInit {
   @Input() phone: string;
   @Input() whatsapp: string;
   @Input() telegram: string;
-  @Input() idUser: string = '';
+  @Input() idUser:string = '';
+  src:string;
 
-  constructor(private _Router: Router) {}
+  constructor(
+    private _Router: Router
+  ) { }
 
   ngOnInit(): void {}
 
-  navigate(): void {
+  navigate():void{
     const contactId = this.idUser;
     const queryParams = {
-      contactId,
-    };
-    this._Router.navigate(['admin', 'bios-edit'], {
-      queryParams,
+      contactId
+    }
+    this._Router.navigate(['admin','bios-edit'],
+    {
+      queryParams
     });
   }
 }
