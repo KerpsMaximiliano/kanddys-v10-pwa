@@ -27,6 +27,7 @@ import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
+import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 
 const routes: Routes = [
   {
@@ -145,7 +146,11 @@ const routes: Routes = [
       {
         path: 'image-banner',
         component: ImageBannerComponent,
-      }
+      },
+      {
+        path: 'qr-edit',
+        component: QrEditComponent,
+      },
     ],
   },
 ];

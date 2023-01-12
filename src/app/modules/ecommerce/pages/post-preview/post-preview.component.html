@@ -7,8 +7,22 @@
         (slideChange)="updateCurrentSlideData($event)"
         *ngIf="post"
       >
-        <ng-container *ngFor="let slide of post.slides">
-          <div class="img-content" [style.background]="slide.media"></div>
+        <ng-container *ngFor="let slide of slidesPath">
+          <ng-container *ngIf="slide.type === 'IMAGE'">
+            <div
+              class="img-content"
+              [ngStyle]="{
+                backgroundImage: slide.path,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }"
+            ></div>
+          </ng-container>
+
+          <ng-container *ngIf="slide.type === 'VIDEO'">
+            <video class="video-content" controls [src]="slide.path"></video>
+          </ng-container>
         </ng-container>
       </swiper>
     </div>
@@ -304,23 +318,9 @@
 
         <ng-container *ngIf="!slideDescription">
           <p class="title2" (click)="handleMode()">
-            Felicidades por tu tesis!!
+            {{ post.title || "Titulo" }}
           </p>
-          <p class="subtitle2">
-            Hace 13 años de esta foto, la recuerdo como si fuera ayer.
-
-            <br />
-            <br />
-
-            Felicidades en tu graduación! Este es un gran logro y estoy muy
-            orgulloso de ti. No puedo creer cómo has crecido y madurado.
-
-            <br />
-            <br />
-
-            Espero que disfrutes cada momento de esta etapa y que sigas
-            alcanzando grandes cosas en el futuro. ¡Te quiero mucho!
-          </p>
+          <p class="subtitle2">{{ post.message }}</p>
         </ng-container>
       </div>
     </div>

@@ -46,7 +46,7 @@
         <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
         <div class="itemContainer">
           <div *ngIf="imageFiles.includes(gridItem._type)" class="imgBox"[ngStyle]="{background: 'url(' + gridItem.background + ') #272727 no-repeat  center/cover'}"></div>
-          <video [src]="gridItem.background" controls *ngIf="videoFiles.includes(gridItem._type)" src="videoFiles.background"></video>
+          <video [src]="gridItem.background" *ngIf="videoFiles.includes(gridItem._type)" src="videoFiles.background"></video>
           <div class="labelBox"></div>
           <p class="text">{{gridItem.text}}</p>
           <div class="label">{{gridItem.title}}</div>

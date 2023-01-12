@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { SlideInput } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
 
 @Component({
   selector: 'app-qr-content',
   templateUrl: './qr-content.component.html',
-  styleUrls: ['./qr-content.component.scss']
+  styleUrls: ['./qr-content.component.scss'],
 })
 export class QrContentComponent implements OnInit {
-  default:boolean = false;
+  default: boolean = false;
+  entity: 'POST-SLIDE' | 'TAG' = 'POST-SLIDE';
+  slides: Array<SlideInput> = null;
 
   tags: Tag[] = [
     {
@@ -90,9 +93,9 @@ export class QrContentComponent implements OnInit {
     },
   ];
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
+    console.log('slides', this.slides);
   }
-
 }

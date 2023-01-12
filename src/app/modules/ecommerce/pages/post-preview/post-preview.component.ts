@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { PostInput } from 'src/app/core/models/post';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SwiperOptions } from 'swiper';
 
@@ -21,6 +22,11 @@ export class PostPreviewComponent implements OnInit {
   post: PostInput;
   slideDescription: string = '';
 
+  slidesPath: Array<{
+    type: 'IMAGE' | 'VIDEO';
+    path: string | SafeUrl;
+  }> = [];
+
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
     freeMode: false,
@@ -32,10 +38,11 @@ export class PostPreviewComponent implements OnInit {
     private gpt3Service: Gpt3Service,
     private route: ActivatedRoute,
     private router: Router,
+    private headerService: HeaderService,
     private postsService: PostsService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     if (this.route.snapshot.queryParamMap.get('mode') === 'solidBg') {
       this.mode = 'solidBg';
       this.slideDescription = this.gpt3Service.gpt3Response;
@@ -74,11 +81,30 @@ export class PostPreviewComponent implements OnInit {
 
     const storedPost = localStorage.getItem('post');
 
-    if (storedPost) {
+    if (storedPost && !this.postsService.post) {
       this.postsService.post = JSON.parse(storedPost);
     }
 
     this.post = this.postsService.post;
+    //this.post = _post;
+
+    for await (const slide of this.post.slides) {
+      if (slide.media.type.includes('image')) {
+        const base64 = await this.fileToBase64(slide.media);
+        this.slidesPath.push({
+          path: `url(${base64})`,
+          type: 'IMAGE',
+        });
+      } else {
+        const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+          URL.createObjectURL(slide.media)
+        );
+        this.slidesPath.push({
+          path: fileUrl,
+          type: 'VIDEO',
+        });
+      }
+    }
 
     if ((this.post && !this.post.slides) || this.post.slides.length === 0) {
       this.mode = 'solidBg';
@@ -86,6 +112,14 @@ export class PostPreviewComponent implements OnInit {
 
     this.updateFrantions();
   }
+
+  fileToBase64 = (file: File) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
   handleMode(): void {
     if (this.mode === 'gradientImg') {
@@ -111,7 +145,9 @@ export class PostPreviewComponent implements OnInit {
   }
 
   topBtnAction() {
-    this.router.navigate(['ecommerce/post-edition']);
+    this.router.navigate([
+      'ecommerce/' + this.headerService.saleflow._id + '/post-edition',
+    ]);
   }
 
   getRandomArbitrary(min, max) {

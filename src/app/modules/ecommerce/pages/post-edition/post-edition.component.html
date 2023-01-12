@@ -108,8 +108,11 @@
     <!--
       <app-invites-notifications title="Acceso & Notificaciones" text="Acceso de Invitados: (000) 000 - 0000"></app-invites-notifications>
       <app-invites-notifications title="Notificaciones" text="Notificación de cuando accesan: (000) 000 - 0000 ó sin Notificación"></app-invites-notifications>
-      <app-qr-content></app-qr-content>
-    -->
+       -->
+    <app-qr-content
+      [entity]="'POST-SLIDES'"
+      [slides]="data.slides"
+    ></app-qr-content>
     <app-envelope-content
       [nombreSobre]="data.title"
       [mensaje]="data.message"

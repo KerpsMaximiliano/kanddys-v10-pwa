@@ -23,22 +23,29 @@
 >
 
 <div class="cards" *ngIf="!default">
-  <div class="card" *ngFor="let item of tags; index as i">
-    <app-general-item
-      [tag]="item"
-      [entity]="'TAG'"
-      [mainColor]="'#b17608'"
-      [showIconForTagStatus]="true"
-      [statusIcon]="null"
-      [textColor]="'#272727'"
-      [titleStyles]="{
-        textAlign: 'center',
-        width: '100%'
-      }"
-      [topInnerButtonStyles]="{
-        display: 'none'
-      }"
-    >
-    </app-general-item>
+  <div class="card" *ngFor="let slide of slides; index as i">
+    <div class="itemContainer">
+      <!--
+              <div
+        *ngIf="imageFiles.includes(gridItem._type)"
+        class="imgBox"
+        [ngStyle]="{
+          background:
+            'url(' + gridItem.background + ') #272727 no-repeat  center/cover'
+        }"
+      ></div>
+      <video
+        [src]="gridItem.background"
+        *ngIf="videoFiles.includes(gridItem._type)"
+        src="videoFiles.background"
+      ></video>
+      <div class="labelBox"></div>
+      <p class="text">{{ gridItem.text }}</p>
+      <div class="label">{{ gridItem.title }}</div>
+      <div class="circleButton">
+        <img class="icon" [src]="environment + '/dots-black.svg'" />
+      </div>
+      -->
+    </div>
   </div>
 </div>

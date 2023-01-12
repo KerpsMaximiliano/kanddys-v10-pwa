@@ -143,6 +143,8 @@ export class CheckoutComponent implements OnInit {
   swiperConfig: SwiperOptions = null;
   status: 'OPEN' | 'CLOSE' = 'CLOSE';
   dialogFlowFunctions: Record<string, any> = {};
+  addedPhotosToTheQr: boolean = false;
+  addedJokesToTheQr: boolean = false;
 
   title = '¿Cuál(es) seria el motivo?';
   title2 = '¿Que emoción(es) quieres transmitir con el mensaje?';
@@ -492,9 +494,9 @@ export class CheckoutComponent implements OnInit {
                 this.temporalDialogs2 = [];
               }
 
-              if (this.dialogs.length === 4) {
+              if (this.dialogs.length === 8) {
                 this.temporalDialogs2 = this.dialogs.splice(3, 1);
-                this.dialogs = this.dialogs.concat(this.temporalDialogs);
+                this.dialogs.splice(3, 0, ...this.temporalDialogs);
                 this.dialogFlowFunctions.moveToDialogByIndex(3);
               } else {
                 this.temporalDialogs2 = this.dialogs.splice(3, 2);
@@ -504,13 +506,14 @@ export class CheckoutComponent implements OnInit {
               typeOfMessageValue = 'Manual';
 
               if (this.temporalDialogs2.length) {
-                this.dialogs.splice(3, 0, this.temporalDialogs2[0]);
+                this.dialogs.splice(3, 0, ...this.temporalDialogs2);
                 this.temporalDialogs2 = [];
               }
 
               this.dialogFlowFunctions.moveToDialogByIndex(3);
 
-              this.temporalDialogs = this.dialogs.splice(5, 5);
+              if (this.temporalDialogs.length !== 5)
+                this.temporalDialogs = this.dialogs.splice(5, 5);
 
               setTimeout(() => {
                 this.swiperConfig.allowSlideNext = false;
@@ -1285,6 +1288,9 @@ export class CheckoutComponent implements OnInit {
                   '/post-edition',
               ]);
             } else {
+              this.dialogFlowFunctions.moveToDialogByIndex(
+                this.dialogs.length - 1
+              );
             }
           },
         },
@@ -1322,7 +1328,7 @@ export class CheckoutComponent implements OnInit {
         fields: {
           list: [
             {
-              name: 'test8',
+              name: 'qrContentSelection',
               value: '',
               validators: [Validators.required],
               type: 'selection',
@@ -1336,11 +1342,12 @@ export class CheckoutComponent implements OnInit {
                 },
                 list: [
                   {
-                    text: 'Un chiste de la IA',
-                  },
-                  {
                     text: 'Fotos, videos de mi device',
                   },
+                  {
+                    text: 'Un chiste de la IA',
+                  },
+                  /*
                   {
                     text: 'Imagen de la IA',
                   },
@@ -1370,7 +1377,7 @@ export class CheckoutComponent implements OnInit {
                         marginLeft: '19.5px',
                       },
                     },
-                  },
+                  },*/
                 ],
               },
               // styles: {},
@@ -1382,9 +1389,37 @@ export class CheckoutComponent implements OnInit {
       },
       outputs: [
         {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
+          name: 'data',
+          callback: (params) => {
+            const { fields, value, valid } = params;
+            const { qrContentSelection } = value;
+
+            if (valid) {
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            if (
+              qrContentSelection.includes('Fotos, videos de mi device') &&
+              !this.addedPhotosToTheQr
+            ) {
+              localStorage.setItem(
+                'post',
+                JSON.stringify({
+                  message: this.postsService.post.message,
+                  title: this.postsService.post.title,
+                  to: this.postsService.post.to,
+                  from: this.postsService.post.from,
+                })
+              );
+
+              this.router.navigate([
+                'ecommerce/' +
+                  this.headerService.saleflow.merchant.slug +
+                  '/qr-edit',
+              ]);
+            }
           },
         },
       ],
@@ -1411,6 +1446,12 @@ export class CheckoutComponent implements OnInit {
     this.route.queryParams.subscribe((queryParams) => {
       const { startOnDialogFlow } = queryParams;
       this.openedDialogFlow = Boolean(startOnDialogFlow);
+
+      if (!this.postsService.post) {
+        const storedPost = localStorage.getItem('post');
+
+        if (storedPost) this.postsService.post = JSON.parse(storedPost);
+      }
 
       if (this.openedDialogFlow) {
         this.dialogs = this.postsService.dialogs;

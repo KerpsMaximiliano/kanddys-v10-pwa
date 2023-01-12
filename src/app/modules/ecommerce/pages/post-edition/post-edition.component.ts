@@ -24,11 +24,17 @@ export class PostEditionComponent implements OnInit {
 
   ngOnInit(): void {
     const storedPost = localStorage.getItem('post');
-    this.data = storedPost ? JSON.parse(storedPost) : this.postsService.post;
+    
+    this.data =
+      storedPost && !this.postsService.post
+        ? JSON.parse(storedPost)
+        : this.postsService.post;
 
-    if (storedPost) {
+    if (storedPost && !this.postsService.post) {
       this.postsService.post = JSON.parse(storedPost);
     }
+
+    console.log(this.data.slides);
   }
 
   goToPostPreview() {
