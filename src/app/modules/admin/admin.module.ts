@@ -21,6 +21,7 @@ import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 import { ImageBannerComponent } from './pages/image-banner/image-banner.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { PostEditionComponent } from '../ecommerce/pages/post-edition/post-edition.component';
+import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -139,6 +140,10 @@ const routes: Routes = [
         component: QrEditComponent
       }
     ],
+  },
+  {
+    path: 'contact-landing/:idUser',
+    component: ContactLandingContainerComponent,
   },
 ];
 
