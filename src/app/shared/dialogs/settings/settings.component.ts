@@ -22,6 +22,7 @@ export interface SettingsDialogButton extends Button {}
 })
 export class SettingsComponent implements OnInit {
   @Input() title: string = 'TITULO';
+  @Input() titleStyles: Record<string, any> = null;
   @Input() cancelButton: Button = {
     text: 'Cerrar',
   };

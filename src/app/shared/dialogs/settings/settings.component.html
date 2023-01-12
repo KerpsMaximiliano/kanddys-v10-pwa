@@ -1,10 +1,12 @@
 <div class="exterior-wrapper">
   <div class="wrapper">
-    <button class="close-btn" (click)="close()">{{ cancelButton.text }}</button>
+    <button class="close-btn" (click)="close()">
+      {{ cancelButton.text }}
+    </button>
 
     <div class="dialog-component-wrapper">
       <div class="title-and-icon-actions-flex">
-        <div class="title">{{ title }}</div>
+        <div class="title" [ngStyle]="titleStyles">{{ title }}</div>
         <div class="icon-list">
           <div (click)="downloadQr()">
             <qrcode

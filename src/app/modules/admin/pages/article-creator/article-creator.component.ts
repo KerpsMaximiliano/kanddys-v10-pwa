@@ -29,8 +29,8 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
-
-type Mode = 'symbols' | 'item';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-article-creator',
@@ -41,6 +41,12 @@ export class ArticleCreatorComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
   controllers: FormArray = new FormArray([]);
+  price: number;
+  testBool: boolean = true;
+  views: string = '0.00';
+  sales: string = '0.00';
+  infoMissing: 'contact' | 'delivery' | 'payment' | 'banner' = 'contact';
+  viewType: 'preview' | 'saved' = 'preview';
   multimedia: any = [];
   urls: string[] = [];
   display: string;
@@ -82,16 +88,18 @@ export class ArticleCreatorComponent implements OnInit {
   isOrder: boolean;
   fractions: string = '1fr';
   activeSlide: number;
-  mode: Mode;
-  ctaText: string;
-  ctaDescription: string;
   item: Item;
   blockSubmitButton: boolean = false;
   selectedTags: Array<string>;
   tagsAsignationOnStart: boolean = false;
   fromTemplate: string = null;
-
+  editMode = false;
+  editingImage: number;
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
+  imageElement: HTMLImageElement;
+  canvasElement: HTMLCanvasElement;
+  public context: CanvasRenderingContext2D;
+
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _ActivatedRoute: ActivatedRoute,
@@ -118,68 +126,42 @@ export class ArticleCreatorComponent implements OnInit {
     });
     if (this._ActivatedRoute.snapshot.paramMap.get('merchantSlug')) {
       this.isOrder = true;
-      this.mode = 'symbols';
-      this.ctaText = 'SALVAR';
-      this.ctaDescription = '';
-    } else {
-      this.mode = 'item';
-      this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
-      this.ctaDescription =
-        'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
     }
     const itemId = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (!this.item) this.goBack();
-      if (
-        this._ActivatedRoute.snapshot.queryParamMap.get('mode') ===
-          'new-item' &&
-        this.item.status === 'draft'
-      ) {
-        const authItem = await this._ItemsService.authItem(
-          this._MerchantsService.merchantData._id,
-          itemId
-        );
-
-        if (this._SaleflowService.saleflowData) {
-          await this._SaleflowService.addItemToSaleFlow(
-            {
-              item: itemId,
-            },
-            this._SaleflowService.saleflowData._id
-          );
-        }
-        this.item.merchant = authItem.merchant;
-        this.item.status = 'active';
-      }
+      this.price = this.item.pricing;
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
         this._Router.navigate(['../../'], {
           relativeTo: this._ActivatedRoute,
         });
         return;
       }
-      if (this.item.images.length && !this._ItemsService.itemImages.length) {
-        const multimedia: File[] = [];
-        this.item.images.forEach(async (image, index) => {
-          this.multimedia[0][index] = this._DomSanitizer
-            .bypassSecurityTrustStyle(`url(
-        ${image})
-        no-repeat center center / contain #2e2e2e`);
-          this.urls.push(image);
-          this.types[0][index] = 'image/jpeg';
+      if (this.item.images.length) {
+        this.urls = [...this.item.images];
+        if (!this._ItemsService.itemImages.length) {
+          const multimedia: File[] = [];
+          this.item.images.forEach(async (image, index) => {
+            this.multimedia[0][index] = this._DomSanitizer
+              .bypassSecurityTrustStyle(`url(
+          ${image})
+          no-repeat center center / contain #2e2e2e`);
+            this.types[0][index] = 'image/jpeg';
 
-          const response = await fetch(image);
-          const blob = await response.blob();
-          const file = new File([blob], `item_image_${index}.jpeg`, {
-            type: 'image/jpeg',
+            const response = await fetch(image);
+            const blob = await response.blob();
+            const file = new File([blob], `item_image_${index}.jpeg`, {
+              type: 'image/jpeg',
+            });
+            multimedia.push(file);
+            if (index + 1 === this.item.images.length) {
+              this.controllers.at(0).get('multimedia').setValue(multimedia);
+              this.updateFrantions();
+              this.activeSlide = 0;
+            }
           });
-          multimedia.push(file);
-          if (index + 1 === this.item.images.length) {
-            this.controllers.at(0).get('multimedia').setValue(multimedia);
-            this.updateFrantions();
-            this.activeSlide = 0;
-          }
-        });
+        }
       }
     }
     if (this._ItemsService.itemImages.length) {
@@ -223,7 +205,11 @@ export class ArticleCreatorComponent implements OnInit {
     }, 900);
   }
 
-  updateCurrentSlideData(event: any) {
+  swiperI: number = 0;
+  swiperJ: number = 0;
+  updateCurrentSlideData(event: any, i: number, j: number) {
+    this.swiperI = i;
+    this.swiperJ = j;
     this.activeSlide = this.mediaSwiper.directiveRef.getIndex();
   }
 
@@ -403,9 +389,168 @@ export class ArticleCreatorComponent implements OnInit {
     };
   }
 
-  submit(): void {
+  imageSizeChange: number = 100;
+  imageRotationChange: number = 0;
+  imageRotation: number = 0;
+
+  rotateImage() {
+    this.imageRotation = this.imageRotationChange * (Math.PI / 180);
+    this.drawImage();
+  }
+
+  resizeImage() {
+    this.drawImage();
+  }
+
+  drawImage() {
+    this.context.clearRect(
+      0,
+      0,
+      this.canvasElement.width,
+      this.canvasElement.height
+    );
+    this.context.translate(
+      this.canvasElement.width / 2,
+      this.canvasElement.height / 2
+    );
+    this.context.rotate(this.imageRotation);
+    this.context.drawImage(
+      this.imageElement,
+      (-this.imageElement.width * (this.imageSizeChange / 100)) / 2,
+      (-this.imageElement.height * (this.imageSizeChange / 100)) / 2,
+      this.imageElement.width * (this.imageSizeChange / 100),
+      this.imageElement.height * (this.imageSizeChange / 100)
+    );
+    this.context.rotate(-this.imageRotation);
+    this.context.translate(
+      -(this.canvasElement.width / 2),
+      -(this.canvasElement.height / 2)
+    );
+  }
+
+  imageSizes: {
+    width: number;
+    height: number;
+  }[] = [];
+
+  enterEdit(i: number, j: number) {
+    this.editMode = true;
+    this.editingImage = j;
+    const img = this.urls[j];
+    this.imageElement = new Image();
+    this.imageElement.src = img as string;
+    this.imageElement.crossOrigin = 'anonymous';
+    this.canvasElement = null;
+    this.context = null;
+    this.imageElement.onload = async () => {
+      if (!this.imageSizes[j]?.width || !this.imageSizes[j]?.height) {
+        this.imageSizes[j] = {
+          width: this.imageElement.width,
+          height: this.imageElement.height,
+        };
+      }
+      this.canvasElement = document.createElement('canvas');
+      const totalSize = Math.max(
+        this.imageElement.width,
+        this.imageElement.height
+      );
+      this.canvasElement.width = this.imageSizes[j].width * 1.25;
+      this.canvasElement.height = this.imageSizes[j].height * 1.25;
+      this.context = this.canvasElement.getContext('2d');
+      this.drawImage();
+      // const url = this.canvasElement.toDataURL('image/png');
+      // this.openImageModal(url);
+    };
+  }
+
+  resetSliders() {
+    this.imageSizeChange = 100;
+    this.imageRotation = 0;
+    this.imageRotationChange = 0;
+  }
+
+  cancelEdit() {
+    this.editMode = false;
+    this.editingImage = null;
+    this.imageElement = null;
+    this.canvasElement = null;
+    this.context = null;
+    this.resetSliders();
+  }
+
+  resetEdit() {
+    this.resetSliders();
+    this.drawImage();
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this._DialogService.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  async submit(settings?: boolean): Promise<void> {
     this.blockSubmitButton = true;
-    if (this.mode === 'symbols') {
+    if (this.editMode) {
+      if (!this.imageRotation) {
+        this.canvasElement.width = this.imageElement.width;
+        this.canvasElement.height = this.imageElement.height;
+        this.drawImage();
+      }
+      this.imageSizeChange = 100;
+      this.imageRotationChange = 0;
+      this.imageRotation = null;
+      this.editMode = false;
+      const url = this.canvasElement.toDataURL('image/png');
+      const file = await this.urltoFile(url, 'image.png');
+      this.urls[this.editingImage] = url;
+      lockUI();
+      const itemWithDeletedImage = await this._ItemsService.deleteImageItem(
+        [this.item.images[this.editingImage]],
+        this.item._id
+      );
+      const itemWithAddedImage = await this._ItemsService.addImageItem(
+        [file],
+        this.item._id
+      );
+      this.urls[this.editingImage] = url;
+      const newItem = await this._ItemsService.item(this.item._id);
+      this.item.images = [...newItem.images];
+      this.urls = newItem.images;
+
+      const multimedia: File[] = [];
+      this.item.images.forEach(async (image, index) => {
+        this.multimedia[0][index] = this._DomSanitizer
+          .bypassSecurityTrustStyle(`url(
+        ${image})
+        no-repeat center center / contain #2e2e2e`);
+        this.types[0][index] = 'image/jpeg';
+
+        const response = await fetch(image);
+        const blob = await response.blob();
+        const file = new File([blob], `item_image_${index}.jpeg`, {
+          type: 'image/jpeg',
+        });
+        multimedia.push(file);
+        if (index + 1 === this.item.images.length) {
+          this.controllers.at(0).get('multimedia').setValue(multimedia);
+          setTimeout(() => {
+            const _Swiper = new Swiper('.swiper');
+            _Swiper.slideTo(this.item.images.length);
+            this.activeSlide = this.item.images.length - 1;
+          }, 50);
+          this.updateFrantions();
+          unlockUI();
+        }
+      });
+      return;
+    }
+    if (this.isOrder) {
       if (this.controllers.invalid) return;
       let result = [];
       const createPost = async (value: PostInput) => {
@@ -440,7 +585,7 @@ export class ArticleCreatorComponent implements OnInit {
       });
       this.blockSubmitButton = false;
     }
-    if (this.mode === 'item') {
+    if (!this.isOrder) {
       const images = [];
       this.controllers.controls.forEach((controller, i) => {
         (controller.get('multimedia').value as File[]).forEach((value) => {
@@ -448,7 +593,39 @@ export class ArticleCreatorComponent implements OnInit {
         });
       });
       this._ItemsService.itemImages = images;
+      if (settings) {
+        this._Router.navigate([
+          `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
+        ]);
+        return;
+      }
 
+      if (this.item) {
+        if (this._ItemsService.changedImages) {
+          const itemInput = {
+            showImages: this._ItemsService.itemImages.length > 0,
+          };
+          const { updateItem: updatedItem } =
+            await this._ItemsService.updateItem(itemInput, this.item._id);
+          await this._ItemsService.deleteImageItem(
+            this.item.images,
+            updatedItem._id
+          );
+          await this._ItemsService.addImageItem(
+            this._ItemsService.itemImages,
+            updatedItem._id
+          );
+          this._ItemsService.itemImages = [];
+          this._ItemsService.changedImages = false;
+          this._ItemsService.removeTemporalItem();
+          this._ToastrService.success(
+            'Producto actualizado satisfactoriamente!'
+          );
+        }
+        this._Router.navigate([`/admin/article-params/${this.item._id}`]);
+        return;
+      }
+      return;
       if (this.fromTemplate) {
         localStorage.setItem(
           'entity-template-creation-data',
@@ -460,14 +637,10 @@ export class ArticleCreatorComponent implements OnInit {
       } else {
         localStorage.removeItem('entity-template-creation-data');
       }
-
-      this._Router.navigate([
-        `/admin/article-params${this.item ? '/' + this.item._id : ''}`,
-      ]);
     }
   }
 
-  navigateToArticlePrivacy():void {
+  navigateToArticlePrivacy(): void {
     const images = [];
     this.controllers.controls.forEach((controller, i) => {
       (controller.get('multimedia').value as File[]).forEach((value) => {
@@ -476,9 +649,7 @@ export class ArticleCreatorComponent implements OnInit {
     });
     const id = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     this._ItemsService.itemImages = images;
-    this._Router.navigate([
-      `/admin/article-privacy`, id,
-    ]);
+    this._Router.navigate([`/admin/article-privacy`, id]);
   }
 
   removeFile(i: number, j: number): void {
@@ -585,23 +756,6 @@ export class ArticleCreatorComponent implements OnInit {
     });
   };
 
-  changeMode(mode: Mode) {
-    this.mode = mode;
-    switch (mode) {
-      case 'symbols':
-        this.ctaText = 'SALVAR';
-        this.ctaDescription = '';
-        break;
-      case 'item': {
-        this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
-        this.ctaDescription = this.item ? 
-          `El visitante te paga RD$${this.item.pricing}.` :
-          'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
-        break;
-      }
-    }
-  }
-
   openTagsDialog = async () => {
     this.selectedTags = [];
     const userTags = await this._TagsService.tagsByUser({
@@ -681,7 +835,6 @@ export class ArticleCreatorComponent implements OnInit {
     }
     this._ItemsService.itemImages = [];
     this._ItemsService.itemName = null;
-    this._ItemsService.itemPrice = null;
     this._ItemsService.changedImages = false;
     if (!this.fromTemplate) {
       if (
@@ -922,7 +1075,6 @@ export class ArticleCreatorComponent implements OnInit {
                 item._id,
                 'item'
               );
-
 
             this._Clipboard.copy(formatID(result.dateId, true).slice(1));
 

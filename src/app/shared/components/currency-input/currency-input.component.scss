@@ -1,26 +1,22 @@
-.price-wrapper {
+.input-wrapper {
   position: relative;
   height: 100%;
 }
-.formatted-price {
+.currency-wrapper {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: white;
-  bottom: 0px;
-  left: 0px;
-  z-index: 1;
-
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
   border-radius: 10px;
-  padding: 0px 20px;
+  padding: 14px 20px;
   width: 100%;
   height: 100%;
+  box-shadow: 0px 7px 20px -18px inset;
+}
+.formatted-price {
+  display: flex;
   font-family: RobotoMedium;
   font-size: 1rem;
-  border: none;
-  color: #0b1f38;
-  box-shadow: 0px 7px 20px -18px inset;
-  overflow-x: scroll;
 }
 .formatted-input {
   background-color: transparent;
@@ -76,4 +72,12 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.inner-label {
+  font-family: "SfProMedium";
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #272727;
 }

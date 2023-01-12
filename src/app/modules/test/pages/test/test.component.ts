@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { CustomFieldsComponent } from 'src/app/shared/dialogs/custom-fields/custom-fields.component';
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
@@ -25,6 +25,10 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
+import { BlankComponent } from 'src/app/shared/dialogs/blank/blank.component';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-test',
@@ -32,9 +36,62 @@ import { SaleFlow } from 'src/app/core/models/saleflow';
   styleUrls: ['./test.component.scss'],
 })
 export class TestComponent implements OnInit {
-  imageField: (string | ArrayBuffer)[] = [''];
-  merchant: Merchant;
-  saleflow: SaleFlow;
+  @ViewChild('dialogSwiper') dialogSwiper: SwiperComponent;
+
+  openedDialogFlow: boolean = false;
+  swiperConfig: SwiperOptions = null;
+  @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
+  dialogs: Array<EmbeddedComponent> = [
+    {
+      component: BlankComponent,
+      inputs: {
+        containerStyles: {
+          height: '500px',
+        },
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: BlankComponent,
+      inputs: {
+        containerStyles: {
+          height: '200px',
+        },
+      },
+    },
+    {
+      component: BlankComponent,
+      inputs: {
+        containerStyles: {
+          height: '500px',
+        },
+      },
+    },
+    {
+      component: BlankComponent,
+      inputs: {
+        containerStyles: {
+          height: '200px',
+        },
+      },
+      outputs: [
+        {
+          name: 'threeClicksDetected',
+          callback: (timeOfDay) => {
+            this.openedDialogFlow = false;
+          },
+        },
+      ],
+    },
+  ];
+
 
   constructor(
     private dialog: DialogService,
@@ -43,67 +100,5 @@ export class TestComponent implements OnInit {
     private saleflowService: SaleFlowService
   ) {}
 
-  async ngOnInit() {
-    this.merchant = await this.merchantService.merchantDefault();
-    this.saleflow = await this.saleflowService.saleflowDefault(
-      this.merchant._id
-    );
-  }
-
-  fileProgressMultiple(e: Event) {
-    const fileList = (e.target as HTMLInputElement).files;
-
-    if (fileList.length > 0) {
-      this.imageField = [];
-
-      for (let i = 0; i < fileList.length; i++) {
-        const file = fileList.item(i);
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.imageField[i] = reader.result;
-        };
-
-        reader.readAsDataURL(file);
-      }
-
-      (e.target as HTMLInputElement).value = null;
-      return;
-    }
-  }
-
-  async createItemForEachLoadedImage() {
-    let productIndex = 0;
-    for await (const image of this.imageField) {
-      try {
-        const itemInput: ItemInput = {
-          name: 'Producto sin nombre #' + productIndex,
-          description: null,
-          pricing: 1,
-          images: [base64ToFile(image as string)],
-          merchant: this.merchant?._id,
-          content: [],
-          currencies: [],
-          hasExtraPrice: false,
-          purchaseLocations: [],
-        };
-
-        const { createItem } = await this.itemsService.createItem(itemInput);
-
-        await this.saleflowService.addItemToSaleFlow(
-          {
-            item: createItem._id,
-          },
-          this.saleflow._id
-        );
-        productIndex++;
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    if (productIndex === this.imageField.length) {
-      alert('productos creados exitosamente');
-    }
-  }
+  async ngOnInit() {}
 }

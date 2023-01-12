@@ -10,9 +10,12 @@ export class CurrencyInputComponent implements OnInit {
   curencyFocused = false;
   formattedPricing = '$0.00';
   @Input() initialValue: number;
+  @Input() currencyLabel: string;
   @Input() fieldStyles: Record<string, any> = null;
+  @Input() placeholderColor: string;
   @Input() inputId: string = 'pricing';
   @Input() inputName: string = 'pricing';
+  @Input() innerLabel: string;
   @Input() required: boolean = true;
   @Input() blockKeyboardNavigation: boolean = false;
   @Output() onInputEvent = new EventEmitter<number>();

@@ -355,6 +355,14 @@ export const ordersByItem = gql`
   }
 `;
 
+export const ordersByItemHot = gql`
+  query ordersByItem($paginate: PaginationInput!) {
+    ordersByItem(paginate: $paginate) {
+      _id
+    }
+  }
+`;
+
 export const createOCR = gql`
   mutation createOCR($input: OCRInput!) {
     createOCR(input: $input) {

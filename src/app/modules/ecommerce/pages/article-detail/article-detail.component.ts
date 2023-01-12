@@ -30,6 +30,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
+import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
 
 SwiperCore.use([Virtual]);
 
@@ -101,7 +102,7 @@ export class ArticleDetailComponent implements OnInit {
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
   constructor(
-    private itemsService: ItemsService,
+    private _ItemsService: ItemsService,
     private tagsService: TagsService,
     public headerService: HeaderService,
     private route: ActivatedRoute,
@@ -175,15 +176,43 @@ export class ArticleDetailComponent implements OnInit {
     });
   }
 
+  openInfoDialog() {
+    const props: any = {
+      symbols: {
+        title: this.itemData.name || 'Sin nombre',
+      },
+    };
+    if (this.itemData.description) {
+      props.symbols.text = this.itemData.description;
+    }
+    if (this.itemData.content?.length) {
+      props.actions = {
+        title: 'Lo incluido:',
+        text: this.itemData.content,
+      };
+    }
+    this.dialogService.open(InfoDialogComponent, {
+      type: 'fullscreen-translucent',
+      props,
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
   async getItemData() {
     try {
-      this.itemData = await this.itemsService.item(this.entityId);
+      this.itemData = await this._ItemsService.item(this.entityId);
+      if (this.previewMode) {
+        this.itemData.name = this._ItemsService.itemName;
+        this.itemData.description = this._ItemsService.itemDesc;
+        this.itemData.pricing = this._ItemsService.itemPrice;
+        this.itemData.images = [...this._ItemsService.itemUrls];
+      }
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
       this.itemTags?.forEach((tag) => {
         tag.selected = this.itemData.tags?.includes(tag._id);
       });
-
       this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
       if (this.itemData.images?.length < 2) this.startTimeout();
     } catch (error) {
@@ -239,7 +268,7 @@ export class ArticleDetailComponent implements OnInit {
         tag.selected = true;
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -342,7 +371,7 @@ export class ArticleDetailComponent implements OnInit {
       this.selectedParam ? itemParamValue : this.itemData
     );
     this.itemInCart();
-    this.showItems();
+    //this.showItems();
   }
 
   paramFromSameItem(id: string) {
@@ -430,7 +459,9 @@ export class ArticleDetailComponent implements OnInit {
 
   async back() {
     if (this.previewMode) {
-      return this.router.navigate([`/admin/entity-detail-metrics`]);
+      return this.router.navigate([
+        `/admin/article-params/${this.itemData._id}`,
+      ]);
     }
     if (this.selectedParam) {
       this.selectedParam = null;
@@ -466,7 +497,7 @@ export class ArticleDetailComponent implements OnInit {
       return;
     }
 
-    this.itemsService.removeTemporalItem();
+    this._ItemsService.removeTemporalItem();
 
     if (this.headerService.saleflow) {
       this.router.navigate([`../../../store`], {

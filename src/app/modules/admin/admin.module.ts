@@ -16,16 +16,17 @@ import { ArticleCreatorComponent } from './pages/article-creator/article-creator
 import { ArticleParamsComponent } from './pages/article-params/article-params.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
+import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/anexo-choices.component';
 import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
-  {
-    path: 'create-article',
-    component: ArticleCreatorComponent,
-  },
+  // {
+  //   path: 'create-article',
+  //   component: ArticleCreatorComponent,
+  // },
   {
     path: 'article-params',
     component: ArticleParamsComponent,
@@ -42,7 +43,7 @@ const routes: Routes = [
       {
         path: 'items-dashboard',
         redirectTo: 'entity-detail-metrics',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       {
         path: 'create-item/:itemId',
@@ -115,6 +116,14 @@ const routes: Routes = [
       {
         path: 'create-tag/:tagId',
         component: CreateTagComponent,
+      },
+      {
+        path: 'article-choices/:articleId',
+        component: AnexoChoicesComponent,
+      },
+      {
+        path: 'article-choices',
+        component: AnexoChoicesComponent,
       },
       {
         path: 'manage-tag',

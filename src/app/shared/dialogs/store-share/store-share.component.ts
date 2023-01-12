@@ -70,6 +70,7 @@ export class StoreShareComponent implements OnInit {
   @Input() buttonText: string = 'Cancel';
   @Input() public buttonCallback: () => void;
   @Input() hideCancelButtton: boolean = false;
+  @Input() relativePositioning: boolean = false;
   @Input() dynamicStyles: {
     container?: Record<string, string | number>;
     titleWrapper?: Record<string, string | number>;

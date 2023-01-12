@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" [ngStyle]="containerStyles">
   <div class="main-container" *ngIf="!final">
     <div class="headline-subtitle">
       <h1 class="title">{{ title }}</h1>
@@ -7,7 +7,7 @@
       </p>
     </div>
 
-    <div class="answer-container" *ngIf="webformOptions">
+    <div class="answer-container" *ngIf="webformOptions?.length">
       <app-answer-selector
         [complexOptions]="webformOptions"
         [hasComplexOptionsLayout]="true"
@@ -22,7 +22,7 @@
       ></app-answer-selector>
     </div>
 
-    <ng-container *ngIf="inputs">
+    <form *ngIf="inputs" [formGroup]="form">
       <div class="title-input" *ngFor="let input of inputs">
         <label
           for="Entrada de informacion"
@@ -34,29 +34,47 @@
         <input
           class="input-content"
           [type]="input.type"
+          [formControlName]="input.name"
           [placeholder]="input.placeholder"
           [ngStyle]="input.inputStyles ? input.inputStyles : null"
-          *ngIf="input.type !== 'textarea'"
+          *ngIf="input.type !== 'textarea' && input.type !== 'currency'"
+          (input)="onFormInput(input.type)"
         />
+
+        <app-currency-input
+          *ngIf="input.type === 'currency'"
+          [innerLabel]="input.innerLabel"
+          (onInputEvent)="onFormInput(input.type, input.name, $event)"
+        ></app-currency-input>
 
         <textarea
           class="input-textarea"
           name="data-in"
           id="input-textarea"
+          [formControlName]="input.name"
           [placeholder]="input.placeholder"
           [cols]="!input.cols ? 30 : input.cols"
           [rows]="!input.rows ? 6 : input.rows"
           *ngIf="input.type === 'textarea'"
+          (input)="onFormInput(input.type)"
         ></textarea>
       </div>
-    </ng-container>
-
+    </form>
+    <button
+      *ngIf="cta"
+      [ngStyle]="cta.styles"
+      class="cta"
+      (click)="cta.callback ? cta.callback() : close()"
+    >
+      {{ cta.text }}
+    </button>
     <ng-container *ngIf="footer">
       <div
         class="footer-background"
         [ngStyle]="footerBackgroundStyles"
         *ngIf="footerBackground"
       >
+        <h2 class="footer-title">{{ footerTitle }}</h2>
         <p class="footer">{{ footer }}</p>
       </div>
       <p class="footer" *ngIf="!footerBackground">{{ footer }}</p>
@@ -77,9 +95,10 @@
       <p *ngIf="subTitle" class="subtitle">
         {{ subTitle }}
         <button
-          [ngStyle]="cta.styles && cta.styles"
+          *ngIf="cta"
+          [ngStyle]="cta.styles"
           class="cta"
-          (click)="cta.callback()"
+          (click)="cta.callback ? cta.callback() : close()"
         >
           {{ cta.text }}
         </button>

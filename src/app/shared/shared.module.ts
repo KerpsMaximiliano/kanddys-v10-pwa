@@ -112,7 +112,15 @@ import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.c
 import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
+import { AnexoChoicesComponent } from './components/anexo-choices/anexo-choices.component';
+import { BiosBannerComponent } from './components/bios-banner/bios-banner.component';
 import { ItemListSelectorComponent } from './dialogs/item-list-selector/item-list-selector.component';
+import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.component';
+import { BlankComponent } from './dialogs/blank/blank.component';
+import { ArticleDialogComponent } from './dialogs/article-dialog/article-dialog.component';
+import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.component';
+import { ItemImagesComponent } from './dialogs/create-item-flow/item-images/item-images.component';
+import { InfoDialogComponent } from './dialogs/info-dialog/info-dialog.component';
 import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
 
 const imports = [
@@ -231,6 +239,16 @@ const declarations = [
   QrCodeDialogComponent,
   PostsXlsComponent,
   TagAsignationComponent,
+  MediaDialogComponent,
+  AnexoChoicesComponent,
+  BiosBannerComponent,
+  DialogFlowComponent,
+  ItemListSelectorComponent,
+  BlankComponent,
+  ArticleDialogComponent,
+  AnexoLandingComponent,
+  ItemImagesComponent,
+  InfoDialogComponent,
   TagTypeDialogComponent,
   MediaDialogComponent,
   ItemListSelectorComponent,
