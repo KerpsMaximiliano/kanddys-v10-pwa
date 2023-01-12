@@ -27,11 +27,7 @@ import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview
 import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
-<<<<<<< HEAD
-import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
-=======
->>>>>>> 321dff11196fab022ffa24592fa4c8e6dcb86f70
 
 const routes: Routes = [
   {
@@ -150,16 +146,11 @@ const routes: Routes = [
       {
         path: 'image-banner',
         component: ImageBannerComponent,
-<<<<<<< HEAD
       },
       {
         path: 'qr-edit',
         component: QrEditComponent,
       },
-=======
-      }
-
->>>>>>> 321dff11196fab022ffa24592fa4c8e6dcb86f70
     ],
   },
 ];

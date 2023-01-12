@@ -33,7 +33,7 @@ export class PostEditionComponent implements OnInit {
     from: 'tester',
   };
   dialogFlowFunctions: Record<string, any> = {};
-  bannerId: string;
+  bannerId:string;
   dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
@@ -130,7 +130,7 @@ export class PostEditionComponent implements OnInit {
       ],
     },
   ];
-  banner: Banner;
+  banner:Banner;
   constructor(
     private postsService: PostsService,
     private router: Router,
@@ -152,12 +152,11 @@ export class PostEditionComponent implements OnInit {
       this.postsService.post = JSON.parse(storedPost);
     }
 
-    console.log(this.data.slides);
+    console.log(this.data?.slides);
     (async () => {
       const storedPost = localStorage.getItem('post');
       this.postInput =
         (storedPost ? JSON.parse(storedPost) : this.postsService.post) || {};
-
       if (storedPost) {
         this.postsService.post = JSON.parse(storedPost);
       }
@@ -169,10 +168,10 @@ export class PostEditionComponent implements OnInit {
           sortBy: 'createdAt:desc',
         },
         findBy: {
-          user,
-        },
-      };
-      const [result]: any = await this._BannersService.banners(paginate);
+          user
+        }
+      }
+      const [result]:any = await this._BannersService.banners(paginate);
       this.banner = result;
       this.bannerId = result._id;
     })();
