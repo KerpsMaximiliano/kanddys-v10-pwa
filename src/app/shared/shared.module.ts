@@ -121,11 +121,12 @@ import { MerchantContactComponent } from './components/merchant-contact/merchant
 import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { PostEditionComponent } from '../modules/ecommerce/pages/post-edition/post-edition.component';
-import { InvitesNotificationsComponent } from './components/invites-notifications/invites-notifications.component';
 import { QrContentComponent } from './components/qr-content/qr-content.component';
 import { EnvelopeContentComponent } from './components/envelope-content/envelope-content.component';
 import { EnvelopeDataComponent } from './components/envelope-data/envelope-data.component';
 import { PostPreviewComponent } from '../modules/ecommerce/pages/post-preview/post-preview.component';
+import { CardComponent } from './components/card/card.component';
+import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
 
 const imports = [
   CommonModule,
@@ -255,10 +256,11 @@ const declarations = [
   QrEditComponent,
   PostEditionComponent,
   PostPreviewComponent,
-  InvitesNotificationsComponent,
   QrContentComponent,
   EnvelopeContentComponent,
   EnvelopeDataComponent,
+  CardComponent,
+  TitleIconHeaderComponent,
 ];
 
 @NgModule({

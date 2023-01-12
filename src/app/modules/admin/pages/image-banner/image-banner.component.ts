@@ -5,10 +5,11 @@ import { Subscription } from 'rxjs';
 import { Banner, BannerInput } from 'src/app/core/models/banner';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { BannersService } from 'src/app/core/services/banners.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 export function imagesValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    console.log(control.value);
     return !control.value ? { images: { value: control.value } } : null;
   };
 }
@@ -41,7 +42,9 @@ export class ImageBannerComponent implements OnInit, OnDestroy {
   constructor(
     private _BannersService: BannersService,
     private _Router: Router,
-    private _ActivatedRoute: ActivatedRoute
+    private _ActivatedRoute: ActivatedRoute,
+    private _MerchantsService: MerchantsService,
+    private _SaleFlowService: SaleFlowService
   ) {}
 
   ngOnInit():void {
@@ -59,7 +62,6 @@ export class ImageBannerComponent implements OnInit, OnDestroy {
             }
           }
           const [result]:any = await this._BannersService.banners(paginate);
-          console.log('result: ', result);
           const { description, image } = result || {};
           this.createTagForm.get('images').setValue(image);
           this.createTagForm.get('name').setValue(description);
@@ -67,18 +69,22 @@ export class ImageBannerComponent implements OnInit, OnDestroy {
       }
       this.icon['callback'] = 
       (async () => {
-        console.log('this.createTagForm.value: ', this.createTagForm.value);
         if(this.createTagForm.invalid)  return;
         const banner:BannerInput = {
           description: this.createTagForm.get('name').value,
           image: this.createTagForm.get('images').value,
+          type: 'image'
         };
         const { _id, ...result }: Banner = await (this.bannerId?this._BannersService.updateBanner(this.bannerId, banner):this._BannersService.createBanner(banner));
-        console.log('result: ', result);
         const queryParams = {
           bannerId: _id
         };
-        this._Router.navigate(['admin','post-edition'],{
+        
+        
+        const { _id: merchantId } = await this._MerchantsService.merchantDefault();
+        const { merchant } = await this._SaleFlowService.saleflowDefault(merchantId);
+        const { slug } = merchant;
+        this._Router.navigate(['ecommerce', slug,'post-edition'],{
           queryParams
         });
       });

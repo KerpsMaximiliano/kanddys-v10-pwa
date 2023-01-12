@@ -2,24 +2,39 @@
   margin: 0;
 }
 
+button {
+  all: unset;
+  cursor: pointer;
+}
+
+.icon {
+  &.black {
+    filter: brightness(0) saturate(100) invert(8%) sepia(0%) saturate(814%) hue-rotate(154deg) brightness(98%) contrast(83%);
+  }
+}
+
 .container {
   height: 100vh;
 
   .header {
     background-color: #ffffff;
-    padding: 10.5px 0;
     display: flex;
     align-items: center;
 
-    svg {
-      cursor: pointer;
+    button {
+      padding: 8px;
+    }
+
+    .flex-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
     }
 
     .arrows {
       margin-left: 16px;
     }
-    p {
-      margin-left: auto;
+    .preview {
       margin-right: 14.5px;
       font-family: SFProBold;
       font-size: 15px;
@@ -29,6 +44,7 @@
       margin-right: 14.5px;
     }
     .dots {
+      display: flex;
       margin-right: 19px;
     }
   }

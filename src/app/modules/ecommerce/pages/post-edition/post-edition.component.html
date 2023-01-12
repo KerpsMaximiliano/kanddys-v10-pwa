@@ -1,109 +1,35 @@
 <div class="container">
   <div class="header">
-    <svg
-      (click)="goBack()"
-      class="arrows"
-      xmlns="http://www.w3.org/2000/svg"
-      width="16.944"
-      height="21.375"
-      viewBox="0 0 16.944 21.375"
-    >
-      <g
-        id="Group_71771"
-        data-name="Group 71771"
-        transform="translate(-47.215 -828.841)"
-      >
-        <path
-          id="back"
-          d="M14.578.857,6,9.436,14.365,17.8l2.109-2.109L10.217,9.436l6.47-6.47Z"
-          transform="translate(65.017 822.841) rotate(90)"
-          fill="#272727"
-          fill-rule="evenodd"
-        />
-        <path
-          id="back-2"
-          data-name="back"
-          d="M14.578.857,6,9.436,14.365,17.8l2.109-2.109L10.217,9.436l6.47-6.47Z"
-          transform="translate(65.017 833.528) rotate(90)"
-          fill="#272727"
-          fill-rule="evenodd"
-        />
-      </g>
-    </svg>
-
-    <p (click)="goToPostPreview()">PREVIEW</p>
-
-    <svg
-      class="save"
-      id="bookmark-plus"
-      xmlns="http://www.w3.org/2000/svg"
-      width="18.051"
-      height="20.042"
-      viewBox="0 0 18.051 20.042"
-    >
-      <path
-        id="Path_28828"
-        data-name="Path 28828"
-        d="M8.833,3.639a.694.694,0,0,0-.694.694V19.7L13.693,16l5.554,3.7V12.664a.694.694,0,0,1,1.389,0v9.628l-6.943-4.628L6.75,22.292V4.333A2.083,2.083,0,0,1,8.833,2.25h5.554a.694.694,0,1,1,0,1.389ZM21.33,2.25a.694.694,0,0,1,.694.694V5.721a.694.694,0,0,1-.694.694H18.553a.694.694,0,1,1,0-1.389h2.083V2.944A.694.694,0,0,1,21.33,2.25Z"
-        transform="translate(-6.75 -2.25)"
-        fill="#272727"
-        fill-rule="evenodd"
+    <button class="arrows">
+      <img
+        class="icon black"
+        [src]="env + '/arrow-double-up.svg'"
+        alt="Volver"
       />
-      <path
-        id="Path_28829"
-        data-name="Path 28829"
-        d="M29.25,7.444a.694.694,0,0,1,.694-.694h2.777a.694.694,0,1,1,0,1.389H30.639v2.083a.694.694,0,0,1-1.389,0Z"
-        transform="translate(-15.364 -3.973)"
-        fill="#272727"
-        fill-rule="evenodd"
-      />
-    </svg>
-
-    <svg
-      class="dots"
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="6"
-      viewBox="0 0 22 6"
-    >
-      <g
-        id="Group_71232"
-        data-name="Group 71232"
-        transform="translate(-387 -78)"
-      >
-        <g id="Group_71368" data-name="Group 71368">
-          <circle
-            id="Ellipse_5107"
-            data-name="Ellipse 5107"
-            cx="3"
-            cy="3"
-            r="3"
-            transform="translate(387 78)"
-            fill="#272727"
-          />
-          <circle
-            id="Ellipse_5108"
-            data-name="Ellipse 5108"
-            cx="3"
-            cy="3"
-            r="3"
-            transform="translate(395 78)"
-            fill="#272727"
-          />
-          <circle
-            id="Ellipse_5109"
-            data-name="Ellipse 5109"
-            cx="3"
-            cy="3"
-            r="3"
-            transform="translate(403 78)"
-            fill="#272727"
-          />
-        </g>
-      </g>
-    </svg>
+    </button>
+    <div class="flex-right">
+      <button class="preview" (click)="goToPostPreview()">
+        <p>PREVIEW</p>
+      </button>
+      <button class="save">
+        <img
+          class="icon black"
+          [src]="env + '/bookmark-plus.svg'"
+          width="18"
+          height="20"
+          alt="Volver"
+        />
+      </button>
+      <button class="dots">
+        <img
+          [src]="env + '/dots-black.svg'"
+          width="22"
+          height="6"
+          alt="Volver"
+        />
+      </button>
+    </div>
   </div>
-
   <div class="content">
     <!--
       <app-invites-notifications title="Acceso & Notificaciones" text="Acceso de Invitados: (000) 000 - 0000"></app-invites-notifications>
