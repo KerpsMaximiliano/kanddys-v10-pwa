@@ -239,7 +239,7 @@ export class ItemsDashboardComponent implements OnInit {
             );
             this._ToastrService.success('Producto creado satisfactoriamente!');
             unlockUI();
-            this.router.navigate([`admin/create-article/${createItem._id}`]);
+            this.router.navigate([`admin/article-editor/${createItem._id}`]);
           },
         },
       ],
@@ -764,7 +764,7 @@ export class ItemsDashboardComponent implements OnInit {
 
   goToDetail(id: string) {
     this.savePageSnapshot();
-    this.router.navigate([`admin/create-article/${id}`]);
+    this.router.navigate([`admin/article-editor/${id}`]);
     this._ItemsService.itemImages = [];
   }
 

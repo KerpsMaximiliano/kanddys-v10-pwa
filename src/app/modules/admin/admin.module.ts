@@ -20,6 +20,7 @@ import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/a
 import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
+import { ArticleEditorComponent } from './pages/article-editor/article-editor.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -133,6 +134,10 @@ const routes: Routes = [
         path: 'article-privacy/:templateId',
         component: ArticlePrivacyComponent,
       },
+      {
+        path: "article-editor/:articleId",
+        component: ArticleEditorComponent
+      }
     ],
   },
   {
@@ -157,6 +162,7 @@ const routes: Routes = [
     CreateTagComponent,
     TagsComponent,
     ManageTagComponent,
+    ArticleEditorComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

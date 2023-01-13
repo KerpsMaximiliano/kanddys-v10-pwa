@@ -123,6 +123,8 @@ import { ItemImagesComponent } from './dialogs/create-item-flow/item-images/item
 import { InfoDialogComponent } from './dialogs/info-dialog/info-dialog.component';
 import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
 import { ImageEditorComponent } from './components/image-editor/image-editor.component';
+import { CardComponent } from './components/card/card.component';
+import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
 
 const imports = [
   CommonModule,
@@ -255,6 +257,8 @@ const declarations = [
   ItemListSelectorComponent,
   TagsDialogComponent,
   ImageEditorComponent,
+  CardComponent,
+  TitleIconHeaderComponent
 ];
 
 @NgModule({

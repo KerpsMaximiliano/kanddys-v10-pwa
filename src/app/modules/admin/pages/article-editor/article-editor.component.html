@@ -1,0 +1,185 @@
+<div class="container">
+    <app-helper-headerv2
+    [mode]="'basic'"
+    [icon]="{
+      src: '/arrow-double-up.svg',
+      width: 17,
+      height: 21,
+      callback: iconCallback,
+      filter: 'brightness(0)'
+    }"
+    [rightText]="{
+      text: 'PREVIEW',
+      fontSize: '0.963rem',
+      fontFamily: 'SfProBold',
+      color: '#272727',
+      pointer: true
+    }"
+    [icons]="[
+      {
+        src: '/bookmark-plus.svg',
+        color: 'brightness(0)',
+        margin: '1px',
+        callback: openTagDialog
+      }
+    ]"
+    [dots]="{
+      active: true,
+      color: '#272727'
+    }"
+    (dotEvent)="openOptionsForThisArticle()"
+    (agnosticAction)="previewItem()"
+    [returnAble]="false"
+    [bgColor]="'#FFFFFF'"
+    (return)="goBack()"
+  ></app-helper-headerv2>
+
+  <div class="toast-status" *ngIf="item?.status === 'disabled'">
+    <p>Este artículo solo lo ves tú.</p>
+  </div>
+
+  <div class="section">
+    <app-title-icon-header
+        title="Precio"
+        [editing]="!editingPrice"
+        (iconClicked)="editingPrice = true"
+    >
+    </app-title-icon-header>
+    <app-card [shadows]="editingPrice">
+        <span *ngIf="!editingPrice">RD$ {{ item?.pricing ? item.pricing.toLocaleString("es-MX") : '0' }}</span>
+        <app-currency-input
+            [fieldStyles]="{
+                boxShadow: 'none',
+                backgroundColor: 'white',
+                borderRadius: '6px',
+                padding: '8px 0px'
+            }"
+            [initialValue]="
+                countDecimals(price.value) < 2 ? price.value * 100 : price.value
+            "
+            (onInputEvent)="handleCurrencyInput($event)"
+            placeholderColor="#7B7B7B"
+            currencyLabel="RD$"
+            *ngIf="editingPrice"
+        ></app-currency-input>
+    </app-card>
+  </div>
+
+  <div class="section">
+    <app-title-icon-header
+        title="Slides, contenido del QR"
+        [editing]="!editingSlides"
+        (iconClicked)="editingSlides = true"
+    >
+    </app-title-icon-header>
+    <app-card [shadows]="editingSlides">
+        <div class="image-selector">
+            <div class="image-area">
+              <input
+                id="filemultiple"
+                (change)="fileProgressMultiple($event)"
+                type="file"
+                style="display: none"
+                accept="image/*"
+                multiple
+                [accept]="['.png', '.jpg', '.jpeg']"
+              />
+              <label for="filemultiple" class="add-image">
+                <div class="corner-btn add"></div>
+              </label>
+        
+              <div
+                class="image-container"
+                *ngFor="let item of selectedImages; index as i"
+              >
+                <button
+                  class="image"
+                  [style.background]="sanitize(item)"
+                  (click)="openImageModal(item)"
+                ></button>
+                <!-- <button class="corner-btn delete" (click)="deleteImage(i)"></button> -->
+                <div class="corner-btn2" (click)="openAuxDialog(i)" *ngIf="editingSlides">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="5"
+                    viewBox="0 0 22 6"
+                  >
+                    <g
+                      id="Group_71232"
+                      data-name="Group 71232"
+                      transform="translate(-387 -78)"
+                    >
+                      <g id="Group_71368" data-name="Group 71368">
+                        <circle
+                          id="Ellipse_5107"
+                          data-name="Ellipse 5107"
+                          cx="3"
+                          cy="3"
+                          r="3"
+                          transform="translate(387 78)"
+                          fill="#272727"
+                        />
+                        <circle
+                          id="Ellipse_5108"
+                          data-name="Ellipse 5108"
+                          cx="3"
+                          cy="3"
+                          r="3"
+                          transform="translate(395 78)"
+                          fill="#272727"
+                        />
+                        <circle
+                          id="Ellipse_5109"
+                          data-name="Ellipse 5109"
+                          cx="3"
+                          cy="3"
+                          r="3"
+                          transform="translate(403 78)"
+                          fill="#272727"
+                        />
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+                <div class="shadow-name"></div>
+              </div>
+            </div>
+        </div>
+    </app-card>
+    <!-- <app-qr-content></app-qr-content> -->
+  </div>
+
+  <div class="section">
+    <app-title-icon-header
+        title="Headline, article name"
+        [editing]="!editingName"
+        (iconClicked)="editingName = true; setFocus('name')"
+    >
+    </app-title-icon-header>
+    <app-card [shadows]="editingName">
+        <span *ngIf="!editingName">{{ item?.name ? item.name : 'Sin nombre...' }}</span>
+        <input #inputName type="text" [formControl]="name" placeholder="Nombre del producto (opcional)" *ngIf="editingName">
+    </app-card>
+  </div>
+
+  <div class="section">
+    <app-title-icon-header
+        title="Body, description, list of things"
+        [editing]="!editingDescription"
+        (iconClicked)="editingDescription = true; setFocus('description')"
+    >
+    </app-title-icon-header>
+    <app-card [shadows]="editingDescription">
+        <span *ngIf="!editingDescription">{{ item?.description ? item.description : 'Sin descripción...' }}</span>
+        <textarea
+            #inputDescription
+            cols="30"
+            rows="4"
+            placeholder="Descripción del producto (opcional)"
+            [formControl]="description"
+            *ngIf="editingDescription"
+        ></textarea>
+    </app-card>
+  </div>
+</div>

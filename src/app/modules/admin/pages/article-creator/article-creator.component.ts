@@ -588,7 +588,7 @@ export class ArticleCreatorComponent implements OnInit {
             'Producto actualizado satisfactoriamente!'
           );
         }
-        this._Router.navigate([`/admin/article-params/${this.item._id}`]);
+        this._Router.navigate([`/admin/article-editor/${this.item._id}`]);
         return;
       }
       return;

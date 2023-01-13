@@ -823,7 +823,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       if (this.entity === 'item') {
         this.headerService.flowRoute = null;
         localStorage.removeItem('flowRoute');
-        this.router.navigate(['admin/article-params/' + this.entityId]);
+        this.router.navigate(['admin/article-editor/' + this.entityId]);
       } else if (this.entity === 'order') {
         this.router.navigate(['ecommerce/order-detail/' + this.orderID]);
       } else {
