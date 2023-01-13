@@ -9,6 +9,11 @@ export const entityTemplate = gql`
       dateId
       status
       user
+      recipients {
+        _id
+        edit
+        recipient
+      }
     }
   }
 `;
@@ -22,6 +27,11 @@ export const entityTemplateByDateId = gql`
       dateId
       status
       user
+      recipients {
+        _id
+        edit
+        recipient
+      }
     }
   }
 `;
@@ -35,6 +45,11 @@ export const entityTemplateByReference = gql`
       dateId
       status
       user
+      recipients {
+        _id
+        edit
+        recipient
+      }
     }
   }
 `;
@@ -48,6 +63,56 @@ export const entityTemplateSetData = gql`
       dateId
       status
       user
+      recipients {
+        _id
+        edit
+        recipient
+      }
+    }
+  }
+`;
+
+export const entityTemplateAuthSetData = gql`
+  mutation entityTemplateAuthSetData(
+    $id: ObjectID!
+    $input: EntityTemplateInput!
+  ) {
+    entityTemplateAuthSetData(id: $id, input: $input) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+      recipients {
+        _id
+        edit
+        recipient
+      }
+    }
+  }
+`;
+
+export const entityTemplateAddRecipient = gql`
+  mutation entityTemplateAddRecipient(
+    $entityTemplateId: ObjectID!
+    $input: RecipientsInput!
+  ) {
+    entityTemplateAddRecipient(
+      entityTemplateId: $entityTemplateId
+      input: $input
+    ) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+      recipients {
+        _id
+        edit
+        recipient
+      }
     }
   }
 `;
@@ -62,6 +127,18 @@ export const createEntityTemplate = gql`
   }
 `;
 
+export const createRecipient = gql`
+  mutation createRecipient($input: RecipientInput!) {
+    createRecipient(input: $input) {
+      _id
+      email
+      phone
+      lastName
+      user
+    }
+  }
+`;
+
 export const preCreateEntityTemplate = gql`
   mutation preCreateEntityTemplate {
     preCreateEntityTemplate {
@@ -71,5 +148,3 @@ export const preCreateEntityTemplate = gql`
     }
   }
 `;
-
-

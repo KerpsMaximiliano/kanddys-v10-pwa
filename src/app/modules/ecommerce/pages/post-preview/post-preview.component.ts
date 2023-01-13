@@ -48,37 +48,6 @@ export class PostPreviewComponent implements OnInit {
       this.slideDescription = this.gpt3Service.gpt3Response;
     }
 
-    const src: string = 'https://wallpapercave.com/wp/wp9100440.jpg';
-    const _post: any = {
-      message: 'Hace 13 años de esta foto, la recuerdo como si fuera ayer',
-      title: 'Felicidades por tu tesis !!',
-      from: 'test',
-      to: 'tester',
-      slides: [
-        {
-          type: 'poster',
-          text: '',
-          media: this._DomSanitizer.bypassSecurityTrustStyle(`
-            url(${src}) center center / contain, linear-gradient(to bottom, #272727, #272727)
-          `) as any,
-        },
-        {
-          type: 'poster',
-          text: '',
-          media: this._DomSanitizer.bypassSecurityTrustStyle(`
-            url(${src}) center center / contain, linear-gradient(to bottom, transparent, #272727)
-          `) as any,
-        },
-        {
-          type: 'poster',
-          text: '',
-          media: this._DomSanitizer.bypassSecurityTrustStyle(`
-            url(${src}) center center / contain, linear-gradient(to bottom, transparent, #272727)
-          `) as any,
-        },
-      ],
-    };
-
     const storedPost = localStorage.getItem('post');
 
     if (storedPost && !this.postsService.post) {
@@ -86,25 +55,27 @@ export class PostPreviewComponent implements OnInit {
     }
 
     this.post = this.postsService.post;
-    //this.post = _post;
 
-    for await (const slide of this.post.slides) {
-      if (slide.media.type.includes('image')) {
-        const base64 = await this.fileToBase64(slide.media);
-        this.slidesPath.push({
-          path: `url(${base64})`,
-          type: 'IMAGE',
-        });
-      } else {
-        const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
-          URL.createObjectURL(slide.media)
-        );
-        this.slidesPath.push({
-          path: fileUrl,
-          type: 'VIDEO',
-        });
+    if(this.post.slides) {
+      for await (const slide of this.post.slides) {
+        if (slide.media.type.includes('image')) {
+          const base64 = await this.fileToBase64(slide.media);
+          this.slidesPath.push({
+            path: `url(${base64})`,
+            type: 'IMAGE',
+          });
+        } else {
+          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+            URL.createObjectURL(slide.media)
+          );
+          this.slidesPath.push({
+            path: fileUrl,
+            type: 'VIDEO',
+          });
+        }
       }
     }
+
 
     if ((this.post && !this.post.slides) || this.post.slides.length === 0) {
       this.mode = 'solidBg';

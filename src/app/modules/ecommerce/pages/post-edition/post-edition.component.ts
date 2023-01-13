@@ -34,6 +34,104 @@ export class PostEditionComponent implements OnInit {
   };
   dialogFlowFunctions: Record<string, any> = {};
   bannerId: string;
+
+  dialogs2: Array<EmbeddedComponentWithId> = [
+    {
+      component: GeneralDialogComponent,
+      componentId: 'includedDialog',
+      inputs: {
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '37px 36.6px 18.9px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '21px',
+            fontFamily: 'SfProBold',
+            marginBottom: '21.2px',
+            marginTop: '0',
+            color: '#4F4F4F',
+          },
+          text: '¿Que deseas incluir?',
+        },
+        title: {
+          styles: {
+            fontSize: '15px',
+            color: '#7B7B7B',
+            fontStyle: 'italic',
+            margin: '0',
+          },
+          text: '',
+        },
+        fields: {
+          list: [
+            {
+              name: 'qrContentSelection',
+              value: '',
+              validators: [Validators.required],
+              type: 'selection',
+              selection: {
+                styles: {
+                  display: 'block',
+                  fontFamily: '"SfProBold"',
+                  fontSize: '17px',
+                  color: '#272727',
+                  marginLeft: '19.5px',
+                },
+                list: [
+                  {
+                    text: 'Fotos, videos de mi device',
+                  },
+                  {
+                    text: 'Un chiste de la IA',
+                  },
+                ],
+              },
+              prop: 'text',
+            },
+          ],
+        },
+        isMultiple: true,
+      },
+      outputs: [
+        {
+          name: 'data',
+          callback: (params) => {
+            const { fields, value, valid } = params;
+            const { qrContentSelection } = value;
+
+            if (valid) {
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            if (qrContentSelection.includes('Fotos, videos de mi device')) {
+              localStorage.setItem(
+                'post',
+                JSON.stringify({
+                  message: this.postsService.post.message,
+                  title: this.postsService.post.title,
+                  to: this.postsService.post.to,
+                  from: this.postsService.post.from,
+                })
+              );
+
+              this.router.navigate([
+                'ecommerce/' +
+                  this.headerService.saleflow.merchant.slug +
+                  '/qr-edit',
+              ]);
+            }
+          },
+        },
+      ],
+    },
+  ];
+
+  /*
   dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
@@ -129,7 +227,7 @@ export class PostEditionComponent implements OnInit {
         },
       ],
     },
-  ];
+  ];*/
   banner: Banner;
   constructor(
     private postsService: PostsService,
@@ -152,7 +250,6 @@ export class PostEditionComponent implements OnInit {
       this.postsService.post = JSON.parse(storedPost);
     }
 
-    console.log(this.data.slides);
     (async () => {
       const storedPost = localStorage.getItem('post');
       this.postInput =
@@ -174,11 +271,16 @@ export class PostEditionComponent implements OnInit {
       };
       const [result]: any = await this._BannersService.banners(paginate);
       this.banner = result;
-      this.bannerId = result._id;
+
+      if (result) {
+        this.bannerId = result._id;
+      }
     })();
   }
 
   goToPostPreview() {
+    this.postsService.post = this.data;
+
     return this.router.navigate([
       'ecommerce/' +
         this.headerService.saleflow.merchant.slug +
@@ -187,6 +289,8 @@ export class PostEditionComponent implements OnInit {
   }
 
   goBack() {
+    this.postsService.post = this.data;
+    this.headerService.post = this.data;
     localStorage.setItem(
       'post',
       JSON.stringify({

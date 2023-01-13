@@ -28,6 +28,8 @@ import { Validators } from '@angular/forms';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { OptionsGridComponent } from 'src/app/shared/dialogs/options-grid/options-grid.component';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
 
 const options = [
   {
@@ -230,6 +232,84 @@ export class CheckoutComponent implements OnInit {
     [];
   temporalDialogs: Array<EmbeddedComponentWithId> = [];
   temporalDialogs2: Array<EmbeddedComponentWithId> = [];
+
+  recipientPhoneDialog: EmbeddedComponentWithId = {
+    component: GeneralDialogComponent,
+    componentId: 'whatsappNumberDialog',
+    inputs: {
+      containerStyles: {
+        background: 'rgb(255, 255, 255)',
+        borderRadius: '8px',
+        opacity: '0.5',
+        padding: '37.1px 23.6px 52.6px 31px',
+      },
+      header: {
+        styles: {
+          fontSize: '22px',
+          fontFamily: 'SfProBold',
+          marginBottom: '12.5px',
+          marginTop: '0',
+        },
+        text: 'Cual es el Whatsapp de QuienRecibiraID?',
+      },
+      fields: {
+        styles: {},
+        list: [
+          {
+            name: 'receiverPhone',
+            value: '',
+            validators: [Validators.required],
+            type: 'text',
+            label: {
+              styles: {
+                display: 'block',
+                fontSize: '17px',
+                fontFamily: '"RobotoMedium"',
+                margin: '10px 0px',
+              },
+              text: '',
+            },
+            placeholder: 'Escribe...',
+            styles: {
+              width: '100%',
+              padding: '26px 16px 16px',
+              border: 'none',
+              boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+              borderRadius: '9px',
+              fontFamily: '"RobotoMedium"',
+            },
+          },
+        ],
+      },
+    },
+    outputs: [
+      {
+        name: 'data',
+        callback: (params) => {
+          const { fields, value, valid } = params;
+          const { receiverPhone } = value;
+
+          if (valid) {
+            this.swiperConfig.allowSlideNext = true;
+          } else {
+            this.swiperConfig.allowSlideNext = false;
+          }
+
+          this.postsService.postReceiverNumber = receiverPhone;
+
+          this.dialogFlowService.saveGeneralDialogData(
+            receiverPhone,
+            'flow1',
+            'whatsappNumberDialog',
+            'receiverPhone',
+            fields
+          );
+        },
+      },
+    ],
+  };
+
+  insertedRecipientDialog: boolean;
 
   dialogs: Array<EmbeddedComponentWithId> = [
     {
@@ -682,7 +762,7 @@ export class CheckoutComponent implements OnInit {
               },
             },
             {
-              name: 'private',
+              name: 'privatePost',
               value: '',
               validators: [],
               type: 'checkbox',
@@ -725,10 +805,8 @@ export class CheckoutComponent implements OnInit {
           name: 'data',
           callback: (params) => {
             const { value, fields } = params;
-            const { message } = value;
+            const { message, privatePost } = value;
             let messageValue = message;
-
-            console.log(params);
 
             if (messageValue && messageValue.length > 0) {
               this.swiperConfig.allowSlideNext = true;
@@ -744,7 +822,33 @@ export class CheckoutComponent implements OnInit {
               fields
             );
 
+            this.dialogFlowService.saveGeneralDialogData(
+              privatePost,
+              'flow1',
+              'messageDialog',
+              'privatePost',
+              fields
+            );
+
+            if (privatePost && !this.insertedRecipientDialog) {
+              this.dialogs.splice(5, 0, this.recipientPhoneDialog);
+              this.dialogFlowService.dialogsFlows['flow1'][
+                'whatsappNumberDialog'
+              ] = {
+                dialogId: 'whatsappNumberDialog',
+                fields: {},
+                swiperConfig: this.swiperConfig,
+              };
+              this.insertedRecipientDialog = true;
+            } else {
+              if (this.insertedRecipientDialog && !privatePost) {
+                this.dialogs.splice(5, 1);
+                this.insertedRecipientDialog = false;
+              }
+            }
+
             this.postsService.post.message = messageValue;
+            this.postsService.privatePost = privatePost;
           },
         },
       ],
@@ -1060,115 +1164,7 @@ export class CheckoutComponent implements OnInit {
         },
       ],
     },
-    {
-      component: GeneralDialogComponent,
-      componentId: 'whatsappNumberDialog',
-      inputs: {
-        containerStyles: {
-          background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
-          opacity: '1',
-          padding: '37.1px 23.6px 52.6px 31px',
-        },
-        header: {
-          styles: {
-            fontSize: '22px',
-            fontFamily: 'SfProBold',
-            marginBottom: '12.5px',
-            marginTop: '0',
-          },
-          text: 'Cual es el Whatsapp de QuienRecibiraID?',
-        },
-        fields: {
-          styles: {},
-          list: [
-            {
-              name: 'receiverPhone',
-              value: '',
-              validators: [Validators.required],
-              type: 'text',
-              label: {
-                styles: {
-                  display: 'block',
-                  fontSize: '17px',
-                  fontFamily: '"RobotoMedium"',
-                  margin: '10px 0px',
-                },
-                text: '',
-              },
-              placeholder: 'Escribe...',
-              styles: {
-                width: '100%',
-                padding: '26px 16px 16px',
-                border: 'none',
-                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
-                borderRadius: '9px',
-                fontFamily: '"RobotoMedium"',
-              },
-            },
-            // {
-            //   name: 'test7',
-            //   value: '',
-            //   validators: [],
-            //   type: 'checkbox',
-            //   label: {
-            //     styles: {
-            //       display: 'block',
-            //       fontSize: '19px',
-            //       fontFamily: '"SfProRegular"',
-            //       margin: '10px 0px',
-            //     },
-            //     text: 'Quiero incluir fotos, videos, musica.',
-            //   },
-            //   placeholder: 'tester',
-            //   disclaimer: {
-            //     text: 'Son como los Stories pero no hay que bajar ningun App.',
-            //     styles: {
-            //       fontFamily: '"SfProLight"',
-            //       paddingLeft: '43px',
-            //       marginTop: '0px',
-            //       color: '#7b7b7b',
-            //     },
-            //   },
-            //   stylesGrid: {
-            //     alignItems: 'center',
-            //     display: 'grid',
-            //     gap: '8px',
-            //     gridTemplateColumns: '1fr 11fr',
-            //     padding: '10px 5px 0px',
-            //     paddingTop: '30.9px',
-            //   },
-            //   styles: {
-            //     height: '17px',
-            //   },
-            // },
-          ],
-        },
-      },
-      outputs: [
-        {
-          name: 'data',
-          callback: (params) => {
-            const { fields, value, valid } = params;
-            const { receiverPhone } = value;
 
-            if (valid) {
-              this.swiperConfig.allowSlideNext = true;
-            } else {
-              this.swiperConfig.allowSlideNext = false;
-            }
-
-            this.dialogFlowService.saveGeneralDialogData(
-              receiverPhone,
-              'flow1',
-              'whatsappNumberDialog',
-              'receiverPhone',
-              fields
-            );
-          },
-        },
-      ],
-    },
     {
       component: GeneralDialogComponent,
       componentId: 'wantToAddQrDialog',
@@ -1347,37 +1343,6 @@ export class CheckoutComponent implements OnInit {
                   {
                     text: 'Un chiste de la IA',
                   },
-                  /*
-                  {
-                    text: 'Imagen de la IA',
-                  },
-                  {
-                    text: 'Una canción o voice',
-                  },
-                  {
-                    text: 'Si, el Giftcard de los Spas',
-                    barStyle: {
-                      display: 'inline-block',
-                      background: '#FC2727',
-                      width: ' 100%',
-                      height: ' 100%',
-                      borderRadius: '4px',
-                    },
-                    subText: {
-                      text: 'Válido en más de 40 Spas de Santo Domingo.',
-                      styles: {
-                        color: '#FC2727',
-                        display: 'block',
-                        fontFamily: '"SfProRegular"',
-                        fontStyle: 'italic',
-                        fontSize: '15px',
-                        marginBottom: '15px',
-                        marginTop: '5px',
-                        paddingRight: '15px',
-                        marginLeft: '19.5px',
-                      },
-                    },
-                  },*/
                 ],
               },
               // styles: {},
@@ -1390,7 +1355,7 @@ export class CheckoutComponent implements OnInit {
       outputs: [
         {
           name: 'data',
-          callback: (params) => {
+          callback: async (params) => {
             const { fields, value, valid } = params;
             const { qrContentSelection } = value;
 
@@ -1419,6 +1384,49 @@ export class CheckoutComponent implements OnInit {
                   this.headerService.saleflow.merchant.slug +
                   '/qr-edit',
               ]);
+            } else if (
+              qrContentSelection.includes('Un chiste de la IA') &&
+              !this.addedJokesToTheQr
+            ) {
+              localStorage.setItem(
+                'post',
+                JSON.stringify({
+                  message: this.postsService.post.message,
+                  title: this.postsService.post.title,
+                  to: this.postsService.post.to,
+                  from: this.postsService.post.from,
+                })
+              );
+
+              lockUI();
+
+              const response =
+                await this.gpt3Service.generateResponseForTemplate(
+                  {},
+                  '63c0ff83e752c40ca8eefcfb'
+                );
+
+              unlockUI();
+
+              if (response) {
+                const jokes = JSON.parse(response);
+                this.headerService.aiJokes = jokes;
+                localStorage.setItem('aiJokes', response);
+              }
+
+              this.headerService.flowRoute =
+                this.router.url + '?startOnDialogFlow=true';
+              localStorage.setItem('flowRoute', this.router.url);
+
+              this.postsService.temporalDialogs = this.temporalDialogs;
+              this.postsService.temporalDialogs2 = this.temporalDialogs2;
+              this.postsService.dialogs = this.dialogs;
+
+              this.router.navigate(['ecommerce/text-edition-and-preview'], {
+                queryParams: {
+                  type: 'ai-joke',
+                },
+              });
             }
           },
         },
@@ -1439,6 +1447,7 @@ export class CheckoutComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private dialogFlowService: DialogFlowService,
+    private entityTemplateService: EntityTemplateService,
     private gpt3Service: Gpt3Service
   ) {}
 
@@ -1454,6 +1463,11 @@ export class CheckoutComponent implements OnInit {
       }
 
       if (this.openedDialogFlow) {
+        this.addedJokesToTheQr = Boolean(this.headerService.selectedJoke);
+        this.addedPhotosToTheQr = Boolean(
+          this.postsService.post.slides && this.postsService.post.slides.length
+        );
+
         this.dialogs = this.postsService.dialogs;
         this.temporalDialogs = this.postsService.temporalDialogs;
         this.temporalDialogs2 = this.postsService.temporalDialogs2;
@@ -1487,6 +1501,14 @@ export class CheckoutComponent implements OnInit {
       this.items = this.headerService.getItems();
       if (!this.items?.length) this.editOrder('item');
       this.post = this.headerService.getPost();
+
+      const storedPost = localStorage.getItem('post');
+
+      if (storedPost && !this.post) {
+        this.headerService.post = JSON.parse(storedPost);
+        this.post = this.headerService.post;
+      }
+
       if (this.post?.slides?.length) {
         this.post.slides.forEach((slide) => {
           if (slide.media?.type.includes('image')) {
@@ -1734,25 +1756,78 @@ export class CheckoutComponent implements OnInit {
     // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
     // ---------------------- Managing Post ----------------------------
     if (this.headerService.saleflow.module?.post) {
-      this.post = {
-        message: '',
-        targets: [
-          {
-            name: '',
-            emailOrPhone: '',
-          },
-        ],
-        from: '',
-        socialNetworks: [
-          {
-            url: '',
-          },
-        ],
-      };
+      if (!this.post)
+        this.post = {
+          message: '',
+          targets: [
+            {
+              name: '',
+              emailOrPhone: '',
+            },
+          ],
+          from: '',
+          socialNetworks: [
+            {
+              url: '',
+            },
+          ],
+        };
       this.headerService.storePost(this.post);
+      localStorage.removeItem('post');
       const postResult = (await this.postsService.createPost(this.post))
         ?.createPost?._id;
       this.headerService.order.products[0].post = postResult;
+
+      let entityTemplate: EntityTemplate;
+
+      let entityTemplateModified;
+      try {
+        if (!this.logged) {
+          entityTemplate =
+            await this.entityTemplateService.precreateEntityTemplate();
+
+          entityTemplateModified =
+            await this.entityTemplateService.entityTemplateSetData(
+              entityTemplate._id,
+              {
+                reference: postResult,
+                entity: 'post',
+              }
+            );
+        } else {
+          entityTemplate =
+            await this.entityTemplateService.createEntityTemplate();
+
+          entityTemplateModified =
+            await this.entityTemplateService.entityTemplateAuthSetData(
+              entityTemplate._id,
+              {
+                reference: postResult,
+                entity: 'post',
+              }
+            );
+
+          const recipientUser = await this.authService.checkUser(
+            this.postsService.postReceiverNumber
+          );
+
+          if (recipientUser) {
+            const recipient = await this.entityTemplateService.createRecipient({
+              phone: this.postsService.postReceiverNumber,
+            });
+
+            await this.entityTemplateService.entityTemplateAddRecipient(
+              entityTemplate._id,
+              {
+                edit: false,
+                recipient: recipient._id,
+              }
+            );
+          }
+        }
+      } catch (error) {
+        console.error('ocurrio un error al crear el simbolo', error);
+      }
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
     try {
@@ -1767,6 +1842,7 @@ export class CheckoutComponent implements OnInit {
           await this.orderService.createPreOrder(this.headerService.order)
         )?.createPreOrder._id;
       }
+
       this.headerService.deleteSaleflowOrder();
       this.headerService.resetOrderProgress();
       this.headerService.orderId = createdOrder;

@@ -28,7 +28,7 @@
     </div>
 
     <div class="divTopBtn">
-      <button class="topBtn">
+      <button class="topBtn" (click)="topBtnAction()">
         <svg
           id="Grupo_73130"
           data-name="Grupo 73130"
@@ -170,7 +170,7 @@
         class="current-media-shown-indicators"
         [style]="{ 'grid-template-columns': '' + fractions + '' }"
       >
-        <ng-container *ngIf="post.slides.length > 0">
+        <ng-container *ngIf="post.slides && post.slides.length > 0">
           <div
             class="indicator"
             [ngClass]="{ active: i === currentMediaSlide }"
@@ -259,7 +259,9 @@
   <div
     [ngClass]="mode === 'gradientImg' ? 'container2' : 'container3'"
     [style.background]="
-      mode === 'gradientImg' && post.slides.length ? post.slides[0].media : null
+      mode === 'gradientImg' && post.slides && post.slides.length
+        ? post.slides[0].media
+        : null
     "
     [ngStyle]="{
       background: mode === 'solidBg' ? 'rgb(39, 39, 39)' : post.slides[0].media
@@ -429,7 +431,7 @@
         *ngIf="mode !== 'solidBg'"
         [style]="{ 'grid-template-columns': '' + fractions + '' }"
       >
-        <ng-container *ngIf="post.slides.length > 0">
+        <ng-container *ngIf="post.slides && post.slides.length > 0">
           <div
             class="indicator"
             [ngClass]="{ active: i === currentMediaSlide }"

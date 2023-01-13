@@ -24,12 +24,13 @@ export class TextEditionAndPreviewComponent implements OnInit {
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
   };
+  type: 'POST' | 'AI-JOKE' = 'POST';
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     public postService: PostsService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     private fb: FormBuilder,
     private dialogFlowService: DialogFlowService
   ) {}
@@ -39,11 +40,16 @@ export class TextEditionAndPreviewComponent implements OnInit {
     message: '',
   });
 
+  jokeForm = this.fb.group({
+    joke: '',
+  });
+
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
       const { type } = queryParams;
+      this.type = type.toUpperCase();
 
-      if (!type || type === 'post') {
+      if (!type || this.type === 'POST') {
         const options = JSON.parse(
           localStorage.getItem('temporal-post-options')
         );
@@ -55,6 +61,11 @@ export class TextEditionAndPreviewComponent implements OnInit {
         this.title =
           firstStoredPostMessage.title ||
           this.postService.postMessageOptions[0].title;
+      } else if (this.type === 'AI-JOKE') {
+        const options = JSON.parse(localStorage.getItem('aiJokes'));
+        this.headerService.aiJokes = options;
+
+        this.description = this.headerService.aiJokes[0];
       }
     });
   }
@@ -62,12 +73,16 @@ export class TextEditionAndPreviewComponent implements OnInit {
   switchToMode(mode: 'EDIT' | 'PREVIEW') {
     this.mode = mode;
 
-    if (this.mode === 'EDIT') {
+    if (this.mode === 'EDIT' && this.type === 'POST') {
       this.messageForm.patchValue({
         title:
           this.postService.postMessageOptions[this.currentMessageIndex].title,
         message:
           this.postService.postMessageOptions[this.currentMessageIndex].message,
+      });
+    } else if (this.mode === 'EDIT' && this.type === 'AI-JOKE') {
+      this.jokeForm.patchValue({
+        joke: this.headerService.aiJokes[this.currentMessageIndex],
       });
     }
   }
@@ -76,27 +91,44 @@ export class TextEditionAndPreviewComponent implements OnInit {
     const currentDialogIndex = eventData.activeIndex;
     this.currentMessageIndex = currentDialogIndex;
 
-    if (this.mode === 'EDIT') {
+    if (this.mode === 'EDIT' && this.type === 'POST') {
       this.messageForm.patchValue({
         title: this.postService.postMessageOptions[currentDialogIndex].title,
         message:
           this.postService.postMessageOptions[currentDialogIndex].message,
+      });
+    } else if (this.mode === 'EDIT' && this.type === 'AI-JOKE') {
+      this.jokeForm.patchValue({
+        joke: this.headerService.aiJokes[this.currentMessageIndex],
       });
     }
   }
 
   saveMessage() {
     if (!this.postService.post) this.postService.post = {};
-    if (this.mode === 'EDIT') {
-      const title = this.messageForm.get('title').value;
-      const message = this.messageForm.get('message').value;
+    if (this.type === 'POST') {
+      if (this.mode === 'EDIT') {
+        const title = this.messageForm.get('title').value;
+        const message = this.messageForm.get('message').value;
 
-      this.postService.post.message = message;
-      this.postService.post.title = title;
-    } else {
-      this.postService.post.message = this.description;
-      this.postService.post.title = this.title;
+        this.postService.post.message = message;
+        this.postService.post.title = title;
+      } else {
+        this.postService.post.message = this.description;
+        this.postService.post.title = this.title;
+      }
+    } else if (this.type === 'AI-JOKE') {
+      if (this.mode === 'EDIT') {
+        const joke = this.jokeForm.get('joke').value;
+
+        this.headerService.selectedJoke = joke;
+      } else {
+        this.headerService.selectedJoke = this.description;
+      }
     }
+
+    localStorage.removeItem('temporal-post-options');
+    localStorage.removeItem('aiJokes');
 
     this.dialogFlowService.previouslyActiveDialogId =
       this.dialogFlowService.activeDialogId;

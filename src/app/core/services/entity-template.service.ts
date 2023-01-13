@@ -1,13 +1,21 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { EntityTemplate, EntityTemplateInput } from '../models/entity-template';
+import {
+  EntityTemplate,
+  EntityTemplateInput,
+  RecipientInput,
+  RecipientsInput,
+} from '../models/entity-template';
 import {
   entityTemplate,
   entityTemplateSetData,
+  entityTemplateAuthSetData,
   entityTemplateByDateId,
   entityTemplateByReference,
   createEntityTemplate,
-  preCreateEntityTemplate
+  preCreateEntityTemplate,
+  entityTemplateAddRecipient,
+  createRecipient,
 } from '../graphql/entity-template.gql';
 
 @Injectable({
@@ -61,6 +69,57 @@ export class EntityTemplateService {
       });
 
       return result?.entityTemplateSetData;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async entityTemplateAuthSetData(
+    id: string,
+    input: EntityTemplateInput
+  ): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateAuthSetData,
+        variables: { id, input },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.entityTemplateAuthSetData;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async createRecipient(input: RecipientInput): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: createRecipient,
+        variables: { input },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.createRecipient;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async entityTemplateAddRecipient(
+    entityTemplateId: string,
+    input: RecipientsInput
+  ): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateAddRecipient,
+        variables: { entityTemplateId, input },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.entityTemplateAddRecipient;
     } catch (error) {
       console.log(error);
       return null;

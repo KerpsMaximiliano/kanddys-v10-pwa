@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { SlideInput } from 'src/app/core/models/post';
-import { Tag } from 'src/app/core/models/tags';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-qr-content',
@@ -8,94 +8,46 @@ import { Tag } from 'src/app/core/models/tags';
   styleUrls: ['./qr-content.component.scss'],
 })
 export class QrContentComponent implements OnInit {
-  default: boolean = false;
-  entity: 'POST-SLIDE' | 'TAG' = 'POST-SLIDE';
-  slides: Array<SlideInput> = null;
+  @Input() slides: Array<SlideInput> = [];
+  @Output() buttonClicked = new EventEmitter();
+  slidesPath: Array<{
+    type: 'IMAGE' | 'VIDEO';
+    path: string | SafeUrl;
+  }> = [];
 
-  tags: Tag[] = [
-    {
-      counter: 1,
-      name: 'First',
-      user: 'user1',
-      status: 'status',
-      images: ['ndin'],
-      merchant: 'Hola',
-      entity: 'entity',
-      notifications: ['hola', 'chao'],
-      _id: 'id1',
-      createdAt: 'hoy',
-      updatedAt: 'hoy',
-    },
-    {
-      counter: 2,
-      name: 'Second',
-      user: 'user1',
-      status: 'status',
-      images: ['ndin'],
-      merchant: 'Hola',
-      entity: 'entity',
-      notifications: ['hola', 'chao'],
-      _id: 'id2',
-      createdAt: 'hoy',
-      updatedAt: 'hoy',
-    },
-    {
-      counter: 3,
-      name: 'Third',
-      user: 'user1',
-      status: 'status',
-      images: ['ndin'],
-      merchant: 'Hola',
-      entity: 'entity',
-      notifications: ['hola', 'chao'],
-      _id: 'id3',
-      createdAt: 'hoy',
-      updatedAt: 'hoy',
-    },
-    {
-      counter: 1,
-      name: 'First',
-      status: 'status',
-      user: 'user1',
-      images: ['ndin'],
-      merchant: 'Hola',
-      entity: 'entity',
-      notifications: ['hola', 'chao'],
-      _id: 'id4',
-      createdAt: 'hoy',
-      updatedAt: 'hoy',
-    },
-    {
-      counter: 2,
-      name: 'Second',
-      status: 'status',
-      user: 'user1',
-      images: ['ndin'],
-      merchant: 'Hola',
-      entity: 'entity',
-      notifications: ['hola', 'chao'],
-      _id: 'id5',
-      createdAt: 'hoy',
-      updatedAt: 'hoy',
-    },
-    {
-      counter: 3,
-      name: 'Third',
-      status: 'status',
-      user: 'user1',
-      images: ['ndin'],
-      merchant: 'Hola',
-      entity: 'entity',
-      notifications: ['hola', 'chao'],
-      _id: 'id6',
-      createdAt: 'hoy',
-      updatedAt: 'hoy',
-    },
-  ];
+  constructor(private _DomSanitizer: DomSanitizer) {}
 
-  constructor() {}
+  async ngOnInit() {
+    if (this.slides) {
+      for await (const slide of this.slides) {
+        if (slide.media.type.includes('image')) {
+          const base64 = await this.fileToBase64(slide.media);
+          this.slidesPath.push({
+            path: `url(${base64})`,
+            type: 'IMAGE',
+          });
+        } else {
+          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+            URL.createObjectURL(slide.media)
+          );
+          this.slidesPath.push({
+            path: fileUrl,
+            type: 'VIDEO',
+          });
+        }
+      }
+    }
+  }
 
-  ngOnInit(): void {
-    console.log('slides', this.slides);
+  fileToBase64 = (file: File) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  emitClick() {
+    this.buttonClicked.emit(true);
   }
 }

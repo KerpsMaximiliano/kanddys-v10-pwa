@@ -34,6 +34,8 @@ export class PostsService {
   constructor(private graphql: GraphQLWrapper) {}
 
   post: PostInput;
+  privatePost: boolean;
+  postReceiverNumber: string;
   content: PostContent;
   dialogs: Array<EmbeddedComponentWithId> = [];
   temporalDialogs: Array<EmbeddedComponentWithId> = [];

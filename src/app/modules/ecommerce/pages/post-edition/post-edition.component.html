@@ -2,6 +2,7 @@
   <div class="header">
     <button class="arrows">
       <img
+        (click)="goBack()"
         class="icon black"
         [src]="env + '/arrow-double-up.svg'"
         alt="Volver"
@@ -36,14 +37,23 @@
       <app-invites-notifications title="Notificaciones" text="Notificación de cuando accesan: (000) 000 - 0000 ó sin Notificación"></app-invites-notifications>
        -->
     <app-qr-content
-      [entity]="'POST-SLIDES'"
       [slides]="data.slides"
+      (buttonClicked)="openedDialogFlow = true"
     ></app-qr-content>
     <app-envelope-content
       [nombreSobre]="data.title"
       [mensaje]="data.message"
       [from]="data.from"
     ></app-envelope-content>
+
+    <app-dialog-flow
+      [dialogFlowId]="'flow2'"
+      [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+      [dialogs]="dialogs2"
+      [allowSlideNext]="false"
+      (saveConfigRef)="swiperConfig = $event"
+      (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+    ></app-dialog-flow>
 
     <!--
       <app-envelope-data></app-envelope-data>

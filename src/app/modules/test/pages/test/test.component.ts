@@ -572,7 +572,7 @@ export class TestComponent implements OnInit {
               },
             },
             {
-              name: 'test5',
+              name: 'privatePost',
               value: '',
               validators: [],
               type: 'checkbox',
@@ -615,16 +615,22 @@ export class TestComponent implements OnInit {
           name: 'data',
           callback: (params) => {
             const { value, fields } = params;
-            const { message } = value;
+            const { message, privatePost } = value;
             let messageValue = message;
-
-            console.log(params);
 
             if (messageValue && messageValue.length > 0) {
               this.swiperConfig.allowSlideNext = true;
             } else {
               this.swiperConfig.allowSlideNext = false;
             }
+
+            this.dialogFlowService.saveGeneralDialogData(
+              privatePost,
+              'flow1',
+              'messageDialog',
+              'privatePost',
+              fields
+            );
 
             this.dialogFlowService.saveGeneralDialogData(
               messageValue,
@@ -963,7 +969,7 @@ export class TestComponent implements OnInit {
           styles: {},
           list: [
             {
-              name: 'test6',
+              name: 'whatsappNumber',
               value: '',
               validators: [Validators.required],
               type: 'text',
@@ -1027,9 +1033,26 @@ export class TestComponent implements OnInit {
       },
       outputs: [
         {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
+          name: 'data',
+          callback: (params) => {
+            const { value, fields } = params;
+            const { whatsappNumber } = value;
+
+            if (whatsappNumber && whatsappNumber.length > 0) {
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            this.postsService.postReceiverNumber = whatsappNumber;
+
+            this.dialogFlowService.saveGeneralDialogData(
+              whatsappNumber,
+              'flow1',
+              'messageDialog',
+              'message',
+              fields
+            );
           },
         },
       ],
