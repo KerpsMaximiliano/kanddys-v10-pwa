@@ -127,6 +127,8 @@ import { EnvelopeDataComponent } from './components/envelope-data/envelope-data.
 import { PostPreviewComponent } from '../modules/ecommerce/pages/post-preview/post-preview.component';
 import { CardComponent } from './components/card/card.component';
 import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
+import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
+import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';
 
 const imports = [
   CommonModule,
@@ -261,6 +263,8 @@ const declarations = [
   EnvelopeDataComponent,
   CardComponent,
   TitleIconHeaderComponent,
+  ContactLandingComponent,
+  ContactLandingContainerComponent
 ];
 
 @NgModule({

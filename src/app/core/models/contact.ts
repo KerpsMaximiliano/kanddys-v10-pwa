@@ -11,9 +11,9 @@ export class ContactInput {
 
 export class Link extends Model<Link> {
   _id: string;
-  image: String;
-  name: String;
-  value: String;
+  image: string;
+  name: string;
+  value: string;
 }
 
 export class Contact extends Model<Contact> {

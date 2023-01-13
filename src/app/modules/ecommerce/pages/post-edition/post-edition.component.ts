@@ -254,7 +254,6 @@ export class PostEditionComponent implements OnInit {
       const storedPost = localStorage.getItem('post');
       this.postInput =
         (storedPost ? JSON.parse(storedPost) : this.postsService.post) || {};
-
       if (storedPost) {
         this.postsService.post = JSON.parse(storedPost);
       }
@@ -266,10 +265,10 @@ export class PostEditionComponent implements OnInit {
           sortBy: 'createdAt:desc',
         },
         findBy: {
-          user,
-        },
-      };
-      const [result]: any = await this._BannersService.banners(paginate);
+          user
+        }
+      }
+      const [result]:any = await this._BannersService.banners(paginate);
       this.banner = result;
 
       if (result) {
