@@ -18,7 +18,6 @@
             class="fixed-button left"
             *ngIf="viewType === 'preview'"
             (click)="isOrder ? submit() : goBack()"
-            style="padding: 6px"
           >
             <img
               class="icon green"
@@ -32,7 +31,6 @@
             class="fixed-button right"
             *ngIf="viewType === 'preview' && !isOrder"
             (click)="submit()"
-            style="padding: 6px"
           >
             <img class="icon green" [src]="env + '/cog-wheel.svg'" />
           </button>
@@ -151,48 +149,50 @@
         </button>
       </div>
 
-      <p class="bottom-text">
+      <p class="desc">
         {{ item?.description || "Descripcion del articulo (opcional)" }}
       </p>
     </div>
-    <div
-      class="lines"
-      [style]="{
-        'grid-template-columns': '' + fractions + '',
-        display: display ? display : 'none'
-      }"
-    >
-      <div
-        *ngFor="let media of multimedia[0]; let i = index"
-        class="line"
-        [style.background]="activeSlide === i ? '#82f18d' : '#ffffff'"
-      ></div>
-    </div>
     <div class="button-display-area">
-      <!--FOR EDIT & OTHER-->
-      <ng-container *ngIf="viewType !== 'preview'">
-        <div class="sales-price">
-          <div class="sales-flex">
-            <span class="price" style="margin-right: 31px"
-              >{{ views }} vistas</span
-            >
-            <span class="price" style="margin-right: 31px"
-              >{{ sales }} ventas</span
-            >
-          </div>
-          <span class="price">RD$ {{ price | number : "1.2-2" }}</span>
-        </div>
-
-        <button class="big-button">
-          <img [src]="env + '/bookmark-plus.svg'" alt="" />
-          Adiciona tags para organizar tus items.
-        </button>
-      </ng-container>
-      <!--FOR EDIT & OTHER-->
-      <span class="price" *ngIf="viewType === 'preview'"
-        >RD$ {{ price | number : "1.2-2" }}</span
+      <div
+        class="lines"
+        [style]="{
+          'grid-template-columns': '' + fractions + '',
+          display: display ? display : 'none'
+        }"
       >
-      <!-- <div class="buttons-display center" *ngIf="viewType === 'preview'"></div> -->
+        <div
+          *ngFor="let media of multimedia[0]; let i = index"
+          class="line"
+          [style.background]="activeSlide === i ? '#82f18d' : '#ffffff'"
+        ></div>
+      </div>
+      <div class="bottom-area">
+        <!--FOR EDIT & OTHER-->
+        <ng-container *ngIf="viewType !== 'preview'">
+          <div class="sales-price">
+            <div class="sales-flex">
+              <span class="price" style="margin-right: 31px"
+                >{{ views }} vistas</span
+              >
+              <span class="price" style="margin-right: 31px"
+                >{{ sales }} ventas</span
+              >
+            </div>
+            <span class="price">RD$ {{ price | number : "1.2-2" }}</span>
+          </div>
+
+          <button class="big-button">
+            <img [src]="env + '/bookmark-plus.svg'" alt="" />
+            Adiciona tags para organizar tus items.
+          </button>
+        </ng-container>
+        <!--FOR EDIT & OTHER-->
+        <span class="price" *ngIf="viewType === 'preview'"
+          >RD$ {{ price | number : "1.2-2" }}</span
+        >
+        <!-- <div class="buttons-display center" *ngIf="viewType === 'preview'"></div> -->
+      </div>
     </div>
     <!-- <app-bios-banner *ngIf="viewType !== 'preview'"> </app-bios-banner> -->
   </div>

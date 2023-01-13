@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -23,33 +22,13 @@ export interface CroppResult {
   templateUrl: './image-editor.component.html',
   styleUrls: ['./image-editor.component.scss'],
 })
-export class ImageEditorComponent implements AfterViewInit, OnDestroy {
+export class ImageEditorComponent implements OnDestroy {
   env: string = environment.assetsUrl;
   @Input() imgUrl: string;
   @Output() cropped = new EventEmitter<CroppResult>();
   cropper: Cropper;
-  initZoomValue: number = 0.2651515;
-  zoomValue: number = 0.2651515;
 
   @ViewChild('image') image: ElementRef;
-
-  ngAfterViewInit() {
-    this.image.nativeElement.addEventListener(
-      'zoom',
-      (e) => this.syncZoomRange(e),
-      false
-    );
-  }
-
-  private syncZoomRange($event) {
-    if (!$event) return;
-    const { ratio } = $event.detail;
-    if (ratio > 1.1 || ratio < 0) {
-      $event.preventDefault();
-      return;
-    }
-    this.zoomValue = ratio;
-  }
 
   imageLoaded($event: Event) {
     if (!$event) return;
@@ -60,24 +39,30 @@ export class ImageEditorComponent implements AfterViewInit, OnDestroy {
   private initCropper(image: HTMLImageElement) {
     if (!image) return;
     image.crossOrigin = 'anonymous';
+    const container = document.querySelector(
+      '.cropper__image'
+    ) as HTMLDivElement;
+
     const cropperOptions: Cropper.Options = {
-      background: true,
-      movable: true,
-      rotatable: true,
-      scalable: true,
-      zoomable: true,
-      viewMode: 0,
-      checkCrossOrigin: true,
+      dragMode: 'move',
+      restore: false,
+      center: false,
+      autoCropArea: 1,
+      cropBoxMovable: false,
+      cropBoxResizable: false,
+      toggleDragModeOnDblclick: false,
+      background: false,
+      minCropBoxHeight: container.clientHeight,
+      minCropBoxWidth: container.clientWidth,
     };
 
     this.destroyCropper();
     this.cropper = new Cropper(image, cropperOptions);
   }
 
-  setZoom($event) {
-    if (!$event) return;
-    this.zoomValue = $event;
-    this.cropper.zoomTo(this.zoomValue);
+  setZoom(zoom: 'in' | 'out') {
+    if (zoom === 'in') this.cropper.zoom(0.1);
+    if (zoom === 'out') this.cropper.zoom(-0.1);
   }
 
   setDragMode(action: 'move' | 'crop') {
@@ -92,7 +77,6 @@ export class ImageEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   // close() {
-  //   this.zoomValue = this.initZoomValue;
   //   this.cropper.reset();
   // }
 
@@ -102,7 +86,6 @@ export class ImageEditorComponent implements AfterViewInit, OnDestroy {
     const canvas = this.cropper.getCroppedCanvas();
     const data = { imageData, cropData };
     canvas.toBlob((blob) => {
-      console.log(blob);
       this.cropped.emit({ ...data, blob });
     });
   }
@@ -115,20 +98,6 @@ export class ImageEditorComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.destroyCropper();
-    if (this.image) {
-      this.image.nativeElement.removeEventListener(
-        'zoom',
-        (e) => this.syncZoomRange(e),
-        false
-      );
-    }
-  }
-
-  updateValue($event) {
-    if (!$event) return;
-    const value = +$event.target.value;
-    // this.value = value;
-    this.setZoom(value);
   }
 
   updateRotation($event) {

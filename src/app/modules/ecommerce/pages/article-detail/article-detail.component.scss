@@ -1,5 +1,5 @@
 .fixed-top-button {
-  padding: 4px 6px;
+  padding: 6px;
   position: absolute;
   top: 38px;
   left: 16px;
@@ -8,10 +8,14 @@
   cursor: pointer;
   z-index: 2;
   background-color: #272727;
+  box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 16%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   img {
-    width: 23px;
-    height: 23px;
+    width: 28px;
+    height: 28px;
     filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%) hue-rotate(62deg) brightness(99%)
       contrast(91%);
   }
@@ -175,17 +179,17 @@
 .container {
   // padding-top: 46px;
   position: relative;
-  height: calc(100vh - (209px));
+  height: calc(100vh - (140px));
   background-color: #2e2e2e;
 
   .entity-image {
-    height: calc(100vh - (179px));
+    height: calc(100vh - (49px));
     width: 100%;
     background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/noimage.png);
     background-position: center;
     background-repeat: no-repeat;
     background-color: #2e2e2e;
-    background-size: "contain";
+    background-size: contain;
   }
 
   video {
@@ -394,7 +398,6 @@ audio {
   margin: auto;
   transition: 0.3s transform linear;
   transform: translateY(133px);
-  background-color: #2e2e2e;
 
   &.opened {
     transform: translateY(0px);
