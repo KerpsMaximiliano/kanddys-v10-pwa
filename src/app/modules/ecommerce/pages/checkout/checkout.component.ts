@@ -242,6 +242,7 @@ export class CheckoutComponent implements OnInit {
         borderRadius: '8px',
         opacity: '0.5',
         padding: '37.1px 23.6px 52.6px 31px',
+        overflow: 'auto',
       },
       header: {
         styles: {
@@ -259,7 +260,7 @@ export class CheckoutComponent implements OnInit {
             name: 'receiverPhone',
             value: '',
             validators: [Validators.required],
-            type: 'text',
+            type: 'phone',
             label: {
               styles: {
                 display: 'block',
