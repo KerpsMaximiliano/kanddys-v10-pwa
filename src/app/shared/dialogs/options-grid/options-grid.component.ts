@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 @Component({
   selector: 'app-options-grid',
@@ -20,11 +21,12 @@ export class OptionsGridComponent implements OnInit {
     styles: Record<string, any>;
   };
   @Input() titleCenter: boolean = true;
+  @Input() dialogId: string = null;
   @Input() uniqueSelection: boolean = true;
   @Output() buttonClicked = new EventEmitter();
   @Output() optionClick = new EventEmitter();
 
-  constructor() {}
+  constructor(private dialogFlowService: DialogFlowService) {}
 
   ngOnInit(): void {
     if (this.wordsObjects.length === 0) {
@@ -36,6 +38,17 @@ export class OptionsGridComponent implements OnInit {
         });
       }
     }
+
+    setTimeout(() => {
+      if (this.dialogFlowService.activeDialogId === this.dialogId) {
+        const activeOptionIndex = this.wordsObjects.findIndex(
+          (wordObject) => wordObject.active
+        );
+
+        this.dialogFlowService.swiperConfig.allowSlideNext =
+          activeOptionIndex > -1;
+      }
+    }, 500);
   }
 
   cardClicked(wordObject: { text: string; active: boolean; keyword: string }) {
@@ -49,7 +62,7 @@ export class OptionsGridComponent implements OnInit {
       });
     }
 
-    if(wordObject.active) {
+    if (wordObject.active) {
       this.optionClick.emit({
         text: wordObject.text,
         keyword: wordObject.keyword,

@@ -579,8 +579,8 @@ export class CheckoutComponent implements OnInit {
                 this.temporalDialogs2 = [];
               }
 
-              if (this.dialogs.length === 8) {
-                this.temporalDialogs2 = this.dialogs.splice(3, 1);
+              if (this.dialogs.length === 7) {
+                this.temporalDialogs2 = this.dialogs.splice(3, 2);
                 this.dialogs.splice(3, 0, ...this.temporalDialogs);
                 this.dialogFlowFunctions.moveToDialogByIndex(3);
               } else {
@@ -911,7 +911,8 @@ export class CheckoutComponent implements OnInit {
               ].inputs.submitButton.styles.display = 'none';
             }
 
-            this.swiperConfig.allowSlideNext = true;
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
       ],
@@ -920,6 +921,8 @@ export class CheckoutComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'sentimentDialog',
       inputs: {
+        dialogId: 'sentimentDialog',
+
         mode: 'default',
         words: this.words2,
         wordsObjects: this.sentimentWordsObjects,
@@ -958,7 +961,8 @@ export class CheckoutComponent implements OnInit {
               ].inputs.submitButton.styles.display = 'none';
             }
 
-            this.swiperConfig.allowSlideNext = true;
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
       ],
@@ -967,6 +971,8 @@ export class CheckoutComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'timingDialog',
       inputs: {
+        dialogId: 'timingDialog',
+
         mode: 'time',
         words: this.words3,
         wordsObjects: this.timingWordsObjects,
@@ -1007,7 +1013,8 @@ export class CheckoutComponent implements OnInit {
               ].inputs.submitButton.styles.display = 'none';
             }
 
-            this.swiperConfig.allowSlideNext = true;
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
       ],
@@ -1016,6 +1023,8 @@ export class CheckoutComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'recipientGenderDialog',
       inputs: {
+        dialogId: 'timingDialog',
+
         mode: 'time',
         words: [
           { keyword: 'male', text: 'Hombre' },
@@ -1058,7 +1067,8 @@ export class CheckoutComponent implements OnInit {
               ].inputs.submitButton.styles.display = 'none';
             }
 
-            this.swiperConfig.allowSlideNext = true;
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
       ],
@@ -1067,6 +1077,7 @@ export class CheckoutComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'receiverRelationshipDialog',
       inputs: {
+        dialogId: 'timingDialog',
         mode: 'default',
         words: this.words4,
         wordsObjects: this.receiverRelationshipWordsObjects,
@@ -1123,7 +1134,8 @@ export class CheckoutComponent implements OnInit {
               ].inputs.submitButton.styles.display = 'none';
             }
 
-            this.swiperConfig.allowSlideNext = true;
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
         {
