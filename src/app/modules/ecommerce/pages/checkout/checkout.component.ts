@@ -1163,10 +1163,11 @@ export class CheckoutComponent implements OnInit {
             this.postsService.temporalDialogs = this.temporalDialogs;
             this.postsService.temporalDialogs2 = this.temporalDialogs2;
             this.postsService.dialogs = this.dialogs;
-
-            this.headerService.flowRoute =
-              this.router.url + '?startOnDialogFlow=true';
-            localStorage.setItem('flowRoute', this.router.url);
+            this.headerService.flowRoute = this.router.url.replace(
+              '?startOnDialogFlow=true',
+              ''
+            );
+            localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
             unlockUI();
           },
@@ -1424,14 +1425,14 @@ export class CheckoutComponent implements OnInit {
                 localStorage.setItem('aiJokes', response);
               }
 
-              this.headerService.flowRoute =
-                this.router.url + '?startOnDialogFlow=true';
-              localStorage.setItem('flowRoute', this.router.url);
-
+              this.headerService.flowRoute = this.router.url.replace(
+                '?startOnDialogFlow=true',
+                ''
+              );
+              localStorage.setItem('flowRoute', this.headerService.flowRoute);
               this.postsService.temporalDialogs = this.temporalDialogs;
               this.postsService.temporalDialogs2 = this.temporalDialogs2;
               this.postsService.dialogs = this.dialogs;
-
               this.router.navigate(['ecommerce/text-edition-and-preview'], {
                 queryParams: {
                   type: 'ai-joke',
@@ -1465,8 +1466,8 @@ export class CheckoutComponent implements OnInit {
     this.route.queryParams.subscribe((queryParams) => {
       const { startOnDialogFlow } = queryParams;
       if (
-        this.postsService.dialogs?.length &&
-        this.postsService.temporalDialogs?.length &&
+        this.postsService.dialogs?.length ||
+        this.postsService.temporalDialogs?.length ||
         this.postsService.temporalDialogs2?.length
       ) {
         this.openedDialogFlow = Boolean(startOnDialogFlow);

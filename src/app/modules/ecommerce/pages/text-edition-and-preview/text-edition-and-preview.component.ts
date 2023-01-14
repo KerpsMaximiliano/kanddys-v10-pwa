@@ -147,6 +147,19 @@ export class TextEditionAndPreviewComponent implements OnInit {
     this.redirectFromQueryParams();
   }
 
+  back() {
+    console.log(this.headerService.flowRoute);
+    this.router.navigate(
+      [this.headerService.flowRoute || localStorage.getItem('flowRoute')],
+      {
+        queryParams: {
+          startOnDialogFlow: true,
+        },
+        replaceUrl: true,
+      }
+    );
+  }
+
   redirectFromQueryParams() {
     const redirectionRoute = this.headerService.flowRoute;
 
