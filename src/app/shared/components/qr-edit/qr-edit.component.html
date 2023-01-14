@@ -51,7 +51,7 @@
           <p class="text">{{gridItem.text}}</p>
           <div class="label">{{gridItem.title}}</div>
           <div class="circleButton">
-            <img class="icon" [src]="environment + '/dots-black.svg'">
+            <img class="icon" [src]="environment + '/dots-black.svg'" (click)="openSlideSettings(i)">
           </div>
         </div>
         <img
