@@ -121,11 +121,22 @@ export class TextEditionAndPreviewComponent implements OnInit {
       if (this.mode === 'EDIT') {
         const joke = this.jokeForm.get('joke').value;
 
-        this.headerService.selectedJoke = joke;
+        this.postService.post.joke = joke;
       } else {
-        this.headerService.selectedJoke = this.description;
+        this.postService.post.joke = this.description;
       }
     }
+
+    localStorage.setItem(
+      'post',
+      JSON.stringify({
+        message: this.postService.post.message,
+        title: this.postService.post.title,
+        to: this.postService.post.to,
+        from: this.postService.post.from,
+        joke: this.postService.post.joke,
+      })
+    );
 
     localStorage.removeItem('temporal-post-options');
     localStorage.removeItem('aiJokes');

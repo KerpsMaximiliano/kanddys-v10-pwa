@@ -38,6 +38,7 @@
        -->
     <app-qr-content
       [slides]="data.slides"
+      [joke]="data.joke"
       (buttonClicked)="openedDialogFlow = true"
     ></app-qr-content>
     <app-envelope-content
@@ -46,7 +47,6 @@
       [from]="data.from"
     ></app-envelope-content>
 
-    <!--
       <app-dialog-flow
         [dialogFlowId]="'flow2'"
         [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
@@ -56,6 +56,7 @@
         (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
       ></app-dialog-flow>
 
+    <!--
        <div style="margin-bottom: 32px">
       <app-title-icon-header
         title="Acceso & Notificaciones"

@@ -17,9 +17,11 @@
 
     <div
       class="flow-contents"
+      id="flow-contents"
       [ngClass]="{
         visible: status === 'OPEN'
       }"
+      (click)="openOrClose($event)"
     >
       <swiper
         [config]="swiperConfig"

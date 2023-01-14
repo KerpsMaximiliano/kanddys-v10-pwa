@@ -288,7 +288,12 @@ export class CheckoutComponent implements OnInit {
         name: 'data',
         callback: (params) => {
           const { fields, value, valid } = params;
-          const { receiverPhone } = value;
+          let { receiverPhone } = value;
+          let receiverPhoneCopy = JSON.parse(JSON.stringify(receiverPhone));
+
+          if (receiverPhone) {
+            receiverPhoneCopy = receiverPhone.e164Number.split('+')[1];
+          }
 
           if (valid) {
             this.swiperConfig.allowSlideNext = true;
@@ -296,7 +301,7 @@ export class CheckoutComponent implements OnInit {
             this.swiperConfig.allowSlideNext = false;
           }
 
-          this.postsService.postReceiverNumber = receiverPhone;
+          this.postsService.postReceiverNumber = receiverPhoneCopy;
 
           this.dialogFlowService.saveGeneralDialogData(
             receiverPhone,
@@ -841,6 +846,10 @@ export class CheckoutComponent implements OnInit {
                 swiperConfig: this.swiperConfig,
               };
               this.insertedRecipientDialog = true;
+
+              setTimeout(() => {
+                this.swiperConfig.allowSlideNext = true;
+              }, 300);
             } else {
               if (this.insertedRecipientDialog && !privatePost) {
                 this.dialogs.splice(5, 1);
@@ -1377,6 +1386,7 @@ export class CheckoutComponent implements OnInit {
                   title: this.postsService.post.title,
                   to: this.postsService.post.to,
                   from: this.postsService.post.from,
+                  joke: this.postsService.post.joke,
                 })
               );
 
@@ -1915,7 +1925,10 @@ export class CheckoutComponent implements OnInit {
           '/post-edition',
       ]);
     } else {
+      this.executeProcessesBeforeOpening();
       this.openedDialogFlow = !this.openedDialogFlow;
+
+      console.log('abierto', this.openedDialogFlow);
     }
   }
 
@@ -1941,5 +1954,21 @@ export class CheckoutComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  deletePost() {
+    this.postsService.post = null;
+    localStorage.removeItem('post');
+    this.openedDialogFlow = false;
+  }
+
+  executeProcessesBeforeOpening() {
+    this.postsService.post = {
+      from: null,
+      to: null,
+      message: null,
+      title: null,
+      joke: null,
+    };
   }
 }

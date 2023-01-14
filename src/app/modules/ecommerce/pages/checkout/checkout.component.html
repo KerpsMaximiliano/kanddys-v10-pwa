@@ -478,4 +478,6 @@
   [allowSlideNext]="false"
   (saveConfigRef)="swiperConfig = $event"
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+  (closingDialogSignal)="deletePost()"
+  (openingDialogSignal)="executeProcessesBeforeOpening()"
 ></app-dialog-flow>

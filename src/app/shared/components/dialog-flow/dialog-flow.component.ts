@@ -26,6 +26,8 @@ export class DialogFlowComponent implements OnInit {
   @Input() allowSlideNext = true;
   @Output() saveConfigRef = new EventEmitter();
   @Output() moveToDialogRef = new EventEmitter();
+  @Output() closingDialogSignal = new EventEmitter();
+  @Output() openingDialogSignal = new EventEmitter();
   swiperConfig: SwiperOptions = {
     direction: 'vertical',
     centeredSlides: true,
@@ -67,6 +69,15 @@ export class DialogFlowComponent implements OnInit {
       this.saveConfigRef.emit(this.swiperConfig);
       this.moveToDialogRef.emit(this.moveToDialogByIndex.bind(this));
     }, 100);
+
+    /*
+    const overlay = document.getElementById('flow-contents');
+    overlay.addEventListener('click',  (event) => {
+      if (event.target === overlay) {
+        event.stopPropagation();
+        this.openOrClose()
+      }
+    });*/
   }
 
   applyTransparencyToSlidesThatArentActive() {
@@ -106,5 +117,21 @@ export class DialogFlowComponent implements OnInit {
     setTimeout(() => {
       this.dialogSwiper.directiveRef.setIndex(dialogNumber);
     }, 100);
+  }
+
+  openOrClose(eventData: any) {
+    const triggerElement = eventData.target as HTMLElement;
+
+    if (
+      triggerElement.classList.contains('swiper') ||
+      triggerElement.classList.contains('dialog')
+    ) {
+      if (this.status === 'OPEN') {
+        this.status = 'CLOSE';
+        this.closingDialogSignal.emit(true);
+      } else {
+        this.status = 'OPEN';
+      }
+    }
   }
 }

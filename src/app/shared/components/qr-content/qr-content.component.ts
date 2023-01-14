@@ -9,6 +9,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 })
 export class QrContentComponent implements OnInit {
   @Input() slides: Array<SlideInput> = [];
+  @Input() joke: string = '';
   @Output() buttonClicked = new EventEmitter();
   slidesPath: Array<{
     type: 'IMAGE' | 'VIDEO';

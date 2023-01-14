@@ -59,6 +59,7 @@ textarea {
     height: 141.05px;
     width: 100%;
     margin-bottom: 5px;
+    max-width: 123.59px;
   }
 }
 
@@ -71,6 +72,30 @@ textarea {
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
   background: #272727;
+
+  .joke-label {
+    position: absolute;
+    bottom: 0;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-family: SfProMedium;
+    font-size: 15px;
+    color: white;
+  }
+
+  .joke {
+    font-family: SfProLight;
+    font-size: 13px;
+    color: white;
+    width: 100%;
+    height: 84px;
+    overflow-y: scroll;
+    padding: 12.9px 10.3px 0px 9px;
+    text-overflow: ellipsis;
+  }
 
   > * {
     position: absolute;
