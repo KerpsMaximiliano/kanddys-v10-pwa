@@ -11,7 +11,7 @@
           *ngFor="let option of postService.postMessageOptions; index as i"
         >
           <nav class="header">
-            <button class="cancel">Cancelar mensaje</button>
+            <button class="cancel" (click)="back()">Cancelar mensaje</button>
 
             <div class="options">
               Opción {{ i + 1 }} de {{ postService.postMessageOptions.length }}
@@ -41,7 +41,7 @@
           *ngFor="let option of headerService.aiJokes; index as i"
         >
           <nav class="header">
-            <button class="cancel">Cancelar chiste</button>
+            <button class="cancel" (click)="back()">Cancelar chiste</button>
 
             <div class="options">
               Opción {{ i + 1 }} de {{ headerService.aiJokes.length }}

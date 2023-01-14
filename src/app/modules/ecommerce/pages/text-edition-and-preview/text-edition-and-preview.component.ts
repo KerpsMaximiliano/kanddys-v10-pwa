@@ -50,9 +50,15 @@ export class TextEditionAndPreviewComponent implements OnInit {
       this.type = type.toUpperCase();
 
       if (!type || this.type === 'POST') {
-        const options = JSON.parse(
-          localStorage.getItem('temporal-post-options')
-        );
+        const storedOptions = localStorage.getItem('temporal-post-options');
+
+        if (!storedOptions) {
+          this.router.navigate([
+            'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+          ]);
+        }
+
+        const options = JSON.parse(storedOptions);
         const firstStoredPostMessage = options[0];
         this.postService.postMessageOptions = options;
         this.description =
@@ -62,7 +68,15 @@ export class TextEditionAndPreviewComponent implements OnInit {
           firstStoredPostMessage.title ||
           this.postService.postMessageOptions[0].title;
       } else if (this.type === 'AI-JOKE') {
-        const options = JSON.parse(localStorage.getItem('aiJokes'));
+        const storedOptions = localStorage.getItem('aiJokes');
+
+        if (!storedOptions) {
+          this.router.navigate([
+            'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+          ]);
+        }
+
+        const options = JSON.parse(storedOptions);
         this.headerService.aiJokes = options;
 
         this.description = this.headerService.aiJokes[0];
@@ -121,11 +135,22 @@ export class TextEditionAndPreviewComponent implements OnInit {
       if (this.mode === 'EDIT') {
         const joke = this.jokeForm.get('joke').value;
 
-        this.headerService.selectedJoke = joke;
+        this.postService.post.joke = joke;
       } else {
-        this.headerService.selectedJoke = this.description;
+        this.postService.post.joke = this.description;
       }
     }
+
+    localStorage.setItem(
+      'post',
+      JSON.stringify({
+        message: this.postService.post.message,
+        title: this.postService.post.title,
+        to: this.postService.post.to,
+        from: this.postService.post.from,
+        joke: this.postService.post.joke,
+      })
+    );
 
     localStorage.removeItem('temporal-post-options');
     localStorage.removeItem('aiJokes');
@@ -136,8 +161,14 @@ export class TextEditionAndPreviewComponent implements OnInit {
     this.redirectFromQueryParams();
   }
 
+  back() {
+    this.redirectFromQueryParams();
+  }
+
   redirectFromQueryParams() {
-    const redirectionRoute = this.headerService.flowRoute;
+    let redirectionRoute = this.headerService.flowRoute;
+
+    if (!redirectionRoute) redirectionRoute = localStorage.getItem('flowRoute');
 
     if (redirectionRoute.includes('?')) {
       const redirectURL: { url: string; queryParams: Record<string, string> } =

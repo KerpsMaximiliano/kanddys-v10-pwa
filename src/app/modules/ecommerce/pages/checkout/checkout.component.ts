@@ -140,7 +140,6 @@ export class CheckoutComponent implements OnInit {
   postSlideImages: (string | ArrayBuffer)[] = [];
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
-  itemsReady = false;
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
   status: 'OPEN' | 'CLOSE' = 'CLOSE';
@@ -288,7 +287,12 @@ export class CheckoutComponent implements OnInit {
         name: 'data',
         callback: (params) => {
           const { fields, value, valid } = params;
-          const { receiverPhone } = value;
+          let { receiverPhone } = value;
+          let receiverPhoneCopy = JSON.parse(JSON.stringify(receiverPhone));
+
+          if (receiverPhone) {
+            receiverPhoneCopy = receiverPhone.e164Number.split('+')[1];
+          }
 
           if (valid) {
             this.swiperConfig.allowSlideNext = true;
@@ -296,7 +300,7 @@ export class CheckoutComponent implements OnInit {
             this.swiperConfig.allowSlideNext = false;
           }
 
-          this.postsService.postReceiverNumber = receiverPhone;
+          this.postsService.postReceiverNumber = receiverPhoneCopy;
 
           this.dialogFlowService.saveGeneralDialogData(
             receiverPhone,
@@ -575,8 +579,8 @@ export class CheckoutComponent implements OnInit {
                 this.temporalDialogs2 = [];
               }
 
-              if (this.dialogs.length === 8) {
-                this.temporalDialogs2 = this.dialogs.splice(3, 1);
+              if (this.dialogs.length === 7) {
+                this.temporalDialogs2 = this.dialogs.splice(3, 2);
                 this.dialogs.splice(3, 0, ...this.temporalDialogs);
                 this.dialogFlowFunctions.moveToDialogByIndex(3);
               } else {
@@ -841,6 +845,10 @@ export class CheckoutComponent implements OnInit {
                 swiperConfig: this.swiperConfig,
               };
               this.insertedRecipientDialog = true;
+
+              setTimeout(() => {
+                this.swiperConfig.allowSlideNext = true;
+              }, 300);
             } else {
               if (this.insertedRecipientDialog && !privatePost) {
                 this.dialogs.splice(5, 1);
@@ -893,7 +901,18 @@ export class CheckoutComponent implements OnInit {
               'motive'
             );
 
-            this.swiperConfig.allowSlideNext = true;
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
+
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
       ],
@@ -902,6 +921,8 @@ export class CheckoutComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'sentimentDialog',
       inputs: {
+        dialogId: 'sentimentDialog',
+
         mode: 'default',
         words: this.words2,
         wordsObjects: this.sentimentWordsObjects,
@@ -930,7 +951,18 @@ export class CheckoutComponent implements OnInit {
               'sentiment'
             );
 
-            this.swiperConfig.allowSlideNext = true;
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
+
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
       ],
@@ -939,6 +971,8 @@ export class CheckoutComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'timingDialog',
       inputs: {
+        dialogId: 'timingDialog',
+
         mode: 'time',
         words: this.words3,
         wordsObjects: this.timingWordsObjects,
@@ -969,7 +1003,18 @@ export class CheckoutComponent implements OnInit {
               'timing'
             );
 
-            this.swiperConfig.allowSlideNext = true;
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
+
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
       ],
@@ -978,6 +1023,8 @@ export class CheckoutComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'recipientGenderDialog',
       inputs: {
+        dialogId: 'timingDialog',
+
         mode: 'time',
         words: [
           { keyword: 'male', text: 'Hombre' },
@@ -1010,7 +1057,18 @@ export class CheckoutComponent implements OnInit {
               'recipientGender'
             );
 
-            this.swiperConfig.allowSlideNext = true;
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
+
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
       ],
@@ -1019,6 +1077,7 @@ export class CheckoutComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'receiverRelationshipDialog',
       inputs: {
+        dialogId: 'timingDialog',
         mode: 'default',
         words: this.words4,
         wordsObjects: this.receiverRelationshipWordsObjects,
@@ -1027,6 +1086,7 @@ export class CheckoutComponent implements OnInit {
         submitButton: {
           text: 'Generar mensajes',
           styles: {
+            display: 'none',
             border: 'none',
             padding: '5px 20px',
             cursor: 'pointer',
@@ -1034,7 +1094,6 @@ export class CheckoutComponent implements OnInit {
             fontFamily: 'SfProBold',
             borderRadius: '3px',
             fontSize: '18px',
-            display: 'flex',
             marginTop: '1rem',
             backgroundColor: 'yellowgreen',
           },
@@ -1065,7 +1124,18 @@ export class CheckoutComponent implements OnInit {
               'receiverRelationship'
             );
 
-            this.swiperConfig.allowSlideNext = true;
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
+
+            if (!keyword) this.swiperConfig.allowSlideNext = false;
+            else this.swiperConfig.allowSlideNext = true;
           },
         },
         {
@@ -1146,26 +1216,33 @@ export class CheckoutComponent implements OnInit {
               JSON.stringify(options)
             );
 
-            this.router.navigate(['ecommerce/text-edition-and-preview'], {
-              queryParams: {
-                type: 'post',
-              },
-            });
+            this.router.navigate(
+              [
+                'ecommerce/' +
+                  this.headerService.saleflow.merchant.slug +
+                  '/text-edition-and-preview',
+              ],
+              {
+                queryParams: {
+                  type: 'post',
+                },
+              }
+            );
 
             this.postsService.temporalDialogs = this.temporalDialogs;
             this.postsService.temporalDialogs2 = this.temporalDialogs2;
             this.postsService.dialogs = this.dialogs;
-
-            this.headerService.flowRoute =
-              this.router.url + '?startOnDialogFlow=true';
-            localStorage.setItem('flowRoute', this.router.url);
+            this.headerService.flowRoute = this.router.url.replace(
+              '?startOnDialogFlow=true',
+              ''
+            );
+            localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
             unlockUI();
           },
         },
       ],
     },
-
     {
       component: GeneralDialogComponent,
       componentId: 'wantToAddQrDialog',
@@ -1377,6 +1454,7 @@ export class CheckoutComponent implements OnInit {
                   title: this.postsService.post.title,
                   to: this.postsService.post.to,
                   from: this.postsService.post.from,
+                  joke: this.postsService.post.joke,
                 })
               );
 
@@ -1415,19 +1493,26 @@ export class CheckoutComponent implements OnInit {
                 localStorage.setItem('aiJokes', response);
               }
 
-              this.headerService.flowRoute =
-                this.router.url + '?startOnDialogFlow=true';
-              localStorage.setItem('flowRoute', this.router.url);
-
+              this.headerService.flowRoute = this.router.url.replace(
+                '?startOnDialogFlow=true',
+                ''
+              );
+              localStorage.setItem('flowRoute', this.headerService.flowRoute);
               this.postsService.temporalDialogs = this.temporalDialogs;
               this.postsService.temporalDialogs2 = this.temporalDialogs2;
               this.postsService.dialogs = this.dialogs;
-
-              this.router.navigate(['ecommerce/text-edition-and-preview'], {
-                queryParams: {
-                  type: 'ai-joke',
-                },
-              });
+              this.router.navigate(
+                [
+                  'ecommerce/' +
+                    this.headerService.saleflow.merchant.slug +
+                    '/text-edition-and-preview',
+                ],
+                {
+                  queryParams: {
+                    type: 'ai-joke',
+                  },
+                }
+              );
             }
           },
         },
@@ -1441,7 +1526,7 @@ export class CheckoutComponent implements OnInit {
     public headerService: HeaderService,
     private customizerValueService: CustomizerValueService,
     public postsService: PostsService,
-    private orderService: OrderService,
+    public orderService: OrderService,
     private appService: AppService,
     private location: Location,
     private router: Router,
@@ -1455,7 +1540,13 @@ export class CheckoutComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe((queryParams) => {
       const { startOnDialogFlow } = queryParams;
-      this.openedDialogFlow = Boolean(startOnDialogFlow);
+      if (
+        this.postsService.dialogs?.length ||
+        this.postsService.temporalDialogs?.length ||
+        this.postsService.temporalDialogs2?.length
+      ) {
+        this.openedDialogFlow = Boolean(startOnDialogFlow);
+      }
 
       if (!this.postsService.post) {
         const storedPost = localStorage.getItem('post');
@@ -1915,8 +2006,37 @@ export class CheckoutComponent implements OnInit {
           '/post-edition',
       ]);
     } else {
+      this.executeProcessesBeforeOpening();
       this.openedDialogFlow = !this.openedDialogFlow;
+
+      console.log('abierto', this.openedDialogFlow);
     }
+  }
+
+  checkIfTheAIOptionsAreSelected() {
+    return (
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1'][
+          'receiverRelationshipDialog'
+        ].fields.receiverRelationship?.length
+      ) &&
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1']['recipientGenderDialog']
+          .fields.recipientGender?.length
+      ) &&
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1']['timingDialog'].fields
+          .timing?.length
+      ) &&
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1']['sentimentDialog'].fields
+          .sentiment?.length
+      ) &&
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1']['motiveDialog'].fields
+          .motive?.length
+      )
+    );
   }
 
   mouseDown: boolean;
@@ -1941,5 +2061,21 @@ export class CheckoutComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  deletePost() {
+    this.postsService.post = null;
+    localStorage.removeItem('post');
+    this.openedDialogFlow = false;
+  }
+
+  executeProcessesBeforeOpening() {
+    this.postsService.post = {
+      from: null,
+      to: null,
+      message: null,
+      title: null,
+      joke: null,
+    };
   }
 }

@@ -18,7 +18,8 @@
   </svg>
 </div>
 
-<div class="cards"
+<div
+  class="cards"
   [ngClass]="{
     noGrid: slidesPath.length === 0
   }"
@@ -48,8 +49,21 @@
     </div>
   </div>
 
+  <div class="card" *ngIf="joke">
+    <div class="itemContainer">
+      <div class="joke">{{ joke }}</div>
 
-  <p class="placeholder" *ngIf="slidesPath.length === 0">
-    Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.
+      <div class="joke-label">Chiste de IA</div>
+
+      <!--
+        <p class="text">{{ gridItem.text }}</p>
+        <div class="label">{{ gridItem.title }}</div>
+      -->
+    </div>
+  </div>
+
+  <p class="placeholder" *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)">
+    Incluyes fotos, memes, videos, música o chistes de la Inteligencia
+    Artificial.
   </p>
 </div>

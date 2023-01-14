@@ -44,6 +44,12 @@ export class QrEditComponent implements OnInit {
       slides: this._PostsService.post?.slides ? this._PostsService.post?.slides : []
     }
 
+    if (!this._PostsService.post) {
+      this._Router.navigate([
+        'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+      ]);
+    }
+
     this.availableFiles = [
       ...this.imageFiles,
       ...this.videoFiles,

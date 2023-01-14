@@ -12,23 +12,26 @@
       <button class="preview" (click)="goToPostPreview()">
         <p>PREVIEW</p>
       </button>
-      <button class="save">
-        <img
-          class="icon black"
-          [src]="env + '/bookmark-plus.svg'"
-          width="18"
-          height="20"
-          alt="Volver"
-        />
-      </button>
-      <button class="dots">
-        <img
-          [src]="env + '/dots-black.svg'"
-          width="22"
-          height="6"
-          alt="Volver"
-        />
-      </button>
+
+      <!--
+        <button class="save">
+          <img
+            class="icon black"
+            [src]="env + '/bookmark-plus.svg'"
+            width="18"
+            height="20"
+            alt="Volver"
+          />
+        </button>
+        <button class="dots">
+          <img
+            [src]="env + '/dots-black.svg'"
+            width="22"
+            height="6"
+            alt="Volver"
+          />
+        </button>
+      -->
     </div>
   </div>
   <div class="content">
@@ -38,6 +41,7 @@
        -->
     <app-qr-content
       [slides]="data.slides"
+      [joke]="data.joke"
       (buttonClicked)="openedDialogFlow = true"
     ></app-qr-content>
     <app-envelope-content
@@ -46,16 +50,17 @@
       [from]="data.from"
     ></app-envelope-content>
 
-    <!--
-      <app-dialog-flow
-        [dialogFlowId]="'flow2'"
-        [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
-        [dialogs]="dialogs2"
-        [allowSlideNext]="false"
-        (saveConfigRef)="swiperConfig = $event"
-        (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
-      ></app-dialog-flow>
+    <app-dialog-flow
+      [dialogFlowId]="'flow2'"
+      [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+      [dialogs]="dialogs2"
+      [allowSlideNext]="false"
+      (saveConfigRef)="swiperConfig = $event"
+      (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+      (closingDialogSignal)="closeDialogFlow()"
+    ></app-dialog-flow>
 
+    <!--
        <div style="margin-bottom: 32px">
       <app-title-icon-header
         title="Acceso & Notificaciones"
