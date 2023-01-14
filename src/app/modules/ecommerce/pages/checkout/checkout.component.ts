@@ -140,7 +140,6 @@ export class CheckoutComponent implements OnInit {
   postSlideImages: (string | ArrayBuffer)[] = [];
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
-  itemsReady = false;
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
   status: 'OPEN' | 'CLOSE' = 'CLOSE';
@@ -1451,7 +1450,7 @@ export class CheckoutComponent implements OnInit {
     public headerService: HeaderService,
     private customizerValueService: CustomizerValueService,
     public postsService: PostsService,
-    private orderService: OrderService,
+    public orderService: OrderService,
     private appService: AppService,
     private location: Location,
     private router: Router,
@@ -1465,7 +1464,13 @@ export class CheckoutComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe((queryParams) => {
       const { startOnDialogFlow } = queryParams;
-      this.openedDialogFlow = Boolean(startOnDialogFlow);
+      if (
+        this.postsService.dialogs?.length &&
+        this.postsService.temporalDialogs?.length &&
+        this.postsService.temporalDialogs2?.length
+      ) {
+        this.openedDialogFlow = Boolean(startOnDialogFlow);
+      }
 
       if (!this.postsService.post) {
         const storedPost = localStorage.getItem('post');
