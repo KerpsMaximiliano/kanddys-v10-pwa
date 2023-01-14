@@ -1,11 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Banner } from 'src/app/core/models/banner';
 import { PostInput } from 'src/app/core/models/post';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { BannersService } from 'src/app/core/services/banners.service';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
@@ -98,7 +100,7 @@ export class PostEditionComponent implements OnInit {
       outputs: [
         {
           name: 'data',
-          callback: (params) => {
+          callback: async (params) => {
             const { fields, value, valid } = params;
             const { qrContentSelection } = value;
 
@@ -124,6 +126,42 @@ export class PostEditionComponent implements OnInit {
                   this.headerService.saleflow.merchant.slug +
                   '/qr-edit',
               ]);
+            } else if (qrContentSelection.includes('Un chiste de la IA')) {
+              localStorage.setItem(
+                'post',
+                JSON.stringify({
+                  message: this.postsService.post.message,
+                  title: this.postsService.post.title,
+                  to: this.postsService.post.to,
+                  from: this.postsService.post.from,
+                })
+              );
+
+              lockUI();
+
+              const response =
+                await this._Gpt3Service.generateResponseForTemplate(
+                  {},
+                  '63c0ff83e752c40ca8eefcfb'
+                );
+
+              unlockUI();
+
+              if (response) {
+                const jokes = JSON.parse(response);
+                this.headerService.aiJokes = jokes;
+                localStorage.setItem('aiJokes', response);
+              }
+
+              this.headerService.flowRoute =
+                this.router.url;
+              localStorage.setItem('flowRoute', this.router.url);
+
+              this.router.navigate(['ecommerce/text-edition-and-preview'], {
+                queryParams: {
+                  type: 'ai-joke',
+                },
+              });
             }
           },
         },
@@ -235,40 +273,34 @@ export class PostEditionComponent implements OnInit {
     public headerService: HeaderService,
     private _Router: Router,
     private _BannersService: BannersService,
-    private _AuthService: AuthService
+    private _AuthService: AuthService,
+    private _Gpt3Service: Gpt3Service
   ) {}
 
   ngOnInit(): void {
     const storedPost = localStorage.getItem('post');
 
-    this.data =
-      storedPost && !this.postsService.post
-        ? JSON.parse(storedPost)
-        : this.postsService.post;
+    this.data = this.postsService.post;
 
     if (storedPost && !this.postsService.post) {
       this.postsService.post = JSON.parse(storedPost);
+      this.data = this.postsService.post;
     }
 
     (async () => {
-      const storedPost = localStorage.getItem('post');
-      this.postInput =
-        (storedPost ? JSON.parse(storedPost) : this.postsService.post) || {};
-      if (storedPost) {
-        this.postsService.post = JSON.parse(storedPost);
-      }
+      this.postInput = this.postsService.post;
       const me = await this._AuthService.me();
       const user = me._id;
       const paginate: PaginationInput = {
         options: {
-          limit: -1,
+          limit: 1,
           sortBy: 'createdAt:desc',
         },
         findBy: {
-          user
-        }
-      }
-      const [result]:any = await this._BannersService.banners(paginate);
+          user,
+        },
+      };
+      const [result]: any = await this._BannersService.banners(paginate);
       this.banner = result;
 
       if (result) {
@@ -305,7 +337,7 @@ export class PostEditionComponent implements OnInit {
     ]);
   }
 
-  doSomething() {
-    this.openedDialogFlow = !this.openedDialogFlow;
+  closeDialogFlow() {
+    this.openedDialogFlow = false;
   }
 }

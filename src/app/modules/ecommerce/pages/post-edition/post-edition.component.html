@@ -47,14 +47,15 @@
       [from]="data.from"
     ></app-envelope-content>
 
-      <app-dialog-flow
-        [dialogFlowId]="'flow2'"
-        [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
-        [dialogs]="dialogs2"
-        [allowSlideNext]="false"
-        (saveConfigRef)="swiperConfig = $event"
-        (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
-      ></app-dialog-flow>
+    <app-dialog-flow
+      [dialogFlowId]="'flow2'"
+      [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+      [dialogs]="dialogs2"
+      [allowSlideNext]="false"
+      (saveConfigRef)="swiperConfig = $event"
+      (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+      (closingDialogSignal)="closeDialogFlow()"
+    ></app-dialog-flow>
 
     <!--
        <div style="margin-bottom: 32px">

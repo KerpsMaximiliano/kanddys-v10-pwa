@@ -33,6 +33,12 @@ export class QrEditComponent implements OnInit {
       if (storedPost) this._PostsService.post = JSON.parse(storedPost);
     }
 
+    if (!this._PostsService.post) {
+      this._Router.navigate([
+        'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+      ]);
+    }
+
     this.availableFiles = [
       ...this.imageFiles,
       ...this.videoFiles,
