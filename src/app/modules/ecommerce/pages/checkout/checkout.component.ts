@@ -901,6 +901,16 @@ export class CheckoutComponent implements OnInit {
               'motive'
             );
 
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
+
             this.swiperConfig.allowSlideNext = true;
           },
         },
@@ -937,6 +947,16 @@ export class CheckoutComponent implements OnInit {
               'sentimentDialog',
               'sentiment'
             );
+
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
 
             this.swiperConfig.allowSlideNext = true;
           },
@@ -976,6 +996,16 @@ export class CheckoutComponent implements OnInit {
               'timingDialog',
               'timing'
             );
+
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
 
             this.swiperConfig.allowSlideNext = true;
           },
@@ -1018,6 +1048,16 @@ export class CheckoutComponent implements OnInit {
               'recipientGender'
             );
 
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
+
             this.swiperConfig.allowSlideNext = true;
           },
         },
@@ -1035,6 +1075,7 @@ export class CheckoutComponent implements OnInit {
         submitButton: {
           text: 'Generar mensajes',
           styles: {
+            display: 'none',
             border: 'none',
             padding: '5px 20px',
             cursor: 'pointer',
@@ -1042,7 +1083,6 @@ export class CheckoutComponent implements OnInit {
             fontFamily: 'SfProBold',
             borderRadius: '3px',
             fontSize: '18px',
-            display: 'flex',
             marginTop: '1rem',
             backgroundColor: 'yellowgreen',
           },
@@ -1072,6 +1112,16 @@ export class CheckoutComponent implements OnInit {
               'receiverRelationshipDialog',
               'receiverRelationship'
             );
+
+            if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'flex';
+            } else if (!keyword) {
+              this.dialogs[
+                this.dialogs.length - 3
+              ].inputs.submitButton.styles.display = 'none';
+            }
 
             this.swiperConfig.allowSlideNext = true;
           },
@@ -1154,11 +1204,18 @@ export class CheckoutComponent implements OnInit {
               JSON.stringify(options)
             );
 
-            this.router.navigate(['ecommerce/text-edition-and-preview'], {
-              queryParams: {
-                type: 'post',
-              },
-            });
+            this.router.navigate(
+              [
+                'ecommerce/' +
+                  this.headerService.saleflow.merchant.slug +
+                  '/text-edition-and-preview',
+              ],
+              {
+                queryParams: {
+                  type: 'post',
+                },
+              }
+            );
 
             this.postsService.temporalDialogs = this.temporalDialogs;
             this.postsService.temporalDialogs2 = this.temporalDialogs2;
@@ -1174,7 +1231,6 @@ export class CheckoutComponent implements OnInit {
         },
       ],
     },
-
     {
       component: GeneralDialogComponent,
       componentId: 'wantToAddQrDialog',
@@ -1433,11 +1489,18 @@ export class CheckoutComponent implements OnInit {
               this.postsService.temporalDialogs = this.temporalDialogs;
               this.postsService.temporalDialogs2 = this.temporalDialogs2;
               this.postsService.dialogs = this.dialogs;
-              this.router.navigate(['ecommerce/text-edition-and-preview'], {
-                queryParams: {
-                  type: 'ai-joke',
-                },
-              });
+              this.router.navigate(
+                [
+                  'ecommerce/' +
+                    this.headerService.saleflow.merchant.slug +
+                    '/text-edition-and-preview',
+                ],
+                {
+                  queryParams: {
+                    type: 'ai-joke',
+                  },
+                }
+              );
             }
           },
         },
@@ -1936,6 +1999,32 @@ export class CheckoutComponent implements OnInit {
 
       console.log('abierto', this.openedDialogFlow);
     }
+  }
+
+  checkIfTheAIOptionsAreSelected() {
+    return (
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1'][
+          'receiverRelationshipDialog'
+        ].fields.receiverRelationship?.length
+      ) &&
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1']['recipientGenderDialog']
+          .fields.recipientGender?.length
+      ) &&
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1']['timingDialog'].fields
+          .timing?.length
+      ) &&
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1']['sentimentDialog'].fields
+          .sentiment?.length
+      ) &&
+      Boolean(
+        this.dialogFlowService.dialogsFlows['flow1']['motiveDialog'].fields
+          .motive?.length
+      )
+    );
   }
 
   mouseDown: boolean;

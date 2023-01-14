@@ -153,15 +153,21 @@ export class PostEditionComponent implements OnInit {
                 localStorage.setItem('aiJokes', response);
               }
 
-              this.headerService.flowRoute =
-                this.router.url;
+              this.headerService.flowRoute = this.router.url;
               localStorage.setItem('flowRoute', this.router.url);
 
-              this.router.navigate(['ecommerce/text-edition-and-preview'], {
-                queryParams: {
-                  type: 'ai-joke',
-                },
-              });
+              this.router.navigate(
+                [
+                  'ecommerce/' +
+                    this.headerService.saleflow.merchant.slug +
+                    '/text-edition-and-preview',
+                ],
+                {
+                  queryParams: {
+                    type: 'ai-joke',
+                  },
+                }
+              );
             }
           },
         },

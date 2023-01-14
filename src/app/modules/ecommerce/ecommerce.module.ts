@@ -28,7 +28,6 @@ import { PostEditionComponent } from './pages/post-edition/post-edition.componen
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
 
-
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 
 const routes: Routes = [
@@ -66,10 +65,6 @@ const routes: Routes = [
     path: 'store/:merchantSlug',
     redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
-  },
-  {
-    path: 'text-edition-and-preview',
-    component: TextEditionAndPreviewComponent,
   },
   {
     path: ':merchantSlug',
@@ -152,6 +147,10 @@ const routes: Routes = [
       {
         path: 'qr-edit',
         component: QrEditComponent,
+      },
+      {
+        path: 'text-edition-and-preview',
+        component: TextEditionAndPreviewComponent,
       },
     ],
   },

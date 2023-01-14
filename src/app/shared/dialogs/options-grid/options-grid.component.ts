@@ -49,11 +49,19 @@ export class OptionsGridComponent implements OnInit {
       });
     }
 
-    this.optionClick.emit({
-      text: wordObject.text,
-      keyword: wordObject.keyword,
-      wordsObjects: this.wordsObjects,
-    });
+    if(wordObject.active) {
+      this.optionClick.emit({
+        text: wordObject.text,
+        keyword: wordObject.keyword,
+        wordsObjects: this.wordsObjects,
+      });
+    } else {
+      this.optionClick.emit({
+        text: null,
+        keyword: null,
+        wordsObjects: this.wordsObjects,
+      });
+    }
   }
 
   submitButtonClicked() {

@@ -38,6 +38,7 @@ import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { Router } from '@angular/router';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-test',
@@ -935,11 +936,18 @@ export class TestComponent implements OnInit {
               JSON.stringify(options)
             );
 
-            this.router.navigate(['ecommerce/text-edition-and-preview'], {
-              queryParams: {
-                type: 'post',
-              },
-            });
+            this.router.navigate(
+              [
+                'ecommerce/' +
+                  this.headerService.saleflow.merchant.slug +
+                  '/text-edition-and-preview',
+              ],
+              {
+                queryParams: {
+                  type: 'post',
+                },
+              }
+            );
 
             unlockUI();
           },
@@ -1358,6 +1366,7 @@ export class TestComponent implements OnInit {
     private dialogFlowService: DialogFlowService,
     private postsService: PostsService,
     private gpt3Service: Gpt3Service,
+    private headerService: HeaderService,
     private router: Router
   ) {}
 

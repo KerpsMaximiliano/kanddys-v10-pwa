@@ -50,9 +50,15 @@ export class TextEditionAndPreviewComponent implements OnInit {
       this.type = type.toUpperCase();
 
       if (!type || this.type === 'POST') {
-        const options = JSON.parse(
-          localStorage.getItem('temporal-post-options')
-        );
+        const storedOptions = localStorage.getItem('temporal-post-options');
+
+        if (!storedOptions) {
+          this.router.navigate([
+            'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+          ]);
+        }
+
+        const options = JSON.parse(storedOptions);
         const firstStoredPostMessage = options[0];
         this.postService.postMessageOptions = options;
         this.description =
@@ -62,7 +68,15 @@ export class TextEditionAndPreviewComponent implements OnInit {
           firstStoredPostMessage.title ||
           this.postService.postMessageOptions[0].title;
       } else if (this.type === 'AI-JOKE') {
-        const options = JSON.parse(localStorage.getItem('aiJokes'));
+        const storedOptions = localStorage.getItem('aiJokes');
+
+        if (!storedOptions) {
+          this.router.navigate([
+            'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+          ]);
+        }
+
+        const options = JSON.parse(storedOptions);
         this.headerService.aiJokes = options;
 
         this.description = this.headerService.aiJokes[0];
@@ -148,20 +162,13 @@ export class TextEditionAndPreviewComponent implements OnInit {
   }
 
   back() {
-    console.log(this.headerService.flowRoute);
-    this.router.navigate(
-      [this.headerService.flowRoute || localStorage.getItem('flowRoute')],
-      {
-        queryParams: {
-          startOnDialogFlow: true,
-        },
-        replaceUrl: true,
-      }
-    );
+    this.redirectFromQueryParams();
   }
 
   redirectFromQueryParams() {
-    const redirectionRoute = this.headerService.flowRoute;
+    let redirectionRoute = this.headerService.flowRoute;
+
+    if (!redirectionRoute) redirectionRoute = localStorage.getItem('flowRoute');
 
     if (redirectionRoute.includes('?')) {
       const redirectURL: { url: string; queryParams: Record<string, string> } =
