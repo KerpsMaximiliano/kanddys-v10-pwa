@@ -11,17 +11,19 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
-import { SettingsComponent, SettingsDialogButton } from 'src/app/shared/dialogs/settings/settings.component';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 
 @Component({
   selector: 'app-article-editor',
   templateUrl: './article-editor.component.html',
-  styleUrls: ['./article-editor.component.scss']
+  styleUrls: ['./article-editor.component.scss'],
 })
 export class ArticleEditorComponent implements OnInit {
-
   @ViewChild('inputName') inputName: ElementRef;
   @ViewChild('inputDescription') inputDescription: ElementRef;
 
@@ -62,14 +64,13 @@ export class ArticleEditorComponent implements OnInit {
     private _TagsService: TagsService,
     private _ToastrService: ToastrService,
     private dialog: DialogService,
-    protected _DomSanitizer: DomSanitizer,
-  ) { }
+    protected _DomSanitizer: DomSanitizer
+  ) {}
 
   async ngOnInit() {
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
-      console.log(this.item);
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
         this._Router.navigate(['../../'], {
           relativeTo: this._Route,
@@ -203,7 +204,13 @@ export class ArticleEditorComponent implements OnInit {
     const list: Array<SettingsDialogButton> = [
       {
         text: 'Edita este slide (crop, etc..)',
-        callback: async () => {},
+        callback: async () => {
+          this._ItemsService.editingImageIndex = index;
+          this._ItemsService.editingImage = this.selectedImages[
+            index
+          ] as string;
+          this._Router.navigate([`admin/create-article/${this.item._id}`]);
+        },
       },
       {
         text: 'Eliminar',
@@ -308,9 +315,7 @@ export class ArticleEditorComponent implements OnInit {
       }
       unlockUI();
       this._ItemsService.removeTemporalItem();
-      this._Router.navigate([
-        `admin/entity-detail-metrics`,
-      ]);
+      this._Router.navigate([`admin/entity-detail-metrics`]);
     }
   };
 
@@ -559,8 +564,8 @@ export class ArticleEditorComponent implements OnInit {
     );
   };
 
-  setFocus(field: string){
-    switch(field) {
+  setFocus(field: string) {
+    switch (field) {
       case 'name':
         setTimeout(() => {
           this.inputName.nativeElement.focus();
@@ -577,5 +582,4 @@ export class ArticleEditorComponent implements OnInit {
   goBack() {
     // TODO
   }
-
 }

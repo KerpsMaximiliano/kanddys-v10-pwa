@@ -64,6 +64,8 @@ export class ItemsService {
   itemName: string;
   itemDesc: string;
   itemPassword: string;
+  editingImageIndex: number;
+  editingImage: string;
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;

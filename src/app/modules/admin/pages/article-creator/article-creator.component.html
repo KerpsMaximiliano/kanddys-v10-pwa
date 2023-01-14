@@ -1,23 +1,11 @@
 <div class="container" *ngIf="!editMode">
-  <div
-    class="disabled"
-    *ngIf="['disabeditModeled', 'archived'].includes(item?.status)"
-  >
-    <img
-      [src]="env + '/closed-eye-white.svg'"
-      alt="Ojo cerrado"
-      class="hidden-img"
-    />
-    <span class="disabled-span">Invisible para visitantes</span>
-  </div>
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
       <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">
         <div class="grid">
           <button
             class="fixed-button left"
-            *ngIf="viewType === 'preview'"
-            (click)="isOrder ? submit() : goBack()"
+            (click)="submit()"
           >
             <img
               class="icon green"
@@ -26,13 +14,6 @@
               height="28"
               alt="Volver"
             />
-          </button>
-          <button
-            class="fixed-button right"
-            *ngIf="viewType === 'preview' && !isOrder"
-            (click)="submit()"
-          >
-            <img class="icon green" [src]="env + '/cog-wheel.svg'" />
           </button>
         </div>
         <ng-container *ngSwitchCase="'file'">
@@ -136,23 +117,6 @@
     </ng-container>
   </ng-container>
   <div class="fixed" *ngIf="!isOrder">
-    <div class="text-icons-container">
-      <div class="top-section">
-        <p class="top-text">
-          {{ item?.name || "Nombre (opcional)" }}
-        </p>
-        <button
-          class="icon-button-texts"
-          (click)="enterEdit(swiperI, activeSlide)"
-        >
-          <img [src]="env + '/screen-cut.svg'" />
-        </button>
-      </div>
-
-      <p class="desc">
-        {{ item?.description || "Descripcion del articulo (opcional)" }}
-      </p>
-    </div>
     <div class="button-display-area">
       <div
         class="lines"
@@ -167,34 +131,7 @@
           [style.background]="activeSlide === i ? '#82f18d' : '#ffffff'"
         ></div>
       </div>
-      <div class="bottom-area">
-        <!--FOR EDIT & OTHER-->
-        <ng-container *ngIf="viewType !== 'preview'">
-          <div class="sales-price">
-            <div class="sales-flex">
-              <span class="price" style="margin-right: 31px"
-                >{{ views }} vistas</span
-              >
-              <span class="price" style="margin-right: 31px"
-                >{{ sales }} ventas</span
-              >
-            </div>
-            <span class="price">RD$ {{ price | number : "1.2-2" }}</span>
-          </div>
-
-          <button class="big-button">
-            <img [src]="env + '/bookmark-plus.svg'" alt="" />
-            Adiciona tags para organizar tus items.
-          </button>
-        </ng-container>
-        <!--FOR EDIT & OTHER-->
-        <span class="price" *ngIf="viewType === 'preview'"
-          >RD$ {{ price | number : "1.2-2" }}</span
-        >
-        <!-- <div class="buttons-display center" *ngIf="viewType === 'preview'"></div> -->
-      </div>
     </div>
-    <!-- <app-bios-banner *ngIf="viewType !== 'preview'"> </app-bios-banner> -->
   </div>
 </div>
 <app-image-editor

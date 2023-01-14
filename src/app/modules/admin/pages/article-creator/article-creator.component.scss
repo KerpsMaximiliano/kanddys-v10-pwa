@@ -205,53 +205,6 @@ audio {
   }
 }
 
-.text-icons-container {
-  width: 100%;
-  min-height: 120px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 1) 100%);
-  padding: 0 3% 10px;
-
-  .top-section {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 5px;
-
-    .top-text {
-      font-family: "SfProBold";
-      font-size: 1.313rem;
-      color: #ffffff;
-      margin: 0;
-    }
-  }
-
-  .desc {
-    max-width: 100%;
-    font-family: "SfProRegular";
-    font-size: 1rem;
-    color: #ffffff;
-    margin: 0;
-    cursor: pointer;
-  }
-}
-
-.icon-button-texts {
-  border: none;
-  padding: 3px;
-  cursor: pointer;
-
-  img {
-    width: 24px;
-    height: 24px;
-    filter: brightness(3);
-  }
-}
-
 .button-display-area {
   width: 100%;
   background-color: #000000;
@@ -402,36 +355,6 @@ audio {
 // .media-placeholder {
 //   height: 100vh !important;
 // }
-
-.disabled {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  background-color: #b17608b5;
-  padding-top: 10vh;
-  z-index: 2;
-
-  .hidden-img {
-    width: 47px;
-    height: 36px;
-  }
-
-  .disabled-span {
-    max-width: 50%;
-    font-size: 1.938rem;
-    font-family: "SfProBold";
-    text-align: center;
-    color: #fff;
-    z-index: 2;
-  }
-}
 
 .icon {
   &.green {
