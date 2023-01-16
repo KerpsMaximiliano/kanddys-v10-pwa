@@ -8,6 +8,8 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SettingsComponent } from '../../dialogs/settings/settings.component';
 import { SingleActionDialogComponent } from '../../dialogs/single-action-dialog/single-action-dialog.component';
+import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-qr-edit',
@@ -27,10 +29,11 @@ export class QrEditComponent implements OnInit {
     private _PostsService: PostsService,
     private _Router: Router,
     private headerService: HeaderService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private _DomSanitizer: DomSanitizer
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     if (!this._PostsService.post) {
       const storedPost = localStorage.getItem('post');
 
@@ -42,6 +45,29 @@ export class QrEditComponent implements OnInit {
     this._PostsService.post = {
       ...this._PostsService.post,
       slides: this._PostsService.post?.slides ? this._PostsService.post?.slides : []
+    }
+
+    if (this._PostsService.post.slides.length) {
+      for await (const slide of this._PostsService.post.slides) {
+        if (slide.media.type.includes('image')) {
+          await fileToBase64(slide.media).then(result => {
+            this.gridArray.push({
+              ...slide,
+              background: result,
+              _type: slide.media.type
+            });
+          });
+        } else {
+          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+            URL.createObjectURL(slide.media)
+          );
+          this.gridArray.push({
+            ...slide,
+            background: fileUrl,
+            _type: slide.media.type,
+          });
+        }
+      }
     }
 
     if (!this._PostsService.post) {
@@ -93,6 +119,7 @@ export class QrEditComponent implements OnInit {
       content['background'] = result;
       content['_type'] = file.type;
       this.gridArray.push(content);
+      console.log(this.gridArray);
       this._PostsService.post.slides.push(content);
     };
   }

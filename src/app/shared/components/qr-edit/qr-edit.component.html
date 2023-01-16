@@ -48,8 +48,8 @@
           <div *ngIf="imageFiles.includes(gridItem._type)" class="imgBox"[ngStyle]="{background: 'url(' + gridItem.background + ') #272727 no-repeat  center/cover'}"></div>
           <video [src]="gridItem.background" *ngIf="videoFiles.includes(gridItem._type)" src="videoFiles.background"></video>
           <div class="labelBox"></div>
-          <div class="circleButton">
-            <img class="icon" [src]="environment + '/dots-black.svg'" (click)="openSlideSettings(i)">
+          <div class="circleButton" (click)="openSlideSettings(i)">
+            <img class="icon" [src]="environment + '/dots-black.svg'">
           </div>
         </div>
         <img
