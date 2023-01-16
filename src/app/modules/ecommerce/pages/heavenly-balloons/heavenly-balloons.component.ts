@@ -2315,6 +2315,27 @@ export class HeavenlyBalloonsComponent implements OnInit {
               data.delivery = deliveryISOString;
             }
 
+            Object.keys(data).forEach((key) => {
+              if (
+                [
+                  'ribbonColor',
+                  'rosesColor',
+                  'balloonsColor',
+                  'referenceImage',
+                  'proofOfPayment',
+                ].includes(key)
+              )
+                data[key] = data[key] || [];
+              else if (
+                !['delivery', 'birthday'].includes(key) &&
+                key !== 'phoneNumber'
+              )
+                data[key] = data[key] || '007';
+              else if (key === 'phoneNumber') {
+                data['phoneNumber'] = data['phoneNumber'] || '0000000000';
+              }
+            });
+
             if (window.navigator.onLine) {
               data = {
                 data: encodeURIComponent(
