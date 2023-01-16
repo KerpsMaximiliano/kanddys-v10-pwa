@@ -2191,7 +2191,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 : wantToAddADedication5thStep,
               orderMedium,
               paymentMethod,
-              timeOfDay: reservation.timeOfDay,
+              timeOfDay: reservation?.timeOfDay || null,
               addressReference: deliveryAddress,
               deliveryAddress,
               deliveryMethod,
