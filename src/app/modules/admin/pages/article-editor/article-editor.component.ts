@@ -17,6 +17,7 @@ import {
 } from 'src/app/shared/dialogs/settings/settings.component';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-article-editor',
@@ -24,6 +25,7 @@ import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/ta
   styleUrls: ['./article-editor.component.scss'],
 })
 export class ArticleEditorComponent implements OnInit {
+  env: string = environment.assetsUrl;
   @ViewChild('inputName') inputName: ElementRef;
   @ViewChild('inputDescription') inputDescription: ElementRef;
 
@@ -279,8 +281,6 @@ export class ArticleEditorComponent implements OnInit {
       name: this.name.value || null,
       description: this.description.value || null,
       pricing: this.price.value,
-      images: this._ItemsService.itemImages,
-      merchant: this._MerchantsService.merchantData?._id,
       content: [],
       currencies: [],
       hasExtraPrice: false,
@@ -290,33 +290,31 @@ export class ArticleEditorComponent implements OnInit {
     this._ItemsService.itemPrice = null;
     this._ItemsService.itemName = null;
 
-    if (this.item) {
-      if (this.updated || this._ItemsService.changedImages) {
-        lockUI();
-        if (!itemInput.pricing) delete itemInput.pricing;
-        delete itemInput.images;
-        delete itemInput.merchant;
-        const { updateItem: updatedItem } = await this._ItemsService.updateItem(
-          itemInput,
-          this.item._id
+    if (this.updated || this._ItemsService.changedImages) {
+      lockUI();
+      if (this.name.invalid) delete itemInput.name;
+      if (this.description.invalid) delete itemInput.description;
+      if (this.price.invalid) delete itemInput.pricing;
+      const { updateItem: updatedItem } = await this._ItemsService.updateItem(
+        itemInput,
+        this.item._id
+      );
+      if (this._ItemsService.changedImages) {
+        await this._ItemsService.deleteImageItem(
+          this.item.images,
+          updatedItem._id
         );
-        if (this._ItemsService.changedImages) {
-          await this._ItemsService.deleteImageItem(
-            this.item.images,
-            updatedItem._id
-          );
-          await this._ItemsService.addImageItem(
-            this._ItemsService.itemImages,
-            updatedItem._id
-          );
-          this._ItemsService.itemImages = [];
-          this._ItemsService.changedImages = false;
-        }
+        await this._ItemsService.addImageItem(
+          this._ItemsService.itemImages,
+          updatedItem._id
+        );
+        this._ItemsService.itemImages = [];
+        this._ItemsService.changedImages = false;
       }
-      unlockUI();
-      this._ItemsService.removeTemporalItem();
-      this._Router.navigate([`admin/entity-detail-metrics`]);
     }
+    unlockUI();
+    this._ItemsService.removeTemporalItem();
+    this._Router.navigate([`admin/entity-detail-metrics`]);
   };
 
   openTagDialog = async () => {
