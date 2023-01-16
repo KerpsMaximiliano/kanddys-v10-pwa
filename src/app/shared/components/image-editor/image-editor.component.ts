@@ -27,8 +27,17 @@ export class ImageEditorComponent implements OnDestroy {
   @Input() imgUrl: string;
   @Output() cropped = new EventEmitter<CroppResult>();
   cropper: Cropper;
+  modified = false;
 
   @ViewChild('image') image: ElementRef;
+
+  ngAfterViewInit() {
+    this.image.nativeElement.addEventListener(
+      'zoom',
+      () => (this.modified = true),
+      false
+    );
+  }
 
   imageLoaded($event: Event) {
     if (!$event) return;
@@ -63,17 +72,26 @@ export class ImageEditorComponent implements OnDestroy {
   setZoom(zoom: 'in' | 'out') {
     if (zoom === 'in') this.cropper.zoom(0.1);
     if (zoom === 'out') this.cropper.zoom(-0.1);
+    this.modified = true;
   }
 
-  setDragMode(action: 'move' | 'crop') {
-    this.cropper.setDragMode(action);
+  updateRotation($event) {
+    if (!$event) return;
+    const value = +$event.target.value;
+    this.cropper.rotateTo(value);
+    this.modified = true;
   }
+
+  // setDragMode(action: 'move' | 'crop') {
+  //   this.cropper.setDragMode(action);
+  // }
 
   flipCanvas(direction: 'horizontal' | 'vertical') {
     if (direction === 'horizontal')
       this.cropper.scaleX(-this.cropper.getData().scaleX || -1);
     if (direction === 'vertical')
       this.cropper.scaleY(-this.cropper.getData().scaleY || -1);
+    this.modified = true;
   }
 
   // close() {
@@ -86,7 +104,7 @@ export class ImageEditorComponent implements OnDestroy {
     const canvas = this.cropper.getCroppedCanvas();
     const data = { imageData, cropData };
     canvas.toBlob((blob) => {
-      this.cropped.emit({ ...data, blob });
+      this.cropped.emit(this.modified ? { ...data, blob } : null);
     });
   }
 
@@ -98,11 +116,12 @@ export class ImageEditorComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.destroyCropper();
-  }
-
-  updateRotation($event) {
-    if (!$event) return;
-    const value = +$event.target.value;
-    this.cropper.rotateTo(value);
+    if (this.image) {
+      this.image.nativeElement.removeEventListener(
+        'zoom',
+        () => (this.modified = true),
+        false
+      );
+    }
   }
 }

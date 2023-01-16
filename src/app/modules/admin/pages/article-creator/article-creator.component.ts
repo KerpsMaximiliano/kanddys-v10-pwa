@@ -265,19 +265,21 @@ export class ArticleCreatorComponent implements OnInit {
     return new File([blob], fileName, { type: type || 'image/jpg' });
   }
 
-  async onEditSubmit(result: CroppResult) {
-    const file = new File([result.blob], 'image.jpg', {
-      type: 'image/jpg',
-    });
-    lockUI();
-    await this._ItemsService.deleteImageItem(
-      [this.item.images[this.editingImageIndex]],
-      this.item._id
-    );
-    await this._ItemsService.addImageItem([file], this.item._id);
-    unlockUI();
-    this._ItemsService.editingImage = null;
-    this._ItemsService.editingImageIndex = null;
+  async onEditSubmit(result?: CroppResult) {
+    if (result) {
+      const file = new File([result.blob], 'image.jpg', {
+        type: 'image/jpg',
+      });
+      lockUI();
+      await this._ItemsService.deleteImageItem(
+        [this.item.images[this.editingImageIndex]],
+        this.item._id
+      );
+      await this._ItemsService.addImageItem([file], this.item._id);
+      unlockUI();
+      this._ItemsService.editingImage = null;
+      this._ItemsService.editingImageIndex = null;
+    }
     this.ngZone.run(() => {
       this._Router.navigate([`/admin/article-editor/${this.item._id}`]);
     });

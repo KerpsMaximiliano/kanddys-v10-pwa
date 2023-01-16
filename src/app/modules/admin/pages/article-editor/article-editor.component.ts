@@ -10,6 +10,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { CurrencyInputComponent } from 'src/app/shared/components/currency-input/currency-input.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import {
   SettingsComponent,
@@ -26,8 +27,11 @@ import { environment } from 'src/environments/environment';
 })
 export class ArticleEditorComponent implements OnInit {
   env: string = environment.assetsUrl;
-  @ViewChild('inputName') inputName: ElementRef;
-  @ViewChild('inputDescription') inputDescription: ElementRef;
+  @ViewChild('inputName') inputName: ElementRef<HTMLInputElement>;
+  @ViewChild('inputDescription')
+  inputDescription: ElementRef<HTMLTextAreaElement>;
+  @ViewChild(CurrencyInputComponent)
+  currencyInputcomponent: CurrencyInputComponent;
 
   price = new FormControl('', [
     Validators.required,
@@ -562,7 +566,7 @@ export class ArticleEditorComponent implements OnInit {
     );
   };
 
-  setFocus(field: string) {
+  setFocus(field: 'name' | 'description' | 'pricing') {
     switch (field) {
       case 'name':
         setTimeout(() => {
@@ -572,6 +576,11 @@ export class ArticleEditorComponent implements OnInit {
       case 'description':
         setTimeout(() => {
           this.inputDescription.nativeElement.focus();
+        }, 100);
+        break;
+      case 'pricing':
+        setTimeout(() => {
+          this.currencyInputcomponent.currencyInput.nativeElement.focus();
         }, 100);
         break;
     }

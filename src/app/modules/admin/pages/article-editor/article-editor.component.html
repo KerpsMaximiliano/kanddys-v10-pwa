@@ -42,7 +42,7 @@
     <app-title-icon-header
       title="Precio"
       [editing]="!editingPrice"
-      (iconClicked)="editingPrice = true"
+      (iconClicked)="editingPrice = true; setFocus('pricing')"
     >
     </app-title-icon-header>
     <app-card [shadows]="editingPrice">
@@ -145,7 +145,7 @@
     >
     </app-title-icon-header>
     <app-card [shadows]="editingDescription">
-      <span *ngIf="!editingDescription">{{
+      <span *ngIf="!editingDescription" style="display: block; height: 86px">{{
         item?.description ? item.description : "Sin descripción..."
       }}</span>
       <textarea
