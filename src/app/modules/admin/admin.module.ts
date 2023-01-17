@@ -21,6 +21,7 @@ import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
 import { ArticleEditorComponent } from './pages/article-editor/article-editor.component';
+import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -137,6 +138,10 @@ const routes: Routes = [
       {
         path: "article-editor/:articleId",
         component: ArticleEditorComponent
+      },
+      {
+        path: "slides-editor",
+        component: QrEditComponent
       }
     ],
   },

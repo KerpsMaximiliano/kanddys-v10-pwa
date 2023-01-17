@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
+import { SlideInput } from 'src/app/core/models/post';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -59,6 +60,8 @@ export class ArticleEditorComponent implements OnInit {
   updated: boolean = false;
 
   selectedTags: Array<string>;
+
+  slides: SlideInput[];
 
   constructor(
     private _ItemsService: ItemsService,
@@ -117,6 +120,12 @@ export class ArticleEditorComponent implements OnInit {
         );
       if (this._SaleflowService.saleflowData) this.obtainLasts();
     }
+
+    // this.slides = this.item.images.map(image => {
+    //   return {
+    //     media: 
+    //   }
+    // })
   }
 
   loadImages() {
@@ -584,6 +593,10 @@ export class ArticleEditorComponent implements OnInit {
         // }, 100);
         break;
     }
+  }
+
+  goEditSlides() {
+    this._Router.navigate([`admin/slides-editor`]);
   }
 
   goBack() {
