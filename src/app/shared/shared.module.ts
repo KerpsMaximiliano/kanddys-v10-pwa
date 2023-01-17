@@ -125,6 +125,8 @@ import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component
 import { ImageEditorComponent } from './components/image-editor/image-editor.component';
 import { CardComponent } from './components/card/card.component';
 import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
+import { QrContentComponent } from './components/qr-content/qr-content.component';
+import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 
 const imports = [
   CommonModule,
@@ -258,7 +260,9 @@ const declarations = [
   TagsDialogComponent,
   ImageEditorComponent,
   CardComponent,
-  TitleIconHeaderComponent
+  TitleIconHeaderComponent,
+  QrContentComponent,
+  QrEditComponent
 ];
 
 @NgModule({
