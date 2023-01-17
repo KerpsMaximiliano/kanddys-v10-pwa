@@ -2,16 +2,17 @@
   <div class="cropper__imageContainer">
     <button
       class="fixed-button left"
-      style="padding: 6px"
+      style="padding: 12px 16px"
       (click)="exportCanvas()"
     >
       <img
         class="icon green"
         [src]="env + '/arrow-double-up.svg'"
         alt="Back"
-        height="28"
-        width="28"
+        height="13"
+        width="16"
       />
+      Guardar
     </button>
     <div class="cropper__image">
       <img #image [src]="imgUrl" (load)="imageLoaded($event)" />

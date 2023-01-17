@@ -87,19 +87,19 @@ export class ArticleEditorComponent implements OnInit {
       this.name.setValue(this.item.name);
       this.description.setValue(this.item.description);
       if (this.item.images.length) {
-        if (!this._ItemsService.itemImages.length) {
-          const imagesPromises = this.item.images.map(async (image, index) => {
-            const response = await fetch(image);
-            const blob = await response.blob();
-            return new File([blob], `item_image_${index}.jpeg`, {
-              type: 'image/jpeg',
-            });
+        // if (!this._ItemsService.itemImages.length) {
+        const imagesPromises = this.item.images.map(async (image, index) => {
+          const response = await fetch(image);
+          const blob = await response.blob();
+          return new File([blob], `item_image_${index}.jpeg`, {
+            type: 'image/jpeg',
           });
-          Promise.all(imagesPromises).then((result) => {
-            this._ItemsService.itemImages = result;
-            if (!this.selectedImages.length) this.loadImages();
-          });
-        } else this.loadImages();
+        });
+        Promise.all(imagesPromises).then((result) => {
+          this._ItemsService.itemImages = result;
+          if (!this.selectedImages.length) this.loadImages();
+        });
+        // } else this.loadImages();
       }
     }
     if (this._ItemsService.itemName)
