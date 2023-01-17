@@ -279,13 +279,17 @@ export class ArticleCreatorComponent implements OnInit {
       unlockUI();
       this._ItemsService.editingImage = null;
       this._ItemsService.editingImageIndex = null;
+      this.ngZone.run(() => {
+        const url = this._Router.serializeUrl(
+          this._Router.createUrlTree([`/admin/article-editor/${this.item._id}`])
+        );
+        window.location.href = url;
+      });
+    } else {
+      this.ngZone.run(() => {
+        this._Router.navigate([`/admin/article-editor/${this.item._id}`]);
+      });
     }
-    this.ngZone.run(() => {
-      const url = this._Router.serializeUrl(
-        this._Router.createUrlTree([`/admin/article-editor/${this.item._id}`])
-      );
-      window.location.href = url;
-    });
   }
 
   async submit(): Promise<void> {

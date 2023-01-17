@@ -579,9 +579,9 @@ export class ArticleEditorComponent implements OnInit {
         }, 100);
         break;
       case 'pricing':
-        setTimeout(() => {
-          this.currencyInputcomponent.currencyInput.nativeElement.focus();
-        }, 100);
+        // setTimeout(() => {
+        //   this.currencyInputcomponent.currencyInput.nativeElement.focus();
+        // }, 100);
         break;
     }
   }
