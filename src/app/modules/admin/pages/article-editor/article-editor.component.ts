@@ -121,11 +121,14 @@ export class ArticleEditorComponent implements OnInit {
       if (this._SaleflowService.saleflowData) this.obtainLasts();
     }
 
-    // this.slides = this.item.images.map(image => {
-    //   return {
-    //     media: 
-    //   }
-    // })
+    this.slides = this._ItemsService.itemImages.map(image => {
+      return {
+        media: image,
+        index: 0,
+        type: "poster",
+        text: ""
+      }
+    });
   }
 
   loadImages() {

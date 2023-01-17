@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, SimpleChanges } from '@angular/core';
 import { SlideInput } from 'src/app/core/models/post';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
@@ -9,6 +9,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 })
 export class QrContentComponent implements OnInit {
   @Input() slides: Array<SlideInput> = [];
+  @Input() shadows: boolean = true;
   @Input() joke: string = '';
   @Output() buttonClicked = new EventEmitter();
   slidesPath: Array<{
@@ -35,6 +36,30 @@ export class QrContentComponent implements OnInit {
             path: fileUrl,
             type: 'VIDEO',
           });
+        }
+      }
+    }
+  }
+
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes.slides) {
+      if (this.slides) {
+        for await (const slide of this.slides) {
+          if (slide.media.type.includes('image')) {
+            const base64 = await this.fileToBase64(slide.media);
+            this.slidesPath.push({
+              path: `url(${base64})`,
+              type: 'IMAGE',
+            });
+          } else {
+            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(slide.media)
+            );
+            this.slidesPath.push({
+              path: fileUrl,
+              type: 'VIDEO',
+            });
+          }
         }
       }
     }

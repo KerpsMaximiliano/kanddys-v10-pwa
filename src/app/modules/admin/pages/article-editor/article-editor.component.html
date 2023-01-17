@@ -69,13 +69,18 @@
   </div>
 
   <div class="section">
-    <app-title-icon-header
+    <!-- <app-title-icon-header
       title="Slides, contenido del QR"
       [editing]="!editingSlides"
       (iconClicked)="editingSlides = true"
     >
-    </app-title-icon-header>
-    <app-card [shadows]="editingSlides">
+    </app-title-icon-header> -->
+    <app-qr-content
+        [slides]="slides"
+        [shadows]="false"
+        (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
+    <!-- <app-card [shadows]="editingSlides">
       <div class="image-selector">
         <div class="image-area">
           <input
@@ -100,7 +105,6 @@
               [style.background]="sanitize(item)"
               (click)="openImageModal(item)"
             ></button>
-            <!-- <button class="corner-btn delete" (click)="deleteImage(i)"></button> -->
             <div
               class="corner-btn2"
               (click)="openAuxDialog(i)"
@@ -112,8 +116,7 @@
           </div>
         </div>
       </div>
-    </app-card>
-    <!-- <app-qr-content></app-qr-content> -->
+    </app-card> -->
   </div>
 
   <div class="section">
