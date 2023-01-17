@@ -281,7 +281,10 @@ export class ArticleCreatorComponent implements OnInit {
       this._ItemsService.editingImageIndex = null;
     }
     this.ngZone.run(() => {
-      this._Router.navigate([`/admin/article-editor/${this.item._id}`]);
+      const url = this._Router.serializeUrl(
+        this._Router.createUrlTree([`/admin/article-editor/${this.item._id}`])
+      );
+      window.location.href = url;
     });
   }
 

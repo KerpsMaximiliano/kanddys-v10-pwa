@@ -63,6 +63,9 @@ export class ImageEditorComponent implements OnDestroy {
       background: false,
       minCropBoxHeight: container.clientHeight,
       minCropBoxWidth: container.clientWidth,
+      cropmove: () => {
+        this.modified = true;
+      },
     };
 
     this.destroyCropper();
@@ -99,13 +102,15 @@ export class ImageEditorComponent implements OnDestroy {
   // }
 
   async exportCanvas() {
-    const imageData = this.cropper.getImageData();
-    const cropData = this.cropper.getCropBoxData();
-    const canvas = this.cropper.getCroppedCanvas();
-    const data = { imageData, cropData };
-    canvas.toBlob((blob) => {
-      this.cropped.emit(this.modified ? { ...data, blob } : null);
-    });
+    if (this.modified) {
+      const imageData = this.cropper.getImageData();
+      const cropData = this.cropper.getCropBoxData();
+      const canvas = this.cropper.getCroppedCanvas();
+      const data = { imageData, cropData };
+      canvas.toBlob((blob) => {
+        this.cropped.emit({ ...data, blob });
+      });
+    } else this.cropped.emit();
   }
 
   private destroyCropper() {
