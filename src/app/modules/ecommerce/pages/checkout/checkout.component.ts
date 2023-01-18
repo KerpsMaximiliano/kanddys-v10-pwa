@@ -238,7 +238,7 @@ export class CheckoutComponent implements OnInit {
     inputs: {
       containerStyles: {
         background: 'rgb(255, 255, 255)',
-        borderRadius: '8px',
+        borderRadius: '12px',
         opacity: '0.5',
         padding: '37.1px 23.6px 52.6px 31px',
         overflow: 'auto',
@@ -250,7 +250,7 @@ export class CheckoutComponent implements OnInit {
           marginBottom: '12.5px',
           marginTop: '0',
         },
-        text: 'Cual es el Whatsapp de QuienRecibiraID?',
+        text: 'Cual es el Whatsapp de quien Recibirá',
       },
       fields: {
         styles: {},
@@ -1183,7 +1183,7 @@ export class CheckoutComponent implements OnInit {
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
+          borderRadius: '12px',
           opacity: '1',
           padding: '37px 36.6px 50.4px 31px',
         },
@@ -1342,7 +1342,7 @@ export class CheckoutComponent implements OnInit {
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
+          borderRadius: '12px',
           opacity: '1',
           padding: '37px 36.6px 18.9px 31px',
         },
