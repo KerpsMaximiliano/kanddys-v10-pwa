@@ -48,7 +48,7 @@
     <app-card [shadows]="editingPrice">
       <span *ngIf="!editingPrice"
         >RD$
-        {{ item?.pricing ? item.pricing.toLocaleString("es-MX") : "0" }}</span
+        {{ price.value ? price.value.toLocaleString("es-MX") : "0" }}</span
       >
       <app-currency-input
         [fieldStyles]="{
@@ -135,7 +135,7 @@
     </app-title-icon-header>
     <app-card [shadows]="editingName">
       <span *ngIf="!editingName">{{
-        item?.name ? item.name : "Sin nombre..."
+        name.value ? name.value : "Sin nombre..."
       }}</span>
       <input
         #inputName
@@ -156,7 +156,7 @@
     </app-title-icon-header>
     <app-card [shadows]="editingDescription">
       <span *ngIf="!editingDescription" style="display: block; height: 86px">{{
-        item?.description ? item.description : "Sin descripción..."
+        description.value ? description.value : "Sin descripción..."
       }}</span>
       <textarea
         #inputDescription
