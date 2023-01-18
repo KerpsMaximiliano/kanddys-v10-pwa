@@ -66,13 +66,25 @@
   </div>
   <div class="bottom">
     <div class="bars">
-      <div
-        class="bar"
-        *ngFor="let option of postService.postMessageOptions; index as i"
-        [ngClass]="{
-          active: currentMessageIndex === i
-        }"
-      ></div>
+      <ng-container *ngIf="type === 'POST'">
+        <div
+          class="bar"
+          *ngFor="let option of postService.postMessageOptions; index as i"
+          [ngClass]="{
+            active: currentMessageIndex === i
+          }"
+        ></div>
+      </ng-container>
+
+      <ng-container *ngIf="type === 'AI-JOKE'">
+        <div
+          class="bar"
+          *ngFor="let joke of headerService.aiJokes; index as i"
+          [ngClass]="{
+            active: currentMessageIndex === i
+          }"
+        ></div>
+      </ng-container>
     </div>
 
     <span

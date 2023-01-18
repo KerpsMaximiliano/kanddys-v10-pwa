@@ -1134,8 +1134,7 @@ export class CheckoutComponent implements OnInit {
               ].inputs.submitButton.styles.display = 'none';
             }
 
-            if (!keyword) this.swiperConfig.allowSlideNext = false;
-            else this.swiperConfig.allowSlideNext = true;
+            this.swiperConfig.allowSlideNext = false;
           },
         },
         {
@@ -1908,13 +1907,15 @@ export class CheckoutComponent implements OnInit {
               phone: this.postsService.postReceiverNumber,
             });
 
-            await this.entityTemplateService.entityTemplateAddRecipient(
-              entityTemplate._id,
-              {
-                edit: false,
-                recipient: recipient._id,
-              }
-            );
+            if (this.postsService.privatePost) {
+              await this.entityTemplateService.entityTemplateAddRecipient(
+                entityTemplate._id,
+                {
+                  edit: false,
+                  recipient: recipient._id,
+                }
+              );
+            }
           }
         }
       } catch (error) {
@@ -1969,6 +1970,14 @@ export class CheckoutComponent implements OnInit {
       this.disableButton = false;
     }
   };
+
+  login() {
+    this.router.navigate(['auth/login'], {
+      queryParams: {
+        redirect: `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+      },
+    });
+  }
 
   async checkLogged() {
     try {

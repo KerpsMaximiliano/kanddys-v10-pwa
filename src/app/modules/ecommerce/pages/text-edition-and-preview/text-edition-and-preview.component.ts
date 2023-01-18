@@ -134,10 +134,34 @@ export class TextEditionAndPreviewComponent implements OnInit {
     } else if (this.type === 'AI-JOKE') {
       if (this.mode === 'EDIT') {
         const joke = this.jokeForm.get('joke').value;
-
         this.postService.post.joke = joke;
       } else {
-        this.postService.post.joke = this.description;
+        this.postService.post.joke =
+          this.headerService.aiJokes[this.currentMessageIndex];
+      }
+
+      if (
+        !this.postService.post.slides ||
+        this.postService.post.slides.length === 0
+      ) {
+        this.postService.post.slides = [];
+        this.postService.post.slides = [
+          {
+            type: 'text',
+            text: this.postService.post.joke,
+            index: 0,
+            title: 'Chiste de IA',
+            media: null,
+          },
+        ];
+      } else {
+        this.postService.post.slides.push({
+          type: 'text',
+          text: this.postService.post.joke,
+          index: this.postService.post.slides.length - 1,
+          title: 'Chiste de IA',
+          media: null,
+        });
       }
     }
 

@@ -66,6 +66,7 @@ export class CreateGiftcardComponent implements OnInit {
         title: this.postsService.post.title,
         to: this.postsService.post.to,
         from: this.postsService.post.from,
+        joke: this.postsService.post.joke,
       })
     );
 

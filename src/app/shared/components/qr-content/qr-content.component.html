@@ -25,7 +25,7 @@
   }"
 >
   <div class="card" *ngFor="let slide of slidesPath; index as i">
-    <div class="itemContainer">
+    <div class="itemContainer" *ngIf="slide.type !== 'TEXT'">
       <ng-container *ngIf="slide.type === 'IMAGE'">
         <div
           class="imgBox"
@@ -47,13 +47,11 @@
         <div class="label">{{ gridItem.title }}</div>
       -->
     </div>
-  </div>
 
-  <div class="card" *ngIf="joke">
-    <div class="itemContainer">
-      <div class="joke">{{ joke }}</div>
+    <div class="itemContainer" *ngIf="slide.type === 'TEXT'">
+      <div class="joke">{{ slide.text }}</div>
 
-      <div class="joke-label">Chiste de IA</div>
+      <div class="joke-label">{{ slide.title }}</div>
 
       <!--
         <p class="text">{{ gridItem.text }}</p>
@@ -62,7 +60,10 @@
     </div>
   </div>
 
-  <p class="placeholder" *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)">
+  <p
+    class="placeholder"
+    *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)"
+  >
     Incluyes fotos, memes, videos, música o chistes de la Inteligencia
     Artificial.
   </p>

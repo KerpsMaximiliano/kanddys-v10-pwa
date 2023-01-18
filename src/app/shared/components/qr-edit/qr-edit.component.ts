@@ -44,20 +44,22 @@ export class QrEditComponent implements OnInit {
 
     this._PostsService.post = {
       ...this._PostsService.post,
-      slides: this._PostsService.post?.slides ? this._PostsService.post?.slides : []
-    }
+      slides: this._PostsService.post?.slides
+        ? this._PostsService.post?.slides
+        : [],
+    };
 
     if (this._PostsService.post.slides.length) {
       for await (const slide of this._PostsService.post.slides) {
-        if (slide.media.type.includes('image')) {
-          await fileToBase64(slide.media).then(result => {
+        if (slide.media && slide.media.type.includes('image')) {
+          await fileToBase64(slide.media).then((result) => {
             this.gridArray.push({
               ...slide,
               background: result,
-              _type: slide.media.type
+              _type: slide.media.type,
             });
           });
-        } else {
+        } else if (slide.media && slide.media.type.includes('video')) {
           const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
             URL.createObjectURL(slide.media)
           );
@@ -65,6 +67,10 @@ export class QrEditComponent implements OnInit {
             ...slide,
             background: fileUrl,
             _type: slide.media.type,
+          });
+        } else if (!slide.media && slide.type === 'text') {
+          this.gridArray.push({
+            ...slide,
           });
         }
       }
@@ -171,26 +177,24 @@ export class QrEditComponent implements OnInit {
             flags: ['no-header'],
           });
         },
-      }
+      },
     ];
-    this.dialog.open(
-      SettingsComponent,
-      {
-        type: 'fullscreen-translucent',
-        props: {
-          optionsList: list,
-          closeEvent: () => {},
-          shareBtn: false,
-          title: '',
-        },
-        customClass: 'app-dialog',
-        flags: ['no-header'],
-      }
-    )
+    this.dialog.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        closeEvent: () => {},
+        shareBtn: false,
+        title: '',
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   deleteImage(index: number) {
     this.gridArray.splice(index, 1);
-    if (this._PostsService.post?.slides.length) this._PostsService.post.slides.splice(index, 1);
+    if (this._PostsService.post?.slides.length)
+      this._PostsService.post.slides.splice(index, 1);
   }
 }

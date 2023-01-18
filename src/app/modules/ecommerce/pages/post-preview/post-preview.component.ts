@@ -23,8 +23,11 @@ export class PostPreviewComponent implements OnInit {
   slideDescription: string = '';
 
   slidesPath: Array<{
-    type: 'IMAGE' | 'VIDEO';
-    path: string | SafeUrl;
+    type: 'IMAGE' | 'VIDEO' | 'TEXT';
+    path?: string | SafeUrl;
+    title?: string;
+    text?: string;
+    mode?: string;
   }> = [];
 
   swiperConfig: SwiperOptions = {
@@ -56,26 +59,47 @@ export class PostPreviewComponent implements OnInit {
 
     this.post = this.postsService.post;
 
-    if(this.post.slides) {
+    /*
+    this.post.slides = [
+      {
+        type: 'text',
+        text: '¿Por qué el zombi no está triste? Porque no tiene cerebro para sentir.',
+        title: 'Chiste de IA',
+        media: null,
+        index: 0,
+      },
+    ];*/
+
+    if (this.post.slides) {
       for await (const slide of this.post.slides) {
-        if (slide.media.type.includes('image')) {
+        console.log(slide.media);
+
+        if (slide.media && slide.media.type.includes('image')) {
           const base64 = await this.fileToBase64(slide.media);
           this.slidesPath.push({
             path: `url(${base64})`,
             type: 'IMAGE',
+            mode: 'fullImg',
           });
-        } else {
+        } else if (slide.media && slide.media.type.includes('video')) {
           const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
             URL.createObjectURL(slide.media)
           );
           this.slidesPath.push({
             path: fileUrl,
             type: 'VIDEO',
+            mode: 'fullImg',
+          });
+        } else if (!slide.media && slide.type === 'text') {
+          this.slidesPath.push({
+            type: 'TEXT',
+            title: slide.title,
+            text: slide.text,
+            mode: 'solidBg',
           });
         }
       }
     }
-
 
     if ((this.post && !this.post.slides) || this.post.slides.length === 0) {
       this.mode = 'solidBg';
@@ -93,10 +117,10 @@ export class PostPreviewComponent implements OnInit {
     });
 
   handleMode(): void {
-    if (this.mode === 'gradientImg') {
-      this.mode = 'fullImg';
-    } else if (this.mode === 'fullImg') {
-      this.mode = 'gradientImg';
+    if (this.slidesPath[this.currentMediaSlide].mode === 'gradientImg') {
+      this.slidesPath[this.currentMediaSlide].mode = 'fullImg';
+    } else if (this.slidesPath[this.currentMediaSlide].mode === 'fullImg') {
+      this.slidesPath[this.currentMediaSlide].mode = 'gradientImg';
     }
   }
 
