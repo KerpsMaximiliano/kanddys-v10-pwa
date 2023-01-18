@@ -300,6 +300,9 @@ export class CheckoutComponent implements OnInit {
             this.swiperConfig.allowSlideNext = false;
           }
 
+          this.postsService.privatePost = true;
+          localStorage.setItem('privatePost', 'true');
+
           this.postsService.postReceiverNumber = receiverPhoneCopy;
 
           this.dialogFlowService.saveGeneralDialogData(
@@ -766,42 +769,6 @@ export class CheckoutComponent implements OnInit {
                 color: '#A1A1A1',
               },
             },
-            {
-              name: 'privatePost',
-              value: '',
-              validators: [],
-              type: 'checkbox',
-              label: {
-                styles: {
-                  display: 'block',
-                  fontSize: '20px',
-                  fontFamily: '"RobotoMedium"',
-                  margin: '9px 0px',
-                },
-                text: 'Privado',
-              },
-              placeholder: 'tester',
-              disclaimer: {
-                text: 'Quien recibirá escaneara un qrCode y le llegara el acceso a su Whatsapp',
-                styles: {
-                  fontFamily: '"SfProLight"',
-                  paddingLeft: '43px',
-                  marginTop: '0px',
-                  color: '#7b7b7b',
-                  fontStyle: 'italic',
-                },
-              },
-              stylesGrid: {
-                alignItems: 'center',
-                display: 'grid',
-                gap: '8px',
-                gridTemplateColumns: '1fr 11fr',
-                padding: '30.9px 5px 0px',
-              },
-              styles: {
-                height: '17px',
-              },
-            },
           ],
         },
       },
@@ -810,7 +777,7 @@ export class CheckoutComponent implements OnInit {
           name: 'data',
           callback: (params) => {
             const { value, fields } = params;
-            const { message, privatePost } = value;
+            const { message } = value;
             let messageValue = message;
 
             if (messageValue && messageValue.length > 0) {
@@ -827,37 +794,7 @@ export class CheckoutComponent implements OnInit {
               fields
             );
 
-            this.dialogFlowService.saveGeneralDialogData(
-              privatePost,
-              'flow1',
-              'messageDialog',
-              'privatePost',
-              fields
-            );
-
-            if (privatePost && !this.insertedRecipientDialog) {
-              this.dialogs.splice(5, 0, this.recipientPhoneDialog);
-              this.dialogFlowService.dialogsFlows['flow1'][
-                'whatsappNumberDialog'
-              ] = {
-                dialogId: 'whatsappNumberDialog',
-                fields: {},
-                swiperConfig: this.swiperConfig,
-              };
-              this.insertedRecipientDialog = true;
-
-              setTimeout(() => {
-                this.swiperConfig.allowSlideNext = true;
-              }, 300);
-            } else {
-              if (this.insertedRecipientDialog && !privatePost) {
-                this.dialogs.splice(5, 1);
-                this.insertedRecipientDialog = false;
-              }
-            }
-
             this.postsService.post.message = messageValue;
-            this.postsService.privatePost = privatePost;
           },
         },
       ],
@@ -1231,10 +1168,8 @@ export class CheckoutComponent implements OnInit {
             this.postsService.temporalDialogs = this.temporalDialogs;
             this.postsService.temporalDialogs2 = this.temporalDialogs2;
             this.postsService.dialogs = this.dialogs;
-            this.headerService.flowRoute = this.router.url.replace(
-              '?startOnDialogFlow=true',
-              ''
-            );
+            this.headerService.flowRoute =
+              this.router.url + '?startOnDialogFlow=true';
             localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
             unlockUI();
@@ -1355,15 +1290,47 @@ export class CheckoutComponent implements OnInit {
                   from: this.postsService.post.from,
                 })
               );
+
+              if (
+                this.dialogs[this.dialogs.length - 2].componentId ===
+                'whatsappNumberDialog'
+              ) {
+                this.dialogs.splice(this.dialogs.length - 2, 1);
+              }
+
               this.router.navigate([
                 'ecommerce/' +
                   this.headerService.saleflow.merchant.slug +
                   '/post-edition',
               ]);
             } else {
-              this.dialogFlowFunctions.moveToDialogByIndex(
-                this.dialogs.length - 1
-              );
+              if (
+                this.dialogs[this.dialogs.length - 2].componentId !==
+                'whatsappNumberDialog'
+              ) {
+                this.dialogFlowService.dialogsFlows['flow1'][
+                  'whatsappNumberDialog'
+                ] = {
+                  dialogId: 'whatsappNumberDialog',
+                  fields: {},
+                  swiperConfig: this.swiperConfig,
+                };
+                this.insertedRecipientDialog = true;
+
+                this.dialogs.splice(
+                  this.dialogs.length - 1,
+                  0,
+                  this.recipientPhoneDialog
+                );
+              }
+
+              setTimeout(() => {
+                this.swiperConfig.allowSlideNext = true;
+
+                this.dialogFlowFunctions.moveToDialogByIndex(
+                  this.dialogs.length - 2
+                );
+              }, 100);
             }
           },
         },
@@ -1547,6 +1514,14 @@ export class CheckoutComponent implements OnInit {
         this.openedDialogFlow = Boolean(startOnDialogFlow);
       }
 
+      let storedPrivatePost: string = localStorage.getItem('privatePost');
+      let privatePost: boolean;
+
+      if (privatePost) {
+        privatePost = Boolean(privatePost);
+        this.postsService.privatePost = privatePost;
+      }
+
       if (!this.postsService.post) {
         const storedPost = localStorage.getItem('post');
 
@@ -1559,9 +1534,11 @@ export class CheckoutComponent implements OnInit {
           this.postsService.post.slides && this.postsService.post.slides.length
         );
 
-        this.dialogs = this.postsService.dialogs;
-        this.temporalDialogs = this.postsService.temporalDialogs;
-        this.temporalDialogs2 = this.postsService.temporalDialogs2;
+        if (this.postsService.dialogs.length !== 0 && startOnDialogFlow) {
+          this.dialogs = this.postsService.dialogs;
+          this.temporalDialogs = this.postsService.temporalDialogs;
+          this.temporalDialogs2 = this.postsService.temporalDialogs2;
+        }
 
         setTimeout(() => {
           let generatedMessage = false;
@@ -1669,6 +1646,7 @@ export class CheckoutComponent implements OnInit {
     mode: 'item' | 'message' | 'address' | 'reservation' | 'customizer'
   ) {
     this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
+    localStorage.removeItem('privatePost');
     switch (mode) {
       case 'item': {
         this.router.navigate([`../store`], {
@@ -1714,6 +1692,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   back = () => {
+    localStorage.removeItem('privatePost');
     this.location.back();
   };
 
@@ -1943,6 +1922,7 @@ export class CheckoutComponent implements OnInit {
       this.headerService.post = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
+        localStorage.removeItem('privatePost');
         this.router.navigate([`../payments/${this.headerService.orderId}`], {
           relativeTo: this.route,
           replaceUrl: true,
@@ -1972,6 +1952,7 @@ export class CheckoutComponent implements OnInit {
   };
 
   login() {
+    localStorage.removeItem('privatePost');
     this.router.navigate(['auth/login'], {
       queryParams: {
         redirect: `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,

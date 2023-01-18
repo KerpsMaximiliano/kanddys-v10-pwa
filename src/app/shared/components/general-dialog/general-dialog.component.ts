@@ -88,6 +88,11 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
   controller: FormGroup;
   sub: Subscription;
   PhoneNumberFormat = PhoneNumberFormat;
+  CountryISO = CountryISO.DominicanRepublic;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
 
   constructor(private dialogFlowService: DialogFlowService) {}
 

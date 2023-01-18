@@ -199,6 +199,7 @@ export class PaymentsComponent implements OnInit {
               color: '#FFF',
             },
             callback: () => {
+              localStorage.removeItem('post');
               this.router.navigate([`../../store`], {
                 relativeTo: this.route,
               });
