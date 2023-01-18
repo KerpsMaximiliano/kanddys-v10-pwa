@@ -76,6 +76,13 @@
     >
     </app-title-icon-header> -->
     <app-qr-content
+        *ngIf="slides"
+        [slides]="slides"
+        [shadows]="false"
+        (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
+    <app-qr-content
+        *ngIf="!slides"
         [slides]="slides"
         [shadows]="false"
         (buttonClicked)="goEditSlides()"

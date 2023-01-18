@@ -100,6 +100,16 @@ export class ArticleEditorComponent implements OnInit {
         });
         Promise.all(imagesPromises).then((result) => {
           this._ItemsService.itemImages = result;
+          this.slides = this._ItemsService.itemImages.map(image => {
+            return {
+              media: image,
+              index: 0,
+              type: "poster",
+              text: ""
+            }
+          });
+          console.log(this.slides);
+          
           if (!this.selectedImages.length) this.loadImages();
         });
         // } else this.loadImages();
@@ -120,15 +130,6 @@ export class ArticleEditorComponent implements OnInit {
         );
       if (this._SaleflowService.saleflowData) this.obtainLasts();
     }
-
-    this.slides = this._ItemsService.itemImages.map(image => {
-      return {
-        media: image,
-        index: 0,
-        type: "poster",
-        text: ""
-      }
-    });
   }
 
   loadImages() {
@@ -599,7 +600,7 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   goEditSlides() {
-    this._Router.navigate([`admin/slides-editor`]);
+    this._Router.navigate([`admin/slides-editor/${this.item._id}`]);
   }
 
   goBack() {
