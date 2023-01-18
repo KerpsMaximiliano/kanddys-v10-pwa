@@ -271,25 +271,23 @@ export class ArticleCreatorComponent implements OnInit {
         type: 'image/jpg',
       });
       lockUI();
-      await this._ItemsService.deleteImageItem(
-        [this.item.images[this.editingImageIndex]],
-        this.item._id
+      const imageIndex = this.item.images.findIndex(
+        (image) => image === this.editingImage
       );
+      if (imageIndex >= 0) {
+        await this._ItemsService.deleteImageItem(
+          [this.item.images[imageIndex]],
+          this.item._id
+        );
+      }
       await this._ItemsService.addImageItem([file], this.item._id);
       unlockUI();
       this._ItemsService.editingImage = null;
       this._ItemsService.editingImageIndex = null;
-      this.ngZone.run(() => {
-        const url = this._Router.serializeUrl(
-          this._Router.createUrlTree([`/admin/article-editor/${this.item._id}`])
-        );
-        window.location.href = url;
-      });
-    } else {
-      this.ngZone.run(() => {
-        this._Router.navigate([`/admin/article-editor/${this.item._id}`]);
-      });
     }
+    this.ngZone.run(() => {
+      this._Router.navigate([`/admin/slides-editor/${this.item._id}`]);
+    });
   }
 
   async submit(): Promise<void> {

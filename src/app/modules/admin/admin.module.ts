@@ -140,7 +140,7 @@ const routes: Routes = [
         component: ArticleEditorComponent
       },
       {
-        path: "slides-editor",
+        path: "slides-editor/:articleId",
         component: QrEditComponent
       }
     ],
