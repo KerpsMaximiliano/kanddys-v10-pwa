@@ -2141,9 +2141,11 @@ export class HeavenlyBalloonsComponent implements OnInit {
         type: 'promise',
         function: async (params) => {
           try {
+            const { email } = params.dataModel.value['1'];
+
             const { instagramUser, name, lastname, birthday } =
               params.dataModel.value['2'];
-            const { email, phoneNumber } = params.dataModel.value['3'];
+            const { phoneNumber } = params.dataModel.value['3'];
             const { whatWouldYouOrder } = params.dataModel.value['4'];
             const {
               additionalDetails,
@@ -2576,10 +2578,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
         flags: ['no-header'],
       });
 
-      /*
-              window.location.href =
-                this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-                */
+      window.location.href =
+        this.whatsappLink + encodeURIComponent(this.fullFormMessage);
     } else {
       throw new Error('Se perdió la conexion a internet');
     }
