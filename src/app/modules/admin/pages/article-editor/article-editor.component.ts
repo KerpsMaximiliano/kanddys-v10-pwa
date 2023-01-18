@@ -62,6 +62,7 @@ export class ArticleEditorComponent implements OnInit {
   selectedTags: Array<string>;
 
   slides: SlideInput[];
+  math = Math;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -100,16 +101,14 @@ export class ArticleEditorComponent implements OnInit {
         });
         Promise.all(imagesPromises).then((result) => {
           this._ItemsService.itemImages = result;
-          this.slides = this._ItemsService.itemImages.map(image => {
+          this.slides = this._ItemsService.itemImages.map((image) => {
             return {
               media: image,
               index: 0,
-              type: "poster",
-              text: ""
-            }
+              type: 'poster',
+              text: '',
+            };
           });
-          console.log(this.slides);
-          
           if (!this.selectedImages.length) this.loadImages();
         });
         // } else this.loadImages();

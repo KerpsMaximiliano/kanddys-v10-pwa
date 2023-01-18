@@ -47,8 +47,7 @@
     </app-title-icon-header>
     <app-card [shadows]="editingPrice">
       <span *ngIf="!editingPrice"
-        >RD$
-        {{ price.value ? price.value.toLocaleString("es-MX") : "0" }}</span
+        >RD$ {{ price.value ? price.value.toLocaleString("es-MX") : "0" }}</span
       >
       <app-currency-input
         [fieldStyles]="{
@@ -58,7 +57,9 @@
           padding: '8px 0px'
         }"
         [initialValue]="
-          countDecimals(price.value) < 2 ? price.value * 100 : price.value
+          countDecimals(price.value) < 2
+            ? math.floor(price.value * 100)
+            : price.value
         "
         (onInputEvent)="handleCurrencyInput($event)"
         placeholderColor="#7B7B7B"
@@ -76,16 +77,16 @@
     >
     </app-title-icon-header> -->
     <app-qr-content
-        *ngIf="slides"
-        [slides]="slides"
-        [shadows]="false"
-        (buttonClicked)="goEditSlides()"
+      *ngIf="slides"
+      [slides]="slides"
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
     ></app-qr-content>
     <app-qr-content
-        *ngIf="!slides"
-        [slides]="slides"
-        [shadows]="false"
-        (buttonClicked)="goEditSlides()"
+      *ngIf="!slides"
+      [slides]="slides"
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
     ></app-qr-content>
     <!-- <app-card [shadows]="editingSlides">
       <div class="image-selector">
