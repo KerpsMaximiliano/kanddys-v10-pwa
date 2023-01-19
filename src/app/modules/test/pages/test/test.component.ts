@@ -29,6 +29,7 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
 import { BlankComponent } from 'src/app/shared/dialogs/blank/blank.component';
 import { SwiperOptions } from 'swiper';
+import { LinkDialogComponent } from 'src/app/shared/dialogs/link-dialog/link-dialog.component';
 
 @Component({
   selector: 'app-test',
@@ -92,7 +93,6 @@ export class TestComponent implements OnInit {
     },
   ];
 
-
   constructor(
     private dialog: DialogService,
     private itemsService: ItemsService,
@@ -101,4 +101,12 @@ export class TestComponent implements OnInit {
   ) {}
 
   async ngOnInit() {}
+
+  openDialog() {
+    this.dialog.open(LinkDialogComponent, {
+      type: 'flat-action-sheet',
+      flags: ['no-header'],
+      customClass: 'app-dialog',
+    });
+  }
 }

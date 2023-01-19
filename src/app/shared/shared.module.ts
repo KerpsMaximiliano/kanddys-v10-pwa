@@ -124,6 +124,7 @@ import { InfoDialogComponent } from './dialogs/info-dialog/info-dialog.component
 import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
 import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';
 import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
+import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component';
 
 const imports = [
   CommonModule,
@@ -257,6 +258,7 @@ const declarations = [
   TagsDialogComponent,
   ContactLandingComponent,
   ContactLandingContainerComponent,
+  LinkDialogComponent,
 ];
 
 @NgModule({

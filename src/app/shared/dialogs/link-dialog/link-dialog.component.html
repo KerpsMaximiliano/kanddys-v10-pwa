@@ -1,0 +1,12 @@
+<div class="container">
+  <div *ngFor="let category of linksCategory" class="linksCategory">
+    <p class="title">{{ category.title }}</p>
+    <div *ngFor="let link of category.links">
+      <img [src]="env + '/upload.svg'" alt="upload" class="upload" />
+      <div class="text-wrap">
+        <a [href]="link.linkDir">{{ link.linkName }}</a>
+        <div class="line"></div>
+      </div>
+    </div>
+  </div>
+</div>
