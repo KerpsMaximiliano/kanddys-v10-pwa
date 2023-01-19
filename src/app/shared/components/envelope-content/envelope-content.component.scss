@@ -1,0 +1,42 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+  margin-top: 63px;
+  margin-bottom: 12px;
+  .title {
+    font-size: 17px;
+    font-family: RobotoMedium;
+    color: #7b7b7b;
+    margin: 0px;
+  }
+  .edit {
+    margin-left: auto;
+    cursor: pointer;
+  }
+}
+
+.data {
+  padding: 35px 25px;
+  width: 100%;
+  //height: 315px;
+  border: none;
+  border-radius: 7px;
+  box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+  margin-bottom: 43px;
+  background-color: #ffffff;
+
+  p {
+    font-size: 17px;
+    font-family: SFProRegular;
+    color: #000000;
+    word-break: break-word;
+  }
+  .bold {
+    font-weight: 600;
+    margin-bottom: 35px;
+  }
+  .bold-bottom {
+    font-weight: 600;
+  }
+}

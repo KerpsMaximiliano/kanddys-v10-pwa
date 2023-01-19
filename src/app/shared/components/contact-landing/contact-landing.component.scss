@@ -1,0 +1,136 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+.container{
+    background-color: #f6f6f6;
+    min-height: 100vh; 
+}
+
+.header{
+    padding: 8px 10px;
+    height: 40px;
+    background-color: #ffffff;
+    font-size: 21px;
+    line-height: 12px;
+    color: #272727;
+    font-family: "SfProBold";
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+
+
+    .header-grid{
+        display:grid;
+        grid-template-columns:10fr 2fr;
+        padding: 0px 10px;
+        width: 100%;
+        p{
+            display: inline;
+        }
+        .icon{
+            font-size: 24px;
+            display: inline;
+            padding-right: 18px;
+        }
+        .far.fa-cog{
+            cursor: pointer;
+            display: flex;
+            justify-content: end;
+        }
+    }
+}
+
+.bodySect{
+    padding: 0 22px 60px 22px;
+}
+
+.bioSection{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+
+    .bioImg{
+        position: relative;
+        width: 153px;
+        height: 153px;
+        border-radius: 50%;
+        border: 1px solid #707070;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .eyeIcon{
+            width: 19px;
+            height: 16px;
+        }
+
+        .markerCont{
+            bottom: 0;
+            right: 0;
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            border: 1px solid #707070;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .locationIcon{
+                filter: invert(41%) sepia(17%) saturate(1757%) hue-rotate(163deg) brightness(96%) contrast(100%);
+                width: 21px;
+                height: 27px;
+            }
+        }
+
+        *{
+            position: absolute;
+        }
+    }
+
+    .contactID{
+        font-size: 17px;
+        line-height: 19px;
+        color: #272727;
+        font-family: "SfProMedium";
+
+    }
+    .bio{
+        margin-top: 5px;
+        font-size: 17px;
+        color: #4f4f4f;
+        font-family: "SfProLight";
+        max-width: 350px;
+
+
+    }
+}
+.dataSect{
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 25px;
+
+    .dataBox{
+        padding: 20px;
+        border-radius: 6px;
+        background-color: #ffffff;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        box-shadow: 0px 3px 3.5px 1px rgba(0, 0, 0, 0.16);
+        font-size: 17px;
+        color: #272727;
+        font-family: "SfProMedium";
+
+        .icon{
+            filter: invert(7%) sepia(5%) saturate(302%) hue-rotate(314deg) brightness(96%) contrast(81%);
+        }
+    }
+}

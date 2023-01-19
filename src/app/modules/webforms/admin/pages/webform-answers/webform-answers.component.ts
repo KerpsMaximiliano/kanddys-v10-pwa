@@ -205,7 +205,6 @@ export class WebformAnswersComponent implements OnInit {
     const month = dateObj.getMonth();
     const hour = dateObj.getHours();
 
-    console.log(year, day, month);
     moment.locale('es');
     return moment([year, month, day, hour]).fromNow();
   }

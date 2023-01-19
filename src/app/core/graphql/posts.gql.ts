@@ -49,6 +49,7 @@ export const post = gql`
       message
       from
       multimedia
+      joke
       socialNetworks {
         url
       }
@@ -58,6 +59,19 @@ export const post = gql`
       }
     }
   }
+`;
+
+export const getSimplePost = gql`
+query post($id:ObjectID!){
+  post(id:$id) {
+    _id,
+    targets{
+      name
+      emailOrPhone
+      nickname
+    }
+  } 
+}
 `;
 
 export const slidesByPost = gql`
@@ -114,6 +128,7 @@ export const postAddUser = gql`
       message
       from
       multimedia
+      joke
       socialNetworks {
         url
       }

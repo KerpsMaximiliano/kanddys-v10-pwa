@@ -26,6 +26,8 @@ export class DialogFlowComponent implements OnInit {
   @Input() allowSlideNext = true;
   @Output() saveConfigRef = new EventEmitter();
   @Output() moveToDialogRef = new EventEmitter();
+  @Output() closingDialogSignal = new EventEmitter();
+  @Output() openingDialogSignal = new EventEmitter();
   swiperConfig: SwiperOptions = {
     direction: 'vertical',
     centeredSlides: true,
@@ -47,7 +49,9 @@ export class DialogFlowComponent implements OnInit {
       if (!this.service.dialogsFlows[this.dialogFlowId]) {
         this.service.dialogsFlows[this.dialogFlowId] = {};
 
-        this.dialogs.forEach((dialog) => {
+        this.dialogs.forEach((dialog, index) => {
+          if (index === 0) this.service.activeDialogId = dialog.componentId;
+
           this.service.dialogsFlows[this.dialogFlowId][dialog.componentId] = {
             dialogId: dialog.componentId,
             swiperConfig: JSON.parse(JSON.stringify(this.swiperConfig)),
@@ -65,20 +69,32 @@ export class DialogFlowComponent implements OnInit {
       this.saveConfigRef.emit(this.swiperConfig);
       this.moveToDialogRef.emit(this.moveToDialogByIndex.bind(this));
     }, 100);
+
+    /*
+    const overlay = document.getElementById('flow-contents');
+    overlay.addEventListener('click',  (event) => {
+      if (event.target === overlay) {
+        event.stopPropagation();
+        this.openOrClose()
+      }
+    });*/
   }
 
   applyTransparencyToSlidesThatArentActive() {
-    this.dialogs.forEach((slide, index) => {
-      const dialogHTMLElement = slide;
+    this.dialogs.forEach((dialog, index) => {
+      if (!this.dialogs[index].inputs) this.dialogs[index].inputs = {};
+      if (!this.dialogs[index].inputs.containerStyles)
+        this.dialogs[index].inputs.containerStyles = {};
 
       if (!this.dialogs[index].inputs) this.dialogs[index].inputs = {};
       if (!this.dialogs[index].inputs.containerStyles)
         this.dialogs[index].inputs.containerStyles = {};
 
       if (index !== this.currentDialogIndex) {
-        this.dialogs[index].inputs.containerStyles.opacity = '0.5';
+        //this.dialogs[index].inputs.containerStyles.opacity = '0.5';
       } else {
         this.dialogs[index].inputs.containerStyles.opacity = '1';
+        this.service.activeDialogId = dialog.componentId;
       }
 
       this.dialogs[index].shouldRerender = true;
@@ -105,5 +121,21 @@ export class DialogFlowComponent implements OnInit {
     setTimeout(() => {
       this.dialogSwiper.directiveRef.setIndex(dialogNumber);
     }, 100);
+  }
+
+  openOrClose(eventData: any) {
+    const triggerElement = eventData.target as HTMLElement;
+
+    if (
+      triggerElement.classList.contains('swiper') ||
+      triggerElement.classList.contains('dialog')
+    ) {
+      if (this.status === 'OPEN') {
+        this.status = 'CLOSE';
+        this.closingDialogSignal.emit(true);
+      } else {
+        this.status = 'OPEN';
+      }
+    }
   }
 }

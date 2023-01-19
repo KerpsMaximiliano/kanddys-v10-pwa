@@ -36,6 +36,9 @@ import { EntityTemplateInput } from 'src/app/core/models/entity-template';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { Router } from '@angular/router';
+import { PostsService } from 'src/app/core/services/posts.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-test',
@@ -57,77 +60,75 @@ export class TestComponent implements OnInit {
   title3 = '¿El tiempo del motivo?';
 
   words = [
-    'Bodas',
-    'Bautizos',
-    'Navidad',
-    'Madres',
-    'Padres',
-    'New Born',
-    'Cumpleaños',
-    'Aniversarios',
-    'Condolencias',
-    'Boda de Oro',
-    'San Valentín',
-    'Boda de Plata',
-    'Comuniones',
-    'Día del Maestro',
-    'Promoción',
-    'Día de la Madre',
-    'Dia del Trabajador',
-    'Graduación',
-    'Dia de Santo',
-    'Día de la madre Soltera',
-    'Día de la Madrina',
-    'Mostrar Afecto',
+    { keyword: 'wedding', text: 'Bodas' },
+    { keyword: 'baptism', text: 'Bautizos' },
+    { keyword: 'christmas', text: 'Navidad' },
+    { keyword: 'mothersDay', text: 'Madres' },
+    { keyword: 'fathersDay', text: 'Padres' },
+    { keyword: 'newborn', text: 'New Born' },
+    { keyword: 'birthday', text: 'Cumpleaños' },
+    { keyword: 'anniversary', text: 'Aniversarios' },
+    { keyword: 'condolences', text: 'Condolencias' },
+    { keyword: 'goldenWedding', text: 'Boda de Oro' },
+    { keyword: 'valentinesDay', text: 'San Valentín' },
+    { keyword: 'silverWedding', text: 'Boda de Plata' },
+    { keyword: 'communion', text: 'Comuniones' },
+    { keyword: 'teachersDay', text: 'Día del Maestro' },
+    { keyword: 'prommotion', text: 'Promoción' },
+    { keyword: 'mothersDay', text: 'Día de la Madre' },
+    { keyword: 'workersDay', text: 'Dia del Trabajador' },
+    { keyword: 'graduation', text: 'Graduación' },
+    { keyword: 'singleMothersDay', text: 'Día de la madre Soltera' },
+    { keyword: 'stepmotherDay', text: 'Día de la Madrina' },
+    { keyword: 'showAffection', text: 'Mostrar Afecto' },
   ];
 
   words2 = [
-    'Alegría',
-    'Tristeza',
-    'Euforia',
-    'Sorpresa',
-    'Amor',
-    'Sutil',
-    'Melancolía',
-    'Preocupación',
-    'Gratitud',
-    'Pasión',
-    'Apoyo',
-    'Esperanza',
-    'Satisfacción',
-    'Aceptación',
-    'Curiosidad',
-    'Devoción',
-    'Orgullo',
-    'Paz',
-    'Compasión',
-    'Vergüenza',
-    'Optimismo',
-    'Resentimiento',
+    { keyword: 'happiness', text: 'Alegría' },
+    { keyword: 'sadness', text: 'Tristeza' },
+    { keyword: 'euphoria', text: 'Euforia' },
+    { keyword: 'surprise', text: 'Sorpresa' },
+    { keyword: 'love', text: 'Amor' },
+    { keyword: 'subtle', text: 'Sutil' },
+    { keyword: 'melancholia', text: 'Melancolía' },
+    { keyword: 'concern', text: 'Preocupación' },
+    { keyword: 'gratitude', text: 'Gratitud' },
+    { keyword: 'passion', text: 'Pasión' },
+    { keyword: 'support', text: 'Apoyo' },
+    { keyword: 'hope', text: 'Esperanza' },
+    { keyword: 'satisfaction', text: 'Satisfacción' },
+    { keyword: 'acceptance', text: 'Aceptación' },
+    { keyword: 'curiosity', text: 'Curiosidad' },
+    { keyword: 'devotion', text: 'Devoción' },
+    { keyword: 'pride', text: 'Orgullo' },
+    { keyword: 'peace', text: 'Paz' },
+    { keyword: 'compassion', text: 'Compasión' },
+    { keyword: 'embarrassment', text: 'Vergüenza' },
+    { keyword: 'optimism', text: 'Optimismo' },
+    { keyword: 'resentment', text: 'Resentimiento' },
   ];
 
   words3 = [
-    'Ya pasó',
-    'Pasará',
-    'Es cuando reciba el mensaje',
-    'Omitir "el tiempo"',
+    { keyword: 'past', text: 'Ya pasó' },
+    { keyword: 'future', text: 'Pasará' },
+    { keyword: 'instant', text: 'En cuando reciba el mensaje' },
   ];
 
   words4 = [
-    'Mi Hijo',
-    'Mi Amigo',
-    'Mi Papá',
-    'Mi Primo',
-    'Vecino',
-    'Cuñado',
-    'Mi Hermano',
-    'Mi Abuelo',
-    'Compañero de Trabajo',
-    'Mi Jefe',
-    'Suegra',
-    'Nuero',
-    'Mi compadre',
-    'Mi Comadre',
+    { text: 'Mi Hijo', keyword: 'son' },
+    { text: 'Mi Amigo', keyword: 'friend' },
+    { text: 'Mi Papá', keyword: 'dad' },
+    { text: 'Mi Primo', keyword: 'cousin' },
+    { text: 'Vecino', keyword: 'neighbor' },
+    { text: 'Cuñado', keyword: 'brotherinlaw' },
+    { text: 'Mi Hermano', keyword: 'brother' },
+    { text: 'Mi Abuelo', keyword: 'grandfather' },
+    { text: 'Compañero de Trabajo', keyword: 'coworker' },
+    { text: 'Mi Jefe', keyword: 'boss' },
+    { text: 'Suegra', keyword: 'motherinlaw' },
+    { text: 'Nuero', keyword: 'soninlaw' },
+    { text: 'Mi compadre', keyword: 'buddy' },
+    { text: 'Mi Comadre', keyword: 'midwife' },
   ];
 
   motiveWordsObjects: Array<{ text: string; active: boolean }> = [];
@@ -137,11 +138,14 @@ export class TestComponent implements OnInit {
   receiverRelationshipWordsObjects: Array<{ text: string; active: boolean }> =
     [];
 
+  temporalDialogs: Array<EmbeddedComponentWithId> = [];
+
   dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
       componentId: 'whoReceives',
       inputs: {
+        dialogId: 'whoReceives',
         omitTabFocus: false,
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -226,6 +230,7 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       componentId: 'whoSends',
       inputs: {
+        dialogId: 'whoSends',
         containerStyles: {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
@@ -284,7 +289,6 @@ export class TestComponent implements OnInit {
         {
           name: 'data',
           callback: (params) => {
-            console.log(params);
             const { fields, value, valid } = params;
             const { senderName } = value;
 
@@ -309,6 +313,7 @@ export class TestComponent implements OnInit {
       component: GeneralDialogComponent,
       componentId: 'messageTypeDialog',
       inputs: {
+        dialogId: 'messageTypeDialog',
         containerStyles: {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
@@ -380,17 +385,24 @@ export class TestComponent implements OnInit {
             } else {
               this.swiperConfig.allowSlideNext = false;
             }
-            
+
             if (
               typeOfMessageValue
                 .toLowerCase()
                 .includes('inteligencia artificial')
             ) {
               typeOfMessageValue = 'AI';
+
+              if (this.dialogs.length === 4) {
+                this.dialogs = this.dialogs.concat(this.temporalDialogs);
+              }
+
               this.dialogFlowFunctions.moveToDialogByIndex(4);
             } else {
               typeOfMessageValue = 'Manual';
               this.dialogFlowFunctions.moveToDialogByIndex(3);
+
+              this.temporalDialogs = this.dialogs.splice(4);
 
               setTimeout(() => {
                 this.swiperConfig.allowSlideNext = false;
@@ -410,8 +422,100 @@ export class TestComponent implements OnInit {
     },
     {
       component: GeneralDialogComponent,
+      componentId: 'messageTitleDialog',
+      inputs: {
+        dialogId: 'messageTitleDialog',
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '12px',
+          opacity: '1',
+          padding: '37.1px 23.6px 29.6px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '23px',
+            fontFamily: 'SfProBold',
+            marginBottom: '12.5px',
+            marginTop: '0',
+            color: '#4F4F4F',
+            width: '50%',
+          },
+          text: 'Titulo del sobre',
+        },
+        fields: {
+          styles: {},
+          list: [
+            {
+              name: 'messageTitle',
+              value: '',
+              validators: [Validators.required],
+              type: 'textarea',
+              label: {
+                styles: {
+                  border: 'none',
+                  borderRadius: '9px',
+                  boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                  display: 'block',
+                  fontFamily: 'RobotoMedium',
+                  fontSize: '17px',
+                  minHeight: '130px',
+                  resize: 'none',
+                  width: '100%',
+                  padding: '26px 26.3px 56.6px 16px',
+                  color: '#A1A1A1',
+                },
+                text: '',
+              },
+              placeholder: 'Escribe...',
+              styles: {
+                border: 'none',
+                borderRadius: '9px',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px inset',
+                display: 'block',
+                fontFamily: 'RobotoMedium',
+                fontSize: '17px',
+                minHeight: '130px',
+                resize: 'none',
+                width: '100%',
+                padding: '26px 26.3px 56.6px 16px',
+                color: '#A1A1A1',
+              },
+            },
+          ],
+        },
+      },
+      outputs: [
+        {
+          name: 'data',
+          callback: (params) => {
+            const { value, fields } = params;
+            const { message } = value;
+            let messageValue = message;
+
+            console.log(params);
+
+            if (messageValue && messageValue.length > 0) {
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            this.dialogFlowService.saveGeneralDialogData(
+              messageValue,
+              'flow1',
+              'messageDialog',
+              'message',
+              fields
+            );
+          },
+        },
+      ],
+    },
+    {
+      component: GeneralDialogComponent,
       componentId: 'messageDialog',
       inputs: {
+        dialogId: 'messageDialog',
         containerStyles: {
           background: 'rgb(255, 255, 255)',
           borderRadius: '12px',
@@ -469,7 +573,7 @@ export class TestComponent implements OnInit {
               },
             },
             {
-              name: 'test5',
+              name: 'privatePost',
               value: '',
               validators: [],
               type: 'checkbox',
@@ -512,16 +616,22 @@ export class TestComponent implements OnInit {
           name: 'data',
           callback: (params) => {
             const { value, fields } = params;
-            const { message } = value;
+            const { message, privatePost } = value;
             let messageValue = message;
-
-            console.log(params);
 
             if (messageValue && messageValue.length > 0) {
               this.swiperConfig.allowSlideNext = true;
             } else {
               this.swiperConfig.allowSlideNext = false;
             }
+
+            this.dialogFlowService.saveGeneralDialogData(
+              privatePost,
+              'flow1',
+              'messageDialog',
+              'privatePost',
+              fields
+            );
 
             this.dialogFlowService.saveGeneralDialogData(
               messageValue,
@@ -538,6 +648,7 @@ export class TestComponent implements OnInit {
       component: OptionsGridComponent,
       componentId: 'motiveDialog',
       inputs: {
+        dialogId: 'motiveDialog',
         mode: 'default',
         words: this.words,
         wordsObjects: this.motiveWordsObjects,
@@ -554,14 +665,19 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
             this.motiveWordsObjects = wordsObjects;
 
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'motiveDialog',
               'motive'
@@ -587,13 +703,18 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
             this.sentimentWordsObjects = wordsObjects;
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'sentimentDialog',
               'sentiment'
@@ -621,14 +742,18 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
-            console.log(data, 'timing');
             this.timingWordsObjects = wordsObjects;
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'timingDialog',
               'timing'
@@ -644,7 +769,10 @@ export class TestComponent implements OnInit {
       componentId: 'recipientGenderDialog',
       inputs: {
         mode: 'time',
-        words: ['Hombre', 'Mujer'],
+        words: [
+          { keyword: 'male', text: 'Hombre' },
+          { keyword: 'female', text: 'Mujer' },
+        ],
         wordsObjects: this.receiverGenderWordsObjects,
         title: '¿Que es RecipienteID?',
         titleCenter: false,
@@ -655,13 +783,18 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
             this.receiverGenderWordsObjects = wordsObjects;
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'recipientGenderDialog',
               'recipientGender'
@@ -705,13 +838,18 @@ export class TestComponent implements OnInit {
           name: 'optionClick',
           callback: (data: {
             text: string;
-            wordsObjects: Array<{ text: string; active: boolean }>;
+            keyword: string;
+            wordsObjects: Array<{
+              text: string;
+              keyword: string;
+              active: boolean;
+            }>;
           }) => {
-            const { text, wordsObjects } = data;
+            const { text, keyword, wordsObjects } = data;
 
             this.receiverRelationshipWordsObjects = wordsObjects;
             this.dialogFlowService.saveData(
-              text,
+              keyword,
               'flow1',
               'receiverRelationshipDialog',
               'receiverRelationship'
@@ -722,8 +860,96 @@ export class TestComponent implements OnInit {
         },
         {
           name: 'buttonClicked',
-          callback: (data: Array<{ text: string; active: boolean }>) => {
-            console.log('boton clickeado');
+          callback: async (
+            data: Array<{ text: string; keyword: string; active: boolean }>
+          ) => {
+            const motive =
+              this.dialogFlowService.dialogsFlows['flow1'].motiveDialog.fields
+                .motive;
+            const sentiment =
+              this.dialogFlowService.dialogsFlows['flow1'].sentimentDialog
+                .fields.sentiment;
+            const timing =
+              this.dialogFlowService.dialogsFlows['flow1'].timingDialog.fields
+                .timing;
+            const recipientGender =
+              this.dialogFlowService.dialogsFlows['flow1'].recipientGenderDialog
+                .fields.recipientGender;
+            const receiverRelationship =
+              this.dialogFlowService.dialogsFlows['flow1']
+                .receiverRelationshipDialog.fields.receiverRelationship;
+
+            lockUI();
+
+            const response = await this.gpt3Service.generateResponseForTemplate(
+              {
+                motive,
+                target: receiverRelationship,
+                sentiment,
+                timing,
+              },
+              '63bd15b25169e824f0b11266'
+            );
+
+            let message;
+            let title;
+            let scannedTitle = false;
+            const parts = response.split('\n');
+
+            const options: Array<{
+              message: string;
+              title: string;
+            }> = [];
+            let optionNumber = 1;
+
+            parts.forEach((line) => {
+              if (optionNumber < 5) {
+                if (
+                  !line.includes('Opción') &&
+                  line.includes(':') &&
+                  !scannedTitle
+                ) {
+                  const [, realTitle] = line.split(':');
+                  title = realTitle;
+                  scannedTitle = true;
+                } else if (
+                  !line.includes('Opción') &&
+                  line.includes(':') &&
+                  scannedTitle
+                ) {
+                  const [, realMessage] = line.split(':');
+                  options.push({
+                    message: realMessage,
+                    title,
+                  });
+                  title = null;
+                  optionNumber += 1;
+                  scannedTitle = false;
+                }
+              }
+            });
+
+            this.postsService.postMessageOptions = options;
+
+            localStorage.setItem(
+              'temporal-post-options',
+              JSON.stringify(options)
+            );
+
+            this.router.navigate(
+              [
+                'ecommerce/' +
+                  this.headerService.saleflow.merchant.slug +
+                  '/text-edition-and-preview',
+              ],
+              {
+                queryParams: {
+                  type: 'post',
+                },
+              }
+            );
+
+            unlockUI();
           },
         },
       ],
@@ -751,7 +977,7 @@ export class TestComponent implements OnInit {
           styles: {},
           list: [
             {
-              name: 'test6',
+              name: 'whatsappNumber',
               value: '',
               validators: [Validators.required],
               type: 'text',
@@ -815,9 +1041,26 @@ export class TestComponent implements OnInit {
       },
       outputs: [
         {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
+          name: 'data',
+          callback: (params) => {
+            const { value, fields } = params;
+            const { whatsappNumber } = value;
+
+            if (whatsappNumber && whatsappNumber.length > 0) {
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            this.postsService.postReceiverNumber = whatsappNumber;
+
+            this.dialogFlowService.saveGeneralDialogData(
+              whatsappNumber,
+              'flow1',
+              'messageDialog',
+              'message',
+              fields
+            );
           },
         },
       ],
@@ -1121,10 +1364,9 @@ export class TestComponent implements OnInit {
 
   constructor(
     private dialogFlowService: DialogFlowService,
-    private itemsService: ItemsService,
-    private merchantService: MerchantsService,
-    private saleflowService: SaleFlowService,
+    private postsService: PostsService,
     private gpt3Service: Gpt3Service,
+    private headerService: HeaderService,
     private router: Router
   ) {}
 
@@ -1142,7 +1384,7 @@ export class TestComponent implements OnInit {
     );
     this.gpt3Service.gpt3Response = response;
 
-    this.router.navigate([`admin/post-preview`], {
+    this.router.navigate([`ecommerce/post-preview`], {
       queryParams: {
         mode: 'solidBg',
       },

@@ -1,8 +1,22 @@
 <div class="tags-grid" [style.background]="containerBackground">
   <button
     *ngFor="let tg of tags"
-    [style.background]="tag.includes(tg._id) ? selectedBackground : background"
-    [style.color]="tag.includes(tg._id) ? selectedColor : color"
+    [style.background]="
+      !tag.includes(tg._id) && tg.notify
+        ? notificationBackground
+        : !tag.includes(tg._id) && !tg.notify && (tg.status !== 'active' && tg.status !== 'featured')
+        ? inactiveBackground
+        : tag.includes(tg._id)
+        ? selectedBackground
+        : background
+    "
+    [style.color]="
+      !tag.includes(tg._id) && !tg.notify && (tg.status !== 'active' && tg.status !== 'featured')
+        ? inactiveColor
+        : tag.includes(tg._id)
+        ? selectedColor
+        : color
+    "
     class="tag"
     (click)="setTag(tg)"
   >
@@ -15,14 +29,16 @@
       class="image"
     />
     <img
-      *ngIf="tg.status !== 'active'"
-      [src]="
-        !tag.includes(tg._id)
-          ? env + '/closed-eye-blue.svg'
-          : env + '/closed-eye-white.svg'
-      "
-      alt=""
-      [style.filter]="tag.includes(tg._id) ? selectedFilter : ''"
+      *ngIf="tg.status === 'disabled'"
+      [src]="getTagIcon(tg.status)"
+      [ngStyle]="{
+        filter: !tag.includes(tg._id) ? selectedFilter : null
+      }"
+      class="image"
+    />
+    <img
+      *ngIf="tg.status === 'featured'"
+      [src]="getTagIcon(tg.status)"
       class="image"
     />
   </button>

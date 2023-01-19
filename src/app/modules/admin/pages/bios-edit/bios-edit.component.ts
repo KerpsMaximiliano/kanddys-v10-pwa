@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { LinkInput } from 'src/app/core/models/LinkInput';
 import { PaginationInput } from 'src/app/core/models/saleflow';
+import { BannersService } from 'src/app/core/services/banners.service';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
@@ -18,8 +19,6 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   name: string = 'Merchant ID';
   bio: string =
     'Servicios de Asesoría Fiscal • 15 años de experiencia como Gerente Local y Proceso Fiscales en DGII •';
-  direc1: string = 'Direccion ID';
-  direc2: string = 'Direccion ID';
   main: boolean = true;
   enlace: boolean = false;
   direcciones: boolean = false;
@@ -39,18 +38,22 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   contactId:string;
   sub:Subscription;
   linkIndex:number;
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
+  accept:string;
 
   constructor(
     private router: Router,
     private _ContactService: ContactService,
     private _MerchantService: MerchantsService,
     private _DomSanitizer: DomSanitizer,
-    private _ActivatedRoute: ActivatedRoute
+    private _ActivatedRoute: ActivatedRoute,
+    private _BannersService: BannersService
   ) {}
 
   ngOnInit(): void {
     this.sub = this._ActivatedRoute.queryParams.subscribe(({ contactId }) => {
       (async () => {
+        this.accept = this.imageFiles.join(', ');
         if(contactId)
           this.contactId = contactId;
         this.initController();
@@ -105,6 +108,10 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       {
         name: 'contact',
         validators: []
+      },
+      {
+        name: 'location',
+        validators: [Validators.required]
       }
     ];
     for(const { name, validators } of fields)
@@ -146,7 +153,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     this.router.navigate(['admin/bios-main']);
   }
   backToMain() {
-    if(this.linkIndex===null&&this.enlace&&this.controller.get('tag').valid&&this.controller.get('contact').valid&&this.src){
+    if(this.linkIndex===null&&this.enlace&&this.controller.get('tag').value&&this.controller.get('contact').value&&this.src){
       const _link:any = {
         image: this.src,
         _image: this.file,
@@ -172,12 +179,29 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.file = '';
       this.src = '';
     }
+    const flag = this.links.find(({name}) => name==='location');
+    const value = this.controller.get('location').value;
+    if(flag){
+      this.links = this.links.filter(({name}) => name!=='location');
+      const location = {
+        _id: flag._id,
+        name: "location",
+        value
+      };
+      this.links.push(location);
+    }else{
+      const location = {
+        name: "location",
+        value
+      };
+      this.links.push(location);
+    }
     this.enlace = false;
     this.direcciones = false;
     this.publicName = false;
     this.bioDescription = false;
     this.main = true;
-    this.linkIndex==null
+    this.linkIndex==null;
   }
   add() {
     this.enlace = true;
@@ -186,6 +210,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   }
 
   submit():void {
+    if(!this.controller.touched)  return;
     if(this.controller.invalid || this.status) return;
     this.status = 'Cargando...';
     (async () => {
@@ -197,12 +222,20 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       const value = {
         name,
         description,
-        merchant,
+        // merchant,
         image: this.fileLogo
       };
       if(!this.contactId){
-        const { _id } = await this._ContactService.createContact(value);
-        this.contactId = _id;
+        const { _id: contact } = await this._ContactService.createContact(value);
+        this.contactId = contact;
+        const banner = {
+          image: this.fileLogo,
+          name,
+          description,
+          type: 'standard',
+          contact
+        };
+        const createBanner = await this._BannersService.createBanner(banner);
         await this.setLinks();
         this.router.navigate(['admin','bios-edit'],{
           queryParams: {
@@ -284,6 +317,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked4 = false;
     }
     this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
   }
   isClicked2() {
     this.resetSrc();
@@ -296,6 +330,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked4 = false;
     }
     this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
+    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
   }
 
   isClicked3() {
@@ -309,6 +344,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked4 = false;
     }
     this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
+    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
   }
 
   isClicked4() {
@@ -322,6 +358,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked3 = false;
     }
     this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
   }
 
   resetSrc():void {
@@ -338,7 +375,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     const link = this.links[index];
     this.controller.get('tag').setValue(link.name);
     this.controller.get('contact').setValue(link.value);
-    const image = link._image || link.image;
+    const image = link.image;
     this.src = image;
     this.linkIndex = index;
   }

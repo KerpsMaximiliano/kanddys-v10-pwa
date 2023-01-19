@@ -38,6 +38,7 @@
     "apollo-link-error": "^1.1.13",
     "bootstrap": "4.1.1",
     "compressorjs": "^1.0.6",
+    "cropperjs": "^1.5.13",
     "exceljs": "^1.12.0",
     "file-saver": "^2.0.5",
     "google-libphonenumber": "^3.2.13",

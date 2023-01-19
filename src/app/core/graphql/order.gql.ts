@@ -54,6 +54,18 @@ const orderData = `
             _id
           }
         }
+        delivery {
+          isActive
+          deliveryLocation
+          pickUpLocations {
+            city
+            street
+            houseNumber
+            referencePoint
+            nickName
+            note
+          }
+        }
       }
     }
     post {

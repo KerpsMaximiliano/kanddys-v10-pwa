@@ -59,8 +59,13 @@ export class ItemsService {
   };
   changedImages: boolean = null;
   itemImages: File[] = [];
+  itemUrls: string[] = [];
   itemPrice: number;
   itemName: string;
+  itemDesc: string;
+  itemPassword: string;
+  editingImageIndex: number;
+  editingImage: string;
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;
@@ -121,7 +126,10 @@ export class ItemsService {
     return response;
   }
 
-  async addImageItem(images: File[], id: string) {
+  async addImageItem(
+    images: File[],
+    id: string
+  ): Promise<{ addImageItem: Item }> {
     const result = await this.graphql.mutate({
       mutation: addImageItem,
       variables: { images, id },
@@ -131,10 +139,13 @@ export class ItemsService {
       },
     });
     if (!result || result?.errors) return undefined;
-    return result;
+    return result.addImageItem;
   }
 
-  async deleteImageItem(images: string[], id: string) {
+  async deleteImageItem(
+    images: string[],
+    id: string
+  ): Promise<{ deleteImageItem: Item }> {
     const result = await this.graphql.mutate({
       mutation: deleteImageItem,
       variables: { images, id },
@@ -144,7 +155,7 @@ export class ItemsService {
       },
     });
     if (!result || result?.errors) return undefined;
-    return result;
+    return result.deleteImageItem;
   }
 
   async authItem(merchantId: string, id: string): Promise<Item> {

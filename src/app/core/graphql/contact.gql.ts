@@ -6,7 +6,6 @@ export const createContact = gql`
       _id
       description
       image
-      merchant
       name
       decription
       banner
@@ -20,7 +19,6 @@ export const updateContact = gql`
       _id
       description
       image
-      merchant
       name
       decription
       banner

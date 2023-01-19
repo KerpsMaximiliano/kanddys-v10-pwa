@@ -8,11 +8,13 @@ import {
   DeliveryLocationInput,
 } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
+import { ViewsMerchant } from 'src/app/core/models/views-merchant';
 import { AuthService } from 'src/app/core/services/auth.service';
 import {
   HeaderService,
   SaleflowData,
 } from 'src/app/core/services/header.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -38,7 +40,8 @@ export class NewAddressComponent implements OnInit {
     private authService: AuthService,
     private fb: FormBuilder,
     private usersService: UsersService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private merchantsService: MerchantsService
   ) {
     this.addressForm = fb.group({
       nickName: fb.control('Mi casa', [
@@ -96,6 +99,7 @@ export class NewAddressComponent implements OnInit {
   selectedDeliveryIndex: number;
   // selectedAuthIndex: number;
   magicLinkLocation: DeliveryLocationInput;
+  viewMerchantForDelivery: ViewsMerchant = null;
 
   async ngOnInit(): Promise<void> {
     const magicLinkData = this.route.snapshot.queryParamMap.get('data');
@@ -189,6 +193,17 @@ export class NewAddressComponent implements OnInit {
       this.addressForm.patchValue({ ...this.magicLinkLocation, save: true });
       this.mode = 'add';
       this.formSubmit();
+    }
+
+    const viewsMerchants = await this.merchantsService.viewsMerchants({
+      findBy: {
+        merchant: this.headerService.saleflow.merchant._id,
+        type: 'delivery-politics',
+      },
+    });
+
+    if (viewsMerchants && viewsMerchants.length > 0) {
+      this.viewMerchantForDelivery = viewsMerchants[0];
     }
   }
 
@@ -457,5 +472,14 @@ export class NewAddressComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  goToShippingPolicies() {
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
+    this.router.navigate([
+      '/ecommerce/terms-of-use/' + this.viewMerchantForDelivery._id,
+    ]);
   }
 }

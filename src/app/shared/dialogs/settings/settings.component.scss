@@ -116,15 +116,13 @@
             background-color: darken($color: #fff, $amount: 3);
           }
 
-        
-
           &:active {
             cursor: pointer;
             background-color: darken($color: #fff, $amount: 5);
           }
 
           &:not(:last-of-type) {
-            border-bottom: solid 1px  lightgray;
+            border-bottom: solid 1px lightgray;
           }
         }
       }
@@ -136,10 +134,7 @@
         width: 100%;
         padding: 0px;
         display: flex;
-        justify-content: flex-start;
-        /*
         justify-content: space-around;
-        */
         background-color: #2874ad;
         height: 82px;
       }
@@ -161,7 +156,7 @@
         &.disabled {
           filter: brightness(0.7);
           color: lightgray;
-          
+
           &:hover {
             cursor: not-allowed;
             background-color: darken($color: #2874ad, $amount: 10);

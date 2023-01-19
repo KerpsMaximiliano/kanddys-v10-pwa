@@ -14,12 +14,18 @@ import {
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import {
+  SearchCountryField,
+  CountryISO,
+  PhoneNumberFormat,
+} from 'ngx-intl-tel-input';
 
 enum FormType {
   text = 'text',
   checkbox = 'checkbox',
   area = 'area',
   selection = 'selection',
+  phone = 'phone',
 }
 
 @Component({
@@ -81,18 +87,21 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
   selected: string[] = [];
   controller: FormGroup;
   sub: Subscription;
+  PhoneNumberFormat = PhoneNumberFormat;
+  CountryISO = CountryISO.DominicanRepublic;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
 
   constructor(private dialogFlowService: DialogFlowService) {}
 
   ngOnInit(): void {
     this.initControllers();
-
-    console.log("Valido ", this.controller.valid)
     setTimeout(() => {
-      if (this.controller.valid) {
-        this.dialogFlowService.swiperConfig.allowSlideNext = true;
-      } else {
-        this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      if (this.dialogFlowService.activeDialogId === this.dialogId) {
+        this.dialogFlowService.swiperConfig.allowSlideNext =
+          this.controller.valid;
       }
     }, 500);
   }

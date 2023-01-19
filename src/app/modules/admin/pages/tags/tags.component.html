@@ -1,0 +1,365 @@
+<div class="main-container tags-page" (scroll)="infinitePagination()">
+  <div id="top-of-the-page"></div>
+
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [bgColor]="'#FFFFFF'"
+    [returnAble]="true"
+    [color]="'#272727'"
+    [mainText]="{
+      text: headerText,
+      fontFamily: 'SfProBold',
+      fontSize: '1.313rem',
+      color: '#272727'
+    }"
+    [dots]="{
+      active: true,
+      color: '#272727',
+      margin: '0 1px'
+    }"
+    (dotEvent)="openGeneralTagsManagementDialog()"
+    (returnEvent)="backButtonAction()"
+  ></app-helper-headerv2>
+
+  <div
+    class="tabs-container"
+    #elemt
+    (mousedown)="startDragging($event, elemt)"
+    (mouseup)="stopDragging()"
+    (mouseleave)="stopDragging()"
+    (mousemove)="moveEvent($event, elemt)"
+  >
+    <button
+      class="tab"
+      *ngFor="let option of optionsToFilterTagsBy; index as i"
+      [ngClass]="{ active: option.selected }"
+      (click)="changeStep(i)"
+    >
+      {{ option.text }}
+    </button>
+  </div>
+
+  <ng-container [ngSwitch]="tagsDisplayMode">
+    <ng-container *ngSwitchCase="'PER-SECTION'">
+      <div
+        class="display-container"
+        *ngIf="highlightedTags && highlightedTags.length > 0"
+      >
+        <div class="title-button">
+          <h2 class="title">Destacados</h2>
+          <button class="top-button" (click)="showTagsOfType('HIGHLIGHTED_ITEMS')">
+            Ver Todos
+          </button>
+        </div>
+        <div class="swiper-area">
+          <swiper [config]="tagsSwiperConfig" #highlightedTagsSwiper>
+            <div
+              class="tag-wrapper"
+              *ngFor="let tag of highlightedTags"
+              style="width: 159px; height: 230px"
+            >
+              <app-general-item
+                [tag]="tag"
+                [entity]="'TAG'"
+                [mainColor]="tag.status !== 'disabled' ? '#000000' : '#b17608'"
+                [tagsByIdsObject]="tagsByIdsObject"
+                [singleIconStyles]="{
+                  filter:
+                    'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+                }"
+                [showIconForTagStatus]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                "
+                [statusIcon]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                    ? env +
+                      (tag.status === 'disabled'
+                        ? '/closed-eye-black.svg'
+                        : '/binoculars-fill-black.svg')
+                    : null
+                "
+                [showVisitorCounter]="true"
+                [topRightButton]="tagsOptionsButton"
+                [titleStyles]="{
+                  display: '-webkit-box',
+                  '-webkit-line-clamp': 1,
+                  'line-clamp': 1,
+                  '-webkit-box-orient': 'vertical',
+                  overflow: 'hidden',
+                  'word-break': 'break-all'
+                }"
+                [topInnerButtonStyles]="{
+                  backgroundColor:
+                    tag.status !== 'disabled' ? '#272727' : '#b17608'
+                }"
+              >
+              </app-general-item>
+            </div>
+          </swiper>
+        </div>
+      </div>
+
+      <div
+        class="display-container"
+        [ngStyle]="{
+          marginTop:
+            highlightedTags && highlightedTags.length > 0 ? '0px' : null
+        }"
+      >
+        <div class="title-button">
+          <h2 class="title">Recientes</h2>
+          <button class="top-button" (click)="showTagsOfType('MOST_RECENT')">
+            Ver Todos
+          </button>
+        </div>
+        <div class="swiper-area">
+          <swiper [config]="tagsSwiperConfig" #recentTagsSwiper>
+            <div
+              class="tag-wrapper"
+              *ngFor="let tag of mostRecentTags"
+              style="width: 159px; height: 230px"
+            >
+              <app-general-item
+                [tag]="tag"
+                [entity]="'TAG'"
+                [mainColor]="tag.status !== 'disabled' ? '#000000' : '#b17608'"
+                [tagsByIdsObject]="tagsByIdsObject"
+                [singleIconStyles]="{
+                  filter:
+                    'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+                }"
+                [showIconForTagStatus]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                "
+                [statusIcon]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                    ? env +
+                      (tag.status === 'disabled'
+                        ? '/closed-eye-black.svg'
+                        : '/binoculars-fill-black.svg')
+                    : null
+                "
+                [showVisitorCounter]="true"
+                [topRightButton]="tagsOptionsButton"
+                [titleStyles]="{
+                  display: '-webkit-box',
+                  '-webkit-line-clamp': 1,
+                  'line-clamp': 1,
+                  '-webkit-box-orient': 'vertical',
+                  overflow: 'hidden',
+                  'word-break': 'break-all'
+                }"
+                [topInnerButtonStyles]="{
+                  backgroundColor:
+                    tag.status !== 'disabled' ? '#272727' : '#b17608'
+                }"
+              >
+              </app-general-item>
+            </div>
+          </swiper>
+        </div>
+      </div>
+
+      <div
+        class="display-container"
+        *ngIf="mostAssignedTags.length > 0"
+        style="margin-top: 0px"
+      >
+        <div class="title-button">
+          <h2 class="title">Los más asignados</h2>
+          <button class="top-button" (click)="showTagsOfType('MOST_ASSIGNED')">
+            Ver Todos
+          </button>
+        </div>
+        <div class="swiper-area">
+          <swiper [config]="tagsSwiperConfig" #mostAssignedTagsSwiper>
+            <div
+              class="tag-wrapper"
+              *ngFor="let tag of mostAssignedTags"
+              style="width: 159px; height: 230px"
+            >
+              <app-general-item
+                [tag]="tag"
+                [entity]="'TAG'"
+                [mainColor]="tag.status !== 'disabled' ? '#000000' : '#b17608'"
+                [tagsByIdsObject]="tagsByIdsObject"
+                [showIconForTagStatus]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                "
+                [statusIcon]="
+                  tag.status === 'disabled' || tag.status === 'featured'
+                    ? env +
+                      (tag.status === 'disabled'
+                        ? '/closed-eye-black.svg'
+                        : '/binoculars-fill-black.svg')
+                    : null
+                "
+                [singleIconStyles]="{
+                  filter:
+                    'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
+                  width: '20px'
+                }"
+                [showVisitorCounter]="true"
+                [topRightButton]="tagsOptionsButton"
+                [titleStyles]="{
+                  display: '-webkit-box',
+                  '-webkit-line-clamp': 1,
+                  'line-clamp': 1,
+                  '-webkit-box-orient': 'vertical',
+                  overflow: 'hidden',
+                  'word-break': 'break-all'
+                }"
+                [topInnerButtonStyles]="{
+                  backgroundColor:
+                    tag.status !== 'disabled' ? '#272727' : '#b17608'
+                }"
+              >
+              </app-general-item>
+            </div>
+          </swiper>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'GRID'">
+      <ng-container *ngIf="!isTagReorderingModeEnabled">
+        <div class="tags-grid">
+          <div
+            class="tag-wrapper"
+            *ngFor="let tag of dependantGridOfTagsToShow"
+            style="width: 100%; height: 272px; margin: 0px; padding: 0px"
+          >
+            <app-general-item
+              [tag]="tag"
+              [entity]="'TAG'"
+              [mainColor]="tag.status !== 'disabled' ? '#000000' : '#b17608'"
+              [tagsByIdsObject]="tagsByIdsObject"
+              [singleIconStyles]="{
+                filter:
+                  'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
+                width: '20px'
+              }"
+              [showIconForTagStatus]="
+                tag.status === 'disabled' || tag.status === 'featured'
+              "
+              [statusIcon]="
+                tag.status === 'disabled' || tag.status === 'featured'
+                  ? env +
+                    (tag.status === 'disabled'
+                      ? '/closed-eye-black.svg'
+                      : '/binoculars-fill-black.svg')
+                  : null
+              "
+              [showVisitorCounter]="true"
+              [topRightButton]="tagsOptionsButton"
+              [titleStyles]="{
+                display: '-webkit-box',
+                '-webkit-line-clamp': 1,
+                'line-clamp': 1,
+                '-webkit-box-orient': 'vertical',
+                overflow: 'hidden',
+                'word-break': 'break-all'
+              }"
+              [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
+              [topInnerButtonStyles]="{
+                backgroundColor:
+                  tag.status !== 'disabled' ? '#272727' : '#b17608'
+              }"
+              (itemSelectedEvent)="selectTag($event, tag)"
+            >
+            </app-general-item>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="isTagReorderingModeEnabled">
+        <div class="tags-grid-drag-and-drop" cdkDropListGroup>
+          <div
+            class="tag-wrapper"
+            cdkDropList
+            *ngFor="let tag of dependantGridOfTagsToShow; let i = index"
+            [cdkDropListData]="{ tag: tag, index: i }"
+            (cdkDropListDropped)="dropTagDraggable($event)"
+            style="width: 100%; margin: 0px; padding: 0px"
+          >
+            <div class="inner-drag-wrapper" cdkDrag>
+              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+
+              <div class="general-item-wrapper" style="height: 141px">
+                <app-general-item
+                  [tag]="tag"
+                  [entity]="'TAG'"
+                  [mainColor]="
+                    tag.status !== 'disabled' ? '#000000' : '#b17608'
+                  "
+                  [tagsByIdsObject]="tagsByIdsObject"
+                  [singleIconStyles]="{
+                    filter:
+                      'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
+                    width: '20px'
+                  }"
+                  [showIconForTagStatus]="
+                    tag.status === 'disabled' || tag.status === 'featured'
+                  "
+                  [statusIcon]="
+                    tag.status === 'disabled' || tag.status === 'featured'
+                      ? env +
+                        (tag.status === 'disabled'
+                          ? '/closed-eye-black.svg'
+                          : '/binoculars-fill-black.svg')
+                      : null
+                  "
+                  [showVisitorCounter]="true"
+                  [titleStyles]="{
+                    display: '-webkit-box',
+                    '-webkit-line-clamp': 1,
+                    'line-clamp': 1,
+                    '-webkit-box-orient': 'vertical',
+                    overflow: 'hidden',
+                    'word-break': 'break-all'
+                  }"
+                  [shouldItemBeSelectectable]="isTagSelectionModeEnabled"
+                  (itemSelectedEvent)="selectTag($event, tag)"
+                  [showEntityButton]="false"
+                  [topInnerButtonStyles]="{
+                    backgroundColor:
+                      tag.status !== 'disabled' ? '#272727' : '#b17608'
+                  }"
+                >
+                </app-general-item>
+              </div>
+
+              <img
+                class="drag-handler"
+                cdkDragHandle
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/drag-area.svg"
+                alt="drag"
+              />
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <div class="blank-space"></div>
+
+  <div class="fixed-buttons" *ngIf="!isTagReorderingModeEnabled">
+    <button class="create" (click)="ctaEventHandler()">
+      {{
+        tagSelectionMode === "HIGHLIGHT"
+          ? "DESTACAR"
+          : tagSelectionMode === "HIDE"
+          ? "ESCONDER"
+          : tagSelectionMode === "DELETE"
+          ? "BORRAR"
+          : tagSelectionMode === "UNARCHIVE"
+          ? "DEJAR DE ARCHIVAR"
+          : "CREAR"
+      }}
+    </button>
+    <button class="share" (click)="share()">
+      <img [src]="env + '/upload.svg'" alt="Imagen de compartir" />
+    </button>
+  </div>
+</div>

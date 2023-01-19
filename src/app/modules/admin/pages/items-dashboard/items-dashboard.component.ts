@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { ToastrService } from 'ngx-toastr';
-import { filter } from 'rxjs/operators';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Calendar } from 'src/app/core/models/calendar';
 import { Item, ItemInput, ItemStatus } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
@@ -21,8 +21,10 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HelperHeaderInput } from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
+import { ItemImagesComponent } from 'src/app/shared/dialogs/create-item-flow/item-images/item-images.component';
 import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
 import {
   SettingsComponent,
@@ -87,6 +89,9 @@ export class ItemsDashboardComponent implements OnInit {
     {
       name: 'Facturas',
     },
+    {
+      name: 'Tags',
+    },
   ];
   allItems: ExtendedItem[] = [];
   itemsTotalCounter = 0;
@@ -146,9 +151,100 @@ export class ItemsDashboardComponent implements OnInit {
     status: 'complete',
   };
   windowWidth: number = 0;
+  tagsMetrics: {
+    inItems: number;
+    inOrders: number;
+    visible: number;
+    hidden: number;
+    featured: number;
+    archived: number;
+    total: number;
+  } = {
+    inItems: 0,
+    inOrders: 0,
+    visible: 0,
+    hidden: 0,
+    featured: 0,
+    archived: 0,
+    total: 0,
+  };
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
   @ViewChild('highlightedItemsSwiper') highlightedItemsSwiper: SwiperComponent;
+
+  swiperConfig: SwiperOptions = {
+    allowSlideNext: false,
+  };
+  openedDialogFlow: boolean = false;
+  dialogs: Array<EmbeddedComponentWithId> = [
+    {
+      component: ItemListSelectorComponent,
+      componentId: 'itemPricing',
+      inputs: {
+        containerStyles: {},
+        title: '¿Que monto te pagarán por el artículo?',
+        inputs: [
+          {
+            type: 'currency',
+            name: 'pricing',
+            innerLabel: 'Pesos Dominicanos',
+          },
+        ],
+      },
+      outputs: [
+        {
+          name: 'formOutput',
+          callback: ({ pricing }: { pricing: number }) => {
+            if (pricing > 0) this.swiperConfig.allowSlideNext = true;
+            else this.swiperConfig.allowSlideNext = false;
+            this._ItemsService.itemPrice = pricing;
+          },
+        },
+      ],
+    },
+    {
+      component: ItemImagesComponent,
+      componentId: 'itemImages',
+      inputs: {
+        containerStyles: {},
+      },
+      outputs: [
+        {
+          name: 'enteredImages',
+          callback: async (images: File[]) => {
+            if (!this._ItemsService.itemPrice) return;
+            lockUI();
+            const itemInput = {
+              name: null,
+              description: null,
+              pricing: this._ItemsService.itemPrice,
+              images: images,
+              merchant: this._MerchantsService.merchantData?._id,
+              content: [],
+              currencies: [],
+              hasExtraPrice: false,
+              purchaseLocations: [],
+              showImages: images.length > 0,
+            };
+            this._ItemsService.itemPrice = null;
+
+            const { createItem } = await this._ItemsService.createItem(
+              itemInput
+            );
+            await this._SaleflowService.addItemToSaleFlow(
+              {
+                item: createItem._id,
+              },
+              this._SaleflowService.saleflowData._id
+            );
+            this._ToastrService.success('Producto creado satisfactoriamente!');
+            unlockUI();
+            this.router.navigate([`admin/article-editor/${createItem._id}`]);
+          },
+        },
+      ],
+    },
+  ];
 
   async infinitePagination() {
     const page = document.querySelector('.dashboard-page');
@@ -230,7 +326,14 @@ export class ItemsDashboardComponent implements OnInit {
   async inicializeTags() {
     const tagsList = await this.tagsService.tagsByUser({
       findBy: {
-        entity: 'item',
+        $or: [
+          {
+            entity: 'item',
+          },
+          {
+            entity: 'order',
+          },
+        ],
       },
       options: {
         limit: -1,
@@ -238,14 +341,44 @@ export class ItemsDashboardComponent implements OnInit {
     });
 
     if (tagsList) {
-      this.tagsList = tagsList;
+      this.tagsList = tagsList.filter((tag) => tag.entity === 'item');
       this.unselectedTags = [...this.tagsList];
 
       for (const tag of this.tagsList) {
         this.tagsHashTable[tag._id] = tag;
         this.tagsByNameHashTable[tag.name] = tag;
       }
+
+      for (const tag of tagsList) {
+        if (tag.status === 'disabled') this.tagsMetrics.hidden++;
+        else if (tag.status === 'active') this.tagsMetrics.visible++;
+        else if (tag.status === 'featured') {
+          this.tagsMetrics.visible++;
+          this.tagsMetrics.featured++;
+        }
+
+        if (tag.entity === 'item') this.tagsMetrics.inItems++;
+        if (tag.entity === 'order') this.tagsMetrics.inOrders++;
+      }
+
+      this.tagsMetrics.total = tagsList.length;
     }
+
+    const tagsArchived = await this.tagsService.hotTagsArchived({
+      options: { limit: -1 },
+      findBy: {
+        $or: [
+          {
+            entity: 'item',
+          },
+          {
+            entity: 'order',
+          },
+        ],
+      },
+    });
+
+    this.tagsMetrics.archived = tagsArchived.length;
 
     this.tagsLoaded = true;
   }
@@ -631,7 +764,8 @@ export class ItemsDashboardComponent implements OnInit {
 
   goToDetail(id: string) {
     this.savePageSnapshot();
-    this.router.navigate([`admin/create-article/${id}`]);
+    this.router.navigate([`admin/article-editor/${id}`]);
+    this._ItemsService.itemImages = [];
   }
 
   savePageSnapshot() {
@@ -709,18 +843,7 @@ export class ItemsDashboardComponent implements OnInit {
             text: 'ADICIONAR',
             mode: 'func',
             func: () => {
-              //this.headerService.flowRoute = this.router.url;
-              // const routerConfig: any = {
-              //   queryParams: {
-              //     from: 'dashboard',
-              //   },
-              // };
-
-              // if (section === 'featured')
-              //   routerConfig.queryParams.initialStatus = 'featured';
-
-              // this.router.navigate(['admin/create-article'], routerConfig);
-              this.openArticleForm();
+              this.openedDialogFlow = !this.openedDialogFlow;
             },
           },
           {
@@ -788,61 +911,6 @@ export class ItemsDashboardComponent implements OnInit {
     });
   };
 
-  openArticleForm() {
-    const dialogref = this.dialog.open(ItemListSelectorComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        title: '¿Que monto te pagarán por el artículo?',
-        inputs: [
-          {
-            label: 'Pesos Dominicanos',
-            type: 'currency',
-            placeholder: '$00.00',
-            name: 'pricing',
-          },
-        ],
-        cta: {
-          text: 'Continuar',
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-    const sub = dialogref.events
-      .pipe(filter((e) => e.type === 'result'))
-      .subscribe(async (e) => {
-        const { pricing } = e.data;
-        if (pricing) {
-          const itemInput = {
-            name: null,
-            description: null,
-            pricing: parseFloat(pricing),
-            images: [],
-            merchant: this._MerchantsService.merchantData?._id,
-            content: [],
-            currencies: [],
-            hasExtraPrice: false,
-            purchaseLocations: [],
-            showImages: false,
-          };
-          this._ItemsService.itemPrice = null;
-          this._ItemsService.itemName = null;
-
-          const { createItem } = await this._ItemsService.createItem(itemInput);
-          await this._SaleflowService.addItemToSaleFlow(
-            {
-              item: createItem._id,
-            },
-            this._SaleflowService.saleflowData._id
-          );
-          this._ToastrService.success('Producto creado satisfactoriamente!');
-          this.router.navigate([`admin/create-article/${createItem._id}`]);
-          this._ItemsService.itemPrice = parseFloat(pricing);
-          sub.unsubscribe();
-        }
-      });
-  }
-
   openHeaderDialog() {
     const list: Array<SettingsDialogButton> = [
       {
@@ -866,7 +934,7 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'Adiciona un artículo',
         callback: () => {
-          this.openArticleForm();
+          this.openedDialogFlow = !this.openedDialogFlow;
         },
       },
       {
@@ -1374,5 +1442,17 @@ export class ItemsDashboardComponent implements OnInit {
 
   getActiveTagsFromSelectedTagsPermantent(): Array<string> {
     return this.tagsList.filter((tag) => tag.selected).map((tag) => tag._id);
+  }
+
+  redirectTo(route: string, queryParams: Record<string, any>) {
+    this.headerService.flowRoute = window.location.href
+      .split('/')
+      .slice(3)
+      .join('/');
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
+    this.router.navigate([route], {
+      queryParams,
+    });
   }
 }

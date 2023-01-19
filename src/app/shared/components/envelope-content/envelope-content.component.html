@@ -1,0 +1,26 @@
+<div class="wrapper">
+  <p class="title">{{ title }}</p>
+  <svg
+    (click)="editContent()"
+    class="edit"
+    xmlns="http://www.w3.org/2000/svg"
+    width="14.789"
+    height="14.763"
+    viewBox="0 0 14.789 14.763"
+  >
+    <path
+      id="edit-line"
+      d="M16.834,4.809l-2.7-2.714a.952.952,0,0,0-1.343,0L3.218,11.653l-.874,3.772a.948.948,0,0,0,.92,1.15.984.984,0,0,0,.2,0L7.275,15.7l9.559-9.549A.952.952,0,0,0,16.834,4.809ZM6.815,14.873l-3.574.75.814-3.505,7.162-7.135,2.76,2.76Zm7.779-7.8-2.76-2.76,1.6-1.592,2.714,2.76Z"
+      transform="translate(-2.322 -1.817)"
+      fill="#272727"
+    />
+  </svg>
+</div>
+<div class="data">
+  <p>Nombre del Sobre:</p>
+  <p class="bold">{{ nombreSobre }}</p>
+  <p>Mensaje:</p>
+  <p class="bold">{{ mensaje }}</p>
+  <p class="bottom">De:</p>
+  <p class="bold-bottom">{{ from }}</p>
+</div>

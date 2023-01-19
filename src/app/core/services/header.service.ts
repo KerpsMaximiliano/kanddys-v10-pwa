@@ -100,6 +100,8 @@ export class HeaderService {
   dashboardTemporalData: Record<string, any> = null;
   storeTemporalData: Record<string, any> = null;
   entityTemplateTemporalData: Record<string, any> = null;
+  aiJokes: Array<string> = [];
+  selectedJoke: string = null;
 
   public session: Session;
   constructor(

@@ -56,6 +56,28 @@
             [formControlName]="field.name"
           ></textarea>
         </div>
+        <div *ngSwitchCase="'phone'">
+          <label [style]="field.label.styles">
+            {{ field.label.text }}
+          </label>
+
+          <ngx-intl-tel-input
+            [cssClass]="'customPhone'"
+            [enableAutoCountrySelect]="true"
+            [enablePlaceholder]="true"
+            [searchCountryFlag]="true"
+            [selectFirstCountry]="false"
+            maxLength="15"
+            [phoneValidation]="true"
+            [separateDialCode]="true"
+            [preferredCountries]="preferredCountries"
+            [selectedCountryISO]="CountryISO"
+            [customPlaceholder]="field.placeholder"
+            [numberFormat]="PhoneNumberFormat.International"
+            tabindex="-1"
+            [formControlName]="field.name"
+          ></ngx-intl-tel-input>
+        </div>
         <div *ngSwitchDefault>
           <label [style]="field.label.styles">
             {{ field.label.text }}

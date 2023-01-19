@@ -81,10 +81,15 @@
               executingMenuOpeningAnimation || executingMenuClosingAnimation
           }"
           [ngStyle]="{
-            height:
-              menuNavigationOptions[activeMenuOptionIndex].name === 'Items'
-                ? '580px'
-                : '413px'
+            height: ['Items'].includes(
+              menuNavigationOptions[activeMenuOptionIndex].name
+            )
+              ? '580px'
+              : ['Tags'].includes(
+                  menuNavigationOptions[activeMenuOptionIndex].name
+                )
+              ? '731px'
+              : '413px'
           }"
         >
           <div
@@ -116,12 +121,23 @@
             menuOpened &&
             !executingMenuOpeningAnimation &&
             !executingMenuClosingAnimation &&
-            menuNavigationOptions[activeMenuOptionIndex].name === 'Items',
+            ['Items'].includes(
+              menuNavigationOptions[activeMenuOptionIndex].name
+            ),
           visible2:
             menuOpened &&
             !executingMenuOpeningAnimation &&
             !executingMenuClosingAnimation &&
-            menuNavigationOptions[activeMenuOptionIndex].name !== 'Items',
+            !['Items', 'Tags'].includes(
+              menuNavigationOptions[activeMenuOptionIndex].name
+            ),
+          visible3:
+            menuOpened &&
+            !executingMenuOpeningAnimation &&
+            !executingMenuClosingAnimation &&
+            ['Tags'].includes(
+              menuNavigationOptions[activeMenuOptionIndex].name
+            ),
           animationRunning:
             executingMenuOpeningAnimation || executingMenuClosingAnimation
         }"
@@ -346,6 +362,91 @@
                 <h2 class="amount">COMPRADORES</h2>
               </div>
             </div>
+
+            <div
+              class="metrics-grid"
+              [ngStyle]="{
+                display:
+                  !menuOpened &&
+                  !(
+                    executingMenuOpeningAnimation ||
+                    executingMenuClosingAnimation
+                  )
+                    ? 'none'
+                    : 'grid'
+              }"
+              *ngSwitchCase="'Tags'"
+            >
+              <div class="card pointer" (click)="redirectTo('/admin/tags', {})">
+                <h2 class="amount quantity">{{ tagsMetrics.total }}</h2>
+                <h2 class="amount">EN TOTAL</h2>
+              </div>
+
+              <div
+                class="card pointer"
+                (click)="
+                  redirectTo('/admin/tags', { selectedTagsFilter: 'Artículos' })
+                "
+              >
+                <h2 class="amount quantity">
+                  {{ tagsMetrics.inItems }}
+                </h2>
+                <h2 class="amount">DE ITEMS</h2>
+              </div>
+
+              <div
+                class="card pointer"
+                (click)="
+                  redirectTo('/admin/tags', { selectedTagsFilter: 'Facturas' })
+                "
+              >
+                <h2 class="amount quantity">
+                  {{ tagsMetrics.inOrders }}
+                </h2>
+                <h2 class="amount">DE FACTURAS</h2>
+              </div>
+
+              <div
+                class="card pointer"
+                (click)="
+                  redirectTo('/admin/tags', { enforceTagsStatus: 'active' })
+                "
+              >
+                <h2 class="amount quantity">{{ tagsMetrics.visible }}</h2>
+                <h2 class="amount">VISIBLES</h2>
+              </div>
+
+              <div
+                class="card pointer"
+                [routerLink]="['/admin/tags']"
+                (click)="
+                  redirectTo('/admin/tags', { enforceTagsStatus: 'disabled' })
+                "
+              >
+                <h2 class="amount quantity">{{ tagsMetrics.hidden }}</h2>
+                <h2 class="amount">INVISIBLES</h2>
+              </div>
+
+              <div
+                class="card pointer"
+                (click)="
+                  redirectTo('/admin/tags', { enforceTagsStatus: 'featured' })
+                "
+              >
+                <h2 class="amount quantity">{{ tagsMetrics.featured }}</h2>
+                <h2 class="amount">DESTACADOS</h2>
+              </div>
+
+              <div
+                class="card pointer"
+                (click)="
+                  redirectTo('/admin/tags', { justShowArchivedTags: true })
+                "
+              >
+                <h2 class="amount quantity">{{ tagsMetrics.archived }}</h2>
+                <h2 class="amount">ARCHIVADOS</h2>
+              </div>
+            </div>
           </ng-container>
         </ng-container>
       </div>
@@ -545,7 +646,7 @@
         >
           <app-saleflow-item
             [type]="'ADD_NEW_ITEM'"
-            (itemClicked)="openArticleForm()"
+            (itemClicked)="openedDialogFlow = !openedDialogFlow"
           ></app-saleflow-item>
         </div>
         <div
@@ -592,3 +693,11 @@
     -->
   </div>
 </div>
+
+<app-dialog-flow
+  dialogFlowId="flow1"
+  [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+  [dialogs]="dialogs"
+  (saveConfigRef)="swiperConfig = $event"
+  [allowSlideNext]="false"
+></app-dialog-flow>

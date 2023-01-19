@@ -5,10 +5,10 @@ export interface EmbeddedDialog {
   dialogId: string;
   fields: Record<string, any>;
   swiperConfig?: SwiperOptions;
-  snapshotState?: {
-    lastDialogIndex: number;
-    dialogToReturnToIndex: number;
-  };
+}
+
+export interface FlowSnapshot {
+  lastDialogId: string;
 }
 
 @Injectable({
@@ -16,6 +16,8 @@ export interface EmbeddedDialog {
 })
 export class DialogFlowService {
   dialogsFlows: Record<string, Record<string, EmbeddedDialog>> = {};
+  activeDialogId: string = null;
+  previouslyActiveDialogId: string = null;
   swiperConfig: SwiperOptions = null;
 
   constructor() {}

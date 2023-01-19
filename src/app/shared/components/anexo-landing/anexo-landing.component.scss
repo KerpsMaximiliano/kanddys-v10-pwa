@@ -1,15 +1,21 @@
+.container {
+  width: 199px;
+  margin: auto;
+}
+
 .content {
-  height: 322px;
   width: 199px;
   margin: auto;
   position: relative;
   border-radius: 10px;
 }
+
 h1 {
   font-family: "SfProLight";
   font-size: 14px;
   margin-top: 0px;
 }
+
 h2 {
   font-family: "SfProBold";
   font-size: 21px;
@@ -40,6 +46,7 @@ h2 {
   top: 7px;
   box-shadow: 2px 0px 9px -2px #8d8d8d;
 }
+
 .image2 {
   width: 109px;
   height: 169px;
@@ -57,6 +64,7 @@ h2 {
   padding: 4px 11px 5px 12px;
   font-size: 16px;
   font-family: "SfProLight";
+  z-index: 1;
 }
 
 .upper {

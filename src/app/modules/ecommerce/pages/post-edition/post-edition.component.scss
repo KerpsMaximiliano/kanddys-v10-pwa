@@ -1,0 +1,66 @@
+* {
+  margin: 0;
+}
+
+button {
+  all: unset;
+  cursor: pointer;
+}
+
+.icon {
+  &.black {
+    filter: brightness(0) saturate(100) invert(8%) sepia(0%) saturate(814%) hue-rotate(154deg) brightness(98%) contrast(83%);
+  }
+}
+
+.container {
+  height: 100vh;
+
+  .header {
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+
+    button {
+      padding: 8px;
+    }
+
+    .flex-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .arrows {
+      margin-left: 16px;
+    }
+    .preview {
+      margin-right: 14.5px;
+      font-family: SFProBold;
+      font-size: 15px;
+      color: #272727;
+    }
+    .save {
+      margin-right: 14.5px;
+    }
+    .dots {
+      display: flex;
+      margin-right: 19px;
+    }
+  }
+
+  .content {
+    padding: 35px 25px;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    .content {
+      .cards {
+        padding: 18.5px 16px 17.5px;
+        gap: 5px;
+      }
+    }
+  }
+}

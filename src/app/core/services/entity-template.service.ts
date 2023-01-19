@@ -1,13 +1,24 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { EntityTemplate, EntityTemplateInput } from '../models/entity-template';
 import {
+  EntityTemplate,
+  EntityTemplateInput,
+  RecipientInput,
+  RecipientsInput,
+} from '../models/entity-template';
+import {
+  createEntityTemplate,
   entityTemplate,
   entityTemplateSetData,
+  entityTemplateAuthSetData,
   entityTemplateByDateId,
   entityTemplateByReference,
-  createEntityTemplate,
-  preCreateEntityTemplate
+  preCreateEntityTemplate,
+  entityTemplateAddRecipient,
+  createRecipient,
+  entityTemplateRecipient,
+  entityTemplateRemoveRecipient,
+  entityTemplateUpdateRecipient,
 } from '../graphql/entity-template.gql';
 
 @Injectable({
@@ -16,14 +27,92 @@ import {
 export class EntityTemplateService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async entityTemplate(id: string): Promise<EntityTemplate> {
+  async entityTemplate(id: string, password?: string): Promise<EntityTemplate> {
+    let variables:any = { id };
+    if(password)
+      variables.password = password;
     const result = await this.graphql.query({
       query: entityTemplate,
-      variables: { id },
+      variables,
       fetchPolicy: 'no-cache',
     });
     if (!result) return;
     return result?.entityTemplate;
+  }
+
+  async entityTemplateSetData(
+    id: string,
+    input: EntityTemplateInput
+  ): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateSetData,
+        variables: { id, input },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.entityTemplateSetData;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async entityTemplateAuthSetData(
+    id: string,
+    input: EntityTemplateInput
+  ): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateAuthSetData,
+        variables: { id, input },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.entityTemplateAuthSetData;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async entityTemplateRemoveRecipient(idRecipients: string, entityTemplateId: string) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateRemoveRecipient,
+        variables: { idRecipients, entityTemplateId },
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async entityTemplateUpdateRecipient(entityTemplateId: string, idRecipients: string, input: RecipientInput) {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateUpdateRecipient,
+        variables: { entityTemplateId, idRecipients, input },
+      });
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async entityTemplateRecipient(id: string, password?: string): Promise<EntityTemplate> {
+    let variables:any = { id };
+    if(password)
+      variables.password = password;
+    const result = await this.graphql.query({
+      query: entityTemplateRecipient,
+      variables,
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result?.entityTemplateRecipient;
   }
 
   async entityTemplateByDateId(dateId: string): Promise<EntityTemplate> {
@@ -49,18 +138,33 @@ export class EntityTemplateService {
     return result?.entityTemplateByReference;
   }
 
-  async entityTemplateSetData(
-    id: string,
-    input: EntityTemplateInput
-  ): Promise<EntityTemplate> {
+  async createRecipient(input: RecipientInput): Promise<EntityTemplate> {
     try {
       const result = await this.graphql.mutate({
-        mutation: entityTemplateSetData,
-        variables: { id, input },
+        mutation: createRecipient,
+        variables: { input },
         fetchPolicy: 'no-cache',
       });
 
-      return result?.entityTemplateSetData;
+      return result?.createRecipient;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async entityTemplateAddRecipient(
+    entityTemplateId: string,
+    input: RecipientsInput
+  ): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateAddRecipient,
+        variables: { entityTemplateId, input },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.entityTemplateAddRecipient;
     } catch (error) {
       console.log(error);
       return null;

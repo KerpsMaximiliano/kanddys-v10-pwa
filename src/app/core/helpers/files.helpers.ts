@@ -13,6 +13,18 @@ export function base64ToFile(base64: string): File {
   return new File([u8arr], filename, { type: mime });
 }
 
+export function fileToBase64(file: File): Promise<any> {
+    const base64File = new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = (error) => reject(error);
+    })
+
+    
+    return base64File;
+}
+
 export async function compressImage(
   file: File | Blob,
   quality: number = 0.6
