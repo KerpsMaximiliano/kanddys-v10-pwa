@@ -14,7 +14,7 @@
           *ngFor="let image of itemData.images"
           [ngStyle]="{
             backgroundImage: 'url(' + image + ')',
-            height: 'calc(100vh - (209px))'
+            height: 'calc(100vh - (140px))'
           }"
         ></div>
       </ng-container>
@@ -197,10 +197,7 @@
           <div
             class="entity-image"
             [ngStyle]="{
-              backgroundImage: 'url(' + slide.media + ')',
-              backgroundSize: 'contain',
-              height: 'calc(100vh - (49px))',
-              backgroundColor: '#2e2e2e'
+              backgroundImage: 'url(' + slide.media + ')'
             }"
           ></div>
         </ng-container>

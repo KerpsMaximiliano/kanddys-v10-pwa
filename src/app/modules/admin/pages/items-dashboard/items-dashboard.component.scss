@@ -3,6 +3,7 @@
 .dashboard-page {
   height: 100vh;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .container {
@@ -34,6 +35,7 @@
     -webkit-box-shadow: inset 0px 3px 5px #d3d3d3;
     -moz-box-shadow: inset 0px 3px 5px #d3d3d3;
     -webkit-appearance: none;
+    appearance: none;
   }
 
   button {

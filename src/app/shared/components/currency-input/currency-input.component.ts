@@ -1,5 +1,13 @@
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-currency-input',
@@ -7,6 +15,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./currency-input.component.scss'],
 })
 export class CurrencyInputComponent implements OnInit {
+  @ViewChild('input') currencyInput: ElementRef<HTMLInputElement>;
   curencyFocused = false;
   formattedPricing = '$0.00';
   @Input() initialValue: number;

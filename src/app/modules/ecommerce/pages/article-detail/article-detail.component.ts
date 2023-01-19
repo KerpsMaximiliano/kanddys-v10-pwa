@@ -460,7 +460,7 @@ export class ArticleDetailComponent implements OnInit {
   async back() {
     if (this.previewMode) {
       return this.router.navigate([
-        `/admin/article-params/${this.itemData._id}`,
+        `/admin/article-editor/${this.itemData._id}`,
       ]);
     }
     if (this.selectedParam) {
