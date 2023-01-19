@@ -27,53 +27,26 @@ export class QrContentComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    // if (this.slides) {
-    //   for await (const slide of this.slides) {
-    //     if (slide.media.type.includes('image')) {
-    //       const base64 = await this.fileToBase64(slide.media);
-    //       this.slidesPath.push({
-    //         path: `url(${base64})`,
-    //         type: 'IMAGE',
-    //       });
-    //     } else {
-    //       const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
-    //         URL.createObjectURL(slide.media)
-    //       );
-    //       this.slidesPath.push({
-    //         path: fileUrl,
-    //         type: 'VIDEO',
-    //       });
-    //     }
-    //   }
-    // }
-  }
-
-  async ngOnChanges(changes: SimpleChanges) {
-    if (changes.slides) {
-      console.log(changes.slides.currentValue);
-      this.slides = changes.slides.currentValue;
-      this.slidesPath = [];
+    console.log(this.slides);
+    console.log("Cambios detectados en los slides");
+    if (this.slides) {
       console.log(this.slides);
-      console.log("Cambios detectados en los slides");
-      if (this.slides) {
-        console.log(this.slides);
-        for await (const slide of this.slides) {
-          if (slide.media.type.includes('image')) {
-            const base64 = await this.fileToBase64(slide.media);
-            this.slidesPath.push({
-              path: `url(${base64})`,
-              type: 'IMAGE',
-            });
-            this.filesStrings.push(base64 as string);
-          } else {
-            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(slide.media)
-            );
-            this.slidesPath.push({
-              path: fileUrl,
-              type: 'VIDEO',
-            });
-          }
+      for await (const slide of this.slides) {
+        if (slide.media.type.includes('image')) {
+          const base64 = await this.fileToBase64(slide.media);
+          this.slidesPath.push({
+            path: `url(${base64})`,
+            type: 'IMAGE',
+          });
+          this.filesStrings.push(base64 as string);
+        } else {
+          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+            URL.createObjectURL(slide.media)
+          );
+          this.slidesPath.push({
+            path: fileUrl,
+            type: 'VIDEO',
+          });
         }
       }
     }
