@@ -20,6 +20,7 @@ import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/a
 import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
+import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -133,11 +134,15 @@ const routes: Routes = [
         path: 'article-privacy/:templateId',
         component: ArticlePrivacyComponent,
       },
+      {
+        path: 'contact-landing/:idUser',
+        component: ContactLandingContainerComponent,
+      },
     ],
   },
   {
     path: 'tags',
-    component: TagsComponent
+    component: TagsComponent,
   },
 ];
 

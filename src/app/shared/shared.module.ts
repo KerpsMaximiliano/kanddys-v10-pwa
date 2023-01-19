@@ -122,6 +122,8 @@ import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.
 import { ItemImagesComponent } from './dialogs/create-item-flow/item-images/item-images.component';
 import { InfoDialogComponent } from './dialogs/info-dialog/info-dialog.component';
 import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
+import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';
+import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
 
 const imports = [
   CommonModule,
@@ -252,7 +254,9 @@ const declarations = [
   TagTypeDialogComponent,
   MediaDialogComponent,
   ItemListSelectorComponent,
-  TagsDialogComponent
+  TagsDialogComponent,
+  ContactLandingComponent,
+  ContactLandingContainerComponent,
 ];
 
 @NgModule({
