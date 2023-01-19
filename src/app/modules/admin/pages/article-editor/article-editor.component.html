@@ -1,0 +1,172 @@
+<div class="container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [icon]="{
+      src: '/arrow-double-up.svg',
+      width: 17,
+      height: 21,
+      callback: iconCallback,
+      filter: 'brightness(0)'
+    }"
+    [rightText]="{
+      text: 'PREVIEW',
+      fontSize: '0.963rem',
+      fontFamily: 'SfProBold',
+      color: '#272727',
+      pointer: true
+    }"
+    [icons]="[
+      {
+        src: '/bookmark-plus.svg',
+        color: 'brightness(0)',
+        margin: '1px',
+        callback: openTagDialog
+      }
+    ]"
+    [dots]="{
+      active: true,
+      color: '#272727'
+    }"
+    (dotEvent)="openOptionsForThisArticle()"
+    (agnosticAction)="previewItem()"
+    [returnAble]="false"
+    [bgColor]="'#FFFFFF'"
+    (return)="goBack()"
+  ></app-helper-headerv2>
+
+  <div class="toast-status" *ngIf="item?.status === 'disabled'">
+    <p>Este artículo solo lo ves tú.</p>
+  </div>
+
+  <div class="section">
+    <app-title-icon-header
+      title="Precio"
+      [editing]="!editingPrice"
+      (iconClicked)="editingPrice = true; setFocus('pricing')"
+    >
+    </app-title-icon-header>
+    <app-card [shadows]="editingPrice">
+      <span *ngIf="!editingPrice"
+        >RD$ {{ price.value ? price.value.toLocaleString("es-MX") : "0" }}</span
+      >
+      <app-currency-input
+        [fieldStyles]="{
+          boxShadow: 'none',
+          backgroundColor: 'white',
+          borderRadius: '6px',
+          padding: '8px 0px'
+        }"
+        [initialValue]="
+          countDecimals(price.value) < 2
+            ? math.floor(price.value * 100)
+            : price.value
+        "
+        (onInputEvent)="handleCurrencyInput($event)"
+        placeholderColor="#7B7B7B"
+        currencyLabel="RD$"
+        *ngIf="editingPrice"
+      ></app-currency-input>
+    </app-card>
+  </div>
+
+  <div class="section">
+    <!-- <app-title-icon-header
+      title="Slides, contenido del QR"
+      [editing]="!editingSlides"
+      (iconClicked)="editSlides()"
+    >
+    </app-title-icon-header> -->
+    <app-qr-content
+      *ngIf="slides"
+      [slides]="slides"
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
+    <app-qr-content
+      *ngIf="!slides"
+      [slides]="slides"
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
+    <!-- <app-card [shadows]="editingSlides">
+      <div class="image-selector">
+        <div class="image-area">
+          <input
+            id="filemultiple"
+            (change)="fileProgressMultiple($event)"
+            type="file"
+            style="display: none"
+            accept="image/*"
+            multiple
+            [accept]="['.png', '.jpg', '.jpeg']"
+          />
+          <label for="filemultiple" class="add-image">
+            <div class="corner-btn add"></div>
+          </label>
+
+          <div
+            class="image-container"
+            *ngFor="let item of selectedImages; index as i"
+          >
+            <button
+              class="image"
+              [style.background]="sanitize(item)"
+              (click)="openImageModal(item)"
+            ></button>
+            <div
+              class="corner-btn2"
+              (click)="openAuxDialog(i)"
+              *ngIf="editingSlides"
+            >
+              <img [src]="env + '/dots-black.svg'" alt="Opciones" />
+            </div>
+            <div class="shadow-name"></div>
+          </div>
+        </div>
+      </div>
+    </app-card> -->
+  </div>
+
+  <div class="section">
+    <app-title-icon-header
+      title="Headline, article name"
+      [editing]="!editingName"
+      (iconClicked)="editingName = true; setFocus('name')"
+    >
+    </app-title-icon-header>
+    <app-card [shadows]="editingName">
+      <span *ngIf="!editingName">{{
+        name.value ? name.value : "Sin nombre..."
+      }}</span>
+      <input
+        #inputName
+        type="text"
+        [formControl]="name"
+        placeholder="Nombre del producto (opcional)"
+        *ngIf="editingName"
+      />
+    </app-card>
+  </div>
+
+  <div class="section">
+    <app-title-icon-header
+      title="Body, description, list of things"
+      [editing]="!editingDescription"
+      (iconClicked)="editingDescription = true; setFocus('description')"
+    >
+    </app-title-icon-header>
+    <app-card [shadows]="editingDescription">
+      <span *ngIf="!editingDescription" style="display: block; height: 86px">{{
+        description.value ? description.value : "Sin descripción..."
+      }}</span>
+      <textarea
+        #inputDescription
+        cols="30"
+        rows="4"
+        placeholder="Descripción del producto (opcional)"
+        [formControl]="description"
+        *ngIf="editingDescription"
+      ></textarea>
+    </app-card>
+  </div>
+</div>

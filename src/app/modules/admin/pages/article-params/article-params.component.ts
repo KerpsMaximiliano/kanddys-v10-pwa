@@ -3,9 +3,9 @@ import { FormControl, Validators } from '@angular/forms';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
-import { SaleFlow } from 'src/app/core/models/saleflow';
+// import { SaleFlow } from 'src/app/core/models/saleflow';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { HeaderService } from 'src/app/core/services/header.service';
+// import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -13,11 +13,16 @@ import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anex
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { Item } from 'src/app/core/models/item';
 import { ToastrService } from 'ngx-toastr';
-import { PostsService } from 'src/app/core/services/posts.service';
+// import { PostsService } from 'src/app/core/services/posts.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
-import { ArticleDialogComponent } from 'src/app/shared/dialogs/article-dialog/article-dialog.component';
-import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+// import { ArticleDialogComponent } from 'src/app/shared/dialogs/article-dialog/article-dialog.component';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
+import { TagsService } from 'src/app/core/services/tags.service';
 
 @Component({
   selector: 'app-article-params',
@@ -55,6 +60,7 @@ export class ArticleParamsComponent implements OnInit {
   updated: boolean = false;
   blockSubmitButton: boolean = false;
   parseFloat = parseFloat;
+  selectedTags: Array<string>;
 
   card1: boolean = false;
   card2: boolean = false;
@@ -63,14 +69,16 @@ export class ArticleParamsComponent implements OnInit {
     protected _DomSanitizer: DomSanitizer,
     private dialog: DialogService,
     private _ItemsService: ItemsService,
-    private _HeaderService: HeaderService,
+    // private _HeaderService: HeaderService,
     private _MerchantsService: MerchantsService,
     private _SaleflowService: SaleFlowService,
     private _Router: Router,
     private _Route: ActivatedRoute,
-    private _PostsService: PostsService,
+    // private _PostsService: PostsService,
     private _EntityTemplateService: EntityTemplateService,
-    private _ToastrService: ToastrService
+    private _DialogService: DialogService,
+    private _ToastrService: ToastrService,
+    private _TagsService: TagsService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -103,12 +111,13 @@ export class ArticleParamsComponent implements OnInit {
           });
         } else this.loadImages();
       }
-    } else {
-      if (this._ItemsService.itemName)
-        this.name.setValue(this._ItemsService.itemName);
-      if (this._ItemsService.itemPrice)
-        this.price.setValue(this._ItemsService.itemPrice);
     }
+    if (this._ItemsService.itemName)
+      this.name.setValue(this._ItemsService.itemName);
+    if (this._ItemsService.itemDesc)
+      this.description.setValue(this._ItemsService.itemDesc);
+    if (this._ItemsService.itemPrice)
+      this.price.setValue(this._ItemsService.itemPrice);
     this._MerchantsService.merchantData =
       await this._MerchantsService.merchantDefault();
     if (this._MerchantsService.merchantData) {
@@ -131,8 +140,6 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   iconCallback = async () => {
-    this._ItemsService.itemName = this.name.value;
-    this._ItemsService.itemPrice = this.price.value;
     if (this.name.dirty || this.description.dirty) {
       this.updated = true;
     }
@@ -155,6 +162,7 @@ export class ArticleParamsComponent implements OnInit {
     if (this.item) {
       if (this.updated || this._ItemsService.changedImages) {
         lockUI();
+        if (!itemInput.pricing) delete itemInput.pricing;
         delete itemInput.images;
         delete itemInput.merchant;
         const { updateItem: updatedItem } = await this._ItemsService.updateItem(
@@ -179,21 +187,75 @@ export class ArticleParamsComponent implements OnInit {
       this._Router.navigate([
         `admin/create-article${this.item ? '/' + this.item._id : ''}`,
       ]);
-    } else {
-      if (this.price.value) {
-        lockUI();
-        const { createItem } = await this._ItemsService.createItem(itemInput);
-        await this._SaleflowService.addItemToSaleFlow(
-          {
-            item: createItem._id,
-          },
-          this._SaleflowService.saleflowData._id
-        );
-        unlockUI();
-        this._ToastrService.success('Producto creado satisfactoriamente!');
-        this._Router.navigate([`/admin/create-article/${createItem._id}`]);
-      }
     }
+  };
+
+  openTagDialog = async () => {
+    this._ItemsService.itemName = this.name.value;
+    this._ItemsService.itemDesc = this.description.value;
+    this._ItemsService.itemPrice = this.price.value;
+    this._ItemsService.itemUrls = this.selectedImages as string[];
+    const userTags = await this._TagsService.tagsByUser({
+      options: {
+        limit: -1,
+      },
+      findBy: {
+        entity: 'item',
+      },
+    });
+
+    const itemTags = (
+      await this._TagsService.tags({
+        options: {
+          limit: -1,
+        },
+        findBy: {
+          id: {
+            __in: this.item.tags,
+          },
+          entity: 'item',
+        },
+      })
+    ).tags;
+
+    this._DialogService.open(TagAsignationComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        tags: userTags,
+        //orderId: this.order._id,
+        colorTheme: 'admin',
+        entity: 'item',
+        entityId: this.item._id,
+        redirectToArticleParams: true,
+        outputAllSelectedTags: true,
+        activeTags:
+          itemTags && Array.isArray(itemTags)
+            ? itemTags.map((tag) => tag._id)
+            : null,
+        tagAction: async ({ selectedTags }) => {
+          this.selectedTags = selectedTags;
+
+          try {
+            const response = await this._ItemsService.updateItem(
+              {
+                tags: this.selectedTags,
+              },
+              this.item._id
+            );
+
+            if (response) {
+              this.item.tags = this.selectedTags;
+            }
+          } catch (error) {
+            this._ToastrService.error('Error al asignar tags', null, {
+              timeOut: 1000,
+            });
+          }
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   };
 
   dotsCallback = () => {
@@ -258,6 +320,23 @@ export class ArticleParamsComponent implements OnInit {
     });
   }
 
+  previewItem = () => {
+    this._ItemsService.itemName = this.name.value;
+    this._ItemsService.itemDesc = this.description.value;
+    this._ItemsService.itemPrice = this.price.value;
+    this._ItemsService.itemUrls = this.selectedImages as string[];
+    this._Router.navigate(
+      [
+        `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
+      ],
+      {
+        queryParams: {
+          mode: 'preview',
+        },
+      }
+    );
+  };
+
   obtainLasts() {
     this._Route.params.subscribe(async (params) => {
       const saleflowItems = this._SaleflowService.saleflowData.items.map(
@@ -289,143 +368,26 @@ export class ArticleParamsComponent implements OnInit {
     else this.models[0] = 'Modelo sin nombre';
   }
 
-  async toSave() {
-    if (this.steps === 'price') {
-      this.changeStep(1);
-      return;
-    }
-    if (this.steps === 'images') {
-      this.blockSubmitButton = true;
-      const itemInput = {
-        name: this.name.value || null,
-        description: this.description.value || null,
-        pricing: this.price.value,
-        images: this._ItemsService.itemImages,
-        merchant: this._MerchantsService.merchantData?._id,
-        content: [],
-        currencies: [],
-        hasExtraPrice: false,
-        purchaseLocations: [],
-        showImages: this._ItemsService.itemImages.length > 0,
-      };
-      this._ItemsService.itemPrice = null;
-      this._ItemsService.itemName = null;
-      if (this.item) {
-        delete itemInput.images;
-        delete itemInput.merchant;
-        const { updateItem: updatedItem } = await this._ItemsService.updateItem(
-          itemInput,
-          this.item._id
-        );
-        if (this._ItemsService.changedImages) {
-          await this._ItemsService.deleteImageItem(
-            this.item.images,
-            updatedItem._id
-          );
-          await this._ItemsService.addImageItem(
-            this._ItemsService.itemImages,
-            updatedItem._id
-          );
-          this._ItemsService.itemImages = [];
-          this._ItemsService.changedImages = false;
-        }
-
-        this._ItemsService.removeTemporalItem();
-        this._Router.navigate([`/admin/merchant-items`]);
-        return;
-      }
-
-      if (this._MerchantsService.merchantData) {
-        const { createItem } = await this._ItemsService.createItem(itemInput);
-        await this._SaleflowService.addItemToSaleFlow(
-          {
-            item: createItem._id,
-          },
-          this._SaleflowService.saleflowData._id
-        );
-
-        const storedTemplateData = localStorage.getItem(
-          'entity-template-creation-data'
-        );
-        const entityTemplateData = storedTemplateData
-          ? JSON.parse(storedTemplateData)
-          : null;
-
-        if (entityTemplateData) {
-          try {
-            const { entity, entityTemplateId } = entityTemplateData;
-
-            const result =
-              await this._EntityTemplateService.entityTemplateSetData(
-                entityTemplateId,
-                {
-                  entity: 'item',
-                  reference: createItem._id,
-                }
-              );
-
-            localStorage.removeItem('entity-template-creation-data');
-          } catch (error) {
-            this._ToastrService.error('Ocurrió un error al crear el simbolo');
-            return;
-          }
-        }
-
-        this._ToastrService.success('Producto creado satisfactoriamente!');
-        this._Router.navigate([`/admin/create-article/${createItem._id}`]);
-      } else {
-        const { createPreItem } = await this._ItemsService.createPreItem(
-          itemInput
-        );
-
-        if ('_id' in createPreItem) {
-          const storedTemplateData = localStorage.getItem(
-            'entity-template-creation-data'
-          );
-          const entityTemplateData = storedTemplateData
-            ? JSON.parse(storedTemplateData)
-            : null;
-
-          if (entityTemplateData) {
-            try {
-              const { entity, entityTemplateId } = entityTemplateData;
-
-              const result =
-                await this._EntityTemplateService.entityTemplateSetData(
-                  entityTemplateId,
-                  {
-                    entity: 'item',
-                    reference: createPreItem?._id,
-                  }
-                );
-
-              localStorage.removeItem('entity-template-creation-data');
-            } catch (error) {
-              this._ToastrService.error('Ocurrió un error al crear el simbolo');
-            }
-          }
-
-          localStorage.setItem('flowRoute', this._Router.url);
-          this._Router.navigate([`/auth/login`], {
-            queryParams: {
-              itemId: createPreItem?._id,
-              hasParams: '',
-              action: 'precreateitem',
-            },
-          });
-        }
-      }
-    }
-  }
-
   goBack() {
     this.steps = 'price';
   }
 
-  deleteImage(index: number) {
+  async deleteImage(index: number) {
     this.selectedImages.splice(index, 1);
     this._ItemsService.itemImages.splice(index, 1);
     this._ItemsService.changedImages = true;
+    if (this.item.images.length === 1) {
+      await this._ItemsService.updateItem(
+        {
+          showImages: false,
+        },
+        this.item._id
+      );
+    }
+    await this._ItemsService.deleteImageItem(
+      [this.item.images[index]],
+      this.item._id
+    );
   }
 
   changeModel(index: number) {
@@ -542,6 +504,165 @@ export class ArticleParamsComponent implements OnInit {
         closeEvent: () => {},
         shareBtn: false,
         title: '',
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  toggleActivateItem = async (item: Item): Promise<string> => {
+    try {
+      this._ItemsService.updateItem(
+        {
+          status:
+            item.status === 'disabled'
+              ? 'active'
+              : item.status === 'active'
+              ? 'featured'
+              : 'disabled',
+        },
+        item._id
+      );
+
+      item.status =
+        item.status === 'disabled'
+          ? 'active'
+          : item.status === 'active'
+          ? 'featured'
+          : 'disabled';
+
+      return item.status;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  openOptionsForThisArticle() {
+    const toggleStatus = () => {
+      return new Promise((resolve, reject) => {
+        this.toggleActivateItem(this.item).then((newStatus) => {
+          newStatus === 'disabled'
+            ? (number = 2)
+            : newStatus === 'active'
+            ? (number = 0)
+            : (number = 1);
+
+          resolve(true);
+        });
+      });
+    };
+
+    let number: number =
+      this.item.status === 'disabled'
+        ? 2
+        : this.item.status === 'active'
+        ? 0
+        : 1;
+    const statuses = [
+      {
+        text: 'VISIBLE (NO DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'VISIBLE (Y DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'INVISIBLE',
+        backgroundColor: '#B17608',
+        color: 'white',
+        asyncCallback: toggleStatus,
+      },
+    ];
+
+    const list: Array<SettingsDialogButton> = [
+      {
+        text: 'Crea un nuevo artículo',
+        callback: async () => {
+          this._Router.navigate([`admin/create-article`]);
+        },
+      },
+      {
+        text: 'Archiva este artículo',
+        callback: async () => {
+          const response = await this._ItemsService.updateItem(
+            {
+              status: 'archived',
+            },
+            this.item._id
+          );
+
+          this._ToastrService.info('¡Item archivado exitosamente!');
+
+          this._Router.navigate([`admin/entity-detail-metrics`]);
+        },
+      },
+      {
+        text: 'Elimina este artículo',
+        callback: () => {
+          this.dialog.open(SingleActionDialogComponent, {
+            type: 'fullscreen-translucent',
+            props: {
+              title: 'Elimina este artículo',
+              buttonText: 'Si, borrar',
+              mainButton: async () => {
+                const removeItemFromSaleFlow =
+                  await this._SaleflowService.removeItemFromSaleFlow(
+                    this.item._id,
+                    this._SaleflowService.saleflowData._id
+                  );
+
+                if (!removeItemFromSaleFlow) return;
+                const deleteItem = await this._ItemsService.deleteItem(
+                  this.item._id
+                );
+                if (!deleteItem) return;
+                else {
+                  this._ToastrService.info('¡Item eliminado exitosamente!');
+
+                  this._SaleflowService.saleflowData =
+                    await this._SaleflowService.saleflowDefault(
+                      this._MerchantsService.merchantData._id
+                    );
+
+                  this._Router.navigate(['/admin/entity-detail-metrics']);
+                }
+              },
+              btnBackgroundColor: '#272727',
+              btnMaxWidth: '133px',
+              btnPadding: '7px 2px',
+            },
+            customClass: 'app-dialog',
+            flags: ['no-header'],
+          });
+        },
+      },
+      {
+        text: 'Adiciona un tag a este artículo',
+        callback: async () => this.openTagDialog(),
+      },
+    ];
+
+    list.forEach((option) => (option.styles = { color: '#383838' }));
+
+    this.dialog.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        statuses,
+        indexValue: number,
+        optionsList: list,
+        hideNavigation: true,
+        hideCloseBtn: true,
+        closeEvent: () => {},
+        shareBtn: false,
+        title: this.item.name,
+        titleStyles: {
+          fontFamily: 'SfProRegular',
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

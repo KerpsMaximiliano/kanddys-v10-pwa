@@ -1,0 +1,48 @@
+<div class="cropper">
+  <div class="cropper__imageContainer">
+    <button
+      class="fixed-button left"
+      style="padding: 12px 16px"
+      (click)="exportCanvas()"
+    >
+      <img
+        class="icon green"
+        [src]="env + '/arrow-double-up.svg'"
+        alt="Back"
+        height="13"
+        width="16"
+      />
+      Guardar
+    </button>
+    <div class="cropper__image">
+      <img #image [src]="imgUrl" (load)="imageLoaded($event)" />
+    </div>
+    <div class="cropper__zoomSlider">
+      <div class="text-icons-container">
+        <button (click)="setZoom('in')" class="action_buttons">
+          <i class="fa fa-search-plus" aria-hidden="true"></i>
+        </button>
+        <button (click)="setZoom('out')" class="action_buttons">
+          <i class="fa fa-search-minus" aria-hidden="true"></i>
+        </button>
+        <button (click)="flipCanvas('horizontal')" class="action_buttons">
+          <i class="fa fa-arrows-h" aria-hidden="true"></i>
+        </button>
+        <button (click)="flipCanvas('vertical')" class="action_buttons">
+          <i class="fa fa-arrows-v" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="range-slider">
+        <img class="icon" [src]="env + '/crop-rotate.svg'" alt="" srcset="" />
+        <input
+          type="range"
+          min="-180"
+          max="180"
+          [step]="1"
+          [value]="0"
+          (input)="updateRotation($event)"
+        />
+      </div>
+    </div>
+  </div>
+</div>

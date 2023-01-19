@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class TitleIconHeaderComponent implements OnInit {
   env: string = environment.assetsUrl;
   @Input() title: string;
+  @Input() editing: boolean = true;
   @Output() iconClicked = new EventEmitter();
 
   constructor() {}

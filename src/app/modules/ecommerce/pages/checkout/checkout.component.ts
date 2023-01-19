@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -1500,7 +1501,8 @@ export class CheckoutComponent implements OnInit {
     private authService: AuthService,
     private dialogFlowService: DialogFlowService,
     private entityTemplateService: EntityTemplateService,
-    private gpt3Service: Gpt3Service
+    private gpt3Service: Gpt3Service,
+    private toastr: ToastrService,
   ) {}
 
   async ngOnInit(): Promise<void> {

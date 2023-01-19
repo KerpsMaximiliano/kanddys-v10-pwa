@@ -6,6 +6,9 @@ export class EntityTemplate extends Model<EntityTemplate> {
   status: string;
   dateId: string;
   user: string;
+  recipients: any;
+  hasPassword: boolean;
+  access: string;
 }
 
 export class EntityTemplateInput {
@@ -14,6 +17,7 @@ export class EntityTemplateInput {
   status?: string;
   dateId?: string;
   user?: string;
+  recipients?: any;
 }
 
 export class RecipientsInput {

@@ -1,0 +1,11 @@
+<div class="page">
+  <div class="icon">
+    <img [src]="env + '/' + icon" alt="" />
+  </div>
+
+  <div class="message">{{ label }}</div>
+
+  <button (click)="success ? redirectToOrderInfo() : goBackToPaymentSelection()">
+    {{ success ? "Ir al detalle de la factura" : "Volver a la orden" }}
+  </button>
+</div>

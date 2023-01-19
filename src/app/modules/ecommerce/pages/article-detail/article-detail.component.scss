@@ -1,19 +1,23 @@
 .fixed-top-button {
-  width: 38px;
-  height: 36px;
+  padding: 6px;
   position: absolute;
   top: 38px;
-  left: 3.12%;
-  background-color: transparent;
+  left: 16px;
   border: none;
   border-radius: 50%;
-  padding: 3px;
   cursor: pointer;
-  z-index: 3;
+  z-index: 2;
+  background-color: #272727;
+  box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 16%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   img {
-    width: 23px;
-    height: 23px;
+    width: 28px;
+    height: 28px;
+    filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%) hue-rotate(62deg) brightness(99%)
+      contrast(91%);
   }
 }
 
@@ -35,17 +39,17 @@
     margin-bottom: 5px;
 
     .top-text {
-      width: 70%;
       font-family: "SfProBold";
       font-size: 1.313rem;
       color: #ffffff;
+      margin: 0;
     }
 
     .icons-flex {
-      width: 30%;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 16px;
 
       .round-button {
         width: fit-content;
@@ -54,6 +58,7 @@
         background-color: transparent;
         border: none;
         border-radius: 50%;
+        cursor: pointer;
 
         img {
           width: 28px;
@@ -66,19 +71,19 @@
 
   .bottom-text {
     max-width: 100%;
-    max-height: 40px;
     font-family: "SfProRegular";
-    font-size: 0.985rem;
     color: #ffffff;
     white-space: break-spaces;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-size: 1rem;
     margin: 0;
+    cursor: pointer;
   }
 }
 
 .slide {
-  background: #e9e371;
+  background: #2e2e2e;
   width: 100%;
   height: 100vh;
   display: block;
@@ -177,17 +182,17 @@
 .container {
   // padding-top: 46px;
   position: relative;
-  height: calc(100vh - (179px));
-  background-color: #e9e371;
+  height: calc(100vh - (140px));
+  background-color: #2e2e2e;
 
   .entity-image {
-    height: calc(100vh - (179px));
+    height: calc(100vh - (49px));
     width: 100%;
     background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/noimage.png);
-    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: #e9e371;
+    background-color: #2e2e2e;
+    background-size: contain;
   }
 
   video {
@@ -381,13 +386,6 @@ audio {
   left: 16px;
 }
 
-.yellow-square {
-  background: #e9e371;
-  width: 90%;
-  height: 81px;
-  border-radius: 4px;
-}
-
 .heart-icon {
   padding-left: 10px;
 }
@@ -396,7 +394,7 @@ audio {
 .bottom-user-actions-panel {
   position: fixed;
   z-index: 1;
-  bottom: 86px;
+  bottom: 133px;
   left: 0;
   right: 0;
   max-width: 500px;
@@ -410,7 +408,7 @@ audio {
 
   .inner-wrapper-top {
     background-color: #000;
-    min-height: 133px;
+    padding: 24px;
     position: relative;
     height: 100%;
     width: 100%;
@@ -581,10 +579,6 @@ audio {
       width: 20px;
     }
   }
-
-  // .empty-space {
-  // flex-basis: 11.48%;
-  // }
 
   .cart-button {
     position: absolute;

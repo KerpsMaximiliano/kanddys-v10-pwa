@@ -1,0 +1,63 @@
+<div class="page-container">
+    <app-helper-headerv2
+        [basicRightButtonStyles]="{ backgroundColor: '#272727', borderRadius: '12px', padding: '0.25rem 1rem' }"
+        [bgColor]="'#ffffff'"
+        [icon]="{
+            callback: goBack2,
+            filter: 'invert(100%) sepia(25%) saturate(50%) hue-rotate(10deg) brightness(100%) contrast(100%)',
+            height: 21,
+            src: '/arrow-double-up.svg',
+            width: 16
+        }"
+        [mainText]="{ color: '#000000', fontFamily: 'SfProBold', fontSize: '21px', text: 'Tag ID' }"
+        [mode]="'basic'"
+        [returnAble]="false"
+        [rightText]="{ color: '#82F18D', fontFamily: 'SfProMedium', fontSize: '13px', pointer: true, text: '150 tagged' }">
+    </app-helper-headerv2>
+
+    <div class="options-container" #elemt>
+        <button
+            class="option"
+            *ngFor="let item of options; index as i"
+            [ngClass]="{ active: active === i }"
+            (click)="changeStep(i)">
+                {{ item }} 
+        </button>
+    </div>
+
+    <form [formGroup]="createTagForm">
+        <div class="inputs-container">
+            <div class="image-input">
+                <label class="input-label"> Imagen </label>
+        
+                <div class="input-container">
+                    <div [ngStyle]="{ height: '225px' }">
+                        <app-general-item
+                            [iconsRowsStyles]="{ display: 'none' }"
+                            [mainColor]="'#FFFDFD'"
+                            [showVisitorCounter]="false"
+                            [stylePreset]="['small-card']"
+                            [textColor]="'#000000'"
+                            [titleStyles]="{ color: '#000000', fontSize: '15px', textAlign: 'center', width: '100%' }"
+                            [tagsStyles]="{ display: 'none' }">
+                    </app-general-item>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="name-input">
+                <label class="input-label"> Nombre </label>
+                <div class="input-container end" [style.background-color]="'#E9E9E9'">
+                    <textarea class="textarea" name="note" id="note" rows="3" placeholder="Escribe">Nombre de tag en tres líneas dsadsadsada</textarea>
+                    <!-- <small class="small">40 max</small> -->
+                </div>
+            </div>
+        </div>
+    
+        <div class="textarea-container">
+            <label for="note" class="input-label"> Nota </label>
+    
+            <textarea class="textarea" name="note" id="note" class="textarea" placeholder="Escribe"></textarea>
+        </div>
+    </form>
+</div>

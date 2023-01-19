@@ -132,7 +132,6 @@ export class GeneralItemComponent implements OnInit {
                 text = 'Articulos';
                 break;
             }
-
             this.topInnerButtons = [];
             this.topInnerButtons.push({
               text,

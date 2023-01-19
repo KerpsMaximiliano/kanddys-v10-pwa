@@ -1,0 +1,16 @@
+<div class="header">
+  <div class="arrow-container">
+    <img [src]="env + '/arrow-double-up.svg'" alt=""
+      (click)="goBack()"
+    >
+  </div>
+  <p></p>
+</div>
+<div class="container">
+  <p class="description">{{ description }}</p>
+  <ul class="numerations">
+    <li *ngFor="let item of numeration" class="numeration">
+      {{ item.value }}
+    </li>
+  </ul>
+</div>

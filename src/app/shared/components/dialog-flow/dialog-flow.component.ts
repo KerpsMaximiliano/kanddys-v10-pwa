@@ -86,6 +86,10 @@ export class DialogFlowComponent implements OnInit {
       if (!this.dialogs[index].inputs.containerStyles)
         this.dialogs[index].inputs.containerStyles = {};
 
+      if (!this.dialogs[index].inputs) this.dialogs[index].inputs = {};
+      if (!this.dialogs[index].inputs.containerStyles)
+        this.dialogs[index].inputs.containerStyles = {};
+
       if (index !== this.currentDialogIndex) {
         //this.dialogs[index].inputs.containerStyles.opacity = '0.5';
       } else {

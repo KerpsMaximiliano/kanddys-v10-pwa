@@ -20,57 +20,19 @@
         src: '/bookmark-plus.svg',
         color: 'brightness(0)',
         margin: '1px',
-        callback: iconCallback
+        callback: openTagDialog
       }
     ]"
     [dots]="{
       active: true,
       color: '#272727'
     }"
+    (dotEvent)="openOptionsForThisArticle()"
+    (agnosticAction)="previewItem()"
     [returnAble]="false"
     [bgColor]="'#FFFFFF'"
     (return)="goBack()"
   ></app-helper-headerv2>
-
-  <!-- <div class="top-headers" *ngIf="steps !== 'save'">
-    // <div
-      class="second-header"
-      #elemt
-      (mousedown)="startDragging($event, elemt)"
-      (mouseup)="stopDragging()"
-      (mouseleave)="stopDragging()"
-      (mousemove)="moveEvent($event, elemt)"
-    >
-      <ng-container *ngFor="let item of models; index as i">
-        <div
-          class="tab"
-          [ngClass]="{ active: active === i }"
-          (click)="changeModel(i)"
-        >
-          {{ item }}
-        </div>
-      </ng-container>
-    </div> //
-    <div
-      class="second-header"
-      #elemt
-      (mousedown)="startDragging($event, elemt)"
-      (mouseup)="stopDragging()"
-      (mouseleave)="stopDragging()"
-      (mousemove)="moveEvent($event, elemt)"
-    >
-      <ng-container *ngFor="let item of options; index as j">
-        <div
-          class="tab"
-          [ngClass]="{ option: activeStep === j }"
-          (click)="changeStep(j)"
-        >
-          {{ item }}
-        </div>
-      </ng-container>
-    </div>
-  </div> -->
-
   <div class="image-selector">
     <div class="image-area">
       <input
@@ -143,14 +105,6 @@
         <div class="shadow-name"></div>
       </div>
     </div>
-
-    <!-- <app-sticky-button
-        [mode]="!blockSubmitButton ? 'fixed' : 'disabled-fixed'"
-        [text]="'SALVAR EL ARTICULO PARA EMPEZAR A VENDER'"
-        [bgColor]="!blockSubmitButton ? '#2874AD' : '#7B7B7B'"
-        [fontSize]="'1.02rem'"
-        (click)="!blockSubmitButton && toSave()"
-      ></app-sticky-button> -->
   </div>
 
   <div [ngSwitch]="steps" *ngIf="!itemId || (itemId && item)">
@@ -176,138 +130,17 @@
         [fieldStyles]="{
           boxShadow: 'none',
           backgroundColor: 'white',
-          borderRadius: '6px'
+          borderRadius: '6px',
+          padding: '8px 20px'
         }"
         [initialValue]="
           countDecimals(price.value) < 2 ? price.value * 100 : price.value
         "
         (onInputEvent)="handleCurrencyInput($event)"
+        placeholderColor="#7B7B7B"
+        currencyLabel="RD$"
       ></app-currency-input>
     </div>
-    <!--  <p class="subtitle">Precio:</p>
-    <div class="price-form" *ngSwitchCase="'price'">
-      <div class="price-input">
-        <app-currency-input
-          *ngIf="!default"
-          [fieldStyles]="{
-            boxShadow: 'lightgrey 0px 3px 8px inset'
-          }"
-          [initialValue]="
-            countDecimals(price.value) < 2 ? price.value * 100 : price.value
-          "
-          (onInputEvent)="handleCurrencyInput($event)"
-        ></app-currency-input>
-        <app-currency-input
-          *ngIf="default"
-          [fieldStyles]="{
-            boxShadow: 'lightgrey 0px 3px 8px inset'
-          }"
-          [initialValue]="
-            countDecimals(price.value) < 2 ? price.value * 100 : price.value
-          "
-          (onInputEvent)="handleCurrencyInput($event)"
-        ></app-currency-input>
-      </div>
-
-      <p class="subtitle">Funcionalidades (opcional):</p>
-
-      <div
-        [ngClass]="card1 === true ? 'active1' : 'card1'"
-        (click)="card1Clicked()"
-      >
-        <svg
-          class="card-logo"
-          xmlns="http://www.w3.org/2000/svg"
-          width="29.077"
-          height="31.5"
-          viewBox="0 0 29.077 31.5"
-        >
-          <path
-            id="calendar"
-            d="M31.154,4.673H26.308V2.25H23.885V4.673H14.192V2.25H11.769V4.673H6.923A2.43,2.43,0,0,0,4.5,7.1V31.327A2.43,2.43,0,0,0,6.923,33.75H31.154a2.43,2.43,0,0,0,2.423-2.423V7.1A2.43,2.43,0,0,0,31.154,4.673Zm0,26.654H6.923V14.365H31.154Zm0-19.385H6.923V7.1h4.846V9.519h2.423V7.1h9.692V9.519h2.423V7.1h4.846Z"
-            transform="translate(-4.5 -2.25)"
-            fill="#272727"
-          />
-        </svg>
-        <p class="card-text">Citas</p>
-      </div>
-
-      <div
-        [ngClass]="card2 === true ? 'active2' : 'card2'"
-        (click)="card2Clicked()"
-      >
-        <svg
-          class="card-logo"
-          xmlns="http://www.w3.org/2000/svg"
-          width="32.832"
-          height="31.096"
-          viewBox="0 0 32.832 31.096"
-        >
-          <g id="form-line" transform="translate(-0.001 -0.001)">
-            <path
-              id="Path_28898"
-              data-name="Path 28898"
-              d="M21.821,19.17l-.6.608A.77.77,0,0,0,21.821,19.17Z"
-              transform="translate(-2.14 -2.298)"
-              fill="#272727"
-            />
-            <g
-              id="Group_72846"
-              data-name="Group 72846"
-              transform="translate(0.001 0.001)"
-            >
-              <path
-                id="Path_28895"
-                data-name="Path 28895"
-                d="M23.343,10.621H7.156c-.639,0-1.156-.345-1.156-.77V6.77C6,6.345,6.518,6,7.156,6H23.343c.639,0,1.156.345,1.156.77V9.851C24.5,10.277,23.982,10.621,23.343,10.621ZM8.312,9.081H22.187V7.494H8.312Z"
-                transform="translate(-0.881 -2.916)"
-                fill="#272727"
-              />
-              <path
-                id="Path_28896"
-                data-name="Path 28896"
-                d="M23.343,14.08H7.156c-.639,0-1.156.345-1.156.77V17.87c0,.425.518.77,1.156.77H20.291L24.5,15.79v-.94c0-.425-.518-.77-1.156-.77ZM22.187,17.1H8.312v-1.54H22.187Z"
-                transform="translate(-0.881 -1.696)"
-                fill="#272727"
-              />
-              <path
-                id="Path_28897"
-                data-name="Path 28897"
-                d="M12.079,31.21V31.15l.356-1.376H4.225V3.98H26.473V14.125L28.7,12.255V2.99A1.057,1.057,0,0,0,27.586,2H3.112A1.057,1.057,0,0,0,2,2.99V30.7a1.057,1.057,0,0,0,1.112.99h8.9A3.048,3.048,0,0,1,12.079,31.21Z"
-                transform="translate(-2 -2)"
-                fill="#272727"
-              />
-              <path
-                id="Path_28899"
-                data-name="Path 28899"
-                d="M6,25.8a.77.77,0,0,0,.77.77H10.5l.231-1,.1-.424v-.039H7.54V23.54h4.883L13.964,22H6.77a.77.77,0,0,0-.77.77Z"
-                transform="translate(-0.881 -1.496)"
-                fill="#272727"
-              />
-              <path
-                id="Path_28900"
-                data-name="Path 28900"
-                d="M28.775,15.787l-2.6-2.6a1.24,1.24,0,0,0-1.756,0L13.863,23.813l-.87,3.7a1.24,1.24,0,0,0,.97,1.463,1.194,1.194,0,0,0,.239,0,.886.886,0,0,0,.285,0l3.736-.824L28.775,17.582a1.232,1.232,0,0,0,0-1.748ZM17.437,26.755l-2.819.624.686-2.8,7.918-8,2.172,2.172Zm8.827-8.873L24.092,15.71,25.316,14.5,27.5,16.688Z"
-                transform="translate(3.693 2.104)"
-                fill="#272727"
-              />
-            </g>
-          </g>
-        </svg>
-
-        <p class="card-text">Preguntas</p>
-      </div>
-
-      <div class="text-wrapper">
-        <p class="bottom-text">
-          Las ventas son ilimitadas. El costo mensual para mantener la data es
-          de US$0.97 por artículo.
-        </p>
-      </div>
-
-      <button class="btn">PREVIEW</button>
-    </div> -->
-
     <div class="save" *NgSwitchCase="'save'">
       <label for="Save input" class="save-input"
         >Escribe tu número del WhatsApp que guardará el artículo y donde serás

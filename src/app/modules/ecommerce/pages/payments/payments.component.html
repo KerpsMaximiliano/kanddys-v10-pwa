@@ -1,30 +1,65 @@
 <div class="container">
-  <header
-    class="header"
-    [ngStyle]="{ backgroundColor: headerService.colorTheme }"
-  >
-    <div style="display: flex; align-items: center">
-      <button (click)="onBackClick()" class="back-btn"><i class="fas fa-chevron-left"></i></button>
-      <h1 class="method">Métodos de Pagos</h1>
-    </div>
-
-    <div class="right-area">
-      <span class="header-text" *ngIf="order">{{
-        currentUser?.name || currentUser?.phone || currentUser?.email
-      }}</span>
-      <img
-        [src]="env + '/person.svg'"
-        alt="Icono de una persona"
-        *ngIf="order?.user"
-      />
-    </div>
+  <header class="header" [style.backgroundColor]="headerService.colorTheme">
+    <button (click)="onBackClick()" class="back-btn">
+      <img [src]="env + '/double-arrow-up.png'" alt="open info" />
+    </button>
+    <h1 class="method">Métodos de Pagos</h1>
   </header>
 
   <div class="payment-method" *ngIf="status === 'complete'">
-    <div class="total-paid" *ngIf="order">
-      <h1 class="paid">${{ paymentAmount | number: "1.2-2" }}</h1>
-      <p class="total">Total Facturado en DOP</p>
+    <!--
+      <div class="order-amount" *ngIf="order">
+        <div class="amount-wrapper">
+          <h4 class="title">Subtotal</h4>
+          <h3 class="price">${{ paymentAmount | number: "1.2-2" }}</h3>
+        </div>
+        <div class="amount-wrapper">
+          <h4 class="title">A saldar</h4>
+          <h3 class="price">${{ paymentAmount | number: "1.2-2" }}</h3>
+        </div>
+      </div>
+    -->
+
+    <div class="amount-list">
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Subtotal a pagar</h3>
+        <h2 class="amount">RD $ {{ paymentAmount | number : "1.2-2" }}</h2>
+      </div>
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Costo de envio</h3>
+        <h2 class="amount">RD $ 0</h2>
+      </div>
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Descuento</h3>
+        <h2 class="amount">RD $ 0</h2>
+      </div>
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Impuestos</h3>
+        <h2 class="amount">RD $ 0</h2>
+      </div>
+      <div class="amount-flex-wrapper">
+        <h3 class="label">Total a pagar</h3>
+        <h2 class="amount">RD $ {{ paymentAmount | number : "1.2-2" }}</h2>
+      </div>
+
+      <div class="refunds-policies" *ngIf="viewMerchantForRefund">
+        <div class="labels">
+          <div class="accept-terms">Acepto las políticas de reembolso</div>
+          <div class="title" (click)="goToRefundPolicies()">
+            Políticas de reembolsos
+          </div>
+        </div>
+
+        <div
+          class="checkbox"
+          [ngClass]="{
+            selected: acceptedRefundPolicies
+          }"
+          (click)="markOrUnmarkCheckbox()"
+        ></div>
+      </div>
     </div>
+
     <div class="amount-input" *ngIf="!order">
       <span class="payment-selection"> Monto del depósito </span>
       <div style="height: 64px">
@@ -33,7 +68,8 @@
         ></app-currency-input>
       </div>
     </div>
-    <span class="payment-selection"> Selecciona el que te convenga: </span>
+    <span class="payment-selection"> Como prefieres pagar?</span>
+
     <ng-container *ngIf="!selectedBank">
       <app-answer-selector
         [values]="{
@@ -43,36 +79,89 @@
         [activeOption]="selectedOption"
         [indicator]="true"
         (onSelector)="selectBank($event)"
+        [blockIndexes]="
+          acceptedRefundPolicies || !viewMerchantForRefund
+            ? []
+            : fillIndexesUpTo(banks.length)
+        "
         [containerStyles]="{
-          margin: '0px'
+          margin: '0px',
+          marginTop: '19px'
         }"
       ></app-answer-selector>
+
+      <app-answer-selector
+        [complexOptions]="onlinePaymentsOptions"
+        [hasComplexOptionsLayout]="true"
+        [indicator]="true"
+        (onSelector)="selectOnlinePayment($event)"
+        [blockIndexes]="
+          acceptedRefundPolicies || !viewMerchantForRefund
+            ? []
+            : fillIndexesUpTo(1)
+        "
+        [containerStyles]="{
+          margin: '-20px 0px 0px 0px'
+        }"
+      >
+      </app-answer-selector>
     </ng-container>
+
     <ng-container *ngIf="selectedBank">
       <div class="option-content">
-        <p class="option-title">Transferencia Bancaria</p>
-        <ul>
-          <li>Tipo de cuenta: {{ selectedBank.typeAccount }}</li>
-          <li>{{ selectedBank.ownerAccount }}</li>
-          <li>Cuenta: {{ selectedBank.account }}</li>
-          <li *ngIf="selectedBank.routingNumber">
-            RNC: {{ selectedBank.routingNumber }}
-          </li>
-        </ul>
-        <p class="option-footer">{{ selectedBank.bankName }}</p>
-        <button class="option-remove" (click)="removeBank()">X</button>
+        <div class="option-icon-wrapper">
+          <svg
+            class="option-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 512"
+          >
+            <!--! Font Awesome Pro 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+            <path
+              d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64H337.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64zm64 64H96v64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64h64V320zM320 352c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96s43 96 96 96z"
+            />
+          </svg>
+        </div>
+        <div class="texts">
+          <p class="option-title">Transferencia Bancaria</p>
+          <ul>
+            <li>Tipo de cuenta: {{ selectedBank.typeAccount }}</li>
+            <li>{{ selectedBank.ownerAccount }}</li>
+            <li>Cuenta: {{ selectedBank.account }}</li>
+            <li *ngIf="selectedBank.routingNumber">
+              RNC: {{ selectedBank.routingNumber }}
+            </li>
+          </ul>
+          <p class="option-footer">{{ selectedBank.bankName }}</p>
+          <button class="option-remove" (click)="removeBank()">X</button>
+        </div>
       </div>
     </ng-container>
   </div>
-  <div class="image-area" *ngIf="selectedBank">
-    <label for="Image" class="image-label">Comprobante de Pago</label>
-    <app-image-input
-      style="margin-left: 5px"
-      [allowedTypes]="['png', 'jpg', 'jpeg']"
-      [expandImage]="true"
-      (onFileInput)="onFileInput($event)"
-    ></app-image-input>
-  </div>
+
+  <ng-container *ngIf="selectedBank">
+    <div class="separator"></div>
+
+    <div class="image-area">
+      <label for="Image" class="image-label">Comprobante de Pago</label>
+      <app-image-input
+        style="margin-left: 5px"
+        [allowedTypes]="['png', 'jpg', 'jpeg']"
+        [expandImage]="true"
+        (onFileInput)="onFileInput($event)"
+        [containerStyles]="{
+          width: '100%'
+        }"
+        [fileStyles]="{
+          width: '100%',
+          height: '150px',
+          backgroundColor: 'white !important',
+          boxShadow: 'rgb(0 0 0 / 18%) 1px 6px 8px 0px inset',
+          border: 'none'
+        }"
+      ></app-image-input>
+    </div>
+  </ng-container>
+
   <app-sticky-button
     *ngIf="selectedBank && (order || (!order && depositAmount > 0))"
     (click)="!disableButton && image && submitPayment()"
@@ -93,4 +182,83 @@
       color: '#FFFFFF'
     }"
   ></app-sticky-button>
+
+  <form
+    action="https://pruebas.azul.com.do/paymentpage/Default.aspx"
+    method="post"
+    id="azulForm"
+  >
+    <input type="hidden" id="MerchantID" name="MerchantID" value="...." />
+    <input
+      type="hidden"
+      id="MerchantName"
+      name="MerchantName"
+      value="D'liciantus"
+    />
+    <input
+      type="hidden"
+      id="MerchantType"
+      name="MerchantType"
+      value="Importadores y productores de flores y follajes"
+    />
+    <input type="hidden" id="CurrencyCode" name="CurrencyCode" value="$" />
+    <input type="hidden" id="OrderNumber" name="OrderNumber" value="2" />
+    <input type="hidden" id="Amount" name="Amount" value="9999" />
+    <input type="hidden" id="ITBIS" name="ITBIS" value="1800" />
+    <input
+      type="hidden"
+      id="ApprovedUrl"
+      name="ApprovedUrl"
+      value="http://localhost:5555/success.html"
+    />
+    <input
+      type="hidden"
+      id="DeclinedUrl"
+      name="DeclinedUrl"
+      value="http://localhost:5555/declined.html"
+    />
+    <input
+      type="hidden"
+      id="CancelUrl"
+      name="CancelUrl"
+      value="https://youtube.com"
+    />
+    <input
+      type="hidden"
+      id="UseCustomField1"
+      name="UseCustomField1"
+      value="1"
+    />
+    <input
+      type="hidden"
+      id="CustomField1Label"
+      name="CustomField1Label"
+      value="Custom1"
+    />
+    <input
+      type="hidden"
+      id="CustomField1Value"
+      name="CustomField1Value"
+      value="Value1"
+    />
+    <input
+      type="hidden"
+      id="UseCustomField2"
+      name="UseCustomField2"
+      value="1"
+    />
+    <input
+      type="hidden"
+      id="CustomField2Label"
+      name="CustomField2Label"
+      value="Custom2"
+    />
+    <input
+      type="hidden"
+      id="CustomField2Value"
+      name="CustomField2Value"
+      value="Value2"
+    />
+    <input type="hidden" id="AuthHash" name="AuthHash" value="......." />
+  </form>
 </div>

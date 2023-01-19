@@ -1,0 +1,191 @@
+.dialog-container {
+   .main-container {
+      height: 90%;
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      background-color: #272727;
+      padding: 24px;
+      border-top-left-radius: 31px;
+      border-top-right-radius: 31px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .title {
+         font-family: "SfProBold";
+         font-size: 1.1875rem;
+         font-weight: 500;
+         color: #ffffff;
+         margin: 35px 0 20px;
+         text-align: center;
+      }
+
+      .sections-container {
+         width: 100%;
+         max-height: 71vh;
+         overflow: scroll;
+
+         .benefits {
+            display: flex;
+            flex-direction: column;
+
+            .benefits-title {
+               font-family: "SfProBold";
+               font-size: 1.4375rem;
+               font-weight: 500;
+               color: #ffffff;
+               margin: 0 0 15px;
+            }
+
+            .benefits-list {
+               display: flex;
+               flex-direction: column;
+               margin-bottom: 20px;
+
+               .list-element {
+                  display: flex;
+                  margin-bottom: 24px;
+
+                  .li-image {
+                     margin-right: 15px;
+                     filter: brightness(5);
+                  }
+
+                  .li-text {
+                     font-family: "SfProRegular";
+                     font-size: 1.063rem;
+                     font-weight: 500;
+                     color: #ffffff;
+                     margin: 0;
+                  }
+
+                  &:last-child {
+                     margin: 0 !important;
+                  }
+               }
+            }
+         }
+
+         .howto-list {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+
+            .howto-title {
+               font-family: "SfProBold";
+               font-size: 1.4375rem;
+               font-weight: 500;
+               color: #ffffff;
+               margin: 0 0 15px;
+            }
+
+            .howto-ol {
+               font-family: "SfProRegular";
+               font-size: 1.063rem;
+               font-weight: 500;
+               color: #ffffff;
+               margin: 0 0 10px;
+               padding-left: 20px;
+
+               li {
+                  margin-bottom: 10px;
+               }
+            }
+
+            .howto-span {
+               font-family: "SfProRegular";
+               font-size: 1.063rem;
+               font-weight: 500;
+               color: #ffffff;
+               margin-bottom: 5px;
+            }
+         }
+
+         .symbols-section {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+
+            .symbols-title {
+               font-family: "SfProBold";
+               font-size: 1.4375rem;
+               font-weight: 500;
+               color: #ffffff;
+               margin: 0 0 15px;
+            }
+
+            .symbols-text {
+               font-family: "SfProRegular";
+               font-size: 1.063rem;
+               font-weight: 500;
+               color: #ffffff;
+               margin: 0;
+            }
+         }
+
+         .action-section {
+            display: flex;
+            flex-direction: column;
+
+            .action-title {
+               font-family: "SfProBold";
+               font-size: 1.4375rem;
+               font-weight: 500;
+               color: #ffffff;
+               margin: 0 0 15px;
+            }
+
+            .actions-span {
+               font-family: "SfProRegular";
+               font-size: 1.063rem;
+               font-weight: 500;
+               color: #ffffff;
+               margin: 0;
+            }
+         }
+      }
+
+      .bottom-area {
+         width: 100%;
+         display: flex;
+         align-items: center;
+         justify-content: flex-end;
+         padding: 10px 0;
+
+         .buttons {
+            width: 50%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .arrow {
+               all: unset;
+               width: 0;
+               height: 0;
+               border-left: 11px solid transparent;
+               border-right: 11px solid transparent;
+               border-bottom: 20px solid #82f18d;
+               cursor: pointer;
+            }
+
+            .share {
+               width: 56px;
+               min-height: 56px;
+               display: flex;
+               justify-content: center;
+               align-items: center;
+               background-color: #ffffff;
+               border: none;
+               border-radius: 50%;
+            }
+         }
+      }
+   }
+}
+
+@media only screen and (max-height: 740px) {
+   .sections-container {
+      max-height: 65vh;
+   }
+}

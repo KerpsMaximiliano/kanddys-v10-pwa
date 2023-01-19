@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" [ngStyle]="containerStyles">
   <div class="main-container" *ngIf="!final">
     <div class="headline-subtitle">
       <h1 class="title">{{ title }}</h1>
@@ -38,18 +38,14 @@
           [placeholder]="input.placeholder"
           [ngStyle]="input.inputStyles ? input.inputStyles : null"
           *ngIf="input.type !== 'textarea' && input.type !== 'currency'"
+          (input)="onFormInput(input.type)"
         />
 
-        <div style="height: 48px; margin-bottom: 12px" *ngIf="input.type === 'currency'">
-          <app-currency-input
-            *ngIf="input.type === 'currency'"
-            [fieldStyles]="{
-              padding: '18px 20px 0'
-            }"
-            [innerLabel]="input.innerLabel"
-            (onInputEvent)="onCurrencyInput(input.name, $event)"
-          ></app-currency-input>
-        </div>
+        <app-currency-input
+          *ngIf="input.type === 'currency'"
+          [innerLabel]="input.innerLabel"
+          (onInputEvent)="onFormInput(input.type, input.name, $event)"
+        ></app-currency-input>
 
         <textarea
           class="input-textarea"
@@ -60,6 +56,7 @@
           [cols]="!input.cols ? 30 : input.cols"
           [rows]="!input.rows ? 6 : input.rows"
           *ngIf="input.type === 'textarea'"
+          (input)="onFormInput(input.type)"
         ></textarea>
       </div>
     </form>

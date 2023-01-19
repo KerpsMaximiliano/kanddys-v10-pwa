@@ -56,35 +56,21 @@ a {
   }
 
   .top-area {
-    width: 90%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    margin: 32px auto 0;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 15px 4% 15px 6.33%;
 
     .top-button {
       all: unset;
-      width: 60%;
-      max-width: 245px;
-      position: fixed;
-      top: 73px;
-      padding: 7px 0;
-      font-family: "SfProBold";
-      font-size: 13px;
-      color: #202020;
-      text-align: center;
-      border-radius: 17px;
-      background-color: #ffffff;
+      font-family: "SfProMedium";
+      font-size: 1.063rem;
+      color: #2874ad;
       cursor: pointer;
-      box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
       z-index: 1;
-
-      .plus {
-        font-family: "SfProBold";
-        font-size: 1.063rem;
-        color: #202020;
-      }
     }
 
     .coins-info {
@@ -122,30 +108,30 @@ a {
     background-color: #ffffff;
     padding: 29px 5% 23px;
 
-    .user-name {
+    /*  .user-name {
       font-family: "RobotoRegular";
       font-size: 1.063rem;
       color: #7b7b7b;
       margin: 0 auto 10px;
-    }
+    } */
 
     .success {
       font-family: "RobotoRegular";
       font-size: 1.438rem;
       color: #4f4f4f;
-      margin: 0 auto 35px;
+      margin: 0 auto 18px;
       text-align: center;
     }
 
     .bill-button {
       width: 85%;
-      background-color: #51983a;
-      font-family: "SfProRegular";
+      background-color: #82f18d;
+      font-family: "SfProBold";
       font-size: 1.063rem;
-      color: #ffffff;
+      color: #272727;
       text-align: center;
       border-radius: 19px;
-      margin: 0 auto 12px;
+      margin: 15px auto 0;
       padding: 10px 0;
       text-decoration: none;
     }
@@ -161,9 +147,9 @@ a {
 
   .information {
     width: 100%;
-    margin: 61px 0 40px 0;
+    margin: 27px 0 40px 0;
     padding: 0 24px 32px;
-    padding-bottom: 70px;//para la barra inferior
+    padding-bottom: 70px; //para la barra inferior
     flex: 1;
 
     .top {
@@ -201,7 +187,7 @@ a {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 10px;
+        margin-top: 8px;
 
         .info {
           font-family: "RobotoRegular";
@@ -219,49 +205,44 @@ a {
         background-color: #ffffff;
         padding: 10px 12px;
         border-radius: 6px;
+        margin-bottom: 2px;
 
-        .image-container {
-          display: flex;
-          overflow-x: scroll;
-          column-gap: 8px;
+        .image {
+          position: relative;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          width: 86px;
+          height: 86px;
+          border-radius: 6px;
 
-          .image {
-            position: relative;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            width: 86px;
-            height: 86px;
+          .item-image {
+            min-width: 86px;
+            max-width: 86px;
+            min-height: 74px;
+            max-height: 110px;
+            background-color: #e9e371;
             border-radius: 6px;
+            -webkit-user-drag: none;
+            object-fit: contain;
+          }
 
-            .item-image {
-              min-width: 86px;
-              max-width: 86px;
-              min-height: 74px;
-              max-height: 110px;
-              background-color: #e9e371;
-              border-radius: 6px;
-              -webkit-user-drag: none;
-              object-fit: contain;
-            }
+          &:after {
+            content: "\A";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: all 0.5s;
+            -webkit-transition: all 0.5s;
+            border-radius: 6px;
+          }
 
-            &:after {
-              content: "\A";
-              position: absolute;
-              width: 100%;
-              height: 100%;
-              top: 0;
-              left: 0;
-              background: rgba(0, 0, 0, 0.3);
-              opacity: 0;
-              transition: all 0.5s;
-              -webkit-transition: all 0.5s;
-              border-radius: 6px;
-            }
-
-            &:hover:after {
-              opacity: 1;
-            }
+          &:hover:after {
+            opacity: 1;
           }
         }
 
@@ -431,6 +412,7 @@ a {
 .space-between {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 table {
@@ -469,7 +451,7 @@ table {
     flex-direction: column;
     align-items: center;
     height: 100%;
-   // margin: 15px auto 0;
+    // margin: 15px auto 0;
 
     .images-container {
       width: 100%;
@@ -534,4 +516,17 @@ table {
 
 .right-arrow {
   right: 15px;
+}
+
+.new-order {
+  font-family: "SfProMedium";
+  font-size: 1.063rem;
+  color: #2874ad;
+  text-align: center;
+  margin: 10px auto 0;
+  text-decoration: none;
+
+  &:hover {
+    cursor: pointer;
+  }
 }

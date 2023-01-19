@@ -30,6 +30,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
+import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
 
 SwiperCore.use([Virtual]);
 
@@ -96,11 +97,12 @@ export class ArticleDetailComponent implements OnInit {
   entityTemplate: EntityTemplate = null;
   user: User;
   logged: boolean = false;
+  isProductMine:boolean = false;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
   constructor(
-    private itemsService: ItemsService,
+    private _ItemsService: ItemsService,
     private tagsService: TagsService,
     public headerService: HeaderService,
     private route: ActivatedRoute,
@@ -122,6 +124,7 @@ export class ArticleDetailComponent implements OnInit {
       this.previewMode = true;
     }
     this.route.params.subscribe(async (routeParams) => {
+      await this.verifyIfUserIsLogged();
       const validEntities = ['item', 'post', 'template'];
       const { entity, entityId } = routeParams;
 
@@ -170,14 +173,41 @@ export class ArticleDetailComponent implements OnInit {
       } else {
         this.router.navigate([`others/error-screen/`]);
       }
+    });
+  }
 
-      await this.verifyIfUserIsLogged();
+  openInfoDialog() {
+    const props: any = {
+      symbols: {
+        title: this.itemData.name || 'Sin nombre',
+      },
+    };
+    if (this.itemData.description) {
+      props.symbols.text = this.itemData.description;
+    }
+    if (this.itemData.content?.length) {
+      props.actions = {
+        title: 'Lo incluido:',
+        text: this.itemData.content,
+      };
+    }
+    this.dialogService.open(InfoDialogComponent, {
+      type: 'fullscreen-translucent',
+      props,
+      customClass: 'app-dialog',
+      flags: ['no-header'],
     });
   }
 
   async getItemData() {
     try {
-      this.itemData = await this.itemsService.item(this.entityId);
+      this.itemData = await this._ItemsService.item(this.entityId);
+      if (this.previewMode) {
+        this.itemData.name = this._ItemsService.itemName;
+        this.itemData.description = this._ItemsService.itemDesc;
+        this.itemData.pricing = this._ItemsService.itemPrice;
+        this.itemData.images = [...this._ItemsService.itemUrls];
+      }
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
       this.itemTags?.forEach((tag) => {
@@ -193,7 +223,9 @@ export class ArticleDetailComponent implements OnInit {
   async getPostData() {
     try {
       const { post } = await this.postsService.getPost(this.entityId);
-
+      const { author } = post;
+      const { _id } = author;
+      this.isProductMine = _id === this.user?._id;
       if (post) {
         this.postData = post;
 
@@ -427,7 +459,9 @@ export class ArticleDetailComponent implements OnInit {
 
   async back() {
     if (this.previewMode) {
-      return this.router.navigate([`/admin/entity-detail-metrics`]);
+      return this.router.navigate([
+        `/admin/article-editor/${this.itemData._id}`,
+      ]);
     }
     if (this.selectedParam) {
       this.selectedParam = null;
@@ -463,7 +497,7 @@ export class ArticleDetailComponent implements OnInit {
       return;
     }
 
-    this.itemsService.removeTemporalItem();
+    this._ItemsService.removeTemporalItem();
 
     if (this.headerService.saleflow) {
       this.router.navigate([`../../../store`], {
@@ -545,7 +579,7 @@ export class ArticleDetailComponent implements OnInit {
                   createdEntityTemplate._id,
                   {
                     entity: 'entity-template',
-                    reference: result._id,
+                    reference: result._id
                   }
                 );
 
@@ -593,5 +627,13 @@ export class ArticleDetailComponent implements OnInit {
       return;
     }
     this.logged = true;
+  }
+
+  navigate():void {
+    (async () => {
+      const { _id } = await this.entityTemplateService.entityTemplateByReference(this.entityId,this.entity);
+      const route = ['ecommerce', 'article-privacy', _id];
+      this.router.navigate(route);
+    })()
   }
 }

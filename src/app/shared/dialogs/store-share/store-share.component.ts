@@ -95,7 +95,7 @@ export class StoreShareComponent implements OnInit {
   constructor(
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
-    //private ref: DialogRef,
+    private ref: DialogRef,
     private toastr: ToastrService
   ) {
     // this.onResize(); /* actualiza dinamicamente el tamaño del qr */
@@ -169,7 +169,7 @@ export class StoreShareComponent implements OnInit {
   }
 
   close() {
-    //this.ref.close();
+    this.ref.close();
   }
 
   inputFunc(callback: () => void) {

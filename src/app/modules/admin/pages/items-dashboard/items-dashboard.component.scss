@@ -2,8 +2,8 @@
 
 .dashboard-page {
   height: 100vh;
-  overflow-x: hidden;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .container {
@@ -35,6 +35,7 @@
     -webkit-box-shadow: inset 0px 3px 5px #d3d3d3;
     -moz-box-shadow: inset 0px 3px 5px #d3d3d3;
     -webkit-appearance: none;
+    appearance: none;
   }
 
   button {
@@ -143,6 +144,18 @@
     &.visible,
     &.animationRunning {
       height: 601px;
+      display: block;
+    }
+
+    &.visible2,
+    &.animationRunning {
+      height: 437px;
+      display: block;
+    }
+
+    &.visible3,
+    &.animationRunning {
+      height: 765px;
       display: block;
     }
   }

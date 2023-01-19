@@ -111,7 +111,7 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
   sanitize(image: string | ArrayBuffer, expandImage) {
     return this._DomSanitizer.bypassSecurityTrustStyle(
       `url(${image}) no-repeat center center / ${
-        !expandImage ? 'contain' : 'cover'
+        !expandImage ? 'cover' : 'contain'
       } #fff`
     );
   }

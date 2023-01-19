@@ -70,7 +70,6 @@ export class QrContentComponent implements OnInit {
   emitClick() {
     this.buttonClicked.emit(true);
   }
-
   openImageModal(imageSourceURL: string | ArrayBuffer) {
     this.dialog.open(ImageViewComponent, {
       type: 'fullscreen-translucent',

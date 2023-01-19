@@ -149,7 +149,20 @@
       </form>
     </ng-container>
   </main>
+
+  <h5
+    class="link"
+    *ngIf="viewMerchantForDelivery"
+    [ngStyle]="{
+      paddingBottom:
+        mode === 'normal' && selectedDeliveryIndex != null ? '62px' : '32px'
+    }"
+    (click)="goToShippingPolicies()"
+  >
+    Política de entrega
+  </h5>
 </div>
+
 <app-sticky-button
   *ngIf="mode === 'add' || editingId"
   [mode]="addressForm?.valid && !disableButton ? 'fixed' : 'disabled-fixed'"

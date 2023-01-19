@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { WebformAnswerLayoutOption } from 'src/app/core/types/answer-selector';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
@@ -28,6 +28,7 @@ export interface FooterButton {
 })
 export class ItemListSelectorComponent implements OnInit {
   activeIndex: number;
+  @Input() containerStyles: Record<string, any>;
   @Input() title: string;
   @Input() subTitle: string;
   @Input() cta: {
@@ -43,9 +44,10 @@ export class ItemListSelectorComponent implements OnInit {
   @Input() footerBackgroundStyles: Record<string, string | number>;
   @Input() footerButton: FooterButton;
   @Input() webformOptions: WebformAnswerLayoutOption[];
+  @Output() formOutput = new EventEmitter();
   form: FormGroup;
 
-  constructor(private ref: DialogRef) {}
+  constructor() {} // private ref: DialogRef
 
   ngOnInit(): void {
     if (this.inputs?.length) {
@@ -57,15 +59,20 @@ export class ItemListSelectorComponent implements OnInit {
   }
 
   onCurrencyInput(name: string, value: number) {
-    this.form.get(name).patchValue(value);;
+    this.form.get(name).patchValue(value);
+  }
+
+  onFormInput(type: string, ...values: any) {
+    if (type === 'currency') this.onCurrencyInput(values[0], values[1]);
+    this.formOutput.emit(this.form.value);
   }
 
   selectedOption(e: number) {
-    this.ref.close();
+    // this.ref.close();
   }
 
   close() {
-    this.ref.close(this.form?.value);
+    // this.ref.close(this.form?.value);
   }
 }
 /* [

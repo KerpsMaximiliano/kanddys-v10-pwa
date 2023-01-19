@@ -7,6 +7,22 @@
   resize: none;
   border: none;
   border-radius: 7px;
-  box-shadow: 0px 3px 6px rgba(#000000, 0.16);
   overflow: hidden;
+  background-color: #fff;
+}
+
+.box-shadow {
+  box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+  transition: all 0.2s;
+}
+
+:host ::ng-deep input,
+:host ::ng-deep textarea {
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+:host ::ng-deep textarea {
+  resize: none; 
 }

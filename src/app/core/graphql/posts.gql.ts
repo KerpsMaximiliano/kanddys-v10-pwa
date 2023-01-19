@@ -61,6 +61,19 @@ export const post = gql`
   }
 `;
 
+export const getSimplePost = gql`
+query post($id:ObjectID!){
+  post(id:$id) {
+    _id,
+    targets{
+      name
+      emailOrPhone
+      nickname
+    }
+  } 
+}
+`;
+
 export const slidesByPost = gql`
   query slidesbyPost($postId: ObjectID!) {
     slidesbyPost(postId: $postId) {
