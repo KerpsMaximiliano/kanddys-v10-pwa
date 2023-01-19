@@ -17,6 +17,7 @@ import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 @Component({
   selector: 'app-qr-edit',
@@ -35,6 +36,7 @@ export class QrEditComponent implements OnInit {
   constructor(
     private _ItemsService: ItemsService,
     private _MerchantsService: MerchantsService,
+    private _SaleflowService: SaleFlowService,
     private _PostsService: PostsService,
     private _Router: Router,
     private _Route: ActivatedRoute,
@@ -51,6 +53,14 @@ export class QrEditComponent implements OnInit {
         this._Router.navigate(['../../'], {
           relativeTo: this._Route,
         });
+        return;
+      }
+      if (this._ItemsService.itemUrls.length) {
+        this.gridArray = this._ItemsService.itemUrls.map((image) => ({
+          background: image,
+          _type: 'image/jpg',
+        }));
+        this._ItemsService.itemUrls = [];
         return;
       }
       if (this.item.images.length) {
@@ -304,5 +314,24 @@ export class QrEditComponent implements OnInit {
     this.gridArray.splice(index, 1);
     if (this._PostsService.post?.slides.length)
       this._PostsService.post.slides.splice(index, 1);
+  }
+
+  previewItem() {
+    this._ItemsService.itemName = this.item.name;
+    this._ItemsService.itemDesc = this.item.description;
+    this._ItemsService.itemPrice = this.item.pricing;
+    this._ItemsService.itemUrls = this.gridArray.map(
+      (gridArray) => gridArray.background
+    );
+    this._Router.navigate(
+      [
+        `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
+      ],
+      {
+        queryParams: {
+          mode: 'image-preview',
+        },
+      }
+    );
   }
 }

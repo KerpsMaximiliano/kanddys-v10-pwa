@@ -1,6 +1,7 @@
 <div class="container">
   <app-helper-headerv2
     [mode]="'basic'"
+    [fixed]="true"
     [icon]="{
       src: '/arrow-double-up.svg',
       width: 17,
@@ -38,7 +39,7 @@
     <p>Este artículo solo lo ves tú.</p>
   </div>
 
-  <div class="section">
+  <div class="section" style="padding-top: 52px">
     <app-title-icon-header
       title="Precio"
       [editing]="!editingPrice"
@@ -148,7 +149,7 @@
     </app-card>
   </div>
 
-  <div class="section">
+  <div class="section" style="padding-bottom: 32px">
     <app-title-icon-header
       title="Body, description, list of things"
       [editing]="!editingDescription"

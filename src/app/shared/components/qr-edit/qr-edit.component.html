@@ -5,6 +5,9 @@
       [style.cursor]="'pointer'"
       (click)="submit()"
     ></i>
+    <button class="preview-btn" (click)="previewItem()" *ngIf="item">
+      PREVIEW
+    </button>
   </div>
 
   <!--<div class="itemsGrid">

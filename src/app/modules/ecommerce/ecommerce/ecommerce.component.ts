@@ -57,8 +57,6 @@ export class EcommerceComponent implements OnInit {
         if (!merchant) {
           // console.log('no hay merchant');
         }
-        console.log(merchant);
-
         const saleflow = await this._SaleflowService.saleflowDefault(
           merchant._id
         );

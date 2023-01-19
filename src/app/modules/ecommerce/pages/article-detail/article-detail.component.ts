@@ -55,6 +55,7 @@ export class ArticleDetailComponent implements OnInit {
   controllers: FormArray = new FormArray([]);
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
+    resistance: false,
     freeMode: false,
     spaceBetween: 0,
     autoplay: {
@@ -76,7 +77,7 @@ export class ArticleDetailComponent implements OnInit {
   };
   isItemInCart: boolean = false;
   menuOpened: boolean;
-  previewMode: boolean;
+  mode: 'preview' | 'image-preview' | 'saleflow';
   typeOfMenuToShow: TypesOfMenu;
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
@@ -97,7 +98,7 @@ export class ArticleDetailComponent implements OnInit {
   entityTemplate: EntityTemplate = null;
   user: User;
   logged: boolean = false;
-  isProductMine:boolean = false;
+  isProductMine: boolean = false;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -120,9 +121,10 @@ export class ArticleDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.route.snapshot.queryParamMap.get('mode') === 'preview') {
-      this.previewMode = true;
-    }
+    this.mode = this.route.snapshot.queryParamMap.get('mode') as
+      | 'preview'
+      | 'image-preview'
+      | 'saleflow';
     this.route.params.subscribe(async (routeParams) => {
       await this.verifyIfUserIsLogged();
       const validEntities = ['item', 'post', 'template'];
@@ -202,7 +204,8 @@ export class ArticleDetailComponent implements OnInit {
   async getItemData() {
     try {
       this.itemData = await this._ItemsService.item(this.entityId);
-      if (this.previewMode) {
+      if (this.mode === 'preview' || this.mode === 'image-preview') {
+        if (!this._ItemsService.itemPrice) return this.back();
         this.itemData.name = this._ItemsService.itemName;
         this.itemData.description = this._ItemsService.itemDesc;
         this.itemData.pricing = this._ItemsService.itemPrice;
@@ -274,7 +277,7 @@ export class ArticleDetailComponent implements OnInit {
 
   startTimeout() {
     this.timer = setTimeout(() => {
-      if (this.route.snapshot.queryParamMap.get('mode') === 'saleflow') {
+      if (this.mode === 'saleflow') {
         let index = this.headerService.saleflow.items.findIndex(
           (saleflowItem) => saleflowItem.item._id === this.itemData._id
         );
@@ -319,7 +322,7 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   saveProduct() {
-    if (this.previewMode) return;
+    if (this.mode === 'preview' || this.mode === 'image-preview') return;
     if (
       !this.isItemInCart &&
       !this.headerService.saleflow.canBuyMultipleItems
@@ -430,7 +433,7 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   showItems() {
-    if (this.previewMode) return;
+    if (this.mode === 'preview' || this.mode === 'image-preview') return;
     this.dialogService.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: {
@@ -458,9 +461,14 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   async back() {
-    if (this.previewMode) {
+    if (this.mode === 'preview') {
       return this.router.navigate([
         `/admin/article-editor/${this.itemData._id}`,
+      ]);
+    }
+    if (this.mode === 'image-preview') {
+      return this.router.navigate([
+        `/admin/slides-editor/${this.itemData._id}`,
       ]);
     }
     if (this.selectedParam) {
@@ -579,7 +587,7 @@ export class ArticleDetailComponent implements OnInit {
                   createdEntityTemplate._id,
                   {
                     entity: 'entity-template',
-                    reference: result._id
+                    reference: result._id,
                   }
                 );
 
@@ -629,11 +637,15 @@ export class ArticleDetailComponent implements OnInit {
     this.logged = true;
   }
 
-  navigate():void {
+  navigate(): void {
     (async () => {
-      const { _id } = await this.entityTemplateService.entityTemplateByReference(this.entityId,this.entity);
+      const { _id } =
+        await this.entityTemplateService.entityTemplateByReference(
+          this.entityId,
+          this.entity
+        );
       const route = ['ecommerce', 'article-privacy', _id];
       this.router.navigate(route);
-    })()
+    })();
   }
 }

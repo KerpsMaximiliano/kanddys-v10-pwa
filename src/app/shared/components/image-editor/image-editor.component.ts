@@ -31,6 +31,10 @@ export class ImageEditorComponent implements OnDestroy {
 
   @ViewChild('image') image: ElementRef;
 
+  ngOnInit() {
+    if (!this.imgUrl) return this.cropped.emit();
+  }
+
   ngAfterViewInit() {
     this.image.nativeElement.addEventListener(
       'zoom',
@@ -48,9 +52,6 @@ export class ImageEditorComponent implements OnDestroy {
   private initCropper(image: HTMLImageElement) {
     if (!image) return;
     image.crossOrigin = 'anonymous';
-    const container = document.querySelector(
-      '.cropper__image'
-    ) as HTMLDivElement;
 
     const cropperOptions: Cropper.Options = {
       dragMode: 'move',
@@ -61,8 +62,7 @@ export class ImageEditorComponent implements OnDestroy {
       cropBoxResizable: false,
       toggleDragModeOnDblclick: false,
       background: false,
-      minCropBoxHeight: container.clientHeight,
-      minCropBoxWidth: container.clientWidth,
+      viewMode: 3,
       cropmove: () => {
         this.modified = true;
       },

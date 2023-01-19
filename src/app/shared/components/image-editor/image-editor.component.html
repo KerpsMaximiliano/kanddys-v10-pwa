@@ -14,7 +14,14 @@
       />
       Guardar
     </button>
-    <div class="cropper__image">
+    <div
+      class="cropper__image"
+      #cropperImage
+      [ngStyle]="{
+        width: '100%',
+        height: (cropperImage.clientWidth * 10) / 7 + 'px'
+      }"
+    >
       <img #image [src]="imgUrl" (load)="imageLoaded($event)" />
     </div>
     <div class="cropper__zoomSlider">
@@ -36,9 +43,9 @@
         <img class="icon" [src]="env + '/crop-rotate.svg'" alt="" srcset="" />
         <input
           type="range"
-          min="-180"
-          max="180"
-          [step]="1"
+          min="0"
+          max="360"
+          [step]="10"
           [value]="0"
           (input)="updateRotation($event)"
         />
