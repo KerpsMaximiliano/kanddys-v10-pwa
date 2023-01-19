@@ -21,11 +21,12 @@
 <div
   class="cards"
   [ngClass]="{
-    noGrid: slidesPath.length === 0
+    noGrid: slidesPath.length === 0,
+    boxShadow: shadows
   }"
 >
   <div class="card" *ngFor="let slide of slidesPath; index as i">
-    <div class="itemContainer" *ngIf="slide.type !== 'TEXT'">
+    <div class="itemContainer" *ngIf="slide.type !== 'TEXT'" (click)="openImageModal(filesStrings[i])">
       <ng-container *ngIf="slide.type === 'IMAGE'">
         <div
           class="imgBox"

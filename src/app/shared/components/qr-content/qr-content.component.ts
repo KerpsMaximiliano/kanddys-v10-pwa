@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { SlideInput } from 'src/app/core/models/post';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ImageViewComponent } from '../../dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-qr-content',
@@ -9,6 +11,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 })
 export class QrContentComponent implements OnInit {
   @Input() slides: Array<SlideInput> = [];
+  @Input() shadows: boolean = true;
   @Input() joke: string = '';
   @Output() buttonClicked = new EventEmitter();
   slidesPath: Array<{
@@ -18,7 +21,12 @@ export class QrContentComponent implements OnInit {
     text?: string;
   }> = [];
 
-  constructor(private _DomSanitizer: DomSanitizer) {}
+  filesStrings: string[] = [];
+
+  constructor(
+    private _DomSanitizer: DomSanitizer,
+    private dialog: DialogService
+  ) {}
 
   async ngOnInit() {
     if (this.slides) {
@@ -30,6 +38,7 @@ export class QrContentComponent implements OnInit {
             path: `url(${base64})`,
             type: 'IMAGE',
           });
+          this.filesStrings.push(base64 as string);
         } else if (slide.media && slide.media.type.includes('video')) {
           const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
             URL.createObjectURL(slide.media)
@@ -38,6 +47,7 @@ export class QrContentComponent implements OnInit {
             path: fileUrl,
             type: 'VIDEO',
           });
+          this.filesStrings.push(fileUrl as string);
         } else if (slide.type === 'text') {
           this.slidesPath.push({
             text: slide.text,
@@ -59,5 +69,16 @@ export class QrContentComponent implements OnInit {
 
   emitClick() {
     this.buttonClicked.emit(true);
+  }
+
+  openImageModal(imageSourceURL: string | ArrayBuffer) {
+    this.dialog.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }
