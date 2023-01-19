@@ -10,7 +10,6 @@ import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxPrintModule } from 'ngx-print';
 import { SwiperModule } from 'ngx-swiper-wrapper';
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { environment } from './../../environments/environment';
 import { DialogModule } from './../libs/dialog/dialog.module';
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
