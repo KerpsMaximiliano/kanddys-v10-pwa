@@ -7,7 +7,11 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
+  background-color: linear-gradient(
+    180deg,
+    white 50%,
+    rgba(213, 213, 213, 0.25) 100%
+  );
 }
 
 main {
@@ -255,7 +259,6 @@ main {
 
   .title {
     margin: 0px;
-    padding: 0px;
     color: black;
     font-size: 19px;
     font-family: RobotoMedium;
@@ -381,13 +384,18 @@ main {
   }
 }
 
+.arrows {
+  filter: invert(96%) sepia(84%) saturate(744%) hue-rotate(53deg)
+    brightness(97%) contrast(94%);
+  cursor: pointer;
+  margin-left: 22px;
+}
+
 .header {
-  height: 36px;
+  padding: 9px 0px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-left: 25px;
-  padding-right: 25px;
+  background-color: #000000;
   color: white;
   font-family: SfProBold;
   font-size: 21px;
@@ -401,20 +409,25 @@ main {
 
   .title {
     font-size: clamp(16px, 4vw, 21px);
+    margin-left: 15px;
   }
 
   .user-area {
+    margin-left: auto;
+    margin-right: 22px;
     display: flex;
-    align-items: baseline;
+    align-items: center;
 
     span {
       max-width: 77px;
       font-size: 13px;
       font-family: RobotoRegular;
       margin-right: 5px;
+      margin-left: auto;
     }
 
     .icon {
+      margin-left: 10px;
       width: 13px;
       height: 17px;
     }

@@ -1,11 +1,12 @@
 <div class="store-page" (scroll)="infinitePagination()">
   <div class="component">
     <header>
-      <div
-        class="header"
-        [style.backgroundColor]="header.colorTheme"
-        *ngIf="selectedTags.length === 0"
-      >
+      <div class="header" *ngIf="selectedTags.length === 0">
+        <img
+          [src]="env + '/arrow-double-up-black.svg'"
+          alt="arrows"
+          class="arrows"
+        />
         <div class="title">
           {{
             header.saleflow?.merchant?.name.length < 18
@@ -27,42 +28,10 @@
                 ).slice(0, 10) + ".."
               : header.user.name || header.user.phone || header.user.email
           }}</span>
+          <span *ngIf="!header.user">CompradorID</span>
           <img class="icon" [src]="env + '/user-white.svg'" />
         </div>
       </div>
-
-      <app-helper-headerv3
-        *ngIf="selectedTags.length > 0"
-        (arrowsClick)="resetSelectedTags()"
-        (dotsClicked)="openUserManagementDialog()"
-        [showSearch]="selectedTags.length > 0"
-        (searchClick)="showSearchbar = true"
-        [containerStyles]="{
-          backgroundColor: header.colorTheme
-        }"
-      ></app-helper-headerv3>
-
-      <app-tags-selector
-        *ngIf="selectedTags.length > 0"
-        [tags]="selectedTagsPermanent"
-        [selectedTagsIds]="getActiveTagsFromSelectedTagsPermantent()"
-        [multipleTags]="true"
-        [selectedBackground]="'#ffffff'"
-        [background]="header.colorTheme"
-        [containerBackground]="header.colorTheme"
-        [selectedColor]="'#2874ad'"
-        [color]="'#fff'"
-        [fillSelectedTagsOnStart]="true"
-        [useIdToRemoveOrAddTags]="true"
-        [useAlternativeOutput]="true"
-        (tagSelect2)="selectTagFromHeader($event)"
-      ></app-tags-selector>
-
-      <div
-        *ngIf="selectedTags.length === 0"
-        class="blank"
-        [ngStyle]="{ paddingBottom: '36px' }"
-      ></div>
     </header>
     <main>
       <form class="top-input-area" *ngIf="!hasCustomizer">
