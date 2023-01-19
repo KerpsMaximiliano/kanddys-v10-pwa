@@ -91,7 +91,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
   loading: boolean = true;
   choosedFloralArrangement = false;
   choosedHeliumBalloons = false;
-  registeredUser: boolean = false;
+  registeredEmail: boolean = false;
+  registeredPhone: boolean = false;
+  existingPhone: string = null;
 
   reservationOrderlessComponent = {
     afterIndex: 0,
@@ -256,7 +258,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             );
 
             if (user) {
-              this.registeredUser = true;
+              this.registeredEmail = true;
 
               this.formSteps[1].fieldsList[0].fieldControl.control.setValue(
                 user.name
@@ -265,9 +267,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 user.lastname
               );
 
-              this.formSteps[2].fieldsList[0].fieldControl.control.setValue(
-                user.phone
-              );
+              if (user.phone) {
+                this.existingPhone = user.phone;
+
+                this.formSteps[2].fieldsList[0].fieldControl.control.setValue(
+                  user.phone
+                );
+              } else {
+                this.existingPhone = null;
+              }
 
               whatsappMessagePartsOfThe1stStep.push(
                 `*Nombre completo:*\n${user.name} ${user.lastname}\n\n`
@@ -277,13 +285,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 `*Número de teléfono:*\n${user.phone}\n\n`
               );
 
-              params.scrollToStep(2);
+              if (user.phone) params.scrollToStep(2);
+              else params.scrollToStep(1);
 
               this.formSteps[0].stepButtonValidText = 'CONTINUA CON TU ORDEN';
             } else {
               this.formSteps[1].fieldsList[0].fieldControl.control.setValue('');
               this.formSteps[1].fieldsList[1].fieldControl.control.setValue('');
-              this.registeredUser = false;
+              this.registeredEmail = false;
             }
 
             whatsappMessagePartsOfThe1stStep.push(`*Email:*\n${email}\n\n`);
@@ -292,7 +301,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           } catch (error) {
             this.formSteps[1].fieldsList[0].fieldControl.control.setValue('');
             this.formSteps[1].fieldsList[1].fieldControl.control.setValue('');
-            this.registeredUser = false;
+            this.registeredEmail = false;
           }
 
           return { ok: true };
@@ -675,7 +684,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         return { ok: true };
       },
       customScrollToStepBackwards: (params) => {
-        if (this.registeredUser) {
+        if (this.registeredEmail) {
           this.whatsAppMessageParts.pop();
           params.scrollToStep(0, false);
         } else {
@@ -2269,7 +2278,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
               lastname,
               socialId,
               email,
-              phoneNumber,
+              phoneNumber:
+                this.existingPhone && this.existingPhone.length
+                  ? {
+                      ...phoneNumber,
+                      e164Number: '+' + this.existingPhone,
+                    }
+                  : phoneNumber,
               receiverPhoneNumber,
               articleDescription: orderDetails,
               sender: sender !== '' ? sender : 'Anónimo',
@@ -2359,7 +2374,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               );
             }
 
-            if (this.registeredUser) {
+            if (this.registeredEmail) {
               // estaba
               await this.submitData(
                 data,
@@ -2369,19 +2384,36 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 whatsappMessagePartsOfThe7thStep
               );
             } else {
-              const registeredUser = await this.authService.signup(
-                {
-                  email,
-                  phone: phoneNumber.e164Number.split('+')[1],
-                  name,
-                  lastname,
-                },
+              const phone =
+                this.existingPhone && this.existingPhone.length
+                  ? this.existingPhone
+                  : phoneNumber.e164Number.split('+')[1];
+
+              try {
+                const phoneUser = await this.authService.checkUser(phone);
+
+                if (phoneUser) this.registeredPhone = true;
+                else this.registeredPhone = false;
+              } catch (error) {
+                this.registeredPhone = false;
+              }
+
+              const input: any = {
+                email,
+                name,
+                lastname,
+              };
+
+              if (!this.registeredPhone) input.phone = phone;
+
+              const registeredEmail = await this.authService.signup(
+                input,
                 'none',
                 null,
                 false
               );
 
-              if (registeredUser) {
+              if (registeredEmail) {
                 await this.submitData(
                   data,
                   arrayOfReferenceImageFiles,
@@ -2543,6 +2575,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
     });
 
     if (window.navigator.onLine) {
+      console.log(data);
+
       data = {
         data: encodeURIComponent(
           JSON.stringify({
