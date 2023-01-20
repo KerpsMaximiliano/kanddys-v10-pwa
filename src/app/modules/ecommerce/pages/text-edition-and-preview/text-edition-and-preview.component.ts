@@ -99,6 +99,26 @@ export class TextEditionAndPreviewComponent implements OnInit {
         joke: this.headerService.aiJokes[this.currentMessageIndex],
       });
     }
+
+    setTimeout(() => {
+      let cssClass: string;
+      if (this.type === 'AI-JOKE') {
+        cssClass = '.paragraphs-edit';
+      } else {
+        cssClass = '.title-edit';
+      }
+      
+      const nodeList = document.querySelectorAll(cssClass);
+
+      const textarea: HTMLInputElement = nodeList.item(
+        this.currentMessageIndex
+      ) as HTMLInputElement;
+
+      textarea.focus();
+    }, 300);
+    /*
+   
+    */
   }
 
   changeSlide(eventData: Swiper) {

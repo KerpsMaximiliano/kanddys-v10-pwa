@@ -127,6 +127,16 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
       this.controller.addControl(name, new FormControl(value, validators));
     }
     this.sub = this.controller.valueChanges.subscribe((value) => {
+
+      if (this.dialogFlowService.activeDialogId === this.dialogId) {
+        if (this.controller.valid) {
+          this.dialogFlowService.swiperConfig.allowSlideNext = true;
+        } else {
+          this.dialogFlowService.swiperConfig.allowSlideNext = false;
+        }
+      }
+
+
       this.data.emit({
         value,
         fields: this.fields.list,

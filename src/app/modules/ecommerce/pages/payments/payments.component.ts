@@ -449,10 +449,8 @@ export class PaymentsComponent implements OnInit {
     this.toastrService.info('Redigiendo a la página de pago', null, {
       timeOut: 1500,
     });
-    
-    lockUI();
 
- 
+    lockUI();
 
     const clientURI = `${environment.uri}`;
 
@@ -527,7 +525,6 @@ export class PaymentsComponent implements OnInit {
               color: '#FFF',
             },
             callback: () => {
-              localStorage.removeItem('post');
               this.router.navigate([`../../store`], {
                 relativeTo: this.route,
               });
@@ -537,6 +534,15 @@ export class PaymentsComponent implements OnInit {
         topBtnCallback: () => {},
         bottomButtonText: 'Cancelar mi factura',
         bottomBtnCallback: () => {
+          this.postsService.post = null;
+          this.postsService.privatePost = null;
+          this.postsService.dialogs = null;
+          this.postsService.temporalDialogs = null;
+          this.postsService.temporalDialogs2 = null;
+          localStorage.removeItem('post');
+
+          console.log(this.postsService.post);
+
           this.router.navigate([`../../store`], {
             relativeTo: this.route,
           });

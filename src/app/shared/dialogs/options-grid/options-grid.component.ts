@@ -22,6 +22,7 @@ export class OptionsGridComponent implements OnInit {
   };
   @Input() titleCenter: boolean = true;
   @Input() dialogId: string = null;
+  @Input() flowId: string = null;
   @Input() uniqueSelection: boolean = true;
   @Output() buttonClicked = new EventEmitter();
   @Output() optionClick = new EventEmitter();
@@ -48,7 +49,7 @@ export class OptionsGridComponent implements OnInit {
         this.dialogFlowService.swiperConfig.allowSlideNext =
           activeOptionIndex > -1;
       }
-    }, 500);
+    }, 200);
   }
 
   cardClicked(wordObject: { text: string; active: boolean; keyword: string }) {

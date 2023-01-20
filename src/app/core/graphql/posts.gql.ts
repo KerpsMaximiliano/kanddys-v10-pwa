@@ -49,7 +49,6 @@ export const post = gql`
       message
       from
       multimedia
-      joke
       socialNetworks {
         url
       }
@@ -128,7 +127,6 @@ export const postAddUser = gql`
       message
       from
       multimedia
-      joke
       socialNetworks {
         url
       }

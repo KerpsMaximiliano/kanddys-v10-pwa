@@ -34,7 +34,7 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 82.3%;
+    width: 82.4%;
     margin: auto;
 
     &.notActive {
@@ -56,6 +56,7 @@
       right: 13px;
       margin: auto;
       display: flex;
+      z-index: 9999;
 
       .current-dialog-indicator {
         width: 14px;
