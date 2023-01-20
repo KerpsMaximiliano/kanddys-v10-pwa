@@ -15,7 +15,9 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 25.8px;
-
+    position: fixed;
+    z-index: 9999;
+    width: 100%;
     .icon {
         font-size: 35px;
     }
@@ -138,6 +140,7 @@
     /* padding: 0px 21px; */
     /* margin: 0px 21px; */
     justify-content: center;
+    padding-top: 60px;
 
     .tag-wrapper {
         height: 211px;
