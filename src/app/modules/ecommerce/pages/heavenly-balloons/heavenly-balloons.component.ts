@@ -172,7 +172,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               marginTop: '36px',
               paddingLeft: '33px',
               paddingRight: '33px',
-              paddingBottom: '4rem',
+              paddingBottom: '12rem',
             },
             fieldStyles: {
               marginTop: '26px',
