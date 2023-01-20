@@ -42,7 +42,7 @@
     <app-qr-content
       [slides]="data.slides"
       [joke]="data.joke"
-      (buttonClicked)="openedDialogFlow = true"
+      (buttonClicked)="openQrContentDialog()"
     ></app-qr-content>
     <app-envelope-content
       [nombreSobre]="data.title"

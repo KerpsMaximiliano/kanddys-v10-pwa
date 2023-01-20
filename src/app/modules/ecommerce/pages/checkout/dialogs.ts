@@ -104,7 +104,7 @@ export class Dialogs {
     [];
 
   insertedRecipientDialog: boolean;
-  
+
   recipientPhoneDialog: EmbeddedComponentWithId = {
     component: GeneralDialogComponent,
     componentId: 'whatsappNumberDialog',
@@ -731,7 +731,8 @@ export class Dialogs {
                 ].inputs.submitButton.styles.display = 'none';
               }
 
-              if (!keyword) this.dialogFlowService.swiperConfig.allowSlideNext = false;
+              if (!keyword)
+                this.dialogFlowService.swiperConfig.allowSlideNext = false;
               else this.dialogFlowService.swiperConfig.allowSlideNext = true;
             },
           },
@@ -781,7 +782,8 @@ export class Dialogs {
                 ].inputs.submitButton.styles.display = 'none';
               }
 
-              if (!keyword) this.dialogFlowService.swiperConfig.allowSlideNext = false;
+              if (!keyword)
+                this.dialogFlowService.swiperConfig.allowSlideNext = false;
               else this.dialogFlowService.swiperConfig.allowSlideNext = true;
             },
           },
@@ -833,7 +835,8 @@ export class Dialogs {
                 ].inputs.submitButton.styles.display = 'none';
               }
 
-              if (!keyword) this.dialogFlowService.swiperConfig.allowSlideNext = false;
+              if (!keyword)
+                this.dialogFlowService.swiperConfig.allowSlideNext = false;
               else this.dialogFlowService.swiperConfig.allowSlideNext = true;
             },
           },
@@ -887,7 +890,8 @@ export class Dialogs {
                 ].inputs.submitButton.styles.display = 'none';
               }
 
-              if (!keyword) this.dialogFlowService.swiperConfig.allowSlideNext = false;
+              if (!keyword)
+                this.dialogFlowService.swiperConfig.allowSlideNext = false;
               else this.dialogFlowService.swiperConfig.allowSlideNext = true;
             },
           },
@@ -913,10 +917,10 @@ export class Dialogs {
               cursor: 'pointer',
               margin: 'auto',
               fontFamily: 'SfProBold',
-              borderRadius: '3px',
+              borderRadius: '6px',
               fontSize: '18px',
               marginTop: '1rem',
-              backgroundColor: 'yellowgreen',
+              backgroundColor: 'lightgreen',
             },
           },
           containerStyles: {
@@ -981,83 +985,97 @@ export class Dialogs {
 
               lockUI();
 
-              const response =
-                await this.gpt3Service.generateResponseForTemplate(
-                  {
-                    motive,
-                    target: receiverRelationship,
-                    sentiment,
-                    timing,
-                  },
-                  '63bd15b25169e824f0b11266'
+              try {
+                const response =
+                  await this.gpt3Service.generateResponseForTemplate(
+                    {
+                      motive,
+                      target: receiverRelationship,
+                      sentiment,
+                      timing,
+                    },
+                    '63bd15b25169e824f0b11266'
+                  );
+
+                let message;
+                let title;
+                let scannedTitle = false;
+                const parts = response.split('\n');
+
+                const options: Array<{
+                  message: string;
+                  title: string;
+                }> = [];
+                let optionNumber = 1;
+
+                parts.forEach((line) => {
+                  if (optionNumber < 5) {
+                    if (
+                      !line.includes('Opción') &&
+                      line.includes(':') &&
+                      !scannedTitle
+                    ) {
+                      const [, realTitle] = line.split(':');
+                      title = realTitle;
+                      scannedTitle = true;
+                    } else if (
+                      !line.includes('Opción') &&
+                      line.includes(':') &&
+                      scannedTitle
+                    ) {
+                      const [, realMessage] = line.split(':');
+                      options.push({
+                        message: realMessage,
+                        title,
+                      });
+                      title = null;
+                      optionNumber += 1;
+                      scannedTitle = false;
+                    }
+                  }
+                });
+
+                this.postsService.postMessageOptions = options;
+
+                localStorage.setItem(
+                  'temporal-post-options',
+                  JSON.stringify(options)
                 );
 
-              let message;
-              let title;
-              let scannedTitle = false;
-              const parts = response.split('\n');
-
-              const options: Array<{
-                message: string;
-                title: string;
-              }> = [];
-              let optionNumber = 1;
-
-              parts.forEach((line) => {
-                if (optionNumber < 5) {
-                  if (
-                    !line.includes('Opción') &&
-                    line.includes(':') &&
-                    !scannedTitle
-                  ) {
-                    const [, realTitle] = line.split(':');
-                    title = realTitle;
-                    scannedTitle = true;
-                  } else if (
-                    !line.includes('Opción') &&
-                    line.includes(':') &&
-                    scannedTitle
-                  ) {
-                    const [, realMessage] = line.split(':');
-                    options.push({
-                      message: realMessage,
-                      title,
-                    });
-                    title = null;
-                    optionNumber += 1;
-                    scannedTitle = false;
+                this.router.navigate(
+                  [
+                    'ecommerce/' +
+                      this.headerService.saleflow.merchant.slug +
+                      '/text-edition-and-preview',
+                  ],
+                  {
+                    queryParams: {
+                      type: 'post',
+                    },
                   }
-                }
-              });
+                );
 
-              this.postsService.postMessageOptions = options;
+                this.postsService.temporalDialogs = this.temporalDialogs;
+                this.postsService.temporalDialogs2 = this.temporalDialogs2;
+                this.postsService.dialogs = this.dialogs;
+                this.headerService.flowRoute =
+                  this.router.url + '?startOnDialogFlow=true';
+                localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
-              localStorage.setItem(
-                'temporal-post-options',
-                JSON.stringify(options)
-              );
+                unlockUI();
+              } catch (error) {
+                unlockUI();
 
-              this.router.navigate(
-                [
-                  'ecommerce/' +
-                    this.headerService.saleflow.merchant.slug +
-                    '/text-edition-and-preview',
-                ],
-                {
-                  queryParams: {
-                    type: 'post',
-                  },
-                }
-              );
+                console.error(error);
 
-              this.postsService.temporalDialogs = this.temporalDialogs;
-              this.postsService.temporalDialogs2 = this.temporalDialogs2;
-              this.postsService.dialogs = this.dialogs;
-              this.headerService.flowRoute =
-                this.router.url + '?startOnDialogFlow=true';
-              localStorage.setItem('flowRoute', this.headerService.flowRoute);
-
-              unlockUI();
+                this.toastr.error(
+                  'Ocurrió un error, vuelva a intentar',
+                  'error',
+                  {
+                    timeOut: 1500,
+                  }
+                );
+              }
             },
           },
         ],
@@ -1183,6 +1201,7 @@ export class Dialogs {
                     '/post-edition',
                 ]);
               } else {
+                this.dialogFlowService.swiperConfig.allowSlideNext = true;
                 if (
                   this.dialogs[this.dialogs.length - 2].componentId !==
                   'whatsappNumberDialog'

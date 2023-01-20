@@ -7,6 +7,7 @@ import { PostInput } from 'src/app/core/models/post';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { BannersService } from 'src/app/core/services/banners.service';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -37,6 +38,90 @@ export class PostEditionComponent implements OnInit {
   dialogFlowFunctions: Record<string, any> = {};
   bannerId: string;
 
+  recipientPhoneDialog: EmbeddedComponentWithId = {
+    component: GeneralDialogComponent,
+    componentId: 'whatsappNumberDialog',
+    inputs: {
+      dialogId: 'whatsappNumberDialog',
+      containerStyles: {
+        background: 'rgb(255, 255, 255)',
+        borderRadius: '12px',
+        padding: '37.1px 23.6px 52.6px 31px',
+        overflow: 'auto',
+      },
+      header: {
+        styles: {
+          fontSize: '22px',
+          fontFamily: 'SfProBold',
+          marginBottom: '12.5px',
+          marginTop: '0',
+        },
+        text: 'Cual es el Whatsapp de quien Recibirá',
+      },
+      fields: {
+        styles: {},
+        list: [
+          {
+            name: 'receiverPhone',
+            value: '',
+            validators: [Validators.required],
+            type: 'phone',
+            label: {
+              styles: {
+                display: 'block',
+                fontSize: '17px',
+                fontFamily: '"RobotoMedium"',
+                margin: '10px 0px',
+              },
+              text: '',
+            },
+            placeholder: 'Escribe...',
+            styles: {
+              width: '100%',
+              padding: '26px 16px 16px',
+              border: 'none',
+              boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+              borderRadius: '9px',
+              fontFamily: '"RobotoMedium"',
+            },
+          },
+        ],
+      },
+    },
+    outputs: [
+      {
+        name: 'data',
+        callback: (params) => {
+          const { fields, value, valid } = params;
+          let { receiverPhone } = value;
+          let receiverPhoneCopy = JSON.parse(JSON.stringify(receiverPhone));
+
+          if (receiverPhone) {
+            receiverPhoneCopy = receiverPhone.e164Number.split('+')[1];
+
+            this.postsService.privatePost = true;
+            localStorage.setItem('privatePost', 'true');
+
+            if (valid) {
+              this.postsService.postReceiverNumber = receiverPhoneCopy;
+              this.swiperConfig.allowSlideNext = true;
+            } else {
+              this.swiperConfig.allowSlideNext = false;
+            }
+
+            this.dialogFlowService.saveGeneralDialogData(
+              receiverPhone,
+              'flow2',
+              'whatsappNumberDialog',
+              'receiverPhone',
+              fields
+            );
+          }
+        },
+      },
+    ],
+  };
+
   dialogs2: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
@@ -44,7 +129,7 @@ export class PostEditionComponent implements OnInit {
       inputs: {
         containerStyles: {
           background: 'rgb(255, 255, 255)',
-          borderRadius: '8px',
+          borderRadius: '12px',
           opacity: '1',
           padding: '37px 36.6px 18.9px 31px',
         },
@@ -280,6 +365,7 @@ export class PostEditionComponent implements OnInit {
     private _Router: Router,
     private _BannersService: BannersService,
     private _AuthService: AuthService,
+    private dialogFlowService: DialogFlowService,
     private _Gpt3Service: Gpt3Service
   ) {}
 
@@ -345,5 +431,19 @@ export class PostEditionComponent implements OnInit {
 
   closeDialogFlow() {
     this.openedDialogFlow = false;
+  }
+
+  openQrContentDialog() {
+    if (this.dialogs2.length === 1 && !this.postsService.postReceiverNumber) {
+      this.dialogs2.unshift(this.recipientPhoneDialog);
+
+      this.dialogFlowService.dialogsFlows['flow2']['whatsappNumberDialog'] = {
+        dialogId: 'whatsappNumberDialog',
+        fields: {},
+        swiperConfig: this.dialogFlowService.swiperConfig,
+      };
+    }
+
+    this.openedDialogFlow = true;
   }
 }
