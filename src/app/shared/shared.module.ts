@@ -125,6 +125,8 @@ import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component
 import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';
 import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
 import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component';
+import { DynamicGridComponent } from './components/dynamic-grid/dynamic-grid.component';
+import { AdminViewComponent } from '../modules/admin/pages/admin-view/admin-view.component';
 
 const imports = [
   CommonModule,
@@ -259,6 +261,8 @@ const declarations = [
   ContactLandingComponent,
   ContactLandingContainerComponent,
   LinkDialogComponent,
+  AdminViewComponent,
+  DynamicGridComponent
 ];
 
 @NgModule({

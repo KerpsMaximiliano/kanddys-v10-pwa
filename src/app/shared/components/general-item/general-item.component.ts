@@ -1,12 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  Output,
-  EventEmitter,
-  OnChanges,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { Item } from 'src/app/core/models/item';
 import { Tag } from 'src/app/core/models/tags';
 import { environment } from 'src/environments/environment';
@@ -43,6 +35,8 @@ export class GeneralItemComponent implements OnInit {
   @Input() showVisitorCounter: boolean = false;
   @Input() statusIcon: string = null;
   @Input() tagsSeparatedByComma: string = null;
+  @Input() itemPrice: string = null;
+  @Input() showTitle: boolean = true;
 
   //tag-specific variables
   @Input() tag: Tag = null;
@@ -60,6 +54,7 @@ export class GeneralItemComponent implements OnInit {
       "url('https://upload.wikimedia.org/wikipedia/en/c/c6/The_Legend_of_Zelda_Breath_of_the_Wild.jpg')",
   };
   gradientBottomColor: string = this.mainColor;
+  @Input() containerGradientBoxStyles: CSSStyles = {};
   @Input() topInnerButtonsContainerStyles: CSSStyles = null;
   @Input() topInnerButtonStyles: CSSStyles = {};
   @Input() itemPresentationBoxStyles: CSSStyles = {};
@@ -68,12 +63,15 @@ export class GeneralItemComponent implements OnInit {
   @Input() selectionButtonStyles: CSSStyles = {};
   @Input() selectionButtonIconStyles: CSSStyles = {};
   @Input() titleStyles: CSSStyles = {};
+  @Input() priceStyles: CSSStyles = {};
   @Input() tagsStyles: CSSStyles = {};
   @Input() itemPresentationBoxTopRowStyles: CSSStyles = null;
   @Input() itemPresentationBoxMiddleRowStyles: CSSStyles = null;
   @Input() itemPresentationBoxBottomRowStyles: CSSStyles = null;
   @Input() viewsCounterStyles: CSSStyles = null;
   @Input() textColor: string = '#fff';
+  @Input() lengthPercentage: string = '60%';
+  @Input() removeBackgroundImage: boolean = false;
 
   //buttons
   @Input() topRightButton: Button = null;
@@ -81,11 +79,20 @@ export class GeneralItemComponent implements OnInit {
   @Input() showEntityButton: boolean = true;
   @Input() overwriteInnerButtonColor: boolean = true;
 
+  //banner
+  @Input() topInnerBanner: boolean = false;
+  @Input() bannerTextColor: string = '';
+  @Input() bannerText: string = '';
+  @Input() bannerBg: string = '';
+  @Input() blackDots: boolean = true;
+
   env: string = environment.assetsUrl;
 
   constructor() {}
 
   ngOnInit(): void {
+    this.containerGradientBoxStyles.backgroundImage = `linear-gradient(to top, ${this.mainColor}, ${this.gradientTopColor} ${this.lengthPercentage})`;
+
     switch (this.entity) {
       case 'ITEM':
         if (['disabled', 'featured'].includes(this.item.status)) {
@@ -106,7 +113,7 @@ export class GeneralItemComponent implements OnInit {
         break;
       case 'TAG':
         if (['disabled', 'featured'].includes(this.tag.status)) {
-            this.showIconForTagStatus = true;
+          this.showIconForTagStatus = true;
 
           this.statusIcon =
             this.env +
@@ -115,28 +122,26 @@ export class GeneralItemComponent implements OnInit {
               : '/binoculars-fill-black.svg');
         }
 
-        if (this.tag.entity && !this.topInnerButtons) {
+        if (this.tag?.entity && !this.topInnerButtons) {
           let text = null;
 
-          if(this.showEntityButton) {
-            switch (this.tag.entity) {
-              case 'order':
-                text = 'Facturas';
-                break;
-              case 'item':
-                text = 'Articulos';
-                break;
-            }
-  
-            this.topInnerButtons = [];
-            this.topInnerButtons.push({
-              text,
-              clickEvent: () => null,
-            });
+          switch (this.tag.entity) {
+            case 'order':
+              text = 'Facturas';
+              break;
+            case 'item':
+              text = 'Articulos';
+              break;
           }
+
+          this.topInnerButtons = [];
+          this.topInnerButtons.push({
+            text,
+            clickEvent: () => null,
+          });
         }
 
-        if (this.tag.images && this.tag.images.length > 0) this.cardMainImage = this.tag.images[0];
+        if (this.tag.images.length > 0) this.cardMainImage = this.tag.images[0];
 
         break;
     }
@@ -183,14 +188,5 @@ export class GeneralItemComponent implements OnInit {
   selectItem() {
     this.itemSelected = !this.itemSelected;
     this.itemSelectedEvent.emit(this.itemSelected);
-  }
-
-  triggerTopRightButtonClick() {
-    const params = [];
-
-    if (this.entity === 'ITEM') params.push(this.item);
-    else if (this.entity === 'TAG') params.push(this.tag);
-
-    this.topRightButton.clickEvent(...params);
   }
 }

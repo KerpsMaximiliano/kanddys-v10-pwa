@@ -1,0 +1,32 @@
+* {
+  margin: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 500px;
+  position: fixed;
+  bottom: 0;
+  padding: 76.3px 16.5px 18.7px 21px;
+  background: linear-gradient(transparent, #000000);
+  display: flex;
+  align-items: center;
+
+  button {
+    background-color: #ffffff;
+    padding: 5px 15px;
+    font-family: SFProMedium;
+    color: #7b7b7b;
+    font-size: 13px;
+    border: none;
+    border-radius: 12px;
+  }
+
+  .wrap {
+    margin-left: auto;
+
+    .msg {
+      margin-right: 30px;
+    }
+  }
+}

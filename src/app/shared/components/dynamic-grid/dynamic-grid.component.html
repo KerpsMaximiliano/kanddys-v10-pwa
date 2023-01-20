@@ -1,0 +1,176 @@
+<div *ngIf="tags.length <= 2" class="container">
+  <div class="fullCards">
+    <div class="fullCard" *ngFor="let item of tags; index as i">
+      <app-general-item
+        [tag]="item"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        [bannerText]="item.name"
+        bannerBg="#FED230"
+        bannerTextColor="#272727"
+      >
+      </app-general-item>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tags.length === 3" class="container">
+  <div class="twoCards">
+    <!-- <div class="card"></div>
+    <div class="card"></div> -->
+    <div class="card">
+      <app-general-item
+        [tag]="tags[0]"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        bannerText="Tiendas"
+        bannerBg="#82F18D"
+        bannerTextColor="#272727"
+      >
+      </app-general-item>
+    </div>
+    <div class="card">
+      <app-general-item
+        [tag]="tags[1]"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        bannerTextColor="#FFFFFF"
+        bannerText="Citas"
+        bannerBg="#7A170C"
+        [blackDots]="false"
+      >
+      </app-general-item>
+    </div>
+  </div>
+  <div class="fullCards">
+    <div class="fullCard2">
+      <app-general-item
+        [tag]="tags[2]"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        bannerText="Stories Pages"
+        bannerBg="#FED230"
+        bannerTextColor="#272727"
+      >
+      </app-general-item>
+    </div>
+  </div>
+</div>
+
+<div class="container" *ngIf="tags.length === 4 || tags.length >= 6">
+  <div class="twoCards">
+    <div class="card" *ngFor="let item of tags; index as i">
+      <app-general-item
+        [tag]="item"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        [bannerText]="item.name"
+        bannerBg="#FED230"
+        bannerTextColor="#272727"
+      >
+      </app-general-item>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tags.length === 5" class="container">
+  <div class="twoCards">
+    <div class="card">
+      <app-general-item
+        [tag]="tags[0]"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        [bannerText]="tags[0].name"
+        bannerBg="#FED230"
+        bannerTextColor="#272727"
+      >
+      </app-general-item>
+    </div>
+    <div class="card">
+      <app-general-item
+        [tag]="tags[1]"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        [bannerText]="tags[1].name"
+        bannerBg="#FED230"
+        bannerTextColor="#272727"
+      >
+      </app-general-item>
+    </div>
+    <div class="card">
+      <app-general-item
+        [tag]="tags[2]"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        [bannerText]="tags[2].name"
+        bannerBg="#FED230"
+        bannerTextColor="#272727"
+      >
+      </app-general-item>
+    </div>
+    <div class="card">
+      <app-general-item
+        [tag]="tags[3]"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        [bannerText]="tags[3].name"
+        bannerBg="#FED230"
+        bannerTextColor="#272727"
+      >
+      </app-general-item>
+    </div>
+  </div>
+  <div class="fullCards">
+    <div class="fullCard2">
+      <app-general-item
+        [tag]="tags[4]"
+        [entity]="'TAG'"
+        [mainColor]="'#b17608'"
+        [showIconForTagStatus]="true"
+        [statusIcon]="null"
+        [textColor]="'#272727'"
+        [topInnerBanner]="true"
+        [bannerText]="tags[4].name"
+        bannerBg="#FED230"
+        bannerTextColor="#272727"
+      >
+      </app-general-item>
+    </div>
+  </div>
+</div>

@@ -21,6 +21,7 @@ import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
 import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
+import { AdminViewComponent } from './pages/admin-view/admin-view.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -137,6 +138,10 @@ const routes: Routes = [
       {
         path: 'contact-landing/:idUser',
         component: ContactLandingContainerComponent,
+      },
+      {
+        path: 'admin-view',
+        component: AdminViewComponent,
       },
     ],
   },

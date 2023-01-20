@@ -1,0 +1,47 @@
+* {
+  margin: 0;
+}
+
+.header {
+  background-color: #ffffff;
+  display: flex;
+  padding: 10px 0;
+  align-items: center;
+
+  .arrows {
+    margin-left: 21px;
+    margin-right: 17.5px;
+    cursor: pointer;
+  }
+
+  button {
+    border-radius: 14px;
+    background-color: #f4f4f4;
+    padding: 5px 20px;
+    border: none;
+    cursor: pointer;
+    font-family: SFProRegular;
+    font-size: 16px;
+    color: #272727;
+  }
+
+  span {
+    margin-left: auto;
+  }
+
+  .plus {
+    margin-left: auto;
+    border-radius: 4px;
+    background-color: #272727;
+    width: 38.55px;
+    height: 31.7px;
+    color: #ffffff;
+    font-family: SFProBold;
+    font-size: 24px;
+    text-align: center;
+  }
+  .dots {
+    margin-left: auto;
+    margin-right: 21px;
+  }
+}

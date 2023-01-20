@@ -556,39 +556,150 @@
               paddingRight: '16.5px'
             }"
           >
-            <app-saleflow-item
-              [itemIndex]="i"
-              [itemId]="item._id"
-              [menuCallback]="openItemOptionsDialog"
-              [type]="4"
-              [showViews]="true"
-              [viewsCounter]="
-                item.visitorCounter ? item.visitorCounter.counter : 0
-              "
-              [imgURL]="item.images ? item.images[0] : ''"
-              [price]="item.pricing"
-              [itemParams]="item.params"
-              [showPrice]="true"
-              [tags]="item.tagsFilled"
-              [dynamicStyles]="{
-                itemContainer: {
-                  minWidth: '242px',
-                  height: '344px',
-                  margin: '0px'
-                },
-                simpleCard: {
-                  height: '100%'
-                },
-                itemImg: {
-                  height: '76.1627%'
-                },
-                infoArea: {
-                  height: '23.8372%',
-                  padding: '18px 12px 20px 16px'
-                }
+            <app-general-item
+              (itemSelectedEvent)="goToDetail(item._id)"
+              [shouldItemBeSelectectable]="true"
+              [tag]="item"
+              [entity]="'TAG'"
+              [mainColor]="item.status !== 'disabled' ? '#000000' : '#b17608'"
+              [itemPresentationBoxStyles]="{
+                width: '222px',
+                height: '300px'
               }"
-              (itemClicked)="goToDetail(item._id)"
-            ></app-saleflow-item>
+              [singleIconStyles]="{
+                filter:
+                  'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+              }"
+              [showIconForTagStatus]="
+                item.status === 'disabled' || item.status === 'featured'
+              "
+              [statusIcon]="
+                item.status === 'disabled' || item.status === 'featured'
+                  ? env +
+                    (item.status === 'disabled'
+                      ? '/closed-eye-black.svg'
+                      : '/binoculars-fill-black.svg')
+                  : null
+              "
+              [showVisitorCounter]="true"
+              [titleStyles]="{
+                display: '-webkit-box',
+                '-webkit-line-clamp': 1,
+                'line-clamp': 1,
+                '-webkit-box-orient': 'vertical',
+                overflow: 'hidden',
+                'word-break': 'break-all'
+              }"
+              [topInnerButtonStyles]="{
+                backgroundColor:
+                  item.status !== 'disabled' ? '#272727' : '#b17608'
+              }"
+            >
+            </app-general-item>
+            <div class="blank-space"></div>
+          </div>
+        </swiper>
+      </div>
+    </section>
+    <!-- HIGHLIGHTED ITEMS SWIPER-->
+    <section
+      class="highlited-items-area"
+      *ngIf="
+        bestSellers.length > 0 &&
+        selectedTags.length === 0 &&
+        itemSearchbar.value === ''
+      "
+    >
+      <div class="title-and-options">
+        <h2 class="title">LOS PREFERIDOS</h2>
+
+        <div class="dot-trio" (click)="openItemManagementDialog('featured')">
+          <div
+            class="dot"
+            [ngStyle]="{
+              'background-color': '#2874ad',
+              margin: '0 2.5px'
+            }"
+          >
+             
+          </div>
+          <div
+            class="dot"
+            [ngStyle]="{
+              'background-color': '#2874ad',
+              margin: '0 2.5px'
+            }"
+          >
+             
+          </div>
+          <div
+            class="dot"
+            [ngStyle]="{
+              'background-color': '#2874ad',
+              margin: '0 2.5px'
+            }"
+          >
+             
+          </div>
+        </div>
+      </div>
+
+      <p class="subtitle" *ngIf="bestSellers.length === 0">
+        No tienes items preferidos
+      </p>
+
+      <div class="highlited-items-swiper" *ngIf="bestSellers.length > 0">
+        <swiper [config]="highlightedConfigSwiper" #highlightedItemsSwiper>
+          <div
+            *ngFor="let item of bestSellers; let i = index"
+            class="swiper-slide"
+            [ngStyle]="{
+              width: 'auto',
+              paddingBottom: '10px',
+              paddingTop: '19px',
+              paddingRight: '16.5px'
+            }"
+          >
+            <app-general-item
+              (itemSelectedEvent)="goToDetail(item._id)"
+              [shouldItemBeSelectectable]="true"
+              [tag]="item"
+              [entity]="'TAG'"
+              [mainColor]="item.status !== 'disabled' ? '#000000' : '#b17608'"
+              [itemPresentationBoxStyles]="{
+                width: '222px',
+                height: '300px'
+              }"
+              [singleIconStyles]="{
+                filter:
+                  'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)'
+              }"
+              [showIconForTagStatus]="
+                item.status === 'disabled' || item.status === 'featured'
+              "
+              [statusIcon]="
+                item.status === 'disabled' || item.status === 'featured'
+                  ? env +
+                    (item.status === 'disabled'
+                      ? '/closed-eye-black.svg'
+                      : '/binoculars-fill-black.svg')
+                  : null
+              "
+              [showVisitorCounter]="true"
+              [titleStyles]="{
+                display: '-webkit-box',
+                '-webkit-line-clamp': 1,
+                'line-clamp': 1,
+                '-webkit-box-orient': 'vertical',
+                overflow: 'hidden',
+                'word-break': 'break-all'
+              }"
+              [topInnerButtonStyles]="{
+                backgroundColor:
+                  item.status !== 'disabled' ? '#272727' : '#b17608'
+              }"
+            >
+            </app-general-item>
             <div class="blank-space"></div>
           </div>
         </swiper>
@@ -639,7 +750,9 @@
         No hay productos
       </p>
 
-      <div class="saleflows-item-grid" *ngIf="allItems.length">
+      <div class="saleflows-item-grid"
+      [style.gridTemplateColumns]="'repeat('+((allItems.length<=5)?'1':'2')+', 1fr)'"
+      *ngIf="allItems.length">
         <div
           class="capsize"
           *ngIf="selectedTags.length === 0 && itemSearchbar.value === ''"
@@ -649,36 +762,41 @@
             (itemClicked)="openedDialogFlow = !openedDialogFlow"
           ></app-saleflow-item>
         </div>
-        <div
-          class="capsize"
-          *ngFor="let item of allItems; let itemIndex = index"
-        >
-          <app-saleflow-item
-            [itemIndex]="itemIndex"
-            [itemId]="item._id"
-            [menuCallback]="openItemOptionsDialog"
-            [type]="4"
-            [showViews]="true"
-            [viewsCounter]="
-              item.visitorCounter ? item.visitorCounter.counter : 0
-            "
-            [inactive]="
-              item.status != 'active' && item.status != 'featured'
-                ? true
-                : false
-            "
-            [imgURL]="item.images ? item.images[0] : ''"
-            [price]="item.pricing"
-            [showPrice]="true"
-            [tags]="item.tagsFilled"
-            [itemParams]="item.params"
-            (itemClicked)="goToDetail(item._id)"
-            [responsiveWidthVersion]="true"
-            [featured]="item.status === 'featured'"
-          ></app-saleflow-item>
-        </div>
+        <ng-container *ngIf="allItems&&allItems.length>5;else dynamicGrid">
+          <div
+            class="capsize"
+            *ngFor="let item of allItems; let itemIndex = index"
+          >
+            <app-saleflow-item
+              [itemIndex]="itemIndex"
+              [itemId]="item._id"
+              [menuCallback]="openItemOptionsDialog"
+              [type]="4"
+              [showViews]="true"
+              [viewsCounter]="
+                item.visitorCounter ? item.visitorCounter.counter : 0
+              "
+              [inactive]="
+                item.status != 'active' && item.status != 'featured'
+                  ? true
+                  : false
+              "
+              [imgURL]="item.images ? item.images[0] : ''"
+              [price]="item.pricing"
+              [showPrice]="true"
+              [tags]="item.tagsFilled"
+              [itemParams]="item.params"
+              (itemClicked)="goToDetail(item._id)"
+              [responsiveWidthVersion]="true"
+              [featured]="item.status === 'featured'"
+            ></app-saleflow-item>
+          </div>
+        </ng-container>
       </div>
     </section>
+    <ng-template #dynamicGrid>
+      <app-dynamic-grid [tags]="allItems"></app-dynamic-grid>
+    </ng-template>
 
     <!--
       <div
