@@ -53,7 +53,6 @@ interface ExtendedTag extends Tag {
 export class StoreComponent implements OnInit {
   URI: string = environment.uri;
   env: string = environment.assetsUrl;
-  hasCustomizer: boolean;
   items: Item[] = [];
   tags: ExtendedTag[] = [];
   tagsHashTable: Record<string, Tag> = {};
@@ -270,9 +269,6 @@ export class StoreComponent implements OnInit {
       customizer: saleflowItem.customizer?._id,
       index: saleflowItem.index,
     }));
-    // Determina si la tienda maneja customizers
-    if (saleflowItems.some((item) => item.customizer))
-      this.hasCustomizer = true;
     // Fetching la data de los productos
     const items = await this.saleflow.listItems({
       findBy: {

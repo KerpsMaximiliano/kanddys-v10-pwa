@@ -11,9 +11,9 @@
         </button>
         <div class="title">
           {{
-            header.saleflow?.merchant?.name.length < 18
+            header.saleflow?.merchant?.name.length < 26
               ? header.saleflow?.merchant?.name
-              : header.saleflow?.merchant?.name.slice(0, 18) + ".." || "Tienda"
+              : header.saleflow?.merchant?.name.slice(0, 25) + ".." || "Tienda"
           }}
         </div>
 
@@ -34,9 +34,9 @@
       </div>
     </header>
     <main>
-      <form class="top-input-area" *ngIf="!hasCustomizer">
+      <div class="top-input-area">
         <!-- ********************************************** SEARCHBAR ************************************-->
-        <input
+        <!-- <input
           class="text"
           placeholder="Busca por tag o nombre de articulo"
           class="input-top"
@@ -45,7 +45,7 @@
           }"
           *ngIf="showSearchbar"
           [formControl]="searchBar"
-        />
+        /> -->
         <!-- ******************************************** ENDSEARCHBAR ************************************-->
 
         <!-- ******************************************* TAG SWIPER ***************************************-->
@@ -54,7 +54,7 @@
             <div
               class="tags-area swiper-slide"
               [ngStyle]="{
-                maxWidth: '130px'
+                maxWidth: '115px'
               }"
               *ngFor="let tag of unselectedTags"
             >
@@ -64,7 +64,7 @@
                     (click)="selectTag(tag, tagIndex)"
                     class="tag-item"
                     [ngStyle]="{
-                      width: '130px',
+                      width: '115px',
                       height: '120px',
                       'background-image':
                         tag.images?.length > 0
@@ -84,7 +84,7 @@
           </swiper>
         </div>
         <!-- **************************************** END TAG SWIPER ***************************************-->
-      </form>
+      </div>
 
       <!--REGULAR MERCHANT-->
       <div class="content">
