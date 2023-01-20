@@ -9,6 +9,19 @@
   padding: 38px 37px 0px 28px;
 }
 
+button {
+  all: unset;
+  width: 100%;
+  margin-bottom: 23px;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.no-border {
+  border: none;
+}
+
 .title {
   font-size: 23px;
   line-height: 22px;
@@ -19,19 +32,14 @@
 
 .upload {
   margin-right: 15px;
-  margin-bottom: -5px;
+  margin-top: -7.5px;
 }
 
 .text-wrap {
-  display: inline-block;
-  .line {
-    width: 1000%;
-    max-width: 400px;
-    margin-top: 10px;
-    margin-bottom: 25px;
-    height: 1px;
-    border: 1px solid rgba(#707070, 0.17);
-  }
+  width: 100%;
+  max-width: 398px;
+  padding-bottom: 12.5px;
+  border-bottom: 1px solid rgba(#707070, 0.17);
 }
 .linksCategory {
   padding-bottom: 33px;
