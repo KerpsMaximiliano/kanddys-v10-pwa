@@ -208,6 +208,9 @@ export class PaymentsComponent implements OnInit {
   viewMerchantForRefund: ViewsMerchant = null;
   azulPaymentsSupported: boolean = false;
 
+  azulPaymentURL: string =
+    'https://pruebas.azul.com.do/paymentpage/Default.aspx';
+
   constructor(
     private walletService: WalletService,
     private orderService: OrderService,
@@ -303,6 +306,30 @@ export class PaymentsComponent implements OnInit {
     if (redirectToAzulPaymentsPage) {
       this.redirectToAzulPaymentPage();
     }
+
+    if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+  }
+
+  checkIfAzulPaymentURLIsAvailable() {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    setTimeout(() => controller.abort(), 4000);
+
+    fetch(this.azulPaymentURL, { signal })
+      .then((response) => {
+        if (!response.ok) {
+          this.azulPaymentURL =
+            'https://contpagos.azul.com.do/PaymentPage/Default.aspx';
+        }
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') {
+          this.azulPaymentURL =
+            'https://contpagos.azul.com.do/PaymentPage/Default.aspx';
+        } else {
+          console.log('An error occured: ', err);
+        }
+      });
   }
 
   onFileInput(file: File | { image: File; index: number }) {
@@ -449,10 +476,8 @@ export class PaymentsComponent implements OnInit {
     this.toastrService.info('Redigiendo a la página de pago', null, {
       timeOut: 1500,
     });
-    
-    lockUI();
 
- 
+    lockUI();
 
     const clientURI = `${environment.uri}`;
 
