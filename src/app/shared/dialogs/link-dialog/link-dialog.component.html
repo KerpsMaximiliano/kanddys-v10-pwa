@@ -1,6 +1,6 @@
 <div class="container">
   <div *ngFor="let category of linksCategory" class="linksCategory">
-    <p class="title">{{ category.title }}</p>
+    <p class="title" *ngIf="category.title !== ''">{{ category.title }}</p>
     <div *ngFor="let link of category.links">
       <img [src]="env + '/upload.svg'" alt="upload" class="upload" />
       <div class="text-wrap">

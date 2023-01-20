@@ -8,7 +8,10 @@
   min-height: 100vh;
 }
 
-.header1 {
+.header1,
+.header2 {
+  all: unset;
+  width: 100%;
   background-color: #fff;
   padding: 10px 0px;
   display: flex;
@@ -33,15 +36,11 @@
 
 .header2 {
   background-color: #272727;
-  padding: 10px;
-  display: flex;
-  align-items: center;
 
   .arrows {
     margin: 0 auto;
     filter: invert(82%) sepia(89%) saturate(315%) hue-rotate(54deg)
       brightness(99%) contrast(90%);
-    cursor: pointer;
   }
 }
 

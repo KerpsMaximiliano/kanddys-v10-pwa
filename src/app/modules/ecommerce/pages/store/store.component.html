@@ -2,22 +2,22 @@
   <div class="component">
     <header>
       <div class="header" *ngIf="selectedTags.length === 0">
-        <img
-          [src]="env + '/arrow-double-up-black.svg'"
-          alt="arrows"
-          class="arrows"
-        />
+        <button class="left">
+          <img
+            [src]="env + '/arrow-double-up-black.svg'"
+            alt="arrows"
+            class="arrows"
+          />
+        </button>
         <div class="title">
           {{
             header.saleflow?.merchant?.name.length < 18
-              ? "Bienvenido a " + header.saleflow?.merchant?.name
-              : "Bienvenido a " +
-                  header.saleflow?.merchant?.name.slice(0, 18) +
-                  ".." || "Tienda"
+              ? header.saleflow?.merchant?.name
+              : header.saleflow?.merchant?.name.slice(0, 18) + ".." || "Tienda"
           }}
         </div>
 
-        <div class="user-area" (click)="openUserManagementDialog()">
+        <button class="user-area" (click)="openUserManagementDialog()">
           <span *ngIf="header.user">{{
             (header.user.name || header.user.phone || header.user.email)
               .length > 10
@@ -30,7 +30,7 @@
           }}</span>
           <span *ngIf="!header.user">CompradorID</span>
           <img class="icon" [src]="env + '/user-white.svg'" />
-        </div>
+        </button>
       </div>
     </header>
     <main>
@@ -54,7 +54,7 @@
             <div
               class="tags-area swiper-slide"
               [ngStyle]="{
-                maxWidth: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)'
+                maxWidth: '130px'
               }"
               *ngFor="let tag of unselectedTags"
             >
@@ -64,13 +64,17 @@
                     (click)="selectTag(tag, tagIndex)"
                     class="tag-item"
                     [ngStyle]="{
-                      width: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
-                      height:
-                        'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
+                      width: '130px',
+                      height: '120px',
                       'background-image':
                         tag.images?.length > 0
-                          ? 'url(' + tag.images[0] + ')'
-                          : 'url(' + env + '/noimage.png' + ')'
+                          ? 'linear-gradient(transparent 70%, #fff),url(' +
+                            tag.images[0] +
+                            ')'
+                          : 'linear-gradient(transparent 70%, #fff),url(' +
+                            env +
+                            '/noimage.png' +
+                            ')'
                     }"
                   ></div>
                   <span class="tag-name">{{ tag.name }}</span>
