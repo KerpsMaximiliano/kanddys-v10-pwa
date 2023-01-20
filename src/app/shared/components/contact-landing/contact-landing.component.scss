@@ -10,7 +10,6 @@
 
 .header1,
 .header2 {
-  all: unset;
   width: 100%;
   background-color: #fff;
   padding: 10px 0px;
@@ -35,6 +34,8 @@
 }
 
 .header2 {
+  all: unset;
+  cursor: pointer;
   background-color: #272727;
 
   .arrows {
