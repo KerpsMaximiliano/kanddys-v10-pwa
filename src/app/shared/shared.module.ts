@@ -109,6 +109,8 @@ import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.c
 import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
+import { GeneralDialogComponent } from './components/general-dialog/general-dialog.component';
+import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.component';
 
 const imports = [
   CommonModule,
@@ -223,7 +225,9 @@ const declarations = [
   AnexosDialogComponent,
   QrCodeDialogComponent,
   PostsXlsComponent,
-  MediaDialogComponent
+  MediaDialogComponent,
+  DialogFlowComponent,
+  GeneralDialogComponent
 ];
 
 @NgModule({

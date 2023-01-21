@@ -25,6 +25,11 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ConfirmActionDialogComponent } from 'src/app/shared/dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { environment } from 'src/environments/environment';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
+import { SwiperOptions } from 'swiper';
+import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
+import { Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-payments',
@@ -48,6 +53,7 @@ export class PaymentsComponent implements OnInit {
   post: Post;
   currentUser: User;
   acceptedRefundPolicies: boolean = false;
+  openedDialogFlow: boolean;
   onlinePaymentsOptions: WebformAnswerLayoutOption[] = [
     {
       type: 'WEBFORM-ANSWER',
@@ -207,6 +213,89 @@ export class PaymentsComponent implements OnInit {
   ];
   viewMerchantForRefund: ViewsMerchant = null;
   azulPaymentsSupported: boolean = false;
+  logged: boolean;
+  dialogs: Array<EmbeddedComponentWithId> = [
+    {
+      component: GeneralDialogComponent,
+      componentId: 'whoReceives',
+      inputs: {
+        dialogId: 'whoReceives',
+        omitTabFocus: false,
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '12px',
+          opacity: '1',
+          padding: '37.1px 23.6px 38.6px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '23px',
+            fontFamily: 'SfProBold',
+            color: '#4F4F4F',
+            marginTop: '0px',
+            marginBottom: '18.5px',
+          },
+          text: 'El banco necesita tu email para hacer el pago.',
+        },
+        fields: {
+          styles: {},
+          list: [
+            {
+              name: 'receiverName',
+              value: '',
+              validators: [Validators.required],
+              label: {
+                styles: {
+                  display: 'block',
+                  fontSize: '17px',
+                  fontFamily: '"SFProRegular"',
+                  color: '#A1A1A1',
+                  margin: '10px 0px',
+                },
+                text: '',
+              },
+              type: 'email',
+              disclaimer: {
+                styles: {
+                  marginTop: '17.9px',
+                  fontFamily: 'SfProLight',
+                  fontStyle: 'italic',
+                  fontSize: '15px',
+                  color: '#7B7B7B'
+                },
+                text: 'Esto solo ocurre cuando los pagos son con tarjetas de crédito.'
+              },
+              placeholder: 'Escribe tu correo electrónico',
+              styles: {
+                border: 'none',
+                borderRadius: '9px',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                display: 'block',
+                fontFamily: 'RobotoMedium',
+                fontSize: '17px',
+                padding: '26px 26px 26px 16px',
+                resize: 'none',
+                width: '100%',
+                color: '#A1A1A1',
+              },
+            },
+          ],
+        },
+        isMultiple: true,
+      },
+      outputs: [
+        {
+          name: 'data',
+          callback: (params) => {
+            const { fields, value, valid } = params;
+            //const {  } = value;
+          },
+        },
+      ],
+      postLabel: 'El mensaje incluirá un qrCode para ver el Story.',
+    },
+  ];
+  swiperConfig: SwiperOptions = null;
 
   azulPaymentURL: string =
     'https://pruebas.azul.com.do/paymentpage/Default.aspx';
@@ -222,6 +311,7 @@ export class PaymentsComponent implements OnInit {
     private location: LocationStrategy,
     private integrationService: IntegrationsService,
     private dialogService: DialogService,
+    private authService: AuthService,
     private toastrService: ToastrService
   ) {
     history.pushState(null, null, window.location.href);
@@ -280,6 +370,8 @@ export class PaymentsComponent implements OnInit {
     ) as User;
     this.currentUser =
       this.order?.user || this.headerService.user || registeredUser;
+    this.logged = Boolean(await this.authService.me());
+
     this.status = 'complete';
 
     const viewsMerchants = await this.merchantService.viewsMerchants({
@@ -303,8 +395,10 @@ export class PaymentsComponent implements OnInit {
       this.onlinePaymentsOptions.pop();
     }
 
-    if (redirectToAzulPaymentsPage) {
+    if (redirectToAzulPaymentsPage && this.currentUser.email) {
       this.redirectToAzulPaymentPage();
+    } else if (this.redirectToAzulPaymentPage && !this.currentUser.email) {
+      this.openedDialogFlow = true;
     }
 
     if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
@@ -456,12 +550,12 @@ export class PaymentsComponent implements OnInit {
         });
       }
     } else if (paymentOptionName === 'Tarjeta de crédito') {
-      if (this.currentUser) this.redirectToAzulPaymentPage();
+      if (this.currentUser && this.logged) this.redirectToAzulPaymentPage();
       else {
         this.router.navigate(['auth/login'], {
           queryParams: {
             orderId: this.order._id,
-            auth: 'payment',
+            auth: 'auth',
             paymentWithAzul: true,
             redirect:
               window.location.href.split('/').slice(3).join('/') +
@@ -600,7 +694,7 @@ export class PaymentsComponent implements OnInit {
     const azulForm: HTMLFormElement = document.querySelector('#azulForm');
     const formData = new FormData(azulForm);
 
-    console.log(formData)
+    console.log(formData);
     /*
     fetch('https://pruebas.azul.com.do/paymentpage/Default.aspx', {
       method: 'POST',

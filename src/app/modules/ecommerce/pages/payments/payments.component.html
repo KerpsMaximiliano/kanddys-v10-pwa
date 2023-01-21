@@ -261,3 +261,11 @@
     <input type="hidden" id="AuthHash" name="AuthHash" value="......." />
   </form>
 </div>
+
+<app-dialog-flow
+  [dialogFlowId]="'azulEmailRequest'"
+  [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+  [dialogs]="dialogs"
+  [allowSlideNext]="false"
+  (saveConfigRef)="swiperConfig = $event"
+></app-dialog-flow>
