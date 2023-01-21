@@ -93,7 +93,7 @@ export class ItemsDashboardComponent implements OnInit {
       name: 'Tags',
     },
   ];
-  allItems: ExtendedItem[] | any = [];
+  allItems: ExtendedItem[] = [];
   itemsTotalCounter = 0;
   activeItems: Item[] = [];
   inactiveItems: Item[] = [];
@@ -102,8 +102,7 @@ export class ItemsDashboardComponent implements OnInit {
   activeItemsCounter: number = 0;
   featuredItemsCounter: number = 0;
   archivedItemsCounter: number = 0;
-  highlightedItems: ExtendedItem[] | any = [];
-  bestSellers: ExtendedItem[] | any = [];
+  highlightedItems: ExtendedItem[] = [];
   filteredHighlightedItems: ExtendedItem[] = [];
   activeMenuOptionIndex: number = 0;
   tagsList: Array<ExtendedTag> = [];
@@ -1455,20 +1454,5 @@ export class ItemsDashboardComponent implements OnInit {
     this.router.navigate([route], {
       queryParams,
     });
-  }
-
-  bestSellersByMerchant():void {
-    (async () => {
-      const bestSellers = [];
-      const { _id } = await this._MerchantsService.merchantDefault();
-      const bestSellersIds = await this._ItemsService.bestSellersByMerchant(
-        15,
-        _id
-      );
-      bestSellersIds.forEach((id) => {
-        const item = this.highlightedItems.find((item) => item._id === id);
-        if (item) this.bestSellers.push(item);
-      });
-    })();
   }
 }
