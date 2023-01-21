@@ -593,4 +593,23 @@ export class PaymentsComponent implements OnInit {
       '/ecommerce/terms-of-use/' + this.viewMerchantForRefund._id,
     ]);
   }
+
+  async payWithAzul(event: Event) {
+    event.preventDefault();
+
+    const azulForm: HTMLFormElement = document.querySelector('#azulForm');
+    const formData = new FormData(azulForm);
+
+    console.log(formData)
+    /*
+    fetch('https://pruebas.azul.com.do/paymentpage/Default.aspx', {
+      method: 'POST',
+      body: formData,
+    }).then((response) => {
+      console.log(response);
+      if (response.redirected) {
+        window.location.href = response.url;
+      }
+    });*/
+  }
 }

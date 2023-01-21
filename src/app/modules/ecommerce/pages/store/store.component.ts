@@ -177,8 +177,9 @@ export class StoreComponent implements OnInit {
         };
         const types: any[] = [
           { type: 'refund', text: 'Políticas de reembolsos' },
-          { type: 'delivery', text: 'Políticas de entregas' },
+          { type: 'delivery-politics', text: 'Políticas de entregas' },
           { type: 'security', text: 'Políticas de seguridad' },
+          { type: 'privacy', text: 'Políticas de privacidad' },
         ];
         for (const { type, text } of types) {
           pagination.findBy.type = type;

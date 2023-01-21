@@ -396,6 +396,7 @@ export const viewsMerchant = gql`
     viewsMerchant(id: $id){
       _id
       description
+      type
       numeration{
         value
       }
