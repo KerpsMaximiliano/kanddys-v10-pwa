@@ -3,6 +3,9 @@
   margin: 0;
   padding: 0;
 }
+button {
+  all: unset;
+}
 .container {
   background-color: #f6f6f6;
   min-height: 100vh;
@@ -34,14 +37,12 @@
 }
 
 .header2 {
-  all: unset;
   cursor: pointer;
   background-color: #272727;
 
   .arrows {
     margin: 0 auto;
-    filter: invert(82%) sepia(89%) saturate(315%) hue-rotate(54deg)
-      brightness(99%) contrast(90%);
+    filter: invert(82%) sepia(89%) saturate(315%) hue-rotate(54deg) brightness(99%) contrast(90%);
   }
 }
 
@@ -85,8 +86,7 @@
       align-items: center;
 
       .locationIcon {
-        filter: invert(41%) sepia(17%) saturate(1757%) hue-rotate(163deg)
-          brightness(96%) contrast(100%);
+        filter: invert(41%) sepia(17%) saturate(1757%) hue-rotate(163deg) brightness(96%) contrast(100%);
         width: 21px;
         height: 27px;
       }
@@ -130,8 +130,7 @@
     font-family: "SfProMedium";
 
     .icon {
-      filter: invert(7%) sepia(5%) saturate(302%) hue-rotate(314deg)
-        brightness(96%) contrast(81%);
+      filter: invert(7%) sepia(5%) saturate(302%) hue-rotate(314deg) brightness(96%) contrast(81%);
     }
   }
 }
