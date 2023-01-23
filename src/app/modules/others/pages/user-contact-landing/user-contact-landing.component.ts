@@ -23,6 +23,10 @@ import { environment } from 'src/environments/environment';
 import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
 import { SwiperOptions } from 'swiper';
 import { ExchangeData } from 'src/app/core/models/wallet';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
 
 const socialNames = [
   'linkedin',
@@ -425,7 +429,9 @@ export class UserContactLandingComponent implements OnInit {
             text: 'Ir a la vista del visitante',
             mode: 'func',
             func: () =>
-              this.router.navigate([`/ecommerce/${this.saleflow.merchant.slug}/store`]),
+              this.router.navigate([
+                `/ecommerce/${this.saleflow.merchant.slug}/store`,
+              ]),
           },
         ],
       },
@@ -480,4 +486,26 @@ export class UserContactLandingComponent implements OnInit {
   goToStore = () => {
     this.router.navigate([`/ecommerce/${this.saleflow.merchant.slug}/store`]);
   };
+
+  openSettingsDialog() {
+    const optionsList: SettingsDialogButton[] = [
+      {
+        text: 'Borrar mi usuario',
+      },
+    ];
+
+    this.dialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        title: 'Gestión de usuario',
+        optionsList,
+        //qrCode: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+        cancelButton: {
+          text: 'cerrar',
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
 }
