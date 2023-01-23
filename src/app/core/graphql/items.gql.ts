@@ -26,7 +26,11 @@ const itemBody = `
   pricePerUnit
   description
   createdAt
-  images
+  images {
+    value
+    index
+    active
+  }
   fixedQuantity
   size
   quality
@@ -64,7 +68,11 @@ export const itemsByMerchant = gql`
     itemsByMerchant(id: $id, sort: $sort) {
       _id
       name
-      images
+      images {
+        value
+        index
+        active
+      }
       notifications
       category {
         _id
@@ -130,7 +138,11 @@ export const item = gql`
       pricePerUnit
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       fixedQuantity
       size
       quality
@@ -206,7 +218,6 @@ export const itemPackageByMerchant = gql`
       createdAt
       name
       images
-
       merchant {
         _id
       }
@@ -224,7 +235,11 @@ export const listItems = gql`
       _id
       createdAt
       name
-      images
+      images {
+        value
+        index
+        active
+      }
       merchant {
         _id
       }
@@ -244,7 +259,6 @@ export const listItemPackage = gql`
       createdAt
       name
       images
-
       merchant {
         _id
       }
@@ -381,7 +395,11 @@ export const addImageItem = gql`
       pricePerUnit
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       fixedQuantity
       size
       quality
@@ -437,7 +455,11 @@ export const deleteImageItem = gql`
       pricePerUnit
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       fixedQuantity
       size
       quality
