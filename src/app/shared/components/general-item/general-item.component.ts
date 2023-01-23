@@ -41,7 +41,10 @@ export class GeneralItemComponent implements OnInit {
   @Input() tagsByIdsObject: Record<string, Tag> = null;
   @Input() showIconForItemStatus: boolean = false;
   @Input() showVisitorCounter: boolean = false;
+  @Input() showPrice: boolean = false;
+  @Input() priceLabel: string = null;
   @Input() statusIcon: string = null;
+  @Input() statusIconLabel: string = null;
   @Input() tagsSeparatedByComma: string = null;
 
   //tag-specific variables
@@ -101,12 +104,19 @@ export class GeneralItemComponent implements OnInit {
         if (this.item.params.length === 0) {
           this.cardMainImage =
             this.item.images.length > 0 ? this.item.images[0] : null;
-          this.itemMainTitle = this.item.name ? this.item.name : 'Sin titulo';
+          if (!this.showPrice)
+            this.itemMainTitle = this.item.name ? this.item.name : 'Sin titulo';
+          else if (this.item.pricing !== null && this.item.pricing) {
+            const priceString = `$${this.item.pricing.toLocaleString('es-MX')}`;
+            this.itemMainTitle = this.priceLabel
+              ? this.priceLabel + priceString
+              : priceString;
+          }
         }
         break;
       case 'TAG':
         if (['disabled', 'featured'].includes(this.tag.status)) {
-            this.showIconForTagStatus = true;
+          this.showIconForTagStatus = true;
 
           this.statusIcon =
             this.env +
@@ -118,7 +128,7 @@ export class GeneralItemComponent implements OnInit {
         if (this.tag.entity && !this.topInnerButtons) {
           let text = null;
 
-          if(this.showEntityButton) {
+          if (this.showEntityButton) {
             switch (this.tag.entity) {
               case 'order':
                 text = 'Facturas';
@@ -127,7 +137,7 @@ export class GeneralItemComponent implements OnInit {
                 text = 'Articulos';
                 break;
             }
-  
+
             this.topInnerButtons = [];
             this.topInnerButtons.push({
               text,
@@ -136,7 +146,8 @@ export class GeneralItemComponent implements OnInit {
           }
         }
 
-        if (this.tag.images && this.tag.images.length > 0) this.cardMainImage = this.tag.images[0];
+        if (this.tag.images && this.tag.images.length > 0)
+          this.cardMainImage = this.tag.images[0];
 
         break;
     }

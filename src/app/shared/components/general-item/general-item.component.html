@@ -120,6 +120,10 @@
                 alt="status"
               />
 
+              <div class="status-icon-label" *ngIf="statusIconLabel">
+                {{statusIconLabel}}
+              </div>
+
               <div
                 *ngIf="
                   (shouldIconsHaveBackground && showIconForItemStatus) ||

@@ -355,4 +355,88 @@ headline="EXPUESTO EN TAB (S)"
 ]"
 ></app-anexo-landing> -->
 
-<button (click)="openDialog()">ver links</button>
+<!--
+    <button (click)="openDialog()">ver links</button>
+-->
+
+<div
+  [ngStyle]="{
+    width: '194.06px',
+    height: '238.43px'
+  }"
+>
+  <app-general-item
+    [item]="item"
+    [entity]="'ITEM'"
+    [mainColor]="'#ffffff'"
+    [textColor]="'#000'"
+    [viewsCounterStyles]="{
+      color: '#000'
+    }"
+    [showPrice]="true"
+    [priceLabel]="'Desde '"
+    [singleIconStyles]="{
+      marginRight: '6.1px'
+    }"
+    [showIconForTagStatus]="
+      item.status === 'disabled' || item.status === 'featured'
+    "
+    [statusIcon]="'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'"
+    [statusIconLabel]="'save n’ win'"
+    [showIconForItemStatus]="true"
+    [showVisitorCounter]="false"
+    [titleStyles]="{
+      display: '-webkit-box',
+      '-webkit-line-clamp': 1,
+      'line-clamp': 1,
+      '-webkit-box-orient': 'vertical',
+      overflow: 'hidden',
+      'word-break': 'break-all'
+    }"
+    [topInnerButtonStyles]="{
+      backgroundColor: item.status !== 'disabled' ? '#272727' : '#b17608'
+    }"
+  >
+  </app-general-item>
+</div>
+
+<div
+  [ngStyle]="{
+    width: '396.88px',
+    height: '487.6px'
+  }"
+>
+  <app-general-item
+    [item]="item"
+    [entity]="'ITEM'"
+    [mainColor]="'#ffffff'"
+    [textColor]="'#000'"
+    [viewsCounterStyles]="{
+      color: '#000'
+    }"
+    [showPrice]="true"
+    [priceLabel]="'Desde '"
+    [singleIconStyles]="{
+      marginRight: '6.1px'
+    }"
+    [showIconForTagStatus]="
+      item.status === 'disabled' || item.status === 'featured'
+    "
+    [statusIcon]="'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'"
+    [statusIconLabel]="'save n’ win'"
+    [showIconForItemStatus]="true"
+    [showVisitorCounter]="false"
+    [titleStyles]="{
+      display: '-webkit-box',
+      '-webkit-line-clamp': 1,
+      'line-clamp': 1,
+      '-webkit-box-orient': 'vertical',
+      overflow: 'hidden',
+      'word-break': 'break-all'
+    }"
+    [topInnerButtonStyles]="{
+      backgroundColor: item.status !== 'disabled' ? '#272727' : '#b17608'
+    }"
+  >
+  </app-general-item>
+</div>

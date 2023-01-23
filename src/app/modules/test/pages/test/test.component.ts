@@ -19,7 +19,7 @@ import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.comp
 import { InputTransparentComponent } from 'src/app/shared/dialogs/input-transparent/input-transparent.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { ItemInput } from 'src/app/core/models/item';
+import { Item, ItemInput } from 'src/app/core/models/item';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -30,6 +30,7 @@ import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
 import { BlankComponent } from 'src/app/shared/dialogs/blank/blank.component';
 import { SwiperOptions } from 'swiper';
 import { LinkDialogComponent } from 'src/app/shared/dialogs/link-dialog/link-dialog.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-test',
@@ -38,10 +39,11 @@ import { LinkDialogComponent } from 'src/app/shared/dialogs/link-dialog/link-dia
 })
 export class TestComponent implements OnInit {
   @ViewChild('dialogSwiper') dialogSwiper: SwiperComponent;
-
+  env: string = environment.assetsUrl;
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
+  item: Item = null;
   dialogs: Array<EmbeddedComponent> = [
     {
       component: BlankComponent,
@@ -100,7 +102,9 @@ export class TestComponent implements OnInit {
     private saleflowService: SaleFlowService
   ) {}
 
-  async ngOnInit() {}
+  async ngOnInit() {
+    this.item = await this.itemsService.item('6387bb0c3dbe8733c0b9427e');
+  }
 
   openDialog() {
     this.dialog.open(LinkDialogComponent, {
