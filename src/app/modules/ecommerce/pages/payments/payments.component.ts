@@ -136,80 +136,6 @@ export class PaymentsComponent implements OnInit {
         },
       ],
     },
-    /*   {
-      type: 'WEBFORM-ANSWER',
-      optionStyles: webformAnswerLayoutOptionDefaultStyles,
-      selected: false,
-      optionIcon: 'stripe',
-      callback: () => this.selectOnlinePayment(0),
-      texts: {
-        topRight: {
-          text: '',
-          styles: {
-            color: '#7B7B7B',
-            display: 'none',
-          },
-        },
-        topLeft: {
-          text: 'Stripe',
-          styles: {
-            paddingBottom: '8px',
-            width: '100%',
-          },
-        },
-        middleTexts: [
-          {
-            text: 'ID',
-          },
-          {
-            text: 'ID',
-          },
-        ],
-        bottomLeft: {
-          text: 'ID',
-          styles: {
-            paddingTop: '8px',
-            fontFamily: 'SfProBold',
-          },
-        },
-      },
-    },
-    {
-      type: 'WEBFORM-ANSWER',
-      optionStyles: webformAnswerLayoutOptionDefaultStyles,
-      selected: false,
-      optionIcon: 'paypal',
-      callback: () => this.selectOnlinePayment(1),
-      texts: {
-        topRight: {
-          text: '',
-          styles: {
-            color: '#7B7B7B',
-          },
-        },
-        topLeft: {
-          text: 'Paypal',
-          styles: {
-            paddingBottom: '8px',
-          },
-        },
-        middleTexts: [
-          {
-            text: 'ID',
-          },
-          {
-            text: 'ID',
-          },
-        ],
-        bottomLeft: {
-          text: 'ID',
-          styles: {
-            paddingTop: '8px',
-            fontFamily: 'SfProBold',
-          },
-        },
-      },
-    },*/
   ];
   viewMerchantForRefund: ViewsMerchant = null;
   azulPaymentsSupported: boolean = false;
@@ -217,9 +143,9 @@ export class PaymentsComponent implements OnInit {
   dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
-      componentId: 'whoReceives',
+      componentId: 'userEmailDialog',
       inputs: {
-        dialogId: 'whoReceives',
+        dialogId: 'userEmailDialog',
         omitTabFocus: false,
         containerStyles: {
           background: 'rgb(255, 255, 255)',
@@ -241,9 +167,9 @@ export class PaymentsComponent implements OnInit {
           styles: {},
           list: [
             {
-              name: 'receiverName',
+              name: 'email',
               value: '',
-              validators: [Validators.required],
+              validators: [Validators.required, Validators.email],
               label: {
                 styles: {
                   display: 'block',
@@ -261,9 +187,9 @@ export class PaymentsComponent implements OnInit {
                   fontFamily: 'SfProLight',
                   fontStyle: 'italic',
                   fontSize: '15px',
-                  color: '#7B7B7B'
+                  color: '#7B7B7B',
                 },
-                text: 'Esto solo ocurre cuando los pagos son con tarjetas de crédito.'
+                text: 'Esto solo ocurre cuando los pagos son con tarjetas de crédito.',
               },
               placeholder: 'Escribe tu correo electrónico',
               styles: {
@@ -279,20 +205,52 @@ export class PaymentsComponent implements OnInit {
                 color: '#A1A1A1',
               },
             },
+            {
+              name: 'submitButton',
+              value: '',
+              validators: [],
+              type: 'buttonIcon',
+              buttonIcon: {
+                src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-right-black.svg',
+                styles: {
+                  width: '10px',
+                  filter:
+                    'invert(100%) sepia(13%) saturate(7497%) hue-rotate(182deg) brightness(97%) contrast(100%)',
+                },
+              },
+              styles: {
+                backgroundColor: 'limegreen',
+                border: 'none',
+                borderRadius: '7px',
+                position: 'absolute',
+                padding: '5px 20px',
+                right: '37px',
+                top: '133px',
+              },
+            },
           ],
         },
         isMultiple: true,
       },
       outputs: [
         {
-          name: 'data',
-          callback: (params) => {
-            const { fields, value, valid } = params;
-            //const {  } = value;
+          name: 'buttonClicked',
+          callback: async (params) => {
+            const { buttonClicked, value, valid } = params;
+
+            if (valid) {
+              await this.authService.updateMe({
+                email: value.email,
+              });
+              this.redirectToAzulPaymentPage();
+            } else {
+              this.toastrService.error('Email invalido', null, {
+                timeOut: 1500,
+              });
+            }
           },
         },
       ],
-      postLabel: 'El mensaje incluirá un qrCode para ver el Story.',
     },
   ];
   swiperConfig: SwiperOptions = null;
@@ -397,7 +355,7 @@ export class PaymentsComponent implements OnInit {
 
     if (redirectToAzulPaymentsPage && this.currentUser.email) {
       this.redirectToAzulPaymentPage();
-    } else if (this.redirectToAzulPaymentPage && !this.currentUser.email) {
+    } else if (redirectToAzulPaymentsPage && !this.currentUser.email) {
       this.openedDialogFlow = true;
     }
 
@@ -409,7 +367,7 @@ export class PaymentsComponent implements OnInit {
     const signal = controller.signal;
     setTimeout(() => controller.abort(), 4000);
 
-    fetch(this.azulPaymentURL, { signal })
+    fetch(this.azulPaymentURL, { signal, redirect: 'follow' })
       .then((response) => {
         if (!response.ok) {
           this.azulPaymentURL =
@@ -550,8 +508,11 @@ export class PaymentsComponent implements OnInit {
         });
       }
     } else if (paymentOptionName === 'Tarjeta de crédito') {
-      if (this.currentUser && this.logged) this.redirectToAzulPaymentPage();
-      else {
+      if (this.currentUser && this.logged && this.currentUser.email)
+        this.redirectToAzulPaymentPage();
+      else if (this.currentUser && this.logged && !this.currentUser.email) {
+        this.openedDialogFlow = true;
+      } else {
         this.router.navigate(['auth/login'], {
           queryParams: {
             orderId: this.order._id,

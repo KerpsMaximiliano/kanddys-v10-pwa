@@ -490,6 +490,15 @@ export class StoreComponent implements OnInit {
         title: 'Menu de opciones',
         options: [
           {
+            text: 'Ir a mi perfil',
+            mode: 'func',
+            func: async () => {
+              await this.router.navigate([
+                `/others/user-contact-landing/${this.header.user._id}`,
+              ]);
+            },
+          },
+          {
             text: 'Cerrar sesión',
             mode: 'func',
             func: async () => {

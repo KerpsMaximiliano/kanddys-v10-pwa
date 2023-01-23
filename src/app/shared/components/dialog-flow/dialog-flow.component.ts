@@ -23,6 +23,7 @@ export class DialogFlowComponent implements OnInit {
   @Input() dialogFlowId: string = null;
   @Input() dialogs: Array<EmbeddedComponentWithId> = [];
   @Input() allowSlideNext = true;
+  @Input() blockClosure = false;
   @Output() saveConfigRef = new EventEmitter();
   @Output() moveToDialogRef = new EventEmitter();
   @Output() closingDialogSignal = new EventEmitter();

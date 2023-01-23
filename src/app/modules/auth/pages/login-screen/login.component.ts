@@ -737,7 +737,8 @@ export class LoginComponent implements OnInit {
       }
       if (this.orderId) {
         this.authOrder(signin.user._id);
-        return;
+
+        if (!this.paymentWithAzul) return;
       }
 
       if (this.itemId) {
