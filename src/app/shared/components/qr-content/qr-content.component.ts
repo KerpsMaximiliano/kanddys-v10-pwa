@@ -52,10 +52,16 @@ export class QrContentComponent implements OnInit {
           this.slidesPath.push({
             text: slide.text,
             title: slide.title,
-            type: 'TEXT'
+            type: 'TEXT',
           });
         }
       }
+    }
+
+    if (this.slides.length > 0) {
+      this.shadows = false;
+    } else {
+      this.shadows = true;
     }
   }
 
@@ -70,11 +76,15 @@ export class QrContentComponent implements OnInit {
   emitClick() {
     this.buttonClicked.emit(true);
   }
-  openImageModal(imageSourceURL: string | ArrayBuffer) {
+  openImageModal(
+    imageSourceURL: string | SafeUrl | ArrayBuffer,
+    type: 'IMAGE' | 'VIDEO'
+  ) {
     this.dialog.open(ImageViewComponent, {
       type: 'fullscreen-translucent',
       props: {
         imageSourceURL,
+        sourceType: type,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

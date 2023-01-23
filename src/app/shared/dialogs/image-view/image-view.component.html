@@ -1,14 +1,21 @@
 <div class="external-wrapper" (click)="close()">
-  <div
-    class="inner-wrapper"
-    (click)="(null)"
-    [ngStyle]="{
-      'background-image': 'url(' + imageSourceURL + ')',
-      'background-position': 'center',
-      'background-size': 'contain',
-      'background-repeat': 'no-repeat'
-    }"
-  ></div>
+  <ng-container *ngIf="sourceType === 'IMAGE'">
+    <div
+      class="inner-wrapper"
+      (click)="(null)"
+      [ngStyle]="{
+        'background-image': 'url(' + imageSourceURL + ')',
+        'background-position': 'center',
+        'background-size': 'contain',
+        'background-repeat': 'no-repeat'
+      }"
+    ></div>
+    </ng-container>
+    <ng-container *ngIf="sourceType === 'VIDEO'">
+      <video class="inner-wrapper" [src]="imageSourceURL" controls>
+      </video>
+  </ng-container>
+
   <button
     class="preview-btn"
     *ngIf="buttonText"
