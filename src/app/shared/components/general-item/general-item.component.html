@@ -13,14 +13,15 @@
   <div
     class="containerGradientBox"
     [ngStyle]="{
-      backgroundImage:
-        'linear-gradient(to top,' + mainColor + ', transparent 60%)'
+      backgroundImage: !useFlatBackgroundForCardInfo
+        ? 'linear-gradient(to top,' + mainColor + ', transparent 60%)'
+        : null
     }"
     [ngClass]="{
       selectedCard: itemSelected
     }"
   >
-    <div class="inner-tag-wrapper">
+    <div class="inner-wrapper" [ngStyle]="innerWrapperStyles">
       <div
         class="topRightButton"
         *ngIf="topRightButton"
@@ -112,6 +113,14 @@
                 (showIconForTagStatus && statusIcon)
               "
             >
+              <div
+                class="status-icon-label"
+                [ngStyle]="statusIconLabelStyles"
+                *ngIf="statusIconLabel && statusIconLabelSide === 'LEFT'"
+              >
+                {{ statusIconLabel }}
+              </div>
+
               <img
                 *ngIf="!shouldIconsHaveBackground"
                 class="icon"
@@ -120,8 +129,11 @@
                 alt="status"
               />
 
-              <div class="status-icon-label" *ngIf="statusIconLabel">
-                {{statusIconLabel}}
+              <div
+                class="status-icon-label"
+                *ngIf="statusIconLabel && statusIconLabelSide === 'RIGHT'"
+              >
+                {{ statusIconLabel }}
               </div>
 
               <div
@@ -156,8 +168,10 @@
           }"
         >
           <ng-container [ngSwitch]="entity">
-            <ng-container *ngSwitchCase="'ITEM'">
-              {{ itemMainTitle }}
+            <ng-container *ngIf="!hideCardTitle">
+              <ng-container *ngSwitchCase="'ITEM'">
+                {{ itemMainTitle }}
+              </ng-container>
             </ng-container>
 
             <ng-container *ngSwitchCase="'TAG'">

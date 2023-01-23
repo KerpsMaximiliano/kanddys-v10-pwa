@@ -32,6 +32,7 @@ export class GeneralItemComponent implements OnInit {
   @Input() entity: EntitiesAllowed = 'ITEM';
   @Input() shouldItemBeSelectectable: boolean = false;
   @Input() itemSelected: boolean = false;
+  @Input() useFlatBackgroundForCardInfo: boolean = false;
   @Output() itemSelectedEvent = new EventEmitter();
   cardMainImage: string = null;
 
@@ -42,9 +43,11 @@ export class GeneralItemComponent implements OnInit {
   @Input() showIconForItemStatus: boolean = false;
   @Input() showVisitorCounter: boolean = false;
   @Input() showPrice: boolean = false;
+  @Input() hideCardTitle: boolean = false;
   @Input() priceLabel: string = null;
   @Input() statusIcon: string = null;
   @Input() statusIconLabel: string = null;
+  @Input() statusIconLabelSide: 'LEFT' | 'RIGHT' = 'RIGHT';
   @Input() tagsSeparatedByComma: string = null;
 
   //tag-specific variables
@@ -75,7 +78,9 @@ export class GeneralItemComponent implements OnInit {
   @Input() itemPresentationBoxTopRowStyles: CSSStyles = null;
   @Input() itemPresentationBoxMiddleRowStyles: CSSStyles = null;
   @Input() itemPresentationBoxBottomRowStyles: CSSStyles = null;
+  @Input() statusIconLabelStyles: CSSStyles = null;
   @Input() viewsCounterStyles: CSSStyles = null;
+  @Input() innerWrapperStyles: CSSStyles = null;
   @Input() textColor: string = '#fff';
 
   //buttons

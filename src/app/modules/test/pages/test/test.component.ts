@@ -31,6 +31,7 @@ import { BlankComponent } from 'src/app/shared/dialogs/blank/blank.component';
 import { SwiperOptions } from 'swiper';
 import { LinkDialogComponent } from 'src/app/shared/dialogs/link-dialog/link-dialog.component';
 import { environment } from 'src/environments/environment';
+import { Button } from 'src/app/shared/components/general-item/general-item.component';
 
 @Component({
   selector: 'app-test',
@@ -94,6 +95,11 @@ export class TestComponent implements OnInit {
       ],
     },
   ];
+  optionsButton: Button = {
+    clickEvent: (params: Tag) => {
+      alert("clicked")
+    },
+  };
 
   constructor(
     private dialog: DialogService,

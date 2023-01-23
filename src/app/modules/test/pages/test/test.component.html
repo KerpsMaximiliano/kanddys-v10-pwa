@@ -381,7 +381,9 @@ headline="EXPUESTO EN TAB (S)"
     [showIconForTagStatus]="
       item.status === 'disabled' || item.status === 'featured'
     "
-    [statusIcon]="'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'"
+    [statusIcon]="
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'
+    "
     [statusIconLabel]="'save n’ win'"
     [showIconForItemStatus]="true"
     [showVisitorCounter]="false"
@@ -395,6 +397,53 @@ headline="EXPUESTO EN TAB (S)"
     }"
     [topInnerButtonStyles]="{
       backgroundColor: item.status !== 'disabled' ? '#272727' : '#b17608'
+    }"
+  >
+  </app-general-item>
+</div>
+
+<div
+  [ngStyle]="{
+    width: '194.06px',
+    height: '238.43px'
+  }"
+>
+  <app-general-item
+    [item]="item"
+    [entity]="'ITEM'"
+    [mainColor]="'#ffffff'"
+    [textColor]="'#fff'"
+    [showIconForTagStatus]="
+      item.status === 'disabled' || item.status === 'featured'
+    "
+    [iconsRowsStyles]="{ width: '100%', marginBottom: '0px' }"
+    [topRightButton]="optionsButton"
+    [showPrice]="true"
+    [singleIconStyles]="{
+      filter:
+        'invert(95%) sepia(100%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(104%)',
+      marginLeft: 'auto'
+    }"
+    [statusIcon]="
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/closed-eye-black.svg'
+    "
+    [statusIconLabel]="item.pricing | currency"
+    [statusIconLabelStyles]="{
+      fontFamily: 'SfProBold',
+      fontSize: '14px'
+    }"
+    [statusIconLabelSide]="'LEFT'"
+    [showIconForItemStatus]="true"
+    [showVisitorCounter]="false"
+    [hideCardTitle]="true"
+    [showPrice]="false"
+    [itemPresentationBoxStyles]="{
+      backgroundColor: '#B17608',
+      borderRadius: '0px 0px 15px 15px',
+      padding: '5.3px 12.1px 9px 10.2px'
+    }"
+    [innerWrapperStyles]="{
+      padding: '9px 0px 0px 0px'
     }"
   >
   </app-general-item>
@@ -422,7 +471,9 @@ headline="EXPUESTO EN TAB (S)"
     [showIconForTagStatus]="
       item.status === 'disabled' || item.status === 'featured'
     "
-    [statusIcon]="'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'"
+    [statusIcon]="
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'
+    "
     [statusIconLabel]="'save n’ win'"
     [showIconForItemStatus]="true"
     [showVisitorCounter]="false"
