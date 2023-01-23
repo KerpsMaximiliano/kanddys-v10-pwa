@@ -126,6 +126,7 @@ export class PostPreviewComponent implements OnInit {
 
   updateFrantions(): void {
     if (this.post.slides) {
+      /*
       this.fractions = this.post.slides
         .map(
           () =>
@@ -136,6 +137,9 @@ export class PostPreviewComponent implements OnInit {
             }fr`
         )
         .join(' ');
+      */
+
+      this.fractions = this.post.slides.map(() => `1fr`).join(' ');
     }
   }
 

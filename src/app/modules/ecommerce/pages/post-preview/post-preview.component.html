@@ -73,7 +73,9 @@
       </svg>
     </button>
   </div>
+</div>
 
+<div class="bottom-content">
   <div
     class="content-container"
     [ngClass]="{
@@ -97,7 +99,10 @@
         <p class="title" (click)="handleMode()">{{ post.title }}</p>
         <p class="subtitle" (click)="handleMode()">
           {{
-            post.message.slice(0, 24) + (post.message.length > 24 ? "..." : "")
+            slidesPath[currentMediaSlide].mode === "fullImg"
+              ? post.message.slice(0, 24) +
+                (post.message.length > 24 ? "..." : "")
+              : post.message
           }}
         </p>
       </div>
@@ -197,7 +202,9 @@
         </svg>
       </div>
     </div>
+  </div>
 
+  <div class="bottom-wrapper">
     <div
       class="current-media-shown-indicators"
       [style]="{ 'grid-template-columns': '' + fractions + '' }"
@@ -210,76 +217,72 @@
         ></div>
       </ng-container>
     </div>
-  </div>
-</div>
 
-<div class="bottom-content">
-  <div class="flex">
-    <div class="icons-container">
-      <svg
-        class="display"
-        xmlns="http://www.w3.org/2000/svg"
-        width="26.201"
-        height="26.202"
-        viewBox="0 0 26.201 26.202"
-      >
-        <g
-          id="Group_73082"
-          data-name="Group 73082"
-          transform="translate(1.125 1.125)"
+    <div class="flex">
+      <div class="icons-container">
+        <svg
+          class="display"
+          xmlns="http://www.w3.org/2000/svg"
+          width="26.201"
+          height="26.202"
+          viewBox="0 0 26.201 26.202"
         >
-          <g id="crop-outline" transform="translate(0 0)">
-            <path
-              id="Path_28918"
-              data-name="Path 28918"
-              d="M10.125,3.375V19.036A2.764,2.764,0,0,0,12.889,21.8h15.66"
-              transform="translate(-4.598 -3.375)"
-              fill="none"
-              stroke="#fff"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.25"
-            />
-            <path
-              id="Path_28919"
-              data-name="Path 28919"
-              d="M23.837,19.337V12.889a2.764,2.764,0,0,0-2.764-2.764H14.625"
-              transform="translate(-5.413 -4.598)"
-              fill="none"
-              stroke="#fff"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.25"
-            />
-            <path
-              id="Path_28920"
-              data-name="Path 28920"
-              d="M25.875,25.875V31.4"
-              transform="translate(-7.451 -7.45)"
-              fill="none"
-              stroke="#fff"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.25"
-            />
-            <path
-              id="Path_28921"
-              data-name="Path 28921"
-              d="M8.9,10.125H3.375"
-              transform="translate(-3.375 -4.598)"
-              fill="none"
-              stroke="#fff"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.25"
-            />
+          <g
+            id="Group_73082"
+            data-name="Group 73082"
+            transform="translate(1.125 1.125)"
+          >
+            <g id="crop-outline" transform="translate(0 0)">
+              <path
+                id="Path_28918"
+                data-name="Path 28918"
+                d="M10.125,3.375V19.036A2.764,2.764,0,0,0,12.889,21.8h15.66"
+                transform="translate(-4.598 -3.375)"
+                fill="none"
+                stroke="#fff"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.25"
+              />
+              <path
+                id="Path_28919"
+                data-name="Path 28919"
+                d="M23.837,19.337V12.889a2.764,2.764,0,0,0-2.764-2.764H14.625"
+                transform="translate(-5.413 -4.598)"
+                fill="none"
+                stroke="#fff"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.25"
+              />
+              <path
+                id="Path_28920"
+                data-name="Path 28920"
+                d="M25.875,25.875V31.4"
+                transform="translate(-7.451 -7.45)"
+                fill="none"
+                stroke="#fff"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.25"
+              />
+              <path
+                id="Path_28921"
+                data-name="Path 28921"
+                d="M8.9,10.125H3.375"
+                transform="translate(-3.375 -4.598)"
+                fill="none"
+                stroke="#fff"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.25"
+              />
+            </g>
           </g>
-        </g>
-      </svg>
-    </div>
+        </svg>
+      </div>
 
-    <div class="texts-container">
-      <p>(Sin GiftCard de Spas)</p>
+      <div class="texts-container"></div>
     </div>
   </div>
 </div>

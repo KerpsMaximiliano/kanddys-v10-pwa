@@ -166,6 +166,10 @@ export class Dialogs {
 
           if (receiverPhone) {
             receiverPhoneCopy = receiverPhone.e164Number.split('+')[1];
+            localStorage.setItem(
+              'postReceiverNumber',
+              JSON.stringify(receiverPhone)
+            );
           }
 
           this.postsService.privatePost = true;

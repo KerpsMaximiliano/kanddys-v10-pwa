@@ -104,6 +104,10 @@ export class PostEditionComponent implements OnInit {
 
             if (valid) {
               this.postsService.postReceiverNumber = receiverPhoneCopy;
+              localStorage.setItem(
+                'postReceiverNumber',
+                JSON.stringify(receiverPhone)
+              );
               this.swiperConfig.allowSlideNext = true;
             } else {
               this.swiperConfig.allowSlideNext = false;
@@ -436,6 +440,10 @@ export class PostEditionComponent implements OnInit {
   openQrContentDialog() {
     if (this.dialogs2.length === 1 && !this.postsService.postReceiverNumber) {
       this.dialogs2.unshift(this.recipientPhoneDialog);
+
+      this.recipientPhoneDialog.inputs.fields.list[0].value = JSON.parse(
+        localStorage.getItem('postReceiverNumber')
+      );
 
       this.dialogFlowService.dialogsFlows['flow2']['whatsappNumberDialog'] = {
         dialogId: 'whatsappNumberDialog',
