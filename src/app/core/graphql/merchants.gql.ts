@@ -397,6 +397,7 @@ export const viewsMerchant = gql`
       _id
       description
       type
+      merchant
       numeration{
         value
       }

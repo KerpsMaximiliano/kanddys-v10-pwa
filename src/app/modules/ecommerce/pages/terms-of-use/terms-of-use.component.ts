@@ -4,12 +4,13 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { environment } from 'src/environments/environment';
 import { marked } from 'marked';
+import { Merchant } from 'src/app/core/models/merchant';
 
 @Component({
   selector: 'app-terms-of-use',
   templateUrl: './terms-of-use.component.html',
   styleUrls: ['./terms-of-use.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class TermsOfUseComponent implements OnInit {
   description: string;
@@ -23,6 +24,7 @@ export class TermsOfUseComponent implements OnInit {
     privacy: 'Políticas de privacidad',
   };
   title: string = 'Titulo';
+  merchant: Merchant;
 
   constructor(
     private _MerchantsService: MerchantsService,
@@ -34,16 +36,26 @@ export class TermsOfUseComponent implements OnInit {
   ngOnInit(): void {
     this._ActivatedRoute.params.subscribe(async ({ viewsMerchantId }) => {
       (async () => {
-        const { description, numeration, type } =
-          (await this._MerchantsService.viewsMerchant(viewsMerchantId)) || {
-            description: '',
-            numeration: [],
-          };
-        this.title = this.titlesObject[type];
-        this.description = description;
+        try {
+          const { description, numeration, merchant, type } =
+            (await this._MerchantsService.viewsMerchant(viewsMerchantId)) || {
+              description: '',
+              numeration: [],
+            };
+          this.merchant = await this._MerchantsService.merchant(merchant);
 
-        const markedjs = marked.setOptions({});
-        this.parsedMarkdown = markedjs.parse(this.description);
+          this.title = this.titlesObject[type];
+          this.description = description;
+
+          const markedjs = marked.setOptions({});
+          this.parsedMarkdown = markedjs.parse(this.description);
+        } catch (error) {
+          this._Router.navigate([
+            'ecommerce/' +
+              this.merchant.slug +
+              '/store',
+          ]);
+        }
       })();
     });
   }
