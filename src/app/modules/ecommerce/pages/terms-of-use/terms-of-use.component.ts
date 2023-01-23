@@ -5,6 +5,8 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { environment } from 'src/environments/environment';
 import { marked } from 'marked';
 import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 @Component({
   selector: 'app-terms-of-use',
@@ -25,9 +27,11 @@ export class TermsOfUseComponent implements OnInit {
   };
   title: string = 'Titulo';
   merchant: Merchant;
+  merchantSaleflow: SaleFlow;
 
   constructor(
     private _MerchantsService: MerchantsService,
+    private _SaleflowService: SaleFlowService,
     private _ActivatedRoute: ActivatedRoute,
     private _Router: Router,
     public _HeaderService: HeaderService
@@ -43,18 +47,22 @@ export class TermsOfUseComponent implements OnInit {
               numeration: [],
             };
           this.merchant = await this._MerchantsService.merchant(merchant);
-
+          this.merchantSaleflow = await this._SaleflowService.saleflowDefault(
+            this.merchant._id
+          );
           this.title = this.titlesObject[type];
           this.description = description;
 
           const markedjs = marked.setOptions({});
           this.parsedMarkdown = markedjs.parse(this.description);
         } catch (error) {
-          this._Router.navigate([
-            'ecommerce/' +
-              this.merchant.slug +
-              '/store',
-          ]);
+          if (this.merchant.slug) {
+            this._Router.navigate([
+              'ecommerce/' + this.merchant.slug + '/store',
+            ]);
+          } else {
+            this._Router.navigate(['ecommerce/store/' + this.merchantSaleflow._id]);
+          }
         }
       })();
     });
