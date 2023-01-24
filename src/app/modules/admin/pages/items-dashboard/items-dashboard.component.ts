@@ -1129,11 +1129,18 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'Duplicar',
         callback: async () => {
+          const itemImages = item.images.map(image => {
+            return {
+              file: image.value,
+              index: image.index,
+              active: image.active
+            }
+          })
           const itemInput: ItemInput = {
             name: item.name || null,
             description: item.description || null,
             pricing: item.pricing,
-            images: item.images,
+            images: itemImages,
             merchant: item.merchant._id,
             content: [],
             currencies: [],
