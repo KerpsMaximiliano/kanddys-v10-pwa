@@ -100,13 +100,13 @@ export class GeneralItemComponent implements OnInit {
 
         if (this.item.params.length === 0) {
           this.cardMainImage =
-            this.item.images.length > 0 ? this.item.images[0] : null;
+            this.item.images.length > 0 ? this.item.images[0].value : null;
           this.itemMainTitle = this.item.name ? this.item.name : 'Sin titulo';
         }
         break;
       case 'TAG':
         if (['disabled', 'featured'].includes(this.tag.status)) {
-            this.showIconForTagStatus = true;
+          this.showIconForTagStatus = true;
 
           this.statusIcon =
             this.env +
@@ -118,7 +118,7 @@ export class GeneralItemComponent implements OnInit {
         if (this.tag.entity && !this.topInnerButtons) {
           let text = null;
 
-          if(this.showEntityButton) {
+          if (this.showEntityButton) {
             switch (this.tag.entity) {
               case 'order':
                 text = 'Facturas';
@@ -127,7 +127,7 @@ export class GeneralItemComponent implements OnInit {
                 text = 'Articulos';
                 break;
             }
-  
+
             this.topInnerButtons = [];
             this.topInnerButtons.push({
               text,
@@ -136,7 +136,8 @@ export class GeneralItemComponent implements OnInit {
           }
         }
 
-        if (this.tag.images && this.tag.images.length > 0) this.cardMainImage = this.tag.images[0];
+        if (this.tag.images && this.tag.images.length > 0)
+          this.cardMainImage = this.tag.images[0];
 
         break;
     }

@@ -144,7 +144,7 @@
                 [itemIndex]="i"
                 [itemId]="item._id"
                 [type]="4"
-                [imgURL]="item.images ? item.images[0] : ''"
+                [imgURL]="item.images?.length ? item.images[0].value : ''"
                 [price]="item.pricing"
                 [itemParams]="item.params"
                 [showPrice]="true"
@@ -207,7 +207,7 @@
                   ? true
                   : false
               "
-              [imgURL]="item.images?.length ? item.images[0] : ''"
+              [imgURL]="item.images?.length ? item.images[0].value : ''"
               [price]="item.pricing"
               [showPrice]="true"
               [itemParams]="item.params"

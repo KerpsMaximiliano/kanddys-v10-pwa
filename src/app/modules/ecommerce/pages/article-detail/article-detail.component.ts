@@ -6,7 +6,7 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
-import { Item, ItemParamValue } from 'src/app/core/models/item';
+import { Item, ItemImage, ItemParamValue } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
@@ -209,7 +209,9 @@ export class ArticleDetailComponent implements OnInit {
         this.itemData.name = this._ItemsService.itemName;
         this.itemData.description = this._ItemsService.itemDesc;
         this.itemData.pricing = this._ItemsService.itemPrice;
-        this.itemData.images = [...this._ItemsService.itemUrls];
+        this.itemData.images = this._ItemsService.itemUrls.map((value) => ({
+          value,
+        })) as ItemImage[];
       }
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();

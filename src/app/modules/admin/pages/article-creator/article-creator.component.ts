@@ -272,11 +272,11 @@ export class ArticleCreatorComponent implements OnInit {
       });
       lockUI();
       const imageIndex = this.item.images.findIndex(
-        (image) => image === this.editingImage
+        (image) => image.value === this.editingImage
       );
       if (imageIndex >= 0) {
         await this._ItemsService.deleteImageItem(
-          [this.item.images[imageIndex]],
+          [this.item.images[imageIndex].value],
           this.item._id
         );
       }

@@ -47,7 +47,7 @@
             *ngFor="let item of item.images; let i = index"
           >
             <div
-              (click)="openImageModal(item)"
+              (click)="openImageModal(item.value)"
               class="item"
               [ngStyle]="{
                 'background-image':

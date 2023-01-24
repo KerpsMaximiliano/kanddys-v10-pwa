@@ -96,8 +96,8 @@ export class Item extends Model<Item> {
 
 export class ItemImage extends Model<ItemImage> {
   value: string;
-  index: number;
-  active: boolean;
+  index?: number;
+  active?: boolean;
 }
 
 

@@ -88,7 +88,6 @@ import { StoreShareComponent } from './dialogs/store-share/store-share.component
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
 import { LoadingScreenComponent } from './components/loading-screen/loading-screen.component';
-import { ItemComponent } from './components/item/item.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
 import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
@@ -222,7 +221,6 @@ const declarations = [
   SetConfigComponent,
   ItemSettingsComponent,
   LoadingScreenComponent,
-  ItemComponent,
   ReloadComponent,
   WhatsappMessageComponent,
   CurrencyInputComponent,
@@ -262,7 +260,7 @@ const declarations = [
   CardComponent,
   TitleIconHeaderComponent,
   QrContentComponent,
-  QrEditComponent
+  QrEditComponent,
 ];
 
 @NgModule({

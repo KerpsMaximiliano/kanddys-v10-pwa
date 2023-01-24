@@ -212,20 +212,20 @@ export class ItemsDashboardComponent implements OnInit {
         {
           name: 'enteredImages',
           callback: async (files: File[]) => {
-            let images = files.map(file => {
+            let images = files.map((file) => {
               return {
                 file: file,
                 index: 0,
-                active: true
-              }
-            })
+                active: true,
+              };
+            });
             if (!this._ItemsService.itemPrice) return;
             lockUI();
-            const itemInput = {
+            const itemInput: ItemInput = {
               name: null,
               description: null,
               pricing: this._ItemsService.itemPrice,
-              images: images,
+              images,
               merchant: this._MerchantsService.merchantData?._id,
               content: [],
               currencies: [],

@@ -526,7 +526,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
           if (this.entity === 'item') {
             this.headerService.flowRoute = null;
             localStorage.removeItem('flowRoute');
-            this.router.navigate(['admin/item-display/' + this.entityId]);
+            this.router.navigate(['admin/article-editor/' + this.entityId]);
           }
           if (!this.entity) this.router.navigate(['admin/items-dashboard']);
         }

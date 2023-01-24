@@ -20,7 +20,7 @@
             class="entity-image"
             *ngFor="let image of itemData.images"
             [ngStyle]="{
-              backgroundImage: 'url(' + image + ')'
+              backgroundImage: 'url(' + image?.value + ')'
             }"
           ></div>
         </ng-container>
