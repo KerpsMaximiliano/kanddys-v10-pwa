@@ -139,6 +139,7 @@ export const item = gql`
       description
       createdAt
       images {
+        _id
         value
         index
         active
@@ -300,28 +301,28 @@ export const createItem = gql`
 `;
 
 export const createItemParam = gql`
-  mutation createItemParam($merchantId: ObjectID!, $itemId: ObjectID!, $input: ItemParamInput!) {
-    createItemParam(
-      merchantId: $merchantId,
-      itemId: $itemId,
-      input: $input
-    ) {
+  mutation createItemParam(
+    $merchantId: ObjectID!
+    $itemId: ObjectID!
+    $input: ItemParamInput!
+  ) {
+    createItemParam(merchantId: $merchantId, itemId: $itemId, input: $input) {
       _id
     }
   }
 `;
 
 export const addItemParamValue = gql`
-  mutation addItemParamValue (
+  mutation addItemParamValue(
     $itemParamId: ObjectID!
     $merchantId: ObjectID!
     $itemId: ObjectID!
     $input: [ItemParamValueInput!]!
   ) {
     addItemParamValue(
-      itemParamId: $itemParamId,
-      merchantId: $merchantId,
-      itemId: $itemId,
+      itemParamId: $itemParamId
+      merchantId: $merchantId
+      itemId: $itemId
       input: $input
     ) {
       _id
@@ -330,16 +331,16 @@ export const addItemParamValue = gql`
 `;
 
 export const deleteItemParamValue = gql`
-  mutation deleteItemParamValue (
+  mutation deleteItemParamValue(
     $itemParamValueId: ObjectID!
     $itemParamId: ObjectID!
     $merchantId: ObjectID!
     $itemId: ObjectID!
   ) {
     deleteItemParamValue(
-      itemParamValueId: $itemParamValueId,
-      itemParamId: $itemParamId,
-      merchantId: $merchantId,
+      itemParamValueId: $itemParamValueId
+      itemParamId: $itemParamId
+      merchantId: $merchantId
       itemId: $itemId
     ) {
       _id
@@ -386,9 +387,9 @@ export const updateItem = gql`
   }
 `;
 
-export const addImageItem = gql`
-  mutation addImageItem($images: [Upload!]!, $id: ObjectID!) {
-    addImageItem(images: $images, id: $id) {
+export const itemAddImage = gql`
+  mutation itemAddImage($input: [ItemImageInput!]!, $id: ObjectID!) {
+    itemAddImage(input: $input, id: $id) {
       _id
       name
       pricing
@@ -446,9 +447,9 @@ export const addImageItem = gql`
   }
 `;
 
-export const deleteImageItem = gql`
-  mutation deleteImageItem($images: [String!]!, $id: ObjectID!) {
-    deleteImageItem(images: $images, id: $id) {
+export const itemRemoveImage = gql`
+  mutation itemRemoveImage($imageId: [ObjectID!]!, $itemId: ObjectID!) {
+    itemRemoveImage(imageId: $imageId, itemId: $itemId) {
       _id
       name
       pricing

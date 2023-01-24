@@ -275,12 +275,19 @@ export class ArticleCreatorComponent implements OnInit {
         (image) => image.value === this.editingImage
       );
       if (imageIndex >= 0) {
-        await this._ItemsService.deleteImageItem(
-          [this.item.images[imageIndex].value],
+        await this._ItemsService.itemRemoveImage(
+          [this.item.images[imageIndex]._id],
           this.item._id
         );
       }
-      await this._ItemsService.addImageItem([file], this.item._id);
+      await this._ItemsService.itemAddImage(
+        [
+          {
+            file,
+          },
+        ],
+        this.item._id
+      );
       unlockUI();
       this._ItemsService.editingImage = null;
       this._ItemsService.editingImageIndex = null;

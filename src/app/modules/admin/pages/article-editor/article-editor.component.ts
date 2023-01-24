@@ -282,8 +282,8 @@ export class ArticleEditorComponent implements OnInit {
         this.item._id
       );
     }
-    await this._ItemsService.deleteImageItem(
-      [this.item.images[index].value],
+    await this._ItemsService.itemRemoveImage(
+      [this.item.images[index]._id],
       this.item._id
     );
   }
@@ -317,13 +317,12 @@ export class ArticleEditorComponent implements OnInit {
       );
       if (this._ItemsService.changedImages) {
         // Temporal solution for the new image structure
-        const imageURLs = this.item.images.map(image => image.value);
-        await this._ItemsService.deleteImageItem(
-          imageURLs,
-          updatedItem._id
-        );
-        await this._ItemsService.addImageItem(
-          this._ItemsService.itemImages,
+        const imageURLs = this.item.images.map((image) => image._id);
+        await this._ItemsService.itemRemoveImage(imageURLs, updatedItem._id);
+        await this._ItemsService.itemAddImage(
+          this._ItemsService.itemImages.map((value) => ({
+            file: value,
+          })),
           updatedItem._id
         );
         this._ItemsService.itemImages = [];

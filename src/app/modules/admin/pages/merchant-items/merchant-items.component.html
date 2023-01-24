@@ -52,7 +52,7 @@
         "
         [selectable]="selectionConfiguration.active"
         [isSelected]="item.selected"
-        [imgURL]="item.images ? item.images[0].value : ''"
+        [imgURL]="item.images?.length ? item.images[0].value : ''"
         [price]="item.pricing"
         [showPrice]="true"
         [itemParams]="item.params"

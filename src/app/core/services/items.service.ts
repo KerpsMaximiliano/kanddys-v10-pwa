@@ -10,8 +10,8 @@ import {
   createItem,
   createItemParam,
   createPreItem,
-  addImageItem,
-  deleteImageItem,
+  itemAddImage,
+  itemRemoveImage,
   itemsByMerchant,
   addItem,
   itemextra,
@@ -40,6 +40,7 @@ import {
   ItemCategory,
   ItemCategoryHeadline,
   ItemCategoryInput,
+  ItemImageInput,
   ItemInput,
   ItemPackage,
   ItemParam,
@@ -126,36 +127,36 @@ export class ItemsService {
     return response;
   }
 
-  async addImageItem(
-    images: File[],
+  async itemAddImage(
+    input: ItemImageInput[],
     id: string
-  ): Promise<{ addImageItem: Item }> {
+  ): Promise<{ itemAddImage: Item }> {
     const result = await this.graphql.mutate({
-      mutation: addImageItem,
-      variables: { images, id },
+      mutation: itemAddImage,
+      variables: { input, id },
       fetchPolicy: 'no-cache',
       context: {
         useMultipart: true,
       },
     });
     if (!result || result?.errors) return undefined;
-    return result.addImageItem;
+    return result.itemAddImage;
   }
 
-  async deleteImageItem(
-    images: string[],
-    id: string
-  ): Promise<{ deleteImageItem: Item }> {
+  async itemRemoveImage(
+    imageId: string[],
+    itemId: string
+  ): Promise<{ itemRemoveImage: Item }> {
     const result = await this.graphql.mutate({
-      mutation: deleteImageItem,
-      variables: { images, id },
+      mutation: itemRemoveImage,
+      variables: { imageId, itemId },
       fetchPolicy: 'no-cache',
       context: {
         useMultipart: true,
       },
     });
     if (!result || result?.errors) return undefined;
-    return result.deleteImageItem;
+    return result.itemRemoveImage;
   }
 
   async authItem(merchantId: string, id: string): Promise<Item> {

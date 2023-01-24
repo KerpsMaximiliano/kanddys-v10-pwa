@@ -63,14 +63,14 @@
             *ngFor="let item of items"
             (click)="
               (item.image || item.images?.length) &&
-                openImageModal(item.image || item.images[0])
+                openImageModal(item.image?.value || item.images[0].value)
             "
           >
             <div class="image">
               <img
                 [src]="
                   item.image || item.images?.length
-                    ? item.image || item.images[0]
+                    ? item.image?.value || item.images[0].value
                     : '/assets/images/noimage.png'
                 "
                 (error)="item.image = '/assets/images/noimage.png'"
