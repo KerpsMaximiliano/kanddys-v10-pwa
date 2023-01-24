@@ -79,10 +79,12 @@
   <div
     class="content-container"
     [ngClass]="{
-      'content-container': ['fullImg', 'solidBg'].includes(
-        slidesPath[currentMediaSlide].mode
-      ),
-      'content-container2': slidesPath[currentMediaSlide].mode === 'gradientImg'
+      'content-container':
+        slidesPath[currentMediaSlide] &&
+        ['fullImg', 'solidBg'].includes(slidesPath[currentMediaSlide].mode),
+      'content-container2':
+        slidesPath[currentMediaSlide] &&
+        slidesPath[currentMediaSlide].mode === 'gradientImg'
     }"
     [ngStyle]="{
       'background-image':
@@ -92,6 +94,7 @@
     <div
       class="content"
       *ngIf="
+        slidesPath[currentMediaSlide] &&
         ['fullImg', 'gradientImg'].includes(slidesPath[currentMediaSlide].mode)
       "
     >
@@ -99,7 +102,7 @@
         <p class="title" (click)="handleMode()">{{ post.title }}</p>
         <p class="subtitle" (click)="handleMode()">
           {{
-            slidesPath[currentMediaSlide].mode === "fullImg"
+            slidesPath[currentMediaSlide] && slidesPath[currentMediaSlide].mode === "fullImg"
               ? post.message.slice(0, 24) +
                 (post.message.length > 24 ? "..." : "")
               : post.message
@@ -284,6 +287,10 @@
 
       <div class="texts-container"></div>
     </div>
+  
+    <!--
+      <app-merchant-contact></app-merchant-contact>
+    -->
   </div>
 </div>
 
