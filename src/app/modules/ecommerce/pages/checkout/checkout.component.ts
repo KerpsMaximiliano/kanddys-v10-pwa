@@ -534,6 +534,7 @@ export class CheckoutComponent implements OnInit {
         };
       this.headerService.storePost(this.post);
       localStorage.removeItem('post');
+      localStorage.removeItem('postReceiverNumber');
       delete this.post.joke;
       const postResult = (await this.postsService.createPost(this.post))
         ?.createPost?._id;
@@ -721,6 +722,7 @@ export class CheckoutComponent implements OnInit {
   deletePost() {
     this.postsService.post = null;
     localStorage.removeItem('post');
+    localStorage.removeItem('postReceiverNumber');
     this.openedDialogFlow = false;
   }
 

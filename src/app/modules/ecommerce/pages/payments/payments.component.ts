@@ -539,6 +539,7 @@ export class PaymentsComponent implements OnInit {
           this.postsService.dialogs = null;
           this.postsService.temporalDialogs = null;
           this.postsService.temporalDialogs2 = null;
+          localStorage.removeItem('postReceiverNumber');
           localStorage.removeItem('post');
 
           console.log(this.postsService.post);
