@@ -903,13 +903,6 @@ export class Dialogs {
                 (dialog) => dialog.componentId === 'receiverRelationshipDialog'
               );
 
-              const wordsObjectsTransformed = [];
-
-              console.log(
-                this.dialogs[targetDetailsIndex].inputs.words,
-                this.dialogs[targetDetailsIndex].inputs.wordsObjects
-              );
-
               if (keyword === 'male') {
                 this.dialogs[targetDetailsIndex].inputs.words = this.words4;
               } else if (keyword === 'female') {
