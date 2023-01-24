@@ -81,18 +81,33 @@ export class Dialogs {
 
   words4 = [
     { text: 'Mi Hijo', keyword: 'son' },
-    { text: 'Mi Amigo', keyword: 'friend' },
+    { text: 'Mi Amigo', keyword: 'male_friend' },
     { text: 'Mi Papá', keyword: 'dad' },
-    { text: 'Mi Primo', keyword: 'cousin' },
-    { text: 'Vecino', keyword: 'neighbor' },
-    { text: 'Cuñado', keyword: 'brotherinlaw' },
+    { text: 'Mi Primo', keyword: 'male_cousin' },
+    { text: 'Mi Vecino', keyword: 'male_neighbor' },
+    { text: 'Mi Cuñado', keyword: 'brotherinlaw' },
     { text: 'Mi Hermano', keyword: 'brother' },
     { text: 'Mi Abuelo', keyword: 'grandfather' },
-    { text: 'Compañero de Trabajo', keyword: 'coworker' },
-    { text: 'Mi Jefe', keyword: 'boss' },
-    { text: 'Suegra', keyword: 'motherinlaw' },
-    { text: 'Nuero', keyword: 'soninlaw' },
+    { text: 'Mi Compañero de Trabajo', keyword: 'male_coworker' },
+    { text: 'Mi Jefe', keyword: 'male_boss' },
+    { text: 'Mi Suegro', keyword: 'fatherinlaw' },
+    { text: 'Mi Nuero', keyword: 'soninlaw' },
     { text: 'Mi compadre', keyword: 'buddy' },
+  ];
+
+  words5 = [
+    { text: 'Mi Hija', keyword: 'daughter' },
+    { text: 'Mi Amiga', keyword: 'female_friend' },
+    { text: 'Mi Mamá', keyword: 'mom' },
+    { text: 'Mi Prima', keyword: 'female_cousin' },
+    { text: 'Mi Vecina', keyword: 'female_neighbor' },
+    { text: 'Mi Cuñada', keyword: 'sisterinlaw' },
+    { text: 'Mi Hermana', keyword: 'sister' },
+    { text: 'Mi Abuela', keyword: 'grandmother' },
+    { text: 'Mi Compañera de Trabajo', keyword: 'female_coworker' },
+    { text: 'Mi Jefa', keyword: 'female_boss' },
+    { text: 'Mi Suegra', keyword: 'motherinlaw' },
+    { text: 'Mi Nuera', keyword: 'daughterinlaw' },
     { text: 'Mi Comadre', keyword: 'midwife' },
   ];
 
@@ -884,6 +899,38 @@ export class Dialogs {
                 'recipientGender'
               );
 
+              const targetDetailsIndex = this.dialogs.findIndex(
+                (dialog) => dialog.componentId === 'receiverRelationshipDialog'
+              );
+
+              const wordsObjectsTransformed = [];
+
+              console.log(
+                this.dialogs[targetDetailsIndex].inputs.words,
+                this.dialogs[targetDetailsIndex].inputs.wordsObjects
+              );
+
+              if (keyword === 'male') {
+                this.dialogs[targetDetailsIndex].inputs.words = this.words4;
+              } else if (keyword === 'female') {
+                this.dialogs[targetDetailsIndex].inputs.words = this.words5;
+              }
+
+              this.dialogs[targetDetailsIndex].inputs.wordsObjects = [];
+              for (const word of this.dialogs[targetDetailsIndex].inputs
+                .words) {
+                this.dialogs[targetDetailsIndex].inputs.wordsObjects.push({
+                  ...word,
+                  active: false,
+                });
+              }
+
+              this.dialogs[targetDetailsIndex].shouldRerender = true;
+
+              setTimeout(() => {
+                this.dialogs[targetDetailsIndex].shouldRerender = false;
+              }, 300);
+
               if (this.checkIfTheAIOptionsAreSelected() && keyword) {
                 this.dialogs[
                   this.dialogs.length - 3
@@ -998,7 +1045,7 @@ export class Dialogs {
                       sentiment,
                       timing,
                     },
-                    '63bd15b25169e824f0b11266'
+                    '63d0437eb4bc34014c0a65e3'
                   );
 
                 let message;
