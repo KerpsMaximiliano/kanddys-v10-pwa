@@ -93,7 +93,7 @@ export class ArticleEditorComponent implements OnInit {
       if (this.item.images.length) {
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
-          const response = await fetch(image);
+          const response = await fetch(image.value);
           const blob = await response.blob();
           return new File([blob], `item_image_${index}.jpeg`, {
             type: 'image/jpeg',
@@ -283,7 +283,7 @@ export class ArticleEditorComponent implements OnInit {
       );
     }
     await this._ItemsService.deleteImageItem(
-      [this.item.images[index]],
+      [this.item.images[index].value],
       this.item._id
     );
   }
@@ -316,8 +316,10 @@ export class ArticleEditorComponent implements OnInit {
         this.item._id
       );
       if (this._ItemsService.changedImages) {
+        // Temporal solution for the new image structure
+        const imageURLs = this.item.images.map(image => image.value);
         await this._ItemsService.deleteImageItem(
-          this.item.images,
+          imageURLs,
           updatedItem._id
         );
         await this._ItemsService.addImageItem(

@@ -65,7 +65,7 @@ export class QrEditComponent implements OnInit {
       }
       if (this.item.images.length) {
         this.gridArray = this.item.images.map((image) => ({
-          background: image,
+          background: image.value,
           _type: 'image/jpg',
         }));
       }
@@ -184,8 +184,10 @@ export class QrEditComponent implements OnInit {
     if (this.item) {
       if (this._ItemsService.changedImages) {
         lockUI();
+        // Temporal solution for new image structure
+        const imageURLs = this.item.images.map(image => image.value);
         await this._ItemsService.deleteImageItem(
-          this.item.images,
+          imageURLs,
           this.item._id
         );
         await this._ItemsService.addImageItem(
@@ -302,12 +304,14 @@ export class QrEditComponent implements OnInit {
           this.item._id
         );
       }
-      if (this.item.images.includes(this.gridArray[index].background)) {
-        await this._ItemsService.deleteImageItem(
-          [this.item.images[index]],
-          this.item._id
-        );
-      }
+      this.item.images.forEach(async image => {
+        if (image.value.includes(this.gridArray[index].background)) {
+          await this._ItemsService.deleteImageItem(
+            [this.item.images[index].value],
+            this.item._id
+          );
+        }
+      });
       this.gridArray.splice(index, 1);
       return;
     }
