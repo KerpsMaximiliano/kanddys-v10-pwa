@@ -15,6 +15,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { ToastrService } from 'ngx-toastr';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -84,7 +85,8 @@ export class UserContactLandingComponent implements OnInit {
     private walletService: WalletService,
     private location: Location,
     private headerService: HeaderService,
-    private itemsService: ItemsService
+    private itemsService: ItemsService,
+    private toastrService: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -491,6 +493,29 @@ export class UserContactLandingComponent implements OnInit {
     const optionsList: SettingsDialogButton[] = [
       {
         text: 'Borrar mi usuario',
+        callback: async () => {
+          const deleted = await this.usersService.deleteMe();
+
+          alert(deleted);
+
+          if (deleted) {
+            this.toastrService.info('Usuario borrado exitosamente', null, {
+              timeOut: 1500,
+            });
+
+            localStorage.removeItem('session-token');
+
+            this.router.navigate(['auth/login']);
+          } else {
+            this.toastrService.error(
+              'Ocurrió un error, intentalo de nuevo',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
+          }
+        },
       },
     ];
 

@@ -510,7 +510,7 @@ export class StoreComponent implements OnInit {
     ];
 
     if (!this.header.user) {
-      list[0].options.pop();
+      list[0].options = [];
       list[0].options.push({
         text: 'Iniciar sesión',
         mode: 'func',
