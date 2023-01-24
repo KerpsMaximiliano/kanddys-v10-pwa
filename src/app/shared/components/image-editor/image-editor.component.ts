@@ -26,6 +26,8 @@ export class ImageEditorComponent implements OnDestroy {
   env: string = environment.assetsUrl;
   @Input() imgUrl: string;
   @Output() cropped = new EventEmitter<CroppResult>();
+  loadedImage: HTMLImageElement;
+  currentViewMode: Cropper.ViewMode = 3;
   cropper: Cropper;
   modified = false;
 
@@ -45,13 +47,17 @@ export class ImageEditorComponent implements OnDestroy {
 
   imageLoaded($event: Event) {
     if (!$event) return;
-    const image = $event.target as HTMLImageElement;
-    this.initCropper(image);
+    this.loadedImage = $event.target as HTMLImageElement;
+    this.loadedImage.crossOrigin = 'anonymous';
+    this.initCropper();
   }
 
-  private initCropper(image: HTMLImageElement) {
-    if (!image) return;
-    image.crossOrigin = 'anonymous';
+  private initCropper() {
+    if (!this.loadedImage) return;
+
+    const container = document.querySelector(
+      '.cropper__image'
+    ) as HTMLDivElement;
 
     const cropperOptions: Cropper.Options = {
       dragMode: 'move',
@@ -62,20 +68,27 @@ export class ImageEditorComponent implements OnDestroy {
       cropBoxResizable: false,
       toggleDragModeOnDblclick: false,
       background: false,
-      viewMode: 3,
+      viewMode: this.currentViewMode,
+      minCropBoxHeight: container.clientHeight,
+      minCropBoxWidth: container.clientWidth,
       cropmove: () => {
         this.modified = true;
       },
     };
 
     this.destroyCropper();
-    this.cropper = new Cropper(image, cropperOptions);
+    this.cropper = new Cropper(this.loadedImage, cropperOptions);
   }
 
   setZoom(zoom: 'in' | 'out') {
     if (zoom === 'in') this.cropper.zoom(0.1);
     if (zoom === 'out') this.cropper.zoom(-0.1);
     this.modified = true;
+  }
+
+  changeViewMode() {
+    this.currentViewMode = this.currentViewMode === 3 ? 0 : 3;
+    this.initCropper();
   }
 
   updateRotation($event) {

@@ -16,8 +16,9 @@
     justify-content: space-between;
     margin-bottom: 25.8px;
     position: fixed;
-    z-index: 9999;
+    z-index: 999;
     width: 100%;
+    max-width: 500px;
     .icon {
         font-size: 35px;
     }
