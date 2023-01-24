@@ -1,0 +1,79 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.container{
+    max-width: 500px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    align-items:flex-end;
+    filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.16 ));
+    background: linear-gradient(180deg, rgba(72,72,72,0 ) 0%, #000000 100%);
+    height: 95px;
+    padding: 0 16px 10.5px 20px;
+}
+
+button{
+    all: unset;
+}
+
+.footer{
+    width: 100%;
+    display: flex;
+    justify-content:space-between;
+    align-items:center;
+    gap: 10px;
+    
+    .commentButton{
+        max-width: 55%;
+        padding: 5px 17px;
+        display: flex;
+        gap: 10px;
+        border-radius: 12px;
+        filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.16 ));
+        background-color: #ffffff;
+        align-items: center;
+        cursor: pointer;
+        p{
+            font-family: "SfProMedium";
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            font-size: 13px;
+            line-height: 12px;
+            font-style: normal;
+            text-align: left;
+            color: #7b7b7b
+        }
+
+        .icon{
+            width: 19px;
+            height: auto;
+        }
+    }
+    .iconsBox{
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        width: fit-content;
+
+        button{
+            padding: 8px;
+        }
+        .heart{
+            width: 28px;
+            height: auto;
+        }
+        .upload{
+            width: 22px;
+            height: auto;
+        }
+        .icon{
+            filter: brightness(0) saturate(100%) invert(99%) sepia(8%) saturate(332%) hue-rotate(249deg) brightness(116%) contrast(100%);
+            cursor: pointer;
+        }
+    }
+}
