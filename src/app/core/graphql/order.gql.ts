@@ -76,7 +76,11 @@ const orderData = `
       _id
       name
       pricing
-      images
+      images {
+        value
+        index
+        active
+      }
       hasSelection
       params {
         _id
@@ -180,7 +184,11 @@ const preOrderData = `
       _id
       name
       pricing
-      images
+      images {
+        value
+        index
+        active
+      }
       hasSelection
       params {
         _id
@@ -343,7 +351,11 @@ export const ordersByItem = gql`
       items {
         item {
           name
-          images
+          images {
+            value
+            index
+            active
+          }
         }
       }
       subtotals {
