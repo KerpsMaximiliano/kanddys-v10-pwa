@@ -34,6 +34,7 @@ import {
   addItemParamValue,
   deleteItemParamValue,
   itemsArchived,
+  duplicateItem,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -372,6 +373,17 @@ export class ItemsService {
 
     if (!result || result?.errors) return undefined;
     return result;
+  }
+
+  async duplicateItem(id: string): Promise<Item> {
+    const result = await this.graphql.mutate({
+      mutation: duplicateItem,
+      variables: { id },
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.duplicateItem;
   }
 
   async createItemParam(merchantId: string, itemId: string, input: any) {

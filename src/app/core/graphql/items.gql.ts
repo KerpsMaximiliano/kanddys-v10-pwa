@@ -300,6 +300,14 @@ export const createItem = gql`
   }
 `;
 
+export const duplicateItem = gql`
+  mutation duplicateItem($id: ObjectID!) {
+    duplicateItem(id: $id) {
+      _id
+    }
+  }
+`;
+
 export const createItemParam = gql`
   mutation createItemParam(
     $merchantId: ObjectID!
