@@ -39,7 +39,6 @@ import { ImageInputComponent } from './components/image-input/image-input.compon
 import { InfoButtonComponent } from './components/info-button/info-button.component';
 import { InfoCardComponent } from './components/info-card/info-card.component';
 import { InformationBoxComponent } from './components/information-box/information-box.component';
-import { ItemCardAmountAndPriceComponent } from './components/item-card-amount-and-price/item-card-amount-and-price.component';
 import { ItemCardComponent } from './components/item-card/item-card.component';
 import { ItemGridComponent } from './components/item-grid/item-grid.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
@@ -158,7 +157,6 @@ const declarations = [
   WarningStepsComponent,
   LeadwordListComponent,
   GiftMessageComponent,
-  ItemCardAmountAndPriceComponent,
   PageComponentTabsComponent,
   ShowItemsComponent,
   ImageInputComponent,

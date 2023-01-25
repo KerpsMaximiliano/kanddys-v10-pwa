@@ -129,7 +129,7 @@ export class QrEditComponent implements OnInit {
     // console.log('this.gridArray: ', this.gridArray);
   }
 
-  loadFile(event: Event) {
+  async loadFile(event: Event) {
     const fileList = (event.target as HTMLInputElement).files;
     if (!fileList.length) return;
     for (let i = 0; i < fileList.length; i++) {
@@ -150,7 +150,14 @@ export class QrEditComponent implements OnInit {
           });
         };
         reader.readAsDataURL(file);
-        this._ItemsService.changedImages = true;
+        await this._ItemsService.itemAddImage(
+          [
+            {
+              file,
+            },
+          ],
+          this.item._id
+        );
       } else {
         if (
           ![
@@ -182,21 +189,6 @@ export class QrEditComponent implements OnInit {
 
   async submit() {
     if (this.item) {
-      if (this._ItemsService.changedImages) {
-        lockUI();
-        // Temporal solution for new image structure
-        const imageURLs = this.item.images.map((image) => image._id);
-        await this._ItemsService.itemRemoveImage(imageURLs, this.item._id);
-        await this._ItemsService.itemAddImage(
-          this._ItemsService.itemImages.map((value) => ({
-            file: value,
-          })),
-          this.item._id
-        );
-        this._ItemsService.itemImages = [];
-        this._ItemsService.changedImages = false;
-        unlockUI();
-      }
       this._Router.navigate([`admin/article-editor/${this.item._id}`]);
       return;
     }
@@ -293,7 +285,6 @@ export class QrEditComponent implements OnInit {
   async deleteImage(index: number) {
     if (this.item) {
       this._ItemsService.itemImages.splice(index, 1);
-      this._ItemsService.changedImages = true;
 
       if (this.item.images.length === 1) {
         await this._ItemsService.updateItem(
@@ -303,14 +294,16 @@ export class QrEditComponent implements OnInit {
           this.item._id
         );
       }
-      this.item.images.forEach(async (image) => {
-        if (image.value.includes(this.gridArray[index].background)) {
-          await this._ItemsService.itemRemoveImage(
-            [this.item.images[index]._id],
-            this.item._id
-          );
-        }
-      });
+      if (
+        this.item.images.some(
+          (itemImage) => itemImage.value === this.gridArray[index].background
+        )
+      ) {
+        await this._ItemsService.itemRemoveImage(
+          [this.item.images[index]._id],
+          this.item._id
+        );
+      }
       this.gridArray.splice(index, 1);
       return;
     }

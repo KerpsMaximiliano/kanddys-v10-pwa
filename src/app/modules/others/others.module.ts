@@ -17,7 +17,6 @@ import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { AdminOrderComponent } from './pages/admin-order/admin-order.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
 import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
-import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
 import { TagCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
 import { ItemCategoryExpositionComponent } from './pages/item-category-exposition/item-category-exposition.component';
 import { MerchantBuyersComponent } from './pages/merchant-buyers/merchant-buyers.component';
@@ -97,10 +96,6 @@ const routes: Routes = [
   {
     path: 'calendar-detail',
     component: CalendarDetailComponent,
-  },
-  {
-    path: 'category-item-detail/:itemId',
-    component: CategoryItemDetailComponent,
   },
   {
     path: 'category-creator/:id',
@@ -202,7 +197,6 @@ const routes: Routes = [
     AdminLoginComponent,
     BankRegistrationComponent,
     CalendarDetailComponent,
-    CategoryItemDetailComponent,
     TagCategoryCreatorComponent,
     ItemCategoryExpositionComponent,
     MerchantBuyersComponent,

@@ -2586,11 +2586,11 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
         lines,
         preview: file,
       };
-      const items = this.header.getItems();
-      this.header.emptyItems();
-      this.header.items[0].images[0].value = url;
-      items[0].images[0].value = url;
-      this.header.storeItem(items[0]);
+      // const items = this.header.getItems();
+      // this.header.emptyItems();
+      // this.header.items[0].images[0].value = url;
+      // items[0].images[0].value = url;
+      // this.header.storeItem(items[0]);
       if (!this.customizerValueID) {
         unlockUI();
         this.saveDataInHeader(customizerValues);

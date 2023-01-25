@@ -320,34 +320,6 @@
         ></app-answer-selector>
       </ng-container>
     </section>
-    <section class="section" *ngIf="customizer" style="margin-top: 32px">
-      <div class="between">
-        <h2 class="section-title">Personalización:</h2>
-
-        <button (click)="editOrder('customizer')">
-          <img
-            [src]="env + '/pencil.svg'"
-            class="edit-image"
-            alt="Icono de un lápiz"
-          />
-        </button>
-      </div>
-      <div class="items-container" style="flex-direction: column">
-        <table>
-          <tr *ngFor="let detail of customizerDetails">
-            <th>{{ detail.name }}</th>
-            <td>{{ detail.value }}</td>
-          </tr>
-        </table>
-        <div *ngIf="customizerPreview">
-          <img
-            class="customizer-preview"
-            [src]="customizerPreview.base64"
-            alt=""
-          />
-        </div>
-      </div>
-    </section>
   </main>
 
   <app-sticky-button

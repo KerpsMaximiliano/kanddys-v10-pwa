@@ -58,7 +58,6 @@ export class ItemsService {
     old: string[];
     new: File[];
   };
-  changedImages: boolean = null;
   itemImages: File[] = [];
   itemUrls: string[] = [];
   itemPrice: number;
@@ -75,7 +74,6 @@ export class ItemsService {
   removeTemporalItem() {
     this.temporalItem = null;
     this.temporalImages = null;
-    this.changedImages = null;
   }
 
   constructor(private graphql: GraphQLWrapper) {}

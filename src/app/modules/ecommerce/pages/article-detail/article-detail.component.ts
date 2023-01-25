@@ -22,7 +22,6 @@ import {
   SettingsComponent,
   SettingsDialogButton,
 } from 'src/app/shared/dialogs/settings/settings.component';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import SwiperCore, { Virtual } from 'swiper/core';
@@ -337,22 +336,22 @@ export class ArticleDetailComponent implements OnInit {
       amount: 1,
     };
 
-    if (this.selectedParam) {
-      product.params = [
-        {
-          param: this.itemData.params[this.selectedParam.param]._id,
-          paramValue:
-            this.itemData.params[this.selectedParam.param].values[
-              this.selectedParam.value
-            ]._id,
-        },
-      ];
-      const paramValue =
-        this.itemData.params[this.selectedParam.param].values[
-          this.selectedParam.value
-        ]._id;
-      this.paramFromSameItem(paramValue);
-    }
+    // if (this.selectedParam) {
+    //   product.params = [
+    //     {
+    //       param: this.itemData.params[this.selectedParam.param]._id,
+    //       paramValue:
+    //         this.itemData.params[this.selectedParam.param].values[
+    //           this.selectedParam.value
+    //         ]._id,
+    //     },
+    //   ];
+    //   const paramValue =
+    //     this.itemData.params[this.selectedParam.param].values[
+    //       this.selectedParam.value
+    //     ]._id;
+    //   this.paramFromSameItem(paramValue);
+    // }
 
     this.headerService.storeOrderProduct(product);
     const itemParamValue: ItemParamValue = this.selectedParam
@@ -376,34 +375,32 @@ export class ArticleDetailComponent implements OnInit {
       this.selectedParam ? itemParamValue : this.itemData
     );
     this.itemInCart();
-    //this.showItems();
   }
 
-  paramFromSameItem(id: string) {
-    const products = this.headerService.getItems();
-    products?.forEach((product) => {
-      if (!product.params) {
-        this.itemData.params[0].values.forEach((value) => {
-          if (id != product._id && value._id == product._id) {
-            this.headerService.removeItem(product._id);
-            this.headerService.removeOrderProduct(product._id);
-          }
-        });
-      }
-    });
-    return;
-  }
+  // paramFromSameItem(id: string) {
+  //   const products = this.headerService.getItems();
+  //   products?.forEach((product) => {
+  //     if (!product.params) {
+  //       this.itemData.params[0].values.forEach((value) => {
+  //         if (id != product._id && value._id == product._id) {
+  //           this.headerService.removeItem(product._id);
+  //           this.headerService.removeOrderProduct(product._id);
+  //         }
+  //       });
+  //     }
+  //   });
+  //   return;
+  // }
 
   itemInCart() {
     const productData = this.headerService.getItems();
     if (productData?.length) {
       this.isItemInCart = productData.some(
-        (item) =>
-          item._id === this.itemData._id ||
-          item._id ===
-            this.itemData.params?.[this.selectedParam?.param]?.values?.[
-              this.selectedParam?.value
-            ]?._id
+        (item) => item === this.itemData._id
+        // || item._id ===
+        //   this.itemData.params?.[this.selectedParam?.param]?.values?.[
+        //     this.selectedParam?.value
+        //   ]?._id
       );
     } else this.isItemInCart = false;
   }
@@ -432,34 +429,6 @@ export class ArticleDetailComponent implements OnInit {
       .catch((error) => {
         console.log(error);
       });
-  }
-
-  showItems() {
-    if (this.mode === 'preview' || this.mode === 'image-preview') return;
-    this.dialogService.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        headerButton: 'Ver más productos',
-        headerCallback: () =>
-          this.router.navigate([`../../../store`], {
-            replaceUrl: this.headerService.checkoutRoute ? true : false,
-            relativeTo: this.route,
-          }),
-        footerCallback: () => {
-          if (this.headerService.checkoutRoute) {
-            this.router.navigate([this.headerService.checkoutRoute], {
-              replaceUrl: true,
-            });
-            return;
-          }
-          this.router.navigate([`../../../checkout`], {
-            relativeTo: this.route,
-          });
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
   }
 
   async back() {
@@ -558,76 +527,6 @@ export class ArticleDetailComponent implements OnInit {
 
   getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
-  }
-
-  moreOptions() {
-    const list: Array<SettingsDialogButton> = [
-      {
-        text: 'Comparte el link',
-        callback: async () => {
-          this.share();
-        },
-      },
-      {
-        text: 'Simbolo ID',
-        callback: async () => {
-          try {
-            let result = null;
-
-            result = await this.entityTemplateService.entityTemplateByReference(
-              this.entity === 'item' ? this.itemData._id : this.postData._id,
-              this.entity
-            );
-
-            let createdEntityTemplate = this.logged
-              ? await this.entityTemplateService.createEntityTemplate()
-              : await this.entityTemplateService.precreateEntityTemplate();
-
-            if (createdEntityTemplate) {
-              createdEntityTemplate =
-                await this.entityTemplateService.entityTemplateSetData(
-                  createdEntityTemplate._id,
-                  {
-                    entity: 'entity-template',
-                    reference: result._id,
-                  }
-                );
-
-              this.clipboard.copy(
-                formatID(createdEntityTemplate.dateId, true).slice(1)
-              );
-            }
-
-            this.toastr.info('Simbolo ID copiado al portapapeles', null, {
-              timeOut: 1500,
-            });
-          } catch (error) {
-            this.toastr.error('Ocurrió un error', null, {
-              timeOut: 1500,
-            });
-
-            console.error(error);
-          }
-        },
-      },
-    ];
-
-    this.dialogService.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        //qr code in the xd's too small to scanning to work
-        title:
-          this.entity === 'item'
-            ? this.itemData.name
-            : 'Opciones de mensaje virtual',
-        cancelButton: {
-          text: 'Cerrar',
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
   }
 
   async verifyIfUserIsLogged() {

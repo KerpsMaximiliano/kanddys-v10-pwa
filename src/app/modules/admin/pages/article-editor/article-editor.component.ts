@@ -166,30 +166,6 @@ export class ArticleEditorComponent implements OnInit {
     });
   }
 
-  fileProgressMultiple(e: Event) {
-    const fileList = (e.target as HTMLInputElement).files;
-    if (!fileList.length) return;
-    // this.itemForm.get('images').setValue(Array.from(fileList));
-    // this.imageField = [];
-    for (let i = 0; i < fileList.length; i++) {
-      const file = fileList.item(i);
-      this._ItemsService.itemImages.push(file);
-      if (
-        !['png', 'jpg', 'jpeg'].some((type) => file.type.includes(type)) ||
-        !file.type.includes('image/')
-      ) {
-        // if (!this.imageField[i]) this.error[i] = true;
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.selectedImages.push(reader.result);
-      };
-      reader.readAsDataURL(file);
-      this._ItemsService.changedImages = true;
-    }
-  }
-
   sanitize(image: string | ArrayBuffer) {
     return this._DomSanitizer.bypassSecurityTrustStyle(
       `url(${image}) no-repeat center center / cover #E9E371`
@@ -218,76 +194,6 @@ export class ArticleEditorComponent implements OnInit {
     return value.toString().split('.')[1]?.length || 0;
   }
 
-  openAuxDialog(index: number): void {
-    const list: Array<SettingsDialogButton> = [
-      {
-        text: 'Edita este slide (crop, etc..)',
-        callback: async () => {
-          this._ItemsService.editingImageIndex = index;
-          this._ItemsService.editingImage = this.selectedImages[
-            index
-          ] as string;
-          this._Router.navigate([`admin/create-article/${this.item._id}`]);
-        },
-      },
-      {
-        text: 'Eliminar',
-        callback: async () => {
-          this.dialog.open(SingleActionDialogComponent, {
-            type: 'fullscreen-translucent',
-            props: {
-              title: 'Eliminar este slide del símbolo',
-              buttonText: 'Sí, borrar',
-              mainButton: () => {
-                this.deleteImage(index);
-              },
-              btnBackgroundColor: '#272727',
-              btnMaxWidth: '133px',
-              btnPadding: '7px 2px',
-            },
-            customClass: 'app-dialog',
-            flags: ['no-header'],
-          });
-        },
-      },
-      // {
-      //   text: 'Cambiar el orden de los slides',
-      //   // TODO
-      //   callback: async () => {},
-      // },
-    ];
-    list.forEach((option) => (option.styles = { color: '#383838' }));
-    this.dialog.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        closeEvent: () => {},
-        shareBtn: false,
-        title: '',
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
-  async deleteImage(index: number) {
-    this.selectedImages.splice(index, 1);
-    this._ItemsService.itemImages.splice(index, 1);
-    this._ItemsService.changedImages = true;
-    if (this.item.images.length === 1) {
-      await this._ItemsService.updateItem(
-        {
-          showImages: false,
-        },
-        this.item._id
-      );
-    }
-    await this._ItemsService.itemRemoveImage(
-      [this.item.images[index]._id],
-      this.item._id
-    );
-  }
-
   iconCallback = async () => {
     if (this.name.dirty || this.description.dirty || this.price.dirty) {
       this.updated = true;
@@ -306,28 +212,12 @@ export class ArticleEditorComponent implements OnInit {
     this._ItemsService.itemPrice = null;
     this._ItemsService.itemName = null;
 
-    if (this.updated || this._ItemsService.changedImages) {
+    if (this.updated) {
       lockUI();
       if (this.name.invalid) delete itemInput.name;
       if (this.description.invalid) delete itemInput.description;
       if (this.price.invalid) delete itemInput.pricing;
-      const { updateItem: updatedItem } = await this._ItemsService.updateItem(
-        itemInput,
-        this.item._id
-      );
-      if (this._ItemsService.changedImages) {
-        // Temporal solution for the new image structure
-        const imageURLs = this.item.images.map((image) => image._id);
-        await this._ItemsService.itemRemoveImage(imageURLs, updatedItem._id);
-        await this._ItemsService.itemAddImage(
-          this._ItemsService.itemImages.map((value) => ({
-            file: value,
-          })),
-          updatedItem._id
-        );
-        this._ItemsService.itemImages = [];
-        this._ItemsService.changedImages = false;
-      }
+      await this._ItemsService.updateItem(itemInput, this.item._id);
     }
     unlockUI();
     this._ItemsService.removeTemporalItem();

@@ -168,7 +168,6 @@ export class ArticleCreatorComponent implements OnInit {
 
   onFileInput(event: Event, i: number, j: number, k: number) {
     const fileList = (event.target as HTMLInputElement).files;
-    if (this.item) this._ItemsService.changedImages = true;
     for (let f = 0; f < fileList.length; f++) {
       if (f > 0) this.addFile(i, j, k);
       const file = fileList.item(f);
@@ -343,7 +342,6 @@ export class ArticleCreatorComponent implements OnInit {
     this.types[i] = this.types[i].filter((image, index) => index !== j);
     const aux = this.controllers.at(i).get('multimedia').value;
     this.controllers.at(i).get('multimedia').setValue([]);
-    if (this.item) this._ItemsService.changedImages = true;
     setTimeout(() => {
       if (!this.multimedia[0][0]) {
         this.controllers.at(i).get('multimedia').setValue(['']);
