@@ -1,27 +1,29 @@
 <div
-    *ngIf = "(swiperMode == false)"
-    class="container type{{type}}"
-    [ngClass]="(optCol>0) ? 'grid' : 'flex'"
-    [ngStyle]="{'grid-template-columns': 'repeat(' + optCol + ', 1fr)'}">
-    <button
-        class="option type{{type}}"
-        *ngFor = "let option of options; let i = index"
-        [ngClass]="{ active: i == selected}" 
-        (click) = "selectOpt(i)">
-        {{option}}
-    </button>
+  *ngIf="swiperMode == false"
+  class="container type{{ type }}"
+  [ngClass]="optCol > 0 ? 'grid' : 'flex'"
+  [ngStyle]="{ 'grid-template-columns': 'repeat(' + optCol + ', 1fr)' }"
+>
+  <button
+    class="option type{{ type }}"
+    *ngFor="let option of options; let i = index"
+    [ngClass]="{ active: i == selected }"
+    (click)="selectOpt(i)"
+  >
+    {{ option }}
+  </button>
 </div>
 
-<!--<div *ngIf = "(swiperMode == true)" style="margin-bottom: 20px;">
-    <swiper [config] = "swiperConfig">
-        <div class="swiper-slide"
-            *ngFor = "let option of options; let i = index">
-            <button
-                class="option"
-                [ngClass]="{ active: i == selected }"
-                (click) = "selectOpt(i)">
-                {{option}}
-            </button>
-        </div>
-    </swiper>
-</div>-->
+<!-- <div *ngIf="swiperMode == true" style="margin-bottom: 20px">
+  <swiper [config]="swiperConfig">
+    <div class="swiper-slide" *ngFor="let option of options; let i = index">
+      <button
+        class="option"
+        [ngClass]="{ active: i == selected }"
+        (click)="selectOpt(i)"
+      >
+        {{ option }}
+      </button>
+    </div>
+  </swiper>
+</div> -->
