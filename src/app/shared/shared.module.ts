@@ -128,6 +128,7 @@ import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component
 import { BuyerCardComponent } from './components/buyer-card/buyer-card.component';
 import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
 import { OptionsBarComponent } from './components/options-bar/options-bar.component';
+import { TagItemsComponent } from './components/tag-items/tag-items.component';
 
 const imports = [
   CommonModule,
@@ -264,7 +265,8 @@ const declarations = [
   LinkDialogComponent,
   BuyerCardComponent,
   GradientFooterComponent,
-  OptionsBarComponent
+  OptionsBarComponent,
+  TagItemsComponent
 ];
 
 @NgModule({
