@@ -1,5 +1,10 @@
 <button class="container">
-  <img [src]="img" alt="" class="top" />
+  <img
+    [src]="img"
+    alt=""
+    class="top"
+    (error)="img = '/assets/images/noimage.png'"
+  />
   <div class="bottom">
     <p class="headline">{{ headline }}</p>
     <div class="flex">
