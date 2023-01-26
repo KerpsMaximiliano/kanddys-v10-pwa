@@ -126,6 +126,9 @@ import { ContactLandingContainerComponent } from './components/contact-landing-c
 import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
 import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component';
 import { BuyerCardComponent } from './components/buyer-card/buyer-card.component';
+import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
+import { OptionsBarComponent } from './components/options-bar/options-bar.component';
+import { TagItemsComponent } from './components/tag-items/tag-items.component';
 
 const imports = [
   CommonModule,
@@ -261,6 +264,9 @@ const declarations = [
   ContactLandingContainerComponent,
   LinkDialogComponent,
   BuyerCardComponent,
+  GradientFooterComponent,
+  OptionsBarComponent,
+  TagItemsComponent
 ];
 
 @NgModule({
