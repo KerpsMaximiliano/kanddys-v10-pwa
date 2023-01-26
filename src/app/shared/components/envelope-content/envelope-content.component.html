@@ -16,7 +16,12 @@
     />
   </svg>
 </div>
-<div class="data">
+<div
+  class="data"
+  [ngClass]="{
+    shadows: shadows
+  }"
+>
   <p>Nombre del Sobre:</p>
   <p class="bold">{{ nombreSobre }}</p>
   <p>Mensaje:</p>

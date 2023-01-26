@@ -22,9 +22,12 @@
   //height: 315px;
   border: none;
   border-radius: 7px;
-  box-shadow: 0px 3px 6px rgba(#000000, 0.16);
   margin-bottom: 43px;
   background-color: #ffffff;
+
+  &.shadows {
+    box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+  }
 
   p {
     font-size: 17px;

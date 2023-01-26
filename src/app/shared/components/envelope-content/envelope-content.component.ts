@@ -13,9 +13,23 @@ export class EnvelopeContentComponent implements OnInit {
   @Input() mensaje: string =
     'Por conseguir lo que veias imposible, por creer en ti, y por demostrarnos a todos lo grande y capaz que eres.';
   @Input() from: string = 'James Bond';
+  @Input() shadows: boolean = true;
   constructor(private router: Router, private headerService: HeaderService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (
+      this.from &&
+      this.from.length > 0 &&
+      this.mensaje &&
+      this.mensaje.length > 0 &&
+      this.nombreSobre &&
+      this.nombreSobre.length > 0
+    ) {
+      this.shadows = false;
+    } else {
+      this.shadows = true;
+    }
+  }
 
   editContent() {
     this.router.navigate([
