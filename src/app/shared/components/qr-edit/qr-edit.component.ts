@@ -65,6 +65,7 @@ export class QrEditComponent implements OnInit {
       }
       if (this.item.images.length) {
         this.gridArray = this.item.images.map((image) => ({
+          _id: image._id,
           background: image.value,
           _type: 'image/jpg',
         }));
@@ -143,21 +144,22 @@ export class QrEditComponent implements OnInit {
           return;
         }
         const reader = new FileReader();
-        reader.onload = (e) => {
-          this.gridArray.push({
-            background: reader.result,
-            _type: file.type,
-          });
+        reader.onload = async (e) => {
+          lockUI();
+          const addedImage = await this._ItemsService.itemAddImage(
+            [
+              {
+                file,
+              },
+            ],
+            this.item._id
+          );
+          this._ItemsService.editingImageId =
+            addedImage.images[addedImage.images.length - 1]._id;
+          unlockUI();
+          this._Router.navigate([`admin/create-article/${this.item._id}`]);
         };
         reader.readAsDataURL(file);
-        await this._ItemsService.itemAddImage(
-          [
-            {
-              file,
-            },
-          ],
-          this.item._id
-        );
       } else {
         if (
           ![
@@ -219,7 +221,7 @@ export class QrEditComponent implements OnInit {
         {
           text: 'Edita este slide (crop, etc..)',
           callback: async () => {
-            this._ItemsService.editingImage = this.gridArray[index].background;
+            this._ItemsService.editingImageId = this.gridArray[index]._id;
             this._Router.navigate([`admin/create-article/${this.item._id}`]);
           },
         },

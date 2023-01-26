@@ -57,6 +57,74 @@ const itemBody = `
   }
 `;
 
+const fullItem = `
+  _id
+  name
+  pricing
+  pricePerUnit
+  description
+  createdAt
+  images {
+    _id
+    active
+    value
+    original
+    index
+  }
+  fixedQuantity
+  size
+  quality
+  iconImage
+  hasExtraPrice
+  content
+  hasSelection
+  status
+  showImages
+  notifications
+  tags
+  visitorCounter {
+    entity
+    counter
+    reference
+  }
+  calendar {
+    _id
+  }
+  category {
+    _id
+    name
+  }
+  params {
+    _id
+    name
+    category
+    formType
+    values {
+      _id
+      name
+      price
+      description
+      image
+      quantity
+    }
+  }
+  itemExtra {
+    _id
+    images
+    name
+    active
+    createdAt
+  }
+  merchant {
+    _id
+    name
+    owner {
+      _id
+      phone
+    }
+  }
+`;
+
 export const items = gql`
   query items($merchantId: ObjectID, $params: ListParams) {
     items(merchantId: $merchantId, params: $params) { ${body} }
@@ -131,72 +199,7 @@ export const itemExtraByMerchant = gql`
 
 export const item = gql`
   query item($id: ObjectID!) {
-    item(id: $id) {
-      _id
-      name
-      pricing
-      pricePerUnit
-      description
-      createdAt
-      images {
-        _id
-        value
-        index
-        active
-      }
-      fixedQuantity
-      size
-      quality
-      iconImage
-      hasExtraPrice
-      content
-      hasSelection
-      status
-      showImages
-      notifications
-      tags
-      visitorCounter {
-        entity
-        counter
-        reference
-      }
-      calendar {
-        _id
-      }
-      category {
-        _id
-        name
-      }
-      params {
-        _id
-        name
-        category
-        formType
-        values {
-          _id
-          name
-          price
-          description
-          image
-          quantity
-        }
-      }
-      itemExtra {
-        _id
-        images
-        name
-        active
-        createdAt
-      }
-      merchant {
-        _id
-        name
-        owner {
-          _id
-          phone
-        }
-      }
-    }
+    item(id: $id) { ${fullItem} }
   }
 `;
 
@@ -294,9 +297,7 @@ export const itemPackage = gql`
 
 export const createItem = gql`
   mutation createItem($input: ItemInput!) {
-    createItem(input: $input) {
-      _id
-    }
+    createItem(input: $input) { ${fullItem} }
   }
 `;
 
@@ -405,8 +406,10 @@ export const itemAddImage = gql`
       description
       createdAt
       images {
+        _id
         value
         index
+        original
         active
       }
       fixedQuantity
@@ -513,6 +516,12 @@ export const itemRemoveImage = gql`
         }
       }
     }
+  }
+`;
+
+export const itemUpdateImage = gql`
+  mutation itemUpdateImage($input: ItemImageInput!, $imageId: ObjectID!, $id: ObjectID!) {
+    itemUpdateImage(input: $input, imageId: $imageId, id: $id) { ${fullItem} }
   }
 `;
 

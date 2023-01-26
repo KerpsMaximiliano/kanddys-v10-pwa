@@ -6,7 +6,12 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Calendar } from 'src/app/core/models/calendar';
-import { Item, ItemInput, ItemStatus } from 'src/app/core/models/item';
+import {
+  Item,
+  ItemImageInput,
+  ItemInput,
+  ItemStatus,
+} from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Reservation } from 'src/app/core/models/reservation';
 import { PaginationInput } from 'src/app/core/models/saleflow';
@@ -212,7 +217,7 @@ export class ItemsDashboardComponent implements OnInit {
         {
           name: 'enteredImages',
           callback: async (files: File[]) => {
-            let images = files.map((file) => {
+            let images: ItemImageInput[] = files.map((file) => {
               return {
                 file: file,
                 index: 0,
@@ -246,7 +251,12 @@ export class ItemsDashboardComponent implements OnInit {
             );
             this._ToastrService.success('Producto creado satisfactoriamente!');
             unlockUI();
-            this.router.navigate([`admin/article-editor/${createItem._id}`]);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this._ItemsService.editingImageId = createItem.images[0]._id;
+              this.router.navigate([`admin/create-article/${createItem._id}`]);
+            };
+            reader.readAsDataURL(images[0].file as File);
           },
         },
       ],
@@ -1159,16 +1169,12 @@ export class ItemsDashboardComponent implements OnInit {
         text: 'Duplicar',
         callback: async () => {
           try {
-            const createdItem = await this._ItemsService.duplicateItem(
-              item._id
-            );
-            const duplicatedItem: ExtendedItem = await this._ItemsService.item(
-              createdItem._id
-            );
+            const createdItem: ExtendedItem =
+              await this._ItemsService.duplicateItem(item._id);
 
             await this._SaleflowService.addItemToSaleFlow(
               {
-                item: duplicatedItem._id,
+                item: createdItem._id,
               },
               this._SaleflowService.saleflowData._id
             );
@@ -1209,13 +1215,13 @@ export class ItemsDashboardComponent implements OnInit {
             //   createItem._id
             // );
 
-            if (duplicatedItem.tags && duplicatedItem.tags.length) {
-              duplicatedItem.tagsFilled = [];
+            if (createdItem.tags && createdItem.tags.length) {
+              createdItem.tagsFilled = [];
 
               if (item.tags.length > 0) {
                 for (const tagId of item.tags) {
                   if (this.tagsHashTable[tagId]) {
-                    duplicatedItem.tagsFilled.push(this.tagsHashTable[tagId]);
+                    createdItem.tagsFilled.push(this.tagsHashTable[tagId]);
                   }
                 }
               }
@@ -1223,19 +1229,19 @@ export class ItemsDashboardComponent implements OnInit {
 
             this.totalItemsCounter++;
 
-            if (duplicatedItem.status === 'featured') {
+            if (createdItem.status === 'featured') {
               this.activeItemsCounter++;
               this.featuredItemsCounter++;
             }
 
-            if (duplicatedItem.status === 'active') {
+            if (createdItem.status === 'active') {
               this.activeItemsCounter++;
             }
 
-            if (duplicatedItem.status === 'disabled') {
+            if (createdItem.status === 'disabled') {
               this.inactiveItemsCounter++;
             }
-            this.allItems = [duplicatedItem].concat(this.allItems);
+            this.allItems = [createdItem].concat(this.allItems);
             this._ToastrService.info('¡Item duplicado exitosamente!');
           } catch (error) {
             console.log(error);

@@ -96,10 +96,10 @@ export class Item extends Model<Item> {
 
 export class ItemImage extends Model<ItemImage> {
   value: string;
+  original: string;
   index?: number;
   active?: boolean;
 }
-
 
 export class ItemPackageRule extends Model<ItemPackageRule> {
   item?: Item;

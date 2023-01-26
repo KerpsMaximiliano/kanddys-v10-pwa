@@ -71,7 +71,7 @@ export class ArticleCreatorComponent implements OnInit {
   tagsAsignationOnStart: boolean = false;
   fromTemplate: string = null;
   editMode = false;
-  editingImageIndex: number;
+  editingImageId: string;
   editingImage: string;
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
   imageElement: HTMLImageElement;
@@ -102,6 +102,10 @@ export class ArticleCreatorComponent implements OnInit {
     }
     const itemId = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     if (itemId) {
+      if (!this._ItemsService.editingImageId) {
+        this._Router.navigate([`/admin/slides-editor/${itemId}`]);
+        return;
+      }
       this.item = await this._ItemsService.item(itemId);
       if (!this.item) this.goBack();
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
@@ -110,8 +114,11 @@ export class ArticleCreatorComponent implements OnInit {
         });
         return;
       }
-      this.editingImageIndex = this._ItemsService.editingImageIndex;
-      this.editingImage = this._ItemsService.editingImage;
+      this.editingImageId = this._ItemsService.editingImageId;
+      const image = this.item.images.find(
+        (itemImage) => itemImage._id === this.editingImageId
+      );
+      this.editingImage = image?.original || image.value;
       this.editMode = true;
     }
   }
@@ -270,26 +277,15 @@ export class ArticleCreatorComponent implements OnInit {
         type: 'image/jpg',
       });
       lockUI();
-      const imageIndex = this.item.images.findIndex(
-        (image) => image.value === this.editingImage
-      );
-      if (imageIndex >= 0) {
-        await this._ItemsService.itemRemoveImage(
-          [this.item.images[imageIndex]._id],
-          this.item._id
-        );
-      }
-      await this._ItemsService.itemAddImage(
-        [
-          {
-            file,
-          },
-        ],
+      await this._ItemsService.itemUpdateImage(
+        {
+          file: file,
+        },
+        this.editingImageId,
         this.item._id
       );
       unlockUI();
-      this._ItemsService.editingImage = null;
-      this._ItemsService.editingImageIndex = null;
+      this._ItemsService.editingImageId = null;
     }
     this.ngZone.run(() => {
       this._Router.navigate([`/admin/slides-editor/${this.item._id}`]);
