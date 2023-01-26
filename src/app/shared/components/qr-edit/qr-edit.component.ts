@@ -55,14 +55,6 @@ export class QrEditComponent implements OnInit {
         });
         return;
       }
-      if (this._ItemsService.itemUrls.length) {
-        this.gridArray = this._ItemsService.itemUrls.map((image) => ({
-          background: image,
-          _type: 'image/jpg',
-        }));
-        this._ItemsService.itemUrls = [];
-        return;
-      }
       if (this.item.images.length) {
         this.gridArray = this.item.images.map((image) => ({
           _id: image._id,

@@ -114,20 +114,17 @@ export class ArticleEditorComponent implements OnInit {
         // } else this.loadImages();
       }
     }
-    if (this._ItemsService.itemName)
+    if (this._ItemsService.itemName) {
       this.name.setValue(this._ItemsService.itemName);
-    if (this._ItemsService.itemDesc)
+      this.name.markAsDirty();
+    }
+    if (this._ItemsService.itemDesc) {
       this.description.setValue(this._ItemsService.itemDesc);
-    if (this._ItemsService.itemPrice)
+      this.description.markAsDirty();
+    }
+    if (this._ItemsService.itemPrice) {
       this.price.setValue(this._ItemsService.itemPrice);
-    this._MerchantsService.merchantData =
-      await this._MerchantsService.merchantDefault();
-    if (this._MerchantsService.merchantData) {
-      this._SaleflowService.saleflowData =
-        await this._SaleflowService.saleflowDefault(
-          this._MerchantsService.merchantData._id
-        );
-      if (this._SaleflowService.saleflowData) this.obtainLasts();
+      this.price.markAsDirty();
     }
   }
 
@@ -138,31 +135,6 @@ export class ArticleEditorComponent implements OnInit {
       reader.onload = (e) => {
         this.selectedImages.push(reader.result);
       };
-    });
-  }
-
-  obtainLasts() {
-    this._Route.params.subscribe(async (params) => {
-      const saleflowItems = this._SaleflowService.saleflowData.items.map(
-        (saleflowItem) => ({
-          item: saleflowItem.item._id,
-        })
-      );
-      this.items = await this._SaleflowService.listItems({
-        findBy: {
-          _id: {
-            __in: ([] = saleflowItems.map((items) => items.item)),
-          },
-        },
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: -1,
-        },
-      });
-      this.items = this.items.listItems.filter((item) => {
-        return item.params == null || undefined || item.params.length == 0;
-      });
-      this.items.length <= 6 ? null : (this.items.length = 6);
     });
   }
 
@@ -194,7 +166,7 @@ export class ArticleEditorComponent implements OnInit {
     return value.toString().split('.')[1]?.length || 0;
   }
 
-  iconCallback = async () => {
+  iconCallback = async (ignore?: boolean) => {
     if (this.name.dirty || this.description.dirty || this.price.dirty) {
       this.updated = true;
     }
@@ -213,15 +185,17 @@ export class ArticleEditorComponent implements OnInit {
     this._ItemsService.itemName = null;
 
     if (this.updated) {
-      lockUI();
+      if (!ignore) lockUI();
       if (this.name.invalid) delete itemInput.name;
       if (this.description.invalid) delete itemInput.description;
       if (this.price.invalid) delete itemInput.pricing;
       await this._ItemsService.updateItem(itemInput, this.item._id);
     }
-    unlockUI();
-    this._ItemsService.removeTemporalItem();
-    this._Router.navigate([`admin/entity-detail-metrics`]);
+    if (!ignore) {
+      unlockUI();
+      this._ItemsService.removeTemporalItem();
+      this._Router.navigate([`admin/entity-detail-metrics`]);
+    }
   };
 
   openTagDialog = async () => {
@@ -490,6 +464,7 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   goEditSlides() {
+    this.iconCallback(true);
     this._Router.navigate([`admin/slides-editor/${this.item._id}`]);
   }
 

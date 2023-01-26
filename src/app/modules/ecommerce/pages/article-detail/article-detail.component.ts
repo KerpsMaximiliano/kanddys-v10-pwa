@@ -433,11 +433,13 @@ export class ArticleDetailComponent implements OnInit {
 
   async back() {
     if (this.mode === 'preview') {
+      this._ItemsService.itemUrls = [];
       return this.router.navigate([
         `/admin/article-editor/${this.itemData._id}`,
       ]);
     }
     if (this.mode === 'image-preview') {
+      this._ItemsService.itemUrls = [];
       return this.router.navigate([
         `/admin/slides-editor/${this.itemData._id}`,
       ]);

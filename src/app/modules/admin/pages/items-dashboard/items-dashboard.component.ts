@@ -1107,64 +1107,6 @@ export class ItemsDashboardComponent implements OnInit {
     ];
 
     const list: Array<SettingsDialogButton> = [
-      // {
-      //   text: 'Vista del visitante',
-      //   callback: async () => {
-      //     if (item.status !== 'disabled') {
-      //       this._ItemsService.itemName = item.name;
-      //       this._ItemsService.itemDesc = item.description;
-      //       this._ItemsService.itemPrice = item.pricing;
-      //       this._ItemsService.itemUrls = item.images.map(
-      //         (itemImage) => itemImage.value
-      //       );
-      //       this.router.navigate(
-      //         [
-      //           `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${item._id}`,
-      //         ],
-      //         {
-      //           queryParams: {
-      //             mode: 'preview',
-      //           },
-      //         }
-      //       );
-      //     } else {
-      //       const { images, name, description, pricing, _id, ...rest } = item;
-      //       const params = item.params;
-      //       params?.forEach((param) => {
-      //         param.values = param.values.filter(
-      //           (values) => values.name || values.price || values.description
-      //         );
-      //       });
-      //       this._ItemsService.storeTemporalItem({
-      //         ...rest,
-      //         name,
-      //         description,
-      //         params,
-      //         images: images,
-      //         pricing,
-      //       });
-      //       this.headerService.flowRoute = this.router.url;
-      //       localStorage.setItem('flowRoute', this.headerService.flowRoute);
-
-      //       this._ItemsService.itemName = item.name;
-      //       this._ItemsService.itemDesc = item.description;
-      //       this._ItemsService.itemPrice = item.pricing;
-      //       this._ItemsService.itemUrls = item.images.map(
-      //         (itemImage) => itemImage.value
-      //       );
-      //       this.router.navigate(
-      //         [
-      //           `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${item._id}`,
-      //         ],
-      //         {
-      //           queryParams: {
-      //             mode: 'preview',
-      //           },
-      //         }
-      //       );
-      //     }
-      //   },
-      // },
       {
         text: 'Duplicar',
         callback: async () => {
