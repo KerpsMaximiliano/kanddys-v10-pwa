@@ -6,9 +6,9 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./buyer-card.component.scss'],
 })
 export class BuyerCardComponent implements OnInit {
-  @Input() background: string = '#E9E371';
+  @Input() img: string = '/assets/images/noimage.png';
   @Input() headline: string =
-    'kebdleinceib ek nedbejb ek eifb ekdedkenidne dke oleoe ek eifknei edk';
+    'kebdleinceib ek nedbejb ek eifb ekdedkenidne dke oleoe ek eifknei edkeib ek nedbejb ek eifb ekdedkenidne dke oleoe ek eifknei edk';
   @Input() leftText: string = 'Texto Izquierda';
   @Input() rightText: string = 'Texto Derecha';
 
