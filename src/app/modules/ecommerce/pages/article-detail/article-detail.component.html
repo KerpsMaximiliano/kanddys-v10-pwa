@@ -186,6 +186,10 @@
   }"
   *ngIf="postData"
 >
+  <button class="fixed-top-button" (click)="back()">
+    <img [src]="env + '/arrow-double-up.svg'" alt="Flecha doble hacia arriba" />
+  </button>
+
   <div class="media-swiper-wrapper">
     <swiper
       [config]="swiperConfig"
@@ -197,9 +201,18 @@
           <div
             class="entity-image"
             [ngStyle]="{
-              backgroundImage: 'url(' + slide.media + ')'
+              'background-image': 'url(' + slide.media + ')'
             }"
           ></div>
+        </ng-container>
+
+        <ng-container *ngIf="slide.type === 'text'">
+          <div class="text-content">
+            <div class="content">
+              <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
+              <p class="subtitle2" *ngIf="slide.text">{{ slide.text }}</p>
+            </div>
+          </div>
         </ng-container>
 
         <ng-container *ngIf="slide.type === 'poster' && slide.isVideo">
@@ -253,7 +266,8 @@
   <div
     class="bottom-user-actions-panel"
     [ngStyle]="{
-      transform: 'translateY(130px)'
+      transform: 'translateY(130px)',
+      height: '23.691460vh'
     }"
   >
     <div class="inner-wrapper-top">
@@ -263,80 +277,26 @@
           'grid-template-columns': '' + fractions + ''
         }"
       >
-        <ng-container *ngIf="entity === 'item' && itemData.images?.length > 0">
-          <div
-            class="indicator"
-            [ngClass]="{
-              active: imageIndex === currentMediaSlide
-            }"
-            *ngFor="let image of itemData.images; let imageIndex = index"
-          ></div>
-        </ng-container>
-
-        <ng-container *ngIf="entity === 'post' && postSlides.length > 0">
-          <div
-            class="indicator"
-            [ngClass]="{
-              active: slideIndex === currentMediaSlide
-            }"
-            *ngFor="let slide of postSlides; let slideIndex = index"
-          ></div>
-        </ng-container>
+        <div
+          class="indicator"
+          [ngClass]="{
+            active: slideIndex === currentMediaSlide
+          }"
+          *ngFor="let slide of postSlides; let slideIndex = index"
+        ></div>
       </div>
+
+      <img
+        [src]="
+          'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/transform-icon-white.svg'
+        "
+        alt="transform"
+        class="transform-icon"
+      />
 
       <div></div>
 
-      <div class="add-to-cart-and-item-price-columnn" *ngIf="entity === 'item'">
-        <h3 class="item-price">
-          RD $ {{ itemData.pricing | number : "1.2-2" }}
-        </h3>
-        <button
-          (click)="saveProduct()"
-          [ngClass]="{
-            inCart: isItemInCart
-          }"
-        >
-          {{ isItemInCart ? "EN LA PRE-FACTURA" : "ADICIONALO A LA FACTURA" }}
-        </button>
-      </div>
-
       <div class="empty-space"></div>
-    </div>
-
-    <div class="inner-wrapper-bottom" *ngIf="entity === 'item'">
-      <div class="content-wrapper">
-        <swiper
-          [config]="swiperConfigTag"
-          *ngIf="typeOfMenuToShow === 'TAGS'"
-          style="max-width: 98%"
-        >
-          <div
-            class="tags-area"
-            *ngFor="let tag of itemTags; let tagIndex = index"
-            (click)="onTagClick(tag)"
-          >
-            <div
-              class="tag-item"
-              [ngStyle]="{
-                'background-image':
-                  tag.images && tag.images.length > 0
-                    ? 'url(' + tag.images[0] + ')'
-                    : 'url(' + env + '/assets/images/noimage.png' + ')',
-                border: tag.selected ? '3px solid #45944d' : 'solid 3px #82f18d'
-              }"
-            ></div>
-            <span class="tag-name">{{ tag.name }}</span>
-          </div>
-        </swiper>
-
-        <div class="description" *ngIf="typeOfMenuToShow === 'DESCRIPTION'">
-          <p>
-            {{
-              !itemData.description ? "Sin descripción" : itemData.description
-            }}
-          </p>
-        </div>
-      </div>
     </div>
   </div>
 </div>

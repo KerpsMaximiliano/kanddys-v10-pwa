@@ -97,7 +97,7 @@ export class ArticleDetailComponent implements OnInit {
   entityTemplate: EntityTemplate = null;
   user: User;
   logged: boolean = false;
-  isProductMine:boolean = false;
+  isProductMine: boolean = false;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -238,6 +238,13 @@ export class ArticleDetailComponent implements OnInit {
             (slide.media.includes('mp4') || slide.media.includes('webm'))
           ) {
             slide.isVideo = true;
+
+            if (
+              !slide.media.includes('https://') &&
+              !slide.media.includes('http://')
+            ) {
+              slide.media = 'https://' + slide.media;
+            }
           }
         }
 
@@ -579,7 +586,7 @@ export class ArticleDetailComponent implements OnInit {
                   createdEntityTemplate._id,
                   {
                     entity: 'entity-template',
-                    reference: result._id
+                    reference: result._id,
                   }
                 );
 
@@ -629,11 +636,15 @@ export class ArticleDetailComponent implements OnInit {
     this.logged = true;
   }
 
-  navigate():void {
+  navigate(): void {
     (async () => {
-      const { _id } = await this.entityTemplateService.entityTemplateByReference(this.entityId,this.entity);
+      const { _id } =
+        await this.entityTemplateService.entityTemplateByReference(
+          this.entityId,
+          this.entity
+        );
       const route = ['ecommerce', 'article-privacy', _id];
       this.router.navigate(route);
-    })()
+    })();
   }
 }
