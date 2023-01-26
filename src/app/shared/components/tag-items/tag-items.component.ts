@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { timeStamp } from 'console';
+import { Tag } from 'src/app/core/models/tags';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { environment } from 'src/environments/environment';
+import { Button } from '../general-item/general-item.component';
 
 @Component({
   selector: 'app-tag-items',
@@ -9,15 +13,24 @@ import { environment } from 'src/environments/environment';
 export class TagItemsComponent implements OnInit {
 
   environment: string = environment.assetsUrl;
+  optional = true;
 
-  items: Array<any> = 
-  [
-    
-  ]
+  items: Array<any> = []
+  optionsButton: Array <Button> = []
 
-  constructor() { }
+  constructor(private itemsService: ItemsService) { }
 
-  ngOnInit(): void {
+ async ngOnInit(){
+   let item = await this.itemsService.item('63c61f50a6ce9322ca216714').then(item=>{
+    for (let index = 0; index < 6; index++) {
+      this.items.push(item)
+      this.optionsButton.push({
+        clickEvent: (params: Tag) => {
+          alert("clicked")
+        },
+      })
+    }
+   });
   }
 
 }

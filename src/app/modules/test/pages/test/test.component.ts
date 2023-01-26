@@ -109,7 +109,7 @@ export class TestComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.item = await this.itemsService.item('6387bb0c3dbe8733c0b9427e');
+    this.item = await this.itemsService.item('63c61f50a6ce9322ca216714');
   }
 
   openDialog() {
