@@ -425,7 +425,6 @@ export class LoginComponent implements OnInit {
               null,
               { timeOut: 8000 }
             );
-            return;
           }
 
           this.phoneNumber.setValue(nationalNumber);
@@ -474,7 +473,6 @@ export class LoginComponent implements OnInit {
             null,
             { timeOut: 2000 }
           );
-          return;
         }
 
         // El user no esta registrado
@@ -596,6 +594,11 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
           return;
         }
+
+        if (this.auth === 'azul-login') {
+          this.redirectFromQueryParams();
+        }
+
         if (this.orderId && !this.toValidate) {
           this.authOrder(checkOTP.user._id);
           return;
