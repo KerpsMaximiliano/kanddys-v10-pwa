@@ -93,7 +93,7 @@ export class ArticleEditorComponent implements OnInit {
       if (this.item.images.length) {
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
-          const response = await fetch(image);
+          const response = await fetch(image.value);
           const blob = await response.blob();
           return new File([blob], `item_image_${index}.jpeg`, {
             type: 'image/jpeg',
@@ -114,20 +114,17 @@ export class ArticleEditorComponent implements OnInit {
         // } else this.loadImages();
       }
     }
-    if (this._ItemsService.itemName)
+    if (this._ItemsService.itemName) {
       this.name.setValue(this._ItemsService.itemName);
-    if (this._ItemsService.itemDesc)
+      this.name.markAsDirty();
+    }
+    if (this._ItemsService.itemDesc) {
       this.description.setValue(this._ItemsService.itemDesc);
-    if (this._ItemsService.itemPrice)
+      this.description.markAsDirty();
+    }
+    if (this._ItemsService.itemPrice) {
       this.price.setValue(this._ItemsService.itemPrice);
-    this._MerchantsService.merchantData =
-      await this._MerchantsService.merchantDefault();
-    if (this._MerchantsService.merchantData) {
-      this._SaleflowService.saleflowData =
-        await this._SaleflowService.saleflowDefault(
-          this._MerchantsService.merchantData._id
-        );
-      if (this._SaleflowService.saleflowData) this.obtainLasts();
+      this.price.markAsDirty();
     }
   }
 
@@ -139,55 +136,6 @@ export class ArticleEditorComponent implements OnInit {
         this.selectedImages.push(reader.result);
       };
     });
-  }
-
-  obtainLasts() {
-    this._Route.params.subscribe(async (params) => {
-      const saleflowItems = this._SaleflowService.saleflowData.items.map(
-        (saleflowItem) => ({
-          item: saleflowItem.item._id,
-        })
-      );
-      this.items = await this._SaleflowService.listItems({
-        findBy: {
-          _id: {
-            __in: ([] = saleflowItems.map((items) => items.item)),
-          },
-        },
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: -1,
-        },
-      });
-      this.items = this.items.listItems.filter((item) => {
-        return item.params == null || undefined || item.params.length == 0;
-      });
-      this.items.length <= 6 ? null : (this.items.length = 6);
-    });
-  }
-
-  fileProgressMultiple(e: Event) {
-    const fileList = (e.target as HTMLInputElement).files;
-    if (!fileList.length) return;
-    // this.itemForm.get('images').setValue(Array.from(fileList));
-    // this.imageField = [];
-    for (let i = 0; i < fileList.length; i++) {
-      const file = fileList.item(i);
-      this._ItemsService.itemImages.push(file);
-      if (
-        !['png', 'jpg', 'jpeg'].some((type) => file.type.includes(type)) ||
-        !file.type.includes('image/')
-      ) {
-        // if (!this.imageField[i]) this.error[i] = true;
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.selectedImages.push(reader.result);
-      };
-      reader.readAsDataURL(file);
-      this._ItemsService.changedImages = true;
-    }
   }
 
   sanitize(image: string | ArrayBuffer) {
@@ -218,77 +166,7 @@ export class ArticleEditorComponent implements OnInit {
     return value.toString().split('.')[1]?.length || 0;
   }
 
-  openAuxDialog(index: number): void {
-    const list: Array<SettingsDialogButton> = [
-      {
-        text: 'Edita este slide (crop, etc..)',
-        callback: async () => {
-          this._ItemsService.editingImageIndex = index;
-          this._ItemsService.editingImage = this.selectedImages[
-            index
-          ] as string;
-          this._Router.navigate([`admin/create-article/${this.item._id}`]);
-        },
-      },
-      {
-        text: 'Eliminar',
-        callback: async () => {
-          this.dialog.open(SingleActionDialogComponent, {
-            type: 'fullscreen-translucent',
-            props: {
-              title: 'Eliminar este slide del símbolo',
-              buttonText: 'Sí, borrar',
-              mainButton: () => {
-                this.deleteImage(index);
-              },
-              btnBackgroundColor: '#272727',
-              btnMaxWidth: '133px',
-              btnPadding: '7px 2px',
-            },
-            customClass: 'app-dialog',
-            flags: ['no-header'],
-          });
-        },
-      },
-      // {
-      //   text: 'Cambiar el orden de los slides',
-      //   // TODO
-      //   callback: async () => {},
-      // },
-    ];
-    list.forEach((option) => (option.styles = { color: '#383838' }));
-    this.dialog.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        closeEvent: () => {},
-        shareBtn: false,
-        title: '',
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
-  async deleteImage(index: number) {
-    this.selectedImages.splice(index, 1);
-    this._ItemsService.itemImages.splice(index, 1);
-    this._ItemsService.changedImages = true;
-    if (this.item.images.length === 1) {
-      await this._ItemsService.updateItem(
-        {
-          showImages: false,
-        },
-        this.item._id
-      );
-    }
-    await this._ItemsService.deleteImageItem(
-      [this.item.images[index]],
-      this.item._id
-    );
-  }
-
-  iconCallback = async () => {
+  iconCallback = async (ignore?: boolean) => {
     if (this.name.dirty || this.description.dirty || this.price.dirty) {
       this.updated = true;
     }
@@ -306,31 +184,18 @@ export class ArticleEditorComponent implements OnInit {
     this._ItemsService.itemPrice = null;
     this._ItemsService.itemName = null;
 
-    if (this.updated || this._ItemsService.changedImages) {
-      lockUI();
+    if (this.updated) {
+      if (!ignore) lockUI();
       if (this.name.invalid) delete itemInput.name;
       if (this.description.invalid) delete itemInput.description;
       if (this.price.invalid) delete itemInput.pricing;
-      const { updateItem: updatedItem } = await this._ItemsService.updateItem(
-        itemInput,
-        this.item._id
-      );
-      if (this._ItemsService.changedImages) {
-        await this._ItemsService.deleteImageItem(
-          this.item.images,
-          updatedItem._id
-        );
-        await this._ItemsService.addImageItem(
-          this._ItemsService.itemImages,
-          updatedItem._id
-        );
-        this._ItemsService.itemImages = [];
-        this._ItemsService.changedImages = false;
-      }
+      await this._ItemsService.updateItem(itemInput, this.item._id);
     }
-    unlockUI();
-    this._ItemsService.removeTemporalItem();
-    this._Router.navigate([`admin/entity-detail-metrics`]);
+    if (!ignore) {
+      unlockUI();
+      this._ItemsService.removeTemporalItem();
+      this._Router.navigate([`admin/entity-detail-metrics`]);
+    }
   };
 
   openTagDialog = async () => {
@@ -599,6 +464,7 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   goEditSlides() {
+    this.iconCallback(true);
     this._Router.navigate([`admin/slides-editor/${this.item._id}`]);
   }
 

@@ -17,6 +17,7 @@ import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 @Component({
   selector: 'app-qr-edit',
@@ -35,6 +36,7 @@ export class QrEditComponent implements OnInit {
   constructor(
     private _ItemsService: ItemsService,
     private _MerchantsService: MerchantsService,
+    private _SaleflowService: SaleFlowService,
     private _PostsService: PostsService,
     private _Router: Router,
     private _Route: ActivatedRoute,
@@ -55,7 +57,8 @@ export class QrEditComponent implements OnInit {
       }
       if (this.item.images.length) {
         this.gridArray = this.item.images.map((image) => ({
-          background: image,
+          _id: image._id,
+          background: image.value,
           _type: 'image/jpg',
         }));
       }
@@ -119,7 +122,7 @@ export class QrEditComponent implements OnInit {
     // console.log('this.gridArray: ', this.gridArray);
   }
 
-  loadFile(event: Event) {
+  async loadFile(event: Event) {
     const fileList = (event.target as HTMLInputElement).files;
     if (!fileList.length) return;
     for (let i = 0; i < fileList.length; i++) {
@@ -133,14 +136,22 @@ export class QrEditComponent implements OnInit {
           return;
         }
         const reader = new FileReader();
-        reader.onload = (e) => {
-          this.gridArray.push({
-            background: reader.result,
-            _type: file.type,
-          });
+        reader.onload = async (e) => {
+          lockUI();
+          const addedImage = await this._ItemsService.itemAddImage(
+            [
+              {
+                file,
+              },
+            ],
+            this.item._id
+          );
+          this._ItemsService.editingImageId =
+            addedImage.images[addedImage.images.length - 1]._id;
+          unlockUI();
+          this._Router.navigate([`admin/create-article/${this.item._id}`]);
         };
         reader.readAsDataURL(file);
-        this._ItemsService.changedImages = true;
       } else {
         if (
           ![
@@ -172,20 +183,6 @@ export class QrEditComponent implements OnInit {
 
   async submit() {
     if (this.item) {
-      if (this._ItemsService.changedImages) {
-        lockUI();
-        await this._ItemsService.deleteImageItem(
-          this.item.images,
-          this.item._id
-        );
-        await this._ItemsService.addImageItem(
-          this._ItemsService.itemImages,
-          this.item._id
-        );
-        this._ItemsService.itemImages = [];
-        this._ItemsService.changedImages = false;
-        unlockUI();
-      }
       this._Router.navigate([`admin/article-editor/${this.item._id}`]);
       return;
     }
@@ -216,7 +213,7 @@ export class QrEditComponent implements OnInit {
         {
           text: 'Edita este slide (crop, etc..)',
           callback: async () => {
-            this._ItemsService.editingImage = this.gridArray[index].background;
+            this._ItemsService.editingImageId = this.gridArray[index]._id;
             this._Router.navigate([`admin/create-article/${this.item._id}`]);
           },
         },
@@ -282,7 +279,6 @@ export class QrEditComponent implements OnInit {
   async deleteImage(index: number) {
     if (this.item) {
       this._ItemsService.itemImages.splice(index, 1);
-      this._ItemsService.changedImages = true;
 
       if (this.item.images.length === 1) {
         await this._ItemsService.updateItem(
@@ -292,9 +288,13 @@ export class QrEditComponent implements OnInit {
           this.item._id
         );
       }
-      if (this.item.images.includes(this.gridArray[index].background)) {
-        await this._ItemsService.deleteImageItem(
-          [this.item.images[index]],
+      if (
+        this.item.images.some(
+          (itemImage) => itemImage.value === this.gridArray[index].background
+        )
+      ) {
+        await this._ItemsService.itemRemoveImage(
+          [this.item.images[index]._id],
           this.item._id
         );
       }
@@ -304,5 +304,24 @@ export class QrEditComponent implements OnInit {
     this.gridArray.splice(index, 1);
     if (this._PostsService.post?.slides.length)
       this._PostsService.post.slides.splice(index, 1);
+  }
+
+  previewItem() {
+    this._ItemsService.itemName = this.item.name;
+    this._ItemsService.itemDesc = this.item.description;
+    this._ItemsService.itemPrice = this.item.pricing;
+    this._ItemsService.itemUrls = this.gridArray.map(
+      (gridArray) => gridArray.background
+    );
+    this._Router.navigate(
+      [
+        `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
+      ],
+      {
+        queryParams: {
+          mode: 'image-preview',
+        },
+      }
+    );
   }
 }

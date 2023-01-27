@@ -5,6 +5,9 @@
       [style.cursor]="'pointer'"
       (click)="submit()"
     ></i>
+    <button class="preview-btn" (click)="previewItem()" *ngIf="item">
+      PREVIEW
+    </button>
   </div>
 
   <!--<div class="itemsGrid">
@@ -33,7 +36,6 @@
           type="file"
           id="file"
           [style.display]="'none'"
-          multiple
           (change)="loadFile($event)"
           [accept]="availableFiles"
         />

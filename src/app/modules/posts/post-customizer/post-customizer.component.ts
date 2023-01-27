@@ -2586,11 +2586,11 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
         lines,
         preview: file,
       };
-      const items = this.header.getItems();
-      this.header.emptyItems();
-      this.header.items[0].images[0] = url;
-      items[0].images[0] = url;
-      this.header.storeItem(items[0]);
+      // const items = this.header.getItems();
+      // this.header.emptyItems();
+      // this.header.items[0].images[0].value = url;
+      // items[0].images[0].value = url;
+      // this.header.storeItem(items[0]);
       if (!this.customizerValueID) {
         unlockUI();
         this.saveDataInHeader(customizerValues);
@@ -2601,13 +2601,15 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
         )
           this.router.navigate([
             `ecommerce/${
-              this.header.saleflow?.merchant.slug || this.header.getSaleflow()?.merchant.slug
+              this.header.saleflow?.merchant.slug ||
+              this.header.getSaleflow()?.merchant.slug
             }/provider-store/${this.itemId}/gift-message`,
           ]);
         else
           this.router.navigate([
             `ecommerce/${
-              this.header.saleflow?.merchant.slug || this.header.getSaleflow()?.merchant.slug
+              this.header.saleflow?.merchant.slug ||
+              this.header.getSaleflow()?.merchant.slug
             }/provider-store/${this.itemId}/user-info`,
           ]);
       } else {

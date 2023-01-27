@@ -178,7 +178,7 @@ export class Authentication implements OnInit {
               if (this.type === 'create-item') {
                 await this.authService.generateMagicLink(
                   phoneNumber,
-                  `admin/item-display`,
+                  `admin/article-editor`,
                   this.itemId,
                   'NewItem',
                   {}
@@ -332,7 +332,9 @@ export class Authentication implements OnInit {
     const itemId = this.route.snapshot.paramMap.get('itemId');
     const type = this.route.snapshot.queryParamMap.get('type');
     const phone = this.route.snapshot.queryParamMap.get('phone');
-    const hide = this.route.snapshot.queryParamMap.get('hide') as 'all' | 'number';
+    const hide = this.route.snapshot.queryParamMap.get('hide') as
+      | 'all'
+      | 'number';
     this.auth = this.route.snapshot.queryParamMap.get('auth') as
       | 'mlink'
       | 'password';
@@ -342,8 +344,7 @@ export class Authentication implements OnInit {
       this.storedFormData =
         this.multistepService.getMultiStepFormData('user-creation');
 
-      if (!this.storedFormData)
-        this.router.navigate(['others/error-screen']);
+      if (!this.storedFormData) this.router.navigate(['others/error-screen']);
 
       this.formSteps[0].fieldsList[0].label =
         '¿En cuál # de WhatsApp guardarás el contacto?';

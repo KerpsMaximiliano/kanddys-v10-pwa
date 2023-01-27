@@ -3,179 +3,104 @@
     <img [src]="env + '/arrow-double-up.svg'" alt="Volver" />
   </button>
   <div class="media-swiper-wrapper">
-    <swiper
-      [config]="swiperConfig"
-      #mediaSwiper
-      (slideChange)="updateCurrentSlideData($event)"
+    <div
+      #swiperContainer
+      [ngStyle]="{
+        width: '100%',
+        height: (swiperContainer.clientWidth * 10) / 7 + 'px'
+      }"
     >
-      <ng-container *ngIf="itemData.images.length > 0">
-        <div
-          class="entity-image"
-          *ngFor="let image of itemData.images"
-          [ngStyle]="{
-            backgroundImage: 'url(' + image + ')',
-            height: 'calc(100vh - (140px))'
-          }"
-        ></div>
-      </ng-container>
-    </swiper>
-  </div>
-
-  <div
-    class="bottom-user-actions-panel"
-    [ngClass]="{
-      opened: menuOpened
-    }"
-  >
-    <div class="text-icons-container">
-      <div class="top-section">
-        <p class="top-text" (click)="openInfoDialog()">
-          {{
-            itemData.name?.length > 30
-              ? (itemData.name.trim() | slice : 0 : 30) + "..."
-              : itemData.name
-          }}
-        </p>
-        <div class="icons-flex">
-          <!-- <button class="round-button">
-            <img [src]="env + '/heart.svg'" alt="Corazón" />
-          </button>
-          <button class="round-button">
-            <img [src]="env + '/speech-bubble.svg'" alt="Burbuja de diálogo" />
-          </button> -->
-          <button class="round-button" (click)="share()">
-            <img
-              [src]="env + '/upload.svg'"
-              alt="Contenedor con flecha saliendo"
-            />
-          </button>
-        </div>
-      </div>
-
-      <p
-        class="bottom-text"
-        *ngIf="itemData.description"
-        (click)="openInfoDialog()"
-      >
-        {{
-          itemData.description.length > 100
-            ? (itemData.description.trim() | slice : 0 : 100) + "..."
-            : itemData.description
-        }}
-        <span *ngIf="itemData.description.length > 100" style="color: #82f18d"
-          >Ver más</span
-        >
-      </p>
-    </div>
-    <div class="inner-wrapper-top">
-      <div
-        class="current-media-shown-indicators"
-        [style]="{
-          'grid-template-columns': '' + fractions + ''
-        }"
+      <swiper
+        [config]="swiperConfig"
+        #mediaSwiper
+        (slideChange)="updateCurrentSlideData($event)"
       >
         <ng-container *ngIf="itemData.images.length > 0">
           <div
-            class="indicator"
-            [ngClass]="{
-              active: imageIndex === currentMediaSlide
+            class="entity-image"
+            *ngFor="let image of itemData.images"
+            [ngStyle]="{
+              backgroundImage: 'url(' + image?.value + ')'
             }"
-            *ngFor="let image of itemData.images; let imageIndex = index"
           ></div>
         </ng-container>
-      </div>
-
-      <!-- <div class="arrows-icon" (click)="openMenu('TAGS')">
-        <img
-          [ngClass]="{
-            opened: menuOpened
-          }"
-          [src]="env + '/arrow-double-up.svg'"
-          alt="open menu"
-        />
-      </div> -->
-      <div></div>
-
-      <div class="add-to-cart-and-item-price-columnn">
-        <h3 class="item-price">
-          RD $ {{ itemData.pricing | number : "1.2-2" }}
-        </h3>
-        <button
-          (click)="saveProduct()"
-          *ngIf="doesModuleDependOnSaleflow"
-          [ngClass]="{
-            inCart: isItemInCart
-          }"
-        >
-          {{ isItemInCart ? "EN LA PRE-FACTURA" : "ADICIONALO A LA FACTURA" }}
-        </button>
-
-        <!--         <div class="add-to-favorites-flex" *ngIf="menuOpened">
-          <p>Para guardar <span>+ recaudar fondo$ en la V2</span></p>
-          <img [src]="env + '/heart-outline.png'" alt="add to favorites" />
-        </div> -->
-      </div>
-
-      <div class="empty-space"></div>
+      </swiper>
     </div>
-
-    <!-- ******************************************* TAG SWIPER ***************************************-->
-    <!-- <div class="inner-wrapper-bottom">
-      <div class="content-wrapper">
-        <swiper
-          [config]="swiperConfigTag"
-          *ngIf="typeOfMenuToShow === 'TAGS'"
-          style="max-width: 98%"
-        >
-          <div
-            class="tags-area"
-            *ngFor="let tag of itemTags; let tagIndex = index"
-            (click)="onTagClick(tag)"
-          >
-            <div
-              class="tag-item"
-              [ngStyle]="{
-                'background-image':
-                  tag.images && tag.images.length > 0
-                    ? 'url(' + tag.images[0] + ')'
-                    : 'url(' + env + '/assets/images/noimage.png' + ')',
-                border: tag.selected ? '3px solid #45944d' : 'solid 3px #82f18d'
-              }"
-            ></div>
-            <span class="tag-name">{{ tag.name }}</span>
-          </div>
-        </swiper>
-
-        <div class="description" *ngIf="typeOfMenuToShow === 'DESCRIPTION'">
-          <p>
+    <div
+      class="bottom-user-actions-panel"
+      [ngClass]="{
+        opened: menuOpened
+      }"
+    >
+      <div class="text-icons-container">
+        <div class="top-section">
+          <p class="top-text" (click)="openInfoDialog()">
             {{
-              !itemData.description ? "Sin descripción" : itemData.description
+              itemData.name?.length > 30
+                ? (itemData.name.trim() | slice : 0 : 30) + "..."
+                : itemData.name
             }}
           </p>
-        </div>
-      </div>
-    </div> -->
-    <!-- **************************************** END TAG SWIPER ***************************************-->
-
-    <!--
-      <div
-        class="cart-button"
-        *ngIf="
-          headerService.saleflow?.canBuyMultipleItems &&
-          headerService.order?.products?.length
-        "
-        [ngStyle]="{
-          backgroundColor: '#272727',
-          backgroundImage: 'url(' + env + '/carrito_blanco.svg' + ')'
-        }"
-      >
-        <div class="cart-button-inner-wrapper">
-          <div class="items-amount">
-            {{ headerService.order?.products?.length }}
+          <div class="icons-flex">
+            <button class="round-button" (click)="share()">
+              <img
+                [src]="env + '/upload.svg'"
+                alt="Contenedor con flecha saliendo"
+              />
+            </button>
           </div>
         </div>
+
+        <p
+          class="bottom-text"
+          *ngIf="itemData.description"
+          (click)="openInfoDialog()"
+        >
+          {{
+            itemData.description.length > 100
+              ? (itemData.description.trim() | slice : 0 : 100) + "..."
+              : itemData.description
+          }}
+          <span *ngIf="itemData.description.length > 100" style="color: #82f18d"
+            >Ver más</span
+          >
+        </p>
       </div>
-    -->
+      <div class="inner-wrapper-top">
+        <div
+          class="current-media-shown-indicators"
+          [style]="{
+            'grid-template-columns': '' + fractions + ''
+          }"
+        >
+          <ng-container *ngIf="itemData.images.length > 0">
+            <div
+              class="indicator"
+              [ngClass]="{
+                active: imageIndex === currentMediaSlide
+              }"
+              *ngFor="let image of itemData.images; let imageIndex = index"
+            ></div>
+          </ng-container>
+        </div>
+        <div></div>
+
+        <div class="add-to-cart-and-item-price-columnn">
+          <h3 class="item-price">
+            RD $ {{ itemData.pricing | number : "1.2-2" }}
+          </h3>
+          <button
+            (click)="saveProduct()"
+            *ngIf="doesModuleDependOnSaleflow"
+            [ngClass]="{
+              inCart: isItemInCart
+            }"
+          >
+            {{ isItemInCart ? "EN LA PRE-FACTURA" : "ADICIONALO A LA FACTURA" }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

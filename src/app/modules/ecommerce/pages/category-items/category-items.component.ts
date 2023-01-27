@@ -114,9 +114,9 @@ export class CategoryItemsComponent implements OnInit {
     this.deleteEvent = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
-        let productData: Item[] = this.header.getItems();
+        let productData = this.header.getItems();
         const selectedItems = productData?.length
-          ? productData.map((item) => item._id)
+          ? productData.map((item) => item)
           : [];
         this.items.forEach((item) => {
           if (!item.customizerId)
@@ -244,44 +244,7 @@ export class CategoryItemsComponent implements OnInit {
     });
   }
 
-  onClick(index: any, type?: string) {
-    let itemData =
-      type === 'slider' ? this.bestSellers[index] : this.items[index];
-    this.header.items = [itemData];
-    if (itemData.customizerId) {
-      this.header.emptyOrderProducts();
-      this.header.emptyItems();
-      let itemParams: ItemSubOrderParamsInput[];
-      if (itemData.params.length > 0) {
-        itemParams = [
-          {
-            param: itemData.params[0]._id,
-            paramValue: itemData.params[0].values[0]._id,
-          },
-        ];
-      }
-      const product = {
-        item: itemData._id,
-        customizer: itemData.customizerId,
-        params: itemParams,
-        amount: itemData.customizerId ? undefined : 1,
-        saleflow: this.header.saleflow._id,
-        name: itemData.name,
-      };
-      this.header.order = {
-        products: [product],
-      };
-      this.header.storeOrderProduct(product);
-      this.header.storeItem(itemData);
-      this.router.navigate([`../../provider-store/${itemData._id}`], {
-        relativeTo: this.route,
-      });
-    } else
-      this.router.navigate([`../../item-detail/${itemData._id}`]),
-        {
-          relativeTo: this.route,
-        };
-  }
+  onClick(index: any, type?: string) {}
 
   onShareClick = () => {
     const list: StoreShareList[] = [
