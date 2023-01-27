@@ -1,0 +1,13 @@
+<div class="parent">
+  <div class="container">
+    <div class="grid">
+      <div class="title">Que tipo de tag crearás?</div>
+    </div>
+    <div *ngFor="let option of options" class="options">
+      <p class="option" (click)="handleClick(option)">
+        {{ option }}
+      </p>
+      <hr />
+    </div>
+  </div>
+</div>

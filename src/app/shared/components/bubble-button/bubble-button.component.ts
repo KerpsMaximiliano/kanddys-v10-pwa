@@ -4,12 +4,21 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-bubble-button',
   templateUrl: './bubble-button.component.html',
-  styleUrls: ['./bubble-button.component.scss']
+  styleUrls: ['./bubble-button.component.scss'],
 })
 export class BubbleButtonComponent implements OnInit {
   //Inputs
   @Input() color: 'yellow' | 'blue' | 'black' = 'yellow';
-  @Input() position: 'left'| 'right' | 'rightxl' | 'mini' | 'minil' | 'minir' | 'minis' | 'big';
+  @Input() bgColor: string;
+  @Input() position:
+    | 'left'
+    | 'right'
+    | 'rightxl'
+    | 'mini'
+    | 'minil'
+    | 'minir'
+    | 'minis'
+    | 'big';
   @Input() cartAmount: number;
   @Input() icon: string;
   @Input() text: string;
@@ -23,7 +32,7 @@ export class BubbleButtonComponent implements OnInit {
   //valores utilizados
   filterColor: string;
   env: string = environment.assetsUrl;
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     this.checkColor(this.color);
@@ -32,16 +41,19 @@ export class BubbleButtonComponent implements OnInit {
   checkColor(value: string) {
     switch (value) {
       case 'yellow':
-        this.filterColor = 'invert(39%) sepia(46%) saturate(719%) hue-rotate(163deg) brightness(75%) contrast(97%)';
+        this.filterColor =
+          'invert(39%) sepia(46%) saturate(719%) hue-rotate(163deg) brightness(75%) contrast(97%)';
         break;
       case 'blue':
-        this.filterColor = 'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
+        this.filterColor =
+          'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
         break;
 
       case 'black':
-         this.filterColor = 'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
+        this.filterColor =
+          'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
 
-         break;
+        break;
     }
   }
 }

@@ -19,6 +19,7 @@ import {
   createOCR,
   createPartialOCR,
   orderSetStatus,
+  ordersByItemHot,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -29,6 +30,9 @@ import {
   OrderStatusType,
   OrderStatusType2,
 } from '../models/order';
+
+import { PaginationInput } from '../models/saleflow';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -208,17 +212,40 @@ export class OrderService {
     return result.orderSetStatus;
   }
 
-  async ordersByItem(itemId: string): Promise<{ ordersByItem: ItemOrder[] }> {
-    const result = await this.graphql.query({
-      query: ordersByItem,
-      variables: { itemId },
-      fetchPolicy: 'no-cache',
-    });
+  async ordersByItem(
+    paginate: PaginationInput,
+    returnPromise?: boolean
+  ): Promise<{ ordersByItem: ItemOrder[] }> {
+    let result = null;
+
+    if (!returnPromise) {
+      result = await this.graphql.query({
+        query: ordersByItem,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+    } else {
+      result = this.graphql.query({
+        query: ordersByItem,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+    }
 
     if (!result || result?.errors) return undefined;
 
-    console.log(result);
     return result;
+  }
+
+  async hotOrdersByItem(
+    paginate?: PaginationInput
+  ): Promise<{ ordersByItem: ItemOrder[] }> {
+    const response = await this.graphql.query({
+      query: ordersByItemHot,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+    return response;
   }
 
   async createOCR(input: OCRInput) {

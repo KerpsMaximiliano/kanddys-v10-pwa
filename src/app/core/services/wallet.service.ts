@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { float } from '@zxing/library/esm/customTypings';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { ExchangeData, ExchangeDataInput, PaymentReceiver } from '../models/wallet';
+import {
+  ExchangeData,
+  ExchangeDataInput,
+  PaymentReceiver,
+} from '../models/wallet';
 import { ListParams } from '../types/general.types';
 import { AppService } from './../../app.service';
 import {
@@ -21,27 +25,29 @@ import {
   paymentReceivers,
   paymentReceiverByName,
   exchangeData,
-  paymentreceiver
+  paymentreceiver,
+  payOrderWithStripe,
+  payOrderWithElectronicPayments
 } from './../graphql/wallet.gql';
 import { Community } from './../models/community';
 import { User } from './../models/user';
 
 @Injectable({ providedIn: 'root' })
 export class WalletService {
-  constructor(private graphql: GraphQLWrapper, private app: AppService) { }
+  constructor(private graphql: GraphQLWrapper, private app: AppService) {}
 
   public async globalWallet() {
     const response = await this.graphql.query({
       query: globalWallet,
       fetchPolicy: 'no-cache',
     });
-    return response
+    return response;
   }
 
   async transactionsByGlobalWallet(isHot?: boolean) {
     if (isHot) {
       try {
-        console.log("caliente ee");
+        console.log('caliente ee');
         const response = await this.graphql.query({
           query: hotTransactionsByGlobalWallet,
           fetchPolicy: 'no-cache',
@@ -63,7 +69,7 @@ export class WalletService {
     }
   }
 
-  async exchangeData(id: string): Promise<{ ExchangeData: ExchangeData }>{
+  async exchangeData(id: string): Promise<{ ExchangeData: ExchangeData }> {
     try {
       const response = await this.graphql.query({
         query: exchangeData,
@@ -76,7 +82,9 @@ export class WalletService {
     }
   }
 
-  async paymentReceiver(id: string): Promise<{ PaymentReceiver: PaymentReceiver }>{
+  async paymentReceiver(
+    id: string
+  ): Promise<{ PaymentReceiver: PaymentReceiver }> {
     try {
       const response = await this.graphql.query({
         query: paymentreceiver,
@@ -89,7 +97,6 @@ export class WalletService {
     }
   }
 
-
   async exchangeDataByUser(userId: string): Promise<ExchangeData> {
     try {
       const response = await this.graphql.query({
@@ -97,7 +104,7 @@ export class WalletService {
         variables: { userId },
         fetchPolicy: 'no-cache',
       });
-      if(!response || response?.errors) return undefined;
+      if (!response || response?.errors) return undefined;
       return response.exchangeDataByUser;
     } catch (e) {
       console.log(e);
@@ -117,7 +124,7 @@ export class WalletService {
     return result.ExchangeData;
   }
 
-  async updateExchangeData(input: any, id:any) {
+  async updateExchangeData(input: any, id: any) {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: updateExchangeData,
@@ -148,7 +155,7 @@ export class WalletService {
   async paymentReceiverByName(name: string) {
     try {
       const response = await this.graphql.query({
-        query:  paymentReceiverByName,
+        query: paymentReceiverByName,
         variables: { name },
         fetchPolicy: 'no-cache',
       });
@@ -250,5 +257,27 @@ export class WalletService {
     this.app.events.emit({ type: 'reload' });
     console.log(result);
     return result;
+  }
+
+  async payOrderWithStripe(orderId: string): Promise<any> {
+    const result = await this.graphql.mutate({
+      mutation: payOrderWithStripe,
+      variables: { orderId },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    return result?.payOrderWithStripe;
+  }
+
+  async payOrderWithElectronicPayments(payMode: string, orderId: string): Promise<any> {
+    const result = await this.graphql.mutate({
+      mutation: payOrderWithElectronicPayments,
+      variables: { payMode, orderId },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    return result?.payOrderWithElectronicPayments;
   }
 }

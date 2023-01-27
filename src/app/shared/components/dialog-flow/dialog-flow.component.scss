@@ -1,0 +1,126 @@
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  max-width: 500px;
+  margin: auto;
+}
+
+.wrapper-relative {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  transition: 0.5s background-color ease-in-out;
+  overflow: hidden;
+}
+
+.dialog {
+  position: relative;
+  height: fit-content !important;
+
+  .dialog-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 82.4%;
+    margin: auto;
+
+    &.notActive {
+      background-color: darkslategray;
+      opacity: 0.5;
+      border-radius: 12px;
+      left: 0;
+      right: 0;
+      z-index: 2000;
+    }
+  }
+
+  .dynamic-component {
+    position: relative;
+
+    .navigation {
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      margin: auto;
+      display: flex;
+      z-index: 9999;
+
+      .current-dialog-indicator {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid white;
+        margin-left: 3px;
+
+        &.active {
+          background-color: white;
+        }
+      }
+    }
+
+    .postLabel {
+      position: absolute;
+      font-family: SfProLight;
+      font-style: italic;
+      bottom: 12.7px;
+      left: 26.1px;
+      color: #272727;
+      z-index: 999;
+    }
+  }
+}
+
+.flow-contents {
+  position: absolute;
+  opacity: 0;
+  transition: 0.5s opacity ease-in-out;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -5;
+
+  &.visible {
+    opacity: 1;
+    z-index: 99;
+  }
+}
+
+@keyframes darkenOverlay {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+    z-index: -1;
+  }
+
+  100% {
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 5;
+    backdrop-filter: blur(8px);
+  }
+}
+
+@keyframes lightenOverlay {
+  0% {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: 5;
+  }
+
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+    z-index: -1;
+  }
+}

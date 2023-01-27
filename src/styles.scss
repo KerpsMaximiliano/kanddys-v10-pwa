@@ -16,6 +16,7 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 @import "~ngx-toastr/toastr-bs4-alert";
+@import "~cropperjs/dist/cropper.min.css";
 
 :root {
   --dialog-header-background: #{get-color("dark")};

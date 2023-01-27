@@ -1,41 +1,47 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SwiperComponent, SwiperConfig } from 'ngx-swiper-wrapper';
-import { Item, ItemInput, ItemStatus } from 'src/app/core/models/item';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { ToastrService } from 'ngx-toastr';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Calendar } from 'src/app/core/models/calendar';
+import {
+  Item,
+  ItemImageInput,
+  ItemInput,
+  ItemStatus,
+} from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
+import { Reservation } from 'src/app/core/models/reservation';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { CalendarsService } from 'src/app/core/services/calendars.service';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { OrderService } from 'src/app/core/services/order.service';
+import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import {
-  HelperHeaderInput,
-  Text,
-} from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
-import { SwiperOptions } from 'swiper';
-import { environment } from 'src/environments/environment';
-import { CalendarsService } from 'src/app/core/services/calendars.service';
-import { Calendar } from 'src/app/core/models/calendar';
-import { ReservationService } from 'src/app/core/services/reservations.service';
-import { PaginationInput } from 'src/app/core/models/saleflow';
-import { Reservation } from 'src/app/core/models/reservation';
-import { OrderService } from 'src/app/core/services/order.service';
-import { FormControl } from '@angular/forms';
-import { HeaderService } from 'src/app/core/services/header.service';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { HelperHeaderInput } from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
+import { ItemImagesComponent } from 'src/app/shared/dialogs/create-item-flow/item-images/item-images.component';
+import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
 import {
   SettingsComponent,
   SettingsDialogButton,
 } from 'src/app/shared/dialogs/settings/settings.component';
-import { NgNavigatorShareService } from 'ng-navigator-share';
-import { ToastrService } from 'ngx-toastr';
-import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 
 interface MenuOption {
   name: string;
@@ -88,6 +94,9 @@ export class ItemsDashboardComponent implements OnInit {
     },
     {
       name: 'Facturas',
+    },
+    {
+      name: 'Tags',
     },
   ];
   allItems: ExtendedItem[] = [];
@@ -148,9 +157,32 @@ export class ItemsDashboardComponent implements OnInit {
     status: 'complete',
   };
   windowWidth: number = 0;
+  tagsMetrics: {
+    inItems: number;
+    inOrders: number;
+    visible: number;
+    hidden: number;
+    featured: number;
+    archived: number;
+    total: number;
+  } = {
+    inItems: 0,
+    inOrders: 0,
+    visible: 0,
+    hidden: 0,
+    featured: 0,
+    archived: 0,
+    total: 0,
+  };
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
   @ViewChild('highlightedItemsSwiper') highlightedItemsSwiper: SwiperComponent;
+
+  swiperConfig: SwiperOptions = {
+    allowSlideNext: false,
+  };
+  openedDialogFlow: boolean = false;
+  dialogs: Array<EmbeddedComponentWithId> = [];
 
   async infinitePagination() {
     const page = document.querySelector('.dashboard-page');
@@ -165,20 +197,21 @@ export class ItemsDashboardComponent implements OnInit {
   }
 
   constructor(
-    private merchantsService: MerchantsService,
-    private saleflowService: SaleFlowService,
+    private _MerchantsService: MerchantsService,
+    private _SaleflowService: SaleFlowService,
     private authService: AuthService,
     private tagsService: TagsService,
     private calendarsService: CalendarsService,
     private reservationsService: ReservationService,
     private ordersService: OrderService,
-    private itemsService: ItemsService,
+    private _ItemsService: ItemsService,
     private router: Router,
     private headerService: HeaderService,
     private route: ActivatedRoute,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private toastr: ToastrService,
-    private dialog: DialogService
+    private _ToastrService: ToastrService,
+    private dialog: DialogService,
+    private dialogFlowService: DialogFlowService
   ) {}
 
   async ngOnInit() {
@@ -213,14 +246,111 @@ export class ItemsDashboardComponent implements OnInit {
       window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
       });
-    }, 500);
+
+      this.dialogs = [
+        {
+          component: ItemListSelectorComponent,
+          componentId: 'itemPricing',
+          inputs: {
+            containerStyles: {},
+            title: '¿Que monto te pagarán por el artículo?',
+            inputs: [
+              {
+                dialogId: 'itemPricing',
+                type: 'currency',
+                name: 'pricing',
+                innerLabel: 'Pesos Dominicanos',
+              },
+            ],
+          },
+          outputs: [
+            {
+              name: 'formOutput',
+              callback: ({ pricing }: { pricing: number }) => {
+                if (pricing > 0) this.swiperConfig.allowSlideNext = true;
+                else this.swiperConfig.allowSlideNext = false;
+                this._ItemsService.itemPrice = pricing;
+                this.dialogFlowService.saveData(
+                  pricing,
+                  'flow1',
+                  'itemPricing',
+                  'pricing'
+                );
+              },
+            },
+          ],
+        },
+        {
+          component: ItemImagesComponent,
+          componentId: 'itemImages',
+          inputs: {
+            containerStyles: {},
+          },
+          outputs: [
+            {
+              name: 'enteredImages',
+              callback: async (files: File[]) => {
+                let images: ItemImageInput[] = files.map((file) => {
+                  return {
+                    file: file,
+                    index: 0,
+                    active: true,
+                  };
+                });
+                if (!this._ItemsService.itemPrice) return;
+                lockUI();
+                const itemInput: ItemInput = {
+                  name: null,
+                  description: null,
+                  pricing: this._ItemsService.itemPrice,
+                  images,
+                  merchant: this._MerchantsService.merchantData?._id,
+                  content: [],
+                  currencies: [],
+                  hasExtraPrice: false,
+                  purchaseLocations: [],
+                  showImages: images.length > 0,
+                };
+                this._ItemsService.itemPrice = null;
+
+                const { createItem } = await this._ItemsService.createItem(
+                  itemInput
+                );
+                await this._SaleflowService.addItemToSaleFlow(
+                  {
+                    item: createItem._id,
+                  },
+                  this._SaleflowService.saleflowData._id
+                );
+                this._ToastrService.success(
+                  'Producto creado satisfactoriamente!'
+                );
+                unlockUI();
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  this._ItemsService.editingImageId = createItem.images[0]._id;
+                  this.router.navigate([
+                    `admin/create-article/${createItem._id}`,
+                  ]);
+                };
+                reader.readAsDataURL(images[0].file as File);
+              },
+            },
+          ],
+        },
+      ];
+    }, 1000);
+  }
+
+  closedDialog() {
+    this._ItemsService.itemPrice = null;
   }
 
   async verifyIfUserIsLogged() {
     this.user = await this.authService.me();
 
     if (this.user) {
-      const merchantDefault = await this.merchantsService.merchantDefault();
+      const merchantDefault = await this._MerchantsService.merchantDefault();
 
       if (merchantDefault) this.merchantDefault = merchantDefault;
       else {
@@ -232,7 +362,14 @@ export class ItemsDashboardComponent implements OnInit {
   async inicializeTags() {
     const tagsList = await this.tagsService.tagsByUser({
       findBy: {
-        entity: 'item',
+        $or: [
+          {
+            entity: 'item',
+          },
+          {
+            entity: 'order',
+          },
+        ],
       },
       options: {
         limit: -1,
@@ -240,20 +377,50 @@ export class ItemsDashboardComponent implements OnInit {
     });
 
     if (tagsList) {
-      this.tagsList = tagsList;
+      this.tagsList = tagsList.filter((tag) => tag.entity === 'item');
       this.unselectedTags = [...this.tagsList];
 
       for (const tag of this.tagsList) {
         this.tagsHashTable[tag._id] = tag;
         this.tagsByNameHashTable[tag.name] = tag;
       }
+
+      for (const tag of tagsList) {
+        if (tag.status === 'disabled') this.tagsMetrics.hidden++;
+        else if (tag.status === 'active') this.tagsMetrics.visible++;
+        else if (tag.status === 'featured') {
+          this.tagsMetrics.visible++;
+          this.tagsMetrics.featured++;
+        }
+
+        if (tag.entity === 'item') this.tagsMetrics.inItems++;
+        if (tag.entity === 'order') this.tagsMetrics.inOrders++;
+      }
+
+      this.tagsMetrics.total = tagsList.length;
     }
+
+    const tagsArchived = await this.tagsService.hotTagsArchived({
+      options: { limit: -1 },
+      findBy: {
+        $or: [
+          {
+            entity: 'item',
+          },
+          {
+            entity: 'order',
+          },
+        ],
+      },
+    });
+
+    this.tagsMetrics.archived = tagsArchived.length;
 
     this.tagsLoaded = true;
   }
 
   async inicializeHighlightedItems() {
-    const saleflowItems = this.saleflowService.saleflowData.items.map(
+    const saleflowItems = this._SaleflowService.saleflowData.items.map(
       (saleflowItem) => ({
         itemId: saleflowItem.item._id,
         customizer: saleflowItem.customizer?._id,
@@ -273,7 +440,7 @@ export class ItemsDashboardComponent implements OnInit {
       },
     };
 
-    const { listItems: highlitedItems } = await this.saleflowService.listItems(
+    const { listItems: highlitedItems } = await this._SaleflowService.listItems(
       pagination
     );
 
@@ -303,7 +470,7 @@ export class ItemsDashboardComponent implements OnInit {
   }
 
   async inicializeArchivedItems() {
-    const saleflowItems = this.saleflowService.saleflowData.items.map(
+    const saleflowItems = this._SaleflowService.saleflowData.items.map(
       (saleflowItem) => ({
         itemId: saleflowItem.item._id,
         customizer: saleflowItem.customizer?._id,
@@ -323,7 +490,7 @@ export class ItemsDashboardComponent implements OnInit {
       },
     };
 
-    const response = await this.itemsService.itemsArchived(pagination);
+    const response = await this._ItemsService.itemsArchived(pagination);
 
     if (response && Array.isArray(response)) {
       this.archivedItemsCounter = response.length;
@@ -335,7 +502,7 @@ export class ItemsDashboardComponent implements OnInit {
     triggeredFromScroll = false,
     getTotalNumberOfItems = false
   ) {
-    const saleflowItems = this.saleflowService.saleflowData.items.map(
+    const saleflowItems = this._SaleflowService.saleflowData.items.map(
       (saleflowItem) => ({
         itemId: saleflowItem.item._id,
         customizer: saleflowItem.customizer?._id,
@@ -421,16 +588,15 @@ export class ItemsDashboardComponent implements OnInit {
       }
     }
 
-    this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
+    this.renderItemsPromise = this._SaleflowService.listItems(pagination, true);
     this.renderItemsPromise.then(async (response) => {
       const items = response;
       const itemsQueryResult = items?.listItems;
 
       if (getTotalNumberOfItems) {
         pagination.options.limit = -1;
-        const { listItems: allItems } = await this.saleflowService.hotListItems(
-          pagination
-        );
+        const { listItems: allItems } =
+          await this._SaleflowService.hotListItems(pagination);
 
         allItems.forEach((item) => {
           if (item.status === 'featured') {
@@ -497,13 +663,13 @@ export class ItemsDashboardComponent implements OnInit {
 
   async inicializeSaleflowCalendar() {
     if (
-      this.saleflowService.saleflowData &&
-      'module' in this.saleflowService.saleflowData &&
-      'appointment' in this.saleflowService.saleflowData.module &&
-      this.saleflowService.saleflowData.module.appointment
+      this._SaleflowService.saleflowData &&
+      'module' in this._SaleflowService.saleflowData &&
+      'appointment' in this._SaleflowService.saleflowData.module &&
+      this._SaleflowService.saleflowData.module.appointment
     ) {
       this.saleflowCalendar = await this.calendarsService.getCalendar(
-        this.saleflowService.saleflowData.module.appointment?.calendar?._id
+        this._SaleflowService.saleflowData.module.appointment?.calendar?._id
       );
 
       if (this.saleflowCalendar) {
@@ -568,16 +734,15 @@ export class ItemsDashboardComponent implements OnInit {
     try {
       const ordersTotalResponse = await this.ordersService.ordersTotal(
         ['in progress', 'to confirm', 'completed'],
-        this.merchantsService.merchantData._id
+        this._MerchantsService.merchantData._id
       );
 
-      const incomeMerchantResponse = await this.merchantsService.incomeMerchant(
-        {
+      const incomeMerchantResponse =
+        await this._MerchantsService.incomeMerchant({
           findBy: {
-            merchant: this.merchantsService.merchantData._id,
+            merchant: this._MerchantsService.merchantData._id,
           },
-        }
-      );
+        });
 
       this.ordersTotal = { length: null, total: null };
       if (ordersTotalResponse) {
@@ -595,8 +760,8 @@ export class ItemsDashboardComponent implements OnInit {
 
   async getMerchantBuyers() {
     try {
-      this.saleflowBuyers = await this.merchantsService.usersOrderMerchant(
-        this.merchantsService.merchantData._id
+      this.saleflowBuyers = await this._MerchantsService.usersOrderMerchant(
+        this._MerchantsService.merchantData._id
       );
     } catch (error) {
       console.log(error);
@@ -633,13 +798,10 @@ export class ItemsDashboardComponent implements OnInit {
     );
   }
 
-  goToCreateItem() {
-    this.router.navigate([`admin/create-article`]);
-  }
-
   goToDetail(id: string) {
     this.savePageSnapshot();
-    this.router.navigate([`admin/create-article/${id}`]);
+    this.router.navigate([`admin/article-editor/${id}`]);
+    this._ItemsService.itemImages = [];
   }
 
   savePageSnapshot() {
@@ -717,17 +879,7 @@ export class ItemsDashboardComponent implements OnInit {
             text: 'ADICIONAR',
             mode: 'func',
             func: () => {
-              //this.headerService.flowRoute = this.router.url;
-              const routerConfig: any = {
-                queryParams: {
-                  from: 'dashboard',
-                },
-              };
-
-              if (section === 'featured')
-                routerConfig.queryParams.initialStatus = 'featured';
-
-              this.router.navigate(['admin/create-article'], routerConfig);
+              this.openedDialogFlow = !this.openedDialogFlow;
             },
           },
           {
@@ -800,7 +952,7 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
-          const link = `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`;
+          const link = `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/store`;
 
           await this.ngNavigatorShareService
             .share({
@@ -813,6 +965,12 @@ export class ItemsDashboardComponent implements OnInit {
             .catch((error) => {
               console.log(error);
             });
+        },
+      },
+      {
+        text: 'Adiciona un artículo',
+        callback: () => {
+          this.openedDialogFlow = !this.openedDialogFlow;
         },
       },
       {
@@ -839,7 +997,7 @@ export class ItemsDashboardComponent implements OnInit {
 
   toggleActivateItem = async (item: Item): Promise<string> => {
     try {
-      this.itemsService.updateItem(
+      this._ItemsService.updateItem(
         {
           status:
             item.status === 'disabled'
@@ -865,7 +1023,7 @@ export class ItemsDashboardComponent implements OnInit {
   };
 
   openItemOptionsDialog = async (id: string) => {
-    const itemsQueryResult = await this.itemsService.item(id);
+    const itemsQueryResult = await this._ItemsService.item(id);
     const item: ExtendedItem = itemsQueryResult;
     item.tagsFilled = [];
 
@@ -969,107 +1127,62 @@ export class ItemsDashboardComponent implements OnInit {
 
     const list: Array<SettingsDialogButton> = [
       {
-        text: 'Vista del visitante',
-        callback: async () => {
-          if (item.status !== 'disabled') {
-            this.router.navigate([
-              `/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${item._id}`,
-            ]);
-          } else {
-            const { images, name, description, pricing, _id, ...rest } = item;
-            const params = item.params;
-            params?.forEach((param) => {
-              param.values = param.values.filter(
-                (values) => values.name || values.price || values.description
-              );
-            });
-            this.itemsService.storeTemporalItem({
-              ...rest,
-              name,
-              description,
-              params,
-              images: images,
-              pricing,
-            });
-            this.headerService.flowRoute = this.router.url;
-            localStorage.setItem('flowRoute', this.headerService.flowRoute);
-            this.router.navigate(['/ecommerce/item-detail']);
-          }
-        },
-      },
-      {
         text: 'Duplicar',
         callback: async () => {
-          const itemInput: ItemInput = {
-            name: item.name || null,
-            description: item.description || null,
-            pricing: item.pricing,
-            images: item.images,
-            merchant: item.merchant._id,
-            content: [],
-            currencies: [],
-            hasExtraPrice: false,
-            purchaseLocations: [],
-            showImages: item.images.length > 0,
-            status: item.status,
-            tags: item.tags ? item.tags : [],
-          };
-
           try {
-            const { createItem } = await this.itemsService.createItem(
-              itemInput
-            );
-            await this.saleflowService.addItemToSaleFlow(
+            const createdItem: ExtendedItem =
+              await this._ItemsService.duplicateItem(item._id);
+
+            await this._SaleflowService.addItemToSaleFlow(
               {
-                item: createItem._id,
+                item: createdItem._id,
               },
-              this.saleflowService.saleflowData._id
+              this._SaleflowService.saleflowData._id
             );
 
-            this.saleflowService.saleflowData =
-              await this.saleflowService.saleflowDefault(
-                this.merchantsService.merchantData._id
-              );
+            // this._SaleflowService.saleflowData =
+            //   await this._SaleflowService.saleflowDefault(
+            //     this._MerchantsService.merchantData._id
+            //   );
+            // if (item.params && item.params.length > 0) {
+            //   const { createItemParam } =
+            //     await this._ItemsService.createItemParam(
+            //       item.merchant._id,
+            //       createItem._id,
+            //       {
+            //         name: item.params[0].name,
+            //         formType: 'color',
+            //         values: [],
+            //       }
+            //     );
+            //   const paramValues = item.params[0].values.map((value) => {
+            //     return {
+            //       name: value.name,
+            //       image: value.image,
+            //       price: value.price,
+            //       description: value.description,
+            //     };
+            //   });
 
-            if (item.params && item.params.length > 0) {
-              const { createItemParam } =
-                await this.itemsService.createItemParam(
-                  item.merchant._id,
-                  createItem._id,
-                  {
-                    name: item.params[0].name,
-                    formType: 'color',
-                    values: [],
-                  }
-                );
-              const paramValues = item.params[0].values.map((value) => {
-                return {
-                  name: value.name,
-                  image: value.image,
-                  price: value.price,
-                  description: value.description,
-                };
-              });
+            //   const result = await this._ItemsService.addItemParamValue(
+            //     paramValues,
+            //     createItemParam._id,
+            //     item.merchant._id,
+            //     createItem._id
+            //   );
+            // }
 
-              const result = await this.itemsService.addItemParamValue(
-                paramValues,
-                createItemParam._id,
-                item.merchant._id,
-                createItem._id
-              );
-            }
+            // const itemWithParams: ExtendedItem = await this._ItemsService.item(
+            //   createItem._id
+            // );
 
-            const itemWithParams: ExtendedItem = await this.itemsService.item(
-              createItem._id
-            );
-
-            if (itemWithParams.tags && itemWithParams.tags.length) {
-              itemWithParams.tagsFilled = [];
+            if (createdItem.tags && createdItem.tags.length) {
+              createdItem.tagsFilled = [];
 
               if (item.tags.length > 0) {
                 for (const tagId of item.tags) {
                   if (this.tagsHashTable[tagId]) {
-                    itemWithParams.tagsFilled.push(this.tagsHashTable[tagId]);
+                    createdItem.tagsFilled.push(this.tagsHashTable[tagId]);
                   }
                 }
               }
@@ -1077,26 +1190,29 @@ export class ItemsDashboardComponent implements OnInit {
 
             this.totalItemsCounter++;
 
-            if (itemWithParams.status === 'featured') {
+            if (createdItem.status === 'featured') {
               this.activeItemsCounter++;
               this.featuredItemsCounter++;
             }
 
-            if (itemWithParams.status === 'active') {
+            if (createdItem.status === 'active') {
               this.activeItemsCounter++;
             }
 
-            if (itemWithParams.status === 'disabled') {
+            if (createdItem.status === 'disabled') {
               this.inactiveItemsCounter++;
             }
-
-            this.allItems = [itemWithParams].concat(this.allItems);
-            this.toastr.info('¡Item duplicado exitosamente!');
+            this.allItems = [createdItem].concat(this.allItems);
+            this._ToastrService.info('¡Item duplicado exitosamente!');
           } catch (error) {
             console.log(error);
-            this.toastr.error('Ocurrio un error al crear el item', null, {
-              timeOut: 1500,
-            });
+            this._ToastrService.error(
+              'Ocurrio un error al crear el item',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
           }
         },
       },
@@ -1104,7 +1220,7 @@ export class ItemsDashboardComponent implements OnInit {
         text: 'Archivar (Sin eliminar la data)',
         callback: async () => {
           try {
-            const response = await this.itemsService.updateItem(
+            const response = await this._ItemsService.updateItem(
               {
                 status: 'archived',
               },
@@ -1132,12 +1248,16 @@ export class ItemsDashboardComponent implements OnInit {
 
             this.archivedItemsCounter++;
 
-            this.toastr.info('¡Item archivado exitosamente!');
+            this._ToastrService.info('¡Item archivado exitosamente!');
           } catch (error) {
             console.log(error);
-            this.toastr.error('Ocurrio un error al archivar el item', null, {
-              timeOut: 1500,
-            });
+            this._ToastrService.error(
+              'Ocurrio un error al archivar el item',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
           }
         },
       },
@@ -1146,12 +1266,12 @@ export class ItemsDashboardComponent implements OnInit {
         callback: async () => {
           try {
             const removeItemFromSaleFlow =
-              await this.saleflowService.removeItemFromSaleFlow(
+              await this._SaleflowService.removeItemFromSaleFlow(
                 item._id,
-                this.saleflowService.saleflowData._id
+                this._SaleflowService.saleflowData._id
               );
             if (!removeItemFromSaleFlow) return;
-            const deleteItem = await this.itemsService.deleteItem(item._id);
+            const deleteItem = await this._ItemsService.deleteItem(item._id);
             if (!deleteItem) return;
 
             let typeOfItem;
@@ -1192,12 +1312,16 @@ export class ItemsDashboardComponent implements OnInit {
                 this.highlightedItemsSwiper.directiveRef.update();
             }, 300);
 
-            this.toastr.info('¡Item borrado exitosamente!');
+            this._ToastrService.info('¡Item borrado exitosamente!');
           } catch (error) {
             console.log(error);
-            this.toastr.error('Ocurrio un error al borrar el item', null, {
-              timeOut: 1500,
-            });
+            this._ToastrService.error(
+              'Ocurrio un error al borrar el item',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
           }
         },
       },
@@ -1308,5 +1432,17 @@ export class ItemsDashboardComponent implements OnInit {
 
   getActiveTagsFromSelectedTagsPermantent(): Array<string> {
     return this.tagsList.filter((tag) => tag.selected).map((tag) => tag._id);
+  }
+
+  redirectTo(route: string, queryParams: Record<string, any>) {
+    this.headerService.flowRoute = window.location.href
+      .split('/')
+      .slice(3)
+      .join('/');
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
+
+    this.router.navigate([route], {
+      queryParams,
+    });
   }
 }

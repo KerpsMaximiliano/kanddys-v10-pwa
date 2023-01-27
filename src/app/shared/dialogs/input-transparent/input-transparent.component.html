@@ -1,0 +1,18 @@
+<div class="main-container">
+   <header class="header-display">
+      <h1 class="title">{{title}}</h1>
+      <button class="close" (click)="close()">
+         <i class="fas fa-times"></i>
+      </button>
+   </header>
+   
+   <div class="input-area">
+      <label for="input" name="Titulo" class="input-label">{{inputLabel}}</label>
+      <div class="input">
+         <input type="password" [formControl]="input" placeholder="Escribe..." (keydown)="fieldEvent($event.target)">
+         <button class="confirm" [style.background]="input.valid && status!=='loading'?'#2874ad':'#c1c1c1'" (click)="submit()">
+            <i class="fas fa-chevron-right"></i>
+         </button>
+      </div>
+   </div>
+</div>

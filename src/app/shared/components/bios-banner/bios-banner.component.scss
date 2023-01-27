@@ -1,0 +1,64 @@
+.banner-container {
+  align-items: center;
+  background-color: #ffffff;
+  display: flex;
+  max-width: 500px;
+  padding: 0.5rem;
+
+  .circle-container {
+    align-items: center;
+    display: flex;
+    flex-basis: 25%;
+    justify-content: center;
+
+    .circle {
+      box-shadow: 0px 3px 6px #70707063;
+      border-radius: 50%;
+      cursor: pointer;
+      height: 62px;
+      width: 62px;
+    }
+  }
+
+  .infouser-container {
+    align-items: center;
+    display: flex;
+    flex-basis: 75%;
+    flex-direction: column;
+    justify-content: center;
+
+    .title-container {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0rem;
+      width: 100%;
+
+      .title {
+        font-family: SfProRegular;
+        font-size: 17px;
+        margin: 0;
+      }
+
+      .icons-container {
+        display: flex;
+        justify-content: space-around;
+        width: 25%;
+
+        svg { 
+          cursor: pointer;
+          margin: 0rem .1rem;
+        }
+      }
+    }
+
+    .text p {
+      color: #4f4f4f;
+      font-family: SfProLight;
+      font-size: 15px;
+      margin: 0;
+      padding: .25rem 0rem;
+      padding-right: 1.5rem;
+    }
+  }
+}

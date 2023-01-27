@@ -82,7 +82,10 @@
             (onSelector)="setClickedDate($event)"
           ></app-answer-selector>
 
-          <h3 style="margin-top: 10px;" *ngIf="!timeRangeOptions || timeRangeOptions.length === 0">
+          <h3
+            style="margin-top: 10px"
+            *ngIf="!timeRangeOptions || timeRangeOptions.length === 0"
+          >
             No quedan horas disponibles para reservar este dia
           </h3>
         </div>
@@ -113,7 +116,7 @@
         *ngIf="selectedDate && selectedDate.filled"
         [text]="stickyButtonText"
         [mode]="'fixed'"
-        [bgColor]="'#2874AD'"
+        [bgColor]="headerService.colorTheme"
         [height]="'max-content'"
         [padding]="'8px 0px'"
         (click)="makeReservation()"

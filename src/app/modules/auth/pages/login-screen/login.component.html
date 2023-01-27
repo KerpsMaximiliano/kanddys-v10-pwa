@@ -268,16 +268,6 @@
       returnCallback: logToggle
     }"
   ></app-sticky-button>
-
-  <app-bubble-button
-    *ngIf="itemCartAmount"
-    position="right"
-    color="blue"
-    [solo]="false"
-    [cart]="true"
-    [cartAmount]="itemCartAmount"
-    (click)="showShoppingCartDialog()"
-  ></app-bubble-button>
 </div>
 
 <!-- old signUp

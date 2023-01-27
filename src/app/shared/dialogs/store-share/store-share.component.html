@@ -1,4 +1,9 @@
-<div class="external-container">
+<div
+  class="external-container"
+  [ngStyle]="{
+    position: relativePositioning ? 'relative' : 'absolute'
+  }"
+>
   <div class="container" [ngStyle]="dynamicStyles?.container">
     <div
       class="dialog-card"

@@ -43,7 +43,7 @@
             isMerchant && totalByItems?.length && totalByItems[i].itemInOrder
           "
           [price]="!hasCustomizer && item.pricing"
-          [imgURL]="item.images ? item.images[0] : ''"
+          [imgURL]="item.images?.length ? item.images[0].value : ''"
           [showPrice]="item.customizerId ? false : true"
           [backgroundSize]="item.customizerId ? 'contain' : 'cover'"
           (itemClicked)="onClick(i)"
@@ -62,7 +62,7 @@
     [mode]="'double'"
     bgColor="#A1A1A1"
     [fontSize]="'14px'"
-    [text]="(ordersTotal? ordersTotal.length : 0) + ' VENTAS'"
+    [text]="(ordersTotal ? ordersTotal.length : 0) + ' VENTAS'"
     [text2]="
       '$' +
       (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0') +

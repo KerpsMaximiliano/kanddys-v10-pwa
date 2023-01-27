@@ -1,0 +1,85 @@
+.container {
+  width: 199px;
+  margin: auto;
+}
+
+.content {
+  width: 199px;
+  margin: auto;
+  position: relative;
+  border-radius: 10px;
+}
+
+h1 {
+  font-family: "SfProLight";
+  font-size: 14px;
+  margin-top: 0px;
+}
+
+h2 {
+  font-family: "SfProBold";
+  font-size: 21px;
+  margin-top: 0px;
+}
+
+.headline,
+.subHeadline,
+.footerText {
+  display: block;
+}
+
+.images-container {
+  width: 100%;
+  position: relative;
+  height: auto;
+  min-height: 179px;
+}
+
+.image {
+  width: 143px;
+  height: 153px;
+  position: absolute;
+  right: 35%;
+  border-radius: 21px;
+  transform: rotate(-5deg);
+  z-index: 1;
+  top: 7px;
+  box-shadow: 2px 0px 9px -2px #8d8d8d;
+}
+
+.image2 {
+  width: 109px;
+  height: 169px;
+  position: absolute;
+  left: 50%;
+  border-radius: 21px;
+  transform: rotate(2deg);
+  box-shadow: 2px 0px 9px -2px #8d8d8d;
+}
+
+.footer-container {
+  bottom: 0px;
+  width: 100%;
+  border-radius: 0px 0px 10px 10px;
+  padding: 4px 11px 5px 12px;
+  font-size: 16px;
+  font-family: "SfProLight";
+  z-index: 1;
+}
+
+.upper {
+  padding-top: 18px;
+  padding-left: 12px;
+}
+
+.btn {
+  cursor: pointer;
+  display: block;
+  margin: auto;
+  margin-top: 20px;
+  border: none;
+  font-family: "SfProMedium";
+  border-radius: 10px;
+  padding: 10px 20px;
+  width: 100%;
+}

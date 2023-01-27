@@ -71,17 +71,17 @@
             </app-cart-button>
           </ng-container>
 
-          <span
-            class="text-icons"
-            *ngIf="rightText"
-            [ngStyle]="{
-              'font-size': rightText.fontSize ? rightText.fontSize : '',
-              'font-family': rightText.fontFamily ? rightText.fontFamily : '',
-              color: rightText.color ? rightText.color : color ? color : '',
-              cursor: rightText.pointer ? 'pointer' : 'unset'
-            }"
-            >{{ rightText.text }}</span
-          >
+          <button *ngIf="rightText" [ngStyle]="basicRightButtonStyles" (click)="neutralEvent()">
+            <span
+              class="text"
+              [ngStyle]="{
+                'font-size': rightText.fontSize ? rightText.fontSize : '',
+                'font-family': rightText.fontFamily ? rightText.fontFamily : '',
+                color: rightText.color ? rightText.color : color ? color : ''
+              }"
+              >{{ rightText.text }}</span
+            >
+          </button>
 
           <ng-container *ngFor="let icon of icons; index as i">
             <div
@@ -91,7 +91,8 @@
                 'background-color': icon.highlight?.highlighted
                   ? icon.highlight?.color
                   : 'transparent',
-                borderRadius: '50%'
+                borderRadius: '50%',
+                margin: icon.margin && icon?.margin
               }"
             >
               <img
@@ -106,7 +107,6 @@
                       : icon.color
                       ? icon.color
                       : 'none',
-                  margin: icon.margin && icon?.margin,
                   cursor: 'pointer'
                 }"
                 (click)="icon.highlight?.active ? highlight(i) : null"
@@ -161,7 +161,7 @@
               class="dot"
               [ngStyle]="{
                 'background-color': dots.color ? dots.color : 'none',
-                margin: '0 2.5px'
+                margin: dots.margin? dots.margin : '0 2.5px'
               }"
             >
                
@@ -170,7 +170,7 @@
               class="dot"
               [ngStyle]="{
                 'background-color': dots.color ? dots.color : 'none',
-                margin: '0 2.5px'
+                margin: dots.margin? dots.margin : '0 2.5px'
               }"
             >
                
@@ -179,7 +179,7 @@
               class="dot"
               [ngStyle]="{
                 'background-color': dots.color ? dots.color : 'none',
-                margin: '0 2.5px'
+                margin: dots.margin? dots.margin : '0 2.5px'
               }"
             >
                
@@ -297,7 +297,7 @@
         </p>
 
         <!--ICONOS-->
-        <div class="icons-holder">
+        <div class="icons-holder" *ngIf="plus.active || icons">
           <button
             class="header-btn"
             *ngIf="plus?.active"
