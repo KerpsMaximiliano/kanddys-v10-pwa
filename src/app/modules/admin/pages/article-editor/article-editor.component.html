@@ -57,11 +57,7 @@
           borderRadius: '6px',
           padding: '8px 0px'
         }"
-        [initialValue]="
-          countDecimals(price.value) < 2
-            ? math.floor(price.value * 100)
-            : price.value
-        "
+        [initialValue]="price.value"
         (onInputEvent)="handleCurrencyInput($event)"
         placeholderColor="#7B7B7B"
         currencyLabel="RD$"

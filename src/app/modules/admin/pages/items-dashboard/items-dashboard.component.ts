@@ -19,6 +19,7 @@ import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CalendarsService } from 'src/app/core/services/calendars.service';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -181,87 +182,7 @@ export class ItemsDashboardComponent implements OnInit {
     allowSlideNext: false,
   };
   openedDialogFlow: boolean = false;
-  dialogs: Array<EmbeddedComponentWithId> = [
-    {
-      component: ItemListSelectorComponent,
-      componentId: 'itemPricing',
-      inputs: {
-        containerStyles: {},
-        title: '¿Que monto te pagarán por el artículo?',
-        inputs: [
-          {
-            type: 'currency',
-            name: 'pricing',
-            innerLabel: 'Pesos Dominicanos',
-          },
-        ],
-      },
-      outputs: [
-        {
-          name: 'formOutput',
-          callback: ({ pricing }: { pricing: number }) => {
-            if (pricing > 0) this.swiperConfig.allowSlideNext = true;
-            else this.swiperConfig.allowSlideNext = false;
-            this._ItemsService.itemPrice = pricing;
-          },
-        },
-      ],
-    },
-    {
-      component: ItemImagesComponent,
-      componentId: 'itemImages',
-      inputs: {
-        containerStyles: {},
-      },
-      outputs: [
-        {
-          name: 'enteredImages',
-          callback: async (files: File[]) => {
-            let images: ItemImageInput[] = files.map((file) => {
-              return {
-                file: file,
-                index: 0,
-                active: true,
-              };
-            });
-            if (!this._ItemsService.itemPrice) return;
-            lockUI();
-            const itemInput: ItemInput = {
-              name: null,
-              description: null,
-              pricing: this._ItemsService.itemPrice,
-              images,
-              merchant: this._MerchantsService.merchantData?._id,
-              content: [],
-              currencies: [],
-              hasExtraPrice: false,
-              purchaseLocations: [],
-              showImages: images.length > 0,
-            };
-            this._ItemsService.itemPrice = null;
-
-            const { createItem } = await this._ItemsService.createItem(
-              itemInput
-            );
-            await this._SaleflowService.addItemToSaleFlow(
-              {
-                item: createItem._id,
-              },
-              this._SaleflowService.saleflowData._id
-            );
-            this._ToastrService.success('Producto creado satisfactoriamente!');
-            unlockUI();
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              this._ItemsService.editingImageId = createItem.images[0]._id;
-              this.router.navigate([`admin/create-article/${createItem._id}`]);
-            };
-            reader.readAsDataURL(images[0].file as File);
-          },
-        },
-      ],
-    },
-  ];
+  dialogs: Array<EmbeddedComponentWithId> = [];
 
   async infinitePagination() {
     const page = document.querySelector('.dashboard-page');
@@ -289,7 +210,8 @@ export class ItemsDashboardComponent implements OnInit {
     private route: ActivatedRoute,
     private ngNavigatorShareService: NgNavigatorShareService,
     private _ToastrService: ToastrService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private dialogFlowService: DialogFlowService
   ) {}
 
   async ngOnInit() {
@@ -324,7 +246,104 @@ export class ItemsDashboardComponent implements OnInit {
       window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
       });
+
+      this.dialogs = [
+        {
+          component: ItemListSelectorComponent,
+          componentId: 'itemPricing',
+          inputs: {
+            containerStyles: {},
+            title: '¿Que monto te pagarán por el artículo?',
+            inputs: [
+              {
+                dialogId: 'itemPricing',
+                type: 'currency',
+                name: 'pricing',
+                innerLabel: 'Pesos Dominicanos',
+              },
+            ],
+          },
+          outputs: [
+            {
+              name: 'formOutput',
+              callback: ({ pricing }: { pricing: number }) => {
+                if (pricing > 0) this.swiperConfig.allowSlideNext = true;
+                else this.swiperConfig.allowSlideNext = false;
+                this._ItemsService.itemPrice = pricing;
+                this.dialogFlowService.saveData(
+                  pricing,
+                  'flow1',
+                  'itemPricing',
+                  'pricing'
+                );
+              },
+            },
+          ],
+        },
+        {
+          component: ItemImagesComponent,
+          componentId: 'itemImages',
+          inputs: {
+            containerStyles: {},
+          },
+          outputs: [
+            {
+              name: 'enteredImages',
+              callback: async (files: File[]) => {
+                let images: ItemImageInput[] = files.map((file) => {
+                  return {
+                    file: file,
+                    index: 0,
+                    active: true,
+                  };
+                });
+                if (!this._ItemsService.itemPrice) return;
+                lockUI();
+                const itemInput: ItemInput = {
+                  name: null,
+                  description: null,
+                  pricing: this._ItemsService.itemPrice,
+                  images,
+                  merchant: this._MerchantsService.merchantData?._id,
+                  content: [],
+                  currencies: [],
+                  hasExtraPrice: false,
+                  purchaseLocations: [],
+                  showImages: images.length > 0,
+                };
+                this._ItemsService.itemPrice = null;
+
+                const { createItem } = await this._ItemsService.createItem(
+                  itemInput
+                );
+                await this._SaleflowService.addItemToSaleFlow(
+                  {
+                    item: createItem._id,
+                  },
+                  this._SaleflowService.saleflowData._id
+                );
+                this._ToastrService.success(
+                  'Producto creado satisfactoriamente!'
+                );
+                unlockUI();
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  this._ItemsService.editingImageId = createItem.images[0]._id;
+                  this.router.navigate([
+                    `admin/create-article/${createItem._id}`,
+                  ]);
+                };
+                reader.readAsDataURL(images[0].file as File);
+              },
+            },
+          ],
+        },
+      ];
     }, 1000);
+  }
+
+  closedDialog() {
+    this._ItemsService.itemPrice = null;
   }
 
   async verifyIfUserIsLogged() {

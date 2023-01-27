@@ -160,12 +160,6 @@ export class ArticleEditorComponent implements OnInit {
     this.price.setValue(value);
   }
 
-  countDecimals(value: number) {
-    if (!value) return;
-    if (Math.floor(value) === value) return 0;
-    return value.toString().split('.')[1]?.length || 0;
-  }
-
   iconCallback = async (ignore?: boolean) => {
     if (this.name.dirty || this.description.dirty || this.price.dirty) {
       this.updated = true;
