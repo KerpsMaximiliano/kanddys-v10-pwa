@@ -145,7 +145,7 @@ export class ReservationsCreatorComponent implements OnInit {
     private reservationsService: ReservationService,
     private authService: AuthService,
     private dialog: DialogService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     public location: Location
   ) {}
 
@@ -154,7 +154,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        const { saleflowId, calendarId, reservationId } = routeParams;
+        const { merchantSlug, calendarId, reservationId } = routeParams;
         const { clientEmail, clientPhone } = queryParams;
 
         //this queryParams are here for the merchant to use
@@ -168,10 +168,15 @@ export class ReservationsCreatorComponent implements OnInit {
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
 
         // If true, this reservation is for an order
-        if (saleflowId) {
+        if (merchantSlug) {
           this.isOrder = true;
           this.stickyButtonText = 'Continuar al resumen de la factura';
-          await this.headerService.fetchSaleflow(saleflowId);
+          this.headerService.colorTheme =
+            this.headerService.user?._id ===
+            this.headerService.saleflow?.merchant?.owner?._id
+              ? '#2874AD'
+              : '#272727';
+          this.headerConfiguration.bgcolor = this.headerService.colorTheme;
         }
 
         //you can update a specific calendar reservation if an id is passed
@@ -221,8 +226,8 @@ export class ReservationsCreatorComponent implements OnInit {
 
             return;
           }
-          const date = this.headerService.getReservation(saleflowId)?.date;
-          if (!saleflowId || !date) {
+          const date = this.headerService.getReservation()?.date;
+          if (!merchantSlug || !date) {
             const currentMonth =
               this.calendarsService.allMonths[currentDateObject.getMonth()];
 
@@ -234,7 +239,7 @@ export class ReservationsCreatorComponent implements OnInit {
           } else if (date) {
             const dateInput = new Date(date.date as string);
             if (dateInput < new Date()) {
-              this.headerService.emptyReservation(saleflowId);
+              this.headerService.emptyReservation();
               const currentMonth =
                 this.calendarsService.allMonths[currentDateObject.getMonth()];
 
@@ -835,15 +840,11 @@ export class ReservationsCreatorComponent implements OnInit {
 
     // If this reservation is for an order it wont execute any mutation
     if (this.isOrder) {
-      this.headerService.storeReservation(
-        this.headerService.saleflow._id,
-        reservationInput,
-        this.selectedDate
-      );
-      this.headerService.isComplete.reservation = true;
-      this.headerService.storeOrderProgress(this.headerService.saleflow._id);
+      this.headerService.storeReservation(reservationInput, this.selectedDate);
+      this.headerService.orderProgress.reservation = true;
+      this.headerService.storeOrderProgress();
       this.router.navigate([
-        `/ecommerce/${this.headerService.saleflow._id}/new-address`,
+        `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
       ]);
       return;
     }

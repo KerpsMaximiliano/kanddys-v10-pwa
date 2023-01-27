@@ -16,7 +16,6 @@ import {
   ItemCategory,
   ItemCategoryHeadline,
 } from 'src/app/core/models/item';
-import { Merchant } from 'src/app/core/models/merchant';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
@@ -24,7 +23,6 @@ import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
@@ -38,6 +36,8 @@ import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import SwiperCore, { Virtual } from 'swiper/core';
+import { Merchant } from 'src/app/core/models/merchant';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 SwiperCore.use([Virtual]);
 
@@ -53,7 +53,6 @@ interface ExtendedTag extends Tag {
 export class StoreComponent implements OnInit {
   URI: string = environment.uri;
   env: string = environment.assetsUrl;
-  saleflowData: SaleFlow;
   hasCustomizer: boolean;
   items: Item[] = [];
   tags: ExtendedTag[] = [];
@@ -75,20 +74,17 @@ export class StoreComponent implements OnInit {
   categorylessItems: Item[] = [];
   filteredCategoryLessItems: Item[] = [];
   categories: ItemCategory[] = [];
-  contactLandingRoute: string;
   highlightedItems: Item[] = [];
   // canOpenCart: boolean;
   itemCartAmount: number;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
-  viewtype: 'preview' | 'merchant';
   admin: boolean;
   searchBar: FormControl = new FormControl('');
   selectedTagsCounter: number = 0;
   selectedTags: Array<Tag> = [];
   selectedTagsPermanent: Array<Tag> = [];
   unselectedTags: Array<Tag> = [];
-  user: User = null;
   userDefaultMerchant: Merchant = null;
   showSearchbar: boolean = true;
   paginationState: {
@@ -133,72 +129,109 @@ export class StoreComponent implements OnInit {
   }
 
   @ViewChild('tagsSwiper') tagsSwiper: SwiperComponent;
+  terms: any[] = [];
 
   constructor(
     private dialog: DialogService,
     private router: Router,
-    private merchantService: MerchantsService,
-    private header: HeaderService,
-    private saleflow: SaleFlowService,
-    private item: ItemsService,
     private route: ActivatedRoute,
+    private merchantService: MerchantsService,
+    public header: HeaderService,
+    private saleflow: SaleFlowService,
     private authService: AuthService,
-    private appService: AppService,
-    private orderService: OrderService,
-    private tagsService: TagsService,
-    private location: Location
+    private tagsService: TagsService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.header.resetIsComplete();
-    this.route.queryParams.subscribe(async (queryParams) => {
-      let { startOnSnapshot } = queryParams;
-      startOnSnapshot = Boolean(startOnSnapshot);
+    setTimeout(() => {
+      this.route.queryParams.subscribe(async (queryParams) => {
+        let { startOnSnapshot } = queryParams;
+        startOnSnapshot = Boolean(startOnSnapshot);
+        localStorage.removeItem('flowRoute');
+        this.header.flowRoute = null;
 
-      if (!this.header.storeTemporalData || !startOnSnapshot)
-        this.executeProcessesAfterLoading();
-      else this.getPageSnapshot();
-    });
+        if (
+          !this.header.storeTemporalData &&
+          localStorage.getItem('storeTemporalData')
+        ) {
+          this.header.storeTemporalData = JSON.parse(
+            localStorage.getItem('storeTemporalData')
+          );
+        }
 
-    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+        if (!this.header.storeTemporalData || !startOnSnapshot)
+          this.executeProcessesAfterLoading();
+        else this.getPageSnapshot();
+      });
 
-    window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-    });
+
+      window.addEventListener('resize', () => {
+        this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+      });
+      const viewsMerchants = (async () => {
+        const pagination: PaginationInput = {
+          findBy: {
+            type: 'refund',
+          },
+        };
+        const types: any[] = [
+          { type: 'refund', text: 'Políticas de reembolsos' },
+          { type: 'delivery', text: 'Políticas de entregas' },
+          { type: 'security', text: 'Políticas de seguridad' },
+        ];
+        for (const { type, text } of types) {
+          pagination.findBy.type = type;
+          const [{ _id, description }] =
+            ((await this.merchantService.viewsMerchants(
+              pagination
+            )) as any) || { _id: '' };
+
+          this.terms.push({ _id, text });
+        }
+      })();
+    }, 300);
   }
 
-  setMerchant(merchant: Merchant) {
-    this.header.merchantInfo = merchant;
-    localStorage.setItem('merchantInfo', JSON.stringify(merchant));
-  }
+  async getHighlightedItems() {
+    const saleflowItems = this.header.saleflow.items.map((saleflowItem) => ({
+      item: saleflowItem.item._id,
+      customizer: saleflowItem.customizer?._id,
+      index: saleflowItem.index,
+    }));
 
-  getCategories(
-    itemCategoriesList: ItemCategory[],
-    headlines: ItemCategoryHeadline
-  ) {
-    if (itemCategoriesList.length === 0) return;
-    const categories =
-      headlines?.itemsCategories.length > 0
-        ? headlines.itemsCategories
-            .map((value) =>
-              itemCategoriesList.find((element) => element._id === value)
-            )
-            .filter((value) => value)
-        : [];
-    return categories;
-  }
+    const pagination: PaginationInput = {
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.item)),
+        },
+        status: 'featured',
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: 10,
+        page: 1,
+      },
+    };
 
-  async organizeItems(merchant: Merchant) {
-    // .sort((a, b) => a.pricing - b.pricing);
-    const highlightedItemsObject = {};
-    this.highlightedItems = [];
+    const { listItems: highlightedItems } = await this.saleflow.listItems(
+      pagination
+    );
 
-    //Sets highlightedItems array
-    for (const item of this.items) {
+    for (const item of highlightedItems) {
       if (item.status === 'featured') {
         this.highlightedItems.push(item);
-        highlightedItemsObject[item._id] = true;
       }
+    }
+  }
+
+  async organizeItems(preventFetchingHighlightedItems = false) {
+    // .sort((a, b) => a.pricing - b.pricing);
+    this.highlightedItems = [];
+
+    if (!preventFetchingHighlightedItems) {
+      //Sets highlightedItems array
+      await this.getHighlightedItems();
     }
 
     //************************* GROUPS ITEMS BY TAG***************//
@@ -216,147 +249,105 @@ export class StoreComponent implements OnInit {
     //*************************                        END                   *****************************//
   }
 
-  executeProcessesAfterLoading() {
-    this.route.params.subscribe(async (params) => {
-      this.status = 'loading';
-      lockUI();
+  async executeProcessesAfterLoading() {
+    this.status = 'loading';
+    lockUI();
 
-      this.header.orderId = null;
-      this.saleflowData = await this.header.fetchSaleflow(params.id);
-      this.getTags();
-      const orderData = this.header.getOrder(this.saleflowData._id);
-      if (!orderData || !orderData.products || orderData.products.length === 0)
-        this.header.emptyItems(this.saleflowData._id);
-
-      const [itemCategories, headlines, merchant, user] = await Promise.all([
-        this.item.itemCategories(this.saleflowData.merchant._id, {
-          options: {
-            limit: 20,
+    // Resetear status de la ultima orden creada
+    this.header.orderId = null;
+    this.getTags();
+    this.header.merchantInfo = await this.merchantService.merchant(
+      this.header.saleflow.merchant._id
+    );
+    if (this.header.user)
+      this.userDefaultMerchant = await this.merchantService.merchantDefault();
+    // Determina si el usuario actual es el dueño de la tienda
+    if (this.header.user?._id === this.header.saleflow.merchant?.owner?._id)
+      this.admin = true;
+    // Obteniendo el ID de los productos, los customizers y el orden
+    const saleflowItems = this.header.saleflow.items.map((saleflowItem) => ({
+      item: saleflowItem.item._id,
+      customizer: saleflowItem.customizer?._id,
+      index: saleflowItem.index,
+    }));
+    // Determina si la tienda maneja customizers
+    if (saleflowItems.some((item) => item.customizer))
+      this.hasCustomizer = true;
+    // Fetching la data de los productos
+    const items = await this.saleflow.listItems({
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.item)),
+        },
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: this.paginationState.pageSize,
+      },
+    });
+    const { listItems: allItems } = await this.saleflow.hotListItems({
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.item)),
+        },
+        $or: [
+          {
+            status: 'active',
           },
-        }),
-        this.item.itemCategoryHeadlineByMerchant(
-          this.saleflowData.merchant._id
-        ),
-        this.merchantService.merchant(this.saleflowData.merchant._id),
-        this.authService.me(),
-      ]);
-      if (user) {
-        this.user = user;
+          {
+            status: 'featured',
+          },
+        ],
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+      },
+    });
 
-        this.userDefaultMerchant = await this.merchantService.merchantDefault();
-      }
+    // Obteniendo la lista de los items seleccionados
+    const selectedItems = this.header.order?.products?.length
+      ? this.header.order.products.map((subOrder) => subOrder.item)
+      : [];
+    // Filtrando los productos activos y destacados
+    this.items = items.listItems.filter(
+      (item) => item.status === 'active' || item.status === 'featured'
+    );
 
-      if (user?._id === merchant?.owner?._id) {
-        this.admin = true;
-      }
-
-      this.categories = this.getCategories(
-        itemCategories.itemCategoriesList,
-        headlines[0]
+    for (let i = 0; i < this.items.length; i++) {
+      // Asignando el status a los items del saleflow
+      const item = this.header.saleflow.items.find(
+        (saleflowItem) => saleflowItem.item._id === this.items[i]._id
       );
-      this.setMerchant(merchant);
-      this.contactLandingRoute = `user-contact-landing/${merchant.owner._id}`;
-      // No packages. Item fetching
-      if (
-        !this.saleflowData.packages.length &&
-        this.saleflowData.items.length
-      ) {
-        const saleflowItems = this.saleflowData.items.map((saleflowItem) => ({
-          item: saleflowItem.item._id,
-          customizer: saleflowItem.customizer?._id,
-          index: saleflowItem.index,
-        }));
-        if (saleflowItems.some((item) => item.customizer))
-          this.hasCustomizer = true;
-        const items = await this.saleflow.listItems({
-          findBy: {
-            _id: {
-              __in: ([] = saleflowItems.map((items) => items.item)),
-            },
-            /*
-            tags: {
-              __in: ['635ae0dd0d49fc05f04add6b'],
-            },
-            */
-          },
-          options: {
-            sortBy: 'createdAt:desc',
-            limit: this.paginationState.pageSize,
-          },
-        });
-        const selectedItems = orderData?.products?.length
-          ? orderData.products.map((subOrder) => subOrder.item)
-          : [];
-        this.items = items.listItems.filter((item) => {
-          return item.status === 'active' || item.status === 'featured';
-        });
-
-        for (let i = 0; i < this.items.length; i++) {
-          const saleflowItem = saleflowItems.find(
-            (item) => item.item === this.items[i]._id
-          );
-          const item = this.header.saleflow.items.find(
-            (saleflowItem) => saleflowItem.item._id === this.items[i]._id
-          );
-          item.item.status = this.items[i].status;
-          this.items[i].customizerId = saleflowItem.customizer;
-          this.items[i].index = saleflowItem.index;
-          if (!this.items[i].customizerId)
-            this.items[i].isSelected = selectedItems.includes(
-              this.items[i]._id
-            );
-          if (this.items[i].hasExtraPrice)
-            this.items[i].totalPrice =
-              this.items[i].fixedQuantity *
-                this.items[i].params[0].values[0].price +
-              this.items[i].pricing;
+      item.item.status = this.items[i].status;
+      // Si la tienda permite compra múltiple, marcar items seleccionados
+      if (this.header.saleflow.canBuyMultipleItems)
+        this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
+    }
+    // Sacando productos del carrito que fueron eliminados de la tienda
+    if (this.header.order?.products?.length) {
+      let itemIDs: string[] = [];
+      this.header.order.products.forEach((item) => {
+        if (!allItems.some((product) => product._id === item.item)) {
+          itemIDs.push(item.item);
+          this.header.removeOrderProduct(item.item);
+          this.header.removeItem(item.item);
         }
-        if (this.items.every((item) => item.index)) {
-          this.items = this.items.sort((a, b) =>
-            a.index > b.index ? 1 : b.index > a.index ? -1 : 0
-          );
-        }
-        if (orderData?.products?.length) {
-          let itemIDs: string[] = [];
-          orderData.products.forEach((item) => {
-            if (!this.items.some((product) => product._id === item.item)) {
-              itemIDs.push(item.item);
-              this.header.removeOrderProduct(this.saleflowData._id, item.item);
-              this.header.removeItem(this.saleflowData._id, item.item);
-            }
-          });
-          orderData.products = orderData.products.filter(
-            (product) => !itemIDs.includes(product.item)
-          );
-        }
-        await this.organizeItems(merchant);
+      });
+      this.header.order.products = this.header.order.products.filter(
+        (product) => !itemIDs.includes(product.item)
+      );
+    }
+    await this.organizeItems();
 
-        this.searchBar.valueChanges.subscribe(async (change) => {
-          await this.getItems(true);
-          /*
-          if (this.selectedTags.length === 0) await this.getItems(true);
-          else {
-            this.filterItemsBySearch(change);
-          }
-          */
-        });
-
-        this.status = 'complete';
-        this.paginationState.status = 'complete';
-        unlockUI();
-      }
-      if (
-        !this.saleflowData.packages.length &&
-        !this.saleflowData.items.length
-      ) {
-        this.status = 'complete';
-        this.paginationState.status = 'complete';
-        unlockUI();
-      }
+    // Detectando cambios en la barra de búsqueda
+    this.searchBar.valueChanges.subscribe(async (change) => {
+      await this.getItems(true);
     });
-    this.route.queryParams.subscribe((queries) => {
-      if (queries.viewtype === 'preview') this.viewtype = 'preview';
-    });
+
+    this.status = 'complete';
+    this.paginationState.status = 'complete';
+    unlockUI();
     if (this.header.customizerData) this.header.customizerData = null;
   }
 
@@ -404,194 +395,36 @@ export class StoreComponent implements OnInit {
               },
             ];
           }
-          this.header.storeOrderProduct(this.saleflowData._id, {
+          this.header.storeOrderProduct({
             item: itemData._id,
             customizer: itemData.customizerId,
             params: itemParams,
             amount: itemData.customizerId ? undefined : 1,
-            saleflow: this.saleflowData._id,
+            saleflow: this.header.saleflow._id,
           });
-          this.header.storeItem(this.saleflowData._id, itemData);
+          this.header.storeItem(itemData);
         } else {
           this.items[index].isSelected = !this.items[index].isSelected;
-          this.header.storeOrderProduct(this.saleflowData._id, {
+          this.header.storeOrderProduct({
             item: this.items[index]._id,
             amount: 1,
-            saleflow: this.saleflowData._id,
+            saleflow: this.header.saleflow._id,
           });
-          this.header.storeItem(this.saleflowData._id, this.items[index]);
+          this.header.storeItem(this.items[index]);
         }
       }
     }
   }
 
-  seeCategories(index: number | string) {
-    if (typeof index === 'string')
-      this.router.navigate([
-        `ecommerce/category-items/${this.saleflowData._id}/${index}`,
-      ]);
-    else
-      this.router.navigate([
-        `ecommerce/category-items/${this.saleflowData._id}/${
-          this.itemsByCategory[index].items[0].category.find(
-            (category) => category.name === this.itemsByCategory[index].label
-          )._id
-        }`,
-      ]);
-  }
-
-  onItemClick(id: string, justRedirect: boolean = false) {
-    const itemData = this.items.find((item) => item._id === id);
-    if (!itemData) return;
-    if (itemData.category.length)
-      this.header.categoryId = itemData.category[0]?._id;
-    this.header.items = [itemData];
-    if (itemData.customizerId) {
-      this.header.emptyOrderProducts(this.saleflowData._id);
-      this.header.emptyItems(this.saleflowData._id);
-      let itemParams: ItemSubOrderParamsInput[];
-      if (itemData.params.length > 0) {
-        itemParams = [
-          {
-            param: itemData.params[0]._id,
-            paramValue: itemData.params[0].values[0]._id,
-          },
-        ];
-      }
-      const product = {
-        item: itemData._id,
-        customizer: itemData.customizerId,
-        params: itemParams,
-        amount: undefined,
-        saleflow: this.saleflowData._id,
-        name: itemData.name,
-      };
-      this.header.order = {
-        products: [product],
-      };
-      this.header.storeOrderProduct(this.saleflowData._id, product);
-      this.header.storeItem(this.saleflowData._id, itemData);
-      this.router.navigate([
-        `/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`,
-      ]);
-    } else {
-      if (!justRedirect) {
-        if (!this.saleflowData.canBuyMultipleItems) {
-          this.header.emptyOrderProducts(this.saleflowData._id);
-          this.header.emptyItems(this.saleflowData._id);
-        }
-        this.header.storeOrderProduct(this.saleflowData._id, {
-          item: itemData._id,
-          amount: 1,
-          saleflow: this.saleflowData._id,
-        });
-        this.header.storeItem(this.saleflowData._id, itemData);
-      }
-      this.savePageSnapshot();
-      this.router.navigate(
-        [
-          `/ecommerce/${this.saleflowData._id}/article-detail/item/${itemData._id}`,
-        ],
-        {
-          replaceUrl: this.header.checkoutRoute ? true : false,
-          queryParams: {
-            mode: 'saleflow',
-            id: this.saleflowData._id,
-          },
-        }
-      );
-    }
-  }
-
-  save(index?: number) {
-    this.header.items = [];
-    let products = [];
-    let order;
-  }
-
-  goToItemDetail(id: string) {
-    this.router.navigate([
-      `/ecommerce/item-detail/${this.saleflowData._id}/${id}`,
-    ]);
-  }
-
-  onShareClick = () => {
-    this.onShareCallback(`/ecommerce/store/${this.saleflowData._id}`);
-  };
-
-  onShareCallback = (url: string) => {
-    const list: StoreShareList[] = [
-      {
-        qrlink: `${this.URI}${url}`,
-        options: [
-          {
-            text: 'Copia el link',
-            mode: 'clipboard',
-            link: `${this.URI}${url}`,
-          },
-          {
-            text: 'Comparte el link',
-            mode: 'share',
-            link: `${this.URI}${url}`,
-          },
-        ],
+  onItemClick(id: string) {
+    this.savePageSnapshot();
+    this.router.navigate([`../article-detail/item/${id}`], {
+      replaceUrl: this.header.checkoutRoute ? true : false,
+      relativeTo: this.route,
+      queryParams: {
+        mode: 'saleflow',
+        id: this.header.saleflow._id,
       },
-    ];
-    this.dialog.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        list,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
-
-  //Same dialog as openUserManagementDialog() but with SettingsComponent
-  openDialog() {
-    const list = [
-      {
-        text: 'Cerrar Sesión',
-        callback: async () => {
-          await this.authService.signout();
-        },
-      },
-    ];
-
-    if (!this.user) {
-      list.pop();
-      list.push({
-        text: 'Iniciar sesión',
-        callback: async () => {
-          this.router.navigate(['auth/login'], {
-            queryParams: {
-              redirect: 'ecommerce/store/' + this.saleflowData._id,
-            },
-          });
-        },
-      });
-    }
-
-    if (this.userDefaultMerchant) {
-      list.unshift({
-        text: 'Ir a mi Dashboard',
-        callback: async () => {
-          this.router.navigate(['admin/entity-detail-metrics']);
-        },
-      });
-    }
-
-    this.dialog.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        title: 'Sobre las facturas',
-        cancelButton: {
-          text: 'Cerrar',
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
     });
   }
 
@@ -605,14 +438,14 @@ export class StoreComponent implements OnInit {
             text: 'Cerrar sesión',
             mode: 'func',
             func: async () => {
-              await this.authService.signout();
+              await this.authService.signoutThree();
             },
           },
         ],
       },
     ];
 
-    if (!this.user) {
+    if (!this.header.user) {
       list[0].options.pop();
       list[0].options.push({
         text: 'Iniciar sesión',
@@ -620,7 +453,7 @@ export class StoreComponent implements OnInit {
         func: async () => {
           this.router.navigate(['auth/login'], {
             queryParams: {
-              redirect: 'ecommerce/store/' + this.saleflowData._id,
+              redirect: `ecommerce/${this.header.saleflow.merchant.slug}/store`,
             },
           });
         },
@@ -639,15 +472,12 @@ export class StoreComponent implements OnInit {
     });
   };
 
-  back() {
-    this.location.back();
-  }
-
   async getTags() {
-    const tagsList = await this.tagsService.tagsByUser({
+    const { tags: tagsList } = await this.tagsService.tags({
       findBy: {
         entity: 'item',
         status: 'active',
+        user: this.header.saleflow.merchant.owner._id,
       },
       options: {
         limit: -1,
@@ -674,6 +504,8 @@ export class StoreComponent implements OnInit {
     if (this.selectedTags.length === 0) {
       this.showSearchbar = false;
     }
+
+    console.log(this.tags[tagIndex].selected, 'seleccionado');
 
     if (this.tags[tagIndex].selected) {
       this.tags[tagIndex].selected = false;
@@ -732,9 +564,9 @@ export class StoreComponent implements OnInit {
 
   async getItems(restartPagination = false) {
     this.paginationState.status = 'loading';
-    const orderData = this.header.getOrder(this.saleflowData._id);
+    // this.header.getOrder();
 
-    const saleflowItems = this.saleflowData.items.map((saleflowItem) => ({
+    const saleflowItems = this.header.saleflow.items.map((saleflowItem) => ({
       item: saleflowItem.item._id,
       customizer: saleflowItem.customizer?._id,
       index: saleflowItem.index,
@@ -830,7 +662,7 @@ export class StoreComponent implements OnInit {
           this.items = this.items.concat(itemsQueryResult);
         }
 
-        this.organizeItems(this.merchantService.merchantData);
+        this.organizeItems(true);
 
         this.paginationState.status = 'complete';
       })
@@ -872,11 +704,12 @@ export class StoreComponent implements OnInit {
     });
 
     this.header.storeTemporalData = null;
+    localStorage.removeItem('storeTemporalData');
   }
 
   savePageSnapshot() {
     this.header.storeTemporalData = {
-      saleflowData: this.saleflowData,
+      saleflowData: this.header.saleflow,
       items: this.items,
       tags: this.tags,
       tagsHashTable: this.tagsHashTable,
@@ -887,14 +720,31 @@ export class StoreComponent implements OnInit {
       selectedTags: this.selectedTags,
       selectedTagsPermanent: this.selectedTagsPermanent,
       unselectedTags: this.unselectedTags,
-      user: this.user,
+      user: this.header.user,
       userDefaultMerchant: this.userDefaultMerchant,
       showSearchbar: this.showSearchbar,
       paginationState: this.paginationState,
     };
+
+    localStorage.setItem(
+      'storeTemporalData',
+      JSON.stringify(this.header.storeTemporalData)
+    );
+
+    this.header.flowRoute = this.router.url + '?startOnSnapshot=true';
+    localStorage.setItem('flowRoute', this.header.flowRoute);
   }
 
   getActiveTagsFromSelectedTagsPermantent(): Array<string> {
     return this.tags.filter((tag) => tag.selected).map((tag) => tag._id);
+  }
+
+  redirectToTermsOfUse(term: any) {
+    this.header.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.header.flowRoute);
+
+    this.savePageSnapshot();
+
+    this.router.navigate(['/ecommerce/terms-of-use/' + term._id]);
   }
 }

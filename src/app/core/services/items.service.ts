@@ -10,8 +10,8 @@ import {
   createItem,
   createItemParam,
   createPreItem,
-  addImageItem,
-  deleteImageItem,
+  itemAddImage,
+  itemRemoveImage,
   itemsByMerchant,
   addItem,
   itemextra,
@@ -34,12 +34,15 @@ import {
   addItemParamValue,
   deleteItemParamValue,
   itemsArchived,
+  duplicateItem,
+  itemUpdateImage,
 } from '../graphql/items.gql';
 import {
   Item,
   ItemCategory,
   ItemCategoryHeadline,
   ItemCategoryInput,
+  ItemImageInput,
   ItemInput,
   ItemPackage,
   ItemParam,
@@ -57,10 +60,13 @@ export class ItemsService {
     old: string[];
     new: File[];
   };
-  changedImages: boolean = null;
   itemImages: File[] = [];
+  itemUrls: string[] = [];
   itemPrice: number;
   itemName: string;
+  itemDesc: string;
+  itemPassword: string;
+  editingImageId: string;
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;
@@ -69,7 +75,6 @@ export class ItemsService {
   removeTemporalItem() {
     this.temporalItem = null;
     this.temporalImages = null;
-    this.changedImages = null;
   }
 
   constructor(private graphql: GraphQLWrapper) {}
@@ -121,30 +126,47 @@ export class ItemsService {
     return response;
   }
 
-  async addImageItem(images: File[], id: string) {
+  async itemAddImage(input: ItemImageInput[], id: string): Promise<Item> {
     const result = await this.graphql.mutate({
-      mutation: addImageItem,
-      variables: { images, id },
+      mutation: itemAddImage,
+      variables: { input, id },
       fetchPolicy: 'no-cache',
       context: {
         useMultipart: true,
       },
     });
     if (!result || result?.errors) return undefined;
-    return result;
+    return result.itemAddImage;
   }
 
-  async deleteImageItem(images: string[], id: string) {
+  async itemRemoveImage(imageId: string[], itemId: string): Promise<Item> {
     const result = await this.graphql.mutate({
-      mutation: deleteImageItem,
-      variables: { images, id },
+      mutation: itemRemoveImage,
+      variables: { imageId, itemId },
       fetchPolicy: 'no-cache',
       context: {
         useMultipart: true,
       },
     });
     if (!result || result?.errors) return undefined;
-    return result;
+    return result.itemRemoveImage;
+  }
+
+  async itemUpdateImage(
+    input: ItemImageInput,
+    imageId: string,
+    id: string
+  ): Promise<Item> {
+    const result = await this.graphql.mutate({
+      mutation: itemUpdateImage,
+      variables: { input, imageId, id },
+      fetchPolicy: 'no-cache',
+      context: {
+        useMultipart: true,
+      },
+    });
+    if (!result || result?.errors) return undefined;
+    return result.itemUpdateImage;
   }
 
   async authItem(merchantId: string, id: string): Promise<Item> {
@@ -362,6 +384,17 @@ export class ItemsService {
 
     if (!result || result?.errors) return undefined;
     return result;
+  }
+
+  async duplicateItem(id: string): Promise<Item> {
+    const result = await this.graphql.mutate({
+      mutation: duplicateItem,
+      variables: { id },
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.duplicateItem;
   }
 
   async createItemParam(merchantId: string, itemId: string, input: any) {

@@ -2,21 +2,22 @@
   width: 100%;
   position: absolute;
   bottom: 0;
+  padding: 60px 9px 15px 25px;
   background-color: #f6f6f6;
 }
 .text-grid {
-  display: grid;
-  grid-template-columns: 4fr 2fr;
-  gap: 2px;
-  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  // display: grid;
+  // grid-template-columns: 4fr 2fr;
+  // gap: 2px;
 }
 .title {
   font-family: "SfProRegular";
   color: #272727;
   font-size: 21px;
-  padding-left: 37px;
   margin: 0px;
-  margin-top: 45px;
 }
 .save {
   background: #2874ad;
@@ -29,17 +30,6 @@
   cursor: pointer;
 }
 
-.blocked-cta {
-  background: rgb(123, 123, 123);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  border: none;
-  height: 67px;
-  cursor: not-allowed;
-}
-
 .icon-container {
   display: flex;
   justify-content: flex-end;
@@ -50,14 +40,49 @@
 }
 
 .icon-blue {
-  height: 20px;
+  height: 40px;
   margin-right: 25px;
   cursor: pointer;
+  filter: invert(15%) sepia(4%) saturate(0%) hue-rotate(229deg) brightness(50%) contrast(98%);
 }
 
 .save-text {
   color: #fff;
-  font-family: SfProBold;
-  font-size: 13px;
+  font-family: "SfProDisplay";
+  font-size: 14px;
   padding-left: 16px;
+}
+
+.return-section{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 7px;
+
+  .bottom-button{
+    width: 25px;
+    height: 25px;
+    display: grid;
+    background-color: transparent;
+    position: relative;
+    margin-bottom: 10px;
+    border: none;
+    cursor: pointer;
+
+    .fas{
+      position: absolute;
+      font-size: 1.313rem;
+      color: #7B7B7B;
+      position: absolute;
+      top: 1px;
+    }
+  }
+
+  .bottom-text{
+    font-family: 'RobotoMedium';
+    font-size: 1.063rem;
+    color: #7B7B7B;
+    margin: 0;
+  }
 }

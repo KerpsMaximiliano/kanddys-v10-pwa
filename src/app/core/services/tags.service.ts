@@ -15,6 +15,10 @@ import {
   itemAddTag,
   itemRemoveTag,
   ordersByTag,
+  deleteTag,
+  tagArchived,
+  hotTagsArchived,
+  tagsArchived,
 } from '../graphql/tags.gql';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
@@ -59,6 +63,18 @@ export class TagsService {
     if (!result || result?.errors) return undefined;
 
     return result?.createTag;
+  }
+
+  async deleteTag(tagId: string) {
+    const result = await this.graphql.mutate({
+      mutation: deleteTag,
+      variables: { tagId },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    console.log(result);
+    return result;
   }
 
   async tagsByUser(
@@ -227,6 +243,50 @@ export class TagsService {
         fetchPolicy: 'no-cache',
       });
       return result?.ordersByTag;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async tagArchived(paginate: PaginationInput = { options: { limit: -1 } }) {
+    try {
+      const result = await this.graphql.query({
+        query: tagArchived,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.tagArchived;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async tagsArchived(
+    paginate: PaginationInput = { options: { limit: -1 } }
+  ): Promise<Array<Tag>> {
+    try {
+      const result = await this.graphql.query({
+        query: tagsArchived,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.tagArchived;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+
+  async hotTagsArchived(
+    paginate: PaginationInput = { options: { limit: -1 } }
+  ): Promise<Array<Tag>> {
+    try {
+      const result = await this.graphql.query({
+        query: hotTagsArchived,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.tagArchived;
     } catch (e) {
       console.log(e);
     }

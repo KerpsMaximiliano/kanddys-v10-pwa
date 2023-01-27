@@ -21,6 +21,7 @@ import gql from 'graphql-tag';
 export const body = `
   _id
   name
+  slug
   location
   email
   image
@@ -36,6 +37,10 @@ export const body = `
     email
     name
     _id
+  }
+  social {
+    name
+    url
   }
 `;
 
@@ -136,6 +141,18 @@ export const merchant = gql`
   }
 `;
 
+export const merchantByName = gql`
+  query merchantByName($name: String!) {
+    merchantByName(name: $name) { ${body} }
+  }
+`;
+
+export const merchantBySlug = gql`
+  query merchantBySlug($slug: String!) {
+    merchantBySlug(slug: $slug) { ${body} }
+  }
+`;
+
 export const isMerchant = gql`
   query isMerchant($user: String!) {
     isMerchant(user: $user)
@@ -194,7 +211,11 @@ export const itemsByMerchant = gql`
       pricing
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       status
     }
   }
@@ -219,7 +240,11 @@ export const ordersByMerchant = gql`
       items {
         item {
           name
-          images
+          images {
+            value
+            index
+            active
+          }
           pricing
           tags
           params {
@@ -268,7 +293,11 @@ export const item = gql`
       pricing
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       fixedQuantity
       params {
         _id
@@ -353,5 +382,35 @@ export const usersOrderMerchant = gql`
 export const incomeMerchant = gql`
   query incomeMerchant($input: PaginationInput) {
     incomeMerchant(input: $input)
+  }
+`;
+
+export const viewsMerchants = gql`
+  query viewsMerchants($paginate: PaginationInput) {
+    viewsMerchants(paginate: $paginate){
+      _id
+      merchant
+      type
+      description
+      numeration{
+        value
+      }
+      socialMedia{
+        name
+        url
+      }
+    }
+  }
+`;
+
+export const viewsMerchant = gql`
+  query viewsMerchant($id: ObjectID!) {
+    viewsMerchant(id: $id){
+      _id
+      description
+      numeration{
+        value
+      }
+    }
   }
 `;

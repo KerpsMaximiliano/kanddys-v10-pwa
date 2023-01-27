@@ -10,6 +10,7 @@ import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxPrintModule } from 'ngx-print';
 import { SwiperModule } from 'ngx-swiper-wrapper';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { environment } from './../../environments/environment';
 import { DialogModule } from './../libs/dialog/dialog.module';
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
@@ -38,7 +39,6 @@ import { ImageInputComponent } from './components/image-input/image-input.compon
 import { InfoButtonComponent } from './components/info-button/info-button.component';
 import { InfoCardComponent } from './components/info-card/info-card.component';
 import { InformationBoxComponent } from './components/information-box/information-box.component';
-import { ItemCardAmountAndPriceComponent } from './components/item-card-amount-and-price/item-card-amount-and-price.component';
 import { ItemCardComponent } from './components/item-card/item-card.component';
 import { ItemGridComponent } from './components/item-grid/item-grid.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
@@ -87,7 +87,6 @@ import { StoreShareComponent } from './dialogs/store-share/store-share.component
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
 import { LoadingScreenComponent } from './components/loading-screen/loading-screen.component';
-import { ItemComponent } from './components/item/item.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
 import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
@@ -101,8 +100,31 @@ import { TagsCarousellComponent } from './components/tags-carousell/tags-carouse
 import { HelperHeaderv3Component } from './components/helper-headerv3/helper-headerv3.component';
 import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
-import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
+import { GeneralItemComponent } from './components/general-item/general-item.component';
+import { TagTypeDialogComponent } from './dialogs/tag-type-dialog/tag-type-dialog.component';
+import { MerchantContactComponent } from './components/merchant-contact/merchant-contact.component';
+import { ArticlePrivacyComponent } from './components/article-privacy/article-privacy.component';
+import { InputTransparentComponent } from './dialogs/input-transparent/input-transparent.component';
+import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
+import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
+import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
+import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
+import { AnexoChoicesComponent } from './components/anexo-choices/anexo-choices.component';
+import { BiosBannerComponent } from './components/bios-banner/bios-banner.component';
+import { ItemListSelectorComponent } from './dialogs/item-list-selector/item-list-selector.component';
+import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.component';
+import { BlankComponent } from './dialogs/blank/blank.component';
+import { ArticleDialogComponent } from './dialogs/article-dialog/article-dialog.component';
+import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.component';
+import { ItemImagesComponent } from './dialogs/create-item-flow/item-images/item-images.component';
+import { InfoDialogComponent } from './dialogs/info-dialog/info-dialog.component';
+import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
+import { ImageEditorComponent } from './components/image-editor/image-editor.component';
+import { CardComponent } from './components/card/card.component';
+import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
+import { QrContentComponent } from './components/qr-content/qr-content.component';
+import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 
 const imports = [
   CommonModule,
@@ -117,6 +139,7 @@ const imports = [
   NgxIntlTelInputModule,
   ClipboardModule,
   GooglePlaceModule,
+  DragDropModule,
 ];
 const declarations = [
   // Pages
@@ -134,7 +157,6 @@ const declarations = [
   WarningStepsComponent,
   LeadwordListComponent,
   GiftMessageComponent,
-  ItemCardAmountAndPriceComponent,
   PageComponentTabsComponent,
   ShowItemsComponent,
   ImageInputComponent,
@@ -197,7 +219,6 @@ const declarations = [
   SetConfigComponent,
   ItemSettingsComponent,
   LoadingScreenComponent,
-  ItemComponent,
   ReloadComponent,
   WhatsappMessageComponent,
   CurrencyInputComponent,
@@ -206,14 +227,38 @@ const declarations = [
   MetricsReservationComponent,
   ReservationListComponent,
   TagManagementComponent,
-  TagAsignationComponent,
   TagsSelectorComponent,
   TagsCarousellComponent,
   HelperHeaderv3Component,
   FunctionalityParametersComponent,
   ConfirmActionDialogComponent,
+  GeneralItemComponent,
+  MerchantContactComponent,
+  InputTransparentComponent,
+  ArticlePrivacyComponent,
   AnexosDialogComponent,
+  QrCodeDialogComponent,
+  PostsXlsComponent,
   TagAsignationComponent,
+  MediaDialogComponent,
+  AnexoChoicesComponent,
+  BiosBannerComponent,
+  DialogFlowComponent,
+  ItemListSelectorComponent,
+  BlankComponent,
+  ArticleDialogComponent,
+  AnexoLandingComponent,
+  ItemImagesComponent,
+  InfoDialogComponent,
+  TagTypeDialogComponent,
+  MediaDialogComponent,
+  ItemListSelectorComponent,
+  TagsDialogComponent,
+  ImageEditorComponent,
+  CardComponent,
+  TitleIconHeaderComponent,
+  QrContentComponent,
+  QrEditComponent,
 ];
 
 @NgModule({

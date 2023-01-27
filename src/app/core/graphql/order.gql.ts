@@ -38,6 +38,7 @@ const orderData = `
       merchant {
         _id
         name
+        slug
         owner {
           _id
           phone
@@ -53,6 +54,18 @@ const orderData = `
             _id
           }
         }
+        delivery {
+          isActive
+          deliveryLocation
+          pickUpLocations {
+            city
+            street
+            houseNumber
+            referencePoint
+            nickName
+            note
+          }
+        }
       }
     }
     post {
@@ -63,7 +76,11 @@ const orderData = `
       _id
       name
       pricing
-      images
+      images {
+        value
+        index
+        active
+      }
       hasSelection
       params {
         _id
@@ -72,6 +89,7 @@ const orderData = `
           _id
           name
           image
+          price
         }
       }
     }
@@ -166,7 +184,11 @@ const preOrderData = `
       _id
       name
       pricing
-      images
+      images {
+        value
+        index
+        active
+      }
       hasSelection
       params {
         _id
@@ -329,7 +351,11 @@ export const ordersByItem = gql`
       items {
         item {
           name
-          images
+          images {
+            value
+            index
+            active
+          }
         }
       }
       subtotals {
@@ -337,6 +363,14 @@ export const ordersByItem = gql`
       }
       dateId
       createdAt
+    }
+  }
+`;
+
+export const ordersByItemHot = gql`
+  query ordersByItem($paginate: PaginationInput!) {
+    ordersByItem(paginate: $paginate) {
+      _id
     }
   }
 `;
@@ -371,14 +405,8 @@ export const createPartialOCR = gql`
 `;
 
 export const orderSetStatus = gql`
-  mutation orderSetStatus(
-    $status: String!
-    $id: ObjectID!
-  ) {
-    orderSetStatus(
-      status: $status
-      id: $id
-    ) {
+  mutation orderSetStatus($status: String!, $id: ObjectID!) {
+    orderSetStatus(status: $status, id: $id) {
       _id
       status {
         status

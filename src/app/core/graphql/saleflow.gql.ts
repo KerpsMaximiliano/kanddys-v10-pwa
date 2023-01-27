@@ -1,96 +1,84 @@
 import gql from 'graphql-tag';
 
+export const body = `
+  _id
+  name
+  headline
+  banner
+  subheadline
+  addressExtraInfo
+  banner
+  itemNickname
+  social {
+    name
+    url
+  }
+  module {
+    _id
+    appointment {
+      isActive
+      calendar {
+        _id
+      }
+    }
+    post {
+      isActive
+      post
+    }
+    delivery {
+      isActive
+      deliveryLocation
+      pickUpLocations {
+        city
+        street
+        houseNumber
+        referencePoint
+        nickName
+        note
+      }
+    }
+    paymentMethod {
+      paymentModule {
+        _id
+      }
+    }
+  }
+  merchant {
+    _id
+    name
+    slug
+    owner {
+      _id
+      phone
+    }
+  }
+  packages {
+    _id
+  }
+  items {
+    item {
+      _id
+    }
+    customizer {
+      _id
+    }
+    index
+  }
+  workingHours
+  paymentInfo
+  createdAt
+  canBuyMultipleItems
+`;
+
 export const saleflow = gql`
   query saleflow($id: ObjectID!) {
-    saleflow(id: $id) {
-      _id
-      name
-      headline
-      banner
-      subheadline
-      addressExtraInfo
-      banner
-      itemNickname
-      social {
-        name
-        url
-      }
-      module {
-        _id
-        appointment {
-          isActive
-          calendar {
-            _id
-          }
-        }
-        post {
-          isActive
-          post
-        }
-        delivery {
-          isActive
-          deliveryLocation
-          pickUpLocations {
-            city
-            street
-            houseNumber
-            referencePoint
-            nickName
-            note
-          }
-        }
-        paymentMethod {
-          paymentModule {
-            _id
-          }
-        }
-      }
-      merchant {
-        _id
-        name
-        owner {
-          _id
-          phone
-        }
-      }
-      packages {
-        _id
-      }
-      items {
-        item {
-          _id
-        }
-        customizer {
-          _id
-        }
-        index
-      }
-      workingHours
-      paymentInfo
-      createdAt
-      canBuyMultipleItems
-    }
+    saleflow(id: $id) { ${body} }
   }
 `;
 
 export const saleflowDefault = gql`
   query saleflowDefault($merchantId: ObjectID!) {
-    saleflowDefault(merchantId: $merchantId) {
-      _id
-      name
-      items {
-        item {
-          _id
-        }
-      }
-      module{
-        appointment{
-          calendar{
-            _id            
-          }
-        }
-      }
-    }
+    saleflowDefault(merchantId: $merchantId) { ${body} }
   }
 `;
 
@@ -221,7 +209,11 @@ export const listItems = gql`
       pricePerUnit
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       fixedQuantity
       size
       quality

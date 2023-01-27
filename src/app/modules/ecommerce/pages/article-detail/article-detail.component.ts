@@ -1,26 +1,44 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
-import { Item, ItemParamValue } from 'src/app/core/models/item';
+import { Item, ItemImage, ItemParamValue } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
+import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { PostsService } from 'src/app/core/services/posts.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import SwiperCore, { Virtual } from 'swiper/core';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { User } from 'src/app/core/models/user';
+import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
 
 SwiperCore.use([Virtual]);
 
 interface ExtendedTag extends Tag {
   selected?: boolean;
+}
+
+interface ExtendedSlide extends Slide {
+  isVideo?: boolean;
 }
 
 type TypesOfMenu = 'TAGS' | 'DESCRIPTION';
@@ -36,6 +54,7 @@ export class ArticleDetailComponent implements OnInit {
   controllers: FormArray = new FormArray([]);
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
+    resistance: false,
     freeMode: false,
     spaceBetween: 0,
     autoplay: {
@@ -49,13 +68,15 @@ export class ArticleDetailComponent implements OnInit {
   entityId: string;
   itemData: Item = null;
   itemTags: Array<ExtendedTag> = [];
+  postData: Post = null;
+  postSlides: Array<ExtendedSlide> = [];
   selectedParam: {
     param: number;
     value: number;
   };
   isItemInCart: boolean = false;
   menuOpened: boolean;
-  previewMode: boolean;
+  mode: 'preview' | 'image-preview' | 'saleflow';
   typeOfMenuToShow: TypesOfMenu;
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
@@ -63,12 +84,25 @@ export class ArticleDetailComponent implements OnInit {
     spaceBetween: 0,
   };
   fractions: string = '';
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  audioFiles: string[] = [
+    'audio/x-m4a',
+    'audio/ogg',
+    'audio/mpeg',
+    'audio/wav',
+  ];
+  doesModuleDependOnSaleflow: boolean = false;
   timer: NodeJS.Timeout;
+  entityTemplate: EntityTemplate = null;
+  user: User;
+  logged: boolean = false;
+  isProductMine: boolean = false;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
   constructor(
-    private itemsService: ItemsService,
+    private _ItemsService: ItemsService,
     private tagsService: TagsService,
     public headerService: HeaderService,
     private route: ActivatedRoute,
@@ -76,73 +110,148 @@ export class ArticleDetailComponent implements OnInit {
     private appService: AppService,
     private dialogService: DialogService,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private saleflowService: SaleFlowService
+    private postsService: PostsService,
+    private entityTemplateService: EntityTemplateService,
+    private toastr: ToastrService,
+    private clipboard: Clipboard,
+    private saleflowService: SaleFlowService,
+    private merchantsService: MerchantsService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.mode = this.route.snapshot.queryParamMap.get('mode') as
+      | 'preview'
+      | 'image-preview'
+      | 'saleflow';
     this.route.params.subscribe(async (routeParams) => {
-      const validEntities = ['item', 'post'];
-      const { saleflowId, entity, entityId } = routeParams;
-      if (!this.headerService.saleflow)
-        await this.headerService.fetchSaleflow(saleflowId);
+      await this.verifyIfUserIsLogged();
+      const validEntities = ['item', 'post', 'template'];
+      const { entity, entityId } = routeParams;
 
-      if (
-        !this.headerService.saleflow.items.some(
-          (saleflowItem) => saleflowItem.item.status
-        )
-      ) {
-        const listItems = await this.saleflowService.listItems({
-          findBy: {
-            _id: {
-              __in: ([] = this.headerService.saleflow.items.map(
-                (items) => items.item._id
-              )),
-            },
-          },
-          options: {
-            sortBy: 'createdAt:desc',
-            limit: 60,
-          },
-        });
-        const items = listItems.listItems.filter((item) => {
-          return item.status === 'active' || item.status === 'featured';
-        });
-
-        for (let i = 0; i < items.length; i++) {
-          const item = this.headerService.saleflow.items.find(
-            (saleflowItem) => saleflowItem.item._id === items[i]._id
-          );
-          item.item.status = items[i].status;
-        }
-      }
+      if (this.headerService.saleflow && this.headerService.saleflow._id)
+        this.doesModuleDependOnSaleflow = true;
 
       if (validEntities.includes(entity)) {
-        this.entityId = entityId;
-        this.entity = entity;
+        if (entity !== 'template') {
+          this.entityId = entityId;
+          this.entity = entity;
 
-        await this.getItemData();
-        this.itemInCart();
+          if (entity === 'item') {
+            await this.getItemData();
+            this.itemInCart();
+          } else if (entity === 'post') {
+            await this.getPostData();
+          }
+        } else {
+          const entityTemplate =
+            await this.entityTemplateService.entityTemplate(entityId);
+          this.entityTemplate = entityTemplate;
+
+          if (entityTemplate.reference && entityTemplate.entity) {
+            this.entityId = entityTemplate.reference;
+            this.entity = entityTemplate.entity as any;
+
+            if (this.entity === 'item') {
+              await this.getItemData();
+            } else if (this.entity === 'post') {
+              await this.getPostData();
+            }
+          } else {
+            const redirectionRoute = this.headerService.saleflow._id
+              ? 'ecommerce/' +
+                this.headerService.saleflow._id +
+                '/article-template/' +
+                entityId
+              : '';
+
+            this.router.navigate([redirectionRoute]);
+          }
+        }
+
+        if (this.headerService.saleflow && this.headerService.saleflow._id)
+          this.itemInCart();
       } else {
         this.router.navigate([`others/error-screen/`]);
       }
     });
   }
 
+  openInfoDialog() {
+    const props: any = {
+      symbols: {
+        title: this.itemData.name || 'Sin nombre',
+      },
+    };
+    if (this.itemData.description) {
+      props.symbols.text = this.itemData.description;
+    }
+    if (this.itemData.content?.length) {
+      props.actions = {
+        title: 'Lo incluido:',
+        text: this.itemData.content,
+      };
+    }
+    this.dialogService.open(InfoDialogComponent, {
+      type: 'fullscreen-translucent',
+      props,
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
   async getItemData() {
     try {
-      this.itemData = await this.itemsService.item(this.entityId);
+      this.itemData = await this._ItemsService.item(this.entityId);
+      if (this.mode === 'preview' || this.mode === 'image-preview') {
+        if (!this._ItemsService.itemPrice) return this.back();
+        this.itemData.name = this._ItemsService.itemName;
+        this.itemData.description = this._ItemsService.itemDesc;
+        this.itemData.pricing = this._ItemsService.itemPrice;
+        this.itemData.images = this._ItemsService.itemUrls.map((value) => ({
+          value,
+        })) as ItemImage[];
+      }
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
       this.itemTags?.forEach((tag) => {
         tag.selected = this.itemData.tags?.includes(tag._id);
       });
-
       this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
       if (this.itemData.images?.length < 2) this.startTimeout();
     } catch (error) {
-      console.error(error);
       this.router.navigate([`others/error-screen/`]);
     }
+  }
+
+  async getPostData() {
+    try {
+      const { post } = await this.postsService.getPost(this.entityId);
+      const { author } = post;
+      const { _id } = author;
+      this.isProductMine = _id === this.user?._id;
+      if (post) {
+        this.postData = post;
+
+        const slides = await this.postsService.slidesByPost(post._id);
+        this.postSlides = slides;
+
+        for (const slide of this.postSlides) {
+          if (
+            slide.type === 'poster' &&
+            (slide.media.includes('mp4') || slide.media.includes('webm'))
+          ) {
+            slide.isVideo = true;
+          }
+        }
+
+        this.updateFrantions();
+
+        this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+
+        //if (this.postSlides.length < 2) this.startTimeout();
+      }
+    } catch (error) {}
   }
 
   async onTagClick(tag: ExtendedTag) {
@@ -163,13 +272,13 @@ export class ArticleDetailComponent implements OnInit {
         tag.selected = true;
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
   startTimeout() {
     this.timer = setTimeout(() => {
-      if (this.route.snapshot.queryParamMap.get('mode') === 'saleflow') {
+      if (this.mode === 'saleflow') {
         let index = this.headerService.saleflow.items.findIndex(
           (saleflowItem) => saleflowItem.item._id === this.itemData._id
         );
@@ -202,41 +311,49 @@ export class ArticleDetailComponent implements OnInit {
 
   updateCurrentSlideData(event: any) {
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
-    if (this.itemData.images.length === this.currentMediaSlide + 1) {
-      this.startTimeout();
-    } else if (this.timer) {
-      clearTimeout(this.timer);
-      this.timer = null;
+
+    if (this.entity === 'item') {
+      if (this.itemData.images.length === this.currentMediaSlide + 1) {
+        this.startTimeout();
+      } else if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
     }
   }
 
   saveProduct() {
+    if (this.mode === 'preview' || this.mode === 'image-preview') return;
+    if (
+      !this.isItemInCart &&
+      !this.headerService.saleflow.canBuyMultipleItems
+    ) {
+      this.headerService.emptyOrderProducts();
+      this.headerService.emptyItems();
+    }
     const product: ItemSubOrderInput = {
       item: this.itemData._id,
       amount: 1,
     };
 
-    if (this.selectedParam) {
-      product.params = [
-        {
-          param: this.itemData.params[this.selectedParam.param]._id,
-          paramValue:
-            this.itemData.params[this.selectedParam.param].values[
-              this.selectedParam.value
-            ]._id,
-        },
-      ];
-      const paramValue =
-        this.itemData.params[this.selectedParam.param].values[
-          this.selectedParam.value
-        ]._id;
-      this.paramFromSameItem(paramValue);
-    }
+    // if (this.selectedParam) {
+    //   product.params = [
+    //     {
+    //       param: this.itemData.params[this.selectedParam.param]._id,
+    //       paramValue:
+    //         this.itemData.params[this.selectedParam.param].values[
+    //           this.selectedParam.value
+    //         ]._id,
+    //     },
+    //   ];
+    //   const paramValue =
+    //     this.itemData.params[this.selectedParam.param].values[
+    //       this.selectedParam.value
+    //     ]._id;
+    //   this.paramFromSameItem(paramValue);
+    // }
 
-    this.headerService.storeOrderProduct(
-      this.headerService.saleflow._id,
-      product
-    );
+    this.headerService.storeOrderProduct(product);
     const itemParamValue: ItemParamValue = this.selectedParam
       ? {
           ...this.itemData.params[this.selectedParam.param].values[
@@ -255,48 +372,35 @@ export class ArticleDetailComponent implements OnInit {
       data: this.itemData._id,
     });
     this.headerService.storeItem(
-      this.headerService.saleflow._id,
       this.selectedParam ? itemParamValue : this.itemData
     );
     this.itemInCart();
-    this.showItems();
   }
 
-  paramFromSameItem(id: string) {
-    const products = this.headerService.getItems(
-      this.headerService.saleflow._id
-    );
-    products?.forEach((product) => {
-      if (!product.params) {
-        this.itemData.params[0].values.forEach((value) => {
-          if (id != product._id && value._id == product._id) {
-            this.headerService.removeItem(
-              this.headerService.saleflow._id,
-              product._id
-            );
-            this.headerService.removeOrderProduct(
-              this.headerService.saleflow._id,
-              product._id
-            );
-          }
-        });
-      }
-    });
-    return;
-  }
+  // paramFromSameItem(id: string) {
+  //   const products = this.headerService.getItems();
+  //   products?.forEach((product) => {
+  //     if (!product.params) {
+  //       this.itemData.params[0].values.forEach((value) => {
+  //         if (id != product._id && value._id == product._id) {
+  //           this.headerService.removeItem(product._id);
+  //           this.headerService.removeOrderProduct(product._id);
+  //         }
+  //       });
+  //     }
+  //   });
+  //   return;
+  // }
 
   itemInCart() {
-    const productData = this.headerService.getItems(
-      this.headerService.saleflow._id
-    );
+    const productData = this.headerService.getItems();
     if (productData?.length) {
       this.isItemInCart = productData.some(
-        (item) =>
-          item._id === this.itemData._id ||
-          item._id ===
-            this.itemData.params?.[this.selectedParam?.param]?.values?.[
-              this.selectedParam?.value
-            ]?._id
+        (item) => item === this.itemData._id
+        // || item._id ===
+        //   this.itemData.params?.[this.selectedParam?.param]?.values?.[
+        //     this.selectedParam?.value
+        //   ]?._id
       );
     } else this.isItemInCart = false;
   }
@@ -313,7 +417,7 @@ export class ArticleDetailComponent implements OnInit {
         url:
           environment.uri +
           '/ecommerce/' +
-          this.headerService.saleflow._id +
+          this.headerService.saleflow.merchant.slug +
           '/article-detail/' +
           this.entity +
           '/' +
@@ -327,84 +431,96 @@ export class ArticleDetailComponent implements OnInit {
       });
   }
 
-  showItems() {
-    if (this.previewMode) return;
-    this.dialogService.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        headerButton: 'Ver más productos',
-        headerCallback: () =>
-          this.router.navigate(
-            [`/ecommerce/store/${this.headerService.saleflow._id}`],
-            {
-              replaceUrl: this.headerService.checkoutRoute ? true : false,
-            }
-          ),
-        footerCallback: () => {
-          if (this.headerService.checkoutRoute) {
-            this.router.navigate([this.headerService.checkoutRoute], {
-              replaceUrl: true,
-            });
-            return;
-          }
-          if (this.headerService.saleflow.module?.post) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
-            ]);
-            return;
-          }
-          if (this.headerService.saleflow.module?.appointment?.calendar?._id) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
-            ]);
-            return;
-          }
-          if (this.headerService.saleflow.module?.delivery) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/new-address`,
-            ]);
-            return;
-          }
-          this.router.navigate([
-            `/ecommerce/${this.headerService.saleflow._id}/checkout`,
-          ]);
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
-  back() {
-    if (this.previewMode) {
-      if (this.itemData._id)
-        return this.router.navigate([
-          `/admin/create-article/${this.itemData._id}`,
-        ]);
-      else return this.router.navigate([`/admin/create-article`]);
+  async back() {
+    if (this.mode === 'preview') {
+      this._ItemsService.itemUrls = [];
+      return this.router.navigate([
+        `/admin/article-editor/${this.itemData._id}`,
+      ]);
+    }
+    if (this.mode === 'image-preview') {
+      this._ItemsService.itemUrls = [];
+      return this.router.navigate([
+        `/admin/slides-editor/${this.itemData._id}`,
+      ]);
     }
     if (this.selectedParam) {
       this.selectedParam = null;
       return;
     }
-    this.itemsService.removeTemporalItem();
-    this.router.navigate(
-      [`/ecommerce/store/${this.headerService.saleflow._id}`],
-      {
+
+    if (!this.headerService.flowRoute && localStorage.getItem('flowRoute')) {
+      this.headerService.flowRoute = localStorage.getItem('flowRoute');
+    }
+
+    if (
+      this.headerService.flowRoute &&
+      this.headerService.flowRoute.length > 1
+    ) {
+      const [baseRoute, paramsString] = this.headerService.flowRoute.split('?');
+
+      const paramsArray = paramsString ? paramsString.split('&') : [];
+      const queryParams = {};
+      paramsArray.forEach((param) => {
+        const [key, value] = param.split('=');
+
+        queryParams[key] = value;
+      });
+
+      localStorage.removeItem('flowRoute');
+
+      this.router.navigate([baseRoute], {
+        queryParams,
+      });
+
+      this.headerService.flowRoute = null;
+      localStorage.removeItem('flowRoute');
+      return;
+    }
+
+    this._ItemsService.removeTemporalItem();
+
+    if (this.headerService.saleflow) {
+      this.router.navigate([`../../../store`], {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
+        relativeTo: this.route,
+      });
+    } else {
+      if (this.itemData) {
+        const itemSaleflow = await this.saleflowService.saleflowDefault(
+          this.itemData.merchant._id
+        );
+
+        if (itemSaleflow)
+          this.router.navigate(['ecommerce/store/' + itemSaleflow._id]);
+      } else if (this.postData && this.postData.author) {
+        const authorMerchant = await this.merchantsService.merchantDefault(
+          this.postData.author._id
+        );
+
+        const saleflowDefault = await this.saleflowService.saleflowDefault(
+          authorMerchant._id
+        );
+
+        if (saleflowDefault)
+          this.router.navigate(['ecommerce/store/' + saleflowDefault._id]);
       }
-    );
+    }
   }
 
   updateFrantions(): void {
-    this.fractions = this.itemData.images
+    this.fractions = (
+      (this.entity === 'item'
+        ? this.itemData.images
+        : this.postSlides) as Array<any>
+    )
       .map(
         () =>
           `${
             // // this.itemData.images.length < 3
             // //   ?
-            
-              '1'
+
+            '1'
             // // : this.getRandomArbitrary(0, this.itemData.images.length)
           }fr`
       )
@@ -413,5 +529,26 @@ export class ArticleDetailComponent implements OnInit {
 
   getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
+  }
+
+  async verifyIfUserIsLogged() {
+    this.user = await this.authService.me();
+    if (!this.user) {
+      this.logged = false;
+      return;
+    }
+    this.logged = true;
+  }
+
+  navigate(): void {
+    (async () => {
+      const { _id } =
+        await this.entityTemplateService.entityTemplateByReference(
+          this.entityId,
+          this.entity
+        );
+      const route = ['ecommerce', 'article-privacy', _id];
+      this.router.navigate(route);
+    })();
   }
 }

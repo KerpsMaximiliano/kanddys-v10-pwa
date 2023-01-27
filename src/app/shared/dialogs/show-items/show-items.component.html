@@ -90,6 +90,7 @@
     [text]="footerButton"
     [mode]="products.length > 0 ? 'basic' : 'disabled'"
     (click)="orderItems()"
+    [bgColor]="header.colorTheme"
     *ngIf="footerButton && !orderFinished && products?.length > 0"
   ></app-sticky-button>
 </div>

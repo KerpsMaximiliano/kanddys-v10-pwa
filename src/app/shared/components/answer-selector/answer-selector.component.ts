@@ -51,7 +51,9 @@ export class AnswerSelectorComponent {
       this.activeMultipleOption.push(option);
       this.activeMultipleOption.sort();
     } else {
-      this.activeMultipleOption = this.activeMultipleOption.filter((item) =>item!==option);
+      this.activeMultipleOption = this.activeMultipleOption.filter(
+        (item) => item !== option
+      );
       this.activeMultipleOption.sort();
     }
     this.activeMultipleOptionValue.emit(this.activeMultipleOption);
