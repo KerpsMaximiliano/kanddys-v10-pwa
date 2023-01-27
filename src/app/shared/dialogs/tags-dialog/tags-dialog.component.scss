@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+}
+
+.container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 35px 31px;
+  margin-left: 40px;
+  width: 84%;
+  max-width: 420px;
+  background-color: #ffffff;
+  border-radius: 5px;
+
+  .title {
+    font-size: 23px;
+    font-family: SFProBold;
+    color: #4f4f4f;
+  }
+
+  .subtitle {
+    font-family: SFProRegular;
+    color: #272727;
+    font-size: 17px;
+    margin-top: 7.5px;
+    margin-bottom: 35px;
+  }
+}

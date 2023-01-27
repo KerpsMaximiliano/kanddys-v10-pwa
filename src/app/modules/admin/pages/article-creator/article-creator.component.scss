@@ -8,7 +8,7 @@ button {
   align-items: center;
 }
 .slide {
-  background: #e9e371;
+  background-color: #2e2e2e;
   color: #2874ad;
   width: 100%;
   height: 100vh;
@@ -48,7 +48,6 @@ button {
   }
 }
 .extra {
-  background: #2e2e2e;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -91,10 +90,6 @@ button {
   font-size: 15px;
   cursor: pointer;
   box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 15%);
-}
-.icon {
-  color: #272727;
-  font-size: 25px;
 }
 .copy {
   position: relative;
@@ -186,7 +181,6 @@ audio {
 .lines {
   gap: 2px;
   width: 100%;
-  height: 8px;
   background: #000;
   align-items: center;
   .line {
@@ -211,23 +205,160 @@ audio {
   }
 }
 
-.rotate-btn {
-  cursor: pointer;
-  position: absolute;
-  right: 16px;
-  bottom: 164px;
-  padding: 8px;
-  border-radius: 50%;
-  background-color: #fff;
-  color: #000;
-  transition: all 0.2s;
+.button-display-area {
+  width: 100%;
+  background-color: #000000;
+  height: 140px;
 
-  &:hover {
-    background-color: rgb(228, 228, 228);
-    transition: all 0.2s;
+  .bottom-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 3.5% 24px;
+    height: 100%;
+  }
+
+  .sales-price {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 3.5%;
+
+    .sales-flex {
+      display: flex;
+    }
+  }
+
+  .big-button {
+    all: unset;
+    width: 91%;
+    min-height: 59px;
+    max-width: 459px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    margin: 0 3.5% 11px;
+    padding: 12px 20px 5px;
+    background-color: rgba(123, 123, 123, 37%);
+    color: #ffffff;
+    font-family: "SfProRegular";
+    font-size: 19px;
+    text-align: center;
+    cursor: pointer;
+
+    img {
+      filter: brightness(10);
+      margin-right: 17px;
+      width: 30px;
+      height: 33px;
+    }
+  }
+
+  .buttons-display {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+
+    .round-button {
+      width: 90%;
+      height: 56px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      // margin: 0 auto;
+      background-color: #82f18d;
+      border-radius: 28px;
+      cursor: pointer;
+
+      img {
+        width: 35px;
+        height: 35px;
+        filter: brightness(0.125);
+      }
+    }
+  }
+
+  .center {
+    justify-content: center !important;
+  }
+
+  .save-button {
+    width: 26.65%;
+    max-width: 114px;
+    max-height: 56px;
+    text-align: center;
+    margin-left: 7%;
+    padding: 15px 22px;
+    background-color: #a1a1a1;
+    font-family: "SfProBold";
+    font-size: 19px;
+    color: #272727;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &.activated {
+      background-color: #82f18d !important;
+    }
   }
 }
 
+.bottom-button-banner {
+  width: 100%;
+
+  .button {
+    all: unset;
+    width: 100%;
+    height: 55px;
+    font-family: "SfProMedium";
+    font-size: 1.25rem;
+    text-align: center;
+    background-color: #82f18d;
+    color: #272727;
+    padding: 18px 0;
+    cursor: pointer;
+  }
+}
+
+.price {
+  font-size: 1.063rem;
+  font-family: "SfProBold";
+  color: #ffffff;
+}
+
+.fixed-button {
+  padding: 6px;
+  position: absolute;
+  top: 38px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+  background-color: #272727;
+  box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 16%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &.left {
+    left: 16px;
+  }
+  &.right {
+    right: 16px;
+  }
+}
+
+.withBanner {
+  height: auto !important;
+  padding: 5px 0 !important;
+}
 // .media-placeholder {
 //   height: 100vh !important;
 // }
+
+.icon {
+  &.green {
+    filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%) hue-rotate(62deg) brightness(99%)
+      contrast(91%);
+  }
+}

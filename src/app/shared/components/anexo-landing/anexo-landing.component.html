@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="content" [style]="contentStyles">
+    <div class="upper">
+      <div [style]="textContainer">
+        <h1 [style]="headlineStyles">
+          <span
+            class="headline"
+            *ngFor="let headline of headlines"
+            >{{ headline }}</span
+          >
+        </h1>
+        <h2 [style]="subHeadlineStyles">
+          <span class="subHeadline" *ngFor="let subHeadline of subHeadlines">{{
+            subHeadline
+          }}</span>
+        </h2>
+      </div>
+      <div class="images-container">
+        <div
+          class="image"
+          [style.background]="image"
+          [ngStyle]="imageStyles"
+        ></div>
+        <div
+          class="image2"
+          [style.background]="image2"
+          [ngStyle]="image2Styles"
+        ></div>
+      </div>
+    </div>
+    <div class="footer-container" [ngStyle]="footerStyles">
+      <span
+        *ngFor="let text of footerTexts"
+        class="footerText"
+        >{{ text }}</span
+      >
+    </div>
+  </div>
+  <button
+    (click)="onClick()"
+    class="btn"
+    [style.color]="btnColor"
+    [style.background]="btnBackground"
+  >
+    {{ btnText }}
+  </button>
+</div>

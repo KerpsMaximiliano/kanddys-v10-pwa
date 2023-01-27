@@ -71,7 +71,7 @@
             </app-cart-button>
           </ng-container>
 
-          <button class="icons-text" *ngIf="rightText" (click)="neutralEvent()">
+          <button *ngIf="rightText" [ngStyle]="basicRightButtonStyles" (click)="neutralEvent()">
             <span
               class="text"
               [ngStyle]="{
@@ -91,7 +91,8 @@
                 'background-color': icon.highlight?.highlighted
                   ? icon.highlight?.color
                   : 'transparent',
-                borderRadius: '50%'
+                borderRadius: '50%',
+                margin: icon.margin && icon?.margin
               }"
             >
               <img
@@ -106,7 +107,6 @@
                       : icon.color
                       ? icon.color
                       : 'none',
-                  margin: icon.margin && icon?.margin,
                   cursor: 'pointer'
                 }"
                 (click)="icon.highlight?.active ? highlight(i) : null"
@@ -161,7 +161,7 @@
               class="dot"
               [ngStyle]="{
                 'background-color': dots.color ? dots.color : 'none',
-                margin: '0 2.5px'
+                margin: dots.margin? dots.margin : '0 2.5px'
               }"
             >
                
@@ -170,7 +170,7 @@
               class="dot"
               [ngStyle]="{
                 'background-color': dots.color ? dots.color : 'none',
-                margin: '0 2.5px'
+                margin: dots.margin? dots.margin : '0 2.5px'
               }"
             >
                
@@ -179,7 +179,7 @@
               class="dot"
               [ngStyle]="{
                 'background-color': dots.color ? dots.color : 'none',
-                margin: '0 2.5px'
+                margin: dots.margin? dots.margin : '0 2.5px'
               }"
             >
                

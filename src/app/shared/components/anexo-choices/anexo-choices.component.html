@@ -1,0 +1,196 @@
+<div class="article-choices" (scroll)="infinitePagination()">
+  <div class="header">
+    <svg
+      class="arrows"
+      xmlns="http://www.w3.org/2000/svg"
+      width="16.944"
+      height="21.375"
+      viewBox="0 0 16.944 21.375"
+    >
+      <g
+        id="Group_71771"
+        data-name="Group 71771"
+        transform="translate(-47.215 -828.841)"
+      >
+        <path
+          id="back"
+          d="M14.578.857,6,9.436,14.365,17.8l2.109-2.109L10.217,9.436l6.47-6.47Z"
+          transform="translate(65.017 822.841) rotate(90)"
+          fill="#272727"
+          fill-rule="evenodd"
+        />
+        <path
+          id="back-2"
+          data-name="back"
+          d="M14.578.857,6,9.436,14.365,17.8l2.109-2.109L10.217,9.436l6.47-6.47Z"
+          transform="translate(65.017 833.528) rotate(90)"
+          fill="#272727"
+          fill-rule="evenodd"
+        />
+      </g>
+    </svg>
+    <p class="title">Textos</p>
+  </div>
+
+  <app-tags-selector
+    *ngIf="selectedTags.length > 0"
+    [tags]="selectedTagsPermanent"
+    [selectedTagsIds]="getIdsOfSelectedTags()"
+    [multipleTags]="true"
+    [selectedBackground]="'#ffffff'"
+    [background]="'rgb(40, 116, 173)'"
+    [selectedColor]="'#2874ad'"
+    [color]="'#fff'"
+    [tagsGridStyles]="{
+      padding: '6px 18px 21px 18px'
+    }"
+    [fillSelectedTagsOnStart]="true"
+    [useIdToRemoveOrAddTags]="true"
+    [useAlternativeOutput]="true"
+    (tagSelect2)="selectTagFromHeader($event)"
+  ></app-tags-selector>
+
+  <div class="content">
+    <p class="top-text">Titulo</p>
+    <input type="text" class="top-input" placeholder="Escribe o pega..." />
+
+    <div class="grid">
+      <p
+        class="text"
+        [ngClass]="choice === _choice ? 'active' : 'text'"
+        *ngFor="let _choice of list; index as i"
+        (click)="handleChoice(_choice)"
+      >
+        {{ _choice }}
+      </p>
+    </div>
+    <div class="container">
+      <ng-container [ngSwitch]="choice">
+        <div class="orders" *ngSwitchCase="'Facturado'">
+          <app-tags-carousell
+            [tags]="unselectedTags"
+            (tag)="handleTag($event)"
+            [multipleTags]="true"
+            borderWidth="4px"
+            [selectedTagsIds]="getIdsOfSelectedTags()"
+          ></app-tags-carousell>
+          <app-factures
+            [merchantId]="merchantId"
+            [orders]="ordersList"
+          ></app-factures>
+        </div>
+        <div *ngSwitchCase="'Listado'">
+          <!-- <div
+            *ngFor="let controller of content.controls; let i = index"
+            class="inputs"
+          >
+            <button
+              *ngIf="content.controls.length - 1 !== i"
+              class="remove"
+              (click)="removeControl(i)"
+            >
+              -
+            </button>
+            <input
+              class="base-input"
+              type="text"
+              placeholder="Escribe.."
+              [formControl]="_AbstractControl(i)"
+            />
+          </div> -->
+          <div class="listado">
+            <div class="left">
+              <input type="text" />
+            </div>
+            <div class="middle">
+              <input type="text" placeholder="Escribe..." />
+            </div>
+            <div class="right">
+              <input type="text" placeholder="$" />
+            </div>
+            <div class="cuadro"></div>
+          </div>
+        </div>
+        <div *ngSwitchDefault>
+          <textarea
+            [formControl]="description"
+            class="area"
+            placeholder="Escribe o pega..."
+          ></textarea>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="bottom-fixed">
+    <div
+      [ngClass]="{
+        'container-grid': choice === 'Facturado',
+        'container-grid-2': choice !== 'Facturado'
+      }"
+    >
+      <div
+        [ngClass]="{
+          'icons-container': choice === 'Facturado',
+          'icons-container-2': choice !== 'Facturado'
+        }"
+      >
+        <!-- <img
+          src="{{ env }}/arrow-double-up.svg"
+          alt="button"
+          (click)="selectedTags.length > 0 ? resetSelectedTags() : null"
+        /> -->
+        <svg
+          class="arrows"
+          xmlns="http://www.w3.org/2000/svg"
+          width="16.944"
+          height="21.375"
+          viewBox="0 0 16.944 21.375"
+        >
+          <g
+            id="Group_71771"
+            data-name="Group 71771"
+            transform="translate(-47.215 -828.841)"
+          >
+            <path
+              id="back"
+              d="M14.578.857,6,9.436,14.365,17.8l2.109-2.109L10.217,9.436l6.47-6.47Z"
+              transform="translate(65.017 822.841) rotate(90)"
+              fill="#272727"
+              fill-rule="evenodd"
+            />
+            <path
+              id="back-2"
+              data-name="back"
+              d="M14.578.857,6,9.436,14.365,17.8l2.109-2.109L10.217,9.436l6.47-6.47Z"
+              transform="translate(65.017 833.528) rotate(90)"
+              fill="#272727"
+              fill-rule="evenodd"
+            />
+          </g>
+        </svg>
+      </div>
+      <ng-container *ngIf="choice === 'Facturado'; else btn">
+        <div class="bottom-grid">
+          <p class="quantity">
+            EN {{ matchingOrdersTotalCounter || 0 | number }} FACTURAS
+          </p>
+          <p class="slash" style="margin: auto">/</p>
+          <p class="income">
+            {{ ordersIncomeForMatchingOrders || 0 | currency }}
+          </p>
+        </div>
+      </ng-container>
+      <ng-template #btn>
+        <p
+          [ngClass]="{
+            'submit-btn': choice === 'Facturado',
+            'submit-btn-2': choice !== 'Facturado'
+          }"
+          (click)="submitItem()"
+        >
+          Enviar
+        </p>
+      </ng-template>
+    </div>
+  </div>
+</div>

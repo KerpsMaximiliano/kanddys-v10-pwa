@@ -300,7 +300,7 @@ export class OrderDetailComponent implements OnInit {
         });
       }
 
-      this.order.items[0].item.images[0] = this.customizer.preview;
+      this.order.items[0].item.images[0].value = this.customizer.preview;
     }
     if (this.order.items[0].reservation) {
       const reservation = await this.reservationService.getReservation(
@@ -686,6 +686,7 @@ export class OrderDetailComponent implements OnInit {
         text: 'SALVAR TAGS SELECCIOANDOS EN LA ORDEN',
         tags: this.tags,
         orderId: this.order._id,
+        colorTheme: 'admin',
         activeTags:
           this.order.tags &&
           (this.order.tags !== null ||

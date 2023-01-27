@@ -286,7 +286,6 @@ export class StoreComponent implements OnInit {
         limit: this.paginationState.pageSize,
       },
     });
-
     const { listItems: allItems } = await this.saleflow.hotListItems({
       findBy: {
         _id: {
@@ -317,32 +316,14 @@ export class StoreComponent implements OnInit {
     );
 
     for (let i = 0; i < this.items.length; i++) {
-      const saleflowItem = saleflowItems.find(
-        (item) => item.item === this.items[i]._id
-      );
       // Asignando el status a los items del saleflow
       const item = this.header.saleflow.items.find(
         (saleflowItem) => saleflowItem.item._id === this.items[i]._id
       );
       item.item.status = this.items[i].status;
-      // Asignando customizer e index a los productos correspondientes
-      this.items[i].customizerId = saleflowItem.customizer;
-      this.items[i].index = saleflowItem.index;
       // Si la tienda permite compra múltiple, marcar items seleccionados
       if (this.header.saleflow.canBuyMultipleItems)
         this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
-      if (this.items[i].hasExtraPrice)
-        // Si el producto tiene precio extra, aplicar fórmula
-        this.items[i].totalPrice =
-          this.items[i].fixedQuantity *
-            this.items[i].params[0].values[0].price +
-          this.items[i].pricing;
-    }
-    // Si todos los productos tienen un index, ordenar por index
-    if (this.items.every((item) => item.index)) {
-      this.items = this.items.sort((a, b) =>
-        a.index > b.index ? 1 : b.index > a.index ? -1 : 0
-      );
     }
     // Sacando productos del carrito que fueron eliminados de la tienda
     if (this.header.order?.products?.length) {
@@ -437,41 +418,6 @@ export class StoreComponent implements OnInit {
   }
 
   onItemClick(id: string) {
-    const itemData = this.items.find((item) => item._id === id);
-    if (itemData?.customizerId) {
-      if (!this.header.saleflow.canBuyMultipleItems) {
-        this.header.emptyOrderProducts();
-        this.header.emptyItems();
-      }
-      if (itemData.category.length)
-        this.header.categoryId = itemData.category[0]?._id;
-      let itemParams: ItemSubOrderParamsInput[];
-      if (itemData.params.length > 0) {
-        itemParams = [
-          {
-            param: itemData.params[0]._id,
-            paramValue: itemData.params[0].values[0]._id,
-          },
-        ];
-      }
-      const product = {
-        item: itemData._id,
-        customizer: itemData.customizerId,
-        params: itemParams,
-        amount: undefined,
-        saleflow: this.header.saleflow._id,
-      };
-      this.header.items = [itemData];
-      this.header.order = {
-        products: [product],
-      };
-      this.header.storeOrderProduct(product);
-      this.header.storeItem(itemData);
-      this.router.navigate([`../provider-store/${itemData._id}`], {
-        relativeTo: this.route,
-      });
-      return;
-    }
     this.savePageSnapshot();
     this.router.navigate([`../article-detail/item/${id}`], {
       replaceUrl: this.header.checkoutRoute ? true : false,

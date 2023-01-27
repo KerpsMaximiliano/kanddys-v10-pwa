@@ -21,12 +21,9 @@
         : null
     "
     [rightText]="
-      headerService.user
+      order.user
         ? {
-            text:
-              headerService.user?.name ||
-              headerService.user?.phone ||
-              headerService.user?.email
+            text: order.user?.name || order.user?.phone || order.user?.email
           }
         : null
     "
@@ -36,7 +33,7 @@
         width: '13px',
         height: '17px',
         color: 'brightness(3)',
-        callback: redirectToUserContact
+        callback: null
       }
     ]"
     [mainText]="
@@ -134,11 +131,12 @@
           <div
             class="image"
             (click)="
-              item.item.images?.length && openImageModal(item.item.images[0])
+              item.item.images?.length &&
+                openImageModal(item.item.images[0].value)
             "
             [ngStyle]="{
               backgroundImage: item.item.images?.length
-                ? 'url(' + item.item.images[0] + ')'
+                ? 'url(' + item.item.images[0].value + ')'
                 : '/assets/images/noimage.png',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',

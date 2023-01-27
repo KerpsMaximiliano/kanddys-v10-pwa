@@ -1,58 +1,28 @@
-<div class="container">
-  <div
-    class="nav"
-    [ngStyle]="{
-      gridTemplateColumns:
-        mode === 'item' && item ? 'repeat(3, 1fr)' : 'repeat(1, 1fr)'
-    }"
-  >
-    <div class="icon-container">
-      <button (click)="goBack()">
-        <i
-          class="fas fa-chevron-up"
-          aria-hidden="true"
-          style="color: rgb(255, 255, 255); display: block"
-        ></i>
-        <i
-          class="fas fa-chevron-up"
-          aria-hidden="true"
-          style="color: rgb(255, 255, 255); display: block"
-        ></i>
-      </button>
-    </div>
-    <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-    <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-    <img
-      *ngIf="mode === 'item' && item"
-      src="{{ env }}/save-blue.png"
-      class="notification"
-      alt=""
-      (click)="openTagsDialog()"
-    />
-    <!-- <img
-      *ngIf="mode === 'item' && item"
-      src="{{ env }}/padlock%20%281%29.png"
-      class="notification"
-      alt=""
-      (click)="navigateToArticlePrivacy()"
-    /> -->
-    <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
-    <!-- <span class="text">VISTA</span> -->
-    <div
-      class="dot-trio"
-      *ngIf="mode === 'item' && item"
-      (click)="openItemOptionsDialog()"
-    ></div>
-  </div>
+<div class="container" *ngIf="!editMode">
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
       <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">
+        <div class="grid">
+          <button
+            class="fixed-button left"
+            (click)="submit()"
+          >
+            <img
+              class="icon green"
+              [src]="env + '/arrow-double-up.svg'"
+              width="28"
+              height="28"
+              alt="Volver"
+            />
+          </button>
+        </div>
         <ng-container *ngSwitchCase="'file'">
           <swiper
             *ngIf="controller.get(field.name).value.length"
             [config]="swiperConfig"
             #mediaSwiper
-            (slideChange)="updateCurrentSlideData($event)"
+            (slideChange)="updateCurrentSlideData($event, i, j)"
+            [ngStyle]="{ display: 'inline' }"
           >
             <div
               *ngFor="
@@ -67,27 +37,7 @@
               role="group"
               (mouseup)="handleSlide($event)"
             >
-              <div class="grid">
-                <div
-                  [style.visibility]="controller.valid ? 'initial' : 'hidden'"
-                  class="col"
-                >
-                  <button class="grid-btn" (click)="removeFile(i, k)">
-                    <span class="icon">x</span>
-                    <span class="copy">SLIDE</span>
-                  </button>
-                </div>
-                <div class="col">
-                  <button
-                    *ngIf="controller.valid"
-                    class="grid-btn"
-                    (click)="addFile(i, j, k)"
-                  >
-                    <span class="icon">+</span>
-                    <span class="copy">SLIDE</span>
-                  </button>
-                </div>
-              </div>
+              <!-- AREA DE BOTONES, CAMBIAR -->
               <input
                 id="{{ i }}{{ k }}"
                 class="hidden"
@@ -99,9 +49,13 @@
               <label
                 [style.height]="
                   types[i][k] === ''
-                    ? 'calc(100vh - 46px)'
+                    ? !isOrder
+                      ? 'calc(100vh - 140px)'
+                      : '100vh'
                     : imageFiles.includes(types[i][k])
-                    ? 'calc(100vh - 46px)'
+                    ? !isOrder
+                      ? 'calc(100vh - 140px)'
+                      : '100vh'
                     : '0'
                 "
                 for="{{ i }}{{ k }}"
@@ -156,66 +110,32 @@
                   </audio>
                 </div>
               </div>
-              <button
-                *ngIf="controller.valid"
-                class="rotate-btn"
-                type="button"
-                (click)="rotateImg(i, k)"
-              >
-                <i class="fa fa-repeat" aria-hidden="true"></i>
-              </button>
             </div>
           </swiper>
         </ng-container>
       </div>
     </ng-container>
   </ng-container>
-  <div class="fixed">
-    <div
-      class="lines"
-      [style]="{
-        'grid-template-columns': '' + fractions + '',
-        display: display ? display : 'none'
-      }"
-    >
+  <div class="fixed" *ngIf="!isOrder">
+    <div class="button-display-area">
       <div
-        *ngFor="let media of multimedia[0]; let i = index"
-        class="line"
-        [style.background]="activeSlide === i ? '#82f18d' : '#ffffff'"
-      ></div>
-    </div>
-    <!-- <div class="bottom">
-      <span
-        (click)="changeMode('symbols')"
-        [ngClass]="{ active: mode === 'symbols' }"
-        >Simbolos</span
+        class="lines"
+        [style]="{
+          'grid-template-columns': '' + fractions + '',
+          display: display ? display : 'none'
+        }"
       >
-      <span (click)="changeMode('item')" [ngClass]="{ active: mode === 'item' }"
-        >Precios</span
-      >
-      <span>Citas</span>
-      <span>Planilla</span>
-    </div> -->
-    <div class="extra" *ngIf="ctaDescription">
-      <div
-        class="description"
-        [ngStyle]="{ textAlign: mode === 'item' && item ? 'left' : 'center' }"
-      >
-        {{ item ? 'El visitante te paga RD$' + (item.pricing | number: "1.2-2") + '.' : 'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.' }}
+        <div
+          *ngFor="let media of multimedia[0]; let i = index"
+          class="line"
+          [style.background]="activeSlide === i ? '#82f18d' : '#ffffff'"
+        ></div>
       </div>
-      <button
-        *ngIf="mode === 'item' && item"
-        class="grid-btn"
-        (click)="submit()"
-      >
-        EDITAR
-      </button>
     </div>
-    <button
-      class="button"
-      (click)="mode === 'item' && item ? openShareDialog() : submit()"
-    >
-      {{ mode === "item" && item ? "Compartir" : ctaText }}
-    </button>
   </div>
 </div>
+<app-image-editor
+  *ngIf="editMode"
+  [imgUrl]="editingImage"
+  (cropped)="onEditSubmit($event)"
+></app-image-editor>

@@ -30,6 +30,7 @@ import {
 import { SwiperOptions } from 'swiper';
 import { Observable } from 'apollo-link';
 import 'swiper/';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-multistep-form',
@@ -170,6 +171,12 @@ export class MultistepFormComponent
   timeoutId: any = null;
   @Input() currentStep: number = 0;
   @Input() currentStepString: string = (this.currentStep + 1).toString();
+  @Input() reminderToast: {
+    message: string;
+    warning?: boolean;
+    secondsTrigger: number;
+    timeoutId?: ReturnType<typeof setTimeout>;
+  } = null;
   @Input() usesGoogleMaps: boolean = false;
   @Output() paramsRef = new EventEmitter();
   dataModel: FormGroup = new FormGroup({});
@@ -190,7 +197,11 @@ export class MultistepFormComponent
   googleMapsApiLoaded: Observable<boolean>;
   location = null;
 
-  constructor(private header: HeaderService, private dialog: DialogService) {}
+  constructor(
+    private header: HeaderService,
+    private dialog: DialogService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.stepFunctionParams = {
@@ -300,6 +311,42 @@ export class MultistepFormComponent
         // console.log('CURRENT FORM GROUP', currentStepFormGroup);
       });
     });
+
+    this.addToastReminder(true);
+  }
+
+  addToastReminder(firstLoad: boolean = false) {
+    if (this.reminderToast) {
+      this.reminderToast.timeoutId = setTimeout(
+        () => {
+          if (!this.reminderToast.warning) {
+            this.toastr.info(this.reminderToast.message, null, {
+              timeOut: 1500,
+              tapToDismiss: true,
+              positionClass: 'toast-top-center',
+            });
+          } else {
+            this.toastr.warning(this.reminderToast.message, null, {
+              timeOut: 1500,
+              tapToDismiss: true,
+              positionClass: 'toast-top-center',
+            });
+          }
+
+          this.addToastReminder();
+        },
+        !firstLoad ? this.reminderToast.secondsTrigger * 1000 : 3000
+      );
+    }
+  }
+
+  resetToastReminderTimeout() {
+    if (this.reminderToast && this.reminderToast.timeoutId !== null) {
+      if (this.reminderToast.timeoutId !== null)
+        clearTimeout(this.reminderToast.timeoutId);
+      this.reminderToast.timeoutId = null;
+      this.addToastReminder();
+    }
   }
 
   //Removes all subscriptions from every formControl
@@ -548,14 +595,17 @@ export class MultistepFormComponent
             result.ok &&
             this.currentStep !== this.steps.length - 1 &&
             !('customScrollToStep' in this.steps[this.currentStep])
-          )
+          ) {
             this.scrollToStep();
-          else if (
+            this.resetToastReminderTimeout();
+          } else if (
             result.ok &&
             this.currentStep !== this.steps.length - 1 &&
             'customScrollToStep' in this.steps[this.currentStep]
-          )
+          ) {
             this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+            this.resetToastReminderTimeout();
+          }
         }
 
         this.finishedExecutingStepProcessingFunction = true;
@@ -568,14 +618,17 @@ export class MultistepFormComponent
             result.ok &&
             this.currentStep !== this.steps.length - 1 &&
             !('customScrollToStep' in this.steps[this.currentStep])
-          )
+          ) {
             this.scrollToStep();
-          else if (
+            this.resetToastReminderTimeout();
+          } else if (
             result.ok &&
             this.currentStep !== this.steps.length - 1 &&
             'customScrollToStep' in this.steps[this.currentStep]
-          )
+          ) {
             this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+            this.resetToastReminderTimeout();
+          }
         }
 
         this.finishedExecutingStepProcessingFunction = true;
@@ -654,14 +707,17 @@ export class MultistepFormComponent
             result.ok &&
             this.currentStep !== this.steps.length - 1 &&
             !('customScrollToStep' in this.steps[this.currentStep])
-          )
+          ) {
             this.scrollToStep();
-          else if (
+            this.resetToastReminderTimeout();
+          } else if (
             result.ok &&
             this.currentStep !== this.steps.length - 1 &&
             'customScrollToStep' in this.steps[this.currentStep]
-          )
+          ) {
             this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+            this.resetToastReminderTimeout();
+          }
         }
 
         this.finishedExecutingStepProcessingFunction = true;
@@ -727,6 +783,7 @@ export class MultistepFormComponent
   executeCustomScrollToStep(stepIndex: number) {
     this.finishedExecutingStepProcessingFunction = false;
     this.steps[stepIndex].customScrollToStep(this.stepFunctionParams);
+    this.resetToastReminderTimeout();
     this.finishedExecutingStepProcessingFunction = true;
   }
 

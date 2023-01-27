@@ -3,6 +3,7 @@
 .dashboard-page {
   height: 100vh;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .container {
@@ -16,8 +17,8 @@
 .search-bar-wrapper {
   display: flex;
   justify-content: space-between;
-  padding: 0px 14px 0px 19px;
-  padding-top: 12px;
+  padding: 16px;
+  padding-bottom: 0;
 
   .search-bar {
     /*
@@ -34,6 +35,7 @@
     -webkit-box-shadow: inset 0px 3px 5px #d3d3d3;
     -moz-box-shadow: inset 0px 3px 5px #d3d3d3;
     -webkit-appearance: none;
+    appearance: none;
   }
 
   button {
@@ -144,6 +146,18 @@
       height: 601px;
       display: block;
     }
+
+    &.visible2,
+    &.animationRunning {
+      height: 437px;
+      display: block;
+    }
+
+    &.visible3,
+    &.animationRunning {
+      height: 765px;
+      display: block;
+    }
   }
 }
 
@@ -182,7 +196,7 @@
 }
 
 .swiper-container {
-  margin-left: 28px;
+  margin-left: 24px;
 }
 
 .tag-wrapper {
@@ -235,12 +249,9 @@
 .items-by-tag-grid,
 .items-without-tags {
   .title-and-options {
-    padding: 0px 28px;
+    padding: 36px 28px 0;
     display: flex;
     justify-content: space-between;
-    padding-top: 36px;
-    padding-left: 28px;
-    padding-right: 19px;
 
     .title {
       margin: 0px;
@@ -281,7 +292,7 @@
     color: #7b7b7b;
     margin: 0px;
     padding: 0px;
-    padding: 0px 28px;
+    padding: 0px 24px;
     margin-top: 15px;
     font-family: SfProRegular;
     font-size: 17px;
@@ -290,13 +301,13 @@
 
   .highlited-items-swiper {
     padding-top: 0px;
-    padding-left: 28px;
+    padding-left: 24px;
   }
 }
 
 .saleflows-item-grid {
   width: auto;
-  padding: 23px 18px 11px 25px;
+  padding: 16px 24px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   -moz-column-gap: 13px;

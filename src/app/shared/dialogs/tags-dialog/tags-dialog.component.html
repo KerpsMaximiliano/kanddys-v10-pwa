@@ -1,0 +1,17 @@
+<div class="container">
+  <p class="title">{{ title }}</p>
+  <p class="subtitle">{{ subtitle }}</p>
+  <app-answer-selector
+    [complexOptions]="webformOptions"
+    [hasComplexOptionsLayout]="true"
+    [indicator]="true"
+    [showSelectedFeedback]="true"
+    [showDescription]="false"
+    (onSelector)="selectedOption($event)"
+    [containerStyles]="{
+      margin: '0px',
+      paddingBottom: '16px'
+    }"
+    (click)="close()"
+  ></app-answer-selector>
+</div>

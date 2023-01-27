@@ -13,6 +13,7 @@
 -->
 <!-- <app-magic-link-dialog></app-magic-link-dialog> 
    <app-short-calendar></app-short-calendar>-->
+<!-- <button (click)="blehblehbleh()">Dialog de prueba</button> -->
 <!-- <button (click)="reloadDialog()">Abrir el dialog</button> -->
 <!-- <app-short-calendar></app-short-calendar>
       <div style="display: flex;
@@ -257,24 +258,99 @@ headline="EXPUESTO EN TAB (S)"
     ></app-multistep-form>
 -->
 
-<h3>Selecciona varias imagenes</h3>
-
-<input
-  type="file"
-  name=""
-  id=""
-  multiple
-  accept="image/*"
-  (change)="fileProgressMultiple($event)"
-/>
-
-<span *ngIf="imageField.length > 0 && imageField[0] !== ''"
-  >Se han cargado {{ imageField.length }} imágenes</span
->
-
-<button
-  *ngIf="imageField.length > 0 && imageField[0] !== ''"
-  (click)="createItemForEachLoadedImage()"
->
-  Crear los productos para cada imagen
-</button>
+<app-anexo-landing
+[textContainer]="{
+    position: 'relative',
+    top: '5px'
+}"
+[contentStyles]="{
+    background: '#f24940',
+    height: '348px'
+}"
+[headlineStyles]="{
+    fontFamily: 'SfProLight',
+    fontSize: '16px',
+    marginTop: '0px',
+    marginBottom: '0px',
+    color: '#fff'
+}"
+[imageStyles]="{
+    height: '217.84px',
+    width: '136.35px',
+    transform: 'rotate(-2deg)',
+    top: '10px',
+    left: '-27px',
+    zIndex: '3'
+}"
+[image2Styles]="{
+    height: '179.27px',
+    width: '112.01px',
+    transform: 'rotate(8deg)',
+    top: '51px',
+    left: '93px',
+    zIndex: '2'
+}"
+[footerStyles]="{
+    position: 'relative',
+    top: '37px',
+    borderRadius: '10px',
+    width: '190px',
+    background: 'rgb(246, 246, 246)',
+    margin: 'auto',
+    color: 'rgb(39, 39, 39)',
+    fontFamily: 'SfProLight',
+    fontSize: '15px',
+    zIndex: '4'
+}"
+[footerTexts]="[
+    'Aumenta la frecuencia de',
+    'las compras de tus clientes'
+]"
+></app-anexo-landing>
+<app-anexo-landing
+[headlines]="[
+    'Automatiza las ventas del'
+]"
+[headlineStyles]="{
+    fontFamily: 'SfProLight',
+    fontSize: '16px',
+    marginTop: '0px',
+    marginBottom: '0px',
+    color: '#fff'
+}"
+[subHeadlines]="[
+    'WhatsApp e Instagram'
+]"
+[imageStyles]="{
+    height: '173.84px',
+    transform: 'rotate(-2deg)',
+    top: '7px',
+    width: '108.81px',
+    left: '-18px',
+    zIndex: '1'
+}"
+[image2Styles]="{
+    height: '124px',
+    width: '127px',
+    left: '38%',
+    transform: 'rotate(3deg)',
+    zIndex: '2',
+    top: '7px'
+}"
+[footerStyles]="{
+    position: 'relative',
+    top: '17px',
+    borderRadius: '10px',
+    width: '190px',
+    background: 'rgb(246, 246, 246)',
+    margin: 'auto',
+    color: 'rgb(39, 39, 39)',
+    fontFamily: 'SfProLight',
+    fontSize: '14px',
+    padding: '8px 13px'
+}"
+[footerTexts]="[
+    'Respuestas rapidas ahorran',
+    'tiempo y venden mas.'
+]"
+></app-anexo-landing>

@@ -16,7 +16,6 @@ import { SaleFlow } from 'src/app/core/models/saleflow';
 import { Session } from 'src/app/core/models/session';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -75,7 +74,6 @@ export class LoginComponent implements OnInit {
   fullLink: string;
   messageLink: string;
   view: string;
-  items: Item[] = [];
   itemCartAmount: number;
   validateData: ValidateData;
   redirectionRoute: string = null;
@@ -147,7 +145,7 @@ export class LoginComponent implements OnInit {
         const flowRoute = localStorage.getItem('flowRoute');
         if (flowRoute && flowRoute.length > 1) {
           const [baseRoute, paramsString] = flowRoute.split('?');
-          const paramsArray = paramsString.split('&');
+          const paramsArray = paramsString ? paramsString.split('&') : [];
           const queryParams = {};
 
           paramsArray.forEach((param) => {
@@ -219,9 +217,6 @@ export class LoginComponent implements OnInit {
 
       this.headerService.orderId = null;
       this.saleflow = await this.headerService.fetchSaleflow(SaleFlow);
-      let productData: Item[] = this.headerService.getItems();
-      this.itemCartAmount = productData?.length;
-      this.items = productData;
 
       if (this.auth === 'address') {
         const address = this.headerService.getLocation();
@@ -1112,18 +1107,6 @@ export class LoginComponent implements OnInit {
       queryParams: { notify: 'true' },
     });
   }
-
-  showShoppingCartDialog = () => {
-    this.dialog.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        orderFinished: true,
-        products: this.items,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
 
   back() {
     this.location.back();
