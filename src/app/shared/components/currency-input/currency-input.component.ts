@@ -8,6 +8,7 @@ import {
   ElementRef,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 @Component({
   selector: 'app-currency-input',
@@ -27,12 +28,32 @@ export class CurrencyInputComponent implements OnInit {
   @Input() innerLabel: string;
   @Input() required: boolean = true;
   @Input() blockKeyboardNavigation: boolean = false;
+  @Input() dialogId: string;
   @Output() onInputEvent = new EventEmitter<number>();
 
-  constructor(private decimalPipe: DecimalPipe) {}
+  constructor(
+    private decimalPipe: DecimalPipe,
+    private dialogFlowService: DialogFlowService
+  ) {}
 
   ngOnInit(): void {
-    this.initialValue && this.formatNumber(this.initialValue);
+    const dialogValue =
+      this.dialogFlowService.dialogsFlows?.['flow1']?.itemPricing?.fields
+        ?.pricing;
+
+    this.initialValue = this.getNumericValue(this.initialValue || dialogValue);
+    if (this.initialValue) this.formatNumber(this.initialValue);
+  }
+
+  countDecimals(value: number) {
+    if (!value) return;
+    if (Math.floor(value) === value) return 0;
+    return value.toString().split('.')[1]?.length || 0;
+  }
+
+  getNumericValue(value: number) {
+    if (!value) return;
+    return this.countDecimals(value) < 2 ? Math.floor(value * 100) : value;
   }
 
   formatNumber(
