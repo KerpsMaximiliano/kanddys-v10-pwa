@@ -1,16 +1,16 @@
-*{
+* {
     padding: 0;
     margin: 0;
 }
 
-button{
+button {
     all: unset;
 }
 
-.container{
+.container {
     min-height: 100vh;
 }
-.header{
+.header {
     position: relative;
     width: 100%;
     height: 47px;
@@ -19,18 +19,19 @@ button{
     display: flex;
     align-items: center;
     cursor: pointer;
+    box-sizing: border-box;
 
-
-    .icon{
-        filter: brightness(0) saturate(100%) invert(87%) sepia(10%) saturate(1817%) hue-rotate(67deg) brightness(96%) contrast(98%);
+    .icon {
+        filter: brightness(0) saturate(100%) invert(87%) sepia(10%) saturate(1817%) hue-rotate(67deg) brightness(96%)
+            contrast(98%);
         width: 17px;
         height: auto;
     }
 
-    .title{
+    .title {
         position: absolute;
         width: 100%;
-        color: #FFFFFF;
+        color: #ffffff;
         text-align: center;
         font-size: 16px;
         font-family: "SfProMedium";
@@ -38,51 +39,49 @@ button{
     }
 }
 
-.margin{
+.margin {
     padding: 24px 20px;
-    padding-bottom: 100px ;
+    padding-bottom: 100px;
     gap: 30px;
 }
 
-.flex{
+.flex {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
 }
 
-.optional{
+.optional {
     font-size: 17px;
     gap: 24.5px;
     text-align: center;
 
-    .top{
-        gap: 18px;   
+    .top {
+        gap: 18px;
     }
 
-    .optImg{
+    .optImg {
         cursor: pointer;
         width: 240px;
         height: 160px;
         border-radius: 15px;
-        filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.16 ));
+        filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.16));
         background: #e9e371;
         object-fit: cover;
     }
 
-
-    .title{
+    .title {
         font-family: "SfProBold";
         color: #272727;
     }
-    .description{
+    .description {
         font-family: "SfProRegular";
-        color: #7B7B7B;
+        color: #7b7b7b;
     }
-
 }
 
-.productGrid{
+.productGrid {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(2, 1fr);

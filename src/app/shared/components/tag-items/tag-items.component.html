@@ -1,22 +1,29 @@
 <div class="container">
-    <button class="header">
-        <img class="icon" [src]="environment + '/arrow-double-up.svg'">
-        <p class="title">Collections</p>
-    </button>
-    <div class="margin flex">
-        <section *ngIf = "optional" class="optional flex">
-            <div class="top flex">
-                <button><img class="optImg" src="" alt=""></button>
-                <p class="title">¡Regala un arreglo floral con globos! ¡Sorprende a alguien especial.</p>
-            </div>
-            <p class="description">Felicidades en tu graduación! Este es un gran logro y estoy muy orgulloso de ti. No puedo creer cómo has crecido y madurado.<br><br>
-                Espero que disfrutes cada momento de esta etapa y que sigas alcanzando grandes cosas en el futuro. ¡Te quiero mucho!</p>
-        </section>
-        <section class="productGrid">
-            <div 
-                *ngFor = "let item of items; let i = index" 
-                [ngStyle]="{width: '190px', height: '238.43px'}">
-                <!--<app-general-item
+  <button class="header">
+    <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
+    <p class="title">Collections</p>
+  </button>
+  <div class="margin flex">
+    <section *ngIf="optional" class="optional flex">
+      <div class="top flex">
+        <button><img class="optImg" src="" alt="" /></button>
+        <p class="title">
+          ¡Regala un arreglo floral con globos! ¡Sorprende a alguien especial.
+        </p>
+      </div>
+      <p class="description">
+        Felicidades en tu graduación! Este es un gran logro y estoy muy
+        orgulloso de ti. No puedo creer cómo has crecido y madurado.<br /><br />
+        Espero que disfrutes cada momento de esta etapa y que sigas alcanzando
+        grandes cosas en el futuro. ¡Te quiero mucho!
+      </p>
+    </section>
+    <section class="productGrid">
+      <div
+        *ngFor="let item of items; let i = index"
+        [ngStyle]="{ width: '190px', height: '238.43px' }"
+      >
+        <!--<app-general-item
                     [item]="item"
                     [entity]="'ITEM'"
                     [mainColor]="'#ffffff'"
@@ -55,41 +62,41 @@
                     }"
                 >
                 </app-general-item>-->
-                <app-general-item
-                    [item]="item" 
-                    [entity]="'ITEM'"
-                    [mainColor]="'#ffffff'"
-                    [textColor]="'#272727'"
-                    [viewsCounterStyles]="{
-                    color: '#000'
-                    }"
-                    [topRightButton]="optionsButton[i]"
-                    [showPrice]="true"
-                    [singleIconStyles]="{
-                    marginRight: '6.1px'
-                    }"
-                    [showIconForTagStatus]="
-                    item.status === 'disabled' || item.status === 'featured'
-                    "
-                    [statusIcon]="
-                    'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'
-                    "
-                    [showIconForItemStatus]="true"
-                    [showVisitorCounter]="false"
-                    [titleStyles]="{
-                    display: '-webkit-box',
-                    '-webkit-line-clamp': 1,
-                    'line-clamp': 1,
-                    '-webkit-box-orient': 'vertical',
-                    overflow: 'hidden',
-                    'word-break': 'break-all'
-                    }"
-                    [topInnerButtonStyles]="{
-                    backgroundColor: item.status !== 'disabled' ? '#272727' : '#b17608'
-                    }"
-                >
-                </app-general-item>
-                <!--<app-general-item
+        <app-general-item
+          [item]="item"
+          [entity]="'ITEM'"
+          [mainColor]="'#ffffff'"
+          [textColor]="'#272727'"
+          [viewsCounterStyles]="{
+            color: '#000'
+          }"
+          [topRightButton]="optionsButton[i]"
+          [showPrice]="true"
+          [singleIconStyles]="{
+            marginRight: '6.1px'
+          }"
+          [showIconForTagStatus]="
+            item.status === 'disabled' || item.status === 'featured'
+          "
+          [statusIcon]="
+            'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'
+          "
+          [showIconForItemStatus]="true"
+          [showVisitorCounter]="false"
+          [titleStyles]="{
+            display: '-webkit-box',
+            '-webkit-line-clamp': 1,
+            'line-clamp': 1,
+            '-webkit-box-orient': 'vertical',
+            overflow: 'hidden',
+            'word-break': 'break-all'
+          }"
+          [topInnerButtonStyles]="{
+            backgroundColor: item.status !== 'disabled' ? '#272727' : '#b17608'
+          }"
+        >
+        </app-general-item>
+        <!--<app-general-item
                     [item]="item" 
                     [entity]="'ITEM'"
                     [mainColor]="'#ffffff'"
@@ -122,15 +129,16 @@
                     }"
                 >
                 </app-general-item>-->
-            </div>
-        </section>
-    </div>
-    <app-bubble-button
-        [position]= "'minir'" 
-        [color] = "'black'" 
-        [solo]="false" 
-        [cart]="true" 
-        [cartAmount]="1">
-    </app-bubble-button>
-    <app-gradient-footer [uploadIcon] = "true"></app-gradient-footer>
+      </div>
+    </section>
+  </div>
+  <app-bubble-button
+    [position]="'minir'"
+    [color]="'black'"
+    [solo]="false"
+    [cart]="true"
+    [cartAmount]="1"
+  >
+  </app-bubble-button>
+  <app-gradient-footer [uploadIcon]="true"></app-gradient-footer>
 </div>
