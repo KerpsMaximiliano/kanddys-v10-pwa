@@ -330,7 +330,7 @@ export class ItemsDashboardComponent implements OnInit {
                 reader.onload = (e) => {
                   this._ItemsService.editingImageId = createItem.images[0]._id;
                   this.router.navigate([
-                    `admin/create-article/${createItem._id}`,
+                    `admin/article-editor/${createItem._id}`,
                   ]);
                 };
                 reader.readAsDataURL(images[0].file as File);
