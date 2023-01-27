@@ -25,7 +25,8 @@
       (!nope && auth !== 'anonymous') ||
       auth === 'order' ||
       (loggin && auth !== 'payment') ||
-      (signUp && !toValidate)
+      (signUp && !toValidate) ||
+      auth === 'azul-login'
         ? true
         : false
     "
@@ -34,7 +35,7 @@
         ? toggleLog()
         : signUp
         ? toSignUp()
-        : ['order', 'payment', 'address'].includes(auth)
+        : ['order', 'payment', 'address', 'azul-login'].includes(auth)
         ? back()
         : null
     "
