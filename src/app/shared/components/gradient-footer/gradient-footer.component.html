@@ -1,14 +1,27 @@
 <div class="container">
-    <div class="footer">
-        <div>
-            <button *ngIf = "commentButtonText" class="commentButton">
-                <img width="29px" height="27px" class="icon" [src]="environment + '/comment.svg'">
-                <p>{{commentButtonText}}</p>
-            </button>
-        </div>
-        <div class="iconsBox">
-            <button *ngIf = "heartIcon"><img class="heart icon" [src]="environment + '/heart.svg'"></button>
-            <button *ngIf = "uploadIcon"><img class="upload icon" [src]="environment + '/upload.svg'"></button>
-        </div>
+  <div class="footer">
+    <div>
+      <button
+        *ngIf="commentButtonText"
+        class="commentButton"
+        (click)="btnClicked.emit('comment')"
+      >
+        <img
+          width="29px"
+          height="27px"
+          class="icon"
+          [src]="environment + '/comment.svg'"
+        />
+        <p>{{ commentButtonText }}</p>
+      </button>
     </div>
+    <div class="iconsBox">
+      <button *ngIf="heartIcon" (click)="btnClicked.emit('heart')">
+        <img class="heart icon" [src]="environment + '/heart.svg'" />
+      </button>
+      <button *ngIf="uploadIcon" (click)="btnClicked.emit('share')">
+        <img class="upload icon" [src]="environment + '/upload.svg'" />
+      </button>
+    </div>
+  </div>
 </div>
