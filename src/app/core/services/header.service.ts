@@ -415,6 +415,9 @@ export class HeaderService {
   getOrder() {
     let { order }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+
+    if('itemPackage' in order) delete order.itemPackage;
+
     this.order = order;
     return order;
   }
