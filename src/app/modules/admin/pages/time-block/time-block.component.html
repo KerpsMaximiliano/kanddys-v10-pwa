@@ -6,15 +6,27 @@
 <div class="container" [ngSwitch]="status">
   <div class="my" *ngFor="let item of [0]; let i = index">
     <h3>{{ month.name !== "" ? "DIA De " + month?.name : "CARGANDO..." }}</h3>
-    <app-short-calendar
+    <!--
+      <app-short-calendar
+        [allowUsersToChangeTheMonthShown]="true"
+        [allowedDays]="null"
+        (selectedDates)="saveSelectedDays($event)"
+        (changedMonth)="updateMonth($event, i)"
+        (beforeAnimation)="setDateAsNull()"
+        [allowSundays]="true"
+        [multipleSelection]="true"
+      ></app-short-calendar>
+    -->
+
+    
+    <app-calendar-swiper
       [allowUsersToChangeTheMonthShown]="true"
       [allowedDays]="null"
       (selectedDates)="saveSelectedDays($event)"
-      (changedMonth)="updateMonth($event, i)"
-      (beforeAnimation)="setDateAsNull()"
+      (changedMonth)="updateMonth($event)"
       [allowSundays]="true"
       [multipleSelection]="true"
-    ></app-short-calendar>
+    ></app-calendar-swiper>
   </div>
   <form [formGroup]="controller">
     <p class="base-label" style="margin-top: 53px; margin-bottom: 22px">Hora</p>

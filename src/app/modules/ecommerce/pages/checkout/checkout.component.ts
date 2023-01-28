@@ -207,6 +207,7 @@ export class CheckoutComponent implements OnInit {
           this.reservation.breakTime
         )}`,
       };
+      this.headerService.orderProgress.reservation = true;
     }
     this.headerService.checkoutRoute = null;
     this.payment = this.items?.reduce(
@@ -252,6 +253,9 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+            },
           }
         );
         break;
@@ -301,6 +305,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrder = async () => {
+    alert('HUEVO');
     if (this.missingOrderData) {
       if (
         this.headerService.saleflow?.module?.appointment?.isActive &&
@@ -313,6 +318,9 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+            },
           }
         );
         return;

@@ -12,6 +12,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { version } from 'package.json';
+import { Month } from 'src/app/shared/components/calendar-swiper/calendar-swiper.component';
 
 @Component({
   selector: 'app-time-block',
@@ -61,7 +62,6 @@ export class TimeBlockComponent implements OnInit {
   formattedStart: string = '';
   formattedEnd: string = '';
   selectedDays: Array<number> = [];
-  selectedDaysDateObjects: Array<Date> = [];
   selectedDaysLabel: string = null;
   submitting: boolean = false;
 
@@ -78,6 +78,9 @@ export class TimeBlockComponent implements OnInit {
   ngOnInit(): void {
     this._ActivatedRoute.params.subscribe(async (routeParams) => {
       this.initController();
+      this._CalendarsService.setInitialData();
+      this.allMonths = this._CalendarsService.allMonths;
+
       const { calendarId } = routeParams;
       this.calendarData = await this._CalendarsService.getCalendar(calendarId);
 
@@ -85,9 +88,11 @@ export class TimeBlockComponent implements OnInit {
 
       await this.checkIfUserIsAMerchant();
 
+      //VOLVER
       this.allMonths = this._CalendarsService.allMonths;
       const date = new Date();
       const monthIndex = date.getMonth();
+
       this.month.name = this.allMonths[monthIndex].name;
       this.month.number = monthIndex + 1;
       this.status = 'complete';
@@ -154,9 +159,9 @@ export class TimeBlockComponent implements OnInit {
     };
   }
 
-  updateMonth(data, index: number): void {
-    this.month.name = this.allMonths[data.id].name;
-    this.month.number = this.allMonths[data.id].id;
+  updateMonth(monthData: { month: Month; year: number }): void {
+    this.month.name = monthData.month.name;
+    this.month.number = monthData.month.id - 1;
   }
 
   saveSelectedDays(dates: Array<Date>): void {

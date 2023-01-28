@@ -35,8 +35,38 @@
         formGroupName="reservationConvenience"
       >
         <div class="calendar" *ngIf="currentMonth?.name">
-          <h3>Dia De {{ currentMonth?.name }}</h3>
-          <app-short-calendar
+          <h3 *ngIf="isUserInteractingWithCurrentYear">
+            Dia De {{ currentMonth?.name }}
+          </h3>
+
+          <h3 *ngIf="!isUserInteractingWithCurrentYear">
+            Dia De {{ currentMonth?.name }} de {{ currentYear }}
+          </h3>
+
+          <!--
+            <app-short-calendar
+              [selectedDay]="selectedDate?.date"
+              [monthNameSelected]="currentMonth?.name"
+              [allowUsersToChangeTheMonthShown]="true"
+              [allowedDays]="
+                !useDateRangeToLimitAvailableWeekDays
+                  ? calendarData?.limits?.inDays
+                  : null
+              "
+              [daysRange]="
+                useDateRangeToLimitAvailableWeekDays
+                  ? {
+                      fromDay: calendarData?.limits?.fromDay,
+                      toDay: calendarData?.limits?.toDay
+                    }
+                  : null
+              "
+              (selectedDate)="rerenderAvailableHours($event)"
+              (changedMonth)="updateMonth($event)"
+              (beforeAnimation)="setDateAsNull()"
+            ></app-short-calendar>
+          -->
+          <app-calendar-swiper
             [selectedDay]="selectedDate?.date"
             [monthNameSelected]="currentMonth?.name"
             [allowUsersToChangeTheMonthShown]="true"
@@ -56,7 +86,7 @@
             (selectedDate)="rerenderAvailableHours($event)"
             (changedMonth)="updateMonth($event)"
             (beforeAnimation)="setDateAsNull()"
-          ></app-short-calendar>
+          ></app-calendar-swiper>
         </div>
 
         <div class="calendar" *ngIf="!currentMonth?.name">
@@ -116,7 +146,7 @@
         *ngIf="selectedDate && selectedDate.filled"
         [text]="stickyButtonText"
         [mode]="'fixed'"
-        [bgColor]="headerService.colorTheme"
+        [bgColor]="'#2874AD'"
         [height]="'max-content'"
         [padding]="'8px 0px'"
         (click)="makeReservation()"
