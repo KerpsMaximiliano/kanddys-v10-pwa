@@ -38,7 +38,7 @@ interface HourOption {
 })
 export class ReservationsCreatorComponent implements OnInit {
   headerConfiguration = {
-    bgcolor: '#2874AD',
+    bgcolor: this.headerService.colorTheme,
     color: '#ffffff',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -151,7 +151,7 @@ export class ReservationsCreatorComponent implements OnInit {
     private reservationsService: ReservationService,
     private authService: AuthService,
     private dialog: DialogService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     public location: Location
   ) {}
 
@@ -921,7 +921,7 @@ export class ReservationsCreatorComponent implements OnInit {
       this.headerService.orderProgress.reservation = true;
       this.headerService.storeOrderProgress();
       this.router.navigate([
-        `/ecommerce/${this.headerService.saleflow._id}/new-address`,
+        `/ecommerce/${this.headerService.saleflow._id}/checkout`,
       ]);
       return;
     }
