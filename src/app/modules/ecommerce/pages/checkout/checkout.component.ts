@@ -392,6 +392,7 @@ export class CheckoutComponent implements OnInit {
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
+      if (this.headerService.order.itemPackage) delete this.headerService.order.itemPackage
       if (this.headerService.user && !anonymous) {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)
