@@ -146,7 +146,7 @@
         *ngIf="selectedDate && selectedDate.filled"
         [text]="stickyButtonText"
         [mode]="'fixed'"
-        [bgColor]="'#2874AD'"
+        [bgColor]="headerConfiguration.bgcolor"
         [height]="'max-content'"
         [padding]="'8px 0px'"
         (click)="makeReservation()"

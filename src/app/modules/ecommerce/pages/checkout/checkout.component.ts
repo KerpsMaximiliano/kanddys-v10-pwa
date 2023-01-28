@@ -305,7 +305,6 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrder = async () => {
-    alert('HUEVO');
     if (this.missingOrderData) {
       if (
         this.headerService.saleflow?.module?.appointment?.isActive &&
