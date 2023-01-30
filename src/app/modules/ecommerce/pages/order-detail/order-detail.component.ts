@@ -122,6 +122,8 @@ export class OrderDetailComponent implements OnInit {
   orderMerchant: Merchant;
   orderInDayIndex: number = null;
   payedWithAzul: boolean = false;
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  videoFiles: string[] = ['video/mp4', 'video/webm'];
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
@@ -168,6 +170,36 @@ export class OrderDetailComponent implements OnInit {
     if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
 
     this.order = (await this.orderService.order(orderId))?.order;
+
+    if (this.order.items) {
+      for (const itemSubOrder of this.order.items) {
+        itemSubOrder.item.media = itemSubOrder.item.images.map((image) => {
+          let url = image.value;
+          const fileParts = image.value.split('.');
+          const fileExtension = fileParts[fileParts.length - 1];
+          let auxiliarImageFileExtension = 'image/' + fileExtension;
+          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+          if (url && !url.includes('http') && !url.includes('https')) {
+            url = 'https://' + url;
+          }
+
+          console.log(url);
+
+          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+            return {
+              src: url,
+              type: 'IMAGE',
+            };
+          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+            return {
+              src: url,
+              type: 'VIDEO',
+            };
+          }
+        });
+      }
+    }
 
     if (!this.order.ocr) {
       const result = await this.paymentLogService.paymentLogsByOrder({
@@ -893,6 +925,22 @@ export class OrderDetailComponent implements OnInit {
     this.isMerchant = merchant === this.orderMerchant?._id;
     this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
+  }
+
+  playVideoOnFullscreen(id: string) {
+    const elem: HTMLVideoElement = document.getElementById(
+      id
+    ) as HTMLVideoElement;
+
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if ((elem as any).webkitRequestFullscreen) {
+      /* Safari */
+      (elem as any).webkitRequestFullscreen();
+    } else if ((elem as any).msRequestFullscreen) {
+      /* IE11 */
+      (elem as any).msRequestFullscreen();
+    }
   }
 
   // async addTag(tagId?: string) {

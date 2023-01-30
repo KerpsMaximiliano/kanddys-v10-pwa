@@ -128,21 +128,37 @@
         *ngFor="let item of order?.items"
       >
         <ng-container *ngIf="!item.params?.length || customizer">
-          <div
-            class="image"
-            (click)="
-              item.item.images?.length &&
-                openImageModal(item.item.images[0].value)
-            "
-            [ngStyle]="{
-              backgroundImage: item.item.images?.length
-                ? 'url(' + item.item.images[0].value + ')'
-                : '/assets/images/noimage.png',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              backgroundSize: 'cover'
-            }"
-          ></div>
+          <ng-container *ngIf="item.item.media && item.item.media.length > 0">
+            <div
+              class="image"
+              (click)="
+                item.item.images?.length &&
+                  openImageModal(item.item.images[0].value)
+              "
+              *ngIf="item.item.media[0].type === 'IMAGE'"
+              [ngStyle]="{
+                backgroundImage: item.item.images?.length
+                  ? 'url(' + item.item.images[0].value + ')'
+                  : '/assets/images/noimage.png',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundSize: 'cover'
+              }"
+            ></div>
+
+            <video
+              *ngIf="item.item.media[0].type === 'VIDEO'"
+              [src]="item.item.media[0].src"
+              [id]="'media' + item.item._id"
+              (click)="playVideoOnFullscreen('media' + item.item._id)"
+              class="video"
+              autoplay
+              [muted]="true"
+              [ngStyle]="{
+                height: 'calc(100vh - 49px)'
+              }"
+            ></video>
+          </ng-container>
         </ng-container>
         <ng-container *ngIf="item.params?.length && !customizer">
           <div *ngFor="let paramValue of item.item.params[0].values">
