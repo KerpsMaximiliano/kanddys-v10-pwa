@@ -124,6 +124,7 @@ export class CheckoutComponent implements OnInit {
   postSlideImages: (string | ArrayBuffer)[] = [];
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
+  saleflowId: string;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -141,6 +142,8 @@ export class CheckoutComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.saleflowId = this.headerService.saleflow.merchant._id;
+    console.log(this.saleflowId);
     let items = this.headerService.getItems();
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
@@ -392,7 +395,8 @@ export class CheckoutComponent implements OnInit {
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
-      if (this.headerService.order.itemPackage) delete this.headerService.order.itemPackage
+      if (this.headerService.order.itemPackage)
+        delete this.headerService.order.itemPackage;
       if (this.headerService.user && !anonymous) {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)
