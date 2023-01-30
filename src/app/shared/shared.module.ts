@@ -129,6 +129,9 @@ import { BuyerCardComponent } from './components/buyer-card/buyer-card.component
 import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
 import { OptionsBarComponent } from './components/options-bar/options-bar.component';
 import { TagItemsComponent } from './components/tag-items/tag-items.component';
+import { MenuButtonComponent } from './components/menu-button/menu-button.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 
 const imports = [
   CommonModule,
@@ -144,6 +147,8 @@ const imports = [
   ClipboardModule,
   GooglePlaceModule,
   DragDropModule,
+  MatMenuModule,
+  MatIconModule,
 ];
 const declarations = [
   // Pages
@@ -266,7 +271,8 @@ const declarations = [
   BuyerCardComponent,
   GradientFooterComponent,
   OptionsBarComponent,
-  TagItemsComponent
+  TagItemsComponent,
+  MenuButtonComponent,
 ];
 
 @NgModule({
