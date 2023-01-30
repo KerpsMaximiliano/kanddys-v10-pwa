@@ -565,7 +565,7 @@
               [viewsCounter]="
                 item.visitorCounter ? item.visitorCounter.counter : 0
               "
-              [imgURL]="item.images ? item.images[0] : ''"
+              [imgURL]="item.images?.length ? item.images[0].value : ''"
               [price]="item.pricing"
               [itemParams]="item.params"
               [showPrice]="true"
@@ -667,7 +667,7 @@
                 ? true
                 : false
             "
-            [imgURL]="item.images ? item.images[0] : ''"
+            [imgURL]="item.images.length ? item.images[0].value : ''"
             [price]="item.pricing"
             [showPrice]="true"
             [tags]="item.tagsFilled"
@@ -695,9 +695,11 @@
 </div>
 
 <app-dialog-flow
+  *ngIf="dialogs.length"
   dialogFlowId="flow1"
   [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
   [dialogs]="dialogs"
   (saveConfigRef)="swiperConfig = $event"
   [allowSlideNext]="false"
+  (closingDialogSignal)="closedDialog()"
 ></app-dialog-flow>

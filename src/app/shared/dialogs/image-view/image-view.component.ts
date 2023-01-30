@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-image-view',
@@ -7,7 +8,8 @@ import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
   styleUrls: ['./image-view.component.scss'],
 })
 export class ImageViewComponent implements OnInit {
-  @Input() imageSourceURL: string;
+  @Input() imageSourceURL: string | SafeUrl;
+  @Input() sourceType: 'IMAGE' | 'VIDEO' = 'IMAGE';  
   @Input() buttonText?: string;
   @Input() buttonFunc?: () => void;
   imageCanvasPositionX: number = 0;

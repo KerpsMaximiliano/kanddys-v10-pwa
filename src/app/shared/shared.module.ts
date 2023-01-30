@@ -39,7 +39,6 @@ import { ImageInputComponent } from './components/image-input/image-input.compon
 import { InfoButtonComponent } from './components/info-button/info-button.component';
 import { InfoCardComponent } from './components/info-card/info-card.component';
 import { InformationBoxComponent } from './components/information-box/information-box.component';
-import { ItemCardAmountAndPriceComponent } from './components/item-card-amount-and-price/item-card-amount-and-price.component';
 import { ItemCardComponent } from './components/item-card/item-card.component';
 import { ItemGridComponent } from './components/item-grid/item-grid.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
@@ -88,7 +87,6 @@ import { StoreShareComponent } from './dialogs/store-share/store-share.component
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
 import { LoadingScreenComponent } from './components/loading-screen/loading-screen.component';
-import { ItemComponent } from './components/item/item.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
 import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
@@ -129,6 +127,11 @@ import { BuyerCardComponent } from './components/buyer-card/buyer-card.component
 import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
 import { OptionsBarComponent } from './components/options-bar/options-bar.component';
 import { TagItemsComponent } from './components/tag-items/tag-items.component';
+import { ImageEditorComponent } from './components/image-editor/image-editor.component';
+import { CardComponent } from './components/card/card.component';
+import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
+import { QrContentComponent } from './components/qr-content/qr-content.component';
+import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 
 const imports = [
   CommonModule,
@@ -161,7 +164,6 @@ const declarations = [
   WarningStepsComponent,
   LeadwordListComponent,
   GiftMessageComponent,
-  ItemCardAmountAndPriceComponent,
   PageComponentTabsComponent,
   ShowItemsComponent,
   ImageInputComponent,
@@ -224,7 +226,6 @@ const declarations = [
   SetConfigComponent,
   ItemSettingsComponent,
   LoadingScreenComponent,
-  ItemComponent,
   ReloadComponent,
   WhatsappMessageComponent,
   CurrencyInputComponent,
@@ -266,7 +267,12 @@ const declarations = [
   BuyerCardComponent,
   GradientFooterComponent,
   OptionsBarComponent,
-  TagItemsComponent
+  TagItemsComponent,
+  ImageEditorComponent,
+  CardComponent,
+  TitleIconHeaderComponent,
+  QrContentComponent,
+  QrEditComponent,
 ];
 
 @NgModule({

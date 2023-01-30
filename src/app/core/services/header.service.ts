@@ -56,7 +56,7 @@ export class HeaderService {
   datePreview: any;
   flowImage: any = [];
   savedBookmarks: any;
-  items: Item[] = [];
+  items: string[] = [];
   order: ItemOrderInput;
   post: PostInput;
   saleflow: SaleFlow;
@@ -203,10 +203,6 @@ export class HeaderService {
     ) {
       if (!this.orderProgress.delivery) return;
     }
-    if (this.items.some((item) => item.customizerId)) {
-      if (!this.orderProgress.qualityQuantity) return;
-      if (!this.orderProgress.customizer) return;
-    }
     if (
       this.saleflow.module.appointment &&
       this.saleflow.module.appointment.isActive
@@ -308,8 +304,8 @@ export class HeaderService {
       itemData.splice(index, 1);
       this.items.splice(index, 1);
     } else {
-      itemData.push(product);
-      this.items.push(product as Item);
+      itemData.push(product._id);
+      this.items.push(product._id);
     }
     localStorage.setItem(
       this.saleflow._id,
@@ -424,7 +420,7 @@ export class HeaderService {
   }
 
   // Returns items data from localStorage
-  getItems(): Item[] {
+  getItems(): string[] {
     let { itemData }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     this.items = itemData || [];

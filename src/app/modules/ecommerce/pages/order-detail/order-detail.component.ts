@@ -300,7 +300,7 @@ export class OrderDetailComponent implements OnInit {
         });
       }
 
-      this.order.items[0].item.images[0] = this.customizer.preview;
+      this.order.items[0].item.images[0].value = this.customizer.preview;
     }
     if (this.order.items[0].reservation) {
       const reservation = await this.reservationService.getReservation(

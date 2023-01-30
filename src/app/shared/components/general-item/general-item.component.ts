@@ -35,6 +35,9 @@ export class GeneralItemComponent implements OnInit {
   @Input() useFlatBackgroundForCardInfo: boolean = false;
   @Output() itemSelectedEvent = new EventEmitter();
   cardMainImage: string = null;
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  isMainImageAVideo: boolean = false;
 
   //item-specific variables
   @Input() item: Item = null;
@@ -108,15 +111,28 @@ export class GeneralItemComponent implements OnInit {
 
         if (this.item.params.length === 0) {
           this.cardMainImage =
-            this.item.images.length > 0 ? this.item.images[0] : null;
-          if (!this.showPrice)
-            this.itemMainTitle = this.item.name ? this.item.name : 'Sin titulo';
-          else if (this.item.pricing !== null && this.item.pricing) {
-            const priceString = `$${this.item.pricing.toLocaleString('es-MX')}`;
-            this.itemMainTitle = this.priceLabel
-              ? this.priceLabel + priceString
-              : priceString;
+            this.item.images.length > 0 ? this.item.images[0].value : null;
+
+          if (
+            this.cardMainImage &&
+            !this.cardMainImage.includes('http') &&
+            !this.cardMainImage.includes('https')
+          ) {
+            this.cardMainImage = 'https://' + this.cardMainImage;
           }
+
+          const fileParts = this.cardMainImage.split('.');
+          const fileExtension = fileParts[fileParts.length - 1];
+          let auxiliarImageFileExtension = 'image/' + fileExtension;
+          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+            this.isMainImageAVideo = false;
+          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+            this.isMainImageAVideo = true;
+          }
+
+          this.itemMainTitle = this.item.name ? this.item.name : 'Sin titulo';
         }
         break;
       case 'TAG':
