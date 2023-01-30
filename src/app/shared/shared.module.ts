@@ -132,6 +132,9 @@ import { CardComponent } from './components/card/card.component';
 import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
 import { QrContentComponent } from './components/qr-content/qr-content.component';
 import { QrEditComponent } from './components/qr-edit/qr-edit.component';
+import { MenuButtonComponent } from './components/menu-button/menu-button.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 
 const imports = [
   CommonModule,
@@ -147,6 +150,8 @@ const imports = [
   ClipboardModule,
   GooglePlaceModule,
   DragDropModule,
+  MatMenuModule,
+  MatIconModule,
 ];
 const declarations = [
   // Pages
@@ -273,6 +278,7 @@ const declarations = [
   TitleIconHeaderComponent,
   QrContentComponent,
   QrEditComponent,
+  MenuButtonComponent,
 ];
 
 @NgModule({

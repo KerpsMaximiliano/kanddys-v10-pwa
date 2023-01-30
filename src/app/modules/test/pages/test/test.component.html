@@ -366,6 +366,7 @@ headline="EXPUESTO EN TAB (S)"
   }"
 >
   <app-general-item
+    *ngIf="item"
     [item]="item"
     [entity]="'ITEM'"
     [mainColor]="'#ffffff'"
@@ -497,6 +498,14 @@ headline="EXPUESTO EN TAB (S)"
   
   <div
     style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px"
+  <app-buyer-card></app-buyer-card>
+</div>
+
+<app-menu-button></app-menu-button>
+<div style="padding: 0 17px">
+  <app-options-bar
+    [options]="['articulos', 'categorias', 'collections']"
+    [type]="'2'"
   >
     <app-buyer-card></app-buyer-card>
     <app-buyer-card></app-buyer-card>
