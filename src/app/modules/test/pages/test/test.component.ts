@@ -37,6 +37,7 @@ import { Router } from '@angular/router';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { AnexoLandingComponent } from 'src/app/shared/components/anexo-landing/anexo-landing.component';
 
 @Component({
   selector: 'app-test',
@@ -141,6 +142,62 @@ export class TestComponent implements OnInit {
   dialogs: Array<EmbeddedComponentWithId> = [
     {
       component: GeneralDialogComponent,
+      componentId: 'componentSelector',
+      inputs: {
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '8px',
+          opacity: '1',
+          padding: '37px 36.6px 58.9px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '21px',
+            fontFamily: 'SfProBold',
+            marginBottom: '21.2px',
+            marginTop: '0',
+            color: '#4F4F4F',
+          },
+          text: 'Component',
+        },
+        title: {
+          styles: {
+            fontSize: '15px',
+            color: '#7B7B7B',
+            fontStyle: 'italic',
+            margin: '0',
+          },
+          text: '',
+        },
+        fields: {
+          list: [
+            {
+              name: 'componentData',
+              value: '',
+              validators: [Validators.required],
+              type: 'component',
+              component: AnexoLandingComponent,
+              shouldRerender: true,
+              inputs: [],
+              outputs: [],
+              // styles: {},
+              prop: 'src',
+            },
+          ],
+        },
+        isMultipleImages: true,
+      },
+      outputs: [
+        {
+          name: 'data',
+          callback: (params) => {
+            this.swiperConfig.allowSlideNext = true;
+          },
+        },
+      ],
+    },
+    {
+      component: GeneralDialogComponent,
       componentId: 'imagesSelector',
       inputs: {
         containerStyles: {
@@ -201,7 +258,6 @@ export class TestComponent implements OnInit {
           name: 'data',
           callback: (params) => {
             const { fields, value, valid } = params;
-            console.log('value: ', value);
             const { imagesData } = value;
             if (valid) {
               this.swiperConfig.allowSlideNext = true;

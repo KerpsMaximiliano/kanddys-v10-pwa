@@ -19,6 +19,15 @@
           </div>
           <p [style]="field.disclaimer.styles">{{ field.disclaimer.text }}</p>
         </div>
+        <div [style]="field.styles" *ngSwitchCase="'component'">
+          <app-dynamic-component
+            [component]="field.component"
+            [componentInputs]="field.inputs"
+            [componentOutputs]="field.outputs"
+            [shouldRemoveItFromTheView]="field.shouldRerender"
+          >
+          ></app-dynamic-component>
+        </div>
         <div [style]="field.styles" *ngSwitchCase="'images'">
           <div class="images-content">
             <div *ngFor="let image of field.selection.list; let i = index">

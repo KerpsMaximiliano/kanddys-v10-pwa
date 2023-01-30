@@ -5,6 +5,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  Type,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -61,6 +62,10 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
         styles: Record<string, string>;
         text: string;
       };
+      component?: Type<any>,
+      shouldRerender: boolean,
+      inputs: any[],
+      outputs: any[],
       selection: {
         selection: {
           ['prop']: string;
