@@ -127,6 +127,7 @@ import { CardComponent } from './components/card/card.component';
 import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
 import { QrContentComponent } from './components/qr-content/qr-content.component';
 import { QrEditComponent } from './components/qr-edit/qr-edit.component';
+import { GeneralDialogComponent } from './components/general-dialog/general-dialog.component';
 
 const imports = [
   CommonModule,
@@ -262,7 +263,8 @@ const declarations = [
   CardComponent,
   TitleIconHeaderComponent,
   QrContentComponent,
-  QrEditComponent
+  QrEditComponent,
+  GeneralDialogComponent
 ];
 
 @NgModule({
