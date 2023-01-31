@@ -20,6 +20,7 @@ import { ArticlePrivacyComponent } from 'src/app/shared/components/article-priva
 import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { ArticleEditorComponent } from './pages/article-editor/article-editor.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -129,6 +130,10 @@ const routes: Routes = [
         path: 'slides-editor/:articleId',
         component: QrEditComponent,
       },
+      {
+        path: 'admin-dashboard',
+        component: AdminDashboardComponent,
+      },
     ],
   },
   {
@@ -151,6 +156,7 @@ const routes: Routes = [
     TagsComponent,
     ManageTagComponent,
     ArticleEditorComponent,
+    AdminDashboardComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
