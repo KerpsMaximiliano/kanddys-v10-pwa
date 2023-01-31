@@ -1,0 +1,92 @@
+<div class="container">
+  <div class="header">
+    <i
+      class="far fa-angle-double-up icon"
+      [style.cursor]="'pointer'"
+      (click)="submit()"
+    ></i>
+    <button class="preview-btn" (click)="previewItem()" *ngIf="item">
+      PREVIEW
+    </button>
+  </div>
+
+  <!--<div class="itemsGrid">
+      <div class="itemContainer add">
+        <div class="labelBox"></div>
+        <div class="imgBox">
+          <p>+</p>
+        </div>
+        <div class="label">Adiciona</div>
+      </div>
+      <div class="itemContainer" *ngFor= "let gridItem of gridArray">
+        <div class="imgBox"[ngStyle]="{background: 'url(' + environment + '/' + gridItem.background + ') #272727 no-repeat  center/cover'}"></div>
+        <div class="labelBox"></div>
+        <p class="text">{{gridItem.text}}</p>
+        <div class="label">{{gridItem.label}}</div>
+        <div class="circleButton">
+          <img class="icon" [src]="environment + '/dots-black.svg'">
+        </div>
+      </div>
+    </div>-->
+
+  <div class="tags-grid-drag-and-drop" cdkDropListGroup>
+    <div class="tag-wrapper" style="width: 100%; margin: 0px; padding: 0px">
+      <div class="inner-drag-wrapper">
+        <input
+          type="file"
+          id="file"
+          [style.display]="'none'"
+          (change)="loadFile($event)"
+          [accept]="availableFiles"
+        />
+        <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
+          <div class="labelBox"></div>
+          <div class="imgBox">
+            <p>+</p>
+          </div>
+          <div class="label">Adiciona</div>
+        </label>
+      </div>
+    </div>
+    <div
+      class="tag-wrapper"
+      cdkDropList
+      *ngFor="let gridItem of gridArray; let i = index"
+      [cdkDropListData]="{ gridItem: gridItem, index: i }"
+      (cdkDropListDropped)="dropTagDraggable($event)"
+      tyle="width: 100%; margin: 0px; padding: 0px"
+    >
+      <div class="inner-drag-wrapper" cdkDrag>
+        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+        <div class="itemContainer">
+          <div
+            *ngIf="imageFiles.includes(gridItem._type)"
+            class="imgBox"
+            [ngStyle]="{
+              background:
+                'url(' +
+                gridItem.background +
+                ') #272727 no-repeat  center/cover'
+            }"
+          ></div>
+          <video
+            autoplay
+            [muted]="true"
+            [src]="gridItem.background"
+            *ngIf="videoFiles.includes(gridItem._type)"
+          ></video>
+          <div class="labelBox"></div>
+          <div class="circleButton" (click)="openSlideSettings(i)">
+            <img class="icon" [src]="environment + '/dots-black.svg'" />
+          </div>
+        </div>
+        <img
+          class="drag-handler"
+          cdkDragHandle
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/drag-area.svg"
+          alt="drag"
+        />
+      </div>
+    </div>
+  </div>
+</div>

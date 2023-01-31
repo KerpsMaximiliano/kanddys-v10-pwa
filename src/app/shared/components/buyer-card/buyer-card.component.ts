@@ -7,10 +7,10 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class BuyerCardComponent implements OnInit {
   @Input() img: string = '';
-  @Input() headline: string =
-    'kebdleinceib ek nedbejb ek eifb ekdedkenidne dke oleoe ek eifknei edkeib ek nedbejb ek eifb ekdedkenidne dke oleoe ek eifknei edk';
-  @Input() leftText: string = 'Texto Izquierda';
-  @Input() rightText: string = 'Texto Derecha';
+  @Input() title: string
+  @Input() description: string
+  @Input() leftAmount: number
+  @Input() rightAmount: number 
 
   constructor() {}
 

@@ -170,7 +170,11 @@ export const ordersByTag = gql`
         items {
           item {
             name
-            images
+            images {
+              value
+              index
+              active
+            }
             tags
             params {
               _id

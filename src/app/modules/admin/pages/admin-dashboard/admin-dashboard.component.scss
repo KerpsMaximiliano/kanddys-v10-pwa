@@ -1,0 +1,115 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+button {
+    all: unset;
+}
+
+.container {
+    min-height: 100vh;
+}
+
+.header {
+    padding: 0 18px;
+    height: 47px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    >*{
+        display: flex;
+        align-items: center;
+    }
+
+    .left{
+        gap: 17px;
+
+        .img {
+            cursor: pointer;
+            width: 31px;
+            height: 31px;
+            object-fit: cover;
+            border-radius: 50%;
+            background-color: #e9e371;
+        }
+
+        .title{
+            font-family: "SfProHeavy";
+            font-size: 16px;
+            color: #272727;
+        }
+    }
+    .right{
+        gap: 32px;
+
+        .listIcon{
+            cursor: pointer;
+            height: 27px;
+            width: auto;
+        }
+        .blackButton{
+            cursor: pointer;
+            padding: 8px 9px 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            border-radius: 17px;
+            background-color: #272727;
+            color: #FED230;
+
+            .starIcon{
+                height: 17.5px;
+                width: auto;
+                filter: brightness(0) saturate(100%) invert(99%) sepia(93%) saturate(2815%) hue-rotate(327deg) brightness(100%) contrast(99%);
+            }
+        }
+    }
+}
+
+.contents {
+    padding: 0 20px;
+    margin-top: 6px;
+}
+
+.newCollection {
+    font-size: 17px;
+    font-family: "SfProLight";
+    text-align: center;
+    color: #272727;
+
+    & > * {
+        display: block;
+        margin: auto;
+    }
+
+    img {
+        width: 110px;
+        height: 112px;
+        object-fit: cover;
+    }
+    .button {
+        cursor: pointer;
+        margin-top: 27px;
+        margin-bottom: 15px;
+        width: 100%;
+        padding: 6px;
+        font-family: "SfProMedium";
+        color: #ffffff;
+        border-radius: 12px;
+        font-size: 15px;
+        background-color: #2874ad;
+    }
+    .text2 {
+        color: #7b7b7b;
+    }
+}
+
+.cardsBox {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

@@ -1,5 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
@@ -11,12 +18,18 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { WebformAnswerLayoutOption, webformAnswerLayoutOptionDefaultStyles } from 'src/app/core/types/answer-selector';
+import {
+  WebformAnswerLayoutOption,
+  webformAnswerLayoutOptionDefaultStyles,
+} from 'src/app/core/types/answer-selector';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { Subscription } from 'rxjs';
 
@@ -27,15 +40,12 @@ export function imagesValidator(): ValidatorFn {
   };
 }
 
-
-
 @Component({
   selector: 'app-manage-tag',
   templateUrl: './manage-tag.component.html',
-  styleUrls: ['./manage-tag.component.scss']
+  styleUrls: ['./manage-tag.component.scss'],
 })
 export class ManageTagComponent implements OnInit, OnDestroy {
-
   env: string = environment.assetsUrl;
   user: User;
   logged: boolean;
@@ -77,7 +87,7 @@ export class ManageTagComponent implements OnInit, OnDestroy {
     private notificationService: NotificationsService,
     private toastr: ToastrService,
     private route: ActivatedRoute,
-    private itemsService: ItemsService,
+    private itemsService: ItemsService
   ) {}
 
   async ngOnInit() {
@@ -195,12 +205,9 @@ export class ManageTagComponent implements OnInit, OnDestroy {
           images.setValue(tag.images[0]);
         }
       } else {
-
       }
     } else if (this.hasTemporalTag) {
-
     } else if (this.logged) {
-
     }
   }
 
@@ -333,7 +340,7 @@ export class ManageTagComponent implements OnInit, OnDestroy {
 
               this.headerService.flowRoute = null;
               localStorage.removeItem('flowRoute');
-              this.router.navigate(['admin/item-display/' + this.entityId], {
+              this.router.navigate(['admin/article-editor/' + this.entityId], {
                 queryParams: {
                   tagsAsignationOnStart: true,
                 },
@@ -378,7 +385,7 @@ export class ManageTagComponent implements OnInit, OnDestroy {
           if (this.entity === 'item') {
             this.headerService.flowRoute = null;
             localStorage.removeItem('flowRoute');
-            this.router.navigate(['admin/item-display/' + this.entityId]);
+            this.router.navigate(['admin/article-editor/' + this.entityId]);
           }
           if (!this.entity) this.router.navigate(['admin/items-dashboard']);
         }
@@ -395,7 +402,6 @@ export class ManageTagComponent implements OnInit, OnDestroy {
   }
 
   setOptionalFunctionalityList() {
-
     this.optionalFunctionalityList.push({
       type: 'WEBFORM-ANSWER',
       optionStyles: webformAnswerLayoutOptionDefaultStyles,

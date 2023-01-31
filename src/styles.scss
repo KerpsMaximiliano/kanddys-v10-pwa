@@ -44,6 +44,7 @@ $rewardcharly-theme: mat-light-theme($rewardcharly-primary, $rewardcharly-accent
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 @import "~ngx-toastr/toastr-bs4-alert";
+@import "~cropperjs/dist/cropper.min.css";
 
 :root {
   --dialog-header-background: #{get-color("dark")};
@@ -296,6 +297,11 @@ body {
 @font-face {
   font-family: "ProDisplayRegular";
   src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Regular.ttf");
+  font-display: swap;
+}
+@font-face {
+  font-family: "SfProHeavy";
+  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Heavy.ttf");
   font-display: swap;
 }
 

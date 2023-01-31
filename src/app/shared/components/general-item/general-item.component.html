@@ -9,7 +9,23 @@
   [ngClass]="{
     selectedCard: itemSelected
   }"
+  *ngIf="!isMainImageAVideo"
 >
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</div>
+
+<div
+  class="container hasVideo"
+  *ngIf="isMainImageAVideo"
+  [ngClass]="{
+    selectedCard: itemSelected
+  }"
+>
+  <video class="video" [src]="cardMainImage" autoplay [muted]="true"></video>
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</div>
+
+<ng-template #content>
   <div
     class="containerGradientBox"
     [ngStyle]="{
@@ -190,4 +206,4 @@
       </div>
     </div>
   </div>
-</div>
+</ng-template>

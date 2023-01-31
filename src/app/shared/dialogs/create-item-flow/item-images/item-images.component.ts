@@ -19,10 +19,15 @@ export class ItemImagesComponent implements OnInit {
     const images: File[] = [];
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList.item(i);
-      if (
-        !['png', 'jpg', 'jpeg'].some((type) => file.type.includes(type)) ||
-        !file.type.includes('image/')
-      ) {
+      let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
+        file.type.includes(type)
+      );
+
+      let isFileAValidVideo = ['webm', 'mp4'].some((type) =>
+        file.type.includes(type)
+      );
+
+      if (!isFileAValidImage && !isFileAValidVideo) {
         return;
       }
       images.push(file);

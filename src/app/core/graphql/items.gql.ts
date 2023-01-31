@@ -26,7 +26,11 @@ const itemBody = `
   pricePerUnit
   description
   createdAt
-  images
+  images {
+    value
+    index
+    active
+  }
   fixedQuantity
   size
   quality
@@ -53,6 +57,74 @@ const itemBody = `
   }
 `;
 
+const fullItem = `
+  _id
+  name
+  pricing
+  pricePerUnit
+  description
+  createdAt
+  images {
+    _id
+    active
+    value
+    original
+    index
+  }
+  fixedQuantity
+  size
+  quality
+  iconImage
+  hasExtraPrice
+  content
+  hasSelection
+  status
+  showImages
+  notifications
+  tags
+  visitorCounter {
+    entity
+    counter
+    reference
+  }
+  calendar {
+    _id
+  }
+  category {
+    _id
+    name
+  }
+  params {
+    _id
+    name
+    category
+    formType
+    values {
+      _id
+      name
+      price
+      description
+      image
+      quantity
+    }
+  }
+  itemExtra {
+    _id
+    images
+    name
+    active
+    createdAt
+  }
+  merchant {
+    _id
+    name
+    owner {
+      _id
+      phone
+    }
+  }
+`;
+
 export const items = gql`
   query items($merchantId: ObjectID, $params: ListParams) {
     items(merchantId: $merchantId, params: $params) { ${body} }
@@ -64,7 +136,11 @@ export const itemsByMerchant = gql`
     itemsByMerchant(id: $id, sort: $sort) {
       _id
       name
-      images
+      images {
+        value
+        index
+        active
+      }
       notifications
       category {
         _id
@@ -123,67 +199,7 @@ export const itemExtraByMerchant = gql`
 
 export const item = gql`
   query item($id: ObjectID!) {
-    item(id: $id) {
-      _id
-      name
-      pricing
-      pricePerUnit
-      description
-      createdAt
-      images
-      fixedQuantity
-      size
-      quality
-      iconImage
-      hasExtraPrice
-      content
-      hasSelection
-      status
-      showImages
-      notifications
-      tags
-      visitorCounter {
-        entity
-        counter
-        reference
-      }
-      calendar {
-        _id
-      }
-      category {
-        _id
-        name
-      }
-      params {
-        _id
-        name
-        category
-        formType
-        values {
-          _id
-          name
-          price
-          description
-          image
-          quantity
-        }
-      }
-      itemExtra {
-        _id
-        images
-        name
-        active
-        createdAt
-      }
-      merchant {
-        _id
-        name
-        owner {
-          _id
-          phone
-        }
-      }
-    }
+    item(id: $id) { ${fullItem} }
   }
 `;
 
@@ -206,7 +222,6 @@ export const itemPackageByMerchant = gql`
       createdAt
       name
       images
-
       merchant {
         _id
       }
@@ -224,7 +239,11 @@ export const listItems = gql`
       _id
       createdAt
       name
-      images
+      images {
+        value
+        index
+        active
+      }
       merchant {
         _id
       }
@@ -244,7 +263,6 @@ export const listItemPackage = gql`
       createdAt
       name
       images
-
       merchant {
         _id
       }
@@ -279,35 +297,41 @@ export const itemPackage = gql`
 
 export const createItem = gql`
   mutation createItem($input: ItemInput!) {
-    createItem(input: $input) {
+    createItem(input: $input) { ${fullItem} }
+  }
+`;
+
+export const duplicateItem = gql`
+  mutation duplicateItem($id: ObjectID!) {
+    duplicateItem(id: $id) {
       _id
     }
   }
 `;
 
 export const createItemParam = gql`
-  mutation createItemParam($merchantId: ObjectID!, $itemId: ObjectID!, $input: ItemParamInput!) {
-    createItemParam(
-      merchantId: $merchantId,
-      itemId: $itemId,
-      input: $input
-    ) {
+  mutation createItemParam(
+    $merchantId: ObjectID!
+    $itemId: ObjectID!
+    $input: ItemParamInput!
+  ) {
+    createItemParam(merchantId: $merchantId, itemId: $itemId, input: $input) {
       _id
     }
   }
 `;
 
 export const addItemParamValue = gql`
-  mutation addItemParamValue (
+  mutation addItemParamValue(
     $itemParamId: ObjectID!
     $merchantId: ObjectID!
     $itemId: ObjectID!
     $input: [ItemParamValueInput!]!
   ) {
     addItemParamValue(
-      itemParamId: $itemParamId,
-      merchantId: $merchantId,
-      itemId: $itemId,
+      itemParamId: $itemParamId
+      merchantId: $merchantId
+      itemId: $itemId
       input: $input
     ) {
       _id
@@ -316,16 +340,16 @@ export const addItemParamValue = gql`
 `;
 
 export const deleteItemParamValue = gql`
-  mutation deleteItemParamValue (
+  mutation deleteItemParamValue(
     $itemParamValueId: ObjectID!
     $itemParamId: ObjectID!
     $merchantId: ObjectID!
     $itemId: ObjectID!
   ) {
     deleteItemParamValue(
-      itemParamValueId: $itemParamValueId,
-      itemParamId: $itemParamId,
-      merchantId: $merchantId,
+      itemParamValueId: $itemParamValueId
+      itemParamId: $itemParamId
+      merchantId: $merchantId
       itemId: $itemId
     ) {
       _id
@@ -372,16 +396,22 @@ export const updateItem = gql`
   }
 `;
 
-export const addImageItem = gql`
-  mutation addImageItem($images: [Upload!]!, $id: ObjectID!) {
-    addImageItem(images: $images, id: $id) {
+export const itemAddImage = gql`
+  mutation itemAddImage($input: [ItemImageInput!]!, $id: ObjectID!) {
+    itemAddImage(input: $input, id: $id) {
       _id
       name
       pricing
       pricePerUnit
       description
       createdAt
-      images
+      images {
+        _id
+        value
+        index
+        original
+        active
+      }
       fixedQuantity
       size
       quality
@@ -428,16 +458,20 @@ export const addImageItem = gql`
   }
 `;
 
-export const deleteImageItem = gql`
-  mutation deleteImageItem($images: [String!]!, $id: ObjectID!) {
-    deleteImageItem(images: $images, id: $id) {
+export const itemRemoveImage = gql`
+  mutation itemRemoveImage($imageId: [ObjectID!]!, $itemId: ObjectID!) {
+    itemRemoveImage(imageId: $imageId, itemId: $itemId) {
       _id
       name
       pricing
       pricePerUnit
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       fixedQuantity
       size
       quality
@@ -482,6 +516,12 @@ export const deleteImageItem = gql`
         }
       }
     }
+  }
+`;
+
+export const itemUpdateImage = gql`
+  mutation itemUpdateImage($input: ItemImageInput!, $imageId: ObjectID!, $id: ObjectID!) {
+    itemUpdateImage(input: $input, imageId: $imageId, id: $id) { ${fullItem} }
   }
 `;
 

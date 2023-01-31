@@ -359,7 +359,6 @@ headline="EXPUESTO EN TAB (S)"
     <button (click)="openDialog()">ver links</button>
 -->
 
-<!-- 
 <div
   [ngStyle]="{
     width: '194.06px',
@@ -367,6 +366,7 @@ headline="EXPUESTO EN TAB (S)"
   }"
 >
   <app-general-item
+    *ngIf="item"
     [item]="item"
     [entity]="'ITEM'"
     [mainColor]="'#ffffff'"
@@ -402,7 +402,7 @@ headline="EXPUESTO EN TAB (S)"
   >
   </app-general-item>
 </div>
-
+<!-- 
 <div
   [ngStyle]="{
     width: '194.06px',
@@ -493,12 +493,11 @@ headline="EXPUESTO EN TAB (S)"
   </app-general-item>
 </div> -->
 
-<app-buyer-card></app-buyer-card>
-
-<div
-  style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px"
->
+<!--
   <app-buyer-card></app-buyer-card>
+  
+  <div
+    style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px"
   <app-buyer-card></app-buyer-card>
 </div>
 
@@ -509,7 +508,34 @@ headline="EXPUESTO EN TAB (S)"
     [type]="'2'"
     (selectedIndex)="firstIndex = $event"
   >
-  </app-options-bar>
-</div>
-<app-gradient-footer [uploadIcon]="true"></app-gradient-footer>
-<app-tag-items></app-tag-items>
+    <app-buyer-card></app-buyer-card>
+    <app-buyer-card></app-buyer-card>
+  </div>
+  
+  <div style="padding: 0 17px">
+    <app-options-bar
+      [options]="['articulos', 'categorias', 'collections']"
+      [type]="'2'"
+    >
+    </app-options-bar>
+  </div>
+  <app-gradient-footer [uploadIcon]="true"></app-gradient-footer>
+  <app-tag-items></app-tag-items>
+-->
+
+<app-buyer-card></app-buyer-card>
+<app-buyer-card 
+    [leftAmount] = "3000">
+  </app-buyer-card>
+
+<app-buyer-card 
+    [title] = "'Plan Individual'"
+    [description] = "'5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'"
+    [leftAmount] = "3000">
+  </app-buyer-card>
+  <app-buyer-card 
+    [title] = "'Tópico de la colección que puede ser de muchas lineas, de hecho acabaria en .. y suprimiria la descripción de ser necesario como justamente este caso'"
+    [description] = "'5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'"
+    [leftAmount] = "3000"
+    [rightAmount] = "700000">
+  </app-buyer-card>

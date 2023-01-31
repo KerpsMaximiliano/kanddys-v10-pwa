@@ -6,7 +6,12 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Calendar } from 'src/app/core/models/calendar';
-import { Item, ItemInput, ItemStatus } from 'src/app/core/models/item';
+import {
+  Item,
+  ItemImageInput,
+  ItemInput,
+  ItemStatus,
+} from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Reservation } from 'src/app/core/models/reservation';
 import { PaginationInput } from 'src/app/core/models/saleflow';
@@ -14,6 +19,7 @@ import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CalendarsService } from 'src/app/core/services/calendars.service';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -176,75 +182,7 @@ export class ItemsDashboardComponent implements OnInit {
     allowSlideNext: false,
   };
   openedDialogFlow: boolean = false;
-  dialogs: Array<EmbeddedComponentWithId> = [
-    {
-      component: ItemListSelectorComponent,
-      componentId: 'itemPricing',
-      inputs: {
-        containerStyles: {},
-        title: '¿Que monto te pagarán por el artículo?',
-        inputs: [
-          {
-            type: 'currency',
-            name: 'pricing',
-            innerLabel: 'Pesos Dominicanos',
-          },
-        ],
-      },
-      outputs: [
-        {
-          name: 'formOutput',
-          callback: ({ pricing }: { pricing: number }) => {
-            if (pricing > 0) this.swiperConfig.allowSlideNext = true;
-            else this.swiperConfig.allowSlideNext = false;
-            this._ItemsService.itemPrice = pricing;
-          },
-        },
-      ],
-    },
-    {
-      component: ItemImagesComponent,
-      componentId: 'itemImages',
-      inputs: {
-        containerStyles: {},
-      },
-      outputs: [
-        {
-          name: 'enteredImages',
-          callback: async (images: File[]) => {
-            if (!this._ItemsService.itemPrice) return;
-            lockUI();
-            const itemInput = {
-              name: null,
-              description: null,
-              pricing: this._ItemsService.itemPrice,
-              images: images,
-              merchant: this._MerchantsService.merchantData?._id,
-              content: [],
-              currencies: [],
-              hasExtraPrice: false,
-              purchaseLocations: [],
-              showImages: images.length > 0,
-            };
-            this._ItemsService.itemPrice = null;
-
-            const { createItem } = await this._ItemsService.createItem(
-              itemInput
-            );
-            await this._SaleflowService.addItemToSaleFlow(
-              {
-                item: createItem._id,
-              },
-              this._SaleflowService.saleflowData._id
-            );
-            this._ToastrService.success('Producto creado satisfactoriamente!');
-            unlockUI();
-            this.router.navigate([`admin/create-article/${createItem._id}`]);
-          },
-        },
-      ],
-    },
-  ];
+  dialogs: Array<EmbeddedComponentWithId> = [];
 
   async infinitePagination() {
     const page = document.querySelector('.dashboard-page');
@@ -272,7 +210,8 @@ export class ItemsDashboardComponent implements OnInit {
     private route: ActivatedRoute,
     private ngNavigatorShareService: NgNavigatorShareService,
     private _ToastrService: ToastrService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private dialogFlowService: DialogFlowService
   ) {}
 
   async ngOnInit() {
@@ -307,7 +246,104 @@ export class ItemsDashboardComponent implements OnInit {
       window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
       });
+
+      this.dialogs = [
+        {
+          component: ItemListSelectorComponent,
+          componentId: 'itemPricing',
+          inputs: {
+            containerStyles: {},
+            title: '¿Que monto te pagarán por el artículo?',
+            inputs: [
+              {
+                dialogId: 'itemPricing',
+                type: 'currency',
+                name: 'pricing',
+                innerLabel: 'Pesos Dominicanos',
+              },
+            ],
+          },
+          outputs: [
+            {
+              name: 'formOutput',
+              callback: ({ pricing }: { pricing: number }) => {
+                if (pricing > 0) this.swiperConfig.allowSlideNext = true;
+                else this.swiperConfig.allowSlideNext = false;
+                this._ItemsService.itemPrice = pricing;
+                this.dialogFlowService.saveData(
+                  pricing,
+                  'flow1',
+                  'itemPricing',
+                  'pricing'
+                );
+              },
+            },
+          ],
+        },
+        {
+          component: ItemImagesComponent,
+          componentId: 'itemImages',
+          inputs: {
+            containerStyles: {},
+          },
+          outputs: [
+            {
+              name: 'enteredImages',
+              callback: async (files: File[]) => {
+                let images: ItemImageInput[] = files.map((file) => {
+                  return {
+                    file: file,
+                    index: 0,
+                    active: true,
+                  };
+                });
+                if (!this._ItemsService.itemPrice) return;
+                lockUI();
+                const itemInput: ItemInput = {
+                  name: null,
+                  description: null,
+                  pricing: this._ItemsService.itemPrice,
+                  images,
+                  merchant: this._MerchantsService.merchantData?._id,
+                  content: [],
+                  currencies: [],
+                  hasExtraPrice: false,
+                  purchaseLocations: [],
+                  showImages: images.length > 0,
+                };
+                this._ItemsService.itemPrice = null;
+
+                const { createItem } = await this._ItemsService.createItem(
+                  itemInput
+                );
+                await this._SaleflowService.addItemToSaleFlow(
+                  {
+                    item: createItem._id,
+                  },
+                  this._SaleflowService.saleflowData._id
+                );
+                this._ToastrService.success(
+                  'Producto creado satisfactoriamente!'
+                );
+                unlockUI();
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  this._ItemsService.editingImageId = createItem.images[0]._id;
+                  this.router.navigate([
+                    `admin/article-editor/${createItem._id}`,
+                  ]);
+                };
+                reader.readAsDataURL(images[0].file as File);
+              },
+            },
+          ],
+        },
+      ];
     }, 1000);
+  }
+
+  closedDialog() {
+    this._ItemsService.itemPrice = null;
   }
 
   async verifyIfUserIsLogged() {
@@ -764,7 +800,7 @@ export class ItemsDashboardComponent implements OnInit {
 
   goToDetail(id: string) {
     this.savePageSnapshot();
-    this.router.navigate([`admin/create-article/${id}`]);
+    this.router.navigate([`admin/article-editor/${id}`]);
     this._ItemsService.itemImages = [];
   }
 
@@ -1091,107 +1127,62 @@ export class ItemsDashboardComponent implements OnInit {
 
     const list: Array<SettingsDialogButton> = [
       {
-        text: 'Vista del visitante',
-        callback: async () => {
-          if (item.status !== 'disabled') {
-            this.router.navigate([
-              `/ecommerce/item-detail/${this._SaleflowService.saleflowData.merchant.slug}/${item._id}`,
-            ]);
-          } else {
-            const { images, name, description, pricing, _id, ...rest } = item;
-            const params = item.params;
-            params?.forEach((param) => {
-              param.values = param.values.filter(
-                (values) => values.name || values.price || values.description
-              );
-            });
-            this._ItemsService.storeTemporalItem({
-              ...rest,
-              name,
-              description,
-              params,
-              images: images,
-              pricing,
-            });
-            this.headerService.flowRoute = this.router.url;
-            localStorage.setItem('flowRoute', this.headerService.flowRoute);
-            this.router.navigate(['/ecommerce/item-detail']);
-          }
-        },
-      },
-      {
         text: 'Duplicar',
         callback: async () => {
-          const itemInput: ItemInput = {
-            name: item.name || null,
-            description: item.description || null,
-            pricing: item.pricing,
-            images: item.images,
-            merchant: item.merchant._id,
-            content: [],
-            currencies: [],
-            hasExtraPrice: false,
-            purchaseLocations: [],
-            showImages: item.images.length > 0,
-            status: item.status,
-            tags: item.tags ? item.tags : [],
-          };
-
           try {
-            const { createItem } = await this._ItemsService.createItem(
-              itemInput
-            );
+            const createdItem: ExtendedItem =
+              await this._ItemsService.duplicateItem(item._id);
+
             await this._SaleflowService.addItemToSaleFlow(
               {
-                item: createItem._id,
+                item: createdItem._id,
               },
               this._SaleflowService.saleflowData._id
             );
 
-            this._SaleflowService.saleflowData =
-              await this._SaleflowService.saleflowDefault(
-                this._MerchantsService.merchantData._id
-              );
+            // this._SaleflowService.saleflowData =
+            //   await this._SaleflowService.saleflowDefault(
+            //     this._MerchantsService.merchantData._id
+            //   );
+            // if (item.params && item.params.length > 0) {
+            //   const { createItemParam } =
+            //     await this._ItemsService.createItemParam(
+            //       item.merchant._id,
+            //       createItem._id,
+            //       {
+            //         name: item.params[0].name,
+            //         formType: 'color',
+            //         values: [],
+            //       }
+            //     );
+            //   const paramValues = item.params[0].values.map((value) => {
+            //     return {
+            //       name: value.name,
+            //       image: value.image,
+            //       price: value.price,
+            //       description: value.description,
+            //     };
+            //   });
 
-            if (item.params && item.params.length > 0) {
-              const { createItemParam } =
-                await this._ItemsService.createItemParam(
-                  item.merchant._id,
-                  createItem._id,
-                  {
-                    name: item.params[0].name,
-                    formType: 'color',
-                    values: [],
-                  }
-                );
-              const paramValues = item.params[0].values.map((value) => {
-                return {
-                  name: value.name,
-                  image: value.image,
-                  price: value.price,
-                  description: value.description,
-                };
-              });
+            //   const result = await this._ItemsService.addItemParamValue(
+            //     paramValues,
+            //     createItemParam._id,
+            //     item.merchant._id,
+            //     createItem._id
+            //   );
+            // }
 
-              const result = await this._ItemsService.addItemParamValue(
-                paramValues,
-                createItemParam._id,
-                item.merchant._id,
-                createItem._id
-              );
-            }
+            // const itemWithParams: ExtendedItem = await this._ItemsService.item(
+            //   createItem._id
+            // );
 
-            const itemWithParams: ExtendedItem = await this._ItemsService.item(
-              createItem._id
-            );
-
-            if (itemWithParams.tags && itemWithParams.tags.length) {
-              itemWithParams.tagsFilled = [];
+            if (createdItem.tags && createdItem.tags.length) {
+              createdItem.tagsFilled = [];
 
               if (item.tags.length > 0) {
                 for (const tagId of item.tags) {
                   if (this.tagsHashTable[tagId]) {
-                    itemWithParams.tagsFilled.push(this.tagsHashTable[tagId]);
+                    createdItem.tagsFilled.push(this.tagsHashTable[tagId]);
                   }
                 }
               }
@@ -1199,20 +1190,19 @@ export class ItemsDashboardComponent implements OnInit {
 
             this.totalItemsCounter++;
 
-            if (itemWithParams.status === 'featured') {
+            if (createdItem.status === 'featured') {
               this.activeItemsCounter++;
               this.featuredItemsCounter++;
             }
 
-            if (itemWithParams.status === 'active') {
+            if (createdItem.status === 'active') {
               this.activeItemsCounter++;
             }
 
-            if (itemWithParams.status === 'disabled') {
+            if (createdItem.status === 'disabled') {
               this.inactiveItemsCounter++;
             }
-
-            this.allItems = [itemWithParams].concat(this.allItems);
+            this.allItems = [createdItem].concat(this.allItems);
             this._ToastrService.info('¡Item duplicado exitosamente!');
           } catch (error) {
             console.log(error);

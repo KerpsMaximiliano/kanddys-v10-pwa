@@ -1,0 +1,26 @@
+<div class="container">
+  <header class="header">
+    <div class="left">
+      <button><img src="" class="img" /></button>
+      <p class="title">MerchantID</p>
+    </div>
+
+    <div class="right">
+      <button>
+        <img class="listIcon" [src]="environment + '/'" />
+      </button>
+      <button class="blackButton">
+        <p>Programas</p>
+        <img class="starIcon" [src]="environment + '/star.svg'" />
+      </button>
+    </div>
+  </header>
+  <div class="contents">
+    <app-options-bar
+      [optCol]="3"
+      [type] = "'2'"
+      [options]="tags"
+      (selectedIndex)="selectTag($event)">
+    </app-options-bar>
+  </div>
+</div>
