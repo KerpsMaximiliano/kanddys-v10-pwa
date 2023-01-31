@@ -13,14 +13,29 @@ export interface ExtendedCalendar extends Calendar {
   limitToDay?: number;
 }
 
+export interface DayInfo {
+  dayNumber: number;
+  dayName: string;
+  weekDayNumber: number;
+  selected?: boolean;
+}
+
 export interface Month {
   id: number;
   name: string;
-  dates: {
-    dayNumber: number;
-    dayName: string;
-    weekDayNumber: number;
-  }[];
+  dates: Array<DayInfo>;
+}
+
+interface Year {
+  yearNumber: number;
+  selected: boolean;
+  allMonths: Array<Month>;
+}
+
+interface SelectedDateData {
+  day: number;
+  month: number;
+  year: number;
 }
 
 @Injectable({
@@ -29,70 +44,127 @@ export interface Month {
 export class CalendarsService {
   calendarsCount = 0;
   calendarsObtained: Record<string, ExtendedCalendar> = {};
-  allMonths: Array<Month> = [
-    {
-      id: 0,
-      name: 'Enero',
-      dates: [],
-    },
-    {
-      id: 1,
-      name: 'Febrero',
-      dates: [],
-    },
-    {
-      id: 2,
-      name: 'Marzo',
-      dates: [],
-    },
-    {
-      id: 3,
-      name: 'Abril',
-      dates: [],
-    },
-    {
-      id: 4,
-      name: 'Mayo',
-      dates: [],
-    },
-    {
-      id: 5,
-      name: 'Junio',
-      dates: [],
-    },
-    {
-      id: 6,
-      name: 'Julio',
-      dates: [],
-    },
-    {
-      id: 7,
-      name: 'Agosto',
-      dates: [],
-    },
-    {
-      id: 8,
-      name: 'Septiembre',
-      dates: [],
-    },
-    {
-      id: 9,
-      name: 'Octubre',
-      dates: [],
-    },
-    {
-      id: 10,
-      name: 'Noviembre',
-      dates: [],
-    },
-    {
-      id: 11,
-      name: 'Diciembre',
-      dates: [],
-    },
-  ];
+  yearsData: Array<Year> = [];
+  yearsExtent = 10;
+  currentDayData = {};
+  allMonths: {
+    id: number;
+    name: string;
+  }[] = [];
+  monthsByNumber = {
+    1: 'Enero',
+    2: 'Febrero',
+    3: 'Marzo',
+    4: 'Abril',
+    5: 'Mayo',
+    6: 'Junio',
+    7: 'Julio',
+    8: 'Agosto',
+    9: 'Septiembre',
+    10: 'Octubre',
+    11: 'Noviembre',
+    12: 'Diciembre',
+  };
 
-  constructor(private graphql: GraphQLWrapper) {}
+  constructor(private graphql: GraphQLWrapper) {
+
+  }
+
+  async setInitialData(dateData: SelectedDateData = null) {
+    if (!dateData) {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+
+      for (let yearIndex = 0; yearIndex < this.yearsExtent; yearIndex++) {
+        if (yearIndex === 0) this.setDataForYear(currentYear, true);
+        else this.setDataForYear(currentYear + yearIndex, false);
+      }
+    }
+
+    for (let monthNumber = 1; monthNumber <= 12; monthNumber++) {
+      this.allMonths.push({
+        id: monthNumber,
+        name: this.monthsByNumber[monthNumber],
+      });
+    }
+  }
+
+  async setDataForYear(year: number, currentYear: boolean) {
+    const yearObject: Year = {
+      yearNumber: year,
+      allMonths: [],
+      selected: currentYear,
+    };
+
+    if (currentYear) {
+      const today = new Date();
+      const currentMonth = today.getMonth() + 1;
+      const currentMonthDay = today.getDate();
+
+      for (let monthNumber = currentMonth; monthNumber <= 12; monthNumber++) {
+        yearObject.allMonths.push({
+          id: monthNumber,
+          name: this.monthsByNumber[monthNumber],
+          dates: this.getMonthDaysArray(
+            yearObject.yearNumber,
+            monthNumber,
+            currentMonthDay,
+            monthNumber === currentMonth
+          ),
+        });
+      }
+    } else {
+      for (let monthNumber = 1; monthNumber <= 12; monthNumber++) {
+        yearObject.allMonths.push({
+          id: monthNumber,
+          name: this.monthsByNumber[monthNumber],
+          dates: this.getMonthDaysArray(
+            yearObject.yearNumber,
+            monthNumber,
+            1,
+            false
+          ),
+        });
+      }
+    }
+
+    this.yearsData.push(yearObject);
+  }
+
+  getMonthDaysArray(
+    year: number,
+    monthNumber: number,
+    monthDay: number,
+    currentMonth: boolean
+  ): Array<DayInfo> {
+    let weekDaysNames = Object.freeze([
+      'Domingo',
+      'Lunes',
+      'Martes',
+      'Miercoles',
+      'Jueves',
+      'Viernes',
+      'Sabado',
+    ]);
+
+    const monthDays: Array<DayInfo> = [];
+
+    let date = new Date(year, monthNumber - 1, 1);
+    while (date.getMonth() == monthNumber - 1) {
+      monthDays.push({
+        dayNumber: date.getDate(),
+        dayName: weekDaysNames[date.getDay()],
+        weekDayNumber: date.getDay(),
+      });
+      date.setDate(date.getDate() + 1);
+    }
+
+    if (currentMonth) {
+      monthDays.splice(0, monthDay - 1);
+    }
+
+    return monthDays;
+  }
 
   async getCalendar(
     id: string,
