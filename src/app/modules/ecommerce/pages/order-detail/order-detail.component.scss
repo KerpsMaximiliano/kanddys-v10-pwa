@@ -246,6 +246,12 @@ a {
           }
         }
 
+        .video {
+          width: 86px;
+          height: 86px !important;
+          border-radius: 6px;
+        }
+
         .total {
           font-family: "SfProBold";
           font-size: 13px;

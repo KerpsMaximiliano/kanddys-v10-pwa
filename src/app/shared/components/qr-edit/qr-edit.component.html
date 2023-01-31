@@ -70,9 +70,10 @@
             }"
           ></div>
           <video
+            autoplay
+            [muted]="true"
             [src]="gridItem.background"
             *ngIf="videoFiles.includes(gridItem._type)"
-            src="videoFiles.background"
           ></video>
           <div class="labelBox"></div>
           <div class="circleButton" (click)="openSlideSettings(i)">

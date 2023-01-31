@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { SlideInput } from 'src/app/core/models/post';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -15,8 +15,10 @@ export class QrContentComponent implements OnInit {
   @Input() joke: string = '';
   @Output() buttonClicked = new EventEmitter();
   slidesPath: Array<{
-    type: 'IMAGE' | 'VIDEO';
-    path: string | SafeUrl | ArrayBuffer;
+    type: 'IMAGE' | 'VIDEO' | 'TEXT';
+    path?: string | SafeUrl;
+    title?: string;
+    text?: string;
   }> = [];
 
   filesStrings: string[] = [];
@@ -27,19 +29,17 @@ export class QrContentComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    console.log(this.slides);
-    console.log("Cambios detectados en los slides");
     if (this.slides) {
-      console.log(this.slides);
       for await (const slide of this.slides) {
-        if (slide.media.type.includes('image')) {
+        console.log(slide);
+        if (slide.media && slide.media.type.includes('image')) {
           const base64 = await this.fileToBase64(slide.media);
           this.slidesPath.push({
             path: `url(${base64})`,
             type: 'IMAGE',
           });
           this.filesStrings.push(base64 as string);
-        } else {
+        } else if (slide.media && slide.media.type.includes('video')) {
           const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
             URL.createObjectURL(slide.media)
           );
@@ -47,8 +47,21 @@ export class QrContentComponent implements OnInit {
             path: fileUrl,
             type: 'VIDEO',
           });
+          this.filesStrings.push(fileUrl as string);
+        } else if (slide.type === 'text') {
+          this.slidesPath.push({
+            text: slide.text,
+            title: slide.title,
+            type: 'TEXT',
+          });
         }
       }
+    }
+
+    if (this.slides.length > 0) {
+      this.shadows = false;
+    } else {
+      this.shadows = true;
     }
   }
 
@@ -63,12 +76,15 @@ export class QrContentComponent implements OnInit {
   emitClick() {
     this.buttonClicked.emit(true);
   }
-  
-  openImageModal(imageSourceURL: string | ArrayBuffer) {
+  openImageModal(
+    imageSourceURL: string | SafeUrl | ArrayBuffer,
+    type: 'IMAGE' | 'VIDEO'
+  ) {
     this.dialog.open(ImageViewComponent, {
       type: 'fullscreen-translucent',
       props: {
         imageSourceURL,
+        sourceType: type,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

@@ -56,11 +56,33 @@ export class QrEditComponent implements OnInit {
         return;
       }
       if (this.item.images.length) {
-        this.gridArray = this.item.images.map((image) => ({
-          _id: image._id,
-          background: image.value,
-          _type: 'image/jpg',
-        }));
+        this.gridArray = this.item.images.map((image) => {
+          const fileParts = image.value.split('.');
+          const fileExtension = fileParts[fileParts.length - 1];
+          let auxiliarImageFileExtension = 'image/' + fileExtension;
+          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+          if (
+            image.value &&
+            !image.value.includes('http') &&
+            !image.value.includes('https')
+          ) {
+            image.value = 'https://' + image.value;
+          }
+
+          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+            return {
+              _id: image._id,
+              background: image.value,
+              _type: auxiliarImageFileExtension,
+            };
+          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+            return {
+              background: image.value,
+              _type: auxiliarVideoFileExtension,
+            };
+          }
+        });
       }
       return;
     }
@@ -74,15 +96,17 @@ export class QrEditComponent implements OnInit {
       ]);
       return;
     }
+
     this._PostsService.post = {
       ...this._PostsService.post,
       slides: this._PostsService.post?.slides
         ? this._PostsService.post?.slides
         : [],
     };
+
     if (this._PostsService.post.slides.length) {
       for await (const slide of this._PostsService.post.slides) {
-        if (slide.media.type.includes('image')) {
+        if (slide.media && slide.media.type.includes('image')) {
           await fileToBase64(slide.media).then((result) => {
             this.gridArray.push({
               ...slide,
@@ -90,7 +114,7 @@ export class QrEditComponent implements OnInit {
               _type: slide.media.type,
             });
           });
-        } else {
+        } else if (slide.media && slide.media.type.includes('video')) {
           const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
             URL.createObjectURL(slide.media)
           );
@@ -98,6 +122,10 @@ export class QrEditComponent implements OnInit {
             ...slide,
             background: fileUrl,
             _type: slide.media.type,
+          });
+        } else if (!slide.media && slide.type === 'text') {
+          this.gridArray.push({
+            ...slide,
           });
         }
       }
@@ -129,10 +157,16 @@ export class QrEditComponent implements OnInit {
       const file = fileList.item(i);
       if (this.item) {
         this._ItemsService.itemImages.push(file);
-        if (
-          !['png', 'jpg', 'jpeg'].some((type) => file.type.includes(type)) ||
-          !file.type.includes('image/')
-        ) {
+
+        let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
+          file.type.includes(type)
+        );
+
+        let isFileAValidVideo = ['webm', 'mp4'].some((type) =>
+          file.type.includes(type)
+        );
+
+        if (!isFileAValidImage && !isFileAValidVideo) {
           return;
         }
         const reader = new FileReader();
@@ -149,7 +183,9 @@ export class QrEditComponent implements OnInit {
           this._ItemsService.editingImageId =
             addedImage.images[addedImage.images.length - 1]._id;
           unlockUI();
-          this._Router.navigate([`admin/create-article/${this.item._id}`]);
+
+          if (!isFileAValidVideo)
+            this._Router.navigate([`admin/create-article/${this.item._id}`]);
         };
         reader.readAsDataURL(file);
       } else {
