@@ -187,11 +187,12 @@ export class HeaderService {
     }
     if (this.saleflow.module?.appointment?.isActive) {
       const reservation = this.getReservation();
-      if (!reservation || !this.orderProgress.reservation) return;
+      if (!reservation || !reservation.date || !this.orderProgress.reservation) return;
     }
     if (this.hasScenarios) {
       if (!this.orderProgress.scenarios) return;
     }
+    console.log("Completo");
     return true;
   }
 

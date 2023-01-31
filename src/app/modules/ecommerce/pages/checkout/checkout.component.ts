@@ -189,6 +189,15 @@ export class CheckoutComponent implements OnInit {
       });
     }
     this.deliveryLocation = this.headerService.getLocation();
+    // Validation for stores with only one address of pickup and no delivery for customers
+    if (!this.deliveryLocation) {
+      if ((this.headerService.saleflow.module.delivery.pickUpLocations.length == 1) && (!this.headerService.saleflow.module.delivery.deliveryLocation)) {
+        this.deliveryLocation = this.headerService.saleflow.module.delivery.pickUpLocations[0];
+        this.headerService.storeLocation(this.deliveryLocation);
+        this.headerService.orderProgress.delivery = true;
+        this.headerService.storeOrderProgress();
+      }
+    }
     this.reservation = this.headerService.getReservation().reservation;
     if (this.reservation) {
       const fromDate = new Date(this.reservation.date.from);
