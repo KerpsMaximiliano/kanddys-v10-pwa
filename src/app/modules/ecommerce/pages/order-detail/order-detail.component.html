@@ -253,7 +253,12 @@
 
     <section class="section" *ngIf="order?.items[0].deliveryLocation">
       <h2 class="section-title" style="margin-top: 50px">
-        Lugar de {{ order?.items[0].reservation ? "la sesión" : " Entrega:" }}
+        Lugar de
+        {{
+          order?.items[0].saleflow.merchant._id === "62ed55eecd8fc9d59c8d7b6b"
+            ? " la sesión:"
+            : " Entrega:"
+        }}
       </h2>
 
       <div class="items-container column">

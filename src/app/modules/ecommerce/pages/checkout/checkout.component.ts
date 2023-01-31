@@ -124,6 +124,7 @@ export class CheckoutComponent implements OnInit {
   postSlideImages: (string | ArrayBuffer)[] = [];
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
+  saleflowId: string;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -141,6 +142,8 @@ export class CheckoutComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.saleflowId = this.headerService.saleflow.merchant._id;
+    console.log(this.saleflowId);
     let items = this.headerService.getItems();
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
@@ -186,6 +189,15 @@ export class CheckoutComponent implements OnInit {
       });
     }
     this.deliveryLocation = this.headerService.getLocation();
+    // Validation for stores with only one address of pickup and no delivery for customers
+    if (!this.deliveryLocation) {
+      if ((this.headerService.saleflow.module.delivery.pickUpLocations.length == 1) && (!this.headerService.saleflow.module.delivery.deliveryLocation)) {
+        this.deliveryLocation = this.headerService.saleflow.module.delivery.pickUpLocations[0];
+        this.headerService.storeLocation(this.deliveryLocation);
+        this.headerService.orderProgress.delivery = true;
+        this.headerService.storeOrderProgress();
+      }
+    }
     this.reservation = this.headerService.getReservation().reservation;
     if (this.reservation) {
       const fromDate = new Date(this.reservation.date.from);
@@ -207,6 +219,7 @@ export class CheckoutComponent implements OnInit {
           this.reservation.breakTime
         )}`,
       };
+      this.headerService.orderProgress.reservation = true;
     }
     this.headerService.checkoutRoute = null;
     this.payment = this.items?.reduce(
@@ -252,6 +265,9 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+            },
           }
         );
         break;
@@ -313,6 +329,9 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+            },
           }
         );
         return;
@@ -385,6 +404,8 @@ export class CheckoutComponent implements OnInit {
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
+      if (this.headerService.order.itemPackage)
+        delete this.headerService.order.itemPackage;
       if (this.headerService.user && !anonymous) {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)

@@ -59,6 +59,7 @@ import { SaleflowItemComponent } from './components/saleflow-item/saleflow-item.
 import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { SeeFiltersComponent } from './components/see-filters/see-filters.component';
 import { ShortCalendarComponent } from './components/short-calendar/short-calendar.component';
+import { CalendarSwiperComponent } from './components/calendar-swiper/calendar-swiper.component';
 import { SingleItemListComponent } from './components/single-item-list/single-item-list.component';
 import { SliderElementListComponent } from './components/slider-element-list/slider-element-list.component';
 import { StickyButtonComponent } from './components/sticky-button/sticky-button.component';
@@ -259,6 +260,7 @@ const declarations = [
   TitleIconHeaderComponent,
   QrContentComponent,
   QrEditComponent,
+  CalendarSwiperComponent,
 ];
 
 @NgModule({

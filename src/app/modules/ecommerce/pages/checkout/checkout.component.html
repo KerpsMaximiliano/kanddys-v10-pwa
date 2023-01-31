@@ -99,7 +99,11 @@
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">
           Lugar de
-          {{ reservation ? "la sesión" : " Entrega:" }}
+          {{
+            saleflowId === "62ed55eecd8fc9d59c8d7b6b"
+              ? " la sesión:"
+              : " Entrega:"
+          }}
         </h2>
 
         <button
