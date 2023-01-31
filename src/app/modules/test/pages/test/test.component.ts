@@ -32,6 +32,8 @@ import { SwiperOptions } from 'swiper';
 import { LinkDialogComponent } from 'src/app/shared/dialogs/link-dialog/link-dialog.component';
 import { environment } from 'src/environments/environment';
 import { Button } from 'src/app/shared/components/general-item/general-item.component';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 
 @Component({
   selector: 'app-test',
@@ -107,7 +109,8 @@ export class TestComponent implements OnInit {
     private dialog: DialogService,
     private itemsService: ItemsService,
     private merchantService: MerchantsService,
-    private saleflowService: SaleFlowService
+    private saleflowService: SaleFlowService,
+    private _bottomSheet: MatBottomSheet
   ) {}
 
   async ngOnInit() {
@@ -121,5 +124,8 @@ export class TestComponent implements OnInit {
       flags: ['no-header'],
       customClass: 'app-dialog',
     });
+  }
+  openBottomSheet(): void {
+    this._bottomSheet.open(LinksDialogComponent);
   }
 }

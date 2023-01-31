@@ -135,6 +135,8 @@ import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 import { MenuButtonComponent } from './components/menu-button/menu-button.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
+import { LinksDialogComponent } from './dialogs/links-dialog/links-dialog.component';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 
 const imports = [
   CommonModule,
@@ -152,6 +154,7 @@ const imports = [
   DragDropModule,
   MatMenuModule,
   MatIconModule,
+  MatBottomSheetModule,
 ];
 const declarations = [
   // Pages
@@ -279,6 +282,7 @@ const declarations = [
   QrContentComponent,
   QrEditComponent,
   MenuButtonComponent,
+  LinksDialogComponent,
 ];
 
 @NgModule({

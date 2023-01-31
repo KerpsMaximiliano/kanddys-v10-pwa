@@ -523,19 +523,27 @@ headline="EXPUESTO EN TAB (S)"
   <app-tag-items></app-tag-items>
 -->
 
-<app-buyer-card></app-buyer-card>
-<app-buyer-card 
-    [leftAmount] = "3000">
-  </app-buyer-card>
+<button (click)="openBottomSheet()">Bottom Sheet</button>
 
-<app-buyer-card 
-    [title] = "'Plan Individual'"
-    [description] = "'5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'"
-    [leftAmount] = "3000">
-  </app-buyer-card>
-  <app-buyer-card 
-    [title] = "'Tópico de la colección que puede ser de muchas lineas, de hecho acabaria en .. y suprimiria la descripción de ser necesario como justamente este caso'"
-    [description] = "'5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'"
-    [leftAmount] = "3000"
-    [rightAmount] = "700000">
-  </app-buyer-card>
+<app-buyer-card></app-buyer-card>
+<app-buyer-card [leftAmount]="3000"> </app-buyer-card>
+
+<app-buyer-card
+  [title]="'Plan Individual'"
+  [description]="
+    '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
+  "
+  [leftAmount]="3000"
+>
+</app-buyer-card>
+<app-buyer-card
+  [title]="
+    'Tópico de la colección que puede ser de muchas lineas, de hecho acabaria en .. y suprimiria la descripción de ser necesario como justamente este caso'
+  "
+  [description]="
+    '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
+  "
+  [leftAmount]="3000"
+  [rightAmount]="700000"
+>
+</app-buyer-card>

@@ -1,0 +1,40 @@
+<mat-nav-list>
+  <span class="title">Links de Visitantes</span>
+  <p
+    *ngFor="let option of options1; index as i"
+    [ngClass]="i === options1.length - 1 ? 'subtitle-last' : 'subtitle'"
+    (click)="handleClick(option)"
+  >
+    {{ option }}
+  </p>
+  <qrcode
+    style="visibility: hidden; height: 55.5px"
+    #qrcode
+    [qrdata]="link"
+    [elementType]="'img'"
+    [width]="55.5"
+    [style.margin-top.px]="-25"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#2874AD"
+  ></qrcode>
+  <span class="title">Links de admins</span>
+  <p
+    *ngFor="let option of options2; index as i"
+    [ngClass]="i === options2.length - 1 ? 'subtitle-last' : 'subtitle'"
+    (click)="handleClick(option)"
+  >
+    {{ option }}
+  </p>
+  <qrcode
+    style="visibility: hidden; height: 55.5px"
+    #qrcode
+    [qrdata]="link2"
+    [elementType]="'img'"
+    [width]="55.5"
+    [style.margin-top.px]="-25"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#2874AD"
+  ></qrcode>
+</mat-nav-list>
