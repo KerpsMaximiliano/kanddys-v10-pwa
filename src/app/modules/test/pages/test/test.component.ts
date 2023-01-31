@@ -97,9 +97,11 @@ export class TestComponent implements OnInit {
   ];
   optionsButton: Button = {
     clickEvent: (params: Tag) => {
-      alert("clicked")
+      alert('clicked');
     },
   };
+
+  firstIndex: number = 0;
 
   constructor(
     private dialog: DialogService,
@@ -110,6 +112,7 @@ export class TestComponent implements OnInit {
 
   async ngOnInit() {
     this.item = await this.itemsService.item('63c61f50a6ce9322ca216714');
+    console.log(this.firstIndex);
   }
 
   openDialog() {

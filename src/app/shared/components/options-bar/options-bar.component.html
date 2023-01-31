@@ -9,10 +9,22 @@
     *ngFor="let option of options; let i = index"
     [ngClass]="{ active: i == selected }"
     (click)="selectOpt(i)"
+    [matMenuTriggerFor]="menu"
   >
     {{ option }}
   </button>
 </div>
+
+<mat-menu #menu="matMenu" class="menu">
+  <button
+    mat-menu-item
+    *ngFor="let item of menuOptions; index as i"
+    (click)="menuOptionSelected(i)"
+  >
+    <span>{{ item.text }}</span>
+    <mat-icon class="icon">{{ item.icon }}</mat-icon>
+  </button>
+</mat-menu>
 
 <!-- <div *ngIf="swiperMode == true" style="margin-bottom: 20px">
   <swiper [config]="swiperConfig">

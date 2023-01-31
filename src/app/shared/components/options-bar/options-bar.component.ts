@@ -12,14 +12,35 @@ export class OptionsBarComponent implements OnInit {
   @Input() optCol: number = 0;
   @Input() swiperMode: boolean = false;
   @Output() selectedIndex = new EventEmitter<number>();
+  @Output() selectedMenuIndex = new EventEmitter<number>();
 
   selected: number = 0;
+  menuSelected: number = 0;
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 8,
   };
+
+  menuOptions = [
+    {
+      text: 'Nuevo artículo',
+      icon: 'chevron_right',
+    },
+    {
+      text: 'Orden de artículos',
+      icon: 'chevron_right',
+    },
+    {
+      text: 'Estilo de cartas',
+      icon: 'chevron_right',
+    },
+    {
+      text: 'Pantalla Inicial',
+      icon: 'check',
+    },
+  ];
 
   constructor() {}
 
@@ -30,5 +51,12 @@ export class OptionsBarComponent implements OnInit {
       this.selected = index;
     }
     this.selectedIndex.emit(this.selected);
+    console.log(this.selected);
+  }
+
+  menuOptionSelected(index: number) {
+    this.menuSelected = index;
+    this.selectedMenuIndex.emit(this.menuSelected);
+    console.log(this.menuSelected);
   }
 }

@@ -507,6 +507,7 @@ headline="EXPUESTO EN TAB (S)"
   <app-options-bar
     [options]="['articulos', 'categorias', 'collections']"
     [type]="'2'"
+    (selectedIndex)="firstIndex = $event"
   >
   </app-options-bar>
 </div>
