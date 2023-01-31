@@ -1,70 +1,26 @@
 <div class="container">
   <header class="header">
-    <button><img src="" class="img" /></button>
-    <button
-      class="tag"
-      *ngFor="let tag of tags; let i = index"
-      [ngClass]="{ active: i === selected }"
-      (click)="selectTag(i)"
-    >
-      {{ tag.name }}
-    </button>
-    <button class="dotsIcon">
-      <img [src]="environment + '/dots-black.svg'" />
-    </button>
+    <div class="left">
+      <button><img src="" class="img" /></button>
+      <p class="title">MerchantID</p>
+    </div>
+
+    <div class="right">
+      <button>
+        <img class="listIcon" [src]="environment + '/'" />
+      </button>
+      <button class="blackButton">
+        <p>Programas</p>
+        <img class="starIcon" [src]="environment + '/star.svg'" />
+      </button>
+    </div>
   </header>
-  <div class="contents" *ngIf="selected == 0">
+  <div class="contents">
     <app-options-bar
-      [optCol]="2"
-      [options]="tags[selected].subMenu.options"
-      (selectedIndex)="changeSubOption(0, $event)"
-    >
+      [optCol]="3"
+      [type] = "'2'"
+      [options]="tags"
+      (selectedIndex)="selectTag($event)">
     </app-options-bar>
-  </div>
-  <div class="contents" *ngIf="selected == 1">
-    <app-options-bar
-      [options]="tags[selected].subMenu.options"
-      (selectedIndex)="changeSubOption(1, $event)"
-    >
-    </app-options-bar>
-    <div *ngIf="tags[selected].subMenu.selected == 0">
-      <div class="cardsBox" *ngIf="createdCollections.length > 0">
-        <app-collection-card
-          *ngFor="let collection of createdCollections"
-          [imgURL]="collection.imgURL"
-          [title]="collection.title"
-          [description]="collection.description"
-          [icon]="''"
-        >
-        </app-collection-card>
-      </div>
-      <div *ngIf="!(createdCollections.length > 0)">
-        <app-card [shadows]="false">
-          <div class="newCollection">
-            <img [src]="environment + '/new-collection.png'" />
-            <p>
-              Es una forma de tener todo en orden y poder mostrar a las personas
-              lo que tienes disponible para vender.
-            </p>
-            <button class="button">Crea tu primer Collection</button>
-            <p class="text2">
-              La plataforma y tu base de datos se mantiene cuando contribuyes
-              $0.87 por venta.
-            </p>
-          </div>
-        </app-card>
-      </div>
-    </div>
-    <div *ngIf="tags[selected].subMenu.selected == 1">
-      <div class="cardsBox">
-        <app-collection-card
-          *ngFor="let collection of predefinedCollections"
-          [imgURL]="collection.imgURL"
-          [title]="collection.title"
-          [description]="collection.description"
-        >
-        </app-collection-card>
-      </div>
-    </div>
   </div>
 </div>

@@ -20,49 +20,56 @@ button {
     justify-content: space-between;
     gap: 8px;
 
-    .img {
-        cursor: pointer;
-        width: 31px;
-        height: 31px;
-        object-fit: cover;
-        border-radius: 50%;
-        background-color: #e9e371;
+    >*{
+        display: flex;
+        align-items: center;
     }
 
-    .tag {
-        cursor: pointer;
-        padding: 5px 0;
-        font-size: 15px;
-        line-height: 15px;
-        color: #272727;
-        font-family: "SfProSemiBold";
-        transition: all 0.2s;
-        max-width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        text-align: center;
+    .left{
+        gap: 17px;
 
-        &.active {
-            padding: 5px 5%;
-            border-radius: 14px;
-            background: #f4f4f4;
+        .img {
+            cursor: pointer;
+            width: 31px;
+            height: 31px;
+            object-fit: cover;
+            border-radius: 50%;
+            background-color: #e9e371;
+        }
+
+        .title{
             font-family: "SfProHeavy";
+            font-size: 16px;
+            color: #272727;
         }
     }
+    .right{
+        gap: 32px;
 
-    .dotsIcon {
-        cursor: pointer;
-        padding: 8px;
-        display: flex;
+        .listIcon{
+            cursor: pointer;
+            height: 27px;
+            width: auto;
+        }
+        .blackButton{
+            cursor: pointer;
+            padding: 8px 9px 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            border-radius: 17px;
+            background-color: #272727;
+            color: #FED230;
 
-        img {
-            width: 18px;
-            height: auto;
-            filter: invert(6%) sepia(90%) saturate(31%) hue-rotate(314deg) brightness(105%) contrast(81%);
+            .starIcon{
+                height: 17.5px;
+                width: auto;
+                filter: brightness(0) saturate(100%) invert(99%) sepia(93%) saturate(2815%) hue-rotate(327deg) brightness(100%) contrast(99%);
+            }
         }
     }
 }
+
 .contents {
     padding: 0 20px;
     margin-top: 6px;

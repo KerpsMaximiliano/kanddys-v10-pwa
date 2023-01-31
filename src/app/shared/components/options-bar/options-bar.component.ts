@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { Swiper, SwiperOptions } from 'swiper';
 
 @Component({
@@ -7,6 +8,8 @@ import { Swiper, SwiperOptions } from 'swiper';
   styleUrls: ['./options-bar.component.scss'],
 })
 export class OptionsBarComponent implements OnInit {
+
+  environment: string = environment.assetsUrl;
   @Input() options: Array<string> = [];
   @Input() type: string = '1';
   @Input() optCol: number = 0;
