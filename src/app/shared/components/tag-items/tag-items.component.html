@@ -1,11 +1,16 @@
 <div class="container">
   <button class="header">
-    <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
-    <p class="title">Collections</p>
+    <!-- <img class="icon" [src]="environment + '/arrow-double-up.svg'" /> -->
+    <button class="icon" [style.background]="image"></button>
+    <p class="title">{{ merchantName.length < 14
+      ? merchantName
+      : merchantName.slice(0, 14) + ".." || "Tienda" | titlecase }}</p>
+    <p class="title">{{ name | titlecase }}</p>
+    <button class="arrow-btn"><img class="icon" [src]="environment + '/arrow-double-up.svg'" /></button>
   </button>
   <div class="margin flex">
     <section *ngIf="optional" class="optional flex">
-      <div class="top flex">
+      <!-- <div class="top flex">
         <button><img class="optImg" src="" alt="" /></button>
         <p class="title">
           ¡Regala un arreglo floral con globos! ¡Sorprende a alguien especial.
@@ -16,7 +21,7 @@
         orgulloso de ti. No puedo creer cómo has crecido y madurado.<br /><br />
         Espero que disfrutes cada momento de esta etapa y que sigas alcanzando
         grandes cosas en el futuro. ¡Te quiero mucho!
-      </p>
+      </p> -->
     </section>
     <section class="productGrid">
       <div
@@ -76,7 +81,7 @@
             marginRight: '6.1px'
           }"
           [showIconForTagStatus]="
-            item.status === 'disabled' || item.status === 'featured'
+            item?.status === 'disabled' || item?.status === 'featured'
           "
           [statusIcon]="
             'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'
@@ -92,7 +97,7 @@
             'word-break': 'break-all'
           }"
           [topInnerButtonStyles]="{
-            backgroundColor: item.status !== 'disabled' ? '#272727' : '#b17608'
+            backgroundColor: item?.status !== 'disabled' ? '#272727' : '#b17608'
           }"
         >
         </app-general-item>
@@ -140,5 +145,5 @@
     [cartAmount]="1"
   >
   </app-bubble-button>
-  <app-gradient-footer [uploadIcon]="true"></app-gradient-footer>
+  <!-- <app-gradient-footer [uploadIcon]="true"></app-gradient-footer> -->
 </div>
