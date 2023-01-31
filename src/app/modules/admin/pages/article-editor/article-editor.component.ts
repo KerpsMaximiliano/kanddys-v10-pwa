@@ -177,6 +177,7 @@ export class ArticleEditorComponent implements OnInit {
     };
     this._ItemsService.itemPrice = null;
     this._ItemsService.itemName = null;
+    this._ItemsService.itemDesc = null;
 
     if (this.updated) {
       if (!ignore) lockUI();
