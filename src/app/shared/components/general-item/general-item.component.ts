@@ -99,7 +99,7 @@ export class GeneralItemComponent implements OnInit {
   ngOnInit(): void {
     switch (this.entity) {
       case 'ITEM':
-        if (['disabled', 'featured'].includes(this.item.status)) {
+        if (['disabled', 'featured'].includes(this.item?.status)) {
           this.showIconForItemStatus = true;
 
           this.statusIcon =
@@ -109,7 +109,7 @@ export class GeneralItemComponent implements OnInit {
               : '/binoculars-fill-black.svg');
         }
 
-        if (this.item.params.length === 0) {
+        if (this.item?.params?.length === 0) {
           this.cardMainImage =
             this.item.images.length > 0 ? this.item.images[0].value : null;
 

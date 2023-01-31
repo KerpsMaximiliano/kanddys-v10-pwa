@@ -18,24 +18,34 @@ button {
     background-color: #272727;
     display: flex;
     align-items: center;
-    cursor: pointer;
     box-sizing: border-box;
 
     .icon {
-        filter: brightness(0) saturate(100%) invert(87%) sepia(10%) saturate(1817%) hue-rotate(67deg) brightness(96%)
-            contrast(98%);
-        width: 17px;
-        height: auto;
+        max-height: 30px;
+        max-width: 30px;
+        min-height: 30px;
+        min-width: 30px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
     }
 
     .title {
-        position: absolute;
+        &:nth-child(2) {
+            padding-left: 7px;
+        }
+        text-align: left;
         width: 100%;
         color: #ffffff;
-        text-align: center;
         font-size: 16px;
         font-family: "SfProMedium";
         left: 0;
+    }
+
+    .arrow-btn {
+        border: none;
+        background: transparent;
+        cursor: pointer;
     }
 }
 

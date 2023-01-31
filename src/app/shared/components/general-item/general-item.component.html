@@ -199,7 +199,7 @@
         <div
           class="tags"
           [ngStyle]="tagsStyles"
-          *ngIf="entity === 'ITEM' && item.tags && item.tags.length"
+          *ngIf="entity === 'ITEM' && item?.tags && item?.tags.length"
         >
           {{ getTagSeparatedByComma() }}
         </div>

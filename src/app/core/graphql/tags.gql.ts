@@ -244,3 +244,64 @@ export const hotTagsArchived = gql`
     }
   }
 `;
+
+export const itemsByTag = gql`
+  query itemsByTag($nameTag: String!, $params: PaginationInput) {
+    itemsByTag(nameTag: $nameTag, params: $params) {
+      _id
+      createdAt
+      updatedAt
+      hasSelection
+      merchant {
+        _id
+      }
+      category {
+        _id
+      }
+      name
+      images {
+        _id
+        value
+      }
+      featuredImage
+      description
+      isPhysical
+      purchaseLocations
+      tags
+      currencies {
+        _id
+      }
+      pricing
+      fixedQuantity
+      pricePerUnit
+      stock
+      params {
+        _id
+      }
+      calendar {
+        _id
+      }
+      itemExtra {
+        _id
+      }
+      size
+      content
+      quality
+      iconImage
+      hasExtraPrice
+      toPromotion
+      status
+      collaboration
+      showImages
+      notifications
+      active
+      rules {
+        _id
+      }
+      visitorCounter {
+        _id
+      }
+      allowCommission
+    }
+  }
+`;
