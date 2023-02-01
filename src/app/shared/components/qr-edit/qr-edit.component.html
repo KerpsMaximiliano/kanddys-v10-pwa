@@ -37,7 +37,7 @@
           id="file"
           [style.display]="'none'"
           (change)="loadFile($event)"
-          [accept]="['.png', '.jpg', '.jpeg', '.webp', '.webm', '.mp4', '.m4v', '.mpg', '.mpeg', '.mpeg4']"
+          [accept]="['.png', '.jpg', '.jpeg', '.webp', '.webm', '.mp4', '.m4v', '.mpg', '.mpeg', '.mpeg4', '.mov', '.3gp', '.mts/m2ts', '.mxf']"
         />
         <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
           <div class="labelBox"></div>
@@ -90,3 +90,7 @@
     </div>
   </div>
 </div>
+
+case '3gp':
+    case 'mts/m2ts':
+    case 'mxf':

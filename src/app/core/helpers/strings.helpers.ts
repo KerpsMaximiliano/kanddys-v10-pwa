@@ -51,6 +51,10 @@ export function isVideo(filename: string) {
     case 'webm':
     case 'mpeg':
     case 'mpeg4':
+    case 'mov':
+    case '3gp':
+    case 'mts/m2ts':
+    case 'mxf':
       return true;
   }
   return false;
