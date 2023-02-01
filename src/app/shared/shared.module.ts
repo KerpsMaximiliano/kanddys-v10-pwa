@@ -139,6 +139,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDividerModule } from '@angular/material/divider';
+import { CollectionsComponent } from './components/collections/collections.component';
 
 const imports = [
   CommonModule,
@@ -287,6 +288,7 @@ const declarations = [
   QrEditComponent,
   MenuButtonComponent,
   LinksDialogComponent,
+  CollectionsComponent
 ];
 
 @NgModule({
