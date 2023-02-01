@@ -21,6 +21,7 @@ export class CollectionsComponent implements OnInit {
   description: string;
   needsDescription: boolean;
   slug: string;
+  title:string = '';
 
   constructor(
     private _MerchantsService: MerchantsService,
@@ -32,8 +33,14 @@ export class CollectionsComponent implements OnInit {
 
   ngOnInit(): void {
     (async () => {
+      const dict = {
+        collections: 'Colecciones',
+        categories: 'Categorías'
+      };
+      const list = this._Router.url.split('/');
       const path: string = 'collections';
-      const needsDescription = this._Router.url.split('/').includes(path);
+      this.title = dict[list[list.length-1]];
+      const needsDescription = list.includes(path);
       this.needsDescription = needsDescription;
       const {
         _id,
