@@ -216,10 +216,11 @@ export class ArticleDetailComponent implements OnInit {
         this.itemData.name = this._ItemsService.itemName;
         this.itemData.description = this._ItemsService.itemDesc;
         this.itemData.pricing = this._ItemsService.itemPrice;
-        this.itemData.images = this._ItemsService.itemUrls.map((value) => ({
-          value,
-        })) as ItemImage[];
+        this.itemData.images = this.itemData.images.map((image) => ({
+          value: image.value,
+        })) as ItemImage[];  
       }
+
       this.itemData.media = this.itemData.images.map((image) => {
         let url = image.value;
         const fileParts = image.value.split('.');
@@ -230,8 +231,6 @@ export class ArticleDetailComponent implements OnInit {
         if (url && !url.includes('http') && !url.includes('https')) {
           url = 'https://' + url;
         }
-
-        console.log(url);
 
         if (this.imageFiles.includes(auxiliarImageFileExtension)) {
           return {
