@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+} from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Swiper, SwiperOptions } from 'swiper';
 
@@ -8,9 +15,8 @@ import { Swiper, SwiperOptions } from 'swiper';
   styleUrls: ['./options-bar.component.scss'],
 })
 export class OptionsBarComponent implements OnInit {
-
   environment: string = environment.assetsUrl;
-  @Input() options: Array<string> = [];
+  @Input() options: Array<any> = [];
   @Input() type: string = '1';
   @Input() optCol: number = 0;
   @Input() swiperMode: boolean = false;
@@ -19,6 +25,10 @@ export class OptionsBarComponent implements OnInit {
 
   selected: number = 0;
   menuSelected: number = 0;
+  otherMenu: boolean = false;
+
+  @ViewChild('menu', { static: true }) public menu: any;
+  @ViewChild('other', { static: true }) public other: any;
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -50,11 +60,8 @@ export class OptionsBarComponent implements OnInit {
   ngOnInit(): void {}
 
   selectOpt(index: number) {
-    if (index != this.selected) {
-      this.selected = index;
-    }
+    this.selected = index;
     this.selectedIndex.emit(this.selected);
-    console.log(this.selected);
   }
 
   menuOptionSelected(index: number) {

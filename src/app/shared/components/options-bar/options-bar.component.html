@@ -7,15 +7,18 @@
   <button
     class="option type{{ type }}"
     *ngFor="let option of options; let i = index"
-    [ngClass]="{ active: i == selected }"
     (click)="selectOpt(i)"
     [matMenuTriggerFor]="i == selected ? menu : other"
+    [ngClass]="{ active: i == selected, optIcon: option.dotsIcon }"
   >
-    {{ option }}
+    <span>{{ option.title }}</span>
+    <button class="dotsButton" *ngIf="option.dotsIcon && i == selected">
+      <img class="dotsIcon" [src]="environment + '/dots-black.svg'" />
+    </button>
   </button>
 </div>
 
-<mat-menu #menu="matMenu" class="menu">
+<mat-menu #menu="matMenu" class="menuContainer">
   <button
     mat-menu-item
     *ngFor="let item of menuOptions; index as i"
@@ -25,6 +28,12 @@
     <mat-icon class="icon">{{ item.icon }}</mat-icon>
   </button>
 </mat-menu>
+
+<mat-menu
+  *ngIf="otherMenu === true"
+  #other
+  style="display: none; visibility: hidden"
+></mat-menu>
 
 <!-- <div *ngIf="swiperMode == true" style="margin-bottom: 20px">
   <swiper [config]="swiperConfig">

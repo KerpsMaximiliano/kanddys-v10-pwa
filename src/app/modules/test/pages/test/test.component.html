@@ -358,8 +358,8 @@ headline="EXPUESTO EN TAB (S)"
 <!--
     <button (click)="openDialog()">ver links</button>
 -->
-<!-- 
-<div
+
+<!--<div
   [ngStyle]="{
     width: '194.06px',
     height: '238.43px'
@@ -401,7 +401,7 @@ headline="EXPUESTO EN TAB (S)"
     }"
   >
   </app-general-item>
-</div> -->
+</div>-->
 <!-- 
 <div
   [ngStyle]="{
@@ -492,64 +492,77 @@ headline="EXPUESTO EN TAB (S)"
   >
   </app-general-item>
 </div> -->
+<!--<app-menu-button></app-menu-button>-->
 
-<!--
-  <app-buyer-card></app-buyer-card>
-  
-  <div
-    style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px"
-  <app-buyer-card></app-buyer-card>
-</div>
-
-<app-menu-button></app-menu-button>
-<div style="padding: 0 17px">
+<div style="padding: 10px; display: grid; gap: 10px">
   <app-options-bar
-    [options]="['articulos', 'categorias', 'collections']"
+    [options]="[
+      { title: 'articulos', dotsIcon: true },
+      { title: 'categorias', dotsIcon: true },
+      { title: 'colecciones', dotsIcon: true }
+    ]"
+    (selectedIndex)="firstIndex = $event"
+  >
+  </app-options-bar>
+  <app-options-bar
+    [options]="[
+      { title: 'articulos', dotsIcon: true },
+      { title: 'categorias', dotsIcon: true },
+      { title: 'colecciones', dotsIcon: true }
+    ]"
     [type]="'2'"
     (selectedIndex)="firstIndex = $event"
   >
-    <app-buyer-card></app-buyer-card>
-    <app-buyer-card></app-buyer-card>
-  </div>
-  
-  <div style="padding: 0 17px">
-    <app-options-bar
-      [options]="['articulos', 'categorias', 'collections']"
-      [type]="'2'"
-    >
-    </app-options-bar>
-  </div>
-  <app-gradient-footer [uploadIcon]="true"></app-gradient-footer>
-  <app-tag-items></app-tag-items>
--->
+  </app-options-bar>
+  <app-options-bar
+    [options]="[
+      { title: 'articulos', dotsIcon: true },
+      { title: 'categorias', dotsIcon: true },
+      { title: 'colecciones', dotsIcon: true }
+    ]"
+    [type]="'3'"
+    (selectedIndex)="firstIndex = $event"
+  >
+  </app-options-bar>
+</div>
+
+<!--<app-gradient-footer [uploadIcon]="true"></app-gradient-footer>-->
+<!--<app-tag-items></app-tag-items>-->
 
 <button (click)="openBottomSheet()">Bottom Sheet</button>
 <app-menu-button></app-menu-button>
 <app-options-bar
-  [options]="['articulos', 'categorias', 'collections']"
+  [options]="[
+    { title: 'articulos', dotsIcon: true },
+    { title: 'categorias', dotsIcon: true },
+    { title: 'colecciones', dotsIcon: true }
+  ]"
   [type]="'2'"
 >
 </app-options-bar>
 
-<!-- <app-buyer-card></app-buyer-card>
-<app-buyer-card [leftAmount]="3000"> </app-buyer-card>
+<div style="display: grid; gap: 10px">
+  <app-buyer-card></app-buyer-card>
 
-<app-buyer-card
-  [title]="'Plan Individual'"
-  [description]="
-    '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
-  "
-  [leftAmount]="3000"
->
-</app-buyer-card>
-<app-buyer-card
-  [title]="
-    'Tópico de la colección que puede ser de muchas lineas, de hecho acabaria en .. y suprimiria la descripción de ser necesario como justamente este caso'
-  "
-  [description]="
-    '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
-  "
-  [leftAmount]="3000"
-  [rightAmount]="700000"
->
-</app-buyer-card> -->
+  <app-buyer-card [leftAmount]="3000"> </app-buyer-card>
+
+  <app-buyer-card
+    [title]="'Plan Individual'"
+    [description]="
+      '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
+    "
+    [leftAmount]="3000"
+  >
+  </app-buyer-card>
+  <app-buyer-card
+    [title]="
+      'Tópico de la colección que puede ser de muchas lineas, de hecho acabaria en .. y suprimiria la descripción de ser necesario como justamente este caso'
+    "
+    [description]="
+      '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
+    "
+    [leftAmount]="3000"
+    [rightAmount]="700000"
+  >
+  </app-buyer-card>
+</div>
