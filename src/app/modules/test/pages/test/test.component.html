@@ -358,7 +358,7 @@ headline="EXPUESTO EN TAB (S)"
 <!--
     <button (click)="openDialog()">ver links</button>
 -->
-
+<!-- 
 <div
   [ngStyle]="{
     width: '194.06px',
@@ -401,7 +401,7 @@ headline="EXPUESTO EN TAB (S)"
     }"
   >
   </app-general-item>
-</div>
+</div> -->
 <!-- 
 <div
   [ngStyle]="{
@@ -524,8 +524,14 @@ headline="EXPUESTO EN TAB (S)"
 -->
 
 <button (click)="openBottomSheet()">Bottom Sheet</button>
+<app-menu-button></app-menu-button>
+<app-options-bar
+  [options]="['articulos', 'categorias', 'collections']"
+  [type]="'2'"
+>
+</app-options-bar>
 
-<app-buyer-card></app-buyer-card>
+<!-- <app-buyer-card></app-buyer-card>
 <app-buyer-card [leftAmount]="3000"> </app-buyer-card>
 
 <app-buyer-card
@@ -546,4 +552,4 @@ headline="EXPUESTO EN TAB (S)"
   [leftAmount]="3000"
   [rightAmount]="700000"
 >
-</app-buyer-card>
+</app-buyer-card> -->

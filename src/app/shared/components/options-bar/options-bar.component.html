@@ -9,7 +9,7 @@
     *ngFor="let option of options; let i = index"
     [ngClass]="{ active: i == selected }"
     (click)="selectOpt(i)"
-    [matMenuTriggerFor]="menu"
+    [matMenuTriggerFor]="i == selected ? menu : other"
   >
     {{ option }}
   </button>

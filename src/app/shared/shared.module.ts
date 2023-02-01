@@ -137,6 +137,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { LinksDialogComponent } from './dialogs/links-dialog/links-dialog.component';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDividerModule } from '@angular/material/divider';
 
 const imports = [
   CommonModule,
@@ -155,6 +156,7 @@ const imports = [
   MatMenuModule,
   MatIconModule,
   MatBottomSheetModule,
+  MatDividerModule,
 ];
 const declarations = [
   // Pages

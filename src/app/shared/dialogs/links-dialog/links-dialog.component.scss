@@ -3,8 +3,10 @@
 }
 
 ::ng-deep.mat-bottom-sheet-container {
-  padding: 38px 27.5px 32.5px 28px;
-  width: 428px;
+  padding: 38px 28px 32.5px 28px;
+  width: 100%;
+  max-width: 500px !important;
+  min-width: unset;
 
   .title {
     color: #000000;
@@ -14,12 +16,18 @@
 
   .subtitle,
   .subtitle-last {
+    background-color: unset;
+    border: none;
+    text-align: left;
     padding-top: 25px;
     padding-bottom: 10px;
     width: 100%;
-    max-width: 370px;
-    border-bottom: 1px solid rgba(#707070, 0.17);
+    max-width: 444px;
     cursor: pointer;
+
+    .divider {
+      margin-top: 10px;
+    }
   }
 
   .subtitle-last {
