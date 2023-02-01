@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ItemParam } from 'src/app/core/models/item';
 import { Tag } from 'src/app/core/models/tags';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-saleflow-item',
@@ -83,6 +84,8 @@ export class SaleflowItemComponent implements OnInit {
 
   env: string = environment.assetsUrl;
 
+  isVideo: boolean = false;
+
   toggleSelect(e) {
     if (!this.itemId && !this.itemIndex) {
       this.changeSelection.emit({
@@ -135,6 +138,8 @@ export class SaleflowItemComponent implements OnInit {
       });
       this.price = this.price + lowest;
     }
+
+    this.isVideo = isVideo(this.imgURL);
   }
 
   showTags(tags: Array<Tag>) {

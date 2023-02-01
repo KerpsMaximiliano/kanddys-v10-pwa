@@ -35,12 +35,19 @@ export class ItemSubOrderParamsInput {
   paramValue: string;
 }
 
+interface ExtendedItem extends Item {
+  media?: Array<{
+    src: string;
+    type: 'IMAGE' | 'VIDEO';
+  }>;
+}
+
 export class ItemSubOrder extends Model<ItemSubOrder> {
   status: string;
   amount: number;
   creator: User;
   deliveryLocation: DeliveryLocation;
-  item: Item;
+  item: ExtendedItem;
   itemSelected: string[];
   merchant: Merchant;
   params: ItemSubOrderParams[];
