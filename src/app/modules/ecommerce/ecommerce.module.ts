@@ -21,6 +21,8 @@ import { ArticleDetailComponent } from './pages/article-detail/article-detail.co
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
+import { CollectionsComponent } from 'src/app/shared/components/collections/collections.component';
+import { TagItemsComponent } from 'src/app/shared/components/tag-items/tag-items.component';
 
 const routes: Routes = [
   {
@@ -61,6 +63,22 @@ const routes: Routes = [
   {
     path: 'terms-of-use/:viewsMerchantId',
     component: TermsOfUseComponent,
+  },
+  {
+    path: 'collections',
+    component: CollectionsComponent
+  },
+  {
+    path: 'collections/:tagId',
+    component: TagItemsComponent,
+  },
+  {
+    path: 'categories',
+    component: CollectionsComponent,
+  },
+  {
+    path: 'categories/:tagId',
+    component: TagItemsComponent,
   },
   {
     path: ':merchantSlug',

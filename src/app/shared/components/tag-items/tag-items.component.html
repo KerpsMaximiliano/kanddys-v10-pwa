@@ -2,11 +2,11 @@
   <button class="header">
     <!-- <img class="icon" [src]="environment + '/arrow-double-up.svg'" /> -->
     <button class="icon" [style.background]="image"></button>
-    <p class="title">{{ merchantName.length < 14
+    <p class="title">{{ merchantName.length < 23
       ? merchantName
-      : merchantName.slice(0, 14) + ".." || "Tienda" | titlecase }}</p>
+      : merchantName.slice(0, 23) + ".." || "Tienda" | titlecase }}</p>
     <p class="title">{{ name | titlecase }}</p>
-    <button class="arrow-btn"><img class="icon" [src]="environment + '/arrow-double-up.svg'" /></button>
+    <button [routerLink]="['../']" class="arrow-btn"><img class="icon" [src]="environment + '/arrow-double-up.svg'" /></button>
   </button>
   <div class="margin flex">
     <section *ngIf="optional" class="optional flex">
@@ -27,6 +27,7 @@
       <div
         *ngFor="let item of items; let i = index"
         [ngStyle]="{ width: '190px', height: '238.43px' }"
+        [routerLink]="['/qr/article-detail/item/'+item._id]"
       >
         <!--<app-general-item
                     [item]="item"
@@ -67,40 +68,27 @@
                     }"
                 >
                 </app-general-item>-->
-        <app-general-item
-          [item]="item"
-          [entity]="'ITEM'"
-          [mainColor]="'#ffffff'"
-          [textColor]="'#272727'"
-          [viewsCounterStyles]="{
-            color: '#000'
-          }"
-          [topRightButton]="optionsButton[i]"
+          <app-saleflow-item
+          [itemIndex]="i"
+          [itemId]="item._id"
+          [type]="4"
+          [showViews]="true"
+          [viewsCounter]="
+            item.visitorCounter ? item.visitorCounter.counter : 0
+          "
+          [inactive]="
+            item.status != 'active' && item.status != 'featured'
+              ? true
+              : false
+          "
+          [imgURL]="item.images.length ? item.images[0].value : ''"
+          [price]="item.pricing"
           [showPrice]="true"
-          [singleIconStyles]="{
-            marginRight: '6.1px'
-          }"
-          [showIconForTagStatus]="
-            item?.status === 'disabled' || item?.status === 'featured'
-          "
-          [statusIcon]="
-            'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'
-          "
-          [showIconForItemStatus]="true"
-          [showVisitorCounter]="false"
-          [titleStyles]="{
-            display: '-webkit-box',
-            '-webkit-line-clamp': 1,
-            'line-clamp': 1,
-            '-webkit-box-orient': 'vertical',
-            overflow: 'hidden',
-            'word-break': 'break-all'
-          }"
-          [topInnerButtonStyles]="{
-            backgroundColor: item?.status !== 'disabled' ? '#272727' : '#b17608'
-          }"
-        >
-        </app-general-item>
+          [tags]="item.tagsFilled"
+          [itemParams]="item.params"
+          [responsiveWidthVersion]="true"
+          [featured]="item.status === 'featured'"
+        ></app-saleflow-item>
         <!--<app-general-item
                     [item]="item" 
                     [entity]="'ITEM'"
@@ -143,6 +131,7 @@
     [solo]="false"
     [cart]="true"
     [cartAmount]="1"
+    [routerLink]="['/ecommerce/'+slug+'/checkout']"
   >
   </app-bubble-button>
   <!-- <app-gradient-footer [uploadIcon]="true"></app-gradient-footer> -->
