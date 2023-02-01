@@ -94,7 +94,9 @@ export class TagsService {
     }
   }
 
-  async tagsByMerchant(merchantId: string): Promise<any> {
+  async tagsByMerchant(
+    merchantId: string
+  ): Promise<{ tags: Tag; order: number }[]> {
     try {
       const result = await this.graphql.query({
         query: tagsByMerchant,
@@ -103,7 +105,7 @@ export class TagsService {
       });
       if (!result) return undefined;
 
-      return result;
+      return result.tagsByMerchant;
     } catch (e) {
       console.log(e);
     }
@@ -277,7 +279,6 @@ export class TagsService {
     }
   }
 
-
   async hotTagsArchived(
     paginate: PaginationInput = { options: { limit: -1 } }
   ): Promise<Array<Tag>> {
@@ -294,7 +295,7 @@ export class TagsService {
   }
 
   async itemsByTag(
-    nameTag:string,
+    nameTag: string,
     params: PaginationInput = { options: { limit: -1 } }
   ): Promise<Array<Tag>> {
     try {
