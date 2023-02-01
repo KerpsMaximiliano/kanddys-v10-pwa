@@ -181,12 +181,35 @@ export class QrEditComponent implements OnInit {
             ],
             this.item._id
           );
+          const itemUpdated: Item = addedImage;
+
           this._ItemsService.editingImageId =
             addedImage.images[addedImage.images.length - 1]._id;
           unlockUI();
 
           if (!isFileAValidVideo)
             this._Router.navigate([`admin/create-article/${this.item._id}`]);
+
+          if (itemUpdated) {
+            let uploadedVideoURL =
+              itemUpdated.images[itemUpdated.images.length - 1].value;
+            const fileParts = uploadedVideoURL.split('.');
+            const fileExtension = fileParts[fileParts.length - 1];
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+            if (
+              uploadedVideoURL &&
+              !uploadedVideoURL.includes('http') &&
+              !uploadedVideoURL.includes('https')
+            ) {
+              uploadedVideoURL = 'https://' + uploadedVideoURL;
+            }
+
+            this.gridArray.push({
+              background: uploadedVideoURL,
+              _type: auxiliarVideoFileExtension,
+            });
+          }
         };
         reader.readAsDataURL(file);
       } else {
