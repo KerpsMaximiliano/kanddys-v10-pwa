@@ -37,7 +37,7 @@
           id="file"
           [style.display]="'none'"
           (change)="loadFile($event)"
-          [accept]="availableFiles"
+          [accept]="['.png', '.jpg', '.jpeg', '.webp', '.webm', '.mp4', '.m4v', '.mpg', '.mpeg', '.mpeg4']"
         />
         <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
           <div class="labelBox"></div>

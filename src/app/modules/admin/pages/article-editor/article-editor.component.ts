@@ -3,6 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { getExtension, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
@@ -95,8 +96,8 @@ export class ArticleEditorComponent implements OnInit {
         const imagesPromises = this.item.images.map(async (image, index) => {
           const response = await fetch(image.value);
           const blob = await response.blob();
-          return new File([blob], `item_image_${index}.jpeg`, {
-            type: 'image/jpeg',
+          return new File([blob], `item_image_${index}.${getExtension(image.value)}`, {
+            type: `${isVideo(image.value) ? `video` : `image`}/${getExtension(image.value)}`,
           });
         });
         Promise.all(imagesPromises).then((result) => {

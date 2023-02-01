@@ -4,6 +4,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
@@ -300,6 +301,23 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  playVideoOnFullscreen(id: string) {
+    const elem: HTMLVideoElement = document.getElementById(
+      id
+    ) as HTMLVideoElement;
+
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if ((elem as any).webkitRequestFullscreen) {
+      /* Safari */
+      (elem as any).webkitRequestFullscreen();
+    } else if ((elem as any).msRequestFullscreen) {
+      /* IE11 */
+      (elem as any).msRequestFullscreen();
+    }
+  }
+
+
   formatHour(date: Date, breakTime?: number) {
     if (breakTime) date = new Date(date.getTime() - breakTime * 60000);
 
@@ -550,5 +568,9 @@ export class CheckoutComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  urlIsVideo(url: string) {
+    return isVideo(url);
   }
 }

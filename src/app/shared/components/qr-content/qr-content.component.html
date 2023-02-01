@@ -29,7 +29,7 @@
     <div
       class="itemContainer"
       *ngIf="slide.type !== 'TEXT'"
-      (click)="openImageModal(filesStrings[i], slide.type)"
+      (click)="slide.type === 'IMAGE' ? openImageModal(filesStrings[i], slide.type) : playVideoOnFullscreen('media' + i)"
     >
       <ng-container *ngIf="slide.type === 'IMAGE'">
         <div
@@ -43,7 +43,7 @@
         ></div>
       </ng-container>
       <ng-container *ngIf="slide.type === 'VIDEO'">
-        <video class="video-content" [src]="slide.path"></video>
+        <video class="video-content" [id]="'media' + i" [muted]="true" [src]="slide.path"></video>
       </ng-container>
       <div class="labelBox"></div>
 

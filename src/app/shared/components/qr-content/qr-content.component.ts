@@ -31,7 +31,6 @@ export class QrContentComponent implements OnInit {
   async ngOnInit() {
     if (this.slides) {
       for await (const slide of this.slides) {
-        console.log(slide);
         if (slide.media && slide.media.type.includes('image')) {
           const base64 = await this.fileToBase64(slide.media);
           this.slidesPath.push({
@@ -89,5 +88,21 @@ export class QrContentComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  playVideoOnFullscreen(id: string) {
+    const elem: HTMLVideoElement = document.getElementById(
+      id
+    ) as HTMLVideoElement;
+
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if ((elem as any).webkitRequestFullscreen) {
+      /* Safari */
+      (elem as any).webkitRequestFullscreen();
+    } else if ((elem as any).msRequestFullscreen) {
+      /* IE11 */
+      (elem as any).msRequestFullscreen();
+    }
   }
 }
