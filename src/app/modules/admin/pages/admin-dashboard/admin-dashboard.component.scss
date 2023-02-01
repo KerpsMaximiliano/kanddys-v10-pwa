@@ -20,13 +20,19 @@ button {
     justify-content: space-between;
     gap: 8px;
 
-    >*{
+    > * {
         display: flex;
         align-items: center;
     }
 
-    .left{
+    .left {
         gap: 17px;
+
+        .merchant-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
         .img {
             cursor: pointer;
@@ -37,21 +43,21 @@ button {
             background-color: #e9e371;
         }
 
-        .title{
+        .title {
             font-family: "SfProHeavy";
             font-size: 16px;
             color: #272727;
         }
     }
-    .right{
+    .right {
         gap: 32px;
 
-        .listIcon{
+        .listIcon {
             cursor: pointer;
             height: 27px;
             width: auto;
         }
-        .blackButton{
+        .blackButton {
             cursor: pointer;
             padding: 8px 9px 8px 14px;
             display: flex;
@@ -59,12 +65,13 @@ button {
             gap: 7px;
             border-radius: 17px;
             background-color: #272727;
-            color: #FED230;
+            color: #fed230;
 
-            .starIcon{
+            .starIcon {
                 height: 17.5px;
                 width: auto;
-                filter: brightness(0) saturate(100%) invert(99%) sepia(93%) saturate(2815%) hue-rotate(327deg) brightness(100%) contrast(99%);
+                filter: brightness(0) saturate(100%) invert(99%) sepia(93%) saturate(2815%) hue-rotate(327deg)
+                    brightness(100%) contrast(99%);
             }
         }
     }
@@ -86,9 +93,9 @@ button {
     overflow-x: hidden;
     justify-items: center;
     .capsize {
-      width: 100%;
-      max-width: 194px;
-      height: 100%;
+        width: 100%;
+        max-width: 194px;
+        height: 100%;
     }
 }
 
@@ -98,7 +105,7 @@ button {
     max-width: 500px;
     bottom: 0;
 
-    .button{
+    .button {
         position: absolute;
         cursor: pointer;
         display: flex;
@@ -111,18 +118,19 @@ button {
         right: 16px;
         bottom: 50px;
 
-        .icon{
+        .icon {
             width: 25px;
             height: auto;
-            filter: brightness(0) saturate(100%) invert(85%) sepia(13%) saturate(1515%) hue-rotate(68deg) brightness(100%) contrast(91%);
+            filter: brightness(0) saturate(100%) invert(85%) sepia(13%) saturate(1515%) hue-rotate(68deg)
+                brightness(100%) contrast(91%);
         }
     }
 }
 
-@media(max-width: 379px){
-    .header{
+@media (max-width: 379px) {
+    .header {
         .left,
-        .right{
+        .right {
             gap: 12px;
         }
     }
