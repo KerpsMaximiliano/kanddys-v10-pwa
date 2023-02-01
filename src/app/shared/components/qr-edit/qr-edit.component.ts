@@ -18,6 +18,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-qr-edit',
@@ -274,6 +275,8 @@ export class QrEditComponent implements OnInit {
           },
         },
       ];
+      if (this.item && isVideo(this.gridArray[index].background)) list.shift();
+
       list.forEach((option) => (option.styles = { color: '#383838' }));
     } else {
       list = [
