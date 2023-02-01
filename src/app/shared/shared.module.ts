@@ -140,6 +140,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDividerModule } from '@angular/material/divider';
 import { CollectionsComponent } from './components/collections/collections.component';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
 
 const imports = [
   CommonModule,
@@ -160,6 +162,7 @@ const imports = [
   MatBottomSheetModule,
   MatDividerModule,
   MatButtonModule,
+  MatExpansionModule,
 ];
 const declarations = [
   // Pages
@@ -288,7 +291,8 @@ const declarations = [
   QrEditComponent,
   MenuButtonComponent,
   LinksDialogComponent,
-  CollectionsComponent
+  CollectionsComponent,
+  GradientCardComponent,
 ];
 
 @NgModule({

@@ -1,0 +1,50 @@
+* {
+  margin: 0;
+}
+
+::ng-deep .mat-expansion-panel-header {
+  padding: 14px 17px 14px 21px !important;
+  background-color: #a1a1a1 !important;
+  border-radius: 0 !important;
+  .mat-content {
+    display: flex;
+    align-items: center;
+    .arrows {
+      all: unset;
+    }
+
+    p {
+      font-family: SFProRegular;
+      color: #272727;
+      font-size: 16px;
+      margin-left: auto;
+    }
+
+    .right {
+      font-family: SFProLight;
+      margin-left: 17px;
+      margin-right: auto;
+    }
+  }
+}
+
+::ng-deep .mat-expansion-panel-body {
+  background-color: #a1a1a1 !important;
+  padding: 15px 15px 30px !important;
+  .flex {
+    display: flex;
+    align-items: center;
+    p {
+      font-family: SFProRegular;
+      color: #272727;
+      font-size: 16px;
+      margin-left: auto;
+    }
+
+    .right {
+      font-family: SFProLight;
+      margin-left: 17px;
+      margin-right: auto;
+    }
+  }
+}
