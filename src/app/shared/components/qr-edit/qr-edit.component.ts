@@ -28,7 +28,20 @@ import { isVideo } from 'src/app/core/helpers/strings.helpers';
 export class QrEditComponent implements OnInit {
   environment: string = environment.assetsUrl;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/avi',
+    'video/mpg',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mxf',
+    'video/m2ts',
+    'video/m2ts',
+  ];
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;

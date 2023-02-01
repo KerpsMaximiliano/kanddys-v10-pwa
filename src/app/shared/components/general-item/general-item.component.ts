@@ -36,7 +36,20 @@ export class GeneralItemComponent implements OnInit {
   @Output() itemSelectedEvent = new EventEmitter();
   cardMainImage: string = null;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/avi',
+    'video/mpg',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mxf',
+    'video/m2ts',
+    'video/m2ts',
+  ];
   isMainImageAVideo: boolean = false;
 
   //item-specific variables
