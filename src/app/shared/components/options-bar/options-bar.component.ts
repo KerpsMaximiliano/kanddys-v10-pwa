@@ -10,7 +10,7 @@ import { Swiper, SwiperOptions } from 'swiper';
 export class OptionsBarComponent implements OnInit {
 
   environment: string = environment.assetsUrl;
-  @Input() options: Array<string> = [];
+  @Input() options: Array<any> = [];
   @Input() type: string = '1';
   @Input() optCol: number = 0;
   @Input() swiperMode: boolean = false;
@@ -50,11 +50,8 @@ export class OptionsBarComponent implements OnInit {
   ngOnInit(): void {}
 
   selectOpt(index: number) {
-    if (index != this.selected) {
-      this.selected = index;
-    }
+    this.selected = index;
     this.selectedIndex.emit(this.selected);
-    console.log(this.selected);
   }
 
   menuOptionSelected(index: number) {

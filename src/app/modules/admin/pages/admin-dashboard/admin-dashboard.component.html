@@ -7,7 +7,7 @@
 
     <div class="right">
       <button>
-        <img class="listIcon" [src]="environment + '/'" />
+        <img class="listIcon" [src]="environment + '/receipt.svg'" />
       </button>
       <button class="blackButton">
         <p>Programas</p>
@@ -17,10 +17,43 @@
   </header>
   <div class="contents">
     <app-options-bar
-      [optCol]="3"
-      [type] = "'2'"
+      [type] = "'3'"
       [options]="tags"
       (selectedIndex)="selectTag($event)">
     </app-options-bar>
+  </div>
+  <section *ngIf = "selected == 0">
+    <div class="saleflows-item-grid" *ngIf="articulos.length">
+      <div
+        class="capsize"
+        *ngFor="let item of articulos; let itemIndex = index">
+        <app-saleflow-item
+          [itemIndex]="itemIndex"
+          [itemId]="item._id"
+          [type]="4"
+          [showViews]="true"
+          [viewsCounter]="
+            item.visitorCounter ? item.visitorCounter.counter : 0
+          "
+          [inactive]="
+            item.status != 'active' && item.status != 'featured'
+              ? true
+              : false
+          "
+          [imgURL]="item.images.length ? item.images[0].value : ''"
+          [price]="item.pricing"
+          [showPrice]="true"
+          [tags]="item.tagsFilled"
+          [itemParams]="item.params"
+          [responsiveWidthVersion]="true"
+          [featured]="item.status === 'featured'"
+        ></app-saleflow-item>
+      </div>
+    </div>
+  </section>
+  <div class="uploadButton">
+    <button class="button">
+      <img class="icon" [src]="environment + '/upload.svg'" />
+    </button>
   </div>
 </div>

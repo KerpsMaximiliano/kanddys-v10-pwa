@@ -4,14 +4,17 @@
   [ngClass]="optCol > 0 ? 'grid' : 'flex'"
   [ngStyle]="{ 'grid-template-columns': 'repeat(' + optCol + ', 1fr)' }"
 >
-  <button
+  <button 
     class="option type{{ type }}"
     *ngFor="let option of options; let i = index"
-    [ngClass]="{ active: i == selected }"
     (click)="selectOpt(i)"
+    [ngClass]="{ active: i == selected, optIcon : option.dotsIcon }"
     [matMenuTriggerFor]="menu"
   >
-    {{ option }}
+    <span>{{option.title}}</span>
+    <button class="dotsButton" *ngIf="option.dotsIcon && i == selected ">
+      <img class="dotsIcon" [src]="environment + '/dots-black.svg'" />
+    </button>
   </button>
 </div>
 
