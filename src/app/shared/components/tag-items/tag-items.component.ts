@@ -56,7 +56,7 @@ export class TagItemsComponent implements OnInit, OnDestroy {
         const { merchant } = await this._SaleFlowService.saleflowDefault(_id);
         this.slug = merchant.slug;
         this.merchantName = merchantName;
-        this.items = (await this._TagsService.itemsByTag(name)).filter(({description}: any):boolean => this.needsDescription?description:!description);
+        this.items = (await this._TagsService.itemsByTag(name)).filter(({notes}: any):boolean => this.needsDescription?notes:!notes);
         this.image = this._DomSanitizer.bypassSecurityTrustStyle(`url(${image}) no-repeat center center / cover #e9e371`);
       })();
     });

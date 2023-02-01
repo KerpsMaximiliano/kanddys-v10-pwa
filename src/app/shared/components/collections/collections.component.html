@@ -2,21 +2,36 @@
   <div class="header">
     <!-- <img class="icon" [src]="environment + '/arrow-double-up.svg'" /> -->
     <button class="icon" [style.background]="image"></button>
-    <p class="title">{{ merchantName.length < 26
-      ? merchantName
-      : merchantName.slice(0, 26) + ".." || "Tienda" | titlecase }}</p>
-    <button class="arrow-btn"><img class="icon" [src]="environment + '/arrow-double-up.svg'" /></button>
+    <p class="title">
+      {{
+        merchantName.length < 26
+          ? merchantName
+          : (merchantName.slice(0, 26) + ".." || "Tienda" | titlecase)
+      }}
+    </p>
+    <p class="title">{{ title }}</p>
+    <button class="arrow-btn">
+      <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
+    </button>
   </div>
   <div
-  *ngFor="let tag of tags"
-  [style.cursor]="'pointer'"
-  [routerLink]="['/ecommerce/'+(tag.tags.description?'collections':'categories')+'/'+tag.tags._id]">
+    *ngFor="let tag of tags"
+    [style.cursor]="'pointer'"
+    [routerLink]="[
+      '/ecommerce/' +
+        slug +
+        '/' +
+        (tag.tags.notes ? 'collections' : 'categories') +
+        '/' +
+        tag.tags._id
+    ]"
+  >
     <app-buyer-card
-    [title]="tag.name"
-    [description]="tag.tags.description"
-    [img]="''"
-    [leftAmount]="3000"
-    [rightAmount]="700000"
+      [title]="tag.name"
+      [description]="tag.notes"
+      [img]="''"
+      [leftAmount]="3000"
+      [rightAmount]="700000"
     ></app-buyer-card>
   </div>
 </div>
