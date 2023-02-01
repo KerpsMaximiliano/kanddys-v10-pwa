@@ -17,7 +17,12 @@
     *ngFor="let tag of tags"
     [style.cursor]="'pointer'"
     [routerLink]="[
-      '/ecommerce/' + (tag.notes ? 'collections' : 'categories') + '/' + tag._id
+      '/ecommerce/' +
+        slug +
+        '/' +
+        (tag.tags.notes ? 'collections' : 'categories') +
+        '/' +
+        tag.tags._id
     ]"
   >
     <app-buyer-card

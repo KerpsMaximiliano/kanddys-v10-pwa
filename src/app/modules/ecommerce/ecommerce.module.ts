@@ -65,22 +65,6 @@ const routes: Routes = [
     component: TermsOfUseComponent,
   },
   {
-    path: 'collections',
-    component: CollectionsComponent
-  },
-  {
-    path: 'collections/:tagId',
-    component: TagItemsComponent,
-  },
-  {
-    path: 'categories',
-    component: CollectionsComponent,
-  },
-  {
-    path: 'categories/:tagId',
-    component: TagItemsComponent,
-  },
-  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -131,6 +115,22 @@ const routes: Routes = [
       {
         path: 'payments',
         component: PaymentsComponent,
+      },
+      {
+        path: 'collections',
+        component: CollectionsComponent
+      },
+      {
+        path: 'collections/:tagId',
+        component: TagItemsComponent,
+      },
+      {
+        path: 'categories',
+        component: CollectionsComponent,
+      },
+      {
+        path: 'categories/:tagId',
+        component: TagItemsComponent,
       },
     ],
   },
