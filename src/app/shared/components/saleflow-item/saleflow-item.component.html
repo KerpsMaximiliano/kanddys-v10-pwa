@@ -268,10 +268,11 @@
 
     <div
       class="itemImg opacity-hover"
+      [ngStyle]="dynamicStyles?.video"
       (click)="onClick()"
       *ngIf="isVideo"
     >
-    <video class="video" [src]="imgURL" [muted]="true"></video>
+      <video class="video" [src]="imgURL" [muted]="true"></video>
       <img
         *ngIf="featured"
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/featured-googles.png"
@@ -306,11 +307,15 @@
           </div>
         </div>
 
-        <div class="views"
+        <div
+          class="views"
           [ngClass]="{
             inactiveViews: inactive && !selectable
           }"
-        *ngIf="showViews">{{ viewsCounter }} vistas</div>
+          *ngIf="showViews"
+        >
+          {{ viewsCounter }} vistas
+        </div>
 
         <div class="flex-column" *ngIf="inactive && !selectable">
           <img

@@ -92,15 +92,32 @@ export class ArticleEditorComponent implements OnInit {
       this.name.setValue(this.item.name);
       this.description.setValue(this.item.description);
       if (this.item.images.length) {
+        lockUI();
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
-          const response = await fetch(image.value);
+          let imageURL = image.value;
+          if (
+            imageURL &&
+            !imageURL.includes('http') &&
+            !imageURL.includes('https')
+          ) {
+            imageURL = 'https://' + imageURL;
+          }
+
+          const response = await fetch(imageURL);
           const blob = await response.blob();
-          return new File([blob], `item_image_${index}.${getExtension(image.value)}`, {
-            type: `${isVideo(image.value) ? `video` : `image`}/${getExtension(image.value)}`,
-          });
+          return new File(
+            [blob],
+            `item_image_${index}.${getExtension(imageURL)}`,
+            {
+              type: `${isVideo(image.value) ? `video` : `image`}/${getExtension(
+                imageURL
+              )}`,
+            }
+          );
         });
         Promise.all(imagesPromises).then((result) => {
+          unlockUI();
           this._ItemsService.itemImages = result;
           this.slides = this._ItemsService.itemImages.map((image) => {
             return {

@@ -158,6 +158,19 @@ export class CheckoutComponent implements OnInit {
         },
       })
     )?.listItems;
+
+    for (const item of this.items as Array<Item>) {
+      for (const image of item.images) {
+        if (
+          image.value &&
+          !image.value.includes('http') &&
+          !image.value.includes('https')
+        ) {
+          image.value = 'https://' + image.value;
+        }
+      }
+    }
+
     if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost();
     if (this.post?.slides?.length) {
@@ -192,8 +205,13 @@ export class CheckoutComponent implements OnInit {
     this.deliveryLocation = this.headerService.getLocation();
     // Validation for stores with only one address of pickup and no delivery for customers
     if (!this.deliveryLocation) {
-      if ((this.headerService.saleflow.module.delivery.pickUpLocations.length == 1) && (!this.headerService.saleflow.module.delivery.deliveryLocation)) {
-        this.deliveryLocation = this.headerService.saleflow.module.delivery.pickUpLocations[0];
+      if (
+        this.headerService.saleflow.module.delivery.pickUpLocations.length ==
+          1 &&
+        !this.headerService.saleflow.module.delivery.deliveryLocation
+      ) {
+        this.deliveryLocation =
+          this.headerService.saleflow.module.delivery.pickUpLocations[0];
         this.headerService.storeLocation(this.deliveryLocation);
         this.headerService.orderProgress.delivery = true;
         this.headerService.storeOrderProgress();
@@ -316,7 +334,6 @@ export class CheckoutComponent implements OnInit {
       (elem as any).msRequestFullscreen();
     }
   }
-
 
   formatHour(date: Date, breakTime?: number) {
     if (breakTime) date = new Date(date.getTime() - breakTime * 60000);

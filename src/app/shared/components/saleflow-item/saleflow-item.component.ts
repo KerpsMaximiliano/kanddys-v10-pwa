@@ -70,6 +70,7 @@ export class SaleflowItemComponent implements OnInit {
     simpleCard?: Record<string, string | number>;
     itemImg?: Record<string, string | number>;
     infoArea?: Record<string, string | number>;
+    video?: Record<string, string | number>;
   } = null;
   @Input() shouldHaveFallbackImage: boolean = false;
   @Input() menuCallback?: (id: string) => void;
@@ -137,6 +138,14 @@ export class SaleflowItemComponent implements OnInit {
         });
       });
       this.price = this.price + lowest;
+    }
+
+    if (
+      this.imgURL &&
+      !this.imgURL.includes('http') &&
+      !this.imgURL.includes('https')
+    ) {
+      this.imgURL = 'https://' + this.imgURL;
     }
 
     this.isVideo = isVideo(this.imgURL);
