@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Swiper, SwiperOptions } from 'swiper';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-options-bar',
@@ -25,10 +26,6 @@ export class OptionsBarComponent implements OnInit {
 
   selected: number = 0;
   menuSelected: number = 0;
-  otherMenu: boolean = false;
-
-  @ViewChild('menu', { static: true }) public menu: any;
-  @ViewChild('other', { static: true }) public other: any;
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',

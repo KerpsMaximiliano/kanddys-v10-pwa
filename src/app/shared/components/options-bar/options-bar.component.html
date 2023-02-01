@@ -8,8 +8,8 @@
     class="option type{{ type }}"
     *ngFor="let option of options; let i = index"
     (click)="selectOpt(i)"
-    [matMenuTriggerFor]="i == selected ? menu : other"
-    [ngClass]="{ active: i == selected, optIcon: option.dotsIcon }"
+    [matMenuTriggerFor]="i === selected ? menu : fake"
+    [ngClass]="{ active: i === selected, optIcon: option.dotsIcon }"
   >
     <span>{{ option.title }}</span>
     <button class="dotsButton" *ngIf="option.dotsIcon && i == selected">
@@ -29,11 +29,7 @@
   </button>
 </mat-menu>
 
-<mat-menu
-  *ngIf="otherMenu === true"
-  #other
-  style="display: none; visibility: hidden"
-></mat-menu>
+<mat-menu #fake class="fake"></mat-menu>
 
 <!-- <div *ngIf="swiperMode == true" style="margin-bottom: 20px">
   <swiper [config]="swiperConfig">
