@@ -11,6 +11,7 @@
   width: 100%;
   max-width: 500px;
   display: flex;
+  z-index: 999;
 }
 
 ::ng-deep .btn {

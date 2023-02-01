@@ -133,9 +133,10 @@ import { TitleIconHeaderComponent } from './components/title-icon-header/title-i
 import { QrContentComponent } from './components/qr-content/qr-content.component';
 import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 import { MenuButtonComponent } from './components/menu-button/menu-button.component';
+import { LinksDialogComponent } from './dialogs/links-dialog/links-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
-import { LinksDialogComponent } from './dialogs/links-dialog/links-dialog.component';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDividerModule } from '@angular/material/divider';
 
@@ -157,6 +158,7 @@ const imports = [
   MatIconModule,
   MatBottomSheetModule,
   MatDividerModule,
+  MatButtonModule,
 ];
 const declarations = [
   // Pages
