@@ -92,7 +92,20 @@ export class ArticleDetailComponent implements OnInit {
   };
   fractions: string = '';
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/avi',
+    'video/mpg',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mxf',
+    'video/m2ts',
+    'video/m2ts',
+  ];
   audioFiles: string[] = [
     'audio/x-m4a',
     'audio/ogg',
@@ -218,7 +231,7 @@ export class ArticleDetailComponent implements OnInit {
         this.itemData.pricing = this._ItemsService.itemPrice;
         this.itemData.images = this.itemData.images.map((image) => ({
           value: image.value,
-        })) as ItemImage[];  
+        })) as ItemImage[];
       }
 
       this.itemData.media = this.itemData.images.map((image) => {

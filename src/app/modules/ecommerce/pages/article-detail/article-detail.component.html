@@ -16,7 +16,7 @@
         (slideChange)="updateCurrentSlideData($event)"
       >
         <ng-container *ngIf="itemData.media && itemData.media.length > 0">
-          <ng-container *ngFor="let media of itemData.media">
+          <ng-container *ngFor="let media of itemData.media; index as i">
             <div
               class="entity-image"
               *ngIf="media.type === 'IMAGE'"
@@ -27,7 +27,7 @@
 
             <video
               *ngIf="media.type === 'VIDEO'"
-              [id]="'media' + currentMediaSlide"
+              [id]="'media' + i"
               (click)="playVideoOnFullscreen('media' + currentMediaSlide)"
               [src]="media.src"
               [ngStyle]="{
