@@ -1,54 +1,57 @@
-*{
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
-.container{
+button {
+    all: unset;
+}
+.container {
     background-color: #f6f6f6;
-    min-height: 100vh; 
+    min-height: 100vh;
 }
 
-.header,
+.header1,
 .header2 {
-  width: 100%;
-  background-color: #fff;
-  padding: 10px 0px;
-  display: flex;
-  align-items: center;
+    width: 100%;
+    background-color: #fff;
+    padding: 10px 0px;
+    display: flex;
+    align-items: center;
 
-  .arrows {
-    margin-left: 16px;
-    cursor: pointer;
-  }
-  .header-title {
-    margin-left: 7px;
-    color: #272727;
-    font-family: SFProBold;
-    font-size: 17px;
-  }
-  .settings {
-    margin-left: auto;
-    margin-right: 15.5px;
-    cursor: pointer;
-  }
+    .arrows {
+        margin-left: 16px;
+        cursor: pointer;
+    }
+    .header-title {
+        margin-left: 7px;
+        color: #272727;
+        font-family: SFProBold;
+        font-size: 17px;
+    }
+    .settings {
+        margin-left: auto;
+        margin-right: 15.5px;
+        cursor: pointer;
+    }
 }
 
 .header2 {
-  cursor: pointer;
-  background-color: #272727;
-  margin-bottom: 30px;
+    cursor: pointer;
+    background-color: #272727;
+    margin-bottom: 30px;
 
-  .arrows {
-    margin: 0 auto;
-    filter: invert(82%) sepia(89%) saturate(315%) hue-rotate(54deg) brightness(99%) contrast(90%);
-  }
+    .arrows {
+        margin: 0 auto;
+        filter: invert(82%) sepia(89%) saturate(315%) hue-rotate(54deg) brightness(99%) contrast(90%);
+    }
 }
 
-.bodySect{
+.bodySect {
     padding: 0 22px 60px 22px;
 }
 
-.bioSection{
+.bioSection {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -56,7 +59,7 @@
     text-align: center;
     gap: 10px;
 
-    .bioImg{
+    .bioImg {
         position: relative;
         width: 153px;
         height: 153px;
@@ -66,12 +69,12 @@
         justify-content: center;
         align-items: center;
 
-        .eyeIcon{
+        .eyeIcon {
             width: 19px;
             height: 16px;
         }
 
-        .markerCont{
+        .markerCont {
             bottom: 0;
             right: 0;
             width: 43px;
@@ -83,42 +86,39 @@
             justify-content: center;
             align-items: center;
 
-            .locationIcon{
+            .locationIcon {
                 filter: invert(41%) sepia(17%) saturate(1757%) hue-rotate(163deg) brightness(96%) contrast(100%);
                 width: 21px;
                 height: 27px;
             }
         }
 
-        *{
+        * {
             position: absolute;
         }
     }
 
-    .contactID{
+    .contactID {
         font-size: 17px;
         line-height: 19px;
         color: #272727;
         font-family: "SfProMedium";
-
     }
-    .bio{
+    .bio {
         margin-top: 5px;
         font-size: 17px;
         color: #4f4f4f;
         font-family: "SfProLight";
         max-width: 350px;
-
-
     }
 }
-.dataSect{
+.dataSect {
     display: flex;
     flex-direction: column;
     gap: 18px;
     margin-top: 25px;
 
-    .dataBox{
+    .dataBox {
         padding: 20px;
         border-radius: 6px;
         background-color: #ffffff;
@@ -130,7 +130,7 @@
         color: #272727;
         font-family: "SfProMedium";
 
-        .icon{
+        .icon {
             filter: invert(7%) sepia(5%) saturate(302%) hue-rotate(314deg) brightness(96%) contrast(81%);
         }
     }
