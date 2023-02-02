@@ -1,11 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  contactAddLink,
-  contacts,
-  contactUpdateLink,
-  createContact,
-  updateContact,
-} from '../graphql/contact.gql';
+import { contactAddLink, contacts, contactUpdateLink, createContact, updateContact } from '../graphql/contact.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Contact, ContactInput } from '../models/contact';
 import { LinkInput } from '../models/LinkInput';
@@ -15,6 +9,7 @@ import { PaginationInput } from '../models/saleflow';
   providedIn: 'root',
 })
 export class ContactService {
+
   constructor(private graphql: GraphQLWrapper) {}
 
   async createContact(input: ContactInput) {
@@ -31,7 +26,7 @@ export class ContactService {
     return result.createContact;
   }
 
-  async updateContact(id: string, input: ContactInput) {
+  async updateContact(id:string, input: ContactInput) {
     const result = await this.graphql.mutate({
       mutation: updateContact,
       variables: { id, input },
@@ -59,7 +54,7 @@ export class ContactService {
     return result.contactAddLink;
   }
 
-  async contactUpdateLink(input: LinkInput, linkId: string, id: string) {
+  async contactUpdateLink(input: LinkInput, linkId:string, id: string) {
     const result = await this.graphql.mutate({
       mutation: contactUpdateLink,
       variables: { input, linkId, id },

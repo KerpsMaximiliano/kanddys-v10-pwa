@@ -22,6 +22,7 @@ import { ArticleEditorComponent } from './pages/article-editor/article-editor.co
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { TagsViewComponent } from './pages/tags-view/tags-view.component';
+import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -139,6 +140,10 @@ const routes: Routes = [
         path: 'tags-view',
         component: TagsViewComponent,
       },
+      {
+        path: 'bios-edit',
+        component: BiosEditComponent,
+      },
     ],
   },
   {
@@ -163,6 +168,7 @@ const routes: Routes = [
     ArticleEditorComponent,
     AdminDashboardComponent,
     TagsViewComponent,
+    BiosEditComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
