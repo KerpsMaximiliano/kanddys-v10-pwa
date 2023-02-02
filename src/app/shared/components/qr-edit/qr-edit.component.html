@@ -37,7 +37,22 @@
           id="file"
           [style.display]="'none'"
           (change)="loadFile($event)"
-          [accept]="['.png', '.jpg', '.jpeg', '.webp', '.webm', '.mp4', '.m4v', '.mpg', '.mpeg', '.mpeg4', '.mov', '.3gp', '.mts/m2ts', '.mxf']"
+          [accept]="[
+            '.png',
+            '.jpg',
+            '.jpeg',
+            '.webp',
+            '.webm',
+            '.mp4',
+            '.m4v',
+            '.mpg',
+            '.mpeg',
+            '.mpeg4',
+            '.mov',
+            '.3gp',
+            '.mts/m2ts',
+            '.mxf'
+          ]"
         />
         <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
           <div class="labelBox"></div>
@@ -69,12 +84,17 @@
                 ') #272727 no-repeat  center/cover'
             }"
           ></div>
-          <video
-            autoplay
-            [muted]="true"
-            [src]="gridItem.background"
-            *ngIf="videoFiles.includes(gridItem._type)"
-          ></video>
+
+          <ng-container *ngIf="videoFiles.includes(gridItem._type)">
+            <img
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+              alt="play"
+              class="playVideoIcon"
+              style="padding: 1.5rem !important; z-index: 99"
+            />
+            <video autoplay [muted]="true" [src]="gridItem.background"></video>
+          </ng-container>
+
           <div class="labelBox"></div>
           <div class="circleButton" (click)="openSlideSettings(i)">
             <img class="icon" [src]="environment + '/dots-black.svg'" />

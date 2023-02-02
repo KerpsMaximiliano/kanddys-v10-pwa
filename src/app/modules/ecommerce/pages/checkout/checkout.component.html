@@ -84,7 +84,10 @@
               />
             </div>
 
-            <div class="video-wrapper videoThumbnail">
+            <div
+              class="video-wrapper videoThumbnail"
+              *ngIf="urlIsVideo(item.images[0].value)"
+            >
               <img
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
                 alt="play"
@@ -93,7 +96,6 @@
               />
 
               <video
-                *ngIf="urlIsVideo(item.images[0].value)"
                 [src]="item.images[0].value"
                 [id]="'media' + item._id"
                 class="video"
