@@ -47,6 +47,13 @@
         ></div>
       </ng-container>
       <ng-container *ngIf="slide.type === 'VIDEO'">
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+          alt="play"
+          class="playVideoIcon"
+          style="padding: 1.5rem !important; z-index: 99"
+        />
+
         <video
           class="video-content"
           [id]="'media' + i"

@@ -60,10 +60,15 @@
           (mousemove)="moveEvent($event, elemt)"
         >
           <button
+            [ngStyle]="{
+              position: 'relative'
+            }"
             *ngFor="let item of items"
             (click)="
-              (item.image || item.images?.length) && (!urlIsVideo(item.images[0].value) ?
-                openImageModal(item.image?.value || item.images[0].value) : playVideoOnFullscreen('media' + item._id))
+              (item.image || item.images?.length) &&
+                (!urlIsVideo(item.images[0].value)
+                  ? openImageModal(item.image?.value || item.images[0].value)
+                  : playVideoOnFullscreen('media' + item._id))
             "
           >
             <div class="image" *ngIf="!urlIsVideo(item.images[0].value)">
@@ -79,13 +84,22 @@
               />
             </div>
 
-            <video
-              *ngIf="urlIsVideo(item.images[0].value)"
-              [src]="item.images[0].value"
-              [id]="'media' + item._id"
-              class="video"
-              [muted]="true"
-            ></video>
+            <div class="video-wrapper videoThumbnail">
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                alt="play"
+                class="playVideoIcon"
+                style="padding: 1rem !important; z-index: 99"
+              />
+
+              <video
+                *ngIf="urlIsVideo(item.images[0].value)"
+                [src]="item.images[0].value"
+                [id]="'media' + item._id"
+                class="video"
+                [muted]="true"
+              ></video>
+            </div>
           </button>
         </div>
       </div>

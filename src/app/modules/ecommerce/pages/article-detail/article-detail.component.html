@@ -25,15 +25,33 @@
               }"
             ></div>
 
-            <video
-              *ngIf="media.type === 'VIDEO'"
-              [id]="'media' + i"
-              (click)="playVideoOnFullscreen('media' + currentMediaSlide)"
-              [src]="media.src"
-              [ngStyle]="{
-                height: 'calc(100vh - 49px)'
-              }"
-            ></video>
+            <div class="video-wrapper">
+
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                alt="play"
+                class="playVideoIcon"
+                style="
+                padding: 7rem !important;
+                z-index: 99;
+                max-width: 300px;
+                margin: auto;
+                left: 0;
+                right: 0;
+              "
+              />
+
+
+              <video
+                *ngIf="media.type === 'VIDEO'"
+                [id]="'media' + i"
+                (click)="playVideoOnFullscreen('media' + currentMediaSlide)"
+                [src]="media.src"
+                [ngStyle]="{
+                  height: 'calc(100vh - 49px)'
+                }"
+              ></video>
+            </div>
           </ng-container>
         </ng-container>
       </swiper>

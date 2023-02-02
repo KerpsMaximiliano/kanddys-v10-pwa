@@ -268,10 +268,19 @@
 
     <div
       class="itemImg opacity-hover"
+      [ngClass]="{
+        videoThumbnail: true
+      }"
       [ngStyle]="dynamicStyles?.video"
       (click)="onClick()"
       *ngIf="isVideo"
     >
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+        alt="play"
+        class="playVideoIcon"
+      />
+
       <video class="video" [src]="imgURL" [muted]="true"></video>
       <img
         *ngIf="featured"
