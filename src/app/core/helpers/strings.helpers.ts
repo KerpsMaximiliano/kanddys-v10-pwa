@@ -22,7 +22,7 @@ export function isEmail(str: string): boolean {
 
 export function getExtension(filename: string) {
   var parts = filename.split('.');
-  return parts[parts.length - 1];
+  return parts[parts.length - 1].toLowerCase();
 }
 
 export function isImage(filename) {
@@ -58,6 +58,17 @@ export function isVideo(filename: string) {
       return true;
   }
   return false;
+}
+
+export function completeImageURL(url: string) {
+  if (
+    url &&
+    !url.includes('http') &&
+    !url.includes('https')
+  ) {
+    return url = 'https://' + url;
+  }
+  return url;
 }
 
 // String formatter for the dateId field of the ItemOrder model

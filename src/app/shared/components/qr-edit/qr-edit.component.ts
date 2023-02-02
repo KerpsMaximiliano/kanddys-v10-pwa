@@ -27,6 +27,7 @@ import { isVideo } from 'src/app/core/helpers/strings.helpers';
 })
 export class QrEditComponent implements OnInit {
   environment: string = environment.assetsUrl;
+  spinnerGif: string = `${environment.assetsUrl}/spinner2.gif`
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = [
     'video/mp4',
@@ -71,7 +72,6 @@ export class QrEditComponent implements OnInit {
       }
       if (this.item.images.length) {
         this.gridArray = this.item.images.map((image) => {
-          console.log('mapeando imágenes');
           const fileParts = image.value.split('.');
           const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
           let auxiliarImageFileExtension = 'image/' + fileExtension;
@@ -85,17 +85,13 @@ export class QrEditComponent implements OnInit {
             image.value = 'https://' + image.value;
           }
 
-          console.log(auxiliarVideoFileExtension);
-
           if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-            console.log('retornando imagen');
             return {
               _id: image._id,
               background: image.value,
               _type: auxiliarImageFileExtension,
             };
           } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-            console.log('retornando video');
             return {
               background: image.value,
               _type: auxiliarVideoFileExtension,
@@ -170,13 +166,11 @@ export class QrEditComponent implements OnInit {
   }
 
   async loadFile(event: Event) {
-    console.log('Entrando a cargar video');
     const fileList = (event.target as HTMLInputElement).files;
     if (!fileList.length) return;
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList.item(i);
       if (this.item) {
-        console.log('Entrando a cargar video de un artículo');
         this._ItemsService.itemImages.push(file);
 
         // let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
@@ -195,7 +189,6 @@ export class QrEditComponent implements OnInit {
         // }
         const reader = new FileReader();
         reader.onload = async (e) => {
-          console.log('cargando video');
           lockUI();
           const addedImage = await this._ItemsService.itemAddImage(
             [
