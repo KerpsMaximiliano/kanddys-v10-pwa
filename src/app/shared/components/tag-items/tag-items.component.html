@@ -1,13 +1,19 @@
 <div class="container">
-  <button class="header">
+  <div class="header">
     <!-- <img class="icon" [src]="environment + '/arrow-double-up.svg'" /> -->
     <button class="icon" [style.background]="image"></button>
-    <p class="title">{{ merchantName.length < 23
-      ? merchantName
-      : merchantName.slice(0, 23) + ".." || "Tienda" | titlecase }}</p>
+    <p class="title">
+      {{
+        merchantName.length < 23
+          ? merchantName
+          : (merchantName.slice(0, 23) + ".." || "Tienda" | titlecase)
+      }}
+    </p>
     <p class="title">{{ name | titlecase }}</p>
-    <button [routerLink]="['../']" class="arrow-btn"><img class="icon" [src]="environment + '/arrow-double-up.svg'" /></button>
-  </button>
+    <button [routerLink]="[notes ? '../' : '../../store']" class="arrow-btn">
+      <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
+    </button>
+  </div>
   <div class="margin flex">
     <section *ngIf="optional" class="optional flex">
       <!-- <div class="top flex">
@@ -27,7 +33,7 @@
       <div
         *ngFor="let item of items; let i = index"
         [ngStyle]="{ width: '190px', height: '238.43px' }"
-        [routerLink]="['/qr/article-detail/item/'+item._id]"
+        [routerLink]="['/qr/article-detail/item/' + item._id]"
       >
         <!--<app-general-item
                     [item]="item"
@@ -68,18 +74,14 @@
                     }"
                 >
                 </app-general-item>-->
-          <app-saleflow-item
+        <app-saleflow-item
           [itemIndex]="i"
           [itemId]="item._id"
           [type]="4"
           [showViews]="true"
-          [viewsCounter]="
-            item.visitorCounter ? item.visitorCounter.counter : 0
-          "
+          [viewsCounter]="item.visitorCounter ? item.visitorCounter.counter : 0"
           [inactive]="
-            item.status != 'active' && item.status != 'featured'
-              ? true
-              : false
+            item.status != 'active' && item.status != 'featured' ? true : false
           "
           [imgURL]="item.images.length ? item.images[0].value : ''"
           [price]="item.pricing"
@@ -125,7 +127,7 @@
       </div>
     </section>
   </div>
-  <app-bubble-button
+  <!-- <app-bubble-button
     [position]="'minir'"
     [color]="'black'"
     [solo]="false"
@@ -133,6 +135,6 @@
     [cartAmount]="1"
     [routerLink]="['/ecommerce/'+slug+'/checkout']"
   >
-  </app-bubble-button>
+  </app-bubble-button> -->
   <!-- <app-gradient-footer [uploadIcon]="true"></app-gradient-footer> -->
 </div>

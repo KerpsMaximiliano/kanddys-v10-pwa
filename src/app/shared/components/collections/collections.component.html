@@ -10,7 +10,7 @@
       }}
     </p>
     <p class="title">{{ title }}</p>
-    <button class="arrow-btn">
+    <button class="arrow-btn" [routerLink]="['../store']">
       <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
     </button>
   </div>
@@ -21,9 +21,9 @@
       '/ecommerce/' +
         slug +
         '/' +
-        (tag.tags.notes ? 'collections' : 'categories') +
+        (tag.notes ? 'collections' : 'categories') +
         '/' +
-        tag.tags._id
+        tag._id
     ]"
   >
     <app-buyer-card

@@ -118,16 +118,16 @@ const routes: Routes = [
       },
       {
         path: 'collections',
-        component: CollectionsComponent
+        component: CollectionsComponent,
       },
       {
         path: 'collections/:tagId',
         component: TagItemsComponent,
       },
-      {
-        path: 'categories',
-        component: CollectionsComponent,
-      },
+      // {
+      //   path: 'categories',
+      //   component: CollectionsComponent,
+      // },
       {
         path: 'categories/:tagId',
         component: TagItemsComponent,

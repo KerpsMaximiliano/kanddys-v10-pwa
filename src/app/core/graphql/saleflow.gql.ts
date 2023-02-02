@@ -47,6 +47,7 @@ export const body = `
     _id
     name
     slug
+    image
     owner {
       _id
       phone
