@@ -212,7 +212,7 @@ export class QrEditComponent implements OnInit {
               itemUpdated.images[itemUpdated.images.length - 1].value;
             const fileParts = uploadedVideoURL.split('.');
             const fileExtension = fileParts[fileParts.length - 1];
-            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+            let auxiliarFileExtension = isVideo(uploadedVideoURL) ? `video/${fileExtension}` : `image/${fileExtension}`;
 
             if (
               uploadedVideoURL &&
@@ -222,9 +222,11 @@ export class QrEditComponent implements OnInit {
               uploadedVideoURL = 'https://' + uploadedVideoURL;
             }
 
+            console.log(auxiliarFileExtension);
+
             this.gridArray.push({
               background: uploadedVideoURL,
-              _type: auxiliarVideoFileExtension,
+              _type: auxiliarFileExtension,
             });
           }
         };
