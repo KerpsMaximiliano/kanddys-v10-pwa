@@ -92,7 +92,7 @@ export class ArticleEditorComponent implements OnInit {
       this.name.setValue(this.item.name);
       this.description.setValue(this.item.description);
       if (this.item.images.length) {
-        lockUI();
+        // lockUI();
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
           let imageURL = image.value;
@@ -117,7 +117,7 @@ export class ArticleEditorComponent implements OnInit {
           );
         });
         Promise.all(imagesPromises).then((result) => {
-          unlockUI();
+          // unlockUI();
           this._ItemsService.itemImages = result;
           this.slides = this._ItemsService.itemImages.map((image) => {
             return {
