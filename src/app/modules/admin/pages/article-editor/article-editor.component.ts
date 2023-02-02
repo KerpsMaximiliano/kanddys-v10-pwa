@@ -3,6 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { getExtension, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
@@ -47,6 +48,7 @@ export class ArticleEditorComponent implements OnInit {
     Validators.minLength(2),
     Validators.pattern(/[\S]/),
   ]);
+  loadingSlides: boolean;
 
   editingPrice: boolean = false;
   editingName: boolean = false;
@@ -91,15 +93,33 @@ export class ArticleEditorComponent implements OnInit {
       this.name.setValue(this.item.name);
       this.description.setValue(this.item.description);
       if (this.item.images.length) {
+        this.loadingSlides = true;
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
-          const response = await fetch(image.value);
+          let imageURL = image.value;
+          if (
+            imageURL &&
+            !imageURL.includes('http') &&
+            !imageURL.includes('https')
+          ) {
+            imageURL = 'https://' + imageURL;
+          }
+
+          const response = await fetch(imageURL);
           const blob = await response.blob();
-          return new File([blob], `item_image_${index}.jpeg`, {
-            type: 'image/jpeg',
-          });
+          return new File(
+            [blob],
+            `item_image_${index}.${getExtension(imageURL)}`,
+            {
+              type: `${isVideo(image.value) ? `video` : `image`}/${getExtension(
+                imageURL
+              )}`,
+            }
+          );
         });
         Promise.all(imagesPromises).then((result) => {
+          // unlockUI();
+          this.loadingSlides = false;
           this._ItemsService.itemImages = result;
           this.slides = this._ItemsService.itemImages.map((image) => {
             return {

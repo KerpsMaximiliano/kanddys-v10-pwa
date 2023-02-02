@@ -41,6 +41,13 @@ interface ExtendedSlide extends Slide {
   isVideo?: boolean;
 }
 
+interface ExtendedItem extends Item {
+  media?: Array<{
+    src: string;
+    type: 'IMAGE' | 'VIDEO';
+  }>;
+}
+
 type TypesOfMenu = 'TAGS' | 'DESCRIPTION';
 type ValidEntities = 'item' | 'post';
 
@@ -66,7 +73,7 @@ export class ArticleDetailComponent implements OnInit {
   currentMediaSlide: number = 0;
   entity: ValidEntities;
   entityId: string;
-  itemData: Item = null;
+  itemData: ExtendedItem = null;
   itemTags: Array<ExtendedTag> = [];
   postData: Post = null;
   postSlides: Array<ExtendedSlide> = [];
@@ -85,7 +92,20 @@ export class ArticleDetailComponent implements OnInit {
   };
   fractions: string = '';
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/avi',
+    'video/mpg',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mxf',
+    'video/m2ts',
+    'video/m2ts',
+  ];
   audioFiles: string[] = [
     'audio/x-m4a',
     'audio/ogg',
@@ -203,15 +223,40 @@ export class ArticleDetailComponent implements OnInit {
   async getItemData() {
     try {
       this.itemData = await this._ItemsService.item(this.entityId);
+
       if (this.mode === 'preview' || this.mode === 'image-preview') {
         if (!this._ItemsService.itemPrice) return this.back();
         this.itemData.name = this._ItemsService.itemName;
         this.itemData.description = this._ItemsService.itemDesc;
         this.itemData.pricing = this._ItemsService.itemPrice;
-        this.itemData.images = this._ItemsService.itemUrls.map((value) => ({
-          value,
+        this.itemData.images = this.itemData.images.map((image) => ({
+          value: image.value,
         })) as ItemImage[];
       }
+
+      this.itemData.media = this.itemData.images.map((image) => {
+        let url = image.value;
+        const fileParts = image.value.split('.');
+        const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+        let auxiliarImageFileExtension = 'image/' + fileExtension;
+        let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+        if (url && !url.includes('http') && !url.includes('https')) {
+          url = 'https://' + url;
+        }
+
+        if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+          return {
+            src: url,
+            type: 'IMAGE',
+          };
+        } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+          return {
+            src: url,
+            type: 'VIDEO',
+          };
+        }
+      });
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
       this.itemTags?.forEach((tag) => {
@@ -550,5 +595,21 @@ export class ArticleDetailComponent implements OnInit {
       const route = ['ecommerce', 'article-privacy', _id];
       this.router.navigate(route);
     })();
+  }
+
+  playVideoOnFullscreen(id: string) {
+    const elem: HTMLVideoElement = document.getElementById(
+      id
+    ) as HTMLVideoElement;
+
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if ((elem as any).webkitRequestFullscreen) {
+      /* Safari */
+      (elem as any).webkitRequestFullscreen();
+    } else if ((elem as any).msRequestFullscreen) {
+      /* IE11 */
+      (elem as any).msRequestFullscreen();
+    }
   }
 }
