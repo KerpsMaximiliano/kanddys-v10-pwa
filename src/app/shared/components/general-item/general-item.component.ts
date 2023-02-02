@@ -135,7 +135,7 @@ export class GeneralItemComponent implements OnInit {
           }
 
           const fileParts = this.cardMainImage.split('.');
-          const fileExtension = fileParts[fileParts.length - 1];
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
           let auxiliarImageFileExtension = 'image/' + fileExtension;
           let auxiliarVideoFileExtension = 'video/' + fileExtension;
 

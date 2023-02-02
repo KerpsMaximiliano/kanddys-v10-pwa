@@ -58,7 +58,7 @@ export class QrContentComponent implements OnInit {
       }
     }
 
-    if (this.slides.length > 0) {
+    if (this.slides && this.slides.length > 0) {
       this.shadows = false;
     } else {
       this.shadows = true;

@@ -237,7 +237,7 @@ export class ArticleDetailComponent implements OnInit {
       this.itemData.media = this.itemData.images.map((image) => {
         let url = image.value;
         const fileParts = image.value.split('.');
-        const fileExtension = fileParts[fileParts.length - 1];
+        const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
         let auxiliarImageFileExtension = 'image/' + fileExtension;
         let auxiliarVideoFileExtension = 'video/' + fileExtension;
 

@@ -26,10 +26,22 @@ import { isVideo } from 'src/app/core/helpers/strings.helpers';
   styleUrls: ['./qr-edit.component.scss'],
 })
 export class QrEditComponent implements OnInit {
-
   environment: string = environment.assetsUrl;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = ['video/mp4', 'video/webm', 'video/m4v', 'video/mpg', 'video/mp4', 'video/mpeg', 'video/mpeg4', 'video/mov', 'video/3gp', 'video/mts', 'video/m2ts', 'video/mxf'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/mpg',
+    'video/mp4',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mts',
+    'video/m2ts',
+    'video/mxf',
+  ];
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;
@@ -59,9 +71,9 @@ export class QrEditComponent implements OnInit {
       }
       if (this.item.images.length) {
         this.gridArray = this.item.images.map((image) => {
-          console.log("mapeando imágenes");
+          console.log('mapeando imágenes');
           const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1];
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
           let auxiliarImageFileExtension = 'image/' + fileExtension;
           let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
@@ -76,14 +88,14 @@ export class QrEditComponent implements OnInit {
           console.log(auxiliarVideoFileExtension);
 
           if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-            console.log("retornando imagen");
+            console.log('retornando imagen');
             return {
               _id: image._id,
               background: image.value,
               _type: auxiliarImageFileExtension,
             };
           } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-            console.log("retornando video");
+            console.log('retornando video');
             return {
               background: image.value,
               _type: auxiliarVideoFileExtension,
@@ -158,13 +170,13 @@ export class QrEditComponent implements OnInit {
   }
 
   async loadFile(event: Event) {
-    console.log("Entrando a cargar video");
+    console.log('Entrando a cargar video');
     const fileList = (event.target as HTMLInputElement).files;
     if (!fileList.length) return;
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList.item(i);
       if (this.item) {
-        console.log("Entrando a cargar video de un artículo");
+        console.log('Entrando a cargar video de un artículo');
         this._ItemsService.itemImages.push(file);
 
         // let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
@@ -183,7 +195,7 @@ export class QrEditComponent implements OnInit {
         // }
         const reader = new FileReader();
         reader.onload = async (e) => {
-          console.log("cargando video");
+          console.log('cargando video');
           lockUI();
           const addedImage = await this._ItemsService.itemAddImage(
             [

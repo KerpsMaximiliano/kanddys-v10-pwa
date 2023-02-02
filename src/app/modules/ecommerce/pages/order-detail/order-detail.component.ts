@@ -188,15 +188,13 @@ export class OrderDetailComponent implements OnInit {
         itemSubOrder.item.media = itemSubOrder.item.images.map((image) => {
           let url = image.value;
           const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1];
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
           let auxiliarImageFileExtension = 'image/' + fileExtension;
           let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
           if (url && !url.includes('http') && !url.includes('https')) {
             url = 'https://' + url;
           }
-
-          console.log(url);
 
           if (this.imageFiles.includes(auxiliarImageFileExtension)) {
             return {
