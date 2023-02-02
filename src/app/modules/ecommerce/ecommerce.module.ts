@@ -160,6 +160,8 @@ const routes: Routes = [
     ArticleDetailComponent,
     CreateArticleComponent,
     TermsOfUseComponent,
+    CollectionsComponent,
+    TagItemsComponent
   ],
   imports: [
     CommonModule,
