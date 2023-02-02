@@ -78,10 +78,14 @@
             *ngIf="imageFiles.includes(gridItem._type)"
             class="imgBox"
             [ngStyle]="{
-              background:
+              backgroundImage:
                 'url(' +
                 gridItem.background +
-                ') #272727 no-repeat  center/cover'
+                '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)',
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: '#272727'
             }"
           ></div>
 

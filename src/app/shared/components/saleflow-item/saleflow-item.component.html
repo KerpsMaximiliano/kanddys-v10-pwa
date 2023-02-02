@@ -236,7 +236,7 @@
               'background-image': imgURL
                 ? 'url(' +
                   imgURL +
-                  ')' +
+                  '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)' +
                   (shouldHaveFallbackImage
                     ? ', url(/assets/images/noimage.png)'
                     : '')
@@ -250,7 +250,8 @@
                   ')' +
                   (shouldHaveFallbackImage
                     ? ', url(/assets/images/noimage.png)'
-                    : '')
+                    : '') +
+                  ', url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
                 : 'url(/assets/images/noimage.png)',
               'background-size': backgroundSize
             }

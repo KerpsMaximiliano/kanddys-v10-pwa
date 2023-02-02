@@ -27,7 +27,7 @@ import { isVideo } from 'src/app/core/helpers/strings.helpers';
 })
 export class QrEditComponent implements OnInit {
   environment: string = environment.assetsUrl;
-  spinnerGif: string = `${environment.assetsUrl}/spinner2.gif`
+  spinnerGif: string = `${environment.assetsUrl}/spinner2.gif`;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = [
     'video/mp4',
@@ -101,47 +101,50 @@ export class QrEditComponent implements OnInit {
       }
       return;
     }
-    if (!this._PostsService.post) {
-      const storedPost = localStorage.getItem('post');
-      if (storedPost) this._PostsService.post = JSON.parse(storedPost);
-    }
-    if (!this._PostsService.post) {
-      this._Router.navigate([
-        'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
-      ]);
-      return;
-    }
 
-    this._PostsService.post = {
-      ...this._PostsService.post,
-      slides: this._PostsService.post?.slides
-        ? this._PostsService.post?.slides
-        : [],
-    };
+    if (!itemId) {
+      if (!this._PostsService.post) {
+        const storedPost = localStorage.getItem('post');
+        if (storedPost) this._PostsService.post = JSON.parse(storedPost);
+      }
+      if (!this._PostsService.post) {
+        this._Router.navigate([
+          'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+        ]);
+        return;
+      }
 
-    if (this._PostsService.post.slides.length) {
-      for await (const slide of this._PostsService.post.slides) {
-        if (slide.media && slide.media.type.includes('image')) {
-          await fileToBase64(slide.media).then((result) => {
+      this._PostsService.post = {
+        ...this._PostsService.post,
+        slides: this._PostsService.post?.slides
+          ? this._PostsService.post?.slides
+          : [],
+      };
+
+      if (this._PostsService.post.slides.length) {
+        for await (const slide of this._PostsService.post.slides) {
+          if (slide.media && slide.media.type.includes('image')) {
+            await fileToBase64(slide.media).then((result) => {
+              this.gridArray.push({
+                ...slide,
+                background: result,
+                _type: slide.media.type,
+              });
+            });
+          } else if (slide.media && slide.media.type.includes('video')) {
+            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(slide.media)
+            );
             this.gridArray.push({
               ...slide,
-              background: result,
+              background: fileUrl,
               _type: slide.media.type,
             });
-          });
-        } else if (slide.media && slide.media.type.includes('video')) {
-          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
-            URL.createObjectURL(slide.media)
-          );
-          this.gridArray.push({
-            ...slide,
-            background: fileUrl,
-            _type: slide.media.type,
-          });
-        } else if (!slide.media && slide.type === 'text') {
-          this.gridArray.push({
-            ...slide,
-          });
+          } else if (!slide.media && slide.type === 'text') {
+            this.gridArray.push({
+              ...slide,
+            });
+          }
         }
       }
     }
@@ -173,20 +176,29 @@ export class QrEditComponent implements OnInit {
       if (this.item) {
         this._ItemsService.itemImages.push(file);
 
-        // let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
-        //   file.type.includes(type)
-        // );
+        let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
+          file.type.includes(type)
+        );
 
-        // console.log(file.type);
+        let isFileAValidVideo = [
+          'webm',
+          'mp4',
+          'm4v',
+          'mpg',
+          'mpeg',
+          'mpeg4',
+          'mov',
+          '3gp',
+          'mts',
+          'm2ts',
+          'mxf',
+        ].some((type) => file.type.includes(type));
 
-        // let isFileAValidVideo = ['webm', 'mp4', 'm4v', 'mpg', 'mpeg', 'mpeg4', 'mov', '3gp', 'mts/m2ts', 'mxf'].some((type) =>
-        //   file.type.includes(type)
-        // );
+        if (!isFileAValidImage && !isFileAValidVideo) {
+          alert('Archivo no valido');
+          return;
+        }
 
-        // if (!isFileAValidImage && !isFileAValidVideo) {
-        //   console.log("Video no es válido");
-        //   return;
-        // }
         const reader = new FileReader();
         reader.onload = async (e) => {
           lockUI();
@@ -204,10 +216,10 @@ export class QrEditComponent implements OnInit {
             addedImage.images[addedImage.images.length - 1]._id;
           unlockUI();
 
-          // if (!isFileAValidVideo)
-          //   this._Router.navigate([`admin/create-article/${this.item._id}`]);
+          if (!isFileAValidVideo && isFileAValidImage)
+            this._Router.navigate([`admin/create-article/${this.item._id}`]);
 
-          if (itemUpdated) {
+          if (itemUpdated && isFileAValidVideo) {
             let uploadedVideoURL =
               itemUpdated.images[itemUpdated.images.length - 1].value;
             const fileParts = uploadedVideoURL.split('.');
