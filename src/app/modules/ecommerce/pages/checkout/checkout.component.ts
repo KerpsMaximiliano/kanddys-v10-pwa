@@ -4,6 +4,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
@@ -157,6 +158,19 @@ export class CheckoutComponent implements OnInit {
         },
       })
     )?.listItems;
+
+    for (const item of this.items as Array<Item>) {
+      for (const image of item.images) {
+        if (
+          image.value &&
+          !image.value.includes('http') &&
+          !image.value.includes('https')
+        ) {
+          image.value = 'https://' + image.value;
+        }
+      }
+    }
+
     if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost();
     if (this.post?.slides?.length) {
@@ -191,8 +205,13 @@ export class CheckoutComponent implements OnInit {
     this.deliveryLocation = this.headerService.getLocation();
     // Validation for stores with only one address of pickup and no delivery for customers
     if (!this.deliveryLocation) {
-      if ((this.headerService.saleflow.module.delivery.pickUpLocations.length == 1) && (!this.headerService.saleflow.module.delivery.deliveryLocation)) {
-        this.deliveryLocation = this.headerService.saleflow.module.delivery.pickUpLocations[0];
+      if (
+        this.headerService.saleflow.module.delivery.pickUpLocations.length ==
+          1 &&
+        !this.headerService.saleflow.module.delivery.deliveryLocation
+      ) {
+        this.deliveryLocation =
+          this.headerService.saleflow.module.delivery.pickUpLocations[0];
         this.headerService.storeLocation(this.deliveryLocation);
         this.headerService.orderProgress.delivery = true;
         this.headerService.storeOrderProgress();
@@ -298,6 +317,22 @@ export class CheckoutComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  playVideoOnFullscreen(id: string) {
+    const elem: HTMLVideoElement = document.getElementById(
+      id
+    ) as HTMLVideoElement;
+
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if ((elem as any).webkitRequestFullscreen) {
+      /* Safari */
+      (elem as any).webkitRequestFullscreen();
+    } else if ((elem as any).msRequestFullscreen) {
+      /* IE11 */
+      (elem as any).msRequestFullscreen();
+    }
   }
 
   formatHour(date: Date, breakTime?: number) {
@@ -550,5 +585,9 @@ export class CheckoutComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  urlIsVideo(url: string) {
+    return isVideo(url);
   }
 }

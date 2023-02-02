@@ -62,11 +62,11 @@
           <button
             *ngFor="let item of items"
             (click)="
-              (item.image || item.images?.length) &&
-                openImageModal(item.image?.value || item.images[0].value)
+              (item.image || item.images?.length) && (!urlIsVideo(item.images[0].value) ?
+                openImageModal(item.image?.value || item.images[0].value) : playVideoOnFullscreen('media' + item._id))
             "
           >
-            <div class="image">
+            <div class="image" *ngIf="!urlIsVideo(item.images[0].value)">
               <img
                 [src]="
                   item.image || item.images?.length
@@ -78,6 +78,14 @@
                 class="item-image"
               />
             </div>
+
+            <video
+              *ngIf="urlIsVideo(item.images[0].value)"
+              [src]="item.images[0].value"
+              [id]="'media' + item._id"
+              class="video"
+              [muted]="true"
+            ></video>
           </button>
         </div>
       </div>
