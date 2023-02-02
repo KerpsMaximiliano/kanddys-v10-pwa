@@ -22,11 +22,19 @@
   class="cards"
   [ngClass]="{
     noGrid: slidesPath.length === 0,
-    boxShadow: shadows
+    boxShadow: shadows && slidesPath.length === 0
   }"
 >
   <div class="card" *ngFor="let slide of slidesPath; index as i">
-    <div class="itemContainer" (click)="openImageModal(filesStrings[i])">
+    <div
+      class="itemContainer"
+      *ngIf="slide.type !== 'TEXT'"
+      (click)="
+        slide.type === 'IMAGE'
+          ? openImageModal(filesStrings[i], slide.type)
+          : playVideoOnFullscreen('media' + i)
+      "
+    >
       <ng-container *ngIf="slide.type === 'IMAGE'">
         <div
           class="imgBox"
@@ -39,7 +47,12 @@
         ></div>
       </ng-container>
       <ng-container *ngIf="slide.type === 'VIDEO'">
-        <video class="video-content" controls [src]="slide.path"></video>
+        <video
+          class="video-content"
+          [id]="'media' + i"
+          [muted]="true"
+          [src]="slide.path"
+        ></video>
       </ng-container>
       <div class="labelBox"></div>
 
@@ -48,13 +61,11 @@
         <div class="label">{{ gridItem.title }}</div>
       -->
     </div>
-  </div>
 
-  <div class="card" *ngIf="joke">
-    <div class="itemContainer">
-      <div class="joke">{{ joke }}</div>
+    <div class="itemContainer" *ngIf="slide.type === 'TEXT'">
+      <div class="joke">{{ slide.text }}</div>
 
-      <div class="joke-label">Chiste de IA</div>
+      <div class="joke-label">{{ slide.title }}</div>
 
       <!--
         <p class="text">{{ gridItem.text }}</p>
@@ -63,8 +74,10 @@
     </div>
   </div>
 
-  <p class="placeholder" *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)">
-    Incluyes fotos, memes, videos, música o chistes de la Inteligencia
-    Artificial.
+  <p
+    class="placeholder"
+    *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)"
+  >
+    {{ defaultText }}
   </p>
 </div>

@@ -18,6 +18,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-qr-edit',
@@ -27,7 +28,20 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 export class QrEditComponent implements OnInit {
   environment: string = environment.assetsUrl;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/mpg',
+    'video/mp4',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mts',
+    'video/m2ts',
+    'video/mxf',
+  ];
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;
@@ -56,11 +70,38 @@ export class QrEditComponent implements OnInit {
         return;
       }
       if (this.item.images.length) {
-        this.gridArray = this.item.images.map((image) => ({
-          _id: image._id,
-          background: image.value,
-          _type: 'image/jpg',
-        }));
+        this.gridArray = this.item.images.map((image) => {
+          console.log('mapeando imágenes');
+          const fileParts = image.value.split('.');
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+          let auxiliarImageFileExtension = 'image/' + fileExtension;
+          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+          if (
+            image.value &&
+            !image.value.includes('http') &&
+            !image.value.includes('https')
+          ) {
+            image.value = 'https://' + image.value;
+          }
+
+          console.log(auxiliarVideoFileExtension);
+
+          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+            console.log('retornando imagen');
+            return {
+              _id: image._id,
+              background: image.value,
+              _type: auxiliarImageFileExtension,
+            };
+          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+            console.log('retornando video');
+            return {
+              background: image.value,
+              _type: auxiliarVideoFileExtension,
+            };
+          }
+        });
       }
       return;
     }
@@ -74,15 +115,17 @@ export class QrEditComponent implements OnInit {
       ]);
       return;
     }
+
     this._PostsService.post = {
       ...this._PostsService.post,
       slides: this._PostsService.post?.slides
         ? this._PostsService.post?.slides
         : [],
     };
+
     if (this._PostsService.post.slides.length) {
       for await (const slide of this._PostsService.post.slides) {
-        if (slide.media.type.includes('image')) {
+        if (slide.media && slide.media.type.includes('image')) {
           await fileToBase64(slide.media).then((result) => {
             this.gridArray.push({
               ...slide,
@@ -90,7 +133,7 @@ export class QrEditComponent implements OnInit {
               _type: slide.media.type,
             });
           });
-        } else {
+        } else if (slide.media && slide.media.type.includes('video')) {
           const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
             URL.createObjectURL(slide.media)
           );
@@ -98,6 +141,10 @@ export class QrEditComponent implements OnInit {
             ...slide,
             background: fileUrl,
             _type: slide.media.type,
+          });
+        } else if (!slide.media && slide.type === 'text') {
+          this.gridArray.push({
+            ...slide,
           });
         }
       }
@@ -123,20 +170,32 @@ export class QrEditComponent implements OnInit {
   }
 
   async loadFile(event: Event) {
+    console.log('Entrando a cargar video');
     const fileList = (event.target as HTMLInputElement).files;
     if (!fileList.length) return;
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList.item(i);
       if (this.item) {
+        console.log('Entrando a cargar video de un artículo');
         this._ItemsService.itemImages.push(file);
-        if (
-          !['png', 'jpg', 'jpeg'].some((type) => file.type.includes(type)) ||
-          !file.type.includes('image/')
-        ) {
-          return;
-        }
+
+        // let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
+        //   file.type.includes(type)
+        // );
+
+        // console.log(file.type);
+
+        // let isFileAValidVideo = ['webm', 'mp4', 'm4v', 'mpg', 'mpeg', 'mpeg4', 'mov', '3gp', 'mts/m2ts', 'mxf'].some((type) =>
+        //   file.type.includes(type)
+        // );
+
+        // if (!isFileAValidImage && !isFileAValidVideo) {
+        //   console.log("Video no es válido");
+        //   return;
+        // }
         const reader = new FileReader();
         reader.onload = async (e) => {
+          console.log('cargando video');
           lockUI();
           const addedImage = await this._ItemsService.itemAddImage(
             [
@@ -146,10 +205,35 @@ export class QrEditComponent implements OnInit {
             ],
             this.item._id
           );
+          const itemUpdated: Item = addedImage;
+
           this._ItemsService.editingImageId =
             addedImage.images[addedImage.images.length - 1]._id;
           unlockUI();
-          this._Router.navigate([`admin/create-article/${this.item._id}`]);
+
+          // if (!isFileAValidVideo)
+          //   this._Router.navigate([`admin/create-article/${this.item._id}`]);
+
+          if (itemUpdated) {
+            let uploadedVideoURL =
+              itemUpdated.images[itemUpdated.images.length - 1].value;
+            const fileParts = uploadedVideoURL.split('.');
+            const fileExtension = fileParts[fileParts.length - 1];
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+            if (
+              uploadedVideoURL &&
+              !uploadedVideoURL.includes('http') &&
+              !uploadedVideoURL.includes('https')
+            ) {
+              uploadedVideoURL = 'https://' + uploadedVideoURL;
+            }
+
+            this.gridArray.push({
+              background: uploadedVideoURL,
+              _type: auxiliarVideoFileExtension,
+            });
+          }
         };
         reader.readAsDataURL(file);
       } else {
@@ -238,6 +322,8 @@ export class QrEditComponent implements OnInit {
           },
         },
       ];
+      if (this.item && isVideo(this.gridArray[index].background)) list.shift();
+
       list.forEach((option) => (option.styles = { color: '#383838' }));
     } else {
       list = [

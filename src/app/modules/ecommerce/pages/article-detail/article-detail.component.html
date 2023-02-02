@@ -15,14 +15,26 @@
         #mediaSwiper
         (slideChange)="updateCurrentSlideData($event)"
       >
-        <ng-container *ngIf="itemData.images.length > 0">
-          <div
-            class="entity-image"
-            *ngFor="let image of itemData.images"
-            [ngStyle]="{
-              backgroundImage: 'url(' + image?.value + ')'
-            }"
-          ></div>
+        <ng-container *ngIf="itemData.media && itemData.media.length > 0">
+          <ng-container *ngFor="let media of itemData.media; index as i">
+            <div
+              class="entity-image"
+              *ngIf="media.type === 'IMAGE'"
+              [ngStyle]="{
+                backgroundImage: 'url(' + media.src + ')'
+              }"
+            ></div>
+
+            <video
+              *ngIf="media.type === 'VIDEO'"
+              [id]="'media' + i"
+              (click)="playVideoOnFullscreen('media' + currentMediaSlide)"
+              [src]="media.src"
+              [ngStyle]="{
+                height: 'calc(100vh - 49px)'
+              }"
+            ></video>
+          </ng-container>
         </ng-container>
       </swiper>
     </div>

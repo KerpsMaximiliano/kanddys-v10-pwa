@@ -187,12 +187,13 @@ export class HeaderService {
     }
     if (this.saleflow.module?.appointment?.isActive) {
       const reservation = this.getReservation();
-      if (!reservation || !reservation.date || !this.orderProgress.reservation) return;
+      if (!reservation || !reservation.date || !this.orderProgress.reservation)
+        return;
     }
     if (this.hasScenarios) {
       if (!this.orderProgress.scenarios) return;
     }
-    console.log("Completo");
+    console.log('Completo');
     return true;
   }
 
@@ -417,7 +418,7 @@ export class HeaderService {
     let { order }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
 
-    if('itemPackage' in order) delete order.itemPackage;
+    if (order && 'itemPackage' in order) delete order.itemPackage;
 
     this.order = order;
     return order;
