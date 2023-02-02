@@ -42,14 +42,24 @@ export class CollectionsComponent implements OnInit {
       const { merchant } = this.headerService.saleflow;
       this.slug = merchant.slug;
       this.merchantName = merchant.name;
-      const tagsByMerchant = await this._TagsService.tagsByMerchant(
-        merchant._id
-      );
+      // const tagsByMerchant = await this._TagsService.tagsByMerchant(
+      //   merchant._id
+      // );
+      const { tags: tagsList } = await this._TagsService.tags({
+        findBy: {
+          entity: 'item',
+          status: 'active',
+          user: this.headerService.saleflow.merchant.owner._id,
+        },
+        options: {
+          limit: -1,
+        },
+      });
       this.image = this._DomSanitizer.bypassSecurityTrustStyle(
         `url(${merchant.image}) no-repeat center center / cover #e9e371`
       );
-      this.tags = tagsByMerchant
-        .map((tags) => tags.tags)
+      this.tags = tagsList
+        .map((tags) => tags)
         .filter((tag) => (this.needsDescription ? tag.notes : !tag.notes));
     })();
   }

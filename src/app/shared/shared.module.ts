@@ -126,7 +126,6 @@ import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component
 import { BuyerCardComponent } from './components/buyer-card/buyer-card.component';
 import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
 import { OptionsBarComponent } from './components/options-bar/options-bar.component';
-import { TagItemsComponent } from './components/tag-items/tag-items.component';
 import { ImageEditorComponent } from './components/image-editor/image-editor.component';
 import { CardComponent } from './components/card/card.component';
 import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
@@ -139,7 +138,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDividerModule } from '@angular/material/divider';
-import { CollectionsComponent } from './components/collections/collections.component';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
 
@@ -163,6 +162,7 @@ const imports = [
   MatDividerModule,
   MatButtonModule,
   MatExpansionModule,
+  MatBadgeModule,
 ];
 const declarations = [
   // Pages
@@ -283,7 +283,6 @@ const declarations = [
   BuyerCardComponent,
   GradientFooterComponent,
   OptionsBarComponent,
-  TagItemsComponent,
   ImageEditorComponent,
   CardComponent,
   TitleIconHeaderComponent,
@@ -291,7 +290,6 @@ const declarations = [
   QrEditComponent,
   MenuButtonComponent,
   LinksDialogComponent,
-  CollectionsComponent,
   GradientCardComponent,
 ];
 

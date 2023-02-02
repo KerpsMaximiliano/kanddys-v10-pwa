@@ -220,7 +220,7 @@ export class TagsService {
     }
   }
 
-  async tags(paginate: PaginationInput) {
+  async tags(paginate: PaginationInput): Promise<{ tags: Tag[] }> {
     try {
       const result = await this.graphql.query({
         query: tags,

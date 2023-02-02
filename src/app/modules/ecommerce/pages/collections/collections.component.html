@@ -1,6 +1,5 @@
 <div class="container">
-  <div class="header">
-    <!-- <img class="icon" [src]="environment + '/arrow-double-up.svg'" /> -->
+  <header class="header">
     <button class="icon" [style.background]="image"></button>
     <p class="title">
       {{
@@ -13,7 +12,7 @@
     <button class="arrow-btn" [routerLink]="['../store']">
       <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
     </button>
-  </div>
+  </header>
   <div
     *ngFor="let tag of tags"
     [style.cursor]="'pointer'"

@@ -6,7 +6,7 @@ import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { environment } from 'src/environments/environment';
-import { Button } from '../general-item/general-item.component';
+import { Button } from '../../../../shared/components/general-item/general-item.component';
 
 @Component({
   selector: 'app-tag-items',

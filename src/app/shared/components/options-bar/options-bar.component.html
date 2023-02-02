@@ -4,18 +4,30 @@
   [ngClass]="optCol > 0 ? 'grid' : 'flex'"
   [ngStyle]="{ 'grid-template-columns': 'repeat(' + optCol + ', 1fr)' }"
 >
-  <button
-    class="option type{{ type }}"
-    *ngFor="let option of options; let i = index"
-    (click)="selectOpt(i)"
-    [matMenuTriggerFor]="i === selected ? menu : fake"
-    [ngClass]="{ active: i === selected, optIcon: option.dotsIcon }"
-  >
-    <span>{{ option.title }}</span>
-    <button class="dotsButton" *ngIf="option.dotsIcon && i == selected">
-      <img class="dotsIcon" [src]="environment + '/dots-black.svg'" />
+  <ng-container *ngIf="openMenu">
+    <button
+      class="option type{{ type }}"
+      *ngFor="let option of options; let i = index"
+      (click)="selectOpt(i)"
+      [matMenuTriggerFor]="i === selected ? menu : fake"
+      [ngClass]="{ active: i === selected, optIcon: option.dotsIcon }"
+    >
+      <span>{{ option.title }}</span>
+      <button class="dotsButton" *ngIf="option.dotsIcon && i == selected">
+        <img class="dotsIcon" [src]="environment + '/dots-black.svg'" />
+      </button>
     </button>
-  </button>
+  </ng-container>
+  <ng-container *ngIf="!openMenu">
+    <button
+      class="option type{{ type }}"
+      *ngFor="let option of options; let i = index"
+      (click)="selectOpt(i)"
+      [ngClass]="{ active: i === selected, optIcon: option.dotsIcon }"
+    >
+      <span>{{ option.title }}</span>
+    </button>
+  </ng-container>
 </div>
 
 <mat-menu #menu="matMenu" class="menuContainer">

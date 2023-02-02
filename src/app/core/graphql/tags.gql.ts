@@ -138,6 +138,7 @@ export const tags = gql`
     tags(paginate: $paginate) {
       _id
       name
+      notes
       user
       status
       images

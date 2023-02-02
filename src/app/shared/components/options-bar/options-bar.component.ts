@@ -18,14 +18,17 @@ import { MatMenuModule } from '@angular/material/menu';
 export class OptionsBarComponent implements OnInit {
   environment: string = environment.assetsUrl;
   @Input() options: Array<any> = [];
-  @Input() type: string = '1';
+  @Input() type: '1' | '2' | '3' = '1';
   @Input() optCol: number = 0;
   @Input() swiperMode: boolean = false;
+  @Input() openMenu: boolean;
   @Output() selectedIndex = new EventEmitter<number>();
-  @Output() selectedMenuIndex = new EventEmitter<number>();
+  @Output() selectedMenuIndex = new EventEmitter<{
+    index: number;
+    menuIndex: number;
+  }>();
 
   selected: number = 0;
-  menuSelected: number = 0;
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -62,8 +65,9 @@ export class OptionsBarComponent implements OnInit {
   }
 
   menuOptionSelected(index: number) {
-    this.menuSelected = index;
-    this.selectedMenuIndex.emit(this.menuSelected);
-    console.log(this.menuSelected);
+    this.selectedMenuIndex.emit({
+      index: this.selected,
+      menuIndex: index,
+    });
   }
 }

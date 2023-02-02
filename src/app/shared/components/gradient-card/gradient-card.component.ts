@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Tag } from 'src/app/core/models/tags';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-gradient-card',
@@ -6,20 +8,8 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./gradient-card.component.scss'],
 })
 export class GradientCardComponent implements OnInit {
-  @Input() cards = [
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-    { name: 'CategoriaID' },
-  ];
+  env = environment.assetsUrl;
+  @Input() tag: Tag;
 
   constructor() {}
 

@@ -3,7 +3,8 @@
   *ngIf="
     headerService.saleflow?.canBuyMultipleItems &&
     headerService.order?.products?.length &&
-    activePath !== 'checkout'
+    activePath !== 'checkout' &&
+    activePath !== 'article-detail/:entity/:entityId'
   "
   position="right"
   color="blue"

@@ -48,7 +48,6 @@ interface ExtendedItem extends Item {
   }>;
 }
 
-type TypesOfMenu = 'TAGS' | 'DESCRIPTION';
 type ValidEntities = 'item' | 'post';
 
 @Component({
@@ -82,9 +81,8 @@ export class ArticleDetailComponent implements OnInit {
     value: number;
   };
   isItemInCart: boolean = false;
-  menuOpened: boolean;
+  itemsAmount: string;
   mode: 'preview' | 'image-preview' | 'saleflow';
-  typeOfMenuToShow: TypesOfMenu;
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
     freeMode: false,
@@ -136,7 +134,7 @@ export class ArticleDetailComponent implements OnInit {
       const validEntities = ['item', 'post', 'template'];
       const { entity, entityId } = routeParams;
 
-      if (this.headerService.saleflow && this.headerService.saleflow._id)
+      if (this.headerService.saleflow?._id)
         this.doesModuleDependOnSaleflow = true;
 
       if (validEntities.includes(entity)) {
@@ -436,11 +434,7 @@ export class ArticleDetailComponent implements OnInit {
         //   ]?._id
       );
     } else this.isItemInCart = false;
-  }
-
-  openMenu(typeOfMenu: TypesOfMenu) {
-    this.menuOpened = !this.menuOpened;
-    this.typeOfMenuToShow = typeOfMenu;
+    this.itemsAmount = productData.length + '';
   }
 
   async share() {
@@ -539,6 +533,12 @@ export class ArticleDetailComponent implements OnInit {
           this.router.navigate(['ecommerce/store/' + saleflowDefault._id]);
       }
     }
+  }
+
+  goToCheckout() {
+    this.router.navigate([
+      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+    ]);
   }
 
   updateFrantions(): void {

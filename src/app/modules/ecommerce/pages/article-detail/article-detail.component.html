@@ -1,6 +1,16 @@
 <div class="container" *ngIf="itemData">
-  <button class="fixed-top-button" (click)="back()">
+  <button class="fixed-top-button left" (click)="back()">
     <img [src]="env + '/arrow-double-up.svg'" alt="Volver" />
+  </button>
+  <button
+    *ngIf="itemsAmount"
+    class="fixed-top-button right"
+    mat-raised-button
+    (click)="goToCheckout()"
+    [matBadge]="itemsAmount"
+    matBadgePosition="after"
+  >
+    <img [src]="env + '/carrito_blanco.svg'" alt="Volver" />
   </button>
   <div class="media-swiper-wrapper">
     <div
@@ -38,30 +48,15 @@
         </ng-container>
       </swiper>
     </div>
-    <div
-      class="bottom-user-actions-panel"
-      [ngClass]="{
-        opened: menuOpened
-      }"
-    >
-      <div class="text-icons-container">
-        <div class="top-section">
-          <p class="top-text" (click)="openInfoDialog()">
-            {{
-              itemData.name?.length > 30
-                ? (itemData.name.trim() | slice : 0 : 30) + "..."
-                : itemData.name
-            }}
-          </p>
-          <div class="icons-flex">
-            <button class="round-button" (click)="share()">
-              <img
-                [src]="env + '/upload.svg'"
-                alt="Contenedor con flecha saliendo"
-              />
-            </button>
-          </div>
-        </div>
+    <div class="bottom-user-actions-panel">
+      <button class="text-container">
+        <p class="top-text" (click)="openInfoDialog()">
+          {{
+            itemData.name?.length > 30
+              ? (itemData.name.trim() | slice : 0 : 30) + "..."
+              : itemData.name
+          }}
+        </p>
 
         <p
           class="bottom-text"
@@ -77,7 +72,7 @@
             >Ver más</span
           >
         </p>
-      </div>
+      </button>
       <div class="inner-wrapper-top">
         <div
           class="current-media-shown-indicators"
@@ -95,22 +90,38 @@
             ></div>
           </ng-container>
         </div>
-        <div></div>
-
-        <div class="add-to-cart-and-item-price-columnn">
+        <div class="pricing-actions">
           <h3 class="item-price">
             RD $ {{ itemData.pricing | number : "1.2-2" }}
           </h3>
-          <button
-            (click)="saveProduct()"
-            *ngIf="doesModuleDependOnSaleflow"
-            [ngClass]="{
-              inCart: isItemInCart
-            }"
-          >
-            {{ isItemInCart ? "EN LA PRE-FACTURA" : "ADICIONALO A LA FACTURA" }}
-          </button>
+          <div class="icons-flex">
+            <button class="round-button" (click)="share()">
+              <img
+                [src]="env + '/upload.svg'"
+                alt="Contenedor con flecha saliendo"
+              />
+            </button>
+          </div>
         </div>
+        <button
+          class="cart-btn"
+          (click)="saveProduct()"
+          *ngIf="doesModuleDependOnSaleflow"
+          [ngClass]="{
+            inCart: isItemInCart
+          }"
+        >
+          <mat-icon>{{
+            isItemInCart ? "remove_shopping_cart" : "add_shopping_cart"
+          }}</mat-icon>
+          <span>
+            {{
+              isItemInCart
+                ? "Este artículo está en tu pre-factura"
+                : "Adiciónalo a la factura"
+            }}
+          </span>
+        </button>
       </div>
     </div>
   </div>
@@ -220,63 +231,6 @@
           ></div>
         </ng-container>
       </div>
-
-      <div></div>
-
-      <div class="add-to-cart-and-item-price-columnn" *ngIf="entity === 'item'">
-        <h3 class="item-price">
-          RD $ {{ itemData.pricing | number : "1.2-2" }}
-        </h3>
-        <button
-          (click)="saveProduct()"
-          [ngClass]="{
-            inCart: isItemInCart
-          }"
-        >
-          {{ isItemInCart ? "EN LA PRE-FACTURA" : "ADICIONALO A LA FACTURA" }}
-        </button>
-      </div>
-
-      <div class="empty-space"></div>
-    </div>
-
-    <div class="inner-wrapper-bottom" *ngIf="entity === 'item'">
-      <div class="content-wrapper">
-        <swiper
-          [config]="swiperConfigTag"
-          *ngIf="typeOfMenuToShow === 'TAGS'"
-          style="max-width: 98%"
-        >
-          <div
-            class="tags-area"
-            *ngFor="let tag of itemTags; let tagIndex = index"
-            (click)="onTagClick(tag)"
-          >
-            <div
-              class="tag-item"
-              [ngStyle]="{
-                'background-image':
-                  tag.images && tag.images.length > 0
-                    ? 'url(' + tag.images[0] + ')'
-                    : 'url(' + env + '/assets/images/noimage.png' + ')',
-                border: tag.selected ? '3px solid #45944d' : 'solid 3px #82f18d'
-              }"
-            ></div>
-            <span class="tag-name">{{ tag.name }}</span>
-          </div>
-        </swiper>
-
-        <div class="description" *ngIf="typeOfMenuToShow === 'DESCRIPTION'">
-          <p>
-            {{
-              !itemData.description ? "Sin descripción" : itemData.description
-            }}
-          </p>
-        </div>
-      </div>
     </div>
   </div>
 </div>
-<!-- <app-bios-banner
-  style="z-index: 999; position: fixed; bottom: 0"
-></app-bios-banner> -->
