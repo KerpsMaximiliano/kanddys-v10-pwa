@@ -48,6 +48,7 @@ export class ArticleEditorComponent implements OnInit {
     Validators.minLength(2),
     Validators.pattern(/[\S]/),
   ]);
+  loadingSlides: boolean;
 
   editingPrice: boolean = false;
   editingName: boolean = false;
@@ -92,7 +93,7 @@ export class ArticleEditorComponent implements OnInit {
       this.name.setValue(this.item.name);
       this.description.setValue(this.item.description);
       if (this.item.images.length) {
-        // lockUI();
+        this.loadingSlides = true;
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
           let imageURL = image.value;
@@ -118,6 +119,7 @@ export class ArticleEditorComponent implements OnInit {
         });
         Promise.all(imagesPromises).then((result) => {
           // unlockUI();
+          this.loadingSlides = false;
           this._ItemsService.itemImages = result;
           this.slides = this._ItemsService.itemImages.map((image) => {
             return {
