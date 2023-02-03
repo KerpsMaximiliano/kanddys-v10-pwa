@@ -1787,7 +1787,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         },
       },
       footerConfig,
-      stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
+      stepButtonInvalidText: 'INGRESA LOS DATOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN',
     },
     //por aqui voy
