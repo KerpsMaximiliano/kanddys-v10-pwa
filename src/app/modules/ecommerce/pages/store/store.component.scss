@@ -2,6 +2,9 @@ button {
   all: unset;
   cursor: pointer;
 }
+a {
+  text-decoration: none;
+}
 .store-page {
   height: 100vh;
   overflow-y: scroll;
@@ -22,6 +25,12 @@ main {
 :host ::ng-deep .swiper-button-next,
 :host ::ng-deep .swiper-button-prev {
   display: none;
+}
+.description-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 24px 32px;
 }
 .saleflows-item-grid {
   width: auto;

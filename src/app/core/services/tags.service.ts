@@ -21,6 +21,7 @@ import {
   tagsArchived,
   itemsByTag,
 } from '../graphql/tags.gql';
+import { Item } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
 
@@ -297,7 +298,7 @@ export class TagsService {
   async itemsByTag(
     nameTag: string,
     params: PaginationInput = { options: { limit: -1 } }
-  ): Promise<Array<Tag>> {
+  ): Promise<Item[]> {
     try {
       const result = await this.graphql.query({
         query: itemsByTag,

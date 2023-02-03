@@ -1,4 +1,4 @@
-<div class="container" *ngIf="itemData">
+<div class="container" *ngIf="itemData || tagData">
   <button class="fixed-top-button left" (click)="back()">
     <img [src]="env + '/arrow-double-up.svg'" alt="Volver" />
   </button>
@@ -25,7 +25,7 @@
         #mediaSwiper
         (slideChange)="updateCurrentSlideData($event)"
       >
-        <ng-container *ngIf="itemData.media && itemData.media.length > 0">
+        <ng-container *ngIf="itemData?.media?.length">
           <ng-container *ngFor="let media of itemData.media">
             <div
               class="entity-image"
@@ -46,31 +46,48 @@
             ></video>
           </ng-container>
         </ng-container>
+        <ng-container *ngIf="tagData?.images?.length">
+          <ng-container *ngFor="let media of tagData.images">
+            <div
+              class="entity-image"
+              [ngStyle]="{
+                backgroundImage: 'url(' + media + ')'
+              }"
+            ></div>
+          </ng-container>
+        </ng-container>
       </swiper>
     </div>
     <div class="bottom-user-actions-panel">
       <button class="text-container">
-        <p class="top-text" (click)="openInfoDialog()">
+        <p class="top-text" *ngIf="itemData?.name || tagData?.name">
           {{
-            itemData.name?.length > 30
-              ? (itemData.name.trim() | slice : 0 : 30) + "..."
-              : itemData.name
+            itemData &&
+              (itemData.name?.length > 30
+                ? (itemData.name.trim() | slice : 0 : 30) + "..."
+                : itemData.name)
+          }}
+          {{
+            tagData &&
+              (tagData.name?.length > 30
+                ? (tagData.name.trim() | slice : 0 : 30) + "..."
+                : tagData.name)
           }}
         </p>
 
-        <p
-          class="bottom-text"
-          *ngIf="itemData.description"
-          (click)="openInfoDialog()"
-        >
+        <p class="bottom-text" *ngIf="itemData?.description || tagData?.notes">
           {{
-            itemData.description.length > 100
-              ? (itemData.description.trim() | slice : 0 : 100) + "..."
-              : itemData.description
+            itemData &&
+              (itemData.description.length > 100
+                ? (itemData.description.trim() | slice : 0 : 100) + "..."
+                : itemData.description)
           }}
-          <span *ngIf="itemData.description.length > 100" style="color: #82f18d"
-            >Ver más</span
-          >
+          {{
+            tagData &&
+              (tagData.notes.length > 100
+                ? (tagData.notes.trim() | slice : 0 : 100) + "..."
+                : tagData.notes)
+          }}
         </p>
       </button>
       <div class="inner-wrapper-top">
@@ -80,18 +97,27 @@
             'grid-template-columns': '' + fractions + ''
           }"
         >
-          <ng-container *ngIf="itemData.images.length > 0">
+          <ng-container *ngIf="itemData?.images?.length">
             <div
               class="indicator"
               [ngClass]="{
                 active: imageIndex === currentMediaSlide
               }"
-              *ngFor="let image of itemData.images; let imageIndex = index"
+              *ngFor="let image of itemData?.images; let imageIndex = index"
+            ></div>
+          </ng-container>
+          <ng-container *ngIf="tagData?.images?.length">
+            <div
+              class="indicator"
+              [ngClass]="{
+                active: imageIndex === currentMediaSlide
+              }"
+              *ngFor="let image of tagData.images; let imageIndex = index"
             ></div>
           </ng-container>
         </div>
         <div class="pricing-actions">
-          <h3 class="item-price">
+          <h3 class="item-price" *ngIf="itemData">
             RD $ {{ itemData.pricing | number : "1.2-2" }}
           </h3>
           <div class="icons-flex">
@@ -106,7 +132,7 @@
         <button
           class="cart-btn"
           (click)="saveProduct()"
-          *ngIf="doesModuleDependOnSaleflow"
+          *ngIf="doesModuleDependOnSaleflow && itemData"
           [ngClass]="{
             inCart: isItemInCart
           }"
@@ -122,6 +148,16 @@
             }}
           </span>
         </button>
+        <a
+          class="cart-btn"
+          [routerLink]="['../../../collections', tagData._id]"
+          *ngIf="tagData"
+          [ngClass]="{
+            inCart: isItemInCart
+          }"
+        >
+          Mira la colección
+        </a>
       </div>
     </div>
   </div>

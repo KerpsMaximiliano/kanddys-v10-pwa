@@ -13,10 +13,10 @@
   background-color: #fff;
   padding: 11px 9px 13px 17px;
   border-radius: 7px;
-  filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.16 ));
+  filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.16));
   color: #272727;
   gap: 15px;
-
+  cursor: pointer;
 
   .top {
     width: 100%;
@@ -26,12 +26,12 @@
     justify-content: center;
     gap: 5px;
 
-    .img{
+    .img {
       object-fit: cover;
       border-radius: 15px;
     }
 
-    .text{
+    .text {
       width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -40,18 +40,16 @@
       line-clamp: 8;
       -webkit-box-orient: vertical;
       line-height: 21px;
-      
-      .title{
+
+      .title {
         font-family: SFProBold;
         font-size: 21px;
       }
-      .description{
+      .description {
         font-family: "SfProLight";
         font-size: 17px;
       }
-
     }
-
   }
 
   .bottom {
@@ -61,7 +59,7 @@
     font-family: "SfProBold";
     font-size: 12px;
 
-    .center{
+    .center {
       width: 100%;
       text-align: center;
     }

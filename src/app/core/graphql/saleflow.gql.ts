@@ -9,6 +9,11 @@ export const body = `
   addressExtraInfo
   banner
   itemNickname
+  layout
+  workingHours
+  paymentInfo
+  createdAt
+  canBuyMultipleItems
   social {
     name
     url
@@ -65,10 +70,6 @@ export const body = `
     }
     index
   }
-  workingHours
-  paymentInfo
-  createdAt
-  canBuyMultipleItems
 `;
 
 export const saleflow = gql`

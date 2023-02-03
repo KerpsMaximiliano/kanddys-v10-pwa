@@ -171,12 +171,9 @@ export class StoreComponent implements OnInit {
     lockUI();
 
     // Resetear status de la ultima orden creada
-    console.log(this.headerService.saleflow?.merchant?.image);
     this.headerService.orderId = null;
     this.getTags();
-    this.headerService.merchantInfo = await this.merchantService.merchant(
-      this.headerService.saleflow.merchant._id
-    );
+    this.headerService.merchantInfo = this.headerService.saleflow.merchant;
     if (this.headerService.user)
       this.userDefaultMerchant = await this.merchantService.merchantDefault();
     // Obteniendo el ID de los productos, los customizers y el orden
@@ -264,7 +261,6 @@ export class StoreComponent implements OnInit {
   onItemClick(id: string) {
     this.savePageSnapshot();
     this.router.navigate([`../article-detail/item/${id}`], {
-      replaceUrl: this.headerService.checkoutRoute ? true : false,
       relativeTo: this.route,
       queryParams: {
         mode: 'saleflow',

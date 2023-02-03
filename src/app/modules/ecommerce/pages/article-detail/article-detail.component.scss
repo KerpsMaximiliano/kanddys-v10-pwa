@@ -2,7 +2,8 @@ p,
 h3 {
   margin: 0;
 }
-button {
+button,
+a {
   all: unset;
 }
 .fixed-top-button {
@@ -44,6 +45,7 @@ button {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 1) 100%);
   padding: 0 3% 10px;
   cursor: pointer;
+  box-sizing: border-box;
 
   .top-text {
     font-family: "SfProBold";
@@ -191,7 +193,7 @@ audio {
 /* ACTIONS*/
 .bottom-user-actions-panel {
   z-index: 1;
-  bottom: -74px;
+  bottom: -117px;
   left: 0;
   right: 0;
   position: absolute;

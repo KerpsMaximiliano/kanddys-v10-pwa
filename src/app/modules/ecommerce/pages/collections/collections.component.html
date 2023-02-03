@@ -13,24 +13,18 @@
       <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
     </button>
   </header>
-  <div
-    *ngFor="let tag of tags"
-    [style.cursor]="'pointer'"
-    [routerLink]="[
-      '/ecommerce/' +
-        slug +
-        '/' +
-        (tag.notes ? 'collections' : 'categories') +
-        '/' +
-        tag._id
-    ]"
-  >
-    <app-buyer-card
-      [title]="tag.name"
-      [description]="tag.notes"
-      [img]="''"
-      [leftAmount]="3000"
-      [rightAmount]="700000"
-    ></app-buyer-card>
+  <div class="collection-view">
+    <a
+      *ngFor="let tag of tags"
+      [routerLink]="['../article-detail/collection/', tag._id]"
+    >
+      <app-buyer-card
+        [title]="tag.name"
+        [description]="tag.notes"
+        [img]="''"
+        [leftAmount]="3000"
+        [rightAmount]="700000"
+      ></app-buyer-card>
+    </a>
   </div>
 </div>

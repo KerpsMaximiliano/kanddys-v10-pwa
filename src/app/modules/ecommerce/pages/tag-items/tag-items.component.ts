@@ -1,7 +1,8 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Item } from 'src/app/core/models/item';
 import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { TagsService } from 'src/app/core/services/tags.service';
@@ -13,19 +14,19 @@ import { Button } from '../../../../shared/components/general-item/general-item.
   templateUrl: './tag-items.component.html',
   styleUrls: ['./tag-items.component.scss'],
 })
-export class TagItemsComponent implements OnInit, OnDestroy {
+export class TagItemsComponent implements OnInit {
   @Input() image: string | SafeStyle = '';
   environment: string = environment.assetsUrl;
-  optional = true;
   slug: string;
 
-  items: Array<any> = [];
+  items: Item[] = [];
   optionsButton: Array<Button> = [];
   sub: Subscription;
   name: string;
   notes: string;
   merchantName: string = '';
   needsDescription: boolean;
+  status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -36,11 +37,12 @@ export class TagItemsComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    this.sub = this._ActivatedRoute.params.subscribe(({ tagId }) => {
+    this._ActivatedRoute.params.subscribe(({ tagId }) => {
       const path: string = 'collections';
       const needsDescription = this._Router.url.split('/').includes(path);
       this.needsDescription = needsDescription;
       (async () => {
+        this.status = 'loading';
         const { tag }: { tag: Tag } = await this._TagsService.tag(tagId);
         const { name, notes } = tag;
         this.name = name;
@@ -50,17 +52,12 @@ export class TagItemsComponent implements OnInit, OnDestroy {
         const { merchant } = this.headerService.saleflow;
         this.slug = merchant.slug;
         this.merchantName = merchant.name;
-        this.items = (await this._TagsService.itemsByTag(name)).filter(
-          ({ notes }: any): boolean => (this.needsDescription ? notes : !notes)
-        );
+        this.items = await this._TagsService.itemsByTag(name);
         this.image = this._DomSanitizer.bypassSecurityTrustStyle(
           `url(${merchant.image}) no-repeat center center / cover #e9e371`
         );
+        this.status = 'complete';
       })();
     });
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
   }
 }

@@ -57,28 +57,55 @@
 
       <!--REGULAR MERCHANT-->
       <div class="content">
-        <div class="saleflows-item-grid">
+        <div
+          class="saleflows-item-grid"
+          *ngIf="
+            !headerService.saleflow.layout ||
+            headerService.saleflow.layout === 'simple-card'
+          "
+        >
           <div
             class="capsize"
             *ngFor="let item of items; let itemIndex = index"
           >
-            <app-saleflow-item
-              [itemIndex]="itemIndex"
-              [itemId]="item._id"
-              [type]="4"
-              [inactive]="
-                item.status != 'active' && item.status != 'featured'
-                  ? true
-                  : false
-              "
-              [imgURL]="item.images?.length ? item.images[0].value : ''"
-              [price]="item.pricing"
-              [showPrice]="true"
-              [itemParams]="item.params"
-              (itemClicked)="onItemClick(item._id)"
-              [responsiveWidthVersion]="true"
-            ></app-saleflow-item>
+            <a
+              [routerLink]="['../article-detail/item', item._id]"
+              [queryParams]="{ mode: 'saleflow' }"
+            >
+              <app-saleflow-item
+                [itemIndex]="itemIndex"
+                [itemId]="item._id"
+                [type]="4"
+                [inactive]="
+                  item.status != 'active' && item.status != 'featured'
+                    ? true
+                    : false
+                "
+                [imgURL]="item.images?.length ? item.images[0].value : ''"
+                [price]="item.pricing"
+                [showPrice]="true"
+                [itemParams]="item.params"
+                [responsiveWidthVersion]="true"
+              ></app-saleflow-item>
+            </a>
           </div>
+        </div>
+        <div
+          class="description-view"
+          *ngIf="headerService.saleflow.layout === 'description-card'"
+        >
+          <a
+            *ngFor="let item of items; let itemIndex = index"
+            [routerLink]="['../article-detail/item', item._id]"
+            [queryParams]="{ mode: 'saleflow' }"
+          >
+            <app-buyer-card
+              [title]="item.name"
+              [description]="item.description"
+              [img]="item.images?.length ? item.images[0].value : ''"
+              [leftAmount]="item.pricing"
+            ></app-buyer-card>
+          </a>
         </div>
       </div>
 
