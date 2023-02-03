@@ -442,4 +442,8 @@ export class QrEditComponent implements OnInit {
       }
     );
   }
+
+  isSlideVideo(index: number) {
+    return isVideo(this.gridArray[index].background);
+  }
 }

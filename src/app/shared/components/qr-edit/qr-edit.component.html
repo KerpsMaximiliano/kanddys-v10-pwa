@@ -100,7 +100,7 @@
             <video [muted]="true" [src]="gridItem.background"></video>
           </ng-container>
 
-          <div class="labelBox"></div>
+          <div class="labelBox" (click)="item && !isSlideVideo(i) ? editSlide(i) : null"></div>
           <button class="circleButton" (click)="deleteSlide(i)">
             <i class="fa fa-times" aria-hidden="true"></i>
           </button>
