@@ -76,6 +76,7 @@
         <div class="itemContainer">
           <div
             *ngIf="imageFiles.includes(gridItem._type)"
+            (click)="this.item && editSlide(i)"
             class="imgBox"
             [ngStyle]="{
               backgroundImage:

@@ -388,6 +388,11 @@ export class QrEditComponent implements OnInit {
       flags: ['no-header'],
     });
   }
+
+  editSlide(index: number) {
+    this._ItemsService.editingImageId = this.gridArray[index]._id;
+    this._Router.navigate([`admin/create-article/${this.item._id}`]);
+  }
   
   async deleteImage(index: number) {
     if (this.item) {
