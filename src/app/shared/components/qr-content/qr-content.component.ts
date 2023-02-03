@@ -4,6 +4,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from '../../dialogs/image-view/image-view.component';
 import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-qr-content',
@@ -22,7 +23,7 @@ export class QrContentComponent implements OnInit {
     title?: string;
     text?: string;
   }> = [];
-
+  playVideoOnFullscreen = playVideoOnFullscreen;
   filesStrings: string[] = [];
 
   constructor(
@@ -98,21 +99,5 @@ export class QrContentComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
-
-  playVideoOnFullscreen(id: string) {
-    const elem: HTMLVideoElement = document.getElementById(
-      id
-    ) as HTMLVideoElement;
-
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if ((elem as any).webkitRequestFullscreen) {
-      /* Safari */
-      (elem as any).webkitRequestFullscreen();
-    } else if ((elem as any).msRequestFullscreen) {
-      /* IE11 */
-      (elem as any).msRequestFullscreen();
-    }
   }
 }

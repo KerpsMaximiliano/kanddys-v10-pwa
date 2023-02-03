@@ -30,6 +30,7 @@ import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
 import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 SwiperCore.use([Virtual]);
 
@@ -118,6 +119,7 @@ export class ArticleDetailComponent implements OnInit {
   user: User;
   logged: boolean = false;
   isProductMine: boolean = false;
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -595,21 +597,5 @@ export class ArticleDetailComponent implements OnInit {
       const route = ['ecommerce', 'article-privacy', _id];
       this.router.navigate(route);
     })();
-  }
-
-  playVideoOnFullscreen(id: string) {
-    const elem: HTMLVideoElement = document.getElementById(
-      id
-    ) as HTMLVideoElement;
-
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if ((elem as any).webkitRequestFullscreen) {
-      /* Safari */
-      (elem as any).webkitRequestFullscreen();
-    } else if ((elem as any).msRequestFullscreen) {
-      /* IE11 */
-      (elem as any).msRequestFullscreen();
-    }
   }
 }

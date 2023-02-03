@@ -16,7 +16,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { isVideo } from 'src/app/core/helpers/strings.helpers';
 
@@ -47,6 +47,7 @@ export class QrEditComponent implements OnInit {
   availableFiles: string;
   item: Item;
   gridArray: Array<any> = [];
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -445,21 +446,5 @@ export class QrEditComponent implements OnInit {
 
   isSlideVideo(index: number) {
     return isVideo(this.gridArray[index].background);
-  }
-
-  playVideoOnFullscreen(id: string) {
-    const elem: HTMLVideoElement = document.getElementById(
-      id
-    ) as HTMLVideoElement;
-
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if ((elem as any).webkitRequestFullscreen) {
-      /* Safari */
-      (elem as any).webkitRequestFullscreen();
-    } else if ((elem as any).msRequestFullscreen) {
-      /* IE11 */
-      (elem as any).msRequestFullscreen();
-    }
   }
 }

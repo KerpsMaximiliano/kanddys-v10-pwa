@@ -38,12 +38,12 @@
                   left: 0;
                   right: 0;
                 "
-                (click)="playVideoOnFullscreen('media' + currentMediaSlide)"
+                (click)="playVideoOnFullscreen('media' + i)"
               />
 
               <video
                 [id]="'media' + i"
-                (click)="playVideoOnFullscreen('media' + currentMediaSlide)"
+                (click)="playVideoOnFullscreen('media' + i)"
                 [src]="media.src"
                 [ngStyle]="{
                   height: 'calc(100vh - 49px)'
