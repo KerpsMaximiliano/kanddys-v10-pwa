@@ -36,7 +36,7 @@ export class ContactLandingContainerComponent implements OnInit {
         this.idUser = idUser;
         const _merchantDefault = await this._MerchantService.merchantDefault();
         if(idUser) {
-          const { _id } = _merchantDefault;
+          const { _id } = _merchantDefault || {};
           const paginate:PaginationInput = {
             findBy:{
               _id: idUser

@@ -221,11 +221,11 @@ export class StoreComponent implements OnInit {
       ? this.headerService.order.products.map((subOrder) => subOrder.item)
       : [];
     // Filtrando los productos activos y destacados
-    this.items = items.listItems.filter(
+    this.items = items?.listItems.filter(
       (item) => item.status === 'active' || item.status === 'featured'
     );
 
-    for (let i = 0; i < this.items.length; i++) {
+    for (let i = 0; i < this.items?.length; i++) {
       // Asignando el status a los items del saleflow
       const item = this.headerService.saleflow.items.find(
         (saleflowItem) => saleflowItem.item._id === this.items[i]._id
