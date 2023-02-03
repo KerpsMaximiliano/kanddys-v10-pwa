@@ -6,6 +6,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./buyer-card.component.scss'],
 })
 export class BuyerCardComponent implements OnInit {
+  @Input() shadow: boolean = true;
   @Input() img: string = '';
   @Input() title: string
   @Input() description: string

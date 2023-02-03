@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" [ngClass]="{ shadow: shadow }">
   <div class="top">
     <p *ngIf="title || description" class="text">
       <span *ngIf="title" class="title">{{ title }}</span
