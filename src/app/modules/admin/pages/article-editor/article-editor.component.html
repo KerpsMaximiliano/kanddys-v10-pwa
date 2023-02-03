@@ -76,12 +76,22 @@
     <app-qr-content
       *ngIf="slides"
       [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
       [shadows]="false"
       (buttonClicked)="goEditSlides()"
     ></app-qr-content>
     <app-qr-content
       *ngIf="!slides"
       [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
       [shadows]="false"
       (buttonClicked)="goEditSlides()"
     ></app-qr-content>

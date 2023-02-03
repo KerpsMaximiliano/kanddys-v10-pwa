@@ -25,6 +25,7 @@ import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 interface Image {
   src: string;
@@ -123,8 +124,21 @@ export class OrderDetailComponent implements OnInit {
   orderInDayIndex: number = null;
   payedWithAzul: boolean = false;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = ['video/mp4', 'video/webm'];
-
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/avi',
+    'video/mpg',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mxf',
+    'video/m2ts',
+    'video/m2ts',
+  ];
+  playVideoOnFullscreen = playVideoOnFullscreen;
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
   constructor(
@@ -176,15 +190,13 @@ export class OrderDetailComponent implements OnInit {
         itemSubOrder.item.media = itemSubOrder.item.images.map((image) => {
           let url = image.value;
           const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1];
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
           let auxiliarImageFileExtension = 'image/' + fileExtension;
           let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
           if (url && !url.includes('http') && !url.includes('https')) {
             url = 'https://' + url;
           }
-
-          console.log(url);
 
           if (this.imageFiles.includes(auxiliarImageFileExtension)) {
             return {
@@ -926,23 +938,7 @@ export class OrderDetailComponent implements OnInit {
     this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
-
-  playVideoOnFullscreen(id: string) {
-    const elem: HTMLVideoElement = document.getElementById(
-      id
-    ) as HTMLVideoElement;
-
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if ((elem as any).webkitRequestFullscreen) {
-      /* Safari */
-      (elem as any).webkitRequestFullscreen();
-    } else if ((elem as any).msRequestFullscreen) {
-      /* IE11 */
-      (elem as any).msRequestFullscreen();
-    }
-  }
-
+  
   // async addTag(tagId?: string) {
   //   if (!this.selectedTags[tagId]) {
   //     const added = await this.tagsService.addTagsInOrder(

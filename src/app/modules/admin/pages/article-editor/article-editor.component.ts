@@ -3,6 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { completeImageURL, getExtension, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
@@ -47,6 +48,7 @@ export class ArticleEditorComponent implements OnInit {
     Validators.minLength(2),
     Validators.pattern(/[\S]/),
   ]);
+  loadingSlides: boolean;
 
   editingPrice: boolean = false;
   editingName: boolean = false;
@@ -80,6 +82,7 @@ export class ArticleEditorComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.loadingSlides = true;
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
@@ -93,46 +96,53 @@ export class ArticleEditorComponent implements OnInit {
       this.name.setValue(this.item.name);
       this.description.setValue(this.item.description);
       if (this.item.images.length) {
+
+        this.loadingSlides = false;
+
+        this.slides = this.item.images.map((image) => {
+          return {
+            url: completeImageURL(image.value),
+            index: 0,
+            type: 'poster',
+            text: '',
+          };
+        });
+        
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
-          const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1];
-          let auxiliarImageFileExtension = 'image/' + fileExtension;
-          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+          let imageURL = image.value;
+          imageURL = completeImageURL(imageURL);
 
-          let filePath = image.value;
-
-          if (!image.value.includes('http') && !image.value.includes('https')) {
-            filePath = 'https://' + filePath;
-          }
-
-          const response = await fetch(filePath);
+          const response = await fetch(imageURL);
           const blob = await response.blob();
-
-          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-            return new File([blob], `item_image_${index}.${fileExtension}`, {
-              type: auxiliarImageFileExtension,
-            });
-          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-            return new File([blob], `item_video_${index}.${fileExtension}`, {
-              type: auxiliarVideoFileExtension,
-            });
-          }
+          return new File(
+            [blob],
+            `item_image_${index}.${getExtension(imageURL)}`,
+            {
+              type: `${isVideo(image.value) ? `video` : `image`}/${getExtension(
+                imageURL
+              )}`,
+            }
+          );
         });
         Promise.all(imagesPromises).then((result) => {
+          console.log(result);
+          // this.loadingSlides = false;
           this._ItemsService.itemImages = result;
-          this.slides = this._ItemsService.itemImages.map((image) => {
-            return {
-              media: image,
-              index: 0,
-              type: 'poster',
-              text: '',
-            };
-          });
+          // this.slides = this._ItemsService.itemImages.map((image) => {
+          //   return {
+          //     media: image,
+          //     index: 0,
+          //     type: 'poster',
+          //     text: '',
+          //   };
+          // });
           if (!this.selectedImages.length) this.loadImages();
         });
         // } else this.loadImages();
+
       }
+      this.loadingSlides = false;
     }
     if (this._ItemsService.itemName) {
       this.name.setValue(this._ItemsService.itemName);

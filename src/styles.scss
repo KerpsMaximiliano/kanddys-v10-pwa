@@ -95,7 +95,6 @@ body {
 //   }
 // }
 
-
 .app-dialog {
   .dialog-frame {
     width: 100vw !important;
@@ -372,3 +371,19 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.videoThumbnail {
+  background-color: #293628 !important;
+
+  position: relative !important;
+}
+
+.playVideoIcon {
+  cursor: pointer;
+  position: absolute;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  padding: 3rem !important;
+  filter: invert(87%) sepia(40%) saturate(582%) hue-rotate(60deg)
+    brightness(101%) contrast(89%);
+}

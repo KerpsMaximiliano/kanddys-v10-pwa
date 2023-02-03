@@ -3,6 +3,8 @@ import { SlideInput } from 'src/app/core/models/post';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from '../../dialogs/image-view/image-view.component';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-qr-content',
@@ -13,6 +15,7 @@ export class QrContentComponent implements OnInit {
   @Input() slides: Array<SlideInput> = [];
   @Input() shadows: boolean = true;
   @Input() joke: string = '';
+  @Input() defaultText: string = '';
   @Output() buttonClicked = new EventEmitter();
   slidesPath: Array<{
     type: 'IMAGE' | 'VIDEO' | 'TEXT';
@@ -20,7 +23,7 @@ export class QrContentComponent implements OnInit {
     title?: string;
     text?: string;
   }> = [];
-
+  playVideoOnFullscreen = playVideoOnFullscreen;
   filesStrings: string[] = [];
 
   constructor(
@@ -31,23 +34,30 @@ export class QrContentComponent implements OnInit {
   async ngOnInit() {
     if (this.slides) {
       for await (const slide of this.slides) {
-        console.log(slide);
-        if (slide.media && slide.media.type.includes('image')) {
-          const base64 = await this.fileToBase64(slide.media);
+        if (slide.media) {
+          if (slide.media.type.includes('image')) {
+            const base64 = await this.fileToBase64(slide.media);
+            this.slidesPath.push({
+              path: `url(${base64})`,
+              type: 'IMAGE',
+            });
+            this.filesStrings.push(base64 as string);
+          } else if (slide.media.type.includes('video')) {
+            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(slide.media)
+            );
+            this.slidesPath.push({
+              path: fileUrl,
+              type: 'VIDEO',
+            });
+            this.filesStrings.push(fileUrl as string);
+          }
+        } else if (slide.url) {
           this.slidesPath.push({
-            path: `url(${base64})`,
-            type: 'IMAGE',
+            path: isVideo(slide.url) ? slide.url : `url(${slide.url})`,
+            type: isVideo(slide.url) ? 'VIDEO' : 'IMAGE'
           });
-          this.filesStrings.push(base64 as string);
-        } else if (slide.media && slide.media.type.includes('video')) {
-          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
-            URL.createObjectURL(slide.media)
-          );
-          this.slidesPath.push({
-            path: fileUrl,
-            type: 'VIDEO',
-          });
-          this.filesStrings.push(fileUrl as string);
+          this.filesStrings.push(slide.url);
         } else if (slide.type === 'text') {
           this.slidesPath.push({
             text: slide.text,
@@ -58,7 +68,7 @@ export class QrContentComponent implements OnInit {
       }
     }
 
-    if (this.slides.length > 0) {
+    if (this.slides && this.slides.length > 0) {
       this.shadows = false;
     } else {
       this.shadows = true;

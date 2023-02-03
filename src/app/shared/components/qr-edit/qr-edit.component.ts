@@ -16,8 +16,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-qr-edit',
@@ -26,12 +27,27 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 })
 export class QrEditComponent implements OnInit {
   environment: string = environment.assetsUrl;
+  spinnerGif: string = `${environment.assetsUrl}/spinner2.gif`;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/mpg',
+    'video/mp4',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mts',
+    'video/m2ts',
+    'video/mxf',
+  ];
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;
   gridArray: Array<any> = [];
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -58,7 +74,7 @@ export class QrEditComponent implements OnInit {
       if (this.item.images.length) {
         this.gridArray = this.item.images.map((image) => {
           const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1];
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
           let auxiliarImageFileExtension = 'image/' + fileExtension;
           let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
@@ -86,47 +102,50 @@ export class QrEditComponent implements OnInit {
       }
       return;
     }
-    if (!this._PostsService.post) {
-      const storedPost = localStorage.getItem('post');
-      if (storedPost) this._PostsService.post = JSON.parse(storedPost);
-    }
-    if (!this._PostsService.post) {
-      this._Router.navigate([
-        'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
-      ]);
-      return;
-    }
 
-    this._PostsService.post = {
-      ...this._PostsService.post,
-      slides: this._PostsService.post?.slides
-        ? this._PostsService.post?.slides
-        : [],
-    };
+    if (!itemId) {
+      if (!this._PostsService.post) {
+        const storedPost = localStorage.getItem('post');
+        if (storedPost) this._PostsService.post = JSON.parse(storedPost);
+      }
+      if (!this._PostsService.post) {
+        this._Router.navigate([
+          'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+        ]);
+        return;
+      }
 
-    if (this._PostsService.post.slides.length) {
-      for await (const slide of this._PostsService.post.slides) {
-        if (slide.media && slide.media.type.includes('image')) {
-          await fileToBase64(slide.media).then((result) => {
+      this._PostsService.post = {
+        ...this._PostsService.post,
+        slides: this._PostsService.post?.slides
+          ? this._PostsService.post?.slides
+          : [],
+      };
+
+      if (this._PostsService.post.slides.length) {
+        for await (const slide of this._PostsService.post.slides) {
+          if (slide.media && slide.media.type.includes('image')) {
+            await fileToBase64(slide.media).then((result) => {
+              this.gridArray.push({
+                ...slide,
+                background: result,
+                _type: slide.media.type,
+              });
+            });
+          } else if (slide.media && slide.media.type.includes('video')) {
+            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(slide.media)
+            );
             this.gridArray.push({
               ...slide,
-              background: result,
+              background: fileUrl,
               _type: slide.media.type,
             });
-          });
-        } else if (slide.media && slide.media.type.includes('video')) {
-          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
-            URL.createObjectURL(slide.media)
-          );
-          this.gridArray.push({
-            ...slide,
-            background: fileUrl,
-            _type: slide.media.type,
-          });
-        } else if (!slide.media && slide.type === 'text') {
-          this.gridArray.push({
-            ...slide,
-          });
+          } else if (!slide.media && slide.type === 'text') {
+            this.gridArray.push({
+              ...slide,
+            });
+          }
         }
       }
     }
@@ -158,17 +177,29 @@ export class QrEditComponent implements OnInit {
       if (this.item) {
         this._ItemsService.itemImages.push(file);
 
-        let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
-          file.type.includes(type)
-        );
+        // let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
+        //   file.type.toLowerCase().includes(type)
+        // );
 
-        let isFileAValidVideo = ['webm', 'mp4'].some((type) =>
-          file.type.includes(type)
-        );
+        // let isFileAValidVideo = [
+        //   'webm',
+        //   'mp4',
+        //   'm4v',
+        //   'mpg',
+        //   'mpeg',
+        //   'mpeg4',
+        //   'mov',
+        //   '3gp',
+        //   'mts',
+        //   'm2ts',
+        //   'mxf',
+        // ].some((type) => file.type.toLowerCase().includes(type));
 
-        if (!isFileAValidImage && !isFileAValidVideo) {
-          return;
-        }
+        // if (!isFileAValidImage && !isFileAValidVideo) {
+        //   alert('Archivo no valido');
+        //   return;
+        // }
+
         const reader = new FileReader();
         reader.onload = async (e) => {
           lockUI();
@@ -180,12 +211,39 @@ export class QrEditComponent implements OnInit {
             ],
             this.item._id
           );
+          const itemUpdated: Item = addedImage;
+
           this._ItemsService.editingImageId =
             addedImage.images[addedImage.images.length - 1]._id;
           unlockUI();
 
-          if (!isFileAValidVideo)
+          if (isImage(itemUpdated.images[itemUpdated.images.length - 1].value))
             this._Router.navigate([`admin/create-article/${this.item._id}`]);
+
+          if (itemUpdated && isVideo(itemUpdated.images[itemUpdated.images.length - 1].value)) {
+            let uploadedVideoURL =
+              itemUpdated.images[itemUpdated.images.length - 1].value;
+            const fileParts = uploadedVideoURL.split('.');
+            const fileExtension = fileParts[fileParts.length - 1];
+            let auxiliarFileExtension = isVideo(uploadedVideoURL)
+              ? `video/${fileExtension}`
+              : `image/${fileExtension}`;
+
+            if (
+              uploadedVideoURL &&
+              !uploadedVideoURL.includes('http') &&
+              !uploadedVideoURL.includes('https')
+            ) {
+              uploadedVideoURL = 'https://' + uploadedVideoURL;
+            }
+
+            console.log(auxiliarFileExtension);
+
+            this.gridArray.push({
+              background: uploadedVideoURL,
+              _type: auxiliarFileExtension,
+            });
+          }
         };
         reader.readAsDataURL(file);
       } else {
@@ -274,6 +332,8 @@ export class QrEditComponent implements OnInit {
           },
         },
       ];
+      if (this.item && isVideo(this.gridArray[index].background)) list.shift();
+
       list.forEach((option) => (option.styles = { color: '#383838' }));
     } else {
       list = [
@@ -312,6 +372,29 @@ export class QrEditComponent implements OnInit {
     });
   }
 
+  deleteSlide(index: number) {
+    this.dialog.open(SingleActionDialogComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        title: 'Eliminar este slide del símbolo',
+        buttonText: 'Sí, borrar',
+        mainButton: () => {
+          this.deleteImage(index);
+        },
+        btnBackgroundColor: '#272727',
+        btnMaxWidth: '133px',
+        btnPadding: '7px 2px',
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  editSlide(index: number) {
+    this._ItemsService.editingImageId = this.gridArray[index]._id;
+    this._Router.navigate([`admin/create-article/${this.item._id}`]);
+  }
+  
   async deleteImage(index: number) {
     if (this.item) {
       this._ItemsService.itemImages.splice(index, 1);
@@ -359,5 +442,9 @@ export class QrEditComponent implements OnInit {
         },
       }
     );
+  }
+
+  isSlideVideo(index: number) {
+    return isVideo(this.gridArray[index].background);
   }
 }
