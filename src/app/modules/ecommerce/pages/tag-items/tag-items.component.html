@@ -10,7 +10,8 @@
       }}
     </p>
     <p class="title">{{ name | titlecase }}</p>
-    <button [routerLink]="[notes ? '../' : '../../store']" class="arrow-btn">
+    <!-- Former routerLink -> [routerLink]="[notes ? '../' : '../../store']" -->
+    <button [routerLink]="['../../store']" class="arrow-btn">
       <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
     </button>
   </div>
