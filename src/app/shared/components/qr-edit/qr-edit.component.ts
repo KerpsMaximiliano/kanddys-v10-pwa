@@ -18,7 +18,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-qr-edit',
@@ -178,27 +178,27 @@ export class QrEditComponent implements OnInit {
         this._ItemsService.itemImages.push(file);
 
         let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
-          file.type.includes(type)
+          file.type.toLowerCase().includes(type)
         );
 
-        let isFileAValidVideo = [
-          'webm',
-          'mp4',
-          'm4v',
-          'mpg',
-          'mpeg',
-          'mpeg4',
-          'mov',
-          '3gp',
-          'mts',
-          'm2ts',
-          'mxf',
-        ].some((type) => file.type.includes(type));
+        // let isFileAValidVideo = [
+        //   'webm',
+        //   'mp4',
+        //   'm4v',
+        //   'mpg',
+        //   'mpeg',
+        //   'mpeg4',
+        //   'mov',
+        //   '3gp',
+        //   'mts',
+        //   'm2ts',
+        //   'mxf',
+        // ].some((type) => file.type.toLowerCase().includes(type));
 
-        if (!isFileAValidImage && !isFileAValidVideo) {
-          alert('Archivo no valido');
-          return;
-        }
+        // if (!isFileAValidImage && !isFileAValidVideo) {
+        //   alert('Archivo no valido');
+        //   return;
+        // }
 
         const reader = new FileReader();
         reader.onload = async (e) => {
@@ -217,10 +217,10 @@ export class QrEditComponent implements OnInit {
             addedImage.images[addedImage.images.length - 1]._id;
           unlockUI();
 
-          if (!isFileAValidVideo && isFileAValidImage)
+          if (isImage(itemUpdated.images[itemUpdated.images.length - 1].value))
             this._Router.navigate([`admin/create-article/${this.item._id}`]);
 
-          if (itemUpdated && isFileAValidVideo) {
+          if (itemUpdated && isVideo(itemUpdated.images[itemUpdated.images.length - 1].value)) {
             let uploadedVideoURL =
               itemUpdated.images[itemUpdated.images.length - 1].value;
             const fileParts = uploadedVideoURL.split('.');

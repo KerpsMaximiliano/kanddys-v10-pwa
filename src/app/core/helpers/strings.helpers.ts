@@ -25,7 +25,7 @@ export function getExtension(filename: string) {
   return parts[parts.length - 1].toLowerCase();
 }
 
-export function isImage(filename) {
+export function isImage(filename: string) {
   var ext = getExtension(filename);
   switch (ext.toLowerCase()) {
     case 'jpg':
