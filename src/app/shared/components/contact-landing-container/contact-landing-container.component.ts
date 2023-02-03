@@ -22,6 +22,7 @@ export class ContactLandingContainerComponent implements OnInit {
   telegram:string;
   _phone:string;
   idUser:string;
+  image:string;
 
   constructor(
     private _UsersService: UsersService,
@@ -35,6 +36,8 @@ export class ContactLandingContainerComponent implements OnInit {
       (async () => {
         this.idUser = idUser;
         const _merchantDefault = await this._MerchantService.merchantDefault();
+        const { image } = _merchantDefault;
+        this.image = image;
         if(idUser) {
           const { _id } = _merchantDefault || {};
           const paginate:PaginationInput = {
