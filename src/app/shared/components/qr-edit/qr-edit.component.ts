@@ -446,4 +446,20 @@ export class QrEditComponent implements OnInit {
   isSlideVideo(index: number) {
     return isVideo(this.gridArray[index].background);
   }
+
+  playVideoOnFullscreen(id: string) {
+    const elem: HTMLVideoElement = document.getElementById(
+      id
+    ) as HTMLVideoElement;
+
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if ((elem as any).webkitRequestFullscreen) {
+      /* Safari */
+      (elem as any).webkitRequestFullscreen();
+    } else if ((elem as any).msRequestFullscreen) {
+      /* IE11 */
+      (elem as any).msRequestFullscreen();
+    }
+  }
 }

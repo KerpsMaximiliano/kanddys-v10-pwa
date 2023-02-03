@@ -96,11 +96,12 @@
               alt="play"
               class="playVideoIcon"
               style="padding: 1.5rem !important; z-index: 99"
+              (click)="playVideoOnFullscreen('media' + i)"
             />
-            <video [muted]="true" [src]="gridItem.background"></video>
+            <video [id]="'media' + i" [muted]="true" [src]="gridItem.background"></video>
           </ng-container>
 
-          <div class="labelBox" (click)="item && !isSlideVideo(i) ? editSlide(i) : null"></div>
+          <div class="labelBox" (click)="item && !isSlideVideo(i) ? editSlide(i) : playVideoOnFullscreen('media' + i)"></div>
           <button class="circleButton" (click)="deleteSlide(i)">
             <i class="fa fa-times" aria-hidden="true"></i>
           </button>
