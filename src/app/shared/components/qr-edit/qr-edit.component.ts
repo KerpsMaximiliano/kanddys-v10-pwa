@@ -177,9 +177,9 @@ export class QrEditComponent implements OnInit {
       if (this.item) {
         this._ItemsService.itemImages.push(file);
 
-        let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
-          file.type.toLowerCase().includes(type)
-        );
+        // let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
+        //   file.type.toLowerCase().includes(type)
+        // );
 
         // let isFileAValidVideo = [
         //   'webm',
