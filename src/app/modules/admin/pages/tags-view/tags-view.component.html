@@ -1,33 +1,35 @@
-<mat-expansion-panel hideToggle>
-  <mat-expansion-panel-header (click)="changeState()">
-    <button class="arrows">
-      <img [src]="env + '/arrow-double-up-black.svg'" alt="arrows" />
-    </button>
-    <p>Categorias</p>
-    <p class="right">$14,789</p>
-    <mat-icon *ngIf="panelOpenState === false">expand_more</mat-icon>
-    <mat-icon *ngIf="panelOpenState === true">expand_less</mat-icon>
-  </mat-expansion-panel-header>
-  <div class="flex">
-    <p>20% categorias más usadas</p>
-    <p class="right">$14,789</p>
-  </div>
-  <div class="flex" style="margin-top: 16px; margin-bottom: 48px">
-    <p>La categoria más usada</p>
-    <p class="right">$14,789</p>
-  </div>
-  <div class="flex">
-    <p>Pantalla Inicial</p>
-    <mat-icon style="margin-left: 8px; margin-right: auto">check</mat-icon>
-  </div>
-</mat-expansion-panel>
-<mat-expansion-panel
-  (opened)="panelOpenState = true"
-  (closed)="panelOpenState = false"
-></mat-expansion-panel>
+<div style="min-height: 100vh">
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header (click)="changeState()">
+      <button class="arrows">
+        <img [src]="env + '/arrow-double-up-black.svg'" alt="arrows" />
+      </button>
+      <p>Categorias</p>
+      <p class="right">$14,789</p>
+      <mat-icon *ngIf="panelOpenState === false">expand_more</mat-icon>
+      <mat-icon *ngIf="panelOpenState === true">expand_less</mat-icon>
+    </mat-expansion-panel-header>
+    <div class="flex">
+      <p>20% categorias más usadas</p>
+      <p class="right">$14,789</p>
+    </div>
+    <div class="flex" style="margin-top: 16px; margin-bottom: 48px">
+      <p>La categoria más usada</p>
+      <p class="right">$14,789</p>
+    </div>
+    <div class="flex">
+      <p>Pantalla Inicial</p>
+      <mat-icon style="margin-left: 8px; margin-right: auto">check</mat-icon>
+    </div>
+  </mat-expansion-panel>
+  <mat-expansion-panel
+    (opened)="panelOpenState = true"
+    (closed)="panelOpenState = false"
+  ></mat-expansion-panel>
 
-<div class="content">
-  <app-gradient-card></app-gradient-card>
+  <div class="content">
+    <app-gradient-card *ngFor="let tag of tags" [tag]="tag"></app-gradient-card>
+  </div>
+
+  <app-menu-button></app-menu-button>
 </div>
-
-<app-menu-button></app-menu-button>

@@ -30,7 +30,7 @@ import { TagsService } from 'src/app/core/services/tags.service';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HelperHeaderInput } from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
-import { ItemImagesComponent } from 'src/app/shared/dialogs/create-item-flow/item-images/item-images.component';
+import { ItemImagesComponent } from 'src/app/shared/dialogs/item-images/item-images.component';
 import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
 import {
   SettingsComponent,

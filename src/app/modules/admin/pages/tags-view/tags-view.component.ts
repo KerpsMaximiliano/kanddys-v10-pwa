@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Tag } from 'src/app/core/models/tags';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -8,6 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class TagsViewComponent implements OnInit {
   env: string = environment.assetsUrl;
+  tags: Tag[] = [];
 
   panelOpenState = false;
   constructor() {}

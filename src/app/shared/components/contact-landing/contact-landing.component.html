@@ -1,19 +1,13 @@
 <div class="container">
   <div class="header1" *ngIf="isOwner">
-    <button (click)="goBack()">
-      <img
-        [src]="environment + '/arrow-double-up-black.svg'"
-        alt="arrows"
-        class="arrows"
-      />
+    <button class="arrows" (click)="goBack()">
+      <img [src]="environment + '/arrow-double-up-black.svg'" alt="arrows" />
     </button>
     <p class="header-title" *ngIf="contactID">{{ contactID }}</p>
     <p class="header-title" *ngIf="!contactID">Mi perfil</p>
-    <img
-      [src]="environment + '/settings.svg'"
-      alt="settings"
-      class="settings"
-    />
+    <button class="settings">
+      <img [src]="environment + '/settings.svg'" alt="settings" />
+    </button>
   </div>
   <button class="header2" (click)="goBack()" *ngIf="!isOwner">
     <img

@@ -117,7 +117,7 @@ import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.compon
 import { BlankComponent } from './dialogs/blank/blank.component';
 import { ArticleDialogComponent } from './dialogs/article-dialog/article-dialog.component';
 import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.component';
-import { ItemImagesComponent } from './dialogs/create-item-flow/item-images/item-images.component';
+import { ItemImagesComponent } from './dialogs/item-images/item-images.component';
 import { InfoDialogComponent } from './dialogs/info-dialog/info-dialog.component';
 import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
 import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';

@@ -1,7 +1,9 @@
 * {
   margin: 0;
 }
-
+.mat-expansion-panel {
+  border-radius: 0 !important;
+}
 ::ng-deep .mat-expansion-panel-header {
   padding: 14px 17px 14px 21px !important;
   background-color: #a1a1a1 !important;
