@@ -25,26 +25,23 @@
               }"
             ></div>
 
-            <div class="video-wrapper">
-
+            <div class="video-wrapper" *ngIf="media.type === 'VIDEO'">
               <img
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
                 alt="play"
                 class="playVideoIcon"
                 style="
-                padding: 7rem !important;
-                z-index: 99;
-                max-width: 300px;
-                margin: auto;
-                left: 0;
-                right: 0;
-              "
+                  padding: 7rem !important;
+                  z-index: 99;
+                  max-width: 300px;
+                  margin: auto;
+                  left: 0;
+                  right: 0;
+                "
                 (click)="playVideoOnFullscreen('media' + currentMediaSlide)"
               />
 
-
               <video
-                *ngIf="media.type === 'VIDEO'"
                 [id]="'media' + i"
                 (click)="playVideoOnFullscreen('media' + currentMediaSlide)"
                 [src]="media.src"
