@@ -1787,7 +1787,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         },
       },
       footerConfig,
-      stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
+      stepButtonInvalidText: 'INGRESA LOS DATOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN',
     },
     //por aqui voy
@@ -2215,6 +2215,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               );
             }
 
+            /*
             if (totalAmount) {
               whatsappMessagePartsOfThe7thStep.push(
                 `*Total de la orden:*\n${totalAmount}\n\n`
@@ -2226,6 +2227,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 `*Total pagado:*\n${firstPayment}\n\n`
               );
             }
+            */
 
             if (orderMedium && orderMedium !== '') {
               whatsappMessagePartsOfThe7thStep.push(

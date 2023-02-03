@@ -146,18 +146,26 @@
               }"
             ></div>
 
-            <video
-              *ngIf="item.item.media[0].type === 'VIDEO'"
-              [src]="item.item.media[0].src"
-              [id]="'media' + item.item._id"
-              (click)="playVideoOnFullscreen('media' + item.item._id)"
-              class="video"
-              autoplay
-              [muted]="true"
-              [ngStyle]="{
-                height: 'calc(100vh - 49px)'
-              }"
-            ></video>
+            <div class="video-wrapper videoThumbnail" *ngIf="item.item.media[0].type === 'VIDEO'">
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                alt="play"
+                class="playVideoIcon"
+                style="padding: 1rem !important;"
+              />
+
+              <video
+                *ngIf="item.item.media[0].type === 'VIDEO'"
+                [src]="item.item.media[0].src"
+                [id]="'media' + item.item._id"
+                (click)="playVideoOnFullscreen('media' + item.item._id)"
+                class="video"
+                [muted]="true"
+                [ngStyle]="{
+                  height: 'calc(100vh - 49px)'
+                }"
+              ></video>
+            </div>
           </ng-container>
         </ng-container>
         <ng-container *ngIf="item.params?.length && !customizer">

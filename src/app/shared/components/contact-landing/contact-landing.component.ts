@@ -32,7 +32,7 @@ export class ContactLandingComponent implements OnInit {
   constructor(
     private _Router: Router,
     private location: Location,
-    private headerService: HeaderService
+    public headerService: HeaderService
   ) {}
 
   ngOnInit(): void {

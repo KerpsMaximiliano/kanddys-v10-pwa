@@ -20,6 +20,8 @@ import SwiperCore, { Virtual } from 'swiper/core';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
+import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 SwiperCore.use([Virtual]);
 
@@ -80,7 +82,20 @@ export class ArticleDetailComponent implements OnInit {
   };
   fractions: string = '';
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = ['video/mp4', 'video/webm'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/avi',
+    'video/mpg',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mxf',
+    'video/m2ts',
+    'video/m2ts',
+  ];
   audioFiles: string[] = [
     'audio/x-m4a',
     'audio/ogg',
@@ -93,6 +108,7 @@ export class ArticleDetailComponent implements OnInit {
   user: User;
   logged: boolean = false;
   isProductMine: boolean = false;
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -178,19 +194,21 @@ export class ArticleDetailComponent implements OnInit {
   async getItemData() {
     try {
       this.itemData = await this._ItemsService.item(this.entityId);
+
       if (this.mode === 'preview' || this.mode === 'image-preview') {
         if (!this._ItemsService.itemPrice) return this.back();
         this.itemData.name = this._ItemsService.itemName;
         this.itemData.description = this._ItemsService.itemDesc;
         this.itemData.pricing = this._ItemsService.itemPrice;
-        this.itemData.images = this._ItemsService.itemUrls.map((value) => ({
-          value,
+        this.itemData.images = this.itemData.images.map((image) => ({
+          value: image.value,
         })) as ItemImage[];
       }
+
       this.itemData.media = this.itemData.images.map((image) => {
         let url = image.value;
         const fileParts = image.value.split('.');
-        const fileExtension = fileParts[fileParts.length - 1];
+        const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
         let auxiliarImageFileExtension = 'image/' + fileExtension;
         let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
@@ -546,21 +564,5 @@ export class ArticleDetailComponent implements OnInit {
       const route = ['ecommerce', 'article-privacy', _id];
       this.router.navigate(route);
     })();
-  }
-
-  playVideoOnFullscreen(id: string) {
-    const elem: HTMLVideoElement = document.getElementById(
-      id
-    ) as HTMLVideoElement;
-
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if ((elem as any).webkitRequestFullscreen) {
-      /* Safari */
-      (elem as any).webkitRequestFullscreen();
-    } else if ((elem as any).msRequestFullscreen) {
-      /* IE11 */
-      (elem as any).msRequestFullscreen();
-    }
   }
 }

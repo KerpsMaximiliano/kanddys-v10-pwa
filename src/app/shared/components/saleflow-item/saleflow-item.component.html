@@ -236,7 +236,7 @@
               'background-image': imgURL
                 ? 'url(' +
                   imgURL +
-                  ')' +
+                  '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)' +
                   (shouldHaveFallbackImage
                     ? ', url(/assets/images/noimage.png)'
                     : '')
@@ -250,13 +250,39 @@
                   ')' +
                   (shouldHaveFallbackImage
                     ? ', url(/assets/images/noimage.png)'
-                    : '')
+                    : '') +
+                  ', url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
                 : 'url(/assets/images/noimage.png)',
               'background-size': backgroundSize
             }
       "
       (click)="onClick()"
+      *ngIf="!isVideo"
     >
+      <img
+        *ngIf="featured"
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/featured-googles.png"
+        alt="featured item"
+        class="featured-item-indicator"
+      />
+    </div>
+
+    <div
+      class="itemImg opacity-hover"
+      [ngClass]="{
+        videoThumbnail: true
+      }"
+      [ngStyle]="dynamicStyles?.video"
+      (click)="onClick()"
+      *ngIf="isVideo"
+    >
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+        alt="play"
+        class="playVideoIcon"
+      />
+
+      <video class="video" [src]="imgURL" [muted]="true"></video>
       <img
         *ngIf="featured"
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/featured-googles.png"
@@ -291,11 +317,15 @@
           </div>
         </div>
 
-        <div class="views"
+        <div
+          class="views"
           [ngClass]="{
             inactiveViews: inactive && !selectable
           }"
-        *ngIf="showViews">{{ viewsCounter }} vistas</div>
+          *ngIf="showViews"
+        >
+          {{ viewsCounter }} vistas
+        </div>
 
         <div class="flex-column" *ngIf="inactive && !selectable">
           <img

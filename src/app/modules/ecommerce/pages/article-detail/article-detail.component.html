@@ -25,8 +25,8 @@
         #mediaSwiper
         (slideChange)="updateCurrentSlideData($event)"
       >
-        <ng-container *ngIf="itemData?.media?.length">
-          <ng-container *ngFor="let media of itemData.media">
+        <ng-container *ngIf="itemData.media && itemData.media.length > 0">
+          <ng-container *ngFor="let media of itemData.media; index as i">
             <div
               class="entity-image"
               *ngIf="media.type === 'IMAGE'"
@@ -35,15 +35,31 @@
               }"
             ></div>
 
-            <video
-              *ngIf="media.type === 'VIDEO'"
-              [id]="'media' + currentMediaSlide"
-              (click)="playVideoOnFullscreen('media' + currentMediaSlide)"
-              [src]="media.src"
-              [ngStyle]="{
-                height: 'calc(100vh - 49px)'
-              }"
-            ></video>
+            <div class="video-wrapper" *ngIf="media.type === 'VIDEO'">
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                alt="play"
+                class="playVideoIcon"
+                style="
+                  padding: 7rem !important;
+                  z-index: 99;
+                  max-width: 300px;
+                  margin: auto;
+                  left: 0;
+                  right: 0;
+                "
+                (click)="playVideoOnFullscreen('media' + i)"
+              />
+
+              <video
+                [id]="'media' + i"
+                (click)="playVideoOnFullscreen('media' + i)"
+                [src]="media.src"
+                [ngStyle]="{
+                  height: 'calc(100vh - 49px)'
+                }"
+              ></video>
+            </div>
           </ng-container>
         </ng-container>
         <ng-container *ngIf="tagData?.images?.length">

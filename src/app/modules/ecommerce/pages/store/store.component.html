@@ -3,7 +3,7 @@
     <nav class="header">
       <a
         [routerLink]="[
-          '/ecommerce/contact-landing',
+          '/ecommerce',headerService.saleflow?.merchant.slug,'contact-landing',
           headerService.saleflow?.merchant.owner._id
         ]"
       >
@@ -84,8 +84,26 @@
                 [imgURL]="item.images?.length ? item.images[0].value : ''"
                 [price]="item.pricing"
                 [showPrice]="true"
-                [itemParams]="item.params"
-                [responsiveWidthVersion]="true"
+                (itemClicked)="onItemClick(item._id)"
+                [dynamicStyles]="{
+                  itemContainer: {
+                    minWidth: '242px',
+                    height: '315px',
+                    margin: '0px'
+                  },
+                  simpleCard: {
+                    height: '100%'
+                  },
+                  itemImg: {
+                    height: '82.8571%'
+                  },
+                  video: {
+                    height: '82.8571%'
+                  },
+                  infoArea: {
+                    height: '17.1429%'
+                  }
+                }"
               ></app-saleflow-item>
             </a>
           </div>
