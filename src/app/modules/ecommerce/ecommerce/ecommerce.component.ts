@@ -75,6 +75,7 @@ export class EcommerceComponent implements OnInit {
         .pipe(filter((evt) => evt instanceof NavigationEnd))
         .subscribe(() => {
           this.activePath = this.route.firstChild.routeConfig.path;
+          console.log(this.activePath);
         });
     });
     this.suscription = this.appService.events

@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
 import { isVideo } from 'src/app/core/helpers/strings.helpers';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
@@ -126,6 +126,7 @@ export class CheckoutComponent implements OnInit {
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
   saleflowId: string;
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -317,22 +318,6 @@ export class CheckoutComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
-
-  playVideoOnFullscreen(id: string) {
-    const elem: HTMLVideoElement = document.getElementById(
-      id
-    ) as HTMLVideoElement;
-
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if ((elem as any).webkitRequestFullscreen) {
-      /* Safari */
-      (elem as any).webkitRequestFullscreen();
-    } else if ((elem as any).msRequestFullscreen) {
-      /* IE11 */
-      (elem as any).msRequestFullscreen();
-    }
   }
 
   formatHour(date: Date, breakTime?: number) {

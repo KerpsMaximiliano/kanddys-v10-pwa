@@ -257,6 +257,11 @@ video {
   object-fit: cover;
   margin: 0px;
   padding: 0px;
+  height: calc(100vh - 49px);
+}
+
+.video-wrapper {
+  position: relative;
 }
 
 .swiper-button-next,
