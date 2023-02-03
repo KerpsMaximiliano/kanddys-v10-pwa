@@ -3,7 +3,7 @@
     <img [src]="env + '/arrow-double-up.svg'" alt="Volver" />
   </button>
   <button
-    *ngIf="itemsAmount"
+    *ngIf="itemsAmount && mode != 'image-preview'"
     class="fixed-top-button right"
     mat-raised-button
     (click)="goToCheckout()"

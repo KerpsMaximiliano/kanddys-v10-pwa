@@ -420,7 +420,7 @@ export class ArticleDetailComponent implements OnInit {
         //   ]?._id
       );
     } else this.isItemInCart = false;
-    this.itemsAmount = productData.length + '';
+    this.itemsAmount = productData.length > 0 ? productData.length + '' : null;
   }
 
   async share() {
