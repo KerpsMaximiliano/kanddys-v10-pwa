@@ -36,7 +36,7 @@ export class ContactLandingContainerComponent implements OnInit {
       (async () => {
         this.idUser = idUser;
         const _merchantDefault = await this._MerchantService.merchantDefault();
-        const { image } = _merchantDefault;
+        const { image } = _merchantDefault || {};
         this.image = image;
         if(idUser) {
           const { _id } = _merchantDefault || {};
