@@ -306,3 +306,9 @@ export const itemsByTag = gql`
     }
   }
 `;
+
+export const itemTagRangePrice = gql`
+  query itemTagRangePrice($paginate: PaginationInput) {
+    itemTagRangePrice(paginate: $paginate)
+  }
+`;

@@ -6,6 +6,11 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { environment } from 'src/environments/environment';
 
+interface ExtendedTag extends Tag {
+  priceMin?: number;
+  priceMax?: number;
+}
+
 @Component({
   selector: 'app-collections',
   templateUrl: './collections.component.html',
@@ -15,7 +20,7 @@ export class CollectionsComponent implements OnInit {
   image: string | SafeStyle = '';
   environment: string = environment.assetsUrl;
   merchantName: string = '';
-  tags: Tag[];
+  tags: ExtendedTag[];
   description: string;
   needsDescription: boolean;
   slug: string;
@@ -55,12 +60,31 @@ export class CollectionsComponent implements OnInit {
           limit: -1,
         },
       });
+      let tagsItemPrices = await this._TagsService.itemTagRangePrice({
+        options: {
+          limit: 100,
+          sortBy: 'priceMax.price:desc',
+        },
+      });
       this.image = this._DomSanitizer.bypassSecurityTrustStyle(
         `url(${merchant.image}) no-repeat center center / cover #e9e371`
       );
       this.tags = tagsList
         .map((tags) => tags)
         .filter((tag) => (this.needsDescription ? tag.notes : !tag.notes));
+      tagsItemPrices = tagsItemPrices.filter((tagPrices) =>
+        this.tags.some((tag) => tag._id === tagPrices.tag)
+      );
+      this.tags = this.tags.map((tag: ExtendedTag) => {
+        const tagPrices = tagsItemPrices.find(
+          (tagPrice) => tagPrice.tag === tag._id
+        );
+        if (tagPrices) {
+          tag.priceMin = tagPrices.priceMax.price;
+          tag.priceMax = tagPrices.priceMax.price;
+        }
+        return tag;
+      });
     })();
   }
 }

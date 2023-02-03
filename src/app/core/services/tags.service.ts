@@ -20,6 +20,7 @@ import {
   hotTagsArchived,
   tagsArchived,
   itemsByTag,
+  itemTagRangePrice,
 } from '../graphql/tags.gql';
 import { Item } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
@@ -306,6 +307,31 @@ export class TagsService {
         fetchPolicy: 'no-cache',
       });
       return result?.itemsByTag;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemTagRangePrice(paginate: PaginationInput): Promise<
+    {
+      priceMax: {
+        price: number;
+        item: string;
+      };
+      priceMin: {
+        price: number;
+        item: string;
+      };
+      tag: string;
+    }[]
+  > {
+    try {
+      const result = await this.graphql.query({
+        query: itemTagRangePrice,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.itemTagRangePrice;
     } catch (e) {
       console.log(e);
     }

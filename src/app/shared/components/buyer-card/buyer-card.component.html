@@ -19,8 +19,8 @@
   </div>
   <div class="bottom" *ngIf="leftAmount">
     <p [ngClass]="{ center: !title && !description }" class="amount">
-      <span>RD${{ leftAmount }} </span
-      ><span *ngIf="rightAmount">- ${{ rightAmount }}</span>
+      <span>RD$ {{ leftAmount | number }} </span
+      ><span *ngIf="rightAmount">- ${{ rightAmount | number }}</span>
     </p>
   </div>
 </div>

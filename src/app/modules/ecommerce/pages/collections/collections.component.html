@@ -21,9 +21,9 @@
       <app-buyer-card
         [title]="tag.name"
         [description]="tag.notes"
-        [img]="''"
-        [leftAmount]="3000"
-        [rightAmount]="700000"
+        [img]="tag.images.length ? tag.images[0] : ''"
+        [leftAmount]="tag.priceMin"
+        [rightAmount]="tag.priceMax"
       ></app-buyer-card>
     </a>
   </div>
