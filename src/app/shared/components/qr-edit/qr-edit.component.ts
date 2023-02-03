@@ -224,7 +224,9 @@ export class QrEditComponent implements OnInit {
               itemUpdated.images[itemUpdated.images.length - 1].value;
             const fileParts = uploadedVideoURL.split('.');
             const fileExtension = fileParts[fileParts.length - 1];
-            let auxiliarFileExtension = isVideo(uploadedVideoURL) ? `video/${fileExtension}` : `image/${fileExtension}`;
+            let auxiliarFileExtension = isVideo(uploadedVideoURL)
+              ? `video/${fileExtension}`
+              : `image/${fileExtension}`;
 
             if (
               uploadedVideoURL &&
@@ -369,6 +371,24 @@ export class QrEditComponent implements OnInit {
     });
   }
 
+  deleteSlide(index: number) {
+    this.dialog.open(SingleActionDialogComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        title: 'Eliminar este slide del símbolo',
+        buttonText: 'Sí, borrar',
+        mainButton: () => {
+          this.deleteImage(index);
+        },
+        btnBackgroundColor: '#272727',
+        btnMaxWidth: '133px',
+        btnPadding: '7px 2px',
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+  
   async deleteImage(index: number) {
     if (this.item) {
       this._ItemsService.itemImages.splice(index, 1);

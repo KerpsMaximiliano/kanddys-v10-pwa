@@ -94,15 +94,15 @@
               src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
               alt="play"
               class="playVideoIcon"
-              style="padding: 1.5rem !important; z-index: 99;"
+              style="padding: 1.5rem !important; z-index: 99"
             />
             <video [muted]="true" [src]="gridItem.background"></video>
           </ng-container>
 
           <div class="labelBox"></div>
-          <div class="circleButton" (click)="openSlideSettings(i)">
-            <img class="icon" [src]="environment + '/dots-black.svg'" />
-          </div>
+          <button class="circleButton" (click)="deleteSlide(i)">
+            <i class="fa fa-times" aria-hidden="true"></i>
+          </button>
         </div>
         <img
           class="drag-handler"
