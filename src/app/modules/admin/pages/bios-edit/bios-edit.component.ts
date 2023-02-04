@@ -15,7 +15,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
   styleUrls: ['./bios-edit.component.scss'],
 })
 export class BiosEditComponent implements OnInit, OnDestroy {
-  status:string;
+  status: string;
   name: string = 'Merchant ID';
   bio: string =
     'Servicios de Asesoría Fiscal • 15 años de experiencia como Gerente Local y Proceso Fiscales en DGII •';
@@ -26,20 +26,20 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   clicked2: boolean = false;
   clicked3: boolean = false;
   clicked4: boolean = true;
-  publicName:boolean = false;
-  bioDescription:boolean = false;
-  controller:FormGroup = new FormGroup({});
-  merchantDefault:string;
-  src:any;
-  logo:any;
-  file:any;
-  fileLogo:any;
-  links:any = [];
-  contactId:string;
-  sub:Subscription;
-  linkIndex:number;
+  publicName: boolean = false;
+  bioDescription: boolean = false;
+  controller: FormGroup = new FormGroup({});
+  merchantDefault: string;
+  src: any;
+  logo: any;
+  file: any;
+  fileLogo: any;
+  links: any = [];
+  contactId: string;
+  sub: Subscription;
+  linkIndex: number;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
-  accept:string;
+  accept: string;
 
   constructor(
     private router: Router,
@@ -54,26 +54,42 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     this.sub = this._ActivatedRoute.queryParams.subscribe(({ contactId }) => {
       (async () => {
         this.accept = this.imageFiles.join(', ');
-        if(contactId)
-          this.contactId = contactId;
+        if (contactId) this.contactId = contactId;
         this.initController();
         const _merchantDefault = await this._MerchantService.merchantDefault();
-        if(contactId) {
+        if (contactId) {
           const { _id } = _merchantDefault;
-          const paginate:PaginationInput = {
-            findBy:{
-              user: contactId
-            }
+          const paginate: PaginationInput = {
+            findBy: {
+              _id: contactId,
+            },
           };
-          const contacts = await this._ContactService.contacts(paginate)
-          const [{ name, description, link, image }] = contacts.length?contacts:[{} as any];
+          const contacts = await this._ContactService.contacts(paginate);
+          const [{ name, description, link, image }] = contacts.length
+            ? contacts
+            : [{} as any];
           this.controller.get('merchant').setValue(_id);
           this.controller.get('name').setValue(name);
           this.controller.get('description').setValue(description);
-          console.log('link: ', link);
           this.links = link || [];
+
+          if (this.links && this.links.length) {
+            const location = (
+              this.links as Array<{
+                image?: string;
+                name?: string;
+                _id: string;
+                value?: string;
+              }>
+            ).find((link) => link.name === 'location');
+
+            if (location) {
+              this.controller.get('location').setValue(location.value);
+            }
+          }
+
           this.logo = this.formatImage(image);
-        }else {
+        } else {
           const { _id, image, name, bio, social } = _merchantDefault;
           this.logo = this.formatImage(image);
           this.controller.get('merchant').setValue(_id);
@@ -83,46 +99,48 @@ export class BiosEditComponent implements OnInit, OnDestroy {
           this.links = social || [];
         }
       })();
-    })
+    });
   }
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
   }
 
-  initController():void {
+  initController(): void {
     const fields = [
       {
-        name:'name',
-        validators: [Validators.required]
+        name: 'name',
+        validators: [Validators.required],
       },
       {
         name: 'description',
-        validators: [Validators.required]
+        validators: [Validators.required],
       },
       {
         name: 'merchant',
-        validators: [Validators.required]
+        validators: [Validators.required],
       },
       {
         name: 'tag',
-        validators: []
+        validators: [],
       },
       {
         name: 'contact',
-        validators: []
+        validators: [],
       },
       {
         name: 'location',
-        validators: [Validators.required]
-      }
+        validators: [Validators.required],
+      },
     ];
-    for(const { name, validators } of fields)
-      this.controller.addControl(name,new FormControl('',validators));
+    for (const { name, validators } of fields)
+      this.controller.addControl(name, new FormControl('', validators));
   }
 
   loadFile(event: any) {
-    ['','','',''].forEach((item,i:number) => this[`clicked${i===0?'':(i+1)}`] = false);
+    ['', '', '', ''].forEach(
+      (item, i: number) => (this[`clicked${i === 0 ? '' : i + 1}`] = false)
+    );
     const [file] = event.target.files;
     this.file = file;
     const reader = new FileReader();
@@ -142,60 +160,71 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     reader.onload = async (e) => {
       const { type } = file;
       let result = reader.result;
-      this.logo = this._DomSanitizer
-        .bypassSecurityTrustStyle(`url(
+      this.logo = this._DomSanitizer.bypassSecurityTrustStyle(`url(
       ${result})
       no-repeat center center / cover #fff`);
     };
   }
 
-  AbstractControl(name:string){
+  AbstractControl(name: string) {
     return this.controller.get(name) as FormControl;
   }
   goBack() {
     this.router.navigate(['admin/bios-main']);
   }
   backToMain() {
-    if(this.linkIndex===null&&this.enlace&&this.controller.get('tag').value&&this.controller.get('contact').value&&this.src){
-      const _link:any = {
+    if (
+      this.linkIndex === null &&
+      this.enlace &&
+      this.controller.get('tag').value &&
+      this.controller.get('contact').value &&
+      this.src
+    ) {
+      const _link: any = {
         image: this.src,
         _image: this.file,
         name: this.controller.get('tag').value,
-        value: this.controller.get('contact').value
+        value: this.controller.get('contact').value,
       };
       this.links = [...this.links, _link];
-      for(const name of ['tag','contact'])
+      for (const name of ['tag', 'contact'])
         this.controller.get(name).setValue('');
       this.file = '';
       this.src = '';
-    }else if(this.linkIndex!==null&&this.enlace&&this.controller.get('tag').valid&&this.controller.get('contact').valid&&this.src){
-      const _link:any = {
+    } else if (
+      this.linkIndex !== null &&
+      this.enlace &&
+      this.controller.get('tag').valid &&
+      this.controller.get('contact').valid &&
+      this.src
+    ) {
+      const _link: any = {
         _id: this.links[this.linkIndex]._id,
         image: this.src,
         _image: this.file,
         name: this.controller.get('tag').value,
-        value: this.controller.get('contact').value
+        value: this.controller.get('contact').value,
       };
       this.links[this.linkIndex] = _link;
-      for(const name of ['tag','contact'])
+      for (const name of ['tag', 'contact'])
         this.controller.get(name).setValue('');
       this.file = '';
       this.src = '';
     }
-    const flag = this.links.find(({name}) => name==='location');
+    const flag = this.links.find(({ name }) => name === 'location');
     const value = this.controller.get('location').value;
-    if(flag){
-      this.links = this.links.filter(({name}) => name!=='location');
+    if (flag) {
+      this.links = this.links.filter(({ name }) => name !== 'location');
       const location = {
         _id: flag._id,
-        name: "location",
-        value
+        name: 'location',
+        value,
       };
       this.links.push(location);
-    }else{
+    } else {
       const location = {
-        name: "location",
-        value
+        name: 'location',
+        value,
       };
       this.links.push(location);
     }
@@ -204,7 +233,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     this.publicName = false;
     this.bioDescription = false;
     this.main = true;
-    this.linkIndex==null;
+    this.linkIndex == null;
   }
   add() {
     this.enlace = true;
@@ -212,74 +241,81 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     this.linkIndex = null;
   }
 
-  submit():void {
-    if(!this.controller.touched)  return;
-    if(this.controller.invalid || this.status) return;
+  submit(): void {
+    if (!this.controller.touched) return;
+    if (this.controller.invalid || this.status) return;
     this.status = 'Cargando...';
     (async () => {
-      const {
-        name,
-        description,
-        merchant
-      } = this.controller.value;
+      const { name, description, merchant } = this.controller.value;
       const value = {
         name,
         description,
         // merchant,
-        image: this.fileLogo
+        image: this.fileLogo,
       };
-      if(!this.contactId){
-        const { _id: contact } = await this._ContactService.createContact(value);
+      if (!this.contactId) {
+        const { _id: contact } = await this._ContactService.createContact(
+          value
+        );
         this.contactId = contact;
         const banner = {
           image: this.fileLogo,
           name,
           description,
           type: 'standard',
-          contact
+          contact,
         };
         const createBanner = await this._BannersService.createBanner(banner);
         await this.setLinks();
-        this.router.navigate(['admin','bios-edit'],{
+        this.router.navigate(['admin', 'bios-edit'], {
           queryParams: {
-            contactId: this.contactId
-          }
+            contactId: this.contactId,
+          },
         });
-      }else{
-        const result = await this._ContactService.updateContact(this.contactId, value);
+      } else {
+        const result = await this._ContactService.updateContact(
+          this.contactId,
+          value
+        );
         await this.setLinks();
       }
     })();
   }
 
-  async setLinks():Promise<void>{
-    for(let link of this.links){
-      if(!link._id){
-        const _link:LinkInput = {
+  async setLinks(): Promise<void> {
+    for (let link of this.links) {
+      if (!link._id) {
+        const _link: LinkInput = {
           image: link._image,
           name: link.name,
-          value: link.value
+          value: link.value,
         };
-        const result = await this._ContactService.contactAddLink(_link, this.contactId);
-      }else {
-        let _link:any = {
+        const result = await this._ContactService.contactAddLink(
+          _link,
+          this.contactId
+        );
+      } else {
+        let _link: any = {
           name: link.name,
-          value: link.value
+          value: link.value,
         };
-        if(link._image)
-          _link.image = link._image;
-        const result = await this._ContactService.contactUpdateLink(_link, link._id, this.contactId);
+        if (link._image) _link.image = link._image;
+        const result = await this._ContactService.contactUpdateLink(
+          _link,
+          link._id,
+          this.contactId
+        );
       }
       // this.links = [...this.links, result];
     }
-    for(const name of ['tag','contact'])
+    for (const name of ['tag', 'contact'])
       this.controller.get(name).setValue('');
     this.file = '';
     this.src = '';
     this.status = '';
   }
 
-  formatImage(image:string):SafeStyle {
+  formatImage(image: string): SafeStyle {
     return this._DomSanitizer.bypassSecurityTrustStyle(`url(
       ${image})
       no-repeat center center / cover #fff`);
@@ -319,8 +355,10 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     } else if (this.clicked4 === true) {
       this.clicked4 = false;
     }
-    this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
-    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+    this.file =
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+    this.src =
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
   }
   isClicked2() {
     this.resetSrc();
@@ -332,8 +370,10 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     } else if (this.clicked4 === true) {
       this.clicked4 = false;
     }
-    this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
-    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
+    this.file =
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
+    this.src =
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
   }
 
   isClicked3() {
@@ -346,8 +386,10 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     } else if (this.clicked4 === true) {
       this.clicked4 = false;
     }
-    this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
-    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
+    this.file =
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
+    this.src =
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/telegram.svg';
   }
 
   isClicked4() {
@@ -360,16 +402,18 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     } else if (this.clicked3 === true) {
       this.clicked3 = false;
     }
-    this.file = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
-    this.src = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+    this.file =
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+    this.src =
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
   }
 
-  resetSrc():void {
+  resetSrc(): void {
     this.file = '';
     this.src = '';
   }
 
-  navigateToLink(index:number):void {
+  navigateToLink(index: number): void {
     this.enlace = true;
     this.direcciones = false;
     this.publicName = false;
