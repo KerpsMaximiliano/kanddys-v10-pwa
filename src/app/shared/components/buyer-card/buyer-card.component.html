@@ -11,10 +11,8 @@
       #imgContainer
       [src]="img"
       (error)="img = '/assets/images/noimage.png'"
-      [ngStyle]="{
-        height: '100%',
-        width: (imgContainer.clientHeight * 7) / 10 + 'px'
-      }"
+      width="132"
+      height="188"
     />
   </div>
   <div class="bottom" *ngIf="leftAmount">

@@ -59,7 +59,7 @@ main {
   position: sticky;
   top: 0;
   z-index: 5;
-  a {
+  .merchant-info {
     all: unset;
     cursor: pointer;
     display: flex;

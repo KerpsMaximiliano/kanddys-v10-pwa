@@ -1,31 +1,49 @@
+<ng-template #merchantInfo>
+  <div
+    class="icon"
+    [style.background]="
+      _DomSanitizer.bypassSecurityTrustStyle(
+        'url(' +
+          headerService.saleflow?.merchant?.image +
+          ') no-repeat center center / cover #e9e371'
+      )
+    "
+  ></div>
+  <p class="title">
+    {{
+      headerService.saleflow?.merchant?.name.length < 26
+        ? headerService.saleflow?.merchant?.name
+        : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+            "Tienda" | titlecase)
+    }}
+  </p>
+</ng-template>
+
 <div class="store-page" (scroll)="infinitePagination()">
   <div class="component">
     <nav class="header">
       <a
+        class="merchant-info"
         [routerLink]="[
-          '/ecommerce',headerService.saleflow?.merchant.slug,'contact-landing',
+          '/ecommerce',
+          headerService.saleflow?.merchant.slug,
+          'contact-landing',
           headerService.saleflow?.merchant.owner._id
         ]"
+        *ngIf="
+          headerService.user._id === headerService.saleflow?.merchant.owner._id
+        "
       >
-        <div
-          class="icon"
-          [style.background]="
-            _DomSanitizer.bypassSecurityTrustStyle(
-              'url(' +
-                headerService.saleflow?.merchant?.image +
-                ') no-repeat center center / cover #e9e371'
-            )
-          "
-        ></div>
-        <p class="title">
-          {{
-            headerService.saleflow?.merchant?.name.length < 26
-              ? headerService.saleflow?.merchant?.name
-              : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
-                  "Tienda" | titlecase)
-          }}
-        </p>
+        <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
       </a>
+      <div
+        *ngIf="
+          headerService.user._id !== headerService.saleflow?.merchant.owner._id
+        "
+      >
+        <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
+      </div>
+
       <p class="title" style="margin-left: 8px">Store</p>
     </nav>
     <main>

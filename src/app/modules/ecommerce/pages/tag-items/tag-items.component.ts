@@ -29,11 +29,11 @@ export class TagItemsComponent implements OnInit {
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
   constructor(
-    private _DomSanitizer: DomSanitizer,
+    public _DomSanitizer: DomSanitizer,
     private _ActivatedRoute: ActivatedRoute,
     private _TagsService: TagsService,
     private _Router: Router,
-    private headerService: HeaderService
+    public headerService: HeaderService
   ) {}
 
   async ngOnInit() {

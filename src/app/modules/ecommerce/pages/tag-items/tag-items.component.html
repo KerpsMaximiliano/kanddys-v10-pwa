@@ -1,20 +1,53 @@
+<ng-template #merchantInfo>
+  <div
+    class="icon"
+    [style.background]="
+      _DomSanitizer.bypassSecurityTrustStyle(
+        'url(' +
+          headerService.saleflow?.merchant?.image +
+          ') no-repeat center center / cover #e9e371'
+      )
+    "
+  ></div>
+  <p class="title">
+    {{
+      headerService.saleflow?.merchant?.name.length < 26
+        ? headerService.saleflow?.merchant?.name
+        : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+            "Tienda" | titlecase)
+    }}
+  </p>
+</ng-template>
+
 <div class="container">
-  <div class="header">
-    <!-- <img class="icon" [src]="environment + '/arrow-double-up.svg'" /> -->
-    <button class="icon" [style.background]="image"></button>
-    <p class="title">
-      {{
-        merchantName.length < 23
-          ? merchantName
-          : (merchantName.slice(0, 23) + ".." || "Tienda" | titlecase)
-      }}
-    </p>
-    <p class="title">{{ name | titlecase }}</p>
-    <!-- Former routerLink -> [routerLink]="[notes ? '../' : '../../store']" -->
+  <nav class="header">
+    <a
+      class="merchant-info"
+      [routerLink]="[
+        '/ecommerce',
+        headerService.saleflow?.merchant.slug,
+        'contact-landing',
+        headerService.saleflow?.merchant.owner._id
+      ]"
+      *ngIf="
+        headerService.user._id === headerService.saleflow?.merchant.owner._id
+      "
+    >
+      <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
+    </a>
+    <div
+      *ngIf="
+        headerService.user._id !== headerService.saleflow?.merchant.owner._id
+      "
+    >
+      <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
+    </div>
+
+    <p class="title" style="margin-left: 8px">{{ name | titlecase }}</p>
     <button [routerLink]="['../../store']" class="arrow-btn">
       <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
     </button>
-  </div>
+  </nav>
   <div class="margin flex">
     <section class="productGrid" *ngIf="status === 'complete' && items?.length">
       <div

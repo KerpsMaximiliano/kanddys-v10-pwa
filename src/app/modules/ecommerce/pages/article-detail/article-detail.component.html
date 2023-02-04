@@ -136,6 +136,7 @@
           <h3 class="item-price" *ngIf="itemData">
             RD $ {{ itemData.pricing | number : "1.2-2" }}
           </h3>
+          <span *ngIf="!itemData"></span>
           <div class="icons-flex">
             <button class="round-button" (click)="share()">
               <img
