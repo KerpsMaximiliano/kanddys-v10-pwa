@@ -576,4 +576,11 @@ export class CheckoutComponent implements OnInit {
   urlIsVideo(url: string) {
     return isVideo(url);
   }
+
+  goToArticleDetail(itemID: string) {
+    this.router.navigate([`../article-detail/item/${itemID}`], {
+      relativeTo: this.route,
+      replaceUrl: true,
+    });
+  }
 }
