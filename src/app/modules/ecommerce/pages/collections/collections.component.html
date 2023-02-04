@@ -20,7 +20,15 @@
 </ng-template>
 
 <div class="container">
-  <nav class="header">
+  <nav
+    class="header"
+    [ngStyle]="{
+      backgroundColor:
+        headerService.user?._id === headerService.saleflow?.merchant.owner._id
+          ? '#2874AD'
+          : '#272727'
+    }"
+  >
     <a
       style="cursor: pointer"
       class="merchant-info"
@@ -50,7 +58,7 @@
       <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
     </button>
   </nav>
-  <div class="collection-view">
+  <div class="collection-view" *ngIf="status === 'complete' && tags?.length">
     <a
       *ngFor="let tag of tags"
       [routerLink]="['../article-detail/collection/', tag._id]"
@@ -63,5 +71,8 @@
         [rightAmount]="tag.priceMax"
       ></app-buyer-card>
     </a>
+  </div>
+  <div class="margin flex" *ngIf="status === 'complete' && !tags?.length">
+    <h3>No hay colecciones creadas</h3>
   </div>
 </div>
