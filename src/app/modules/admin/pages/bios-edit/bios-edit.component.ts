@@ -62,7 +62,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
           const { _id } = _merchantDefault;
           const paginate:PaginationInput = {
             findBy:{
-              _id: contactId
+              user: contactId
             }
           };
           const contacts = await this._ContactService.contacts(paginate)
