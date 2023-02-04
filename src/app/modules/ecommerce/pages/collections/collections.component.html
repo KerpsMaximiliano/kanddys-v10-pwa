@@ -1,18 +1,53 @@
+<ng-template #merchantInfo>
+  <div
+    class="icon"
+    [style.background]="
+      _DomSanitizer.bypassSecurityTrustStyle(
+        'url(' +
+          headerService.saleflow?.merchant?.image +
+          ') no-repeat center center / cover #e9e371'
+      )
+    "
+  ></div>
+  <p class="title">
+    {{
+      headerService.saleflow?.merchant?.name.length < 26
+        ? headerService.saleflow?.merchant?.name
+        : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+            "Tienda" | titlecase)
+    }}
+  </p>
+</ng-template>
+
 <div class="container">
-  <header class="header">
-    <button class="icon" [style.background]="image"></button>
-    <p class="title">
-      {{
-        merchantName.length < 26
-          ? merchantName
-          : (merchantName.slice(0, 26) + ".." || "Tienda" | titlecase)
-      }}
-    </p>
-    <p class="title">{{ title }}</p>
+  <nav class="header">
+    <a
+      class="merchant-info"
+      [routerLink]="[
+        '/ecommerce',
+        headerService.saleflow?.merchant.slug,
+        'contact-landing',
+        headerService.saleflow?.merchant.owner._id
+      ]"
+      *ngIf="
+        headerService.user._id === headerService.saleflow?.merchant.owner._id
+      "
+    >
+      <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
+    </a>
+    <div
+      *ngIf="
+        headerService.user._id !== headerService.saleflow?.merchant.owner._id
+      "
+    >
+      <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
+    </div>
+
+    <p class="title" style="margin-left: 8px">{{ title }}</p>
     <button class="arrow-btn" [routerLink]="['../store']">
       <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
     </button>
-  </header>
+  </nav>
   <div class="collection-view">
     <a
       *ngFor="let tag of tags"

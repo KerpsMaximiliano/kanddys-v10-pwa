@@ -17,7 +17,6 @@ interface ExtendedTag extends Tag {
   styleUrls: ['./collections.component.scss'],
 })
 export class CollectionsComponent implements OnInit {
-  image: string | SafeStyle = '';
   environment: string = environment.assetsUrl;
   merchantName: string = '';
   tags: ExtendedTag[];
@@ -28,9 +27,9 @@ export class CollectionsComponent implements OnInit {
 
   constructor(
     private _TagsService: TagsService,
-    private _DomSanitizer: DomSanitizer,
+    public _DomSanitizer: DomSanitizer,
     private _Router: Router,
-    private headerService: HeaderService
+    public headerService: HeaderService
   ) {}
 
   ngOnInit(): void {
@@ -66,10 +65,6 @@ export class CollectionsComponent implements OnInit {
           sortBy: 'priceMax.price:desc',
         },
       });
-
-      this.image = this._DomSanitizer.bypassSecurityTrustStyle(
-        `url(${merchant.image}) no-repeat center center / cover #e9e371`
-      );
       this.tags = tagsList
         .map((tags) => tags)
         .filter((tag) => (this.needsDescription ? tag.notes : !tag.notes));
