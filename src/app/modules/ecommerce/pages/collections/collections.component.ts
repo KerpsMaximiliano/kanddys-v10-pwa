@@ -81,6 +81,8 @@ export class CollectionsComponent implements OnInit {
         }
         return tag;
       });
+
+      console.log(this.tags);
     })();
   }
 }

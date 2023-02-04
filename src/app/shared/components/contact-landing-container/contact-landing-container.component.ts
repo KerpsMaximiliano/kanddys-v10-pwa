@@ -42,15 +42,20 @@ export class ContactLandingContainerComponent implements OnInit {
           const { _id } = _merchantDefault || {};
           const paginate:PaginationInput = {
             findBy:{
-              _id: idUser
+              user: idUser
+            },
+            options:{
+              sortBy: 'createdAt: asc',
+              limit: 1
             }
-          }
+          };
           const [contact] = await this._ContactService.contacts(paginate);
           if(contact){
-            const { name, description, link, image } = contact || {};
+            const { name, description, link, image, user }:any = contact || {};
             this.contactID = name;
             this.img = image;
             this.bio = description;
+            this.idUser = user;
             for(const { name, value } of link){
               switch(name){
                 case 'whatsapp':
