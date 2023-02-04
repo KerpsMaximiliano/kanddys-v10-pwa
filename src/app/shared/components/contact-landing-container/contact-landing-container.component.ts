@@ -71,8 +71,25 @@ export class ContactLandingContainerComponent implements OnInit {
               (await this._UsersService.user(idUser)) || {
                 social: [],
               };
+            const merchantDefault = await this._MerchantService.merchants({
+              findBy: {
+                owner: idUser,
+                default: true,
+              },
+              options: {
+                limit: 1,
+              },
+            });
+
             this.contactID = name || phone || email;
             this.img = image;
+
+            if (merchantDefault && merchantDefault.length) {
+              if (merchantDefault[0].image) {
+                this.img = merchantDefault[0].image;
+              }
+            }
+
             this.bio = bio;
             for (const { name, url } of social) {
               switch (name) {
