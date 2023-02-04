@@ -111,15 +111,6 @@
         <span class="info" style="margin-left: 0">{{ orderDate }}</span>
         <!-- <span class="info">{{ orderStatus | titlecase }}</span> -->
       </div>
-
-      <a
-        *ngIf="!notify && !isMerchant"
-        [href]="messageLink"
-        target="_blank"
-        class="new-order"
-      >
-        Confirmar por WhatsApp</a
-      >
     </section>
     <section class="section">
       <h2 class="section-title">Artículos facturados:</h2>
