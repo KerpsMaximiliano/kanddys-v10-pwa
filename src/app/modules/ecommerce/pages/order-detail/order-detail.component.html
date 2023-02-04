@@ -21,7 +21,7 @@
         : null
     "
     [rightText]="
-      order.user
+      order?.user
         ? {
             text: order.user?.name || order.user?.phone || order.user?.email
           }
@@ -146,12 +146,15 @@
               }"
             ></div>
 
-            <div class="video-wrapper videoThumbnail" *ngIf="item.item.media[0].type === 'VIDEO'">
+            <div
+              class="video-wrapper videoThumbnail"
+              *ngIf="item.item.media[0].type === 'VIDEO'"
+            >
               <img
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
                 alt="play"
                 class="playVideoIcon"
-                style="padding: 1rem !important;"
+                style="padding: 1rem !important"
               />
 
               <video

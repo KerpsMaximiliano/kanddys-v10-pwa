@@ -5,7 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
 import { isVideo } from 'src/app/core/helpers/strings.helpers';
-import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
@@ -145,7 +149,6 @@ export class CheckoutComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.saleflowId = this.headerService.saleflow.merchant._id;
-    console.log(this.saleflowId);
     let items = this.headerService.getItems();
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
@@ -415,8 +418,6 @@ export class CheckoutComponent implements OnInit {
           this.disableButton = false;
 
           return;
-
-          console.error(error);
         }
       }
     }

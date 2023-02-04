@@ -61,7 +61,7 @@ export class CollectionsComponent implements OnInit {
       });
       let tagsItemPrices = await this._TagsService.itemTagRangePrice({
         options: {
-          limit: 100,
+          limit: -1,
           sortBy: 'priceMax.price:desc',
         },
       });
@@ -81,8 +81,6 @@ export class CollectionsComponent implements OnInit {
         }
         return tag;
       });
-
-      console.log(this.tags);
     })();
   }
 }
