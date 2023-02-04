@@ -66,6 +66,7 @@ export class CollectionsComponent implements OnInit {
           sortBy: 'priceMax.price:desc',
         },
       });
+
       this.image = this._DomSanitizer.bypassSecurityTrustStyle(
         `url(${merchant.image}) no-repeat center center / cover #e9e371`
       );
@@ -80,11 +81,13 @@ export class CollectionsComponent implements OnInit {
           (tagPrice) => tagPrice.tag === tag._id
         );
         if (tagPrices) {
-          tag.priceMin = tagPrices.priceMax.price;
+          tag.priceMin = tagPrices.priceMin.price;
           tag.priceMax = tagPrices.priceMax.price;
         }
         return tag;
       });
+
+      console.log(this.tags);
     })();
   }
 }
