@@ -273,3 +273,8 @@ audio {
     }
   }
 }
+
+::ng-deep .mat-badge-content {
+  background-color: #82f18d;
+  color: #272727;
+}

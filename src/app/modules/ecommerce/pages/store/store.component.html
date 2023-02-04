@@ -23,6 +23,7 @@
   <div class="component">
     <nav class="header">
       <a
+        style="cursor: pointer"
         class="merchant-info"
         [routerLink]="[
           '/ecommerce',
@@ -31,14 +32,15 @@
           headerService.saleflow?.merchant.owner._id
         ]"
         *ngIf="
-          headerService.user._id === headerService.saleflow?.merchant.owner._id
+          headerService.user?._id === headerService.saleflow?.merchant.owner._id
         "
       >
         <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
       </a>
       <div
+        class="merchant-info"
         *ngIf="
-          headerService.user._id !== headerService.saleflow?.merchant.owner._id
+          headerService.user?._id !== headerService.saleflow?.merchant.owner._id
         "
       >
         <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
