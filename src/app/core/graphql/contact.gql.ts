@@ -77,7 +77,6 @@ export const contacts = gql`
         image
       }
       image
-      user
     }
   }
 `;
