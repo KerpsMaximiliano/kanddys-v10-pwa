@@ -21,7 +21,15 @@
 
 <div class="store-page" (scroll)="infinitePagination()">
   <div class="component">
-    <nav class="header">
+    <nav
+      class="header"
+      [ngStyle]="{
+        backgroundColor:
+          headerService.user?._id === headerService.saleflow?.merchant.owner._id
+            ? '#2874AD'
+            : '#272727'
+      }"
+    >
       <a
         style="cursor: pointer"
         class="merchant-info"

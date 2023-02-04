@@ -24,6 +24,7 @@ export class CollectionsComponent implements OnInit {
   needsDescription: boolean;
   slug: string;
   title: string = '';
+  status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
   constructor(
     private _TagsService: TagsService,
@@ -34,6 +35,7 @@ export class CollectionsComponent implements OnInit {
 
   ngOnInit(): void {
     (async () => {
+      this.status = 'loading';
       const dict = {
         collections: 'Colecciones',
         categories: 'Categorías',
@@ -81,6 +83,7 @@ export class CollectionsComponent implements OnInit {
         }
         return tag;
       });
+      this.status = 'complete';
     })();
   }
 }
