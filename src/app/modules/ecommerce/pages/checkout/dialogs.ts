@@ -1038,46 +1038,13 @@ export class Dialogs {
                       sentiment,
                       timing,
                     },
-                    '63d0437eb4bc34014c0a65e3'
+                    '63e0306165c8752d0c5f0345'
                   );
 
-                let message;
-                let title;
-                let scannedTitle = false;
-                const parts = response.split('\n');
-
-                const options: Array<{
-                  message: string;
-                  title: string;
-                }> = [];
-                let optionNumber = 1;
-
-                parts.forEach((line) => {
-                  if (optionNumber < 5) {
-                    if (
-                      !line.includes('Opción') &&
-                      line.includes(':') &&
-                      !scannedTitle
-                    ) {
-                      const [, realTitle] = line.split(':');
-                      title = realTitle;
-                      scannedTitle = true;
-                    } else if (
-                      !line.includes('Opción') &&
-                      line.includes(':') &&
-                      scannedTitle
-                    ) {
-                      const [, realMessage] = line.split(':');
-                      options.push({
-                        message: realMessage,
-                        title,
-                      });
-                      title = null;
-                      optionNumber += 1;
-                      scannedTitle = false;
-                    }
-                  }
-                });
+                const options = JSON.parse(response).map((option) => ({
+                  title: option.titulo,
+                  message: option.mensaje,
+                }));
 
                 this.postsService.postMessageOptions = options;
 

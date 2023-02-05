@@ -130,7 +130,11 @@ export const item = gql`
       pricePerUnit
       description
       createdAt
-      images
+      images {
+        _id
+        index
+        value
+      }
       fixedQuantity
       size
       quality
@@ -224,7 +228,11 @@ export const listItems = gql`
       _id
       createdAt
       name
-      images
+      images {
+        _id
+        index
+        value
+      }
       merchant {
         _id
       }

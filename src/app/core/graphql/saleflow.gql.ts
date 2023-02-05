@@ -209,7 +209,11 @@ export const listItems = gql`
       pricePerUnit
       description
       createdAt
-      images
+      images {
+        _id
+        index
+        value
+      }
       fixedQuantity
       size
       quality
