@@ -1346,40 +1346,55 @@ export class Dialogs {
 
                 lockUI();
 
-                const response =
-                  await this.gpt3Service.generateResponseForTemplate(
-                    {},
-                    '63c0ff83e752c40ca8eefcfb'
-                  );
+                try {
+                  const response =
+                    await this.gpt3Service.generateResponseForTemplate(
+                      {},
+                      '63c0ff83e752c40ca8eefcfb'
+                    );
 
-                unlockUI();
+                  unlockUI();
 
-                if (response) {
-                  const jokes = JSON.parse(response);
-                  this.headerService.aiJokes = jokes;
-                  localStorage.setItem('aiJokes', response);
-                }
-
-                this.headerService.flowRoute = this.router.url.replace(
-                  '?startOnDialogFlow=true',
-                  ''
-                );
-                localStorage.setItem('flowRoute', this.headerService.flowRoute);
-                this.postsService.temporalDialogs = this.temporalDialogs;
-                this.postsService.temporalDialogs2 = this.temporalDialogs2;
-                this.postsService.dialogs = this.dialogs;
-                this.router.navigate(
-                  [
-                    'ecommerce/' +
-                      this.headerService.saleflow.merchant.slug +
-                      '/text-edition-and-preview',
-                  ],
-                  {
-                    queryParams: {
-                      type: 'ai-joke',
-                    },
+                  if (response) {
+                    const jokes = JSON.parse(response);
+                    this.headerService.aiJokes = jokes;
+                    localStorage.setItem('aiJokes', response);
                   }
-                );
+
+                  this.headerService.flowRoute = this.router.url.replace(
+                    '?startOnDialogFlow=true',
+                    ''
+                  );
+                  localStorage.setItem(
+                    'flowRoute',
+                    this.headerService.flowRoute
+                  );
+                  this.postsService.temporalDialogs = this.temporalDialogs;
+                  this.postsService.temporalDialogs2 = this.temporalDialogs2;
+                  this.postsService.dialogs = this.dialogs;
+                  this.router.navigate(
+                    [
+                      'ecommerce/' +
+                        this.headerService.saleflow.merchant.slug +
+                        '/text-edition-and-preview',
+                    ],
+                    {
+                      queryParams: {
+                        type: 'ai-joke',
+                      },
+                    }
+                  );
+                } catch (error) {
+                  unlockUI();
+
+                  this.toastr.error(
+                    'Ocurrió un error, vuelva a intentar',
+                    'error',
+                    {
+                      timeOut: 1500,
+                    }
+                  );
+                }
               }
             },
           },
