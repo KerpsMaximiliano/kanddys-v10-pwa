@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+}
+
+.container {
+  background-color: #fff;
+  margin: 25px auto;
+  border-radius: 12px;
+  padding: 44px 28.5px 39.5px;
+  max-width: 355px;
+
+  .title {
+    color: #4f4f4f;
+    font-family: SFProBold;
+    font-size: 17px;
+    margin-bottom: 20.5px;
+    text-align: center;
+  }
+
+  .arrows {
+    display: block;
+    margin: 0 auto;
+    margin-top: 7.5px;
+    cursor: pointer;
+    filter: invert(99%) sepia(1%) saturate(4539%) hue-rotate(275deg)
+      brightness(121%) contrast(83%);
+    transform: rotate(180deg);
+  }
+}

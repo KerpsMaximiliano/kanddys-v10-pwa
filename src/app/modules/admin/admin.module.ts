@@ -22,6 +22,7 @@ import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
 import { ArticleEditorComponent } from './pages/article-editor/article-editor.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { WebformMetricsComponent } from './pages/webform-metrics/webform-metrics.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -136,18 +137,22 @@ const routes: Routes = [
         component: ArticlePrivacyComponent,
       },
       {
-        path: "article-editor/:articleId",
-        component: ArticleEditorComponent
+        path: 'article-editor/:articleId',
+        component: ArticleEditorComponent,
       },
       {
-        path: "slides-editor/:articleId",
-        component: QrEditComponent
-      }
+        path: 'slides-editor/:articleId',
+        component: QrEditComponent,
+      },
+      {
+        path: 'webform-metrics/:formId',
+        component: WebformMetricsComponent,
+      },
     ],
   },
   {
     path: 'tags',
-    component: TagsComponent
+    component: TagsComponent,
   },
 ];
 
@@ -167,7 +172,8 @@ const routes: Routes = [
     CreateTagComponent,
     TagsComponent,
     ManageTagComponent,
-    ArticleEditorComponent
+    ArticleEditorComponent,
+    WebformMetricsComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

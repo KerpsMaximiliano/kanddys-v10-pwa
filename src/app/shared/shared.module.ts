@@ -128,6 +128,14 @@ import { TitleIconHeaderComponent } from './components/title-icon-header/title-i
 import { QrContentComponent } from './components/qr-content/qr-content.component';
 import { QrEditComponent } from './components/qr-edit/qr-edit.component';
 import { GeneralDialogComponent } from './components/general-dialog/general-dialog.component';
+import { DescriptionDialogComponent } from './dialogs/description-dialog/description-dialog.component';
+import { MenuButtonComponent } from './components/menu-button/menu-button.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { ImagesCardComponent } from './components/images-card/images-card.component';
+import { LinkCardComponent } from './components/link-card/link-card.component';
+import { RouterOptionsComponent } from './components/router-options/router-options.component';
 
 const imports = [
   CommonModule,
@@ -143,6 +151,9 @@ const imports = [
   ClipboardModule,
   GooglePlaceModule,
   DragDropModule,
+  MatButtonModule,
+  MatMenuModule,
+  MatIconModule,
 ];
 const declarations = [
   // Pages
@@ -264,7 +275,12 @@ const declarations = [
   TitleIconHeaderComponent,
   QrContentComponent,
   QrEditComponent,
-  GeneralDialogComponent
+  GeneralDialogComponent,
+  DescriptionDialogComponent,
+  MenuButtonComponent,
+  ImagesCardComponent,
+  LinkCardComponent,
+  RouterOptionsComponent,
 ];
 
 @NgModule({

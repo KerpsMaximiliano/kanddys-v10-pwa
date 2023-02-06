@@ -38,6 +38,7 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { AnexoLandingComponent } from 'src/app/shared/components/anexo-landing/anexo-landing.component';
+import { DescriptionDialogComponent } from 'src/app/shared/dialogs/description-dialog/description-dialog.component';
 
 @Component({
   selector: 'app-test',
@@ -241,9 +242,15 @@ export class TestComponent implements OnInit {
                   marginLeft: '19.5px',
                 },
                 list: [
-                  {src: 'https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGdeQXVyNTM0OTY1OQ@@._V1_.jpg'},
-                  {src: 'https://i0.wp.com/codigoespagueti.com/wp-content/uploads/2022/10/The-Last-of-Us-Part-II-prepara-multijugador-free-to-play-segun-rumores.jpg?fit=1280%2C720&quality=80&ssl=1'},
-                  {src: 'https://i.insider.com/63c08e6933ffb700180f8ce8?width=700'},
+                  {
+                    src: 'https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGdeQXVyNTM0OTY1OQ@@._V1_.jpg',
+                  },
+                  {
+                    src: 'https://i0.wp.com/codigoespagueti.com/wp-content/uploads/2022/10/The-Last-of-Us-Part-II-prepara-multijugador-free-to-play-segun-rumores.jpg?fit=1280%2C720&quality=80&ssl=1',
+                  },
+                  {
+                    src: 'https://i.insider.com/63c08e6933ffb700180f8ce8?width=700',
+                  },
                 ],
               },
               // styles: {},
@@ -1080,8 +1087,17 @@ export class TestComponent implements OnInit {
     private dialogFlowService: DialogFlowService,
     private postsService: PostsService,
     private headerService: HeaderService,
-    private router: Router
+    private router: Router,
+    private dialog: DialogService
   ) {}
 
   async ngOnInit() {}
+
+  openDescriptionDialog() {
+    this.dialog.open(DescriptionDialogComponent, {
+      type: 'centralized-fullscreen',
+      flags: ['no-header'],
+      customClass: 'app-dialog',
+    });
+  }
 }

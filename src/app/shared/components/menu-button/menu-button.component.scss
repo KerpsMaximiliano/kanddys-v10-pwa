@@ -1,0 +1,67 @@
+.example-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+}
+
+.container {
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  z-index: 999;
+}
+
+::ng-deep .mat-fab .mat-button-wrapper {
+  padding: 0px !important;
+}
+
+.mat-flat-button.mat-accent,
+.mat-raised-button.mat-accent,
+.mat-fab.mat-accent,
+.mat-mini-fab.mat-accent {
+  background-color: black;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: 24px;
+  cursor: pointer;
+  border: none;
+
+  .btn-icon {
+    padding: 0;
+    color: #82f18d;
+  }
+}
+
+::ng-deep .menu {
+  background-color: #272727;
+  border-radius: 11px;
+  margin-bottom: 5px;
+  position: relative !important;
+  z-index: 999 !important;
+
+  .menu-item {
+    border-bottom: 1px solid #707070;
+    width: 240px;
+    display: flex;
+    align-items: center;
+    span {
+      font-family: SFProLight;
+      font-size: 17px;
+      color: #ffffff;
+    }
+    .circle {
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+      margin-left: auto;
+    }
+  }
+
+  .menu-item:last-child {
+    border-bottom: none;
+  }
+}
