@@ -1,0 +1,136 @@
+<div class="container">
+  <div class="header1" *ngIf="isOwner">
+    <button class="arrows" (click)="goBack()">
+      <img [src]="environment + '/arrow-double-up-black.svg'" alt="arrows" />
+    </button>
+    <p class="header-title" *ngIf="contactID">{{ contactID }}</p>
+    <p class="header-title" *ngIf="!contactID">Mi perfil</p>
+  
+    <button class="settings">
+      <img
+      [routerLink]="['/admin/bios-edit']"
+      [queryParams]="{ contactId: idUser }"
+      [src]="environment + '/settings.svg'" alt="settings" />
+    </button>
+  
+  </div>
+  <button class="header2" (click)="goBack()" *ngIf="!isOwner">
+    <img
+      [src]="environment + '/arrow-double-up-black.svg'"
+      alt="arrows"
+      class="arrows"
+    />
+  </button>
+  <div class="bodySect">
+    <div class="bioSection">
+      <div
+        *ngIf="img"
+        class="bioImg"
+        [ngStyle]="{
+          background:
+            'url(' +
+            (img.startsWith('https') ? img : environment + '/' + img) +
+            ') no-repeat  center/cover'
+        }"
+      >
+        <img class="eyeIcon" [src]="environment + '/eye.svg'" />
+        <div class="markerCont">
+          <img
+            class="locationIcon"
+            [src]="environment + '/location-2-black.svg'"
+          />
+        </div>
+      </div>
+      <div
+        *ngIf="!img"
+        class="bioImg"
+        [ngStyle]="{ 'background-color': '#A0A0A0' }"
+      >
+        <img class="eyeIcon" [src]="environment + '/eye.svg'" />
+        <div class="markerCont">
+          <img
+            class="locationIcon"
+            [src]="environment + '/location-2-black.svg'"
+          />
+        </div>
+      </div>
+      <p class="contactID">{{ contactID }}</p>
+      <p *ngIf="contactDirection" class="contactID">{{ contactDirection }}</p>
+      <p *ngIf="contactBio" class="bio">{{ contactBio }}</p>
+    </div>
+    <div class="dataSect">
+      <div 
+      *ngFor="let link of links"
+      [ngSwitch]="link.name"
+      class="dataBox">
+        <ng-container *ngSwitchCase="'whatsapp'">
+          <img
+            class="icon"
+            [src]="environment + '/whatsapp_black.svg'"
+            width="32"
+            height="34"
+          />
+          <p>
+            <a
+              [style.textDecoration]="'none'"
+              [style.color]="'inherit'"
+              [href]="'https://wa.me/' + link.value"
+              target="_blank"
+              >{{ link.name }}</a
+            >
+          </p>
+        </ng-container>
+        <ng-container *ngSwitchCase="'telegram'" class="dataBox">
+          <img
+            class="icon"
+            [src]="environment + '/telegram.svg'"
+            width="32"
+            height="33"
+          />
+          <p>
+            <a
+              [style.textDecoration]="'none'"
+              [style.color]="'inherit'"
+              [href]="'https://telegram.me/' + link.value"
+              target="_blank"
+              >{{ link.name }}</a
+            >
+          </p>
+        </ng-container>
+        <ng-container *ngSwitchCase="'phone'" class="dataBox">
+          <img
+            class="icon"
+            [src]="environment + '/phone-black.svg'"
+            width="32"
+            height="32"
+          />
+          <p>
+            <a
+              [style.textDecoration]="'none'"
+              [style.color]="'inherit'"
+              [href]="'tel:' + link.value"
+              >{{ link.name }}</a
+            >
+          </p>
+        </ng-container>
+        <ng-container *ngSwitchDefault class="dataBox">
+          <img
+            *ngIf="link.image"
+            class="icon"
+            [src]="environment + link.image"
+            width="32"
+            height="32"
+          />
+          <p>
+            <a
+              [style.textDecoration]="'none'"
+              [style.color]="'inherit'"
+              [href]="'tel:' + link.value"
+              >{{ link.name }}</a
+            >
+          </p>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

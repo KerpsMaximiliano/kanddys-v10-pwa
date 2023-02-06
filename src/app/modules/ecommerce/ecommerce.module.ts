@@ -21,6 +21,8 @@ import { ArticleDetailComponent } from './pages/article-detail/article-detail.co
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
+import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
+import { ContactLandingComponent } from 'src/app/shared/components/contact-landing/contact-landing.component';
 
 const routes: Routes = [
   {
@@ -114,6 +116,10 @@ const routes: Routes = [
         path: 'payments',
         component: PaymentsComponent,
       },
+      {
+        path: 'contact-landing/:idUser',
+        component: ContactLandingContainerComponent,
+      },
     ],
   },
 ];
@@ -137,6 +143,8 @@ const routes: Routes = [
     ArticleDetailComponent,
     CreateArticleComponent,
     TermsOfUseComponent,
+    ContactLandingContainerComponent,
+    ContactLandingComponent
   ],
   imports: [
     CommonModule,

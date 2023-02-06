@@ -19,6 +19,7 @@ import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
 import { ArticleEditorComponent } from './pages/article-editor/article-editor.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -124,6 +125,10 @@ const routes: Routes = [
         path: 'slides-editor/:articleId',
         component: QrEditComponent,
       },
+      {
+        path: 'bios-edit',
+        component: BiosEditComponent,
+      },
     ],
   },
   {
@@ -146,6 +151,7 @@ const routes: Routes = [
     TagsComponent,
     ManageTagComponent,
     ArticleEditorComponent,
+    BiosEditComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
