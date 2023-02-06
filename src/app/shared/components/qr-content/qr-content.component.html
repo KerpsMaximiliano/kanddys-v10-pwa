@@ -39,7 +39,9 @@
         <div
           class="imgBox"
           [ngStyle]="{
-            backgroundImage: slide.path,
+            backgroundImage:
+              slide.path +
+              ', url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
@@ -47,6 +49,21 @@
         ></div>
       </ng-container>
       <ng-container *ngIf="slide.type === 'VIDEO'">
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+          alt="play"
+          class="playVideoIcon"
+          style="
+            padding: 1.5rem !important;
+            z-index: 99;
+            z-index: 99;
+            left: 0;
+            right: 0;
+            max-width: 80px;
+            min-width: 70px;
+          "
+        />
+
         <video
           class="video-content"
           [id]="'media' + i"

@@ -236,7 +236,7 @@
               'background-image': imgURL
                 ? 'url(' +
                   imgURL +
-                  ')' +
+                  '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)' +
                   (shouldHaveFallbackImage
                     ? ', url(/assets/images/noimage.png)'
                     : '')
@@ -250,7 +250,8 @@
                   ')' +
                   (shouldHaveFallbackImage
                     ? ', url(/assets/images/noimage.png)'
-                    : '')
+                    : '') +
+                  ', url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
                 : 'url(/assets/images/noimage.png)',
               'background-size': backgroundSize
             }
@@ -268,10 +269,19 @@
 
     <div
       class="itemImg opacity-hover"
+      [ngClass]="{
+        videoThumbnail: true
+      }"
       [ngStyle]="dynamicStyles?.video"
       (click)="onClick()"
       *ngIf="isVideo"
     >
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+        alt="play"
+        class="playVideoIcon"
+      />
+
       <video class="video" [src]="imgURL" [muted]="true"></video>
       <img
         *ngIf="featured"
@@ -297,7 +307,7 @@
 
         <div
           class="dynamic-choices"
-          *ngIf="itemParams?.length > 0 && itemParams[0].values.length > 0"
+          *ngIf="itemParams?.length > 0 && itemParams[0].values?.length > 0"
         >
           <div>
             <span class="quantity">

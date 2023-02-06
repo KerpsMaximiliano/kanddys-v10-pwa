@@ -100,35 +100,5 @@ export class EcommerceComponent implements OnInit {
     this.router.navigate([
       '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
     ]);
-
-    /*
-    this.dialogService.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        orderFinished: !(
-          this.activePath === 'article-detail/:entity/:entityId' ||
-          this.activePath === 'store' ||
-          this.headerService.checkoutRoute
-        ),
-        headerButton: this.activePath !== 'store' && 'Ver mas productos',
-        headerCallback: () =>
-          this.router.navigate([`./store`], {
-            relativeTo: this.route,
-          }),
-        footerCallback: async () => {
-          if (this.headerService.checkoutRoute) {
-            this.router.navigate([this.headerService.checkoutRoute], {
-              replaceUrl: true,
-            });
-            return;
-          }
-          this.router.navigate([`./checkout`], {
-            relativeTo: this.route,
-          });
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });*/
   };
 }

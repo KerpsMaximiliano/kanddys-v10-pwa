@@ -37,7 +37,23 @@
           id="file"
           [style.display]="'none'"
           (change)="loadFile($event)"
-          [accept]="['.png', '.jpg', '.jpeg', '.webp', '.webm', '.mp4', '.m4v', '.mpg', '.mpeg', '.mpeg4', '.mov', '.3gp', '.mts/m2ts', '.mxf']"
+          [accept]="[
+            '.png',
+            '.jpg',
+            '.jpeg',
+            '.webp',
+            '.webm',
+            '.mp4',
+            '.m4v',
+            '.mpg',
+            '.mpeg',
+            '.mpeg4',
+            '.mov',
+            '.3gp',
+            '.mts',
+            '.m2ts',
+            '.mxf'
+          ]"
         />
         <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
           <div class="labelBox"></div>
@@ -61,24 +77,35 @@
         <div class="itemContainer">
           <div
             *ngIf="imageFiles.includes(gridItem._type)"
+            (click)="this.item && editSlide(i)"
             class="imgBox"
             [ngStyle]="{
-              background:
+              backgroundImage:
                 'url(' +
                 gridItem.background +
-                ') #272727 no-repeat  center/cover'
+                '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)',
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: '#272727'
             }"
           ></div>
-          <video
-            autoplay
-            [muted]="true"
-            [src]="gridItem.background"
-            *ngIf="videoFiles.includes(gridItem._type)"
-          ></video>
-          <div class="labelBox"></div>
-          <div class="circleButton" (click)="openSlideSettings(i)">
-            <img class="icon" [src]="environment + '/dots-black.svg'" />
-          </div>
+
+          <ng-container *ngIf="videoFiles.includes(gridItem._type)">
+            <img
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+              alt="play"
+              class="playVideoIcon"
+              style="padding: 1.5rem !important; z-index: 99"
+              (click)="playVideoOnFullscreen('media' + i)"
+            />
+            <video [id]="'media' + i" [muted]="true" [src]="gridItem.background"></video>
+          </ng-container>
+
+          <div class="labelBox" (click)="item && !isSlideVideo(i) ? editSlide(i) : playVideoOnFullscreen('media' + i)"></div>
+          <button class="circleButton" (click)="deleteSlide(i)">
+            <i class="fa fa-times" aria-hidden="true"></i>
+          </button>
         </div>
         <img
           class="drag-handler"

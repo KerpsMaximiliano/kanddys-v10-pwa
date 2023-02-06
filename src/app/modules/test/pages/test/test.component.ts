@@ -19,7 +19,7 @@ import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.comp
 import { InputTransparentComponent } from 'src/app/shared/dialogs/input-transparent/input-transparent.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { ItemInput } from 'src/app/core/models/item';
+import { Item, ItemInput } from 'src/app/core/models/item';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -29,6 +29,11 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
 import { BlankComponent } from 'src/app/shared/dialogs/blank/blank.component';
 import { SwiperOptions } from 'swiper';
+import { LinkDialogComponent } from 'src/app/shared/dialogs/link-dialog/link-dialog.component';
+import { environment } from 'src/environments/environment';
+import { Button } from 'src/app/shared/components/general-item/general-item.component';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 
 @Component({
   selector: 'app-test',
@@ -37,10 +42,11 @@ import { SwiperOptions } from 'swiper';
 })
 export class TestComponent implements OnInit {
   @ViewChild('dialogSwiper') dialogSwiper: SwiperComponent;
-
+  env: string = environment.assetsUrl;
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
+  item: Item = null;
   dialogs: Array<EmbeddedComponent> = [
     {
       component: BlankComponent,
@@ -91,14 +97,35 @@ export class TestComponent implements OnInit {
       ],
     },
   ];
+  optionsButton: Button = {
+    clickEvent: (params: Tag) => {
+      alert('clicked');
+    },
+  };
 
+  firstIndex: number = 0;
 
   constructor(
     private dialog: DialogService,
     private itemsService: ItemsService,
     private merchantService: MerchantsService,
-    private saleflowService: SaleFlowService
+    private saleflowService: SaleFlowService,
+    private _bottomSheet: MatBottomSheet
   ) {}
 
-  async ngOnInit() {}
+  async ngOnInit() {
+    console.log(this.firstIndex);
+    this.item = await this.itemsService.item('63d7ebf3bbd3bc32bcc2ec0b');
+  }
+
+  openDialog() {
+    this.dialog.open(LinkDialogComponent, {
+      type: 'flat-action-sheet',
+      flags: ['no-header'],
+      customClass: 'app-dialog',
+    });
+  }
+  openBottomSheet(): void {
+    this._bottomSheet.open(LinksDialogComponent);
+  }
 }

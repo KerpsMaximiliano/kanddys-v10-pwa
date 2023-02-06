@@ -1,3 +1,31 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$rewardcharly-primary: mat-palette($mat-indigo);
+$rewardcharly-accent: mat-palette($mat-pink, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$rewardcharly-warn: mat-palette($mat-red);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$rewardcharly-theme: mat-light-theme($rewardcharly-primary, $rewardcharly-accent, $rewardcharly-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($rewardcharly-theme);
+
 // @import "theme";
 @import "mixins";
 @import "~normalize.css";
@@ -66,7 +94,6 @@ body {
 //     width: 100%;
 //   }
 // }
-
 
 .app-dialog {
   .dialog-frame {
@@ -271,6 +298,11 @@ body {
   src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Regular.ttf");
   font-display: swap;
 }
+@font-face {
+  font-family: "SfProHeavy";
+  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Heavy.ttf");
+  font-display: swap;
+}
 
 @font-face {
   font-family: "Nirvana";
@@ -335,4 +367,23 @@ body {
 @font-face {
   font-family: "RalewaySemiBold";
   src: url("../src/assets/fonts/RalewaySemiBold.ttf");
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.videoThumbnail {
+  background-color: #293628 !important;
+
+  position: relative !important;
+}
+
+.playVideoIcon {
+  cursor: pointer;
+  position: absolute;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  padding: 3rem !important;
+  filter: invert(87%) sepia(40%) saturate(582%) hue-rotate(60deg)
+    brightness(101%) contrast(89%);
 }

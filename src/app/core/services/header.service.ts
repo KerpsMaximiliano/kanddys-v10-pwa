@@ -35,7 +35,7 @@ class OrderProgress {
 
 export class SaleflowData {
   order: ItemOrderInput;
-  itemData: any[];
+  itemData: string[];
   post: PostInput;
   deliveryLocation: DeliveryLocationInput;
   reservation: ReservationInput;
@@ -301,7 +301,7 @@ export class HeaderService {
     let { itemData, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     if (!itemData) itemData = [];
-    const index = itemData.findIndex((item) => item._id === product._id);
+    const index = itemData.findIndex((item) => item === product._id);
     if (index >= 0) {
       itemData.splice(index, 1);
       this.items.splice(index, 1);
@@ -504,7 +504,7 @@ export class HeaderService {
     let { itemData, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     if (!itemData) return;
-    const index = itemData.findIndex((product) => product._id === id);
+    const index = itemData.findIndex((product) => product === id);
     if (index >= 0) itemData.splice(index, 1);
     else return;
     localStorage.setItem(

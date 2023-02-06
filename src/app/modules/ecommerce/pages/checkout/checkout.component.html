@@ -60,32 +60,48 @@
           (mousemove)="moveEvent($event, elemt)"
         >
           <button
+            [ngStyle]="{
+              position: 'relative'
+            }"
             *ngFor="let item of items"
-            (click)="
-              (item.image || item.images?.length) && (!urlIsVideo(item.images[0].value) ?
-                openImageModal(item.image?.value || item.images[0].value) : playVideoOnFullscreen('media' + item._id))
-            "
+            (click)="goToArticleDetail(item._id)"
           >
             <div class="image" *ngIf="!urlIsVideo(item.images[0].value)">
-              <img
-                [src]="
-                  item.image || item.images?.length
-                    ? item.image?.value || item.images[0].value
-                    : '/assets/images/noimage.png'
-                "
-                (error)="item.image = '/assets/images/noimage.png'"
-                alt="item image"
-                class="item-image"
-              />
+              <div
+                class="image-for-item"
+                [ngStyle]="{
+                  backgroundImage:
+                    item.image || item.images?.length
+                      ? item.image?.value ||
+                        'url(' +
+                          item.images[0].value +
+                          '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                      : 'url(/assets/images/noimage.png)',
+                  backgroundPosition: 'center',
+                  backgroundSize: 'contain',
+                  backgroundRepeat: 'no-repeat'
+                }"
+              ></div>
             </div>
 
-            <video
+            <div
+              class="video-wrapper videoThumbnail"
               *ngIf="urlIsVideo(item.images[0].value)"
-              [src]="item.images[0].value"
-              [id]="'media' + item._id"
-              class="video"
-              [muted]="true"
-            ></video>
+            >
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                alt="play"
+                class="playVideoIcon"
+                style="padding: 1rem !important; z-index: 99"
+              />
+
+              <video
+                [src]="item.images[0].value"
+                [id]="'media' + item._id"
+                class="video"
+                [muted]="true"
+              ></video>
+            </div>
           </button>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { getExtension, isVideo } from 'src/app/core/helpers/strings.helpers';
+import { completeImageURL, getExtension, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
@@ -54,6 +54,8 @@ export class ArticleEditorComponent implements OnInit {
   editingName: boolean = false;
   editingDescription: boolean = false;
   editingSlides: boolean = false;
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  videoFiles: string[] = ['video/mp4', 'video/webm'];
 
   item: Item;
   selectedImages: (string | ArrayBuffer)[] = [];
@@ -80,6 +82,7 @@ export class ArticleEditorComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.loadingSlides = true;
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
@@ -93,17 +96,22 @@ export class ArticleEditorComponent implements OnInit {
       this.name.setValue(this.item.name);
       this.description.setValue(this.item.description);
       if (this.item.images.length) {
-        this.loadingSlides = true;
+
+        this.loadingSlides = false;
+
+        this.slides = this.item.images.map((image) => {
+          return {
+            url: completeImageURL(image.value),
+            index: 0,
+            type: 'poster',
+            text: '',
+          };
+        });
+        
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
           let imageURL = image.value;
-          if (
-            imageURL &&
-            !imageURL.includes('http') &&
-            !imageURL.includes('https')
-          ) {
-            imageURL = 'https://' + imageURL;
-          }
+          imageURL = completeImageURL(imageURL);
 
           const response = await fetch(imageURL);
           const blob = await response.blob();
@@ -118,21 +126,23 @@ export class ArticleEditorComponent implements OnInit {
           );
         });
         Promise.all(imagesPromises).then((result) => {
-          // unlockUI();
-          this.loadingSlides = false;
+          console.log(result);
+          // this.loadingSlides = false;
           this._ItemsService.itemImages = result;
-          this.slides = this._ItemsService.itemImages.map((image) => {
-            return {
-              media: image,
-              index: 0,
-              type: 'poster',
-              text: '',
-            };
-          });
+          // this.slides = this._ItemsService.itemImages.map((image) => {
+          //   return {
+          //     media: image,
+          //     index: 0,
+          //     type: 'poster',
+          //     text: '',
+          //   };
+          // });
           if (!this.selectedImages.length) this.loadImages();
         });
         // } else this.loadImages();
+
       }
+      this.loadingSlides = false;
     }
     if (this._ItemsService.itemName) {
       this.name.setValue(this._ItemsService.itemName);
