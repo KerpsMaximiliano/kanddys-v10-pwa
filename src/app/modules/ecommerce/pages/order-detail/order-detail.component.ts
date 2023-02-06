@@ -25,6 +25,7 @@ import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 interface Image {
   src: string;
@@ -137,6 +138,7 @@ export class OrderDetailComponent implements OnInit {
     'video/m2ts',
     'video/m2ts',
   ];
+  playVideoOnFullscreen = playVideoOnFullscreen;
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
   constructor(
@@ -936,23 +938,7 @@ export class OrderDetailComponent implements OnInit {
     this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
-
-  playVideoOnFullscreen(id: string) {
-    const elem: HTMLVideoElement = document.getElementById(
-      id
-    ) as HTMLVideoElement;
-
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if ((elem as any).webkitRequestFullscreen) {
-      /* Safari */
-      (elem as any).webkitRequestFullscreen();
-    } else if ((elem as any).msRequestFullscreen) {
-      /* IE11 */
-      (elem as any).msRequestFullscreen();
-    }
-  }
-
+  
   // async addTag(tagId?: string) {
   //   if (!this.selectedTags[tagId]) {
   //     const added = await this.tagsService.addTagsInOrder(

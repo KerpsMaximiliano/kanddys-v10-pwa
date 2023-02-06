@@ -1,0 +1,36 @@
+* {
+  margin: 0;
+}
+
+::ng-deep.mat-bottom-sheet-container {
+  padding: 38px 28px 32.5px 28px;
+  width: 100%;
+  max-width: 500px !important;
+  min-width: unset;
+
+  .title {
+    color: #000000;
+    font-family: RobotoMedium;
+    font-size: 23px;
+  }
+
+  .subtitle,
+  .subtitle-last {
+    background-color: unset;
+    border: none;
+    text-align: left;
+    padding-top: 25px;
+    padding-bottom: 10px;
+    width: 100%;
+    max-width: 444px;
+    cursor: pointer;
+
+    .divider {
+      margin-top: 10px;
+    }
+  }
+
+  .subtitle-last {
+    border-bottom: none;
+  }
+}

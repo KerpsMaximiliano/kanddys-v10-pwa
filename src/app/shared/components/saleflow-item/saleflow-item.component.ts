@@ -116,7 +116,7 @@ export class SaleflowItemComponent implements OnInit {
     if (this.itemParams?.length) {
       let lowest = 0;
       this.itemParams.forEach((params) => {
-        params.values.forEach((values) => {
+        params.values?.forEach((values) => {
           if (lowest === 0) {
             lowest = values.price;
             if (

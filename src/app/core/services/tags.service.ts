@@ -19,7 +19,10 @@ import {
   tagArchived,
   hotTagsArchived,
   tagsArchived,
+  itemsByTag,
+  itemTagRangePrice,
 } from '../graphql/tags.gql';
+import { Item } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
 
@@ -93,7 +96,9 @@ export class TagsService {
     }
   }
 
-  async tagsByMerchant(merchantId: string): Promise<any> {
+  async tagsByMerchant(
+    merchantId: string
+  ): Promise<{ tags: Tag; order: number }[]> {
     try {
       const result = await this.graphql.query({
         query: tagsByMerchant,
@@ -102,7 +107,7 @@ export class TagsService {
       });
       if (!result) return undefined;
 
-      return result;
+      return result.tagsByMerchant;
     } catch (e) {
       console.log(e);
     }
@@ -217,7 +222,7 @@ export class TagsService {
     }
   }
 
-  async tags(paginate: PaginationInput) {
+  async tags(paginate: PaginationInput): Promise<{ tags: Tag[] }> {
     try {
       const result = await this.graphql.query({
         query: tags,
@@ -276,7 +281,6 @@ export class TagsService {
     }
   }
 
-
   async hotTagsArchived(
     paginate: PaginationInput = { options: { limit: -1 } }
   ): Promise<Array<Tag>> {
@@ -287,6 +291,47 @@ export class TagsService {
         fetchPolicy: 'no-cache',
       });
       return result?.tagArchived;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemsByTag(
+    nameTag: string,
+    params: PaginationInput = { options: { limit: -1 } }
+  ): Promise<Item[]> {
+    try {
+      const result = await this.graphql.query({
+        query: itemsByTag,
+        variables: { nameTag, params },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.itemsByTag;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemTagRangePrice(paginate: PaginationInput): Promise<
+    {
+      priceMax: {
+        price: number;
+        item: string;
+      };
+      priceMin: {
+        price: number;
+        item: string;
+      };
+      tag: string;
+    }[]
+  > {
+    try {
+      const result = await this.graphql.query({
+        query: itemTagRangePrice,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return result?.itemTagRangePrice;
     } catch (e) {
       console.log(e);
     }
