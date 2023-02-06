@@ -118,14 +118,30 @@ import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.compon
 import { BlankComponent } from './dialogs/blank/blank.component';
 import { ArticleDialogComponent } from './dialogs/article-dialog/article-dialog.component';
 import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.component';
-import { ItemImagesComponent } from './dialogs/create-item-flow/item-images/item-images.component';
+import { ItemImagesComponent } from './dialogs/item-images/item-images.component';
 import { InfoDialogComponent } from './dialogs/info-dialog/info-dialog.component';
 import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
+import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';
+import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
+import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component';
+import { BuyerCardComponent } from './components/buyer-card/buyer-card.component';
+import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
+import { OptionsBarComponent } from './components/options-bar/options-bar.component';
 import { ImageEditorComponent } from './components/image-editor/image-editor.component';
 import { CardComponent } from './components/card/card.component';
 import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
 import { QrContentComponent } from './components/qr-content/qr-content.component';
 import { QrEditComponent } from './components/qr-edit/qr-edit.component';
+import { MenuButtonComponent } from './components/menu-button/menu-button.component';
+import { LinksDialogComponent } from './dialogs/links-dialog/links-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
 
 const imports = [
   CommonModule,
@@ -141,6 +157,13 @@ const imports = [
   ClipboardModule,
   GooglePlaceModule,
   DragDropModule,
+  MatMenuModule,
+  MatIconModule,
+  MatBottomSheetModule,
+  MatDividerModule,
+  MatButtonModule,
+  MatExpansionModule,
+  MatBadgeModule,
 ];
 const declarations = [
   // Pages
@@ -255,11 +278,20 @@ const declarations = [
   MediaDialogComponent,
   ItemListSelectorComponent,
   TagsDialogComponent,
+  ContactLandingComponent,
+  ContactLandingContainerComponent,
+  LinkDialogComponent,
+  BuyerCardComponent,
+  GradientFooterComponent,
+  OptionsBarComponent,
   ImageEditorComponent,
   CardComponent,
   TitleIconHeaderComponent,
   QrContentComponent,
   QrEditComponent,
+  MenuButtonComponent,
+  LinksDialogComponent,
+  GradientCardComponent,
   CalendarSwiperComponent,
 ];
 

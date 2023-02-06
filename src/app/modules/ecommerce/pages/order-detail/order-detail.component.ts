@@ -938,7 +938,7 @@ export class OrderDetailComponent implements OnInit {
     this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
-
+  
   // async addTag(tagId?: string) {
   //   if (!this.selectedTags[tagId]) {
   //     const added = await this.tagsService.addTagsInOrder(

@@ -54,6 +54,8 @@ export class ArticleEditorComponent implements OnInit {
   editingName: boolean = false;
   editingDescription: boolean = false;
   editingSlides: boolean = false;
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  videoFiles: string[] = ['video/mp4', 'video/webm'];
 
   item: Item;
   selectedImages: (string | ArrayBuffer)[] = [];

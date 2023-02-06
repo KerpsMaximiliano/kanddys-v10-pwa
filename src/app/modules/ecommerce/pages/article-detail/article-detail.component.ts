@@ -1,10 +1,7 @@
-import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
-import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
 import { Item, ItemImage, ItemParamValue } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
@@ -16,16 +13,10 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
-import {
-  SettingsComponent,
-  SettingsDialogButton,
-} from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import SwiperCore, { Virtual } from 'swiper/core';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
@@ -49,8 +40,7 @@ interface ExtendedItem extends Item {
   }>;
 }
 
-type TypesOfMenu = 'TAGS' | 'DESCRIPTION';
-type ValidEntities = 'item' | 'post';
+type ValidEntities = 'item' | 'post' | 'collection';
 
 @Component({
   selector: 'app-article-detail',
@@ -59,7 +49,6 @@ type ValidEntities = 'item' | 'post';
 })
 export class ArticleDetailComponent implements OnInit {
   env: string = environment.assetsUrl;
-  controllers: FormArray = new FormArray([]);
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
     resistance: false,
@@ -75,17 +64,17 @@ export class ArticleDetailComponent implements OnInit {
   entity: ValidEntities;
   entityId: string;
   itemData: ExtendedItem = null;
+  tagData: Tag;
   itemTags: Array<ExtendedTag> = [];
   postData: Post = null;
   postSlides: Array<ExtendedSlide> = [];
-  selectedParam: {
-    param: number;
-    value: number;
-  };
+  // selectedParam: {
+  //   param: number;
+  //   value: number;
+  // };
   isItemInCart: boolean = false;
-  menuOpened: boolean;
+  itemsAmount: string;
   mode: 'preview' | 'image-preview' | 'saleflow';
-  typeOfMenuToShow: TypesOfMenu;
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
     freeMode: false,
@@ -130,12 +119,9 @@ export class ArticleDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private appService: AppService,
-    private dialogService: DialogService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private postsService: PostsService,
     private entityTemplateService: EntityTemplateService,
-    private toastr: ToastrService,
-    private clipboard: Clipboard,
     private saleflowService: SaleFlowService,
     private merchantsService: MerchantsService,
     private authService: AuthService
@@ -148,10 +134,10 @@ export class ArticleDetailComponent implements OnInit {
       | 'saleflow';
     this.route.params.subscribe(async (routeParams) => {
       await this.verifyIfUserIsLogged();
-      const validEntities = ['item', 'post', 'template'];
+      const validEntities = ['item', 'post', 'template', 'collection'];
       const { entity, entityId } = routeParams;
 
-      if (this.headerService.saleflow && this.headerService.saleflow._id)
+      if (this.headerService.saleflow?._id)
         this.doesModuleDependOnSaleflow = true;
 
       if (validEntities.includes(entity)) {
@@ -164,6 +150,8 @@ export class ArticleDetailComponent implements OnInit {
             this.itemInCart();
           } else if (entity === 'post') {
             await this.getPostData();
+          } else if (entity === 'collection') {
+            await this.getCollection();
           }
         } else {
           const entityTemplate =
@@ -191,7 +179,7 @@ export class ArticleDetailComponent implements OnInit {
           }
         }
 
-        if (this.headerService.saleflow && this.headerService.saleflow._id)
+        if (this.headerService.saleflow?._id && this.entity === 'item')
           this.itemInCart();
       } else {
         this.router.navigate([`others/error-screen/`]);
@@ -199,27 +187,8 @@ export class ArticleDetailComponent implements OnInit {
     });
   }
 
-  openInfoDialog() {
-    const props: any = {
-      symbols: {
-        title: this.itemData.name || 'Sin nombre',
-      },
-    };
-    if (this.itemData.description) {
-      props.symbols.text = this.itemData.description;
-    }
-    if (this.itemData.content?.length) {
-      props.actions = {
-        title: 'Lo incluido:',
-        text: this.itemData.content,
-      };
-    }
-    this.dialogService.open(InfoDialogComponent, {
-      type: 'fullscreen-translucent',
-      props,
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
+  async getCollection() {
+    this.tagData = (await this.tagsService.tag(this.entityId)).tag;
   }
 
   async getItemData() {
@@ -401,25 +370,26 @@ export class ArticleDetailComponent implements OnInit {
     // }
 
     this.headerService.storeOrderProduct(product);
-    const itemParamValue: ItemParamValue = this.selectedParam
-      ? {
-          ...this.itemData.params[this.selectedParam.param].values[
-            this.selectedParam.value
-          ],
-          price:
-            this.itemData.pricing +
-            this.itemData.params[this.selectedParam.param].values[
-              this.selectedParam.value
-            ].price,
-        }
-      : null;
+    // const itemParamValue: ItemParamValue = this.selectedParam
+    //   ? {
+    //       ...this.itemData.params[this.selectedParam.param].values[
+    //         this.selectedParam.value
+    //       ],
+    //       price:
+    //         this.itemData.pricing +
+    //         this.itemData.params[this.selectedParam.param].values[
+    //           this.selectedParam.value
+    //         ].price,
+    //     }
+    //   : null;
 
     this.appService.events.emit({
       type: 'added-item',
       data: this.itemData._id,
     });
     this.headerService.storeItem(
-      this.selectedParam ? itemParamValue : this.itemData
+      // this.selectedParam ? itemParamValue :
+      this.itemData
     );
     this.itemInCart();
   }
@@ -450,11 +420,7 @@ export class ArticleDetailComponent implements OnInit {
         //   ]?._id
       );
     } else this.isItemInCart = false;
-  }
-
-  openMenu(typeOfMenu: TypesOfMenu) {
-    this.menuOpened = !this.menuOpened;
-    this.typeOfMenuToShow = typeOfMenu;
+    this.itemsAmount = productData.length > 0 ? productData.length + '' : null;
   }
 
   async share() {
@@ -491,10 +457,10 @@ export class ArticleDetailComponent implements OnInit {
         `/admin/slides-editor/${this.itemData._id}`,
       ]);
     }
-    if (this.selectedParam) {
-      this.selectedParam = null;
-      return;
-    }
+    // if (this.selectedParam) {
+    //   this.selectedParam = null;
+    //   return;
+    // }
 
     if (!this.headerService.flowRoute && localStorage.getItem('flowRoute')) {
       this.headerService.flowRoute = localStorage.getItem('flowRoute');
@@ -555,22 +521,23 @@ export class ArticleDetailComponent implements OnInit {
     }
   }
 
+  goToCheckout() {
+    this.router.navigate([
+      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+    ]);
+  }
+
   updateFrantions(): void {
     this.fractions = (
       (this.entity === 'item'
         ? this.itemData.images
-        : this.postSlides) as Array<any>
+        : this.entity === 'post'
+        ? this.postSlides
+        : this.entity === 'collection'
+        ? this.tagData.images
+        : []) as Array<any>
     )
-      .map(
-        () =>
-          `${
-            // // this.itemData.images.length < 3
-            // //   ?
-
-            '1'
-            // // : this.getRandomArbitrary(0, this.itemData.images.length)
-          }fr`
-      )
+      .map(() => `${'1'}fr`)
       .join(' ');
   }
 
