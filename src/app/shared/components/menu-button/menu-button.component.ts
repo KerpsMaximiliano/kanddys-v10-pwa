@@ -12,6 +12,17 @@ export class MenuButtonComponent implements OnInit {
   @Input() mode: string = 'basic';
   @Input() phone: string;
   @Input() link: string;
+  @Input() options = [
+    {
+      text: 'Nueva Pregunta',
+    },
+    {
+      text: 'Edita el formulario',
+    },
+    {
+      text: 'Preview de Compradores',
+    },
+  ];
 
   constructor(private ngNavigatorShareService: NgNavigatorShareService) {}
 

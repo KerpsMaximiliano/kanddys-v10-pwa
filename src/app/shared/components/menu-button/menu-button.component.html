@@ -1,4 +1,4 @@
-<div class="container" *ngIf="mode === 'basic'">
+<div class="container" style="bottom: 100px" *ngIf="mode === 'basic'">
   <button
     mat-fab
     [matMenuTriggerFor]="menu"
@@ -14,6 +14,27 @@
     </button>
     <button mat-menu-item class="menu-item" (click)="shareStore()">
       <span>Comparte la tienda</span>
+      <img src="/assets/images/noimage.png" alt="circle" class="circle" />
+    </button>
+  </mat-menu>
+</div>
+
+<div class="container" style="bottom: 17px" *ngIf="mode === 'array'">
+  <button
+    mat-fab
+    [matMenuTriggerFor]="menu"
+    aria-label="Example icon-button with a menu"
+    class="btn"
+  >
+    <mat-icon class="btn-icon">menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
+    <button
+      mat-menu-item
+      class="menu-item"
+      *ngFor="let option of options; index as i"
+    >
+      <span>{{ option.text }}</span>
       <img src="/assets/images/noimage.png" alt="circle" class="circle" />
     </button>
   </mat-menu>
