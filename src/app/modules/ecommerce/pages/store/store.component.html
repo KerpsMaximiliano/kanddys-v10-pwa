@@ -59,6 +59,7 @@
     <main>
       <div class="top-input-area">
         <app-options-bar
+          *ngIf="showOptionsBar === true"
           [options]="[{ title: 'articulos' }, { title: 'colecciones' }]"
           type="3"
           (selectedIndex)="onTabClick($event)"
@@ -165,4 +166,5 @@
       </ul>
     </main>
   </div>
+  <app-menu-button [phone]="phone" [link]="link" mode="basic"></app-menu-button>
 </div>
