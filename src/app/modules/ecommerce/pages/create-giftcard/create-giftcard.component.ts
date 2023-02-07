@@ -190,7 +190,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             containerStyles: {
               width: '89%',
               maxWidth: '445px',
-              margin: '42.3vh auto 43px',
+              margin: '248px auto 16px',
               display: 'flex',
               justifyContent: 'center',
             },
