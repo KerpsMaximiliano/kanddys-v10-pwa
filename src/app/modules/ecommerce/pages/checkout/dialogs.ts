@@ -712,7 +712,7 @@ export class Dialogs {
           title: this.title,
           containerStyles: {
             background: 'rgb(255, 255, 255)',
-            borderRadius: '8px',
+            borderRadius: '12px',
             opacity: '1',
             // padding: '37px 36.6px 70.4px 31px',
           },
@@ -1053,6 +1053,10 @@ export class Dialogs {
                   JSON.stringify(options)
                 );
 
+                this.postsService.temporalDialogs = this.temporalDialogs;
+                this.postsService.temporalDialogs2 = this.temporalDialogs2;
+                this.postsService.dialogs = this.dialogs;
+
                 this.router.navigate(
                   [
                     'ecommerce/' +
@@ -1310,6 +1314,14 @@ export class Dialogs {
               const { fields, value, valid } = params;
               const { qrContentSelection } = value;
 
+              if (qrContentSelection.includes('No')) {
+                return this.router.navigate([
+                  'ecommerce/' +
+                    this.headerService.saleflow.merchant.slug +
+                    '/post-edition',
+                ]);
+              }
+
               if (
                 qrContentSelection.includes('Fotos, videos de mi device') &&
                 !this.addedPhotosToTheQr
@@ -1325,11 +1337,22 @@ export class Dialogs {
                   })
                 );
 
-                this.router.navigate([
-                  'ecommerce/' +
-                    this.headerService.saleflow.merchant.slug +
-                    '/qr-edit',
-                ]);
+                this.postsService.temporalDialogs = this.temporalDialogs;
+                this.postsService.temporalDialogs2 = this.temporalDialogs2;
+                this.postsService.dialogs = this.dialogs;
+
+                this.router.navigate(
+                  [
+                    'ecommerce/' +
+                      this.headerService.saleflow.merchant.slug +
+                      '/qr-edit',
+                  ],
+                  {
+                    queryParams: {
+                      returnTo: 'checkout',
+                    },
+                  }
+                );
               } else if (
                 qrContentSelection.includes('Un chiste de la IA') &&
                 !this.addedJokesToTheQr
@@ -1361,17 +1384,10 @@ export class Dialogs {
                     localStorage.setItem('aiJokes', response);
                   }
 
-                  this.headerService.flowRoute = this.router.url.replace(
-                    '?startOnDialogFlow=true',
-                    ''
-                  );
-                  localStorage.setItem(
-                    'flowRoute',
-                    this.headerService.flowRoute
-                  );
                   this.postsService.temporalDialogs = this.temporalDialogs;
                   this.postsService.temporalDialogs2 = this.temporalDialogs2;
                   this.postsService.dialogs = this.dialogs;
+
                   this.router.navigate(
                     [
                       'ecommerce/' +
@@ -1381,11 +1397,14 @@ export class Dialogs {
                     {
                       queryParams: {
                         type: 'ai-joke',
+                        returnTo: 'checkout',
                       },
                     }
                   );
                 } catch (error) {
                   unlockUI();
+
+                  console.error(error);
 
                   this.toastr.error(
                     'Ocurrió un error, vuelva a intentar',

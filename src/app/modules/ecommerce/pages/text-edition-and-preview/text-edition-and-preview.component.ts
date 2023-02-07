@@ -25,6 +25,7 @@ export class TextEditionAndPreviewComponent implements OnInit {
     slidesPerView: 1,
   };
   type: 'POST' | 'AI-JOKE' = 'POST';
+  returnTo: 'checkout' | 'post-edition' | 'article-editor' = null;
 
   constructor(
     private router: Router,
@@ -46,8 +47,9 @@ export class TextEditionAndPreviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { type } = queryParams;
+      const { type, returnTo } = queryParams;
       this.type = type.toUpperCase();
+      this.returnTo = returnTo as any;
 
       if (!type || this.type === 'POST') {
         const storedOptions = localStorage.getItem('temporal-post-options');
@@ -107,7 +109,7 @@ export class TextEditionAndPreviewComponent implements OnInit {
       } else {
         cssClass = '.title-edit';
       }
-      
+
       const nodeList = document.querySelectorAll(cssClass);
 
       const textarea: HTMLInputElement = nodeList.item(
@@ -202,7 +204,29 @@ export class TextEditionAndPreviewComponent implements OnInit {
     this.dialogFlowService.previouslyActiveDialogId =
       this.dialogFlowService.activeDialogId;
 
-    this.redirectFromQueryParams();
+    if (!this.returnTo) this.redirectFromQueryParams();
+    else if (this.returnTo === 'checkout') {
+      const queryParams: any = {
+        startOnDialogFlow: true,
+        addedQr: true,
+        addedAIJoke: this.type === 'AI-JOKE',
+      };
+      if (this.type === 'POST') queryParams.addedPhotos = true;
+      if (this.type === 'AI-JOKE') queryParams.addedAIJoke = true;
+
+      this.router.navigate(
+        ['ecommerce', this.headerService.saleflow.merchant.slug, 'checkout'],
+        {
+          queryParams,
+        }
+      );
+    } else if (this.returnTo === 'post-edition') {
+      this.router.navigate([
+        'ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/post-edition',
+      ]);
+    }
   }
 
   back() {

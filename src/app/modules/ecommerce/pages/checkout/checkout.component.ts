@@ -179,7 +179,8 @@ export class CheckoutComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { startOnDialogFlow } = queryParams;
+      const { startOnDialogFlow, addedQr, addedPhotos, addedAIJoke } =
+        queryParams;
       if (
         this.postsService.dialogs?.length ||
         this.postsService.temporalDialogs?.length ||
@@ -188,27 +189,7 @@ export class CheckoutComponent implements OnInit {
         this.openedDialogFlow = Boolean(startOnDialogFlow);
       }
 
-      this.dialogs = new Dialogs(
-        this.dialogService,
-        this.headerService,
-        this.customizerValueService,
-        this.postsService,
-        this.orderService,
-        this.appService,
-        this.location,
-        this.router,
-        this.route,
-        this.authService,
-        this.dialogFlowService,
-        this.entityTemplateService,
-        this.gpt3Service,
-        this.toastr,
-        this.dialogFlowFunctions,
-        this.temporalDialogs,
-        this.temporalDialogs2,
-        this.addedPhotosToTheQr,
-        this.addedJokesToTheQr
-      ).inject();
+      this.createDialogs();
 
       let storedPrivatePost: string = localStorage.getItem('privatePost');
       let privatePost: boolean;
@@ -225,10 +206,12 @@ export class CheckoutComponent implements OnInit {
       }
 
       if (this.openedDialogFlow) {
-        this.addedJokesToTheQr = Boolean(this.headerService.selectedJoke);
+        this.addedJokesToTheQr = Boolean(this.postsService.post.joke);
         this.addedPhotosToTheQr = Boolean(
           this.postsService.post.slides && this.postsService.post.slides.length
         );
+
+        this.createDialogs();
 
         if (this.postsService.dialogs.length !== 0 && startOnDialogFlow) {
           this.dialogs = this.postsService.dialogs;
@@ -257,6 +240,27 @@ export class CheckoutComponent implements OnInit {
           });
 
           if (generatedMessage) lastActiveDialogIndex += 1;
+
+          if (addedQr) {
+            if (addedPhotos || addedAIJoke) {
+              this.dialogs[this.dialogs.length - 1].inputs.header.text =
+                '¿Deseas incluir alguna otra cosa?';
+
+              this.dialogs[
+                this.dialogs.length - 1
+              ].inputs.fields.list[0].selection.list[0].text = 'No';
+
+              this.dialogs[
+                this.dialogs.length - 1
+              ].inputs.fields.list[0].selection.list[1].text = addedPhotos
+                ? 'Un chiste de la IA'
+                : 'Fotos, videos de mi device';
+            }
+
+            return this.dialogFlowFunctions.moveToDialogByIndex(
+              this.dialogs.length - 1
+            );
+          }
 
           this.dialogFlowFunctions.moveToDialogByIndex(lastActiveDialogIndex);
         }, 500);
@@ -349,6 +353,30 @@ export class CheckoutComponent implements OnInit {
         this.missingOrderData = true;
       }
     });
+  }
+
+  createDialogs() {
+    this.dialogs = new Dialogs(
+      this.dialogService,
+      this.headerService,
+      this.customizerValueService,
+      this.postsService,
+      this.orderService,
+      this.appService,
+      this.location,
+      this.router,
+      this.route,
+      this.authService,
+      this.dialogFlowService,
+      this.entityTemplateService,
+      this.gpt3Service,
+      this.toastr,
+      this.dialogFlowFunctions,
+      this.temporalDialogs,
+      this.temporalDialogs2,
+      this.addedPhotosToTheQr,
+      this.addedJokesToTheQr
+    ).inject();
   }
 
   editOrder(

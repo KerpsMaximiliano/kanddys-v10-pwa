@@ -79,7 +79,7 @@
           ></ngx-intl-tel-input>
         </div>
         <div *ngSwitchDefault>
-          <label [style]="field.label.styles">
+          <label *ngIf="field.label" [style]="field.label.styles">
             {{ field.label.text }}
           </label>
           <input

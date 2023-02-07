@@ -13,7 +13,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
 
@@ -43,6 +47,7 @@ export class QrEditComponent implements OnInit {
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;
+  returnTo: 'checkout' | 'post-edition' | 'article-editor' = null;
 
   gridArray: Array<any> = [];
   playVideoOnFullscreen = playVideoOnFullscreen;
@@ -61,6 +66,9 @@ export class QrEditComponent implements OnInit {
 
   async ngOnInit() {
     const itemId = this._Route.snapshot.paramMap.get('articleId');
+    const returnTo = this._Route.snapshot.queryParamMap.get('returnTo');
+    this.returnTo = returnTo as any;
+
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (this.item?.merchant._id !== this._MerchantsService.merchantData._id) {
@@ -224,7 +232,10 @@ export class QrEditComponent implements OnInit {
           if (isImage(itemUpdated.images[itemUpdated.images.length - 1].value))
             this._Router.navigate([`admin/create-article/${this.item._id}`]);
 
-          if (itemUpdated && isVideo(itemUpdated.images[itemUpdated.images.length - 1].value)) {
+          if (
+            itemUpdated &&
+            isVideo(itemUpdated.images[itemUpdated.images.length - 1].value)
+          ) {
             let uploadedVideoURL =
               itemUpdated.images[itemUpdated.images.length - 1].value;
             const fileParts = uploadedVideoURL.split('.');
@@ -299,7 +310,26 @@ export class QrEditComponent implements OnInit {
 
     this._PostsService.post.slides = slides;
 
-    console.log(this._PostsService.post.slides);
+    if (this.returnTo === 'checkout') {
+      this._Router.navigate(
+        ['ecommerce', this.headerService.saleflow.merchant.slug, 'checkout'],
+        {
+          queryParams: {
+            startOnDialogFlow: true,
+            addedQr: true,
+            addedPhotos: true,
+          },
+        }
+      );
+      return;
+    } else if (this.returnTo === 'post-edition') {
+      this._Router.navigate([
+        'ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/post-edition',
+      ]);
+      return;
+    }
 
     this._Router.navigate([
       'ecommerce',
@@ -406,7 +436,7 @@ export class QrEditComponent implements OnInit {
     this._ItemsService.editingImageId = this.gridArray[index]._id;
     this._Router.navigate([`admin/create-article/${this.item._id}`]);
   }
-  
+
   async deleteImage(index: number) {
     if (this.item) {
       this._ItemsService.itemImages.splice(index, 1);
