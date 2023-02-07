@@ -578,6 +578,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   goToArticleDetail(itemID: string) {
+    this.headerService.flowRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
     this.router.navigate([`../article-detail/item/${itemID}`], {
       relativeTo: this.route,
       replaceUrl: true,
