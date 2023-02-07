@@ -377,7 +377,7 @@ export class ItemsDashboardComponent implements OnInit {
     });
 
     if (tagsList) {
-      this.tagsList = tagsList.filter((tag) => tag.entity === 'item');
+      this.tagsList = tagsList.filter((tag) => tag.entity === 'item').sort((a, b) => (a.index > b.index) ? 1 : -1 );
       this.unselectedTags = [...this.tagsList];
 
       for (const tag of this.tagsList) {
