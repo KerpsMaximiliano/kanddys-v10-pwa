@@ -150,6 +150,7 @@ export class CheckoutComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.saleflowId = this.headerService.saleflow.merchant._id;
     let items = this.headerService.getItems();
+    console.log(items);
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
     }
@@ -162,6 +163,8 @@ export class CheckoutComponent implements OnInit {
         },
       })
     )?.listItems;
+
+    console.log(this.items);
 
     for (const item of this.items as Array<Item>) {
       for (const image of item.images) {
