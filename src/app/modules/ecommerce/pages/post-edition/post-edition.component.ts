@@ -383,6 +383,7 @@ export class PostEditionComponent implements OnInit {
       this.data = this.postsService.post;
     }
 
+    /*
     (async () => {
       this.postInput = this.postsService.post;
       const me = await this._AuthService.me();
@@ -402,7 +403,7 @@ export class PostEditionComponent implements OnInit {
       if (result) {
         this.bannerId = result._id;
       }
-    })();
+    })();*/
   }
 
   goToPostPreview() {

@@ -250,114 +250,130 @@ a {
                display: flex;
                overflow-x: scroll;
                column-gap: 8px;
-
+     
                .image {
-                  position: relative;
-
-                  .item-image {
-                     width: 86px;
-                     height: 74px;
-                     background-color: #e9e371;
-                     border-radius: 6px;
-                     -webkit-user-drag: none;
-                     object-fit: cover;
-                  }
-
-                  &:after {
-                     content: "\A";
-                     position: absolute;
-                     width: 100%;
-                     height: 100%;
-                     top: 0;
-                     left: 0;
-                     background: rgba(0, 0, 0, 0.3);
-                     opacity: 0;
-                     transition: all 0.5s;
-                     -webkit-transition: all 0.5s;
-                     border-radius: 6px;
-                  }
-
-                  &:hover:after {
-                     opacity: 1;
-                  }
+                 position: relative;
+     
+                 .image-for-item {
+                   width: 86px;
+                   height: 74px;
+                   border-radius: 6px;
+                   -webkit-user-drag: none;
+                   object-fit: cover;
+                   border: 0.001px solid lightgray;
+                 }
+     
+                 .item-image {
+                   width: 86px;
+                   height: 74px;
+                   background-color: #e9e371;
+                   border-radius: 6px;
+                   -webkit-user-drag: none;
+                   object-fit: cover;
+                   background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif);
+                 }
+     
+                 &:after {
+                   content: "\A";
+                   position: absolute;
+                   width: 100%;
+                   height: 100%;
+                   top: 0;
+                   left: 0;
+                   background: rgba(0, 0, 0, 0.3);
+                   opacity: 0;
+                   transition: all 0.5s;
+                   -webkit-transition: all 0.5s;
+                   border-radius: 6px;
+                 }
+     
+                 &:hover:after {
+                   opacity: 1;
+                 }
                }
-
+     
+               .video-wrapper {
+                 position: relative;
+                 width: 84px;
+                 height: 74px;
+               }
+     
                .video {
-                  all: unset;
-                  width: 84px;
-                  height: 74px;
-                  position: relative;
-                  cursor: pointer;
-
-                  .item-video {
-                     width: 86px;
-                     height: 74px;
-                     object-fit: fill;
-                     border-radius: 6px;
-                  }
-
-                  &::before {
-                     content: "\a";
-                     position: absolute;
-                     top: 20px;
-                     left: 30px;
-                     width: 40px;
-                     height: 32px;
-                     box-sizing: border-box;
-                     border-style: solid;
-                     border-width: 15px 0 15px 30px;
-                     border-color: transparent transparent transparent #ffffff;
-                     opacity: 1;
-                  }
-
-                  &:after {
-                     content: "\A";
-                     position: absolute;
-                     width: 100%;
-                     height: 100%;
-                     top: 0;
-                     left: 0;
-                     background: rgba(0, 0, 0, 0.3);
-                     opacity: 0;
-                     transition: all 0.5s;
-                     -webkit-transition: all 0.5s;
-                     border-radius: 6px;
-                  }
-
-                  &:hover:after {
-                     opacity: 1;
-                  }
+                 all: unset;
+                 width: 84px;
+                 height: 74px;
+                 position: relative;
+                 cursor: pointer;
+     
+                 .item-video {
+                   width: 86px;
+                   height: 74px;
+                   object-fit: fill;
+                   border-radius: 6px;
+                 }
+     
+                 &::before {
+                   content: "\a";
+                   position: absolute;
+                   top: 20px;
+                   left: 30px;
+                   width: 40px;
+                   height: 32px;
+                   box-sizing: border-box;
+                   border-style: solid;
+                   border-width: 15px 0 15px 30px;
+                   border-color: transparent transparent transparent #ffffff;
+                   opacity: 1;
+                 }
+     
+                 &:after {
+                   content: "\A";
+                   position: absolute;
+                   width: 100%;
+                   height: 100%;
+                   top: 0;
+                   left: 0;
+                   background: rgba(0, 0, 0, 0.3);
+                   opacity: 0;
+                   transition: all 0.5s;
+                   -webkit-transition: all 0.5s;
+                   border-radius: 6px;
+                 }
+     
+                 &:hover:after {
+                   opacity: 1;
+                 }
                }
-
+     
                audio::-webkit-media-controls-panel
-                  audio::-webkit-media-controls-mute-button
-                  audio::-webkit-media-controls-timeline
-                  audio::-webkit-media-controls-timeline-container
-                  audio::-webkit-media-controls-current-time-display
-                  audio::-webkit-media-controls-time-remaining-display
-                  audio::-webkit-media-controls-timeline
-                  audio::-webkit-media-controls-volume-slider-container
-                  audio::-webkit-media-controls-volume-slider
-                  audio::-webkit-media-controls-seek-back-button
-                  audio::-webkit-media-controls-seek-forward-button
-                  audio::-webkit-media-controls-fullscreen-button
-                  audio::-webkit-media-controls-rewind-button
-                  audio::-webkit-media-controls-return-to-realtime-button
-                  audio::-webkit-internal-media-controls-overflow-button
-                  audio::-webkit-media-controls-toggle-closed-captions-button {
-                  display: none !important;
+                 audio::-webkit-media-controls-mute-button
+                 audio::-webkit-media-controls-timeline
+                 audio::-webkit-media-controls-timeline-container
+                 audio::-webkit-media-controls-current-time-display
+                 audio::-webkit-media-controls-time-remaining-display
+                 audio::-webkit-media-controls-timeline
+                 audio::-webkit-media-controls-volume-slider-container
+                 audio::-webkit-media-controls-volume-slider
+                 audio::-webkit-media-controls-seek-back-button
+                 audio::-webkit-media-controls-seek-forward-button
+                 audio::-webkit-media-controls-fullscreen-button
+                 audio::-webkit-media-controls-rewind-button
+                 audio::-webkit-media-controls-return-to-realtime-button
+                 audio::-webkit-internal-media-controls-overflow-button
+                 audio::-webkit-media-controls-toggle-closed-captions-button {
+                 display: none !important;
                }
                audio::-webkit-media-controls-play-button {
-                  display: inline !important;
+                 display: inline !important;
                }
-
+     
                .audio {
-                  .item-audio {
-                     height: 65px;
-                     max-width: 80px;
-                  }
+                 .item-audio {
+                   height: 65px;
+                   max-width: 80px;
+                 }
                }
-            }
+             }
 
             .total {
                font-family: "SfProBold";

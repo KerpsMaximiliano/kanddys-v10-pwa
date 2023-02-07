@@ -76,82 +76,61 @@
         </button>
       </div>
 
-      <div class="flexBox">
+      <div class="items-container">
         <div
-          *ngFor="let item of items; index as i"
-          class="items-container flexBox"
+          class="image-container"
+          #elemt
+          (mousedown)="startDragging($event, elemt)"
+          (mouseup)="stopDragging()"
+          (mouseleave)="stopDragging()"
+          (mousemove)="moveEvent($event, elemt)"
         >
-          <div class="productData">
-            <button
-              (click)="
-                (item.image || item.images?.length) &&
-                  openImageModal(item.image || item.images[0].value)
-              "
+          <button
+            [ngStyle]="{
+              position: 'relative'
+            }"
+            *ngFor="let item of items"
+            (click)="goToArticleDetail(item._id)"
+          >
+            <div class="image" *ngIf="!urlIsVideo(item.images[0].value)">
+              <div
+                class="image-for-item"
+                [ngStyle]="{
+                  backgroundImage:
+                    item.images && item.images?.length
+                      ? 'url(' +
+                        item.images[0].value +
+                        '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                      : 'url(/assets/images/noimage.png)',
+                  backgroundPosition: 'center',
+                  backgroundSize: 'contain',
+                  backgroundRepeat: 'no-repeat'
+                }"
+              ></div>
+            </div>
+
+            <div
+              class="video-wrapper videoThumbnail"
+              *ngIf="urlIsVideo(item.images[0].value)"
             >
               <img
-                [src]="
-                  item.image || item.images?.length
-                    ? item.image || item.images[0].value
-                    : '/assets/images/noimage.png'
-                "
-                (error)="item.image = '/assets/images/noimage.png'"
-                alt="item image"
-                class="itemImg"
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                alt="play"
+                class="playVideoIcon"
+                style="padding: 1rem !important; z-index: 99"
               />
-            </button>
-            <div class="rightSection">
-              <div class="title">
-                <p>{{ !orderService.itemsReady ? "Cantidad" : item.name }}</p>
-                <p>
-                  <span
-                    style="margin-right: 8px"
-                    *ngIf="orderService.itemsReady"
-                  >
-                    {{ headerService.order.products[i].amount }}x
-                  </span>
-                  ${{
-                    item.pricing * headerService.order.products[i].amount
-                      | number : "1.2-2"
-                  }}
-                </p>
-              </div>
-              <div class="rightBottom" *ngIf="!orderService.itemsReady">
-                <div class="countBox">
-                  <button
-                    class="cube sign"
-                    (click)="changeAmount(i, 'subtract')"
-                  >
-                    -
-                  </button>
-                  <div class="cube number">
-                    {{ headerService.order.products[i].amount }}
-                  </div>
-                  <button class="cube sign" (click)="changeAmount(i, 'add')">
-                    +
-                  </button>
-                </div>
-                <button class="iconBtn" (click)="deleteProduct(i)">
-                  <i class="far fa-trash-alt"></i>
-                </button>
-              </div>
+
+              <video
+                [src]="item.images[0].value"
+                [id]="'media' + item._id"
+                class="video"
+                [muted]="true"
+              ></video>
             </div>
-          </div>
-          <!-- <div class="questionSection">
-            <div class="questionBox">
-              <div class="question">
-                Pregunta acaba en 2 puntitos cuando no quepa
-              </div>
-              <a href="" class="link">Responder</a>
-              <div class="questionBox">
-                <div class="question">
-                  Pregunta acaba en 2 puntitos cuando no quepa
-                </div>
-                <a href="" class="link">Responder</a>
-              </div>
-            </div>
-          </div> -->
+          </button>
         </div>
       </div>
+
       <div class="items-container" style="margin-top: 4px">
         <div
           class="items-container space-between"
@@ -170,11 +149,7 @@
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">
           Lugar de
-          {{
-            saleflowId === "62ed55eecd8fc9d59c8d7b6b"
-              ? " la sesión:"
-              : " Entrega:"
-          }}
+          {{ reservation ? "la sesión" : " Entrega:" }}
         </h2>
 
         <button
@@ -271,6 +246,7 @@
     >
       <div class="between">
         <h2 class="section-title">Mensaje de regalo:</h2>
+
         <button (click)="editOrder('message')" *ngIf="post">
           <img
             [src]="env + '/pencil.svg'"
@@ -279,6 +255,7 @@
           />
         </button>
       </div>
+
       <ng-container *ngIf="post">
         <div
           class="items-container"
@@ -327,6 +304,7 @@
                 Lo sentimos, no se puede mostrar el video
               </video>
             </button>
+
             <button
               class="video"
               *ngFor="let audio of postSlideAudio"
@@ -356,10 +334,12 @@
               {{ post.message }}
             </p>
           </section>
+
           <section *ngIf="post.targets?.length && post.targets[0]?.name">
             <h3 class="sub">Título del sobre:</h3>
             <p class="message-text inner">{{ post.targets[0]?.name }}</p>
           </section>
+
           <section *ngIf="post.from">
             <h3 class="sub">De:</h3>
             <p class="message-text inner">{{ post.from }}</p>
@@ -390,6 +370,34 @@
         ></app-answer-selector>
       </ng-container>
     </section> -->
+    <section class="section" *ngIf="customizer" style="margin-top: 32px">
+      <div class="between">
+        <h2 class="section-title">Personalización:</h2>
+
+        <button (click)="editOrder('customizer')">
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
+        </button>
+      </div>
+      <div class="items-container" style="flex-direction: column">
+        <table>
+          <tr *ngFor="let detail of customizerDetails">
+            <th>{{ detail.name }}</th>
+            <td>{{ detail.value }}</td>
+          </tr>
+        </table>
+        <div *ngIf="customizerPreview">
+          <img
+            class="customizer-preview"
+            [src]="customizerPreview.base64"
+            alt=""
+          />
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- <app-sticky-button
@@ -444,7 +452,7 @@
     mode="fixed"
     color="#FFFFFF"
     fontSize="17px"
-    bgColor="#272727"
+    [bgColor]="headerService.colorTheme"
     text="VER MAS ARTICULOS"
     size="small"
     (click)="editOrder('item')"

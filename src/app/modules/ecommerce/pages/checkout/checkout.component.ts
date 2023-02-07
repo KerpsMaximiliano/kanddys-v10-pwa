@@ -4,34 +4,39 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
 import {
   lockUI,
   playVideoOnFullscreen,
   unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
+import { CustomizerValueInput } from 'src/app/core/models/customizer-value';
 import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
 import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { Validators } from '@angular/forms';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import { OptionsGridComponent } from 'src/app/shared/dialogs/options-grid/options-grid.component';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Dialogs } from './dialogs';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { Item } from 'src/app/core/models/item';
 
 const options = [
   {
@@ -112,6 +117,13 @@ const options = [
   styleUrls: ['./checkout.component.scss'],
 })
 export class CheckoutComponent implements OnInit {
+  customizerDetails: { name: string; value: string }[] = [];
+  customizer: CustomizerValueInput;
+  customizerPreview: {
+    base64: string;
+    filename: string;
+    type: string;
+  };
   order: ItemOrderInput;
   items: any[];
   post: PostInput;
@@ -145,14 +157,13 @@ export class CheckoutComponent implements OnInit {
   temporalDialogs2: Array<EmbeddedComponentWithId> = [];
 
   dialogs: Array<EmbeddedComponentWithId> = [];
-  saleflowId: string;
-  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
     private dialogService: DialogService,
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
+    private customizerValueService: CustomizerValueService,
     public postsService: PostsService,
     public orderService: OrderService,
     private appService: AppService,
@@ -180,6 +191,7 @@ export class CheckoutComponent implements OnInit {
       this.dialogs = new Dialogs(
         this.dialogService,
         this.headerService,
+        this.customizerValueService,
         this.postsService,
         this.orderService,
         this.appService,
@@ -223,8 +235,33 @@ export class CheckoutComponent implements OnInit {
           this.temporalDialogs = this.postsService.temporalDialogs;
           this.temporalDialogs2 = this.postsService.temporalDialogs2;
         }
+
+        setTimeout(() => {
+          let generatedMessage = false;
+
+          let lastActiveDialogIndex = this.dialogs.findIndex((dialog) => {
+            const doesTheDialogsIdsMatch =
+              dialog.componentId ===
+              this.dialogFlowService.previouslyActiveDialogId;
+
+            if (
+              doesTheDialogsIdsMatch &&
+              dialog.componentId === 'receiverRelationshipDialog' &&
+              this.postsService.post.message &&
+              this.postsService.post.title
+            ) {
+              generatedMessage = true;
+            }
+
+            return doesTheDialogsIdsMatch;
+          });
+
+          if (generatedMessage) lastActiveDialogIndex += 1;
+
+          this.dialogFlowFunctions.moveToDialogByIndex(lastActiveDialogIndex);
+        }, 500);
       }
-      this.saleflowId = this.headerService.saleflow.merchant._id;
+
       let items = this.headerService.getItems();
       if (!items.every((value) => typeof value === 'string')) {
         items = items.map((item: any) => item?._id || item);
@@ -238,21 +275,17 @@ export class CheckoutComponent implements OnInit {
           },
         })
       )?.listItems;
+      if (!this.items?.length) this.editOrder('item');
 
-      for (const item of this.items as Array<Item>) {
-        for (const image of item.images) {
-          if (
-            image.value &&
-            !image.value.includes('http') &&
-            !image.value.includes('https')
-          ) {
-            image.value = 'https://' + image.value;
-          }
-        }
+      this.post = this.headerService.getPost();
+
+      const storedPost = localStorage.getItem('post');
+
+      if (storedPost && !this.post) {
+        this.headerService.post = JSON.parse(storedPost);
+        this.post = this.headerService.post;
       }
 
-      if (!this.items?.length) this.editOrder('item');
-      this.post = this.headerService.getPost();
       if (this.post?.slides?.length) {
         this.post.slides.forEach((slide) => {
           if (slide.media?.type.includes('image')) {
@@ -269,126 +302,58 @@ export class CheckoutComponent implements OnInit {
             };
             reader.readAsDataURL(slide.media);
           }
-
-          setTimeout(() => {
-            let generatedMessage = false;
-
-            let lastActiveDialogIndex = this.dialogs.findIndex((dialog) => {
-              const doesTheDialogsIdsMatch =
-                dialog.componentId ===
-                this.dialogFlowService.previouslyActiveDialogId;
-
-              if (
-                doesTheDialogsIdsMatch &&
-                dialog.componentId === 'receiverRelationshipDialog' &&
-                this.postsService.post.message &&
-                this.postsService.post.title
-              ) {
-                generatedMessage = true;
-              }
-
-              return doesTheDialogsIdsMatch;
-            });
-
-            if (generatedMessage) lastActiveDialogIndex += 1;
-
-            this.dialogFlowFunctions.moveToDialogByIndex(lastActiveDialogIndex);
-          }, 500);
+          if (slide.media?.type.includes('audio')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this.postSlideAudio.push(
+                this._DomSanitizer.bypassSecurityTrustUrl(
+                  URL.createObjectURL(slide.media)
+                )
+              );
+            };
+            reader.readAsDataURL(slide.media);
+          }
         });
-
-        this.items = this.headerService.getItems();
-        if (!this.items?.length) this.editOrder('item');
-        this.post = this.headerService.getPost();
-
-        const storedPost = localStorage.getItem('post');
-
-        if (storedPost && !this.post) {
-          this.headerService.post = JSON.parse(storedPost);
-          this.post = this.headerService.post;
+      }
+      this.deliveryLocation = this.headerService.getLocation();
+      this.reservation = this.headerService.getReservation().reservation;
+      if (this.reservation) {
+        const fromDate = new Date(this.reservation.date.from);
+        if (fromDate < new Date()) {
+          this.headerService.emptyReservation();
+          this.editOrder('reservation');
         }
-
-        if (this.post?.slides?.length) {
-          this.post.slides.forEach((slide) => {
-            if (slide.media?.type.includes('image')) {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                this.postSlideImages.push(reader.result);
-              };
-              reader.readAsDataURL(slide.media);
-            }
-            if (slide.media?.type.includes('video')) {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                this.postSlideVideos.push(reader.result);
-              };
-              reader.readAsDataURL(slide.media);
-            }
-            if (slide.media?.type.includes('audio')) {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                this.postSlideAudio.push(
-                  this._DomSanitizer.bypassSecurityTrustUrl(
-                    URL.createObjectURL(slide.media)
-                  )
-                );
-              };
-              reader.readAsDataURL(slide.media);
-            }
-          });
-        }
-        this.deliveryLocation = this.headerService.getLocation();
-        // Validation for stores with only one address of pickup and no delivery for customers
-        if (!this.deliveryLocation) {
-          if (
-            this.headerService.saleflow.module.delivery.pickUpLocations
-              .length == 1 &&
-            !this.headerService.saleflow.module.delivery.deliveryLocation
-          ) {
-            this.deliveryLocation =
-              this.headerService.saleflow.module.delivery.pickUpLocations[0];
-            this.headerService.storeLocation(this.deliveryLocation);
-            this.headerService.orderProgress.delivery = true;
-            this.headerService.storeOrderProgress();
-          }
-        }
-        this.reservation = this.headerService.getReservation().reservation;
-        if (this.reservation) {
-          const fromDate = new Date(this.reservation.date.from);
-          if (fromDate < new Date()) {
-            this.headerService.emptyReservation();
-            this.editOrder('reservation');
-          }
-          const untilDate = new Date(this.reservation.date.until);
-          this.date = {
-            day: fromDate.getDate(),
-            weekday: fromDate.toLocaleString('es-MX', {
-              weekday: 'short',
-            }),
-            month: fromDate.toLocaleString('es-MX', {
-              month: 'short',
-            }),
-            time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
-              untilDate,
-              this.reservation.breakTime
-            )}`,
-          };
-          this.headerService.orderProgress.reservation = true;
-        }
-        this.headerService.checkoutRoute = null;
-        this.updatePayment();
-        if (
-          this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-        )
-          this.hasPaymentModule = true;
-        this.checkLogged();
-        if (!this.headerService.orderInputComplete()) {
-          this.missingOrderData = true;
-        }
+        const untilDate = new Date(this.reservation.date.until);
+        this.date = {
+          day: fromDate.getDate(),
+          weekday: fromDate.toLocaleString('es-MX', {
+            weekday: 'short',
+          }),
+          month: fromDate.toLocaleString('es-MX', {
+            month: 'short',
+          }),
+          time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
+            untilDate,
+            this.reservation.breakTime
+          )}`,
+        };
+      }
+      this.headerService.checkoutRoute = null;
+      if (!this.customizer) this.updatePayment();
+      if (
+        this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+      )
+        this.hasPaymentModule = true;
+      this.checkLogged();
+      if (!this.headerService.orderInputComplete()) {
+        this.missingOrderData = true;
       }
     });
   }
 
-  editOrder(mode: 'item' | 'message' | 'address' | 'reservation') {
+  editOrder(
+    mode: 'item' | 'message' | 'address' | 'reservation' | 'customizer'
+  ) {
     this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
     localStorage.removeItem('privatePost');
     switch (mode) {
@@ -418,6 +383,19 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+            },
+          }
+        );
+        break;
+      }
+      case 'customizer': {
+        this.router.navigate(
+          [`../provider-store/${this.items[0]._id}/quantity-and-quality`],
+          {
+            relativeTo: this.route,
+            replaceUrl: true,
           }
         );
         break;
@@ -534,6 +512,30 @@ export class CheckoutComponent implements OnInit {
       this.deliveryLocation;
     if (this.reservation)
       this.headerService.order.products[0].reservation = this.reservation;
+    // ---------------------- Managing Customizer ----------------------
+    if (this.customizer) {
+      localStorage.removeItem('customizerFile');
+      if (!this.customizer.preview) {
+        const res: Response = await fetch(this.customizerPreview.base64);
+        const blob: Blob = await res.blob();
+
+        this.customizer.preview = new File(
+          [blob],
+          this.customizerPreview.filename,
+          {
+            type: this.customizerPreview.type,
+          }
+        );
+      }
+      const customizerId =
+        await this.customizerValueService.createCustomizerValue(
+          this.customizer
+        );
+      this.headerService.order.products[0].customizer = customizerId;
+      this.headerService.customizer = null;
+      this.headerService.customizerData = null;
+    }
+    // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
     // ---------------------- Managing Post ----------------------------
     if (this.headerService.saleflow.module?.post) {
       if (!this.post)
@@ -752,5 +754,16 @@ export class CheckoutComponent implements OnInit {
       title: null,
       joke: null,
     };
+  }
+
+  urlIsVideo(url: string) {
+    return isVideo(url);
+  }
+
+  goToArticleDetail(itemID: string) {
+    this.router.navigate([`../article-detail/item/${itemID}`], {
+      relativeTo: this.route,
+      replaceUrl: true,
+    });
   }
 }

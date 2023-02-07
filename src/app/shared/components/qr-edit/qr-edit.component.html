@@ -102,6 +102,12 @@
             <video [id]="'media' + i" [muted]="true" [src]="gridItem.background"></video>
           </ng-container>
 
+          <ng-container *ngIf="gridItem.type === 'text'">
+            <div class="description">{{ gridItem.text }}</div>
+
+            <div class="title">{{ gridItem.title }}</div>
+          </ng-container>
+
           <div class="labelBox" (click)="item && !isSlideVideo(i) ? editSlide(i) : playVideoOnFullscreen('media' + i)"></div>
           <button class="circleButton" (click)="deleteSlide(i)">
             <i class="fa fa-times" aria-hidden="true"></i>
