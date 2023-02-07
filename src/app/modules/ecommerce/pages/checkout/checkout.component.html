@@ -111,13 +111,13 @@
               1 || headerService.saleflow?.module?.delivery?.deliveryLocation;
             else deliveryInfo
           "
-          class="items-container"
+          class="items-container ready"
           (click)="editOrder('address')"
         >
           <ng-container *ngTemplateOutlet="deliveryTemplate"></ng-container>
         </button>
         <ng-template #deliveryInfo>
-          <div class="items-container">
+          <div class="items-container ready">
             <ng-container *ngTemplateOutlet="deliveryTemplate"></ng-container>
           </div>
         </ng-template>
@@ -142,7 +142,7 @@
         <h2 class="section-title">Fecha de la sesión:</h2>
       </div>
 
-      <button class="items-container" *ngIf="reservation && date">
+      <button class="items-container ready" *ngIf="reservation && date">
         <ng-container *ngTemplateOutlet="reservationTemplate"></ng-container>
       </button>
 
@@ -162,14 +162,6 @@
     >
       <div class="between">
         <h2 class="section-title">Mensaje de regalo:</h2>
-
-        <button (click)="editOrder('message')" *ngIf="post">
-          <img
-            [src]="env + '/pencil.svg'"
-            class="edit-image"
-            alt="Icono de un lápiz"
-          />
-        </button>
       </div>
 
       <ng-container *ngIf="post">
@@ -235,8 +227,9 @@
             </button>
           </div>
         </div>
-        <div
-          class="message-box"
+        <button
+          class="message-box ready"
+          (click)="editOrder('message')"
           *ngIf="
             post?.message ||
               post?.from ||
@@ -260,10 +253,11 @@
             <h3 class="sub">De:</h3>
             <p class="message-text inner">{{ post.from }}</p>
           </section>
-        </div>
+        </button>
         <ng-template #noMessage>
-          <div
-            class="items-container"
+          <button
+            class="items-container ready"
+            (click)="editOrder('message')"
             *ngIf="
               !post.slides?.length ||
               (!postSlideImages?.length &&
@@ -272,7 +266,7 @@
             "
           >
             <span class="address-name"> Sin mensaje de regalo </span>
-          </div>
+          </button>
         </ng-template>
       </ng-container>
       <ng-container *ngIf="!post">
