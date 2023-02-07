@@ -33,7 +33,7 @@
           [options]="addressesOptions"
           [activeOption]="selectedDeliveryIndex"
           [indicator]="true"
-          (onSelector)="selectedDeliveryIndex = $event"
+          (onSelector)="handleData($event)"
           [containerStyles]="{
             margin: '0px'
           }"
@@ -170,14 +170,6 @@
   [bgColor]="headerService.colorTheme"
   size="small"
   (click)="!disableButton && formSubmit()"
-></app-sticky-button>
-<app-sticky-button
-  *ngIf="mode === 'normal' && selectedDeliveryIndex != null"
-  mode="fixed"
-  text="CONTINUAR"
-  [bgColor]="headerService.colorTheme"
-  size="small"
-  (click)="selectAddress()"
 ></app-sticky-button>
 <app-sticky-button
   *ngIf="(mode === 'edit' && !editingId) || mode === 'delete'"
