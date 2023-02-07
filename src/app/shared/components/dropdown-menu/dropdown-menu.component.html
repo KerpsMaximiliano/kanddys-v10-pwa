@@ -1,0 +1,60 @@
+<section class="container" *ngIf="mode === 'multi-select'">
+  <p class="title">{{ title }}</p>
+  <mat-expansion-panel
+    (opened)="panelOpenState = true"
+    (closed)="panelOpenState = false"
+  >
+    <mat-expansion-panel-header>
+      <img *ngIf="logo !== ''" [src]="logo" alt="" class="logo" />
+      <h2
+        [style]="logo === '' ? 'margin-left:31.5px;' : 'margin-left: 11.5px'"
+        class="list-title"
+      >
+        {{ listTitle }}
+      </h2>
+    </mat-expansion-panel-header>
+
+    <mat-selection-list #options>
+      <mat-list-option
+        *ngFor="let option of optionsList; index as i"
+        (click)="toggleSelected(i)"
+        [ngClass]="option.selected === true ? 'selected' : 'option'"
+      >
+        <div style="display: flex; align-items: center">
+          <div [ngClass]="option.selected === true ? 'hidden' : 'bar'"></div>
+          <span> {{ option.text }}</span>
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-expansion-panel>
+</section>
+
+<section class="container" *ngIf="mode === 'basic'">
+  <p class="title">{{ title }}</p>
+  <mat-expansion-panel
+    (opened)="panelOpenState = true"
+    (closed)="panelOpenState = false"
+  >
+    <mat-expansion-panel-header>
+      <img *ngIf="logo !== ''" [src]="logo" alt="" class="logo" />
+      <h2
+        [style]="logo === '' ? 'margin-left:31.5px;' : 'margin-left: 11.5px'"
+        class="list-title"
+      >
+        {{ listTitle }}
+      </h2>
+    </mat-expansion-panel-header>
+
+    <mat-selection-list #options>
+      <mat-list-option
+        *ngFor="let option of optionsList; index as i"
+        (click)="toggleSelected(i)"
+        class="option"
+      >
+        <div style="display: flex; align-items: center">
+          <span class="option-text"> {{ option.text }}</span>
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-expansion-panel>
+</section>

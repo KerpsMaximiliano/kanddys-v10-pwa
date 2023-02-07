@@ -51,6 +51,9 @@
     (agnosticAction)="openLogoutDialog()"
   ></app-helper-headerv2>
 
+  <app-dropdown-menu logo="/assets/images/noimage.png"></app-dropdown-menu>
+  <app-dropdown-menu [optionsList]="options" mode="basic"></app-dropdown-menu>
+
   <div class="header" *ngIf="buyerView === false">
     <img
       [src]="env + '/arrow-double-up-black.svg'"

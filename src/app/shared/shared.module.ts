@@ -142,6 +142,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
+import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatListModule } from '@angular/material/list';
 
 const imports = [
   CommonModule,
@@ -164,6 +167,8 @@ const imports = [
   MatButtonModule,
   MatExpansionModule,
   MatBadgeModule,
+  MatSelectModule,
+  MatListModule,
 ];
 const declarations = [
   // Pages
@@ -293,6 +298,7 @@ const declarations = [
   LinksDialogComponent,
   GradientCardComponent,
   CalendarSwiperComponent,
+  DropdownMenuComponent,
 ];
 
 @NgModule({

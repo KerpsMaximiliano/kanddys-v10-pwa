@@ -122,6 +122,12 @@ export class OrderDetailComponent implements OnInit {
   buyerView: boolean = true;
   infoCardBg: string = '#E9E371';
 
+  options = [
+    { text: 'Todo listo para entregarse', selected: false },
+    { text: 'De camino a ser entregado', selected: false },
+    { text: 'Entregado', selected: false },
+  ];
+
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
   constructor(
