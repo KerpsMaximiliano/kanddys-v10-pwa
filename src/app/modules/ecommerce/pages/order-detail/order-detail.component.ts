@@ -24,8 +24,6 @@ import * as moment from 'moment';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
-import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
-import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 interface Image {
   src: string;
@@ -73,7 +71,6 @@ export class OrderDetailComponent implements OnInit {
     time: string;
   };
   messageLink: string;
-  orderItems: any[] = ['', ''];
   tags: Tag[];
   selectedTags: any = {};
   tabs: any[] = ['', '', '', '', ''];
@@ -122,23 +119,9 @@ export class OrderDetailComponent implements OnInit {
   orderSaleflow: SaleFlow;
   orderMerchant: Merchant;
   orderInDayIndex: number = null;
-  payedWithAzul: boolean = false;
-  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
-  videoFiles: string[] = [
-    'video/mp4',
-    'video/webm',
-    'video/m4v',
-    'video/avi',
-    'video/mpg',
-    'video/mpeg',
-    'video/mpeg4',
-    'video/mov',
-    'video/3gp',
-    'video/mxf',
-    'video/m2ts',
-    'video/m2ts',
-  ];
-  playVideoOnFullscreen = playVideoOnFullscreen;
+  buyerView: boolean = true;
+  infoCardBg: string = '#E9E371';
+
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
   constructor(
@@ -154,7 +137,6 @@ export class OrderDetailComponent implements OnInit {
     public headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private merchantsService: MerchantsService,
-    private paymentLogService: PaymentLogsService,
     private tagsService: TagsService
   ) {
     history.pushState(null, null, window.location.href);
@@ -184,46 +166,6 @@ export class OrderDetailComponent implements OnInit {
     if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
 
     this.order = (await this.orderService.order(orderId))?.order;
-
-    if (this.order.items) {
-      for (const itemSubOrder of this.order.items) {
-        itemSubOrder.item.media = itemSubOrder.item.images.map((image) => {
-          let url = image.value;
-          const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
-          let auxiliarImageFileExtension = 'image/' + fileExtension;
-          let auxiliarVideoFileExtension = 'video/' + fileExtension;
-
-          if (url && !url.includes('http') && !url.includes('https')) {
-            url = 'https://' + url;
-          }
-
-          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-            return {
-              src: url,
-              type: 'IMAGE',
-            };
-          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-            return {
-              src: url,
-              type: 'VIDEO',
-            };
-          }
-        });
-      }
-    }
-
-    if (!this.order.ocr) {
-      const result = await this.paymentLogService.paymentLogsByOrder({
-        findBy: {
-          order: this.order._id,
-        },
-      });
-
-      if (result && result.length > 0 && result[0].paymentMethod === 'azul') {
-        this.payedWithAzul = true;
-      }
-    }
 
     if (!this.order) {
       this.router.navigate([`others/error-screen/`], {
@@ -730,7 +672,6 @@ export class OrderDetailComponent implements OnInit {
         text: 'SALVAR TAGS SELECCIOANDOS EN LA ORDEN',
         tags: this.tags,
         orderId: this.order._id,
-        colorTheme: 'admin',
         activeTags:
           this.order.tags &&
           (this.order.tags !== null ||
@@ -938,7 +879,7 @@ export class OrderDetailComponent implements OnInit {
     this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
-  
+
   // async addTag(tagId?: string) {
   //   if (!this.selectedTags[tagId]) {
   //     const added = await this.tagsService.addTagsInOrder(
@@ -1018,12 +959,6 @@ export class OrderDetailComponent implements OnInit {
         this.order.items[0].saleflow.merchant.slug +
         '/article-detail/post/' +
         this.post._id,
-    ]);
-  }
-
-  returnToStore() {
-    this.router.navigate([
-      'ecommerce/' + this.order.items[0].saleflow.merchant.slug + '/store',
     ]);
   }
 
