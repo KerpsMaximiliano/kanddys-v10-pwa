@@ -620,3 +620,11 @@ table {
     margin-left: auto;
   }
 }
+
+.move {
+  width: 100%;
+  max-width: 500px;
+  position: fixed;
+  top: 25px;
+  transition: all 1s ease-out;
+}

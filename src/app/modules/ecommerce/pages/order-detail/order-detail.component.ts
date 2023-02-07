@@ -968,6 +968,14 @@ export class OrderDetailComponent implements OnInit {
     ]);
   }
 
+  moveDropdown() {
+    document.getElementById('move').classList.add('move');
+
+    setTimeout(function () {
+      document.getElementById('move').classList.remove('move');
+    }, 3500);
+  }
+
   // goBackToFlowRoute() {
   //   if (
   //     this.flowRoute.includes('admin/orders') &&

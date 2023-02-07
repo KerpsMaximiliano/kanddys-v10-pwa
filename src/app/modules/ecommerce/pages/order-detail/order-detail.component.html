@@ -51,7 +51,9 @@
     (agnosticAction)="openLogoutDialog()"
   ></app-helper-headerv2>
 
-  <app-dropdown-menu logo="/assets/images/noimage.png"></app-dropdown-menu>
+  <div id="move">
+    <app-dropdown-menu logo="/assets/images/noimage.png"></app-dropdown-menu>
+  </div>
   <app-dropdown-menu [optionsList]="options" mode="basic"></app-dropdown-menu>
 
   <div class="header" *ngIf="buyerView === false">
@@ -352,7 +354,9 @@
       <button class="blue" style="width: 70%">
         Imprime o descarga el QR que enlaza el contenido
       </button>
-      <button class="blue">Copy en Clipboard el ID: SimboloID</button>
+      <button class="blue" (click)="moveDropdown()">
+        Añadir factura al TAG de entregada
+      </button>
     </section>
 
     <section class="section" *ngIf="order?.items[0].reservation && date">
