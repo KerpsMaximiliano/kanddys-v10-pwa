@@ -188,7 +188,7 @@ const routes: Routes = [
     TextEditionAndPreviewComponent,
     TermsOfUseComponent,
     CollectionsComponent,
-    TagItemsComponent
+    TagItemsComponent,
   ],
   imports: [
     CommonModule,
