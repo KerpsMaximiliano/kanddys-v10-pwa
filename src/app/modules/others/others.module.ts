@@ -13,30 +13,20 @@ import { PostEditComponent } from './pages/post-edit/post-edit.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
-import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
-import { UserOrdersComponent } from './pages/user-dashboard/user-orders/user-orders.component';
-import { MallDashboardComponent } from './pages/mall-dashboard/mall-dashboard.component';
-import { MallGiftsComponent } from './pages/mall-dashboard/mall-gifts/mall-gifts.component';
-import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-stores.component';
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { AdminOrderComponent } from './pages/admin-order/admin-order.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
 import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
-import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
-import { CategoryItemsAdminComponent } from './pages/category-items-admin/category-items-admin.component';
 import { TagCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
 import { ItemCategoryExpositionComponent } from './pages/item-category-exposition/item-category-exposition.component';
-import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-detail.component';
 import { MerchantBuyersComponent } from './pages/merchant-buyers/merchant-buyers.component';
 import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
-import { MerchantSharedComponent } from './pages/merchant-shared/merchant-shared.component';
 import { MetricsInfoComponent } from './pages/metrics-info/metrics-info.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
 import { OrderReservationComponent } from './pages/order-reservation/order-reservation.component';
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
-import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
 import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
 
@@ -93,30 +83,6 @@ const routes: Routes = [
     path: 'user-contact-landing/:id',
     component: UserContactLandingComponent,
   },
-  {
-    path: 'user-dashboard',
-    component: UserDashboardComponent,
-    children: [
-      {
-        path: 'tiendas',
-        component: UserOrdersComponent,
-      },
-    ],
-  },
-  {
-    path: 'mall-dashboard',
-    component: MallDashboardComponent,
-    children: [
-      {
-        path: 'gifts',
-        component: MallGiftsComponent,
-      },
-      {
-        path: 'stores',
-        component: MallStoresComponent,
-      },
-    ],
-  },
   // FROM ADMIN 21/9/2022
   {
     path: 'admin-login',
@@ -129,14 +95,6 @@ const routes: Routes = [
   {
     path: 'calendar-detail',
     component: CalendarDetailComponent,
-  },
-  {
-    path: 'category-item-detail/:itemId',
-    component: CategoryItemDetailComponent,
-  },
-  {
-    path: 'category-items-admin/:categoryId',
-    component: CategoryItemsAdminComponent,
   },
   {
     path: 'category-creator/:id',
@@ -157,10 +115,6 @@ const routes: Routes = [
   {
     path: 'item-category-exposition',
     component: ItemCategoryExpositionComponent,
-  },
-  {
-    path: 'item-sales-detail/:itemId',
-    component: ItemSalesDetailComponent,
   },
   {
     path: 'merchant-buyers',
@@ -199,10 +153,6 @@ const routes: Routes = [
     component: ReservationsComponent,
   },
   {
-    path: 'sale-detail/:orderId',
-    component: SaleDetailComponent,
-  },
-  {
     path: 'tag-detail',
     component: TagDetailComponent,
   },
@@ -222,10 +172,6 @@ const routes: Routes = [
     path: 'metrics-info',
     component: MetricsInfoComponent,
   },
-  {
-    path: 'merchant-shared/:merchantId',
-    component: MerchantSharedComponent,
-  },
   // FROM ADMIN 21/9/2022
 ];
 
@@ -242,33 +188,23 @@ const routes: Routes = [
     PostPreviewComponent,
     PrivacyPolicyComponent,
     UserContactLandingComponent,
-    UserDashboardComponent,
-    UserOrdersComponent,
-    MallDashboardComponent,
-    MallGiftsComponent,
-    MallStoresComponent,
     // FROM ADMIN 21/9/2022
     AdminLoginComponent,
     BankRegistrationComponent,
     CalendarDetailComponent,
-    CategoryItemDetailComponent,
-    CategoryItemsAdminComponent,
     TagCategoryCreatorComponent,
     ItemCategoryExpositionComponent,
-    ItemSalesDetailComponent,
     MerchantBuyersComponent,
     MerchantOrdersComponent,
     NotificationCreatorComponent,
     NotificationsLogComponent,
     ReservationsComponent,
     ReservationDetailComponent,
-    SaleDetailComponent,
     TagDetailComponent,
     TagsEditComponent,
     OrderReservationComponent,
     AdminOrderComponent,
     MetricsInfoComponent,
-    MerchantSharedComponent,
     // FROM ADMIN 21/9/2022
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

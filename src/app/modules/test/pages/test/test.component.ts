@@ -19,7 +19,7 @@ import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.comp
 import { InputTransparentComponent } from 'src/app/shared/dialogs/input-transparent/input-transparent.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { ItemInput } from 'src/app/core/models/item';
+import { Item, ItemInput } from 'src/app/core/models/item';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -39,6 +39,7 @@ import { Router } from '@angular/router';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-test',
@@ -47,7 +48,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 })
 export class TestComponent implements OnInit {
   @ViewChild('dialogSwiper') dialogSwiper: SwiperComponent;
-
+  env: string = environment.assetsUrl;
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
@@ -1359,6 +1360,11 @@ export class TestComponent implements OnInit {
       ],
     },
   ];
+  // optionsButton: Button = {
+  //   clickEvent: (params: Tag) => {
+  //     alert('clicked');
+  //   },
+  // };
 
   joke: string = '';
 

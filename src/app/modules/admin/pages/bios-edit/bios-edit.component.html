@@ -76,7 +76,7 @@
     </div>
     <div class="content">
       <div class="flex">
-        <p class="content-title">Public Name</p>
+        <p class="content-title">Nombre</p>
         <svg
           (click)="edit2()"
           class="edit-content"
@@ -177,7 +177,7 @@
     </label>
 
     <div class="socials">
-      <div [ngClass]="clicked ? 'clicked' : 'social'">
+      <div [ngClass]="clicked ? 'clicked1' : 'social1'">
         <svg
           (click)="isClicked()"
           xmlns="http://www.w3.org/2000/svg"
@@ -235,7 +235,7 @@
   <!----------DIRECCIONES------------>
 
   <div class="direcciones" *ngIf="direcciones === true">
-    <p class="title">ID</p>
+    <p class="title">DIRECCIÓN</p>
     <input [formControl]="AbstractControl('location')" type="text" placeholder="Escribe" class="address-input" />
   </div>
 

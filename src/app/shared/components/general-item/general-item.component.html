@@ -7,18 +7,38 @@
         : { backgroundImage: 'none' }
     )
   "
+  [ngClass]="{
+    selectedCard: itemSelected
+  }"
+  *ngIf="!isMainImageAVideo"
 >
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</div>
+
+<div
+  class="container hasVideo"
+  *ngIf="isMainImageAVideo"
+  [ngClass]="{
+    selectedCard: itemSelected
+  }"
+>
+  <video class="video" [src]="cardMainImage" autoplay [muted]="true"></video>
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</div>
+
+<ng-template #content>
   <div
     class="containerGradientBox"
     [ngStyle]="{
-      backgroundImage:
-        'linear-gradient(to top,' + mainColor + ', transparent 60%)'
+      backgroundImage: !useFlatBackgroundForCardInfo
+        ? 'linear-gradient(to top,' + mainColor + ', transparent 60%)'
+        : null
     }"
     [ngClass]="{
       selectedCard: itemSelected
     }"
   >
-    <div class="inner-tag-wrapper">
+    <div class="inner-wrapper" [ngStyle]="innerWrapperStyles">
       <div
         class="topRightButton"
         *ngIf="topRightButton"
@@ -110,6 +130,14 @@
                 (showIconForTagStatus && statusIcon)
               "
             >
+              <div
+                class="status-icon-label"
+                [ngStyle]="statusIconLabelStyles"
+                *ngIf="statusIconLabel && statusIconLabelSide === 'LEFT'"
+              >
+                {{ statusIconLabel }}
+              </div>
+
               <img
                 *ngIf="!shouldIconsHaveBackground"
                 class="icon"
@@ -117,6 +145,13 @@
                 [src]="statusIcon"
                 alt="status"
               />
+
+              <div
+                class="status-icon-label"
+                *ngIf="statusIconLabel && statusIconLabelSide === 'RIGHT'"
+              >
+                {{ statusIconLabel }}
+              </div>
 
               <div
                 *ngIf="
@@ -150,8 +185,10 @@
           }"
         >
           <ng-container [ngSwitch]="entity">
-            <ng-container *ngSwitchCase="'ITEM'">
-              {{ itemMainTitle }}
+            <ng-container *ngIf="!hideCardTitle">
+              <ng-container *ngSwitchCase="'ITEM'">
+                {{ itemMainTitle }}
+              </ng-container>
             </ng-container>
 
             <ng-container *ngSwitchCase="'TAG'">
@@ -163,11 +200,11 @@
         <div
           class="tags"
           [ngStyle]="tagsStyles"
-          *ngIf="entity === 'ITEM' && item.tags && item.tags.length"
+          *ngIf="entity === 'ITEM' && item?.tags && item?.tags.length"
         >
           {{ getTagSeparatedByComma() }}
         </div>
       </div>
     </div>
   </div>
-</div>
+</ng-template>

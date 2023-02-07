@@ -10,10 +10,9 @@
         'background-repeat': 'no-repeat'
       }"
     ></div>
-    </ng-container>
-    <ng-container *ngIf="sourceType === 'VIDEO'">
-      <video class="inner-wrapper" [src]="imageSourceURL" controls>
-      </video>
+  </ng-container>
+  <ng-container *ngIf="sourceType === 'VIDEO'">
+    <video class="inner-wrapper" [src]="imageSourceURL" controls></video>
   </ng-container>
 
   <button

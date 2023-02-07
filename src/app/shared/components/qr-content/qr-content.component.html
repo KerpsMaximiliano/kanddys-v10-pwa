@@ -29,13 +29,19 @@
     <div
       class="itemContainer"
       *ngIf="slide.type !== 'TEXT'"
-      (click)="openImageModal(filesStrings[i], slide.type)"
+      (click)="
+        slide.type === 'IMAGE'
+          ? openImageModal(filesStrings[i], slide.type)
+          : playVideoOnFullscreen('media' + i)
+      "
     >
       <ng-container *ngIf="slide.type === 'IMAGE'">
         <div
           class="imgBox"
           [ngStyle]="{
-            backgroundImage: slide.path,
+            backgroundImage:
+              slide.path +
+              ', url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
@@ -43,7 +49,27 @@
         ></div>
       </ng-container>
       <ng-container *ngIf="slide.type === 'VIDEO'">
-        <video class="video-content" [src]="slide.path"></video>
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+          alt="play"
+          class="playVideoIcon"
+          style="
+            padding: 1.5rem !important;
+            z-index: 99;
+            z-index: 99;
+            left: 0;
+            right: 0;
+            max-width: 80px;
+            min-width: 70px;
+          "
+        />
+
+        <video
+          class="video-content"
+          [id]="'media' + i"
+          [muted]="true"
+          [src]="slide.path"
+        ></video>
       </ng-container>
       <div class="labelBox"></div>
 
@@ -69,7 +95,8 @@
     class="placeholder"
     *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)"
   >
-    Incluyes fotos, memes, videos, música o chistes de la Inteligencia
-    Artificial.
+    <!-- Incluyes fotos, memes, videos, música o chistes de la Inteligencia
+    Artificial. -->
+    {{ defaultText }}
   </p>
 </div>

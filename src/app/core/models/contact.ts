@@ -1,4 +1,4 @@
-import { Model } from "../objects/model";
+import { Model } from '../objects/model';
 
 export class ContactInput {
   description?: string;

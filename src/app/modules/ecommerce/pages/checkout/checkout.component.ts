@@ -4,19 +4,23 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { CustomizerValueInput } from 'src/app/core/models/customizer-value';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
+import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
 import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -32,6 +36,7 @@ import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Dialogs } from './dialogs';
+import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 
 const options = [
   {
@@ -112,13 +117,6 @@ const options = [
   styleUrls: ['./checkout.component.scss'],
 })
 export class CheckoutComponent implements OnInit {
-  customizerDetails: { name: string; value: string }[] = [];
-  customizer: CustomizerValueInput;
-  customizerPreview: {
-    base64: string;
-    filename: string;
-    type: string;
-  };
   order: ItemOrderInput;
   items: any[];
   post: PostInput;
@@ -152,14 +150,16 @@ export class CheckoutComponent implements OnInit {
   temporalDialogs2: Array<EmbeddedComponentWithId> = [];
 
   dialogs: Array<EmbeddedComponentWithId> = [];
+  saleflowId: string;
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
     private dialogService: DialogService,
     public headerService: HeaderService,
-    private customizerValueService: CustomizerValueService,
-    public postsService: PostsService,
-    public orderService: OrderService,
+    private saleflowService: SaleFlowService,
+    private postsService: PostsService,
+    private orderService: OrderService,
     private appService: AppService,
     private location: Location,
     private router: Router,
@@ -168,11 +168,12 @@ export class CheckoutComponent implements OnInit {
     private dialogFlowService: DialogFlowService,
     private entityTemplateService: EntityTemplateService,
     private gpt3Service: Gpt3Service,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private customizerValueService: CustomizerValueService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.route.queryParams.subscribe((queryParams) => {
+    this.route.queryParams.subscribe(async (queryParams) => {
       const { startOnDialogFlow } = queryParams;
       if (
         this.postsService.dialogs?.length ||
@@ -229,6 +230,52 @@ export class CheckoutComponent implements OnInit {
           this.temporalDialogs = this.postsService.temporalDialogs;
           this.temporalDialogs2 = this.postsService.temporalDialogs2;
         }
+      }
+    this.saleflowId = this.headerService.saleflow.merchant._id;
+    let items = this.headerService.getItems();
+    if (!items.every((value) => typeof value === 'string')) {
+      items = items.map((item: any) => item?._id || item);
+    }
+    this.items = (
+      await this.saleflowService.listItems({
+        findBy: {
+          _id: {
+            __in: ([] = [...items]),
+          },
+        },
+      })
+    )?.listItems;
+
+    for (const item of this.items as Array<Item>) {
+      for (const image of item.images) {
+        if (
+          image.value &&
+          !image.value.includes('http') &&
+          !image.value.includes('https')
+        ) {
+          image.value = 'https://' + image.value;
+        }
+      }
+    }
+
+    if (!this.items?.length) this.editOrder('item');
+    this.post = this.headerService.getPost();
+    if (this.post?.slides?.length) {
+      this.post.slides.forEach((slide) => {
+        if (slide.media?.type.includes('image')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideImages.push(reader.result);
+          };
+          reader.readAsDataURL(slide.media);
+        }
+        if (slide.media?.type.includes('video')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideVideos.push(reader.result);
+          };
+          reader.readAsDataURL(slide.media);
+        }
 
         setTimeout(() => {
           let generatedMessage = false;
@@ -254,7 +301,7 @@ export class CheckoutComponent implements OnInit {
 
           this.dialogFlowFunctions.moveToDialogByIndex(lastActiveDialogIndex);
         }, 500);
-      }
+      });
 
       this.items = this.headerService.getItems();
       if (!this.items?.length) this.editOrder('item');
@@ -320,7 +367,8 @@ export class CheckoutComponent implements OnInit {
         };
       }
       this.headerService.checkoutRoute = null;
-      if (!this.customizer) this.updatePayment();
+      // TODO: potencialmente eliminar la linea de abajo
+      // if (!this.customizer) this.updatePayment();
       if (
         this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
       )
@@ -329,7 +377,64 @@ export class CheckoutComponent implements OnInit {
       if (!this.headerService.orderInputComplete()) {
         this.missingOrderData = true;
       }
-    });
+    };
+  });
+
+
+    
+  // aquí inicia el merge conflict
+    //   });
+    // }
+    // this.deliveryLocation = this.headerService.getLocation();
+    // // Validation for stores with only one address of pickup and no delivery for customers
+    // if (!this.deliveryLocation) {
+    //   if (
+    //     this.headerService.saleflow.module.delivery.pickUpLocations.length ==
+    //       1 &&
+    //     !this.headerService.saleflow.module.delivery.deliveryLocation
+    //   ) {
+    //     this.deliveryLocation =
+    //       this.headerService.saleflow.module.delivery.pickUpLocations[0];
+    //     this.headerService.storeLocation(this.deliveryLocation);
+    //     this.headerService.orderProgress.delivery = true;
+    //     this.headerService.storeOrderProgress();
+    //   }
+    // }
+    // this.reservation = this.headerService.getReservation().reservation;
+    // if (this.reservation) {
+    //   const fromDate = new Date(this.reservation.date.from);
+    //   if (fromDate < new Date()) {
+    //     this.headerService.emptyReservation();
+    //     this.editOrder('reservation');
+    //   }
+    //   const untilDate = new Date(this.reservation.date.until);
+    //   this.date = {
+    //     day: fromDate.getDate(),
+    //     weekday: fromDate.toLocaleString('es-MX', {
+    //       weekday: 'short',
+    //     }),
+    //     month: fromDate.toLocaleString('es-MX', {
+    //       month: 'short',
+    //     }),
+    //     time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
+    //       untilDate,
+    //       this.reservation.breakTime
+    //     )}`,
+    //   };
+    //   this.headerService.orderProgress.reservation = true;
+    // }
+    // this.headerService.checkoutRoute = null;
+    // this.payment = this.items?.reduce(
+    //   (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),
+    //   0
+    // );
+    // if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
+    //   this.hasPaymentModule = true;
+    // this.checkLogged();
+    // if (!this.headerService.orderInputComplete()) {
+    //   this.missingOrderData = true;
+    // }
+    // aquí finaliza el merge conflict
   }
 
   editOrder(
@@ -364,6 +469,9 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+            },
           }
         );
         break;
@@ -452,6 +560,9 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+            },
           }
         );
         return;
@@ -490,30 +601,6 @@ export class CheckoutComponent implements OnInit {
       this.deliveryLocation;
     if (this.reservation)
       this.headerService.order.products[0].reservation = this.reservation;
-    // ---------------------- Managing Customizer ----------------------
-    if (this.customizer) {
-      localStorage.removeItem('customizerFile');
-      if (!this.customizer.preview) {
-        const res: Response = await fetch(this.customizerPreview.base64);
-        const blob: Blob = await res.blob();
-
-        this.customizer.preview = new File(
-          [blob],
-          this.customizerPreview.filename,
-          {
-            type: this.customizerPreview.type,
-          }
-        );
-      }
-      const customizerId =
-        await this.customizerValueService.createCustomizerValue(
-          this.customizer
-        );
-      this.headerService.order.products[0].customizer = customizerId;
-      this.headerService.customizer = null;
-      this.headerService.customizerData = null;
-    }
-    // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
     // ---------------------- Managing Post ----------------------------
     if (this.headerService.saleflow.module?.post) {
       if (!this.post)
@@ -597,6 +684,8 @@ export class CheckoutComponent implements OnInit {
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
+      if (this.headerService.order.itemPackage)
+        delete this.headerService.order.itemPackage;
       if (this.headerService.user && !anonymous) {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)
@@ -734,5 +823,16 @@ export class CheckoutComponent implements OnInit {
       title: null,
       joke: null,
     };
+  }
+  
+  urlIsVideo(url: string) {
+    return isVideo(url);
+  }
+
+  goToArticleDetail(itemID: string) {
+    this.router.navigate([`../article-detail/item/${itemID}`], {
+      relativeTo: this.route,
+      replaceUrl: true,
+    });
   }
 }

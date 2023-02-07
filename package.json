@@ -1,6 +1,6 @@
 {
   "name": "rewardcharly",
-  "version": "1.16.5",
+  "version": "2.3.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -17,6 +17,7 @@
     "@angular/compiler": "~9.1.9",
     "@angular/core": "~9.1.9",
     "@angular/forms": "~9.1.9",
+    "@angular/material": "~9.2.1",
     "@angular/platform-browser": "~9.1.9",
     "@angular/platform-browser-dynamic": "~9.1.9",
     "@angular/router": "~9.1.9",

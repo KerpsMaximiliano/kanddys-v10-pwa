@@ -1,0 +1,115 @@
+<div class="container">
+  <header class="header">
+    <button>
+      <i class="fas fa-angle-left icon"></i>
+    </button>
+    <p>{{ title }}</p>
+  </header>
+  <section class="body">
+    <div
+      *ngIf="typeView === 'items'"
+      class="tags-grid-drag-and-drop"
+      cdkDropListGroup
+    >
+      <div
+        class="tag-wrapper"
+        cdkDropList
+        *ngFor="let gridItem of itemsArray; let i = index"
+        [cdkDropListData]="{ gridItem: gridItem, index: i }"
+        (cdkDropListDropped)="dropTagDraggable($event)"
+        tyle="width: 100%; margin: 0px; padding: 0px"
+      >
+        <div class="inner-drag-wrapper" cdkDrag>
+          <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+          <div class="capsize">
+            <button class="delete">
+              <img
+                class="icon"
+                cdkDragHandle
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/delete.svg"
+                alt="drag"
+              />
+            </button>
+            <app-saleflow-item
+              [itemIndex]="i"
+              [itemId]="gridItem._id"
+              [type]="4"
+              [showViews]="true"
+              [viewsCounter]="
+                gridItem.visitorCounter ? gridItem.visitorCounter.counter : 0
+              "
+              [inactive]="
+                gridItem.status != 'active' && gridItem.status != 'featured'
+                  ? true
+                  : false
+              "
+              [imgURL]="gridItem.images.length ? gridItem.images[0].value : ''"
+              [price]="gridItem.pricing"
+              [showPrice]="true"
+              [tags]="gridItem.tagsFilled"
+              [itemParams]="gridItem.params"
+              [responsiveWidthVersion]="true"
+              [featured]="gridItem.status === 'featured'"
+            >
+            </app-saleflow-item>
+          </div>
+          <img
+            class="drag-handler"
+            cdkDragHandle
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/drag-area.svg"
+            alt="drag"
+          />
+        </div>
+      </div>
+    </div>
+    <div *ngIf="typeView == 'cards'" class="cards-flexBox">
+      <div class="cardContainer select" *ngIf="itemsArray.length > 3">
+        <div class="border">
+          <app-buyer-card
+            [shadow]="false"
+            [img]="
+              itemsArray[2].images.length ? itemsArray[2].images[0].value : ''
+            "
+            [title]="itemsArray[2].name"
+            [description]="itemsArray[2].description"
+            [leftAmount]="itemsArray[2].pricing"
+          >
+          </app-buyer-card>
+        </div>
+      </div>
+
+      <div class="optionsBox">
+        <p class="label">Opciones:</p>
+        <div class="cardContainer">
+          <div class="border">
+            <div class="options-grid">
+              <div
+                class="capsize"
+                *ngFor="let option of optionsArray; let i = index"
+              >
+                <app-saleflow-item
+                  [itemIndex]="i"
+                  [itemId]="option._id"
+                  [type]="4"
+                  [inactive]="
+                    option.status != 'active' && option.status != 'featured'
+                      ? true
+                      : false
+                  "
+                  [imgURL]="option.images.length ? option.images[0].value : ''"
+                  [price]="option.pricing"
+                  [showPrice]="true"
+                  [tags]="option.tagsFilled"
+                  [itemParams]="option.params"
+                  [responsiveWidthVersion]="true"
+                  [featured]="option.status === 'featured'"
+                >
+                </app-saleflow-item>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

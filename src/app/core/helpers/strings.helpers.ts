@@ -20,6 +20,57 @@ export function isEmail(str: string): boolean {
   return regex.test(String(str).toLocaleLowerCase());
 }
 
+export function getExtension(filename: string) {
+  var parts = filename.split('.');
+  return parts[parts.length - 1].toLowerCase();
+}
+
+export function isImage(filename: string) {
+  var ext = getExtension(filename);
+  switch (ext.toLowerCase()) {
+    case 'jpg':
+    case 'jpeg':
+    case 'gif':
+    case 'bmp':
+    case 'png':
+    case 'webp':
+      //etc
+      return true;
+  }
+  return false;
+}
+
+export function isVideo(filename: string) {
+  var ext = getExtension(filename);
+  switch (ext.toLowerCase()) {
+    case 'm4v':
+    case 'avi':
+    case 'mpg':
+    case 'mp4':
+    case 'webm':
+    case 'webm':
+    case 'mpeg':
+    case 'mpeg4':
+    case 'mov':
+    case '3gp':
+    case 'mts/m2ts':
+    case 'mxf':
+      return true;
+  }
+  return false;
+}
+
+export function completeImageURL(url: string) {
+  if (
+    url &&
+    !url.includes('http') &&
+    !url.includes('https')
+  ) {
+    return url = 'https://' + url;
+  }
+  return url;
+}
+
 // String formatter for the dateId field of the ItemOrder model
 export function formatID(dateId: string, padZeroes = false): string {
   if (/[0-9]{4}[-][0-9]{1,2}[-][0-9]{1,2}N[0-9]{1,}/.test(dateId)) {

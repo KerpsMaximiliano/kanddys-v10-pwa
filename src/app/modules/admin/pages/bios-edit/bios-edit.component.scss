@@ -18,7 +18,7 @@
       display: inline-block;
       color: #7b7b7b;
       font-size: 15px;
-      font-weight: bold;
+      font-weight: SfProBold;
     }
   }
   .logo-container {
@@ -61,7 +61,7 @@
         display: inline-block;
         font-size: 17px;
         font-weight: 900;
-        font-family: "SFPro";
+        font-family: "SFProRegular";
         color: #272727;
         margin-top: 45px;
       }
@@ -75,7 +75,7 @@
 
     .text {
       margin: 0;
-      font-family: SFProDisplay;
+      font-family: SFProLight;
       font-size: 17px;
       font-weight: 300;
       color: #4f4f4f;
@@ -89,7 +89,7 @@
       margin-top: 55px;
       font-weight: 900;
       font-size: 17px;
-      font-family: SFPro;
+      font-family: SFProRegular;
       color: #272727;
       margin-bottom: 21px;
     }
@@ -107,7 +107,7 @@
       height: 72px;
       width: 80%;
       margin-left: 13px;
-      border-radius: 6px;
+      border-radius: 9px;
       background-color: #ffffff;
       box-shadow: 0px 3px 6px #70707063;
       display: inline-block;
@@ -119,7 +119,7 @@
     }
     .input::placeholder {
       font-size: 17px;
-      font-family: SFPro;
+      font-family: SFProRegular;
       font-weight: 900;
       color: #272727;
     }
@@ -139,9 +139,8 @@
     .mainBtn {
       width: 68.45%;
       height: 40px;
-      font-family: SFProDisplay;
+      font-family: SFProBold;
       font-size: 15px;
-      font-weight: bold;
       color: #272727;
       box-shadow: 0px 3px 6px #70707063;
       border-radius: 19px;
@@ -173,13 +172,38 @@
       margin-bottom: 18px;
     }
 
+    .wrap {
+      display: flex;
+      .title2 {
+        font-family: RobotoMedium;
+        font-size: 17px;
+        color: #7b7b7b;
+        margin-top: 45px;
+        margin-bottom: 18px;
+      }
+      .text-right {
+        margin-top: 45px;
+        margin-right: 35px;
+        margin-left: auto;
+        font-family: SFProLight;
+        font-size: 17px;
+        color: #7b7b7b;
+      }
+    }
+
+    .title3 {
+      display: inline-block;
+    }
+
     .add-square {
-      height: 80.5px;
+      height: 85px;
       width: 74px;
       border-radius: 17px;
       border: solid 1px #707070;
       display: inline-block;
       cursor: pointer;
+      box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+      background-color: #ffffff;
     }
 
     .add-circle {
@@ -198,7 +222,7 @@
       cursor: pointer;
 
       span {
-        margin-left: 5px;
+        margin-left: 6.5px;
       }
     }
 

@@ -21,6 +21,7 @@ import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { FrontendLogsService } from 'src/app/core/services/frontend-logs.service';
 import { version } from 'package.json';
 import { getLocaleDateStringFormat } from 'src/app/core/helpers/ui.helpers';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px',
@@ -90,6 +91,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
   loading: boolean = true;
   choosedFloralArrangement = false;
   choosedHeliumBalloons = false;
+  registeredEmail: boolean = false;
+  registeredPhone: boolean = false;
+  existingPhone: string = null;
 
   reservationOrderlessComponent = {
     afterIndex: 0,
@@ -114,11 +118,11 @@ export class HeavenlyBalloonsComponent implements OnInit {
             timeOfDay.timeOfDay &&
             timeOfDay.dayName
           ) {
-            this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
+            this.formSteps[6].fieldsList[0].fieldControl.control.setValue(
               timeOfDay
             );
           } else {
-            this.formSteps[5].fieldsList[0].fieldControl.control.setValue(null);
+            this.formSteps[6].fieldsList[0].fieldControl.control.setValue(null);
           }
         },
       },
@@ -134,6 +138,178 @@ export class HeavenlyBalloonsComponent implements OnInit {
   };
 
   formSteps: FormStep[] = [
+    {
+      fieldsList: [
+        {
+          name: 'email',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(
+              '',
+              Validators.compose([
+                Validators.required,
+                Validators.pattern(
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                ),
+              ])
+            ),
+          },
+          label: 'Correo electrónico (*)',
+          placeholder: 'example@domain',
+          inputType: 'email',
+          topLabelAction: {
+            text: 'Ayudanos a identificarte usando tu correo electrónico',
+          },
+          topSubLabelAction: {
+            text: 'También lo usaremos para informarte sobre el estatus de tu orden',
+          },
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingTop: '65px',
+            },
+            containerStyles: {
+              marginTop: '36px',
+              paddingLeft: '33px',
+              paddingRight: '33px',
+              paddingBottom: '12rem',
+            },
+            fieldStyles: {
+              marginTop: '26px',
+            },
+            topLabelActionStyles: {
+              fontFamily: 'RobotoBold',
+              fontSize: '24px',
+              margin: '0px',
+              marginTop: '36px',
+              display: 'block',
+            },
+            topSubLabelActionStyles: {
+              fontFamily: 'RobotoRegular',
+              color: '#141414',
+              fontSize: '16px',
+              fontWeight: 'lighter',
+              opacity: '0.64',
+              margin: '0px',
+              display: 'block',
+            },
+          },
+        },
+      ],
+      embeddedComponents: [
+        {
+          component: HeaderInfoComponent,
+          beforeIndex: 0,
+          inputs: {
+            title: 'Heavenly Balloons',
+            description: 'Formulario de Ordenes',
+            profileImage: this.logo,
+            type: 'dialog',
+            socials: [
+              {
+                name: 'instagram',
+                url: 'https://www.instagram.com/_heavenlyballoons/?hl=en',
+              },
+              {
+                name: 'phone',
+                url: '18492068680',
+              },
+            ],
+            reverseInfoOrder: true,
+            customStyles: {
+              wrapper: {
+                margin: '0px',
+                backgroundColor: 'white',
+                background:
+                  'linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%)',
+                padding: '0px 20px',
+                paddingTop: '24px',
+                paddingBottom: '35.8px',
+              },
+              leftInnerWrapper: {
+                margin: '0px',
+              },
+              pictureWrapper: {
+                alignSelf: 'center',
+              },
+              infoWrapper: {
+                justifyContent: 'center',
+                marginLeft: '21px',
+              },
+            },
+          },
+          outputs: [],
+        },
+      ],
+      hideHeader: true,
+      styles: {
+        padding: '0px',
+      },
+      footerConfig,
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          try {
+            const { email } = params.dataModel.value['1'];
+            const whatsappMessagePartsOfThe1stStep = [];
+
+            const user = await this.authService.checkUser(
+              this.formSteps[0].fieldsList[0].fieldControl.control.value
+            );
+
+            if (user) {
+              this.registeredEmail = true;
+
+              this.formSteps[1].fieldsList[0].fieldControl.control.setValue(
+                user.name
+              );
+              this.formSteps[1].fieldsList[1].fieldControl.control.setValue(
+                user.lastname
+              );
+
+              if (user.phone) {
+                this.existingPhone = user.phone;
+
+                this.formSteps[2].fieldsList[0].fieldControl.control.setValue(
+                  user.phone
+                );
+              } else {
+                this.existingPhone = null;
+              }
+
+              whatsappMessagePartsOfThe1stStep.push(
+                `*Nombre completo:*\n${user.name} ${user.lastname}\n\n`
+              );
+
+              whatsappMessagePartsOfThe1stStep.push(
+                `*Número de teléfono:*\n${user.phone}\n\n`
+              );
+
+              if (user.phone) params.scrollToStep(2);
+              else params.scrollToStep(1);
+
+              this.formSteps[0].stepButtonValidText = 'CONTINUA CON TU ORDEN';
+            } else {
+              this.formSteps[1].fieldsList[0].fieldControl.control.setValue('');
+              this.formSteps[1].fieldsList[1].fieldControl.control.setValue('');
+              this.registeredEmail = false;
+            }
+
+            whatsappMessagePartsOfThe1stStep.push(`*Email:*\n${email}\n\n`);
+
+            this.whatsAppMessageParts.push(whatsappMessagePartsOfThe1stStep);
+          } catch (error) {
+            this.formSteps[1].fieldsList[0].fieldControl.control.setValue('');
+            this.formSteps[1].fieldsList[1].fieldControl.control.setValue('');
+            this.registeredEmail = false;
+          }
+
+          return { ok: true };
+        },
+      },
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN',
+    },
     {
       fieldsList: [
         {
@@ -163,7 +339,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               display: 'inline-block',
               width: 'calc(100% / 2)',
               paddingRight: '6px',
-              paddingLeft: '33px',
               marginTop: '36px',
               // width: '83.70%',
             },
@@ -235,6 +410,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '100%',
+              display: 'none',
               padding: '0px 33px',
             },
             fieldStyles: {
@@ -258,6 +434,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '100%',
+              display: 'none',
               padding: '0px 33px',
             },
             fieldStyles: {
@@ -280,60 +457,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
         },
       ],
-      embeddedComponents: [
-        {
-          component: HeaderInfoComponent,
-          beforeIndex: 0,
-          inputs: {
-            title: 'Heavenly Balloons',
-            description: 'Formulario de Ordenes',
-            profileImage: this.logo,
-            type: 'dialog',
-            socials: [
-              {
-                name: 'instagram',
-                url: 'https://www.instagram.com/_heavenlyballoons/?hl=en',
-              },
-              {
-                name: 'phone',
-                url: '18492068680',
-              },
-            ],
-            reverseInfoOrder: true,
-            customStyles: {
-              wrapper: {
-                margin: '0px',
-                backgroundColor: 'white',
-                background:
-                  'linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%)',
-                padding: '0px 20px',
-                paddingTop: '24px',
-                paddingBottom: '35.8px',
-              },
-              leftInnerWrapper: {
-                margin: '0px',
-              },
-              pictureWrapper: {
-                alignSelf: 'center',
-              },
-              infoWrapper: {
-                justifyContent: 'center',
-                marginLeft: '21px',
-              },
-            },
-          },
-          outputs: [],
-        },
-      ],
-      hideHeader: true,
       styles: {
         padding: '0px',
-        paddingBottom: '4rem',
+        paddingBottom: '14rem',
       },
       footerConfig,
       stepProcessingFunction: (params) => {
         const { name, lastname, birthday, instagramUser } =
-          params.dataModel.value['1'];
+          params.dataModel.value['2'];
 
         const whatsappMessagePartsOfThe1stStep = [];
 
@@ -354,6 +485,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
         this.whatsAppMessageParts.push(whatsappMessagePartsOfThe1stStep);
 
         return { ok: true };
+      },
+      customScrollToStepBackwards: (params) => {
+        this.whatsAppMessageParts.pop();
+        params.scrollToStep(0, false);
       },
       stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN',
@@ -377,48 +512,18 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
           },
         },
-        {
-          name: 'email',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl(
-              '',
-              Validators.compose([
-                Validators.required,
-                Validators.pattern(
-                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                ),
-              ])
-            ),
-          },
-          label: 'Correo electrónico (*)',
-          placeholder: 'example@domain',
-          inputType: 'email',
-          sublabel: 'Para informarle sobre el estatus de su orden',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              paddingTop: '65px',
-            },
-            subLabelStyles: {
-              fontFamily: 'RobotoRegular',
-              color: '#141414',
-              fontSize: '16px',
-              fontWeight: 'lighter',
-              opacity: '0.64',
-              margin: '0px',
-            },
-            containerStyles: {
-              paddingBottom: '4rem',
-            },
-            fieldStyles: {
-              marginTop: '26px',
-            },
-          },
-        },
       ],
+      pageHeader: {
+        text: '¿Dónde más notificamos el estatus de tu orden?',
+        styles: {
+          fontFamily: 'RobotoBold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '36px',
+        },
+      },
       stepProcessingFunction: (params) => {
-        const { email, phoneNumber } = params.dataModel.value['2'];
+        const { phoneNumber } = params.dataModel.value['3'];
 
         const whatsappMessagePartsOfThe2ndStep = [];
 
@@ -426,25 +531,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
           `*Número de teléfono:*\n${phoneNumber.nationalNumber}\n\n`
         );
 
-        if (email && email !== '')
-          whatsappMessagePartsOfThe2ndStep.push(`*Email:*\n${email}\n\n`);
-
         this.whatsAppMessageParts.push(whatsappMessagePartsOfThe2ndStep);
 
         return { ok: true };
       },
       customScrollToStepBackwards: (params) => {
         this.whatsAppMessageParts.pop();
-        params.scrollToStep(0, false);
-      },
-      pageHeader: {
-        text: '¿Dónde notificamos el estatus de tu orden?',
-        styles: {
-          fontFamily: 'RobotoBold',
-          fontSize: '24px',
-          margin: '0px',
-          marginTop: '36px',
-        },
+        params.scrollToStep(1, false);
       },
       footerConfig,
       stepButtonInvalidText: 'ESCRIBE COMO TE CONTACTAMOS',
@@ -480,51 +573,50 @@ export class HeavenlyBalloonsComponent implements OnInit {
               if (change.toLowerCase().includes('Globos'.toLowerCase())) {
                 this.choosedFloralArrangement = false;
                 this.choosedHeliumBalloons = true;
-                this.formSteps[3].fieldsList[0].styles.containerStyles.display =
+                this.formSteps[4].fieldsList[0].styles.containerStyles.display =
                   'none';
-                this.formSteps[3].fieldsList[2].styles.containerStyles.display =
+                this.formSteps[4].fieldsList[2].styles.containerStyles.display =
                   'none';
-                this.formSteps[3].fieldsList[2].fieldControl.control.setValidators(
+                this.formSteps[4].fieldsList[2].fieldControl.control.setValidators(
                   Validators.compose([])
                 );
-                this.formSteps[3].fieldsList[1].colorPickerConfiguration.maximumNumberOfSelections = 100;
-                this.formSteps[3].fieldsList[2].fieldControl.control.setValue(
+                this.formSteps[4].fieldsList[1].colorPickerConfiguration.maximumNumberOfSelections = 100;
+                this.formSteps[4].fieldsList[2].fieldControl.control.setValue(
                   ''
                 );
 
-                this.formSteps[3].fieldsList[1].label = 'Color de globos';
+                this.formSteps[4].fieldsList[1].label = 'Color de globos (*)';
               } else {
                 this.choosedFloralArrangement = true;
                 this.choosedHeliumBalloons = false;
-                this.formSteps[3].fieldsList[0].styles.containerStyles.display =
+                this.formSteps[4].fieldsList[0].styles.containerStyles.display =
                   'block';
-                this.formSteps[3].fieldsList[2].styles.containerStyles.display =
+                this.formSteps[4].fieldsList[2].styles.containerStyles.display =
                   'block';
-                this.formSteps[3].fieldsList[2].fieldControl.control.setValidators(
+                this.formSteps[4].fieldsList[2].fieldControl.control.setValidators(
                   Validators.compose([
                     Validators.required,
                     Validators.minLength(1),
                   ])
                 );
-                this.formSteps[3].fieldsList[1].colorPickerConfiguration.maximumNumberOfSelections = 2;
-                this.formSteps[3].fieldsList[2].fieldControl.control.setValue(
+                this.formSteps[4].fieldsList[1].colorPickerConfiguration.maximumNumberOfSelections = 2;
+                this.formSteps[4].fieldsList[2].fieldControl.control.setValue(
                   ''
                 );
 
-                this.formSteps[3].fieldsList[1].label = 'Color de rosas';
+                this.formSteps[4].fieldsList[1].label =
+                  'Color de rosas (*) Puedes seleccionar máximo 2 colores';
               }
 
-              this.formSteps[3].fieldsList[4].label =
-                'Describe aquí todos los detalles de tu orden de ' +
-                change +
-                ' (*)';
-              this.formSteps[3].fieldsList[5].label =
+              this.formSteps[4].fieldsList[4].label =
+                'Describe aquí todos los detalles de tu orden de ' + change;
+              this.formSteps[4].fieldsList[5].label =
                 '¿Deseas incluir una tarjeta de dedicatoria a tu orden de ' +
                 change +
                 ' ?';
 
-              this.formSteps[4].fieldsList.forEach((field, index) => {
-                if (index !== this.formSteps[4].fieldsList.length - 1)
+              this.formSteps[5].fieldsList.forEach((field, index) => {
+                if (index !== this.formSteps[5].fieldsList.length - 1)
                   field.fieldControl.control.setValue('');
                 else {
                   field.fieldControl.control.setValue(['']);
@@ -532,12 +624,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 }
               });
 
-              params.scrollToStep(3);
+              params.scrollToStep(4);
               this.choosedFlowers = true;
             } else {
               this.choosedFloralArrangement = false;
               this.choosedHeliumBalloons = false;
-              this.formSteps[3].fieldsList.forEach((field, index) => {
+              this.formSteps[4].fieldsList.forEach((field, index) => {
                 if ([1, 2].includes(index)) {
                   field.fieldControl.control.setValue([]);
                   field.colorPickerConfiguration.selectedCounter = 0;
@@ -555,20 +647,20 @@ export class HeavenlyBalloonsComponent implements OnInit {
               if (
                 change !== 'Otros (Art. personalizádos, Boxes, Art. de fiestas)'
               ) {
-                this.formSteps[4].fieldsList[0].label =
+                this.formSteps[5].fieldsList[0].label =
                   'Describe aquí todos los detalles de tu ' + change + ' (*)';
-                this.formSteps[4].fieldsList[1].label =
+                this.formSteps[5].fieldsList[1].label =
                   '¿Deseas incluir una tarjeta de dedicatoria a tu ' +
                   change +
                   ' ?';
               } else {
-                this.formSteps[4].fieldsList[0].label =
+                this.formSteps[5].fieldsList[0].label =
                   'Describe aquí todos los detalles de tu orden (*)';
-                this.formSteps[4].fieldsList[1].label =
+                this.formSteps[5].fieldsList[1].label =
                   '¿Deseas incluir una tarjeta de dedicatoria a tu orden ?';
               }
 
-              params.scrollToStep(4);
+              params.scrollToStep(5);
               this.choosedFlowers = false;
             }
           },
@@ -592,8 +684,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
         return { ok: true };
       },
       customScrollToStepBackwards: (params) => {
-        this.whatsAppMessageParts.pop();
-        params.scrollToStep(1, false);
+        if (this.registeredEmail) {
+          this.whatsAppMessageParts.pop();
+          params.scrollToStep(0, false);
+        } else {
+          this.whatsAppMessageParts.pop();
+          params.scrollToStep(2, false);
+        }
       },
       footerConfig,
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
@@ -839,7 +936,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[3].fieldsList[5].fieldControl.control.setValue(
+            this.formSteps[4].fieldsList[5].fieldControl.control.setValue(
               change,
               {
                 emitEvent: false,
@@ -847,32 +944,32 @@ export class HeavenlyBalloonsComponent implements OnInit {
             );
 
             if (change === 'Si') {
-              this.formSteps[3].fieldsList[6].styles.containerStyles.opacity =
+              this.formSteps[4].fieldsList[6].styles.containerStyles.opacity =
                 '1';
-              this.formSteps[3].fieldsList[6].styles.containerStyles.height =
+              this.formSteps[4].fieldsList[6].styles.containerStyles.height =
                 'auto';
 
-              this.formSteps[3].fieldsList[6].styles.containerStyles.marginLeft =
+              this.formSteps[4].fieldsList[6].styles.containerStyles.marginLeft =
                 '0px';
-              this.formSteps[3].fieldsList[6].fieldControl.control.setValidators(
+              this.formSteps[4].fieldsList[6].fieldControl.control.setValidators(
                 Validators.compose([
                   Validators.required,
                   Validators.pattern(/[\S]/),
                 ])
               );
-              this.formSteps[3].fieldsList[6].fieldControl.control.updateValueAndValidity();
+              this.formSteps[4].fieldsList[6].fieldControl.control.updateValueAndValidity();
             } else {
-              this.formSteps[3].fieldsList[6].styles.containerStyles.opacity =
+              this.formSteps[4].fieldsList[6].styles.containerStyles.opacity =
                 '0';
-              this.formSteps[3].fieldsList[6].styles.containerStyles.height =
+              this.formSteps[4].fieldsList[6].styles.containerStyles.height =
                 '0px';
-              this.formSteps[3].fieldsList[6].styles.containerStyles.marginLeft =
+              this.formSteps[4].fieldsList[6].styles.containerStyles.marginLeft =
                 '1000px';
-              this.formSteps[3].fieldsList[6].fieldControl.control.setValue('');
-              this.formSteps[3].fieldsList[6].fieldControl.control.setValidators(
+              this.formSteps[4].fieldsList[6].fieldControl.control.setValue('');
+              this.formSteps[4].fieldsList[6].fieldControl.control.setValidators(
                 []
               );
-              this.formSteps[3].fieldsList[6].fieldControl.control.updateValueAndValidity();
+              this.formSteps[4].fieldsList[6].fieldControl.control.updateValueAndValidity();
             }
           },
           label: '¿Deseas incluir una tarjeta de dedicatoria a tu arreglo?',
@@ -972,7 +1069,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           additionalDetails,
           wantToAddADedication,
           dedicationMessage1,
-        } = params.dataModel.value['4'];
+        } = params.dataModel.value['5'];
 
         const whatsappMessagePartsOfThe4thStep = [];
 
@@ -1024,14 +1121,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
         this.whatsAppMessageParts.push(whatsappMessagePartsOfThe4thStep);
 
-        params.scrollToStep(4);
+        params.scrollToStep(5);
 
         return { ok: true };
       },
       customScrollToStepBackwards: (params) => {
-        this.formSteps[2].fieldsList[0].fieldControl.control.setValue(null);
+        this.formSteps[3].fieldsList[0].fieldControl.control.setValue(null);
 
-        params.scrollToStep(2);
+        params.scrollToStep(3);
 
         this.whatsAppMessageParts.pop();
       },
@@ -1073,29 +1170,29 @@ export class HeavenlyBalloonsComponent implements OnInit {
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
             if (change === 'Si') {
-              this.formSteps[4].fieldsList[2].styles.containerStyles.opacity =
+              this.formSteps[5].fieldsList[2].styles.containerStyles.opacity =
                 '1';
-              this.formSteps[4].fieldsList[2].styles.containerStyles.height =
+              this.formSteps[5].fieldsList[2].styles.containerStyles.height =
                 'auto';
 
-              this.formSteps[4].fieldsList[2].styles.containerStyles.marginLeft =
+              this.formSteps[5].fieldsList[2].styles.containerStyles.marginLeft =
                 '0px';
-              this.formSteps[4].fieldsList[2].fieldControl.control.setValidators(
+              this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
                 Validators.required
               );
-              this.formSteps[4].fieldsList[2].fieldControl.control.updateValueAndValidity();
+              this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
             } else {
-              this.formSteps[4].fieldsList[2].styles.containerStyles.opacity =
+              this.formSteps[5].fieldsList[2].styles.containerStyles.opacity =
                 '0';
-              this.formSteps[4].fieldsList[2].styles.containerStyles.height =
+              this.formSteps[5].fieldsList[2].styles.containerStyles.height =
                 '0px';
-              this.formSteps[4].fieldsList[2].styles.containerStyles.marginLeft =
+              this.formSteps[5].fieldsList[2].styles.containerStyles.marginLeft =
                 '1000px';
-              this.formSteps[4].fieldsList[2].fieldControl.control.setValue('');
-              this.formSteps[4].fieldsList[2].fieldControl.control.setValidators(
+              this.formSteps[5].fieldsList[2].fieldControl.control.setValue('');
+              this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
                 []
               );
-              this.formSteps[4].fieldsList[2].fieldControl.control.updateValueAndValidity();
+              this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
             }
           },
           label: '¿Deseas incluir una tarjeta de dedicatoria a tu arreglo?',
@@ -1187,7 +1284,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       ],
       stepProcessingFunction: (params) => {
         const { orderDetails, wantToAddADedication, dedicationMessage2 } =
-          params.dataModel.value['5'];
+          params.dataModel.value['6'];
 
         const whatsappMessagePartsOfThe5thStep = [];
 
@@ -1208,10 +1305,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
         return { ok: true };
       },
       customScrollToStepBackwards: (params) => {
-        this.formSteps[2].fieldsList[0].fieldControl.control.setValue(null);
+        this.formSteps[3].fieldsList[0].fieldControl.control.setValue(null);
 
-        this.formSteps[4].fieldsList.forEach((field, index) => {
-          if (index !== this.formSteps[4].fieldsList.length - 1)
+        this.formSteps[5].fieldsList.forEach((field, index) => {
+          if (index !== this.formSteps[5].fieldsList.length - 1)
             field.fieldControl.control.setValue('');
           else {
             field.fieldControl.control.setValue(['']);
@@ -1219,7 +1316,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           }
         });
 
-        params.scrollToStep(2);
+        params.scrollToStep(3);
 
         this.whatsAppMessageParts.pop();
       },
@@ -1258,134 +1355,157 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'Fuera de Santo Domingo',
           ],
           changeCallbackFunction: (change, params) => {
-            const { deliveryMethod: pastValue } = params.dataModel.value['6'];
+            const { deliveryMethod: pastValue } = params.dataModel.value['7'];
+
+            /*
+            this.formSteps[5].fieldsList[4].fieldControl.control.setValidators(
+              Validators.compose([Validators.required])
+            );
+            this.formSteps[5].fieldsList[4].fieldControl.control.updateValueAndValidity();
+            */
 
             if (
               change !== 'Pickup' &&
               (pastValue === '' || pastValue === 'Pickup')
             ) {
-              this.formSteps[5].fieldsList.forEach((field, index) => {
+              this.formSteps[6].fieldsList.forEach((field, index) => {
                 if (
                   !(
                     'containerStyles' in
-                    this.formSteps[5].fieldsList[index].styles
+                    this.formSteps[6].fieldsList[index].styles
                   )
                 ) {
-                  this.formSteps[5].fieldsList[index].styles.containerStyles =
+                  this.formSteps[6].fieldsList[index].styles.containerStyles =
                     {};
                 }
 
                 if (index === 1) {
-                  this.formSteps[5].fieldsList[
+                  this.formSteps[6].fieldsList[
                     index
                   ].styles.containerStyles.paddingBottom = '0px';
                 }
 
                 if (index > 1) {
-                  this.formSteps[5].fieldsList[
+                  this.formSteps[6].fieldsList[
                     index
                   ].styles.containerStyles.opacity = '1';
-                  this.formSteps[5].fieldsList[
+                  this.formSteps[6].fieldsList[
                     index
                   ].styles.containerStyles.height = 'auto';
                 }
 
-                if (index === this.formSteps[5].fieldsList.length - 1) {
-                  this.formSteps[5].fieldsList[
+                if (index === this.formSteps[6].fieldsList.length - 1) {
+                  this.formSteps[6].fieldsList[
                     index
                   ].styles.containerStyles.paddingBottom = '20rem';
                 }
 
-                this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
+                this.formSteps[6].fieldsList[2].fieldControl.control.setValidators(
                   Validators.required
                 );
-                this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
-                this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
+                this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
                   Validators.compose([
                     Validators.required,
                     Validators.pattern(/[\S]/),
                   ])
                 );
-                this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
-                this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
+
+                this.formSteps[6].fieldsList[6].fieldControl.control.setValidators(
                   Validators.compose([
                     Validators.required,
                     Validators.pattern(/[\S]/),
                   ])
                 );
-                this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
+
+                this.formSteps[6].fieldsList[4].fieldControl.control.setValidators(
+                  Validators.compose([Validators.required])
+                );
+
+                setTimeout(() => {
+                  this.formSteps[6].fieldsList[2].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[6].fieldsList[4].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[6].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                }, 500);
               });
             } else if (
               change === 'Pickup' &&
               (pastValue === '' || pastValue !== 'Pickup')
             ) {
-              this.formSteps[5].fieldsList.forEach((field, index) => {
+              this.formSteps[6].fieldsList.forEach((field, index) => {
                 if (
                   !(
                     'containerStyles' in
-                    this.formSteps[5].fieldsList[index].styles
+                    this.formSteps[6].fieldsList[index].styles
                   )
                 ) {
-                  this.formSteps[5].fieldsList[index].styles.containerStyles =
+                  this.formSteps[6].fieldsList[index].styles.containerStyles =
                     {};
                 }
 
                 if (index === 1) {
-                  this.formSteps[5].fieldsList[
+                  this.formSteps[6].fieldsList[
                     index
                   ].styles.containerStyles.paddingBottom = '60px';
                 }
 
                 if (index > 1) {
-                  this.formSteps[5].fieldsList[
+                  this.formSteps[6].fieldsList[
                     index
                   ].styles.containerStyles.height = '0px';
-                  this.formSteps[5].fieldsList[
+                  this.formSteps[6].fieldsList[
                     index
                   ].styles.containerStyles.opacity = '0';
-                  this.formSteps[5].fieldsList[
+                  this.formSteps[6].fieldsList[
                     index
                   ].fieldControl.control.setValue('', {
                     emitEvent: false,
                   });
                 }
 
-                if (index === this.formSteps[5].fieldsList.length - 1) {
-                  this.formSteps[5].fieldsList[
+                if (index === this.formSteps[6].fieldsList.length - 1) {
+                  this.formSteps[6].fieldsList[
                     index
                   ].styles.containerStyles.paddingBottom = '0rem';
                 }
 
-                this.formSteps[5].fieldsList[2].fieldControl.control.setValue(
+                this.formSteps[6].fieldsList[2].fieldControl.control.setValue(
                   '',
                   {
                     emitEvent: false,
                   }
                 );
-                this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
+                this.formSteps[6].fieldsList[2].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
-                this.formSteps[5].fieldsList[3].fieldControl.control.setValue(
+                this.formSteps[6].fieldsList[3].fieldControl.control.setValue(
                   '',
                   {
                     emitEvent: false,
                   }
                 );
-                this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
+                this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
-                this.formSteps[5].fieldsList[6].fieldControl.control.setValue(
+                this.formSteps[6].fieldsList[6].fieldControl.control.setValue(
                   '',
                   {
                     emitEvent: false,
                   }
                 );
-                this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
+                this.formSteps[6].fieldsList[6].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                this.formSteps[6].fieldsList[4].fieldControl.control.setValidators(
+                  []
+                );
+
+                setTimeout(() => {
+                  this.formSteps[6].fieldsList[2].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[6].fieldsList[4].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[6].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                }, 500);
               });
             }
           },
@@ -1467,15 +1587,24 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'location',
           fieldControl: {
             type: 'single',
-            control: new FormControl(''),
+            control: new FormControl('', Validators.required),
           },
-          label:
-            'Locación/Ubicación GPS(Esto ayudara al mensajero a hacer la entrega más precisa)',
+          label: 'Link de la Locación/Ubicación GPS (*)',
+          sublabel: 'Esto ayudara al mensajero a hacer la entrega más precisa',
           placeholder: 'Escribe aquí...',
           styles: {
             labelStyles: {
               ...labelStyles,
               paddingTop: '65px',
+              paddingBottom: '0px',
+            },
+            subLabelStyles: {
+              display: 'block',
+              fontFamily: 'RobotoRegular',
+              color: '#141414',
+              fontSize: '16px',
+              opacity: '0.64',
+              fontWeight: 'normal',
               paddingBottom: '26px',
             },
             containerStyles: {
@@ -1515,8 +1644,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'Nombre de quien envía',
-          placeholder: 'Escribe aquí',
+          label:
+            'Nombre de quien envía(Si lo dejas vacio, diremos que tu pedido, arreglo o regalo fue realizado por alguien "Anónimo")',
+          placeholder: 'Anónimo',
           styles: {
             labelStyles: {
               ...labelStyles,
@@ -1580,7 +1710,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           sender,
           receiver,
           receiverPhoneNumber,
-        } = params.dataModel.value['6'];
+        } = params.dataModel.value['7'];
 
         const whatsappMessagePartsOfThe6thStep = [];
 
@@ -1616,7 +1746,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
         if (sender && sender !== '') {
           whatsappMessagePartsOfThe6thStep.push(
-            `*Nombre del Remitente:*\n${sender}\n\n`
+            `*Nombre del Remitente:*\n${
+              sender && sender.length ? sender : 'Anónimo'
+            }\n\n`
           );
         }
 
@@ -1640,9 +1772,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
         this.whatsAppMessageParts.pop();
 
         if (this.choosedFlowers) {
-          params.scrollToStep(3);
-        } else {
           params.scrollToStep(4);
+        } else {
+          params.scrollToStep(5);
         }
       },
       pageHeader: {
@@ -1655,7 +1787,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         },
       },
       footerConfig,
-      stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
+      stepButtonInvalidText: 'INGRESA LOS DATOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN',
     },
     //por aqui voy
@@ -1675,7 +1807,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'Consumo (B02)',
           ],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[6].fieldsList[0].fieldControl.control.setValue(
+            this.formSteps[7].fieldsList[0].fieldControl.control.setValue(
               change,
               {
                 emitEvent: false,
@@ -1683,27 +1815,27 @@ export class HeavenlyBalloonsComponent implements OnInit {
             );
 
             if (change !== 'Comprobante Fiscal (B01)') {
-              this.formSteps[6].fieldsList[1].fieldControl.control.setValue('');
-              this.formSteps[6].fieldsList[1].styles.containerStyles.opacity =
+              this.formSteps[7].fieldsList[1].fieldControl.control.setValue('');
+              this.formSteps[7].fieldsList[1].styles.containerStyles.opacity =
                 '0';
-              this.formSteps[6].fieldsList[1].styles.containerStyles.height =
+              this.formSteps[7].fieldsList[1].styles.containerStyles.height =
                 '0px';
-              this.formSteps[6].fieldsList[1].fieldControl.control.setValidators(
+              this.formSteps[7].fieldsList[1].fieldControl.control.setValidators(
                 []
               );
-              this.formSteps[6].fieldsList[1].fieldControl.control.updateValueAndValidity();
+              this.formSteps[7].fieldsList[1].fieldControl.control.updateValueAndValidity();
             } else {
-              this.formSteps[6].fieldsList[1].styles.containerStyles.opacity =
+              this.formSteps[7].fieldsList[1].styles.containerStyles.opacity =
                 '1';
-              this.formSteps[6].fieldsList[1].styles.containerStyles.height =
+              this.formSteps[7].fieldsList[1].styles.containerStyles.height =
                 'auto';
-              this.formSteps[6].fieldsList[1].fieldControl.control.setValidators(
+              this.formSteps[7].fieldsList[1].fieldControl.control.setValidators(
                 Validators.compose([
                   Validators.required,
                   Validators.pattern(/[\S]/),
                 ])
               );
-              this.formSteps[6].fieldsList[1].fieldControl.control.updateValueAndValidity();
+              this.formSteps[7].fieldsList[1].fieldControl.control.updateValueAndValidity();
             }
           },
           inputType: 'radio',
@@ -1756,15 +1888,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'Otro',
           ],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[6].fieldsList[3].styles.containerStyles = {};
+            this.formSteps[7].fieldsList[3].styles.containerStyles = {};
 
             if (change !== 'Efectivo') {
-              this.formSteps[6].fieldsList[3].styles.containerStyles.opacity =
+              this.formSteps[7].fieldsList[3].styles.containerStyles.opacity =
                 '1';
-              this.formSteps[6].fieldsList[3].styles.containerStyles.height =
+              this.formSteps[7].fieldsList[3].styles.containerStyles.height =
                 'auto';
 
-              this.formSteps[6].fieldsList[3].styles.containerStyles.marginLeft =
+              this.formSteps[7].fieldsList[3].styles.containerStyles.marginLeft =
                 '0px';
 
               const detectIfFirstIndexIsAnImageAndIsNotAnEmptyString = (
@@ -1782,28 +1914,28 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 };
               };
 
-              this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
+              this.formSteps[7].fieldsList[3].fieldControl.control.setValidators(
                 Validators.compose([
                   Validators.required,
                   detectIfFirstIndexIsAnImageAndIsNotAnEmptyString(
-                    this.formSteps[6].fieldsList[3].fieldControl.control.value
+                    this.formSteps[7].fieldsList[3].fieldControl.control.value
                   ),
                 ])
               );
             } else {
-              this.formSteps[6].fieldsList[3].styles.containerStyles.opacity =
+              this.formSteps[7].fieldsList[3].styles.containerStyles.opacity =
                 '0';
-              this.formSteps[6].fieldsList[3].styles.containerStyles.height =
+              this.formSteps[7].fieldsList[3].styles.containerStyles.height =
                 '0px';
-              this.formSteps[6].fieldsList[3].fieldControl.control.setValue([
+              this.formSteps[7].fieldsList[3].fieldControl.control.setValue([
                 '',
               ]);
-              this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
+              this.formSteps[7].fieldsList[3].fieldControl.control.setValidators(
                 []
               );
             }
 
-            this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
+            this.formSteps[7].fieldsList[3].fieldControl.control.updateValueAndValidity();
           },
           label: 'Vía o Cuenta a la que realizaste tu pago',
           inputType: 'radio',
@@ -2018,10 +2150,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
         type: 'promise',
         function: async (params) => {
           try {
+            const { email } = params.dataModel.value['1'];
+
             const { instagramUser, name, lastname, birthday } =
-              params.dataModel.value['1'];
-            const { email, phoneNumber } = params.dataModel.value['2'];
-            const { whatWouldYouOrder } = params.dataModel.value['3'];
+              params.dataModel.value['2'];
+            const { phoneNumber } = params.dataModel.value['3'];
+            const { whatWouldYouOrder } = params.dataModel.value['4'];
             const {
               additionalDetails,
               balloonMessage,
@@ -2030,12 +2164,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
               ribbonColor,
               rosesColor,
               wantToAddADedication: wantToAddADedication4thStep,
-            } = params.dataModel.value['4'];
+            } = params.dataModel.value['5'];
             const {
               dedicationMessage2: dedicationMessage5thStep,
               orderDetails,
               wantToAddADedication: wantToAddADedication5thStep,
-            } = params.dataModel.value['5'];
+            } = params.dataModel.value['6'];
             const {
               deliveryAddress,
               deliveryMethod,
@@ -2045,7 +2179,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               reservation,
               sender,
               typeOfBuilding,
-            } = params.dataModel.value['6'];
+            } = params.dataModel.value['7'];
             const {
               billType,
               howDidYouFindUs,
@@ -2053,13 +2187,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paymentMethod,
               proofOfPayment,
               socialId,
-            } = params.dataModel.value['7'];
+            } = params.dataModel.value['8'];
             let totalAmount =
               '$' +
-              this.formSteps[6].fieldsList[4].fieldControl.control.value.toLocaleString();
+              this.formSteps[7].fieldsList[4].fieldControl.control.value.toLocaleString();
             let firstPayment =
               '$' +
-              this.formSteps[6].fieldsList[5].fieldControl.control.value.toLocaleString();
+              this.formSteps[7].fieldsList[5].fieldControl.control.value.toLocaleString();
 
             const whatsappMessagePartsOfThe7thStep = [];
 
@@ -2081,6 +2215,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               );
             }
 
+            /*
             if (totalAmount) {
               whatsappMessagePartsOfThe7thStep.push(
                 `*Total de la orden:*\n${totalAmount}\n\n`
@@ -2092,6 +2227,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 `*Total pagado:*\n${firstPayment}\n\n`
               );
             }
+            */
 
             if (orderMedium && orderMedium !== '') {
               whatsappMessagePartsOfThe7thStep.push(
@@ -2144,7 +2280,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
               lastname,
               socialId,
               email,
-              phoneNumber,
+              phoneNumber:
+                this.existingPhone && this.existingPhone.length
+                  ? {
+                      ...phoneNumber,
+                      e164Number: '+' + this.existingPhone,
+                    }
+                  : phoneNumber,
               receiverPhoneNumber,
               articleDescription: orderDetails,
               sender: sender !== '' ? sender : 'Anónimo',
@@ -2157,7 +2299,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 : wantToAddADedication5thStep,
               orderMedium,
               paymentMethod,
-              timeOfDay: reservation.timeOfDay,
+              timeOfDay: reservation?.timeOfDay || null,
               addressReference: deliveryAddress,
               deliveryAddress,
               deliveryMethod,
@@ -2187,15 +2329,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
             const arrayOfProofOfPaymentFiles = [];
 
             if (
-              this.formSteps[3].fieldsList[7].fieldControl.control.value
+              this.formSteps[4].fieldsList[7].fieldControl.control.value
                 .length > 0 &&
-              this.formSteps[3].fieldsList[7].fieldControl.control.value[0] !==
+              this.formSteps[4].fieldsList[7].fieldControl.control.value[0] !==
                 '' &&
               ['Globos de helio', 'Arreglo de flores'].includes(
                 whatWouldYouOrder
               )
             ) {
-              this.formSteps[3].fieldsList[7].fieldControl.control.value.forEach(
+              this.formSteps[4].fieldsList[7].fieldControl.control.value.forEach(
                 (base64string) => {
                   if (base64string && base64string !== '')
                     arrayOfReferenceImageFiles.push(base64ToFile(base64string));
@@ -2204,15 +2346,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
 
             if (
-              this.formSteps[4].fieldsList[3].fieldControl.control.value
+              this.formSteps[5].fieldsList[3].fieldControl.control.value
                 .length > 0 &&
-              this.formSteps[4].fieldsList[3].fieldControl.control.value[0] !==
+              this.formSteps[5].fieldsList[3].fieldControl.control.value[0] !==
                 '' &&
               !['Globos de helio', 'Arreglo de flores'].includes(
                 whatWouldYouOrder
               )
             ) {
-              this.formSteps[4].fieldsList[3].fieldControl.control.value.forEach(
+              this.formSteps[5].fieldsList[3].fieldControl.control.value.forEach(
                 (base64string) => {
                   if (base64string && base64string !== '')
                     arrayOfReferenceImageFiles.push(base64ToFile(base64string));
@@ -2221,12 +2363,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
 
             if (
-              this.formSteps[6].fieldsList[3].fieldControl.control.value
+              this.formSteps[7].fieldsList[3].fieldControl.control.value
                 .length > 0 &&
-              this.formSteps[6].fieldsList[3].fieldControl.control.value[0] !==
+              this.formSteps[7].fieldsList[3].fieldControl.control.value[0] !==
                 ''
             ) {
-              this.formSteps[6].fieldsList[3].fieldControl.control.value.forEach(
+              this.formSteps[7].fieldsList[3].fieldControl.control.value.forEach(
                 (base64string) => {
                   if (base64string && base64string !== '')
                     arrayOfProofOfPaymentFiles.push(base64ToFile(base64string));
@@ -2234,94 +2376,54 @@ export class HeavenlyBalloonsComponent implements OnInit {
               );
             }
 
-            let uploadFilesResultReferenceImages = null;
-
-            if (arrayOfReferenceImageFiles.length > 0)
-              uploadFilesResultReferenceImages =
-                await this.merchantsService.uploadAirtableAttachments(
-                  arrayOfReferenceImageFiles
-                );
-
-            let uploadFilesResultProofOfPayment = null;
-
-            if (arrayOfProofOfPaymentFiles.length > 0)
-              uploadFilesResultProofOfPayment =
-                await this.merchantsService.uploadAirtableAttachments(
-                  arrayOfProofOfPaymentFiles
-                );
-
-            if (uploadFilesResultReferenceImages) {
-              const fileRoutes = uploadFilesResultReferenceImages;
-              whatsappMessagePartsOfThe7thStep.push(`*Foto de Referencia:*\n`);
-
-              data.referenceImage = fileRoutes;
-
-              fileRoutes.forEach((route, index) => {
-                whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
-              });
-            }
-
-            if (uploadFilesResultProofOfPayment) {
-              const fileRoutes = uploadFilesResultProofOfPayment;
-              whatsappMessagePartsOfThe7thStep.push(`*Comprobante de pago:*\n`);
-
-              data.proofOfPayment = fileRoutes;
-
-              fileRoutes.forEach((route, index) => {
-                whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
-              });
-            }
-
-            if (reservation) {
-              const deliveryISOString = new Date(
-                reservation.year,
-                reservation.monthNumber - 1,
-                reservation.dayNumber
-              ).toISOString();
-              data.delivery = deliveryISOString;
-            }
-
-            if (window.navigator.onLine) {
-              data = {
-                data: encodeURIComponent(
-                  JSON.stringify({
-                    ...data,
-                  })
-                ),
-                appVersion: version,
-              };
-
-              const completeWhatsappParts = this.whatsAppMessageParts.concat(
+            if (this.registeredEmail) {
+              // estaba
+              await this.submitData(
+                data,
+                arrayOfReferenceImageFiles,
+                arrayOfProofOfPaymentFiles,
+                reservation,
                 whatsappMessagePartsOfThe7thStep
               );
-
-              //console.log(completeWhatsappParts);
-
-              this.fullFormMessage = completeWhatsappParts.join('');
-
-              const success =
-                await this.merchantsService.uploadDataToClientsAirtable(
-                  this.merchantId,
-                  this.automationName,
-                  data,
-                  window.location.href
-                );
-
-              this.dialog.open(GeneralFormSubmissionDialogComponent, {
-                type: 'centralized-fullscreen',
-                props: {
-                  icon: success ? 'check-circle.svg' : 'sadFace.svg',
-                  showCloseButton: success ? false : true,
-                  message: success ? null : 'Ocurrió un problema',
-                },
-                customClass: 'app-dialog',
-                flags: ['no-header'],
-              });
-
-              window.location.href =
-                this.whatsappLink + encodeURIComponent(this.fullFormMessage);
             } else {
-              throw new Error('Se perdió la conexion a internet');
+              const phone =
+                this.existingPhone && this.existingPhone.length
+                  ? this.existingPhone
+                  : phoneNumber.e164Number.split('+')[1];
+
+              try {
+                const phoneUser = await this.authService.checkUser(phone);
+
+                if (phoneUser) this.registeredPhone = true;
+                else this.registeredPhone = false;
+              } catch (error) {
+                this.registeredPhone = false;
+              }
+
+              const input: any = {
+                email,
+                name,
+                lastname,
+              };
+
+              if (!this.registeredPhone) input.phone = phone;
+
+              const registeredEmail = await this.authService.signup(
+                input,
+                'none',
+                null,
+                false
+              );
+
+              if (registeredEmail) {
+                await this.submitData(
+                  data,
+                  arrayOfReferenceImageFiles,
+                  arrayOfProofOfPaymentFiles,
+                  reservation,
+                  whatsappMessagePartsOfThe7thStep
+                );
+              }
             }
 
             return { ok: true };
@@ -2367,7 +2469,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       customScrollToStepBackwards: (params) => {
         this.whatsAppMessageParts.pop();
 
-        params.scrollToStep(5);
+        params.scrollToStep(6);
       },
       footerConfig,
       stepButtonInvalidText: 'INGRESA LOS DATOS',
@@ -2380,7 +2482,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
     private decimalPipe: DecimalPipe,
     private dialog: DialogService,
     private merchantsService: MerchantsService,
-    private frontendLogsService: FrontendLogsService
+    private frontendLogsService: FrontendLogsService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -2399,6 +2502,123 @@ export class HeavenlyBalloonsComponent implements OnInit {
     setTimeout(() => {
       this.loading = false;
     }, 1000);
+  }
+
+  async submitData(
+    data: any,
+    arrayOfReferenceImageFiles: any[],
+    arrayOfProofOfPaymentFiles: any[],
+    reservation: any,
+    whatsappMessagePartsOfThe7thStep: string[]
+  ) {
+    let uploadFilesResultReferenceImages = null;
+
+    if (arrayOfReferenceImageFiles.length > 0)
+      uploadFilesResultReferenceImages =
+        await this.merchantsService.uploadAirtableAttachments(
+          arrayOfReferenceImageFiles
+        );
+
+    let uploadFilesResultProofOfPayment = null;
+
+    if (arrayOfProofOfPaymentFiles.length > 0)
+      uploadFilesResultProofOfPayment =
+        await this.merchantsService.uploadAirtableAttachments(
+          arrayOfProofOfPaymentFiles
+        );
+
+    if (uploadFilesResultReferenceImages) {
+      const fileRoutes = uploadFilesResultReferenceImages;
+      whatsappMessagePartsOfThe7thStep.push(`*Foto de Referencia:*\n`);
+
+      data.referenceImage = fileRoutes;
+
+      fileRoutes.forEach((route, index) => {
+        whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
+      });
+    }
+
+    if (uploadFilesResultProofOfPayment) {
+      const fileRoutes = uploadFilesResultProofOfPayment;
+      whatsappMessagePartsOfThe7thStep.push(`*Comprobante de pago:*\n`);
+
+      data.proofOfPayment = fileRoutes;
+
+      fileRoutes.forEach((route, index) => {
+        whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
+      });
+    }
+
+    if (reservation) {
+      const deliveryISOString = new Date(
+        reservation.year,
+        reservation.monthNumber - 1,
+        reservation.dayNumber
+      ).toISOString();
+      data.delivery = deliveryISOString;
+    }
+
+    Object.keys(data).forEach((key) => {
+      if (
+        [
+          'ribbonColor',
+          'rosesColor',
+          'balloonsColor',
+          'referenceImage',
+          'proofOfPayment',
+        ].includes(key)
+      )
+        data[key] = data[key] || [];
+      else if (!['delivery', 'birthday'].includes(key) && key !== 'phoneNumber')
+        data[key] = data[key] || '007';
+      else if (key === 'phoneNumber') {
+        data['phoneNumber'] = data['phoneNumber'] || '0000000000';
+      }
+    });
+
+    if (window.navigator.onLine) {
+      console.log(data);
+
+      data = {
+        data: encodeURIComponent(
+          JSON.stringify({
+            ...data,
+          })
+        ),
+        appVersion: version,
+      };
+
+      const completeWhatsappParts = this.whatsAppMessageParts.concat(
+        whatsappMessagePartsOfThe7thStep
+      );
+
+      //console.log(completeWhatsappParts);
+
+      this.fullFormMessage = completeWhatsappParts.join('');
+
+      const success = await this.merchantsService.uploadDataToClientsAirtable(
+        this.merchantId,
+        this.automationName,
+        data,
+        window.location.href
+      );
+
+      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+        type: 'centralized-fullscreen',
+        props: {
+          icon: success ? 'check-circle.svg' : 'sadFace.svg',
+          showCloseButton: success ? false : true,
+          message: success ? null : 'Ocurrió un problema',
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+
+      window.location.href =
+        this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+    } else {
+      throw new Error('Se perdió la conexion a internet');
+    }
   }
 
   storeParams(params: any) {

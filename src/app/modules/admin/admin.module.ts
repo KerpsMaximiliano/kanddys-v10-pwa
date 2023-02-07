@@ -2,9 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { CreateItemComponent } from './pages/create-item/create-item.component';
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
-import { ItemDisplayComponent } from './pages/item-display/item-display.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
 import { AdminComponent } from './admin/admin.component';
 import { OrdersAndPreOrdersList } from './pages/ordersAndPreOrdersList/ordersAndPreOrdersList';
@@ -13,7 +11,6 @@ import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/ta
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
 import { ArticleCreatorComponent } from './pages/article-creator/article-creator.component';
-import { ArticleParamsComponent } from './pages/article-params/article-params.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/anexo-choices.component';
@@ -26,6 +23,9 @@ import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
 import { ArticleEditorComponent } from './pages/article-editor/article-editor.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { TagsViewComponent } from './pages/tags-view/tags-view.component';
+import { ViewConfigurationComponent } from './pages/view-configuration/view-configuration.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -33,10 +33,6 @@ const routes: Routes = [
   //   path: 'create-article',
   //   component: ArticleCreatorComponent,
   // },
-  {
-    path: 'article-params',
-    component: ArticleParamsComponent,
-  },
   {
     path: '',
     component: AdminComponent,
@@ -60,10 +56,6 @@ const routes: Routes = [
         path: 'create-article/:itemId',
         component: ArticleCreatorComponent,
       },
-      {
-        path: 'article-params/:itemId',
-        component: ArticleParamsComponent,
-      },
       /*{
         path: 'entity-detail-metrics',
         component: EntityDetailMetricsComponent,
@@ -72,14 +64,6 @@ const routes: Routes = [
       {
         path: 'merchant-items',
         component: MerchantItemsComponent,
-      },
-      {
-        path: 'item-display/:itemId',
-        component: ItemDisplayComponent,
-      },
-      {
-        path: 'item-display',
-        component: ItemDisplayComponent,
       },
       {
         path: 'options/:itemId',
@@ -152,12 +136,36 @@ const routes: Routes = [
         component: ArticlePrivacyComponent,
       },
       {
-        path: "article-editor/:articleId",
-        component: ArticleEditorComponent
+        path: 'contact-landing/:idUser',
+        component: ContactLandingContainerComponent,
       },
       {
-        path: "slides-editor/:articleId",
-        component: QrEditComponent
+        path: 'article-editor/:articleId',
+        component: ArticleEditorComponent,
+      },
+      {
+        path: 'slides-editor/:articleId',
+        component: QrEditComponent,
+      },
+      {
+        path: 'admin-dashboard',
+        component: AdminDashboardComponent,
+      },
+      {
+        path: 'tags-view',
+        component: TagsViewComponent,
+      },
+      {
+        path: 'bios-edit',
+        component: BiosEditComponent,
+      },
+      {
+        path: 'view-configuration-items',
+        component: ViewConfigurationComponent,
+      },
+      {
+        path: 'view-configuration-cards',
+        component: ViewConfigurationComponent,
       }
     ],
   },
@@ -167,29 +175,30 @@ const routes: Routes = [
   },
   {
     path: 'tags',
-    component: TagsComponent
+    component: TagsComponent,
   },
 ];
 
 @NgModule({
   declarations: [
-    CreateItemComponent,
     MerchantItemsComponent,
-    ItemDisplayComponent,
     ActionsMenuComponent,
     AdminComponent,
     OrdersAndPreOrdersList,
     CalendarCreatorComponent,
     TimeBlockComponent,
     ArticleCreatorComponent,
-    ArticleParamsComponent,
     ItemsDashboardComponent,
     CreateTagComponent,
     BiosEditComponent,
     ImageBannerComponent,
     TagsComponent,
     ManageTagComponent,
-    ArticleEditorComponent
+    ArticleEditorComponent,
+    AdminDashboardComponent,
+    TagsViewComponent,
+    BiosEditComponent,
+    ViewConfigurationComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

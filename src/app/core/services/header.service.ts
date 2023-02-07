@@ -35,7 +35,7 @@ class OrderProgress {
 
 export class SaleflowData {
   order: ItemOrderInput;
-  itemData: any[];
+  itemData: string[];
   post: PostInput;
   deliveryLocation: DeliveryLocationInput;
   reservation: ReservationInput;
@@ -56,7 +56,7 @@ export class HeaderService {
   datePreview: any;
   flowImage: any = [];
   savedBookmarks: any;
-  items: Item[] = [];
+  items: string[] = [];
   order: ItemOrderInput;
   post: PostInput;
   saleflow: SaleFlow;
@@ -189,11 +189,13 @@ export class HeaderService {
     }
     if (this.saleflow.module?.appointment?.isActive) {
       const reservation = this.getReservation();
-      if (!reservation || !this.orderProgress.reservation) return;
+      if (!reservation || !reservation.date || !this.orderProgress.reservation)
+        return;
     }
     if (this.hasScenarios) {
       if (!this.orderProgress.scenarios) return;
     }
+    console.log('Completo');
     return true;
   }
 
@@ -204,10 +206,6 @@ export class HeaderService {
       this.saleflow.module.delivery.isActive
     ) {
       if (!this.orderProgress.delivery) return;
-    }
-    if (this.items.some((item) => item.customizerId)) {
-      if (!this.orderProgress.qualityQuantity) return;
-      if (!this.orderProgress.customizer) return;
     }
     if (
       this.saleflow.module.appointment &&
@@ -305,13 +303,13 @@ export class HeaderService {
     let { itemData, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     if (!itemData) itemData = [];
-    const index = itemData.findIndex((item) => item._id === product._id);
+    const index = itemData.findIndex((item) => item === product._id);
     if (index >= 0) {
       itemData.splice(index, 1);
       this.items.splice(index, 1);
     } else {
-      itemData.push(product);
-      this.items.push(product as Item);
+      itemData.push(product._id);
+      this.items.push(product._id);
     }
     localStorage.setItem(
       this.saleflow._id,
@@ -432,12 +430,15 @@ export class HeaderService {
   getOrder() {
     let { order }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+
+    if (order && 'itemPackage' in order) delete order.itemPackage;
+
     this.order = order;
     return order;
   }
 
   // Returns items data from localStorage
-  getItems(): Item[] {
+  getItems(): string[] {
     let { itemData }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     this.items = itemData || [];
@@ -516,7 +517,7 @@ export class HeaderService {
     let { itemData, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     if (!itemData) return;
-    const index = itemData.findIndex((product) => product._id === id);
+    const index = itemData.findIndex((product) => product === id);
     if (index >= 0) itemData.splice(index, 1);
     else return;
     localStorage.setItem(

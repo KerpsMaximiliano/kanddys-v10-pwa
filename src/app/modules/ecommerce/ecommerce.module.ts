@@ -5,13 +5,8 @@ import { SharedModule } from './../../shared/shared.module';
 import { CategoryItemsComponent } from './pages/category-items/category-items.component';
 import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
-import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
-import { CustomItemDetailComponent } from './pages/provider-store/custom-item-detail/custom-item-detail.component';
-import { CustomizerRedirectComponent } from './pages/provider-store/customizer-redirect/customizer-redirect.component';
-import { ProviderStoreComponent } from './pages/provider-store/provider-store.component';
-import { UserInfoComponent } from './pages/provider-store/user-info/user-info.component';
 import { RedirectionsComponent } from './pages/redirections/redirections.component';
 import { NewAddressComponent } from './pages/new-address/new-address.component';
 import { EcommerceComponent } from './ecommerce/ecommerce.component';
@@ -32,6 +27,9 @@ import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.c
 
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
+import { CollectionsComponent } from 'src/app/modules/ecommerce/pages/collections/collections.component';
+import { TagItemsComponent } from 'src/app/modules/ecommerce/pages/tag-items/tag-items.component';
+import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 
 const routes: Routes = [
   {
@@ -48,11 +46,7 @@ const routes: Routes = [
   },
   {
     path: 'article-access/:templateId',
-    component: ArticleAccessComponent
-  },
-  {
-    path: 'item-detail',
-    component: ItemDetailComponent,
+    component: ArticleAccessComponent,
   },
   {
     path: 'order-info/:orderId',
@@ -86,24 +80,6 @@ const routes: Routes = [
         component: CategoryItemsComponent,
       },
       {
-        path: 'provider-store/:itemId',
-        component: ProviderStoreComponent,
-        children: [
-          {
-            path: 'quantity-and-quality',
-            component: CustomItemDetailComponent,
-          },
-          {
-            path: 'redirect-to-customizer',
-            component: CustomizerRedirectComponent,
-          },
-          {
-            path: 'user-info',
-            component: UserInfoComponent,
-          },
-        ],
-      },
-      {
         path: 'store',
         component: StoreComponent,
       },
@@ -126,10 +102,6 @@ const routes: Routes = [
       {
         path: 'new-address',
         component: NewAddressComponent,
-      },
-      {
-        path: 'item-detail/:itemId',
-        component: ItemDetailComponent,
       },
       {
         path: 'create-giftcard',
@@ -171,6 +143,26 @@ const routes: Routes = [
         path: 'text-edition-and-preview',
         component: TextEditionAndPreviewComponent,
       },
+      {
+        path: 'collections',
+        component: CollectionsComponent,
+      },
+      {
+        path: 'collections/:tagId',
+        component: TagItemsComponent,
+      },
+      // {
+      //   path: 'categories',
+      //   component: CollectionsComponent,
+      // },
+      {
+        path: 'categories/:tagId',
+        component: TagItemsComponent,
+      },
+      {
+        path: 'contact-landing/:idUser',
+        component: ContactLandingContainerComponent,
+      },
     ],
   },
 ];
@@ -179,13 +171,7 @@ const routes: Routes = [
   declarations: [
     EcommerceComponent,
     CategoryItemsComponent,
-    CustomItemDetailComponent,
-    CustomizerRedirectComponent,
-    ProviderStoreComponent,
     StoreComponent,
-    ItemDetailComponent,
-    CustomizerRedirectComponent,
-    UserInfoComponent,
     CreateGiftcardComponent,
     OrderDetailComponent,
     RedirectionsComponent,
@@ -200,7 +186,9 @@ const routes: Routes = [
     ArticleDetailComponent,
     CreateArticleComponent,
     TextEditionAndPreviewComponent,
-    TermsOfUseComponent
+    TermsOfUseComponent,
+    CollectionsComponent,
+    TagItemsComponent
   ],
   imports: [
     CommonModule,
