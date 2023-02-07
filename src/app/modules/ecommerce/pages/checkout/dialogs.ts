@@ -207,7 +207,6 @@ export class Dialogs {
   constructor(
     private dialogService: DialogService,
     private headerService: HeaderService,
-    private customizerValueService: CustomizerValueService,
     private postsService: PostsService,
     private orderService: OrderService,
     private appService: AppService,

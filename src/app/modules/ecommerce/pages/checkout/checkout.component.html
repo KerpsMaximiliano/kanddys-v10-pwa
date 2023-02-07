@@ -85,13 +85,13 @@
             <button
               (click)="
                 (item.image || item.images?.length) &&
-                  openImageModal(item.image || item.images[0])
+                  openImageModal(item.image || item.images[0].value)
               "
             >
               <img
                 [src]="
                   item.image || item.images?.length
-                    ? item.image || item.images[0]
+                    ? item.image || item.images[0].value
                     : '/assets/images/noimage.png'
                 "
                 (error)="item.image = '/assets/images/noimage.png'"
@@ -271,7 +271,6 @@
     >
       <div class="between">
         <h2 class="section-title">Mensaje de regalo:</h2>
-
         <button (click)="editOrder('message')" *ngIf="post">
           <img
             [src]="env + '/pencil.svg'"
@@ -280,7 +279,6 @@
           />
         </button>
       </div>
-
       <ng-container *ngIf="post">
         <div
           class="items-container"
@@ -329,7 +327,6 @@
                 Lo sentimos, no se puede mostrar el video
               </video>
             </button>
-
             <button
               class="video"
               *ngFor="let audio of postSlideAudio"
@@ -359,12 +356,10 @@
               {{ post.message }}
             </p>
           </section>
-
           <section *ngIf="post.targets?.length && post.targets[0]?.name">
             <h3 class="sub">Título del sobre:</h3>
             <p class="message-text inner">{{ post.targets[0]?.name }}</p>
           </section>
-
           <section *ngIf="post.from">
             <h3 class="sub">De:</h3>
             <p class="message-text inner">{{ post.from }}</p>
@@ -394,10 +389,10 @@
           }"
         ></app-answer-selector>
       </ng-container>
-    </section>
+    </section> -->
   </main>
 
-  <app-sticky-button
+  <!-- <app-sticky-button
     [mode]="
       !disableButton &&
       ((headerService.saleflow.module?.post && post) ||
@@ -445,7 +440,6 @@
         createOrder()
     "
   ></app-sticky-button> -->
-  </main>
   <app-sticky-button
     mode="fixed"
     color="#FFFFFF"
