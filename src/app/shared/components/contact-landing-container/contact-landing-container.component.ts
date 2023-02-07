@@ -43,53 +43,121 @@ export class ContactLandingContainerComponent implements OnInit {
 
         const { image } = _merchantDefault || {};
         this.image = image;
-        const { _id } = _merchantDefault || {};
-        const paginate: PaginationInput = {
-          findBy: {
-            user: idUser,
-          },
-          options: {
-            sortBy: 'updatedAt:desc',
-            limit: -1
-          }
-        };
-        const [contact] = await this._ContactService.contacts(paginate);
-        if (contact) {
-          const { _id, name, description, link, image } = contact || {};
-          this.contactID = name;
-          this.img = image;
-          this.bio = description;
-          this.links = link;
-          this.idUser = _id;
-          const direction = link.find(({name, value}) =>  name==='location');
-          this.contactDirection = direction?.value || '';
-        } else {
-          let { name, phone, email, bio, social, image, ...test }: any =
-            (await this._UsersService.user(idUser)) || {
-              social: [],
-            };
-          const merchantDefault = await this._MerchantService.merchants({
+
+        // Lo de abajo está comentado por un merge conflict
+
+        // const { _id } = _merchantDefault || {};
+        // const paginate: PaginationInput = {
+        //   findBy: {
+        //     user: idUser,
+        //   },
+        //   options: {
+        //     sortBy: 'updatedAt:desc',
+        //     limit: -1
+        //   }
+        // };
+        // const [contact] = await this._ContactService.contacts(paginate);
+        // if (contact) {
+        //   const { _id, name, description, link, image } = contact || {};
+        //   this.contactID = name;
+        //   this.img = image;
+        //   this.bio = description;
+        //   this.links = link;
+        //   this.idUser = _id;
+        //   const direction = link.find(({name, value}) =>  name==='location');
+        //   this.contactDirection = direction?.value || '';
+        // } else {
+        //   let { name, phone, email, bio, social, image, ...test }: any =
+        //     (await this._UsersService.user(idUser)) || {
+        //       social: [],
+        //     };
+        //   const merchantDefault = await this._MerchantService.merchants({
+        //     findBy: {
+        //       owner: idUser,
+        //       default: true,
+        //     },
+        //     options: {
+        //       limit: 1,
+        //     },
+        //   });
+
+        //   this.contactID = name || phone || email;
+        //   this.img = image;
+
+        //   if (merchantDefault && merchantDefault.length) {
+        //     if (merchantDefault[0].image) {
+        //       this.img = merchantDefault[0].image;
+        //     }
+        //   }
+
+        //   this.bio = bio;
+        //   this.links = social.map(({name,url:value}) => ({name, value}));
+        //   console.log('links: ', this.links);
+        if (idUser) {
+          const { _id } = _merchantDefault || {};
+          const paginate: PaginationInput = {
             findBy: {
-              owner: idUser,
-              default: true,
+              _id: idUser,
             },
-            options: {
-              limit: 1,
-            },
-          });
+          };
+          const [contact] = await this._ContactService.contacts(paginate);
+          if (contact) {
+            const { name, description, link, image } = contact || {};
+            this.contactID = name;
+            this.img = image;
+            this.bio = description;
+            for (const { name, value } of link) {
+              switch (name) {
+                case 'whatsapp':
+                  this.whatsapp = value;
+                  break;
+                case 'telegram':
+                  this.telegram = value;
+                  break;
+                case 'phone':
+                  this._phone = value;
+                  break;
+              }
+            }
+          } else {
+            let { name, phone, email, bio, social, image, ...test } =
+              (await this._UsersService.user(idUser)) || {
+                social: [],
+              };
+            const merchantDefault = await this._MerchantService.merchants({
+              findBy: {
+                owner: idUser,
+                default: true,
+              },
+              options: {
+                limit: 1,
+              },
+            });
 
-          this.contactID = name || phone || email;
-          this.img = image;
+            this.contactID = name || phone || email;
+            this.img = image;
 
-          if (merchantDefault && merchantDefault.length) {
-            if (merchantDefault[0].image) {
-              this.img = merchantDefault[0].image;
+            if (merchantDefault && merchantDefault.length) {
+              if (merchantDefault[0].image) {
+                this.img = merchantDefault[0].image;
+              }
+            }
+
+            this.bio = bio;
+            for (const { name, url } of social) {
+              switch (name) {
+                case 'whatsapp':
+                  this.whatsapp = url;
+                  break;
+                case 'telegram':
+                  this.telegram = url;
+                  break;
+                case 'phone':
+                  this._phone = url;
+                  break;
+              }
             }
           }
-
-          this.bio = bio;
-          this.links = social.map(({name,url:value}) => ({name, value}));
-          console.log('links: ', this.links);
         }
       })();
     });

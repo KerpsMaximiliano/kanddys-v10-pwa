@@ -1,0 +1,138 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.container {
+  width: 100%;
+
+  &.flex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+  }
+  &.grid {
+    display: grid;
+    .option {
+      width: 100%;
+    }
+  }
+  align-items: center;
+  gap: 7px;
+}
+
+.option {
+  cursor: pointer;
+  transition: all 0.2s;
+  max-width: 100%;
+  min-width: fit-content;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+  flex: 1 1 30%;
+
+  &.optIcon {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+
+    button {
+      all: unset;
+    }
+    .dotsIcon {
+      cursor: pointer;
+      height: 5px;
+      width: auto;
+    }
+  }
+
+  &.type1 {
+    padding: 6px 16px;
+    border: 1px solid #a1a1a1;
+    border-radius: 4px;
+    color: #7b7b7b;
+    font-size: 16px;
+    font-family: "SfProMedium";
+
+    &.active {
+      border: none;
+      background-color: #272727;
+      color: #ffffff;
+    }
+
+    &.optIcon {
+      .dotsIcon {
+        filter: invert(98%) sepia(0%) saturate(8%) hue-rotate(218deg)
+          brightness(103%) contrast(104%);
+      }
+    }
+  }
+
+  &.type2,
+  &.type3 {
+    border: none;
+    color: #272727;
+    font-size: 13px;
+    font-family: "SfProLight";
+    text-transform: uppercase;
+    background-color: transparent;
+
+    &.active {
+      background-color: #e9e9e9;
+    }
+    &.optIcon {
+      .dotsIcon {
+        filter: invert(0%) sepia(37%) saturate(51%) hue-rotate(141deg)
+          brightness(95%) contrast(70%);
+      }
+    }
+  }
+
+  &.type2 {
+    padding: 15px 25px;
+    border-radius: 9px;
+  }
+  &.type3 {
+    padding: 6px 16px 6px 16px;
+    border-radius: 6px;
+  }
+}
+
+.swiper-slide {
+  width: auto !important;
+}
+
+::ng-deep .menuContainer {
+  margin-top: 7px;
+  background-color: #e9e9e9;
+  border-radius: 11px;
+  width: 236px;
+  padding-top: 0px;
+  padding-bottom: 41.5px;
+
+  button {
+    border-bottom: 1px solid #707070;
+    width: 100%;
+    height: 48.5px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 15px;
+
+    span {
+      font-family: SFProLight;
+      font-size: 17px;
+      color: #272727;
+    }
+    .icon {
+      margin-left: auto;
+      margin-right: 0;
+    }
+  }
+}
+
+::ng-deep .fake {
+  display: none;
+}

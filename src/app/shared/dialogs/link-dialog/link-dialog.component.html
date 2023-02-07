@@ -1,0 +1,12 @@
+<div class="container">
+  <div *ngFor="let category of linksCategory" class="linksCategory">
+    <p class="title" *ngIf="category.title !== ''">{{ category.title }}</p>
+    <button *ngFor="let link of category.links; index as i">
+      <img [src]="env + '/upload.svg'" alt="upload" class="upload" />
+      <div class="text-wrap">
+        <a [href]="link.linkDir">{{ link.linkName }}</a>
+        <!-- <div class="line"></div> -->
+      </div>
+    </button>
+  </div>
+</div>

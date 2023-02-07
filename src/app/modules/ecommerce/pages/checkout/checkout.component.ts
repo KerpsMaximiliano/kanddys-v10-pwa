@@ -4,7 +4,12 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
@@ -124,6 +129,8 @@ export class CheckoutComponent implements OnInit {
   postSlideImages: (string | ArrayBuffer)[] = [];
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
+  saleflowId: string;
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -141,6 +148,7 @@ export class CheckoutComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.saleflowId = this.headerService.saleflow.merchant._id;
     let items = this.headerService.getItems();
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
@@ -154,6 +162,19 @@ export class CheckoutComponent implements OnInit {
         },
       })
     )?.listItems;
+
+    for (const item of this.items as Array<Item>) {
+      for (const image of item.images) {
+        if (
+          image.value &&
+          !image.value.includes('http') &&
+          !image.value.includes('https')
+        ) {
+          image.value = 'https://' + image.value;
+        }
+      }
+    }
+
     if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost();
     if (this.post?.slides?.length) {
@@ -186,6 +207,20 @@ export class CheckoutComponent implements OnInit {
       });
     }
     this.deliveryLocation = this.headerService.getLocation();
+    // Validation for stores with only one address of pickup and no delivery for customers
+    if (!this.deliveryLocation) {
+      if (
+        this.headerService.saleflow.module.delivery.pickUpLocations.length ==
+          1 &&
+        !this.headerService.saleflow.module.delivery.deliveryLocation
+      ) {
+        this.deliveryLocation =
+          this.headerService.saleflow.module.delivery.pickUpLocations[0];
+        this.headerService.storeLocation(this.deliveryLocation);
+        this.headerService.orderProgress.delivery = true;
+        this.headerService.storeOrderProgress();
+      }
+    }
     this.reservation = this.headerService.getReservation().reservation;
     if (this.reservation) {
       const fromDate = new Date(this.reservation.date.from);
@@ -207,6 +242,7 @@ export class CheckoutComponent implements OnInit {
           this.reservation.breakTime
         )}`,
       };
+      this.headerService.orderProgress.reservation = true;
     }
     this.headerService.checkoutRoute = null;
     this.payment = this.items?.reduce(
@@ -252,6 +288,9 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+            },
           }
         );
         break;
@@ -313,6 +352,9 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+            },
           }
         );
         return;
@@ -376,8 +418,6 @@ export class CheckoutComponent implements OnInit {
           this.disableButton = false;
 
           return;
-
-          console.error(error);
         }
       }
     }
@@ -385,6 +425,8 @@ export class CheckoutComponent implements OnInit {
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
+      if (this.headerService.order.itemPackage)
+        delete this.headerService.order.itemPackage;
       if (this.headerService.user && !anonymous) {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)
@@ -529,5 +571,16 @@ export class CheckoutComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  urlIsVideo(url: string) {
+    return isVideo(url);
+  }
+
+  goToArticleDetail(itemID: string) {
+    this.router.navigate([`../article-detail/item/${itemID}`], {
+      relativeTo: this.route,
+      replaceUrl: true,
+    });
   }
 }

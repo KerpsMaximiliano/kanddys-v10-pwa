@@ -17,9 +17,13 @@ import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/a
 import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
+import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { ArticleEditorComponent } from './pages/article-editor/article-editor.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { TagsViewComponent } from './pages/tags-view/tags-view.component';
 import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
+import { ViewConfigurationComponent } from './pages/view-configuration/view-configuration.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -118,6 +122,10 @@ const routes: Routes = [
         component: ArticlePrivacyComponent,
       },
       {
+        path: 'contact-landing/:idUser',
+        component: ContactLandingContainerComponent,
+      },
+      {
         path: 'article-editor/:articleId',
         component: ArticleEditorComponent,
       },
@@ -126,9 +134,25 @@ const routes: Routes = [
         component: QrEditComponent,
       },
       {
+        path: 'admin-dashboard',
+        component: AdminDashboardComponent,
+      },
+      {
+        path: 'tags-view',
+        component: TagsViewComponent,
+      },
+      {
         path: 'bios-edit',
         component: BiosEditComponent,
       },
+      {
+        path: 'view-configuration-items',
+        component: ViewConfigurationComponent,
+      },
+      {
+        path: 'view-configuration-cards',
+        component: ViewConfigurationComponent,
+      }
     ],
   },
   {
@@ -151,7 +175,10 @@ const routes: Routes = [
     TagsComponent,
     ManageTagComponent,
     ArticleEditorComponent,
-    BiosEditComponent
+    AdminDashboardComponent,
+    TagsViewComponent,
+    BiosEditComponent,
+    ViewConfigurationComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

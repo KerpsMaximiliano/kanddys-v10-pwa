@@ -1,0 +1,103 @@
+<ng-template #merchantInfo>
+  <div
+    class="icon"
+    [style.background]="
+      _DomSanitizer.bypassSecurityTrustStyle(
+        'url(' +
+          headerService.saleflow?.merchant?.image +
+          ') no-repeat center center / cover #e9e371'
+      )
+    "
+  ></div>
+  <p class="title">
+    {{
+      headerService.saleflow?.merchant?.name.length < 26
+        ? headerService.saleflow?.merchant?.name
+        : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+            "Tienda" | titlecase)
+    }}
+  </p>
+</ng-template>
+
+<div class="container">
+  <nav
+    class="header"
+    [ngStyle]="{
+      backgroundColor:
+        headerService.user?._id === headerService.saleflow?.merchant.owner._id
+          ? '#2874AD'
+          : '#272727'
+    }"
+  >
+    <a
+      style="cursor: pointer"
+      class="merchant-info"
+      [routerLink]="[
+        '/ecommerce',
+        headerService.saleflow?.merchant.slug,
+        'contact-landing',
+        headerService.saleflow?.merchant.owner._id
+      ]"
+      *ngIf="
+        headerService.user?._id === headerService.saleflow?.merchant.owner._id
+      "
+    >
+      <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
+    </a>
+    <div
+      class="merchant-info"
+      *ngIf="
+        headerService.user?._id !== headerService.saleflow?.merchant.owner._id
+      "
+    >
+      <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
+    </div>
+
+    <p class="title" style="margin-left: 8px">{{ name | titlecase }}</p>
+    <button [routerLink]="['../../store']" class="arrow-btn">
+      <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
+    </button>
+  </nav>
+  <div class="margin flex">
+    <section class="productGrid" *ngIf="status === 'complete' && items?.length">
+      <div
+        *ngFor="let item of items; let i = index"
+        [ngStyle]="{ width: '190px', height: '238.43px' }"
+        [routerLink]="['../../article-detail/item/' + item._id]"
+      >
+        <app-saleflow-item
+          [itemIndex]="i"
+          [itemId]="item._id"
+          [type]="4"
+          [showViews]="false"
+          [viewsCounter]="item.visitorCounter ? item.visitorCounter.counter : 0"
+          [inactive]="
+            item.status != 'active' && item.status != 'featured' ? true : false
+          "
+          [imgURL]="item.images.length ? item.images[0].value : ''"
+          [price]="item.pricing"
+          [showPrice]="true"
+          [itemParams]="item.params"
+          [responsiveWidthVersion]="true"
+          [featured]="item.status === 'featured'"
+        ></app-saleflow-item>
+      </div>
+    </section>
+    <div *ngIf="status === 'complete' && !items?.length">
+      <h3>
+        Esta {{ notes ? "colección" : "categoría" }} no tiene productos
+        asignados
+      </h3>
+    </div>
+  </div>
+  <!-- <app-bubble-button
+    [position]="'minir'"
+    [color]="'black'"
+    [solo]="false"
+    [cart]="true"
+    [cartAmount]="1"
+    [routerLink]="['/ecommerce/'+slug+'/checkout']"
+  >
+  </app-bubble-button> -->
+  <!-- <app-gradient-footer [uploadIcon]="true"></app-gradient-footer> -->
+</div>

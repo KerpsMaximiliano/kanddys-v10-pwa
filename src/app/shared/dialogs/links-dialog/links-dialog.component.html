@@ -1,0 +1,44 @@
+<mat-action-list>
+  <span class="title">Links de Visitantes</span>
+  <ng-container *ngFor="let option of options1; last as last">
+    <button
+      [ngClass]="last ? 'subtitle-last' : 'subtitle'"
+      (click)="handleClick(option)"
+    >
+      {{ option }}
+    </button>
+    <mat-divider *ngIf="!last" class="divider"></mat-divider>
+  </ng-container>
+  <qrcode
+    style="visibility: hidden; height: 55.5px"
+    #qrcode
+    [qrdata]="link"
+    [elementType]="'img'"
+    [width]="55.5"
+    [style.margin-top.px]="-25"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#2874AD"
+  ></qrcode>
+  <span class="title">Links de admins</span>
+  <ng-container *ngFor="let option of options2; last as last">
+    <button
+      [ngClass]="last ? 'subtitle-last' : 'subtitle'"
+      (click)="handleClick(option)"
+    >
+      {{ option }}
+    </button>
+    <mat-divider *ngIf="!last" class="divider"></mat-divider>
+  </ng-container>
+  <qrcode
+    style="visibility: hidden; height: 55.5px"
+    #qrcode
+    [qrdata]="link2"
+    [elementType]="'img'"
+    [width]="55.5"
+    [style.margin-top.px]="-25"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#2874AD"
+  ></qrcode>
+</mat-action-list>

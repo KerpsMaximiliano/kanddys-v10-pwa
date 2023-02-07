@@ -25,6 +25,7 @@ import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 interface Image {
   src: string;
@@ -122,7 +123,22 @@ export class OrderDetailComponent implements OnInit {
   orderMerchant: Merchant;
   orderInDayIndex: number = null;
   payedWithAzul: boolean = false;
-
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/avi',
+    'video/mpg',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mxf',
+    'video/m2ts',
+    'video/m2ts',
+  ];
+  playVideoOnFullscreen = playVideoOnFullscreen;
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
   constructor(
@@ -168,6 +184,34 @@ export class OrderDetailComponent implements OnInit {
     if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
 
     this.order = (await this.orderService.order(orderId))?.order;
+
+    if (this.order.items) {
+      for (const itemSubOrder of this.order.items) {
+        itemSubOrder.item.media = itemSubOrder.item.images.map((image) => {
+          let url = image.value;
+          const fileParts = image.value.split('.');
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+          let auxiliarImageFileExtension = 'image/' + fileExtension;
+          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+          if (url && !url.includes('http') && !url.includes('https')) {
+            url = 'https://' + url;
+          }
+
+          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+            return {
+              src: url,
+              type: 'IMAGE',
+            };
+          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+            return {
+              src: url,
+              type: 'VIDEO',
+            };
+          }
+        });
+      }
+    }
 
     if (!this.order.ocr) {
       const result = await this.paymentLogService.paymentLogsByOrder({
@@ -894,7 +938,7 @@ export class OrderDetailComponent implements OnInit {
     this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
-
+  
   // async addTag(tagId?: string) {
   //   if (!this.selectedTags[tagId]) {
   //     const added = await this.tagsService.addTagsInOrder(

@@ -23,6 +23,8 @@ import { AdminModule } from '../admin/admin.module';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { ContactLandingComponent } from 'src/app/shared/components/contact-landing/contact-landing.component';
+import { CollectionsComponent } from 'src/app/modules/ecommerce/pages/collections/collections.component';
+import { TagItemsComponent } from 'src/app/modules/ecommerce/pages/tag-items/tag-items.component';
 
 const routes: Routes = [
   {
@@ -117,6 +119,22 @@ const routes: Routes = [
         component: PaymentsComponent,
       },
       {
+        path: 'collections',
+        component: CollectionsComponent,
+      },
+      {
+        path: 'collections/:tagId',
+        component: TagItemsComponent,
+      },
+      // {
+      //   path: 'categories',
+      //   component: CollectionsComponent,
+      // },
+      {
+        path: 'categories/:tagId',
+        component: TagItemsComponent,
+      },
+      {
         path: 'contact-landing/:idUser',
         component: ContactLandingContainerComponent,
       },
@@ -144,7 +162,9 @@ const routes: Routes = [
     CreateArticleComponent,
     TermsOfUseComponent,
     ContactLandingContainerComponent,
-    ContactLandingComponent
+    ContactLandingComponent,
+    CollectionsComponent,
+    TagItemsComponent
   ],
   imports: [
     CommonModule,

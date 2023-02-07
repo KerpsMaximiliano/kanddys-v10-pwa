@@ -78,6 +78,7 @@ import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { SeeFiltersComponent } from './components/see-filters/see-filters.component';
 import { SelectDropdownComponent } from './components/select-dropdown/select-dropdown.component';
 import { ShortCalendarComponent } from './components/short-calendar/short-calendar.component';
+import { CalendarSwiperComponent } from './components/calendar-swiper/calendar-swiper.component';
 import { SingleItemListComponent } from './components/single-item-list/single-item-list.component';
 import { SliderElementListComponent } from './components/slider-element-list/slider-element-list.component';
 import { StickyButtonComponent } from './components/sticky-button/sticky-button.component';
@@ -95,7 +96,6 @@ import { BlankComponent } from './dialogs/blank/blank.component';
 import { CollaborationsComponent } from './dialogs/collaborations/collaborations.component';
 import { CommunityPreviewComponent } from './dialogs/community-preview/community-preview.component';
 import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
-import { ItemImagesComponent } from './dialogs/create-item-flow/item-images/item-images.component';
 import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.component';
 import { EntityItemListComponent } from './dialogs/entity-item-list/entity-item-list.component';
 import { FormFunnelV2Component } from './dialogs/form-funnel-v2/form-funnel-v2.component';
@@ -125,6 +125,23 @@ import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
 import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
+import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';
+import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
+import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component';
+import { BuyerCardComponent } from './components/buyer-card/buyer-card.component';
+import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
+import { OptionsBarComponent } from './components/options-bar/options-bar.component';
+import { MenuButtonComponent } from './components/menu-button/menu-button.component';
+import { LinksDialogComponent } from './dialogs/links-dialog/links-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
+import { ItemImagesComponent } from './dialogs/item-images/item-images.component';
 
 const imports = [
   CommonModule,
@@ -140,6 +157,13 @@ const imports = [
   ClipboardModule,
   GooglePlaceModule,
   DragDropModule,
+  MatMenuModule,
+  MatIconModule,
+  MatBottomSheetModule,
+  MatDividerModule,
+  MatButtonModule,
+  MatExpansionModule,
+  MatBadgeModule,
 ];
 const declarations = [
   // Pages
@@ -252,11 +276,21 @@ const declarations = [
   InfoDialogComponent,
   TagTypeDialogComponent,
   TagsDialogComponent,
+  ContactLandingComponent,
+  ContactLandingContainerComponent,
+  LinkDialogComponent,
+  BuyerCardComponent,
+  GradientFooterComponent,
+  OptionsBarComponent,
   ImageEditorComponent,
   CardComponent,
   TitleIconHeaderComponent,
   QrContentComponent,
   QrEditComponent,
+  MenuButtonComponent,
+  LinksDialogComponent,
+  GradientCardComponent,
+  CalendarSwiperComponent,
 ];
 
 @NgModule({
