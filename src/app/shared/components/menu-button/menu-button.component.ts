@@ -23,6 +23,7 @@ export class MenuButtonComponent implements OnInit {
       text: 'Preview de Compradores',
     },
   ];
+  @Input() merchantName: string;
 
   constructor(private ngNavigatorShareService: NgNavigatorShareService) {}
 

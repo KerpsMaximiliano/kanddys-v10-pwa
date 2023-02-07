@@ -9,7 +9,7 @@
   </button>
   <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
     <button mat-menu-item class="menu-item" (click)="goToWhatsapp()">
-      <span>Chat con TiendaID</span>
+      <span>Chat con {{ merchantName }}</span>
       <img src="/assets/images/noimage.png" alt="circle" class="circle" />
     </button>
     <button mat-menu-item class="menu-item" (click)="shareStore()">

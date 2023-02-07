@@ -66,6 +66,7 @@ export class StoreComponent implements OnInit {
   renderItemsPromise: Promise<any>;
   phone: string;
   showOptionsBar: boolean = false;
+  merchantName: string;
 
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 'auto',
@@ -163,6 +164,8 @@ export class StoreComponent implements OnInit {
     }, 300);
     console.log(this.headerService.saleflow.merchant);
     this.link = `${this.URI}/ecommerce/${this.headerService.saleflow.merchant.slug}/store`;
+
+    this.merchantName = this.headerService.saleflow.merchant.name;
 
     this.phone = this.headerService.saleflow.merchant.owner.phone;
   }

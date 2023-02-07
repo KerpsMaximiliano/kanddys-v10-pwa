@@ -52,6 +52,9 @@
       font-family: SFProLight;
       font-size: 17px;
       color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .circle {
       height: 30px;
