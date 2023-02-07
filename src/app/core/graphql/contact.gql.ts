@@ -44,7 +44,11 @@ export const contactAddLink = gql`
 `;
 
 export const contactUpdateLink = gql`
-  mutation contactUpdateLink($input: LinkInput!, $linkId: ObjectID!, $id: ObjectID!) {
+  mutation contactUpdateLink(
+    $input: LinkInput!
+    $linkId: ObjectID!
+    $id: ObjectID!
+  ) {
     contactUpdateLink(input: $input, linkId: $linkId, id: $id) {
       _id
       description
@@ -66,7 +70,7 @@ export const contacts = gql`
       _id
       name
       description
-      link{
+      link {
         _id
         name
         value
