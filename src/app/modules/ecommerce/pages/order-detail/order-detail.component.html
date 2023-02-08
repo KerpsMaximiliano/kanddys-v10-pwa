@@ -192,6 +192,7 @@
       <div
         class="items-container space-between"
         style="padding: 11px 30px 12px 33px; margin-top: 5px"
+        *ngIf="payedWithAzul"
       >
         <p class="total">Costo de envio:</p>
         <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
@@ -245,23 +246,25 @@
         </div>
       </div>
 
-      <div class="items-container space-between" style="margin-top: 4px">
-        <p class="total">Subtotal a pagar:</p>
-        <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
-      </div>
-      <!--       <div class="items-container space-between" style="margin-top: 4px">
-        <p class="total">Coins:</p>
-        <p class="amount">- {{ payment | number: "1.2-2" }}</p>
-      </div> -->
-      <div class="items-container space-between" style="margin-top: 4px">
-        <p class="total">Descuentos:</p>
-        <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
-      </div>
-
-      <div class="items-container space-between" style="margin-top: 4px">
-        <p class="total">Impuestos:</p>
-        <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
-      </div>
+      <ng-container *ngIf="payedWithAzul">
+        <div class="items-container space-between" style="margin-top: 4px">
+          <p class="total">Subtotal a pagar:</p>
+          <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
+        </div>
+        <!--       <div class="items-container space-between" style="margin-top: 4px">
+          <p class="total">Coins:</p>
+          <p class="amount">- {{ payment | number: "1.2-2" }}</p>
+        </div> -->
+        <div class="items-container space-between" style="margin-top: 4px">
+          <p class="total">Descuentos:</p>
+          <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
+        </div>
+  
+        <div class="items-container space-between" style="margin-top: 4px">
+          <p class="total">Impuestos:</p>
+          <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
+        </div>
+      </ng-container>
 
       <div class="items-container space-between" style="margin-top: 4px">
         <p class="total">Total Pagado:</p>
