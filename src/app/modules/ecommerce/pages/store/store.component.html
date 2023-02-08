@@ -57,7 +57,7 @@
       <p class="title" style="margin-left: 8px">Store</p>
     </nav>
     <main>
-      <div class="top-input-area">
+      <div class="top-input-area" *ngIf="hasCollections">
         <app-options-bar
           [options]="[{ title: 'articulos' }, { title: 'colecciones' }]"
           type="3"
@@ -65,16 +65,19 @@
         >
         </app-options-bar>
       </div>
+      <br *ngIf="!hasCollections">
 
       <!-- ******************************************* TAG SWIPER ***************************************-->
-      <div style="width: 100%; padding: 0px 0px 0px 21px">
+      <div style="width: 100%; padding: 0px 21px 0px 21px">
         <swiper [config]="swiperConfigTag" #tagsSwiper>
           <a
             *ngFor="let tag of tags"
             [ngStyle]="{
               maxWidth: '115px',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              paddingBottom: '15px'
             }"
+            style="height: auto !important; overflow: hidden;"
             [routerLink]="['../categories', tag._id]"
           >
             <app-gradient-card [tag]="tag"></app-gradient-card>
