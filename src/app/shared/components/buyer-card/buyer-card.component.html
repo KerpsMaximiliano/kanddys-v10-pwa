@@ -19,6 +19,7 @@
     <p [ngClass]="{ center: !title && !description }" class="amount">
       <span>RD$ {{ leftAmount | number }} </span
       ><span *ngIf="rightAmount">- ${{ rightAmount | number }}</span>
+      <button class="cart-button inactive" *ngIf="cartButton">Adiciónalo a mi <span><img [src]="env + '/carrito_blanco.svg'" alt=""></span></button>
     </p>
   </div>
 </div>
