@@ -22,7 +22,10 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
 import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
 import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
-import { SettingsComponent, SettingsDialogButton } from 'src/app/shared/dialogs/settings/settings.component';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { ToastrService } from 'ngx-toastr';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -481,10 +484,7 @@ export class ArticleDetailComponent implements OnInit {
       this.headerService.flowRoute = localStorage.getItem('flowRoute');
     }
 
-    if (
-      this.headerService.flowRoute &&
-      this.headerService.flowRoute.length > 1
-    ) {
+    if (this.headerService.flowRoute?.length) {
       const [baseRoute, paramsString] = this.headerService.flowRoute.split('?');
 
       const paramsArray = paramsString ? paramsString.split('&') : [];

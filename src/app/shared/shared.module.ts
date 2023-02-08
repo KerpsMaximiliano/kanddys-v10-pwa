@@ -150,6 +150,8 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
 import { ItemImagesComponent } from './dialogs/item-images/item-images.component';
+import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const imports = [
   CommonModule,
@@ -172,6 +174,7 @@ const imports = [
   MatButtonModule,
   MatExpansionModule,
   MatBadgeModule,
+  MatDialogModule,
 ];
 const declarations = [
   // Pages
@@ -310,6 +313,7 @@ const declarations = [
   LinksDialogComponent,
   GradientCardComponent,
   CalendarSwiperComponent,
+  ConfirmationDialogComponent,
 ];
 
 @NgModule({
