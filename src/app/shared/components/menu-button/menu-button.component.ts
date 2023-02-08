@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class MenuButtonComponent implements OnInit {
   uri: string = environment.uri;
+  env: string = environment.assetsUrl;
   @Input() mode: string = 'basic';
   @Input() phone: string;
   @Input() link: string;

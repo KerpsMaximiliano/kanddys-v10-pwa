@@ -38,7 +38,7 @@
 
 ::ng-deep .menu {
   background-color: #272727;
-  border-radius: 11px;
+  border-radius: 11px !important;
   margin-bottom: 5px;
   position: relative !important;
   z-index: 999 !important;
@@ -59,8 +59,9 @@
     .circle {
       height: 30px;
       width: 30px;
-      border-radius: 50%;
       margin-left: auto;
+      filter: brightness(0) invert(100%) sepia(0%) saturate(7467%)
+        hue-rotate(300deg) brightness(115%) contrast(100%);
     }
   }
 
