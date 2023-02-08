@@ -38,46 +38,46 @@ const options = [
       color: '#202020',
     },
   },
-  {
-    status: true,
-    click: true,
-    value: 'Con mensaje virtual e impreso',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-    subtexts: [
-      {
-        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
-        styles: {
-          fontFamily: 'SfProRegular',
-          fontSize: '1rem',
-          color: '#7B7B7B',
-        },
-      },
-    ],
-  },
-  {
-    status: true,
-    click: true,
-    value: 'Mensaje virtual',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-    subtexts: [
-      {
-        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
-        styles: {
-          fontFamily: 'SfProRegular',
-          fontSize: '1rem',
-          color: '#7B7B7B',
-        },
-      },
-    ],
-  },
+  // {
+  //   status: true,
+  //   click: true,
+  //   value: 'Con mensaje virtual e impreso',
+  //   valueStyles: {
+  //     'font-family': 'SfProBold',
+  //     'font-size': '13px',
+  //     color: '#202020',
+  //   },
+  //   subtexts: [
+  //     {
+  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
+  //       styles: {
+  //         fontFamily: 'SfProRegular',
+  //         fontSize: '1rem',
+  //         color: '#7B7B7B',
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   status: true,
+  //   click: true,
+  //   value: 'Mensaje virtual',
+  //   valueStyles: {
+  //     'font-family': 'SfProBold',
+  //     'font-size': '13px',
+  //     color: '#202020',
+  //   },
+  //   subtexts: [
+  //     {
+  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
+  //       styles: {
+  //         fontFamily: 'SfProRegular',
+  //         fontSize: '1rem',
+  //         color: '#7B7B7B',
+  //       },
+  //     },
+  //   ],
+  // },
   {
     status: true,
     click: true,
@@ -150,7 +150,6 @@ export class CheckoutComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.saleflowId = this.headerService.saleflow.merchant._id;
     let items = this.headerService.getItems();
-    console.log(items);
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
     }
@@ -163,8 +162,6 @@ export class CheckoutComponent implements OnInit {
         },
       })
     )?.listItems;
-
-    console.log(this.items);
 
     for (const item of this.items as Array<Item>) {
       for (const image of item.images) {
@@ -511,25 +508,25 @@ export class CheckoutComponent implements OnInit {
         this.headerService.storePost(this.post);
         break;
       }
+      // case 1: {
+      //   this.router.navigate([`../create-giftcard`], {
+      //     queryParams: {
+      //       symbols: 'virtual',
+      //     },
+      //     relativeTo: this.route,
+      //     replaceUrl: true,
+      //   });
+      //   break;
+      // }
+      // case 2: {
+      //   this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
+      //   this.router.navigate([`../create-article`], {
+      //     relativeTo: this.route,
+      //     replaceUrl: true,
+      //   });
+      //   break;
+      // }
       case 1: {
-        this.router.navigate([`../create-giftcard`], {
-          queryParams: {
-            symbols: 'virtual',
-          },
-          relativeTo: this.route,
-          replaceUrl: true,
-        });
-        break;
-      }
-      case 2: {
-        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
-        this.router.navigate([`../create-article`], {
-          relativeTo: this.route,
-          replaceUrl: true,
-        });
-        break;
-      }
-      case 3: {
         this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
         this.router.navigate([`../create-giftcard`], {
           relativeTo: this.route,
@@ -581,6 +578,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   goToArticleDetail(itemID: string) {
+    this.headerService.flowRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
     this.router.navigate([`../article-detail/item/${itemID}`], {
       relativeTo: this.route,
       replaceUrl: true,

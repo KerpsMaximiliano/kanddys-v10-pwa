@@ -190,7 +190,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             containerStyles: {
               width: '89%',
               maxWidth: '445px',
-              margin: '42.3vh auto 43px',
+              margin: '248px auto 16px',
               display: 'flex',
               justifyContent: 'center',
             },
@@ -352,11 +352,11 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     if (symbols === 'virtual') {
       this.virtual = true;
     }
-    this.header.flowRoute = `create-giftcard`;
-    localStorage.setItem(
-      'flowRoute',
-      `${this.header.saleflow._id}/create-giftcard`
-    );
+    // this.header.flowRoute = `create-giftcard`;
+    // localStorage.setItem(
+    //   'flowRoute',
+    //   `${this.header.saleflow._id}/create-giftcard`
+    // );
     const post = this.header.getPost();
     if (post?.targets?.[0]?.name) {
       this.formSteps[1].fieldsList[0].fieldControl.control = new FormControl(

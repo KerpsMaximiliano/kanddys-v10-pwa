@@ -422,7 +422,9 @@ export class ArticleDetailComponent implements OnInit {
     } else this.isItemInCart = false;
 
     // Validation to avoid getting deleted or unavailable items in the count of the cart
-    const itemsInCart = this.headerService.saleflow.items.filter(item => productData.some(product => product === item.item._id))
+    const itemsInCart = this.headerService.saleflow.items.filter((item) =>
+      productData.some((product) => product === item.item._id)
+    );
 
     this.itemsAmount = itemsInCart.length > 0 ? itemsInCart.length + '' : null;
   }
@@ -470,10 +472,7 @@ export class ArticleDetailComponent implements OnInit {
       this.headerService.flowRoute = localStorage.getItem('flowRoute');
     }
 
-    if (
-      this.headerService.flowRoute &&
-      this.headerService.flowRoute.length > 1
-    ) {
+    if (this.headerService.flowRoute?.length) {
       const [baseRoute, paramsString] = this.headerService.flowRoute.split('?');
 
       const paramsArray = paramsString ? paramsString.split('&') : [];
