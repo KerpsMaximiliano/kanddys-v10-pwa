@@ -7,6 +7,7 @@ import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SwiperOptions } from 'swiper';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-post-preview',
@@ -15,6 +16,8 @@ import { SwiperOptions } from 'swiper';
 })
 export class PostPreviewComponent implements OnInit {
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
+
+  env: string = environment.assetsUrl;
 
   currentMediaSlide: number = 0;
   fractions: string = '';

@@ -14,15 +14,14 @@ button,
 a {
    cursor: pointer;
 }
+.flexBox {
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+}
 .container {
    width: 100%;
    min-height: 100vh;
-
-   .flexBox {
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
-   }
 
    .header {
       width: 100%;
@@ -31,6 +30,17 @@ a {
       justify-content: space-between;
       align-items: center;
       padding: 0 23px;
+
+      .title {
+         color: #fff;
+         font-family: SfProBold;
+         font-size: 21px;
+         overflow: hidden;
+         display: -webkit-box;
+         text-overflow: ellipsis;
+         -webkit-line-clamp: 1;
+         -webkit-box-orient: vertical;
+      }
 
       .far {
          color: #ffffff;
@@ -62,69 +72,13 @@ a {
       }
    }
 
-   .top {
-      background-color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 16px;
-      padding: 30px 30px 15px 30px;
-      margin-bottom: 60px;
-
-      .msj {
-         font-family: "SfProLight";
-         font-size: 23px;
-         color: #272727;
-      }
-      .confirmButton {
-         font-family: "SfProBold";
-         font-size: 17px;
-         padding: 13px;
-         border-radius: 19px;
-         text-align: center;
-         width: 280px;
-         cursor: pointer;
-      }
-      .bannerLink {
-         font-family: "SfProBold";
-         color: #2874ad;
-         size: 17px;
-         cursor: pointer;
-      }
-   }
-
    .information {
       width: 100%;
       margin-top: 40px;
       padding: 0 24px 32px;
 
-      .top {
-         margin: 33px 0 35px;
-         display: flex;
-         justify-content: center;
-         align-items: center;
-
-         .top-h {
-            font-family: "RobotoMedium";
-            font-size: 0.875rem;
-            color: #7b7b7b;
-            font-weight: 500;
-            text-align: center;
-
-            .top-name {
-               font-family: "SfProBold";
-               font-size: 1.25rem;
-               color: #7b7b7b;
-               font-weight: 500;
-            }
-         }
-      }
-
       .section {
          width: 100%;
-
          .between {
             display: flex;
             justify-content: space-between;
@@ -138,13 +92,6 @@ a {
                margin-bottom: 10px;
                font-weight: normal;
             }
-
-            .edit-image {
-               width: 15px;
-               height: 15px;
-               cursor: pointer;
-               filter: brightness(0);
-            }
          }
 
          .items-container {
@@ -154,19 +101,137 @@ a {
             box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
             width: 100%;
             box-sizing: border-box;
-            margin-bottom: 3px;
+
+            &.ready {
+               box-shadow: none;
+            }
 
             .productData {
                display: flex;
                justify-content: space-between;
                gap: 15px;
 
-               .itemImg {
-                  width: 86px;
+               .image {
+                  position: relative;
+
+                  .image-for-item {
+                     width: 86px;
+                     height: 74px;
+                     border-radius: 6px;
+                     -webkit-user-drag: none;
+                     object-fit: cover;
+                     border: 0.001px solid lightgray;
+                  }
+
+                  .item-image {
+                     width: 86px;
+                     height: 74px;
+                     background-color: #e9e371;
+                     border-radius: 6px;
+                     -webkit-user-drag: none;
+                     object-fit: cover;
+                     background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif);
+                  }
+
+                  &:after {
+                     content: "\A";
+                     position: absolute;
+                     width: 100%;
+                     height: 100%;
+                     top: 0;
+                     left: 0;
+                     background: rgba(0, 0, 0, 0.3);
+                     opacity: 0;
+                     transition: all 0.5s;
+                     -webkit-transition: all 0.5s;
+                     border-radius: 6px;
+                  }
+
+                  &:hover:after {
+                     opacity: 1;
+                  }
+               }
+
+               .video-wrapper {
+                  position: relative;
+                  width: 84px;
                   height: 74px;
-                  background-color: #e9e371;
-                  border-radius: 6px;
-                  object-fit: cover;
+               }
+
+               .video {
+                  all: unset;
+                  width: 84px;
+                  height: 74px;
+                  position: relative;
+                  cursor: pointer;
+
+                  .item-video {
+                     width: 86px;
+                     height: 74px;
+                     object-fit: fill;
+                     border-radius: 6px;
+                  }
+
+                  &::before {
+                     content: "\a";
+                     position: absolute;
+                     top: 20px;
+                     left: 30px;
+                     width: 40px;
+                     height: 32px;
+                     box-sizing: border-box;
+                     border-style: solid;
+                     border-width: 15px 0 15px 30px;
+                     border-color: transparent transparent transparent #ffffff;
+                     opacity: 1;
+                  }
+
+                  &:after {
+                     content: "\A";
+                     position: absolute;
+                     width: 100%;
+                     height: 100%;
+                     top: 0;
+                     left: 0;
+                     background: rgba(0, 0, 0, 0.3);
+                     opacity: 0;
+                     transition: all 0.5s;
+                     -webkit-transition: all 0.5s;
+                     border-radius: 6px;
+                  }
+
+                  &:hover:after {
+                     opacity: 1;
+                  }
+               }
+
+               audio::-webkit-media-controls-panel
+                  audio::-webkit-media-controls-mute-button
+                  audio::-webkit-media-controls-timeline
+                  audio::-webkit-media-controls-timeline-container
+                  audio::-webkit-media-controls-current-time-display
+                  audio::-webkit-media-controls-time-remaining-display
+                  audio::-webkit-media-controls-timeline
+                  audio::-webkit-media-controls-volume-slider-container
+                  audio::-webkit-media-controls-volume-slider
+                  audio::-webkit-media-controls-seek-back-button
+                  audio::-webkit-media-controls-seek-forward-button
+                  audio::-webkit-media-controls-fullscreen-button
+                  audio::-webkit-media-controls-rewind-button
+                  audio::-webkit-media-controls-return-to-realtime-button
+                  audio::-webkit-internal-media-controls-overflow-button
+                  audio::-webkit-media-controls-toggle-closed-captions-button {
+                  display: none !important;
+               }
+               audio::-webkit-media-controls-play-button {
+                  display: inline !important;
+               }
+
+               .audio {
+                  .item-audio {
+                     height: 65px;
+                     max-width: 80px;
+                  }
                }
 
                .rightSection {
@@ -188,6 +253,18 @@ a {
                      justify-content: space-between;
                      align-items: center;
                      gap: 9px;
+
+                     .description {
+                        -webkit-line-clamp: 3;
+                        line-clamp: 3;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-box-orient: vertical;
+                        font-size: 0.813rem;
+                        color: #7b7b7b;
+                        font-family: SfProMedium;
+                     }
 
                      .countBox {
                         display: flex;
@@ -221,159 +298,10 @@ a {
                   }
                }
             }
-            .questionSection {
-               .questionBox {
-                  max-width: 280px;
-                  .question {
-                     width: 100%;
-                     white-space: nowrap;
-                     text-overflow: ellipsis;
-                     overflow: hidden;
-                     color: #000000;
-                     font-size: 13px;
-                     font-family: "SfProMedium";
-                  }
-                  .link {
-                     color: #2874ad;
-                     font-size: 13px;
-                     font-family: "SfProMedium";
-                     text-decoration: none;
-                  }
-               }
-            }
 
             &.green {
                background-color: #82f18d;
             }
-
-            .image-container {
-               display: flex;
-               overflow-x: scroll;
-               column-gap: 8px;
-     
-               .image {
-                 position: relative;
-     
-                 .image-for-item {
-                   width: 86px;
-                   height: 74px;
-                   border-radius: 6px;
-                   -webkit-user-drag: none;
-                   object-fit: cover;
-                   border: 0.001px solid lightgray;
-                 }
-     
-                 .item-image {
-                   width: 86px;
-                   height: 74px;
-                   background-color: #e9e371;
-                   border-radius: 6px;
-                   -webkit-user-drag: none;
-                   object-fit: cover;
-                   background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif);
-                 }
-     
-                 &:after {
-                   content: "\A";
-                   position: absolute;
-                   width: 100%;
-                   height: 100%;
-                   top: 0;
-                   left: 0;
-                   background: rgba(0, 0, 0, 0.3);
-                   opacity: 0;
-                   transition: all 0.5s;
-                   -webkit-transition: all 0.5s;
-                   border-radius: 6px;
-                 }
-     
-                 &:hover:after {
-                   opacity: 1;
-                 }
-               }
-     
-               .video-wrapper {
-                 position: relative;
-                 width: 84px;
-                 height: 74px;
-               }
-     
-               .video {
-                 all: unset;
-                 width: 84px;
-                 height: 74px;
-                 position: relative;
-                 cursor: pointer;
-     
-                 .item-video {
-                   width: 86px;
-                   height: 74px;
-                   object-fit: fill;
-                   border-radius: 6px;
-                 }
-     
-                 &::before {
-                   content: "\a";
-                   position: absolute;
-                   top: 20px;
-                   left: 30px;
-                   width: 40px;
-                   height: 32px;
-                   box-sizing: border-box;
-                   border-style: solid;
-                   border-width: 15px 0 15px 30px;
-                   border-color: transparent transparent transparent #ffffff;
-                   opacity: 1;
-                 }
-     
-                 &:after {
-                   content: "\A";
-                   position: absolute;
-                   width: 100%;
-                   height: 100%;
-                   top: 0;
-                   left: 0;
-                   background: rgba(0, 0, 0, 0.3);
-                   opacity: 0;
-                   transition: all 0.5s;
-                   -webkit-transition: all 0.5s;
-                   border-radius: 6px;
-                 }
-     
-                 &:hover:after {
-                   opacity: 1;
-                 }
-               }
-     
-               audio::-webkit-media-controls-panel
-                 audio::-webkit-media-controls-mute-button
-                 audio::-webkit-media-controls-timeline
-                 audio::-webkit-media-controls-timeline-container
-                 audio::-webkit-media-controls-current-time-display
-                 audio::-webkit-media-controls-time-remaining-display
-                 audio::-webkit-media-controls-timeline
-                 audio::-webkit-media-controls-volume-slider-container
-                 audio::-webkit-media-controls-volume-slider
-                 audio::-webkit-media-controls-seek-back-button
-                 audio::-webkit-media-controls-seek-forward-button
-                 audio::-webkit-media-controls-fullscreen-button
-                 audio::-webkit-media-controls-rewind-button
-                 audio::-webkit-media-controls-return-to-realtime-button
-                 audio::-webkit-internal-media-controls-overflow-button
-                 audio::-webkit-media-controls-toggle-closed-captions-button {
-                 display: none !important;
-               }
-               audio::-webkit-media-controls-play-button {
-                 display: inline !important;
-               }
-     
-               .audio {
-                 .item-audio {
-                   height: 65px;
-                   max-width: 80px;
-                 }
-               }
-             }
 
             .total {
                font-family: "SfProBold";
@@ -422,17 +350,6 @@ a {
             padding: 0;
             margin: 0;
          }
-         .message-box {
-            border-radius: 6px;
-            background-color: #ffffff;
-            box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
-            flex-direction: column;
-            padding: 24px;
-
-            > :not(:first-child) {
-               margin-top: 32px;
-            }
-         }
 
          .message-text {
             font-family: "RobotoMedium";
@@ -480,60 +397,37 @@ table {
       padding: 5px;
    }
 }
-.customizer-preview {
-   width: 100%;
-}
 .pointer {
    cursor: pointer;
 }
+.top {
+   background-color: #ffffff;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   text-align: center;
+   gap: 16px;
+   padding: 30px 30px 15px 30px;
 
-@media (max-width: 409px) {
-   .container {
-      .information {
-         .section {
-            .items-container {
-               .productData {
-                  gap: 10px;
-
-                  .itemImg {
-                     width: 70px;
-                     height: 60px;
-                  }
-                  .rightSection {
-                     .rightBottom {
-                        .countBox {
-                           gap: 4px;
-                           .cube {
-                              font-size: 17px;
-                              padding: 6px;
-                              &.number {
-                                 min-width: 46px;
-                              }
-                           }
-                        }
-                        .iconBtn {
-                           padding: 10px 12px;
-                           font-size: 13px;
-                           border-radius: 16px;
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      }
+   .msj {
+      font-family: "SfProLight";
+      font-size: 23px;
+      color: #272727;
    }
-}
-
-.btn-green {
-   font-family: SfProBold;
-   font-size: 1rem;
-   color: #272727;
-   background-color: #82f18d;
-   padding: 8px 16px;
-   border-radius: 16px;
-
-   &:hover {
-      background-color: #72ee7e;
+   .confirmButton {
+      font-family: "SfProBold";
+      font-size: 17px;
+      padding: 13px;
+      border-radius: 19px;
+      text-align: center;
+      width: 280px;
+      cursor: pointer;
+   }
+   .bannerLink {
+      font-family: "SfProBold";
+      color: #2874ad;
+      size: 17px;
+      cursor: pointer;
    }
 }

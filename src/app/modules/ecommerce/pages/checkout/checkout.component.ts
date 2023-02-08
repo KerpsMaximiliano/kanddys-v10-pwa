@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -10,7 +11,8 @@ import {
   playVideoOnFullscreen,
   unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
-import { CustomizerValueInput } from 'src/app/core/models/customizer-value';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
+import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
 import { ReservationInput } from 'src/app/core/models/reservation';
@@ -18,98 +20,25 @@ import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
-import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
-import { Validators } from '@angular/forms';
-import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
-import { OptionsGridComponent } from 'src/app/shared/dialogs/options-grid/options-grid.component';
-import { Gpt3Service } from 'src/app/core/services/gpt3.service';
-import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
-import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Dialogs } from './dialogs';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
-const options = [
-  {
-    status: true,
-    click: true,
-    value: 'No tendrá mensaje de regalo',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-  },
-  {
-    status: true,
-    click: true,
-    value: 'Con mensaje virtual e impreso',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-    subtexts: [
-      {
-        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
-        styles: {
-          fontFamily: 'SfProRegular',
-          fontSize: '1rem',
-          color: '#7B7B7B',
-        },
-      },
-    ],
-  },
-  {
-    status: true,
-    click: true,
-    value: 'Mensaje virtual',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-    subtexts: [
-      {
-        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
-        styles: {
-          fontFamily: 'SfProRegular',
-          fontSize: '1rem',
-          color: '#7B7B7B',
-        },
-      },
-    ],
-  },
-  {
-    status: true,
-    click: true,
-    value: 'Mensaje impreso',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-    subtexts: [
-      {
-        text: `Agregue texto a la tarjeta.`,
-        styles: {
-          fontFamily: 'SfProRegular',
-          fontSize: '1rem',
-          color: '#7B7B7B',
-        },
-      },
-    ],
-  },
-];
+interface ExtendedItem extends Item {
+  ready?: boolean;
+}
 
 @Component({
   selector: 'app-checkout',
@@ -117,15 +46,8 @@ const options = [
   styleUrls: ['./checkout.component.scss'],
 })
 export class CheckoutComponent implements OnInit {
-  customizerDetails: { name: string; value: string }[] = [];
-  customizer: CustomizerValueInput;
-  customizerPreview: {
-    base64: string;
-    filename: string;
-    type: string;
-  };
   order: ItemOrderInput;
-  items: any[];
+  items: ExtendedItem[];
   post: PostInput;
   deliveryLocation: DeliveryLocationInput;
   reservation: ReservationInput;
@@ -141,12 +63,13 @@ export class CheckoutComponent implements OnInit {
   };
   logged: boolean;
   env: string = environment.assetsUrl;
-  options: OptionAnswerSelector[] = options;
   selectedPostOption: number;
   missingOrderData: boolean;
   postSlideImages: (string | ArrayBuffer)[] = [];
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
+  saleflowId: string;
+  playVideoOnFullscreen = playVideoOnFullscreen;
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
   status: 'OPEN' | 'CLOSE' = 'CLOSE';
@@ -174,10 +97,12 @@ export class CheckoutComponent implements OnInit {
     private dialogFlowService: DialogFlowService,
     private entityTemplateService: EntityTemplateService,
     private gpt3Service: Gpt3Service,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public dialog: MatDialog
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.saleflowId = this.headerService.saleflow.merchant._id;
     this.route.queryParams.subscribe(async (queryParams) => {
       const { startOnDialogFlow, addedQr, addedPhotos, addedAIJoke } =
         queryParams;
@@ -320,6 +245,20 @@ export class CheckoutComponent implements OnInit {
         });
       }
       this.deliveryLocation = this.headerService.getLocation();
+      // Validation for stores with only one address of pickup and no delivery for customers
+      if (!this.deliveryLocation) {
+        if (
+          this.headerService.saleflow.module.delivery.pickUpLocations.length ==
+            1 &&
+          !this.headerService.saleflow.module.delivery.deliveryLocation
+        ) {
+          this.deliveryLocation =
+            this.headerService.saleflow.module.delivery.pickUpLocations[0];
+          this.headerService.storeLocation(this.deliveryLocation);
+          this.headerService.orderProgress.delivery = true;
+          this.headerService.storeOrderProgress();
+        }
+      }
       this.reservation = this.headerService.getReservation().reservation;
       if (this.reservation) {
         const fromDate = new Date(this.reservation.date.from);
@@ -341,9 +280,10 @@ export class CheckoutComponent implements OnInit {
             this.reservation.breakTime
           )}`,
         };
+        this.headerService.orderProgress.reservation = true;
       }
       this.headerService.checkoutRoute = null;
-      if (!this.customizer) this.updatePayment();
+      this.updatePayment();
       if (
         this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
       )
@@ -418,22 +358,12 @@ export class CheckoutComponent implements OnInit {
         );
         break;
       }
-      case 'customizer': {
-        this.router.navigate(
-          [`../provider-store/${this.items[0]._id}/quantity-and-quality`],
-          {
-            relativeTo: this.route,
-            replaceUrl: true,
-          }
-        );
-        break;
-      }
     }
   }
 
   back = () => {
     localStorage.removeItem('privatePost');
-    this.location.back();
+    this.editOrder('item');
   };
 
   openImageModal(imageSourceURL: string | ArrayBuffer) {
@@ -466,19 +396,30 @@ export class CheckoutComponent implements OnInit {
   deleteProduct(i: number) {
     let deletedID = this.items[i]._id;
     const index = this.items.findIndex((product) => product._id === deletedID);
-    if (index >= 0) this.items.splice(index, 1);
-    this.headerService.removeOrderProduct(deletedID);
-    this.headerService.removeItem(deletedID);
-    this.updatePayment();
-    if (!this.items.length) this.editOrder('item');
+    let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Borrar producto`,
+        description: `Estás seguro que deseas borrar ${
+          this.items[index].name || 'este producto'
+        }?`,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        if (index >= 0) this.items.splice(index, 1);
+        this.headerService.removeOrderProduct(deletedID);
+        this.headerService.removeItem(deletedID);
+        this.updatePayment();
+        if (!this.items.length) this.editOrder('item');
+      }
+    });
   }
 
   updatePayment() {
     this.payment = this.items?.reduce(
       (prev, curr, currIndex) =>
         prev +
-        ('pricing' in curr ? curr.pricing : curr.price) *
-          this.headerService.order.products[currIndex].amount,
+        curr.pricing * this.headerService.order.products[currIndex].amount,
       0
     );
   }
@@ -540,30 +481,6 @@ export class CheckoutComponent implements OnInit {
       this.deliveryLocation;
     if (this.reservation)
       this.headerService.order.products[0].reservation = this.reservation;
-    // ---------------------- Managing Customizer ----------------------
-    if (this.customizer) {
-      localStorage.removeItem('customizerFile');
-      if (!this.customizer.preview) {
-        const res: Response = await fetch(this.customizerPreview.base64);
-        const blob: Blob = await res.blob();
-
-        this.customizer.preview = new File(
-          [blob],
-          this.customizerPreview.filename,
-          {
-            type: this.customizerPreview.type,
-          }
-        );
-      }
-      const customizerId =
-        await this.customizerValueService.createCustomizerValue(
-          this.customizer
-        );
-      this.headerService.order.products[0].customizer = customizerId;
-      this.headerService.customizer = null;
-      this.headerService.customizerData = null;
-    }
-    // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
     // ---------------------- Managing Post ----------------------------
     if (this.headerService.saleflow.module?.post) {
       if (!this.post)
@@ -789,6 +706,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   goToArticleDetail(itemID: string) {
+    this.headerService.flowRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
     this.router.navigate([`../article-detail/item/${itemID}`], {
       relativeTo: this.route,
       replaceUrl: true,

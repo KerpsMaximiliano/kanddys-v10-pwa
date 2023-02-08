@@ -14,14 +14,20 @@
 
   <header
     class="header"
-    *ngIf="logged || headerService.user"
     [ngStyle]="{ backgroundColor: headerService.colorTheme }"
   >
-    <a> <i class="far fa-angle-double-up" (click)="back()"></i></a>
-
-    <img [src]="env + '/carrito_blanco.svg'" alt="Icono de un carrito" />
-
-    <div class="right-area">
+    <div style="display: flex; gap: 8px">
+      <a> <i class="far fa-angle-double-up" (click)="back()"></i></a>
+      <p class="title">
+        {{
+          headerService.saleflow?.merchant?.name.length < 26
+            ? headerService.saleflow?.merchant?.name
+            : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+                "Tienda" | titlecase)
+        }}
+      </p>
+    </div>
+    <div class="right-area" *ngIf="logged || headerService.user">
       <span class="header-text">{{
         currentUser?.name || currentUser?.phone || currentUser?.email
       }}</span>
@@ -30,14 +36,13 @@
   </header>
 
   <section class="top">
-    <p class="msj">Excelente! Mira como va tu factura.</p>
+    <!-- <p class="msj">Excelente! Mira como va tu factura.</p> -->
     <button
       class="confirmButton"
       [ngStyle]="{
-        backgroundColor:
-          !orderService.itemsReady || missingOrderData ? '#e9e9e9' : '#82F18D'
+        backgroundColor: missingOrderData ? '#e9e9e9' : '#82F18D'
       }"
-      [disabled]="!orderService.itemsReady || missingOrderData"
+      [disabled]="missingOrderData"
       (click)="
         !this.logged && postsService.privatePost ? login() : createOrder()
       "
@@ -53,85 +58,34 @@
 
   <main class="information">
     <section class="section">
-      <div class="between" style="margin-bottom: 30px">
-        <h2 class="section-title" style="margin-bottom: 0px">
-          Articulos facturados:
-        </h2>
-        <button
-          (click)="orderService.itemsReady = !orderService.itemsReady"
-          *ngIf="orderService.itemsReady"
-        >
-          <img
-            [src]="env + '/pencil.svg'"
-            class="edit-image"
-            alt="Icono de un lápiz"
-          />
-        </button>
-        <button
-          class="btn-green"
-          (click)="orderService.itemsReady = !orderService.itemsReady"
-          *ngIf="!orderService.itemsReady"
-        >
-          Listo
-        </button>
+      <div class="between">
+        <h2 class="section-title">Articulos facturados:</h2>
       </div>
-
-      <div class="items-container">
-        <div
-          class="image-container"
-          #elemt
-          (mousedown)="startDragging($event, elemt)"
-          (mouseup)="stopDragging()"
-          (mouseleave)="stopDragging()"
-          (mousemove)="moveEvent($event, elemt)"
-        >
+      <div class="flexBox">
+        <ng-container *ngFor="let item of items; index as i">
+          <div class="items-container flexBox ready" *ngIf="!item.ready">
+            <ng-container
+              *ngTemplateOutlet="
+                itemInfoTemplate;
+                context: { item: item, i: i }
+              "
+            ></ng-container>
+          </div>
           <button
-            [ngStyle]="{
-              position: 'relative'
-            }"
-            *ngFor="let item of items"
-            (click)="goToArticleDetail(item._id)"
+            class="items-container flexBox"
+            *ngIf="item.ready"
+            (click)="item.ready = !item.ready"
           >
-            <div class="image" *ngIf="!urlIsVideo(item.images[0].value)">
-              <div
-                class="image-for-item"
-                [ngStyle]="{
-                  backgroundImage:
-                    item.images && item.images?.length
-                      ? 'url(' +
-                        item.images[0].value +
-                        '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
-                      : 'url(/assets/images/noimage.png)',
-                  backgroundPosition: 'center',
-                  backgroundSize: 'contain',
-                  backgroundRepeat: 'no-repeat'
-                }"
-              ></div>
-            </div>
-
-            <div
-              class="video-wrapper videoThumbnail"
-              *ngIf="urlIsVideo(item.images[0].value)"
-            >
-              <img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
-                alt="play"
-                class="playVideoIcon"
-                style="padding: 1rem !important; z-index: 99"
-              />
-
-              <video
-                [src]="item.images[0].value"
-                [id]="'media' + item._id"
-                class="video"
-                [muted]="true"
-              ></video>
-            </div>
+            <ng-container
+              *ngTemplateOutlet="
+                itemInfoTemplate;
+                context: { item: item, i: i }
+              "
+            ></ng-container>
           </button>
-        </div>
+        </ng-container>
       </div>
-
-      <div class="items-container" style="margin-top: 4px">
+      <div class="items-container ready" style="margin-top: 8px">
         <div
           class="items-container space-between"
           style="padding: 0 32px; align-items: center"
@@ -149,49 +103,32 @@
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">
           Lugar de
-          {{ reservation ? "la sesión" : " Entrega:" }}
+          {{
+            saleflowId === "62ed55eecd8fc9d59c8d7b6b"
+              ? " la sesión:"
+              : " Entrega:"
+          }}
         </h2>
+      </div>
 
+      <ng-container *ngIf="deliveryLocation">
         <button
-          (click)="editOrder('address')"
           *ngIf="
             headerService.saleflow?.module?.delivery?.pickUpLocations?.length >
-              1 || headerService.saleflow?.module?.delivery?.deliveryLocation
+              1 || headerService.saleflow?.module?.delivery?.deliveryLocation;
+            else deliveryInfo
           "
+          class="items-container ready"
+          (click)="editOrder('address')"
         >
-          <img
-            [src]="env + '/pencil.svg'"
-            class="edit-image"
-            alt="Icono de un lápiz"
-          />
+          <ng-container *ngTemplateOutlet="deliveryTemplate"></ng-container>
         </button>
-      </div>
-
-      <div class="items-container column" *ngIf="deliveryLocation">
-        <p class="address-name" *ngIf="deliveryLocation.nickName">
-          {{ deliveryLocation.nickName }}
-        </p>
-        <p
-          [ngClass]="{
-            added: deliveryLocation.nickName,
-            'address-name': !deliveryLocation.nickName
-          }"
-          *ngIf="deliveryLocation.street"
-        >
-          {{
-            deliveryLocation.houseNumber
-              ? "#" + deliveryLocation.houseNumber + ", "
-              : ""
-          }}
-          {{ deliveryLocation.street }},
-          {{
-            deliveryLocation.referencePoint
-              ? deliveryLocation.referencePoint + ", "
-              : ""
-          }}
-          {{ deliveryLocation.city }}, República Dominicana
-        </p>
-      </div>
+        <ng-template #deliveryInfo>
+          <div class="items-container ready">
+            <ng-container *ngTemplateOutlet="deliveryTemplate"></ng-container>
+          </div>
+        </ng-template>
+      </ng-container>
       <button
         class="items-container column pointer green"
         *ngIf="!deliveryLocation"
@@ -210,26 +147,12 @@
     >
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Fecha de la sesión:</h2>
-
-        <button (click)="editOrder('reservation')">
-          <img
-            [src]="env + '/pencil.svg'"
-            class="edit-image"
-            alt="Icono de un lápiz"
-          />
-        </button>
       </div>
 
-      <div
-        class="items-container"
-        style="padding: 10px 32px"
-        *ngIf="reservation && date"
-      >
-        <p class="amount">
-          {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
-          {{ date.time }}
-        </p>
-      </div>
+      <button class="items-container ready" *ngIf="reservation && date">
+        <ng-container *ngTemplateOutlet="reservationTemplate"></ng-container>
+      </button>
+
       <button
         class="items-container column pointer green"
         *ngIf="!reservation && !date"
@@ -370,34 +293,6 @@
         ></app-answer-selector>
       </ng-container>
     </section> -->
-    <section class="section" *ngIf="customizer" style="margin-top: 32px">
-      <div class="between">
-        <h2 class="section-title">Personalización:</h2>
-
-        <button (click)="editOrder('customizer')">
-          <img
-            [src]="env + '/pencil.svg'"
-            class="edit-image"
-            alt="Icono de un lápiz"
-          />
-        </button>
-      </div>
-      <div class="items-container" style="flex-direction: column">
-        <table>
-          <tr *ngFor="let detail of customizerDetails">
-            <th>{{ detail.name }}</th>
-            <td>{{ detail.value }}</td>
-          </tr>
-        </table>
-        <div *ngIf="customizerPreview">
-          <img
-            class="customizer-preview"
-            [src]="customizerPreview.base64"
-            alt=""
-          />
-        </div>
-      </div>
-    </section>
   </main>
 
   <!-- <app-sticky-button
@@ -469,3 +364,117 @@
   (closingDialogSignal)="deletePost()"
   (openingDialogSignal)="executeProcessesBeforeOpening()"
 ></app-dialog-flow>
+
+<ng-template #itemInfoTemplate let-item="item" let-i="i">
+  <div class="productData">
+    <button (click)="goToArticleDetail(item._id)">
+      <div class="image" *ngIf="!urlIsVideo(item.images[0].value)">
+        <div
+          class="image-for-item"
+          [ngStyle]="{
+            backgroundImage: item.images?.length
+              ? 'url(' +
+                item.images[0].value +
+                '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+              : 'url(/assets/images/noimage.png)',
+            backgroundPosition: 'center',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat'
+          }"
+        ></div>
+      </div>
+      <div
+        class="video-wrapper videoThumbnail"
+        *ngIf="urlIsVideo(item.images[0].value)"
+      >
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+          alt="play"
+          class="playVideoIcon"
+          style="padding: 1rem !important; z-index: 99"
+        />
+
+        <video
+          [src]="item.images[0].value"
+          [id]="'media' + item._id"
+          class="video"
+          [muted]="true"
+        ></video>
+      </div>
+    </button>
+    <div class="rightSection">
+      <div class="title">
+        <p>
+          <span *ngIf="item.ready && item.name">
+            {{ headerService.order.products[i].amount }}x </span
+          >{{ !item.ready ? "Cantidad" : item.name }}
+        </p>
+        <p>
+          <span style="margin-right: 8px" *ngIf="item.ready && !item.name">
+            {{ headerService.order.products[i].amount }}x
+          </span>
+          ${{
+            item.pricing * headerService.order.products[i].amount
+              | number : "1.2-2"
+          }}
+        </p>
+      </div>
+      <div class="rightBottom">
+        <ng-container *ngIf="!item.ready">
+          <div class="countBox">
+            <button class="cube sign" (click)="changeAmount(i, 'subtract')">
+              -
+            </button>
+            <div class="cube number">
+              {{ headerService.order.products[i].amount }}
+            </div>
+            <button class="cube sign" (click)="changeAmount(i, 'add')">
+              +
+            </button>
+          </div>
+          <button class="iconBtn" (click)="deleteProduct(i)">
+            <i class="far fa-trash-alt"></i>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="item.ready">
+          <p class="description">
+            {{ item.description }}
+          </p>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #deliveryTemplate>
+  <p class="address-name" *ngIf="deliveryLocation.nickName">
+    {{ deliveryLocation.nickName }}
+  </p>
+  <p
+    [ngClass]="{
+      added: deliveryLocation.nickName,
+      'address-name': !deliveryLocation.nickName
+    }"
+    *ngIf="deliveryLocation.street"
+  >
+    {{
+      deliveryLocation.houseNumber
+        ? "#" + deliveryLocation.houseNumber + ", "
+        : ""
+    }}
+    {{ deliveryLocation.street }},
+    {{
+      deliveryLocation.referencePoint
+        ? deliveryLocation.referencePoint + ", "
+        : ""
+    }}
+    {{ deliveryLocation.city }}, República Dominicana
+  </p>
+</ng-template>
+
+<ng-template #reservationTemplate>
+  <p class="amount">
+    {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
+    {{ date.time }}
+  </p>
+</ng-template>

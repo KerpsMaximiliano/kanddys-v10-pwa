@@ -28,6 +28,7 @@
     .topBtn {
       background-color: transparent;
       border: none;
+      cursor: pointer;
     }
   }
 }
@@ -110,6 +111,13 @@
         flex-basis: 60%;
         flex-direction: column;
         padding-left: 15px;
+
+        .title {
+          margin-top: 30px;
+        }
+        .subtitle {
+          margin-bottom: 20px;
+        }
       }
 
       .icons-container {
@@ -117,6 +125,10 @@
         flex-basis: 40%;
         justify-content: space-around;
         margin: 0 auto;
+
+        svg {
+          cursor: pointer;
+        }
       }
     }
 
@@ -310,4 +322,13 @@
       justify-content: space-around;
     }
   }
+}
+
+.arrows {
+  filter: invert(85%) sepia(29%) saturate(755%) hue-rotate(64deg)
+    brightness(104%) contrast(89%);
+}
+
+.heart {
+  margin-left: 22px;
 }
