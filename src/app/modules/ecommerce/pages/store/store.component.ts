@@ -65,6 +65,8 @@ export class StoreComponent implements OnInit {
   };
   renderItemsPromise: Promise<any>;
 
+  hasCollections: boolean = false;
+
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
@@ -284,6 +286,7 @@ export class StoreComponent implements OnInit {
     });
     if (tagsList) {
       this.tags = tagsList;
+      this.hasCollections = tagsList.some(tag => (tag.notes != null) && (tag.notes != ""));
     }
   }
 
