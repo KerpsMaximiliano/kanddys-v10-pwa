@@ -60,7 +60,7 @@ export class StoreComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 5,
+    pageSize: 15,
     status: 'loading',
   };
   renderItemsPromise: Promise<any>;
@@ -91,7 +91,9 @@ export class StoreComponent implements OnInit {
     const verticalScroll = window.innerHeight + page.scrollTop;
 
     if (verticalScroll >= pageScrollHeight) {
-      await this.getItems();
+      if (this.paginationState.status === 'complete') {
+        await this.getItems();
+      }
     }
   }
 

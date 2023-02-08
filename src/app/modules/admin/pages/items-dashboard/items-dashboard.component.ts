@@ -153,7 +153,7 @@ export class ItemsDashboardComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 5,
+    pageSize: 15,
     status: 'complete',
   };
   windowWidth: number = 0;
