@@ -293,7 +293,10 @@ export class StoreComponent implements OnInit {
     });
     if (tagsList) {
       this.tags = tagsList;
-      //this.showOptionsBar = true;
+
+      if(this.tags.length > 0) {
+        this.showOptionsBar = true;
+      }
     }
   }
 
