@@ -154,15 +154,21 @@
         </div>
       </div>
 
-      <ul class="footer-links">
-        <li
-          *ngFor="let term of terms"
-          class="link"
-          (click)="redirectToTermsOfUse(term)"
-        >
-          {{ term.text }}
-        </li>
-      </ul>
+      <div id="footer" class="display-footer hide">
+        <button class="close" (click)="closeFooter()">X</button>
+        <ul class="footer-links">
+          <li
+            *ngFor="let term of terms"
+            class="link"
+            (click)="redirectToTermsOfUse(term)"
+          >
+            {{ term.text }}
+          </li>
+        </ul>
+      </div>
+      <div id="footerbtn" class="display-footer">
+        <button class="info-button" (click)="displayFooter()">i</button>
+      </div>
     </main>
   </div>
 </div>

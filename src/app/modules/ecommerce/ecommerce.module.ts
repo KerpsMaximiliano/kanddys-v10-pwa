@@ -162,9 +162,8 @@ const routes: Routes = [
     CreateArticleComponent,
     TermsOfUseComponent,
     ContactLandingContainerComponent,
-    ContactLandingComponent,
     CollectionsComponent,
-    TagItemsComponent
+    TagItemsComponent,
   ],
   imports: [
     CommonModule,

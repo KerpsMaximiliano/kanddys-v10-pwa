@@ -431,4 +431,13 @@ export class StoreComponent implements OnInit {
 
     this.router.navigate(['/ecommerce/terms-of-use/' + term._id]);
   }
+
+  closeFooter() {
+    document.getElementById('footer').classList.add('hide');
+    document.getElementById('footerbtn').classList.remove('hide');
+  }
+  displayFooter() {
+    document.getElementById('footer').classList.remove('hide');
+    document.getElementById('footerbtn').classList.add('hide');
+  }
 }

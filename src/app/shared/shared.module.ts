@@ -277,7 +277,6 @@ const declarations = [
   TagTypeDialogComponent,
   TagsDialogComponent,
   ContactLandingComponent,
-  ContactLandingContainerComponent,
   LinkDialogComponent,
   BuyerCardComponent,
   GradientFooterComponent,
