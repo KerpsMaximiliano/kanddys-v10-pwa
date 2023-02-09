@@ -141,6 +141,7 @@ import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialogModule } from '@angular/material/dialog';
 import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
 import { DotLoaderComponent } from './components/dot-loader/dot-loader.component';
 import { RouterOptionsComponent } from './components/router-options/router-options.component';
@@ -150,6 +151,7 @@ import { DescriptionDialogComponent } from './dialogs/description-dialog/descrip
 import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
+import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 
 const imports = [
   CommonModule,
@@ -174,6 +176,7 @@ const imports = [
   MatBadgeModule,
   MatSelectModule,
   MatListModule,
+  MatDialogModule,
 ];
 const declarations = [
   // Pages
@@ -309,6 +312,7 @@ const declarations = [
   ImagesCardComponent,
   DescriptionDialogComponent,
   DropdownMenuComponent,
+  ConfirmationDialogComponent
 ];
 
 @NgModule({
