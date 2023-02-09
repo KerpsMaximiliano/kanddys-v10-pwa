@@ -63,10 +63,6 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'terms-of-use/:viewsMerchantId',
-    component: TermsOfUseComponent,
-  },
-  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -137,6 +133,10 @@ const routes: Routes = [
       {
         path: 'contact-landing/:idUser',
         component: ContactLandingContainerComponent,
+      },
+      {
+        path: 'terms-of-use/:viewsMerchantId',
+        component: TermsOfUseComponent,
       },
     ],
   },

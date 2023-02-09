@@ -39,6 +39,7 @@ import SwiperCore, { Virtual } from 'swiper/core';
 import { Merchant } from 'src/app/core/models/merchant';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { IntegrationsService } from 'src/app/core/services/integrations.service';
 
 SwiperCore.use([Virtual]);
 
@@ -77,6 +78,7 @@ export class StoreComponent implements OnInit {
     spaceBetween: 5,
   };
 
+  azulPaymentsSupported: boolean = false;
   swiperConfigHighlightedItems: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
@@ -107,6 +109,7 @@ export class StoreComponent implements OnInit {
     private tagsService: TagsService,
     public _DomSanitizer: DomSanitizer,
     private authService: AuthService,
+    private integrationService: IntegrationsService,
     private dialog: DialogService
   ) {}
 
@@ -218,6 +221,13 @@ export class StoreComponent implements OnInit {
         limit: -1,
       },
     });
+
+    //Verifica si son soportados los pagos con azul
+    this.azulPaymentsSupported =
+      await this.integrationService.integrationPaymentMethod(
+        'azul',
+        this.headerService.saleflow.merchant._id
+      );
 
     // Obteniendo la lista de los items seleccionados
     const selectedItems = this.headerService.order?.products?.length
@@ -429,7 +439,12 @@ export class StoreComponent implements OnInit {
 
     this.savePageSnapshot();
 
-    this.router.navigate(['/ecommerce/terms-of-use/' + term._id]);
+    this.router.navigate([
+      '/ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/terms-of-use/' +
+        term._id,
+    ]);
   }
 
   closeFooter() {

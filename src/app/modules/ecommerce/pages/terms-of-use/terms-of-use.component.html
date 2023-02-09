@@ -5,4 +5,11 @@
 
   <h1 class="title">{{ title }}</h1>
   <div class="content" [innerHTML]="parsedMarkdown"></div>
+
+  <div class="logos" *ngIf="azulPaymentsSupported && viewMerchantType === 'security'">
+    <img
+      class="payment-methods-logos"
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpayment_methods_logos.svg"
+    />
+  </div>
 </div>

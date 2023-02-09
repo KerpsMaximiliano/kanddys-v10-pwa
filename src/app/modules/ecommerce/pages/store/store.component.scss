@@ -85,13 +85,16 @@ main {
     font-family: "SfProMedium";
   }
 }
+.footer-content {
+  background-color: #272727;
+  padding-bottom: 20px;
+}
+
 .footer-links {
   list-style: none;
-  background-color: black;
   margin: 0px;
   padding: 0px 6.54%;
   padding-top: 20px;
-  padding-bottom: 70px;
   .link {
     font-size: 19px;
     color: white;
@@ -111,6 +114,7 @@ main {
   max-width: 500px;
   bottom: 0;
   transition: 1.5s;
+  z-index: 9999;
 
   .close {
     background-color: #272727;
@@ -145,4 +149,10 @@ main {
 .hide {
   display: none;
   visibility: hidden;
+}
+
+.payment-methods-logos {
+  background-color: #272727;
+  width: 100%;
+  padding: 2rem;
 }
