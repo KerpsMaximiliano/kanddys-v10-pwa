@@ -3,6 +3,11 @@
   padding: 0;
 }
 
+a {
+  text-decoration: none;
+  color: #272727;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -33,6 +38,14 @@
     .img {
       object-fit: cover;
       border-radius: 15px;
+      width: 155px;
+      height: auto;
+    }
+
+    @media (max-width: 385px) {
+      .img {
+        width: 135px;
+      }
     }
 
     .text {
@@ -63,20 +76,49 @@
     font-family: "SfProBold";
     font-size: 12px;
 
+    span {
+      font-size: 17px;
+    }
+
+    .amount {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
     .center {
       width: 100%;
       text-align: center;
     }
+
     .cart-button {
       cursor: pointer;
       background-color: #FED230;
       padding: 7px 14px;
       font-family: SFProRegular;
+      font-size: 14px;
       border-radius: 20px;
       border: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 155px;
 
       &.active {
         background-color: #82F18D;
+      }
+
+      img {
+        width: 18px;
+        filter: brightness(0) invert(16%) sepia(13%) saturate(973%) hue-rotate(68deg) brightness(102%) contrast(90%);
+      }
+    }
+
+    @media (max-width: 385px) {
+      .cart-button {
+        width: 135px;
+        font-size: 12px;
       }
     }
   }

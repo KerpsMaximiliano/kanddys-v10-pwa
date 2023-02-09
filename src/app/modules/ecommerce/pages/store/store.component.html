@@ -146,7 +146,6 @@
             [queryParams]="{ mode: 'saleflow' }" -->
           <a
             *ngFor="let item of items; let itemIndex = index"
-            
           >
             <app-buyer-card
               [index]="itemIndex"
@@ -156,6 +155,7 @@
               [leftAmount]="item.pricing"
               [cta]="true"
               [ctaActive]="item.isSelected"
+              [redirectionParams]="{link: ['../article-detail/item', item._id], param: { mode: 'saleflow' }}"
               (ctaClicked)="toggleItemInCart($event)"
             ></app-buyer-card>
           </a>

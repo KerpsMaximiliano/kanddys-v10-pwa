@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class BuyerCardComponent implements OnInit {
   @Input() ID: string = '';
   @Input() index: number;
+  @Input() redirectionParams: any;
   @Input() shadow: boolean = true;
   @Input() img: string = '';
   @Input() title: string;
@@ -26,7 +27,6 @@ export class BuyerCardComponent implements OnInit {
   ngOnInit(): void {}
 
   emitClick() {
-    this.ctaActive = !this.ctaActive;
     this.ctaClicked.emit(this.index);
   }
 }
