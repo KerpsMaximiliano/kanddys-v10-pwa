@@ -336,11 +336,12 @@
           <span *ngIf="item.ready && item.name">
             {{ headerService.order.products[i].amount }}x </span
           >{{ !item.ready ? "Cantidad" : item.name }}
-        </p>
-        <p>
+
           <span style="margin-right: 8px" *ngIf="item.ready && !item.name">
             {{ headerService.order.products[i].amount }}x
           </span>
+        </p>
+        <p>
           ${{
             item.pricing * headerService.order.products[i].amount
               | number : "1.2-2"
