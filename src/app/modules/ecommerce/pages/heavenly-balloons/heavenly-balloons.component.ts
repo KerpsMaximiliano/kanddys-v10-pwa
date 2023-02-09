@@ -382,7 +382,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               display: 'inline-block',
               width: 'calc(100% / 2)',
               paddingLeft: '6px',
-              paddingRight: '33px',
               // width: '83.70%',
             },
             fieldStyles: {
