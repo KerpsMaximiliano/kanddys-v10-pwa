@@ -143,6 +143,10 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
 import { DotLoaderComponent } from './components/dot-loader/dot-loader.component';
+import { RouterOptionsComponent } from './components/router-options/router-options.component';
+import { LinkCardComponent } from './components/link-card/link-card.component';
+import { ImagesCardComponent } from './components/images-card/images-card.component';
+import { DescriptionDialogComponent } from './dialogs/description-dialog/description-dialog.component';
 
 const imports = [
   CommonModule,
@@ -294,7 +298,11 @@ const declarations = [
   LinksDialogComponent,
   GradientCardComponent,
   CalendarSwiperComponent,
-  DotLoaderComponent
+  DotLoaderComponent,
+  RouterOptionsComponent,
+  LinkCardComponent,
+  ImagesCardComponent,
+  DescriptionDialogComponent,
 ];
 
 @NgModule({

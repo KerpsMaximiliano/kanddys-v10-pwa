@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+}
+
+.container {
+  background-color: #fff;
+  padding: 24px 27px 32px;
+  border-radius: 7px;
+  width: 100%;
+
+  color: #000000;
+  font-family: SFProMedium;
+  font-size: 17px;
+  .title {
+    margin-bottom: 10px;
+  }
+
+  .text {
+    text-decoration: none;
+    color: #2874ad;
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,23 @@
+<div class="container">
+  <header class="header">
+    <img
+      [src]="env + '/arrow-double-up-black.svg'"
+      alt="arrows"
+      class="arrows"
+    />
+    <button class="right">Preview</button>
+    <button class="hide">Inactivo</button>
+  </header>
+  <div class="content">
+    <app-router-options></app-router-options>
+  </div>
+  <div class="content" style="margin-top: 8px">
+    <app-link-card></app-link-card>
+  </div>
+  <div class="content" style="margin-top: 10px">
+    <app-images-card></app-images-card>
+  </div>
+  <div style="position: fixed; bottom: 50px">
+    <app-menu-button mode="array"></app-menu-button>
+  </div>
+</div>

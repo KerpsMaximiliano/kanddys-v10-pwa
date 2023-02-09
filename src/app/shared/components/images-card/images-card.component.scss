@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+}
+
+.container {
+  border-radius: 7px;
+  background-color: #fff;
+  padding: 24px 20px 20px;
+
+  .title {
+    color: #000000;
+    font-size: 17px;
+    font-family: SFProMedium;
+    margin-bottom: 15px;
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5px;
+
+    .card {
+      text-align: center;
+      cursor: pointer;
+      img {
+        width: 100%;
+        height: 111.82px;
+        border-radius: 9px;
+      }
+
+      .text {
+        color: #7b7b7b;
+        font-size: 14px;
+        font-family: SFProRegular;
+        margin-top: 5px;
+      }
+    }
+  }
+}
