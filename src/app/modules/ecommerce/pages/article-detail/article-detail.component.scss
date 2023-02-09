@@ -6,8 +6,9 @@ button,
 a {
   all: unset;
 }
-.fixed-top-button {
-  padding: 6px;
+.fixed-top-button,
+.bottom-button {
+  padding: 8px 9px;
   position: absolute;
   top: 38px;
   border: none;
@@ -15,7 +16,6 @@ a {
   cursor: pointer;
   z-index: 2;
   background-color: #272727;
-  box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 16%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,6 +33,11 @@ a {
     filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%) hue-rotate(62deg) brightness(99%)
       contrast(91%);
   }
+}
+.bottom-button {
+  top: 70px;
+  background-color: unset;
+  box-shadow: unset !important;
 }
 
 .media-swiper-wrapper {
@@ -249,16 +254,18 @@ audio {
 }
 
 .cart-btn {
+  width: 75%;
   font-size: 1rem;
-  width: 100%;
   justify-content: center;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 0px;
+  padding: 12px 20px;
   background-color: #fed230;
   transition: 0.3s background-color linear;
   font-family: "SfProBold";
+  border-top-right-radius: 11px;
+  margin-right: 50px !important;
 
   &.inCart {
     background-color: #82f18d;
@@ -275,6 +282,21 @@ audio {
 }
 
 ::ng-deep .mat-badge-content {
-  background-color: #82f18d;
+  background-color: #fed230;
   color: #272727;
+  border: 1px solid #f5f5f5;
+  left: 16px !important;
+}
+
+@media (max-width: 390px) {
+  .cart-btn {
+    width: 70%;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .cart-btn {
+    width: 65%;
+  }
 }

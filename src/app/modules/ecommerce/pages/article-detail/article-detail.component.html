@@ -2,16 +2,7 @@
   <button class="fixed-top-button left" (click)="back()">
     <img [src]="env + '/arrow-double-up.svg'" alt="Volver" />
   </button>
-  <button
-    *ngIf="itemsAmount && mode != 'image-preview'"
-    class="fixed-top-button right"
-    mat-raised-button
-    (click)="goToCheckout()"
-    [matBadge]="itemsAmount"
-    matBadgePosition="after"
-  >
-    <img [src]="env + '/carrito_blanco.svg'" alt="Volver" />
-  </button>
+
   <div class="media-swiper-wrapper">
     <div
       #swiperContainer
@@ -144,8 +135,12 @@
                 alt="Contenedor con flecha saliendo"
               />
             </button>
+            <!-- <button class="round-button">
+              <img [src]="env + '/heart.svg'" alt="corazon" />
+            </button> -->
           </div>
         </div>
+
         <button
           class="cart-btn"
           (click)="saveProduct()"
@@ -153,10 +148,11 @@
           [ngClass]="{
             inCart: isItemInCart
           }"
+          [ngStyle]="{
+            width: itemsAmount ? '75%' : '100%',
+            borderTopRightRadius: itemsAmount ? '11px' : '0'
+          }"
         >
-          <mat-icon>{{
-            isItemInCart ? "remove_shopping_cart" : "add_shopping_cart"
-          }}</mat-icon>
           <span>
             {{
               isItemInCart
@@ -164,7 +160,22 @@
                 : "Adiciónalo a la factura"
             }}
           </span>
+          <mat-icon>{{
+            isItemInCart ? "remove_shopping_cart" : "add_shopping_cart"
+          }}</mat-icon>
         </button>
+        <button
+          *ngIf="itemsAmount && mode != 'image-preview'"
+          class="bottom-button right"
+          mat-raised-button
+          (click)="goToCheckout()"
+          [matBadge]="itemsAmount"
+          matBadgePosition="after"
+          matBadgeSize="small"
+        >
+          <img [src]="env + '/carrito_blanco.svg'" alt="Volver" />
+        </button>
+
         <a
           class="cart-btn"
           [routerLink]="['../../../collections', tagData._id]"
