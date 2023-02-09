@@ -133,6 +133,8 @@ export class OrderDetailComponent implements OnInit {
       const { notify: notification, redirectTo } = queryParams;
       this.redirectTo = redirectTo;
 
+      if(typeof redirectTo === 'undefined') this.redirectTo = null; 
+
       this.route.params.subscribe(async (params) => {
         const { orderId } = params;
 
@@ -910,4 +912,10 @@ export class OrderDetailComponent implements OnInit {
   //     }
   //   }
   // }
+
+  returnToStore = () => {
+    this.router.navigate([
+      'ecommerce/' + this.order.items[0].saleflow.merchant.slug + '/store',
+    ]);
+  }
 }

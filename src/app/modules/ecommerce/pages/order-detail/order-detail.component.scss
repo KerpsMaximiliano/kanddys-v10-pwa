@@ -406,6 +406,13 @@ a {
         margin: 0;
         margin-bottom: 10px;
         font-weight: normal;
+
+        &.adminView {
+          font-family: SfProLight;
+          font-size: 13px;
+          color: #272727;
+          text-transform: uppercase;
+        }
       }
     }
   }
