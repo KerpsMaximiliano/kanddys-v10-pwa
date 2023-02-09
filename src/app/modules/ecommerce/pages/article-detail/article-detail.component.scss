@@ -30,8 +30,8 @@ a {
   img {
     width: 28px;
     height: 28px;
-    filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%)
-      hue-rotate(62deg) brightness(99%) contrast(91%);
+    filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%) hue-rotate(62deg) brightness(99%)
+      contrast(91%);
   }
 }
 .bottom-button {
@@ -47,11 +47,7 @@ a {
 .text-container {
   width: 100%;
   min-height: 64px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(0, 0, 0, 1) 100%
-  );
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 1) 100%);
   padding: 0 3% 10px;
   cursor: pointer;
   box-sizing: border-box;
@@ -265,7 +261,7 @@ audio {
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background-color: #82f18d;
+  background-color: #fed230;
   transition: 0.3s background-color linear;
   font-family: "SfProBold";
   border-top-right-radius: 11px;
@@ -277,7 +273,7 @@ audio {
 
   &:hover {
     cursor: pointer;
-    background-color: darken($color: #82f18d, $amount: 20);
+    background-color: darken($color: #fed230, $amount: 20);
 
     &.inCart {
       background-color: darken($color: #82f18d, $amount: 30);

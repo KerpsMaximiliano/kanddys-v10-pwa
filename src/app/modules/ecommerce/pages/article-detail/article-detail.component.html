@@ -135,9 +135,9 @@
                 alt="Contenedor con flecha saliendo"
               />
             </button>
-            <button class="round-button">
+            <!-- <button class="round-button">
               <img [src]="env + '/heart.svg'" alt="corazon" />
-            </button>
+            </button> -->
           </div>
         </div>
 
@@ -148,10 +148,11 @@
           [ngClass]="{
             inCart: isItemInCart
           }"
+          [ngStyle]="{
+            width: itemsAmount ? '75%' : '100%',
+            borderTopRightRadius: itemsAmount ? '11px' : '0'
+          }"
         >
-          <!-- <mat-icon>{{
-            isItemInCart ? "remove_shopping_cart" : "add_shopping_cart"
-          }}</mat-icon> -->
           <span>
             {{
               isItemInCart
@@ -159,6 +160,9 @@
                 : "Adiciónalo a la factura"
             }}
           </span>
+          <mat-icon>{{
+            isItemInCart ? "remove_shopping_cart" : "add_shopping_cart"
+          }}</mat-icon>
         </button>
         <button
           *ngIf="itemsAmount && mode != 'image-preview'"
