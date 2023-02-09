@@ -82,7 +82,7 @@
   <main class="information" [ngStyle]="{ 'margin-top': notify ? '13px' : '' }">
     <section class="top">
       <h2 class="top-h" *ngIf="order">
-        FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
+        FACTURA {{ formatId(order.dateId) }} <br />
         <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
           {{ order.user?.name || order.user?.phone || order.user?.email }}
         </button>
