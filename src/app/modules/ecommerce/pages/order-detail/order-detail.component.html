@@ -9,64 +9,117 @@
       merchantOwner
     "
     (returnEvent)="returnEvent()"
-    [bgColor]="changeColor ? changeColor : headerService.colorTheme"
-    [icon]="
-      !isMerchant && merchantOwner
-        ? {
-            src: '/arrow-double-up.svg',
-            width: 17,
-            height: 21,
-            callback: changeView
-          }
+    [bgColor]="isMerchant ? '#fff' : headerService.colorTheme"
+    [icon]="{
+      src: '/arrow-double-up.svg',
+      width: 17,
+      height: 21,
+      callback: changeView,
+      filter: isMerchant
+        ? 'brightness(0) saturate(100) invert(11%) sepia(0%) saturate(0%) hue-rotate(277deg) brightness(93%) contrast(88%)'
         : null
-    "
+    }"
+    [dots]="{
+      active: isMerchant,
+      color: '#272727'
+    }"
     [rightText]="
-      order?.user
-        ? {
-            text: order.user?.name || order.user?.phone || order.user?.email
-          }
-        : null
-    "
-    [icons]="[
-      {
-        src: '/person.svg',
-        width: '13px',
-        height: '17px',
-        color: 'brightness(3)',
-        callback: null
-      }
-    ]"
-    [mainText]="
-      !isMerchant
+      headerService.user && !isMerchant
         ? {
             text:
-              order?.items[0].saleflow.headline?.length < 38
-                ? order?.items[0].saleflow.headline
-                : order?.items[0].saleflow.headline.split(' ')['0'],
-            fontSize: '21px',
-            fontFamily: 'SfProBold'
+              headerService.user?.name ||
+              headerService.user?.phone ||
+              headerService.user?.email
           }
         : null
     "
+    [icons]="
+      !isMerchant
+        ? [
+            {
+              src: '/person.svg',
+              width: '13px',
+              height: '17px',
+              color: 'brightness(3)',
+              callback: redirectToUserContact
+            }
+          ]
+        : null
+    "
+    [mainText]="{
+      text:
+        order?.items[0].saleflow.headline?.length < 38
+          ? order?.items[0].saleflow.headline
+          : order?.items[0].saleflow.headline.split(' ')['0'],
+      fontSize: '21px',
+      fontFamily: 'SfProBold',
+      color: !isMerchant ? '#fff' : '#272727'
+    }"
     (agnosticAction)="openLogoutDialog()"
   ></app-helper-headerv2>
-  <div class="top-area" *ngIf="!notify && !isMerchant">
-    <button class="top-button" (click)="buyAgain()">Comprar otra vez</button>
-    <button class="top-button" (click)="returnToStore()">
-      Comprar otra cosa
-    </button>
+
+  <!-- <ng-container *ngIf="isMerchant">
+    <div style="padding-top: 5px; margin-bottom: 5px">
+      <app-dropdown-menu
+        [optionsList]="deliveryStatusOptions"
+        [multiple]="false"
+        title="STATUS DE LA FACTURA"
+        [listTitle]="orderDeliveryStatus()"
+        (listValue)="changeOrderStatus($event)"
+      ></app-dropdown-menu>
+    </div>
+    <div>
+      <app-dropdown-menu
+        logo="/assets/images/noimage.png"
+        title="MIS LISTAS DE FACTURAS"
+        [listTitle]="Listas"
+        [optionsList]="tagOptions"
+        (listValue)="addTag($event)"
+      ></app-dropdown-menu>
+    </div>
+    <div style="background-color: #fff">
+      <a
+        [routerLink]="['/admin/create-tag']"
+        [queryParams]="{ entity: 'order' }"
+        >+ Crear un nuevo listado</a
+      >
+    </div>
+  </ng-container> -->
+
+  <!-- <button (click)="changeOrderStatus()">set to pickup</button> -->
+  <!-- <div class="header" *ngIf="buyerView === false">
+    <img
+      [src]="env + '/arrow-double-up-black.svg'"
+      alt="arrows"
+      class="arrows"
+    />
+    <p class="header-title">
+      {{
+        order?.items[0].saleflow.headline?.length < 38
+          ? order?.items[0].saleflow.headline
+          : order?.items[0].saleflow.headline.split(" ")["0"]
+      }}
+    </p>
+    <img [src]="env + '/bookmark-plus.svg'" alt="bookmark" class="bookmark" />
+    <img [src]="env + '/dots-black.svg'" alt="dots" class="dots" />
+  </div> -->
+
+  <div *ngIf="!isMerchant" class="top-banner">
+    <button class="blue">Comprar otra vez</button>
+    <button class="blue right">Comprar otra cosa</button>
   </div>
 
-  <div class="bill-area" *ngIf="notify">
-    <!--     <h2 class="user-name">
-      {{ order.user?.name || order.user?.phone || order.user?.email }}
-    </h2> -->
-    <h2 class="success">Tu factura se creó exitosamente.</h2>
+  <!-- <div class="top-area" *ngIf="!notify && !isMerchant">
+    <button class="top-button" (click)="buyAgain()">
+      <span class="plus"> + </span> COMPRAR OTRA VEZ
+    </button>
+  </div> -->
 
-    <p class="bill-clarity">
-      Al “confirmar” se abrirá tu WhatsApp con la factura para
-      {{ order?.items[0].saleflow.merchant.name }}.
-    </p>
+  <!-- <div class="bill-area" *ngIf="notify">
+    <h2 class="user-name">
+      {{ order.user?.name || order.user?.phone || order.user?.email }}
+    </h2>
+    <h2 class="success">Tu factura se creó exitosamente.</h2>
 
     <a
       [href]="messageLink"
@@ -77,12 +130,19 @@
       Confirmar por WhatsApp
     </a>
 
-    <span (click)="returnToStore()" class="new-order"> Comprar otra cosa</span>
-  </div>
-  <main class="information" [ngStyle]="{ 'margin-top': notify ? '13px' : '' }">
+    <p class="bill-clarity">
+      Al “confirmar” se abrirá tu WhatsApp con la factura para
+      {{ order?.items[0].saleflow.merchant.name }}.
+    </p>
+  </div> -->
+  <main class="information">
     <section class="top">
       <h2 class="top-h" *ngIf="order">
-        FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
+        FACTURA {{ formatId(order.dateId) }} <br />
+        <a target="_blank" [href]="messageLink" *ngIf="!isMerchant" class="blue"
+          >Confirmar por WhatsApp</a
+        >
+        <br *ngIf="!isMerchant" />
         <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
           {{ order.user?.name || order.user?.phone || order.user?.email }}
         </button>
@@ -90,43 +150,30 @@
           order?.items[0].saleflow.headline
         }}</span>
       </h2>
-
-      <div
-        class="info-display"
-        *ngIf="
-          order &&
-          order.items &&
-          order.items.length > 0 &&
-          order.items[0].saleflow.module.delivery &&
-          order.items[0].saleflow.module.delivery.pickUpLocations
-        "
-      >
-        <span class="info" style="margin-left: 0">{{
-          order.items[0].saleflow.module.delivery.pickUpLocations[0].nickName
-        }}</span>
-        <!-- <span class="info">{{ orderStatus | titlecase }}</span> -->
+      <div class="info-display" *ngIf="!isMerchant">
+        <span class="info">Direccion de mi Floristeria</span>
       </div>
-
       <div class="info-display">
         <span class="info" style="margin-left: 0">{{ orderDate }}</span>
-        <!-- <span class="info">{{ orderStatus | titlecase }}</span> -->
       </div>
     </section>
     <section class="section">
       <h2 class="section-title">Artículos facturados:</h2>
+
       <div
-        class="items-container space-between"
-        *ngFor="let item of order?.items"
+        class="items-container"
+        *ngFor="let item of order?.items; index as i"
+        style="margin-bottom: 4px"
       >
-        <ng-container *ngIf="!item.params?.length || customizer">
-          <ng-container *ngIf="item.item.media && item.item.media.length > 0">
+        <div class="image-container">
+          <button>
             <div
               class="image"
+              *ngIf="!urlIsVideo(item.item.images[0].value)"
               (click)="
                 item.item.images?.length &&
                   openImageModal(item.item.images[0].value)
               "
-              *ngIf="item.item.media[0].type === 'IMAGE'"
               [ngStyle]="{
                 backgroundImage: item.item.images?.length
                   ? 'url(' + item.item.images[0].value + ')'
@@ -136,57 +183,42 @@
                 backgroundSize: 'cover'
               }"
             ></div>
-
             <div
               class="video-wrapper videoThumbnail"
-              *ngIf="item.item.media[0].type === 'VIDEO'"
+              *ngIf="urlIsVideo(item.item.images[0].value)"
             >
               <img
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
                 alt="play"
                 class="playVideoIcon"
-                style="padding: 1rem !important"
+                style="padding: 1rem !important; z-index: 99"
               />
 
               <video
-                *ngIf="item.item.media[0].type === 'VIDEO'"
-                [src]="item.item.media[0].src"
-                [id]="'media' + item.item._id"
-                (click)="playVideoOnFullscreen('media' + item.item._id)"
+                [src]="item.item.images[0].value"
+                [id]="'media' + item._id"
                 class="video"
                 [muted]="true"
-                [ngStyle]="{
-                  height: 'calc(100vh - 49px)'
-                }"
               ></video>
             </div>
-          </ng-container>
-        </ng-container>
-        <ng-container *ngIf="item.params?.length && !customizer">
-          <div *ngFor="let paramValue of item.item.params[0].values">
-            <div
-              class="image"
-              *ngIf="
-                item.params[0].param == item.item.params[0]._id &&
-                item.params[0].paramValue == paramValue._id
-              "
-              [ngStyle]="{
-                backgroundImage: paramValue.image
-                  ? 'url(' +
-                    paramValue.image +
-                    '), url(/assets/images/noimage.png)'
-                  : '/assets/images/noimage.png',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundSize: 'cover'
-              }"
-              (click)="openImageModal(paramValue.image)"
-            ></div>
+          </button>
+          <div class="right" style="width: 100%">
+            <div class="top-flex">
+              <p class="left-text">
+                {{ item.amount }}x {{ item.item.name || "artículo(s)" }}
+              </p>
+              <p class="right-text">
+                ${{ order.subtotals[i].amount | number }}
+              </p>
+            </div>
+            <p class="grey">
+              {{ item.item.description }}
+            </p>
           </div>
-        </ng-container>
-
-        <div class="amount" [style.paddingRight]="'18px'">
-          1x RD $ {{ item.item.pricing | number : "1.2-2" }}
+          <!-- <div class="question">
+            <p class="top-text">Que irá escrito en el globo?</p>
+            <p class="bottom-text">RespuestaID</p>
+          </div> -->
         </div>
       </div>
       <div
@@ -203,17 +235,15 @@
         style="padding: 11px 30px 12px 33px; margin-top: 5px"
       >
         <p class="total">Total facturado:</p>
-        <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
+        <p class="amount" [style]="{ fontSize: '21px' }">
+          $ {{ payment | number : "1.2-2" }}
+        </p>
       </div>
     </section>
 
-    <section class="section" style="margin-top: 50px">
-      <h2 class="section-title">Sobre el pago:</h2>
-      <div
-        class="items-container"
-        style="margin-top: 5px"
-        *ngIf="order?.ocr || payedWithAzul"
-      >
+    <section *ngIf="isMerchant" class="section" style="margin-top: 50px">
+      <h2 class="section-title">Pagos:</h2>
+      <div class="items-container" style="margin-top: 5px" *ngIf="order?.ocr">
         <div
           class="image-container"
           #elemt
@@ -222,25 +252,22 @@
           (mouseleave)="stopDragging()"
           (mousemove)="moveEvent($event, elemt)"
         >
-          <button (click)="order.ocr ? openImageModal(order.ocr.image) : null">
+          <button (click)="order.ocr && openImageModal(order.ocr.image)">
             <div
               class="image"
               [ngStyle]="{
-                'background-image':
-                  order.ocr && order.ocr.image
-                    ? 'url(' + order.ocr.image + ') '
-                    : payedWithAzul
-                    ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
-                    : 'url(/assets/images/noimage.png)'
+                'background-image': order.ocr.image
+                  ? 'url(' + order.ocr.image + ') '
+                  : 'url(/assets/images/noimage.png)'
               }"
             >
-              <!-- <img
-                 [src]="
-                   order.ocr ? order.ocr.image : '/assets/images/noimage.png'
-                 "
-                 alt="item image"
-                 class="item-image"
-               /> -->
+              <img
+                [src]="
+                  order.ocr ? order.ocr.image : '/assets/images/noimage.png'
+                "
+                alt="item image"
+                class="item-image"
+              />
             </div>
           </button>
         </div>
@@ -259,24 +286,39 @@
           <p class="total">Descuentos:</p>
           <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
         </div>
-  
+
         <div class="items-container space-between" style="margin-top: 4px">
           <p class="total">Impuestos:</p>
           <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
         </div>
       </ng-container>
 
+      <!-- <div class="items-container space-between" style="margin-top: 4px">
+        <p class="total">MerchantID GiftCard</p>
+        <p class="amount">$ {{ payment | number : "1.2-2" }}</p>
+      </div> -->
       <div class="items-container space-between" style="margin-top: 4px">
-        <p class="total">Total Pagado:</p>
-        <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
+        <p class="total">Total pagado:</p>
+        <p class="amount" [style]="{ fontSize: '21px' }">
+          $ {{ payment | number : "1.2-2" }}
+        </p>
       </div>
     </section>
+
+    <!-- <div *ngIf="isMerchant" class="info-card">
+      <div class="square" [style]="{ background: infoCardBg }"></div>
+      <div class="right">
+        <p class="bold">Pago por transferencia</p>
+        <p class="grey">
+          Si necesitamos poner alguno info del pago then iria aqui.
+        </p>
+      </div>
+    </div> -->
 
     <section class="section" *ngIf="order?.items[0].deliveryLocation">
       <h2 class="section-title" style="margin-top: 50px">
         Lugar de {{ order?.items[0].reservation ? "la sesión" : " Entrega:" }}
       </h2>
-
       <div class="items-container column">
         <p
           class="address-name"
@@ -311,7 +353,6 @@
         </p>
       </div>
     </section>
-
     <section class="section" *ngIf="order?.items[0].reservation && date">
       <h2 class="section-title" style="margin-top: 32px">
         Fecha de la sesión:
@@ -324,8 +365,64 @@
         </p>
       </div>
     </section>
+    <!-- <section
+      class="section"
+      [style]="{ marginTop: '78.5px' }"
+    >
+      <h2 class="section-title">Entrega:</h2>
+      <div class="question">
+        <p class="top-text">Donde entregaremos?</p>
+        <p class="bottom-text">RespuestaID</p>
+      </div>
+      <div class="question">
+        <p class="top-text">A quien entregaremos?</p>
+        <p class="bottom-text">RespuestaID</p>
+      </div>
+      <div class="question">
+        <p class="top-text">Cuando entregaremos?</p>
+        <p class="bottom-text">RespuestaID</p>
+      </div>
+      <button *ngIf="isMerchant" style="margin-top: 25px">
+        <p class="blue">Imprime o descarga el QR que enlaza el contenido</p>
+      </button>
+      <button *ngIf="isMerchant" style="margin-top: 25px">
+        <p class="blue">Añadir al TAG de entregado</p>
+      </button>
+    </section> -->
 
     <section
+      class="section"
+      style="margin-top: 32px"
+      *ngIf="
+        post?.message ||
+        post?.from ||
+        (post?.targets?.length && post.targets[0].name)
+      "
+    >
+      <h2 class="section-title">Mensaje de regalo (opcional)</h2>
+      <div class="question" *ngIf="post.message">
+        <p class="top-text">Escrito en tarjeta fisica</p>
+        <p class="bottom-text">{{ post.message }}</p>
+      </div>
+      <div
+        class="question"
+        *ngIf="post.targets?.length && post.targets[0]?.name"
+      >
+        <p class="top-text">Nombre del sobre</p>
+        <p class="bottom-text">{{ post.targets[0].name }}</p>
+      </div>
+      <!-- <div class="question">
+        <p class="top-text">Contenido privado del QR (fotos, audio y ...)</p>
+      </div> -->
+      <!-- <button class="blue" style="width: 70%">
+        Imprime o descarga el QR que enlaza el contenido
+      </button>
+      <button class="blue" (click)="moveDropdown()">
+        Añadir factura al TAG de entregada
+      </button> -->
+    </section>
+
+    <!-- <section
       class="section"
       *ngIf="
         order?.items[0].post &&
@@ -387,21 +484,7 @@
           <p class="message-text inner">{{ post.from }}</p>
         </section>
       </div>
-    </section>
-    <section class="section" *ngIf="customizer" style="margin-top: 32px">
-      <h2 class="section-title">Personalización:</h2>
-      <div class="items-container" style="flex-direction: column">
-        <table>
-          <tr *ngFor="let detail of customizerDetails">
-            <th>{{ detail.name }}</th>
-            <td>{{ detail.value }}</td>
-          </tr>
-        </table>
-        <div *ngIf="customizer.preview">
-          <img class="customizer-preview" [src]="customizer.preview" alt="" />
-        </div>
-      </div>
-    </section>
+    </section> -->
   </main>
 
   <qrcode
@@ -415,56 +498,6 @@
     [allowEmptyString]="true"
     colorDark="#000"
   ></qrcode>
-
-  <footer
-    class="footer-display"
-    [style.backgroundColor]="
-      changeColor ? changeColor : headerService.colorTheme
-    "
-  >
-    <!--
-      <div
-        class="left-arrow"
-        *ngIf="this.orderInDayIndex > 0 || orderBeforeOrderDay"
-        (click)="goToNextOrPreviousOrder('PREVIOUS')"
-      >
-        <img
-          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-white.svg"
-          alt=""
-        />
-      </div>
-    -->
-
-    <div class="pages-tabs">
-      <div class="images-container">
-        <img
-          [src]="env + image.src"
-          *ngFor="let image of imageList"
-          class="image"
-          (click)="image.callback()"
-          [ngStyle]="{
-            filter: image.filter && image.filter
-          }"
-        />
-      </div>
-    </div>
-
-    <!--
-      <div
-        class="right-arrow"
-        *ngIf="
-          this.orderInDayIndex < this.ordersInTheSameDay.length - 1 ||
-          orderAfterOrderDay
-        "
-        (click)="goToNextOrPreviousOrder('NEXT')"
-      >
-        <img
-          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-right-white.svg"
-          alt=""
-        />
-      </div>
-    -->
-  </footer>
 
   <!-- Aquí hubo un merge conflict -->
 

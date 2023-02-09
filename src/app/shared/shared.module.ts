@@ -147,6 +147,9 @@ import { RouterOptionsComponent } from './components/router-options/router-optio
 import { LinkCardComponent } from './components/link-card/link-card.component';
 import { ImagesCardComponent } from './components/images-card/images-card.component';
 import { DescriptionDialogComponent } from './dialogs/description-dialog/description-dialog.component';
+import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatListModule } from '@angular/material/list';
 
 const imports = [
   CommonModule,
@@ -169,6 +172,8 @@ const imports = [
   MatButtonModule,
   MatExpansionModule,
   MatBadgeModule,
+  MatSelectModule,
+  MatListModule,
 ];
 const declarations = [
   // Pages
@@ -303,6 +308,7 @@ const declarations = [
   LinkCardComponent,
   ImagesCardComponent,
   DescriptionDialogComponent,
+  DropdownMenuComponent,
 ];
 
 @NgModule({

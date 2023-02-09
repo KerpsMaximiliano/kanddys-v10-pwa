@@ -102,10 +102,18 @@ export type OrderStatusNameType =
   | 'completado'
   | 'error';
 
+export type OrderStatusDeliveryType =
+  | 'pickup'
+  | 'in progress'
+  | 'pending'
+  | 'shipped'
+  | 'delivered';
+
 export type OrderType = 'regular' | 'itemPackage';
 
 export class ItemOrder extends Model<ItemOrder> {
   orderStatus: OrderStatusType;
+  orderStatusDelivery: OrderStatusDeliveryType;
   orderType: OrderType;
   isComplete: boolean;
   subtotals: OrderSubtotal[];
