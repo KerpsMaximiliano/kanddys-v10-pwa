@@ -1134,7 +1134,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         this.whatsAppMessageParts.pop();
       },
       footerConfig,
-      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
+      stepButtonInvalidText: 'INGRESA LOS DATOS REQUERIDOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN',
     },
     {
