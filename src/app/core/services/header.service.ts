@@ -303,8 +303,8 @@ export class HeaderService {
     if (!itemData) itemData = [];
     const index = itemData.findIndex((item) => item === product._id);
     if (index >= 0) {
-      itemData.splice(index, 1);
-      this.items.splice(index, 1);
+      itemData = itemData.filter((item) => item !== product._id);
+      this.items = this.items.filter((item) => item !== product._id);
     } else {
       itemData.push(product._id);
       this.items.push(product._id);

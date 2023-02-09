@@ -142,6 +142,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
+import { DotLoaderComponent } from './components/dot-loader/dot-loader.component';
 
 const imports = [
   CommonModule,
@@ -293,6 +294,7 @@ const declarations = [
   LinksDialogComponent,
   GradientCardComponent,
   CalendarSwiperComponent,
+  DotLoaderComponent
 ];
 
 @NgModule({

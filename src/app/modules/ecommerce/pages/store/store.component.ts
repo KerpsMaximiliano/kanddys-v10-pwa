@@ -60,10 +60,12 @@ export class StoreComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 5,
+    pageSize: 15,
     status: 'loading',
   };
   renderItemsPromise: Promise<any>;
+
+  hasCollections: boolean = false;
 
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 'auto',
@@ -91,7 +93,9 @@ export class StoreComponent implements OnInit {
     const verticalScroll = window.innerHeight + page.scrollTop;
 
     if (verticalScroll >= pageScrollHeight) {
-      await this.getItems();
+      if (this.paginationState.status === 'complete') {
+        await this.getItems();
+      }
     }
   }
 
@@ -282,6 +286,7 @@ export class StoreComponent implements OnInit {
     });
     if (tagsList) {
       this.tags = tagsList;
+      this.hasCollections = tagsList.some(tag => (tag.notes != null) && (tag.notes != ""));
     }
   }
 
