@@ -375,4 +375,10 @@ export class StoreComponent implements OnInit {
 
     this.router.navigate(['/ecommerce/terms-of-use/' + term._id]);
   }
+
+  toggleItemInCart(index: number) {
+    console.log(index);
+    this.items[index].isSelected = !this.items[index].isSelected;
+    
+  }
 }

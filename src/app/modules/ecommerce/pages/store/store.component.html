@@ -139,17 +139,21 @@
           class="description-view"
           *ngIf="headerService.saleflow.layout === 'description-card'"
         >
+        <!-- [routerLink]="['../article-detail/item', item._id]"
+            [queryParams]="{ mode: 'saleflow' }" -->
           <a
             *ngFor="let item of items; let itemIndex = index"
-            [routerLink]="['../article-detail/item', item._id]"
-            [queryParams]="{ mode: 'saleflow' }"
+            
           >
             <app-buyer-card
+              [index]="itemIndex"
               [title]="item.name"
               [description]="item.description"
               [img]="item.images?.length ? item.images[0].value : ''"
               [leftAmount]="item.pricing"
-              [cartButton]="true"
+              [cta]="true"
+              [ctaActive]="item.isSelected"
+              (ctaClicked)="toggleItemInCart($event)"
             ></app-buyer-card>
           </a>
         </div>

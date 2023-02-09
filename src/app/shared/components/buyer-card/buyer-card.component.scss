@@ -69,6 +69,7 @@
     }
     .cart-button {
       cursor: pointer;
+      background-color: #FED230;
       padding: 7px 14px;
       font-family: SFProRegular;
       border-radius: 20px;
@@ -76,9 +77,6 @@
 
       &.active {
         background-color: #82F18D;
-      }
-      &.inactive {
-        background-color: #FED230;
       }
     }
   }
