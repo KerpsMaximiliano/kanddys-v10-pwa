@@ -79,7 +79,7 @@
 
     <!-- <span (click)="returnToStore()" class="new-order"> Comprar otra cosa</span> -->
   </div>
-  <main class="information" [ngStyle]="{ 'margin-top': notify ? '13px' : '' }">
+  <main class="information">
     <section class="top">
       <h2 class="top-h" *ngIf="order">
         FACTURA {{ formatId(order.dateId) }} <br />
@@ -317,7 +317,7 @@
         Fecha de la sesión:
       </h2>
 
-      <div class="items-container" style="padding: 10px 32px">
+      <div class="items-container" style="padding: 10px 20px">
         <p class="amount">
           {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
           {{ date.time }}

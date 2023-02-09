@@ -147,13 +147,13 @@ a {
 
   .information {
     width: 100%;
-    margin: 27px 0 40px 0;
+    margin: 50px 0 40px 0;
     padding: 0 24px 32px;
     padding-bottom: 70px; //para la barra inferior
     flex: 1;
 
     .top {
-      margin: 0 0 59.5px;
+      margin: 0 0 50px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -187,7 +187,7 @@ a {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 8px;
+        // margin-top: 8px;
 
         .info {
           font-family: "RobotoRegular";
