@@ -680,6 +680,7 @@ export class MultistepFormComponent
   };
 
   executeStepDataProcessing = () => {
+    console.log(this.finishedExecutingStepProcessingFunction, this.currentStep)
     if (this.finishedExecutingStepProcessingFunction) {
       this.finishedExecutingStepProcessingFunction = false;
 

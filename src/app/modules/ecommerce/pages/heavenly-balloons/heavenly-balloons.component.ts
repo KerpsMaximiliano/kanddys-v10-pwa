@@ -1405,7 +1405,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               (pastValue === '' || pastValue === 'Pickup')
             ) {
               this.formSteps[7].fieldsList.forEach((field, index) => {
-                console.log(field.name, field.label)
+                //console.log(field.name, field.label)
                 if (
                   !(
                     'containerStyles' in
@@ -1437,32 +1437,32 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   ].styles.containerStyles.paddingBottom = '20rem';
                 }
 
-                this.formSteps[7].fieldsList[2].fieldControl.control.setValidators(
+                this.formSteps[7].fieldsList[1].fieldControl.control.setValidators(
                   Validators.required
                 );
+                this.formSteps[7].fieldsList[2].fieldControl.control.setValidators(
+                  Validators.compose([
+                    Validators.required,
+                    Validators.pattern(/[\S]/),
+                  ])
+                );
+
+                this.formSteps[7].fieldsList[5].fieldControl.control.setValidators(
+                  Validators.compose([
+                    Validators.required,
+                    Validators.pattern(/[\S]/),
+                  ])
+                );
+
                 this.formSteps[7].fieldsList[3].fieldControl.control.setValidators(
-                  Validators.compose([
-                    Validators.required,
-                    Validators.pattern(/[\S]/),
-                  ])
-                );
-
-                this.formSteps[7].fieldsList[6].fieldControl.control.setValidators(
-                  Validators.compose([
-                    Validators.required,
-                    Validators.pattern(/[\S]/),
-                  ])
-                );
-
-                this.formSteps[7].fieldsList[4].fieldControl.control.setValidators(
                   Validators.compose([Validators.required])
                 );
 
                 setTimeout(() => {
+                  this.formSteps[7].fieldsList[1].fieldControl.control.updateValueAndValidity();
                   this.formSteps[7].fieldsList[2].fieldControl.control.updateValueAndValidity();
                   this.formSteps[7].fieldsList[3].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[7].fieldsList[4].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[7].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[5].fieldControl.control.updateValueAndValidity();
                 }, 500);
               });
             } else if (
@@ -1506,6 +1506,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   ].styles.containerStyles.paddingBottom = '0rem';
                 }
 
+                this.formSteps[7].fieldsList[1].fieldControl.control.setValue(
+                  '',
+                  {
+                    emitEvent: false,
+                  }
+                );
+                this.formSteps[7].fieldsList[1].fieldControl.control.setValidators(
+                  []
+                );
                 this.formSteps[7].fieldsList[2].fieldControl.control.setValue(
                   '',
                   {
@@ -1515,33 +1524,24 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 this.formSteps[7].fieldsList[2].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[7].fieldsList[3].fieldControl.control.setValue(
+                this.formSteps[7].fieldsList[5].fieldControl.control.setValue(
                   '',
                   {
                     emitEvent: false,
                   }
+                );
+                this.formSteps[7].fieldsList[5].fieldControl.control.setValidators(
+                  []
                 );
                 this.formSteps[7].fieldsList[3].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[7].fieldsList[6].fieldControl.control.setValue(
-                  '',
-                  {
-                    emitEvent: false,
-                  }
-                );
-                this.formSteps[7].fieldsList[6].fieldControl.control.setValidators(
-                  []
-                );
-                this.formSteps[7].fieldsList[4].fieldControl.control.setValidators(
-                  []
-                );
 
                 setTimeout(() => {
+                  this.formSteps[7].fieldsList[1].fieldControl.control.updateValueAndValidity();
                   this.formSteps[7].fieldsList[2].fieldControl.control.updateValueAndValidity();
                   this.formSteps[7].fieldsList[3].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[7].fieldsList[4].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[7].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[5].fieldControl.control.updateValueAndValidity();
                 }, 500);
               });
             }
