@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 @Component({
@@ -10,24 +10,24 @@ export class DropdownMenuComponent implements OnInit {
   constructor() {}
 
   panelOpenState = false;
-  @Input() mode: string = 'multi-select';
+  @Input() multiple: boolean = true;
   @Input() boldList: boolean = true;
-  @Input() title: string = 'Status de la Factura';
+  @Input() title: string;
   @Input() logo: string = '';
-  @Input() listTitle: string = 'Titulo de Lista';
+  @Input() listTitle: string;
   options = new FormControl('');
-  @Input() optionsList = [
-    { text: 'Lista NameID', selected: false },
-    { text: 'Lista NameID', selected: false },
-    { text: 'Lista NameID', selected: false },
-    { text: 'Lista NameID', selected: false },
-    { text: 'Lista NameID', selected: false },
-    { text: 'Lista NameID', selected: false },
-  ];
+  @Input() optionsList = [];
+  @Output() listValue = new EventEmitter();
 
   ngOnInit(): void {}
 
   toggleSelected(i: number) {
     this.optionsList[i].selected = !this.optionsList[i].selected;
+    if (!this.multiple) {
+      this.optionsList.forEach((option, index) => {
+        option.selected = index === i;
+      });
+    }
+    this.listValue.emit(this.optionsList[i].value);
   }
 }
