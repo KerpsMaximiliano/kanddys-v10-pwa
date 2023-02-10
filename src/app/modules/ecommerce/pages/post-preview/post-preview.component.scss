@@ -17,18 +17,24 @@
     border-radius: 50%;
     cursor: pointer;
     display: flex;
-    height: 37px;
     justify-content: center;
     left: 18px;
     position: absolute;
     top: 30px;
-    width: 35px;
     z-index: 190;
+    box-shadow: 0 3px 6px 3px rgb(0 0 0 / 16%);
+    padding: 6px;
 
     .topBtn {
       background-color: transparent;
       border: none;
       cursor: pointer;
+      padding: 0px;
+
+      img {
+        height: 28px;
+        width: 28px;
+      }
     }
   }
 }
@@ -153,7 +159,7 @@
 
   .bottom-wrapper {
     background-color: #000000;
-    height: 23.69vh;
+    height: 8.3455vh;
   }
 
   .flex {

@@ -180,95 +180,113 @@
   </div>
 </div>
 
-<div
-  class="container post-data"
-  [ngStyle]="{
-    height: 'calc(100vh - 49px)'
-  }"
-  *ngIf="postData"
->
-  <button class="fixed-top-button" (click)="back()">
+<div class="container post-data" *ngIf="postData">
+  <button
+    class="fixed-top-button"
+    [ngStyle]="{
+      left: '7px'
+    }"
+    (click)="back()"
+  >
     <img [src]="env + '/arrow-double-up.svg'" alt="Flecha doble hacia arriba" />
   </button>
 
   <div class="media-swiper-wrapper">
-    <swiper
-      [config]="swiperConfig"
-      #mediaSwiper
-      (slideChange)="updateCurrentSlideData($event)"
+    <div
+      #swiperContainer
+      [ngStyle]="{
+        width: '100%',
+        height: (swiperContainer.clientWidth * 10) / 7 + 'px'
+      }"
     >
-      <ng-container *ngFor="let slide of postSlides">
-        <ng-container *ngIf="slide.type === 'poster' && !slide.isVideo">
-          <div
-            class="entity-image"
-            [ngStyle]="{
-              'background-image': 'url(' + slide.media + ')'
-            }"
-          ></div>
-        </ng-container>
+      <swiper
+        [config]="swiperConfig"
+        #mediaSwiper
+        (slideChange)="updateCurrentSlideData($event)"
+      >
+        <ng-container *ngFor="let slide of postSlides">
+          <ng-container *ngIf="slide.type === 'poster' && !slide.isVideo">
+            <div
+              class="entity-image"
+              [ngStyle]="{
+                'background-image': 'url(' + slide.media + ')'
+              }"
+            >
+              <div class="post-content-minimized">
+                <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
+                <p class="subtitle2" *ngIf="slide.text">
+                  {{
+                    slide.text.length > 24
+                      ? slide.text.slice(0, 24) + "..."
+                      : slide.text
+                  }}
+                </p>
+              </div>
+            </div>
+          </ng-container>
 
-        <ng-container *ngIf="slide.type === 'text'">
-          <div class="text-content">
-            <div class="content">
-              <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
-              <p class="subtitle2" *ngIf="slide.text">{{ slide.text }}</p>
+          <ng-container *ngIf="slide.type === 'text'">
+            <div class="text-content">
+              <div class="content">
+                <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
+                <p class="subtitle2" *ngIf="slide.text">{{ slide.text }}</p>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="slide.type === 'poster' && slide.isVideo">
+            <video
+              controls
+              [src]="slide.media"
+              [ngStyle]="{
+                height: 'calc(100vh - 49px)'
+              }"
+            ></video>
+          </ng-container>
+
+          <div *ngIf="slide.type === 'audio'" class="audio">
+            <div class="audio-container">
+              <svg
+                class="audio-file"
+                xmlns="http://www.w3.org/2000/svg"
+                version="1.0"
+                width="500"
+                height="500"
+                viewBox="0 0 75 75"
+              >
+                <path
+                  d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z"
+                  style="
+                    stroke: #111;
+                    stroke-width: 5;
+                    stroke-linejoin: round;
+                    fill: #111;
+                  "
+                />
+                <path
+                  d="M48,27.6a19.5,19.5 0 0 1 0,21.4M55.1,20.5a30,30 0 0 1 0,35.6M61.6,14a38.8,38.8 0 0 1 0,48.6"
+                  style="
+                    fill: none;
+                    stroke: #111;
+                    stroke-width: 5;
+                    stroke-linecap: round;
+                  "
+                />
+              </svg>
+              <audio controls="controls">
+                <source [src]="slide.media" />
+              </audio>
             </div>
           </div>
         </ng-container>
-
-        <ng-container *ngIf="slide.type === 'poster' && slide.isVideo">
-          <video
-            controls
-            [src]="slide.media"
-            [ngStyle]="{
-              height: 'calc(100vh - 49px)'
-            }"
-          ></video>
-        </ng-container>
-
-        <div *ngIf="slide.type === 'audio'" class="audio">
-          <div class="audio-container">
-            <svg
-              class="audio-file"
-              xmlns="http://www.w3.org/2000/svg"
-              version="1.0"
-              width="500"
-              height="500"
-              viewBox="0 0 75 75"
-            >
-              <path
-                d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z"
-                style="
-                  stroke: #111;
-                  stroke-width: 5;
-                  stroke-linejoin: round;
-                  fill: #111;
-                "
-              />
-              <path
-                d="M48,27.6a19.5,19.5 0 0 1 0,21.4M55.1,20.5a30,30 0 0 1 0,35.6M61.6,14a38.8,38.8 0 0 1 0,48.6"
-                style="
-                  fill: none;
-                  stroke: #111;
-                  stroke-width: 5;
-                  stroke-linecap: round;
-                "
-              />
-            </svg>
-            <audio controls="controls">
-              <source [src]="slide.media" />
-            </audio>
-          </div>
-        </div>
-      </ng-container>
-    </swiper>
+      </swiper>
+    </div>
   </div>
 
   <div
     class="bottom-user-actions-panel"
     [ngStyle]="{
-      transform: 'translateY(130px)',
-      height: '23.691460vh'
+      height: '8.3455vh'
     }"
   >
     <div class="inner-wrapper-top">
