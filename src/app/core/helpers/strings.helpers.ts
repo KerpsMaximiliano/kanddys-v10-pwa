@@ -111,3 +111,7 @@ export function unformatID(
 ): string {
   return `${month}/${day}/${year}${number}`;
 }
+
+export function capitalize(text) {
+  return text.replace(/\b\w/g, l => l.toUpperCase());
+};
