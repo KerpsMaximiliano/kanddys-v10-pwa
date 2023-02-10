@@ -171,7 +171,7 @@ export class CheckoutComponent implements OnInit {
     )?.listItems;
 
     for (const item of this.items as Array<ExtendedItem>) {
-      item.ready = true;
+      item.ready = false;
       for (const image of item.images) {
         if (
           image.value &&
