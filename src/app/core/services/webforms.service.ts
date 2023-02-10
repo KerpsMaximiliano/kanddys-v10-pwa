@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
+  answerFrequent,
   answerPaginate,
   createAnswer,
   createWebform,
@@ -97,5 +98,21 @@ export class WebformsService {
       variables: { input },
     });
     return result?.createAnswer;
+  }
+
+  async answerFrequent(webformId: string): Promise<Webform[]> {
+    try {
+      const response = await this.graphql.query({
+        query: answerFrequent,
+        variables: { webformId },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!response) return undefined;
+
+      return response?.answerFrequent;
+    } catch (e) {
+      console.log(e);
+    }
   }
 }

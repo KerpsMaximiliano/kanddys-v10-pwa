@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 export class RouterOptionsComponent implements OnInit {
   constructor() {}
 
-  title: string =
+  @Input() title: string =
     '¿Cuáles son los principales desafíos que enfrenta su negocio en este momento?';
 
   @Input() options = [

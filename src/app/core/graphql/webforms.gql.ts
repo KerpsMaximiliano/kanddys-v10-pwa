@@ -4,12 +4,9 @@ const webformBody = `
     _id
     name
     description
-    merchant {
+    user {
       _id
       name
-      owner {
-        phone
-      }
     }
     questions {
         _id
@@ -92,5 +89,12 @@ export const createAnswer = gql`
         value
       }
     }
+  }
+`;
+
+
+export const answerFrequent = gql`
+  query answerFrequent($webformId: ObjectID!) {
+    answerFrequent(webformId: $webformId)
   }
 `;

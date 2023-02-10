@@ -90,4 +90,5 @@ export class Webform extends Model<Webform> {
   bookmark: BookMark;
   exchangeData: ExchangeData;
   active: Boolean;
+  user: User
 }

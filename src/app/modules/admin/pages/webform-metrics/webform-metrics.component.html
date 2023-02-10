@@ -8,11 +8,23 @@
     <button class="right">Preview</button>
     <button class="hide">Inactivo</button>
   </header>
-  <div class="content">
-    <app-router-options></app-router-options>
-  </div>
-  <div class="content" style="margin-top: 8px">
-    <app-link-card></app-link-card>
+  <div
+    *ngFor="let question of webform.questions"
+    class="content"
+    style="margin-top: 10px"
+  >
+    <ng-container [ngSwitch]="question.type">
+      <app-router-options
+        *ngSwitchCase="'multiple'"
+        [title]="question.value"
+        [options]="question.answers"
+      ></app-router-options>
+      <app-link-card
+        *ngSwitchDefault
+        [title]="question.value + ', ' + question.type"
+        [text]="question.total"
+      ></app-link-card>
+    </ng-container>
   </div>
   <div class="content" style="margin-top: 10px">
     <app-images-card></app-images-card>
