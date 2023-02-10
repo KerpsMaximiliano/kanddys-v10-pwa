@@ -142,6 +142,10 @@ a {
       color: #7b7b7b;
       text-align: center;
       margin: 0 auto;
+      
+      span {
+        text-transform: capitalize;
+      }
     }
   }
 
