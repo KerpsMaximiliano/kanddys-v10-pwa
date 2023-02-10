@@ -56,7 +56,10 @@
       </div>
       <div class="flexBox">
         <ng-container *ngFor="let item of items; index as i">
-          <div class="items-container flexBox ready" *ngIf="!item.ready">
+          <div
+            class="items-container flexBox ready"
+            *ngIf="!item.ready && itemObjects[item._id]"
+          >
             <ng-container
               *ngTemplateOutlet="
                 itemInfoTemplate;
@@ -66,7 +69,7 @@
           </div>
           <button
             class="items-container flexBox"
-            *ngIf="item.ready"
+            *ngIf="item.ready && itemObjects[item._id]"
             (click)="item.ready = !item.ready"
           >
             <ng-container
@@ -342,16 +345,16 @@
           </span>
         </p>
         <p>
-          ${{
-            item.pricing * itemObjects[item._id].amount
-              | number : "1.2-2"
-          }}
+          ${{ item.pricing * itemObjects[item._id].amount | number : "1.2-2" }}
         </p>
       </div>
       <div class="rightBottom">
-        <ng-container *ngIf="!item.ready" >
+        <ng-container *ngIf="!item.ready">
           <div class="countBox">
-            <button class="cube sign" (click)="changeAmount(item._id, 'subtract')">
+            <button
+              class="cube sign"
+              (click)="changeAmount(item._id, 'subtract')"
+            >
               -
             </button>
             <div class="cube number">
