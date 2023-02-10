@@ -20,6 +20,7 @@ import {
   createPartialOCR,
   orderSetStatus,
   ordersByItemHot,
+  orderSetStatusDelivery,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -289,6 +290,16 @@ export class OrderService {
   async getOrderData(id: string, preOrder?: boolean): Promise<ItemOrder> {
     if (!preOrder) return (await this.order(id))?.order;
     return (await this.preOrder(id))?.order;
+  }
+
+  async orderSetStatusDelivery(orderStatusDelivery: string, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: orderSetStatusDelivery,
+      variables: { orderStatusDelivery, id },
+      context: { useMultipart: true },
+    });
+    if (!result || result?.errors) return undefined;
+    return result.orderSetStatusDelivery;
   }
 
   openWhatsAppMessage(phone: string, message: string) {

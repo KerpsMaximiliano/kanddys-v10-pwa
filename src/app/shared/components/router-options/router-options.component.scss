@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+}
+
+.container {
+  padding: 30px 25px 25px;
+  border-radius: 7px;
+  background-color: #fff;
+
+  .title {
+    color: #000000;
+    font-family: SFProMedium;
+    font-size: 17px;
+    margin-bottom: 5px;
+  }
+
+  .flex {
+    margin-top: 10.5px;
+    display: flex;
+    align-items: center;
+
+    .left {
+      border-radius: 5px;
+      border: 1px solid #82f18d;
+      width: 7.5px;
+      margin-right: 10.5px;
+      height: 28.55px;
+    }
+
+    a {
+      text-decoration: none;
+      font-style: none;
+      color: #7b7b7b;
+      font-family: SFProRegular;
+      font-size: 17px;
+    }
+  }
+}

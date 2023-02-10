@@ -57,7 +57,7 @@
       <p class="title" style="margin-left: 8px">Store</p>
     </nav>
     <main>
-      <div class="top-input-area">
+      <div class="top-input-area" *ngIf="hasCollections">
         <app-options-bar
           [options]="[{ title: 'articulos' }, { title: 'colecciones' }]"
           type="3"
@@ -65,16 +65,19 @@
         >
         </app-options-bar>
       </div>
+      <br *ngIf="!hasCollections">
 
       <!-- ******************************************* TAG SWIPER ***************************************-->
-      <div style="width: 100%; padding: 0px 0px 0px 21px">
+      <div style="width: 100%; padding: 0px 21px 0px 21px">
         <swiper [config]="swiperConfigTag" #tagsSwiper>
           <a
             *ngFor="let tag of tags"
             [ngStyle]="{
               maxWidth: '115px',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              paddingBottom: '15px'
             }"
+            style="height: auto !important; overflow: hidden;"
             [routerLink]="['../categories', tag._id]"
           >
             <app-gradient-card [tag]="tag"></app-gradient-card>
@@ -139,18 +142,36 @@
           class="description-view"
           *ngIf="headerService.saleflow.layout === 'description-card'"
         >
+        <!-- [routerLink]="['../article-detail/item', item._id]"
+            [queryParams]="{ mode: 'saleflow' }" -->
           <a
             *ngFor="let item of items; let itemIndex = index"
-            [routerLink]="['../article-detail/item', item._id]"
-            [queryParams]="{ mode: 'saleflow' }"
           >
             <app-buyer-card
+              [index]="itemIndex"
               [title]="item.name"
               [description]="item.description"
               [img]="item.images?.length ? item.images[0].value : ''"
               [leftAmount]="item.pricing"
+              [cta]="true"
+              [ctaActive]="item.isSelected"
+              [redirectionParams]="{link: ['../article-detail/item', item._id], param: { mode: 'saleflow' }}"
+              (ctaClicked)="toggleItemInCart($event)"
             ></app-buyer-card>
           </a>
+        </div>
+
+        <div
+          [ngStyle]="{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            height: '80px',
+            justifyContent: 'center'
+          }"
+          *ngIf="paginationState.status === 'loading'"
+        >
+          <app-dot-loader></app-dot-loader>
         </div>
       </div>
 
@@ -165,4 +186,10 @@
       </ul>
     </main>
   </div>
+  <app-menu-button
+    [phone]="phone"
+    [link]="link"
+    mode="basic"
+    [merchantName]="merchantName"
+  ></app-menu-button>
 </div>

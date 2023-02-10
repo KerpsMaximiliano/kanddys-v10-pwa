@@ -1,23 +1,23 @@
 <div class="container">
-  <app-helper-headerv2
+  <!-- <app-helper-headerv2
     *ngIf="!logged && !headerService.user"
     [mode]="'basic'"
     [returnAble]="true"
-    (returnEvent)="back()"
+    (returnEvent)="editOrder('item')"
     [bgColor]="headerService.colorTheme"
     [mainText]="{
       text: '',
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
-  ></app-helper-headerv2>
+  ></app-helper-headerv2> -->
 
   <header
     class="header"
     [ngStyle]="{ backgroundColor: headerService.colorTheme }"
   >
     <div style="display: flex; gap: 8px">
-      <a> <i class="far fa-angle-double-up" (click)="back()"></i></a>
+      <a> <i class="far fa-angle-double-up" (click)="editOrder('item')"></i></a>
       <p class="title">
         {{
           headerService.saleflow?.merchant?.name.length < 26
@@ -144,6 +144,7 @@
         headerService.saleflow?.module?.appointment?.isActive &&
         headerService.saleflow?.module?.appointment?.calendar?._id
       "
+      (click)="editOrder('reservation')"
     >
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Fecha de la sesión:</h2>
@@ -169,14 +170,6 @@
     >
       <div class="between">
         <h2 class="section-title">Mensaje de regalo:</h2>
-
-        <button (click)="editOrder('message')" *ngIf="post">
-          <img
-            [src]="env + '/pencil.svg'"
-            class="edit-image"
-            alt="Icono de un lápiz"
-          />
-        </button>
       </div>
 
       <ng-container *ngIf="post">
@@ -242,8 +235,9 @@
             </button>
           </div>
         </div>
-        <div
-          class="message-box"
+        <button
+          class="message-box ready"
+          (click)="editOrder('message')"
           *ngIf="
             post?.message ||
               post?.from ||
@@ -267,10 +261,11 @@
             <h3 class="sub">De:</h3>
             <p class="message-text inner">{{ post.from }}</p>
           </section>
-        </div>
+        </button>
         <ng-template #noMessage>
-          <div
-            class="items-container"
+          <button
+            class="items-container ready"
+            (click)="editOrder('message')"
             *ngIf="
               !post.slides?.length ||
               (!postSlideImages?.length &&
@@ -279,7 +274,7 @@
             "
           >
             <span class="address-name"> Sin mensaje de regalo </span>
-          </div>
+          </button>
         </ng-template>
       </ng-container>
       <ng-container *ngIf="!post">
@@ -408,11 +403,12 @@
           <span *ngIf="item.ready && item.name">
             {{ headerService.order.products[i].amount }}x </span
           >{{ !item.ready ? "Cantidad" : item.name }}
-        </p>
-        <p>
+
           <span style="margin-right: 8px" *ngIf="item.ready && !item.name">
             {{ headerService.order.products[i].amount }}x
           </span>
+        </p>
+        <p>
           ${{
             item.pricing * headerService.order.products[i].amount
               | number : "1.2-2"
@@ -422,13 +418,13 @@
       <div class="rightBottom">
         <ng-container *ngIf="!item.ready">
           <div class="countBox">
-            <button class="cube sign" (click)="changeAmount(i, 'subtract')">
+            <button class="cube sign" (click)="changeAmount(item._id, 'subtract')">
               -
             </button>
-            <div class="cube number">
-              {{ headerService.order.products[i].amount }}
+            <div class="cube number" *ngIf="itemObjects[item._id]">
+              {{ itemObjects[item._id].amount }}
             </div>
-            <button class="cube sign" (click)="changeAmount(i, 'add')">
+            <button class="cube sign" (click)="changeAmount(item._id, 'add')">
               +
             </button>
           </div>

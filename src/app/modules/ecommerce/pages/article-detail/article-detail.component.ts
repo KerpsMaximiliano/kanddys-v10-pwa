@@ -439,7 +439,13 @@ export class ArticleDetailComponent implements OnInit {
         //   ]?._id
       );
     } else this.isItemInCart = false;
-    this.itemsAmount = productData.length > 0 ? productData.length + '' : null;
+
+    // Validation to avoid getting deleted or unavailable items in the count of the cart
+    const itemsInCart = this.headerService.saleflow.items.filter((item) =>
+      productData.some((product) => product === item.item._id)
+    );
+
+    this.itemsAmount = itemsInCart.length > 0 ? itemsInCart.length + '' : null;
   }
 
   async share() {

@@ -16,7 +16,7 @@ import {
   ItemCategory,
   ItemCategoryHeadline,
 } from 'src/app/core/models/item';
-import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import { ItemSubOrderInput, ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
@@ -60,10 +60,15 @@ export class StoreComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 5,
+    pageSize: 15,
     status: 'loading',
   };
   renderItemsPromise: Promise<any>;
+  phone: string;
+  showOptionsBar: boolean = false;
+  merchantName: string;
+
+  hasCollections: boolean = false;
 
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 'auto',
@@ -85,13 +90,17 @@ export class StoreComponent implements OnInit {
 
   windowWidth: number = 0;
 
+  link: string;
+
   async infinitePagination() {
     const page = document.querySelector('.store-page');
     const pageScrollHeight = page.scrollHeight;
     const verticalScroll = window.innerHeight + page.scrollTop;
 
     if (verticalScroll >= pageScrollHeight) {
-      await this.getItems();
+      if (this.paginationState.status === 'complete') {
+        await this.getItems();
+      }
     }
   }
 
@@ -105,7 +114,8 @@ export class StoreComponent implements OnInit {
     public headerService: HeaderService,
     private saleflow: SaleFlowService,
     private tagsService: TagsService,
-    public _DomSanitizer: DomSanitizer
+    public _DomSanitizer: DomSanitizer,
+    private appService: AppService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -157,6 +167,12 @@ export class StoreComponent implements OnInit {
         }
       })();
     }, 300);
+    console.log(this.headerService.saleflow.merchant);
+    this.link = `${this.URI}/ecommerce/${this.headerService.saleflow.merchant.slug}/store`;
+
+    this.merchantName = this.headerService.saleflow.merchant.name;
+
+    this.phone = this.headerService.saleflow.merchant.owner.phone;
   }
 
   onTabClick(index: number) {
@@ -282,6 +298,9 @@ export class StoreComponent implements OnInit {
     });
     if (tagsList) {
       this.tags = tagsList;
+      this.hasCollections = tagsList.some(
+        (tag) => tag.notes != null && tag.notes != ''
+      );
     }
   }
 
@@ -374,5 +393,32 @@ export class StoreComponent implements OnInit {
     this.savePageSnapshot();
 
     this.router.navigate(['/ecommerce/terms-of-use/' + term._id]);
+  }
+
+  toggleItemInCart(index: number) {
+    const item = this.items[index];
+
+    /* Validaciones para saleflows donde solo se puede comprar un item a la vez */
+    if (
+      !item.isSelected &&
+      !this.headerService.saleflow.canBuyMultipleItems
+    ) {
+      this.headerService.emptyOrderProducts();
+      this.headerService.emptyItems();
+    }
+    /* ... */
+
+    const product: ItemSubOrderInput = {
+      item: item._id,
+      amount: 1,
+    };
+    this.headerService.storeOrderProduct(product);
+    this.appService.events.emit({
+      type: 'added-item',
+      data: item._id,
+    });
+    this.headerService.storeItem(item);
+
+    this.items[index].isSelected = !this.items[index].isSelected;
   }
 }

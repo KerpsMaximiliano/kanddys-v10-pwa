@@ -13,7 +13,7 @@ import {
 } from 'src/app/core/helpers/ui.helpers';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Item } from 'src/app/core/models/item';
-import { ItemOrderInput } from 'src/app/core/models/order';
+import { ItemOrderInput, ItemSubOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
 import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
@@ -35,6 +35,10 @@ import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Dialogs } from './dialogs';
+
+interface ExtendedItem extends Item {
+  ready?: boolean;
+}
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -78,15 +82,14 @@ export class CheckoutComponent implements OnInit {
   addedJokesToTheQr: boolean = false;
   temporalDialogs: Array<EmbeddedComponentWithId> = [];
   temporalDialogs2: Array<EmbeddedComponentWithId> = [];
-
   dialogs: Array<EmbeddedComponentWithId> = [];
+  itemObjects: Record<string, ItemSubOrderInput> = {};
 
   constructor(
     private _DomSanitizer: DomSanitizer,
     private dialogService: DialogService,
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
-    private customizerValueService: CustomizerValueService,
     public postsService: PostsService,
     public orderService: OrderService,
     private appService: AppService,
@@ -204,6 +207,19 @@ export class CheckoutComponent implements OnInit {
           },
         })
       )?.listItems;
+      for (const item of this.items as Array<ExtendedItem>) {
+        item.ready = false;
+        for (const image of item.images) {
+          if (
+            image.value &&
+            !image.value.includes('http') &&
+            !image.value.includes('https')
+          ) {
+            image.value = 'https://' + image.value;
+          }
+        }
+      }
+  
       if (!this.items?.length) this.editOrder('item');
 
       this.post = this.headerService.getPost();
@@ -284,6 +300,10 @@ export class CheckoutComponent implements OnInit {
       }
       this.headerService.checkoutRoute = null;
       this.updatePayment();
+      this.headerService.order.products.forEach((product) => {
+        this.itemObjects[product.item] = product;
+      });
+      
       if (
         this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
       )
@@ -299,7 +319,6 @@ export class CheckoutComponent implements OnInit {
     this.dialogs = new Dialogs(
       this.dialogService,
       this.headerService,
-      this.customizerValueService,
       this.postsService,
       this.orderService,
       this.appService,
@@ -334,7 +353,9 @@ export class CheckoutComponent implements OnInit {
       }
       case 'message': {
         this.post = null;
-        // this.headerService.emptyPost();
+        this.headerService.emptyPost();
+        if (!this.headerService.orderInputComplete())
+          this.missingOrderData = true;
         break;
       }
       case 'address': {
@@ -424,8 +445,11 @@ export class CheckoutComponent implements OnInit {
     );
   }
 
-  changeAmount(index: number, type: 'add' | 'subtract') {
-    const product = this.headerService.order.products[index];
+  changeAmount(itemId: string, type: 'add' | 'subtract') {
+    const product = this.headerService.order.products.find(
+      (product) => product.item === itemId
+    );
+
     this.headerService.changeItemAmount(product.item, type);
     this.updatePayment();
   }
@@ -632,6 +656,61 @@ export class CheckoutComponent implements OnInit {
     } catch (e) {
       console.log(e);
       return;
+    }
+  }
+
+  selectSelect(index: number) {
+    switch (index) {
+      case 0: {
+        this.post = {
+          message: '',
+          targets: [
+            {
+              name: '',
+              emailOrPhone: '',
+            },
+          ],
+          from: '',
+          socialNetworks: [
+            {
+              url: '',
+            },
+          ],
+        };
+        this.headerService.storePost(this.post);
+        if (!this.headerService.orderInputComplete()) {
+          this.missingOrderData = true;
+        } else {
+          this.missingOrderData = false;
+        }
+        break;
+      }
+      // case 1: {
+      //   this.router.navigate([`../create-giftcard`], {
+      //     queryParams: {
+      //       symbols: 'virtual',
+      //     },
+      //     relativeTo: this.route,
+      //     replaceUrl: true,
+      //   });
+      //   break;
+      // }
+      // case 2: {
+      //   this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
+      //   this.router.navigate([`../create-article`], {
+      //     relativeTo: this.route,
+      //     replaceUrl: true,
+      //   });
+      //   break;
+      // }
+      case 1: {
+        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
+        this.router.navigate([`../create-giftcard`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
+        break;
+      }
     }
   }
 

@@ -59,18 +59,18 @@
     </button>
   </nav>
   <div class="collection-view" *ngIf="status === 'complete' && tags?.length">
-    <a
-      *ngFor="let tag of tags"
-      [routerLink]="['../article-detail/collection/', tag._id]"
-    >
+    <ng-container *ngFor="let tag of tags">
       <app-buyer-card
         [title]="tag.name"
         [description]="tag.notes"
         [img]="tag.images.length ? tag.images[0] : ''"
         [leftAmount]="tag.priceMin"
         [rightAmount]="tag.priceMax"
+        [redirectionParams]="{
+          link: ['../article-detail/collection/', tag._id]
+        }"
       ></app-buyer-card>
-    </a>
+    </ng-container>
   </div>
   <div class="margin flex" *ngIf="status === 'complete' && !tags?.length">
     <h3>No hay colecciones creadas</h3>

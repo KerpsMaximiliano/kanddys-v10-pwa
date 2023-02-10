@@ -382,7 +382,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               display: 'inline-block',
               width: 'calc(100% / 2)',
               paddingLeft: '6px',
-              paddingRight: '33px',
               // width: '83.70%',
             },
             fieldStyles: {
@@ -1113,11 +1112,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
           );
         }
 
+        /*
         if (wantToAddADedication === 'Si' && dedicationMessage1 !== '') {
           whatsappMessagePartsOfThe4thStep.push(
             `*Dedicatoria:*\n${dedicationMessage1}\n\n`
           );
-        }
+        }*/
 
         this.whatsAppMessageParts.push(whatsappMessagePartsOfThe4thStep);
 
@@ -1133,7 +1133,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         this.whatsAppMessageParts.pop();
       },
       footerConfig,
-      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
+      stepButtonInvalidText: 'INGRESA LOS DATOS REQUERIDOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN',
     },
     {
@@ -1339,6 +1339,49 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
           },
         },
+      ],
+      embeddedComponents: [this.reservationOrderlessComponent],
+      stepProcessingFunction: (params) => {
+        const {
+          reservation: timeOfDay
+        } = params.dataModel.value['7'];
+
+        const whatsappMessagePartsOfThe6thStep = [];
+
+        if (timeOfDay) {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Entrega:*\n${timeOfDay.dayName}, ${timeOfDay.dayNumber} de ${timeOfDay.monthName}\n\n`
+          );
+        }
+
+        this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
+
+        return { ok: true };
+      },
+      customScrollToStepBackwards: (params) => {
+        this.whatsAppMessageParts.pop();
+
+        if (this.choosedFlowers) {
+          params.scrollToStep(4);
+        } else {
+          params.scrollToStep(5);
+        }
+      },
+      pageHeader: {
+        text: '¿Cuándo entregamos tu pedido?',
+        styles: {
+          fontFamily: 'RobotoBold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '36px',
+        },
+      },
+      footerConfig,
+      stepButtonInvalidText: 'INGRESA LOS DATOS',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN',
+    },
+    {
+      fieldsList: [
         {
           name: 'deliveryMethod',
           label: 'Método de entrega (*)',
@@ -1355,156 +1398,150 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'Fuera de Santo Domingo',
           ],
           changeCallbackFunction: (change, params) => {
-            const { deliveryMethod: pastValue } = params.dataModel.value['7'];
-
-            /*
-            this.formSteps[5].fieldsList[4].fieldControl.control.setValidators(
-              Validators.compose([Validators.required])
-            );
-            this.formSteps[5].fieldsList[4].fieldControl.control.updateValueAndValidity();
-            */
+            const { deliveryMethod: pastValue } = params.dataModel.value['8'];
 
             if (
               change !== 'Pickup' &&
               (pastValue === '' || pastValue === 'Pickup')
             ) {
-              this.formSteps[6].fieldsList.forEach((field, index) => {
+              this.formSteps[7].fieldsList.forEach((field, index) => {
+                //console.log(field.name, field.label)
                 if (
                   !(
                     'containerStyles' in
-                    this.formSteps[6].fieldsList[index].styles
+                    this.formSteps[7].fieldsList[index].styles
                   )
                 ) {
-                  this.formSteps[6].fieldsList[index].styles.containerStyles =
+                  this.formSteps[7].fieldsList[index].styles.containerStyles =
                     {};
                 }
 
-                if (index === 1) {
-                  this.formSteps[6].fieldsList[
+                if (index === 0) {
+                  this.formSteps[7].fieldsList[
                     index
                   ].styles.containerStyles.paddingBottom = '0px';
                 }
 
-                if (index > 1) {
-                  this.formSteps[6].fieldsList[
+                if (index > 0) {
+                  this.formSteps[7].fieldsList[
                     index
                   ].styles.containerStyles.opacity = '1';
-                  this.formSteps[6].fieldsList[
+                  this.formSteps[7].fieldsList[
                     index
                   ].styles.containerStyles.height = 'auto';
                 }
 
-                if (index === this.formSteps[6].fieldsList.length - 1) {
-                  this.formSteps[6].fieldsList[
+                if (index === this.formSteps[7].fieldsList.length - 1) {
+                  this.formSteps[7].fieldsList[
                     index
                   ].styles.containerStyles.paddingBottom = '20rem';
                 }
 
-                this.formSteps[6].fieldsList[2].fieldControl.control.setValidators(
+                this.formSteps[7].fieldsList[1].fieldControl.control.setValidators(
                   Validators.required
                 );
-                this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
+                this.formSteps[7].fieldsList[2].fieldControl.control.setValidators(
                   Validators.compose([
                     Validators.required,
                     Validators.pattern(/[\S]/),
                   ])
                 );
 
-                this.formSteps[6].fieldsList[6].fieldControl.control.setValidators(
+                this.formSteps[7].fieldsList[5].fieldControl.control.setValidators(
                   Validators.compose([
                     Validators.required,
                     Validators.pattern(/[\S]/),
                   ])
                 );
 
-                this.formSteps[6].fieldsList[4].fieldControl.control.setValidators(
+                this.formSteps[7].fieldsList[3].fieldControl.control.setValidators(
                   Validators.compose([Validators.required])
                 );
 
                 setTimeout(() => {
-                  this.formSteps[6].fieldsList[2].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[6].fieldsList[4].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[6].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[1].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[2].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[3].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[5].fieldControl.control.updateValueAndValidity();
                 }, 500);
               });
             } else if (
               change === 'Pickup' &&
               (pastValue === '' || pastValue !== 'Pickup')
             ) {
-              this.formSteps[6].fieldsList.forEach((field, index) => {
+              this.formSteps[7].fieldsList.forEach((field, index) => {
                 if (
                   !(
                     'containerStyles' in
-                    this.formSteps[6].fieldsList[index].styles
+                    this.formSteps[7].fieldsList[index].styles
                   )
                 ) {
-                  this.formSteps[6].fieldsList[index].styles.containerStyles =
+                  this.formSteps[7].fieldsList[index].styles.containerStyles =
                     {};
                 }
 
-                if (index === 1) {
-                  this.formSteps[6].fieldsList[
+                if (index === 0) {
+                  this.formSteps[7].fieldsList[
                     index
                   ].styles.containerStyles.paddingBottom = '60px';
                 }
 
-                if (index > 1) {
-                  this.formSteps[6].fieldsList[
+                if (index > 0) {
+                  this.formSteps[7].fieldsList[
                     index
                   ].styles.containerStyles.height = '0px';
-                  this.formSteps[6].fieldsList[
+                  this.formSteps[7].fieldsList[
                     index
                   ].styles.containerStyles.opacity = '0';
-                  this.formSteps[6].fieldsList[
+                  this.formSteps[7].fieldsList[
                     index
                   ].fieldControl.control.setValue('', {
                     emitEvent: false,
                   });
                 }
 
-                if (index === this.formSteps[6].fieldsList.length - 1) {
-                  this.formSteps[6].fieldsList[
+                if (index === this.formSteps[7].fieldsList.length - 1) {
+                  this.formSteps[7].fieldsList[
                     index
                   ].styles.containerStyles.paddingBottom = '0rem';
                 }
 
-                this.formSteps[6].fieldsList[2].fieldControl.control.setValue(
+                this.formSteps[7].fieldsList[1].fieldControl.control.setValue(
                   '',
                   {
                     emitEvent: false,
                   }
                 );
-                this.formSteps[6].fieldsList[2].fieldControl.control.setValidators(
+                this.formSteps[7].fieldsList[1].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[6].fieldsList[3].fieldControl.control.setValue(
+                this.formSteps[7].fieldsList[2].fieldControl.control.setValue(
                   '',
                   {
                     emitEvent: false,
                   }
                 );
-                this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
+                this.formSteps[7].fieldsList[2].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[6].fieldsList[6].fieldControl.control.setValue(
+                this.formSteps[7].fieldsList[5].fieldControl.control.setValue(
                   '',
                   {
                     emitEvent: false,
                   }
                 );
-                this.formSteps[6].fieldsList[6].fieldControl.control.setValidators(
+                this.formSteps[7].fieldsList[5].fieldControl.control.setValidators(
                   []
                 );
-                this.formSteps[6].fieldsList[4].fieldControl.control.setValidators(
+                this.formSteps[7].fieldsList[3].fieldControl.control.setValidators(
                   []
                 );
 
                 setTimeout(() => {
-                  this.formSteps[6].fieldsList[2].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[6].fieldsList[4].fieldControl.control.updateValueAndValidity();
-                  this.formSteps[6].fieldsList[6].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[1].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[2].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[3].fieldControl.control.updateValueAndValidity();
+                  this.formSteps[7].fieldsList[5].fieldControl.control.updateValueAndValidity();
                 }, 500);
               });
             }
@@ -1699,10 +1736,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
         },
       ],
-      embeddedComponents: [this.reservationOrderlessComponent],
       stepProcessingFunction: (params) => {
         const {
-          reservation: timeOfDay,
           deliveryMethod,
           typeOfBuilding,
           deliveryAddress,
@@ -1710,15 +1745,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
           sender,
           receiver,
           receiverPhoneNumber,
-        } = params.dataModel.value['7'];
+        } = params.dataModel.value['8'];
 
         const whatsappMessagePartsOfThe6thStep = [];
-
-        if (timeOfDay) {
-          whatsappMessagePartsOfThe6thStep.push(
-            `*Entrega:*\n${timeOfDay.dayName}, ${timeOfDay.dayNumber} de ${timeOfDay.monthName}\n\n`
-          );
-        }
 
         if (deliveryMethod && deliveryMethod !== '') {
           whatsappMessagePartsOfThe6thStep.push(
@@ -1768,17 +1797,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
         return { ok: true };
       },
-      customScrollToStepBackwards: (params) => {
-        this.whatsAppMessageParts.pop();
-
-        if (this.choosedFlowers) {
-          params.scrollToStep(4);
-        } else {
-          params.scrollToStep(5);
-        }
-      },
       pageHeader: {
-        text: '¿Cuándo y dónde entregamos tu pedido?',
+        text: '¿Dónde entregamos tu pedido?',
         styles: {
           fontFamily: 'RobotoBold',
           fontSize: '24px',
@@ -1786,9 +1806,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
           marginTop: '36px',
         },
       },
+      customScrollToStepBackwards: (params) => {
+        this.whatsAppMessageParts.pop();
+        
+        params.scrollToStep(6);
+      },
       footerConfig,
       stepButtonInvalidText: 'INGRESA LOS DATOS',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     //por aqui voy
     {
@@ -1807,7 +1832,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'Consumo (B02)',
           ],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[7].fieldsList[0].fieldControl.control.setValue(
+            this.formSteps[8].fieldsList[0].fieldControl.control.setValue(
               change,
               {
                 emitEvent: false,
@@ -1815,27 +1840,27 @@ export class HeavenlyBalloonsComponent implements OnInit {
             );
 
             if (change !== 'Comprobante Fiscal (B01)') {
-              this.formSteps[7].fieldsList[1].fieldControl.control.setValue('');
-              this.formSteps[7].fieldsList[1].styles.containerStyles.opacity =
+              this.formSteps[8].fieldsList[1].fieldControl.control.setValue('');
+              this.formSteps[8].fieldsList[1].styles.containerStyles.opacity =
                 '0';
-              this.formSteps[7].fieldsList[1].styles.containerStyles.height =
+              this.formSteps[8].fieldsList[1].styles.containerStyles.height =
                 '0px';
-              this.formSteps[7].fieldsList[1].fieldControl.control.setValidators(
+              this.formSteps[8].fieldsList[1].fieldControl.control.setValidators(
                 []
               );
-              this.formSteps[7].fieldsList[1].fieldControl.control.updateValueAndValidity();
+              this.formSteps[8].fieldsList[1].fieldControl.control.updateValueAndValidity();
             } else {
-              this.formSteps[7].fieldsList[1].styles.containerStyles.opacity =
+              this.formSteps[8].fieldsList[1].styles.containerStyles.opacity =
                 '1';
-              this.formSteps[7].fieldsList[1].styles.containerStyles.height =
+              this.formSteps[8].fieldsList[1].styles.containerStyles.height =
                 'auto';
-              this.formSteps[7].fieldsList[1].fieldControl.control.setValidators(
+              this.formSteps[8].fieldsList[1].fieldControl.control.setValidators(
                 Validators.compose([
                   Validators.required,
                   Validators.pattern(/[\S]/),
                 ])
               );
-              this.formSteps[7].fieldsList[1].fieldControl.control.updateValueAndValidity();
+              this.formSteps[8].fieldsList[1].fieldControl.control.updateValueAndValidity();
             }
           },
           inputType: 'radio',
@@ -1888,15 +1913,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'Otro',
           ],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[7].fieldsList[3].styles.containerStyles = {};
+            this.formSteps[8].fieldsList[3].styles.containerStyles = {};
 
             if (change !== 'Efectivo') {
-              this.formSteps[7].fieldsList[3].styles.containerStyles.opacity =
+              this.formSteps[8].fieldsList[3].styles.containerStyles.opacity =
                 '1';
-              this.formSteps[7].fieldsList[3].styles.containerStyles.height =
+              this.formSteps[8].fieldsList[3].styles.containerStyles.height =
                 'auto';
 
-              this.formSteps[7].fieldsList[3].styles.containerStyles.marginLeft =
+              this.formSteps[8].fieldsList[3].styles.containerStyles.marginLeft =
                 '0px';
 
               const detectIfFirstIndexIsAnImageAndIsNotAnEmptyString = (
@@ -1914,28 +1939,28 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 };
               };
 
-              this.formSteps[7].fieldsList[3].fieldControl.control.setValidators(
+              this.formSteps[8].fieldsList[3].fieldControl.control.setValidators(
                 Validators.compose([
                   Validators.required,
                   detectIfFirstIndexIsAnImageAndIsNotAnEmptyString(
-                    this.formSteps[7].fieldsList[3].fieldControl.control.value
+                    this.formSteps[8].fieldsList[3].fieldControl.control.value
                   ),
                 ])
               );
             } else {
-              this.formSteps[7].fieldsList[3].styles.containerStyles.opacity =
+              this.formSteps[8].fieldsList[3].styles.containerStyles.opacity =
                 '0';
-              this.formSteps[7].fieldsList[3].styles.containerStyles.height =
+              this.formSteps[8].fieldsList[3].styles.containerStyles.height =
                 '0px';
-              this.formSteps[7].fieldsList[3].fieldControl.control.setValue([
+              this.formSteps[8].fieldsList[3].fieldControl.control.setValue([
                 '',
               ]);
-              this.formSteps[7].fieldsList[3].fieldControl.control.setValidators(
+              this.formSteps[8].fieldsList[3].fieldControl.control.setValidators(
                 []
               );
             }
 
-            this.formSteps[7].fieldsList[3].fieldControl.control.updateValueAndValidity();
+            this.formSteps[8].fieldsList[3].fieldControl.control.updateValueAndValidity();
           },
           label: 'Vía o Cuenta a la que realizaste tu pago',
           inputType: 'radio',
@@ -2171,15 +2196,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
               wantToAddADedication: wantToAddADedication5thStep,
             } = params.dataModel.value['6'];
             const {
+              reservation
+            } = params.dataModel.value['7'];
+            const {
               deliveryAddress,
               deliveryMethod,
               location,
               receiver,
               receiverPhoneNumber,
-              reservation,
               sender,
               typeOfBuilding,
-            } = params.dataModel.value['7'];
+            } = params.dataModel.value['8'];
             const {
               billType,
               howDidYouFindUs,
@@ -2187,20 +2214,21 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paymentMethod,
               proofOfPayment,
               socialId,
-            } = params.dataModel.value['8'];
+            } = params.dataModel.value['9'];
             let totalAmount =
               '$' +
-              this.formSteps[7].fieldsList[4].fieldControl.control.value.toLocaleString();
+              this.formSteps[8].fieldsList[4].fieldControl.control.value.toLocaleString();
             let firstPayment =
               '$' +
-              this.formSteps[7].fieldsList[5].fieldControl.control.value.toLocaleString();
+              this.formSteps[8].fieldsList[5].fieldControl.control.value.toLocaleString();
 
             const whatsappMessagePartsOfThe7thStep = [];
 
             if (billType && billType !== '') {
+              /*
               whatsappMessagePartsOfThe7thStep.push(
                 `*Tipo de Factura:*\n${billType}\n\n`
-              );
+              );*/
 
               if (billType === 'Comprobante Fiscal (B01)' && socialId !== '') {
                 whatsappMessagePartsOfThe7thStep.push(
@@ -2209,11 +2237,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
               }
             }
 
+            /*
             if (paymentMethod && paymentMethod !== '') {
               whatsappMessagePartsOfThe7thStep.push(
                 `*Vía de pago:*\n${paymentMethod}\n\n`
               );
             }
+            */
 
             /*
             if (totalAmount) {
@@ -2229,17 +2259,20 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
             */
 
+            /*
             if (orderMedium && orderMedium !== '') {
               whatsappMessagePartsOfThe7thStep.push(
                 `*Vía del pedido:*\n${orderMedium}\n\n`
               );
             }
+            */
 
+            /*
             if (howDidYouFindUs && howDidYouFindUs !== '') {
               whatsappMessagePartsOfThe7thStep.push(
                 `*¿Cómo nos conociste?:*\n${howDidYouFindUs}\n\n`
               );
-            }
+            }*/
 
             const convertedTotalAmount = Number(
               totalAmount
@@ -2363,12 +2396,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
 
             if (
-              this.formSteps[7].fieldsList[3].fieldControl.control.value
+              this.formSteps[8].fieldsList[3].fieldControl.control.value
                 .length > 0 &&
-              this.formSteps[7].fieldsList[3].fieldControl.control.value[0] !==
+              this.formSteps[8].fieldsList[3].fieldControl.control.value[0] !==
                 ''
             ) {
-              this.formSteps[7].fieldsList[3].fieldControl.control.value.forEach(
+              this.formSteps[8].fieldsList[3].fieldControl.control.value.forEach(
                 (base64string) => {
                   if (base64string && base64string !== '')
                     arrayOfProofOfPaymentFiles.push(base64ToFile(base64string));
@@ -2469,7 +2502,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       customScrollToStepBackwards: (params) => {
         this.whatsAppMessageParts.pop();
 
-        params.scrollToStep(6);
+        params.scrollToStep(7);
       },
       footerConfig,
       stepButtonInvalidText: 'INGRESA LOS DATOS',
@@ -2527,26 +2560,34 @@ export class HeavenlyBalloonsComponent implements OnInit {
           arrayOfProofOfPaymentFiles
         );
 
+    
     if (uploadFilesResultReferenceImages) {
       const fileRoutes = uploadFilesResultReferenceImages;
+      /*
       whatsappMessagePartsOfThe7thStep.push(`*Foto de Referencia:*\n`);
+      */
 
       data.referenceImage = fileRoutes;
 
+      /*
       fileRoutes.forEach((route, index) => {
         whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
       });
+      */
     }
 
     if (uploadFilesResultProofOfPayment) {
       const fileRoutes = uploadFilesResultProofOfPayment;
+      /*
       whatsappMessagePartsOfThe7thStep.push(`*Comprobante de pago:*\n`);
+      */
 
       data.proofOfPayment = fileRoutes;
 
+      /*
       fileRoutes.forEach((route, index) => {
         whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
-      });
+      });*/
     }
 
     if (reservation) {

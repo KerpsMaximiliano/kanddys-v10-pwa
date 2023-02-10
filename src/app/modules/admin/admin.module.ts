@@ -26,6 +26,7 @@ import { ArticleEditorComponent } from './pages/article-editor/article-editor.co
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { TagsViewComponent } from './pages/tags-view/tags-view.component';
 import { ViewConfigurationComponent } from './pages/view-configuration/view-configuration.component';
+import { WebformMetricsComponent } from './pages/webform-metrics/webform-metrics.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -166,7 +167,11 @@ const routes: Routes = [
       {
         path: 'view-configuration-cards',
         component: ViewConfigurationComponent,
-      }
+      },
+      {
+        path: 'webform-metrics',
+        component: WebformMetricsComponent,
+      },
     ],
   },
   {
@@ -198,7 +203,8 @@ const routes: Routes = [
     AdminDashboardComponent,
     TagsViewComponent,
     BiosEditComponent,
-    ViewConfigurationComponent
+    ViewConfigurationComponent,
+    WebformMetricsComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
