@@ -474,4 +474,18 @@
   [text]="'VOLVER A LA TIENDA'"
   (click)="goToStore()"
   ></app-sticky-button> -->
+
+  <div style="visibility: hidden; position: absolute; z-index: -99">
+    <qrcode
+      *ngIf="entityTemplate"
+      #qrcodeTemplate
+      [qrdata]="entityTemplateLink"
+      [elementType]="'img'"
+      [width]="500"
+      [style.margin-top.px]="-25"
+      [errorCorrectionLevel]="'M'"
+      [allowEmptyString]="true"
+      colorDark="#000000"
+    ></qrcode>
+  </div>
 </div>

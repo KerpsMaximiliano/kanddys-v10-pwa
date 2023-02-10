@@ -20,6 +20,26 @@ export const entityTemplate = gql`
   }
 `;
 
+export const entityTemplates = gql`
+  query entityTemplates($paginate: PaginationInput) {
+    entityTemplates(paginate: $paginate) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+      recipients{
+        _id
+        recipient
+        edit 
+      }
+      hasPassword
+      access
+    }
+  }
+`;
+
 export const entityTemplateRecipient = gql`
   query entityTemplateRecipient($id: ObjectID!) {
     entityTemplateRecipient(id: $id) {

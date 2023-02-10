@@ -26,6 +26,8 @@ import { Merchant } from 'src/app/core/models/merchant';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
 import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
 
 interface Image {
   src: string;
@@ -108,7 +110,7 @@ export class OrderDetailComponent implements OnInit {
       src: '/QR.svg',
       filter: 'brightness(7)',
       callback: () => {
-        this.downloadQr();
+        this.downloadQr(this.qr);
       },
     },
     {
@@ -139,7 +141,10 @@ export class OrderDetailComponent implements OnInit {
     'video/m2ts',
   ];
   playVideoOnFullscreen = playVideoOnFullscreen;
+  entityTemplate: EntityTemplate;
+  entityTemplateLink: string;
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
+  @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -155,6 +160,7 @@ export class OrderDetailComponent implements OnInit {
     private ngNavigatorShareService: NgNavigatorShareService,
     private merchantsService: MerchantsService,
     private paymentLogService: PaymentLogsService,
+    private entityTemplateService: EntityTemplateService,
     private tagsService: TagsService
   ) {
     history.pushState(null, null, window.location.href);
@@ -254,6 +260,20 @@ export class OrderDetailComponent implements OnInit {
         await this.postsService.getPost(this.order.items[0].post._id)
       ).post;
       this.slides = await this.postsService.slidesByPost(this.post._id);
+
+      if (this.post) {
+        const results = await this.entityTemplateService.entityTemplates({
+          findBy: {
+            reference: this.post._id,
+          },
+        });
+
+        if (results.length > 0) {
+          this.entityTemplate = results[0];
+          this.entityTemplateLink =
+            this.URI + '/qr/article-template/' + this.entityTemplate._id;
+        }
+      }
     }
     if (this.order.items[0].customizer) {
       this.payment =
@@ -801,8 +821,8 @@ export class OrderDetailComponent implements OnInit {
     }
   }
 
-  downloadQr() {
-    const parentElement = this.qr.nativeElement.querySelector('img').src;
+  downloadQr(qrElment: ElementRef) {
+    const parentElement = qrElment.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
       //IE
@@ -938,7 +958,7 @@ export class OrderDetailComponent implements OnInit {
     this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
-  
+
   // async addTag(tagId?: string) {
   //   if (!this.selectedTags[tagId]) {
   //     const added = await this.tagsService.addTagsInOrder(
@@ -1006,6 +1026,8 @@ export class OrderDetailComponent implements OnInit {
   }
 
   goToPostDetail() {
+    this.downloadQr(this.qrcodeTemplate);
+    /*
     this.headerService.flowRoute = window.location.href
       .split('/')
       .slice(3)
@@ -1018,7 +1040,7 @@ export class OrderDetailComponent implements OnInit {
         this.order.items[0].saleflow.merchant.slug +
         '/article-detail/post/' +
         this.post._id,
-    ]);
+    ]);*/
   }
 
   returnToStore() {

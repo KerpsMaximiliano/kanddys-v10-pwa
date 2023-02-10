@@ -19,7 +19,10 @@ import {
   entityTemplateRecipient,
   entityTemplateRemoveRecipient,
   entityTemplateUpdateRecipient,
+  entityTemplates,
 } from '../graphql/entity-template.gql';
+import { PaginationEvents } from 'swiper/types/components/pagination';
+import { PaginationInput } from '../models/saleflow';
 
 @Injectable({
   providedIn: 'root',
@@ -28,9 +31,8 @@ export class EntityTemplateService {
   constructor(private graphql: GraphQLWrapper) {}
 
   async entityTemplate(id: string, password?: string): Promise<EntityTemplate> {
-    let variables:any = { id };
-    if(password)
-      variables.password = password;
+    let variables: any = { id };
+    if (password) variables.password = password;
     const result = await this.graphql.query({
       query: entityTemplate,
       variables,
@@ -38,6 +40,18 @@ export class EntityTemplateService {
     });
     if (!result) return;
     return result?.entityTemplate;
+  }
+
+  async entityTemplates(
+    paginate: PaginationInput
+  ): Promise<Array<EntityTemplate>> {
+    const result = await this.graphql.query({
+      query: entityTemplates,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result?.entityTemplates;
   }
 
   async entityTemplateSetData(
@@ -76,7 +90,10 @@ export class EntityTemplateService {
     }
   }
 
-  async entityTemplateRemoveRecipient(idRecipients: string, entityTemplateId: string) {
+  async entityTemplateRemoveRecipient(
+    idRecipients: string,
+    entityTemplateId: string
+  ) {
     try {
       const result = await this.graphql.mutate({
         mutation: entityTemplateRemoveRecipient,
@@ -89,7 +106,11 @@ export class EntityTemplateService {
     }
   }
 
-  async entityTemplateUpdateRecipient(entityTemplateId: string, idRecipients: string, input: RecipientInput) {
+  async entityTemplateUpdateRecipient(
+    entityTemplateId: string,
+    idRecipients: string,
+    input: RecipientInput
+  ) {
     try {
       const result = await this.graphql.mutate({
         mutation: entityTemplateUpdateRecipient,
@@ -102,10 +123,12 @@ export class EntityTemplateService {
     }
   }
 
-  async entityTemplateRecipient(id: string, password?: string): Promise<EntityTemplate> {
-    let variables:any = { id };
-    if(password)
-      variables.password = password;
+  async entityTemplateRecipient(
+    id: string,
+    password?: string
+  ): Promise<EntityTemplate> {
+    let variables: any = { id };
+    if (password) variables.password = password;
     const result = await this.graphql.query({
       query: entityTemplateRecipient,
       variables,
