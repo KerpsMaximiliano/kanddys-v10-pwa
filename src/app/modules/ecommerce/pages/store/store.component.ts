@@ -16,7 +16,7 @@ import {
   ItemCategory,
   ItemCategoryHeadline,
 } from 'src/app/core/models/item';
-import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import { ItemSubOrderInput, ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
@@ -114,7 +114,8 @@ export class StoreComponent implements OnInit {
     public headerService: HeaderService,
     private saleflow: SaleFlowService,
     private tagsService: TagsService,
-    public _DomSanitizer: DomSanitizer
+    public _DomSanitizer: DomSanitizer,
+    private appService: AppService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -392,5 +393,32 @@ export class StoreComponent implements OnInit {
     this.savePageSnapshot();
 
     this.router.navigate(['/ecommerce/terms-of-use/' + term._id]);
+  }
+
+  toggleItemInCart(index: number) {
+    const item = this.items[index];
+
+    /* Validaciones para saleflows donde solo se puede comprar un item a la vez */
+    if (
+      !item.isSelected &&
+      !this.headerService.saleflow.canBuyMultipleItems
+    ) {
+      this.headerService.emptyOrderProducts();
+      this.headerService.emptyItems();
+    }
+    /* ... */
+
+    const product: ItemSubOrderInput = {
+      item: item._id,
+      amount: 1,
+    };
+    this.headerService.storeOrderProduct(product);
+    this.appService.events.emit({
+      type: 'added-item',
+      data: item._id,
+    });
+    this.headerService.storeItem(item);
+
+    this.items[index].isSelected = !this.items[index].isSelected;
   }
 }

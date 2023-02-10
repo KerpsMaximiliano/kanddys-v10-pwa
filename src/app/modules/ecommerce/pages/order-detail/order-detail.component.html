@@ -141,10 +141,14 @@
     <section class="top">
       <h2 class="top-h" *ngIf="order">
         FACTURA {{ formatId(order.dateId) }} <br />
-        <a target="_blank" [href]="messageLink" *ngIf="!isMerchant" class="blue"
+        <a
+          target="_blank"
+          [href]="messageLink"
+          *ngIf="!isMerchant && notify"
+          class="blue"
           >Confirmar por WhatsApp</a
         >
-        <br *ngIf="!isMerchant" />
+        <br *ngIf="!isMerchant && !notify" />
         <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
           {{ order.user?.name || order.user?.phone || order.user?.email }}
         </button>
@@ -400,7 +404,7 @@
         Fecha de la sesión:
       </h2>
 
-      <div class="items-container" style="padding: 10px 32px">
+      <div class="items-container" style="padding: 10px 20px">
         <p class="amount">
           {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
           {{ date.time }}
@@ -547,6 +551,29 @@
     [allowEmptyString]="true"
     colorDark="#000"
   ></qrcode>
+
+  <!-- <footer
+    class="footer-display"
+    [style.backgroundColor]="
+      changeColor ? changeColor : headerService.colorTheme
+    "
+    *ngIf=""
+  >
+
+    <div class="pages-tabs">
+      <div class="images-container">
+        <img
+          [src]="env + image.src"
+          *ngFor="let image of imageList"
+          class="image"
+          (click)="image.callback()"
+          [ngStyle]="{
+            filter: image.filter && image.filter
+          }"
+        />
+      </div>
+    </div>
+  </footer> -->
 
   <!-- Aquí hubo un merge conflict -->
 

@@ -92,6 +92,7 @@ export class OrderDetailComponent implements OnInit {
     'video/m2ts',
   ];
   playVideoOnFullscreen = playVideoOnFullscreen;
+  notify: boolean = false;
 
   deliveryStatusOptions = [
     { text: 'Pick Up', value: 'pickup', selected: false },
@@ -131,6 +132,7 @@ export class OrderDetailComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe(async (queryParams) => {
       const { notify: notification, redirectTo } = queryParams;
+      this.notify = Boolean(notification)
       this.redirectTo = redirectTo;
 
       if(typeof redirectTo === 'undefined') this.redirectTo = null; 
