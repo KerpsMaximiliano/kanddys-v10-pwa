@@ -256,7 +256,7 @@ export class CheckoutComponent implements OnInit {
     this.headerService.checkoutRoute = null;
     this.updatePayment();
     this.headerService.order.products.forEach((product) => {
-      this.itemObjects[product.item] = product;
+      if (product.amount) this.itemObjects[product.item] = product;
     });
     if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
       this.hasPaymentModule = true;
