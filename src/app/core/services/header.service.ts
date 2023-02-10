@@ -190,10 +190,17 @@ export class HeaderService {
       if (!reservation || !reservation.date || !this.orderProgress.reservation)
         return;
     }
+
+    if (this.saleflow.module?.post?.isActive) {
+      const post = this.getPost();
+      console.log(post);
+      if (!post) return;
+    }
+
     if (this.hasScenarios) {
       if (!this.orderProgress.scenarios) return;
     }
-    console.log('Completo');
+    //console.log('Completo');
     return true;
   }
 

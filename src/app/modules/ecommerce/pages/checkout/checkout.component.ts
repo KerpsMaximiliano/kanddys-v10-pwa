@@ -12,7 +12,7 @@ import {
   unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
-import { ItemOrderInput } from 'src/app/core/models/order';
+import { ItemOrderInput, ItemSubOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
 import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
@@ -137,6 +137,7 @@ export class CheckoutComponent implements OnInit {
   postSlideAudio: SafeUrl[] = [];
   saleflowId: string;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  itemObjects: Record<string, ItemSubOrderInput> = {};
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -254,6 +255,9 @@ export class CheckoutComponent implements OnInit {
     }
     this.headerService.checkoutRoute = null;
     this.updatePayment();
+    this.headerService.order.products.forEach((product) => {
+      this.itemObjects[product.item] = product;
+    });
     if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
       this.hasPaymentModule = true;
     this.checkLogged();
@@ -276,7 +280,9 @@ export class CheckoutComponent implements OnInit {
       }
       case 'message': {
         this.post = null;
-        // this.headerService.emptyPost();
+        this.headerService.emptyPost();
+        if (!this.headerService.orderInputComplete())
+          this.missingOrderData = true;
         break;
       }
       case 'address': {
@@ -371,8 +377,11 @@ export class CheckoutComponent implements OnInit {
     );
   }
 
-  changeAmount(index: number, type: 'add' | 'subtract') {
-    const product = this.headerService.order.products[index];
+  changeAmount(itemId: string, type: 'add' | 'subtract') {
+    const product = this.headerService.order.products.find(
+      (product) => product.item === itemId
+    );
+
     this.headerService.changeItemAmount(product.item, type);
     this.updatePayment();
   }
@@ -544,6 +553,11 @@ export class CheckoutComponent implements OnInit {
           ],
         };
         this.headerService.storePost(this.post);
+        if (!this.headerService.orderInputComplete()) {
+          this.missingOrderData = true;
+        } else {
+          this.missingOrderData = false;
+        }
         break;
       }
       // case 1: {

@@ -300,10 +300,6 @@ export class StoreComponent implements OnInit {
       this.hasCollections = tagsList.some(
         (tag) => tag.notes != null && tag.notes != ''
       );
-
-      if (this.tags.length > 0) {
-        this.showOptionsBar = true;
-      }
     }
   }
 

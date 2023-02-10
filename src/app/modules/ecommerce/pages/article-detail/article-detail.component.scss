@@ -267,6 +267,11 @@ audio {
   border-top-right-radius: 11px;
   margin-right: 50px !important;
 
+  &.tagView {
+    border: 0px;
+    width: 100%;
+  }
+
   &.inCart {
     background-color: #82f18d;
   }

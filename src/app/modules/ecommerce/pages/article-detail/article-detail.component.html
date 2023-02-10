@@ -142,7 +142,7 @@
         </div>
 
         <button
-          class="cart-btn"
+          class="cart-btn"    
           (click)="saveProduct()"
           *ngIf="doesModuleDependOnSaleflow && itemData"
           [ngClass]="{
@@ -181,6 +181,7 @@
           [routerLink]="['../../../collections', tagData._id]"
           *ngIf="tagData"
           [ngClass]="{
+            tagView: true,
             inCart: isItemInCart
           }"
         >

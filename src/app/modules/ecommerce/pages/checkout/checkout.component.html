@@ -351,13 +351,13 @@
       <div class="rightBottom">
         <ng-container *ngIf="!item.ready">
           <div class="countBox">
-            <button class="cube sign" (click)="changeAmount(i, 'subtract')">
+            <button class="cube sign" (click)="changeAmount(item._id, 'subtract')">
               -
             </button>
-            <div class="cube number">
-              {{ headerService.order.products[i].amount }}
+            <div class="cube number" *ngIf="itemObjects[item._id]">
+              {{ itemObjects[item._id].amount }}
             </div>
-            <button class="cube sign" (click)="changeAmount(i, 'add')">
+            <button class="cube sign" (click)="changeAmount(item._id, 'add')">
               +
             </button>
           </div>
