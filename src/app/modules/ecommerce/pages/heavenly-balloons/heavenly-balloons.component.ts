@@ -295,7 +295,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               this.registeredEmail = false;
             }
 
+            /*
             whatsappMessagePartsOfThe1stStep.push(`*Email:*\n${email}\n\n`);
+            */
 
             this.whatsAppMessageParts.push(whatsappMessagePartsOfThe1stStep);
           } catch (error) {
