@@ -190,10 +190,17 @@ export class HeaderService {
       if (!reservation || !reservation.date || !this.orderProgress.reservation)
         return;
     }
+
+    if (this.saleflow.module?.post?.isActive) {
+      const post = this.getPost();
+      console.log(post);
+      if (!post) return;
+    }
+
     if (this.hasScenarios) {
       if (!this.orderProgress.scenarios) return;
     }
-    console.log('Completo');
+    //console.log('Completo');
     return true;
   }
 
@@ -326,12 +333,23 @@ export class HeaderService {
   }
 
   // Stores amount to first order product in localStorage
-  storeAmount(amount: number) {
+  changeItemAmount(productId: string, type: 'add' | 'subtract') {
     let { order, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     if (!order) return;
     if (!order.products || order.products.length === 0) return;
-    order.products[0].amount = amount;
+    const index = order.products.findIndex(
+      (product) => product.item === productId
+    );
+    if (index < 0) return;
+    if (type === 'add') {
+      order.products[index].amount++;
+      this.order.products[index].amount++;
+    }
+    if (type === 'subtract' && order.products[index].amount > 1) {
+      order.products[index].amount--;
+      this.order.products[index].amount--;
+    }
     localStorage.setItem(this.saleflow._id, JSON.stringify({ order, ...rest }));
   }
 

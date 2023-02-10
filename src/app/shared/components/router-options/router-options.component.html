@@ -1,0 +1,9 @@
+<section class="container">
+  <p class="title">{{ title }}</p>
+  <div class="flex" *ngFor="let option of options; index as i">
+    <div class="left"></div>
+    <a routerLink="option.link">
+      {{ option.text }}
+    </a>
+  </div>
+</section>

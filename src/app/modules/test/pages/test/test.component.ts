@@ -34,6 +34,7 @@ import { environment } from 'src/environments/environment';
 import { Button } from 'src/app/shared/components/general-item/general-item.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
+import { DescriptionDialogComponent } from 'src/app/shared/dialogs/description-dialog/description-dialog.component';
 
 @Component({
   selector: 'app-test',
@@ -127,5 +128,13 @@ export class TestComponent implements OnInit {
   }
   openBottomSheet(): void {
     this._bottomSheet.open(LinksDialogComponent);
+  }
+
+  openDescriptionDialog() {
+    this.dialog.open(DescriptionDialogComponent, {
+      type: 'centralized-fullscreen',
+      flags: ['no-header'],
+      customClass: 'app-dialog',
+    });
   }
 }

@@ -26,7 +26,9 @@ export class TagItemsComponent implements OnInit {
   notes: string;
   merchantName: string = '';
   needsDescription: boolean;
+  tagId: string;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
+  redirectionRoute: string = null;
 
   constructor(
     public _DomSanitizer: DomSanitizer,
@@ -45,6 +47,8 @@ export class TagItemsComponent implements OnInit {
         this.status = 'loading';
         const { tag }: { tag: Tag } = await this._TagsService.tag(tagId);
         const { name, notes } = tag;
+
+        if (tag) this.tagId = tag._id;
         this.name = name;
         this.notes = notes;
         if (needsDescription && !notes)
@@ -57,6 +61,19 @@ export class TagItemsComponent implements OnInit {
           `url(${merchant.image}) no-repeat center center / cover #e9e371`
         );
         this.status = 'complete';
+
+        if (window.location.href.includes('collections'))
+          this.redirectionRoute =
+            '/ecommerce/' +
+            this.headerService.saleflow?.merchant.slug +
+            '/article-detail/collection/' +
+            this.tagId;
+        else {
+          this.redirectionRoute =
+            '/ecommerce/' +
+            this.headerService.saleflow?.merchant.slug +
+            '/store';
+        }
       })();
     });
   }

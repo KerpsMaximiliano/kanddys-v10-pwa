@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -11,7 +12,7 @@ import {
   unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
-import { ItemOrderInput } from 'src/app/core/models/order';
+import { ItemOrderInput, ItemSubOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
 import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
@@ -23,6 +24,7 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { environment } from 'src/environments/environment';
@@ -100,6 +102,10 @@ const options = [
   },
 ];
 
+interface ExtendedItem extends Item {
+  ready?: boolean;
+}
+
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
@@ -107,7 +113,7 @@ const options = [
 })
 export class CheckoutComponent implements OnInit {
   order: ItemOrderInput;
-  items: any[];
+  items: ExtendedItem[];
   post: PostInput;
   deliveryLocation: DeliveryLocationInput;
   reservation: ReservationInput;
@@ -131,6 +137,7 @@ export class CheckoutComponent implements OnInit {
   postSlideAudio: SafeUrl[] = [];
   saleflowId: string;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  itemObjects: Record<string, ItemSubOrderInput> = {};
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -138,13 +145,14 @@ export class CheckoutComponent implements OnInit {
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
     private postsService: PostsService,
-    private orderService: OrderService,
+    public orderService: OrderService,
     private appService: AppService,
     private location: Location,
     private router: Router,
     private route: ActivatedRoute,
     private toastr: ToastrService,
-    private authService: AuthService
+    private authService: AuthService,
+    public dialog: MatDialog
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -163,7 +171,8 @@ export class CheckoutComponent implements OnInit {
       })
     )?.listItems;
 
-    for (const item of this.items as Array<Item>) {
+    for (const item of this.items as Array<ExtendedItem>) {
+      item.ready = false;
       for (const image of item.images) {
         if (
           image.value &&
@@ -245,10 +254,10 @@ export class CheckoutComponent implements OnInit {
       this.headerService.orderProgress.reservation = true;
     }
     this.headerService.checkoutRoute = null;
-    this.payment = this.items?.reduce(
-      (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),
-      0
-    );
+    this.updatePayment();
+    this.headerService.order.products.forEach((product) => {
+      this.itemObjects[product.item] = product;
+    });
     if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
       this.hasPaymentModule = true;
     this.checkLogged();
@@ -271,7 +280,9 @@ export class CheckoutComponent implements OnInit {
       }
       case 'message': {
         this.post = null;
-        // this.headerService.emptyPost();
+        this.headerService.emptyPost();
+        if (!this.headerService.orderInputComplete())
+          this.missingOrderData = true;
         break;
       }
       case 'address': {
@@ -308,10 +319,6 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  back = () => {
-    this.location.back();
-  };
-
   openImageModal(imageSourceURL: string | ArrayBuffer) {
     this.dialogService.open(ImageViewComponent, {
       type: 'fullscreen-translucent',
@@ -337,6 +344,46 @@ export class CheckoutComponent implements OnInit {
     }
 
     return result;
+  }
+
+  deleteProduct(i: number) {
+    let deletedID = this.items[i]._id;
+    const index = this.items.findIndex((product) => product._id === deletedID);
+    let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Borrar producto`,
+        description: `Estás seguro que deseas borrar ${
+          this.items[index].name || 'este producto'
+        }?`,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        if (index >= 0) this.items.splice(index, 1);
+        this.headerService.removeOrderProduct(deletedID);
+        this.headerService.removeItem(deletedID);
+        this.updatePayment();
+        if (!this.items.length) this.editOrder('item');
+      }
+    });
+  }
+
+  updatePayment() {
+    this.payment = this.items?.reduce(
+      (prev, curr, currIndex) =>
+        prev +
+        curr.pricing * this.headerService.order.products[currIndex].amount,
+      0
+    );
+  }
+
+  changeAmount(itemId: string, type: 'add' | 'subtract') {
+    const product = this.headerService.order.products.find(
+      (product) => product.item === itemId
+    );
+
+    this.headerService.changeItemAmount(product.item, type);
+    this.updatePayment();
   }
 
   createOrder = async () => {
@@ -506,6 +553,11 @@ export class CheckoutComponent implements OnInit {
           ],
         };
         this.headerService.storePost(this.post);
+        if (!this.headerService.orderInputComplete()) {
+          this.missingOrderData = true;
+        } else {
+          this.missingOrderData = false;
+        }
         break;
       }
       // case 1: {

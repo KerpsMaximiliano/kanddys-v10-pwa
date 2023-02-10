@@ -8,6 +8,7 @@ import {
   PhoneNumberFormat,
   SearchCountryField,
 } from 'ngx-intl-tel-input';
+import { capitalize } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Reservation, ReservationInput } from 'src/app/core/models/reservation';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -204,7 +205,7 @@ export class ReservationsCreatorComponent implements OnInit {
             this.calendarData.merchant
           );
           this.headerConfiguration.headerText =
-            'Reserva la fecha con ' + this.calendarMerchant.name;
+            'Reserva la fecha con ' + capitalize(this.calendarMerchant.name);
 
           //Sets the current month label that its shown in top of the month's swiper
           const currentDateObject = new Date();

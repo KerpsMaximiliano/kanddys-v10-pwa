@@ -64,6 +64,9 @@ export class StoreComponent implements OnInit {
     status: 'loading',
   };
   renderItemsPromise: Promise<any>;
+  phone: string;
+  showOptionsBar: boolean = false;
+  merchantName: string;
 
   hasCollections: boolean = false;
 
@@ -86,6 +89,8 @@ export class StoreComponent implements OnInit {
   };
 
   windowWidth: number = 0;
+
+  link: string;
 
   async infinitePagination() {
     const page = document.querySelector('.store-page');
@@ -162,6 +167,12 @@ export class StoreComponent implements OnInit {
         }
       })();
     }, 300);
+    console.log(this.headerService.saleflow.merchant);
+    this.link = `${this.URI}/ecommerce/${this.headerService.saleflow.merchant.slug}/store`;
+
+    this.merchantName = this.headerService.saleflow.merchant.name;
+
+    this.phone = this.headerService.saleflow.merchant.owner.phone;
   }
 
   onTabClick(index: number) {
@@ -287,7 +298,9 @@ export class StoreComponent implements OnInit {
     });
     if (tagsList) {
       this.tags = tagsList;
-      this.hasCollections = tagsList.some(tag => (tag.notes != null) && (tag.notes != ""));
+      this.hasCollections = tagsList.some(
+        (tag) => tag.notes != null && tag.notes != ''
+      );
     }
   }
 
