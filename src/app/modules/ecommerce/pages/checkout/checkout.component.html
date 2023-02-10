@@ -56,7 +56,10 @@
       </div>
       <div class="flexBox">
         <ng-container *ngFor="let item of items; index as i">
-          <div class="items-container flexBox ready" *ngIf="!item.ready">
+          <div
+            class="items-container flexBox ready"
+            *ngIf="!item.ready && itemObjects[item._id]"
+          >
             <ng-container
               *ngTemplateOutlet="
                 itemInfoTemplate;
@@ -66,7 +69,7 @@
           </div>
           <button
             class="items-container flexBox"
-            *ngIf="item.ready"
+            *ngIf="item.ready && itemObjects[item._id]"
             (click)="item.ready = !item.ready"
           >
             <ng-container
@@ -282,7 +285,7 @@
       </ng-container>
     </section>
   </main>
-  <app-sticky-button
+  <!-- <app-sticky-button
     mode="fixed"
     color="#FFFFFF"
     fontSize="17px"
@@ -290,7 +293,7 @@
     text="VER MAS ARTICULOS"
     size="small"
     (click)="editOrder('item')"
-  ></app-sticky-button>
+  ></app-sticky-button> -->
 </div>
 
 <ng-template #itemInfoTemplate let-item="item" let-i="i">
@@ -330,31 +333,31 @@
         ></video>
       </div>
     </button>
-    <div class="rightSection">
+    <div class="rightSection" *ngIf="itemObjects[item._id]">
       <div class="title">
         <p>
           <span *ngIf="item.ready && item.name">
-            {{ headerService.order.products[i].amount }}x </span
+            {{ itemObjects[item._id].amount }}x </span
           >{{ !item.ready ? "Cantidad" : item.name }}
 
           <span style="margin-right: 8px" *ngIf="item.ready && !item.name">
-            {{ headerService.order.products[i].amount }}x
+            {{ itemObjects[item._id].amount }}x
           </span>
         </p>
         <p>
-          ${{
-            item.pricing * headerService.order.products[i].amount
-              | number : "1.2-2"
-          }}
+          ${{ item.pricing * itemObjects[item._id].amount | number : "1.2-2" }}
         </p>
       </div>
       <div class="rightBottom">
         <ng-container *ngIf="!item.ready">
           <div class="countBox">
-            <button class="cube sign" (click)="changeAmount(item._id, 'subtract')">
+            <button
+              class="cube sign"
+              (click)="changeAmount(item._id, 'subtract')"
+            >
               -
             </button>
-            <div class="cube number" *ngIf="itemObjects[item._id]">
+            <div class="cube number">
               {{ itemObjects[item._id].amount }}
             </div>
             <button class="cube sign" (click)="changeAmount(item._id, 'add')">
