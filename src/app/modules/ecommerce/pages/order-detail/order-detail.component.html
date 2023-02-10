@@ -65,7 +65,7 @@
 
     <p class="bill-clarity">
       Al “confirmar” se abrirá tu WhatsApp con la factura para
-      {{ order?.items[0].saleflow.merchant.name }}.
+      <span>{{ order?.items[0].saleflow.merchant.name }}</span>.
     </p>
 
     <a
@@ -77,12 +77,12 @@
       Confirmar por WhatsApp
     </a>
 
-    <span (click)="returnToStore()" class="new-order"> Comprar otra cosa</span>
+    <!-- <span (click)="returnToStore()" class="new-order"> Comprar otra cosa</span> -->
   </div>
-  <main class="information" [ngStyle]="{ 'margin-top': notify ? '13px' : '' }">
+  <main class="information">
     <section class="top">
       <h2 class="top-h" *ngIf="order">
-        FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
+        FACTURA {{ formatId(order.dateId) }} <br />
         <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
           {{ order.user?.name || order.user?.phone || order.user?.email }}
         </button>
@@ -317,7 +317,7 @@
         Fecha de la sesión:
       </h2>
 
-      <div class="items-container" style="padding: 10px 32px">
+      <div class="items-container" style="padding: 10px 20px">
         <p class="amount">
           {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
           {{ date.time }}
@@ -416,24 +416,13 @@
     colorDark="#000"
   ></qrcode>
 
-  <footer
+  <!-- <footer
     class="footer-display"
     [style.backgroundColor]="
       changeColor ? changeColor : headerService.colorTheme
     "
+    *ngIf=""
   >
-    <!--
-      <div
-        class="left-arrow"
-        *ngIf="this.orderInDayIndex > 0 || orderBeforeOrderDay"
-        (click)="goToNextOrPreviousOrder('PREVIOUS')"
-      >
-        <img
-          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-white.svg"
-          alt=""
-        />
-      </div>
-    -->
 
     <div class="pages-tabs">
       <div class="images-container">
@@ -448,23 +437,7 @@
         />
       </div>
     </div>
-
-    <!--
-      <div
-        class="right-arrow"
-        *ngIf="
-          this.orderInDayIndex < this.ordersInTheSameDay.length - 1 ||
-          orderAfterOrderDay
-        "
-        (click)="goToNextOrPreviousOrder('NEXT')"
-      >
-        <img
-          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-right-white.svg"
-          alt=""
-        />
-      </div>
-    -->
-  </footer>
+  </footer> -->
 
   <!-- Aquí hubo un merge conflict -->
 
