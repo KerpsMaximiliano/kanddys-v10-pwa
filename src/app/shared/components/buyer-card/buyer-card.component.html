@@ -1,24 +1,30 @@
 <div class="container" [ngClass]="{ shadow: shadow }">
-  <div class="top">
-    <p *ngIf="title || description" class="text">
-      <span *ngIf="title" class="title">{{ title }}</span
-      ><br />
-      <br />
-      <span *ngIf="description" class="description">{{ description }}</span>
-    </p>
-    <img
-      class="img"
-      #imgContainer
-      [src]="img"
-      (error)="img = '/assets/images/noimage.png'"
-      width="132"
-      height="188"
-    />
-  </div>
+  <a 
+    [routerLink]="redirectionParams.link"
+    [queryParams]="redirectionParams.param"
+  >
+    <div class="top">
+      <p *ngIf="title || description" class="text">
+        <span *ngIf="title" class="title">{{ title }}</span
+        ><br />
+        <br />
+        <span *ngIf="description" class="description">{{ description }}</span>
+      </p>
+      <img
+        class="img"
+        #imgContainer
+        [src]="img"
+        (error)="img = '/assets/images/noimage.png'"
+      />
+    </div>
+  </a>
   <div class="bottom" *ngIf="leftAmount">
     <p [ngClass]="{ center: !title && !description }" class="amount">
       <span>RD$ {{ leftAmount | number }} </span
       ><span *ngIf="rightAmount">- ${{ rightAmount | number }}</span>
+      <button class="cart-button" [ngClass]="{ active: ctaActive }" (click)="emitClick()" *ngIf="cta">
+        {{ ctaActive ? 'Está dentro de mí' : 'Adiciónalo a mí' }} <span><img [src]="env + '/carrito_blanco.svg'" alt=""></span>
+      </button>
     </p>
   </div>
 </div>

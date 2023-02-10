@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class BubbleButtonComponent implements OnInit {
   //Inputs
-  @Input() color: 'yellow' | 'blue' | 'black' = 'yellow';
+  @Input() color: 'yellow' | 'blue' | 'black' | 'green' = 'yellow';
   @Input() bgColor: string;
   @Input() position:
     | 'left'
@@ -39,6 +39,7 @@ export class BubbleButtonComponent implements OnInit {
   }
 
   checkColor(value: string) {
+    console.log(value);
     switch (value) {
       case 'yellow':
         this.filterColor =
@@ -52,6 +53,10 @@ export class BubbleButtonComponent implements OnInit {
       case 'black':
         this.filterColor =
           'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
+
+      case 'green':
+        this.filterColor =
+          'brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%) hue-rotate(62deg) brightness(99%) contrast(91%)';
 
         break;
     }
