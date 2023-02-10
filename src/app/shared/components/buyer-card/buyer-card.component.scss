@@ -82,9 +82,12 @@ a {
 
     .amount {
       display: flex;
-      justify-content: space-between;
       align-items: center;
       width: 100%;
+
+      &.hasCartButton {
+        justify-content: space-between;
+      }
     }
 
     .center {
@@ -94,7 +97,7 @@ a {
 
     .cart-button {
       cursor: pointer;
-      background-color: #FED230;
+      background-color: #fed230;
       padding: 7px 14px;
       font-family: SFProRegular;
       font-size: 14px;
@@ -107,12 +110,13 @@ a {
       width: 155px;
 
       &.active {
-        background-color: #82F18D;
+        background-color: #82f18d;
       }
 
       img {
         width: 18px;
-        filter: brightness(0) invert(16%) sepia(13%) saturate(973%) hue-rotate(68deg) brightness(102%) contrast(90%);
+        filter: brightness(0) invert(16%) sepia(13%) saturate(973%)
+          hue-rotate(68deg) brightness(102%) contrast(90%);
       }
     }
 

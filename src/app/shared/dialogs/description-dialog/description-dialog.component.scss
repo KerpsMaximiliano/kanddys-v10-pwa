@@ -1,0 +1,59 @@
+* {
+  margin: 0;
+}
+
+.container {
+  background-color: #fff;
+  margin: 25px auto;
+  border-radius: 12px;
+  padding: 44px 28.5px 39.5px;
+  max-width: 355px;
+
+  .title {
+    color: #4f4f4f;
+    font-family: SFProBold;
+    font-size: 17px;
+    margin-bottom: 20.5px;
+    text-align: center;
+  }
+
+  .text {
+    margin-bottom: 25px;
+    color: #272727;
+    font-family: SFProRegular;
+    font-size: 17px;
+  }
+
+  .check {
+    margin-top: 12px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+
+    input {
+      height: 18px;
+      width: 18px;
+      border-radius: 4px;
+      border: 1px solid #707070;
+      margin-left: 15px;
+      cursor: pointer;
+    }
+
+    .check-text {
+      margin-bottom: -2.5px;
+      margin-left: 12px;
+      color: #7b7b7b;
+      font-family: SFProLight;
+      font-style: italic;
+    }
+  }
+  .arrows {
+    display: block;
+    margin: 0 auto;
+    margin-top: 7.5px;
+    cursor: pointer;
+    filter: invert(99%) sepia(1%) saturate(4539%) hue-rotate(275deg)
+      brightness(121%) contrast(83%);
+    transform: rotate(180deg);
+  }
+}

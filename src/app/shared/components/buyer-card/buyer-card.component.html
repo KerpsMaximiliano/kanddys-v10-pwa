@@ -1,5 +1,5 @@
 <div class="container" [ngClass]="{ shadow: shadow }">
-  <a 
+  <a
     [routerLink]="redirectionParams.link"
     [queryParams]="redirectionParams.param"
   >
@@ -19,11 +19,23 @@
     </div>
   </a>
   <div class="bottom" *ngIf="leftAmount">
-    <p [ngClass]="{ center: !title && !description }" class="amount">
+    <p
+      [ngClass]="{ center: !title && !description }"
+      class="amount"
+      [ngClass]="{
+        hasCartButton: cta
+      }"
+    >
       <span>RD$ {{ leftAmount | number }} </span
       ><span *ngIf="rightAmount">- ${{ rightAmount | number }}</span>
-      <button class="cart-button" [ngClass]="{ active: ctaActive }" (click)="emitClick()" *ngIf="cta">
-        {{ ctaActive ? 'Está dentro de mí' : 'Adiciónalo a mí' }} <span><img [src]="env + '/carrito_blanco.svg'" alt=""></span>
+      <button
+        class="cart-button"
+        [ngClass]="{ active: ctaActive }"
+        (click)="emitClick()"
+        *ngIf="cta"
+      >
+        {{ ctaActive ? "Está dentro de mí" : "Adiciónalo a mí" }}
+        <span><img [src]="env + '/carrito_blanco.svg'" alt="" /></span>
       </button>
     </p>
   </div>

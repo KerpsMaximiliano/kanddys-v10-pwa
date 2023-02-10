@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" style="bottom: 100px" *ngIf="mode === 'basic'">
   <button
     mat-fab
     [matMenuTriggerFor]="menu"
@@ -8,28 +8,33 @@
     <mat-icon class="btn-icon">menu</mat-icon>
   </button>
   <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
-    <button mat-menu-item class="menu-item">
-      <span>Chat con TiendaID</span>
-      <img src="/assets/images/noimage.png" alt="circle" class="circle" />
+    <button mat-menu-item class="menu-item" (click)="goToWhatsapp()">
+      <span>Chat con {{ merchantName }}</span>
+      <img [src]="env + '/whatsapp_verde.svg'" alt="circle" class="circle" />
     </button>
-    <button mat-menu-item class="menu-item">
-      <span style="color: '#FC2727'">Dejanos un mensaje</span>
-      <img src="/assets/images/noimage.png" alt="circle" class="circle" />
+    <button mat-menu-item class="menu-item" (click)="shareStore()">
+      <span>Comparte la tienda</span>
+      <img [src]="env + '/upload.svg'" alt="circle" class="circle" />
     </button>
-    <button mat-menu-item class="menu-item">
-      <span>Comparte la Tienda</span>
-      <img src="/assets/images/noimage.png" alt="circle" class="circle" />
-    </button>
-    <button mat-menu-item class="menu-item">
-      <span>Opción #x</span>
-      <img src="/assets/images/noimage.png" alt="circle" class="circle" />
-    </button>
-    <button mat-menu-item class="menu-item">
-      <span>Opción ID #2</span>
-      <img src="/assets/images/noimage.png" alt="circle" class="circle" />
-    </button>
-    <button mat-menu-item class="menu-item">
-      <span>Opción ID #1</span>
+  </mat-menu>
+</div>
+
+<div class="container" style="bottom: 17px" *ngIf="mode === 'array'">
+  <button
+    mat-fab
+    [matMenuTriggerFor]="menu"
+    aria-label="Example icon-button with a menu"
+    class="btn"
+  >
+    <mat-icon class="btn-icon">menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
+    <button
+      mat-menu-item
+      class="menu-item"
+      *ngFor="let option of options; index as i"
+    >
+      <span>{{ option.text }}</span>
       <img src="/assets/images/noimage.png" alt="circle" class="circle" />
     </button>
   </mat-menu>

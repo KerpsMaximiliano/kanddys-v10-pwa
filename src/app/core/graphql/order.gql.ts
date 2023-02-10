@@ -75,6 +75,7 @@ const orderData = `
     item {
       _id
       name
+      description
       pricing
       images {
         value
@@ -111,6 +112,8 @@ const orderData = `
     }
   }
   orderStatus
+  orderStatusDelivery
+  statusDelivery
   itemPackage {
     _id
     name
@@ -411,6 +414,18 @@ export const orderSetStatus = gql`
       status {
         status
       }
+    }
+  }
+`;
+
+export const orderSetStatusDelivery = gql`
+  mutation orderSetStatusDelivery(
+    $orderStatusDelivery: String!
+    $id: ObjectID!
+  ) {
+    orderSetStatusDelivery(orderStatusDelivery: $orderStatusDelivery, id: $id) {
+      _id
+      orderStatusDelivery
     }
   }
 `;
