@@ -117,6 +117,7 @@ export class ArticleDetailComponent implements OnInit {
   logged: boolean = false;
   isProductMine: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  postContentMinimized: boolean = true;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
