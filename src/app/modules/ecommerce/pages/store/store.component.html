@@ -68,8 +68,8 @@
       <br *ngIf="!hasCollections">
 
       <!-- ******************************************* TAG SWIPER ***************************************-->
-      <div style="width: 100%; padding: 0px 21px 0px 21px">
-        <swiper [config]="swiperConfigTag" #tagsSwiper>
+      <div style="width: 100%; padding: 0px 21px 0px 21px;">
+        <swiper [config]="swiperConfigTag">
           <a
             *ngFor="let tag of tags"
             [ngStyle]="{
