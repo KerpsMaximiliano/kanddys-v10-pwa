@@ -44,11 +44,11 @@
   .content-container {
     display: flex;
     flex-direction: column;
-    height: 80vh;
+    height: calc(100vh - 8.3455vh);
     overflow-y: scroll;
-    padding: 30px 15px 0px;
+    padding: 98px 15px 0px;
     position: relative;
-    top: 40px;
+    top: 0px;
   }
 
   .content {
@@ -56,6 +56,7 @@
     flex-direction: column;
     height: 47.5vh;
     overflow-y: scroll;
+    text-align: justify;
 
     .title2 {
       color: #ffffff;
@@ -262,7 +263,7 @@
 .video-content {
   object-fit: cover;
   max-width: 500px;
-  height: calc(100vh - 100px);
+  height: 100%;
 }
 
 .wrapper {

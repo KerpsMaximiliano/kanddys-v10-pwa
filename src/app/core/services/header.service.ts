@@ -193,11 +193,11 @@ export class HeaderService {
         return;
     }
 
+    /*
     if (this.saleflow.module?.post?.isActive) {
       const post = this.getPost();
-      console.log(post);
       if (!post) return;
-    }
+    }*/
 
     if (this.hasScenarios) {
       if (!this.orderProgress.scenarios) return;
@@ -546,6 +546,12 @@ export class HeaderService {
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     this.post = null;
     localStorage.setItem(this.saleflow._id, JSON.stringify(rest));
+  }
+
+  emptyMediaPost() {
+    localStorage.removeItem('postReceiverNumber');
+    localStorage.removeItem('privatePost');
+    localStorage.removeItem('post');
   }
 
   // Empties order products from localStorage

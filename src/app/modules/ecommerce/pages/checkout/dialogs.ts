@@ -272,11 +272,11 @@ export class Dialogs {
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
-                  boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                  boxShadow: 'rgb(210 210 210) 0px 4px 7px 0px inset',
                   display: 'block',
                   fontFamily: 'RobotoMedium',
                   fontSize: '17px',
-                  minHeight: '130px',
+                  minHeight: '188.58px',
                   resize: 'none',
                   width: '100%',
                   padding: '22px 26.3px 105.6px 16px',
@@ -326,6 +326,8 @@ export class Dialogs {
               fontFamily: 'SfProBold',
               color: '#4F4F4F',
               marginBottom: '12.5px',
+              width: '75.60%',
+              minWidth: '220px'
             },
             text: 'Departe de quien o quienes?',
           },
@@ -352,7 +354,7 @@ export class Dialogs {
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
-                  boxShadow: 'rgba(228 228 228) 0px 3px 7px inset',
+                  boxShadow: 'rgb(210 210 210) 0px 4px 7px 0px inset',
                   display: 'block',
                   fontFamily: 'RobotoMedium',
                   fontSize: '17px',
@@ -366,8 +368,6 @@ export class Dialogs {
             ],
           },
         },
-        postLabel:
-          'Mensajito de prueba que se ve despues de pasar el 2do dialog.',
         outputs: [
           {
             name: 'data',
@@ -552,7 +552,7 @@ export class Dialogs {
                   styles: {
                     border: 'none',
                     borderRadius: '9px',
-                    boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                    boxShadow: 'rgb(210 210 210) 0px 4px 7px 0px inset',
                     display: 'block',
                     fontFamily: 'RobotoMedium',
                     fontSize: '17px',
@@ -568,7 +568,7 @@ export class Dialogs {
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
-                  boxShadow: 'rgb(228 228 228) 0px 3px 7px inset',
+                  boxShadow: 'rgb(210 210 210) 0px 4px 7px 0px inset',
                   display: 'block',
                   fontFamily: 'RobotoMedium',
                   fontSize: '17px',
@@ -627,6 +627,7 @@ export class Dialogs {
               marginTop: '0',
               color: '#4F4F4F',
               width: '50%',
+              minWidth: '149px'
             },
             text: '¿Que mensaje escribiremos?',
           },
@@ -642,7 +643,7 @@ export class Dialogs {
                   styles: {
                     border: 'none',
                     borderRadius: '9px',
-                    boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                    boxShadow: 'rgb(210 210 210) 0px 4px 7px 0px inset',
                     display: 'block',
                     fontFamily: 'RobotoMedium',
                     fontSize: '17px',
@@ -658,7 +659,7 @@ export class Dialogs {
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
-                  boxShadow: 'rgb(228 228 228) 0px 3px 7px inset',
+                  boxShadow: 'rgb(210 210 210) 0px 4px 7px 0px inset',
                   display: 'block',
                   fontFamily: 'RobotoMedium',
                   fontSize: '17px',

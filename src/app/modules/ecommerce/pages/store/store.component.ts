@@ -16,7 +16,10 @@ import {
   ItemCategory,
   ItemCategoryHeadline,
 } from 'src/app/core/models/item';
-import { ItemSubOrderInput, ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import {
+  ItemSubOrderInput,
+  ItemSubOrderParamsInput,
+} from 'src/app/core/models/order';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
@@ -67,7 +70,7 @@ export class StoreComponent implements OnInit {
   phone: string;
   showOptionsBar: boolean = false;
   merchantName: string;
-
+  reachedTheEndOfPagination: boolean = false;
   hasCollections: boolean = false;
 
   public swiperConfigTag: SwiperOptions = {
@@ -98,7 +101,10 @@ export class StoreComponent implements OnInit {
     const verticalScroll = window.innerHeight + page.scrollTop;
 
     if (verticalScroll >= pageScrollHeight) {
-      if (this.paginationState.status === 'complete') {
+      if (
+        this.paginationState.status === 'complete' &&
+        !this.reachedTheEndOfPagination
+      ) {
         await this.getItems();
       }
     }
@@ -349,6 +355,10 @@ export class StoreComponent implements OnInit {
           this.items = this.items.concat(itemsQueryResult);
         }
 
+        if (itemsQueryResult.length === 0) {
+          this.reachedTheEndOfPagination = true;
+        }
+
         this.paginationState.status = 'complete';
       })
       .catch((err) => {
@@ -399,10 +409,7 @@ export class StoreComponent implements OnInit {
     const item = this.items[index];
 
     /* Validaciones para saleflows donde solo se puede comprar un item a la vez */
-    if (
-      !item.isSelected &&
-      !this.headerService.saleflow.canBuyMultipleItems
-    ) {
+    if (!item.isSelected && !this.headerService.saleflow.canBuyMultipleItems) {
       this.headerService.emptyOrderProducts();
       this.headerService.emptyItems();
     }

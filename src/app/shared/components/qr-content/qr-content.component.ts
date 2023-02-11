@@ -55,7 +55,7 @@ export class QrContentComponent implements OnInit {
         } else if (slide.url) {
           this.slidesPath.push({
             path: isVideo(slide.url) ? slide.url : `url(${slide.url})`,
-            type: isVideo(slide.url) ? 'VIDEO' : 'IMAGE'
+            type: isVideo(slide.url) ? 'VIDEO' : 'IMAGE',
           });
           this.filesStrings.push(slide.url);
         } else if (slide.type === 'text') {
@@ -66,6 +66,15 @@ export class QrContentComponent implements OnInit {
           });
         }
       }
+    }
+
+    if (!this.slides && this.joke) {
+      this.slidesPath = [];
+      this.slidesPath.push({
+        text: this.joke,
+        title: 'Chiste de IA',
+        type: 'TEXT',
+      });
     }
 
     if (this.slides && this.slides.length > 0) {

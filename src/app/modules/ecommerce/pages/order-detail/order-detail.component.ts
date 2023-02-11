@@ -27,6 +27,8 @@ import { environment } from 'src/environments/environment';
 import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ToastrService } from 'ngx-toastr';
 
 interface Image {
   src: string;
@@ -38,6 +40,10 @@ interface Image {
   src: string;
   filter?: string;
   callback?(...param): any;
+}
+
+interface ExtendedSlide extends Slide {
+  isVideo?: boolean;
 }
 
 @Component({
@@ -53,7 +59,7 @@ export class OrderDetailComponent implements OnInit {
   orderAfterOrderDay: ItemOrder = null;
   order: ItemOrder;
   post: Post;
-  slides: Slide[];
+  slides: ExtendedSlide[];
   payment: number;
   isMerchant: boolean;
   merchantOwner: boolean;
@@ -127,6 +133,8 @@ export class OrderDetailComponent implements OnInit {
     private merchantsService: MerchantsService,
     private paymentLogService: PaymentLogsService,
     private entityTemplateService: EntityTemplateService,
+    private clipboard: Clipboard,
+    private toastr: ToastrService,
     private tagsService: TagsService
   ) {
     history.pushState(null, null, window.location.href);
@@ -229,6 +237,22 @@ export class OrderDetailComponent implements OnInit {
         await this.postsService.getPost(this.order.items[0].post._id)
       ).post;
       this.slides = await this.postsService.slidesByPost(this.post._id);
+
+      for (const slide of this.slides) {
+        if (
+          slide.type === 'poster' &&
+          (slide.media.includes('mp4') || slide.media.includes('webm'))
+        ) {
+          slide.isVideo = true;
+
+          if (
+            !slide.media.includes('https://') &&
+            !slide.media.includes('http://')
+          ) {
+            slide.media = 'https://' + slide.media;
+          }
+        }
+      }
 
       if (this.post) {
         const results = await this.entityTemplateService.entityTemplates({
@@ -942,4 +966,14 @@ export class OrderDetailComponent implements OnInit {
       'ecommerce/' + this.order.items[0].saleflow.merchant.slug + '/store',
     ]);
   };
+
+  copyEntityId(id: string) {
+    const entityId = this.formatId(id);
+
+    this.clipboard.copy(entityId);
+
+    this.toastr.info('Id copiado al portapapeles', null, {
+      timeOut: 3000,
+    });
+  }
 }

@@ -183,6 +183,7 @@ export class ItemsDashboardComponent implements OnInit {
   };
   openedDialogFlow: boolean = false;
   dialogs: Array<EmbeddedComponentWithId> = [];
+  reachTheEndOfPagination: boolean = false;
 
   async infinitePagination() {
     const page = document.querySelector('.dashboard-page');
@@ -190,7 +191,11 @@ export class ItemsDashboardComponent implements OnInit {
     const verticalScroll = window.innerHeight + page.scrollTop;
 
     if (verticalScroll >= pageScrollHeight) {
-      if (this.paginationState.status === 'complete' && this.tagsLoaded) {
+      if (
+        this.paginationState.status === 'complete' &&
+        this.tagsLoaded &&
+        !this.reachTheEndOfPagination
+      ) {
         await this.inicializeItems(false, true);
       }
     }
@@ -237,8 +242,8 @@ export class ItemsDashboardComponent implements OnInit {
         }
       });
 
-      this.itemSearchbar.valueChanges.subscribe((change) =>
-        this.inicializeItems(true, false)
+      this.itemSearchbar.valueChanges.subscribe(
+        async (change) => await this.inicializeItems(true, false)
       );
 
       this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
@@ -377,7 +382,9 @@ export class ItemsDashboardComponent implements OnInit {
     });
 
     if (tagsList) {
-      this.tagsList = tagsList.filter((tag) => tag.entity === 'item').sort((a, b) => (a.index > b.index) ? 1 : -1 );
+      this.tagsList = tagsList
+        .filter((tag) => tag.entity === 'item')
+        .sort((a, b) => (a.index > b.index ? 1 : -1));
       this.unselectedTags = [...this.tagsList];
 
       for (const tag of this.tagsList) {
@@ -515,7 +522,9 @@ export class ItemsDashboardComponent implements OnInit {
     this.paginationState.status = 'loading';
 
     if (restartPagination) {
+      this.reachTheEndOfPagination = false;
       this.paginationState.page = 1;
+      this.allItems = [];
     } else {
       this.paginationState.page++;
     }
@@ -616,8 +625,10 @@ export class ItemsDashboardComponent implements OnInit {
         this.allItems = [];
       }
 
-      if (itemsQueryResult.length === 0 && this.paginationState.page !== 1)
+      if (itemsQueryResult.length === 0 && this.paginationState.page !== 1) {
         this.paginationState.page--;
+        this.reachTheEndOfPagination = true;
+      }
 
       if (itemsQueryResult && itemsQueryResult.length > 0) {
         if (this.paginationState.page === 1) {
@@ -647,9 +658,8 @@ export class ItemsDashboardComponent implements OnInit {
             }
           }
         }
-
-        this.paginationState.status = 'complete';
       }
+      this.paginationState.status = 'complete';
 
       if (
         itemsQueryResult.length === 0 &&

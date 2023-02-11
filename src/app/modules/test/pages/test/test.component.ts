@@ -40,13 +40,10 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
-<<<<<<< HEAD
-=======
 import { Button } from 'src/app/shared/components/general-item/general-item.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { DescriptionDialogComponent } from 'src/app/shared/dialogs/description-dialog/description-dialog.component';
->>>>>>> staging-v3
 
 @Component({
   selector: 'app-test',
@@ -1403,18 +1400,4 @@ export class TestComponent implements OnInit {
       },
     });
   }
-<<<<<<< HEAD
-=======
-  openBottomSheet(): void {
-    this._bottomSheet.open(LinksDialogComponent);
-  }
-
-  openDescriptionDialog() {
-    this.dialog.open(DescriptionDialogComponent, {
-      type: 'centralized-fullscreen',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-    });
-  }
->>>>>>> staging-v3
 }

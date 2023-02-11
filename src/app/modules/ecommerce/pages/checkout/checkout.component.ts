@@ -299,11 +299,14 @@ export class CheckoutComponent implements OnInit {
         this.headerService.orderProgress.reservation = true;
       }
       this.headerService.checkoutRoute = null;
-      this.updatePayment();
       this.headerService.order.products.forEach((product) => {
-        this.itemObjects[product.item] = product;
+        if (product.amount) this.itemObjects[product.item] = product;
+        else {
+          this.headerService.removeOrderProduct(product.item);
+          this.headerService.removeItem(product.item);
+        }
       });
-      
+      this.updatePayment();
       if (
         this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
       )
@@ -437,12 +440,9 @@ export class CheckoutComponent implements OnInit {
   }
 
   updatePayment() {
-    this.payment = this.items?.reduce(
-      (prev, curr, currIndex) =>
-        prev +
-        curr.pricing * this.headerService.order.products[currIndex].amount,
-      0
-    );
+    this.payment = this.items?.reduce((prev, item, itemIndex) => {
+      return prev + item.pricing * this.itemObjects[item._id].amount;
+    }, 0);
   }
 
   changeAmount(itemId: string, type: 'add' | 'subtract') {
@@ -451,6 +451,13 @@ export class CheckoutComponent implements OnInit {
     );
 
     this.headerService.changeItemAmount(product.item, type);
+    this.headerService.order.products.forEach((product) => {
+      if (product.amount) this.itemObjects[product.item] = product;
+      else {
+        this.headerService.removeOrderProduct(product.item);
+        this.headerService.removeItem(product.item);
+      }
+    });
     this.updatePayment();
   }
 

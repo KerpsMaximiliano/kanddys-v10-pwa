@@ -540,9 +540,8 @@ export class PaymentsComponent implements OnInit {
           this.postsService.temporalDialogs = null;
           this.postsService.temporalDialogs2 = null;
           localStorage.removeItem('postReceiverNumber');
+          localStorage.removeItem('privatePost');
           localStorage.removeItem('post');
-
-          console.log(this.postsService.post);
 
           this.router.navigate([`../../store`], {
             relativeTo: this.route,
