@@ -179,7 +179,6 @@ export class ReservationsCreatorComponent implements OnInit {
         // If true, this reservation is for an order
         if (saleflowId) {
           this.isOrder = true;
-          this.stickyButtonText = 'Continuar al resumen de la factura';
           await this.headerService.fetchSaleflow(saleflowId);
         }
 
@@ -805,6 +804,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     this.selectedDate.filled = true;
     this.activeReservationIndex = dateOptionIndex;
+    if (this.isOrder) this.makeReservation();
   }
 
   /**

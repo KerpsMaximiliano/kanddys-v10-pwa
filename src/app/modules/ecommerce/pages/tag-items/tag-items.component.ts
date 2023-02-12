@@ -17,18 +17,17 @@ import { Button } from '../../../../shared/components/general-item/general-item.
 export class TagItemsComponent implements OnInit {
   @Input() image: string | SafeStyle = '';
   environment: string = environment.assetsUrl;
+  URI: string = environment.uri;
   slug: string;
-
   items: Item[] = [];
+  tag: Tag;
   optionsButton: Array<Button> = [];
   sub: Subscription;
-  name: string;
-  notes: string;
   merchantName: string = '';
   needsDescription: boolean;
-  tagId: string;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   redirectionRoute: string = null;
+  link: string;
 
   constructor(
     public _DomSanitizer: DomSanitizer,
@@ -45,12 +44,8 @@ export class TagItemsComponent implements OnInit {
       this.needsDescription = needsDescription;
       (async () => {
         this.status = 'loading';
-        const { tag }: { tag: Tag } = await this._TagsService.tag(tagId);
-        const { name, notes } = tag;
-
-        if (tag) this.tagId = tag._id;
-        this.name = name;
-        this.notes = notes;
+        this.tag = (await this._TagsService.tag(tagId))?.tag;
+        const { name, notes } = this.tag;
         if (needsDescription && !notes)
           this._Router.navigate([this._Router.url.replace(path, 'categories')]);
         const { merchant } = this.headerService.saleflow;
@@ -67,13 +62,16 @@ export class TagItemsComponent implements OnInit {
             '/ecommerce/' +
             this.headerService.saleflow?.merchant.slug +
             '/article-detail/collection/' +
-            this.tagId;
+            this.tag._id;
         else {
           this.redirectionRoute =
             '/ecommerce/' +
             this.headerService.saleflow?.merchant.slug +
             '/store';
         }
+        this.link = `${this.URI}/ecommerce/${
+          this.headerService.saleflow.merchant.slug
+        }/${this.tag.notes ? 'collections' : 'categories'}/${this.tag._id}`;
       })();
     });
   }
