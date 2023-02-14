@@ -1,8 +1,8 @@
 <div class="container">
   <header class="header">
-    <button>
+    <a [routerLink]="['../admin-dashboard']">
       <i class="fas fa-angle-left icon"></i>
-    </button>
+    </a>
     <p>{{ title }}</p>
   </header>
   <section class="body">
@@ -62,54 +62,66 @@
         </div>
       </div>
     </div>
-    <div *ngIf="typeView == 'cards'" class="cards-flexBox">
-      <div class="cardContainer select" *ngIf="itemsArray.length > 3">
-        <div class="border">
-          <app-buyer-card
-            [shadow]="false"
-            [img]="
-              itemsArray[2].images.length ? itemsArray[2].images[0].value : ''
-            "
-            [title]="itemsArray[2].name"
-            [description]="itemsArray[2].description"
-            [leftAmount]="itemsArray[2].pricing"
-          >
-          </app-buyer-card>
-        </div>
+    <div
+      *ngIf="typeView == 'cards' && saleflowService.saleflowData"
+      class="cards-flexBox"
+    >
+      <div class="cardContainer select">
+        <ng-container
+          [ngTemplateOutlet]="
+            saleflowService.saleflowData?.layout === 'description-card'
+              ? buyerCardView
+              : saleflowItemView
+          "
+        ></ng-container>
       </div>
-
-      <div class="optionsBox">
+      <div>
         <p class="label">Opciones:</p>
         <div class="cardContainer">
-          <div class="border">
-            <div class="options-grid">
-              <div
-                class="capsize"
-                *ngFor="let option of optionsArray; let i = index"
-              >
-                <app-saleflow-item
-                  [itemIndex]="i"
-                  [itemId]="option._id"
-                  [type]="4"
-                  [inactive]="
-                    option.status != 'active' && option.status != 'featured'
-                      ? true
-                      : false
-                  "
-                  [imgURL]="option.images.length ? option.images[0].value : ''"
-                  [price]="option.pricing"
-                  [showPrice]="true"
-                  [tags]="option.tagsFilled"
-                  [itemParams]="option.params"
-                  [responsiveWidthVersion]="true"
-                  [featured]="option.status === 'featured'"
-                >
-                </app-saleflow-item>
-              </div>
-            </div>
-          </div>
+          <button style="width: 100%" (click)="changeView()">
+            <ng-container
+              [ngTemplateOutlet]="
+                saleflowService.saleflowData?.layout === 'description-card'
+                  ? saleflowItemView
+                  : buyerCardView
+              "
+            ></ng-container>
+          </button>
         </div>
       </div>
     </div>
   </section>
 </div>
+
+<ng-template #buyerCardView>
+  <div class="border">
+    <app-buyer-card
+      [shadow]="false"
+      [img]="
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1674848727416877cf86c0aaad6ceff21195f5a89ca98136e816cfb8c6d6820d2d9b320f546d5.png'
+      "
+      title="Nombre del Articulo"
+      description="Descripción del artículo"
+      [leftAmount]="3000"
+    >
+    </app-buyer-card>
+  </div>
+</ng-template>
+
+<ng-template #saleflowItemView>
+  <div class="border">
+    <div class="options-grid">
+      <div class="capsize" *ngFor="let option of ['', '']; let i = index">
+        <app-saleflow-item
+          [itemIndex]="i"
+          [type]="4"
+          imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1674848727416877cf86c0aaad6ceff21195f5a89ca98136e816cfb8c6d6820d2d9b320f546d5.png"
+          [price]="145.35"
+          [showPrice]="true"
+          [responsiveWidthVersion]="true"
+        >
+        </app-saleflow-item>
+      </div>
+    </div>
+  </div>
+</ng-template>

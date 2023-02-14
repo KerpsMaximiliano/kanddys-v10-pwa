@@ -293,6 +293,7 @@ export class ItemsDashboardComponent implements OnInit {
           componentId: 'itemImages',
           inputs: {
             containerStyles: {},
+            title: 'Imagen o video del cover:',
           },
           outputs: [
             {

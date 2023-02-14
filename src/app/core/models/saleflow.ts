@@ -130,3 +130,34 @@ export class SaleFlowModuleInput {
   paymentMethod?: SaleflowModuleConfigInput;
   isSkip?: boolean;
 }
+
+export class SocialMediaInput {
+  name?: String;
+  url?: String;
+  userName?: String;
+}
+
+export class SaleFlowItemInput {
+  item?: string;
+  customizer?: string;
+  index?: number;
+}
+
+export class SaleFlowInput {
+  name?: string;
+  headline?: string;
+  subheadline?: string;
+  addressExtraInfo?: string;
+  workingHours?: string;
+  paymentInfo?: string;
+  social?: SocialMediaInput[];
+  merchant?: string;
+  banner?: string;
+  module?: SaleFlowModuleInput;
+  items?: SaleFlowItemInput[];
+  packages?: string[];
+  itemNickname?: string;
+  packageNickname?: string;
+  canBuyMultipleItems?: boolean;
+  layout?: string;
+}

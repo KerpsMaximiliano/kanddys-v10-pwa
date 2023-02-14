@@ -151,7 +151,12 @@ import { DescriptionDialogComponent } from './dialogs/description-dialog/descrip
 import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
+import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
 
 const imports = [
   CommonModule,
@@ -177,6 +182,10 @@ const imports = [
   MatSelectModule,
   MatListModule,
   MatDialogModule,
+  MatStepperModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatSnackBarModule
 ];
 const declarations = [
   // Pages
@@ -312,7 +321,8 @@ const declarations = [
   ImagesCardComponent,
   DescriptionDialogComponent,
   DropdownMenuComponent,
-  ConfirmationDialogComponent
+  ConfirmationDialogComponent,
+  StepperFormComponent,
 ];
 
 @NgModule({
