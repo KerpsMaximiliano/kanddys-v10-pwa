@@ -1,47 +1,21 @@
-import { Location } from '@angular/common';
-import {
-  Component,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import {
-  Item,
-  ItemCategory,
-  ItemCategoryHeadline,
-} from 'src/app/core/models/item';
-import {
-  ItemSubOrderInput,
-  ItemSubOrderParamsInput,
-} from 'src/app/core/models/order';
-import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
+import { Item } from 'src/app/core/models/item';
+import { Merchant } from 'src/app/core/models/merchant';
+import { ItemSubOrderInput } from 'src/app/core/models/order';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
-import { User } from 'src/app/core/models/user';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { OrderService } from 'src/app/core/services/order.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
-import { SwiperComponent } from 'ngx-swiper-wrapper';
 import SwiperCore, { Virtual } from 'swiper/core';
-import { Merchant } from 'src/app/core/models/merchant';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { DomSanitizer } from '@angular/platform-browser';
 
 SwiperCore.use([Virtual]);
 
@@ -67,9 +41,7 @@ export class StoreComponent implements OnInit {
     status: 'loading',
   };
   renderItemsPromise: Promise<any>;
-  phone: string;
   showOptionsBar: boolean = false;
-  merchantName: string;
   reachedTheEndOfPagination: boolean = false;
   hasCollections: boolean = false;
 
@@ -173,12 +145,7 @@ export class StoreComponent implements OnInit {
         }
       })();
     }, 300);
-    console.log(this.headerService.saleflow.merchant);
     this.link = `${this.URI}/ecommerce/${this.headerService.saleflow.merchant.slug}/store`;
-
-    this.merchantName = this.headerService.saleflow.merchant.name;
-
-    this.phone = this.headerService.saleflow.merchant.owner.phone;
   }
 
   onTabClick(index: number) {

@@ -16,7 +16,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
 
@@ -213,14 +217,27 @@ export class QrEditComponent implements OnInit {
           );
           const itemUpdated: Item = addedImage;
 
-          this._ItemsService.editingImageId =
-            addedImage.images[addedImage.images.length - 1]._id;
           unlockUI();
+          // this._ItemsService.editingImageId =
+          //   addedImage.images[addedImage.images.length - 1]._id;
+          if (
+            isImage(itemUpdated.images[itemUpdated.images.length - 1].value)
+          ) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this.gridArray.push({
+                background: reader.result,
+                _type: file.type,
+              });
+            };
+            reader.readAsDataURL(file);
+          }
+          //   this._Router.navigate([`admin/create-article/${this.item._id}`]);
 
-          if (isImage(itemUpdated.images[itemUpdated.images.length - 1].value))
-            this._Router.navigate([`admin/create-article/${this.item._id}`]);
-
-          if (itemUpdated && isVideo(itemUpdated.images[itemUpdated.images.length - 1].value)) {
+          if (
+            itemUpdated &&
+            isVideo(itemUpdated.images[itemUpdated.images.length - 1].value)
+          ) {
             let uploadedVideoURL =
               itemUpdated.images[itemUpdated.images.length - 1].value;
             const fileParts = uploadedVideoURL.split('.');
@@ -392,9 +409,10 @@ export class QrEditComponent implements OnInit {
 
   editSlide(index: number) {
     this._ItemsService.editingImageId = this.gridArray[index]._id;
+    lockUI();
     this._Router.navigate([`admin/create-article/${this.item._id}`]);
   }
-  
+
   async deleteImage(index: number) {
     if (this.item) {
       this._ItemsService.itemImages.splice(index, 1);
