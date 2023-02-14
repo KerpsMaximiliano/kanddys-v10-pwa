@@ -219,7 +219,7 @@ export class ArticleEditorComponent implements OnInit {
     if (!ignore) {
       unlockUI();
       this._ItemsService.removeTemporalItem();
-      this._Router.navigate([`admin/entity-detail-metrics`]);
+      this._Router.navigate([`admin/admin-dashboard`]);
     }
   };
 

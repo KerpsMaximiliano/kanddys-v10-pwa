@@ -3,7 +3,7 @@
     margin: 0;
 }
 
-button {
+.btn {
     all: unset;
 }
 
@@ -107,23 +107,9 @@ button {
 
     .button {
         position: absolute;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         background-color: #272727;
-        border-radius: 50%;
-        height: 55px;
-        width: 55px;
         right: 16px;
         bottom: 50px;
-
-        .icon {
-            width: 25px;
-            height: auto;
-            filter: brightness(0) saturate(100%) invert(85%) sepia(13%) saturate(1515%) hue-rotate(68deg)
-                brightness(100%) contrast(91%);
-        }
     }
 }
 

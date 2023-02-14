@@ -7,6 +7,7 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class ItemImagesComponent implements OnInit {
   @Input() containerStyles: Record<string, any> = {};
+  @Input() title: string;
   @Output() enteredImages = new EventEmitter();
 
   constructor() {}
