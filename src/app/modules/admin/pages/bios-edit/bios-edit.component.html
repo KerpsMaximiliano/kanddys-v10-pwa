@@ -149,7 +149,7 @@
       >
         <ng-container *ngIf="link.name!=='location'">
           <div class="square" [style.background]="formatImage(link.image)"></div>
-          <div class="input">{{ link.value || link.name }}</div>
+          <div class="input">{{ link.name || link.value }}</div>
         </ng-container>
       </div>
       <button class="add" (click)="add()">Adiciona otro enlace</button>
@@ -170,6 +170,7 @@
       style="display: none"
       (change)="loadFile($event)"
       [accept]="accept"
+      #fileInput
     />
 
     <label class="add-square" [style.background]="formatImage(src)" for="image">
@@ -241,7 +242,7 @@
 
   <!----------PUBLIC NAME------------>
   <div class="direcciones" *ngIf="publicName">
-    <p class="title">NAME</p>
+    <p class="title">Nombre</p>
     <input
       [formControl]="AbstractControl('name')"
       type="text"
