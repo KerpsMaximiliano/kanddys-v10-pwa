@@ -22,6 +22,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -138,6 +139,8 @@ export class CheckoutComponent implements OnInit {
   saleflowId: string;
   playVideoOnFullscreen = playVideoOnFullscreen;
   itemObjects: Record<string, ItemSubOrderInput> = {};
+  questions:any = [];
+  questionsList:number[] = [];
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -152,7 +155,8 @@ export class CheckoutComponent implements OnInit {
     private route: ActivatedRoute,
     private toastr: ToastrService,
     private authService: AuthService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private _WebformsService: WebformsService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -170,6 +174,7 @@ export class CheckoutComponent implements OnInit {
         },
       })
     )?.listItems;
+    this.getQuestions(this.items);
 
     for (const item of this.items as Array<ExtendedItem>) {
       item.ready = false;
@@ -644,5 +649,28 @@ export class CheckoutComponent implements OnInit {
       relativeTo: this.route,
       replaceUrl: true,
     });
+  }
+
+  async getQuestions(items = []):Promise<void>{
+    for(const { webForms } of items){
+      const [{ reference }] = webForms;
+      const _webform = await this._WebformsService.webform(reference);
+      const answers:any = await this._WebformsService.answerFrequent(reference);
+      _webform.questions = _webform.questions.map(({value, _id}) => {
+        const answer = answers.find(({question}) => question===_id);
+        let question:any = {
+          value,
+          _id
+        };
+        if(answer)
+          question.answer = answer.response;
+        return question;
+      }) as any;
+      this.questions = _webform.questions;
+    }
+  }
+
+  handleQuestion(index:number):void {
+    this.questionsList = this.questionsList.includes(index)?this.questionsList.filter((_index:number) => index!==index):[index,...this.questionsList];
   }
 }

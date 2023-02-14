@@ -92,6 +92,7 @@ export class Item extends Model<Item> {
   };
   index?: number;
   visitorCounter?: VisitorCounter;
+  webForms: any
 }
 
 export class ItemImage extends Model<ItemImage> {
