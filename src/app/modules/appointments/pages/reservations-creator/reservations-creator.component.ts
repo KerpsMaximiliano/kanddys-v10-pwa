@@ -771,7 +771,7 @@ export class ReservationsCreatorComponent implements OnInit {
     this.generateHourList(dayOfTheMonthNumber);
 
     //clicks the previous selected reservation when opening the component
-    if (this.activeReservationIndex !== null) {
+    if (this.activeReservationIndex !== null && !this.isOrder) {
       setTimeout(() => {
         const listItem = document.querySelectorAll('.selector-option')[
           this.activeReservationIndex

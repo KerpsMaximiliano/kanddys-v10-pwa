@@ -105,5 +105,9 @@
     [link]="link"
     mode="basic"
     [merchantName]="headerService.saleflow?.merchant.name"
+    [size]="headerService.order?.products?.length ? 'mini' : 'normal'"
+    [position]="{
+      bottom: headerService.order?.products?.length ? '100px' : '50px'
+    }"
   ></app-menu-button>
 </div>
