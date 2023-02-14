@@ -53,7 +53,7 @@
       <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
     </div>
 
-    <p class="title" style="margin-left: 8px">{{ name | titlecase }}</p>
+    <p class="title" style="margin-left: 8px">{{ tag?.name | titlecase }}</p>
     <button [routerLink]="redirectionRoute" class="arrow-btn">
       <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
     </button>
@@ -85,7 +85,7 @@
     </section>
     <div *ngIf="status === 'complete' && !items?.length">
       <h3>
-        Esta {{ notes ? "colección" : "categoría" }} no tiene productos
+        Esta {{ tag?.notes ? "colección" : "categoría" }} no tiene productos
         asignados
       </h3>
     </div>
@@ -100,4 +100,14 @@
   >
   </app-bubble-button> -->
   <!-- <app-gradient-footer [uploadIcon]="true"></app-gradient-footer> -->
+  <app-menu-button
+    [phone]="headerService.saleflow?.merchant.owner.phone"
+    [link]="link"
+    mode="basic"
+    [merchantName]="headerService.saleflow?.merchant.name"
+    [size]="headerService.order?.products?.length ? 'mini' : 'normal'"
+    [position]="{
+      bottom: headerService.order?.products?.length ? '100px' : '50px'
+    }"
+  ></app-menu-button>
 </div>
