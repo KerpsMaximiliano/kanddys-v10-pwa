@@ -1,41 +1,50 @@
-<div class="container" style="bottom: 100px" *ngIf="mode === 'basic'">
+<div class="container" [ngStyle]="position">
   <button
+    *ngIf="size === 'normal'"
     mat-fab
     [matMenuTriggerFor]="menu"
-    aria-label="Example icon-button with a menu"
+    aria-label="Menu button"
+    class="btn"
+  >
+    <mat-icon class="btn-icon">menu</mat-icon>
+  </button>
+  <button
+    *ngIf="size === 'mini'"
+    mat-mini-fab
+    [matMenuTriggerFor]="menu"
+    aria-label="Menu button"
     class="btn"
   >
     <mat-icon class="btn-icon">menu</mat-icon>
   </button>
   <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
-    <button mat-menu-item class="menu-item" (click)="goToWhatsapp()">
-      <span>Chat con {{ merchantName }}</span>
-      <img [src]="env + '/whatsapp_verde.svg'" alt="circle" class="circle" />
-    </button>
-    <button mat-menu-item class="menu-item" (click)="shareStore()">
-      <span>Comparte la tienda</span>
-      <img [src]="env + '/upload.svg'" alt="circle" class="circle" />
-    </button>
-  </mat-menu>
-</div>
-
-<div class="container" style="bottom: 17px" *ngIf="mode === 'array'">
-  <button
-    mat-fab
-    [matMenuTriggerFor]="menu"
-    aria-label="Example icon-button with a menu"
-    class="btn"
-  >
-    <mat-icon class="btn-icon">menu</mat-icon>
-  </button>
-  <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
-    <button
-      mat-menu-item
-      class="menu-item"
-      *ngFor="let option of options; index as i"
-    >
-      <span>{{ option.text }}</span>
-      <img src="/assets/images/noimage.png" alt="circle" class="circle" />
-    </button>
+    <ng-container *ngIf="mode === 'basic'">
+      <button mat-menu-item class="menu-item" (click)="goToWhatsapp()">
+        <span>Chat con {{ merchantName }}</span>
+        <img [src]="env + '/whatsapp_verde.svg'" alt="circle" class="circle" />
+      </button>
+      <button mat-menu-item class="menu-item" (click)="shareStore()">
+        <span>Comparte la tienda</span>
+        <img [src]="env + '/upload.svg'" alt="circle" class="circle" />
+      </button>
+      <button
+        mat-menu-item
+        class="menu-item"
+        (click)="logout()"
+        *ngIf="headerService.user"
+      >
+        <span>Cerrar sesión</span>
+      </button>
+    </ng-container>
+    <ng-container *ngIf="mode === 'array'">
+      <button
+        mat-menu-item
+        class="menu-item"
+        *ngFor="let option of options; index as i"
+      >
+        <span>{{ option.text }}</span>
+        <img src="/assets/images/noimage.png" alt="circle" class="circle" />
+      </button>
+    </ng-container>
   </mat-menu>
 </div>
