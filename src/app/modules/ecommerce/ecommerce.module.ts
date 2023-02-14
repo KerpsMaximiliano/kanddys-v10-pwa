@@ -24,6 +24,7 @@ import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component
 import { CollectionsComponent } from 'src/app/modules/ecommerce/pages/collections/collections.component';
 import { TagItemsComponent } from 'src/app/modules/ecommerce/pages/tag-items/tag-items.component';
 import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
+import { GiftDetailComponent } from './pages/gift-detail/gift-detail.component';
 
 const routes: Routes = [
   {
@@ -64,6 +65,10 @@ const routes: Routes = [
   {
     path: 'terms-of-use/:viewsMerchantId',
     component: TermsOfUseComponent,
+  },
+  {
+    path: 'gift-detail/:orderId',
+    component: GiftDetailComponent,
   },
   {
     path: ':merchantSlug',
@@ -161,7 +166,8 @@ const routes: Routes = [
     CreateArticleComponent,
     TermsOfUseComponent,
     CollectionsComponent,
-    TagItemsComponent
+    TagItemsComponent,
+    GiftDetailComponent,
   ],
   imports: [
     CommonModule,
