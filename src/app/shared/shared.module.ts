@@ -39,7 +39,6 @@ import { ImageInputComponent } from './components/image-input/image-input.compon
 import { InfoButtonComponent } from './components/info-button/info-button.component';
 import { InfoCardComponent } from './components/info-card/info-card.component';
 import { InformationBoxComponent } from './components/information-box/information-box.component';
-import { ItemCardAmountAndPriceComponent } from './components/item-card-amount-and-price/item-card-amount-and-price.component';
 import { ItemCardComponent } from './components/item-card/item-card.component';
 import { ItemGridComponent } from './components/item-grid/item-grid.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
@@ -60,6 +59,7 @@ import { SaleflowItemComponent } from './components/saleflow-item/saleflow-item.
 import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { SeeFiltersComponent } from './components/see-filters/see-filters.component';
 import { ShortCalendarComponent } from './components/short-calendar/short-calendar.component';
+import { CalendarSwiperComponent } from './components/calendar-swiper/calendar-swiper.component';
 import { SingleItemListComponent } from './components/single-item-list/single-item-list.component';
 import { SliderElementListComponent } from './components/slider-element-list/slider-element-list.component';
 import { StickyButtonComponent } from './components/sticky-button/sticky-button.component';
@@ -88,7 +88,6 @@ import { StoreShareComponent } from './dialogs/store-share/store-share.component
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
 import { LoadingScreenComponent } from './components/loading-screen/loading-screen.component';
-import { ItemComponent } from './components/item/item.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
 import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
@@ -119,9 +118,15 @@ import { DialogFlowComponent } from './components/dialog-flow/dialog-flow.compon
 import { BlankComponent } from './dialogs/blank/blank.component';
 import { ArticleDialogComponent } from './dialogs/article-dialog/article-dialog.component';
 import { AnexoLandingComponent } from './components/anexo-landing/anexo-landing.component';
-import { ItemImagesComponent } from './dialogs/create-item-flow/item-images/item-images.component';
+import { ItemImagesComponent } from './dialogs/item-images/item-images.component';
 import { InfoDialogComponent } from './dialogs/info-dialog/info-dialog.component';
 import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
+import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';
+import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
+import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component';
+import { BuyerCardComponent } from './components/buyer-card/buyer-card.component';
+import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
+import { OptionsBarComponent } from './components/options-bar/options-bar.component';
 import { ImageEditorComponent } from './components/image-editor/image-editor.component';
 import { CardComponent } from './components/card/card.component';
 import { TitleIconHeaderComponent } from './components/title-icon-header/title-icon-header.component';
@@ -136,6 +141,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { ImagesCardComponent } from './components/images-card/images-card.component';
 import { LinkCardComponent } from './components/link-card/link-card.component';
 import { RouterOptionsComponent } from './components/router-options/router-options.component';
+import { LinksDialogComponent } from './dialogs/links-dialog/links-dialog.component';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialogModule } from '@angular/material/dialog';
+import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
+import { DotLoaderComponent } from './components/dot-loader/dot-loader.component';
+import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatListModule } from '@angular/material/list';
+import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 
 const imports = [
   CommonModule,
@@ -154,6 +171,13 @@ const imports = [
   MatButtonModule,
   MatMenuModule,
   MatIconModule,
+  MatBottomSheetModule,
+  MatDividerModule,
+  MatExpansionModule,
+  MatBadgeModule,
+  MatSelectModule,
+  MatListModule,
+  MatDialogModule,
 ];
 const declarations = [
   // Pages
@@ -171,7 +195,6 @@ const declarations = [
   WarningStepsComponent,
   LeadwordListComponent,
   GiftMessageComponent,
-  ItemCardAmountAndPriceComponent,
   PageComponentTabsComponent,
   ShowItemsComponent,
   ImageInputComponent,
@@ -234,7 +257,6 @@ const declarations = [
   SetConfigComponent,
   ItemSettingsComponent,
   LoadingScreenComponent,
-  ItemComponent,
   ReloadComponent,
   WhatsappMessageComponent,
   CurrencyInputComponent,
@@ -270,6 +292,12 @@ const declarations = [
   MediaDialogComponent,
   ItemListSelectorComponent,
   TagsDialogComponent,
+  ContactLandingComponent,
+  ContactLandingContainerComponent,
+  LinkDialogComponent,
+  BuyerCardComponent,
+  GradientFooterComponent,
+  OptionsBarComponent,
   ImageEditorComponent,
   CardComponent,
   TitleIconHeaderComponent,
@@ -281,6 +309,12 @@ const declarations = [
   ImagesCardComponent,
   LinkCardComponent,
   RouterOptionsComponent,
+  LinksDialogComponent,
+  GradientCardComponent,
+  CalendarSwiperComponent,
+  DotLoaderComponent,
+  DropdownMenuComponent,
+  ConfirmationDialogComponent
 ];
 
 @NgModule({

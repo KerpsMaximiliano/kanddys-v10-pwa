@@ -235,3 +235,57 @@ export function getLocaleDateStringFormat() {
 
   return formats[navigator.language] || 'dd/MM/yyyy';
 }
+
+export const playVideoOnFullscreen = (id: string) => {
+  const elem: HTMLVideoElement = document.getElementById(
+    id
+  ) as HTMLVideoElement;
+  elem.play();
+  elem.muted = false;
+
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if ((elem as any).webkitRequestFullscreen) {
+    /* Safari */
+    (elem as any).webkitRequestFullscreen();
+  } else if ((elem as any).msRequestFullscreen) {
+    /* IE11 */
+    (elem as any).msRequestFullscreen();
+  }
+
+  setTimeout(() => {
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        elem.muted = true;
+        elem.pause();
+      }
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
+    };
+
+    const onEscapeKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        elem.muted = true;
+        elem.pause();
+      }
+      document.removeEventListener('keydown', onEscapeKeyDown);
+    };
+
+    document.addEventListener(
+      'webkitfullscreenchange',
+      onFullscreenChange,
+      false
+    );
+    document.addEventListener(
+      'mozfullscreenchange',
+      onFullscreenChange,
+      false
+    );
+    document.addEventListener('fullscreenchange', onFullscreenChange, false);
+    document.addEventListener(
+      'MSFullscreenChange',
+      onFullscreenChange,
+      false
+    );
+    document.addEventListener('keydown', onEscapeKeyDown);
+  }, 300);
+}

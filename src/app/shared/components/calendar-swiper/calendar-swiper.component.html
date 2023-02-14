@@ -1,0 +1,46 @@
+<div class="wrapper">
+  <swiper
+    [config]="calendarSwiperConfig"
+    #monthsSwiper
+    (sliderMove)="slideChange($event)"
+    (swiperTouchEnd)="executeTransitionOnTouchEnd($event)"
+    (swiperTransitionEnd)="executeMonthChangeWhenTransitionEnds($event)"
+  >
+    <div
+      class="month swiper-slide"
+      *ngFor="let month of months; let monthIndex = index"
+      [ngClass]="['' + monthIndex + '']"
+    >
+      <div
+        *ngFor="let day of month.days"
+        class="day"
+        [ngClass]="{
+          selected: checkIfDayIsSelected(day),
+          disabled:
+            !allowSundays &&
+            day.weekDayNumber === 0 &&
+            !allowedDays &&
+            !daysRange
+              ? true
+              : allowedDays && !daysRange
+              ? !isThisDayAValidOne(day)
+              : !allowedDays && daysRange
+              ? !isThisDayInTheRange(day)
+              : false
+        }"
+        (click)="
+          (!allowedDays && !daysRange) ||
+          (allowedDays && isThisDayAValidOne(day)) ||
+          (daysRange && isThisDayInTheRange(day))
+            ? onClick(day, month, monthIndex)
+            : null
+        "
+      >
+        <span
+          >{{ day.dayName[0] }}{{ day.dayName[1] }}{{ day.dayName[2] }}</span
+        >
+        <span>{{ day.dayNumber }}</span>
+      </div>
+    </div>
+  </swiper>
+</div>

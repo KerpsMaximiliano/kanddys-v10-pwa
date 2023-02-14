@@ -1,157 +1,123 @@
+<ng-template #merchantInfo>
+  <div
+    class="icon"
+    [style.background]="
+      _DomSanitizer.bypassSecurityTrustStyle(
+        'url(' +
+          headerService.saleflow?.merchant?.image +
+          ') no-repeat center center / cover #e9e371'
+      )
+    "
+  ></div>
+  <p class="title">
+    {{
+      headerService.saleflow?.merchant?.name.length < 26
+        ? headerService.saleflow?.merchant?.name
+        : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+            "Tienda" | titlecase)
+    }}
+  </p>
+</ng-template>
+
 <div class="store-page" (scroll)="infinitePagination()">
   <div class="component">
-    <header>
-      <div
-        class="header"
-        [style.backgroundColor]="header.colorTheme"
-        *ngIf="selectedTags.length === 0"
+    <nav
+      class="header"
+      [ngStyle]="{
+        backgroundColor:
+          headerService.user?._id === headerService.saleflow?.merchant.owner._id
+            ? '#2874AD'
+            : '#272727'
+      }"
+    >
+      <a
+        style="cursor: pointer"
+        class="merchant-info"
+        [routerLink]="[
+          '/ecommerce',
+          headerService.saleflow?.merchant.slug,
+          'contact-landing',
+          headerService.saleflow?.merchant.owner._id
+        ]"
+        *ngIf="
+          headerService.user?._id === headerService.saleflow?.merchant.owner._id
+        "
       >
-        <div class="title">
-          {{
-            header.saleflow?.merchant?.name.length < 18
-              ? "Bienvenido a " + header.saleflow?.merchant?.name
-              : "Bienvenido a " +
-                  header.saleflow?.merchant?.name.slice(0, 18) +
-                  ".." || "Tienda"
-          }}
-        </div>
-
-        <div class="user-area" (click)="openUserManagementDialog()">
-          <span *ngIf="header.user">{{
-            (header.user.name || header.user.phone || header.user.email)
-              .length > 10
-              ? (
-                  header.user.name ||
-                  header.user.phone ||
-                  header.user.email
-                ).slice(0, 10) + ".."
-              : header.user.name || header.user.phone || header.user.email
-          }}</span>
-          <img class="icon" [src]="env + '/user-white.svg'" />
-        </div>
+        <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
+      </a>
+      <div
+        class="merchant-info"
+        *ngIf="
+          headerService.user?._id !== headerService.saleflow?.merchant.owner._id
+        "
+      >
+        <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
       </div>
 
-      <app-helper-headerv3
-        *ngIf="selectedTags.length > 0"
-        (arrowsClick)="resetSelectedTags()"
-        (dotsClicked)="openUserManagementDialog()"
-        [showSearch]="selectedTags.length > 0"
-        (searchClick)="showSearchbar = true"
-        [containerStyles]="{
-          backgroundColor: header.colorTheme
-        }"
-      ></app-helper-headerv3>
-
-      <app-tags-selector
-        *ngIf="selectedTags.length > 0"
-        [tags]="selectedTagsPermanent"
-        [selectedTagsIds]="getActiveTagsFromSelectedTagsPermantent()"
-        [multipleTags]="true"
-        [selectedBackground]="'#ffffff'"
-        [background]="header.colorTheme"
-        [containerBackground]="header.colorTheme"
-        [selectedColor]="'#2874ad'"
-        [color]="'#fff'"
-        [fillSelectedTagsOnStart]="true"
-        [useIdToRemoveOrAddTags]="true"
-        [useAlternativeOutput]="true"
-        (tagSelect2)="selectTagFromHeader($event)"
-      ></app-tags-selector>
-
-      <div
-        *ngIf="selectedTags.length === 0"
-        class="blank"
-        [ngStyle]="{ paddingBottom: '36px' }"
-      ></div>
-    </header>
+      <p class="title" style="margin-left: 8px">Store</p>
+    </nav>
     <main>
-      <form class="top-input-area" *ngIf="!hasCustomizer">
-        <!-- ********************************************** SEARCHBAR ************************************-->
-        <input
-          class="text"
-          placeholder="Busca por tag o nombre de articulo"
-          class="input-top"
-          [ngStyle]="{
-            marginBottom: tags.length !== 0 ? '28px' : '0px'
-          }"
-          *ngIf="showSearchbar"
-          [formControl]="searchBar"
-        />
-        <!-- ******************************************** ENDSEARCHBAR ************************************-->
+      <div class="top-input-area" *ngIf="hasCollections">
+        <app-options-bar
+          [options]="[{ title: 'articulos' }, { title: 'colecciones' }]"
+          type="3"
+          (selectedIndex)="onTabClick($event)"
+        >
+        </app-options-bar>
+      </div>
+      <br *ngIf="!hasCollections">
 
-        <!-- ******************************************* TAG SWIPER ***************************************-->
-        <div style="width: 100%; padding: 0px 0px 0px 21px">
-          <swiper [config]="swiperConfigTag" #tagsSwiper>
-            <div
-              class="tags-area swiper-slide"
-              [ngStyle]="{
-                maxWidth: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)'
-              }"
-              *ngFor="let tag of unselectedTags"
-            >
-              <ng-container *ngFor="let tag2 of tags; let tagIndex = index">
-                <ng-container *ngIf="tag2._id === tag._id">
-                  <div
-                    (click)="selectTag(tag, tagIndex)"
-                    class="tag-item"
-                    [ngStyle]="{
-                      width: 'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
-                      height:
-                        'calc(' + (windowWidth - 21 - 8 * 4) + 'px / 4.5)',
-                      'background-image':
-                        tag.images?.length > 0
-                          ? 'url(' + tag.images[0] + ')'
-                          : 'url(' + env + '/noimage.png' + ')'
-                    }"
-                  ></div>
-                  <span class="tag-name">{{ tag.name }}</span>
-                </ng-container>
-              </ng-container>
-            </div>
-          </swiper>
-        </div>
-        <!-- **************************************** END TAG SWIPER ***************************************-->
-      </form>
+      <!-- ******************************************* TAG SWIPER ***************************************-->
+      <div style="width: 100%; padding: 0px 21px 0px 21px;">
+        <swiper [config]="swiperConfigTag">
+          <a
+            *ngFor="let tag of tags"
+            [ngStyle]="{
+              maxWidth: '115px',
+              textDecoration: 'none',
+              paddingBottom: '15px'
+            }"
+            style="height: auto !important; overflow: hidden;"
+            [routerLink]="['../categories', tag._id]"
+          >
+            <app-gradient-card [tag]="tag"></app-gradient-card>
+          </a>
+        </swiper>
+      </div>
+      <!-- **************************************** END TAG SWIPER ***************************************-->
 
       <!--REGULAR MERCHANT-->
       <div class="content">
-        <!--SHOWS ITEMS HIGHLIGHTED-->
         <div
+          class="saleflows-item-grid"
           *ngIf="
-            highlightedItems.length > 0 &&
-            searchBar.value === '' &&
-            selectedTags.length === 0
+            !headerService.saleflow.layout ||
+            headerService.saleflow.layout === 'simple-card'
           "
-          [ngStyle]="{
-            paddingLeft: '25px'
-          }"
         >
-          <div class="header-wrapper">
-            <h2 class="items-header">Destacados</h2>
-          </div>
-
-          <div></div>
-          <swiper [config]="swiperConfigHighlightedItems">
-            <div
-              *ngFor="let item of highlightedItems; let i = index"
-              [ngStyle]="{
-                width: 'auto',
-                paddingBottom: '10px',
-                paddingRight: '13px'
-              }"
+          <div
+            class="capsize"
+            *ngFor="let item of items; let itemIndex = index"
+          >
+            <a
+              [routerLink]="['../article-detail/item', item._id]"
+              [queryParams]="{ mode: 'saleflow' }"
             >
               <app-saleflow-item
-                [itemIndex]="i"
+                [itemIndex]="itemIndex"
                 [itemId]="item._id"
                 [type]="4"
-                [imgURL]="item.images ? item.images[0] : ''"
+                [inactive]="
+                  item.status != 'active' && item.status != 'featured'
+                    ? true
+                    : false
+                "
+                [imgURL]="item.images?.length ? item.images[0].value : ''"
                 [price]="item.pricing"
-                [itemParams]="item.params"
                 [showPrice]="true"
-                (itemClicked)="onItemClick(item._id)"
                 [dynamicStyles]="{
                   itemContainer: {
-                    minWidth: '242px',
+                    width: '100%',
                     height: '315px',
                     margin: '0px'
                   },
@@ -161,64 +127,55 @@
                   itemImg: {
                     height: '82.8571%'
                   },
+                  video: {
+                    height: '82.8571%'
+                  },
                   infoArea: {
                     height: '17.1429%'
                   }
                 }"
               ></app-saleflow-item>
-              <div class="blank-space"></div>
-            </div>
-          </swiper>
+            </a>
+          </div>
         </div>
-
-        <div class="title-and-options">
-          <h2 class="title">
-            {{
-              searchBar.value !== ""
-                ? "Resultados"
-                : searchBar.value === "" && selectedTags.length === 0
-                ? "Todos los productos"
-                : "Resultados"
-            }}
-          </h2>
-        </div>
-
-        <p class="subtitle" *ngIf="items.length === 0">
-          {{
-            searchBar.value === "" && items.length === 0
-              ? "No hay items"
-              : searchBar.value !== "" && items.length === 0
-              ? "No se encontró nada"
-              : null
-          }}
-        </p>
-
-        <div class="saleflows-item-grid">
-          <div
-            class="capsize"
+        <div
+          class="description-view"
+          *ngIf="headerService.saleflow.layout === 'description-card'"
+        >
+        <!-- [routerLink]="['../article-detail/item', item._id]"
+            [queryParams]="{ mode: 'saleflow' }" -->
+          <a
             *ngFor="let item of items; let itemIndex = index"
           >
-            <app-saleflow-item
-              [itemIndex]="itemIndex"
-              [itemId]="item._id"
-              [type]="4"
-              [inactive]="
-                item.status != 'active' && item.status != 'featured'
-                  ? true
-                  : false
-              "
-              [imgURL]="item.images?.length ? item.images[0] : ''"
-              [price]="item.pricing"
-              [showPrice]="true"
-              [itemParams]="item.params"
-              (itemClicked)="onItemClick(item._id)"
-              [responsiveWidthVersion]="true"
-            ></app-saleflow-item>
-          </div>
+            <app-buyer-card
+              [index]="itemIndex"
+              [title]="item.name"
+              [description]="item.description"
+              [img]="item.images?.length ? item.images[0].value : ''"
+              [leftAmount]="item.pricing"
+              [cta]="true"
+              [ctaActive]="item.isSelected"
+              [redirectionParams]="{link: ['../article-detail/item', item._id], param: { mode: 'saleflow' }}"
+              (ctaClicked)="toggleItemInCart($event)"
+            ></app-buyer-card>
+          </a>
+        </div>
+
+        <div
+          [ngStyle]="{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            height: '80px',
+            justifyContent: 'center'
+          }"
+          *ngIf="paginationState.status === 'loading'"
+        >
+          <app-dot-loader></app-dot-loader>
         </div>
       </div>
 
-      <ul class="footer-links">
+      <!-- <ul class="footer-links" *ngIf="terms.length">
         <li
           *ngFor="let term of terms"
           class="link"
@@ -226,11 +183,13 @@
         >
           {{ term.text }}
         </li>
-      </ul>
-
-      <div class="blank-footer"></div>
-
-      <app-merchant-contact></app-merchant-contact>
+      </ul> -->
     </main>
   </div>
+  <app-menu-button
+    [phone]="phone"
+    [link]="link"
+    mode="basic"
+    [merchantName]="merchantName"
+  ></app-menu-button>
 </div>

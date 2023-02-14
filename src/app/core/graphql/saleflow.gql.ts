@@ -9,6 +9,11 @@ export const body = `
   addressExtraInfo
   banner
   itemNickname
+  layout
+  workingHours
+  paymentInfo
+  createdAt
+  canBuyMultipleItems
   social {
     name
     url
@@ -47,6 +52,7 @@ export const body = `
     _id
     name
     slug
+    image
     owner {
       _id
       phone
@@ -64,10 +70,6 @@ export const body = `
     }
     index
   }
-  workingHours
-  paymentInfo
-  createdAt
-  canBuyMultipleItems
 `;
 
 export const saleflow = gql`
@@ -209,7 +211,11 @@ export const listItems = gql`
       pricePerUnit
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       fixedQuantity
       size
       quality

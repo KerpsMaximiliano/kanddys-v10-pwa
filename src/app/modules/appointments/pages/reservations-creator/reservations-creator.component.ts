@@ -8,6 +8,7 @@ import {
   PhoneNumberFormat,
   SearchCountryField,
 } from 'ngx-intl-tel-input';
+import { capitalize } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Reservation, ReservationInput } from 'src/app/core/models/reservation';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -20,7 +21,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ChangedMonthEventData } from 'src/app/shared/components/short-calendar/short-calendar.component';
+import { Month } from 'src/app/shared/components/calendar-swiper/calendar-swiper.component';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 
 interface HourOption {
@@ -38,7 +39,7 @@ interface HourOption {
 })
 export class ReservationsCreatorComponent implements OnInit {
   headerConfiguration = {
-    bgcolor: '#2874AD',
+    bgcolor: this.headerService.colorTheme,
     color: '#ffffff',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -100,15 +101,21 @@ export class ReservationsCreatorComponent implements OnInit {
   activeReservationIndex: number = null;
   initialMonthName: string = null;
   stickyButtonText: string = 'SALVAR RESERVACIÓN';
+  isUserInteractingWithCurrentYear: boolean = true;
+  currentYear: number = new Date().getFullYear();
+  daysOfTheWeekInOrder = [
+    'MONDAY',
+    'TUESDAY',
+    'WEDNESDAY',
+    'THURSDAY',
+    'FRIDAY',
+    'SATURDAY',
+    'SUNDAY',
+  ];
 
   allMonths: {
     id: number;
     name: string;
-    dates: {
-      dayNumber: number;
-      dayName: string;
-      weekDayNumber: number;
-    }[];
   }[] = [];
 
   allDaysOfTheWeekArrayInSpanishAndEnglish = [
@@ -150,12 +157,14 @@ export class ReservationsCreatorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    //VOLVER
+    this.calendarsService.setInitialData();
     this.allMonths = this.calendarsService.allMonths;
 
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        const { merchantSlug, calendarId, reservationId } = routeParams;
-        const { clientEmail, clientPhone } = queryParams;
+        const { calendarId, reservationId } = routeParams;
+        const { clientEmail, clientPhone, saleflowId } = queryParams;
 
         //this queryParams are here for the merchant to use
         //when any of these two is present, then a notification
@@ -168,15 +177,10 @@ export class ReservationsCreatorComponent implements OnInit {
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
 
         // If true, this reservation is for an order
-        if (merchantSlug) {
+        if (saleflowId) {
           this.isOrder = true;
           this.stickyButtonText = 'Continuar al resumen de la factura';
-          this.headerService.colorTheme =
-            this.headerService.user?._id ===
-            this.headerService.saleflow?.merchant?.owner?._id
-              ? '#2874AD'
-              : '#272727';
-          this.headerConfiguration.bgcolor = this.headerService.colorTheme;
+          await this.headerService.fetchSaleflow(saleflowId);
         }
 
         //you can update a specific calendar reservation if an id is passed
@@ -201,7 +205,7 @@ export class ReservationsCreatorComponent implements OnInit {
             this.calendarData.merchant
           );
           this.headerConfiguration.headerText =
-            'Reserva la fecha con ' + this.calendarMerchant.name;
+            'Reserva la fecha con ' + capitalize(this.calendarMerchant.name);
 
           //Sets the current month label that its shown in top of the month's swiper
           const currentDateObject = new Date();
@@ -214,6 +218,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
           if (this.reservation) {
             const dateInput = new Date(this.reservation.date.from);
+
             const currentMonth =
               this.calendarsService.allMonths[dateInput.getMonth()];
 
@@ -227,7 +232,8 @@ export class ReservationsCreatorComponent implements OnInit {
             return;
           }
           const date = this.headerService.getReservation()?.date;
-          if (!merchantSlug || !date) {
+
+          if (!saleflowId || !date) {
             const currentMonth =
               this.calendarsService.allMonths[currentDateObject.getMonth()];
 
@@ -235,7 +241,8 @@ export class ReservationsCreatorComponent implements OnInit {
               name: currentMonth.name,
               number: currentMonth.id,
             };
-            this.rerenderAvailableHours(currentDateObject);
+
+            this.renderFirstAvailableDay(currentDateObject);
           } else if (date) {
             const dateInput = new Date(date.date as string);
             if (dateInput < new Date()) {
@@ -247,7 +254,8 @@ export class ReservationsCreatorComponent implements OnInit {
                 name: currentMonth.name,
                 number: currentMonth.id,
               };
-              this.rerenderAvailableHours(currentDateObject);
+
+              this.renderFirstAvailableDay(currentDateObject);
               return;
             }
 
@@ -266,6 +274,76 @@ export class ReservationsCreatorComponent implements OnInit {
         }
       });
     });
+  }
+
+  renderFirstAvailableDay(currentDateObject: Date) {
+    let isValidDay = false;
+    let hadToUpdateInitialDay = false;
+
+    if (this.useDateRangeToLimitAvailableWeekDays) {
+      let dayName = this.getTodayDayName(currentDateObject);
+
+      if (
+        this.isThisDayInTheRange(dayName, {
+          fromDay: this.calendarData?.limits?.fromDay,
+          toDay: this.calendarData?.limits?.toDay,
+        })
+      ) {
+        isValidDay = true;
+      }
+
+      while (!isValidDay) {
+        currentDateObject.setDate(currentDateObject.getDate() + 1); //set the date to tomorrow
+
+        let dayName = this.getTodayDayName(currentDateObject);
+
+        if (
+          this.isThisDayInTheRange(dayName, {
+            fromDay: this.calendarData?.limits?.fromDay,
+            toDay: this.calendarData?.limits?.toDay,
+          })
+        ) {
+          isValidDay = true;
+          hadToUpdateInitialDay = true;
+        }
+      }
+    }
+
+    if (
+      this.calendarData?.limits?.inDays &&
+      this.calendarData?.limits?.inDays.length > 0
+    ) {
+      let dayName = this.getTodayDayName(currentDateObject);
+
+      if (this.calendarData?.limits?.inDays.includes(dayName)) {
+        isValidDay = true;
+      }
+
+      while (!isValidDay) {
+        currentDateObject.setDate(currentDateObject.getDate() + 1); //set the date to tomorrow
+
+        let dayName = this.getTodayDayName(currentDateObject);
+
+        if (this.calendarData?.limits?.inDays.includes(dayName)) {
+          isValidDay = true;
+          hadToUpdateInitialDay = true;
+        }
+      }
+    }
+
+    if (hadToUpdateInitialDay) {
+      const currentMonth =
+        this.calendarsService.allMonths[currentDateObject.getMonth()];
+
+      this.currentMonth = {
+        name: currentMonth.name,
+        number: currentMonth.id,
+      };
+    }
+
+    if (isValidDay) {
+      this.rerenderAvailableHours(currentDateObject);
+    }
   }
 
   /**
@@ -684,7 +762,7 @@ export class ReservationsCreatorComponent implements OnInit {
           .spanishName,
       dayOfTheMonthNumber,
       monthName: this.allMonths[monthNumber].name,
-      monthNumber: selectedDateObject.getMonth() + 1,
+      monthNumber: selectedDateObject.getMonth(),
     };
 
     this.timeRangeOptions = [];
@@ -745,7 +823,7 @@ export class ReservationsCreatorComponent implements OnInit {
     //Creates javascript standar date objects for the from-until selected hour range
     let fromDateObject = new Date(
       currentYear,
-      this.selectedDate.monthNumber - 1,
+      this.selectedDate.monthNumber,
       this.selectedDate.dayOfTheMonthNumber,
       this.selectedDate.fromHour.timeOfDay === 'PM' &&
       this.selectedDate.fromHour.hourNumber !== 12
@@ -756,7 +834,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     let toDateObject = new Date(
       currentYear,
-      this.selectedDate.monthNumber - 1,
+      this.selectedDate.monthNumber,
       this.selectedDate.dayOfTheMonthNumber,
       this.selectedDate.toHour.hourNumber,
       this.selectedDate.toHour.minutesNumber
@@ -844,7 +922,7 @@ export class ReservationsCreatorComponent implements OnInit {
       this.headerService.orderProgress.reservation = true;
       this.headerService.storeOrderProgress();
       this.router.navigate([
-        `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
+        `/ecommerce/${this.headerService.saleflow._id}/checkout`,
       ]);
       return;
     }
@@ -861,6 +939,8 @@ export class ReservationsCreatorComponent implements OnInit {
     const mutationParams: any = [reservationInput];
 
     if (user && this.reservation) mutationParams.push(this.reservation._id);
+
+    console.log(mutationParams);
 
     let result = await reservationMutation(...mutationParams);
 
@@ -969,11 +1049,41 @@ export class ReservationsCreatorComponent implements OnInit {
    * this is executed when the user swipes right or left in the months swiper
    *
    */
-  updateMonth(monthData: ChangedMonthEventData) {
+  updateMonth(monthData: { month: Month; year: number }) {
     this.currentMonth = {
-      name: monthData.name,
-      number: monthData.id,
+      name: monthData.month.name,
+      number: monthData.month.id,
     };
     this.selectedDate = null;
+
+    this.currentYear = monthData.year;
+
+    if (new Date().getFullYear() !== monthData.year) {
+      this.isUserInteractingWithCurrentYear = false;
+    } else {
+      this.isUserInteractingWithCurrentYear = true;
+    }
+  }
+
+  getTodayDayName(date: Date) {
+    return date.toLocaleDateString('en-EN', { weekday: 'long' }).toUpperCase();
+  }
+
+  isThisDayInTheRange(
+    dayName: string,
+    daysRange: { fromDay: string; toDay: string }
+  ): boolean {
+    const startRangeIndex = this.daysOfTheWeekInOrder.findIndex(
+      (dayOfTheWeekName) => dayOfTheWeekName === daysRange.fromDay
+    );
+    const endRangeIndex = this.daysOfTheWeekInOrder.findIndex(
+      (dayOfTheWeekName) => dayOfTheWeekName === daysRange.toDay
+    );
+
+    const dayIndex = this.daysOfTheWeekInOrder.findIndex(
+      (dayOfTheWeekName) => dayOfTheWeekName === dayName
+    );
+
+    return startRangeIndex <= dayIndex && dayIndex <= endRangeIndex;
   }
 }

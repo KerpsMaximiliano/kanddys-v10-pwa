@@ -565,7 +565,7 @@
               [viewsCounter]="
                 item.visitorCounter ? item.visitorCounter.counter : 0
               "
-              [imgURL]="item.images ? item.images[0] : ''"
+              [imgURL]="item.images?.length ? item.images[0].value : ''"
               [price]="item.pricing"
               [itemParams]="item.params"
               [showPrice]="true"
@@ -580,6 +580,9 @@
                   height: '100%'
                 },
                 itemImg: {
+                  height: '76.1627%'
+                },
+                video: {
                   height: '76.1627%'
                 },
                 infoArea: {
@@ -667,7 +670,7 @@
                 ? true
                 : false
             "
-            [imgURL]="item.images ? item.images[0] : ''"
+            [imgURL]="item.images.length ? item.images[0].value : ''"
             [price]="item.pricing"
             [showPrice]="true"
             [tags]="item.tagsFilled"
@@ -677,6 +680,19 @@
             [featured]="item.status === 'featured'"
           ></app-saleflow-item>
         </div>
+      </div>
+
+      <div
+        [ngStyle]="{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '80px',
+          justifyContent: 'center'
+        }"
+        *ngIf="paginationState.status === 'loading'"
+      >
+        <app-dot-loader></app-dot-loader>
       </div>
     </section>
 
@@ -695,9 +711,11 @@
 </div>
 
 <app-dialog-flow
+  *ngIf="dialogs.length"
   dialogFlowId="flow1"
   [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
   [dialogs]="dialogs"
   (saveConfigRef)="swiperConfig = $event"
   [allowSlideNext]="false"
+  (closingDialogSignal)="closedDialog()"
 ></app-dialog-flow>

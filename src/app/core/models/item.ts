@@ -58,7 +58,7 @@ export class Item extends Model<Item> {
   merchant?: Merchant;
   category: ItemCategory[];
   name: string;
-  images: string[];
+  images: ItemImage[];
   featuredImage: string;
   description: string;
   isPhysical: boolean;
@@ -92,6 +92,13 @@ export class Item extends Model<Item> {
   };
   index?: number;
   visitorCounter?: VisitorCounter;
+}
+
+export class ItemImage extends Model<ItemImage> {
+  value: string;
+  original: string;
+  index?: number;
+  active?: boolean;
 }
 
 export class ItemPackageRule extends Model<ItemPackageRule> {
@@ -157,7 +164,7 @@ export class ItemInput {
   merchant?: string;
   category?: string[];
   name?: string;
-  images?: File[] | string[];
+  images?: ItemImageInput[];
   iconImage?: string;
   fixedQuantity?: number;
   pricePerUnit?: number;
@@ -180,6 +187,12 @@ export class ItemInput {
   showImages?: boolean;
   status?: ItemStatus;
   collaboration?: number;
+}
+
+export class ItemImageInput {
+  file?: File | string;
+  index?: number;
+  active?: boolean;
 }
 
 export class ItemCategoryInput {

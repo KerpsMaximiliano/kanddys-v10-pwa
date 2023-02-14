@@ -1,6 +1,7 @@
 <div class="container">
   <app-helper-headerv2
     [mode]="'basic'"
+    [fixed]="true"
     [icon]="{
       src: '/arrow-double-up.svg',
       width: 17,
@@ -38,7 +39,7 @@
     <p>Este artículo solo lo ves tú.</p>
   </div>
 
-  <div class="section">
+  <div class="section" style="padding-top: 52px">
     <app-title-icon-header
       title="Precio"
       [editing]="!editingPrice"
@@ -56,11 +57,7 @@
           borderRadius: '6px',
           padding: '8px 0px'
         }"
-        [initialValue]="
-          countDecimals(price.value) < 2
-            ? math.floor(price.value * 100)
-            : price.value
-        "
+        [initialValue]="price.value"
         (onInputEvent)="handleCurrencyInput($event)"
         placeholderColor="#7B7B7B"
         currencyLabel="RD$"
@@ -79,52 +76,25 @@
     <app-qr-content
       *ngIf="slides"
       [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
       [shadows]="false"
       (buttonClicked)="goEditSlides()"
     ></app-qr-content>
     <app-qr-content
       *ngIf="!slides"
       [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
       [shadows]="false"
       (buttonClicked)="goEditSlides()"
     ></app-qr-content>
-    <!-- <app-card [shadows]="editingSlides">
-      <div class="image-selector">
-        <div class="image-area">
-          <input
-            id="filemultiple"
-            (change)="fileProgressMultiple($event)"
-            type="file"
-            style="display: none"
-            accept="image/*"
-            multiple
-            [accept]="['.png', '.jpg', '.jpeg']"
-          />
-          <label for="filemultiple" class="add-image">
-            <div class="corner-btn add"></div>
-          </label>
-
-          <div
-            class="image-container"
-            *ngFor="let item of selectedImages; index as i"
-          >
-            <button
-              class="image"
-              [style.background]="sanitize(item)"
-              (click)="openImageModal(item)"
-            ></button>
-            <div
-              class="corner-btn2"
-              (click)="openAuxDialog(i)"
-              *ngIf="editingSlides"
-            >
-              <img [src]="env + '/dots-black.svg'" alt="Opciones" />
-            </div>
-            <div class="shadow-name"></div>
-          </div>
-        </div>
-      </div>
-    </app-card> -->
   </div>
 
   <div class="section">
@@ -148,7 +118,7 @@
     </app-card>
   </div>
 
-  <div class="section">
+  <div class="section" style="padding-bottom: 32px">
     <app-title-icon-header
       title="Body, description, list of things"
       [editing]="!editingDescription"

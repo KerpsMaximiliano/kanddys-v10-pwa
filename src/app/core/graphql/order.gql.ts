@@ -75,8 +75,13 @@ const orderData = `
     item {
       _id
       name
+      description
       pricing
-      images
+      images {
+        value
+        index
+        active
+      }
       hasSelection
       params {
         _id
@@ -107,6 +112,8 @@ const orderData = `
     }
   }
   orderStatus
+  orderStatusDelivery
+  statusDelivery
   itemPackage {
     _id
     name
@@ -180,7 +187,11 @@ const preOrderData = `
       _id
       name
       pricing
-      images
+      images {
+        value
+        index
+        active
+      }
       hasSelection
       params {
         _id
@@ -343,7 +354,11 @@ export const ordersByItem = gql`
       items {
         item {
           name
-          images
+          images {
+            value
+            index
+            active
+          }
         }
       }
       subtotals {
@@ -399,6 +414,18 @@ export const orderSetStatus = gql`
       status {
         status
       }
+    }
+  }
+`;
+
+export const orderSetStatusDelivery = gql`
+  mutation orderSetStatusDelivery(
+    $orderStatusDelivery: String!
+    $id: ObjectID!
+  ) {
+    orderSetStatusDelivery(orderStatusDelivery: $orderStatusDelivery, id: $id) {
+      _id
+      orderStatusDelivery
     }
   }
 `;

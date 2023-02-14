@@ -1,0 +1,22 @@
+<div
+  class="tags-area swiper-slide"
+  [ngStyle]="{
+    maxWidth: '107px'
+  }"
+>
+  <div
+    class="tag-item"
+    [ngStyle]="{
+      width: '107px',
+      height: '120px',
+      'background-image':
+        tag.images?.length > 0
+          ? 'linear-gradient(transparent 70%, #fff),url(' + tag.images[0] + ')'
+          : 'linear-gradient(transparent 70%, #fff),url(' +
+            env +
+            '/noimage.png' +
+            ')'
+    }"
+  ></div>
+  <span class="tag-name">{{ tag.name }}</span>
+</div>

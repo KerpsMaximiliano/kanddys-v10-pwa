@@ -5,6 +5,8 @@ import { Item, ItemCategory, ItemPackage } from './item';
 import { Merchant } from './merchant';
 import { ExchangeData } from './wallet';
 
+type SaleflowLayout = 'simple-card' | 'description-card';
+
 export class DeliveryLocation {
   _id?: string;
   googleMapsURL?: string;
@@ -82,6 +84,7 @@ export class SaleFlow extends Model<SaleFlow> {
   social?: SocialMediaModel[];
   merchant?: Merchant;
   banner?: string;
+  layout?: SaleflowLayout;
   module?: SaleFlowModule;
   items?: SaleFlowItem[];
   packages?: ItemPackage[];

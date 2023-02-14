@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ItemParam } from 'src/app/core/models/item';
 import { Tag } from 'src/app/core/models/tags';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-saleflow-item',
@@ -69,6 +70,7 @@ export class SaleflowItemComponent implements OnInit {
     simpleCard?: Record<string, string | number>;
     itemImg?: Record<string, string | number>;
     infoArea?: Record<string, string | number>;
+    video?: Record<string, string | number>;
   } = null;
   @Input() shouldHaveFallbackImage: boolean = false;
   @Input() menuCallback?: (id: string) => void;
@@ -82,6 +84,8 @@ export class SaleflowItemComponent implements OnInit {
   @Output() action = new EventEmitter();
 
   env: string = environment.assetsUrl;
+
+  isVideo: boolean = false;
 
   toggleSelect(e) {
     if (!this.itemId && !this.itemIndex) {
@@ -112,7 +116,7 @@ export class SaleflowItemComponent implements OnInit {
     if (this.itemParams?.length) {
       let lowest = 0;
       this.itemParams.forEach((params) => {
-        params.values.forEach((values) => {
+        params.values?.forEach((values) => {
           if (lowest === 0) {
             lowest = values.price;
             if (
@@ -135,6 +139,16 @@ export class SaleflowItemComponent implements OnInit {
       });
       this.price = this.price + lowest;
     }
+
+    if (
+      this.imgURL &&
+      !this.imgURL.includes('http') &&
+      !this.imgURL.includes('https')
+    ) {
+      this.imgURL = 'https://' + this.imgURL;
+    }
+
+    this.isVideo = isVideo(this.imgURL);
   }
 
   showTags(tags: Array<Tag>) {

@@ -271,8 +271,16 @@
             <ng-container *ngFor="let slide of ['AM', 'PM']; let i = index">
               <div
                 class="swiper-slide"
-                (click)="selectTimeOfDay(slide)"
-                [ngClass]="{ 'btn-add': slide === timeOfDay }"
+                (click)="
+                  blockButtons.includes(slide) ? null : selectTimeOfDay(slide)
+                "
+                [ngClass]="{
+                  'btn-add':
+                    slide === timeOfDay && !blockButtons.includes(timeOfDay)
+                }"
+                [ngStyle]="{
+                  color: blockButtons.includes(slide) ? '#949494' : '#000'
+                }"
               >
                 <div class="slide-content">
                   {{ slide }}

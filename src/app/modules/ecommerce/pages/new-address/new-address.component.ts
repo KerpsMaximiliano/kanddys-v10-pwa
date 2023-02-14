@@ -482,4 +482,9 @@ export class NewAddressComponent implements OnInit {
       '/ecommerce/terms-of-use/' + this.viewMerchantForDelivery._id,
     ]);
   }
+
+  handleData(event):void {
+    this.selectedDeliveryIndex = event;
+    this.selectAddress();
+  }
 }

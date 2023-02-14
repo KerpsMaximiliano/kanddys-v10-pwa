@@ -211,7 +211,11 @@ export const itemsByMerchant = gql`
       pricing
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       status
     }
   }
@@ -236,7 +240,11 @@ export const ordersByMerchant = gql`
       items {
         item {
           name
-          images
+          images {
+            value
+            index
+            active
+          }
           pricing
           tags
           params {
@@ -285,7 +293,11 @@ export const item = gql`
       pricing
       description
       createdAt
-      images
+      images {
+        value
+        index
+        active
+      }
       fixedQuantity
       params {
         _id

@@ -35,12 +35,19 @@ export class ItemSubOrderParamsInput {
   paramValue: string;
 }
 
+interface ExtendedItem extends Item {
+  media?: Array<{
+    src: string;
+    type: 'IMAGE' | 'VIDEO';
+  }>;
+}
+
 export class ItemSubOrder extends Model<ItemSubOrder> {
   status: string;
   amount: number;
   creator: User;
   deliveryLocation: DeliveryLocation;
-  item: Item;
+  item: ExtendedItem;
   itemSelected: string[];
   merchant: Merchant;
   params: ItemSubOrderParams[];
@@ -95,10 +102,18 @@ export type OrderStatusNameType =
   | 'completado'
   | 'error';
 
+export type OrderStatusDeliveryType =
+  | 'pickup'
+  | 'in progress'
+  | 'pending'
+  | 'shipped'
+  | 'delivered';
+
 export type OrderType = 'regular' | 'itemPackage';
 
 export class ItemOrder extends Model<ItemOrder> {
   orderStatus: OrderStatusType;
+  orderStatusDelivery: OrderStatusDeliveryType;
   orderType: OrderType;
   isComplete: boolean;
   subtotals: OrderSubtotal[];

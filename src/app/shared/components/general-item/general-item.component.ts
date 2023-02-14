@@ -32,8 +32,25 @@ export class GeneralItemComponent implements OnInit {
   @Input() entity: EntitiesAllowed = 'ITEM';
   @Input() shouldItemBeSelectectable: boolean = false;
   @Input() itemSelected: boolean = false;
+  @Input() useFlatBackgroundForCardInfo: boolean = false;
   @Output() itemSelectedEvent = new EventEmitter();
   cardMainImage: string = null;
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/avi',
+    'video/mpg',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mxf',
+    'video/m2ts',
+    'video/m2ts',
+  ];
+  isMainImageAVideo: boolean = false;
 
   //item-specific variables
   @Input() item: Item = null;
@@ -41,7 +58,12 @@ export class GeneralItemComponent implements OnInit {
   @Input() tagsByIdsObject: Record<string, Tag> = null;
   @Input() showIconForItemStatus: boolean = false;
   @Input() showVisitorCounter: boolean = false;
+  @Input() showPrice: boolean = false;
+  @Input() hideCardTitle: boolean = false;
+  @Input() priceLabel: string = null;
   @Input() statusIcon: string = null;
+  @Input() statusIconLabel: string = null;
+  @Input() statusIconLabelSide: 'LEFT' | 'RIGHT' = 'RIGHT';
   @Input() tagsSeparatedByComma: string = null;
 
   //tag-specific variables
@@ -72,7 +94,9 @@ export class GeneralItemComponent implements OnInit {
   @Input() itemPresentationBoxTopRowStyles: CSSStyles = null;
   @Input() itemPresentationBoxMiddleRowStyles: CSSStyles = null;
   @Input() itemPresentationBoxBottomRowStyles: CSSStyles = null;
+  @Input() statusIconLabelStyles: CSSStyles = null;
   @Input() viewsCounterStyles: CSSStyles = null;
+  @Input() innerWrapperStyles: CSSStyles = null;
   @Input() textColor: string = '#fff';
 
   //buttons
@@ -88,7 +112,7 @@ export class GeneralItemComponent implements OnInit {
   ngOnInit(): void {
     switch (this.entity) {
       case 'ITEM':
-        if (['disabled', 'featured'].includes(this.item.status)) {
+        if (['disabled', 'featured'].includes(this.item?.status)) {
           this.showIconForItemStatus = true;
 
           this.statusIcon =
@@ -98,15 +122,35 @@ export class GeneralItemComponent implements OnInit {
               : '/binoculars-fill-black.svg');
         }
 
-        if (this.item.params.length === 0) {
+        if (this.item?.params?.length === 0) {
           this.cardMainImage =
-            this.item.images.length > 0 ? this.item.images[0] : null;
+            this.item.images.length > 0 ? this.item.images[0].value : null;
+
+          if (
+            this.cardMainImage &&
+            !this.cardMainImage.includes('http') &&
+            !this.cardMainImage.includes('https')
+          ) {
+            this.cardMainImage = 'https://' + this.cardMainImage;
+          }
+
+          const fileParts = this.cardMainImage.split('.');
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+          let auxiliarImageFileExtension = 'image/' + fileExtension;
+          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+            this.isMainImageAVideo = false;
+          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+            this.isMainImageAVideo = true;
+          }
+
           this.itemMainTitle = this.item.name ? this.item.name : 'Sin titulo';
         }
         break;
       case 'TAG':
         if (['disabled', 'featured'].includes(this.tag.status)) {
-            this.showIconForTagStatus = true;
+          this.showIconForTagStatus = true;
 
           this.statusIcon =
             this.env +
@@ -118,7 +162,7 @@ export class GeneralItemComponent implements OnInit {
         if (this.tag.entity && !this.topInnerButtons) {
           let text = null;
 
-          if(this.showEntityButton) {
+          if (this.showEntityButton) {
             switch (this.tag.entity) {
               case 'order':
                 text = 'Facturas';
@@ -127,7 +171,7 @@ export class GeneralItemComponent implements OnInit {
                 text = 'Articulos';
                 break;
             }
-  
+
             this.topInnerButtons = [];
             this.topInnerButtons.push({
               text,
@@ -136,7 +180,8 @@ export class GeneralItemComponent implements OnInit {
           }
         }
 
-        if (this.tag.images && this.tag.images.length > 0) this.cardMainImage = this.tag.images[0];
+        if (this.tag.images && this.tag.images.length > 0)
+          this.cardMainImage = this.tag.images[0];
 
         break;
     }
