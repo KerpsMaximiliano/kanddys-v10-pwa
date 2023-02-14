@@ -91,6 +91,11 @@ export class OrderDetailComponent implements OnInit {
     'video/m2ts',
     'video/m2ts',
   ];
+  dropdownList = [
+    { text: 'Option 1', selected: false },
+    { text: 'Option 2', selected: false },
+    { text: 'Option 3', selected: false },
+  ];
   playVideoOnFullscreen = playVideoOnFullscreen;
   notify: boolean = false;
 
@@ -132,10 +137,10 @@ export class OrderDetailComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe(async (queryParams) => {
       const { notify: notification, redirectTo } = queryParams;
-      this.notify = Boolean(notification)
+      this.notify = Boolean(notification);
       this.redirectTo = redirectTo;
 
-      if(typeof redirectTo === 'undefined') this.redirectTo = null; 
+      if (typeof redirectTo === 'undefined') this.redirectTo = null;
 
       this.route.params.subscribe(async (params) => {
         const { orderId } = params;
@@ -143,6 +148,10 @@ export class OrderDetailComponent implements OnInit {
         await this.executeProcessesAfterLoading(orderId, notification);
       });
     });
+
+    this.isMerchant = true;
+    this.orderMerchant._id;
+    console.log(this.orderMerchant._id);
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
@@ -482,30 +491,30 @@ export class OrderDetailComponent implements OnInit {
   //   }
   // }
 
-  // async notificationClicked() {
-  //   this.notify = false;
-  //   this.router.navigate([], {
-  //     relativeTo: this.route,
-  //   });
-  //   console.log(this.order.tags);
-  //   const tags =
-  //     (await this.tagsService.tagsByUser({
-  //       findBy: {
-  //         entity: 'order',
-  //       },
-  //       options: {
-  //         limit: -1,
-  //       },
-  //     })) || [];
-  //   for (const tag of tags) {
-  //     this.selectedTags[tag._id] = false;
-  //     if (this.order.tags.includes(tag._id)) {
-  //       this.selectedTags[tag._id] = true;
-  //     }
-  //   }
-  //   this.tags = tags;
-  //   this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
-  // }
+  async notificationClicked() {
+    this.notify = false;
+    this.router.navigate([], {
+      relativeTo: this.route,
+    });
+    console.log(this.order.tags);
+    const tags =
+      (await this.tagsService.tagsByUser({
+        findBy: {
+          entity: 'order',
+        },
+        options: {
+          limit: -1,
+        },
+      })) || [];
+    for (const tag of tags) {
+      this.selectedTags[tag._id] = false;
+      if (this.order.tags.includes(tag._id)) {
+        this.selectedTags[tag._id] = true;
+      }
+    }
+    this.tags = tags;
+    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+  }
 
   openImageModal(imageSourceURL: string) {
     this.dialogService.open(ImageViewComponent, {
@@ -919,5 +928,5 @@ export class OrderDetailComponent implements OnInit {
     this.router.navigate([
       'ecommerce/' + this.order.items[0].saleflow.merchant.slug + '/store',
     ]);
-  }
+  };
 }

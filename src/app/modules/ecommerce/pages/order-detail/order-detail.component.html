@@ -1,5 +1,61 @@
 <div class="container">
-  <app-helper-headerv2
+  <header class="header">
+    <button
+      (click)="!redirectTo ? returnToStore() : returnEvent()"
+      style="all: unset; cursor: pointer"
+    >
+      <img
+        [src]="env + '/arrow-double-up-black.svg'"
+        alt=""
+        style="
+          filter: invert(87%) sepia(6%) saturate(3262%) hue-rotate(67deg)
+            brightness(104%) contrast(89%);
+        "
+      />
+    </button>
+    <p>
+      {{
+        order?.items[0].saleflow.headline?.length < 38
+          ? order?.items[0].saleflow.headline
+          : order?.items[0].saleflow.headline.split(" ")["0"]
+      }}
+    </p>
+  </header>
+
+  <button
+    class="bar"
+    *ngIf="isMerchant === false"
+    (clicked)="notificationClicked()"
+  >
+    <p>
+      Factura creada, envíala por
+      <img
+        [src]="env + '/whatsapp_black.svg'"
+        alt=""
+        style="margin: 0px 5px; margin-bottom: -4px"
+      />
+
+      a
+      {{ order.items[0].saleflow.merchant.name }}
+    </p>
+  </button>
+
+  <div *ngIf="isMerchant === true">
+    <app-dropdown-menu
+      title="STATUS DE LA FACTURA"
+      listTitle="Por entregarse"
+      [optionsList]="dropdownList"
+    ></app-dropdown-menu>
+    <div style="height: 5px"></div>
+    <app-dropdown-menu
+      title="MIS LISTAS DE FACTURAS"
+      listTitle="Lista NameID"
+      [optionsList]="dropdownList"
+      [multiple]="false"
+    ></app-dropdown-menu>
+  </div>
+
+  <!-- <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="
       redirectTo &&
@@ -9,15 +65,14 @@
       merchantOwner
     "
     (returnEvent)="!redirectTo ? returnToStore() : returnEvent()"
-    [bgColor]="isMerchant ? '#fff' : headerService.colorTheme"
+    [bgColor]="'#293628'"
     [icon]="{
-      src: '/arrow-double-up.svg',
+      src: '/arrow-double-up-black.svg',
       width: 17,
       height: 21,
       callback: !redirectTo ? returnToStore : returnEvent,
-      filter: isMerchant
-        ? 'brightness(0) saturate(100) invert(11%) sepia(0%) saturate(0%) hue-rotate(277deg) brightness(93%) contrast(88%)'
-        : null
+      filter:
+        'invert(87%) sepia(6%) saturate(3262%) hue-rotate(67deg) brightness(104%) contrast(89%) !important;'
     }"
     [dots]="{
       active: false,
@@ -53,10 +108,10 @@
           : order?.items[0].saleflow.headline.split(' ')['0'],
       fontSize: '21px',
       fontFamily: 'SfProBold',
-      color: !isMerchant ? '#fff' : '#272727'
+      color: '#fff'
     }"
     (agnosticAction)="openLogoutDialog()"
-  ></app-helper-headerv2>
+  ></app-helper-headerv2> -->
 
   <!-- <ng-container *ngIf="isMerchant">
     <div style="padding-top: 5px; margin-bottom: 5px">
@@ -139,39 +194,35 @@
   </div> -->
   <main class="information">
     <section class="top">
-      <h2 class="top-h" *ngIf="order">
-        FACTURA {{ formatId(order.dateId) }} <br />
-        <a
-          target="_blank"
-          [href]="messageLink"
-          *ngIf="!isMerchant && notify"
-          class="blue"
-          >Confirmar por WhatsApp</a
-        >
-        <br *ngIf="!isMerchant && !notify" />
-        <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
-          {{ order.user?.name || order.user?.phone || order.user?.email }}
-        </button>
-        <span class="top-headline" *ngIf="!isMerchant">{{
-          order?.items[0].saleflow.headline
+      <div style="display: flex; align-items: center">
+        <h2 class="top-h" *ngIf="order">
+          FACTURA {{ formatId(order.dateId) }} <br />
+          <a
+            target="_blank"
+            [href]="messageLink"
+            *ngIf="!isMerchant && notify"
+            class="blue"
+            >Confirmar por WhatsApp</a
+          >
+          <br *ngIf="!isMerchant && !notify" />
+          <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
+            {{ order.user?.name || order.user?.phone || order.user?.email }}
+          </button>
+          <span class="top-headline" *ngIf="!isMerchant">{{
+            order?.items[0].saleflow.headline
+          }}</span>
+        </h2>
+        <img
+          [src]="env + '/qr-code.svg'"
+          alt=""
+          style="margin-left: auto; cursor: pointer"
+        />
+      </div>
+      <div class="info-display">
+        <span class="info" style="margin-left: 0px">{{
+          "Dirección: " +
+            order?.items[0].saleflow.module.delivery.pickUpLocations[0].nickName
         }}</span>
-      </h2>
-      <div class="info-display" *ngIf="!isMerchant">
-        <span
-          class="info"
-          *ngIf="
-            order?.items[0].saleflow?.module?.delivery?.pickUpLocations &&
-            order?.items[0].saleflow?.module?.delivery?.pickUpLocations.length >
-              0 &&
-            order?.items[0].saleflow?.module?.delivery?.pickUpLocations[0]
-              .nickName
-          "
-          >{{
-            "Dirección: " +
-              order?.items[0].saleflow.module.delivery.pickUpLocations[0]
-                .nickName
-          }}</span
-        >
       </div>
       <div class="info-display">
         <span class="info" style="margin-left: 0">{{ orderDate }}</span>
@@ -357,7 +408,12 @@
           adminView: isMerchant
         }"
       >
-        Lugar de {{ order?.items[0].saleflow._id === '62ed5ad9bd70dde4db98b924' ? "la sesión" : "Entrega:" }}
+        Lugar de
+        {{
+          order?.items[0].saleflow._id === "62ed5ad9bd70dde4db98b924"
+            ? "la sesión"
+            : "Entrega:"
+        }}
       </h2>
       <div class="items-container column">
         <p
@@ -401,7 +457,12 @@
           adminView: isMerchant
         }"
       >
-        Fecha de {{ order?.items[0].saleflow._id === '62ed5ad9bd70dde4db98b924' ? "la sesión" : "Entrega:" }}
+        Fecha de
+        {{
+          order?.items[0].saleflow._id === "62ed5ad9bd70dde4db98b924"
+            ? "la sesión"
+            : "Entrega:"
+        }}
       </h2>
 
       <div class="items-container" style="padding: 10px 20px">
