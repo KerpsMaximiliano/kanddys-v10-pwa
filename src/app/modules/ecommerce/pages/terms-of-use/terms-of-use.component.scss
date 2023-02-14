@@ -36,10 +36,15 @@
 
     span {
       font-family: SfProLight;
-      font-size: 17px;        
+      font-size: 17px;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       font-family: SfProBold;
     }
 
@@ -54,10 +59,11 @@
   padding: 2rem;
 }
 
-ol, ul {
-  padding-left: 1rem;  
+ol,
+ul {
+  padding-left: 1rem;
+}
 
-  li {
-    font-weight: bold;
-  }
+ol li {
+  font-weight: bold;
 }

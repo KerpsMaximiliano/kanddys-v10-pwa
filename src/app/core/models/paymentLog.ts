@@ -14,6 +14,7 @@ export class PaymentLog extends Model<PaymentLog> {
 export class PaymentLogInput {
   user?: string;
   paymentMethod?: string;
+  paymentMethodData?: string;
   ammount?: number;
   reason?: string;
   merchant?: string;

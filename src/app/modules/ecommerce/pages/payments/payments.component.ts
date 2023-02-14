@@ -100,7 +100,7 @@ export class PaymentsComponent implements OnInit {
       logos: [
         {
           src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpayment_methods_logos.svg',
-          width: '100%'
+          width: '100%',
         },
       ],
     },
@@ -613,7 +613,10 @@ export class PaymentsComponent implements OnInit {
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
     this.router.navigate([
-      '/ecommerce/terms-of-use/' + this.viewMerchantForRefund._id,
+      '/ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/terms-of-use/' +
+        this.viewMerchantForRefund._id,
     ]);
   }
 

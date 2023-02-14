@@ -6,6 +6,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
 import { environment } from 'src/environments/environment';
+import * as forge from 'node-forge';
 
 @Component({
   selector: 'app-payments-redirection',
@@ -79,7 +80,7 @@ export class PaymentsRedirectionComponent implements OnInit {
           }),
         })
           .then((response) => response.text())
-          .then((hash) => {
+          .then(async (hash) => {
             console.log('hash del back', hash);
             console.log('hash del url', rest['AuthHash']);
 
@@ -89,11 +90,26 @@ export class PaymentsRedirectionComponent implements OnInit {
             ) {
               //Cambiar igualdad
 
-              if (hash === rest['AuthHash'] && this.order.orderStatus !== 'paid') {
+              if (
+                hash === rest['AuthHash'] &&
+                this.order.orderStatus !== 'paid'
+              ) {
+                const response = await fetch('assets/ap.pem');
+                const textResponse = await response.text();
+
+                const publicKeyParsed =
+                  forge.pki.publicKeyFromPem(textResponse);
+
+                const data = rest['CardNumber'];
+                const plaintextBytes = forge.util.encodeUtf8(data);
+                const encrypted = publicKeyParsed.encrypt(plaintextBytes, 'RSA-OAEP');
+                const encryptedBase64 = forge.util.encode64(encrypted);
+
                 this.paymentLogService.createPaymentLogAzul({
                   ammount: Number(rest['Amount']) / 100,
                   reason: 'payment',
                   paymentMethod: 'azul',
+                  paymentMethodData: encryptedBase64,
                   order: rest['OrderNumber'],
                   merchant: this.headerService.saleflow.merchant._id,
                   user: this.order.user._id,
