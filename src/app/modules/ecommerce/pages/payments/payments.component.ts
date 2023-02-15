@@ -321,7 +321,7 @@ export class PaymentsComponent implements OnInit {
       this.onlinePaymentsOptions.pop();
     }
 
-    if (redirectToAzulPaymentsPage && !this.order.user) {
+    if(redirectToAzulPaymentsPage && !this.order.user) {
       this.order = (
         await this.orderService.authOrder(this.order._id, this.currentUser._id)
       ).authOrder;
@@ -515,7 +515,7 @@ export class PaymentsComponent implements OnInit {
       MerchantID: this.headerService.saleflow.merchant._id,
       MerchantType: 'Importadores y productores de flores y follajes',
       CurrencyCode: '$',
-      OrderNumber: formatID(this.order.dateId),
+      OrderNumber: this.order._id,
       //OrderNumber: formatID(this.order.dateId),
       Amount: this.paymentAmount.toFixed(2).toString().replace('.', ''),
       ITBIS: (this.paymentAmount * 0.18).toFixed(2).toString().replace('.', ''),
@@ -523,7 +523,7 @@ export class PaymentsComponent implements OnInit {
         clientURI +
         '/ecommerce/' +
         this.headerService.saleflow._id +
-        '/payments-redirection?typeOfPayment=azul&success=true',
+        '/payments-redirection?typeOfPayment=azul&success=true&orderId=' + this.order._id,
       DeclinedUrl:
         clientURI +
         '/ecommerce/' +

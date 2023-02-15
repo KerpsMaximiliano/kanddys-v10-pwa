@@ -68,7 +68,7 @@ export class PaymentsRedirectionComponent implements OnInit {
           },
           body: JSON.stringify({
             MerchantID: this.headerService.saleflow.merchant._id,
-            OrderNumber: rest['OrderNumber'],
+            OrderNumber: orderId,
             Amount: rest['Amount'],
             AuthorizationCode: rest['AuthorizationCode'],
             DateTime: rest['DateTime'],
@@ -81,9 +81,6 @@ export class PaymentsRedirectionComponent implements OnInit {
         })
           .then((response) => response.text())
           .then(async (hash) => {
-            console.log('hash del back', hash);
-            console.log('hash del url', rest['AuthHash']);
-
             if (
               rest['IsoCode'] === '00' &&
               this.order.orderStatus !== 'completed'
