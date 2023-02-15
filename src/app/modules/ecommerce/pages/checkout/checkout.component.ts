@@ -667,7 +667,7 @@ export class CheckoutComponent implements OnInit {
           question.answer = answer.response.map(({value, ...answer}) => ({value:this.showAnswers?value:'test',...answer}));
         return question;
       }) as any;
-      this.questions = _webform.questions;
+      webForms.questions = _webform.questions;
     }
   }
 
