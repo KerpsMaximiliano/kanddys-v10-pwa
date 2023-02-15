@@ -11,7 +11,7 @@ import {
 } from 'src/app/core/models/order';
 import { Post, PostInput, Slide } from 'src/app/core/models/post';
 import { SaleFlow } from 'src/app/core/models/saleflow';
-import { Tag } from 'src/app/core/models/tags';
+import { Tag, TagInput } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -25,6 +25,8 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateTagComponent } from 'src/app/shared/dialogs/create-tag/create-tag.component';
 
 interface Image {
   src: string;
@@ -54,7 +56,6 @@ export class OrderDetailComponent implements OnInit {
   slides: Slide[];
   payment: number;
   isMerchant: boolean;
-  merchantOwner: boolean;
   // changeColor: string;
   orderStatus: OrderStatusNameType;
   orderDate: string;
@@ -91,11 +92,6 @@ export class OrderDetailComponent implements OnInit {
     'video/m2ts',
     'video/m2ts',
   ];
-  dropdownList = [
-    { text: 'Option 1', selected: false },
-    { text: 'Option 2', selected: false },
-    { text: 'Option 3', selected: false },
-  ];
   playVideoOnFullscreen = playVideoOnFullscreen;
   notify: boolean = false;
 
@@ -110,6 +106,7 @@ export class OrderDetailComponent implements OnInit {
     value: string;
     selected: boolean;
   }[];
+  tagPanelState: boolean;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
@@ -123,10 +120,10 @@ export class OrderDetailComponent implements OnInit {
     private location: LocationStrategy,
     private authService: AuthService,
     public headerService: HeaderService,
-    private ngNavigatorShareService: NgNavigatorShareService,
     private merchantsService: MerchantsService,
     private paymentLogService: PaymentLogsService,
-    private tagsService: TagsService
+    private tagsService: TagsService,
+    public dialog: MatDialog
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -788,17 +785,9 @@ export class OrderDetailComponent implements OnInit {
     );
   }
 
-  changeView = () => {
-    // if (this.merchantOwner && !this.isMerchant) {
-    //   this.isMerchant = true;
-    //   // this.changeColor = '#2874AD';
-    // }
-  };
-
   async isMerchantOwner(merchant: string) {
     this.orderMerchant = await this.merchantsService.merchantDefault();
     this.isMerchant = merchant === this.orderMerchant?._id;
-    this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
 
@@ -839,6 +828,25 @@ export class OrderDetailComponent implements OnInit {
   //  for await (const tag of selectedTags) {
   //  } */
   // }
+
+  createTag() {
+    let dialogRef = this.dialog.open(CreateTagComponent);
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (!result) return;
+      const data: TagInput = {
+        name: result.name,
+        entity: 'order',
+        images: result.images,
+        merchant: this.orderMerchant._id,
+      };
+      const createdTag = await this.tagsService.createTag(data);
+      this.tagOptions.push({
+        text: result.name,
+        value: createdTag._id,
+        selected: false,
+      });
+    });
+  }
 
   urlIsVideo(url: string) {
     return isVideo(url);

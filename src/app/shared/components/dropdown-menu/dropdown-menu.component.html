@@ -1,8 +1,8 @@
 <section class="container">
   <p class="title" *ngIf="title">{{ title }}</p>
   <mat-expansion-panel
-    (opened)="panelOpenState = true"
-    (closed)="panelOpenState = false"
+    (opened)="togglePanel(true)"
+    (closed)="togglePanel(false)"
   >
     <mat-expansion-panel-header>
       <img *ngIf="logo !== ''" [src]="logo" alt="" class="logo" />

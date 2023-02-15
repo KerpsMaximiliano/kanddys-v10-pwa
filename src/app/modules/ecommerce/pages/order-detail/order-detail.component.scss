@@ -7,7 +7,7 @@ h6,
 p {
   margin: 0;
 }
-button {
+.btn {
   all: unset;
 }
 button,
@@ -15,10 +15,7 @@ a {
   cursor: pointer;
 }
 .container {
-  width: 100%;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 
   // .header {
   //   width: 100%;
@@ -451,6 +448,12 @@ table {
     text-align: left;
     padding: 5px;
   }
+}
+
+.tag-add {
+  font-family: SfProBold;
+  font-size: 1rem;
+  color: #272727;
 }
 
 .footer-display {

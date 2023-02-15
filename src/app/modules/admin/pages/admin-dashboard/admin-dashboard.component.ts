@@ -4,7 +4,6 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { forEach } from 'jszip';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -87,7 +86,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    if (this.subscription) this.subscription.unsubscribe();
   }
 
   options: BarOptions[] = [
@@ -333,9 +332,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           ],
         },
       ],
-    });
-    bottomSheetRef.afterDismissed().subscribe((result) => {
-      console.log('Bottom sheet has been dismissed.', result);
     });
   }
 

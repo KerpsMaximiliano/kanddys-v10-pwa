@@ -154,6 +154,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
+import { CreateTagComponent } from './dialogs/create-tag/create-tag.component';
 
 const imports = [
   CommonModule,
@@ -317,6 +318,7 @@ const declarations = [
   DropdownMenuComponent,
   ConfirmationDialogComponent,
   StepperFormComponent,
+  CreateTagComponent,
 ];
 
 @NgModule({

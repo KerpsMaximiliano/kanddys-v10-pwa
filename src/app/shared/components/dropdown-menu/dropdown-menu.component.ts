@@ -18,8 +18,14 @@ export class DropdownMenuComponent implements OnInit {
   options = new FormControl('');
   @Input() optionsList = [];
   @Output() listValue = new EventEmitter();
+  @Output() panelState = new EventEmitter();
 
   ngOnInit(): void {}
+
+  togglePanel(open: boolean) {
+    this.panelOpenState = open;
+    this.panelState.emit(open);
+  }
 
   toggleSelected(i: number) {
     this.optionsList[i].selected = !this.optionsList[i].selected;

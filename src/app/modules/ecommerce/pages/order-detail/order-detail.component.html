@@ -23,7 +23,7 @@
   </header>
 
   <button
-    class="bar"
+    class="bar btn"
     *ngIf="isMerchant === false"
     (clicked)="notificationClicked()"
   >
@@ -39,81 +39,7 @@
       {{ order.items[0].saleflow.merchant.name }}
     </p>
   </button>
-
-  <div *ngIf="isMerchant === true">
-    <app-dropdown-menu
-      title="STATUS DE LA FACTURA"
-      listTitle="Por entregarse"
-      [optionsList]="dropdownList"
-    ></app-dropdown-menu>
-    <div style="height: 5px"></div>
-    <app-dropdown-menu
-      title="MIS LISTAS DE FACTURAS"
-      listTitle="Lista NameID"
-      [optionsList]="dropdownList"
-      [multiple]="false"
-    ></app-dropdown-menu>
-  </div>
-
-  <!-- <app-helper-headerv2
-    [mode]="'basic'"
-    [returnAble]="
-      redirectTo &&
-      redirectTo !== null &&
-      redirectTo !== '' &&
-      isMerchant &&
-      merchantOwner
-    "
-    (returnEvent)="!redirectTo ? returnToStore() : returnEvent()"
-    [bgColor]="'#293628'"
-    [icon]="{
-      src: '/arrow-double-up-black.svg',
-      width: 17,
-      height: 21,
-      callback: !redirectTo ? returnToStore : returnEvent,
-      filter:
-        'invert(87%) sepia(6%) saturate(3262%) hue-rotate(67deg) brightness(104%) contrast(89%) !important;'
-    }"
-    [dots]="{
-      active: false,
-      color: '#272727'
-    }"
-    [rightText]="
-      headerService.user && !isMerchant
-        ? {
-            text:
-              headerService.user?.name ||
-              headerService.user?.phone ||
-              headerService.user?.email
-          }
-        : null
-    "
-    [icons]="
-      !isMerchant
-        ? [
-            {
-              src: '/person.svg',
-              width: '13px',
-              height: '17px',
-              color: 'brightness(3)',
-              callback: redirectToUserContact
-            }
-          ]
-        : null
-    "
-    [mainText]="{
-      text:
-        order?.items[0].saleflow.headline?.length < 38
-          ? order?.items[0].saleflow.headline
-          : order?.items[0].saleflow.headline.split(' ')['0'],
-      fontSize: '21px',
-      fontFamily: 'SfProBold',
-      color: '#fff'
-    }"
-    (agnosticAction)="openLogoutDialog()"
-  ></app-helper-headerv2> -->
-
-  <!-- <ng-container *ngIf="isMerchant">
+  <ng-container *ngIf="isMerchant">
     <div style="padding-top: 5px; margin-bottom: 5px">
       <app-dropdown-menu
         [optionsList]="deliveryStatusOptions"
@@ -127,19 +53,22 @@
       <app-dropdown-menu
         logo="/assets/images/noimage.png"
         title="MIS LISTAS DE FACTURAS"
-        [listTitle]="Listas"
+        listTitle="Listas"
         [optionsList]="tagOptions"
         (listValue)="addTag($event)"
+        (panelState)="tagPanelState = $event"
       ></app-dropdown-menu>
     </div>
-    <div style="background-color: #fff">
-      <a
-        [routerLink]="['/admin/create-tag']"
-        [queryParams]="{ entity: 'order' }"
-        >+ Crear un nuevo listado</a
-      >
+    <div
+      style="background-color: #fff; padding: 0 32px 8px"
+      *ngIf="tagPanelState"
+    >
+      <button mat-button extended (click)="createTag()" class="tag-add">
+        <mat-icon>add</mat-icon>
+        Crear un nuevo listado
+      </button>
     </div>
-  </ng-container> -->
+  </ng-container>
 
   <!-- <button (click)="changeOrderStatus()">set to pickup</button> -->
   <!-- <div class="header" *ngIf="buyerView === false">
@@ -205,7 +134,11 @@
             >Confirmar por WhatsApp</a
           >
           <br *ngIf="!isMerchant && !notify" />
-          <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
+          <button
+            class="top-name btn"
+            (click)="sendMessage()"
+            *ngIf="isMerchant"
+          >
             {{ order.user?.name || order.user?.phone || order.user?.email }}
           </button>
           <span class="top-headline" *ngIf="!isMerchant">{{
@@ -244,7 +177,7 @@
         style="margin-bottom: 4px"
       >
         <div class="image-container">
-          <button>
+          <button class="btn">
             <div
               class="image"
               *ngIf="!urlIsVideo(item.item.images[0].value)"
@@ -337,7 +270,10 @@
           (mouseleave)="stopDragging()"
           (mousemove)="moveEvent($event, elemt)"
         >
-          <button (click)="order.ocr && openImageModal(order.ocr.image)">
+          <button
+            (click)="order.ocr && openImageModal(order.ocr.image)"
+            class="btn"
+          >
             <div
               class="image"
               [ngStyle]="{
