@@ -141,6 +141,7 @@ export class CheckoutComponent implements OnInit {
   itemObjects: Record<string, ItemSubOrderInput> = {};
   questions:any = [];
   questionsList:number[] = [];
+  showAnswers:boolean = false;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -663,7 +664,7 @@ export class CheckoutComponent implements OnInit {
           _id
         };
         if(answer)
-          question.answer = answer.response;
+          question.answer = answer.response.map(({value, ...answer}) => ({value:this.showAnswers?value:'test',...answer}));
         return question;
       }) as any;
       this.questions = _webform.questions;
@@ -671,6 +672,6 @@ export class CheckoutComponent implements OnInit {
   }
 
   handleQuestion(index:number):void {
-    this.questionsList = this.questionsList.includes(index)?this.questionsList.filter((_index:number) => index!==index):[index,...this.questionsList];
+    this.questionsList = this.questionsList.includes(index)?this.questionsList.filter((_index:number) => _index!==index):[index,...this.questionsList];
   }
 }
