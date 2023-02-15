@@ -112,7 +112,6 @@ const orderData = `
     }
   }
   orderStatus
-  orderStatusDelivery
   statusDelivery
   itemPackage {
     _id
