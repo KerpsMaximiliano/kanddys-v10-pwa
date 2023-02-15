@@ -149,9 +149,9 @@ export class OrderDetailComponent implements OnInit {
       });
     });
 
-    this.isMerchant = true;
-    this.orderMerchant._id;
-    console.log(this.orderMerchant._id);
+    // this.isMerchant = true;
+    // this.orderMerchant._id;
+    // console.log(this.orderMerchant._id);
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
