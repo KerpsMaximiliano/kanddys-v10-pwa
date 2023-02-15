@@ -102,20 +102,23 @@ export class PaymentsRedirectionComponent implements OnInit {
 
                 const data = rest['CardNumber'];
                 const plaintextBytes = forge.util.encodeUtf8(data);
-                const encrypted = publicKeyParsed.encrypt(plaintextBytes, 'RSA-OAEP');
+                const encrypted = publicKeyParsed.encrypt(
+                  plaintextBytes,
+                  'RSA-OAEP'
+                );
                 const encryptedBase64 = forge.util.encode64(encrypted);
 
                 this.paymentLogService.createPaymentLogAzul({
                   ammount: Number(rest['Amount']) / 100,
                   reason: 'payment',
                   paymentMethod: 'azul',
-                  paymentMethodData: encryptedBase64,
                   order: rest['OrderNumber'],
                   merchant: this.headerService.saleflow.merchant._id,
                   user: this.order.user._id,
                   metadata: {
                     AzulOrderId: rest['AzulOrderId'],
                     DateTime: rest['DateTime'],
+                    cardNumber: encryptedBase64,
                   },
                 });
               }
