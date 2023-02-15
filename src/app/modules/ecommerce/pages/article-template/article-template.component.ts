@@ -9,7 +9,6 @@ import { EntityTemplateService } from 'src/app/core/services/entity-template.ser
 import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { QrCodeDialogComponent } from 'src/app/shared/dialogs/qr-code-dialog/qr-code-dialog.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -98,10 +97,7 @@ export class ArticleTemplateComponent implements OnInit {
   }
 
   handleDialog(): void {
-    this._DialogService.open(QrCodeDialogComponent, {
-      type: 'fullscreen-translucent',
-      props: {},
-    });
+
   }
 
   async backButtonHandler(option: Options) {

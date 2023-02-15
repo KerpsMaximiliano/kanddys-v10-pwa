@@ -135,7 +135,7 @@ const routes: Routes = [
         component: QrEditComponent,
       },
       {
-        path: 'admin-dashboard',
+        path: 'dashboard',
         component: AdminDashboardComponent,
       },
       {

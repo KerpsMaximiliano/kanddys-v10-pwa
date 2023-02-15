@@ -1,9 +1,11 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { forEach } from 'jszip';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
@@ -25,13 +27,14 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./admin-dashboard.component.scss'],
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
+  URI: string = environment.uri;
   environment: string = environment.assetsUrl;
-  artID: Array<string> = [
-    '63d429d7849f894c1895c659',
-    '63d420a8849f894c189544d4',
-    '63c93768a6ce9322ca278888',
-    '63c61f50a6ce9322ca216714',
-  ];
+  // artID: Array<string> = [
+  //   '63d429d7849f894c1895c659',
+  //   '63d420a8849f894c189544d4',
+  //   '63c93768a6ce9322ca278888',
+  //   '63c61f50a6ce9322ca216714',
+  // ];
   items: Item[] = [];
   allItems: Item[] = [];
   itemStatus: 'active' | 'disabled' = 'active';
@@ -59,7 +62,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private _ItemsService: ItemsService,
     private snackBar: MatSnackBar,
     private _bottomSheet: MatBottomSheet,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private clipboard: Clipboard
   ) {}
 
   async ngOnInit() {
@@ -280,7 +285,58 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   share() {
-    this._bottomSheet.open(LinksDialogComponent);
+    const link = `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`;
+    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+      data: [
+        {
+          title: 'Links de Visitantes',
+          options: [
+            {
+              title: 'Ver como lo verá el visitante',
+              callback: () => {
+                this.router.navigate([
+                  `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
+                ]);
+              },
+            },
+            {
+              title: 'Compartir el Link',
+              callback: () => {
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: link,
+                });
+              },
+            },
+            {
+              title: 'Copiar el Link',
+              callback: () => {
+                this.clipboard.copy(link);
+                this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                  duration: 2000,
+                });
+              },
+            },
+            {
+              title: 'Descargar el qrCode',
+              link,
+            },
+          ],
+        },
+        {
+          title: 'Links de admins',
+          options: [
+            {
+              title: 'Descargar el qrCode del admin',
+              link: `${this.URI}/admin/dashboard`,
+            },
+          ],
+        },
+      ],
+    });
+    bottomSheetRef.afterDismissed().subscribe((result) => {
+      console.log('Bottom sheet has been dismissed.', result);
+    });
   }
 
   selectTag(index: number) {

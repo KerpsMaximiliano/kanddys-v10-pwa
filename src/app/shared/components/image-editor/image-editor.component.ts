@@ -16,6 +16,7 @@ export interface CroppResult {
   cropData: Cropper.CropBoxData;
   blob?: Blob;
   dataUrl?: string;
+  modified?: boolean;
 }
 
 @Component({
@@ -30,7 +31,7 @@ export class ImageEditorComponent implements OnDestroy {
   loadedImage: HTMLImageElement;
   currentViewMode: Cropper.ViewMode = 3;
   cropper: Cropper;
-  modified = true;
+  modified = false;
 
   @ViewChild('image') image: ElementRef;
 
@@ -72,9 +73,9 @@ export class ImageEditorComponent implements OnDestroy {
       viewMode: this.currentViewMode,
       minCropBoxHeight: container.clientHeight,
       minCropBoxWidth: container.clientWidth,
-      // cropmove: () => {
-      //   this.modified = true;
-      // },
+      cropmove: () => {
+        this.modified = true;
+      },
       ready: () => {
         unlockUI();
       },
@@ -87,12 +88,12 @@ export class ImageEditorComponent implements OnDestroy {
   setZoom(zoom: 'in' | 'out') {
     if (zoom === 'in') this.cropper.zoom(0.1);
     if (zoom === 'out') this.cropper.zoom(-0.1);
-    // this.modified = true;
+    this.modified = true;
   }
 
   changeViewMode() {
     this.currentViewMode = this.currentViewMode === 3 ? 0 : 3;
-    // this.modified = true;
+    this.modified = true;
     this.initCropper();
   }
 
@@ -100,7 +101,7 @@ export class ImageEditorComponent implements OnDestroy {
     if (!$event) return;
     const value = +$event.target.value;
     this.cropper.rotateTo(value);
-    // this.modified = true;
+    this.modified = true;
   }
 
   // setDragMode(action: 'move' | 'crop') {
@@ -112,7 +113,7 @@ export class ImageEditorComponent implements OnDestroy {
       this.cropper.scaleX(-this.cropper.getData().scaleX || -1);
     if (direction === 'vertical')
       this.cropper.scaleY(-this.cropper.getData().scaleY || -1);
-    // this.modified = true;
+    this.modified = true;
   }
 
   // close() {
@@ -120,15 +121,13 @@ export class ImageEditorComponent implements OnDestroy {
   // }
 
   async exportCanvas() {
-    if (this.modified) {
-      const imageData = this.cropper.getImageData();
-      const cropData = this.cropper.getCropBoxData();
-      const canvas = this.cropper.getCroppedCanvas();
-      const data = { imageData, cropData };
-      canvas.toBlob((blob) => {
-        this.cropped.emit({ ...data, blob });
-      });
-    } else this.cropped.emit();
+    const imageData = this.cropper.getImageData();
+    const cropData = this.cropper.getCropBoxData();
+    const canvas = this.cropper.getCroppedCanvas();
+    const data = { imageData, cropData };
+    canvas.toBlob((blob) => {
+      this.cropped.emit({ ...data, blob, modified: this.modified });
+    });
   }
 
   private destroyCropper() {

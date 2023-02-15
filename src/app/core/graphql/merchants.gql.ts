@@ -80,6 +80,7 @@ export const merchantDefault = gql`
       _id
       name
       title
+      slug
       showItems
       image
       activity

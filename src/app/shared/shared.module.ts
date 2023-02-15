@@ -82,8 +82,6 @@ import { PostPrivacyComponent } from './dialogs/post-privacy/post-privacy.compon
 import { SearchHashtagComponent } from './dialogs/search-hashtag/search-hashtag.component';
 import { SetConfigComponent } from './dialogs/set-config/set-config.component';
 import { ShareLinksComponent } from './dialogs/share-links/share-links.component';
-import { ShowItemsComponent } from './dialogs/show-items/show-items.component';
-import { StatusListComponent } from './dialogs/status-list/status-list.component';
 import { StoreShareComponent } from './dialogs/store-share/store-share.component';
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
@@ -107,7 +105,6 @@ import { TagTypeDialogComponent } from './dialogs/tag-type-dialog/tag-type-dialo
 import { MerchantContactComponent } from './components/merchant-contact/merchant-contact.component';
 import { ArticlePrivacyComponent } from './components/article-privacy/article-privacy.component';
 import { InputTransparentComponent } from './dialogs/input-transparent/input-transparent.component';
-import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
 import { PostsXlsComponent } from './components/posts-xls/posts-xls.component';
 import { AnexosDialogComponent } from './dialogs/anexos-dialog/anexos-dialog.component';
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
@@ -185,7 +182,7 @@ const imports = [
   MatStepperModule,
   MatFormFieldModule,
   MatInputModule,
-  MatSnackBarModule
+  MatSnackBarModule,
 ];
 const declarations = [
   // Pages
@@ -204,7 +201,6 @@ const declarations = [
   LeadwordListComponent,
   GiftMessageComponent,
   PageComponentTabsComponent,
-  ShowItemsComponent,
   ImageInputComponent,
   AnswerSelectorComponent,
   HelperHeaderComponent,
@@ -236,7 +232,6 @@ const declarations = [
   CartButtonComponent,
   CollaborationsComponent,
   InfoButtonComponent,
-  StatusListComponent,
   ItemStatusComponent,
   AudioRecorderComponent,
   StoreShareComponent,
@@ -283,7 +278,6 @@ const declarations = [
   InputTransparentComponent,
   ArticlePrivacyComponent,
   AnexosDialogComponent,
-  QrCodeDialogComponent,
   PostsXlsComponent,
   TagAsignationComponent,
   MediaDialogComponent,
