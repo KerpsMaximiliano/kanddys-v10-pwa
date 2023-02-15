@@ -20,13 +20,15 @@ export class ContactLandingContainerComponent implements OnInit {
   social: any;
   img: string;
   contactID: string;
+  address: string;
   whatsapp: string;
   telegram: string;
   _phone: string;
   idUser: string;
   image: string;
   links: any[];
-  contactDirection:string;
+  contactDirection: string;
+  location: string;
 
   constructor(
     private _UsersService: UsersService,
@@ -41,6 +43,10 @@ export class ContactLandingContainerComponent implements OnInit {
         this.idUser = idUser;
         let _merchantDefault = await this._MerchantService.merchantDefault();
 
+        console.log(_merchantDefault);
+        if (_merchantDefault && _merchantDefault.address)
+          this.address = _merchantDefault.address;
+
         const { image } = _merchantDefault || {};
         this.image = image;
         const { _id } = _merchantDefault || {};
@@ -50,8 +56,8 @@ export class ContactLandingContainerComponent implements OnInit {
           },
           options: {
             sortBy: 'updatedAt:desc',
-            limit: -1
-          }
+            limit: -1,
+          },
         };
         const [contact] = await this._ContactService.contacts(paginate);
         if (contact) {
@@ -59,10 +65,12 @@ export class ContactLandingContainerComponent implements OnInit {
           this.contactID = name;
           this.img = image;
           this.bio = description;
-          this.links = link.filter(({name, value}) =>  name!=='location');
+          this.links = link.filter(({ name, value }) => name !== 'location');
           this.idUser = _id;
-          const direction = link.find(({name, value}) =>  name==='location');
-          this.contactDirection = direction?.value || '';
+          const direction = link.find(({ name, value }) => name === 'location');
+
+          this.contactDirection = this.address || '';
+          this.location = direction?.value || '';
         } else {
           let { name, phone, email, bio, social, image, ...test }: any =
             (await this._UsersService.user(idUser)) || {
@@ -85,11 +93,14 @@ export class ContactLandingContainerComponent implements OnInit {
             if (merchantDefault[0].image) {
               this.img = merchantDefault[0].image;
             }
+
+            if (merchantDefault[0].address) {
+              this.contactDirection = merchantDefault[0].address;
+            }
           }
 
           this.bio = bio;
-          this.links = social.map(({name,url:value}) => ({name, value}));
-          console.log('links: ', this.links);
+          this.links = social.map(({ name, url: value }) => ({ name, value }));
         }
       })();
     });

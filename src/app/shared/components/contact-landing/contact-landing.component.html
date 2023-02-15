@@ -34,13 +34,17 @@
             ') no-repeat  center/cover'
         }"
       >
-        <img class="eyeIcon" [src]="environment + '/eye.svg'" />
-        <div class="markerCont">
+        <a
+          [href]="locationString"
+          *ngIf="locationString && locationString.length"
+          target="_blank"
+          class="markerCont"
+        >
           <img
             class="locationIcon"
             [src]="environment + '/location-2-black.svg'"
           />
-        </div>
+        </a>
       </div>
       <div
         *ngIf="!img"
@@ -117,6 +121,8 @@
           [href]="
             link.value.startsWith('https') || link.value.startsWith('http')
               ? link.value
+              : isEmail(link.value)
+              ? 'mailto:' + link.value
               : 'tel:' + link.value
           "
           [target]="
@@ -145,5 +151,15 @@
         </a>
       </div>
     </div>
+    <button
+      mat-raised-button
+      color="warn"
+      class="delete-me"
+      (click)="openConfirmationDialog()"
+    >
+      <span> Borra mi perfil </span>
+
+      <mat-icon>delete</mat-icon>
+    </button>
   </div>
 </div>

@@ -36,6 +36,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   merchantDefault: string;
   src: any;
   logo: any;
+  changedLogo: boolean = false;
   file: any;
   fileLogo: any;
   links: any = [];
@@ -178,6 +179,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.logo = this._DomSanitizer.bypassSecurityTrustStyle(`url(
       ${result})
       no-repeat center center / cover #fff`);
+      this.changedLogo = true;
     };
   }
 
@@ -379,9 +381,9 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked4 = false;
     }
     this.file =
-      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_black.svg';
     this.src =
-      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_black.svg';
   }
   isClicked2() {
     this.resetSrc();

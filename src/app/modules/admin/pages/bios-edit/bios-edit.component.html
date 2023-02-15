@@ -137,7 +137,7 @@
           />
         </svg>
       </div>
-      <p class="text">{{ controller.get('location').value }}</p>
+      <p class="text">{{ controller.get("location").value }}</p>
     </div>
 
     <div class="media">
@@ -147,14 +147,24 @@
         *ngFor="let link of links; let i = index"
         (click)="navigateToLink(i)"
       >
-        <ng-container *ngIf="link.name!=='location'">
-          <div class="square" [style.background]="formatImage(link.image)"></div>
+        <ng-container *ngIf="link.name !== 'location'">
+          <div
+            class="square"
+            [style.background]="formatImage(link.image)"
+          ></div>
           <div class="input">{{ link.name || link.value }}</div>
         </ng-container>
       </div>
       <button class="add" (click)="add()">Adiciona otro enlace</button>
 
-      <button class="mainBtn" (click)="submit()">
+      <button
+        class="mainBtn"
+        *ngIf="
+          this.controller.touched && !logo || 
+          (this.controller.touched && this.controller.status === 'VALID' || (logo && changedLogo))
+        "
+        (click)="submit()"
+      >
         {{ status || "SALVAR CAMBIOS" }}
       </button>
     </div>
@@ -237,7 +247,12 @@
 
   <div class="direcciones" *ngIf="direcciones === true">
     <p class="title">DIRECCIÓN</p>
-    <input [formControl]="AbstractControl('location')" type="text" placeholder="Escribe" class="address-input" />
+    <input
+      [formControl]="AbstractControl('location')"
+      type="text"
+      placeholder="Escribe"
+      class="address-input"
+    />
   </div>
 
   <!----------PUBLIC NAME------------>
