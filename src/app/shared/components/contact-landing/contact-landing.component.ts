@@ -47,8 +47,16 @@ export class ContactLandingComponent implements OnInit {
     private dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {
-    this.isOwner = this.idUser === this.headerService.user?._id;
+  async ngOnInit() {
+    try {
+      const pageUser = await this.usersService.user(this.idUser);
+
+      if(!pageUser) throw Error("Non existant user")
+
+      this.isOwner = this.idUser === this.headerService.user?._id;
+    } catch (error) {
+      this._Router.navigate(['others/error-screen'])      
+    }
   }
 
   navigate(): void {
