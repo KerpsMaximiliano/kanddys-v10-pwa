@@ -37,6 +37,7 @@
           id="file"
           [style.display]="'none'"
           (change)="loadFile($event)"
+          multiple
           [accept]="[
             '.png',
             '.jpg',
@@ -99,7 +100,11 @@
               style="padding: 1.5rem !important; z-index: 99"
               (click)="playVideoOnFullscreen('media' + i)"
             />
-            <video [id]="'media' + i" [muted]="true" [src]="gridItem.background"></video>
+            <video
+              [id]="'media' + i"
+              [muted]="true"
+              [src]="gridItem.background"
+            ></video>
           </ng-container>
 
           <ng-container *ngIf="gridItem.type === 'text'">

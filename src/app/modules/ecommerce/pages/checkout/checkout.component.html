@@ -150,7 +150,7 @@
       (click)="editOrder('reservation')"
     >
       <div class="between" style="margin-top: 32px">
-        <h2 class="section-title">Fecha de la sesión:</h2>
+        <h2 class="section-title">Fecha de {{ headerService.saleflow._id === '62ed5ad9bd70dde4db98b924' ? "la sesión" : "entrega" }}:</h2>
       </div>
 
       <button class="items-container ready" *ngIf="reservation && date">
@@ -341,7 +341,7 @@
         createOrder()
     "
   ></app-sticky-button> -->
-  <app-sticky-button
+  <!-- <app-sticky-button
     mode="fixed"
     color="#FFFFFF"
     fontSize="17px"
@@ -349,7 +349,7 @@
     text="VER MAS ARTICULOS"
     size="small"
     (click)="editOrder('item')"
-  ></app-sticky-button>
+  ></app-sticky-button> -->
 </div>
 
 <app-dialog-flow

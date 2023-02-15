@@ -358,7 +358,7 @@
           adminView: isMerchant
         }"
       >
-        Lugar de {{ order?.items[0].reservation ? "la sesión" : " Entrega:" }}
+        Lugar de {{ order?.items[0].saleflow._id === '62ed5ad9bd70dde4db98b924' ? "la sesión" : "Entrega:" }}
       </h2>
       <div class="items-container column">
         <p
@@ -402,7 +402,7 @@
           adminView: isMerchant
         }"
       >
-        Fecha de la sesión:
+        Fecha de {{ order?.items[0].saleflow._id === '62ed5ad9bd70dde4db98b924' ? "la sesión" : "Entrega:" }}
       </h2>
 
       <div class="items-container" style="padding: 10px 20px">

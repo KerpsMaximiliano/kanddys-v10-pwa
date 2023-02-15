@@ -225,9 +225,22 @@ export class QrEditComponent implements OnInit {
           );
           const itemUpdated: Item = addedImage;
 
-          this._ItemsService.editingImageId =
-            addedImage.images[addedImage.images.length - 1]._id;
           unlockUI();
+          // this._ItemsService.editingImageId =
+          //   addedImage.images[addedImage.images.length - 1]._id;
+          if (
+            isImage(itemUpdated.images[itemUpdated.images.length - 1].value)
+          ) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this.gridArray.push({
+                background: reader.result,
+                _type: file.type,
+              });
+            };
+            reader.readAsDataURL(file);
+          }
+          //   this._Router.navigate([`admin/create-article/${this.item._id}`]);
 
           if (isImage(itemUpdated.images[itemUpdated.images.length - 1].value))
             this._Router.navigate([`admin/create-article/${this.item._id}`]);
@@ -434,6 +447,7 @@ export class QrEditComponent implements OnInit {
 
   editSlide(index: number) {
     this._ItemsService.editingImageId = this.gridArray[index]._id;
+    lockUI();
     this._Router.navigate([`admin/create-article/${this.item._id}`]);
   }
 

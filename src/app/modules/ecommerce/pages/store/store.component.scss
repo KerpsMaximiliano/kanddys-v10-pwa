@@ -8,10 +8,7 @@ a {
 .store-page {
   height: 100vh;
   overflow-y: scroll;
-
-  .content {
-    margin-top: 47px;
-  }
+  margin-top: 47px;
 }
 .component {
   min-height: 100vh;
@@ -38,7 +35,7 @@ main {
 }
 .saleflows-item-grid {
   width: auto;
-  padding: 24px 24px 32px;
+  padding: 12px 24px 32px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   -moz-column-gap: 14px;

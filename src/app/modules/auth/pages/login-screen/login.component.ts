@@ -60,7 +60,7 @@ export class LoginComponent implements OnInit {
   nope: boolean;
   orderId: string;
   itemId: string;
-  doesItemHasParams: boolean;
+  // doesItemHasParams: boolean;
   action: string;
   paymentAmount: number;
   orderStatus: string;
@@ -133,33 +133,33 @@ export class LoginComponent implements OnInit {
     this.paymentWithAzul = Boolean(
       this.route.snapshot.queryParamMap.get('paymentWithAzul')
     );
-    this.doesItemHasParams = Boolean(
-      this.route.snapshot.queryParamMap.get('hasParams')
-    );
+    // this.doesItemHasParams = Boolean(
+    //   this.route.snapshot.queryParamMap.get('hasParams')
+    // );
 
-    if (this.action === 'precreateitem' && this.doesItemHasParams) {
-      const itemParams = this.itemsService.temporalItemParams;
+    // if (this.action === 'precreateitem' && this.doesItemHasParams) {
+    //   const itemParams = this.itemsService.temporalItemParams;
 
-      if (typeof itemParams === 'undefined' || !itemParams) {
-        const flowRoute = localStorage.getItem('flowRoute');
-        if (flowRoute && flowRoute.length > 1) {
-          const [baseRoute, paramsString] = flowRoute.split('?');
-          const paramsArray = paramsString ? paramsString.split('&') : [];
-          const queryParams = {};
+    //   if (typeof itemParams === 'undefined' || !itemParams) {
+    //     const flowRoute = localStorage.getItem('flowRoute');
+    //     if (flowRoute && flowRoute.length > 1) {
+    //       const [baseRoute, paramsString] = flowRoute.split('?');
+    //       const paramsArray = paramsString ? paramsString.split('&') : [];
+    //       const queryParams = {};
 
-          paramsArray.forEach((param) => {
-            const [key, value] = param.split('=');
+    //       paramsArray.forEach((param) => {
+    //         const [key, value] = param.split('=');
 
-            queryParams[key] = value;
-          });
+    //         queryParams[key] = value;
+    //       });
 
-          localStorage.removeItem('flowRoute');
-          this.router.navigate([baseRoute], {
-            queryParams,
-          });
-        }
-      }
-    }
+    //       localStorage.removeItem('flowRoute');
+    //       this.router.navigate([baseRoute], {
+    //         queryParams,
+    //       });
+    //     }
+    //   }
+    // }
     this.getNumber();
     const phone = this.route.snapshot.queryParamMap.get('phone');
     const SaleFlow = this.route.snapshot.queryParamMap.get('saleflow');
@@ -381,15 +381,15 @@ export class LoginComponent implements OnInit {
             );
           }
 
-          if (this.action === 'precreateitem') {
-            await this.authService.generateMagicLink(
-              this.merchantNumber,
-              `admin/create-article/`,
-              this.itemId,
-              'NewItem',
-              {}
-            );
-          }
+          // if (this.action === 'precreateitem') {
+          //   await this.authService.generateMagicLink(
+          //     this.merchantNumber,
+          //     `admin/create-article/`,
+          //     this.itemId,
+          //     'NewItem',
+          //     {}
+          //   );
+          // }
 
           if (this.auth === 'merchant') {
             await this.authService.generateMagicLink(
@@ -563,10 +563,10 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        if (this.itemId) {
-          await this.createItem(checkOTP.user);
-          return;
-        }
+        // if (this.itemId) {
+        //   await this.createItem(checkOTP.user);
+        //   return;
+        // }
 
         /* if (this.toValidate) {
           this.loggin = false;
@@ -668,11 +668,11 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        if (this.itemId) {
-          await this.createItem(session.user);
-          this.status = 'ready';
-          return;
-        }
+        // if (this.itemId) {
+        //   await this.createItem(session.user);
+        //   this.status = 'ready';
+        //   return;
+        // }
 
         if (this.redirectionRoute) {
           this.redirectFromQueryParams();
@@ -735,10 +735,10 @@ export class LoginComponent implements OnInit {
         return;
       }
 
-      if (this.itemId) {
-        await this.createItem(signin.user);
-        return;
-      }
+      // if (this.itemId) {
+      //   await this.createItem(signin.user);
+      //   return;
+      // }
 
       if (this.redirectionRoute) {
         this.redirectFromQueryParams();
@@ -971,67 +971,67 @@ export class LoginComponent implements OnInit {
     };
   }
 
-  async createItem(user: User) {
-    switch (this.action) {
-      case 'precreateitem':
-        const {
-          merchantDefault: userMerchantDefault,
-          saleflowDefault: userSaleflowDefault,
-        } = await this.getDefaultMerchantAndSaleflows(user);
+  // async createItem(user: User) {
+  //   switch (this.action) {
+  //     case 'precreateitem':
+  //       const {
+  //         merchantDefault: userMerchantDefault,
+  //         saleflowDefault: userSaleflowDefault,
+  //       } = await this.getDefaultMerchantAndSaleflows(user);
 
-        await this.itemsService.authItem(userMerchantDefault._id, this.itemId);
+  //       await this.itemsService.authItem(userMerchantDefault._id, this.itemId);
 
-        await this.saleflowsService.addItemToSaleFlow(
-          {
-            item: this.itemId,
-          },
-          userSaleflowDefault._id
-        );
+  //       await this.saleflowsService.addItemToSaleFlow(
+  //         {
+  //           item: this.itemId,
+  //         },
+  //         userSaleflowDefault._id
+  //       );
 
-        if (this.doesItemHasParams) {
-          const itemParams = this.itemsService.temporalItemParams;
+  //       if (this.doesItemHasParams) {
+  //         const itemParams = this.itemsService.temporalItemParams;
 
-          if (!itemParams) this.router.navigate([this.headerService.flowRoute]);
+  //         if (!itemParams) this.router.navigate([this.headerService.flowRoute]);
 
-          /*
-          const itemParams = JSON.parse(localStorage.getItem("temporalItemParams"));
-          localStorage.removeItem("temporalItemParams");
-          */
+  //         /*
+  //         const itemParams = JSON.parse(localStorage.getItem("temporalItemParams"));
+  //         localStorage.removeItem("temporalItemParams");
+  //         */
 
-          if (itemParams.length > 0 && itemParams[0].values.length > 0) {
-            const { createItemParam } = await this.itemsService.createItemParam(
-              userMerchantDefault._id,
-              this.itemId,
-              {
-                name: itemParams[0].name,
-                formType: 'color',
-                values: [],
-              }
-            );
-            const paramValues = itemParams[0].values.map((value) => {
-              return {
-                name: value.name,
-                image: value.image,
-                price: value.price,
-                description: value.description,
-              };
-            });
+  //         if (itemParams.length > 0 && itemParams[0].values.length > 0) {
+  //           const { createItemParam } = await this.itemsService.createItemParam(
+  //             userMerchantDefault._id,
+  //             this.itemId,
+  //             {
+  //               name: itemParams[0].name,
+  //               formType: 'color',
+  //               values: [],
+  //             }
+  //           );
+  //           const paramValues = itemParams[0].values.map((value) => {
+  //             return {
+  //               name: value.name,
+  //               image: value.image,
+  //               price: value.price,
+  //               description: value.description,
+  //             };
+  //           });
 
-            await this.itemsService.addItemParamValue(
-              paramValues,
-              createItemParam._id,
-              userMerchantDefault._id,
-              this.itemId
-            );
-          }
-        }
-        this.toastr.success('Producto creado satisfactoriamente!');
-        this.router.navigate(['admin/create-article/' + this.itemId]);
-        return;
+  //           await this.itemsService.addItemParamValue(
+  //             paramValues,
+  //             createItemParam._id,
+  //             userMerchantDefault._id,
+  //             this.itemId
+  //           );
+  //         }
+  //       }
+  //       this.toastr.success('Producto creado satisfactoriamente!');
+  //       this.router.navigate(['admin/create-article/' + this.itemId]);
+  //       return;
 
-        break;
-    }
-  }
+  //       break;
+  //   }
+  // }
 
   async getOrderData(id: string, preOrder?: boolean): Promise<ItemOrder> {
     if (!preOrder) return (await this.orderService.order(id))?.order;

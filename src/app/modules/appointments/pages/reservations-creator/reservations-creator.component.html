@@ -122,7 +122,7 @@
 
         <div
           class="selectedReservation"
-          *ngIf="selectedDate && selectedDate.filled"
+          *ngIf="selectedDate && selectedDate.filled && !isOrder"
         >
           <h3>Fecha reservada:</h3>
 
@@ -143,7 +143,7 @@
       </div>
 
       <app-sticky-button
-        *ngIf="selectedDate && selectedDate.filled"
+        *ngIf="selectedDate && selectedDate.filled && !isOrder"
         [text]="stickyButtonText"
         [mode]="'fixed'"
         [bgColor]="headerConfiguration.bgcolor"
