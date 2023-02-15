@@ -56,7 +56,7 @@ export class PaymentsRedirectionComponent implements OnInit {
         this.label = 'El pago se completó';
 
         this.order = (
-          await this.ordersService.order(rest['OrderNumber'])
+          await this.ordersService.order(orderId)
         ).order;
 
         fetch(environment.api.url + '/azul/calculate-response-hash', {
@@ -68,7 +68,7 @@ export class PaymentsRedirectionComponent implements OnInit {
           },
           body: JSON.stringify({
             MerchantID: this.headerService.saleflow.merchant._id,
-            OrderNumber: orderId,
+            OrderNumber: rest['OrderNumber'],
             Amount: rest['Amount'],
             AuthorizationCode: rest['AuthorizationCode'],
             DateTime: rest['DateTime'],
@@ -119,7 +119,7 @@ export class PaymentsRedirectionComponent implements OnInit {
                   ammount: Number(rest['Amount']) / 100,
                   reason: 'payment',
                   paymentMethod: 'azul',
-                  order: rest['OrderNumber'],
+                  order: this.order._id,
                   merchant: this.headerService.saleflow.merchant._id,
                   user: this.order.user._id,
                   metadata: {

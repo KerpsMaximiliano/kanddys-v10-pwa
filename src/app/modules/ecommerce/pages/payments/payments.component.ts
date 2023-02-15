@@ -515,8 +515,8 @@ export class PaymentsComponent implements OnInit {
       MerchantID: this.headerService.saleflow.merchant._id,
       MerchantType: 'Importadores y productores de flores y follajes',
       CurrencyCode: '$',
-      OrderNumber: this.order._id,
-      //OrderNumber: formatID(this.order.dateId),
+      // OrderNumber: this.order._id,
+      OrderNumber: formatID(this.order.dateId),
       Amount: this.paymentAmount.toFixed(2).toString().replace('.', ''),
       ITBIS: (this.paymentAmount * 0.18).toFixed(2).toString().replace('.', ''),
       ApprovedUrl:
