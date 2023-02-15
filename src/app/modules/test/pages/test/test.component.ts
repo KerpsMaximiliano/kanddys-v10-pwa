@@ -1384,7 +1384,7 @@ export class TestComponent implements OnInit {
 
   async generateGPT3Response() {
     // const templateID = "63b7976096612318e8983786"; Chiste sobre {subject}
-    const templateID = '63b7b91296612318e898379d';
+    const templateID = '63ec8dbd12adcf783c420946';
     const templateObject = {
       subject1: 'maracuchos',
     };

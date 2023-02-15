@@ -1373,7 +1373,7 @@ export class Dialogs {
                   const response =
                     await this.gpt3Service.generateResponseForTemplate(
                       {},
-                      '63c0ff83e752c40ca8eefcfb'
+                      '63ec8dbd12adcf783c420946'
                     );
 
                   unlockUI();
