@@ -194,6 +194,7 @@ export class PaymentsComponent implements OnInit {
                 padding: '5px 20px',
                 right: '37px',
                 top: '133px',
+                cursor: 'pointer'
               },
             },
           ],
@@ -206,16 +207,32 @@ export class PaymentsComponent implements OnInit {
           callback: async (params) => {
             const { buttonClicked, value, valid } = params;
 
-            if (valid) {
-              await this.authService.updateMe({
-                email: value.email,
-              });
-              this.redirectToAzulPaymentPage();
-            } else {
-              this.toastrService.error('Email invalido', null, {
-                timeOut: 1500,
-              });
+            try {
+              if (valid &&  value.email && value.email.length > 0) {
+                await this.authService.updateMe({
+                  email: value.email,
+                });
+                this.redirectToAzulPaymentPage();
+              } else {
+                this.toastrService.error( value.email && value.email.length > 0 ? 'Email invalido' : 'Campo vacio, ingresa un email valido', null, {
+                  timeOut: 1500,
+                });
+              }
+            } catch (error) {
+              const user = await this.authService.checkUser(value.email);
+
+              if(user) {
+                this.toastrService.error('Email ya registrado con otro usuario, ingresa un email diferente', null, {
+                  timeOut: 1500,
+                });
+              } else {
+                this.toastrService.error('Ocurrió un error', null, {
+                  timeOut: 1500,
+                });                
+              }
+
             }
+           
           },
         },
       ],
