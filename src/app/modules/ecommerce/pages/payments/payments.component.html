@@ -21,7 +21,7 @@
     -->
 
     <div class="amount-list">
-      <!--
+      <ng-container *ngIf="azulPaymentsSupported">
         <div class="amount-flex-wrapper">
           <h3 class="label">Subtotal a pagar</h3>
           <h2 class="amount">RD $ {{ paymentAmount | number : "1.2-2" }}</h2>
@@ -38,7 +38,7 @@
           <h3 class="label">Impuestos</h3>
           <h2 class="amount">RD $ 0</h2>
         </div>
-      -->
+      </ng-container>
       <div class="amount-flex-wrapper">
         <h3 class="label">Total a pagar</h3>
         <h2 class="amount">RD $ {{ paymentAmount | number : "1.2-2" }}</h2>
@@ -186,11 +186,7 @@
     [color]="image ? '#293628' : '#fff'"
   ></app-sticky-button>
 
-  <form
-    [action]="this.azulPaymentURL"
-    method="post"
-    id="azulForm"
-  >
+  <form [action]="this.azulPaymentURL" method="post" id="azulForm">
     <input type="hidden" id="MerchantID" name="MerchantID" value="...." />
     <input
       type="hidden"
