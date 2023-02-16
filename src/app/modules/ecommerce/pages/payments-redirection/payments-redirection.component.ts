@@ -49,6 +49,7 @@ export class PaymentsRedirectionComponent implements OnInit {
 
       if (typeOfPayment === 'azul') {
         this.azulOrderQueryParams = rest;
+        this.azulOrderQueryParams['RealOrderID'] = orderId;
       }
 
       if (!typeOfPayment) return this.router.navigate(['others/error-screen']);
@@ -169,7 +170,7 @@ export class PaymentsRedirectionComponent implements OnInit {
 
   redirectToOrderInfo() {
     this.router.navigate(
-      ['ecommerce/order-info/' + this.azulOrderQueryParams['OrderNumber']],
+      ['ecommerce/order-info/' + this.azulOrderQueryParams['RealOrderID']],
       {
         queryParams: {
           notify: true,
@@ -180,7 +181,7 @@ export class PaymentsRedirectionComponent implements OnInit {
 
   goBackToPaymentSelection() {
     const orderNumber = !this.cancel
-      ? this.azulOrderQueryParams['OrderNumber']
+      ? this.azulOrderQueryParams['RealOrderID']
       : this.orderId;
 
     this.router.navigate(

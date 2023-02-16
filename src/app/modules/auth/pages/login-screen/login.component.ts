@@ -407,7 +407,7 @@ export class LoginComponent implements OnInit {
             this.orderId &&
             (this.auth === 'anonymous' || this.auth === 'payment')
           ) {
-            this.authOrder(this.userID);
+            await this.authOrder(this.userID);
             return;
           }
 
@@ -450,7 +450,7 @@ export class LoginComponent implements OnInit {
           false
         );
         if (anonymous) {
-          this.authOrder(anonymous._id);
+          await this.authOrder(anonymous._id);
           return;
         } else {
           this.toastr.error('Algo salio mal', null, {
@@ -596,11 +596,11 @@ export class LoginComponent implements OnInit {
         }
 
         if (this.auth === 'azul-login') {
-          this.redirectFromQueryParams();
+          return this.redirectFromQueryParams();
         }
 
         if (this.orderId && !this.toValidate) {
-          this.authOrder(checkOTP.user._id);
+          await this.authOrder(checkOTP.user._id);
           return;
         }
 
@@ -704,7 +704,7 @@ export class LoginComponent implements OnInit {
           return;
         }
         if (this.orderId) {
-          this.authOrder(session.user._id);
+          await this.authOrder(session.user._id);
           this.status = 'ready';
           return;
         }
@@ -772,7 +772,7 @@ export class LoginComponent implements OnInit {
         return;
       }
       if (this.orderId) {
-        this.authOrder(signin.user._id);
+        await this.authOrder(signin.user._id);
 
         if (!this.paymentWithAzul) return;
       }

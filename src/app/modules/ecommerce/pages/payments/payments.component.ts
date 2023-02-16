@@ -247,93 +247,103 @@ export class PaymentsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.status = 'loading';
-    const orderId = this.route.snapshot.paramMap.get('orderId');
-    const redirectToAzulPaymentsPage = Boolean(
-      this.route.snapshot.queryParamMap.get('redirectToAzul')
-    );
-    if (orderId) {
-      const { orderStatus } = await this.orderService.getOrderStatus(orderId);
-      if (orderStatus === 'draft')
-        this.order = (await this.orderService.preOrder(orderId)).order;
-      else if (orderStatus === 'in progress')
-        this.order = (await this.orderService.order(orderId)).order;
-      else {
-        this.orderCompleted(orderId);
-        return;
-      }
-      if (!this.headerService.saleflow)
-        this.headerService.saleflow = this.headerService.getSaleflow();
-      if (
-        !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      ) {
-        this.orderCompleted();
-        return;
-      }
-      this.paymentAmount = this.order.subtotals.reduce(
-        (a, b) => a + b.amount,
-        0
-      );
-      if (this.order.items[0].customizer)
-        this.paymentAmount = this.paymentAmount * 1.18;
-      this.merchant = await this.merchantService.merchant(
-        this.order.merchants?.[0]?._id
-      );
-      if (this.order.items[0].post) {
-        this.post = (
-          await this.postsService.getPost(this.order.items[0].post._id)
-        ).post;
-      }
-    }
-    const exchangeData = await this.walletService.exchangeData(
-      this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-    );
+    this.route.params.subscribe((params) => {
+      this.route.queryParams.subscribe(async (queryParams) => {
+        const orderId = params['orderId'];
+        const { redirectToAzul } = queryParams;
 
-    this.banks = exchangeData?.ExchangeData?.bank;
+        this.status = 'loading';
+        const redirectToAzulPaymentsPage = Boolean(redirectToAzul);
+        if (orderId) {
+          const { orderStatus } = await this.orderService.getOrderStatus(
+            orderId
+          );
+          if (orderStatus === 'draft')
+            this.order = (await this.orderService.preOrder(orderId)).order;
+          else if (orderStatus === 'in progress')
+            this.order = (await this.orderService.order(orderId)).order;
+          else {
+            this.orderCompleted(orderId);
+            return;
+          }
+          if (!this.headerService.saleflow)
+            this.headerService.saleflow = this.headerService.getSaleflow();
+          if (
+            !this.headerService.saleflow?.module?.paymentMethod?.paymentModule
+              ?._id
+          ) {
+            this.orderCompleted();
+            return;
+          }
+          this.paymentAmount = this.order.subtotals.reduce(
+            (a, b) => a + b.amount,
+            0
+          );
+          if (this.order.items[0].customizer)
+            this.paymentAmount = this.paymentAmount * 1.18;
+          this.merchant = await this.merchantService.merchant(
+            this.order.merchants?.[0]?._id
+          );
+          if (this.order.items[0].post) {
+            this.post = (
+              await this.postsService.getPost(this.order.items[0].post._id)
+            ).post;
+          }
+        }
+        const exchangeData = await this.walletService.exchangeData(
+          this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+        );
 
-    const registeredUser = JSON.parse(
-      localStorage.getItem('registered-user')
-    ) as User;
-    this.currentUser =
-      this.order?.user || this.headerService.user || registeredUser;
-    this.logged = Boolean(await this.authService.me());
+        this.banks = exchangeData?.ExchangeData?.bank;
 
-    this.status = 'complete';
+        const registeredUser = JSON.parse(
+          localStorage.getItem('registered-user')
+        ) as User;
+        this.currentUser =
+          this.order?.user || this.headerService.user || registeredUser;
+        this.logged = Boolean(await this.authService.me());
 
-    const viewsMerchants = await this.merchantService.viewsMerchants({
-      findBy: {
-        merchant: this.headerService.saleflow.merchant._id,
-        type: 'refund',
-      },
+        this.status = 'complete';
+
+        const viewsMerchants = await this.merchantService.viewsMerchants({
+          findBy: {
+            merchant: this.headerService.saleflow.merchant._id,
+            type: 'refund',
+          },
+        });
+
+        if (viewsMerchants && viewsMerchants.length > 0) {
+          this.viewMerchantForRefund = viewsMerchants[0];
+        }
+
+        this.azulPaymentsSupported =
+          await this.integrationService.integrationPaymentMethod(
+            'azul',
+            this.headerService.saleflow.merchant._id
+          );
+
+        if (!this.azulPaymentsSupported) {
+          this.onlinePaymentsOptions.pop();
+        }
+
+        if (redirectToAzulPaymentsPage && !this.order.user) {
+          this.order = (
+            await this.orderService.authOrder(
+              this.order._id,
+              this.currentUser._id
+            )
+          ).authOrder;
+        }
+
+        if (redirectToAzulPaymentsPage && this.currentUser.email) {
+          this.redirectToAzulPaymentPage();
+        } else if (redirectToAzulPaymentsPage && !this.currentUser.email) {
+          this.openedDialogFlow = true;
+        }
+
+        if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+      });
     });
-
-    if (viewsMerchants && viewsMerchants.length > 0) {
-      this.viewMerchantForRefund = viewsMerchants[0];
-    }
-
-    this.azulPaymentsSupported =
-      await this.integrationService.integrationPaymentMethod(
-        'azul',
-        this.headerService.saleflow.merchant._id
-      );
-
-    if (!this.azulPaymentsSupported) {
-      this.onlinePaymentsOptions.pop();
-    }
-
-    if(redirectToAzulPaymentsPage && !this.order.user) {
-      this.order = (
-        await this.orderService.authOrder(this.order._id, this.currentUser._id)
-      ).authOrder;
-    }
-
-    if (redirectToAzulPaymentsPage && this.currentUser.email) {
-      this.redirectToAzulPaymentPage();
-    } else if (redirectToAzulPaymentsPage && !this.currentUser.email) {
-      this.openedDialogFlow = true;
-    }
-
-    if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
   }
 
   checkIfAzulPaymentURLIsAvailable() {
@@ -523,12 +533,14 @@ export class PaymentsComponent implements OnInit {
         clientURI +
         '/ecommerce/' +
         this.headerService.saleflow._id +
-        '/payments-redirection?typeOfPayment=azul&success=true&orderId=' + this.order._id,
+        '/payments-redirection?typeOfPayment=azul&success=true&orderId=' +
+        this.order._id,
       DeclinedUrl:
         clientURI +
         '/ecommerce/' +
         this.headerService.saleflow._id +
-        '/payments-redirection?typeOfPayment=azul&success=false',
+        '/payments-redirection?typeOfPayment=azul&success=false&orderId=' +
+        this.order._id,
       CancelUrl:
         clientURI +
         '/ecommerce/' +
