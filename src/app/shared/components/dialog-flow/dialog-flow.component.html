@@ -21,7 +21,7 @@
       [ngClass]="{
         visible: status === 'OPEN'
       }"
-      (click)="openOrClose($event)"
+      (click)="!blockClosure ? openOrClose($event) : null"
     >
       <swiper
         [config]="swiperConfig"

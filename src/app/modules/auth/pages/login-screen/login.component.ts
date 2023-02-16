@@ -34,7 +34,8 @@ type AuthTypes =
   | 'address'
   | 'anonymous'
   | 'payment'
-  | 'merchant';
+  | 'merchant'
+  | 'azul-login';
 
 interface ValidateData {
   name: string;
@@ -268,6 +269,7 @@ export class LoginComponent implements OnInit {
       }
     } else if (this.auth === 'merchant') {
       console.log('merchant access');
+    } else if (this.auth === 'azul-login') {
     } else {
       this.auth = 'phone';
       this.loggin = false;
@@ -405,9 +407,26 @@ export class LoginComponent implements OnInit {
             this.orderId &&
             (this.auth === 'anonymous' || this.auth === 'payment')
           ) {
-            this.authOrder(this.userID);
+            await this.authOrder(this.userID);
             return;
           }
+
+          if (this.auth === 'azul-login') {
+            await this.authService.generateMagicLink(
+              this.phoneNumber.value.e164Number.split('+')[1],
+              this.redirectionRoute,
+              null,
+              'UserAccess',
+              null
+            );
+
+            this.toastr.info(
+              'Se ha enviado un link de acceso a tu telefono',
+              null,
+              { timeOut: 8000 }
+            );
+          }
+
           this.phoneNumber.setValue(nationalNumber);
           this.CountryISO = countryIso;
           this.status = 'ready';
@@ -431,7 +450,7 @@ export class LoginComponent implements OnInit {
           false
         );
         if (anonymous) {
-          this.authOrder(anonymous._id);
+          await this.authOrder(anonymous._id);
           return;
         } else {
           this.toastr.error('Algo salio mal', null, {
@@ -440,6 +459,22 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
         }
       } else {
+        if (this.auth === 'azul-login') {
+          await this.authService.generateMagicLink(
+            this.phoneNumber.value.e164Number.split('+')[1],
+            this.redirectionRoute,
+            null,
+            'UserAccess',
+            null
+          );
+
+          this.toastr.info(
+            'Se ha enviado un link de acceso a tu telefono',
+            null,
+            { timeOut: 2000 }
+          );
+        }
+
         // El user no esta registrado
         if (this.auth === 'address') {
           // Guardar una dirección
@@ -487,6 +522,7 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
           return;
         }
+
         this.toastr.info('Al registro', null, { timeOut: 2000 });
         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
         this.password.setValue(this.merchantNumber.slice(-4));
@@ -558,8 +594,13 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
           return;
         }
+
+        if (this.auth === 'azul-login') {
+          return this.redirectFromQueryParams();
+        }
+
         if (this.orderId && !this.toValidate) {
-          this.authOrder(checkOTP.user._id);
+          await this.authOrder(checkOTP.user._id);
           return;
         }
 
@@ -663,7 +704,7 @@ export class LoginComponent implements OnInit {
           return;
         }
         if (this.orderId) {
-          this.authOrder(session.user._id);
+          await this.authOrder(session.user._id);
           this.status = 'ready';
           return;
         }
@@ -731,8 +772,9 @@ export class LoginComponent implements OnInit {
         return;
       }
       if (this.orderId) {
-        this.authOrder(signin.user._id);
-        return;
+        await this.authOrder(signin.user._id);
+
+        if (!this.paymentWithAzul) return;
       }
 
       // if (this.itemId) {

@@ -21,9 +21,10 @@ import { ArticleDetailComponent } from './pages/article-detail/article-detail.co
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
+import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
+import { ContactLandingComponent } from 'src/app/shared/components/contact-landing/contact-landing.component';
 import { CollectionsComponent } from 'src/app/modules/ecommerce/pages/collections/collections.component';
 import { TagItemsComponent } from 'src/app/modules/ecommerce/pages/tag-items/tag-items.component';
-import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 
 const routes: Routes = [
   {
@@ -60,10 +61,6 @@ const routes: Routes = [
     path: 'store/:merchantSlug',
     redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
-  },
-  {
-    path: 'terms-of-use/:viewsMerchantId',
-    component: TermsOfUseComponent,
   },
   {
     path: ':merchantSlug',
@@ -137,6 +134,10 @@ const routes: Routes = [
         path: 'contact-landing/:idUser',
         component: ContactLandingContainerComponent,
       },
+      {
+        path: 'terms-of-use/:viewsMerchantId',
+        component: TermsOfUseComponent,
+      },
     ],
   },
 ];
@@ -160,8 +161,9 @@ const routes: Routes = [
     ArticleDetailComponent,
     CreateArticleComponent,
     TermsOfUseComponent,
+    ContactLandingContainerComponent,
     CollectionsComponent,
-    TagItemsComponent
+    TagItemsComponent,
   ],
   imports: [
     CommonModule,
