@@ -1,0 +1,83 @@
+<div class="container">
+  <header class="header">
+    <a [routerLink]="['../dashboard']">
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
+    </a>
+    <p>Data</p>
+  </header>
+  <!-- <div class="options">
+    <app-options-bar
+      type="3"
+      [options]="[{ title: 'FACTURAS' }, { title: 'ARTICULOS' }]"
+    ></app-options-bar>
+  </div> -->
+  <section style="padding-top: 16px">
+    <div class="flex">
+      <p class="text">facturas en proceso</p>
+      <p class="bold">{{ orders?.length | number }}</p>
+    </div>
+
+    <div style="padding: 0px 17px">
+      <div style="margin-bottom: 5px">
+        <a [routerLink]="['../order-list/status', 'in-progress']">
+          <app-collection-card
+            title="Por Entregarse"
+            [description]="
+              orderStatus.inProgress.length + ' facturas en total.'
+            "
+          ></app-collection-card>
+        </a>
+      </div>
+      <div style="margin-bottom: 5px">
+        <a [routerLink]="['../order-list/status', 'pending']">
+          <app-collection-card
+            title="Listas para Entregarse"
+            [description]="orderStatus.pending.length + ' facturas en total.'"
+          ></app-collection-card>
+        </a>
+      </div>
+      <div style="margin-bottom: 5px">
+        <a [routerLink]="['../order-list/status', 'shipped']">
+          <app-collection-card
+            title="De camino a ser Entregadas"
+            [description]="orderStatus.shipped.length + ' facturas en total.'"
+          ></app-collection-card>
+        </a>
+      </div>
+      <div style="margin-bottom: 5px">
+        <a [routerLink]="['../order-list/status', 'delivered']">
+          <app-collection-card
+            title="Entregadas"
+            [description]="orderStatus.delivered.length + ' facturas en total.'"
+          ></app-collection-card>
+        </a>
+      </div>
+      <div style="margin-bottom: 5px">
+        <a [routerLink]="['../order-list/status', 'pickup']">
+          <app-collection-card
+            title="Pick Up"
+            [description]="orderStatus.pickup.length + ' facturas en total.'"
+          ></app-collection-card>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section *ngIf="tags.length">
+    <div class="flex" style="margin-top: 47px">
+      <p class="text">mis listados</p>
+    </div>
+
+    <div
+      style="padding: 0px 17px; margin-bottom: 5px"
+      *ngFor="let tag of tags; index as i"
+    >
+      <a [routerLink]="['../order-list/tags', tag._id]">
+        <app-collection-card
+          [title]="tag.name"
+          [description]="tag.orderAmount + ' facturas en total'"
+        ></app-collection-card>
+      </a>
+    </div>
+  </section>
+</div>

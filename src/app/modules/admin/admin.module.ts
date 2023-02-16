@@ -25,6 +25,8 @@ import { TagsViewComponent } from './pages/tags-view/tags-view.component';
 import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 import { ViewConfigurationComponent } from './pages/view-configuration/view-configuration.component';
 import { WebformMetricsComponent } from './pages/webform-metrics/webform-metrics.component';
+import { OrderStatusViewComponent } from './pages/order-status-view/order-status-view.component';
+import { OrderListComponent } from './pages/order-list/order-list.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -158,6 +160,23 @@ const routes: Routes = [
         path: 'webform-metrics',
         component: WebformMetricsComponent,
       },
+      {
+        path: 'order-status-view',
+        component: OrderStatusViewComponent,
+      },
+      {
+        path: 'order-list',
+        children: [
+          {
+            path: 'tags/:tagId',
+            component: OrderListComponent,
+          },
+          {
+            path: 'status/:deliveryStatus',
+            component: OrderListComponent,
+          },
+        ],
+      },
     ],
   },
   {
@@ -185,6 +204,8 @@ const routes: Routes = [
     BiosEditComponent,
     ViewConfigurationComponent,
     WebformMetricsComponent,
+    OrderStatusViewComponent,
+    OrderListComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

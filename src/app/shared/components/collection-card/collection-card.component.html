@@ -1,0 +1,17 @@
+<mat-card class="mat-elevation-z0">
+  <div class="container">
+    <img *ngIf="imgURL" [src]="imgURL" class="imgBox shadow" alt="" />
+    <div *ngIf="!imgURL" class="imgBox" alt=""></div>
+    <div class="infoBox">
+      <div class="title">
+        <p>{{ title }}</p>
+        <button *ngIf="icon">
+          <img class="icon" [src]="environment + '/' + icon" />
+        </button>
+      </div>
+      <div class="desc">
+        <p>{{ description }}</p>
+      </div>
+    </div>
+  </div>
+</mat-card>

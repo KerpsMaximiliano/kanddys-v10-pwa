@@ -155,6 +155,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
 import { CreateTagComponent } from './dialogs/create-tag/create-tag.component';
+import { CollectionCardComponent } from './components/collection-card/collection-card.component';
+import { MatCardModule } from '@angular/material/card';
+import { CompactCardComponent } from './components/compact-card/compact-card.component';
 
 const imports = [
   CommonModule,
@@ -184,6 +187,7 @@ const imports = [
   MatFormFieldModule,
   MatInputModule,
   MatSnackBarModule,
+  MatCardModule,
 ];
 const declarations = [
   // Pages
@@ -319,6 +323,8 @@ const declarations = [
   ConfirmationDialogComponent,
   StepperFormComponent,
   CreateTagComponent,
+  CollectionCardComponent,
+  CompactCardComponent,
 ];
 
 @NgModule({

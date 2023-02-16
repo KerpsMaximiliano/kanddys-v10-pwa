@@ -24,9 +24,14 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
-import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateTagComponent } from 'src/app/shared/dialogs/create-tag/create-tag.component';
+import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
 
 interface Image {
   src: string;
@@ -94,18 +99,16 @@ export class OrderDetailComponent implements OnInit {
   ];
   playVideoOnFullscreen = playVideoOnFullscreen;
   notify: boolean = false;
+  orderDeliveryStatus = this.orderService.orderDeliveryStatus;
 
-  deliveryStatusOptions = [
+  deliveryStatusOptions: DropdownOptionItem[] = [
     { text: 'Pick Up', value: 'pickup', selected: false },
     { text: 'Todo listo para entregarse', value: 'pending', selected: false },
     { text: 'De camino a ser entregado', value: 'shipped', selected: false },
     { text: 'Entregado', value: 'delivered', selected: false },
+    { text: 'Por Entregarse', value: 'in progress', selected: false },
   ];
-  tagOptions: {
-    text: string;
-    value: string;
-    selected: boolean;
-  }[];
+  tagOptions: DropdownOptionItem[];
   tagPanelState: boolean;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
@@ -157,7 +160,7 @@ export class OrderDetailComponent implements OnInit {
     // );
 
     // if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
-
+    lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
 
     if (this.order.items) {
@@ -223,6 +226,10 @@ export class OrderDetailComponent implements OnInit {
       .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
     await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+
+    if (this.isMerchant) {
+      this.handleStatusOptions(this.order.orderStatusDelivery);
+    }
 
     if (this.order.items[0].post) {
       this.post = (
@@ -342,6 +349,7 @@ export class OrderDetailComponent implements OnInit {
         selected: this.order.tags.includes(tag._id),
       };
     });
+    unlockUI();
   }
 
   // async getAdjacentOrders() {
@@ -552,22 +560,15 @@ export class OrderDetailComponent implements OnInit {
   };
 
   async changeOrderStatus(value: OrderStatusDeliveryType) {
-    const result = await this.orderService.orderSetStatusDelivery(
-      value,
-      this.order._id
-    );
-    this.order.orderStatusDelivery = result.orderStatusDelivery;
+    this.order.orderStatusDelivery = value;
+    this.handleStatusOptions(value);
+    await this.orderService.orderSetStatusDelivery(value, this.order._id);
   }
 
-  orderDeliveryStatus() {
-    return (
-      {
-        pickup: 'Pick Up',
-        pending: 'Todo listo para entregarse',
-        shipped: 'De camino a ser entregado',
-        delivered: 'Entregado',
-      }[this.order?.orderStatusDelivery] || 'Desconocido'
-    );
+  handleStatusOptions(value: OrderStatusDeliveryType) {
+    this.deliveryStatusOptions.forEach((option) => {
+      option.hide = option.value === value;
+    });
   }
 
   goToStore() {
