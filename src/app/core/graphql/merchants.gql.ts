@@ -32,6 +32,7 @@ export const body = `
   activity
   active
   showItems
+  address
   owner { 
     phone
     email
@@ -85,6 +86,7 @@ export const merchantDefault = gql`
       image
       activity
       bio
+      address
       owner {
         _id
         phone
@@ -416,7 +418,9 @@ export const viewsMerchant = gql`
     viewsMerchant(id: $id) {
       _id
       description
-      numeration {
+      type
+      merchant
+      numeration{
         value
       }
     }

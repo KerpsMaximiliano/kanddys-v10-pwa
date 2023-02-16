@@ -5,12 +5,15 @@
     </button>
     <p class="header-title" *ngIf="contactID">{{ contactID }}</p>
     <p class="header-title" *ngIf="!contactID">Mi perfil</p>
+
     <!--
       <button class="settings">
         <img
-        [routerLink]="['/admin/bios-edit']"
-        [queryParams]="{ contactId: idUser }"
-        [src]="environment + '/settings.svg'" alt="settings" />
+          [routerLink]="['/admin/bios-edit']"
+          [queryParams]="{ contactId: idUser }"
+          [src]="environment + '/settings.svg'"
+          alt="settings"
+        />
       </button>
     -->
   </div>
@@ -33,13 +36,17 @@
             ') no-repeat  center/cover'
         }"
       >
-        <img class="eyeIcon" [src]="environment + '/eye.svg'" />
-        <div class="markerCont">
+        <a
+          [href]="locationString"
+          *ngIf="locationString && locationString.length"
+          target="_blank"
+          class="markerCont"
+        >
           <img
             class="locationIcon"
             [src]="environment + '/location-2-black.svg'"
           />
-        </div>
+        </a>
       </div>
       <div
         *ngIf="!img"
@@ -55,59 +62,107 @@
         </div>
       </div>
       <p class="contactID">{{ contactID }}</p>
+      <p *ngIf="contactDirection" class="contactID">{{ contactDirection }}</p>
       <p *ngIf="contactBio" class="bio">{{ contactBio }}</p>
     </div>
     <div class="dataSect">
-      <div *ngIf="whatsapp" class="dataBox">
-        <img
-          class="icon"
-          [src]="environment + '/whatsapp_black.svg'"
-          width="32"
-          height="34"
-        />
-        <p>
-          <a
-            [style.textDecoration]="'none'"
-            [style.color]="'inherit'"
-            [href]="'https://wa.me/' + whatsapp"
-            target="_blank"
-            >{{ whatsapp }}</a
-          >
-        </p>
-      </div>
-      <div *ngIf="telegram" class="dataBox">
-        <img
-          class="icon"
-          [src]="environment + '/telegram.svg'"
-          width="32"
-          height="33"
-        />
-        <p>
-          <a
-            [style.textDecoration]="'none'"
-            [style.color]="'inherit'"
-            [href]="'https://telegram.me/' + whatsapp"
-            target="_blank"
-            >{{ telegram }}</a
-          >
-        </p>
-      </div>
-      <div *ngIf="phone" class="dataBox">
-        <img
-          class="icon"
-          [src]="environment + '/phone-black.svg'"
-          width="32"
-          height="32"
-        />
-        <p>
-          <a
-            [style.textDecoration]="'none'"
-            [style.color]="'inherit'"
-            [href]="'tel:' + phone"
-            >{{ phone }}</a
-          >
-        </p>
+      <div *ngFor="let link of links" [ngSwitch]="link.name">
+        <a
+          [style.textDecoration]="'none'"
+          [style.color]="'inherit'"
+          [href]="'https://wa.me/' + link.value"
+          target="_blank"
+          *ngSwitchCase="'whatsapp'"
+          class="dataBox"
+        >
+          <img
+            class="icon"
+            [src]="environment + '/whatsapp_black.svg'"
+            width="32"
+            height="34"
+          />
+          <p>{{ link.name }}</p>
+        </a>
+
+        <a
+          [style.textDecoration]="'none'"
+          [style.color]="'inherit'"
+          [href]="'https://telegram.me/' + link.value"
+          target="_blank"
+          *ngSwitchCase="'telegram'"
+          class="dataBox"
+        >
+          <img
+            class="icon"
+            [src]="environment + '/telegram.svg'"
+            width="32"
+            height="33"
+          />
+          <p>{{ link.name }}</p>
+        </a>
+
+        <a
+          [style.textDecoration]="'none'"
+          [style.color]="'inherit'"
+          [href]="'tel:' + link.value"
+          *ngSwitchCase="'phone'"
+          class="dataBox"
+        >
+          <img
+            class="icon"
+            [src]="environment + '/phone-black.svg'"
+            width="32"
+            height="32"
+          />
+          <p>{{ link.name }}</p>
+        </a>
+
+        <a
+          [style.textDecoration]="'none'"
+          [style.color]="'inherit'"
+          [href]="
+            link.value.startsWith('https') || link.value.startsWith('http')
+              ? link.value
+              : isEmail(link.value)
+              ? 'mailto:' + link.value
+              : 'tel:' + link.value
+          "
+          [target]="
+            link.value.startsWith('https') || link.value.startsWith('http')
+              ? '_blank'
+              : '_self'
+          "
+          *ngSwitchDefault
+          class="dataBox"
+        >
+          <div
+            class="linkImagge"
+            *ngIf="link.image"
+            [ngStyle]="{
+              backgroundImage: 'url(' + environment + link.image + ')',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              width: '39px',
+              height: '39px',
+              borderRadius: '5px'
+            }"
+          ></div>
+
+          <p>{{ link.name }}</p>
+        </a>
       </div>
     </div>
+    <button
+      mat-raised-button
+      color="warn"
+      class="delete-me"
+      *ngIf="isOwner"
+      (click)="openConfirmationDialog()"
+    >
+      <span> Borra mi perfil </span>
+
+      <mat-icon>delete</mat-icon>
+    </button>
   </div>
 </div>

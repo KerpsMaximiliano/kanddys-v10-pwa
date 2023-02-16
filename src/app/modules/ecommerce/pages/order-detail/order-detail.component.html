@@ -189,7 +189,7 @@
       </div>
     </section>
 
-    <section *ngIf="isMerchant" class="section" style="margin-top: 50px">
+    <section class="section" style="margin-top: 50px">
       <h2
         class="section-title"
         [ngClass]="{
@@ -198,7 +198,11 @@
       >
         Pagos:
       </h2>
-      <div class="items-container" style="margin-top: 5px" *ngIf="order?.ocr">
+      <div
+        class="items-container"
+        style="margin-top: 5px"
+        *ngIf="order?.ocr || payedWithAzul"
+      >
         <div
           class="image-container"
           #elemt
@@ -207,19 +211,20 @@
           (mouseleave)="stopDragging()"
           (mousemove)="moveEvent($event, elemt)"
         >
-          <button
-            (click)="order.ocr && openImageModal(order.ocr.image)"
-            class="btn"
-          >
+          <button (click)="order.ocr ? openImageModal(order.ocr.image) : null">
             <div
               class="image"
               [ngStyle]="{
-                'background-image': order.ocr.image
-                  ? 'url(' + order.ocr.image + ') '
-                  : 'url(/assets/images/noimage.png)'
+                'background-image':
+                  order.ocr && order.ocr.image
+                    ? 'url(' + order.ocr.image + ') '
+                    : payedWithAzul
+                    ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
+                    : 'url(/assets/images/noimage.png)'
               }"
             >
               <img
+                *ngIf="order.ocr"
                 [src]="
                   order.ocr ? order.ocr.image : '/assets/images/noimage.png'
                 "

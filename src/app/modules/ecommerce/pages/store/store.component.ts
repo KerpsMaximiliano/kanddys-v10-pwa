@@ -16,6 +16,10 @@ import { TagsService } from 'src/app/core/services/tags.service';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import SwiperCore, { Virtual } from 'swiper/core';
+import { IntegrationsService } from 'src/app/core/services/integrations.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 
 SwiperCore.use([Virtual]);
 
@@ -57,6 +61,7 @@ export class StoreComponent implements OnInit {
     spaceBetween: 5,
   };
 
+  azulPaymentsSupported: boolean = false;
   swiperConfigHighlightedItems: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
@@ -93,6 +98,9 @@ export class StoreComponent implements OnInit {
     private saleflow: SaleFlowService,
     private tagsService: TagsService,
     public _DomSanitizer: DomSanitizer,
+    private authService: AuthService,
+    private integrationService: IntegrationsService,
+    private dialog: DialogService,
     private appService: AppService
   ) {}
 
@@ -131,8 +139,9 @@ export class StoreComponent implements OnInit {
         };
         const types: any[] = [
           { type: 'refund', text: 'Políticas de reembolsos' },
-          { type: 'delivery', text: 'Políticas de entregas' },
+          { type: 'delivery-politics', text: 'Políticas de entregas' },
           { type: 'security', text: 'Políticas de seguridad' },
+          { type: 'privacy', text: 'Políticas de privacidad' },
         ];
         for (const { type, text } of types) {
           pagination.findBy.type = type;
@@ -205,6 +214,13 @@ export class StoreComponent implements OnInit {
       },
     });
 
+    //Verifica si son soportados los pagos con azul
+    this.azulPaymentsSupported =
+      await this.integrationService.integrationPaymentMethod(
+        'azul',
+        this.headerService.saleflow.merchant._id
+      );
+
     // Obteniendo la lista de los items seleccionados
     const selectedItems = this.headerService.order?.products?.length
       ? this.headerService.order.products.map((subOrder) => subOrder.item)
@@ -257,6 +273,59 @@ export class StoreComponent implements OnInit {
       },
     });
   }
+
+  //Same dialog as openDialog() but with StoreShare
+  openUserManagementDialog = () => {
+    const list: StoreShareList[] = [
+      {
+        title: 'Menu de opciones',
+        options: [
+          {
+            text: 'Ir a mi perfil',
+            mode: 'func',
+            func: async () => {
+              await this.router.navigate([
+                `/others/user-contact-landing/${this.headerService.user._id}`,
+              ]);
+            },
+          },
+          {
+            text: 'Cerrar sesión',
+            mode: 'func',
+            func: async () => {
+              await this.authService.signoutThree();
+            },
+          },
+        ],
+      },
+    ];
+
+    if (!this.headerService.user) {
+      list[0].options = [];
+      list[0].options.push({
+        text: 'Iniciar sesión',
+        mode: 'func',
+        func: async () => {
+          this.router.navigate(['auth/login'], {
+            queryParams: {
+              redirect: `ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
+            },
+          });
+        },
+      });
+    }
+
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+        hideCancelButtton: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
 
   async getTags() {
     const { tags: tagsList } = await this.tagsService.tags({
@@ -369,7 +438,21 @@ export class StoreComponent implements OnInit {
 
     this.savePageSnapshot();
 
-    this.router.navigate(['/ecommerce/terms-of-use/' + term._id]);
+    this.router.navigate([
+      '/ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/terms-of-use/' +
+        term._id,
+    ]);
+  }
+
+  closeFooter() {
+    document.getElementById('footer').classList.add('hide');
+    document.getElementById('footerbtn').classList.remove('hide');
+  }
+  displayFooter() {
+    document.getElementById('footer').classList.remove('hide');
+    document.getElementById('footerbtn').classList.add('hide');
   }
 
   toggleItemInCart(index: number) {
