@@ -1049,16 +1049,15 @@ export class ItemsDashboardComponent implements OnInit {
       }
     }
 
-    const allItemIndex = this.allItems.findIndex((item) => item._id === id);
-    const highlightedItemsIndex = this.highlightedItems.findIndex(
-      (item) => item._id === id
-    );
-    const visibleItemsIndex = this.activeItems.findIndex(
-      (item) => item._id === id
-    );
-    const invisibleItemsIndex = this.inactiveItems.findIndex(
-      (item) => item._id === id
-    );
+    const allItemIndex = this.resetStatusIndex(id, this.allItems);
+    let highlightedItemsIndex = this.resetStatusIndex(id, this.highlightedItems);
+    let visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
+    let invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
+
+    if (highlightedItemsIndex >= 0 && visibleItemsIndex >= 0) {
+      this.activeItems.splice(visibleItemsIndex, 1);
+      visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
+    }
 
     const toggleStatus = () => {
       return new Promise((resolve, reject) => {
@@ -1073,42 +1072,59 @@ export class ItemsDashboardComponent implements OnInit {
 
           if (newStatus === 'disabled' && visibleItemsIndex >= 0) {
             this.activeItems.splice(visibleItemsIndex, 1);
-            this.inactiveItems.push(item);
+            this.inactiveItems.unshift(item);
+
+            visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
+            invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
           }
 
           if (newStatus === 'disabled' && highlightedItemsIndex >= 0) {
             this.highlightedItems.splice(highlightedItemsIndex, 1);
-            this.inactiveItems.push(item);
+            this.inactiveItems.unshift(item);
+
+            highlightedItemsIndex = this.resetStatusIndex(id, this.highlightedItems);
+            invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
           }
 
           if (newStatus === 'active' && invisibleItemsIndex >= 0) {
             this.inactiveItems.splice(invisibleItemsIndex, 1);
-            this.activeItems.push(item);
+            this.activeItems.unshift(item);
+
+            invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
+            visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
           }
 
           if (newStatus === 'featured' && invisibleItemsIndex >= 0) {
             this.inactiveItems.splice(invisibleItemsIndex, 1);
-            this.highlightedItems.push(item);
+            this.highlightedItems.unshift(item);
 
-            setTimeout(() => {
-              if (
-                this.highlightedItemsSwiper &&
-                this.highlightedItemsSwiper.directiveRef
-              )
-                this.highlightedItemsSwiper.directiveRef.update();
-            }, 300);
+            invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
+            highlightedItemsIndex = this.resetStatusIndex(id, this.highlightedItems);
+
+            // setTimeout(() => {
+            //   if (
+            //     this.highlightedItemsSwiper &&
+            //     this.highlightedItemsSwiper.directiveRef
+            //   )
+            //     this.highlightedItemsSwiper.directiveRef.update();
+            // }, 300);
           }
 
           if (newStatus === 'featured' && visibleItemsIndex >= 0) {
-            this.highlightedItems.push(item);
 
-            setTimeout(() => {
-              if (
-                this.highlightedItemsSwiper &&
-                this.highlightedItemsSwiper.directiveRef
-              )
-                this.highlightedItemsSwiper.directiveRef.update();
-            }, 300);
+            this.activeItems.splice(visibleItemsIndex, 1);
+            this.highlightedItems.unshift(item);
+
+            highlightedItemsIndex = this.resetStatusIndex(id, this.highlightedItems);
+            visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
+
+            // setTimeout(() => {
+            //   if (
+            //     this.highlightedItemsSwiper &&
+            //     this.highlightedItemsSwiper.directiveRef
+            //   )
+            //     this.highlightedItemsSwiper.directiveRef.update();
+            // }, 300);
           }
 
           resolve(true);
@@ -1357,6 +1373,12 @@ export class ItemsDashboardComponent implements OnInit {
       flags: ['no-header'],
     });
   };
+
+  private resetStatusIndex(id: string, array: Item[]) {
+    return array.findIndex(
+      (item) => item._id === id
+    );
+  }
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
     if (!this.selectedTagsCounter) {

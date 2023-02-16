@@ -1,13 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { LinkInput } from 'src/app/core/models/LinkInput';
 import { PaginationInput } from 'src/app/core/models/saleflow';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { BannersService } from 'src/app/core/services/banners.service';
 import { ContactService } from 'src/app/core/services/contact.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 @Component({
   selector: 'app-bios-edit',
@@ -15,6 +18,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
   styleUrls: ['./bios-edit.component.scss'],
 })
 export class BiosEditComponent implements OnInit, OnDestroy {
+  @ViewChild('fileInput') fileInput: any;
   status: string;
   name: string = 'Merchant ID';
   bio: string =
@@ -32,6 +36,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   merchantDefault: string;
   src: any;
   logo: any;
+  changedLogo: boolean = false;
   file: any;
   fileLogo: any;
   links: any = [];
@@ -40,6 +45,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
   linkIndex: number;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
   accept: string;
+  slug:string;
 
   constructor(
     private router: Router,
@@ -47,7 +53,10 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     private _MerchantService: MerchantsService,
     private _DomSanitizer: DomSanitizer,
     private _ActivatedRoute: ActivatedRoute,
-    private _BannersService: BannersService
+    private _BannersService: BannersService,
+    private _SaleFlowService: SaleFlowService,
+    public _HeaderService: HeaderService,
+    private _AuthService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -57,14 +66,21 @@ export class BiosEditComponent implements OnInit, OnDestroy {
         if (contactId) this.contactId = contactId;
         this.initController();
         const _merchantDefault = await this._MerchantService.merchantDefault();
+        const { _id } = _merchantDefault;
+        const { merchant } = await this._SaleFlowService.saleflowDefault(_id);
+        const { slug } = merchant;
+        this.slug = slug;
         if (contactId) {
-          const { _id } = _merchantDefault;
           const paginate: PaginationInput = {
             findBy: {
               _id: contactId,
             },
           };
           const contacts = await this._ContactService.contacts(paginate);
+          if(contactId&&!contacts.length){
+            this.contactId = null;
+            this.router.navigate(['admin','bios-edit']);
+          }
           const [{ name, description, link, image }] = contacts.length
             ? contacts
             : [{} as any];
@@ -95,7 +111,6 @@ export class BiosEditComponent implements OnInit, OnDestroy {
           this.controller.get('merchant').setValue(_id);
           this.controller.get('name').setValue(name);
           this.controller.get('description').setValue(bio);
-          console.log('social: ', social);
           this.links = social || [];
         }
       })();
@@ -149,6 +164,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       const { type } = file;
       let result = reader.result;
       this.src = result;
+      this.fileInput.nativeElement.value = '';
     };
   }
 
@@ -163,6 +179,7 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.logo = this._DomSanitizer.bypassSecurityTrustStyle(`url(
       ${result})
       no-repeat center center / cover #fff`);
+      this.changedLogo = true;
     };
   }
 
@@ -170,7 +187,15 @@ export class BiosEditComponent implements OnInit, OnDestroy {
     return this.controller.get(name) as FormControl;
   }
   goBack() {
-    this.router.navigate(['admin/bios-main']);
+    (async () => {
+      const { _id } = await this._AuthService.me();
+      this.router.navigate([
+        'ecommerce',
+        this.slug,
+        'contact-landing',
+        _id
+      ]);
+    })();
   }
   backToMain() {
     if (
@@ -356,9 +381,9 @@ export class BiosEditComponent implements OnInit, OnDestroy {
       this.clicked4 = false;
     }
     this.file =
-      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_black.svg';
     this.src =
-      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp.svg';
+      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_black.svg';
   }
   isClicked2() {
     this.resetSrc();

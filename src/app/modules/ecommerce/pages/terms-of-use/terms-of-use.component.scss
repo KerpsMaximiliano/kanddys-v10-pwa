@@ -1,34 +1,69 @@
-.header {
-  display: grid;
-  grid-template-columns: 2fr 12fr;
-  background: #2874ad;
-}
+.page {
+  min-height: 100vh;
+  background-color: #272727;
+  padding: 28px 17px 2rem 17px;
+  color: white;
+  overflow-y: scroll;
 
-.arrow-container {
-  display: flex;
-  justify-self: center;
-  align-items: center;
-  min-height: 40px;
-}
+  .top-flex {
+    display: flex;
 
-.container {
-  width: 90%;
-  margin: auto;
-  height: 100vh;
-  margin-top: 40px;
-}
+    .cancel-btn {
+      padding: 4px 21px;
+      font-family: SfProBold;
+      color: #7b7b7b;
+      text-align: center;
+      border-radius: 22px;
+      background-color: #ffffff;
 
-.description {
-  font-family: "SfProMedium";
-  color: #000;
-  font-size: 16px;
-}
-
-.numerations {
-  list-style: none;
-  .numeration {
-    font-family: "SfProBold";
-    color: #000;
-    font-size: 16px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
   }
+
+  .title {
+    font-family: SfProBold;
+    font-size: 21px;
+    margin-bottom: 27px;
+    margin-top: 41px;
+  }
+
+  .content {
+    text-align: justify;
+    font-family: SfProLight;
+    font-size: 17px;
+
+    span {
+      font-family: SfProLight;
+      font-size: 17px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: SfProBold;
+    }
+
+    ul {
+      padding-left: 24px;
+    }
+  }
+}
+
+.payment-methods-logos {
+  width: 100%;
+  padding: 2rem;
+}
+
+ol,
+ul {
+  padding-left: 1rem;
+}
+
+ol li {
+  font-weight: bold;
 }

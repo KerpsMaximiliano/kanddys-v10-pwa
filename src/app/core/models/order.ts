@@ -83,7 +83,8 @@ export type OrderStatusType =
   | 'to confirm'
   | 'completed'
   | 'error'
-  | 'draft';
+  | 'draft'
+  | 'paid';
 
 export type OrderStatusType2 =
   | 'active'

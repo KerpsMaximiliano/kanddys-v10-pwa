@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { addLocation, deleteLocation } from '../graphql/saleflow.gql';
-import { user, users, buyersByItem } from '../graphql/users.gql';
+import { user, users, buyersByItem, deleteMe } from '../graphql/users.gql';
 import { DeliveryLocation, DeliveryLocationInput } from '../models/saleflow';
 import { User } from '../models/user';
 import { ListParams } from '../types/general.types';
@@ -59,5 +59,13 @@ export class UsersService {
 
     if (!result || result?.errors) return undefined;
     return result;
+  }
+
+  async deleteMe() {
+    const response = await this.graphql.mutate({
+      mutation: deleteMe,
+    });
+
+    return response?.deleteMe;
   }
 }

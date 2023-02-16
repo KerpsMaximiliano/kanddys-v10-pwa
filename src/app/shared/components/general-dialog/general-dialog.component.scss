@@ -1,0 +1,52 @@
+.selection {
+  margin: 20px 20px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #a1a1a1;
+  opacity: 0.6;
+}
+
+.select-option {
+  display: grid;
+  grid-template-columns: 0.3fr 11.8fr;
+  align-items: center;
+  min-height: 28.55px;
+  color: #272727;
+  font-size: 17px;
+  font-family: "SfProDisplay";
+  cursor: pointer;
+  margin-bottom: 20px;
+  border-radius: 9px;
+  background-size: 200% 100% !important;
+  transition: all 0.5s ease-out;
+  background: linear-gradient(to right, #82f18d 50%, transparent 50%);
+}
+
+.square-item {
+  display: inline-block;
+  background: #82f18d;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+.square-item-red {
+  display: inline-block;
+  background: #fc2727;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+// .grid-content {
+//   padding-left: 19.5px;
+// }
+
+input::placeholder {
+  opacity: 0.6;
+}
+
+.customPhone {
+  width: 100%;
+}

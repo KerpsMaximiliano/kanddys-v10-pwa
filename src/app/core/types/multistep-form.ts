@@ -160,6 +160,11 @@ export interface EmbeddedComponentWithId {
   preLabel?: string;
 }
 
+export interface EmbeddedComponentWithId extends EmbeddedComponent {
+  componentId: string;
+  postLabel?: string;
+}
+
 export interface PromiseFunction {
   type: 'promise';
   function(params): Promise<any>;

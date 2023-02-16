@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { merchantDefault } from 'src/app/core/graphql/merchants.gql';
+import { Link } from 'src/app/core/models/contact';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -19,11 +20,15 @@ export class ContactLandingContainerComponent implements OnInit {
   social: any;
   img: string;
   contactID: string;
+  address: string;
   whatsapp: string;
   telegram: string;
   _phone: string;
   idUser: string;
   image: string;
+  links: any[];
+  contactDirection: string;
+  location: string;
 
   constructor(
     private _UsersService: UsersService,
@@ -38,73 +43,64 @@ export class ContactLandingContainerComponent implements OnInit {
         this.idUser = idUser;
         let _merchantDefault = await this._MerchantService.merchantDefault();
 
+        console.log(_merchantDefault);
+        if (_merchantDefault && _merchantDefault.address)
+          this.address = _merchantDefault.address;
+
         const { image } = _merchantDefault || {};
         this.image = image;
-        if (idUser) {
-          const { _id } = _merchantDefault || {};
-          const paginate: PaginationInput = {
+        const { _id } = _merchantDefault || {};
+        const paginate: PaginationInput = {
+          findBy: {
+            user: idUser,
+          },
+          options: {
+            sortBy: 'updatedAt:desc',
+            limit: -1,
+          },
+        };
+        const [contact] = await this._ContactService.contacts(paginate);
+        if (contact) {
+          const { _id, name, description, link, image } = contact || {};
+          this.contactID = name;
+          this.img = image;
+          this.bio = description;
+          this.links = link.filter(({ name, value }) => name !== 'location');
+          this.idUser = _id;
+          const direction = link.find(({ name, value }) => name === 'location');
+
+          this.contactDirection = this.address || '';
+          this.location = direction?.value || '';
+        } else {
+          let { name, phone, email, bio, social, image, ...test }: any =
+            (await this._UsersService.user(idUser)) || {
+              social: [],
+            };
+          const merchantDefault = await this._MerchantService.merchants({
             findBy: {
-              _id: idUser,
+              owner: idUser,
+              default: true,
             },
-          };
-          const [contact] = await this._ContactService.contacts(paginate);
-          if (contact) {
-            const { name, description, link, image } = contact || {};
-            this.contactID = name;
-            this.img = image;
-            this.bio = description;
-            for (const { name, value } of link) {
-              switch (name) {
-                case 'whatsapp':
-                  this.whatsapp = value;
-                  break;
-                case 'telegram':
-                  this.telegram = value;
-                  break;
-                case 'phone':
-                  this._phone = value;
-                  break;
-              }
-            }
-          } else {
-            let { name, phone, email, bio, social, image, ...test } =
-              (await this._UsersService.user(idUser)) || {
-                social: [],
-              };
-            const merchantDefault = await this._MerchantService.merchants({
-              findBy: {
-                owner: idUser,
-                default: true,
-              },
-              options: {
-                limit: 1,
-              },
-            });
+            options: {
+              limit: 1,
+            },
+          });
 
-            this.contactID = name || phone || email;
-            this.img = image;
+          this.contactID = name || phone || email;
+          this.img = image;
 
-            if (merchantDefault && merchantDefault.length) {
-              if (merchantDefault[0].image) {
-                this.img = merchantDefault[0].image;
-              }
+          if (merchantDefault && merchantDefault.length) {
+            if (merchantDefault[0].image) {
+              this.img = merchantDefault[0].image;
             }
 
-            this.bio = bio;
-            for (const { name, url } of social) {
-              switch (name) {
-                case 'whatsapp':
-                  this.whatsapp = url;
-                  break;
-                case 'telegram':
-                  this.telegram = url;
-                  break;
-                case 'phone':
-                  this._phone = url;
-                  break;
-              }
+            if (merchantDefault[0].address) {
+              this.contactDirection = merchantDefault[0].address;
             }
           }
+
+          this.bio = bio;
+          this.links = social.map(({ name, url: value }) => ({ name, value }));
         }
       })();
     });

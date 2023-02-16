@@ -9,7 +9,6 @@ import {
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions, Swiper } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
-import { BlankComponent } from '../../dialogs/blank/blank.component';
 import {
   DialogFlowService,
   EmbeddedDialog,
@@ -24,6 +23,7 @@ export class DialogFlowComponent implements OnInit {
   @Input() dialogFlowId: string = null;
   @Input() dialogs: Array<EmbeddedComponentWithId> = [];
   @Input() allowSlideNext = true;
+  @Input() blockClosure = false;
   @Output() saveConfigRef = new EventEmitter();
   @Output() moveToDialogRef = new EventEmitter();
   @Output() closingDialogSignal = new EventEmitter();
