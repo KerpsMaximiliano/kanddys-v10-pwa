@@ -12,7 +12,7 @@
       (slideChange)="updateCurrentSlideData($event)"
       *ngIf="post"
     >
-      <ng-container *ngFor="let slide of slidesPath">
+      <ng-container *ngFor="let slide of slidesPath; let i = index">
         <div class="wrapper">
           <div class="img-container">
             <ng-container>
@@ -31,7 +31,8 @@
               <ng-container *ngIf="slide.type === 'VIDEO'">
                 <video
                   class="video-content"
-                  controls
+                  [id]="'post-media' + i"
+                  (click)="playVideoOnFullscreen('post-media' + i)"
                   [src]="slide.path"
                 ></video>
               </ng-container>
@@ -63,7 +64,11 @@
   </div>
 </div>
 
-<div class="bottom-content">
+<div class="bottom-content"
+  [ngClass]="{
+    'text-slide': slidesPath[currentMediaSlide].mode === 'solidBg'
+  }"
+>
   <div
     class="content-container"
     [ngClass]="{
@@ -121,75 +126,16 @@
         flex-direction: column;
         justify-content: center;
         height: 100%;
+        background-color: #000;
+        margin-top: 6px;
       "
     >
       <div class="icons-container" style="margin: 0 23px 0 auto">
-        <svg
-          style="cursor: pointer"
-          xmlns="http://www.w3.org/2000/svg"
-          width="21.966"
-          height="28.105"
-          viewBox="0 0 21.966 28.105"
-        >
-          <g
-            id="Grupo_72833"
-            data-name="Grupo 72833"
-            transform="translate(-390.25 -493.947)"
-          >
-            <path
-              id="Trazado_28821"
-              data-name="Trazado 28821"
-              d="M22.1,13.5h2.559a2.559,2.559,0,0,1,2.559,2.559V28.338A2.559,2.559,0,0,1,24.657,30.9H9.309A2.559,2.559,0,0,1,6.75,28.338V16.059A2.559,2.559,0,0,1,9.309,13.5h2.559"
-              transform="translate(384.25 490.406)"
-              fill="none"
-              stroke="#fff"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.5"
-            />
-            <path
-              id="Trazado_28822"
-              data-name="Trazado 28822"
-              d="M22.608,8.491,17.491,3.375,12.375,8.491"
-              transform="translate(383.741 491.322)"
-              fill="none"
-              stroke="#fff"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.5"
-            />
-            <path
-              id="Trazado_28823"
-              data-name="Trazado 28823"
-              d="M18,20.834V3.375"
-              transform="translate(383.232 491.322)"
-              fill="none"
-              stroke="#fff"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.5"
-            />
-          </g>
-        </svg>
-        <svg
-          style="cursor: pointer"
-          xmlns="http://www.w3.org/2000/svg"
-          width="28.378"
-          height="26.606"
-          viewBox="0 0 28.378 26.606"
-          class="heart"
-        >
-          <g id="heart" transform="translate(79 0)">
-            <path
-              id="Trazado_28864"
-              data-name="Trazado 28864"
-              d="M14.19,4.874,12.918,3.567C9.933.5,4.459,1.558,2.483,5.415c-.928,1.815-1.137,4.434.557,7.777,1.632,3.219,5.027,7.075,11.149,11.275,6.123-4.2,9.516-8.057,11.149-11.275,1.694-3.346,1.486-5.964.557-7.777C23.921,1.558,18.447.5,15.461,3.565Zm0,21.731c-27.2-17.971-8.373-32-.312-24.578.106.1.211.2.312.3q.15-.157.312-.3C22.562-5.4,41.386,8.633,14.19,26.605Z"
-              transform="translate(-79 0)"
-              fill="#fff"
-              fill-rule="evenodd"
-            />
-          </g>
-        </svg>
+        <img
+            [src]="env + '/upload.svg'"
+            style="filter: brightness(10)"
+            alt="Contenedor con flecha saliendo"
+          />
       </div>
     </div>
 

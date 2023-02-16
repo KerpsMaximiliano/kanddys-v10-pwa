@@ -145,7 +145,7 @@ export class QrEditComponent implements OnInit {
             this.gridArray.push({
               ...slide,
               background: fileUrl,
-              _type: slide.media.type,
+              _type: 'video',
             });
           } else if (!slide.media && slide.type === 'text') {
             this.gridArray.push({

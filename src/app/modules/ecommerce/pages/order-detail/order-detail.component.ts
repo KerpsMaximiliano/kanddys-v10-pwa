@@ -241,7 +241,7 @@ export class OrderDetailComponent implements OnInit {
       for (const slide of this.slides) {
         if (
           slide.type === 'poster' &&
-          (slide.media.includes('mp4') || slide.media.includes('webm'))
+          isVideo(slide.media)
         ) {
           slide.isVideo = true;
 

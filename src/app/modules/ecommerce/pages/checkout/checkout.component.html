@@ -44,7 +44,7 @@
       }"
       [disabled]="missingOrderData"
       (click)="
-        !this.logged && postsService.privatePost ? login() : createOrder()
+        createOrder()
       "
     >
       Confirmar y pagar

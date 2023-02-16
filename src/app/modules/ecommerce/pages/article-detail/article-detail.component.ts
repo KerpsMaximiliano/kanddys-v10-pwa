@@ -26,7 +26,7 @@ import {
   SettingsComponent,
   SettingsDialogButton,
 } from 'src/app/shared/dialogs/settings/settings.component';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { ToastrService } from 'ngx-toastr';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -265,10 +265,7 @@ export class ArticleDetailComponent implements OnInit {
         this.postSlides = slides;
 
         for (const slide of this.postSlides) {
-          if (
-            slide.type === 'poster' &&
-            (slide.media.includes('mp4') || slide.media.includes('webm'))
-          ) {
+          if (slide.type === 'poster' && isVideo(slide.media)) {
             slide.isVideo = true;
 
             if (

@@ -216,7 +216,7 @@
         #mediaSwiper
         (slideChange)="updateCurrentSlideData($event)"
       >
-        <ng-container *ngFor="let slide of postSlides">
+        <ng-container *ngFor="let slide of postSlides; let i = index">
           <ng-container *ngIf="slide.type === 'poster' && !slide.isVideo">
             <div
               class="entity-image"
@@ -263,8 +263,9 @@
 
           <ng-container *ngIf="slide.type === 'poster' && slide.isVideo">
             <video
-              controls
+              [id]="'post-media' + i"
               [src]="slide.media"
+              (click)="playVideoOnFullscreen('post-media' + i)"
             ></video>
           </ng-container>
 
@@ -313,7 +314,7 @@
       height: '8.3455vh'
     }"
   >
-    <div class="inner-wrapper-top">
+    <div class="inner-wrapper-top post">
       <div
         class="current-media-shown-indicators"
         [style]="{
@@ -339,6 +340,19 @@
             *ngFor="let slide of postSlides; let slideIndex = index"
           ></div>
         </ng-container>
+      </div>
+
+      <div class="icons-flex-2">
+        <button class="round-button" (click)="share()">
+          <img
+            [src]="env + '/upload.svg'"
+            style="filter: brightness(10)"
+            alt="Contenedor con flecha saliendo"
+          />
+        </button>
+        <!-- <button class="round-button">
+          <img [src]="env + '/heart.svg'" alt="corazon" />
+        </button> -->
       </div>
     </div>
   </div>

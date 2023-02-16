@@ -8,6 +8,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SwiperOptions } from 'swiper';
 import { environment } from 'src/environments/environment';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-post-preview',
@@ -38,6 +39,7 @@ export class PostPreviewComponent implements OnInit {
     freeMode: false,
     spaceBetween: 0,
   };
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -75,8 +77,6 @@ export class PostPreviewComponent implements OnInit {
 
     if (this.post.slides) {
       for await (const slide of this.post.slides) {
-        console.log(slide.media);
-
         if (slide.media && slide.media.type.includes('image')) {
           const base64 = await this.fileToBase64(slide.media);
           this.slidesPath.push({

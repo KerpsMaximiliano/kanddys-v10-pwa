@@ -381,6 +381,22 @@ export class PostEditionComponent implements OnInit {
     if (storedPost && !this.postsService.post) {
       this.postsService.post = JSON.parse(storedPost);
       this.data = this.postsService.post;
+
+      if (
+        this.data.joke &&
+        (!this.postsService.post.slides ||
+          this.postsService.post.slides.length === 0)
+      ) {
+        this.postsService.post.slides = [
+          {
+            index: 0,
+            media: null,
+            title: 'Chiste de IA',
+            type: 'text',
+            text: this.data.joke,
+          },
+        ];
+      }
     }
 
     /*

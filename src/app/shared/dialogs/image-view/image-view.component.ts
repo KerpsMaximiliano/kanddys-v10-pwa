@@ -18,7 +18,6 @@ export class ImageViewComponent implements OnInit {
   constructor(private ref: DialogRef) {}
 
   ngOnInit(): void {
-    console.log(this.imageSourceURL)
     // const imageContainer = document.querySelector('.inner-wrapper');
   }
   

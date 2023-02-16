@@ -92,6 +92,18 @@ a {
   }
 }
 
+.icons-flex-2 {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+
+  .round-button {
+    margin-right: 23px;
+  }
+}
+
 .container {
   height: 100vh;
   background-color: #000;
@@ -245,6 +257,10 @@ audio {
       &.active {
         background-color: #82f18d;
       }
+    }
+
+    &.post {
+      height: 100%;
     }
   }
 
