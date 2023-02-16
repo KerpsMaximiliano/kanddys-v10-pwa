@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
@@ -32,6 +33,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HelperHeaderInput } from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
 import { ItemImagesComponent } from 'src/app/shared/dialogs/item-images/item-images.component';
 import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import {
   SettingsComponent,
   SettingsDialogButton,
@@ -153,7 +155,7 @@ export class ItemsDashboardComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 5,
+    pageSize: 15,
     status: 'complete',
   };
   windowWidth: number = 0;
@@ -183,6 +185,7 @@ export class ItemsDashboardComponent implements OnInit {
   };
   openedDialogFlow: boolean = false;
   dialogs: Array<EmbeddedComponentWithId> = [];
+  reachTheEndOfPagination: boolean = false;
 
   async infinitePagination() {
     const page = document.querySelector('.dashboard-page');
@@ -190,7 +193,11 @@ export class ItemsDashboardComponent implements OnInit {
     const verticalScroll = window.innerHeight + page.scrollTop;
 
     if (verticalScroll >= pageScrollHeight) {
-      if (this.paginationState.status === 'complete' && this.tagsLoaded) {
+      if (
+        this.paginationState.status === 'complete' &&
+        this.tagsLoaded &&
+        !this.reachTheEndOfPagination
+      ) {
         await this.inicializeItems(false, true);
       }
     }
@@ -211,7 +218,8 @@ export class ItemsDashboardComponent implements OnInit {
     private ngNavigatorShareService: NgNavigatorShareService,
     private _ToastrService: ToastrService,
     private dialog: DialogService,
-    private dialogFlowService: DialogFlowService
+    private dialogFlowService: DialogFlowService,
+    private _bottomSheet: MatBottomSheet
   ) {}
 
   async ngOnInit() {
@@ -237,8 +245,8 @@ export class ItemsDashboardComponent implements OnInit {
         }
       });
 
-      this.itemSearchbar.valueChanges.subscribe((change) =>
-        this.inicializeItems(true, false)
+      this.itemSearchbar.valueChanges.subscribe(
+        async (change) => await this.inicializeItems(true, false)
       );
 
       this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
@@ -377,7 +385,9 @@ export class ItemsDashboardComponent implements OnInit {
     });
 
     if (tagsList) {
-      this.tagsList = tagsList.filter((tag) => tag.entity === 'item');
+      this.tagsList = tagsList
+        .filter((tag) => tag.entity === 'item')
+        .sort((a, b) => (a.index > b.index ? 1 : -1));
       this.unselectedTags = [...this.tagsList];
 
       for (const tag of this.tagsList) {
@@ -515,7 +525,9 @@ export class ItemsDashboardComponent implements OnInit {
     this.paginationState.status = 'loading';
 
     if (restartPagination) {
+      this.reachTheEndOfPagination = false;
       this.paginationState.page = 1;
+      this.allItems = [];
     } else {
       this.paginationState.page++;
     }
@@ -616,8 +628,10 @@ export class ItemsDashboardComponent implements OnInit {
         this.allItems = [];
       }
 
-      if (itemsQueryResult.length === 0 && this.paginationState.page !== 1)
+      if (itemsQueryResult.length === 0 && this.paginationState.page !== 1) {
         this.paginationState.page--;
+        this.reachTheEndOfPagination = true;
+      }
 
       if (itemsQueryResult && itemsQueryResult.length > 0) {
         if (this.paginationState.page === 1) {
@@ -647,9 +661,8 @@ export class ItemsDashboardComponent implements OnInit {
             }
           }
         }
-
-        this.paginationState.status = 'complete';
       }
+      this.paginationState.status = 'complete';
 
       if (
         itemsQueryResult.length === 0 &&
@@ -948,51 +961,52 @@ export class ItemsDashboardComponent implements OnInit {
   };
 
   openHeaderDialog() {
-    const list: Array<SettingsDialogButton> = [
-      {
-        text: 'Vende online. Comparte el link',
-        callback: async () => {
-          const link = `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/store`;
+    this._bottomSheet.open(LinksDialogComponent);
+    // const list: Array<SettingsDialogButton> = [
+    //   {
+    //     text: 'Vende online. Comparte el link',
+    //     callback: async () => {
+    //       const link = `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/store`;
 
-          await this.ngNavigatorShareService
-            .share({
-              title: '',
-              url: link,
-            })
-            .then((response) => {
-              console.log(response);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        },
-      },
-      {
-        text: 'Adiciona un artículo',
-        callback: () => {
-          this.openedDialogFlow = !this.openedDialogFlow;
-        },
-      },
-      {
-        text: 'Cerrar Sesión',
-        callback: async () => {
-          await this.authService.signout();
-        },
-      },
-    ];
+    //       await this.ngNavigatorShareService
+    //         .share({
+    //           title: '',
+    //           url: link,
+    //         })
+    //         .then((response) => {
+    //           console.log(response);
+    //         })
+    //         .catch((error) => {
+    //           console.log(error);
+    //         });
+    //     },
+    //   },
+    //   {
+    //     text: 'Adiciona un artículo',
+    //     callback: () => {
+    //       this.openedDialogFlow = !this.openedDialogFlow;
+    //     },
+    //   },
+    //   {
+    //     text: 'Cerrar Sesión',
+    //     callback: async () => {
+    //       await this.authService.signout();
+    //     },
+    //   },
+    // ];
 
-    this.dialog.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        title: 'Menu de opciones',
-        cancelButton: {
-          text: 'Cerrar',
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
+    // this.dialog.open(SettingsComponent, {
+    //   type: 'fullscreen-translucent',
+    //   props: {
+    //     optionsList: list,
+    //     title: 'Menu de opciones',
+    //     cancelButton: {
+    //       text: 'Cerrar',
+    //     },
+    //   },
+    //   customClass: 'app-dialog',
+    //   flags: ['no-header'],
+    // });
   }
 
   toggleActivateItem = async (item: Item): Promise<string> => {

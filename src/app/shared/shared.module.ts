@@ -143,6 +143,14 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
 import { ItemImagesComponent } from './dialogs/item-images/item-images.component';
+import { DotLoaderComponent } from './components/dot-loader/dot-loader.component';
+import { RouterOptionsComponent } from './components/router-options/router-options.component';
+import { LinkCardComponent } from './components/link-card/link-card.component';
+import { ImagesCardComponent } from './components/images-card/images-card.component';
+import { DescriptionDialogComponent } from './dialogs/description-dialog/description-dialog.component';
+import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatListModule } from '@angular/material/list';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 
 const imports = [
@@ -166,7 +174,9 @@ const imports = [
   MatButtonModule,
   MatExpansionModule,
   MatBadgeModule,
-  MatDialogModule
+  MatSelectModule,
+  MatListModule,
+  MatDialogModule,
 ];
 const declarations = [
   // Pages
@@ -293,6 +303,12 @@ const declarations = [
   LinksDialogComponent,
   GradientCardComponent,
   CalendarSwiperComponent,
+  DotLoaderComponent,
+  RouterOptionsComponent,
+  LinkCardComponent,
+  ImagesCardComponent,
+  DescriptionDialogComponent,
+  DropdownMenuComponent,
   ConfirmationDialogComponent
 ];
 

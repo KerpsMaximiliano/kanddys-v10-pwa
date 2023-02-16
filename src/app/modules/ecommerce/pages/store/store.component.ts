@@ -1,45 +1,25 @@
-import { Location } from '@angular/common';
-import {
-  Component,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import {
-  Item,
-  ItemCategory,
-  ItemCategoryHeadline,
-} from 'src/app/core/models/item';
-import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
-import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
+import { Item } from 'src/app/core/models/item';
+import { Merchant } from 'src/app/core/models/merchant';
+import { ItemSubOrderInput } from 'src/app/core/models/order';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
-import { User } from 'src/app/core/models/user';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { OrderService } from 'src/app/core/services/order.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
-import { SwiperComponent } from 'ngx-swiper-wrapper';
 import SwiperCore, { Virtual } from 'swiper/core';
-import { Merchant } from 'src/app/core/models/merchant';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { DomSanitizer } from '@angular/platform-browser';
 import { IntegrationsService } from 'src/app/core/services/integrations.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 
 SwiperCore.use([Virtual]);
 
@@ -61,10 +41,13 @@ export class StoreComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 5,
+    pageSize: 15,
     status: 'loading',
   };
   renderItemsPromise: Promise<any>;
+  showOptionsBar: boolean = false;
+  reachedTheEndOfPagination: boolean = false;
+  hasCollections: boolean = false;
 
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 'auto',
@@ -87,13 +70,20 @@ export class StoreComponent implements OnInit {
 
   windowWidth: number = 0;
 
+  link: string;
+
   async infinitePagination() {
     const page = document.querySelector('.store-page');
     const pageScrollHeight = page.scrollHeight;
     const verticalScroll = window.innerHeight + page.scrollTop;
 
     if (verticalScroll >= pageScrollHeight) {
-      await this.getItems();
+      if (
+        this.paginationState.status === 'complete' &&
+        !this.reachedTheEndOfPagination
+      ) {
+        await this.getItems();
+      }
     }
   }
 
@@ -110,7 +100,8 @@ export class StoreComponent implements OnInit {
     public _DomSanitizer: DomSanitizer,
     private authService: AuthService,
     private integrationService: IntegrationsService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private appService: AppService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -163,6 +154,7 @@ export class StoreComponent implements OnInit {
         }
       })();
     }, 300);
+    this.link = `${this.URI}/ecommerce/${this.headerService.saleflow.merchant.slug}/store`;
   }
 
   onTabClick(index: number) {
@@ -348,6 +340,9 @@ export class StoreComponent implements OnInit {
     });
     if (tagsList) {
       this.tags = tagsList;
+      this.hasCollections = tagsList.some(
+        (tag) => tag.notes != null && tag.notes != ''
+      );
     }
   }
 
@@ -394,6 +389,10 @@ export class StoreComponent implements OnInit {
           this.items = itemsQueryResult;
         } else {
           this.items = this.items.concat(itemsQueryResult);
+        }
+
+        if (itemsQueryResult.length === 0) {
+          this.reachedTheEndOfPagination = true;
         }
 
         this.paginationState.status = 'complete';
@@ -454,5 +453,29 @@ export class StoreComponent implements OnInit {
   displayFooter() {
     document.getElementById('footer').classList.remove('hide');
     document.getElementById('footerbtn').classList.add('hide');
+  }
+
+  toggleItemInCart(index: number) {
+    const item = this.items[index];
+
+    /* Validaciones para saleflows donde solo se puede comprar un item a la vez */
+    if (!item.isSelected && !this.headerService.saleflow.canBuyMultipleItems) {
+      this.headerService.emptyOrderProducts();
+      this.headerService.emptyItems();
+    }
+    /* ... */
+
+    const product: ItemSubOrderInput = {
+      item: item._id,
+      amount: 1,
+    };
+    this.headerService.storeOrderProduct(product);
+    this.appService.events.emit({
+      type: 'added-item',
+      data: item._id,
+    });
+    this.headerService.storeItem(item);
+
+    this.items[index].isSelected = !this.items[index].isSelected;
   }
 }

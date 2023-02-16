@@ -21,6 +21,7 @@ export function isEmail(str: string): boolean {
 }
 
 export function getExtension(filename: string) {
+  if (!filename) return '';
   var parts = filename.split('.');
   return parts[parts.length - 1].toLowerCase();
 }
@@ -61,12 +62,8 @@ export function isVideo(filename: string) {
 }
 
 export function completeImageURL(url: string) {
-  if (
-    url &&
-    !url.includes('http') &&
-    !url.includes('https')
-  ) {
-    return url = 'https://' + url;
+  if (url && !url.includes('http') && !url.includes('https')) {
+    return (url = 'https://' + url);
   }
   return url;
 }
@@ -110,4 +107,8 @@ export function unformatID(
   number: string
 ): string {
   return `${month}/${day}/${year}${number}`;
+}
+
+export function capitalize(text) {
+  return text.replace(/\b\w/g, (l) => l.toUpperCase());
 }

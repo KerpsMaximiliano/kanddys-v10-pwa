@@ -21,22 +21,24 @@
     -->
 
     <div class="amount-list">
-      <div class="amount-flex-wrapper">
-        <h3 class="label">Subtotal a pagar</h3>
-        <h2 class="amount">RD $ {{ paymentAmount | number : "1.2-2" }}</h2>
-      </div>
-      <div class="amount-flex-wrapper">
-        <h3 class="label">Costo de envio</h3>
-        <h2 class="amount">RD $ 0</h2>
-      </div>
-      <div class="amount-flex-wrapper">
-        <h3 class="label">Descuento</h3>
-        <h2 class="amount">RD $ 0</h2>
-      </div>
-      <div class="amount-flex-wrapper">
-        <h3 class="label">Impuestos</h3>
-        <h2 class="amount">RD $ 0</h2>
-      </div>
+      <!--
+        <div class="amount-flex-wrapper">
+          <h3 class="label">Subtotal a pagar</h3>
+          <h2 class="amount">RD $ {{ paymentAmount | number : "1.2-2" }}</h2>
+        </div>
+        <div class="amount-flex-wrapper">
+          <h3 class="label">Costo de envio</h3>
+          <h2 class="amount">RD $ 0</h2>
+        </div>
+        <div class="amount-flex-wrapper">
+          <h3 class="label">Descuento</h3>
+          <h2 class="amount">RD $ 0</h2>
+        </div>
+        <div class="amount-flex-wrapper">
+          <h3 class="label">Impuestos</h3>
+          <h2 class="amount">RD $ 0</h2>
+        </div>
+      -->
       <div class="amount-flex-wrapper">
         <h3 class="label">Total a pagar</h3>
         <h2 class="amount">RD $ {{ paymentAmount | number : "1.2-2" }}</h2>
@@ -174,13 +176,14 @@
         : ''
     "
     [size]="'small'"
-    [bgColor]="image ? headerService.colorTheme : '#A1A1A1'"
+    [bgColor]="image ? '#FED230' : '#A1A1A1'"
     [customLeftButtonStyles]="{
       'letter-space': '1px',
       'font-family': 'RobotoMedium',
       'font-size': '17px',
       color: '#FFFFFF'
     }"
+    [color]="image ? '#293628' : '#fff'"
   ></app-sticky-button>
 
   <form

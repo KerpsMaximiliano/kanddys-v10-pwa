@@ -494,6 +494,48 @@ headline="EXPUESTO EN TAB (S)"
 </div> -->
 <!--<app-menu-button></app-menu-button>-->
 
+<!--
+  <div style="padding: 10px; display: grid; gap: 10px">
+    <app-options-bar
+      [options]="[
+        { title: 'articulos', dotsIcon: true },
+        { title: 'categorias', dotsIcon: true },
+        { title: 'colecciones', dotsIcon: true }
+      ]"
+      (selectedIndex)="firstIndex = $event"
+    >
+    </app-options-bar>
+    <app-options-bar
+      [options]="[
+        { title: 'articulos', dotsIcon: true },
+        { title: 'categorias', dotsIcon: true },
+        { title: 'colecciones', dotsIcon: true }
+      ]"
+      [type]="'2'"
+      (selectedIndex)="firstIndex = $event"
+    >
+    </app-options-bar>
+    <app-options-bar
+      [options]="[
+        { title: 'articulos', dotsIcon: true },
+        { title: 'categorias', dotsIcon: true },
+        { title: 'colecciones', dotsIcon: true }
+      ]"
+      [type]="'3'"
+      (selectedIndex)="firstIndex = $event"
+    >
+    </app-options-bar>
+  </div>
+-->
+
+<!--<app-gradient-footer [uploadIcon]="true"></app-gradient-footer>-->
+<!--<app-tag-items></app-tag-items>-->
+
+<!--
+  <button (click)="openBottomSheet()">Bottom Sheet</button>
+  <app-menu-button></app-menu-button>
+<button (click)="openDescriptionDialog()">Description Dialog</button>
+
 <div style="padding: 10px; display: grid; gap: 10px">
   <app-options-bar
     [options]="[
@@ -511,58 +553,40 @@ headline="EXPUESTO EN TAB (S)"
       { title: 'colecciones', dotsIcon: true }
     ]"
     [type]="'2'"
-    (selectedIndex)="firstIndex = $event"
   >
   </app-options-bar>
-  <app-options-bar
-    [options]="[
-      { title: 'articulos', dotsIcon: true },
-      { title: 'categorias', dotsIcon: true },
-      { title: 'colecciones', dotsIcon: true }
-    ]"
-    [type]="'3'"
-    (selectedIndex)="firstIndex = $event"
-  >
-  </app-options-bar>
-</div>
-
-<!--<app-gradient-footer [uploadIcon]="true"></app-gradient-footer>-->
-<!--<app-tag-items></app-tag-items>-->
-
-<button (click)="openBottomSheet()">Bottom Sheet</button>
-<app-menu-button></app-menu-button>
-<app-options-bar
-  [options]="[
-    { title: 'articulos', dotsIcon: true },
-    { title: 'categorias', dotsIcon: true },
-    { title: 'colecciones', dotsIcon: true }
-  ]"
-  [type]="'2'"
+  
+  <div style="display: grid; gap: 10px">
+    <app-buyer-card></app-buyer-card>
+  
+    <app-buyer-card [leftAmount]="3000"> </app-buyer-card>
+  
+    <app-buyer-card
+      [title]="'Plan Individual'"
+      [description]="
+        '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
+      "
+      [leftAmount]="3000"
+    >
+    </app-buyer-card>
+    <app-buyer-card
+      [title]="
+        'Tópico de la colección que puede ser de muchas lineas, de hecho acabaria en .. y suprimiria la descripción de ser necesario como justamente este caso'
+      "
+      [description]="
+        '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
+      "
+      [leftAmount]="3000"
+      [rightAmount]="700000"
+    >
+    </app-buyer-card>
+  </div>
+-->
+<div
+  [ngStyle]="{
+    width: '100%',
+    height: '200px'
+  }"
 >
-</app-options-bar>
-
-<div style="display: grid; gap: 10px">
-  <app-buyer-card></app-buyer-card>
-
-  <app-buyer-card [leftAmount]="3000"> </app-buyer-card>
-
-  <app-buyer-card
-    [title]="'Plan Individual'"
-    [description]="
-      '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
-    "
-    [leftAmount]="3000"
-  >
-  </app-buyer-card>
-  <app-buyer-card
-    [title]="
-      'Tópico de la colección que puede ser de muchas lineas, de hecho acabaria en .. y suprimiria la descripción de ser necesario como justamente este caso'
-    "
-    [description]="
-      '5 imágenes digitales, 1 escenario, 1 persona, sin cambio de vestuario, 25 minutos de sesión.'
-    "
-    [leftAmount]="3000"
-    [rightAmount]="700000"
-  >
-  </app-buyer-card>
+  <app-dot-loader></app-dot-loader>
 </div>

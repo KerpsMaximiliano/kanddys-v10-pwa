@@ -420,7 +420,13 @@ export class ArticleDetailComponent implements OnInit {
         //   ]?._id
       );
     } else this.isItemInCart = false;
-    this.itemsAmount = productData.length > 0 ? productData.length + '' : null;
+
+    // Validation to avoid getting deleted or unavailable items in the count of the cart
+    const itemsInCart = this.headerService.saleflow.items.filter((item) =>
+      productData.some((product) => product === item.item._id)
+    );
+
+    this.itemsAmount = itemsInCart.length > 0 ? itemsInCart.length + '' : null;
   }
 
   async share() {
@@ -466,10 +472,7 @@ export class ArticleDetailComponent implements OnInit {
       this.headerService.flowRoute = localStorage.getItem('flowRoute');
     }
 
-    if (
-      this.headerService.flowRoute &&
-      this.headerService.flowRoute.length > 1
-    ) {
+    if (this.headerService.flowRoute?.length) {
       const [baseRoute, paramsString] = this.headerService.flowRoute.split('?');
 
       const paramsArray = paramsString ? paramsString.split('&') : [];

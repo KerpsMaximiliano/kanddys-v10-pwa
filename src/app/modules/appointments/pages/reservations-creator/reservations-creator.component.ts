@@ -8,6 +8,7 @@ import {
   PhoneNumberFormat,
   SearchCountryField,
 } from 'ngx-intl-tel-input';
+import { capitalize } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Reservation, ReservationInput } from 'src/app/core/models/reservation';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -178,7 +179,6 @@ export class ReservationsCreatorComponent implements OnInit {
         // If true, this reservation is for an order
         if (saleflowId) {
           this.isOrder = true;
-          this.stickyButtonText = 'Continuar al resumen de la factura';
           await this.headerService.fetchSaleflow(saleflowId);
         }
 
@@ -204,7 +204,7 @@ export class ReservationsCreatorComponent implements OnInit {
             this.calendarData.merchant
           );
           this.headerConfiguration.headerText =
-            'Reserva la fecha con ' + this.calendarMerchant.name;
+            'Reserva la fecha con ' + capitalize(this.calendarMerchant.name);
 
           //Sets the current month label that its shown in top of the month's swiper
           const currentDateObject = new Date();
@@ -771,7 +771,7 @@ export class ReservationsCreatorComponent implements OnInit {
     this.generateHourList(dayOfTheMonthNumber);
 
     //clicks the previous selected reservation when opening the component
-    if (this.activeReservationIndex !== null) {
+    if (this.activeReservationIndex !== null && !this.isOrder) {
       setTimeout(() => {
         const listItem = document.querySelectorAll('.selector-option')[
           this.activeReservationIndex
@@ -804,6 +804,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     this.selectedDate.filled = true;
     this.activeReservationIndex = dateOptionIndex;
+    if (this.isOrder) this.makeReservation();
   }
 
   /**

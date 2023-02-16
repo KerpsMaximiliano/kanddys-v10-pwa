@@ -8,6 +8,7 @@ a {
 .store-page {
   height: 100vh;
   overflow-y: scroll;
+  margin-top: 47px;
 }
 .component {
   min-height: 100vh;
@@ -38,7 +39,7 @@ main {
 }
 .saleflows-item-grid {
   width: auto;
-  padding: 24px 24px 32px;
+  padding: 12px 24px 32px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   -moz-column-gap: 14px;
@@ -52,16 +53,17 @@ main {
   }
 }
 .header {
-  position: relative;
+  position: fixed;
   width: 100%;
+  max-width: 500px;
   height: 47px;
   padding: 0 20px;
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  position: sticky;
   top: 0;
   z-index: 5;
+  text-transform: capitalize;
   .merchant-info {
     text-decoration: none;
     color: inherit;
