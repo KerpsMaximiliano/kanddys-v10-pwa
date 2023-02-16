@@ -1,48 +1,60 @@
 <div class="container" *ngIf="mode !== 'solidBg'">
-  <swiper
-    [config]="swiperConfig"
-    #mediaSwiper
-    (slideChange)="updateCurrentSlideData($event)"
-    *ngIf="post"
+  <div
+    #swiperContainer
+    [ngStyle]="{
+      width: '100%',
+      height: (swiperContainer.clientWidth * 10) / 7 + 'px'
+    }"
   >
-    <ng-container *ngFor="let slide of slidesPath">
-      <div class="wrapper">
-        <div class="img-container">
-          <ng-container>
-            <ng-container *ngIf="slide.type === 'IMAGE'">
-              <div
-                class="img-content"
-                [ngStyle]="{
-                  backgroundImage: slide.path,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
-                }"
-              ></div>
-            </ng-container>
+    <swiper
+      [config]="swiperConfig"
+      #mediaSwiper
+      (slideChange)="updateCurrentSlideData($event)"
+      *ngIf="post"
+    >
+      <ng-container *ngFor="let slide of slidesPath">
+        <div class="wrapper">
+          <div class="img-container">
+            <ng-container>
+              <ng-container *ngIf="slide.type === 'IMAGE'">
+                <div
+                  class="img-content"
+                  [ngStyle]="{
+                    backgroundImage: slide.path,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                  }"
+                ></div>
+              </ng-container>
 
-            <ng-container *ngIf="slide.type === 'VIDEO'">
-              <video class="video-content" controls [src]="slide.path"></video>
-            </ng-container>
+              <ng-container *ngIf="slide.type === 'VIDEO'">
+                <video
+                  class="video-content"
+                  controls
+                  [src]="slide.path"
+                ></video>
+              </ng-container>
 
-            <ng-container *ngIf="slide.type === 'TEXT'">
-              <div
-                class="text-content"
-                [ngStyle]="{
-                  background: slide.mode === 'solidBg'
-                }"
-              >
-                <div class="content">
-                  <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
-                  <p class="subtitle2" *ngIf="slide.text">{{ slide.text }}</p>
+              <ng-container *ngIf="slide.type === 'TEXT'">
+                <div
+                  class="text-content"
+                  [ngStyle]="{
+                    background: slide.mode === 'solidBg'
+                  }"
+                >
+                  <div class="content">
+                    <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
+                    <p class="subtitle2" *ngIf="slide.text">{{ slide.text }}</p>
+                  </div>
                 </div>
-              </div>
+              </ng-container>
             </ng-container>
-          </ng-container>
+          </div>
         </div>
-      </div>
-    </ng-container>
-  </swiper>
+      </ng-container>
+    </swiper>
+  </div>
 
   <div class="divTopBtn">
     <button class="topBtn" (click)="topBtnAction()">
@@ -104,7 +116,12 @@
     </div>
 
     <div
-      style="display: flex; flex-direction: column; justify-content: center; height: 100%;"
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+      "
     >
       <div class="icons-container" style="margin: 0 23px 0 auto">
         <svg
