@@ -33,6 +33,7 @@ export class Merchant extends Model<Merchant> {
   minPaymentQantity?: number;
   collaborationPaymentAmount?: number;
   receiveNotifications?: boolean;
+  address?: string;
   notes?: String;
 }
 
@@ -68,4 +69,5 @@ export class MerchantInput {
   collaborationPaymentAmount?: number;
   receiveNotifications?: Boolean;
   notes?: string;
+  address?: string;
 }
