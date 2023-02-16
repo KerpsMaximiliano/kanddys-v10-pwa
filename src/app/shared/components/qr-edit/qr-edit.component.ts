@@ -275,18 +275,13 @@ export class QrEditComponent implements OnInit {
         };
         reader.readAsDataURL(file);
       } else {
-        if (
-          ![
-            ...this.imageFiles,
-            ...this.videoFiles,
-            ...this.audioFiles,
-          ].includes(file.type)
-        )
-          return;
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = async (e) => {
-          let result = reader.result;
+
+        if (file.type.includes('video')) {
+          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+            URL.createObjectURL(file)
+          );
+
           const content: SlideInput = {
             text: 'test',
             title: 'test',
@@ -294,11 +289,29 @@ export class QrEditComponent implements OnInit {
             type: 'poster',
             index: this.gridArray.length,
           };
-          content['background'] = result;
-          content['_type'] = file.type;
+          content['background'] = fileUrl;
+          content['_type'] = 'video';
+
           this.gridArray.push(content);
           this._PostsService.post.slides.push(content);
-        };
+        } else {
+          reader.readAsDataURL(file);
+
+          reader.onload = async (e) => {
+            let result = reader.result;
+            const content: SlideInput = {
+              text: 'test',
+              title: 'test',
+              media: file,
+              type: 'poster',
+              index: this.gridArray.length,
+            };
+            content['background'] = result;
+            content['_type'] = file.type;
+            this.gridArray.push(content);
+            this._PostsService.post.slides.push(content);
+          };
+        }
       }
     }
   }

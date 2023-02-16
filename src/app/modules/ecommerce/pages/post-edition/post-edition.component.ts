@@ -231,7 +231,7 @@ export class PostEditionComponent implements OnInit {
               const response =
                 await this._Gpt3Service.generateResponseForTemplate(
                   {},
-                  '63ec8dbd12adcf783c420946'
+                  '63c0ff83e752c40ca8eefcfb'
                 );
 
               unlockUI();

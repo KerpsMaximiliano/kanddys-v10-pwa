@@ -92,7 +92,7 @@
             }"
           ></div>
 
-          <ng-container *ngIf="videoFiles.includes(gridItem._type)">
+          <ng-container *ngIf="videoFiles.includes(gridItem._type) || gridItem._type === 'video'">
             <img
               src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
               alt="play"

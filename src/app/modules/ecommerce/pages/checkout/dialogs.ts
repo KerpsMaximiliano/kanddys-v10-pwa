@@ -429,7 +429,7 @@ export class Dialogs {
                     {
                       text: 'Quiero ver el draft de opciones de inteligencia artificial',
                       subText: {
-                        text: 'TRY IT. FREE.HOT FEATURE',
+                        text: 'EXPERIMENTAL, PUEDE TARDAR EN RESPONDER',
                         styles: {
                           color: '#91812f',
                           display: 'block',
@@ -1038,7 +1038,7 @@ export class Dialogs {
                       sentiment,
                       timing,
                     },
-                    '63ec7e9a4e5af65e00aca7e0'
+                    '63e02c8c65c8752d0c5f033c'
                   );
 
                 const options = JSON.parse(response).map((option) => ({
@@ -1373,7 +1373,7 @@ export class Dialogs {
                   const response =
                     await this.gpt3Service.generateResponseForTemplate(
                       {},
-                      '63ec8dbd12adcf783c420946'
+                      '63c0ff83e752c40ca8eefcfb'
                     );
 
                   unlockUI();
