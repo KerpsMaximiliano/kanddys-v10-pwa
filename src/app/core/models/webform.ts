@@ -92,3 +92,8 @@ export class Webform extends Model<Webform> {
   active: Boolean;
   user: User
 }
+
+export class ItemWebform extends Model<ItemWebform> {
+  reference: string;
+  active: boolean;
+}

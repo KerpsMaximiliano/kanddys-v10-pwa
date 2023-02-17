@@ -1,0 +1,11 @@
+<div class="external-wrapper" [ngStyle]="containerStyles">
+  <form class="wrapper">
+    <label for="question">{{ label }}</label>
+    <textarea
+      tabindex="-1"
+      [formControl]="textarea"
+      placeholder="Escribe aqui"
+      id="question"
+    ></textarea>
+  </form>
+</div>

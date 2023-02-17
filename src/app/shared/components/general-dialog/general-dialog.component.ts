@@ -30,6 +30,45 @@ enum FormType {
   phone = 'phone',
 }
 
+export interface DialogField {
+  type: FormType;
+  stylesGrid: Record<string, string>;
+  placeholder: string;
+  styles: Record<string, string>;
+  name: string;
+  label: {
+    styles: Record<string, string>;
+    text: string;
+  };
+  disclaimer: {
+    styles: Record<string, string>;
+    text: string;
+  };
+  component?: Type<any>,
+  shouldRerender: boolean,
+  inputs: any[],
+  outputs: any[],
+  selection: {
+    selection: {
+      ['prop']: string;
+    };
+    styles: Record<string, string>;
+    list: Array<{
+      text: string;
+      barStyle: Record<string, string>;
+      subText: {
+        text: string;
+        text2?: string;
+        styles: Record<string, string>;
+      };
+      styles: Record<string, string>;
+    }>;
+  };
+  prop: string;
+  value: any;
+  validators: ValidatorFn[];
+};
+
 @Component({
   selector: 'app-general-dialog',
   templateUrl: './general-dialog.component.html',
@@ -48,44 +87,7 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
   } = {};
   @Input('fields') fields: {
     styles?: Record<string, string>;
-    list?: Array<{
-      type: FormType;
-      stylesGrid: Record<string, string>;
-      placeholder: string;
-      styles: Record<string, string>;
-      name: string;
-      label: {
-        styles: Record<string, string>;
-        text: string;
-      };
-      disclaimer: {
-        styles: Record<string, string>;
-        text: string;
-      };
-      component?: Type<any>,
-      shouldRerender: boolean,
-      inputs: any[],
-      outputs: any[],
-      selection: {
-        selection: {
-          ['prop']: string;
-        };
-        styles: Record<string, string>;
-        list: Array<{
-          text: string;
-          barStyle: Record<string, string>;
-          subText: {
-            text: string;
-            text2?: string;
-            styles: Record<string, string>;
-          };
-          styles: Record<string, string>;
-        }>;
-      };
-      prop: string;
-      value: any;
-      validators: ValidatorFn[];
-    }>;
+    list?: Array<DialogField>;
   } = {};
   @Input('isMultiple') isMultiple: boolean = false;
   @Input('isMultipleImages') isMultipleImages: boolean = false;

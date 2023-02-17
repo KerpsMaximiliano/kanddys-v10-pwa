@@ -54,7 +54,7 @@ export class DialogFlowComponent implements OnInit {
 
           this.service.dialogsFlows[this.dialogFlowId][dialog.componentId] = {
             dialogId: dialog.componentId,
-            swiperConfig: JSON.parse(JSON.stringify(this.swiperConfig)),
+            swiperConfig: this.swiperConfig,
             fields: {},
           };
         });
@@ -97,7 +97,7 @@ export class DialogFlowComponent implements OnInit {
         this.service.activeDialogId = dialog.componentId;
       }
 
-      this.dialogs[index].shouldRerender = true;
+      //this.dialogs[index].shouldRerender = true;
     });
 
     setTimeout(() => {

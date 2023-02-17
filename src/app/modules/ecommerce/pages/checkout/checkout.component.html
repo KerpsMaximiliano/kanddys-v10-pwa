@@ -79,16 +79,33 @@
               "
             ></ng-container>
           </button>
-          <ul
-            *ngFor="let question of item.webForms.questions;let i = index;"
-            class="webform"
-            (click)="handleQuestion(i)"
+          <ng-container
+            *ngIf="webformsByItem[item._id] && webformsByItem[item._id].webform"
           >
-            <p>{{question.value}}</p>
-            <div class="li-container" *ngIf="questionsList.includes(i)">
-              <li *ngFor="let answer of question.answer">{{ answer.value }}</li>
-            </div>
-          </ul>
+            <ul class="list-of-webform-questions">
+              <li
+                *ngFor="
+                  let question of webformsByItem[item._id].webform.questions;
+                  let i = index
+                "
+                class="webform-question-container"
+                [ngClass]="{
+                  required:
+                    question.required &&
+                    !answersByQuestion[question._id]?.response
+                }"
+                (click)="openWebform(item._id, i)"
+              >
+                <p>{{ question.value }}</p>
+                <div
+                  class="question-text-response"
+                  *ngIf="answersByQuestion[question._id]?.response"
+                >
+                  {{ answersByQuestion[question._id]?.response }}
+                </div>
+              </li>
+            </ul>
+          </ng-container>
         </ng-container>
       </div>
       <div class="items-container ready" style="margin-top: 8px">
@@ -153,7 +170,14 @@
       (click)="editOrder('reservation')"
     >
       <div class="between" style="margin-top: 32px">
-        <h2 class="section-title">Fecha de {{ headerService.saleflow._id === '62ed5ad9bd70dde4db98b924' ? "la sesión" : "entrega" }}:</h2>
+        <h2 class="section-title">
+          Fecha de
+          {{
+            headerService.saleflow._id === "62ed5ad9bd70dde4db98b924"
+              ? "la sesión"
+              : "entrega"
+          }}:
+        </h2>
       </div>
 
       <button class="items-container ready" *ngIf="reservation && date">
@@ -295,6 +319,26 @@
       </ng-container>
     </section>
   </main>
+
+  <ng-container *ngFor="let item of items">
+    <app-dialog-flow
+      *ngIf="this.webformsByItem[item._id].dialogs"
+      [dialogFlowId]="'webform-item-' + item._id"
+      [status]="this.webformsByItem[item._id].opened ? 'OPEN' : 'CLOSE'"
+      [dialogs]="this.webformsByItem[item._id].dialogs"
+      [allowSlideNext]="false"
+      (saveConfigRef)="this.webformsByItem[item._id].swiperConfig = $event"
+      (moveToDialogRef)="
+        this.webformsByItem[item._id].dialogFlowFunctions.moveToDialogByIndex =
+          $event
+      "
+      (closingDialogSignal)="
+        webformsByItem[item._id].opened = !webformsByItem[item._id].opened
+      "
+      (openingDialogSignal)="(null)"
+    ></app-dialog-flow>
+  </ng-container>
+
   <!-- <app-sticky-button
     mode="fixed"
     color="#FFFFFF"

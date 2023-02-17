@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,18 +18,27 @@ import { PostInput } from 'src/app/core/models/post';
 import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
+import { ItemWebform, Question, Webform } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  DialogField,
+  GeneralDialogComponent,
+} from 'src/app/shared/components/general-dialog/general-dialog.component';
+import { WebformTextareaQuestionComponent } from 'src/app/shared/components/webform-textarea-question/webform-textarea-question.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 
 const options = [
   {
@@ -139,9 +149,28 @@ export class CheckoutComponent implements OnInit {
   saleflowId: string;
   playVideoOnFullscreen = playVideoOnFullscreen;
   itemObjects: Record<string, ItemSubOrderInput> = {};
-  questions:any = [];
-  questionsList:number[] = [];
-  showAnswers:boolean = false;
+  questions: any = [];
+  questionsList: number[] = [];
+  showAnswers: boolean = false;
+  swiperConfig: SwiperOptions = null;
+  dialogFlowFunctions: Record<string, any> = {};
+  webformsByItem: Record<
+    string,
+    {
+      webform: Webform;
+      dialogs: Array<EmbeddedComponentWithId>;
+      swiperConfig: SwiperOptions;
+      dialogFlowFunctions: Record<string, any>;
+      opened: boolean;
+    }
+  > = {};
+  answersByQuestion: Record<
+    string,
+    {
+      question: Question;
+      response: any;
+    }
+  > = {};
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -157,6 +186,7 @@ export class CheckoutComponent implements OnInit {
     private toastr: ToastrService,
     private authService: AuthService,
     public dialog: MatDialog,
+    private dialogFlowService: DialogFlowService,
     private _WebformsService: WebformsService
   ) {}
 
@@ -175,7 +205,7 @@ export class CheckoutComponent implements OnInit {
         },
       })
     )?.listItems;
-    this.getQuestions(this.items);
+    this.getQuestions();
 
     for (const item of this.items as Array<ExtendedItem>) {
       item.ready = false;
@@ -652,26 +682,93 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
-  async getQuestions(items = []):Promise<void>{
-    for(const { webForms } of items){
-      const [{ reference }] = webForms;
-      const _webform = await this._WebformsService.webform(reference);
-      const answers:any = await this._WebformsService.answerFrequent(reference);
-      _webform.questions = _webform.questions.map(({value, _id}) => {
-        const answer = answers.find(({question}) => question===_id);
-        let question:any = {
-          value,
-          _id
-        };
-        if(answer)
-          question.answer = answer.response.map(({value, ...answer}) => ({value:this.showAnswers?value:'test',...answer}));
-        return question;
-      }) as any;
-      webForms.questions = _webform.questions;
+  async getQuestions(): Promise<void> {
+    for (const item of this.items) {
+      const { webForms } = item;
+
+      //If there's at least 1 webform associated with the item, then, it loads the questions
+      if (webForms && webForms.length > 0) {
+        const itemWebform = webForms[0];
+
+        const webformId = itemWebform.reference;
+        const webform = await this._WebformsService.webform(webformId);
+        webform.questions = webform.questions.sort((a, b) => a.index - b.index);
+
+        if (webform) {
+          this.webformsByItem[item._id] = {
+            webform,
+            dialogs: [],
+            swiperConfig: null,
+            dialogFlowFunctions: {},
+            opened: false,
+          };
+
+          //loads the questions in an object that associates each answer with each question
+          for (const question of webform.questions) {
+            this.answersByQuestion[question._id] = {
+              question,
+              response: '',
+            };
+          }
+        }
+      }
+    }
+
+    this.createDialogFlowForEachQuestion();
+  }
+
+  //Creates a dialog flow that allows the user to answer each item questions
+  createDialogFlowForEachQuestion() {
+    for (const item of this.items) {
+      if (this.webformsByItem[item._id].webform) {
+        console.log(this.webformsByItem[item._id].webform);
+
+        for (const question of this.webformsByItem[item._id].webform
+          .questions) {
+          const lastDialogIndex =
+            this.webformsByItem[item._id].dialogs.length - 1;
+
+          if (question.type === 'text') {
+            this.webformsByItem[item._id].dialogs.push({
+              component: WebformTextareaQuestionComponent,
+              componentId: question._id,
+              inputs: {
+                label: question.value,
+                containerStyles: {
+                  opacity: '1',
+                },
+                dialogFlowConfig: {
+                  dialogId: question._id,
+                  flowId: 'webform-item-' + item._id,
+                },
+                textarea: new FormControl('', [Validators.required]),
+              },
+              outputs: [
+                {
+                  name: 'inputDetected',
+                  callback: (inputDetected) => {
+                    this.answersByQuestion[question._id].response =
+                      inputDetected;
+                  },
+                },
+              ],
+            });
+          } else if(question.type === 'multiple') {
+            
+          }
+        }
+      }
     }
   }
 
-  handleQuestion(index:number):void {
-    this.questionsList = this.questionsList.includes(index)?this.questionsList.filter((_index:number) => _index!==index):[index,...this.questionsList];
+  openWebform(itemId: string, index: number) {
+    this.webformsByItem[itemId].dialogFlowFunctions.moveToDialogByIndex(index);
+    this.webformsByItem[itemId].opened = !this.webformsByItem[itemId].opened;
+  }
+
+  handleQuestion(index: number): void {
+    this.questionsList = this.questionsList.includes(index)
+      ? this.questionsList.filter((_index: number) => _index !== index)
+      : [index, ...this.questionsList];
   }
 }

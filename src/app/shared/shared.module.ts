@@ -153,6 +153,8 @@ import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
+import { WebformTextareaQuestionComponent } from './components/webform-textarea-question/webform-textarea-question.component';
+import { WebformMultipleSelectionQuestionComponent } from './components/webform-multiple-selection-question/webform-multiple-selection-question.component';
 
 const imports = [
   CommonModule,
@@ -314,7 +316,9 @@ const declarations = [
   CalendarSwiperComponent,
   DotLoaderComponent,
   DropdownMenuComponent,
-  ConfirmationDialogComponent
+  ConfirmationDialogComponent,
+  WebformTextareaQuestionComponent,
+  WebformMultipleSelectionQuestionComponent
 ];
 
 @NgModule({
