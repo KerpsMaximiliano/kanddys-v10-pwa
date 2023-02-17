@@ -24,7 +24,6 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
 
 type AuthTypes =
@@ -396,7 +395,7 @@ export class LoginComponent implements OnInit {
           if (this.auth === 'merchant') {
             await this.authService.generateMagicLink(
               this.merchantNumber,
-              `admin/entity-detail-metrics`,
+              `admin/dashboard`,
               this.userID,
               'MerchantAccess',
               null
@@ -630,7 +629,7 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        this.router.navigate([`admin/entity-detail-metrics`], {
+        this.router.navigate([`admin/dashboard`], {
           replaceUrl: true,
         });
         this.status = 'ready';
@@ -720,7 +719,7 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        this.router.navigate([`admin/entity-detail-metrics`], {
+        this.router.navigate([`admin/dashboard`], {
           replaceUrl: true,
         });
         this.status = 'ready';
@@ -787,7 +786,7 @@ export class LoginComponent implements OnInit {
         return;
       }
 
-      this.router.navigate([`admin/entity-detail-metrics`], {
+      this.router.navigate([`admin/dashboard`], {
         replaceUrl: true,
       });
       this.status = 'ready';
@@ -933,7 +932,7 @@ export class LoginComponent implements OnInit {
               return;
             }
 
-            this.router.navigate([`admin/entity-detail-metrics`], {
+            this.router.navigate([`admin/dashboard`], {
               replaceUrl: true,
             });
           }

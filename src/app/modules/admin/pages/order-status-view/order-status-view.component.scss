@@ -1,0 +1,61 @@
+* {
+  margin: 0;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.container {
+  min-height: 100vh;
+  padding-bottom: 24px;
+
+  .header {
+    padding: 14px 21px;
+    display: flex;
+    align-items: center;
+    background-color: #a1a1a1;
+
+    button {
+      all: unset;
+      cursor: pointer;
+    }
+
+    p {
+      margin: 0 auto;
+      color: #272727;
+      font-size: 16px;
+      font-family: SFProRegular;
+    }
+  }
+
+  .options {
+    padding: 0 16px;
+    margin: 16px 0;
+  }
+
+  .flex {
+    display: flex;
+    align-items: center;
+    padding: 0px 21px;
+    margin-bottom: 7px;
+
+    .text,
+    .bold {
+      color: #272727;
+      text-transform: uppercase;
+    }
+
+    .text {
+      font-size: 0.813rem;
+      font-family: SFProRegular;
+    }
+
+    .bold {
+      font-size: 1.063rem;
+      font-family: SFProBold;
+      margin-left: auto;
+    }
+  }
+}

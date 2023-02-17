@@ -1,0 +1,13 @@
+<div class="factura">
+  <div
+    class="bar"
+    [style]="{
+      backgroundColor: barColor
+    }"
+  ></div>
+  <div class="square" [style]="{ backgroundImage: 'url(' + image + ')' }"></div>
+  <span class="top-left">{{ title }}</span>
+  <span class="top-right" *ngIf="price">${{ price | number }}</span>
+  <span class="middle">{{ subtitle }}</span>
+  <span class="bottom-left">{{ description }}</span>
+</div>

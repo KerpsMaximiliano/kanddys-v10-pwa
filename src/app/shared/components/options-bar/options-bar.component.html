@@ -1,47 +1,38 @@
 <div
-  *ngIf="swiperMode == false"
   class="container type{{ type }}"
   [ngClass]="optCol > 0 ? 'grid' : 'flex'"
   [ngStyle]="{ 'grid-template-columns': 'repeat(' + optCol + ', 1fr)' }"
 >
-  <ng-container *ngIf="openMenu">
+  <ng-container *ngFor="let option of options; let i = index">
     <button
-      class="option type{{ type }}"
-      *ngFor="let option of options; let i = index"
+      *ngIf="i === selected && option.menu?.length"
+      class="option type{{ type }} active optIcon"
       (click)="selectOpt(i)"
-      [matMenuTriggerFor]="i === selected ? menu : fake"
-      [ngClass]="{ active: i === selected, optIcon: option.dotsIcon }"
+      [matMenuTriggerFor]="menu"
     >
       <span>{{ option.title }}</span>
-      <button class="dotsButton" *ngIf="option.dotsIcon && i == selected">
-        <img class="dotsIcon" [src]="environment + '/dots-black.svg'" />
+      <img class="dotsIcon" [src]="environment + '/dots-black.svg'" />
+    </button>
+    <button
+      *ngIf="i !== selected || !option.menu?.length"
+      class="option type{{ type }}"
+      (click)="selectOpt(i)"
+      [ngClass]="{ active: i === selected }"
+    >
+      <span>{{ option.title }}</span>
+    </button>
+    <mat-menu #menu="matMenu" class="menuContainer">
+      <button
+        mat-menu-item
+        *ngFor="let item of option.menu; index as i"
+        (click)="menuOptionSelected(i)"
+      >
+        <span>{{ item.title }}</span>
+        <mat-icon class="icon">{{ item.icon }}</mat-icon>
       </button>
-    </button>
-  </ng-container>
-  <ng-container *ngIf="!openMenu">
-    <button
-      class="option type{{ type }}"
-      *ngFor="let option of options; let i = index"
-      (click)="selectOpt(i)"
-      [ngClass]="{ active: i === selected, optIcon: option.dotsIcon }"
-    >
-      <span>{{ option.title }}</span>
-    </button>
+    </mat-menu>
   </ng-container>
 </div>
-
-<mat-menu #menu="matMenu" class="menuContainer">
-  <button
-    mat-menu-item
-    *ngFor="let item of menuOptions; index as i"
-    (click)="menuOptionSelected(i)"
-  >
-    <span>{{ item.text }}</span>
-    <mat-icon class="icon">{{ item.icon }}</mat-icon>
-  </button>
-</mat-menu>
-
-<mat-menu #fake class="fake"></mat-menu>
 
 <!-- <div *ngIf="swiperMode == true" style="margin-bottom: 20px">
   <swiper [config]="swiperConfig">

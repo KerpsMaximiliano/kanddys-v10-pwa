@@ -1,0 +1,24 @@
+<div class="container">
+  <header class="header">
+    <a [routerLink]="['../../../order-status-view']">
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
+    </a>
+    <p class="title">{{ tag?.name || orderDeliveryStatus }}</p>
+  </header>
+
+  <section style="padding: 0 16px">
+    <a
+      *ngFor="let order of orders"
+      [routerLink]="['../../../../ecommerce/order-detail', order._id]"
+      [queryParams]="{ redirectTo: router.url }"
+    >
+      <app-compact-card
+        [title]="order.user?.name || order.user?.phone"
+        [price]="order.total"
+        [image]="order.user?.image"
+        [subtitle]="order.transaction"
+        [description]="order.date"
+      ></app-compact-card>
+    </a>
+  </section>
+</div>

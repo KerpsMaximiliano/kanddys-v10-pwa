@@ -167,6 +167,7 @@ export const ordersByTag = gql`
         }
         ocr {
           _id
+          platform
         }
         items {
           item {

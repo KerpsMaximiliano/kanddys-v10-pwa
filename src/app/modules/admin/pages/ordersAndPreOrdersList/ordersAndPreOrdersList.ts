@@ -528,8 +528,7 @@ export class OrdersAndPreOrdersList implements OnInit {
 
     this.renderItemsPromise = this.merchantsService.ordersByMerchant(
       this.defaultMerchant._id,
-      ordersByMerchantPagination,
-      true
+      ordersByMerchantPagination
     );
 
     this.renderItemsPromise.then(async ({ ordersByMerchant }) => {

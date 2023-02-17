@@ -1,5 +1,5 @@
 <div class="container" [ngStyle]="containerStyles">
-  <h1>Imagen o video del cover:</h1>
+  <h1 *ngIf="title">{{ title }}</h1>
   <div class="image-selector">
     <div class="image-area">
       <input

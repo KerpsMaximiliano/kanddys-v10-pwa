@@ -1,137 +1,124 @@
 * {
-    padding: 0;
-    margin: 0;
+	padding: 0;
+	margin: 0;
 }
 
-button {
-    all: unset;
+.btn {
+	all: unset;
 }
 
 .container {
-    min-height: 100vh;
+	min-height: 100vh;
 }
 
 .header {
-    padding: 0 16px;
-    height: 47px;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+	padding: 0 16px;
+	height: 47px;
+	background: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
 
-    > * {
-        display: flex;
-        align-items: center;
-    }
+	> * {
+		display: flex;
+		align-items: center;
+	}
 
-    .left {
-        gap: 17px;
+	.left {
+		gap: 17px;
 
-        .merchant-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+		.merchant-btn {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
 
-        .img {
-            cursor: pointer;
-            width: 31px;
-            height: 31px;
-            object-fit: cover;
-            border-radius: 50%;
-            background-color: #e9e371;
-        }
+		.img {
+			cursor: pointer;
+			width: 31px;
+			height: 31px;
+			object-fit: cover;
+			border-radius: 50%;
+			background-color: #e9e371;
+		}
 
-        .title {
-            font-family: "SfProHeavy";
-            font-size: 16px;
-            color: #272727;
-        }
-    }
-    .right {
-        gap: 32px;
+		.title {
+			font-family: "SfProHeavy";
+			font-size: 16px;
+			color: #272727;
+		}
+	}
+	.right {
+		gap: 32px;
 
-        .listIcon {
-            cursor: pointer;
-            height: 27px;
-            width: auto;
-        }
-        .blackButton {
-            cursor: pointer;
-            padding: 8px 9px 8px 14px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            border-radius: 17px;
-            background-color: #272727;
-            color: #fed230;
+		.listIcon {
+			cursor: pointer;
+			height: 27px;
+			width: auto;
+		}
+		.blackButton {
+			cursor: pointer;
+			padding: 8px 9px 8px 14px;
+			display: flex;
+			align-items: center;
+			gap: 7px;
+			border-radius: 17px;
+			background-color: #272727;
+			color: #fed230;
 
-            .starIcon {
-                height: 17.5px;
-                width: auto;
-                filter: brightness(0) saturate(100%) invert(99%) sepia(93%) saturate(2815%) hue-rotate(327deg)
-                    brightness(100%) contrast(99%);
-            }
-        }
-    }
+			.starIcon {
+				height: 17.5px;
+				width: auto;
+				filter: brightness(0) saturate(100%) invert(99%) sepia(93%) saturate(2815%) hue-rotate(327deg) brightness(100%)
+					contrast(99%);
+			}
+		}
+	}
 }
 
 .contents {
-    background-color: #ffffff;
-    padding: 13px 16px 13px 16px;
+	background-color: #ffffff;
+	padding: 12px;
 }
 
 .saleflows-item-grid {
-    width: auto;
-    padding: 20px 16px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    -moz-column-gap: 8px;
-    column-gap: 8px;
-    row-gap: 18px;
-    overflow-x: hidden;
-    justify-items: center;
-    .capsize {
-        width: 100%;
-        max-width: 194px;
-        height: 100%;
-    }
+	width: auto;
+	padding: 20px 16px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	-moz-column-gap: 8px;
+	column-gap: 8px;
+	row-gap: 18px;
+	overflow-x: hidden;
+	justify-items: center;
+	.capsize {
+		text-decoration: none;
+		width: 100%;
+		max-width: 194px;
+		height: 100%;
+	}
 }
 
 .uploadButton {
-    position: fixed;
-    width: 100%;
-    max-width: 500px;
-    bottom: 0;
+	position: fixed;
+	width: 100%;
+	max-width: 500px;
+	bottom: 0;
 
-    .button {
-        position: absolute;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #272727;
-        border-radius: 50%;
-        height: 55px;
-        width: 55px;
-        right: 16px;
-        bottom: 50px;
-
-        .icon {
-            width: 25px;
-            height: auto;
-            filter: brightness(0) saturate(100%) invert(85%) sepia(13%) saturate(1515%) hue-rotate(68deg)
-                brightness(100%) contrast(91%);
-        }
-    }
+	.button {
+		position: absolute;
+		background-color: #272727;
+		right: 16px;
+		bottom: 50px;
+	}
 }
 
 @media (max-width: 379px) {
-    .header {
-        .left,
-        .right {
-            gap: 12px;
-        }
-    }
+	.header {
+		.left,
+		.right {
+			gap: 12px;
+		}
+	}
 }

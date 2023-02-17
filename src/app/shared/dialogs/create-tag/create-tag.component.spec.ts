@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { QrCodeDialogComponent } from './qr-code-dialog.component';
+import { CreateTagComponent } from './create-tag.component';
 
-describe('QrCodeDialogComponent', () => {
-  let component: QrCodeDialogComponent;
-  let fixture: ComponentFixture<QrCodeDialogComponent>;
+describe('CreateTagComponent', () => {
+  let component: CreateTagComponent;
+  let fixture: ComponentFixture<CreateTagComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ QrCodeDialogComponent ]
+      declarations: [ CreateTagComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(QrCodeDialogComponent);
+    fixture = TestBed.createComponent(CreateTagComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
