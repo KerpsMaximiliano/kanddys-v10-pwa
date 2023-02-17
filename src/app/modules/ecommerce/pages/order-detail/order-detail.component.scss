@@ -639,12 +639,6 @@ table {
     margin-left: 17px;
     font-size: 1.313rem;
     font-family: SFProBold;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
-    -webkit-box-orient: vertical;
   }
   span {
     font-family: SfProRegular;
@@ -654,9 +648,9 @@ table {
 }
 
 .bar {
+  all: unset;
   display: flex;
   align-items: baseline;
-  all: unset;
   width: 100%;
   padding: 10px 20px;
   background-color: #82f18d;
@@ -682,5 +676,12 @@ table {
     p {
       font-size: 1rem;
     }
+    span {
+      font-size: 0.75rem;
+    }
+  }
+
+  .notify {
+    font-size: 0.75rem;
   }
 }

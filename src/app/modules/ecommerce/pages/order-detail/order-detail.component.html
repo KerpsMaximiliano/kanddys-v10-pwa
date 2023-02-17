@@ -20,10 +20,11 @@
     <span>Revistas Virtuales para Monetizar</span>
   </header>
 
-  <button
-    class="bar btn"
+  <a
+    class="bar btn notify"
     *ngIf="isMerchant === false"
-    (clicked)="notificationClicked()"
+    [href]="messageLink"
+    target="_blank"
   >
     <p>
       Factura creada, envíala por
@@ -36,7 +37,7 @@
       a
       {{ order.items[0].saleflow.merchant.name }}
     </p>
-  </button>
+  </a>
   <ng-container *ngIf="isMerchant">
     <div style="padding-top: 5px; margin-bottom: 5px">
       <app-dropdown-menu

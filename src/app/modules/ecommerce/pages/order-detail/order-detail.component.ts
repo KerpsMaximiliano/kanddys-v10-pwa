@@ -259,59 +259,55 @@ export class OrderDetailComponent implements OnInit {
         };
       }
     }
-    if (notification == 'true') {
-      let address = '';
-      const location = this.order.items[0].deliveryLocation;
-      if (location) {
-        address = '\n\nDirección: ';
-        if (location.street) {
-          if (location.houseNumber)
-            address += '#' + location.houseNumber + ', ';
-          address += location.street + ', ';
-          if (location.referencePoint)
-            address += location.referencePoint + ', ';
-          address += location.city + ', República Dominicana';
-          if (location.note) address += ` (${location.note})`;
-        } else {
-          address += location.nickName;
-        }
+    let address = '';
+    const location = this.order.items[0].deliveryLocation;
+    if (location) {
+      address = '\n\nDirección: ';
+      if (location.street) {
+        if (location.houseNumber) address += '#' + location.houseNumber + ', ';
+        address += location.street + ', ';
+        if (location.referencePoint) address += location.referencePoint + ', ';
+        address += location.city + ', República Dominicana';
+        if (location.note) address += ` (${location.note})`;
+      } else {
+        address += location.nickName;
       }
-
-      let giftMessage = '';
-      if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
-      if (this.post?.targets?.[0]?.name)
-        giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
-      if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
-
-      const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
-      const message = `*🐝 FACTURA ${formatID(
-        this.order.dateId
-      )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
-        'es-MX'
-      )}: ${fullLink}\n\n*Comprador*: ${
-        this.order.user?.name ||
-        this.order.user?.phone ||
-        this.order.user?.email ||
-        'Anónimo'
-      }${address}\n\n${
-        giftMessage
-          ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
-          : ''
-      }`;
-
-      this.messageLink = `https://api.whatsapp.com/send?phone=${
-        this.order.items[0].saleflow.merchant.owner.phone
-      }&text=${encodeURIComponent(message)}`;
-      // this.notify = true;
     }
 
-    const today = new Date(this.order.createdAt);
-    const utcOffset = today.getTimezoneOffset() / 60;
-    const todayFromISO = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    ).toISOString();
+    let giftMessage = '';
+    if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
+    if (this.post?.targets?.[0]?.name)
+      giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
+    if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
+
+    const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+    const message = `*🐝 FACTURA ${formatID(
+      this.order.dateId
+    )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
+      'es-MX'
+    )}: ${fullLink}\n\n*Comprador*: ${
+      this.order.user?.name ||
+      this.order.user?.phone ||
+      this.order.user?.email ||
+      'Anónimo'
+    }${address}\n\n${
+      giftMessage
+        ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
+        : ''
+    }`;
+
+    this.messageLink = `https://api.whatsapp.com/send?phone=${
+      this.order.items[0].saleflow.merchant.owner.phone
+    }&text=${encodeURIComponent(message)}`;
+    // this.notify = true;
+
+    // const today = new Date(this.order.createdAt);
+    // const utcOffset = today.getTimezoneOffset() / 60;
+    // const todayFromISO = new Date(
+    //   today.getFullYear(),
+    //   today.getMonth(),
+    //   today.getDate()
+    // ).toISOString();
 
     // this.currentDayOrdersRange = {
     //   fromISO: moment(todayFromISO)
