@@ -305,11 +305,11 @@ export class OrderService {
   orderDeliveryStatus(status: OrderStatusDeliveryType) {
     return (
       {
-        pickup: 'Pick Up',
-        pending: 'Todo listo para entregarse',
+        'in progress': 'En preparación',
+        pending: 'Listo para enviarse',
+        pickup: 'Listo para pick-up',
         shipped: 'De camino a ser entregado',
         delivered: 'Entregado',
-        'in progress': 'Por Entregarse',
       }[status] || 'Desconocido'
     );
   }

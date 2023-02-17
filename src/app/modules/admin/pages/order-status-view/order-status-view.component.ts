@@ -63,14 +63,14 @@ export class OrderStatusViewComponent implements OnInit {
       this.orderStatus.pending = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'pending'
       );
-      this.orderStatus.delivered = this.orders.filter(
-        (itemOrder) => itemOrder.orderStatusDelivery === 'delivered'
+      this.orderStatus.pickup = this.orders.filter(
+        (itemOrder) => itemOrder.orderStatusDelivery === 'pickup'
       );
       this.orderStatus.shipped = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'shipped'
       );
-      this.orderStatus.pickup = this.orders.filter(
-        (itemOrder) => itemOrder.orderStatusDelivery === 'pickup'
+      this.orderStatus.delivered = this.orders.filter(
+        (itemOrder) => itemOrder.orderStatusDelivery === 'delivered'
       );
 
       this.tags = tags.map((tag: ExtendedTag) => {
