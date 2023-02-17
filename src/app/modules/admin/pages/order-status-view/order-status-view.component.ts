@@ -60,10 +60,10 @@ export class OrderStatusViewComponent implements OnInit {
       this.orderStatus.inProgress = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'in progress'
       );
-      this.orderStatus.delivered = this.orders.filter(
+      this.orderStatus.pending = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'pending'
       );
-      this.orderStatus.pending = this.orders.filter(
+      this.orderStatus.delivered = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'delivered'
       );
       this.orderStatus.shipped = this.orders.filter(

@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { PaginationInput } from 'src/app/core/models/saleflow';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -56,6 +57,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   constructor(
     public _MerchantsService: MerchantsService,
     private router: Router,
+    private authService: AuthService,
     // private itemsService: ItemsService,
     private _SaleflowService: SaleFlowService,
     private _ItemsService: ItemsService,
@@ -333,6 +335,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         },
       ],
     });
+  }
+
+  logout() {
+    this.authService.signouttwo();
   }
 
   selectTag(index: number) {

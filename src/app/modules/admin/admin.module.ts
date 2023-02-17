@@ -40,12 +40,17 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'admin/entity-detail-metrics',
+        redirectTo: 'admin/dashboard',
         pathMatch: 'full',
       },
       {
         path: 'items-dashboard',
-        redirectTo: 'entity-detail-metrics',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+      {
+        path: 'entity-detail-metrics',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
       },
       {
@@ -57,11 +62,6 @@ const routes: Routes = [
         path: 'create-article/:itemId',
         component: ArticleCreatorComponent,
       },
-      /*{
-        path: 'entity-detail-metrics',
-        component: EntityDetailMetricsComponent,
-        data: { animation: 'EntityDetailMetrics' },
-      },*/
       {
         path: 'merchant-items',
         component: MerchantItemsComponent,
@@ -97,7 +97,7 @@ const routes: Routes = [
         component: TimeBlockComponent,
       },
       {
-        path: 'entity-detail-metrics',
+        path: 'old-dashboard',
         component: ItemsDashboardComponent,
       },
       {

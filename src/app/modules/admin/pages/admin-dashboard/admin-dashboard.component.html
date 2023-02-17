@@ -1,10 +1,20 @@
 <div class="container">
   <header class="header">
     <div class="left">
-      <button class="btn merchant-btn">
+      <button class="btn merchant-btn" [matMenuTriggerFor]="menu">
         <img [src]="_MerchantsService.merchantData.image" class="img" />
         <p class="title">{{ _MerchantsService.merchantData.name }}</p>
       </button>
+      <mat-menu #menu="matMenu">
+        <a mat-menu-item [routerLink]="['']">
+          <mat-icon>settings</mat-icon>
+          <span>Configuración</span>
+        </a>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
     </div>
 
     <div class="right">

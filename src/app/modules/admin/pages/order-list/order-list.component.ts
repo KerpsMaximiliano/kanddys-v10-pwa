@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
 import { Tag } from 'src/app/core/models/tags';
@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 interface ExtendedOrder extends ItemOrder {
   total?: number;
   date?: string;
+  transaction?: string;
 }
 
 @Component({
@@ -26,6 +27,7 @@ export class OrderListComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    public router: Router,
     private orderService: OrderService,
     private merchantsService: MerchantsService,
     private tagsService: TagsService
@@ -53,6 +55,7 @@ export class OrderListComponent implements OnInit {
             },
             options: {
               limit: -1,
+              sortBy: 'createdAt:desc',
             },
           }
         )
@@ -70,16 +73,24 @@ export class OrderListComponent implements OnInit {
   addInfoToOrder(itemOrder: ExtendedOrder) {
     itemOrder.total = itemOrder.subtotals.reduce((a, b) => a + b.amount, 0);
     const temporalDate = new Date(itemOrder.createdAt);
-    itemOrder.date = temporalDate
-      .toLocaleString('es-MX', {
-        hour12: true,
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-      .toLocaleUpperCase();
+    const currentDate = new Date();
+    const dateDifference = currentDate.getDate() - temporalDate.getDate();
+    switch (dateDifference) {
+      case 0:
+        itemOrder.date = 'Hoy';
+        break;
+      case 1:
+        itemOrder.date = 'Ayer';
+        break;
+      default:
+        itemOrder.date = `Hace ${dateDifference} días`;
+    }
+    if (itemOrder.ocr?.platform) {
+      itemOrder.transaction =
+        {
+          'bank-transfer': 'Transferencia Bancaria',
+        }[itemOrder.ocr.platform] || itemOrder.ocr.platform;
+    }
     return itemOrder;
   }
 }

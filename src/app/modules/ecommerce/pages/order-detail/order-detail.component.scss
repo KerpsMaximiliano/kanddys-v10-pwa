@@ -675,12 +675,12 @@ table {
   }
 }
 
-@media (max-width: 300px) {
+@media (max-width: 400px) {
   .header {
     padding: 15px 15px 10px;
 
     p {
-      font-size: 17px;
+      font-size: 1rem;
     }
   }
 }
