@@ -50,6 +50,7 @@ export class AnswerDefault extends Model<AnswerDefault> {
   isMedia: boolean;
   value: string;
   defaultValue: string;
+  label: string;
 }
 
 export class QuestionInput {

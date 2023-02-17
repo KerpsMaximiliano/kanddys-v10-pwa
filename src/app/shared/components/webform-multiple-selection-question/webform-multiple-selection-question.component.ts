@@ -1,5 +1,6 @@
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { FormControl, Validator } from '@angular/forms';
+import { AnswerDefault } from 'src/app/core/models/webform';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 @Component({
@@ -9,10 +10,8 @@ import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 })
 export class WebformMultipleSelectionQuestionComponent implements OnInit {
   @Input() label: string = 'PreguntaID';
-  @Input() options: Array<{
-    text: string;
-    active: boolean;
-  }> = [];
+  @Input() options: Array<AnswerDefault> = [];
+  @Input() optionsInput: Array<any> = [];
   @Input() multiple: boolean = false;
   @Input() containerStyles: Record<string, any> = {
     opacity: 1,
@@ -23,6 +22,12 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
   };
   @Input() selectedIndex: number = null;
   @Output() inputDetected = new EventEmitter();
+  layoutType = {
+    'JUST-TEXT': 1,
+    'JUST-IMAGES': 2,
+    'IMAGES-AND-TEXT': 3,
+  };
+  layout: number = null;
 
   constructor(private dialogFlowService: DialogFlowService) {}
 
@@ -44,6 +49,38 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
         ].fields.options = [];
       }
     }
+
+    if (this.options.length && !this.options[0].isMedia) {
+      this.layout = this.layoutType['JUST-TEXT'];
+    } else if (
+      this.options.length &&
+      this.options[0].isMedia &&
+      this.options[0].label
+    ) {
+      this.layout = this.layoutType['IMAGES-AND-TEXT'];
+    } else if (
+      this.options.length &&
+      this.options[0].isMedia &&
+      !this.options[0].label
+    ) {
+      this.layout = this.layoutType['JUST-IMAGES'];
+    }
+
+    if (
+      this.layout === this.layoutType['JUST-IMAGES'] ||
+      this.layout === this.layoutType['IMAGES-AND-TEXT']
+    ) {
+      this.optionsInput = this.options.map((option) => ({
+        text: option.label,
+        img: option.value,
+      }));
+    } else {
+      this.optionsInput = this.options.map((option) => ({
+        text: option.value,
+      }));
+    }
+    console.log(this.options)
+    console.log(this.optionsInput)
   }
 
   emitInput = (selectedOptionIndex: number) => {

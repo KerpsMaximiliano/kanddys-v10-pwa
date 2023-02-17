@@ -758,7 +758,7 @@ export class CheckoutComponent implements OnInit {
             const activeOptions = question.answerDefault
               .filter((option) => option.active)
               .map((option) => ({
-                text: option.value,
+                ...option,
                 selected: false,
               }));
 
