@@ -21,7 +21,7 @@
       <div style="margin-bottom: 5px">
         <a [routerLink]="['../order-list/status', 'in-progress']">
           <app-collection-card
-            title="Por Entregarse"
+            title="En preparación"
             [description]="
               orderStatus.inProgress.length + ' facturas en total.'
             "
@@ -31,15 +31,23 @@
       <div style="margin-bottom: 5px">
         <a [routerLink]="['../order-list/status', 'pending']">
           <app-collection-card
-            title="Listas para Entregarse"
+            title="Listas para enviarse"
             [description]="orderStatus.pending.length + ' facturas en total.'"
+          ></app-collection-card>
+        </a>
+      </div>
+      <div style="margin-bottom: 5px">
+        <a [routerLink]="['../order-list/status', 'pickup']">
+          <app-collection-card
+            title="Listas para Pick Up"
+            [description]="orderStatus.pickup.length + ' facturas en total.'"
           ></app-collection-card>
         </a>
       </div>
       <div style="margin-bottom: 5px">
         <a [routerLink]="['../order-list/status', 'shipped']">
           <app-collection-card
-            title="De camino a ser Entregadas"
+            title="De camino a ser entregadas"
             [description]="orderStatus.shipped.length + ' facturas en total.'"
           ></app-collection-card>
         </a>
@@ -49,14 +57,6 @@
           <app-collection-card
             title="Entregadas"
             [description]="orderStatus.delivered.length + ' facturas en total.'"
-          ></app-collection-card>
-        </a>
-      </div>
-      <div style="margin-bottom: 5px">
-        <a [routerLink]="['../order-list/status', 'pickup']">
-          <app-collection-card
-            title="Pick Up"
-            [description]="orderStatus.pickup.length + ' facturas en total.'"
           ></app-collection-card>
         </a>
       </div>
