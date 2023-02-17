@@ -33,6 +33,7 @@ export class AnswerSelectorComponent {
   @Input() blockIndexes: number[];
   @Input() complexOptions: ComplexOptionAnswerSelector[];
   @Input() values: BankAnswers;
+  @Input() alternativeBackground: string;
 
   @Output() onSelector = new EventEmitter<number>();
 

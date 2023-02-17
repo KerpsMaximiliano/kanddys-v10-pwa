@@ -21,6 +21,7 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
     dialogId: string;
     flowId: string;
   };
+  @Input() selectedIndex: number = null;
   @Output() inputDetected = new EventEmitter();
 
   constructor(private dialogFlowService: DialogFlowService) {}
@@ -45,7 +46,12 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
     }
   }
 
-  emitInput = () => {
+  emitInput = (selectedOptionIndex: number) => {
+    this.options = this.options.map((option, index) => ({
+      ...option,
+      selected: index === selectedOptionIndex,
+    }));
+    this.selectedIndex = selectedOptionIndex;
     if (this.dialogFlowConfig) {
       this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
         this.dialogFlowConfig.dialogId

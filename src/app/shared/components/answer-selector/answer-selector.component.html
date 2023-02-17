@@ -37,7 +37,13 @@
                   : null
               "
             >
-              <div class="background"></div>
+              <div
+                class="background"
+                [ngClass]="{
+                  narrow:
+                    alternativeBackground && alternativeBackground === 'narrow'
+                }"
+              ></div>
 
               <ng-container *ngIf="!option.isOptionAnArray">
                 <span [ngStyle]="option.valueStyles">{{ option.value }}</span>

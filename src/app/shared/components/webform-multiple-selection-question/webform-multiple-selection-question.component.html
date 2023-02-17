@@ -1,6 +1,9 @@
-<div class="external-wrapper" [ngStyle]="containerStyles">
-  <form class="wrapper">
-    <label for="question">{{ label }}</label>
-    
-  </form>
-</div>
+<app-closed-question-card
+  [type]="1"
+  [id]="'sadasdaasd'"
+  [question]="label"
+  [answers]="options"
+  [selected]="selectedIndex"
+  (onSelector)="emitInput($event)"
+>
+</app-closed-question-card>

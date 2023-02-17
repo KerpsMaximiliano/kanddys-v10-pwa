@@ -155,6 +155,7 @@ import { MatListModule } from '@angular/material/list';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 import { WebformTextareaQuestionComponent } from './components/webform-textarea-question/webform-textarea-question.component';
 import { WebformMultipleSelectionQuestionComponent } from './components/webform-multiple-selection-question/webform-multiple-selection-question.component';
+import { ClosedQuestionCardComponent } from './components/closed-question-card/closed-question-card.component';
 
 const imports = [
   CommonModule,
@@ -318,7 +319,8 @@ const declarations = [
   DropdownMenuComponent,
   ConfirmationDialogComponent,
   WebformTextareaQuestionComponent,
-  WebformMultipleSelectionQuestionComponent
+  WebformMultipleSelectionQuestionComponent,
+  ClosedQuestionCardComponent
 ];
 
 @NgModule({

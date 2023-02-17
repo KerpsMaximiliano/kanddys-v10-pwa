@@ -33,6 +33,7 @@ import {
   DialogField,
   GeneralDialogComponent,
 } from 'src/app/shared/components/general-dialog/general-dialog.component';
+import { WebformMultipleSelectionQuestionComponent } from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
 import { WebformTextareaQuestionComponent } from 'src/app/shared/components/webform-textarea-question/webform-textarea-question.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
@@ -753,8 +754,45 @@ export class CheckoutComponent implements OnInit {
                 },
               ],
             });
-          } else if(question.type === 'multiple') {
-            
+          } else if (question.type === 'multiple') {
+            const activeOptions = question.answerDefault
+              .filter((option) => option.active)
+              .map((option) => ({
+                text: option.value,
+                selected: false,
+              }));
+
+            this.webformsByItem[item._id].dialogs.push({
+              component: WebformMultipleSelectionQuestionComponent,
+              componentId: question._id,
+              inputs: {
+                label: question.value,
+                containerStyles: {
+                  opacity: '1',
+                },
+                dialogFlowConfig: {
+                  dialogId: question._id,
+                  flowId: 'webform-item-' + item._id,
+                },
+                options: activeOptions,
+              },
+              outputs: [
+                {
+                  name: 'inputDetected',
+                  callback: (
+                    inputDetected: Array<{ text: string; selected: boolean }>
+                  ) => {
+                    const selected = inputDetected.find(
+                      (option) => option.selected
+                    );
+
+                    if (selected)
+                      this.answersByQuestion[question._id].response =
+                        selected.text;
+                  },
+                },
+              ],
+            });
           }
         }
       }

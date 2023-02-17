@@ -1,0 +1,68 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.imgGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  gap: 5px;
+}
+
+.title {
+  font-family: SfProBold;
+  font-size: 23px;
+}
+
+.radio {
+  margin-top: 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+
+  .radioImg {
+    cursor: pointer;
+    object-fit: cover;
+    border-radius: 9px;
+    width: 104px;
+    height: 142px;
+  }
+
+  @media (max-width: 427px) {
+    .radioImg {
+      width: 88px;
+      height: 120px;
+    }
+  }
+  @media (max-width: 374px) {
+    .radioImg {
+      width: 73px;
+      height: 100px;
+    }
+  }
+
+  .radioButton {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1px solid #707070;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon {
+      display: none;
+      transition: transform 0.2s;
+    }
+
+    &.active {
+      .icon {
+        display: block;
+      }
+    }
+  }
+}

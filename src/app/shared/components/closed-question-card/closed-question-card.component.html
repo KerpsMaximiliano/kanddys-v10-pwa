@@ -1,0 +1,48 @@
+<div class="container" id="{{ id }}">
+  <app-card [shadows]="true">
+    <p class="title">{{ question }}</p>
+
+    <div class="imgGrid" *ngIf="type === 2 || type == 3">
+      <div
+        *ngFor="let answer of answers; let i = index"
+        [id]="id + '-' + i"
+        class="radio"
+      >
+        <img
+          [src]="answer.img"
+          (error)="answer.img = '/assets/images/noimage.png'"
+          class="radioImg"
+          (click)="selectOpt(i)"
+        />
+        <div
+          class="radioButton"
+          (click)="selectOpt(i)"
+          [ngClass]="{ active: i === selected }"
+        >
+          <img class="icon" [src]="env + '/check-black.svg'" />
+        </div>
+      </div>
+    </div>
+
+    <app-answer-selector
+      *ngIf="type === 1 || type == 3"
+      style="text-align: left"
+      [activeOption]="selected"
+      [options]="options"
+      [indicator]="true"
+      [containerStyles]="{
+        margin: '0px',
+        marginTop: '17px'
+      }"
+      [itemStyles]="{
+        fontSize: '17px',
+        padding: '7px 0px'
+      }"
+      [optionContainerStyles]="{
+        marginBottom: '0px'
+      }"
+      [alternativeBackground]="'narrow'"
+      (onSelector)="selectOpt($event)"
+    ></app-answer-selector>
+  </app-card>
+</div>
