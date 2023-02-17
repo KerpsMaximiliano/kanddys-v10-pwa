@@ -96,7 +96,14 @@ export class OrderDetailComponent implements OnInit {
   notify: boolean = false;
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
 
-  deliveryStatusOptions: DropdownOptionItem[] = [];
+  deliveryStatusOptions: DropdownOptionItem[] = [
+    {
+      text: 'En preparación',
+      value: 'in progress',
+      selected: false,
+      hide: false,
+    },
+  ];
   tagOptions: DropdownOptionItem[];
   tagPanelState: boolean;
 
