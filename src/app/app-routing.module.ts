@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ErrorScreenComponent } from './modules/others/pages/error-screen/error-screen.component';
 
-const redirectTo = 'admin/entity-detail-metrics';
+const redirectTo = 'admin/dashboard';
 const routes: Routes = [
   { path: '', redirectTo, pathMatch: 'full' },
   { path: 'admin/items-dashboard', redirectTo, pathMatch: 'full' },

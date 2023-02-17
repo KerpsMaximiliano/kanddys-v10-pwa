@@ -23,6 +23,7 @@ import {
   itemTagRangePrice,
 } from '../graphql/tags.gql';
 import { Item } from '../models/item';
+import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
 
@@ -239,7 +240,7 @@ export class TagsService {
     orderStatuses: Array<string>,
     limit: number,
     tagIds: Array<string>
-  ) {
+  ): Promise<{ orders: ItemOrder[]; tag: string }[]> {
     try {
       console.log({ orderStatus: orderStatuses, limit, tagId: tagIds });
       const result = await this.graphql.query({

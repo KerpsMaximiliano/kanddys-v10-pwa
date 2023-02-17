@@ -271,11 +271,14 @@ export class ArticleCreatorComponent implements OnInit {
     return new File([blob], fileName, { type: type || 'image/jpg' });
   }
 
-  async onEditSubmit(result?: CroppResult) {
-    if (result) {
-      const file = new File([result.blob], 'image.jpg', {
-        type: 'image/jpg',
-      });
+  async onEditSubmit(result: CroppResult) {
+    const file = new File([result.blob], 'image.jpg', {
+      type: 'image/jpg',
+    });
+    const image = this.item.images.find(
+      (itemImage) => itemImage._id === this.editingImageId
+    );
+    if (result.modified || image.original === image.value) {
       lockUI();
       await this._ItemsService.itemUpdateImage(
         {
@@ -284,8 +287,8 @@ export class ArticleCreatorComponent implements OnInit {
         this.editingImageId,
         this.item._id
       );
-      unlockUI();
       this._ItemsService.editingImageId = null;
+      unlockUI();
     }
     this.ngZone.run(() => {
       this._Router.navigate([`/admin/slides-editor/${this.item._id}`]);

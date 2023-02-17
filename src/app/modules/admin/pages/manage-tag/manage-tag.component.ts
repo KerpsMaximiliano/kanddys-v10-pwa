@@ -469,7 +469,7 @@ export class ManageTagComponent implements OnInit, OnDestroy {
         func: async () => {
           this.router.navigate(['auth/login'], {
             queryParams: {
-              redirect: 'admin/entity-detail-metrics',
+              redirect: 'admin/dashboard',
             },
           });
         },
@@ -582,13 +582,13 @@ export class ManageTagComponent implements OnInit, OnDestroy {
         let flowRoute = localStorage.getItem('flowRoute');
 
         if (!flowRoute)
-          this.headerService.flowRoute = 'admin/entity-detail-metrics';
+          this.headerService.flowRoute = 'admin/dashboard';
         else this.headerService.flowRoute = flowRoute;
       }
     } else {
       if (!flowRoute.includes('create-tag'))
         this.headerService.flowRoute = flowRoute;
-      else this.headerService.flowRoute = 'admin/entity-detail-metrics';
+      else this.headerService.flowRoute = 'admin/dashboard';
     }
 
     const redirectionRoute = this.headerService.flowRoute;
@@ -663,7 +663,7 @@ export class ManageTagComponent implements OnInit, OnDestroy {
     } else if (this.entity === 'order') {
       this.router.navigate(['ecommerce/order-detail/' + this.entityId]);
     } else {
-      this.router.navigate(['admin/entity-detail-metrics']);
+      this.router.navigate(['admin/dashboard']);
     }
   };
 
