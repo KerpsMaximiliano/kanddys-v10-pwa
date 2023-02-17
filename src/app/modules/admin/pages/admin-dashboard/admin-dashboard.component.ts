@@ -29,6 +29,8 @@ import { environment } from 'src/environments/environment';
 export class AdminDashboardComponent implements OnInit, OnDestroy {
   URI: string = environment.uri;
   environment: string = environment.assetsUrl;
+
+  isSimpleCard = history.state.data;
   // artID: Array<string> = [
   //   '63d429d7849f894c1895c659',
   //   '63d420a8849f894c189544d4',
@@ -73,6 +75,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.inicializeItems(true, false, true);
       return;
     }
+    console.log(this.isSimpleCard);
     this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
       next: (value) => {
         if (value) {
@@ -283,6 +286,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.allItems = [];
       }
     });
+
+    if (this._SaleflowService.saleflowData.layout === 'simple-card') {
+      this.isSimpleCard = true;
+    } else {
+      this.isSimpleCard = false;
+    }
   }
 
   share() {
