@@ -49,6 +49,8 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
         ].fields.options = [];
       }
     }
+    
+    console.log(this.options[0].isMedia, this.options[0].label)
 
     if (this.options.length && !this.options[0].isMedia) {
       this.layout = this.layoutType['JUST-TEXT'];
@@ -79,8 +81,7 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
         text: option.value,
       }));
     }
-    console.log(this.options)
-    console.log(this.optionsInput)
+    console.log(this.layout)
   }
 
   emitInput = (selectedOptionIndex: number) => {

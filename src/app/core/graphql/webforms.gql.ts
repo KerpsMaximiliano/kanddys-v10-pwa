@@ -19,6 +19,7 @@ const webformBody = `
           isMedia
           value
           defaultValue
+          label
         }
         show
         required

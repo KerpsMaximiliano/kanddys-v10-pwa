@@ -762,6 +762,8 @@ export class CheckoutComponent implements OnInit {
                 selected: false,
               }));
 
+              console.log("ACTIVE OPTIONS", activeOptions)
+
             this.webformsByItem[item._id].dialogs.push({
               component: WebformMultipleSelectionQuestionComponent,
               componentId: question._id,
