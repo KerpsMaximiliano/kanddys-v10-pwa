@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -41,7 +42,8 @@ export class MenuButtonComponent implements OnInit {
   constructor(
     private ngNavigatorShareService: NgNavigatorShareService,
     public headerService: HeaderService,
-    private authService: AuthService
+    private authService: AuthService,
+    private routerService: Router
   ) {}
 
   ngOnInit(): void {}
@@ -66,5 +68,14 @@ export class MenuButtonComponent implements OnInit {
 
   logout() {
     this.authService.signoutThree();
+  }
+
+  goToProfile() {
+    return this.routerService.navigate([
+      'ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/contact-landing/' +
+        this.headerService.user._id,
+    ]);
   }
 }
