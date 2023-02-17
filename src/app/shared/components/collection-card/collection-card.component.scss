@@ -1,0 +1,46 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 17px;
+  color: #272727;
+
+  .imgBox {
+    min-width: 66px !important;
+    height: 74px !important;
+    border-radius: 15px;
+    background-color: #e9e371;
+    object-fit: cover;
+
+    &.shadow {
+      filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.16));
+    }
+  }
+  .infoBox {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    .title {
+      font-family: "SfProBold";
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .arrow {
+        color: #a1a1a1;
+        font-size: 18px;
+      }
+    }
+    .desc {
+      font-family: "SfProRegular";
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

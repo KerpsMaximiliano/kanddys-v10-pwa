@@ -30,6 +30,7 @@ import {
   OrderStatusNameType,
   OrderStatusType,
   OrderStatusType2,
+  OrderStatusDeliveryType,
 } from '../models/order';
 
 import { PaginationInput } from '../models/saleflow';
@@ -301,18 +302,15 @@ export class OrderService {
     return result.orderSetStatusDelivery;
   }
 
-  openWhatsAppMessage(phone: string, message: string) {
-    this.dialogService.open(WhatsappMessageComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        data: {
-          phone,
-          message,
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      notCancellable: true,
-    });
+  orderDeliveryStatus(status: OrderStatusDeliveryType) {
+    return (
+      {
+        'in progress': 'En preparación',
+        pending: 'Listo para enviarse',
+        pickup: 'Listo para pick-up',
+        shipped: 'De camino a ser entregado',
+        delivered: 'Entregado',
+      }[status] || 'Desconocido'
+    );
   }
 }

@@ -109,14 +109,12 @@ import { ItemSettingsComponent } from './dialogs/item-settings/item-settings.com
 import { MediaDialogComponent } from './dialogs/media-dialog/media-dialog.component';
 import { MerchantInfoComponent } from './dialogs/merchant-info/merchant-info.component';
 import { PostPrivacyComponent } from './dialogs/post-privacy/post-privacy.component';
-import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
+// import { QrCodeDialogComponent } from './dialogs/qr-code-dialog/qr-code-dialog.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
 import { SearchHashtagComponent } from './dialogs/search-hashtag/search-hashtag.component';
 import { SetConfigComponent } from './dialogs/set-config/set-config.component';
 import { SettingsComponent } from './dialogs/settings/settings.component';
 import { ShareLinksComponent } from './dialogs/share-links/share-links.component';
-import { ShowItemsComponent } from './dialogs/show-items/show-items.component';
-import { StatusListComponent } from './dialogs/status-list/status-list.component';
 import { StoreShareComponent } from './dialogs/store-share/store-share.component';
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
 import { TagManagementComponent } from './dialogs/tag-management/tag-management.component';
@@ -151,7 +149,16 @@ import { DescriptionDialogComponent } from './dialogs/description-dialog/descrip
 import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
+import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
+import { CreateTagComponent } from './dialogs/create-tag/create-tag.component';
+import { CollectionCardComponent } from './components/collection-card/collection-card.component';
+import { MatCardModule } from '@angular/material/card';
+import { CompactCardComponent } from './components/compact-card/compact-card.component';
 
 const imports = [
   CommonModule,
@@ -177,6 +184,11 @@ const imports = [
   MatSelectModule,
   MatListModule,
   MatDialogModule,
+  MatStepperModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatSnackBarModule,
+  MatCardModule,
 ];
 const declarations = [
   // Pages
@@ -195,7 +207,6 @@ const declarations = [
   LeadwordListComponent,
   GiftMessageComponent,
   PageComponentTabsComponent,
-  ShowItemsComponent,
   ImageInputComponent,
   AnswerSelectorComponent,
   HelperHeaderComponent,
@@ -227,7 +238,6 @@ const declarations = [
   CartButtonComponent,
   CollaborationsComponent,
   InfoButtonComponent,
-  StatusListComponent,
   ItemStatusComponent,
   AudioRecorderComponent,
   StoreShareComponent,
@@ -274,7 +284,6 @@ const declarations = [
   InputTransparentComponent,
   ArticlePrivacyComponent,
   AnexosDialogComponent,
-  QrCodeDialogComponent,
   PostsXlsComponent,
   MediaDialogComponent,
   DialogFlowComponent,
@@ -309,7 +318,11 @@ const declarations = [
   ImagesCardComponent,
   DescriptionDialogComponent,
   DropdownMenuComponent,
-  ConfirmationDialogComponent
+  ConfirmationDialogComponent,
+  StepperFormComponent,
+  CreateTagComponent,
+  CollectionCardComponent,
+  CompactCardComponent,
 ];
 
 @NgModule({

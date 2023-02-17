@@ -1,6 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
+export interface DropdownOptionItem {
+  text: string;
+  value: string;
+  selected: boolean;
+  hide?: boolean;
+}
+
 @Component({
   selector: 'app-dropdown-menu',
   templateUrl: './dropdown-menu.component.html',
@@ -16,10 +23,16 @@ export class DropdownMenuComponent implements OnInit {
   @Input() logo: string = '';
   @Input() listTitle: string;
   options = new FormControl('');
-  @Input() optionsList = [];
+  @Input() optionsList: DropdownOptionItem[] = [];
   @Output() listValue = new EventEmitter();
+  @Output() panelState = new EventEmitter();
 
   ngOnInit(): void {}
+
+  togglePanel(open: boolean) {
+    this.panelOpenState = open;
+    this.panelState.emit(open);
+  }
 
   toggleSelected(i: number) {
     this.optionsList[i].selected = !this.optionsList[i].selected;

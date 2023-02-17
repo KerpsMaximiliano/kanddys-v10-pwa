@@ -1,0 +1,217 @@
+<section class="top">
+  <div style="display: flex; align-items: center">
+    <h2 class="top-h">
+      FACTURA {{ formatId(order.dateId) }} <br />
+      <button class="top-name">
+        {{ order.user?.name || order.user?.phone || order.user?.email }}
+      </button>
+    </h2>
+  </div>
+  <div class="info-display">
+    <span class="info" style="margin-left: 0px">{{
+      "Dirección: " +
+        order?.items[0].saleflow.module.delivery.pickUpLocations[0].nickName
+    }}</span>
+  </div>
+  <div class="info-display">
+    <span class="info" style="margin-left: 0">{{ orderDate }}</span>
+  </div>
+</section>
+
+<section
+  class="section"
+  *ngIf="default === true"
+  style="padding: 33px 24px 27px 28px"
+>
+  <p class="section-title">Artículos facturados:</p>
+  <div class="items-container" *ngFor="let item of order?.items; index as i">
+    <div class="image-container">
+      <button>
+        <div
+          class="image"
+          *ngIf="!urlIsVideo(item.item.images[0].value)"
+          (click)="
+            item.item.images?.length &&
+              openImageModal(item.item.images[0].value)
+          "
+          [ngStyle]="{
+            backgroundImage: item.item.images?.length
+              ? 'url(' + item.item.images[0].value + ')'
+              : '/assets/images/noimage.png',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover'
+          }"
+        ></div>
+        <div
+          class="video-wrapper videoThumbnail"
+          *ngIf="urlIsVideo(item.item.images[0].value)"
+        >
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+            alt="play"
+            class="playVideoIcon"
+            style="padding: 1rem !important; z-index: 99"
+          />
+
+          <video
+            [src]="item.item.images[0].value"
+            [id]="'media' + item._id"
+            class="video"
+            [muted]="true"
+          ></video>
+        </div>
+      </button>
+      <div class="right" style="width: 100%">
+        <div class="top-flex">
+          <p class="left-text">
+            {{ item.amount }}x {{ item.item.name || "artículo(s)" }}
+          </p>
+          <p class="right-text">${{ order.subtotals[i].amount | number }}</p>
+        </div>
+        <p class="grey">
+          {{ item.item.description }}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section
+  class="section"
+  *ngIf="default === true"
+  style="padding: 30px 28px 28px; margin-top: 5px; margin-bottom: 5px"
+>
+  <p class="section-title">entrega:</p>
+  <div class="question-wrapper">
+    <p class="question">Donde entregaremos?</p>
+    <input type="text" class="answer" placeholder="RespuestaID" />
+  </div>
+  <div class="question-wrapper" style="margin-top: 26px">
+    <p class="question">A quien entregaremos?</p>
+    <input type="text" class="answer" placeholder="RespuestaID" />
+  </div>
+  <div class="question-wrapper" style="margin-top: 26px">
+    <p class="question">Cuando entregaremos?</p>
+    <input type="text" class="answer" placeholder="RespuestaID" />
+  </div>
+</section>
+
+<section
+  class="section"
+  *ngIf="default === false"
+  style="padding: 30px 28px 28px; margin-top: 5px; margin-bottom: 5px"
+>
+  <p class="section-title">contenido visible</p>
+  <div class="question-wrapper" style="margin-top: 25px">
+    <p class="question">Escrito en tarjeta física</p>
+    <input type="text" class="answer" placeholder="MensajeID" />
+  </div>
+  <div class="question-wrapper" style="margin-top: 33px">
+    <p class="question">Nombre del sobre</p>
+    <input type="text" class="answer" placeholder="MensajeID" />
+  </div>
+</section>
+
+<section
+  class="section"
+  *ngIf="default === true"
+  style="padding: 40px 0px 65px 28px; margin-bottom: 5px"
+>
+  <p class="section-title" style="margin-bottom: 18px">flujo de la entrega:</p>
+  <div class="square-wrapper">
+    <div class="square">+</div>
+    <p class="text">Imagen de la entrega</p>
+  </div>
+  <div style="display: flex; align-items: center; margin-top: 36px">
+    <input type="checkbox" class="check" />
+    <p
+      style="
+        color: #7b7b7b;
+        font-size: 15px;
+        font-family: SFProLight;
+        font-style: italic;
+      "
+    >
+      Marcar como entregado
+    </p>
+  </div>
+</section>
+
+<section
+  class="section"
+  *ngIf="default === true"
+  style="padding: 30px 0px 60px 30px; margin-bottom: 100px"
+>
+  <p class="section-title" style="margin-bottom: 15px">
+    qr enlazado a esta pantalla
+  </p>
+  <img
+    [src]="env + '/qr-code.svg'"
+    alt=""
+    style="
+      width: 100%;
+      max-width: 200px;
+      height: 200px;
+      filter: brightness(0);
+      cursor: pointer;
+    "
+  />
+  <br />
+  <button
+    style="
+      all: unset;
+      color: #2874ad;
+      font-size: 17px;
+      font-family: SFProMedium;
+      cursor: pointer;
+    "
+  >
+    Imprime o descarga el QR
+  </button>
+</section>
+
+<section
+  class="section"
+  *ngIf="default === false"
+  style="padding: 30px 0px 36px 30px"
+>
+  <p class="section-title" style="margin-bottom: 34px">
+    contenido virtual privado
+  </p>
+  <div class="qr-wrapper">
+    <img [src]="env + '/qr-code.svg'" alt="" class="qr" />
+    <div>
+      <button>Accesa al contenido</button>
+      <br />
+      <button>Copy el ID: SimboloID</button>
+      <br />
+      <button>Imprime o descarga el QR</button>
+    </div>
+  </div>
+</section>
+
+<section
+  class="section"
+  *ngIf="default === false"
+  style="padding: 40px 24px 30px 28px; margin-top: 5px; margin-bottom: 100px"
+>
+  <p class="section-title" style="color: #fc2727; margin-bottom: 17.5px">
+    imagen sugerida por la inteligencia artificial como cover de la tarjeta
+    fisica
+  </p>
+  <img
+    src="/assets/images/noimage.png"
+    alt=""
+    style="height: 295px; width: 100%; border-radius: 15px; cursor: pointer"
+  />
+</section>
+
+<footer class="footer">
+  <button>Imprime</button>
+  <button style="margin: 0 auto">Copia el Link</button>
+  <button>
+    Envíala por
+    <img [src]="env + '/whatsapp_black.svg'" alt="" style="margin-left: 3px" />
+  </button>
+</footer>

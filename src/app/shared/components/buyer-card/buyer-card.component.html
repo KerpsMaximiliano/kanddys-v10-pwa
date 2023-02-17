@@ -1,23 +1,15 @@
 <div class="container" [ngClass]="{ shadow: shadow }">
   <a
+    *ngIf="redirectionParams"
     [routerLink]="redirectionParams.link"
     [queryParams]="redirectionParams.param"
   >
-    <div class="top">
-      <p *ngIf="title || description" class="text">
-        <span *ngIf="title" class="title">{{ title }}</span
-        ><br />
-        <br />
-        <span *ngIf="description" class="description">{{ description }}</span>
-      </p>
-      <img
-        class="img"
-        #imgContainer
-        [src]="img"
-        (error)="img = '/assets/images/noimage.png'"
-      />
-    </div>
+    <ng-container [ngTemplateOutlet]="cardContent"></ng-container>
   </a>
+  <ng-container
+    *ngIf="!redirectionParams"
+    [ngTemplateOutlet]="cardContent"
+  ></ng-container>
   <div class="bottom" *ngIf="leftAmount">
     <p
       [ngClass]="{ center: !title && !description }"
@@ -40,3 +32,20 @@
     </p>
   </div>
 </div>
+
+<ng-template #cardContent>
+  <div class="top">
+    <p *ngIf="title || description" class="text">
+      <span *ngIf="title" class="title">{{ title }}</span
+      ><br />
+      <br />
+      <span *ngIf="description" class="description">{{ description }}</span>
+    </p>
+    <img
+      class="img"
+      #imgContainer
+      [src]="img"
+      (error)="img = '/assets/images/noimage.png'"
+    />
+  </div>
+</ng-template>

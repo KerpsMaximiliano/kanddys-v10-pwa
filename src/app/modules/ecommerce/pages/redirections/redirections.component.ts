@@ -109,7 +109,7 @@ export class RedirectionsComponent implements OnInit {
           unlockUI();
         }
       } catch (error) {
-        this.router.navigate([`admin/entity-detail-metrics`]);
+        this.router.navigate([`admin/dashboard`]);
         unlockUI();
         // console.error(error);
       }

@@ -97,6 +97,7 @@ button {
     .border {
         border: solid 1px #707070;
         border-radius: 7px;
+        cursor: pointer;
     }
 
     &.select {
@@ -111,27 +112,25 @@ button {
     gap: 65px;
 }
 
-.optionsBox {
-    .label {
-        color: #272727;
-        font-family: "SfProLight";
-        font-size: 17px;
-        margin-bottom: 10px;
-    }
-    .options-grid {
-        padding: 20px 12px;
-        display: grid;
-        -moz-column-gap: 5px;
-        column-gap: 5px;
-        row-gap: 24px;
-        grid-template-columns: repeat(2, 1fr);
-        justify-content: center;
-        justify-items: center;
+.label {
+    color: #272727;
+    font-family: "SfProLight";
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+.options-grid {
+    padding: 20px 12px;
+    display: grid;
+    -moz-column-gap: 5px;
+    column-gap: 5px;
+    row-gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
+    justify-items: center;
 
-        .capsize {
-            width: 100%;
-            max-width: 169px;
-            height: 100%;
-        }
+    .capsize {
+        width: 100%;
+        max-width: 169px;
+        height: 100%;
     }
 }

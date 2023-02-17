@@ -1,11 +1,27 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { Clipboard } from '@angular/cdk/clipboard';
-import { ToastrService } from 'ngx-toastr';
+import {
+  Component,
+  OnInit,
+  ViewChildren,
+  ElementRef,
+  QueryList,
+  Inject,
+} from '@angular/core';
+import {
+  MatBottomSheetRef,
+  MAT_BOTTOM_SHEET_DATA,
+} from '@angular/material/bottom-sheet';
 import { environment } from 'src/environments/environment';
-import { Router } from '@angular/router';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
-import { NgNavigatorShareService } from 'ng-navigator-share';
+
+export interface DialogOptions {
+  title: string;
+  link?: string;
+  callback: () => void;
+}
+
+export interface DialogTemplate {
+  title: string;
+  options: DialogOptions[];
+}
 
 @Component({
   selector: 'app-links-dialog',
@@ -14,63 +30,36 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 })
 export class LinksDialogComponent implements OnInit {
   constructor(
-    private _bottomSheetRef: MatBottomSheetRef,
-    private clipboard: Clipboard,
-    private toastr: ToastrService,
-    private router: Router,
-    private ngNavigatorShareService: NgNavigatorShareService
+    @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate[],
+    private _bottomSheetRef: MatBottomSheetRef
   ) {}
 
   URI: string = environment.uri;
-  @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
-  link: string = 'https://www.google.com/';
-  link2: string = 'https://fast.com/es/';
+  @ViewChildren('qrcode', { read: ElementRef })
+  private qr: QueryList<ElementRef>;
 
   ngOnInit(): void {}
-
-  options1: string[] = [
-    'Ver como lo verá el visitante',
-    'Compartir el Link',
-    'Copiar el Link',
-    'Descargar el qrCode',
-  ];
-  options2: string[] = [
-    'Descargar el qrCode del admin',
-    'Posibilidades de "ADS" para promocionarlo',
-  ];
 
   openLink(event: MouseEvent): void {
     this._bottomSheetRef.dismiss();
     event.preventDefault();
   }
 
-  async handleClick(option: string) {
-    switch (option) {
-      case 'Descargar el qrCode':
-        this.downloadQr();
-        break;
-      case 'Descargar el qrCode del admin':
-        this.downloadQr();
-        break;
-      case 'Copiar el Link':
-        this.clipboard.copy(
-          `${this.URI}/${window.location.href.split('/').slice(3).join('/')}`
-        );
-        this.toastr.info('Enlace copiado en el portapapeles', null, {
-          timeOut: 2000,
-        });
-        break;
-      case 'Ver como lo verá el visitante':
-        this.router.navigate([`/ecommerce/arepera-que-molleja/store`]);
-        this._bottomSheetRef.dismiss();
-        break;
-      case 'Compartir el Link':
-        this.share();
-        break;
+  onClick(index: number, optionIndex: number) {
+    if (this.data[index].options[optionIndex].link) {
+      this.downloadQr('qrcode' + index + optionIndex);
     }
+    if (this.data[index].options[optionIndex].callback) {
+      this.data[index].options[optionIndex].callback();
+    }
+    this._bottomSheetRef.dismiss();
   }
-  downloadQr() {
-    const parentElement = this.qr.nativeElement.querySelector('img').src;
+
+  downloadQr(id: string) {
+    const qr = this.qr
+      .toArray()
+      .find((element) => element.nativeElement.id === id);
+    const parentElement = qr.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
       //IE
@@ -102,25 +91,5 @@ export class LinksDialogComponent implements OnInit {
     }
     // RETURN BLOB IMAGE AFTER CONVERSION
     return new Blob([uInt8Array], { type: imageType });
-  }
-
-  formatId(dateId: string) {
-    return formatID(dateId);
-  }
-
-  async share() {
-    const link = `${this.URI}/ecommerce/arepera-que-molleja/store`;
-
-    await this.ngNavigatorShareService
-      .share({
-        title: '',
-        url: link,
-      })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   }
 }

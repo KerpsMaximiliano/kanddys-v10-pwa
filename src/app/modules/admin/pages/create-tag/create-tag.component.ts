@@ -650,7 +650,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         func: async () => {
           this.router.navigate(['auth/login'], {
             queryParams: {
-              redirect: 'admin/entity-detail-metrics',
+              redirect: 'admin/dashboard',
             },
           });
         },
@@ -827,7 +827,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
       } else if (this.entity === 'order') {
         this.router.navigate(['ecommerce/order-detail/' + this.orderID]);
       } else {
-        this.router.navigate(['admin/entity-detail-metrics']);
+        this.router.navigate(['admin/dashboard']);
       }
     }
 

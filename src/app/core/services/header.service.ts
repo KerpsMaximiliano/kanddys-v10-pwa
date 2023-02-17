@@ -247,7 +247,7 @@ export class HeaderService {
   async fetchSaleflow(id: string) {
     if (!this.saleflow || this.saleflow._id !== id)
       this.saleflow = (await this.saleflowService.saleflow(id))?.saleflow;
-    else this.saleflowService.saleflowSubject.next(this.saleflow);
+    else this.saleflowService.saleflowLoaded.next(this.saleflow);
     this.storeSaleflow(this.saleflow);
     return this.saleflow;
   }
@@ -259,7 +259,7 @@ export class HeaderService {
   getSaleflow(): SaleFlow {
     const saleflow = JSON.parse(localStorage.getItem('saleflow-data'));
     this.saleflow = saleflow;
-    this.saleflowService.saleflowSubject.next(this.saleflow);
+    this.saleflowService.saleflowLoaded.next(this.saleflow);
     return saleflow;
   }
 

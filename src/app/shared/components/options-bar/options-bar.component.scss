@@ -8,7 +8,6 @@
 
   &.flex {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-evenly;
   }
   &.grid {
@@ -18,7 +17,6 @@
     }
   }
   align-items: center;
-  gap: 7px;
 }
 
 .option {
@@ -34,7 +32,7 @@
 
   &.optIcon {
     display: flex;
-    gap: 20px;
+    gap: 12px;
     align-items: center;
     justify-content: center;
 
@@ -64,8 +62,7 @@
 
     &.optIcon {
       .dotsIcon {
-        filter: invert(98%) sepia(0%) saturate(8%) hue-rotate(218deg)
-          brightness(103%) contrast(104%);
+        filter: invert(98%) sepia(0%) saturate(8%) hue-rotate(218deg) brightness(103%) contrast(104%);
       }
     }
   }
@@ -84,8 +81,7 @@
     }
     &.optIcon {
       .dotsIcon {
-        filter: invert(0%) sepia(37%) saturate(51%) hue-rotate(141deg)
-          brightness(95%) contrast(70%);
+        filter: invert(0%) sepia(37%) saturate(51%) hue-rotate(141deg) brightness(95%) contrast(70%);
       }
     }
   }
@@ -95,7 +91,7 @@
     border-radius: 9px;
   }
   &.type3 {
-    padding: 6px 16px 6px 16px;
+    padding: 6px 12px;
     border-radius: 6px;
   }
 }
