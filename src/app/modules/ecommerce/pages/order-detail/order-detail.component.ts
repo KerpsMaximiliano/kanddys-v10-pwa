@@ -53,15 +53,11 @@ interface Image {
 export class OrderDetailComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
-  ordersInTheSameDay: ItemOrder[] = [];
-  orderBeforeOrderDay: ItemOrder = null;
-  orderAfterOrderDay: ItemOrder = null;
   order: ItemOrder;
   post: Post;
   slides: Slide[];
   payment: number;
   isMerchant: boolean;
-  // changeColor: string;
   orderStatus: OrderStatusNameType;
   orderDate: string;
   date: {
@@ -76,7 +72,6 @@ export class OrderDetailComponent implements OnInit {
     [key: string]: boolean;
   } = {};
   redirectTo: string = null;
-  orderSaleflow: SaleFlow;
   orderMerchant: Merchant;
   orderInDayIndex: number = null;
   // buyerView: boolean = true;
@@ -102,11 +97,12 @@ export class OrderDetailComponent implements OnInit {
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
 
   deliveryStatusOptions: DropdownOptionItem[] = [
-    { text: 'Pick Up', value: 'pickup', selected: false },
-    { text: 'Todo listo para entregarse', value: 'pending', selected: false },
-    { text: 'De camino a ser entregado', value: 'shipped', selected: false },
-    { text: 'Entregado', value: 'delivered', selected: false },
-    { text: 'Por Entregarse', value: 'in progress', selected: false },
+    {
+      text: 'En preparación',
+      value: 'in progress',
+      selected: false,
+      hide: false,
+    },
   ];
   tagOptions: DropdownOptionItem[];
   tagPanelState: boolean;
@@ -148,18 +144,9 @@ export class OrderDetailComponent implements OnInit {
         await this.executeProcessesAfterLoading(orderId, notification);
       });
     });
-
-    // this.isMerchant = true;
-    // this.orderMerchant._id;
-    // console.log(this.orderMerchant._id);
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
-    // const tagsAsignationOnStart = this.route.snapshot.queryParamMap.get(
-    //   'tagsAsignationOnStart'
-    // );
-
-    // if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
 
@@ -227,10 +214,6 @@ export class OrderDetailComponent implements OnInit {
     this.headerService.user = await this.authService.me();
     await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
 
-    if (this.isMerchant) {
-      this.handleStatusOptions(this.order.orderStatusDelivery);
-    }
-
     if (this.order.items[0].post) {
       this.post = (
         await this.postsService.getPost(this.order.items[0].post._id)
@@ -264,6 +247,20 @@ export class OrderDetailComponent implements OnInit {
     if (location) {
       address = '\n\nDirección: ';
       if (location.street) {
+        this.deliveryStatusOptions.push(
+          {
+            text: 'Listo para enviarse',
+            value: 'pending',
+            selected: false,
+            hide: false,
+          },
+          {
+            text: 'De camino a ser entregado',
+            value: 'shipped',
+            selected: false,
+            hide: false,
+          }
+        );
         if (location.houseNumber) address += '#' + location.houseNumber + ', ';
         address += location.street + ', ';
         if (location.referencePoint) address += location.referencePoint + ', ';
@@ -271,7 +268,22 @@ export class OrderDetailComponent implements OnInit {
         if (location.note) address += ` (${location.note})`;
       } else {
         address += location.nickName;
+        this.deliveryStatusOptions.push({
+          text: 'Listo para pick-up',
+          value: 'pickup',
+          selected: false,
+          hide: false,
+        });
       }
+    }
+    this.deliveryStatusOptions.push({
+      text: 'Entregado',
+      value: 'delivered',
+      selected: false,
+      hide: false,
+    });
+    if (this.isMerchant) {
+      this.handleStatusOptions(this.order.orderStatusDelivery);
     }
 
     let giftMessage = '';
@@ -299,32 +311,6 @@ export class OrderDetailComponent implements OnInit {
     this.messageLink = `https://api.whatsapp.com/send?phone=${
       this.order.items[0].saleflow.merchant.owner.phone
     }&text=${encodeURIComponent(message)}`;
-    // this.notify = true;
-
-    // const today = new Date(this.order.createdAt);
-    // const utcOffset = today.getTimezoneOffset() / 60;
-    // const todayFromISO = new Date(
-    //   today.getFullYear(),
-    //   today.getMonth(),
-    //   today.getDate()
-    // ).toISOString();
-
-    // this.currentDayOrdersRange = {
-    //   fromISO: moment(todayFromISO)
-    //     .subtract(utcOffset, 'hours')
-    //     .toDate()
-    //     .toISOString(),
-    //   toISO: moment(todayFromISO)
-    //     .subtract(utcOffset, 'hours')
-    //     .add(23, 'hours')
-    //     .add(59, 'minutes')
-    //     .add(59, 'seconds')
-    //     .toDate()
-    //     .toISOString(),
-    // };
-
-    // if (this.orderMerchant) await this.getAdjacentOrders();
-    // if (this.tagsAsignationOnStart) await this.tagDialog();
     const tags =
       (await this.tagsService.tagsByUser({
         findBy: {
@@ -347,150 +333,6 @@ export class OrderDetailComponent implements OnInit {
     });
     unlockUI();
   }
-
-  // async getAdjacentOrders() {
-  //   //Get the 1st order before current day
-  //   let pagination: PaginationInput = {
-  //     options: {
-  //       range: {
-  //         to: this.currentDayOrdersRange.fromISO,
-  //       },
-  //       sortBy: 'createdAt:desc',
-  //       limit: 1,
-  //     },
-  //   };
-
-  //   const { ordersByMerchant: orderBeforeOrderDay } =
-  //     await this.merchantsService.ordersByMerchant(
-  //       this.orderMerchant._id,
-  //       pagination
-  //     );
-
-  //   if (orderBeforeOrderDay && orderBeforeOrderDay.length > 0) {
-  //     this.orderBeforeOrderDay = orderBeforeOrderDay[0];
-  //   } else {
-  //     this.orderBeforeOrderDay = null;
-  //   }
-
-  //   //Get the 1st after current day
-  //   pagination = {
-  //     options: {
-  //       range: {
-  //         from: moment(this.currentDayOrdersRange.fromISO)
-  //           .add(1, 'days')
-  //           .toDate()
-  //           .toISOString(),
-  //       },
-  //       sortBy: 'createdAt:asc',
-  //       limit: 1,
-  //     },
-  //   };
-
-  //   const { ordersByMerchant: orderAfterOrderDay } =
-  //     await this.merchantsService.ordersByMerchant(
-  //       this.orderMerchant._id,
-  //       pagination
-  //     );
-
-  //   if (orderAfterOrderDay && orderAfterOrderDay.length > 0) {
-  //     this.orderAfterOrderDay = orderAfterOrderDay[0];
-  //   } else {
-  //     this.orderAfterOrderDay = null;
-  //   }
-
-  //   //get orders from the same day
-  //   let from = this.currentDayOrdersRange.fromISO;
-  //   let to = this.currentDayOrdersRange.toISO;
-
-  //   const range = {
-  //     from: from,
-  //     to: to,
-  //   };
-
-  //   pagination = {
-  //     options: {
-  //       range,
-  //       limit: -1,
-  //     },
-  //   };
-
-  //   const { ordersByMerchant: ordersInTheSameDay } =
-  //     await this.merchantsService.ordersByMerchant(
-  //       this.orderMerchant._id,
-  //       pagination
-  //     );
-
-  //   if (ordersInTheSameDay) {
-  //     this.ordersInTheSameDay = ordersInTheSameDay;
-
-  //     const orderIndex = this.ordersInTheSameDay.findIndex(
-  //       (order) => order._id === this.order._id
-  //     );
-
-  //     if (orderIndex >= 0) {
-  //       this.orderInDayIndex = orderIndex;
-  //     }
-  //   }
-  // }
-
-  // goToNextOrPreviousOrder(direction: 'NEXT' | 'PREVIOUS') {
-  //   if (
-  //     this.orderInDayIndex < this.ordersInTheSameDay.length - 1 &&
-  //     direction === 'NEXT'
-  //   ) {
-  //     history.pushState(
-  //       null,
-  //       null,
-  //       'ecommerce/order-detail/' +
-  //         this.ordersInTheSameDay[this.orderInDayIndex + 1]._id
-  //     );
-
-  //     this.executeProcessesAfterLoading(
-  //       this.ordersInTheSameDay[this.orderInDayIndex + 1]._id
-  //     );
-  //   }
-
-  //   if (this.orderInDayIndex > 0 && direction === 'PREVIOUS') {
-  //     history.pushState(
-  //       null,
-  //       null,
-  //       'ecommerce/order-detail/' +
-  //         this.ordersInTheSameDay[this.orderInDayIndex - 1]._id
-  //     );
-
-  //     this.executeProcessesAfterLoading(
-  //       this.ordersInTheSameDay[this.orderInDayIndex - 1]._id
-  //     );
-  //   }
-
-  //   if (
-  //     this.orderInDayIndex === 0 &&
-  //     direction === 'PREVIOUS' &&
-  //     this.orderBeforeOrderDay
-  //   ) {
-  //     history.pushState(
-  //       null,
-  //       null,
-  //       'ecommerce/order-detail/' + this.orderBeforeOrderDay._id
-  //     );
-
-  //     this.executeProcessesAfterLoading(this.orderBeforeOrderDay._id);
-  //   }
-
-  //   if (
-  //     this.orderInDayIndex === this.ordersInTheSameDay.length - 1 &&
-  //     direction === 'NEXT' &&
-  //     this.orderAfterOrderDay
-  //   ) {
-  //     history.pushState(
-  //       null,
-  //       null,
-  //       'ecommerce/order-detail/' + this.orderAfterOrderDay._id
-  //     );
-
-  //     this.executeProcessesAfterLoading(this.orderAfterOrderDay._id);
-  //   }
-  // }
 
   async notificationClicked() {
     this.notify = false;
@@ -573,70 +415,6 @@ export class OrderDetailComponent implements OnInit {
       relativeTo: this.route,
     });
   }
-
-  // async tagDialog(tags?: string[]) {
-  //   const tagsFilled = await this.tagsService.tagsByUser({
-  //     findBy: {
-  //       entity: 'order',
-  //     },
-  //     options: {
-  //       limit: -1,
-  //     },
-  //   });
-
-  //   this.dialogService.open(TagAsignationComponent, {
-  //     type: 'fullscreen-translucent',
-  //     customClass: 'app-dialog',
-  //     flags: ['no-header'],
-  //     props: {
-  //       text: 'SALVAR TAGS SELECCIOANDOS EN LA ORDEN',
-  //       tags: this.tags,
-  //       orderId: this.order._id,
-  //       activeTags:
-  //         this.order.tags &&
-  //         (this.order.tags !== null ||
-  //           (undefined && this.order.tags.length > 0))
-  //           ? this.order.tags
-  //           : null,
-  //       tagAction: async (param) => {
-  //         // !this.selectedTags[param._id] ? this.selectedTags[param._id] = true : this.selectedTags[param._id] = false;
-  //         this.addTag(param._id);
-  //       },
-  //     },
-  //   });
-  // }
-
-  // settingsDialog() {
-  //   const optionsList = [
-  //     {
-  //       text: 'Compartir',
-  //       callback: async () => {
-  //         await this.ngNavigatorShareService.share({
-  //           title: `Mi orden`,
-  //           url: `${this.URI}/ecommerce/order-detail/${this.order._id}`,
-  //         });
-  //       },
-  //     },
-  //   ];
-  //   if (this.merchantOwner && this.isMerchant) {
-  //     optionsList.push({
-  //       text: 'Vista del Visitante',
-  //       callback: async () => {
-  //         this.isMerchant = false;
-  //         // this.changeColor = '#272727';
-  //       },
-  //     });
-  //   }
-  //   this.dialogService.open(SettingsComponent, {
-  //     type: 'fullscreen-translucent',
-  //     customClass: 'app-dialog',
-  //     flags: ['no-header'],
-  //     props: {
-  //       title: 'Compartir esta Orden',
-  //       optionsList,
-  //     },
-  //   });
-  // }
 
   async addTag(tagId: string) {
     if (!this.selectedTags[tagId]) {
@@ -788,46 +566,10 @@ export class OrderDetailComponent implements OnInit {
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
 
-  // async addTag(tagId?: string) {
-  //   if (!this.selectedTags[tagId]) {
-  //     const added = await this.tagsService.addTagsInOrder(
-  //       this.order.items[0].saleflow.merchant._id,
-  //       tagId,
-  //       this.order._id
-  //     );
-  //     this.selectedTags[tagId] = true;
-  //     this.order.tags.push(tagId);
-  //   } else {
-  //     const removed = await this.tagsService.removeTagsInOrder(
-  //       this.order.items[0].saleflow.merchant._id,
-  //       tagId,
-  //       this.order._id
-  //     );
-  //     this.selectedTags[tagId] = false;
-  //     if (this.order.tags.includes(tagId)) {
-  //       this.order.tags = this.order.tags.filter((tag) => tag !== tagId);
-  //     }
-  //     /* const tagIndex = this.order.tags.findIndex((tag)=>{
-  //        tagId === this.order.tags[tag]
-  //        console.log(tagId + ' EL ID DEL TAG');
-  //     });
-  //     console.log(tagIndex + ' INDICE')
-  //     if(tagIndex >= 0){
-  //        this.order.tags.splice(tagIndex, 1)
-  //     } else {
-  //        console.log('No Esta')
-  //     } */
-  //   }
-  //   /* let selectedTags = Object.keys(this.selectedTags).filter((tag) =>{
-  //     return this.selectedTags[tag] == true
-  //  })
-  //  console.log(selectedTags);
-  //  for await (const tag of selectedTags) {
-  //  } */
-  // }
-
   createTag() {
-    let dialogRef = this.dialog.open(CreateTagComponent);
+    let dialogRef = this.dialog.open(CreateTagComponent, {
+      data: ['Ingresa el nombre del listado', 'Ingresa el cover del listado'],
+    });
     dialogRef.afterClosed().subscribe(async (result) => {
       if (!result) return;
       const data: TagInput = {
@@ -900,34 +642,6 @@ export class OrderDetailComponent implements OnInit {
       document.getElementById('move').classList.remove('move');
     }, 3500);
   }
-
-  // goBackToFlowRoute() {
-  //   if (
-  //     this.flowRoute.includes('admin/orders') &&
-  //     this.flowRoute &&
-  //     this.isMerchant
-  //   ) {
-  //     this.router.navigate([this.flowRoute], {
-  //       queryParams: {
-  //         startOnSnapshot: true,
-  //       },
-  //     });
-  //     return;
-  //   } else {
-  //     if (this.isMerchant && !this.flowRoute.includes('admin/orders')) {
-  //       this.router.navigate(['admin/orders']);
-  //       return;
-  //     }
-
-  //     if (this.flowRoute && !this.isMerchant) {
-  //       this.router.navigate([this.flowRoute]);
-  //       return;
-  //     } else {
-  //       this.location.back();
-  //       return;
-  //     }
-  //   }
-  // }
 
   returnToStore = () => {
     this.router.navigate([

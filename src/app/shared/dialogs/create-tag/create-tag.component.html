@@ -1,7 +1,7 @@
 <mat-vertical-stepper #stepper>
   <mat-step>
     <form [formGroup]="tagForm">
-      <ng-template matStepLabel>Ingresa el nombre del listado</ng-template>
+      <ng-template matStepLabel>{{ data[0] || "Primer paso" }}</ng-template>
       <mat-form-field appearance="outline" style="margin-top: 8px">
         <mat-label>Nombre</mat-label>
         <input matInput formControlName="name" />
@@ -12,7 +12,7 @@
     </form>
   </mat-step>
   <mat-step>
-    <ng-template matStepLabel>Ingresa el cover del listado</ng-template>
+    <ng-template matStepLabel>{{ data[1] || "Segundo paso" }}</ng-template>
     <div>
       <app-item-images (enteredImages)="onImageInput($event)"></app-item-images>
     </div>

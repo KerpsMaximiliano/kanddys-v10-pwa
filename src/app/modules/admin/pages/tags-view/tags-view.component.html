@@ -1,9 +1,9 @@
 <div style="min-height: 100vh">
-  <mat-expansion-panel hideToggle>
+  <!-- <mat-expansion-panel hideToggle>
     <mat-expansion-panel-header (click)="changeState()">
-      <button class="arrows">
+      <a mat-icon-button [routerLink]="['../dashboard']">
         <img [src]="env + '/arrow-double-up-black.svg'" alt="arrows" />
-      </button>
+      </a>
       <p>Categorias</p>
       <p class="right">$14,789</p>
       <mat-icon *ngIf="panelOpenState === false">expand_more</mat-icon>
@@ -25,11 +25,59 @@
   <mat-expansion-panel
     (opened)="panelOpenState = true"
     (closed)="panelOpenState = false"
-  ></mat-expansion-panel>
+  ></mat-expansion-panel> -->
+  <header class="header">
+    <a mat-icon-button [routerLink]="['../dashboard']">
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+    </a>
+    <p>Categorías</p>
+  </header>
 
   <div class="content">
-    <app-gradient-card *ngFor="let tag of tags" [tag]="tag"></app-gradient-card>
+    <div *ngFor="let tag of tags">
+      <button [matMenuTriggerFor]="menu" style="all: unset">
+        <app-gradient-card [tag]="tag"></app-gradient-card>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button
+          mat-menu-item
+          *ngIf="tag.status === 'disabled'"
+          (click)="changeTagStatus(tag, 'active')"
+        >
+          <mat-icon>visibility</mat-icon>
+          <span>Mostrar</span>
+        </button>
+        <button
+          mat-menu-item
+          *ngIf="tag.status === 'disabled' || tag.status === 'active'"
+          (click)="changeTagStatus(tag, 'featured')"
+        >
+          <mat-icon>star_border</mat-icon>
+          <span>Destacar</span>
+        </button>
+        <button
+          mat-menu-item
+          *ngIf="tag.status === 'featured'"
+          (click)="changeTagStatus(tag, 'active')"
+        >
+          <mat-icon>star</mat-icon>
+          <span>Destacado</span>
+        </button>
+        <button
+          mat-menu-item
+          *ngIf="tag.status === 'active' || tag.status === 'featured'"
+          (click)="changeTagStatus(tag, 'disabled')"
+        >
+          <mat-icon>visibility_off</mat-icon>
+          <span>Ocultar</span>
+        </button>
+        <button mat-menu-item (click)="deleteTag(tag)">
+          <mat-icon>delete_outline</mat-icon>
+          <span>Eliminar</span>
+        </button>
+      </mat-menu>
+    </div>
   </div>
 
-  <app-menu-button></app-menu-button>
+  <app-menu-button [position]="{ bottom: '50px' }" [options]="options"></app-menu-button>
 </div>
