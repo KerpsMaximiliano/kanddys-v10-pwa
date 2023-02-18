@@ -29,10 +29,6 @@ import { WebformsService } from 'src/app/core/services/webforms.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  DialogField,
-  GeneralDialogComponent,
-} from 'src/app/shared/components/general-dialog/general-dialog.component';
 import { WebformMultipleSelectionQuestionComponent } from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
 import { WebformTextareaQuestionComponent } from 'src/app/shared/components/webform-textarea-question/webform-textarea-question.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -118,6 +114,12 @@ interface ExtendedItem extends Item {
   ready?: boolean;
 }
 
+enum WebformMultipleChoicesType {
+  'JUST-TEXT' = 1,
+  'JUST-IMAGES',
+  'IMAGES-AND-TEXT',
+}
+
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
@@ -172,6 +174,7 @@ export class CheckoutComponent implements OnInit {
       multipleSelection?: boolean;
       selectedIndex?: number;
       selectedIndexes?: Array<number>;
+      multipleChoicesType?: WebformMultipleChoicesType;
     }
   > = {};
 
@@ -737,8 +740,6 @@ export class CheckoutComponent implements OnInit {
   createDialogFlowForEachQuestion() {
     for (const item of this.items) {
       if (this.webformsByItem[item._id].webform) {
-        console.log(this.webformsByItem[item._id].webform);
-
         for (const question of this.webformsByItem[item._id].webform
           .questions) {
           const lastDialogIndex =
@@ -776,6 +777,8 @@ export class CheckoutComponent implements OnInit {
                 ...option,
                 selected: false,
               }));
+
+            
 
             this.webformsByItem[item._id].dialogs.push({
               component: WebformMultipleSelectionQuestionComponent,
@@ -821,6 +824,7 @@ export class CheckoutComponent implements OnInit {
                 },
               ],
             });
+            
           }
         }
       }

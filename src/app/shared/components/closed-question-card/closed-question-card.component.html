@@ -1,6 +1,6 @@
 <div class="container" id="{{ id }}">
-  <app-card [shadows]="true">
-    <p class="title">{{ question }}</p>
+  <app-card [shadows]="shadows" [containerStyles]="containerStyles">
+    <p class="title" [ngStyle]="labelStyles">{{ question }}</p>
 
     <div class="imgGrid" *ngIf="type === 2 || type == 3">
       <div

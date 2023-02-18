@@ -14,6 +14,9 @@ export class ClosedQuestionCardComponent implements OnInit {
   @Input() id: string;
   @Input() answers: Array<any> = [];
   @Input() type: number = 1;
+  @Input() shadows: boolean = true;
+  @Input() containerStyles: Record<string, any> = null;
+  @Input() labelStyles: Record<string, any> = null;
   @Output() onSelector = new EventEmitter<number>();
 
   options: OptionAnswerSelector[] = [];

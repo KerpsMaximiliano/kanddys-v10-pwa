@@ -143,8 +143,15 @@
                   "
                 >
                   <app-closed-question-card
-                    [type]="2"
+                    [type]="3"
                     [id]="'sadasdaasd'"
+                    [shadows]="false"
+                    [labelStyles]="{
+                      fontFamily: 'SfProRegular',
+                      color: '#000',
+                      fontSize: '15px'
+                    }"
+                    [containerStyles]="{padding: '15px 18px'}"
                     [question]="question.value"
                     [answers]="question.answerDefault"
                     [selected]="answersByQuestion[question._id].selectedIndex"
