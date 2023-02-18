@@ -193,7 +193,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       ],
     },
     { title: 'categorias' },
-    { title: 'colecciones' },
+    // { title: 'colecciones' },
   ];
   selected: number;
 
@@ -345,6 +345,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (index != this.selected) {
       this.selected = index;
     }
+    if (index === 1) this.router.navigate([`admin/tags-view`]);
   }
 
   selectedMenuOption(selected: MenuEvent) {
