@@ -17,6 +17,7 @@ interface ExtendedTag extends Tag {
   styleUrls: ['./collections.component.scss'],
 })
 export class CollectionsComponent implements OnInit {
+  URI: string = environment.uri;
   environment: string = environment.assetsUrl;
   merchantName: string = '';
   tags: ExtendedTag[];
@@ -24,6 +25,7 @@ export class CollectionsComponent implements OnInit {
   needsDescription: boolean;
   slug: string;
   title: string = '';
+  link: string;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
   constructor(
@@ -84,6 +86,7 @@ export class CollectionsComponent implements OnInit {
         return tag;
       });
       this.status = 'complete';
+      this.link = `${this.URI}/ecommerce/${this.headerService.saleflow.merchant.slug}/collections`;
     })();
   }
 }

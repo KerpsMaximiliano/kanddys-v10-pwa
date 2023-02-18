@@ -32,6 +32,7 @@ export const body = `
   activity
   active
   showItems
+  address
   owner { 
     phone
     email
@@ -80,10 +81,12 @@ export const merchantDefault = gql`
       _id
       name
       title
+      slug
       showItems
       image
       activity
       bio
+      address
       owner {
         _id
         phone
@@ -236,6 +239,7 @@ export const ordersByMerchant = gql`
       }
       ocr {
         _id
+        platform
       }
       items {
         item {
@@ -266,6 +270,7 @@ export const ordersByMerchant = gql`
         }
       }
       orderStatus
+      orderStatusDelivery
       status {
         status
         access
@@ -281,6 +286,11 @@ export const ordersByMerchantHot = gql`
   query ordersByMerchant($pagination: PaginationInput, $merchant: ObjectID!) {
     ordersByMerchant(pagination: $pagination, merchant: $merchant) {
       _id
+      status {
+        status
+      }
+      orderStatusDelivery
+      tags
     }
   }
 `;
@@ -387,15 +397,15 @@ export const incomeMerchant = gql`
 
 export const viewsMerchants = gql`
   query viewsMerchants($paginate: PaginationInput) {
-    viewsMerchants(paginate: $paginate){
+    viewsMerchants(paginate: $paginate) {
       _id
       merchant
       type
       description
-      numeration{
+      numeration {
         value
       }
-      socialMedia{
+      socialMedia {
         name
         url
       }
@@ -405,9 +415,11 @@ export const viewsMerchants = gql`
 
 export const viewsMerchant = gql`
   query viewsMerchant($id: ObjectID!) {
-    viewsMerchant(id: $id){
+    viewsMerchant(id: $id) {
       _id
       description
+      type
+      merchant
       numeration{
         value
       }

@@ -1,6 +1,15 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgNavigatorShareService } from 'ng-navigator-share';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
+
+interface PositionCss {
+  left?: string;
+  right?: string;
+  top?: string;
+  bottom?: string;
+}
 
 @Component({
   selector: 'app-menu-button',
@@ -10,7 +19,10 @@ import { environment } from 'src/environments/environment';
 export class MenuButtonComponent implements OnInit {
   uri: string = environment.uri;
   env: string = environment.assetsUrl;
-  @Input() mode: string = 'basic';
+
+  @Input() mode: 'basic' | 'array' = 'basic';
+  @Input() size: 'normal' | 'mini' = 'normal';
+  @Input() position: PositionCss;
   @Input() phone: string;
   @Input() link: string;
   @Input() options = [
@@ -26,7 +38,11 @@ export class MenuButtonComponent implements OnInit {
   ];
   @Input() merchantName: string;
 
-  constructor(private ngNavigatorShareService: NgNavigatorShareService) {}
+  constructor(
+    private ngNavigatorShareService: NgNavigatorShareService,
+    public headerService: HeaderService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -46,5 +62,9 @@ export class MenuButtonComponent implements OnInit {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  logout() {
+    this.authService.signoutThree();
   }
 }

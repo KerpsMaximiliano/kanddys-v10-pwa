@@ -19,29 +19,6 @@
           </div>
           <p [style]="field.disclaimer.styles">{{ field.disclaimer.text }}</p>
         </div>
-        <div [style]="field.styles" *ngSwitchCase="'component'">
-          <app-dynamic-component
-            [component]="field.component"
-            [componentInputs]="field.inputs"
-            [componentOutputs]="field.outputs"
-            [shouldRemoveItFromTheView]="field.shouldRerender"
-          >
-          ></app-dynamic-component>
-        </div>
-        <div [style]="field.styles" *ngSwitchCase="'images'">
-          <div class="images-content">
-            <div *ngFor="let image of field.selection.list; let i = index">
-              <div
-              (click) ="setSelectedImage(image[field.prop], controller.get(field.name))"
-              class="image"
-              [style.background]="sanitize(image[field.prop])">
-              </div>
-              <div class="check-container">
-                <i class="{{selectedImage.includes(image[field.prop])?'fas fa-check-circle':''}}"></i>
-              </div>
-            </div>
-          </div>
-        </div>
         <div [style]="field.styles" *ngSwitchCase="'selection'">
           <div
             *ngFor="let item of field.selection.list; let i = index"
@@ -100,6 +77,33 @@
             tabindex="-1"
             [formControlName]="field.name"
           ></ngx-intl-tel-input>
+        </div>
+        <div *ngSwitchCase="'email'">
+          <label [style]="field.label.styles">
+            {{ field.label.text }}
+          </label>
+          <input
+            [tabindex]="omitTabFocus ? -1 : i"
+            type="email"
+            [placeholder]="field.placeholder"
+            [style]="field.styles"
+            [formControlName]="field.name"
+          />
+          <p [style]="field.disclaimer.styles" *ngIf="field.disclaimer">
+            {{ field.disclaimer.text }}
+          </p>
+        </div>
+        <div *ngSwitchCase="'buttonIcon'">
+          <button
+            [style]="field.styles"
+            (click)="buttonClick(field)"
+            *ngIf="field.buttonIcon"
+          >
+            <img
+              [src]="field.buttonIcon.src"
+              [ngStyle]="field.buttonIcon.styles"
+            />
+          </button>
         </div>
         <div *ngSwitchDefault>
           <label [style]="field.label.styles">

@@ -25,6 +25,11 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ConfirmActionDialogComponent } from 'src/app/shared/dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { environment } from 'src/environments/environment';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
+import { SwiperOptions } from 'swiper';
+import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
+import { Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-payments',
@@ -48,6 +53,7 @@ export class PaymentsComponent implements OnInit {
   post: Post;
   currentUser: User;
   acceptedRefundPolicies: boolean = false;
+  openedDialogFlow: boolean;
   onlinePaymentsOptions: WebformAnswerLayoutOption[] = [
     {
       type: 'WEBFORM-ANSWER',
@@ -93,120 +99,149 @@ export class PaymentsComponent implements OnInit {
       },
       logos: [
         {
-          src: 'https://cdn.visa.com/v2/assets/images/logos/visa/blue/logo.png',
-          width: '55px',
-          height: '18px',
-        },
-        {
-          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mastercard.svg',
-          width: '50px',
-          height: '46px',
-        },
-        {
-          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/Amex_logo_color.png',
-          width: '50px',
-          height: '46px',
-        },
-        {
-          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/discover_logo.jpg',
-          width: '68px',
-          height: '34px',
-        },
-        {
-          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/DCI_logo_all_black.svg',
-          width: '100px',
-          height: '25px',
-        },
-
-        {
-          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/visa-secure_blu_2021.png',
-          width: '45px',
-          height: '45px',
-        },
-        {
-          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mc_idcheck_hrz_rgb_pos.png',
-          width: '200px',
-          height: '50px',
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpayment_methods_logos.svg',
+          width: '100%',
         },
       ],
     },
-    /*   {
-      type: 'WEBFORM-ANSWER',
-      optionStyles: webformAnswerLayoutOptionDefaultStyles,
-      selected: false,
-      optionIcon: 'stripe',
-      callback: () => this.selectOnlinePayment(0),
-      texts: {
-        topRight: {
-          text: '',
-          styles: {
-            color: '#7B7B7B',
-            display: 'none',
-          },
-        },
-        topLeft: {
-          text: 'Stripe',
-          styles: {
-            paddingBottom: '8px',
-            width: '100%',
-          },
-        },
-        middleTexts: [
-          {
-            text: 'ID',
-          },
-          {
-            text: 'ID',
-          },
-        ],
-        bottomLeft: {
-          text: 'ID',
-          styles: {
-            paddingTop: '8px',
-            fontFamily: 'SfProBold',
-          },
-        },
-      },
-    },
-    {
-      type: 'WEBFORM-ANSWER',
-      optionStyles: webformAnswerLayoutOptionDefaultStyles,
-      selected: false,
-      optionIcon: 'paypal',
-      callback: () => this.selectOnlinePayment(1),
-      texts: {
-        topRight: {
-          text: '',
-          styles: {
-            color: '#7B7B7B',
-          },
-        },
-        topLeft: {
-          text: 'Paypal',
-          styles: {
-            paddingBottom: '8px',
-          },
-        },
-        middleTexts: [
-          {
-            text: 'ID',
-          },
-          {
-            text: 'ID',
-          },
-        ],
-        bottomLeft: {
-          text: 'ID',
-          styles: {
-            paddingTop: '8px',
-            fontFamily: 'SfProBold',
-          },
-        },
-      },
-    },*/
   ];
   viewMerchantForRefund: ViewsMerchant = null;
   azulPaymentsSupported: boolean = false;
+  logged: boolean;
+  dialogs: Array<EmbeddedComponentWithId> = [
+    {
+      component: GeneralDialogComponent,
+      componentId: 'userEmailDialog',
+      inputs: {
+        dialogId: 'userEmailDialog',
+        omitTabFocus: false,
+        containerStyles: {
+          background: 'rgb(255, 255, 255)',
+          borderRadius: '12px',
+          opacity: '1',
+          padding: '37.1px 23.6px 38.6px 31px',
+        },
+        header: {
+          styles: {
+            fontSize: '23px',
+            fontFamily: 'SfProBold',
+            color: '#4F4F4F',
+            marginTop: '0px',
+            marginBottom: '18.5px',
+          },
+          text: 'El banco necesita tu email para hacer el pago.',
+        },
+        fields: {
+          styles: {},
+          list: [
+            {
+              name: 'email',
+              value: '',
+              validators: [Validators.required, Validators.email],
+              label: {
+                styles: {
+                  display: 'block',
+                  fontSize: '17px',
+                  fontFamily: '"SFProRegular"',
+                  color: '#A1A1A1',
+                  margin: '10px 0px',
+                },
+                text: '',
+              },
+              type: 'email',
+              disclaimer: {
+                styles: {
+                  marginTop: '17.9px',
+                  fontFamily: 'SfProLight',
+                  fontStyle: 'italic',
+                  fontSize: '15px',
+                  color: '#7B7B7B',
+                },
+                text: 'Esto solo ocurre cuando los pagos son con tarjetas de crédito.',
+              },
+              placeholder: 'Escribe tu correo electrónico',
+              styles: {
+                border: 'none',
+                borderRadius: '9px',
+                boxShadow: 'rgb(228 228 228) 0px 3px 7px 0px inset',
+                display: 'block',
+                fontFamily: 'RobotoMedium',
+                fontSize: '17px',
+                padding: '26px 26px 26px 16px',
+                resize: 'none',
+                width: '100%',
+                color: '#A1A1A1',
+              },
+            },
+            {
+              name: 'submitButton',
+              value: '',
+              validators: [],
+              type: 'buttonIcon',
+              buttonIcon: {
+                src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-right-black.svg',
+                styles: {
+                  width: '10px',
+                  filter:
+                    'invert(100%) sepia(13%) saturate(7497%) hue-rotate(182deg) brightness(97%) contrast(100%)',
+                },
+              },
+              styles: {
+                backgroundColor: 'limegreen',
+                border: 'none',
+                borderRadius: '7px',
+                position: 'absolute',
+                padding: '5px 20px',
+                right: '37px',
+                top: '133px',
+                cursor: 'pointer'
+              },
+            },
+          ],
+        },
+        isMultiple: true,
+      },
+      outputs: [
+        {
+          name: 'buttonClicked',
+          callback: async (params) => {
+            const { buttonClicked, value, valid } = params;
+
+            try {
+              if (valid &&  value.email && value.email.length > 0) {
+                await this.authService.updateMe({
+                  email: value.email,
+                });
+                this.redirectToAzulPaymentPage();
+              } else {
+                this.toastrService.error( value.email && value.email.length > 0 ? 'Email invalido' : 'Campo vacio, ingresa un email valido', null, {
+                  timeOut: 1500,
+                });
+              }
+            } catch (error) {
+              const user = await this.authService.checkUser(value.email);
+
+              if(user) {
+                this.toastrService.error('Email ya registrado con otro usuario, ingresa un email diferente', null, {
+                  timeOut: 1500,
+                });
+              } else {
+                this.toastrService.error('Ocurrió un error', null, {
+                  timeOut: 1500,
+                });                
+              }
+
+            }
+           
+          },
+        },
+      ],
+    },
+  ];
+  swiperConfig: SwiperOptions = null;
+
+  azulPaymentURL: string =
+    'https://pruebas.azul.com.do/paymentpage/Default.aspx';
 
   constructor(
     private walletService: WalletService,
@@ -219,6 +254,7 @@ export class PaymentsComponent implements OnInit {
     private location: LocationStrategy,
     private integrationService: IntegrationsService,
     private dialogService: DialogService,
+    private authService: AuthService,
     private toastrService: ToastrService
   ) {
     history.pushState(null, null, window.location.href);
@@ -228,81 +264,125 @@ export class PaymentsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.status = 'loading';
-    const orderId = this.route.snapshot.paramMap.get('orderId');
-    const redirectToAzulPaymentsPage = Boolean(
-      this.route.snapshot.queryParamMap.get('redirectToAzul')
-    );
-    if (orderId) {
-      const { orderStatus } = await this.orderService.getOrderStatus(orderId);
-      if (orderStatus === 'draft')
-        this.order = (await this.orderService.preOrder(orderId)).order;
-      else if (orderStatus === 'in progress')
-        this.order = (await this.orderService.order(orderId)).order;
-      else {
-        this.orderCompleted(orderId);
-        return;
-      }
-      if (!this.headerService.saleflow)
-        this.headerService.saleflow = this.headerService.getSaleflow();
-      if (
-        !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      ) {
-        this.orderCompleted();
-        return;
-      }
-      this.paymentAmount = this.order.subtotals.reduce(
-        (a, b) => a + b.amount,
-        0
-      );
-      if (this.order.items[0].customizer)
-        this.paymentAmount = this.paymentAmount * 1.18;
-      this.merchant = await this.merchantService.merchant(
-        this.order.merchants?.[0]?._id
-      );
-      if (this.order.items[0].post) {
-        this.post = (
-          await this.postsService.getPost(this.order.items[0].post._id)
-        ).post;
-      }
-    }
-    const exchangeData = await this.walletService.exchangeData(
-      this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-    );
+    this.route.params.subscribe((params) => {
+      this.route.queryParams.subscribe(async (queryParams) => {
+        const orderId = params['orderId'];
+        const { redirectToAzul } = queryParams;
 
-    this.banks = exchangeData?.ExchangeData?.bank;
+        this.status = 'loading';
+        const redirectToAzulPaymentsPage = Boolean(redirectToAzul);
+        if (orderId) {
+          const { orderStatus } = await this.orderService.getOrderStatus(
+            orderId
+          );
+          if (orderStatus === 'draft')
+            this.order = (await this.orderService.preOrder(orderId)).order;
+          else if (orderStatus === 'in progress')
+            this.order = (await this.orderService.order(orderId)).order;
+          else {
+            this.orderCompleted(orderId);
+            return;
+          }
+          if (!this.headerService.saleflow)
+            this.headerService.saleflow = this.headerService.getSaleflow();
+          if (
+            !this.headerService.saleflow?.module?.paymentMethod?.paymentModule
+              ?._id
+          ) {
+            this.orderCompleted();
+            return;
+          }
+          this.paymentAmount = this.order.subtotals.reduce(
+            (a, b) => a + b.amount,
+            0
+          );
+          if (this.order.items[0].customizer)
+            this.paymentAmount = this.paymentAmount * 1.18;
+          this.merchant = await this.merchantService.merchant(
+            this.order.merchants?.[0]?._id
+          );
+          if (this.order.items[0].post) {
+            this.post = (
+              await this.postsService.getPost(this.order.items[0].post._id)
+            ).post;
+          }
+        }
+        const exchangeData = await this.walletService.exchangeData(
+          this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+        );
 
-    const registeredUser = JSON.parse(
-      localStorage.getItem('registered-user')
-    ) as User;
-    this.currentUser =
-      this.order?.user || this.headerService.user || registeredUser;
-    this.status = 'complete';
+        this.banks = exchangeData?.ExchangeData?.bank;
 
-    const viewsMerchants = await this.merchantService.viewsMerchants({
-      findBy: {
-        merchant: this.headerService.saleflow.merchant._id,
-        type: 'refund',
-      },
+        const registeredUser = JSON.parse(
+          localStorage.getItem('registered-user')
+        ) as User;
+        this.currentUser =
+          this.order?.user || this.headerService.user || registeredUser;
+        this.logged = Boolean(await this.authService.me());
+
+        this.status = 'complete';
+
+        const viewsMerchants = await this.merchantService.viewsMerchants({
+          findBy: {
+            merchant: this.headerService.saleflow.merchant._id,
+            type: 'refund',
+          },
+        });
+
+        if (viewsMerchants && viewsMerchants.length > 0) {
+          this.viewMerchantForRefund = viewsMerchants[0];
+        }
+
+        this.azulPaymentsSupported =
+          await this.integrationService.integrationPaymentMethod(
+            'azul',
+            this.headerService.saleflow.merchant._id
+          );
+
+        if (!this.azulPaymentsSupported) {
+          this.onlinePaymentsOptions.pop();
+        }
+
+        if (redirectToAzulPaymentsPage && !this.order.user) {
+          this.order = (
+            await this.orderService.authOrder(
+              this.order._id,
+              this.currentUser._id
+            )
+          ).authOrder;
+        }
+
+        if (redirectToAzulPaymentsPage && this.currentUser.email) {
+          this.redirectToAzulPaymentPage();
+        } else if (redirectToAzulPaymentsPage && !this.currentUser.email) {
+          this.openedDialogFlow = true;
+        }
+
+        if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+      });
     });
+  }
 
-    if (viewsMerchants && viewsMerchants.length > 0) {
-      this.viewMerchantForRefund = viewsMerchants[0];
-    }
+  checkIfAzulPaymentURLIsAvailable() {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    setTimeout(() => controller.abort(), 4000);
 
-    this.azulPaymentsSupported =
-      await this.integrationService.integrationPaymentMethod(
-        'azul',
-        this.headerService.saleflow.merchant._id
-      );
-
-    if (!this.azulPaymentsSupported) {
-      this.onlinePaymentsOptions.pop();
-    }
-
-    if (redirectToAzulPaymentsPage) {
-      this.redirectToAzulPaymentPage();
-    }
+    fetch(this.azulPaymentURL, { signal, redirect: 'follow' })
+      .then((response) => {
+        if (!response.ok) {
+          this.azulPaymentURL =
+            'https://contpagos.azul.com.do/PaymentPage/Default.aspx';
+        }
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') {
+          this.azulPaymentURL =
+            'https://contpagos.azul.com.do/PaymentPage/Default.aspx';
+        } else {
+          console.log('An error occured: ', err);
+        }
+      });
   }
 
   onFileInput(file: File | { image: File; index: number }) {
@@ -429,12 +509,15 @@ export class PaymentsComponent implements OnInit {
         });
       }
     } else if (paymentOptionName === 'Tarjeta de crédito') {
-      if (this.currentUser) this.redirectToAzulPaymentPage();
-      else {
+      if (this.currentUser && this.logged && this.currentUser.email)
+        this.redirectToAzulPaymentPage();
+      else if (this.currentUser && this.logged && !this.currentUser.email) {
+        this.openedDialogFlow = true;
+      } else {
         this.router.navigate(['auth/login'], {
           queryParams: {
             orderId: this.order._id,
-            auth: 'payment',
+            auth: 'azul-login',
             paymentWithAzul: true,
             redirect:
               window.location.href.split('/').slice(3).join('/') +
@@ -449,10 +532,8 @@ export class PaymentsComponent implements OnInit {
     this.toastrService.info('Redigiendo a la página de pago', null, {
       timeOut: 1500,
     });
-    
-    lockUI();
 
- 
+    lockUI();
 
     const clientURI = `${environment.uri}`;
 
@@ -461,20 +542,22 @@ export class PaymentsComponent implements OnInit {
       MerchantID: this.headerService.saleflow.merchant._id,
       MerchantType: 'Importadores y productores de flores y follajes',
       CurrencyCode: '$',
-      OrderNumber: this.order._id,
-      //OrderNumber: formatID(this.order.dateId),
+      // OrderNumber: this.order._id,
+      OrderNumber: formatID(this.order.dateId),
       Amount: this.paymentAmount.toFixed(2).toString().replace('.', ''),
       ITBIS: (this.paymentAmount * 0.18).toFixed(2).toString().replace('.', ''),
       ApprovedUrl:
         clientURI +
         '/ecommerce/' +
         this.headerService.saleflow._id +
-        '/payments-redirection?typeOfPayment=azul&success=true',
+        '/payments-redirection?typeOfPayment=azul&success=true&orderId=' +
+        this.order._id,
       DeclinedUrl:
         clientURI +
         '/ecommerce/' +
         this.headerService.saleflow._id +
-        '/payments-redirection?typeOfPayment=azul&success=false',
+        '/payments-redirection?typeOfPayment=azul&success=false&orderId=' +
+        this.order._id,
       CancelUrl:
         clientURI +
         '/ecommerce/' +
@@ -565,7 +648,29 @@ export class PaymentsComponent implements OnInit {
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
     this.router.navigate([
-      '/ecommerce/terms-of-use/' + this.viewMerchantForRefund._id,
+      '/ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/terms-of-use/' +
+        this.viewMerchantForRefund._id,
     ]);
+  }
+
+  async payWithAzul(event: Event) {
+    event.preventDefault();
+
+    const azulForm: HTMLFormElement = document.querySelector('#azulForm');
+    const formData = new FormData(azulForm);
+
+    console.log(formData);
+    /*
+    fetch('https://pruebas.azul.com.do/paymentpage/Default.aspx', {
+      method: 'POST',
+      body: formData,
+    }).then((response) => {
+      console.log(response);
+      if (response.redirected) {
+        window.location.href = response.url;
+      }
+    });*/
   }
 }

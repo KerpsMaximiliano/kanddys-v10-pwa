@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
@@ -32,6 +33,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HelperHeaderInput } from 'src/app/shared/components/helper-headerv2/helper-headerv2.component';
 import { ItemImagesComponent } from 'src/app/shared/dialogs/item-images/item-images.component';
 import { ItemListSelectorComponent } from 'src/app/shared/dialogs/item-list-selector/item-list-selector.component';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import {
   SettingsComponent,
   SettingsDialogButton,
@@ -216,7 +218,8 @@ export class ItemsDashboardComponent implements OnInit {
     private ngNavigatorShareService: NgNavigatorShareService,
     private _ToastrService: ToastrService,
     private dialog: DialogService,
-    private dialogFlowService: DialogFlowService
+    private dialogFlowService: DialogFlowService,
+    private _bottomSheet: MatBottomSheet
   ) {}
 
   async ngOnInit() {
@@ -290,6 +293,7 @@ export class ItemsDashboardComponent implements OnInit {
           componentId: 'itemImages',
           inputs: {
             containerStyles: {},
+            title: 'Imagen o video del cover:',
           },
           outputs: [
             {
@@ -958,51 +962,52 @@ export class ItemsDashboardComponent implements OnInit {
   };
 
   openHeaderDialog() {
-    const list: Array<SettingsDialogButton> = [
-      {
-        text: 'Vende online. Comparte el link',
-        callback: async () => {
-          const link = `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/store`;
+    this._bottomSheet.open(LinksDialogComponent);
+    // const list: Array<SettingsDialogButton> = [
+    //   {
+    //     text: 'Vende online. Comparte el link',
+    //     callback: async () => {
+    //       const link = `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/store`;
 
-          await this.ngNavigatorShareService
-            .share({
-              title: '',
-              url: link,
-            })
-            .then((response) => {
-              console.log(response);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        },
-      },
-      {
-        text: 'Adiciona un artículo',
-        callback: () => {
-          this.openedDialogFlow = !this.openedDialogFlow;
-        },
-      },
-      {
-        text: 'Cerrar Sesión',
-        callback: async () => {
-          await this.authService.signout();
-        },
-      },
-    ];
+    //       await this.ngNavigatorShareService
+    //         .share({
+    //           title: '',
+    //           url: link,
+    //         })
+    //         .then((response) => {
+    //           console.log(response);
+    //         })
+    //         .catch((error) => {
+    //           console.log(error);
+    //         });
+    //     },
+    //   },
+    //   {
+    //     text: 'Adiciona un artículo',
+    //     callback: () => {
+    //       this.openedDialogFlow = !this.openedDialogFlow;
+    //     },
+    //   },
+    //   {
+    //     text: 'Cerrar Sesión',
+    //     callback: async () => {
+    //       await this.authService.signout();
+    //     },
+    //   },
+    // ];
 
-    this.dialog.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        title: 'Menu de opciones',
-        cancelButton: {
-          text: 'Cerrar',
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
+    // this.dialog.open(SettingsComponent, {
+    //   type: 'fullscreen-translucent',
+    //   props: {
+    //     optionsList: list,
+    //     title: 'Menu de opciones',
+    //     cancelButton: {
+    //       text: 'Cerrar',
+    //     },
+    //   },
+    //   customClass: 'app-dialog',
+    //   flags: ['no-header'],
+    // });
   }
 
   toggleActivateItem = async (item: Item): Promise<string> => {
@@ -1045,16 +1050,15 @@ export class ItemsDashboardComponent implements OnInit {
       }
     }
 
-    const allItemIndex = this.allItems.findIndex((item) => item._id === id);
-    const highlightedItemsIndex = this.highlightedItems.findIndex(
-      (item) => item._id === id
-    );
-    const visibleItemsIndex = this.activeItems.findIndex(
-      (item) => item._id === id
-    );
-    const invisibleItemsIndex = this.inactiveItems.findIndex(
-      (item) => item._id === id
-    );
+    const allItemIndex = this.resetStatusIndex(id, this.allItems);
+    let highlightedItemsIndex = this.resetStatusIndex(id, this.highlightedItems);
+    let visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
+    let invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
+
+    if (highlightedItemsIndex >= 0 && visibleItemsIndex >= 0) {
+      this.activeItems.splice(visibleItemsIndex, 1);
+      visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
+    }
 
     const toggleStatus = () => {
       return new Promise((resolve, reject) => {
@@ -1069,42 +1073,59 @@ export class ItemsDashboardComponent implements OnInit {
 
           if (newStatus === 'disabled' && visibleItemsIndex >= 0) {
             this.activeItems.splice(visibleItemsIndex, 1);
-            this.inactiveItems.push(item);
+            this.inactiveItems.unshift(item);
+
+            visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
+            invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
           }
 
           if (newStatus === 'disabled' && highlightedItemsIndex >= 0) {
             this.highlightedItems.splice(highlightedItemsIndex, 1);
-            this.inactiveItems.push(item);
+            this.inactiveItems.unshift(item);
+
+            highlightedItemsIndex = this.resetStatusIndex(id, this.highlightedItems);
+            invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
           }
 
           if (newStatus === 'active' && invisibleItemsIndex >= 0) {
             this.inactiveItems.splice(invisibleItemsIndex, 1);
-            this.activeItems.push(item);
+            this.activeItems.unshift(item);
+
+            invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
+            visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
           }
 
           if (newStatus === 'featured' && invisibleItemsIndex >= 0) {
             this.inactiveItems.splice(invisibleItemsIndex, 1);
-            this.highlightedItems.push(item);
+            this.highlightedItems.unshift(item);
 
-            setTimeout(() => {
-              if (
-                this.highlightedItemsSwiper &&
-                this.highlightedItemsSwiper.directiveRef
-              )
-                this.highlightedItemsSwiper.directiveRef.update();
-            }, 300);
+            invisibleItemsIndex = this.resetStatusIndex(id, this.inactiveItems);
+            highlightedItemsIndex = this.resetStatusIndex(id, this.highlightedItems);
+
+            // setTimeout(() => {
+            //   if (
+            //     this.highlightedItemsSwiper &&
+            //     this.highlightedItemsSwiper.directiveRef
+            //   )
+            //     this.highlightedItemsSwiper.directiveRef.update();
+            // }, 300);
           }
 
           if (newStatus === 'featured' && visibleItemsIndex >= 0) {
-            this.highlightedItems.push(item);
 
-            setTimeout(() => {
-              if (
-                this.highlightedItemsSwiper &&
-                this.highlightedItemsSwiper.directiveRef
-              )
-                this.highlightedItemsSwiper.directiveRef.update();
-            }, 300);
+            this.activeItems.splice(visibleItemsIndex, 1);
+            this.highlightedItems.unshift(item);
+
+            highlightedItemsIndex = this.resetStatusIndex(id, this.highlightedItems);
+            visibleItemsIndex = this.resetStatusIndex(id, this.activeItems);
+
+            // setTimeout(() => {
+            //   if (
+            //     this.highlightedItemsSwiper &&
+            //     this.highlightedItemsSwiper.directiveRef
+            //   )
+            //     this.highlightedItemsSwiper.directiveRef.update();
+            // }, 300);
           }
 
           resolve(true);
@@ -1353,6 +1374,12 @@ export class ItemsDashboardComponent implements OnInit {
       flags: ['no-header'],
     });
   };
+
+  private resetStatusIndex(id: string, array: Item[]) {
+    return array.findIndex(
+      (item) => item._id === id
+    );
+  }
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
     if (!this.selectedTagsCounter) {

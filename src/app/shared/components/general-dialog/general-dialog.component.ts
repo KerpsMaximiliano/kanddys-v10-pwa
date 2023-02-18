@@ -5,7 +5,6 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Type,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -20,7 +19,6 @@ import {
   CountryISO,
   PhoneNumberFormat,
 } from 'ngx-intl-tel-input';
-import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 enum FormType {
   text = 'text',
@@ -28,9 +26,11 @@ enum FormType {
   area = 'area',
   selection = 'selection',
   phone = 'phone',
+  button = 'button',
+  buttonIcon = 'buttonIcon',
 }
 
-export interface DialogField {
+export interface GeneralDialogField {
   type: FormType;
   stylesGrid: Record<string, string>;
   placeholder: string;
@@ -44,10 +44,6 @@ export interface DialogField {
     styles: Record<string, string>;
     text: string;
   };
-  component?: Type<any>,
-  shouldRerender: boolean,
-  inputs: any[],
-  outputs: any[],
   selection: {
     selection: {
       ['prop']: string;
@@ -64,10 +60,14 @@ export interface DialogField {
       styles: Record<string, string>;
     }>;
   };
+  buttonIcon?: {
+    src: string;
+    styles: Record<string, any>;
+  };
   prop: string;
   value: any;
   validators: ValidatorFn[];
-};
+}
 
 @Component({
   selector: 'app-general-dialog',
@@ -87,14 +87,14 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
   } = {};
   @Input('fields') fields: {
     styles?: Record<string, string>;
-    list?: Array<DialogField>;
+    list?: Array<GeneralDialogField>;
   } = {};
   @Input('isMultiple') isMultiple: boolean = false;
-  @Input('isMultipleImages') isMultipleImages: boolean = false;
   @Output('data') data: EventEmitter<any> = new EventEmitter();
+  @Output('buttonClicked') buttonClicked: EventEmitter<any> =
+    new EventEmitter();
   @Input('omitTabFocus') omitTabFocus: boolean = true;
   selected: string[] = [];
-  selectedImage: string [] = [];
   controller: FormGroup;
   sub: Subscription;
   PhoneNumberFormat = PhoneNumberFormat;
@@ -104,10 +104,7 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
     CountryISO.UnitedStates,
   ];
 
-  constructor(
-    private dialogFlowService: DialogFlowService,
-    private _DomSanitizer: DomSanitizer
-  ) {}
+  constructor(private dialogFlowService: DialogFlowService) {}
 
   ngOnInit(): void {
     this.initControllers();
@@ -134,24 +131,12 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  setSelectedImage(item, controller: AbstractControl): void {
-    if (this.selectedImage.includes(item)) {
-      this.selectedImage = this.selectedImage.filter((tg) => tg !== item);
-      controller.setValue(this.selectedImage);
-    } else {
-      const value = this.isMultipleImages ? [...this.selectedImage, item] : [item];
-      this.selectedImage = value;
-      controller.setValue(this.selectedImage);
-    }
-  }
-
   initControllers(): void {
     this.controller = new FormGroup({});
     for (const { name, value, validators } of this.fields.list) {
       this.controller.addControl(name, new FormControl(value, validators));
     }
     this.sub = this.controller.valueChanges.subscribe((value) => {
-
       if (this.dialogFlowService.activeDialogId === this.dialogId) {
         if (this.controller.valid) {
           this.dialogFlowService.swiperConfig.allowSlideNext = true;
@@ -159,7 +144,6 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
           this.dialogFlowService.swiperConfig.allowSlideNext = false;
         }
       }
-
 
       this.data.emit({
         value,
@@ -169,14 +153,18 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  checkboxChange({ target }, control: AbstractControl): void {
-    control.setValue(target.checked);
+  buttonClick(field: GeneralDialogField) {
+    const value = this.controller.value;
+
+    this.buttonClicked.emit({
+      buttonClicked: field.name,
+      value,
+      fields: this.fields.list,
+      valid: this.controller.valid,
+    });
   }
 
-  sanitize(src: any):SafeStyle {
-    const result: SafeStyle = this._DomSanitizer.bypassSecurityTrustStyle(`url(
-      ${src})
-      no-repeat center center / cover #2e2e2e`);
-    return result;
+  checkboxChange({ target }, control: AbstractControl): void {
+    control.setValue(target.checked);
   }
 }

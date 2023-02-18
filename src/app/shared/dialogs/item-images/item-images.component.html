@@ -1,5 +1,5 @@
 <div class="container" [ngStyle]="containerStyles">
-  <h1>Imagen o video del cover:</h1>
+  <h1 *ngIf="title">{{ title }}</h1>
   <div class="image-selector">
     <div class="image-area">
       <input
@@ -8,7 +8,23 @@
         type="file"
         style="display: none"
         accept="video/*,image/*"
-        [accept]="['.png', '.jpg', '.jpeg', '.webp', '.webm', '.mp4', '.m4v', '.mpg', '.mpeg', '.mpeg4', '.mov', '.3gp', '.mts/m2ts', '.mxf']"
+        multiple
+        [accept]="[
+          '.png',
+          '.jpg',
+          '.jpeg',
+          '.webp',
+          '.webm',
+          '.mp4',
+          '.m4v',
+          '.mpg',
+          '.mpeg',
+          '.mpeg4',
+          '.mov',
+          '.3gp',
+          '.mts/m2ts',
+          '.mxf'
+        ]"
       />
       <div class="btn-add">
         <label for="filemultiple">

@@ -945,7 +945,7 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
 
     switch (this.currentStep) {
       case 'MAIN':
-        this.router.navigate([`admin/entity-detail-metrics`]);
+        this.router.navigate([`admin/dashboard`]);
         break;
       case 'RESERVATION_DURATION_AND_BREAKTIME':
         this.currentStep = 'MAIN';
@@ -1053,7 +1053,7 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
             'Calendario genérico ' + Math.floor(Math.random() * (100 - 1)) + 1;
           result = await this.calendarService.createCalendar(calendarInput);
 
-          if (result) this.router.navigate([`admin/entity-detail-metrics`]);
+          if (result) this.router.navigate([`admin/dashboard`]);
         } else {
           delete calendarInput.merchant;
 
@@ -1062,7 +1062,7 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
             this.calendarId
           );
 
-          if (result) this.router.navigate([`admin/entity-detail-metrics`]);
+          if (result) this.router.navigate([`admin/dashboard`]);
         }
 
         break;

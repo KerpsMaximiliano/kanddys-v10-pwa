@@ -8,6 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import Cropper from 'cropperjs';
+import { unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { environment } from 'src/environments/environment';
 
 export interface CroppResult {
@@ -15,6 +16,7 @@ export interface CroppResult {
   cropData: Cropper.CropBoxData;
   blob?: Blob;
   dataUrl?: string;
+  modified?: boolean;
 }
 
 @Component({
@@ -74,6 +76,9 @@ export class ImageEditorComponent implements OnDestroy {
       cropmove: () => {
         this.modified = true;
       },
+      ready: () => {
+        unlockUI();
+      },
     };
 
     this.destroyCropper();
@@ -88,6 +93,7 @@ export class ImageEditorComponent implements OnDestroy {
 
   changeViewMode() {
     this.currentViewMode = this.currentViewMode === 3 ? 0 : 3;
+    this.modified = true;
     this.initCropper();
   }
 
@@ -115,15 +121,13 @@ export class ImageEditorComponent implements OnDestroy {
   // }
 
   async exportCanvas() {
-    if (this.modified) {
-      const imageData = this.cropper.getImageData();
-      const cropData = this.cropper.getCropBoxData();
-      const canvas = this.cropper.getCroppedCanvas();
-      const data = { imageData, cropData };
-      canvas.toBlob((blob) => {
-        this.cropped.emit({ ...data, blob });
-      });
-    } else this.cropped.emit();
+    const imageData = this.cropper.getImageData();
+    const cropData = this.cropper.getCropBoxData();
+    const canvas = this.cropper.getCroppedCanvas();
+    const data = { imageData, cropData };
+    canvas.toBlob((blob) => {
+      this.cropped.emit({ ...data, blob, modified: this.modified });
+    });
   }
 
   private destroyCropper() {

@@ -103,7 +103,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       firstLabel: 'FECHA DE ENTREGA (*)',
       secondLabel: 'TANDA',
       timeOfDayMode: true,
-      blockButtons: ['AM'],
+      //blockButtons: ['AM'],
       containerStyles: {
         minHeight: 'auto',
       },

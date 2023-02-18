@@ -75,4 +75,14 @@
   <div class="margin flex" *ngIf="status === 'complete' && !tags?.length">
     <h3>No hay colecciones creadas</h3>
   </div>
+  <app-menu-button
+    [phone]="headerService.saleflow?.merchant.owner.phone"
+    [link]="link"
+    mode="basic"
+    [merchantName]="headerService.saleflow?.merchant.name"
+    [size]="headerService.order?.products?.length ? 'mini' : 'normal'"
+    [position]="{
+      bottom: headerService.order?.products?.length ? '100px' : '50px'
+    }"
+  ></app-menu-button>
 </div>

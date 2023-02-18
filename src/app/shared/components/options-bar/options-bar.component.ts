@@ -4,11 +4,27 @@ import {
   Input,
   Output,
   EventEmitter,
-  ViewChild,
+  // ViewChild,
 } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { Swiper, SwiperOptions } from 'swiper';
-import { MatMenuModule } from '@angular/material/menu';
+// import { Swiper, SwiperOptions } from 'swiper';
+// import { MatMenuModule } from '@angular/material/menu';
+
+export interface BarMenu {
+  title: string;
+  icon: string;
+  callback: () => void;
+}
+
+export interface BarOptions {
+  title: string;
+  menu?: BarMenu[];
+}
+
+export interface MenuEvent {
+  index: number;
+  menuIndex: number;
+}
 
 @Component({
   selector: 'app-options-bar',
@@ -17,43 +33,20 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 export class OptionsBarComponent implements OnInit {
   environment: string = environment.assetsUrl;
-  @Input() options: Array<any> = [];
+  @Input() options: Array<BarOptions> = [];
   @Input() type: '1' | '2' | '3' = '1';
   @Input() optCol: number = 0;
-  @Input() swiperMode: boolean = false;
-  @Input() openMenu: boolean;
+  // @Input() swiperMode: boolean = false;
   @Output() selectedIndex = new EventEmitter<number>();
-  @Output() selectedMenuIndex = new EventEmitter<{
-    index: number;
-    menuIndex: number;
-  }>();
+  @Output() selectedMenuIndex = new EventEmitter<MenuEvent>();
 
   selected: number = 0;
 
-  swiperConfig: SwiperOptions = {
-    slidesPerView: 'auto',
-    freeMode: true,
-    spaceBetween: 8,
-  };
-
-  menuOptions = [
-    {
-      text: 'Nuevo artículo',
-      icon: 'chevron_right',
-    },
-    {
-      text: 'Orden de artículos',
-      icon: 'chevron_right',
-    },
-    {
-      text: 'Estilo de cartas',
-      icon: 'chevron_right',
-    },
-    {
-      text: 'Pantalla Inicial',
-      icon: 'check',
-    },
-  ];
+  // swiperConfig: SwiperOptions = {
+  //   slidesPerView: 'auto',
+  //   freeMode: true,
+  //   spaceBetween: 8,
+  // };
 
   constructor() {}
 

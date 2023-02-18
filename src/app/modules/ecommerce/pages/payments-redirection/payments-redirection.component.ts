@@ -6,6 +6,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
 import { environment } from 'src/environments/environment';
+import * as forge from 'node-forge';
 
 @Component({
   selector: 'app-payments-redirection',
@@ -40,16 +41,6 @@ export class PaymentsRedirectionComponent implements OnInit {
     this.route.queryParams.subscribe(async (queryParams) => {
       let { typeOfPayment, success, cancel, orderId, blockURL, ...rest } =
         queryParams;
-      blockURL = Boolean(blockURL);
-
-      if (!blockURL) {
-        this.router.navigate([this.router.url.split('?')[0]], {
-          queryParams: {
-            ...queryParams,
-            blockURL: true,
-          },
-        });
-      }
 
       success = Boolean(success);
       cancel = Boolean(cancel);
@@ -58,6 +49,7 @@ export class PaymentsRedirectionComponent implements OnInit {
 
       if (typeOfPayment === 'azul') {
         this.azulOrderQueryParams = rest;
+        this.azulOrderQueryParams['RealOrderID'] = orderId;
       }
 
       if (!typeOfPayment) return this.router.navigate(['others/error-screen']);
@@ -65,7 +57,7 @@ export class PaymentsRedirectionComponent implements OnInit {
         this.label = 'El pago se completó';
 
         this.order = (
-          await this.ordersService.order(rest['OrderNumber'])
+          await this.ordersService.order(orderId)
         ).order;
 
         fetch(environment.api.url + '/azul/calculate-response-hash', {
@@ -89,27 +81,53 @@ export class PaymentsRedirectionComponent implements OnInit {
           }),
         })
           .then((response) => response.text())
-          .then((hash) => {
-            console.log('hash del back', hash);
-            console.log('hash del url', rest['AuthHash']);
-
+          .then(async (hash) => {
             if (
               rest['IsoCode'] === '00' &&
               this.order.orderStatus !== 'completed'
             ) {
               //Cambiar igualdad
 
-              if (hash !== rest['AuthHash']) {
+              if (
+                hash === rest['AuthHash'] &&
+                this.order.orderStatus !== 'paid'
+              ) {
+                const response = await fetch('assets/ap.pem');
+                const textResponse = await response.text();
+
+                const publicKeyParsed =
+                  forge.pki.publicKeyFromPem(textResponse);
+
+                const data = rest['CardNumber'];
+                const brand = this.detectCreditCardBrand(data.replaceAll('*', '0'));
+                const last4Digits = data.slice(-4);
+                
+                const plaintextBytes = forge.util.encodeUtf8(last4Digits);
+                const encrypted = publicKeyParsed.encrypt(
+                  plaintextBytes,
+                  'RSA-OAEP'
+                );
+                const encryptedBase64 = forge.util.encode64(encrypted);
+
+                const brandPlaintextBytes = forge.util.encodeUtf8(brand);
+                const encryptedBrand = publicKeyParsed.encrypt(
+                  brandPlaintextBytes,
+                  'RSA-OAEP'
+                );
+                const encryptedBrandBase64 = forge.util.encode64(encryptedBrand);
+
                 this.paymentLogService.createPaymentLogAzul({
                   ammount: Number(rest['Amount']) / 100,
                   reason: 'payment',
                   paymentMethod: 'azul',
-                  order: rest['OrderNumber'],
+                  order: this.order._id,
                   merchant: this.headerService.saleflow.merchant._id,
                   user: this.order.user._id,
                   metadata: {
                     AzulOrderId: rest['AzulOrderId'],
                     DateTime: rest['DateTime'],
+                    cardNumber: encryptedBase64,
+                    cardBrand: encryptedBrandBase64
                   },
                 });
               }
@@ -152,7 +170,7 @@ export class PaymentsRedirectionComponent implements OnInit {
 
   redirectToOrderInfo() {
     this.router.navigate(
-      ['ecommerce/order-info/' + this.azulOrderQueryParams['OrderNumber']],
+      ['ecommerce/order-info/' + this.azulOrderQueryParams['RealOrderID']],
       {
         queryParams: {
           notify: true,
@@ -163,7 +181,7 @@ export class PaymentsRedirectionComponent implements OnInit {
 
   goBackToPaymentSelection() {
     const orderNumber = !this.cancel
-      ? this.azulOrderQueryParams['OrderNumber']
+      ? this.azulOrderQueryParams['RealOrderID']
       : this.orderId;
 
     this.router.navigate(
@@ -179,5 +197,32 @@ export class PaymentsRedirectionComponent implements OnInit {
         },
       }
     );
+  }
+
+  detectCreditCardBrand(creditCardNumber) {
+    // Remove any non-digit characters from the input string
+    const cleanedNumber = creditCardNumber.replace(/\D/g, '');
+  
+    // Define regular expressions for each supported credit card brand
+    const visaRegex = /^4[0-9]{12}(?:[0-9]{3})?$/;
+    const mastercardRegex = /^5[1-5][0-9]{14}$/;
+    const amexRegex = /^3[47][0-9]{13}$/;
+    const discoverRegex = /^6(?:011|5[0-9]{2})[0-9]{12}$/;
+    const dinersRegex = /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/;
+  
+    // Check the cleaned number against each regular expression to determine the brand
+    if (visaRegex.test(cleanedNumber)) {
+      return 'Visa';
+    } else if (mastercardRegex.test(cleanedNumber)) {
+      return 'Mastercard';
+    } else if (amexRegex.test(cleanedNumber)) {
+      return 'American Express';
+    } else if (discoverRegex.test(cleanedNumber)) {
+      return 'Discover';
+    } else if (dinersRegex.test(cleanedNumber)) {
+      return 'Diners Club';
+    } else {
+      return 'Unknown';
+    }
   }
 }
