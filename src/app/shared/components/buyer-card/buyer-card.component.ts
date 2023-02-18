@@ -18,6 +18,8 @@ export class BuyerCardComponent implements OnInit {
   @Input() rightAmount: number;
   @Input() cta: boolean;
   @Input() ctaActive: boolean = false;
+  @Input() viewsCounter: boolean = false;
+  @Input() views: number;
   @Output() ctaClicked = new EventEmitter();
 
   env: string = environment.assetsUrl;

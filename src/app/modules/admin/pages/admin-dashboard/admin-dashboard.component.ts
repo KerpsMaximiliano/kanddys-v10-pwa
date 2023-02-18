@@ -29,6 +29,8 @@ import { environment } from 'src/environments/environment';
 export class AdminDashboardComponent implements OnInit, OnDestroy {
   URI: string = environment.uri;
   environment: string = environment.assetsUrl;
+
+  isSimpleCard = history.state.data;
   // artID: Array<string> = [
   //   '63d429d7849f894c1895c659',
   //   '63d420a8849f894c189544d4',
@@ -54,6 +56,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   reachTheEndOfPagination: boolean = false;
   // Pagination
 
+  tags;
+
   constructor(
     public _MerchantsService: MerchantsService,
     private router: Router,
@@ -68,7 +72,118 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private clipboard: Clipboard
   ) {}
 
+  options: BarOptions[] = [];
+  articulosMenu = [
+    {
+      title: 'Nuevo',
+      icon: 'chevron_right',
+      callback: () => {
+        let dialogRef = this.dialog.open(StepperFormComponent);
+        dialogRef
+          .afterClosed()
+          .subscribe(async (result: { pricing: number; images: File[] }) => {
+            if (!result) return;
+            const { pricing, images: imagesResult } = result;
+            let images: ItemImageInput[] = imagesResult.map((file) => {
+              return {
+                file: file,
+                index: 0,
+                active: true,
+              };
+            });
+            if (!pricing) return;
+            lockUI();
+            const itemInput: ItemInput = {
+              name: null,
+              description: null,
+              pricing: pricing,
+              images,
+              merchant: this._MerchantsService.merchantData?._id,
+              content: [],
+              currencies: [],
+              hasExtraPrice: false,
+              purchaseLocations: [],
+              showImages: images.length > 0,
+            };
+            this._ItemsService.itemPrice = null;
+
+            const { createItem } = await this._ItemsService.createItem(
+              itemInput
+            );
+            await this._SaleflowService.addItemToSaleFlow(
+              {
+                item: createItem._id,
+              },
+              this._SaleflowService.saleflowData._id
+            );
+            this.snackBar.open('Producto creado satisfactoriamente!', '', {
+              duration: 5000,
+            });
+            unlockUI();
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this._ItemsService.editingImageId = createItem.images[0]._id;
+              this.router.navigate([`admin/article-editor/${createItem._id}`]);
+            };
+            reader.readAsDataURL(images[0].file as File);
+          });
+      },
+    },
+    {
+      title: 'Organización',
+      icon: 'chevron_right',
+      callback: () => {},
+    },
+    {
+      title: 'Invisibles',
+      icon: 'chevron_right',
+      callback: () => {
+        if (this.itemStatus === 'active') {
+          this.itemStatus = 'disabled';
+          this.options[0].menu[2].title = 'Visibles';
+        } else {
+          this.itemStatus = 'active';
+          this.options[0].menu[2].title = 'Invisibles';
+        }
+        this.inicializeItems(true, false, true);
+      },
+    },
+    {
+      title: 'Estilo de cartas',
+      icon: 'chevron_right',
+      callback: () => {
+        this.router.navigate([`admin/view-configuration-cards`]);
+      },
+    },
+    {
+      title: 'Pantalla Inicial',
+      icon: 'check',
+      callback: () => {},
+    },
+  ];
+
   async ngOnInit() {
+    this.tags = await this._MerchantsService.tagsByMerchant(
+      this._MerchantsService.merchantData._id
+    );
+    console.log(this.tags.tagsByMerchant.length);
+    this.tags.tagsByMerchant.length > 1
+      ? (this.options = [
+          {
+            title: 'articulos',
+            menu: this.articulosMenu,
+          },
+        ])
+      : (this.options = [
+          {
+            title: 'articulos',
+            menu: this.articulosMenu,
+          },
+          {
+            title: 'categorias',
+          },
+          { title: 'colecciones' },
+        ]);
     if (this._SaleflowService.saleflowData) {
       this.inicializeItems(true, false, true);
       return;
@@ -283,6 +398,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.allItems = [];
       }
     });
+
+    if (this._SaleflowService.saleflowData.layout === 'simple-card') {
+      this.isSimpleCard = true;
+    } else {
+      this.isSimpleCard = false;
+    }
   }
 
   share() {
@@ -330,6 +451,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             {
               title: 'Descargar el qrCode del admin',
               link: `${this.URI}/admin/dashboard`,
+            },
+            {
+              title: 'Lo vendido',
+              callback: () => {
+                this.router.navigate(['/admin/order-status-view']);
+              },
             },
           ],
         },

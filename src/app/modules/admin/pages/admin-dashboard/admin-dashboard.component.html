@@ -36,7 +36,10 @@
     >
     </app-options-bar>
   </div>
-  <div class="saleflows-item-grid" *ngIf="allItems.length">
+  <div
+    class="saleflows-item-grid"
+    *ngIf="allItems.length && isSimpleCard === true"
+  >
     <a
       class="capsize"
       [routerLink]="['../article-editor', item._id]"
@@ -58,6 +61,33 @@
         [responsiveWidthVersion]="true"
         [featured]="item.status === 'featured'"
       ></app-saleflow-item>
+    </a>
+  </div>
+  <div
+    *ngIf="allItems.length && isSimpleCard === false"
+    style="padding: 24px; display: grid; grid-template-columns: 1fr; gap: 15px"
+  >
+    <a
+      class="capsize"
+      [routerLink]="['../article-editor', item._id]"
+      *ngFor="let item of allItems; let itemIndex = index"
+      style="text-decoration: none"
+    >
+      <app-buyer-card
+        [index]="itemIndex"
+        [title]="item.name"
+        [description]="item.description"
+        [img]="item.images?.length ? item.images[0].value : ''"
+        [leftAmount]="item.pricing"
+        [cta]="false"
+        [ctaActive]="item.isSelected"
+        [redirectionParams]="{
+          link: ['../article-detail/item', item._id],
+          param: { mode: 'saleflow' }
+        }"
+        [viewsCounter]="true"
+        [views]="item.visitorCounter ? item.visitorCounter.counter : 0"
+      ></app-buyer-card>
     </a>
   </div>
   <div
