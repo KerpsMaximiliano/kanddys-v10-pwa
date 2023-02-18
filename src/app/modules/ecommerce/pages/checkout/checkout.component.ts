@@ -150,8 +150,6 @@ export class CheckoutComponent implements OnInit {
   saleflowId: string;
   playVideoOnFullscreen = playVideoOnFullscreen;
   itemObjects: Record<string, ItemSubOrderInput> = {};
-  questions: any = [];
-  questionsList: number[] = [];
   showAnswers: boolean = false;
   swiperConfig: SwiperOptions = null;
   dialogFlowFunctions: Record<string, any> = {};
@@ -170,6 +168,10 @@ export class CheckoutComponent implements OnInit {
     {
       question: Question;
       response: any;
+      isMedia?: boolean;
+      multipleSelection?: boolean;
+      selectedIndex?: number;
+      selectedIndexes?: Array<number>;
     }
   > = {};
 
@@ -706,9 +708,22 @@ export class CheckoutComponent implements OnInit {
 
           //loads the questions in an object that associates each answer with each question
           for (const question of webform.questions) {
+            const isMedia =
+              question.answerDefault &&
+              question.answerDefault.length &&
+              question.answerDefault[0].isMedia;
+
+            if (isMedia) {
+              question.answerDefault = question.answerDefault.map((option) => ({
+                ...option,
+                img: option.value,
+              }));
+            }
+
             this.answersByQuestion[question._id] = {
               question,
               response: '',
+              isMedia,
             };
           }
         }
@@ -762,8 +777,6 @@ export class CheckoutComponent implements OnInit {
                 selected: false,
               }));
 
-              console.log("ACTIVE OPTIONS", activeOptions)
-
             this.webformsByItem[item._id].dialogs.push({
               component: WebformMultipleSelectionQuestionComponent,
               componentId: question._id,
@@ -782,15 +795,28 @@ export class CheckoutComponent implements OnInit {
                 {
                   name: 'inputDetected',
                   callback: (
-                    inputDetected: Array<{ text: string; selected: boolean }>
+                    inputDetected: Array<{ value: string; selected: boolean }>
                   ) => {
                     const selected = inputDetected.find(
                       (option) => option.selected
                     );
 
-                    if (selected)
-                      this.answersByQuestion[question._id].response =
-                        selected.text;
+                    const selectedIndex = inputDetected.findIndex(
+                      (option) => option.selected
+                    );
+
+                    if (!question.answerDefault[0].isMedia) {
+                      if (selected)
+                        this.answersByQuestion[question._id].response =
+                          selected.value;
+                    } else {
+                      if (selected) {
+                        this.answersByQuestion[question._id].response =
+                          selected.value;
+                        this.answersByQuestion[question._id].selectedIndex =
+                          selectedIndex;
+                      }
+                    }
                   },
                 },
               ],
@@ -806,9 +832,23 @@ export class CheckoutComponent implements OnInit {
     this.webformsByItem[itemId].opened = !this.webformsByItem[itemId].opened;
   }
 
-  handleQuestion(index: number): void {
-    this.questionsList = this.questionsList.includes(index)
-      ? this.questionsList.filter((_index: number) => _index !== index)
-      : [index, ...this.questionsList];
-  }
+  selectWebformMediaOption = (
+    selectedOptionIndex: number,
+    item: ExtendedItem,
+    question: Question
+  ) => {
+    const options =
+      this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
+        question._id
+      ].fields.options;
+
+    const updatedOptions = options.map((option, index) => ({
+      ...option,
+      selected: index === selectedOptionIndex,
+    }));
+
+    this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
+      question._id
+    ].fields.options = updatedOptions;
+  };
 }

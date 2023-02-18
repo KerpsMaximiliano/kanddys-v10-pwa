@@ -83,27 +83,76 @@
             *ngIf="webformsByItem[item._id] && webformsByItem[item._id].webform"
           >
             <ul class="list-of-webform-questions">
-              <li
+              <ng-container
                 *ngFor="
                   let question of webformsByItem[item._id].webform.questions;
                   let i = index
                 "
-                class="webform-question-container"
-                [ngClass]="{
-                  required:
-                    question.required &&
-                    !answersByQuestion[question._id]?.response
-                }"
-                (click)="openWebform(item._id, i)"
               >
-                <p>{{ question.value }}</p>
-                <div
-                  class="question-text-response"
-                  *ngIf="answersByQuestion[question._id]?.response"
+                <!-- RESPONSE HAS NO IMAGES-->
+                <ng-container *ngIf="!answersByQuestion[question._id].isMedia">
+                  <li
+                    class="webform-question-container"
+                    [ngClass]="{
+                      required:
+                        question.required &&
+                        !answersByQuestion[question._id]?.response
+                    }"
+                    (click)="openWebform(item._id, i)"
+                  >
+                    <p>
+                      {{ question.value }}
+                    </p>
+                    <div
+                      class="question-text-response"
+                      *ngIf="
+                        answersByQuestion[question._id]?.response &&
+                        !answersByQuestion[question._id].isMedia
+                      "
+                    >
+                      {{ answersByQuestion[question._id]?.response }}
+                    </div>
+                  </li>
+                </ng-container>
+
+                <!-- RESPONSE HAS IMAGES AND USER HASNT ANSWERED-->
+                <li
+                  class="webform-question-container"
+                  [ngClass]="{
+                    required:
+                      question.required &&
+                      !answersByQuestion[question._id]?.response
+                  }"
+                  (click)="openWebform(item._id, i)"
+                  *ngIf="
+                    !answersByQuestion[question._id]?.response &&
+                    answersByQuestion[question._id].isMedia
+                  "
                 >
-                  {{ answersByQuestion[question._id]?.response }}
+                  <p>
+                    {{ question.value }}
+                  </p>
+                </li>
+
+                <!-- RESPONSE HAS IMAGES AND USER HAS ALREADY ANSWERED-->
+                <div
+                  class="question-media-response"
+                  *ngIf="
+                    answersByQuestion[question._id]?.response &&
+                    answersByQuestion[question._id].isMedia
+                  "
+                >
+                  <app-closed-question-card
+                    [type]="2"
+                    [id]="'sadasdaasd'"
+                    [question]="question.value"
+                    [answers]="question.answerDefault"
+                    [selected]="answersByQuestion[question._id].selectedIndex"
+                    (onSelector)="selectWebformMediaOption($event, item, question)"
+                  >
+                  </app-closed-question-card>
                 </div>
-              </li>
+              </ng-container>
             </ul>
           </ng-container>
         </ng-container>

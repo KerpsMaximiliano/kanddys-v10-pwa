@@ -50,8 +50,6 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
       }
     }
     
-    console.log(this.options[0].isMedia, this.options[0].label)
-
     if (this.options.length && !this.options[0].isMedia) {
       this.layout = this.layoutType['JUST-TEXT'];
     } else if (
@@ -81,7 +79,6 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
         text: option.value,
       }));
     }
-    console.log(this.layout)
   }
 
   emitInput = (selectedOptionIndex: number) => {
