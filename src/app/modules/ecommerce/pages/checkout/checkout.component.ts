@@ -18,7 +18,14 @@ import { PostInput } from 'src/app/core/models/post';
 import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
-import { ItemWebform, Question, Webform } from 'src/app/core/models/webform';
+import {
+  ItemWebform,
+  Question,
+  Webform,
+  AnswerInput,
+  WebformAnswerInput,
+  WebformResponseInput,
+} from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -163,6 +170,7 @@ export class CheckoutComponent implements OnInit {
       swiperConfig: SwiperOptions;
       dialogFlowFunctions: Record<string, any>;
       opened: boolean;
+      valid?: boolean;
     }
   > = {};
   answersByQuestion: Record<
@@ -170,6 +178,7 @@ export class CheckoutComponent implements OnInit {
     {
       question: Question;
       response: any;
+      responseLabel?: string;
       isMedia?: boolean;
       multipleSelection?: boolean;
       selectedIndex?: number;
@@ -177,6 +186,7 @@ export class CheckoutComponent implements OnInit {
       multipleChoicesType?: WebformMultipleChoicesType;
     }
   > = {};
+  areWebformsValid: boolean = false;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -468,6 +478,9 @@ export class CheckoutComponent implements OnInit {
       }
       return;
     }
+
+    if (!this.areWebformsValid) return;
+
     this.disableButton = true;
     lockUI();
     const userInput = JSON.parse(
@@ -539,6 +552,25 @@ export class CheckoutComponent implements OnInit {
       this.headerService.orderId = createdOrder;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
+
+      //Answer the webforms of each item and adds it to the order
+      for await (const item of this.items) {
+        if (item.webForms && item.webForms.length) {
+          const answer = this.getWebformAnswer(item._id);
+
+          console.log(answer);
+
+          const response = await this._WebformsService.createAnswer(answer);
+
+          if (response) {
+            await this._WebformsService.orderAddAnswer(
+              response._id,
+              createdOrder
+            );
+          }
+        }
+      }
+
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
         this.router.navigate([`../payments/${this.headerService.orderId}`], {
@@ -730,6 +762,8 @@ export class CheckoutComponent implements OnInit {
             };
           }
         }
+      } else {
+        this.areWebformsValid = true;
       }
     }
 
@@ -739,7 +773,7 @@ export class CheckoutComponent implements OnInit {
   //Creates a dialog flow that allows the user to answer each item questions
   createDialogFlowForEachQuestion() {
     for (const item of this.items) {
-      if (this.webformsByItem[item._id].webform) {
+      if (this.webformsByItem[item._id]?.webform) {
         for (const question of this.webformsByItem[item._id].webform
           .questions) {
           const lastDialogIndex =
@@ -766,6 +800,8 @@ export class CheckoutComponent implements OnInit {
                   callback: (inputDetected) => {
                     this.answersByQuestion[question._id].response =
                       inputDetected;
+
+                    this.areWebformsValid = this.areItemsQuestionsAnswered();
                   },
                 },
               ],
@@ -778,8 +814,6 @@ export class CheckoutComponent implements OnInit {
                 selected: false,
               }));
 
-            
-
             this.webformsByItem[item._id].dialogs.push({
               component: WebformMultipleSelectionQuestionComponent,
               componentId: question._id,
@@ -788,6 +822,7 @@ export class CheckoutComponent implements OnInit {
                 containerStyles: {
                   opacity: '1',
                 },
+                shadows: false,
                 dialogFlowConfig: {
                   dialogId: question._id,
                   flowId: 'webform-item-' + item._id,
@@ -798,7 +833,11 @@ export class CheckoutComponent implements OnInit {
                 {
                   name: 'inputDetected',
                   callback: (
-                    inputDetected: Array<{ value: string; selected: boolean }>
+                    inputDetected: Array<{
+                      value: string;
+                      selected: boolean;
+                      label?: string;
+                    }>
                   ) => {
                     const selected = inputDetected.find(
                       (option) => option.selected
@@ -819,23 +858,30 @@ export class CheckoutComponent implements OnInit {
                         this.answersByQuestion[question._id].selectedIndex =
                           selectedIndex;
                       }
+
+                      if (selected && selected.label)
+                        this.answersByQuestion[question._id].responseLabel =
+                          selected.label;
                     }
+
+                    this.areWebformsValid = this.areItemsQuestionsAnswered();
                   },
                 },
               ],
             });
-            
           }
         }
       }
     }
   }
 
+  //Opens each item webform
   openWebform(itemId: string, index: number) {
     this.webformsByItem[itemId].dialogFlowFunctions.moveToDialogByIndex(index);
     this.webformsByItem[itemId].opened = !this.webformsByItem[itemId].opened;
   }
 
+  //Select an image from the webform multiple option
   selectWebformMediaOption = (
     selectedOptionIndex: number,
     item: ExtendedItem,
@@ -855,4 +901,81 @@ export class CheckoutComponent implements OnInit {
       question._id
     ].fields.options = updatedOptions;
   };
+
+  //Get Webform Answer
+  getWebformAnswer(itemId: string): WebformAnswerInput {
+    const answerInput: WebformAnswerInput = {
+      webform: this.webformsByItem[itemId].webform._id,
+      response: [],
+      entity: 'ITEM',
+      reference: itemId,
+    };
+
+    for (const question of this.webformsByItem[itemId].webform.questions) {
+      if (this.answersByQuestion[question._id].response) {
+        const response: WebformResponseInput = {
+          question: question._id,
+          value: this.answersByQuestion[question._id].response,
+        };
+
+        if (this.answersByQuestion[question._id].responseLabel)
+          response.label = this.answersByQuestion[question._id].responseLabel;
+
+        answerInput.response.push(response);
+      }
+    }
+
+    return answerInput;
+  }
+
+  //See if each item questions are answered
+  areItemsQuestionsAnswered() {
+    const itemRequiredQuestions: Record<
+      string,
+      {
+        requiredQuestions: number;
+        valid: boolean;
+      }
+    > = {}; // {itemId: {requiredQuestions: number; valid: boolean}}
+
+    for (const item of this.items) {
+      itemRequiredQuestions[item._id] = { requiredQuestions: 0, valid: false };
+
+      for (const question of this.webformsByItem[item._id].webform.questions) {
+        if (question.required) {
+          itemRequiredQuestions[item._id].requiredQuestions++;
+        }
+      }
+    }
+
+    for (const item of this.items) {
+      let requiredQuestionsAnsweredCounter = 0;
+
+      for (const question of this.webformsByItem[item._id].webform.questions) {
+        if (
+          question.required &&
+          this.answersByQuestion[question._id].response
+        ) {
+          requiredQuestionsAnsweredCounter++;
+        }
+      }
+
+      if (
+        itemRequiredQuestions[item._id].requiredQuestions ===
+          requiredQuestionsAnsweredCounter ||
+        itemRequiredQuestions[item._id].requiredQuestions === 0
+      ) {
+        itemRequiredQuestions[item._id].valid = true;
+      }
+    }
+
+    let doesAnyItemHaveRequiredQuestionLeftUnanswered = false;
+
+    for (const item of this.items) {
+      if (!itemRequiredQuestions[item._id].valid)
+        doesAnyItemHaveRequiredQuestionLeftUnanswered = true;
+    }
+
+    return !doesAnyItemHaveRequiredQuestionLeftUnanswered;
+  }
 }

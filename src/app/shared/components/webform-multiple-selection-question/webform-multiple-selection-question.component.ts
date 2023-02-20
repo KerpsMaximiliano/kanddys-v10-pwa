@@ -13,6 +13,7 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
   @Input() options: Array<AnswerDefault> = [];
   @Input() optionsInput: Array<any> = [];
   @Input() multiple: boolean = false;
+  @Input() shadows: boolean = true;
   @Input() containerStyles: Record<string, any> = {
     opacity: 1,
   };

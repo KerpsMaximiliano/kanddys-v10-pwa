@@ -32,6 +32,13 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { CreateTagComponent } from 'src/app/shared/dialogs/create-tag/create-tag.component';
 import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
+import {
+  AnswersQuestion,
+  Question,
+  Webform,
+  WebformAnswer,
+} from 'src/app/core/models/webform';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 
 interface Image {
   src: string;
@@ -43,6 +50,10 @@ interface Image {
   src: string;
   filter?: string;
   callback?(...param): any;
+}
+
+interface ExtendedWebformAnswer extends WebformAnswer {
+  questionLabel: string;
 }
 
 @Component({
@@ -106,6 +117,8 @@ export class OrderDetailComponent implements OnInit {
   ];
   tagOptions: DropdownOptionItem[];
   tagPanelState: boolean;
+  webformsByItem: Record<string, Webform> = {};
+  answersByItem: Record<string, WebformAnswer> = {};
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
@@ -122,7 +135,8 @@ export class OrderDetailComponent implements OnInit {
     private merchantsService: MerchantsService,
     private paymentLogService: PaymentLogsService,
     private tagsService: TagsService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private webformsService: WebformsService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -149,6 +163,8 @@ export class OrderDetailComponent implements OnInit {
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
+
+    await this.getAnswersForEachItem();
 
     if (this.order.items) {
       for (const itemSubOrder of this.order.items) {
@@ -646,4 +662,76 @@ export class OrderDetailComponent implements OnInit {
       'ecommerce/' + this.order.items[0].saleflow.merchant.slug + '/store',
     ]);
   };
+
+  async getAnswersForEachItem() {
+    this.answersByItem = {};
+    const answers: Array<WebformAnswer> =
+      await this.webformsService.answerPaginate({
+        findBy: {
+          _id: {
+            __in: this.order.answers.map((answer) => answer.reference),
+          },
+        },
+      });
+
+    if (answers.length) {
+      const webformsIds = [];
+      for (const item of this.order.items) {
+        if (item.item.webForms && item.item.webForms.length) {
+          const webform = item.item.webForms[0];
+          webformsIds.push(webform.reference);
+        }
+      }
+
+      const webforms = await this.webformsService.webforms({
+        findBy: {
+          _id: {
+            __in: webformsIds,
+          },
+        },
+        options: {
+          limit: -1,
+        },
+      });
+
+      for (const item of this.order.items) {
+        if (item.item.webForms && item.item.webForms.length) {
+          const webform = item.item.webForms[0];
+
+          const answersForWebform = answers.find(
+            (answerInList) => answerInList.webform === webform.reference
+          );
+
+          if (answersForWebform) {
+            const webformObject = webforms.find(
+              (webformInList) => webformInList._id === webform.reference
+            );
+
+            if (webformObject) {
+              this.webformsByItem[item._id] = webformObject;
+
+              answersForWebform.response.forEach((answerInList) => {
+                const question = webformObject.questions.find(
+                  (questionInList) =>
+                    questionInList._id === answerInList.question
+                );
+
+                if (answerInList.question) {
+                  answerInList.question = question.value;
+                  if (
+                    question.answerDefault &&
+                    question.answerDefault.length &&
+                    question.answerDefault[0].isMedia
+                  )
+                    answerInList.isMedia = true;
+                }
+              });
+            }
+
+            this.answersByItem[item._id] = answersForWebform;
+          }
+        }
+      }
+    }
+  }
 }

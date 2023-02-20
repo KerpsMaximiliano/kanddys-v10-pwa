@@ -13,9 +13,9 @@ export class AnswersQuestionInput {
 
 export class AnswersQuestion extends Model<AnswersQuestion> {
   question: string;
-  value: string;
-  isMedia: boolean;
-  type: string;
+  value?: string;
+  label?: string;
+  isMedia?: boolean;
 }
 
 export class AnswerInput {
@@ -92,6 +92,35 @@ export class Webform extends Model<Webform> {
   exchangeData: ExchangeData;
   active: Boolean;
   user: User
+}
+
+export interface WebformAnswer extends Model<Answer> {
+  webform: string;
+  response: Array<{
+    question?: string;
+    value?: string;
+    label?: string;
+    isMedia?: boolean;
+  }>;
+  entity: string;
+  reference: string;
+}
+
+
+
+export interface WebformResponseInput {
+  question: string;
+  value?: string;
+  label?: string;
+  media?: File;
+  isMedia?: boolean;
+};
+
+export interface WebformAnswerInput {
+  webform: string;
+  response: Array<WebformResponseInput>;
+  entity: string;
+  reference: string;
 }
 
 export class ItemWebform extends Model<ItemWebform> {

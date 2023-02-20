@@ -36,6 +36,17 @@ export const webform = gql`
     }
 `;
 
+export const webforms = gql`
+    query webforms($input: PaginationInput) {
+        webforms(input: $input) {
+          results {
+            ${webformBody}
+          }
+        }
+    }
+`;
+
+
 export const webformByMerchant = gql`
   query webformByMerchant($merchantId: ObjectID!) {
     webformByMerchant(merchantId: $merchantId) {
@@ -53,7 +64,7 @@ export const answerPaginate = gql`
         response {
           question
           value
-          type
+          label
           isMedia
         }
         createdAt
@@ -93,9 +104,19 @@ export const createAnswer = gql`
   }
 `;
 
-
 export const answerFrequent = gql`
   query answerFrequent($webformId: ObjectID!) {
     answerFrequent(webformId: $webformId)
+  }
+`;
+
+export const orderAddAnswer = gql`
+  mutation orderAddAnswer($answerId: ObjectID!, $id: ObjectID!) {
+    orderAddAnswer(answerId: $answerId, id: $id) {
+      _id
+      answers {
+        reference
+      }
+    }
   }
 `;

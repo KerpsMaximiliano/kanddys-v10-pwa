@@ -18,6 +18,9 @@ const orderData = `
     name
     email
   }
+  answers {
+    reference
+  }
   items {
     _id
     deliveryLocation {
@@ -80,6 +83,11 @@ const orderData = `
       images {
         value
         index
+        active
+      }
+      webForms {
+        _id
+        reference
         active
       }
       hasSelection

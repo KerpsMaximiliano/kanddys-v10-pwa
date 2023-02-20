@@ -5,15 +5,20 @@ import {
   answerPaginate,
   createAnswer,
   createWebform,
+  orderAddAnswer,
   webform,
   webformAddQuestion,
   webformByMerchant,
+  webforms,
 } from '../graphql/webforms.gql';
+import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import {
   AnswerInput,
   QuestionInput,
   Webform,
+  WebformAnswer,
+  WebformAnswerInput,
   WebformInput,
 } from '../models/webform';
 
@@ -92,7 +97,7 @@ export class WebformsService {
     }
   }
 
-  async createAnswer(input: AnswerInput) {
+  async createAnswer(input: WebformAnswerInput): Promise<WebformAnswer> {
     const result = await this.graphql.mutate({
       mutation: createAnswer,
       variables: { input },
@@ -113,6 +118,30 @@ export class WebformsService {
       return response?.answerFrequent;
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async orderAddAnswer(answerId: string, id: string): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: orderAddAnswer,
+      variables: { answerId, id },
+    });
+    return result?.orderAddAnswer;
+  }
+
+  async webforms(input: PaginationInput): Promise<Array<Webform>> {
+    try {
+      const response  = await this.graphql.query({
+        query: webforms,
+        variables: { input },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!response || response?.errors) return undefined;
+
+      return response.webforms?.results;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

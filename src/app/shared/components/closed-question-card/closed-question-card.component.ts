@@ -39,13 +39,15 @@ export class ClosedQuestionCardComponent implements OnInit {
           },
         });
       });
-      this.options[this.selected].valueStyles = {
-        'padding-left': '0px',
-        marginLeft: '17.5px',
-        'font-family': 'RobotoBold',
-        color: '#272727',
-        'font-size': '17px',
-      };
+
+      if (this.options[this.selected])
+        this.options[this.selected].valueStyles = {
+          'padding-left': '0px',
+          marginLeft: '17.5px',
+          'font-family': 'RobotoBold',
+          color: '#272727',
+          'font-size': '17px',
+        };
     }
     this.onSelector.emit(this.selected);
   }
@@ -55,14 +57,15 @@ export class ClosedQuestionCardComponent implements OnInit {
 
     if (this.type === 1 || this.type == 3) {
       this.options.forEach((option, index) => {
-        this.options[index].valueStyles = {
-          'padding-left': '0px',
-          marginLeft: '17.5px',
-          'font-family':
-            index === this.selected ? 'RobotoBold' : 'SfProRegular',
-          color: index === this.selected ? '#272727' : '#7b7b7b',
-          'font-size': '17px',
-        };
+        if (this.options[index])
+          this.options[index].valueStyles = {
+            'padding-left': '0px',
+            marginLeft: '17.5px',
+            'font-family':
+              index === this.selected ? 'RobotoBold' : 'SfProRegular',
+            color: index === this.selected ? '#272727' : '#7b7b7b',
+            'font-size': '17px',
+          };
       });
     }
     this.onSelector.emit(this.selected);

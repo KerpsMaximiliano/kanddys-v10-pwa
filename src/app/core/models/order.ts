@@ -132,6 +132,9 @@ export class ItemOrder extends Model<ItemOrder> {
     status: string;
     access: string;
   }>;
+  answers?: Array<{
+    reference: string;
+  }>
 }
 
 export class ItemOrderInput {

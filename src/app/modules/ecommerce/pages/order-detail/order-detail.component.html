@@ -109,67 +109,96 @@
         Artículos facturados:
       </h2>
 
-      <div
-        class="items-container"
-        *ngFor="let item of order?.items; index as i"
-        style="margin-bottom: 4px"
-      >
-        <div class="image-container">
-          <button class="btn">
-            <div
-              class="image"
-              *ngIf="!urlIsVideo(item.item.images[0].value)"
-              (click)="
-                item.item.images?.length &&
-                  openImageModal(item.item.images[0].value)
-              "
-              [ngStyle]="{
-                backgroundImage: item.item.images?.length
-                  ? 'url(' + item.item.images[0].value + ')'
-                  : '/assets/images/noimage.png',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundSize: 'cover'
-              }"
-            ></div>
-            <div
-              class="video-wrapper videoThumbnail"
-              *ngIf="urlIsVideo(item.item.images[0].value)"
-            >
-              <img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
-                alt="play"
-                class="playVideoIcon"
-                style="padding: 1rem !important; z-index: 99"
-              />
+      <ng-container *ngFor="let item of order?.items; index as i">
+        <div class="items-container" style="margin-bottom: 4px">
+          <div class="image-container">
+            <button class="btn">
+              <div
+                class="image"
+                *ngIf="!urlIsVideo(item.item.images[0].value)"
+                (click)="
+                  item.item.images?.length &&
+                    openImageModal(item.item.images[0].value)
+                "
+                [ngStyle]="{
+                  backgroundImage: item.item.images?.length
+                    ? 'url(' + item.item.images[0].value + ')'
+                    : '/assets/images/noimage.png',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover'
+                }"
+              ></div>
+              <div
+                class="video-wrapper videoThumbnail"
+                *ngIf="urlIsVideo(item.item.images[0].value)"
+              >
+                <img
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                  alt="play"
+                  class="playVideoIcon"
+                  style="padding: 1rem !important; z-index: 99"
+                />
 
-              <video
-                [src]="item.item.images[0].value"
-                [id]="'media' + item._id"
-                class="video"
-                [muted]="true"
-              ></video>
-            </div>
-          </button>
-          <div class="right" style="width: 100%">
-            <div class="top-flex">
-              <p class="left-text">
-                {{ item.amount }}x {{ item.item.name || "artículo(s)" }}
+                <video
+                  [src]="item.item.images[0].value"
+                  [id]="'media' + item._id"
+                  class="video"
+                  [muted]="true"
+                ></video>
+              </div>
+            </button>
+            <div class="right" style="width: 100%">
+              <div class="top-flex">
+                <p class="left-text">
+                  {{ item.amount }}x {{ item.item.name || "artículo(s)" }}
+                </p>
+                <p class="right-text">
+                  ${{ order.subtotals[i].amount | number }}
+                </p>
+              </div>
+              <p class="grey">
+                {{ item.item.description }}
               </p>
-              <p class="right-text">
-                ${{ order.subtotals[i].amount | number }}
-              </p>
             </div>
-            <p class="grey">
-              {{ item.item.description }}
-            </p>
+            <!-- <div class="question">
+              <p class="top-text">Que irá escrito en el globo?</p>
+              <p class="bottom-text">RespuestaID</p>
+            </div> -->
           </div>
-          <!-- <div class="question">
-            <p class="top-text">Que irá escrito en el globo?</p>
-            <p class="bottom-text">RespuestaID</p>
-          </div> -->
         </div>
-      </div>
+
+        <ng-container *ngIf="answersByItem[item._id]">
+          <div
+            class="webform-question-wrapper"
+            *ngFor="let question of answersByItem[item._id].response"
+          >
+            <div class="question">
+              <p class="top-text">{{ question.question }}</p>
+              <p class="bottom-text" *ngIf="!question.isMedia">
+                {{ question.value }}
+              </p>
+              <p class="bottom-text" *ngIf="question.isMedia && question.label">
+                {{ question.label }}
+              </p>
+
+              <div class="question-img-wrapper" *ngIf="question.isMedia">
+                <div
+                  class="image"
+                  (click)="openImageModal(question.value)"
+                  [ngStyle]="{
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover',
+                    backgroundImage: 'url(' + question.value + '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                  }"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+
       <div
         class="items-container space-between"
         style="padding: 11px 30px 12px 33px; margin-top: 5px"
