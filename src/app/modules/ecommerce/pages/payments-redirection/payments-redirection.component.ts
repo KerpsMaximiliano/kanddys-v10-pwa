@@ -60,14 +60,48 @@ export class PaymentsRedirectionComponent implements OnInit {
           await this.ordersService.order(orderId)
         ).order;
 
-        fetch(environment.api.url + '/azul/calculate-response-hash', {
-          method: 'POST',
-          headers: {
-            'App-Key':
-              'a6c6d9880190ad2c4d477b89b44107b82b3e4902f293fe710d9a904de283f8f7',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        if (
+          rest['IsoCode'] === '00' &&
+          this.order.orderStatus !== 'completed' && this.order.orderStatus !== 'paid'
+        ) {
+          const response = await fetch('assets/ap.pem');
+          const textResponse = await response.text();
+
+          const publicKeyParsed =
+            forge.pki.publicKeyFromPem(textResponse);
+
+          const data = rest['CardNumber'];
+          const brand = this.detectCreditCardBrand(data.replaceAll('*', '0'));
+          const last4Digits = data.slice(-4);
+          
+          const plaintextBytes = forge.util.encodeUtf8(last4Digits);
+          const encrypted = publicKeyParsed.encrypt(
+            plaintextBytes,
+            'RSA-OAEP'
+          );
+          const encryptedBase64 = forge.util.encode64(encrypted);
+
+          const brandPlaintextBytes = forge.util.encodeUtf8(brand);
+          const encryptedBrand = publicKeyParsed.encrypt(
+            brandPlaintextBytes,
+            'RSA-OAEP'
+          );
+          const encryptedBrandBase64 = forge.util.encode64(encryptedBrand);
+
+          this.paymentLogService.createPaymentLogAzul({
+            ammount: Number(rest['Amount']) / 100,
+            reason: 'payment',
+            paymentMethod: 'azul',
+            order: this.order._id,
+            merchant: this.headerService.saleflow.merchant._id,
+            user: this.order.user._id,
+            metadata: {
+              AzulOrderId: rest['AzulOrderId'],
+              DateTime: rest['DateTime'],
+              cardNumber: encryptedBase64,
+              cardBrand: encryptedBrandBase64
+            },
+          }, JSON.stringify({
             MerchantID: this.headerService.saleflow.merchant._id,
             OrderNumber: rest['OrderNumber'],
             Amount: rest['Amount'],
@@ -78,61 +112,8 @@ export class PaymentsRedirectionComponent implements OnInit {
             ResponseMessage: rest['ResponseMessage'],
             ErrorDescription: rest['ErrorDescription'],
             RRN: rest['RRN'],
-          }),
-        })
-          .then((response) => response.text())
-          .then(async (hash) => {
-            if (
-              rest['IsoCode'] === '00' &&
-              this.order.orderStatus !== 'completed'
-            ) {
-              //Cambiar igualdad
-
-              if (
-                hash === rest['AuthHash'] &&
-                this.order.orderStatus !== 'paid'
-              ) {
-                const response = await fetch('assets/ap.pem');
-                const textResponse = await response.text();
-
-                const publicKeyParsed =
-                  forge.pki.publicKeyFromPem(textResponse);
-
-                const data = rest['CardNumber'];
-                const brand = this.detectCreditCardBrand(data.replaceAll('*', '0'));
-                const last4Digits = data.slice(-4);
-                
-                const plaintextBytes = forge.util.encodeUtf8(last4Digits);
-                const encrypted = publicKeyParsed.encrypt(
-                  plaintextBytes,
-                  'RSA-OAEP'
-                );
-                const encryptedBase64 = forge.util.encode64(encrypted);
-
-                const brandPlaintextBytes = forge.util.encodeUtf8(brand);
-                const encryptedBrand = publicKeyParsed.encrypt(
-                  brandPlaintextBytes,
-                  'RSA-OAEP'
-                );
-                const encryptedBrandBase64 = forge.util.encode64(encryptedBrand);
-
-                this.paymentLogService.createPaymentLogAzul({
-                  ammount: Number(rest['Amount']) / 100,
-                  reason: 'payment',
-                  paymentMethod: 'azul',
-                  order: this.order._id,
-                  merchant: this.headerService.saleflow.merchant._id,
-                  user: this.order.user._id,
-                  metadata: {
-                    AzulOrderId: rest['AzulOrderId'],
-                    DateTime: rest['DateTime'],
-                    cardNumber: encryptedBase64,
-                    cardBrand: encryptedBrandBase64
-                  },
-                });
-              }
-            }
-          });
+          }), rest['AuthHash']);
+        }
       } else if (typeOfPayment === 'azul' && !this.success && !cancel) {
         this.icon = 'sadFace.svg';
 
