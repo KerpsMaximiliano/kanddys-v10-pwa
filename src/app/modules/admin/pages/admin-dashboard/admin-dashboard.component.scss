@@ -84,6 +84,9 @@
 }
 
 .saleflows-item-grid {
+	height: calc(100vh - 98px);
+	overflow-y: scroll;
+	overflow-x: hidden;
 	width: auto;
 	padding: 20px 16px;
 	display: grid;

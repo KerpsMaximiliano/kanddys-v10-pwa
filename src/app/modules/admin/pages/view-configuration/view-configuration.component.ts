@@ -67,13 +67,5 @@ export class ViewConfigurationComponent implements OnInit {
       this.saleflowService.saleflowData._id
     );
     this.saleflowService.saleflowData.layout = newView;
-
-    if (this.saleflowService.saleflowData.layout === 'simple-card') {
-      this.isSimpleCard = true;
-    } else {
-      this.isSimpleCard = false;
-    }
-
-    console.log(this.isSimpleCard);
   }
 }
