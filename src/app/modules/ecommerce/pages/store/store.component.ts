@@ -228,7 +228,7 @@ export class StoreComponent implements OnInit {
     // Filtrando los productos activos y destacados
     this.items = items?.listItems.filter(
       (item) => item.status === 'active' || item.status === 'featured'
-    );
+    ).map((item) => ({images: item.images.sort(({index:a},{index:b}) => a>b?1:-1),...item}));
 
     for (let i = 0; i < this.items?.length; i++) {
       // Asignando el status a los items del saleflow
