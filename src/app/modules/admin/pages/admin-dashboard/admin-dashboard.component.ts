@@ -34,7 +34,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   layout: 'simple-card' | 'description-card';
   items: Item[] = [];
   allItems: Item[] = [];
-  itemStatus: 'active' | 'disabled' = 'active';
+  itemStatus: 'active' | 'disabled' | '' | null = 'active';
   renderItemsPromise: Promise<{ listItems: Item[] }>;
   subscription: Subscription;
 
@@ -58,7 +58,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       title: 'articulos',
       menu: [
         {
-          title: 'Nuevo',
+          title: 'Nuevo Artículo',
           icon: 'chevron_right',
           callback: () => {
             let dialogRef = this.dialog.open(StepperFormComponent);
@@ -122,20 +122,38 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           },
         },
         {
-          title: 'Organización',
+          title: 'Todos los artículos',
+          icon: 'chevron_right',
+          callback: () => {
+            if (
+              this.itemStatus === 'active' ||
+              this.itemStatus === 'disabled'
+            ) {
+              this.itemStatus = '';
+            }
+            this.inicializeItems(true, false, true);
+          },
+        },
+        {
+          title: 'Artículos exhibiéndose',
           icon: 'chevron_right',
           callback: () => {},
         },
         {
-          title: 'Invisibles',
+          title: 'Organización de artículos',
+          icon: 'chevron_right',
+          callback: () => {},
+        },
+        {
+          title: 'Artículos invisibles',
           icon: 'chevron_right',
           callback: () => {
             if (this.itemStatus === 'active') {
               this.itemStatus = 'disabled';
-              this.options[0].menu[2].title = 'Visibles';
+              this.options[0].menu[2].title = 'Artículos visibles';
             } else {
               this.itemStatus = 'active';
-              this.options[0].menu[2].title = 'Invisibles';
+              this.options[0].menu[2].title = 'Artículos invisibles';
             }
             this.inicializeItems(true, false, true);
           },
@@ -194,7 +212,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   selected: number;
 
   async infinitePagination() {
-    const page = document.querySelector('.dashboard-page');
+    const targetClass =
+      this.layout === 'simple-card'
+        ? '.saleflows-item-grid'
+        : '.description-card-grid';
+    const page = document.querySelector(targetClass);
     const pageScrollHeight = page.scrollHeight;
     const verticalScroll = window.innerHeight + page.scrollTop;
 
@@ -204,7 +226,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         // this.tagsLoaded &&
         !this.reachTheEndOfPagination
       ) {
-        await this.inicializeItems(false, true);
+        await this.inicializeItems(false, true, true);
       }
     }
   }
@@ -250,6 +272,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.renderItemsPromise.then(async (response) => {
       const items = response;
       const itemsQueryResult = items?.listItems;
+      console.log(itemsQueryResult);
 
       if (getTotalNumberOfItems) {
         pagination.options.limit = -1;

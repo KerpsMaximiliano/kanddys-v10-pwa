@@ -37,7 +37,8 @@
     </app-options-bar>
   </div>
   <div
-    class="saleflows-item-grid"
+    class="saleflows-item-grid" 
+    (scroll)="infinitePagination()"
     *ngIf="allItems.length && layout === 'simple-card'"
   >
     <a
@@ -59,13 +60,14 @@
         [showPrice]="true"
         [itemParams]="item.params"
         [responsiveWidthVersion]="true"
-        [featured]="item.status === 'featured'"
       ></app-saleflow-item>
     </a>
   </div>
   <div
     *ngIf="allItems.length && layout === 'description-card'"
-    style="padding: 24px; display: grid; grid-template-columns: 1fr; gap: 15px"
+    class="description-card-grid"
+    style="padding: 24px; display: grid; grid-template-columns: 1fr; gap: 15px; height: calc(100vh - 98px); overflow-y: scroll; overflow-x: hidden;"
+    (scroll)="infinitePagination()"
   >
     <a
       class="capsize"
