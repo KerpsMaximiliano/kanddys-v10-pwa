@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { PaginationInput } from 'src/app/core/models/saleflow';
+import { Tag } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -30,13 +31,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   URI: string = environment.uri;
   environment: string = environment.assetsUrl;
 
-  isSimpleCard = history.state.data;
-  // artID: Array<string> = [
-  //   '63d429d7849f894c1895c659',
-  //   '63d420a8849f894c189544d4',
-  //   '63c93768a6ce9322ca278888',
-  //   '63c61f50a6ce9322ca216714',
-  // ];
+  layout: 'simple-card' | 'description-card';
   items: Item[] = [];
   allItems: Item[] = [];
   itemStatus: 'active' | 'disabled' = 'active';
@@ -56,14 +51,117 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   reachTheEndOfPagination: boolean = false;
   // Pagination
 
-  tags;
+  tags: Tag[] = [];
+
+  options: BarOptions[] = [
+    {
+      title: 'articulos',
+      menu: [
+        {
+          title: 'Nuevo',
+          icon: 'chevron_right',
+          callback: () => {
+            let dialogRef = this.dialog.open(StepperFormComponent);
+            dialogRef
+              .afterClosed()
+              .subscribe(
+                async (result: { pricing: number; images: File[] }) => {
+                  if (!result) return;
+                  const { pricing, images: imagesResult } = result;
+                  let images: ItemImageInput[] = imagesResult.map((file) => {
+                    return {
+                      file: file,
+                      index: 0,
+                      active: true,
+                    };
+                  });
+                  if (!pricing) return;
+                  lockUI();
+                  const itemInput: ItemInput = {
+                    name: null,
+                    description: null,
+                    pricing: pricing,
+                    images,
+                    merchant: this._MerchantsService.merchantData?._id,
+                    content: [],
+                    currencies: [],
+                    hasExtraPrice: false,
+                    purchaseLocations: [],
+                    showImages: images.length > 0,
+                  };
+                  this._ItemsService.itemPrice = null;
+
+                  const { createItem } = await this._ItemsService.createItem(
+                    itemInput
+                  );
+                  await this._SaleflowService.addItemToSaleFlow(
+                    {
+                      item: createItem._id,
+                    },
+                    this._SaleflowService.saleflowData._id
+                  );
+                  this.snackBar.open(
+                    'Producto creado satisfactoriamente!',
+                    '',
+                    {
+                      duration: 5000,
+                    }
+                  );
+                  unlockUI();
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    this._ItemsService.editingImageId =
+                      createItem.images[0]._id;
+                    this.router.navigate([
+                      `admin/article-editor/${createItem._id}`,
+                    ]);
+                  };
+                  reader.readAsDataURL(images[0].file as File);
+                }
+              );
+          },
+        },
+        {
+          title: 'Organización',
+          icon: 'chevron_right',
+          callback: () => {},
+        },
+        {
+          title: 'Invisibles',
+          icon: 'chevron_right',
+          callback: () => {
+            if (this.itemStatus === 'active') {
+              this.itemStatus = 'disabled';
+              this.options[0].menu[2].title = 'Visibles';
+            } else {
+              this.itemStatus = 'active';
+              this.options[0].menu[2].title = 'Invisibles';
+            }
+            this.inicializeItems(true, false, true);
+          },
+        },
+        {
+          title: 'Estilo de cartas',
+          icon: 'chevron_right',
+          callback: () => {
+            this.router.navigate([`admin/view-configuration-cards`]);
+          },
+        },
+        {
+          title: 'Pantalla Inicial',
+          icon: 'check',
+          callback: () => {},
+        },
+      ],
+    },
+  ];
 
   constructor(
     public _MerchantsService: MerchantsService,
+    private _SaleflowService: SaleFlowService,
     private router: Router,
     private authService: AuthService,
     // private itemsService: ItemsService,
-    private _SaleflowService: SaleFlowService,
     private _ItemsService: ItemsService,
     private snackBar: MatSnackBar,
     private _bottomSheet: MatBottomSheet,
@@ -72,244 +170,26 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private clipboard: Clipboard
   ) {}
 
-  options: BarOptions[] = [];
-  articulosMenu = [
-    {
-      title: 'Nuevo',
-      icon: 'chevron_right',
-      callback: () => {
-        let dialogRef = this.dialog.open(StepperFormComponent);
-        dialogRef
-          .afterClosed()
-          .subscribe(async (result: { pricing: number; images: File[] }) => {
-            if (!result) return;
-            const { pricing, images: imagesResult } = result;
-            let images: ItemImageInput[] = imagesResult.map((file) => {
-              return {
-                file: file,
-                index: 0,
-                active: true,
-              };
-            });
-            if (!pricing) return;
-            lockUI();
-            const itemInput: ItemInput = {
-              name: null,
-              description: null,
-              pricing: pricing,
-              images,
-              merchant: this._MerchantsService.merchantData?._id,
-              content: [],
-              currencies: [],
-              hasExtraPrice: false,
-              purchaseLocations: [],
-              showImages: images.length > 0,
-            };
-            this._ItemsService.itemPrice = null;
-
-            const { createItem } = await this._ItemsService.createItem(
-              itemInput
-            );
-            await this._SaleflowService.addItemToSaleFlow(
-              {
-                item: createItem._id,
-              },
-              this._SaleflowService.saleflowData._id
-            );
-            this.snackBar.open('Producto creado satisfactoriamente!', '', {
-              duration: 5000,
-            });
-            unlockUI();
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              this._ItemsService.editingImageId = createItem.images[0]._id;
-              this.router.navigate([`admin/article-editor/${createItem._id}`]);
-            };
-            reader.readAsDataURL(images[0].file as File);
-          });
-      },
-    },
-    {
-      title: 'Organización',
-      icon: 'chevron_right',
-      callback: () => {},
-    },
-    {
-      title: 'Invisibles',
-      icon: 'chevron_right',
-      callback: () => {
-        if (this.itemStatus === 'active') {
-          this.itemStatus = 'disabled';
-          this.options[0].menu[2].title = 'Visibles';
-        } else {
-          this.itemStatus = 'active';
-          this.options[0].menu[2].title = 'Invisibles';
-        }
-        this.inicializeItems(true, false, true);
-      },
-    },
-    {
-      title: 'Estilo de cartas',
-      icon: 'chevron_right',
-      callback: () => {
-        this.router.navigate([`admin/view-configuration-cards`]);
-      },
-    },
-    {
-      title: 'Pantalla Inicial',
-      icon: 'check',
-      callback: () => {},
-    },
-  ];
-
   async ngOnInit() {
-    this.tags = await this._MerchantsService.tagsByMerchant(
-      this._MerchantsService.merchantData._id
-    );
-    console.log(this.tags.tagsByMerchant.length);
-    this.tags.tagsByMerchant.length > 1
-      ? (this.options = [
-          {
-            title: 'articulos',
-            menu: this.articulosMenu,
-          },
-        ])
-      : (this.options = [
-          {
-            title: 'articulos',
-            menu: this.articulosMenu,
-          },
-          {
-            title: 'categorias',
-          },
-          { title: 'colecciones' },
-        ]);
     if (this._SaleflowService.saleflowData) {
       this.inicializeItems(true, false, true);
+      this.getTags();
       return;
     }
     this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
       next: (value) => {
         if (value) {
           this.inicializeItems(true, false, true);
+          this.getTags();
         }
       },
     });
-
-    // this.artID.forEach(async (element) => {
-    //   let item = await this.itemsService.item(element);
-    //   this.articulos.push(item);
-    // });
+    //{ title: 'colecciones' },
   }
 
   ngOnDestroy() {
     if (this.subscription) this.subscription.unsubscribe();
   }
-
-  // options: BarOptions[] = [
-  //   {
-  //     title: 'articulos',
-  //     menu: [
-  //       {
-  //         title: 'Nuevo',
-  //         icon: 'chevron_right',
-  //         callback: () => {
-  //           let dialogRef = this.dialog.open(StepperFormComponent);
-  //           dialogRef
-  //             .afterClosed()
-  //             .subscribe(
-  //               async (result: { pricing: number; images: File[] }) => {
-  //                 if (!result) return;
-  //                 const { pricing, images: imagesResult } = result;
-  //                 let images: ItemImageInput[] = imagesResult.map((file) => {
-  //                   return {
-  //                     file: file,
-  //                     index: 0,
-  //                     active: true,
-  //                   };
-  //                 });
-  //                 if (!pricing) return;
-  //                 lockUI();
-  //                 const itemInput: ItemInput = {
-  //                   name: null,
-  //                   description: null,
-  //                   pricing: pricing,
-  //                   images,
-  //                   merchant: this._MerchantsService.merchantData?._id,
-  //                   content: [],
-  //                   currencies: [],
-  //                   hasExtraPrice: false,
-  //                   purchaseLocations: [],
-  //                   showImages: images.length > 0,
-  //                 };
-  //                 this._ItemsService.itemPrice = null;
-
-  //                 const { createItem } = await this._ItemsService.createItem(
-  //                   itemInput
-  //                 );
-  //                 await this._SaleflowService.addItemToSaleFlow(
-  //                   {
-  //                     item: createItem._id,
-  //                   },
-  //                   this._SaleflowService.saleflowData._id
-  //                 );
-  //                 this.snackBar.open(
-  //                   'Producto creado satisfactoriamente!',
-  //                   '',
-  //                   {
-  //                     duration: 5000,
-  //                   }
-  //                 );
-  //                 unlockUI();
-  //                 const reader = new FileReader();
-  //                 reader.onload = (e) => {
-  //                   this._ItemsService.editingImageId =
-  //                     createItem.images[0]._id;
-  //                   this.router.navigate([
-  //                     `admin/article-editor/${createItem._id}`,
-  //                   ]);
-  //                 };
-  //                 reader.readAsDataURL(images[0].file as File);
-  //               }
-  //             );
-  //         },
-  //       },
-  //       {
-  //         title: 'Organización',
-  //         icon: 'chevron_right',
-  //         callback: () => {},
-  //       },
-  //       {
-  //         title: 'Invisibles',
-  //         icon: 'chevron_right',
-  //         callback: () => {
-  //           if (this.itemStatus === 'active') {
-  //             this.itemStatus = 'disabled';
-  //             this.options[0].menu[2].title = 'Visibles';
-  //           } else {
-  //             this.itemStatus = 'active';
-  //             this.options[0].menu[2].title = 'Invisibles';
-  //           }
-  //           this.inicializeItems(true, false, true);
-  //         },
-  //       },
-  //       {
-  //         title: 'Estilo de cartas',
-  //         icon: 'chevron_right',
-  //         callback: () => {
-  //           this.router.navigate([`admin/view-configuration-cards`]);
-  //         },
-  //       },
-  //       {
-  //         title: 'Pantalla Inicial',
-  //         icon: 'check',
-  //         callback: () => {},
-  //       },
-  //     ],
-  //   },
-  //   { title: 'categorias' },
-  //   // { title: 'colecciones' },
-  // ];
 
   selected: number;
 
@@ -399,11 +279,20 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.allItems = [];
       }
     });
+    this.layout = this._SaleflowService.saleflowData.layout;
+  }
 
-    if (this._SaleflowService.saleflowData.layout === 'simple-card') {
-      this.isSimpleCard = true;
-    } else {
-      this.isSimpleCard = false;
+  async getTags() {
+    const tagsByMerchant = (
+      await this._MerchantsService.tagsByMerchant(
+        this._MerchantsService.merchantData._id
+      )
+    )?.tagsByMerchant;
+    this.tags = tagsByMerchant.map((value) => value.tags);
+    if (this.tags.length) {
+      this.options.push({
+        title: 'categorias',
+      });
     }
   }
 
