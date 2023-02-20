@@ -268,9 +268,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
       if (itemsQueryResult && itemsQueryResult.length > 0) {
         if (this.paginationState.page === 1) {
-          this.allItems = itemsQueryResult;
+          this.allItems = itemsQueryResult.map((item) => ({images: item.images.sort(({index:a},{index:b}) => a>b?1:-1),...item}));
         } else {
-          this.allItems = this.allItems.concat(itemsQueryResult);
+          this.allItems = this.allItems.concat(itemsQueryResult).map((item) => ({images: item.images.sort(({index:a},{index:b}) => a>b?1:-1),...item}));
         }
       }
       this.paginationState.status = 'complete';
