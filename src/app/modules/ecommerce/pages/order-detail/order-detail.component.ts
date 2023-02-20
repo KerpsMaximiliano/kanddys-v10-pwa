@@ -152,7 +152,7 @@ export class OrderDetailComponent implements OnInit {
 
     if (this.order.items) {
       for (const itemSubOrder of this.order.items) {
-        itemSubOrder.item.media = itemSubOrder.item.images.map((image) => {
+        itemSubOrder.item.media = itemSubOrder.item.images.sort(({index:a},{index:b}) => a>b?1:-1).map((image) => {
           let url = image.value;
           const fileParts = image.value.split('.');
           const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
