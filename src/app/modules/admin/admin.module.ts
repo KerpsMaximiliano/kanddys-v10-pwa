@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
-import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
 import { AdminComponent } from './admin/admin.component';
 import { OrdersAndPreOrdersList } from './pages/ordersAndPreOrdersList/ordersAndPreOrdersList';
 import { ReservationListComponent } from 'src/app/shared/components/reservation-list/reservation-list.component';
@@ -65,10 +64,6 @@ const routes: Routes = [
       {
         path: 'merchant-items',
         component: MerchantItemsComponent,
-      },
-      {
-        path: 'options/:itemId',
-        component: ActionsMenuComponent,
       },
       {
         path: 'orders',
@@ -188,7 +183,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     MerchantItemsComponent,
-    ActionsMenuComponent,
     AdminComponent,
     OrdersAndPreOrdersList,
     CalendarCreatorComponent,

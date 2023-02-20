@@ -96,7 +96,14 @@ export class OrderDetailComponent implements OnInit {
   notify: boolean = false;
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
 
-  deliveryStatusOptions: DropdownOptionItem[] = [];
+  deliveryStatusOptions: DropdownOptionItem[] = [
+    {
+      text: 'En preparación',
+      value: 'in progress',
+      selected: false,
+      hide: false,
+    },
+  ];
   tagOptions: DropdownOptionItem[];
   tagPanelState: boolean;
 
@@ -560,7 +567,9 @@ export class OrderDetailComponent implements OnInit {
   }
 
   createTag() {
-    let dialogRef = this.dialog.open(CreateTagComponent);
+    let dialogRef = this.dialog.open(CreateTagComponent, {
+      data: ['Ingresa el nombre del listado', 'Ingresa el cover del listado'],
+    });
     dialogRef.afterClosed().subscribe(async (result) => {
       if (!result) return;
       const data: TagInput = {

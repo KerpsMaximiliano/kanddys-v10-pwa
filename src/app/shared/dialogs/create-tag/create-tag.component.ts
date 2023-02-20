@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+export interface DialogData {
+  title: string;
+}
 
 @Component({
   selector: 'app-create-tag',
@@ -15,6 +19,7 @@ export class CreateTagComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData[],
     private dialogRef: MatDialogRef<CreateTagComponent>
   ) {}
 

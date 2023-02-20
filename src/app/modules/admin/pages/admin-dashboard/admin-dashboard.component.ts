@@ -206,6 +206,110 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (this.subscription) this.subscription.unsubscribe();
   }
 
+  options: BarOptions[] = [
+    {
+      title: 'articulos',
+      menu: [
+        {
+          title: 'Nuevo',
+          icon: 'chevron_right',
+          callback: () => {
+            let dialogRef = this.dialog.open(StepperFormComponent);
+            dialogRef
+              .afterClosed()
+              .subscribe(
+                async (result: { pricing: number; images: File[] }) => {
+                  if (!result) return;
+                  const { pricing, images: imagesResult } = result;
+                  let images: ItemImageInput[] = imagesResult.map((file) => {
+                    return {
+                      file: file,
+                      index: 0,
+                      active: true,
+                    };
+                  });
+                  if (!pricing) return;
+                  lockUI();
+                  const itemInput: ItemInput = {
+                    name: null,
+                    description: null,
+                    pricing: pricing,
+                    images,
+                    merchant: this._MerchantsService.merchantData?._id,
+                    content: [],
+                    currencies: [],
+                    hasExtraPrice: false,
+                    purchaseLocations: [],
+                    showImages: images.length > 0,
+                  };
+                  this._ItemsService.itemPrice = null;
+
+                  const { createItem } = await this._ItemsService.createItem(
+                    itemInput
+                  );
+                  await this._SaleflowService.addItemToSaleFlow(
+                    {
+                      item: createItem._id,
+                    },
+                    this._SaleflowService.saleflowData._id
+                  );
+                  this.snackBar.open(
+                    'Producto creado satisfactoriamente!',
+                    '',
+                    {
+                      duration: 5000,
+                    }
+                  );
+                  unlockUI();
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    this._ItemsService.editingImageId =
+                      createItem.images[0]._id;
+                    this.router.navigate([
+                      `admin/article-editor/${createItem._id}`,
+                    ]);
+                  };
+                  reader.readAsDataURL(images[0].file as File);
+                }
+              );
+          },
+        },
+        {
+          title: 'Organización',
+          icon: 'chevron_right',
+          callback: () => {},
+        },
+        {
+          title: 'Invisibles',
+          icon: 'chevron_right',
+          callback: () => {
+            if (this.itemStatus === 'active') {
+              this.itemStatus = 'disabled';
+              this.options[0].menu[2].title = 'Visibles';
+            } else {
+              this.itemStatus = 'active';
+              this.options[0].menu[2].title = 'Invisibles';
+            }
+            this.inicializeItems(true, false, true);
+          },
+        },
+        {
+          title: 'Estilo de cartas',
+          icon: 'chevron_right',
+          callback: () => {
+            this.router.navigate([`admin/view-configuration-cards`]);
+          },
+        },
+        {
+          title: 'Pantalla Inicial',
+          icon: 'check',
+          callback: () => {},
+        },
+      ],
+    },
+    { title: 'categorias' },
+    // { title: 'colecciones' },
+  ];
   selected: number;
 
   async infinitePagination() {
@@ -368,6 +472,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (index != this.selected) {
       this.selected = index;
     }
+    if (index === 1) this.router.navigate([`admin/tags-view`]);
   }
 
   selectedMenuOption(selected: MenuEvent) {
