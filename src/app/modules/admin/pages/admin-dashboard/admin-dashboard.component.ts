@@ -212,7 +212,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   selected: number;
 
   async infinitePagination() {
-    const page = document.querySelector('.dashboard-page');
+    const targetClass =
+      this.layout === 'simple-card'
+        ? '.saleflows-item-grid'
+        : '.description-card-grid';
+    const page = document.querySelector(targetClass);
     const pageScrollHeight = page.scrollHeight;
     const verticalScroll = window.innerHeight + page.scrollTop;
 
