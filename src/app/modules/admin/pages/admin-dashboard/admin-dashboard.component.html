@@ -37,7 +37,8 @@
     </app-options-bar>
   </div>
   <div
-    class="saleflows-item-grid"
+    class="saleflows-item-grid" 
+    (scroll)="infinitePagination()"
     *ngIf="allItems.length && layout === 'simple-card'"
   >
     <a
