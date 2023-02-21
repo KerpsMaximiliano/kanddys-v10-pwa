@@ -1,0 +1,54 @@
+.external-wrapper {
+  height: 266.69px;
+}
+
+.wrapper {
+  background-color: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+  height: 100%;
+
+  label {
+    font-family: SfProBold;
+    font-size: 23px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  textarea {
+    padding: 23px 16px 23px 16px;
+    resize: none;
+    height: 124px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: rgb(210 210 210) 0px 4px 7px 0px inset;
+    font-family: RobotoMedium;
+    color: #000;
+    font-size: 17px;
+    width: 100%;
+
+    &::placeholder {
+      color: #a1a1a1;
+    }
+  }
+
+  .required-wrapper {
+    margin-top: 20.3px;
+    font-family: SfProLight;
+    font-style: italic;
+    color: #7b7b7b;
+  }
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-frame {
+  border-color: #707070;
+  border-radius: 4px;
+  height: 18px;
+  width: 18px;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-background {
+  height: 18px;
+  width: 18px;
+}

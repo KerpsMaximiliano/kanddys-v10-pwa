@@ -279,27 +279,33 @@ headline="EXPUESTO EN TAB (S)"
 </div>
   -->
 
-  <br />
-  <p>Chite malo: {{ joke }}</p>
-
-  <button (click)="openDescriptionDialog()">Description Dialog</button>
+  <!--
+      <br />
+      <p>Chite malo: {{ joke }}</p>
+    
+      <button (click)="openDescriptionDialog()">Description Dialog</button>
+  -->
 
   <!-- <app-options-grid [words]="words" [title]="title"></app-options-grid> -->
 
   <!--<app-merchant-contact></app-merchant-contact>-->
   <!--<app-merchant-contact [imgBanner] = "'logo.png'"></app-merchant-contact>-->
+  <!--
+
+  -->
   <button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
 
   <app-dialog-flow
     [dialogFlowId]="'flow1'"
     [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
     [dialogs]="dialogs"
-    [allowSlideNext]="false"
     (saveConfigRef)="swiperConfig = $event"
     (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
   ></app-dialog-flow>
 </div>
 
-<app-qr-edit></app-qr-edit>
-<app-webform-textarea-question></app-webform-textarea-question>
-<app-webform-multiple-selection-question></app-webform-multiple-selection-question>
+<!--
+    <app-qr-edit></app-qr-edit>
+    <app-webform-textarea-question></app-webform-textarea-question>
+    <app-webform-multiple-selection-question></app-webform-multiple-selection-question>
+-->

@@ -153,6 +153,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 import { WebformTextareaQuestionComponent } from './components/webform-textarea-question/webform-textarea-question.component';
 import { WebformMultipleSelectionQuestionComponent } from './components/webform-multiple-selection-question/webform-multiple-selection-question.component';
@@ -162,6 +163,8 @@ import { CreateTagComponent } from './dialogs/create-tag/create-tag.component';
 import { CollectionCardComponent } from './components/collection-card/collection-card.component';
 import { MatCardModule } from '@angular/material/card';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
+import { WebformsCreatorComponent } from './components/webforms-creator/webforms-creator.component';
+import { WebformQuestionDialogComponent } from './components/webform-question-dialog/webform-question-dialog.component';
 
 const imports = [
   CommonModule,
@@ -192,6 +195,7 @@ const imports = [
   MatInputModule,
   MatSnackBarModule,
   MatCardModule,
+  MatCheckboxModule
 ];
 const declarations = [
   // Pages
@@ -330,6 +334,8 @@ const declarations = [
   CreateTagComponent,
   CollectionCardComponent,
   CompactCardComponent,
+  WebformsCreatorComponent,
+  WebformQuestionDialogComponent,
 ];
 
 @NgModule({

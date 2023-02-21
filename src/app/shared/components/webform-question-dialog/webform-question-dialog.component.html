@@ -1,0 +1,15 @@
+<div class="external-wrapper" [ngStyle]="containerStyles">
+  <form class="wrapper">
+    <label for="question">Pregunta que responderán:</label>
+    <textarea
+      tabindex="-1"
+      [formControl]="textarea"
+      placeholder="Escribe..."
+      id="question"
+    ></textarea>
+
+    <div class="required-wrapper">
+      <mat-checkbox class="required-question-checkbox" [(ngModel)]="requiredQuestion">Obligado responder</mat-checkbox>
+    </div>
+  </form>
+</div>
