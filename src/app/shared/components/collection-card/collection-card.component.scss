@@ -11,10 +11,9 @@
   color: #272727;
 
   .imgBox {
-    min-width: 66px !important;
+    width: 66px !important;
     height: 74px !important;
     border-radius: 15px;
-    background-color: #e9e371;
     object-fit: cover;
 
     &.shadow {
