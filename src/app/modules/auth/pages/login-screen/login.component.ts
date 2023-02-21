@@ -34,7 +34,8 @@ type AuthTypes =
   | 'address'
   | 'anonymous'
   | 'payment'
-  | 'merchant';
+  | 'merchant'
+  | 'virtual-message';
 
 interface ValidateData {
   name: string;
@@ -268,6 +269,9 @@ export class LoginComponent implements OnInit {
       }
     } else if (this.auth === 'merchant') {
       console.log('merchant access');
+    } else if (this.auth === 'virtual-message') {
+      this.saleflow = await this.headerService.fetchSaleflow(SaleFlow);
+      unlockUI();
     } else {
       this.auth = 'phone';
       this.loggin = false;
@@ -380,11 +384,23 @@ export class LoginComponent implements OnInit {
               }
             );
           }
+          if (this.auth === 'virtual-message') {
+            // Se le envia el magic link para autenticar
+            await this.authService.generateMagicLink(
+              this.merchantNumber,
+              `ecommerce/${this.merchant.slug}/payments`,
+              this.orderId,
+              'Order',
+              {
+                privatePost: localStorage.getItem('privatePost'),
+              }
+            );
+          }
 
           // if (this.action === 'precreateitem') {
           //   await this.authService.generateMagicLink(
           //     this.merchantNumber,
-          //     `admin/create-article/`,
+          //     `admin/create-article/`,F
           //     this.itemId,
           //     'NewItem',
           //     {}
@@ -529,6 +545,16 @@ export class LoginComponent implements OnInit {
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
+        if (this.auth === 'virtual-message') {
+          this.router.navigate(
+            [`ecommerce/${this.merchant.slug}/payments/${this.orderId}`],
+            {
+              replaceUrl: true,
+            }
+          );
+          this.status = 'ready';
+          return;
+        }
         if (this.auth === 'address') {
           const address = this.headerService.getLocation();
           const result = await this.usersService.addLocation(address);

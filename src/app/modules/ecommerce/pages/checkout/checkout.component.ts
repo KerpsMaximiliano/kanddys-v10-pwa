@@ -120,12 +120,7 @@ export class CheckoutComponent implements OnInit {
       this.createDialogs();
 
       let storedPrivatePost: string = localStorage.getItem('privatePost');
-      let privatePost: boolean;
-
-      if (privatePost) {
-        privatePost = Boolean(privatePost);
-        this.postsService.privatePost = privatePost;
-      }
+      this.postsService.privatePost = Boolean(storedPrivatePost);
 
       if (!this.postsService.post) {
         const storedPost = localStorage.getItem('post');
@@ -219,7 +214,6 @@ export class CheckoutComponent implements OnInit {
           }
         }
       }
-  
       if (!this.items?.length) this.editOrder('item');
 
       this.post = this.headerService.getPost();
@@ -546,14 +540,14 @@ export class CheckoutComponent implements OnInit {
           entityTemplate =
             await this.entityTemplateService.precreateEntityTemplate();
 
-          entityTemplateModified =
-            await this.entityTemplateService.entityTemplateSetData(
-              entityTemplate._id,
-              {
-                reference: postResult,
-                entity: 'post',
-              }
-            );
+          // entityTemplateModified =
+          //   await this.entityTemplateService.entityTemplateSetData(
+          //     entityTemplate._id,
+          //     {
+          //       reference: postResult,
+          //       entity: 'post',
+          //     }
+          //   );
         } else {
           entityTemplate =
             await this.entityTemplateService.createEntityTemplate();
@@ -612,6 +606,15 @@ export class CheckoutComponent implements OnInit {
       this.headerService.post = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
+        if (this.postsService.privatePost) {
+          this.router.navigate([`/auth/login`], {
+            queryParams: {
+              orderId: createdOrder,
+              auth: 'virtual-message',
+            },
+          });
+          return;
+        }
         localStorage.removeItem('privatePost');
         this.router.navigate([`../payments/${this.headerService.orderId}`], {
           relativeTo: this.route,
