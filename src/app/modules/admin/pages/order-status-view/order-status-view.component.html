@@ -1,6 +1,6 @@
 <div class="container">
   <header class="header">
-    <a [routerLink]="['../dashboard']">
+    <a mat-icon-button [routerLink]="['../dashboard']">
       <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
     </a>
     <p>Data</p>
@@ -22,6 +22,7 @@
         <a [routerLink]="['../order-list/status', 'in-progress']">
           <app-collection-card
             title="En preparación"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-in-progress.png"
             [description]="
               orderStatus.inProgress.length + ' facturas en total.'
             "
@@ -32,6 +33,7 @@
         <a [routerLink]="['../order-list/status', 'pending']">
           <app-collection-card
             title="Listas para enviarse"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-pending.png"
             [description]="orderStatus.pending.length + ' facturas en total.'"
           ></app-collection-card>
         </a>
@@ -40,6 +42,7 @@
         <a [routerLink]="['../order-list/status', 'pickup']">
           <app-collection-card
             title="Listas para Pick Up"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-pickup.png"
             [description]="orderStatus.pickup.length + ' facturas en total.'"
           ></app-collection-card>
         </a>
@@ -48,6 +51,7 @@
         <a [routerLink]="['../order-list/status', 'shipped']">
           <app-collection-card
             title="De camino a ser entregadas"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-shipped.png"
             [description]="orderStatus.shipped.length + ' facturas en total.'"
           ></app-collection-card>
         </a>
@@ -56,6 +60,7 @@
         <a [routerLink]="['../order-list/status', 'delivered']">
           <app-collection-card
             title="Entregadas"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-delivered.png"
             [description]="orderStatus.delivered.length + ' facturas en total.'"
           ></app-collection-card>
         </a>
@@ -75,6 +80,7 @@
       <a [routerLink]="['../order-list/tags', tag._id]">
         <app-collection-card
           [title]="tag.name"
+          [imgURL]="tag.images?.length ? tag.images[0] : ''"
           [description]="tag.orderAmount + ' facturas en total'"
         ></app-collection-card>
       </a>

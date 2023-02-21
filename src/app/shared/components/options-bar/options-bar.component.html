@@ -1,4 +1,5 @@
 <div
+  *ngIf="options.length !== 1"
   class="container type{{ type }}"
   [ngClass]="optCol > 0 ? 'grid' : 'flex'"
   [ngStyle]="{ 'grid-template-columns': 'repeat(' + optCol + ', 1fr)' }"
@@ -12,6 +13,50 @@
     >
       <span>{{ option.title }}</span>
       <img class="dotsIcon" [src]="environment + '/dots-black.svg'" />
+    </button>
+    <button
+      *ngIf="i !== selected || !option.menu?.length"
+      class="option type{{ type }}"
+      (click)="selectOpt(i)"
+      [ngClass]="{ active: i === selected }"
+    >
+      <span>{{ option.title }}</span>
+    </button>
+    <mat-menu #menu="matMenu" class="menuContainer">
+      <button
+        mat-menu-item
+        *ngFor="let item of option.menu; index as i"
+        (click)="menuOptionSelected(i)"
+      >
+        <span>{{ item.title }}</span>
+        <mat-icon class="icon">{{ item.icon }}</mat-icon>
+      </button>
+    </mat-menu>
+  </ng-container>
+</div>
+
+<!-- --------------------------- CUANDO SOLO HAY UNA OPCION --------------------------- -->
+
+<div
+  *ngIf="options.length === 1"
+  class="container type{{ type }}"
+  [ngClass]="optCol > 0 ? 'grid' : 'flex'"
+  [ngStyle]="{ 'grid-template-columns': 'repeat(' + optCol + ', 1fr)' }"
+>
+  <ng-container *ngFor="let option of options; let i = index">
+    <button
+      *ngIf="i === selected && option.menu?.length"
+      class="option type{{ type }} active optIcon"
+      (click)="selectOpt(i)"
+      [matMenuTriggerFor]="menu"
+      style="text-align: left; display: flex; align-items: center"
+    >
+      <span>{{ option.title }}</span>
+      <img
+        class="dotsIcon"
+        [src]="environment + '/dots-black.svg'"
+        style="margin-left: auto"
+      />
     </button>
     <button
       *ngIf="i !== selected || !option.menu?.length"

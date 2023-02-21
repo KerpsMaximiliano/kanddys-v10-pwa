@@ -4,11 +4,17 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 
-interface PositionCss {
+export interface PositionCss {
   left?: string;
   right?: string;
   top?: string;
   bottom?: string;
+}
+
+export interface MenuOptions {
+  text: string;
+  icon?: string;
+  callback: () => void;
 }
 
 @Component({
@@ -20,22 +26,11 @@ export class MenuButtonComponent implements OnInit {
   uri: string = environment.uri;
   env: string = environment.assetsUrl;
 
-  @Input() mode: 'basic' | 'array' = 'basic';
   @Input() size: 'normal' | 'mini' = 'normal';
   @Input() position: PositionCss;
   @Input() phone: string;
   @Input() link: string;
-  @Input() options = [
-    {
-      text: 'Nueva Pregunta',
-    },
-    {
-      text: 'Edita el formulario',
-    },
-    {
-      text: 'Preview de Compradores',
-    },
-  ];
+  @Input() options: MenuOptions[] = [];
   @Input() merchantName: string;
 
   constructor(
