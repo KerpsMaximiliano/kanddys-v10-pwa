@@ -173,6 +173,7 @@ export class CheckoutComponent implements OnInit {
 
     for (const item of this.items as Array<ExtendedItem>) {
       item.ready = false;
+      item.images = item.images.sort(({index:a},{index:b}) => a>b?1:-1);
       for (const image of item.images) {
         if (
           image.value &&

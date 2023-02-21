@@ -102,10 +102,12 @@ export class ArticleEditorComponent implements OnInit {
       if (this.item.images.length) {
         this.loadingSlides = false;
 
-        this.slides = this.item.images.map((image) => {
+        this.slides = this.item.images
+        .sort(({index:a},{index:b}) => a>b?1:-1)
+        .map(({index, ...image}) => {
           return {
             url: completeImageURL(image.value),
-            index: 0,
+            index,
             type: 'poster',
             text: '',
           };

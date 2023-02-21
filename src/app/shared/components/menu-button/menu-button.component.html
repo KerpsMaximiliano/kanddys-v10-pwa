@@ -18,7 +18,7 @@
     <mat-icon class="btn-icon">menu</mat-icon>
   </button>
   <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
-    <ng-container *ngIf="mode === 'basic'">
+    <ng-container *ngIf="!options.length">
       <button mat-menu-item class="menu-item" (click)="goToWhatsapp()">
         <span>Chat con {{ merchantName }}</span>
         <img [src]="env + '/whatsapp_verde.svg'" alt="circle" class="circle" />
@@ -46,14 +46,15 @@
         <span>Cerrar sesión</span>
       </button>
     </ng-container>
-    <ng-container *ngIf="mode === 'array'">
+    <ng-container *ngIf="options.length">
       <button
         mat-menu-item
         class="menu-item"
+        (click)="option.callback()"
         *ngFor="let option of options; index as i"
       >
         <span>{{ option.text }}</span>
-        <img src="/assets/images/noimage.png" alt="circle" class="circle" />
+        <mat-icon *ngIf="option.icon">{{ option.icon }}</mat-icon>
       </button>
     </ng-container>
   </mat-menu>

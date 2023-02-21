@@ -1,6 +1,6 @@
 <div class="container">
   <header class="header">
-    <a [routerLink]="['../../../order-status-view']">
+    <a mat-icon-button [routerLink]="['../../../order-status-view']">
       <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
     </a>
     <p class="title">{{ tag?.name || orderDeliveryStatus }}</p>

@@ -61,6 +61,7 @@
     width: 240px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     span {
       font-family: SFProLight;
       font-size: 17px;
@@ -69,10 +70,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    mat-icon {
+      color: #fff;
+      margin: 0;
+    }
     .circle {
       height: 30px;
       width: 30px;
-      margin-left: auto;
       filter: brightness(0) invert(100%) sepia(0%) saturate(7467%) hue-rotate(300deg) brightness(115%) contrast(100%);
     }
   }
