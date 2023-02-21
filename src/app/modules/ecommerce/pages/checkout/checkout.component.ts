@@ -532,34 +532,18 @@ export class CheckoutComponent implements OnInit {
         ?.createPost?._id;
       this.headerService.order.products[0].post = postResult;
 
-      let entityTemplate: EntityTemplate;
-
-      let entityTemplateModified;
-      try {
-        if (!this.logged) {
-          entityTemplate =
-            await this.entityTemplateService.precreateEntityTemplate();
-
-          // entityTemplateModified =
-          //   await this.entityTemplateService.entityTemplateSetData(
-          //     entityTemplate._id,
-          //     {
-          //       reference: postResult,
-          //       entity: 'post',
-          //     }
-          //   );
-        } else {
-          entityTemplate =
+      if (this.logged) {
+        try {
+          const entityTemplate =
             await this.entityTemplateService.createEntityTemplate();
 
-          entityTemplateModified =
-            await this.entityTemplateService.entityTemplateAuthSetData(
-              entityTemplate._id,
-              {
-                reference: postResult,
-                entity: 'post',
-              }
-            );
+          await this.entityTemplateService.entityTemplateAuthSetData(
+            entityTemplate._id,
+            {
+              reference: postResult,
+              entity: 'post',
+            }
+          );
 
           const recipientUser = await this.authService.checkUser(
             this.postsService.postReceiverNumber
@@ -580,9 +564,9 @@ export class CheckoutComponent implements OnInit {
               );
             }
           }
+        } catch (error) {
+          console.error('ocurrio un error al crear el simbolo', error);
         }
-      } catch (error) {
-        console.error('ocurrio un error al crear el simbolo', error);
       }
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++

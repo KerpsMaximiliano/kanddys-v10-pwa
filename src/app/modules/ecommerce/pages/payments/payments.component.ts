@@ -1,6 +1,7 @@
 import { LocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Integration } from 'src/app/core/models/integration';
@@ -10,6 +11,7 @@ import { Post } from 'src/app/core/models/post';
 import { User } from 'src/app/core/models/user';
 import { ViewsMerchant } from 'src/app/core/models/views-merchant';
 import { Bank } from 'src/app/core/models/wallet';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { IntegrationsService } from 'src/app/core/services/integrations.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -24,7 +26,6 @@ import {
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ConfirmActionDialogComponent } from 'src/app/shared/dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { environment } from 'src/environments/environment';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-payments',
@@ -219,7 +220,8 @@ export class PaymentsComponent implements OnInit {
     private location: LocationStrategy,
     private integrationService: IntegrationsService,
     private dialogService: DialogService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private entityTemplateService: EntityTemplateService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -302,6 +304,19 @@ export class PaymentsComponent implements OnInit {
 
     if (redirectToAzulPaymentsPage) {
       this.redirectToAzulPaymentPage();
+    }
+
+    const privatePost = this.route.snapshot.queryParamMap.get('privatePost');
+    if (privatePost === 'true') {
+      const entityTemplate =
+        await this.entityTemplateService.precreateEntityTemplate();
+      await this.entityTemplateService.entityTemplateAuthSetData(
+        entityTemplate._id,
+        {
+          reference: this.order.items[0].post._id,
+          entity: 'post',
+        }
+      );
     }
   }
 
