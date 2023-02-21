@@ -12,12 +12,14 @@ export class TagContainersInput {
   name?: string;
 }
 
+export type TagStatus = 'active' | 'disabled' | 'featured';
+
 export class Tag extends Model<Tag> {
   counter: number;
   name: string;
   notes?: string;
   user?: string;
-  status: string;
+  status: TagStatus;
   images?: [string];
   notifications: string[];
   merchant: string;

@@ -20,6 +20,7 @@
     >
       <span>RD$ {{ leftAmount | number }} </span
       ><span *ngIf="rightAmount">- ${{ rightAmount | number }}</span>
+      <span *ngIf="viewsCounter" class="views">{{ views }} vistas</span>
       <button
         class="cart-button"
         [ngClass]="{ active: ctaActive }"

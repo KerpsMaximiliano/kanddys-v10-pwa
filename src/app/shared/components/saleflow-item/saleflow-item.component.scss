@@ -132,8 +132,8 @@
       }
 
       img {
-        filter: brightness(0) saturate(100%) invert(11%) sepia(12%)
-          saturate(3277%) hue-rotate(174deg) brightness(99%) contrast(100%);
+        filter: brightness(0) saturate(100%) invert(11%) sepia(12%) saturate(3277%) hue-rotate(174deg) brightness(99%)
+          contrast(100%);
       }
 
       &.white {
@@ -256,8 +256,7 @@
           color: #8351fe;
 
           .star-icon {
-            filter: invert(47%) sepia(85%) saturate(5683%) hue-rotate(243deg)
-              brightness(102%) contrast(99%);
+            filter: invert(47%) sepia(85%) saturate(5683%) hue-rotate(243deg) brightness(102%) contrast(99%);
           }
         }
       }
@@ -402,7 +401,6 @@
       box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 15%);
       border-bottom-left-radius: 14px;
       border-bottom-right-radius: 14px;
-      height: calc(100% - 201px);
       background-color: white;
       font-size: 16px;
 

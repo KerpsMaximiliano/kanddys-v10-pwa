@@ -2,17 +2,12 @@
   margin: 0;
 }
 
-a {
-  cursor: pointer;
-  text-decoration: none;
-}
-
 .container {
   min-height: 100vh;
   padding-bottom: 24px;
 
   .header {
-    padding: 14px 21px;
+    // padding: 14px 21px;
     display: flex;
     align-items: center;
     background-color: #a1a1a1;

@@ -52,7 +52,11 @@
       <app-dropdown-menu
         logo="/assets/images/noimage.png"
         title="MIS LISTAS DE FACTURAS"
-        listTitle="Listas"
+        [listTitle]="
+          selectedTagsLength
+            ? 'En ' + selectedTagsLength + ' lista(s)'
+            : 'Añadela a una lista'
+        "
         [optionsList]="tagOptions"
         (listValue)="addTag($event)"
         (panelState)="tagPanelState = $event"
