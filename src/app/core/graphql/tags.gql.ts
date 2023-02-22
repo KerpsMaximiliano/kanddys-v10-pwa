@@ -19,6 +19,10 @@ export const createTag = gql`
   mutation createTag($input: TagInput!) {
     createTag(input: $input) {
       _id
+      name
+      images
+      status
+      index
     }
   }
 `;
@@ -167,6 +171,7 @@ export const ordersByTag = gql`
         }
         ocr {
           _id
+          platform
         }
         items {
           item {

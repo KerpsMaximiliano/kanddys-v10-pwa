@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
-import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
 import { AdminComponent } from './admin/admin.component';
 import { OrdersAndPreOrdersList } from './pages/ordersAndPreOrdersList/ordersAndPreOrdersList';
 import { ReservationListComponent } from 'src/app/shared/components/reservation-list/reservation-list.component';
@@ -27,6 +26,8 @@ import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard
 import { TagsViewComponent } from './pages/tags-view/tags-view.component';
 import { ViewConfigurationComponent } from './pages/view-configuration/view-configuration.component';
 import { WebformMetricsComponent } from './pages/webform-metrics/webform-metrics.component';
+import { OrderStatusViewComponent } from './pages/order-status-view/order-status-view.component';
+import { OrderListComponent } from './pages/order-list/order-list.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -40,12 +41,17 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'admin/entity-detail-metrics',
+        redirectTo: 'admin/dashboard',
         pathMatch: 'full',
       },
       {
         path: 'items-dashboard',
-        redirectTo: 'entity-detail-metrics',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+      {
+        path: 'entity-detail-metrics',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
       },
       {
@@ -57,18 +63,9 @@ const routes: Routes = [
         path: 'create-article/:itemId',
         component: ArticleCreatorComponent,
       },
-      /*{
-        path: 'entity-detail-metrics',
-        component: EntityDetailMetricsComponent,
-        data: { animation: 'EntityDetailMetrics' },
-      },*/
       {
         path: 'merchant-items',
         component: MerchantItemsComponent,
-      },
-      {
-        path: 'options/:itemId',
-        component: ActionsMenuComponent,
       },
       {
         path: 'orders',
@@ -97,7 +94,7 @@ const routes: Routes = [
         component: TimeBlockComponent,
       },
       {
-        path: 'entity-detail-metrics',
+        path: 'old-dashboard',
         component: ItemsDashboardComponent,
       },
       {
@@ -149,7 +146,7 @@ const routes: Routes = [
         component: QrEditComponent,
       },
       {
-        path: 'admin-dashboard',
+        path: 'dashboard',
         component: AdminDashboardComponent,
       },
       {
@@ -172,6 +169,23 @@ const routes: Routes = [
         path: 'webform-metrics',
         component: WebformMetricsComponent,
       },
+      {
+        path: 'order-status-view',
+        component: OrderStatusViewComponent,
+      },
+      {
+        path: 'order-list',
+        children: [
+          {
+            path: 'tags/:tagId',
+            component: OrderListComponent,
+          },
+          {
+            path: 'status/:deliveryStatus',
+            component: OrderListComponent,
+          },
+        ],
+      },
     ],
   },
   {
@@ -187,7 +201,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     MerchantItemsComponent,
-    ActionsMenuComponent,
     AdminComponent,
     OrdersAndPreOrdersList,
     CalendarCreatorComponent,
@@ -205,6 +218,8 @@ const routes: Routes = [
     BiosEditComponent,
     ViewConfigurationComponent,
     WebformMetricsComponent,
+    OrderStatusViewComponent,
+    OrderListComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

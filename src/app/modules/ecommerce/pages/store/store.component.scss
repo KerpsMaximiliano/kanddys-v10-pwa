@@ -14,7 +14,11 @@ a {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
+  background-color: linear-gradient(
+    180deg,
+    white 50%,
+    rgba(213, 213, 213, 0.25) 100%
+  );
 }
 main {
   flex-grow: 1;
@@ -83,13 +87,16 @@ main {
     font-family: "SfProMedium";
   }
 }
+.footer-content {
+  background-color: #272727;
+  padding-bottom: 20px;
+}
+
 .footer-links {
   list-style: none;
-  background-color: black;
   margin: 0px;
   padding: 0px 6.54%;
   padding-top: 20px;
-  padding-bottom: 70px;
   .link {
     font-size: 19px;
     color: white;
@@ -101,4 +108,53 @@ main {
       color: darken($color: #a1a1a1, $amount: 15);
     }
   }
+}
+
+.display-footer {
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  bottom: 0;
+  transition: 1.5s;
+  z-index: 9999;
+
+  .close {
+    background-color: #272727;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    width: 25px;
+    height: 25px;
+    color: #fff;
+    margin-left: auto;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+  .info-button {
+    background-color: #272727;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 5px;
+    width: 40px;
+    height: 15px;
+    color: #fff;
+    margin: 0 auto;
+    border-top-right-radius: 25px;
+    border-top-left-radius: 25px;
+  }
+}
+
+.hide {
+  display: none;
+  visibility: hidden;
+}
+
+.payment-methods-logos {
+  background-color: #272727;
+  width: 100%;
+  padding: 2rem;
 }

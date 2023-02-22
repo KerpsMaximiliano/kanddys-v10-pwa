@@ -8,7 +8,6 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 // import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-// import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 
 @Component({
   selector: 'app-ecommerce',

@@ -1,0 +1,20 @@
+<mat-vertical-stepper #stepper>
+  <mat-step>
+    <form [formGroup]="tagForm">
+      <ng-template matStepLabel>{{ data[0] || "Primer paso" }}</ng-template>
+      <mat-form-field appearance="outline" style="margin-top: 8px">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+      <div *ngIf="tagForm.get('name').valid">
+        <button mat-button matStepperNext>Continuar</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>{{ data[1] || "Segundo paso" }}</ng-template>
+    <div>
+      <app-item-images (enteredImages)="onImageInput($event)"></app-item-images>
+    </div>
+  </mat-step>
+</mat-vertical-stepper>

@@ -11,6 +11,8 @@
           ? 'Salvar la orden'
           : auth === 'order'
           ? 'Direcciones guardadas'
+          : auth === 'azul-login'
+          ? 'Pagar con tarjeta de crédito'
           : loggin
           ? merchantNumber
           : signUp && !toValidate
@@ -25,7 +27,8 @@
       (!nope && auth !== 'anonymous') ||
       auth === 'order' ||
       (loggin && auth !== 'payment') ||
-      (signUp && !toValidate)
+      (signUp && !toValidate) ||
+      auth === 'azul-login'
         ? true
         : false
     "
@@ -34,7 +37,7 @@
         ? toggleLog()
         : signUp
         ? toSignUp()
-        : ['order', 'payment', 'address'].includes(auth)
+        : ['order', 'payment', 'address', 'azul-login'].includes(auth)
         ? back()
         : null
     "
@@ -48,6 +51,8 @@
             "Escribe tu número de WhatsApp para acceder a tus direcciones guardadas:") ||
             (auth === "address" &&
               "Escribe tu número del WhatsApp que guardará la dirección para tus futuros pedidos") ||
+            (auth === "azul-login" &&
+              "Escribe tu número de WhatsApp que recibirá la factura") ||
             (auth === "payment" &&
               "Escribe tu número de WhatsApp que recibirá la factura:") ||
             "Login"
@@ -153,7 +158,12 @@
         <div
           class="subtext-options"
           style="margin: 48px 8%"
-          *ngIf="auth === 'order' || auth === 'address' || auth === 'merchant'"
+          *ngIf="
+            auth === 'order' ||
+            auth === 'address' ||
+            auth === 'merchant' ||
+            auth === 'azul-login'
+          "
         >
           <!-- {{
             OTP || authCode
@@ -165,8 +175,10 @@
             <li>
               - Presiona el
               {{
-                auth !== "merchant"
+                auth !== "merchant" && auth !== "azul-login"
                   ? "“link de nuevas ordenes”"
+                  : auth === "azul-login"
+                  ? "link de acceso para seguir con tu pago"
                   : "link de acceso a tu dashboard de administrador"
               }}
               o escribe la clave provisional que acabas de recibir por WhatsApp

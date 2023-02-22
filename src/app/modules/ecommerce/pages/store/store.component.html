@@ -175,15 +175,30 @@
         </div>
       </div>
 
-      <!-- <ul class="footer-links" *ngIf="terms.length">
-        <li
-          *ngFor="let term of terms"
-          class="link"
-          (click)="redirectToTermsOfUse(term)"
-        >
-          {{ term.text }}
-        </li>
-      </ul> -->
+      <div id="footer" class="display-footer hide">
+        <button class="close" (click)="closeFooter()">X</button>
+        <div class="footer-content">
+          <ul class="footer-links">
+            <li
+              *ngFor="let term of terms"
+              class="link"
+              (click)="redirectToTermsOfUse(term)"
+            >
+              {{ term.text }}
+            </li>
+          </ul>
+
+          <div class="logos">
+            <img
+              class="payment-methods-logos"
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpayment_methods_logos.svg"
+            />
+          </div>
+        </div>
+      </div>
+      <div id="footerbtn" class="display-footer">
+        <button class="info-button" (click)="displayFooter()">i</button>
+      </div>
     </main>
   </div>
   <app-menu-button

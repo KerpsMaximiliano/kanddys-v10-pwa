@@ -1,59 +1,109 @@
 <div class="container">
   <header class="header">
     <div class="left">
-      <button class="merchant-btn">
-        <img src="" class="img" />
-        <p class="title">MerchantID</p>
+      <button class="btn merchant-btn" [matMenuTriggerFor]="menu">
+        <img [src]="_MerchantsService.merchantData.image" class="img" />
+        <p class="title">{{ _MerchantsService.merchantData.name }}</p>
       </button>
+      <mat-menu #menu="matMenu">
+        <a mat-menu-item [routerLink]="['']">
+          <mat-icon>settings</mat-icon>
+          <span>Configuración</span>
+        </a>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
     </div>
 
     <div class="right">
-      <button>
+      <a class="btn" [routerLink]="['../order-status-view']">
         <img class="listIcon" [src]="environment + '/receipt.svg'" />
-      </button>
-      <button class="blackButton">
+      </a>
+      <!-- <button class="btn blackButton">
         <p>Programas</p>
         <img class="starIcon" [src]="environment + '/star.svg'" />
-      </button>
+      </button> -->
     </div>
   </header>
   <div class="contents">
     <app-options-bar
       [type]="'3'"
-      [options]="tags"
+      [options]="options"
       (selectedIndex)="selectTag($event)"
+      (selectedMenuIndex)="selectedMenuOption($event)"
     >
     </app-options-bar>
   </div>
-  <section *ngIf="selected == 0">
-    <div class="saleflows-item-grid" *ngIf="articulos.length">
-      <div
-        class="capsize"
-        *ngFor="let item of articulos; let itemIndex = index"
-      >
-        <app-saleflow-item
-          [itemIndex]="itemIndex"
-          [itemId]="item._id"
-          [type]="4"
-          [showViews]="true"
-          [viewsCounter]="item.visitorCounter ? item.visitorCounter.counter : 0"
-          [inactive]="
-            item.status != 'active' && item.status != 'featured' ? true : false
-          "
-          [imgURL]="item.images.length ? item.images[0].value : ''"
-          [price]="item.pricing"
-          [showPrice]="true"
-          [tags]="item.tagsFilled"
-          [itemParams]="item.params"
-          [responsiveWidthVersion]="true"
-          [featured]="item.status === 'featured'"
-        ></app-saleflow-item>
-      </div>
-    </div>
-  </section>
+  <div
+    class="saleflows-item-grid" 
+    (scroll)="infinitePagination()"
+    *ngIf="allItems.length && layout === 'simple-card'"
+  >
+    <a
+      class="capsize"
+      [routerLink]="['../article-editor', item._id]"
+      *ngFor="let item of allItems; let itemIndex = index"
+    >
+      <app-saleflow-item
+        [itemIndex]="itemIndex"
+        [itemId]="item._id"
+        [type]="4"
+        [showViews]="true"
+        [viewsCounter]="item.visitorCounter ? item.visitorCounter.counter : 0"
+        [inactive]="
+          item.status != 'active' && item.status != 'featured' ? true : false
+        "
+        [imgURL]="item.images.length ? item.images[0].value : ''"
+        [price]="item.pricing"
+        [showPrice]="true"
+        [itemParams]="item.params"
+        [responsiveWidthVersion]="true"
+      ></app-saleflow-item>
+    </a>
+  </div>
+  <div
+    *ngIf="allItems.length && layout === 'description-card'"
+    class="description-card-grid"
+    style="padding: 24px; display: grid; grid-template-columns: 1fr; gap: 15px; height: calc(100vh - 98px); overflow-y: scroll; overflow-x: hidden;"
+    (scroll)="infinitePagination()"
+  >
+    <a
+      class="capsize"
+      [routerLink]="['../article-editor', item._id]"
+      *ngFor="let item of allItems; let itemIndex = index"
+      style="text-decoration: none"
+    >
+      <app-buyer-card
+        [index]="itemIndex"
+        [title]="item.name"
+        [description]="item.description"
+        [img]="item.images?.length ? item.images[0].value : ''"
+        [leftAmount]="item.pricing"
+        [cta]="false"
+        [ctaActive]="item.isSelected"
+        [viewsCounter]="true"
+        [views]="item.visitorCounter ? item.visitorCounter.counter : 0"
+      ></app-buyer-card>
+    </a>
+  </div>
+  <div
+    [ngStyle]="{
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      height: '80px',
+      justifyContent: 'center'
+    }"
+    *ngIf="paginationState.status === 'loading'"
+  >
+    <app-dot-loader></app-dot-loader>
+  </div>
   <div class="uploadButton">
-    <button class="button">
-      <img class="icon" [src]="environment + '/upload.svg'" />
+    <button mat-fab class="button" (click)="share()">
+      <mat-icon style="color: #82f18d">share</mat-icon>
+      <!-- <img class="icon" [src]="environment + '/upload.svg'" /> -->
     </button>
   </div>
 </div>

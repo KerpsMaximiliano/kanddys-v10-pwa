@@ -78,8 +78,35 @@
             [formControlName]="field.name"
           ></ngx-intl-tel-input>
         </div>
+        <div *ngSwitchCase="'email'">
+          <label [style]="field.label.styles">
+            {{ field.label.text }}
+          </label>
+          <input
+            [tabindex]="omitTabFocus ? -1 : i"
+            type="email"
+            [placeholder]="field.placeholder"
+            [style]="field.styles"
+            [formControlName]="field.name"
+          />
+          <p [style]="field.disclaimer.styles" *ngIf="field.disclaimer">
+            {{ field.disclaimer.text }}
+          </p>
+        </div>
+        <div *ngSwitchCase="'buttonIcon'">
+          <button
+            [style]="field.styles"
+            (click)="buttonClick(field)"
+            *ngIf="field.buttonIcon"
+          >
+            <img
+              [src]="field.buttonIcon.src"
+              [ngStyle]="field.buttonIcon.styles"
+            />
+          </button>
+        </div>
         <div *ngSwitchDefault>
-          <label *ngIf="field.label" [style]="field.label.styles">
+          <label [style]="field.label.styles">
             {{ field.label.text }}
           </label>
           <input

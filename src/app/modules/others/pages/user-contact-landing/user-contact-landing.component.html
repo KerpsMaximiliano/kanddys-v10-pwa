@@ -2,6 +2,10 @@
   <app-helper-headerv2
     [returnAble]="true"
     [mode]="'basic'"
+    [dots]="{
+      active: true
+    }"
+    (dotEvent)="openSettingsDialog()"
     [icons]="[
       {
         src: '/person.svg',
@@ -90,11 +94,7 @@
             <!-- <a class="dollar-btn">$</a> -->
             <ng-container *ngIf="exchangeData">
               <a href="#">
-                <img
-                  [src]="env + '/dollar.svg'"
-                  alt="bank-info"
-                  height="50"
-                />
+                <img [src]="env + '/dollar.svg'" alt="bank-info" height="50" />
               </a>
             </ng-container>
             <ng-container

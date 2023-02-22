@@ -6,6 +6,10 @@
 a {
   text-decoration: none;
   color: #272727;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .container {
@@ -18,10 +22,6 @@ a {
   border-radius: 7px;
   color: #272727;
   gap: 15px;
-
-  &:hover {
-    cursor: pointer;
-  }
 
   &.shadow {
     filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.16));
@@ -40,6 +40,7 @@ a {
       border-radius: 15px;
       width: 155px;
       height: auto;
+      max-height: 221px;
     }
 
     @media (max-width: 385px) {
@@ -118,6 +119,13 @@ a {
         filter: brightness(0) invert(16%) sepia(13%) saturate(973%)
           hue-rotate(68deg) brightness(102%) contrast(90%);
       }
+    }
+
+    .views {
+      color: #7b7b7b;
+      font-size: 16px;
+      font-family: SfProLight;
+      margin-left: auto;
     }
 
     @media (max-width: 385px) {

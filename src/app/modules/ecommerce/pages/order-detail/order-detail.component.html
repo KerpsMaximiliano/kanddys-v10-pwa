@@ -1,70 +1,50 @@
 <div class="container">
-  <app-helper-headerv2
-    [mode]="'basic'"
-    [returnAble]="
-      redirectTo &&
-      redirectTo !== null &&
-      redirectTo !== '' &&
-      isMerchant &&
-      merchantOwner
-    "
-    (returnEvent)="!redirectTo ? returnToStore() : returnEvent()"
-    [bgColor]="isMerchant ? '#fff' : headerService.colorTheme"
-    [icon]="{
-      src: '/arrow-double-up.svg',
-      width: 17,
-      height: 21,
-      callback: !redirectTo ? returnToStore : returnEvent,
-      filter: isMerchant
-        ? 'brightness(0) saturate(100) invert(11%) sepia(0%) saturate(0%) hue-rotate(277deg) brightness(93%) contrast(88%)'
-        : null
-    }"
-    [dots]="{
-      active: false,
-      color: '#272727'
-    }"
-    [rightText]="
-      headerService.user && !isMerchant
-        ? {
-            text:
-              headerService.user?.name ||
-              headerService.user?.phone ||
-              headerService.user?.email
-          }
-        : null
-    "
-    [icons]="
-      !isMerchant
-        ? [
-            {
-              src: '/person.svg',
-              width: '13px',
-              height: '17px',
-              color: 'brightness(3)',
-              callback: redirectToUserContact
-            }
-          ]
-        : null
-    "
-    [mainText]="{
-      text:
-        order?.items[0].saleflow.headline?.length < 38
-          ? order?.items[0].saleflow.headline
-          : order?.items[0].saleflow.headline.split(' ')['0'],
-      fontSize: '21px',
-      fontFamily: 'SfProBold',
-      color: !isMerchant ? '#fff' : '#272727'
-    }"
-    (agnosticAction)="openLogoutDialog()"
-  ></app-helper-headerv2>
+  <header
+    class="header"
+    [ngStyle]="{ backgroundColor: isMerchant ? '#000000' : '#293628' }"
+  >
+    <button
+      (click)="!redirectTo ? returnToStore() : returnEvent()"
+      style="all: unset; cursor: pointer"
+    >
+      <img
+        [src]="env + '/arrow-double-up-black.svg'"
+        alt=""
+        style="
+          filter: invert(87%) sepia(6%) saturate(3262%) hue-rotate(67deg)
+            brightness(104%) contrast(89%);
+        "
+      />
+    </button>
+    <p>WeDoWeLike</p>
+    <span>Revistas Virtuales para Monetizar</span>
+  </header>
 
-  <!-- <ng-container *ngIf="isMerchant">
+  <a
+    class="bar btn notify"
+    *ngIf="isMerchant === false"
+    [href]="messageLink"
+    target="_blank"
+  >
+    <p>
+      Factura creada, envíala por
+      <img
+        [src]="env + '/whatsapp_black.svg'"
+        alt=""
+        style="margin: 0px 5px; margin-bottom: -4px"
+      />
+
+      a
+      {{ order.items[0].saleflow.merchant.name }}
+    </p>
+  </a>
+  <ng-container *ngIf="isMerchant">
     <div style="padding-top: 5px; margin-bottom: 5px">
       <app-dropdown-menu
         [optionsList]="deliveryStatusOptions"
         [multiple]="false"
         title="STATUS DE LA FACTURA"
-        [listTitle]="orderDeliveryStatus()"
+        [listTitle]="orderDeliveryStatus(order.orderStatusDelivery)"
         (listValue)="changeOrderStatus($event)"
       ></app-dropdown-menu>
     </div>
@@ -72,109 +52,55 @@
       <app-dropdown-menu
         logo="/assets/images/noimage.png"
         title="MIS LISTAS DE FACTURAS"
-        [listTitle]="Listas"
+        [listTitle]="
+          selectedTagsLength
+            ? 'En ' + selectedTagsLength + ' lista(s)'
+            : 'Añadela a una lista'
+        "
         [optionsList]="tagOptions"
         (listValue)="addTag($event)"
+        (panelState)="tagPanelState = $event"
       ></app-dropdown-menu>
     </div>
-    <div style="background-color: #fff">
-      <a
-        [routerLink]="['/admin/create-tag']"
-        [queryParams]="{ entity: 'order' }"
-        >+ Crear un nuevo listado</a
-      >
-    </div>
-  </ng-container> -->
-
-  <!-- <button (click)="changeOrderStatus()">set to pickup</button> -->
-  <!-- <div class="header" *ngIf="buyerView === false">
-    <img
-      [src]="env + '/arrow-double-up-black.svg'"
-      alt="arrows"
-      class="arrows"
-    />
-    <p class="header-title">
-      {{
-        order?.items[0].saleflow.headline?.length < 38
-          ? order?.items[0].saleflow.headline
-          : order?.items[0].saleflow.headline.split(" ")["0"]
-      }}
-    </p>
-    <img [src]="env + '/bookmark-plus.svg'" alt="bookmark" class="bookmark" />
-    <img [src]="env + '/dots-black.svg'" alt="dots" class="dots" />
-  </div> -->
-
-  <div *ngIf="!isMerchant" class="top-banner">
-    <button class="blue" (click)="buyAgain()">Comprar otra vez</button>
-    <button class="blue right" (click)="returnToStore()">
-      Comprar otra cosa
-    </button>
-  </div>
-
-  <!-- <div class="top-area" *ngIf="!notify && !isMerchant">
-    <button class="top-button" (click)="buyAgain()">
-      <span class="plus"> + </span> COMPRAR OTRA VEZ
-    </button>
-  </div> -->
-
-  <!-- <div class="bill-area" *ngIf="notify">
-    <h2 class="user-name">
-      {{ order.user?.name || order.user?.phone || order.user?.email }}
-    </h2>
-    <h2 class="success">Tu factura se creó exitosamente.</h2>
-
-    <a
-      [href]="messageLink"
-      target="_blank"
-      class="bill-button"
-      (click)="notificationClicked()"
+    <div
+      style="background-color: #fff; padding: 0 32px 8px"
+      *ngIf="tagPanelState"
     >
-      Confirmar por WhatsApp
-    </a>
+      <button mat-button extended (click)="createTag()" class="tag-add">
+        <mat-icon>add</mat-icon>
+        Crear un nuevo listado
+      </button>
+    </div>
+  </ng-container>
 
-    <p class="bill-clarity">
-      Al “confirmar” se abrirá tu WhatsApp con la factura para
-      {{ order?.items[0].saleflow.merchant.name }}.
-    </p>
-  </div> -->
   <main class="information">
     <section class="top">
-      <h2 class="top-h" *ngIf="order">
-        FACTURA {{ formatId(order.dateId) }} <br />
-        <a
-          target="_blank"
-          [href]="messageLink"
-          *ngIf="!isMerchant && notify"
-          class="blue"
-          >Confirmar por WhatsApp</a
-        >
-        <br *ngIf="!isMerchant && !notify" />
-        <button class="top-name" (click)="sendMessage()" *ngIf="isMerchant">
-          {{ order.user?.name || order.user?.phone || order.user?.email }}
-        </button>
-        <span class="top-headline" *ngIf="!isMerchant">{{
-          order?.items[0].saleflow.headline
-        }}</span>
-      </h2>
-      <div class="info-display" *ngIf="!isMerchant">
-        <span
-          class="info"
-          *ngIf="
-            order?.items[0].saleflow?.module?.delivery?.pickUpLocations &&
-            order?.items[0].saleflow?.module?.delivery?.pickUpLocations.length >
-              0 &&
-            order?.items[0].saleflow?.module?.delivery?.pickUpLocations[0]
-              .nickName
-          "
-          >{{
-            "Dirección: " +
-              order?.items[0].saleflow.module.delivery.pickUpLocations[0]
-                .nickName
-          }}</span
-        >
+      <div style="display: flex; align-items: center">
+        <h2 class="top-h" *ngIf="order">
+          FACTURA {{ formatId(order.dateId) }} <br />
+          <button class="top-name btn" *ngIf="isMerchant">
+            {{ order?.items[0].saleflow.headline }}
+          </button>
+        </h2>
+        <img
+          [src]="env + '/qr-code.svg'"
+          alt=""
+          style="margin-left: auto; cursor: pointer"
+        />
       </div>
       <div class="info-display">
-        <span class="info" style="margin-left: 0">{{ orderDate }}</span>
+        <span class="info" style="margin-left: 0px">{{
+          "Dirección: " +
+            order?.items[0].saleflow.module.delivery.pickUpLocations[0].nickName
+        }}</span>
+      </div>
+      <div class="info-display">
+        <span class="info" style="margin-left: 0">
+          {{ orderDate }} para
+          <a style="color: #2874ad">
+            {{ order?.user?.name || order?.user?.phone || order?.user?.email }}
+          </a>
+        </span>
       </div>
     </section>
     <section class="section">
@@ -193,7 +119,7 @@
         style="margin-bottom: 4px"
       >
         <div class="image-container">
-          <button>
+          <button class="btn">
             <div
               class="image"
               *ngIf="!urlIsVideo(item.item.images[0].value)"
@@ -269,7 +195,7 @@
       </div>
     </section>
 
-    <section *ngIf="isMerchant" class="section" style="margin-top: 50px">
+    <section class="section" style="margin-top: 50px">
       <h2
         class="section-title"
         [ngClass]="{
@@ -278,7 +204,11 @@
       >
         Pagos:
       </h2>
-      <div class="items-container" style="margin-top: 5px" *ngIf="order?.ocr">
+      <div
+        class="items-container"
+        style="margin-top: 5px"
+        *ngIf="order?.ocr || payedWithAzul"
+      >
         <div
           class="image-container"
           #elemt
@@ -287,16 +217,20 @@
           (mouseleave)="stopDragging()"
           (mousemove)="moveEvent($event, elemt)"
         >
-          <button (click)="order.ocr && openImageModal(order.ocr.image)">
+          <button (click)="order.ocr ? openImageModal(order.ocr.image) : null">
             <div
               class="image"
               [ngStyle]="{
-                'background-image': order.ocr.image
-                  ? 'url(' + order.ocr.image + ') '
-                  : 'url(/assets/images/noimage.png)'
+                'background-image':
+                  order.ocr && order.ocr.image
+                    ? 'url(' + order.ocr.image + ') '
+                    : payedWithAzul
+                    ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
+                    : 'url(/assets/images/noimage.png)'
               }"
             >
               <img
+                *ngIf="order.ocr"
                 [src]="
                   order.ocr ? order.ocr.image : '/assets/images/noimage.png'
                 "
@@ -358,7 +292,12 @@
           adminView: isMerchant
         }"
       >
-        Lugar de {{ order?.items[0].saleflow._id === '62ed5ad9bd70dde4db98b924' ? "la sesión" : "Entrega:" }}
+        Lugar de
+        {{
+          order?.items[0].saleflow._id === "62ed5ad9bd70dde4db98b924"
+            ? "la sesión"
+            : "Entrega:"
+        }}
       </h2>
       <div class="items-container column">
         <p
@@ -402,7 +341,12 @@
           adminView: isMerchant
         }"
       >
-        Fecha de {{ order?.items[0].saleflow._id === '62ed5ad9bd70dde4db98b924' ? "la sesión" : "Entrega:" }}
+        Fecha de
+        {{
+          order?.items[0].saleflow._id === "62ed5ad9bd70dde4db98b924"
+            ? "la sesión"
+            : "Entrega:"
+        }}
       </h2>
 
       <div class="items-container" style="padding: 10px 20px">

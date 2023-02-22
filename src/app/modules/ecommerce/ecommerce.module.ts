@@ -27,9 +27,11 @@ import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.c
 
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
+import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
+import { ContactLandingComponent } from 'src/app/shared/components/contact-landing/contact-landing.component';
 import { CollectionsComponent } from 'src/app/modules/ecommerce/pages/collections/collections.component';
 import { TagItemsComponent } from 'src/app/modules/ecommerce/pages/tag-items/tag-items.component';
-import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
+import { GiftDetailComponent } from './pages/gift-detail/gift-detail.component';
 
 const routes: Routes = [
   {
@@ -70,6 +72,10 @@ const routes: Routes = [
   {
     path: 'terms-of-use/:viewsMerchantId',
     component: TermsOfUseComponent,
+  },
+  {
+    path: 'gift-detail/:orderId',
+    component: GiftDetailComponent,
   },
   {
     path: ':merchantSlug',
@@ -162,7 +168,7 @@ const routes: Routes = [
       {
         path: 'contact-landing/:idUser',
         component: ContactLandingContainerComponent,
-      },
+      }
     ],
   },
 ];
@@ -187,8 +193,10 @@ const routes: Routes = [
     CreateArticleComponent,
     TextEditionAndPreviewComponent,
     TermsOfUseComponent,
+    ContactLandingContainerComponent,
     CollectionsComponent,
     TagItemsComponent,
+    GiftDetailComponent,
   ],
   imports: [
     CommonModule,

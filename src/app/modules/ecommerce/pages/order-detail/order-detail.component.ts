@@ -11,7 +11,7 @@ import {
 } from 'src/app/core/models/order';
 import { Post, PostInput, Slide } from 'src/app/core/models/post';
 import { SaleFlow } from 'src/app/core/models/saleflow';
-import { Tag } from 'src/app/core/models/tags';
+import { Tag, TagInput } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -29,6 +29,13 @@ import { EntityTemplateService } from 'src/app/core/services/entity-template.ser
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
+import {
+  lockUI,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateTagComponent } from 'src/app/shared/dialogs/create-tag/create-tag.component';
+import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
 
 interface Image {
   src: string;
@@ -54,16 +61,11 @@ interface ExtendedSlide extends Slide {
 export class OrderDetailComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
-  ordersInTheSameDay: ItemOrder[] = [];
-  orderBeforeOrderDay: ItemOrder = null;
-  orderAfterOrderDay: ItemOrder = null;
   order: ItemOrder;
   post: Post;
   slides: ExtendedSlide[];
   payment: number;
   isMerchant: boolean;
-  merchantOwner: boolean;
-  // changeColor: string;
   orderStatus: OrderStatusNameType;
   orderDate: string;
   date: {
@@ -77,8 +79,8 @@ export class OrderDetailComponent implements OnInit {
   selectedTags: {
     [key: string]: boolean;
   } = {};
+  selectedTagsLength: number;
   redirectTo: string = null;
-  orderSaleflow: SaleFlow;
   orderMerchant: Merchant;
   orderInDayIndex: number = null;
   // buyerView: boolean = true;
@@ -103,18 +105,18 @@ export class OrderDetailComponent implements OnInit {
   entityTemplate: EntityTemplate;
   entityTemplateLink: string;
   notify: boolean = false;
+  orderDeliveryStatus = this.orderService.orderDeliveryStatus;
 
-  deliveryStatusOptions = [
-    { text: 'Pick Up', value: 'pickup', selected: false },
-    { text: 'Todo listo para entregarse', value: 'pending', selected: false },
-    { text: 'De camino a ser entregado', value: 'shipped', selected: false },
-    { text: 'Entregado', value: 'delivered', selected: false },
+  deliveryStatusOptions: DropdownOptionItem[] = [
+    {
+      text: 'En preparación',
+      value: 'in progress',
+      selected: false,
+      hide: false,
+    },
   ];
-  tagOptions: {
-    text: string;
-    value: string;
-    selected: boolean;
-  }[];
+  tagOptions: DropdownOptionItem[];
+  tagPanelState: boolean;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -129,13 +131,13 @@ export class OrderDetailComponent implements OnInit {
     private location: LocationStrategy,
     private authService: AuthService,
     public headerService: HeaderService,
-    private ngNavigatorShareService: NgNavigatorShareService,
     private merchantsService: MerchantsService,
     private paymentLogService: PaymentLogsService,
     private entityTemplateService: EntityTemplateService,
     private clipboard: Clipboard,
     private toastr: ToastrService,
-    private tagsService: TagsService
+    private tagsService: TagsService,
+    public dialog: MatDialog
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -160,39 +162,36 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
-    // const tagsAsignationOnStart = this.route.snapshot.queryParamMap.get(
-    //   'tagsAsignationOnStart'
-    // );
-
-    // if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
-
+    lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
 
     if (this.order.items) {
       for (const itemSubOrder of this.order.items) {
-        itemSubOrder.item.media = itemSubOrder.item.images.map((image) => {
-          let url = image.value;
-          const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
-          let auxiliarImageFileExtension = 'image/' + fileExtension;
-          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+        itemSubOrder.item.media = itemSubOrder.item.images
+          .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+          .map((image) => {
+            let url = image.value;
+            const fileParts = image.value.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
-          if (url && !url.includes('http') && !url.includes('https')) {
-            url = 'https://' + url;
-          }
+            if (url && !url.includes('http') && !url.includes('https')) {
+              url = 'https://' + url;
+            }
 
-          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-            return {
-              src: url,
-              type: 'IMAGE',
-            };
-          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-            return {
-              src: url,
-              type: 'VIDEO',
-            };
-          }
-        });
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              return {
+                src: url,
+                type: 'IMAGE',
+              };
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              return {
+                src: url,
+                type: 'VIDEO',
+              };
+            }
+          });
       }
     }
 
@@ -290,76 +289,75 @@ export class OrderDetailComponent implements OnInit {
         };
       }
     }
-    if (notification == 'true') {
-      let address = '';
-      const location = this.order.items[0].deliveryLocation;
-      if (location) {
-        address = '\n\nDirección: ';
-        if (location.street) {
-          if (location.houseNumber)
-            address += '#' + location.houseNumber + ', ';
-          address += location.street + ', ';
-          if (location.referencePoint)
-            address += location.referencePoint + ', ';
-          address += location.city + ', República Dominicana';
-          if (location.note) address += ` (${location.note})`;
-        } else {
-          address += location.nickName;
-        }
+    let address = '';
+    const location = this.order.items[0].deliveryLocation;
+    if (location) {
+      address = '\n\nDirección: ';
+      if (location.street) {
+        this.deliveryStatusOptions.push(
+          {
+            text: 'Listo para enviarse',
+            value: 'pending',
+            selected: false,
+            hide: false,
+          },
+          {
+            text: 'De camino a ser entregado',
+            value: 'shipped',
+            selected: false,
+            hide: false,
+          }
+        );
+        if (location.houseNumber) address += '#' + location.houseNumber + ', ';
+        address += location.street + ', ';
+        if (location.referencePoint) address += location.referencePoint + ', ';
+        address += location.city + ', República Dominicana';
+        if (location.note) address += ` (${location.note})`;
+      } else {
+        address += location.nickName;
+        this.deliveryStatusOptions.push({
+          text: 'Listo para pick-up',
+          value: 'pickup',
+          selected: false,
+          hide: false,
+        });
       }
-
-      let giftMessage = '';
-      if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
-      if (this.post?.targets?.[0]?.name)
-        giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
-      if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
-
-      const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
-      const message = `*🐝 FACTURA ${formatID(
-        this.order.dateId
-      )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
-        'es-MX'
-      )}: ${fullLink}\n\n*Comprador*: ${
-        this.order.user?.name ||
-        this.order.user?.phone ||
-        this.order.user?.email ||
-        'Anónimo'
-      }${address}\n\n${
-        giftMessage
-          ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
-          : ''
-      }`;
-
-      this.messageLink = `https://api.whatsapp.com/send?phone=${
-        this.order.items[0].saleflow.merchant.owner.phone
-      }&text=${encodeURIComponent(message)}`;
-      // this.notify = true;
+    }
+    this.deliveryStatusOptions.push({
+      text: 'Entregado',
+      value: 'delivered',
+      selected: false,
+      hide: false,
+    });
+    if (this.isMerchant) {
+      this.handleStatusOptions(this.order.orderStatusDelivery);
     }
 
-    const today = new Date(this.order.createdAt);
-    const utcOffset = today.getTimezoneOffset() / 60;
-    const todayFromISO = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    ).toISOString();
+    let giftMessage = '';
+    if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
+    if (this.post?.targets?.[0]?.name)
+      giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
+    if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
 
-    // this.currentDayOrdersRange = {
-    //   fromISO: moment(todayFromISO)
-    //     .subtract(utcOffset, 'hours')
-    //     .toDate()
-    //     .toISOString(),
-    //   toISO: moment(todayFromISO)
-    //     .subtract(utcOffset, 'hours')
-    //     .add(23, 'hours')
-    //     .add(59, 'minutes')
-    //     .add(59, 'seconds')
-    //     .toDate()
-    //     .toISOString(),
-    // };
+    const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+    const message = `*🐝 FACTURA ${formatID(
+      this.order.dateId
+    )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
+      'es-MX'
+    )}: ${fullLink}\n\n*Comprador*: ${
+      this.order.user?.name ||
+      this.order.user?.phone ||
+      this.order.user?.email ||
+      'Anónimo'
+    }${address}\n\n${
+      giftMessage
+        ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
+        : ''
+    }`;
 
-    // if (this.orderMerchant) await this.getAdjacentOrders();
-    // if (this.tagsAsignationOnStart) await this.tagDialog();
+    this.messageLink = `https://api.whatsapp.com/send?phone=${
+      this.order.items[0].saleflow.merchant.owner.phone
+    }&text=${encodeURIComponent(message)}`;
     const tags =
       (await this.tagsService.tagsByUser({
         findBy: {
@@ -372,6 +370,9 @@ export class OrderDetailComponent implements OnInit {
     for (const tag of tags) {
       this.selectedTags[tag._id] = this.order.tags.includes(tag._id);
     }
+    this.selectedTagsLength = Object.entries(this.selectedTags).filter(
+      (value) => value[1]
+    ).length;
     this.tags = tags;
     this.tagOptions = this.tags.map((tag) => {
       return {
@@ -380,176 +381,33 @@ export class OrderDetailComponent implements OnInit {
         selected: this.order.tags.includes(tag._id),
       };
     });
+    unlockUI();
   }
 
-  // async getAdjacentOrders() {
-  //   //Get the 1st order before current day
-  //   let pagination: PaginationInput = {
-  //     options: {
-  //       range: {
-  //         to: this.currentDayOrdersRange.fromISO,
-  //       },
-  //       sortBy: 'createdAt:desc',
-  //       limit: 1,
-  //     },
-  //   };
-
-  //   const { ordersByMerchant: orderBeforeOrderDay } =
-  //     await this.merchantsService.ordersByMerchant(
-  //       this.orderMerchant._id,
-  //       pagination
-  //     );
-
-  //   if (orderBeforeOrderDay && orderBeforeOrderDay.length > 0) {
-  //     this.orderBeforeOrderDay = orderBeforeOrderDay[0];
-  //   } else {
-  //     this.orderBeforeOrderDay = null;
-  //   }
-
-  //   //Get the 1st after current day
-  //   pagination = {
-  //     options: {
-  //       range: {
-  //         from: moment(this.currentDayOrdersRange.fromISO)
-  //           .add(1, 'days')
-  //           .toDate()
-  //           .toISOString(),
-  //       },
-  //       sortBy: 'createdAt:asc',
-  //       limit: 1,
-  //     },
-  //   };
-
-  //   const { ordersByMerchant: orderAfterOrderDay } =
-  //     await this.merchantsService.ordersByMerchant(
-  //       this.orderMerchant._id,
-  //       pagination
-  //     );
-
-  //   if (orderAfterOrderDay && orderAfterOrderDay.length > 0) {
-  //     this.orderAfterOrderDay = orderAfterOrderDay[0];
-  //   } else {
-  //     this.orderAfterOrderDay = null;
-  //   }
-
-  //   //get orders from the same day
-  //   let from = this.currentDayOrdersRange.fromISO;
-  //   let to = this.currentDayOrdersRange.toISO;
-
-  //   const range = {
-  //     from: from,
-  //     to: to,
-  //   };
-
-  //   pagination = {
-  //     options: {
-  //       range,
-  //       limit: -1,
-  //     },
-  //   };
-
-  //   const { ordersByMerchant: ordersInTheSameDay } =
-  //     await this.merchantsService.ordersByMerchant(
-  //       this.orderMerchant._id,
-  //       pagination
-  //     );
-
-  //   if (ordersInTheSameDay) {
-  //     this.ordersInTheSameDay = ordersInTheSameDay;
-
-  //     const orderIndex = this.ordersInTheSameDay.findIndex(
-  //       (order) => order._id === this.order._id
-  //     );
-
-  //     if (orderIndex >= 0) {
-  //       this.orderInDayIndex = orderIndex;
-  //     }
-  //   }
-  // }
-
-  // goToNextOrPreviousOrder(direction: 'NEXT' | 'PREVIOUS') {
-  //   if (
-  //     this.orderInDayIndex < this.ordersInTheSameDay.length - 1 &&
-  //     direction === 'NEXT'
-  //   ) {
-  //     history.pushState(
-  //       null,
-  //       null,
-  //       'ecommerce/order-detail/' +
-  //         this.ordersInTheSameDay[this.orderInDayIndex + 1]._id
-  //     );
-
-  //     this.executeProcessesAfterLoading(
-  //       this.ordersInTheSameDay[this.orderInDayIndex + 1]._id
-  //     );
-  //   }
-
-  //   if (this.orderInDayIndex > 0 && direction === 'PREVIOUS') {
-  //     history.pushState(
-  //       null,
-  //       null,
-  //       'ecommerce/order-detail/' +
-  //         this.ordersInTheSameDay[this.orderInDayIndex - 1]._id
-  //     );
-
-  //     this.executeProcessesAfterLoading(
-  //       this.ordersInTheSameDay[this.orderInDayIndex - 1]._id
-  //     );
-  //   }
-
-  //   if (
-  //     this.orderInDayIndex === 0 &&
-  //     direction === 'PREVIOUS' &&
-  //     this.orderBeforeOrderDay
-  //   ) {
-  //     history.pushState(
-  //       null,
-  //       null,
-  //       'ecommerce/order-detail/' + this.orderBeforeOrderDay._id
-  //     );
-
-  //     this.executeProcessesAfterLoading(this.orderBeforeOrderDay._id);
-  //   }
-
-  //   if (
-  //     this.orderInDayIndex === this.ordersInTheSameDay.length - 1 &&
-  //     direction === 'NEXT' &&
-  //     this.orderAfterOrderDay
-  //   ) {
-  //     history.pushState(
-  //       null,
-  //       null,
-  //       'ecommerce/order-detail/' + this.orderAfterOrderDay._id
-  //     );
-
-  //     this.executeProcessesAfterLoading(this.orderAfterOrderDay._id);
-  //   }
-  // }
-
-  // async notificationClicked() {
-  //   this.notify = false;
-  //   this.router.navigate([], {
-  //     relativeTo: this.route,
-  //   });
-  //   console.log(this.order.tags);
-  //   const tags =
-  //     (await this.tagsService.tagsByUser({
-  //       findBy: {
-  //         entity: 'order',
-  //       },
-  //       options: {
-  //         limit: -1,
-  //       },
-  //     })) || [];
-  //   for (const tag of tags) {
-  //     this.selectedTags[tag._id] = false;
-  //     if (this.order.tags.includes(tag._id)) {
-  //       this.selectedTags[tag._id] = true;
-  //     }
-  //   }
-  //   this.tags = tags;
-  //   this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
-  // }
+  async notificationClicked() {
+    this.notify = false;
+    this.router.navigate([], {
+      relativeTo: this.route,
+    });
+    console.log(this.order.tags);
+    const tags =
+      (await this.tagsService.tagsByUser({
+        findBy: {
+          entity: 'order',
+        },
+        options: {
+          limit: -1,
+        },
+      })) || [];
+    for (const tag of tags) {
+      this.selectedTags[tag._id] = false;
+      if (this.order.tags.includes(tag._id)) {
+        this.selectedTags[tag._id] = true;
+      }
+    }
+    this.tags = tags;
+    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+  }
 
   openImageModal(imageSourceURL: string) {
     this.dialogService.open(ImageViewComponent, {
@@ -590,22 +448,15 @@ export class OrderDetailComponent implements OnInit {
   };
 
   async changeOrderStatus(value: OrderStatusDeliveryType) {
-    const result = await this.orderService.orderSetStatusDelivery(
-      value,
-      this.order._id
-    );
-    this.order.orderStatusDelivery = result.orderStatusDelivery;
+    this.order.orderStatusDelivery = value;
+    this.handleStatusOptions(value);
+    await this.orderService.orderSetStatusDelivery(value, this.order._id);
   }
 
-  orderDeliveryStatus() {
-    return (
-      {
-        pickup: 'Pick Up',
-        pending: 'Todo listo para entregarse',
-        shipped: 'De camino a ser entregado',
-        delivered: 'Entregado',
-      }[this.order?.orderStatusDelivery] || 'Desconocido'
-    );
+  handleStatusOptions(value: OrderStatusDeliveryType) {
+    this.deliveryStatusOptions.forEach((option) => {
+      option.hide = option.value === value;
+    });
   }
 
   goToStore() {
@@ -614,70 +465,6 @@ export class OrderDetailComponent implements OnInit {
       relativeTo: this.route,
     });
   }
-
-  // async tagDialog(tags?: string[]) {
-  //   const tagsFilled = await this.tagsService.tagsByUser({
-  //     findBy: {
-  //       entity: 'order',
-  //     },
-  //     options: {
-  //       limit: -1,
-  //     },
-  //   });
-
-  //   this.dialogService.open(TagAsignationComponent, {
-  //     type: 'fullscreen-translucent',
-  //     customClass: 'app-dialog',
-  //     flags: ['no-header'],
-  //     props: {
-  //       text: 'SALVAR TAGS SELECCIOANDOS EN LA ORDEN',
-  //       tags: this.tags,
-  //       orderId: this.order._id,
-  //       activeTags:
-  //         this.order.tags &&
-  //         (this.order.tags !== null ||
-  //           (undefined && this.order.tags.length > 0))
-  //           ? this.order.tags
-  //           : null,
-  //       tagAction: async (param) => {
-  //         // !this.selectedTags[param._id] ? this.selectedTags[param._id] = true : this.selectedTags[param._id] = false;
-  //         this.addTag(param._id);
-  //       },
-  //     },
-  //   });
-  // }
-
-  // settingsDialog() {
-  //   const optionsList = [
-  //     {
-  //       text: 'Compartir',
-  //       callback: async () => {
-  //         await this.ngNavigatorShareService.share({
-  //           title: `Mi orden`,
-  //           url: `${this.URI}/ecommerce/order-detail/${this.order._id}`,
-  //         });
-  //       },
-  //     },
-  //   ];
-  //   if (this.merchantOwner && this.isMerchant) {
-  //     optionsList.push({
-  //       text: 'Vista del Visitante',
-  //       callback: async () => {
-  //         this.isMerchant = false;
-  //         // this.changeColor = '#272727';
-  //       },
-  //     });
-  //   }
-  //   this.dialogService.open(SettingsComponent, {
-  //     type: 'fullscreen-translucent',
-  //     customClass: 'app-dialog',
-  //     flags: ['no-header'],
-  //     props: {
-  //       title: 'Compartir esta Orden',
-  //       optionsList,
-  //     },
-  //   });
-  // }
 
   async addTag(tagId: string) {
     if (!this.selectedTags[tagId]) {
@@ -697,6 +484,9 @@ export class OrderDetailComponent implements OnInit {
       this.selectedTags[tagId] = false;
       this.order.tags = this.order.tags.filter((tag) => tag !== tagId);
     }
+    this.selectedTagsLength = Object.entries(this.selectedTags).filter(
+      (value) => value[1]
+    ).length;
   }
 
   downloadQr(qrElment: ElementRef) {
@@ -823,57 +613,32 @@ export class OrderDetailComponent implements OnInit {
     );
   }
 
-  changeView = () => {
-    // if (this.merchantOwner && !this.isMerchant) {
-    //   this.isMerchant = true;
-    //   // this.changeColor = '#2874AD';
-    // }
-  };
-
   async isMerchantOwner(merchant: string) {
     this.orderMerchant = await this.merchantsService.merchantDefault();
     this.isMerchant = merchant === this.orderMerchant?._id;
-    this.merchantOwner = merchant === this.orderMerchant?._id;
     this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
   }
 
-  // async addTag(tagId?: string) {
-  //   if (!this.selectedTags[tagId]) {
-  //     const added = await this.tagsService.addTagsInOrder(
-  //       this.order.items[0].saleflow.merchant._id,
-  //       tagId,
-  //       this.order._id
-  //     );
-  //     this.selectedTags[tagId] = true;
-  //     this.order.tags.push(tagId);
-  //   } else {
-  //     const removed = await this.tagsService.removeTagsInOrder(
-  //       this.order.items[0].saleflow.merchant._id,
-  //       tagId,
-  //       this.order._id
-  //     );
-  //     this.selectedTags[tagId] = false;
-  //     if (this.order.tags.includes(tagId)) {
-  //       this.order.tags = this.order.tags.filter((tag) => tag !== tagId);
-  //     }
-  //     /* const tagIndex = this.order.tags.findIndex((tag)=>{
-  //        tagId === this.order.tags[tag]
-  //        console.log(tagId + ' EL ID DEL TAG');
-  //     });
-  //     console.log(tagIndex + ' INDICE')
-  //     if(tagIndex >= 0){
-  //        this.order.tags.splice(tagIndex, 1)
-  //     } else {
-  //        console.log('No Esta')
-  //     } */
-  //   }
-  //   /* let selectedTags = Object.keys(this.selectedTags).filter((tag) =>{
-  //     return this.selectedTags[tag] == true
-  //  })
-  //  console.log(selectedTags);
-  //  for await (const tag of selectedTags) {
-  //  } */
-  // }
+  createTag() {
+    let dialogRef = this.dialog.open(CreateTagComponent, {
+      data: ['Ingresa el nombre del listado', 'Ingresa el cover del listado'],
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (!result) return;
+      const data: TagInput = {
+        name: result.name,
+        entity: 'order',
+        images: result.images,
+        merchant: this.orderMerchant._id,
+      };
+      const createdTag = await this.tagsService.createTag(data);
+      this.tagOptions.push({
+        text: result.name,
+        value: createdTag._id,
+        selected: false,
+      });
+    });
+  }
 
   urlIsVideo(url: string) {
     return isVideo(url);
@@ -932,34 +697,6 @@ export class OrderDetailComponent implements OnInit {
       document.getElementById('move').classList.remove('move');
     }, 3500);
   }
-
-  // goBackToFlowRoute() {
-  //   if (
-  //     this.flowRoute.includes('admin/orders') &&
-  //     this.flowRoute &&
-  //     this.isMerchant
-  //   ) {
-  //     this.router.navigate([this.flowRoute], {
-  //       queryParams: {
-  //         startOnSnapshot: true,
-  //       },
-  //     });
-  //     return;
-  //   } else {
-  //     if (this.isMerchant && !this.flowRoute.includes('admin/orders')) {
-  //       this.router.navigate(['admin/orders']);
-  //       return;
-  //     }
-
-  //     if (this.flowRoute && !this.isMerchant) {
-  //       this.router.navigate([this.flowRoute]);
-  //       return;
-  //     } else {
-  //       this.location.back();
-  //       return;
-  //     }
-  //   }
-  // }
 
   returnToStore = () => {
     this.router.navigate([

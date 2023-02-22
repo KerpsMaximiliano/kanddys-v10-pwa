@@ -3,7 +3,11 @@ import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { completeImageURL, getExtension, isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  completeImageURL,
+  getExtension,
+  isVideo,
+} from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
@@ -96,18 +100,19 @@ export class ArticleEditorComponent implements OnInit {
       this.name.setValue(this.item.name);
       this.description.setValue(this.item.description);
       if (this.item.images.length) {
-
         this.loadingSlides = false;
 
-        this.slides = this.item.images.map((image) => {
+        this.slides = this.item.images
+        .sort(({index:a},{index:b}) => a>b?1:-1)
+        .map(({index, ...image}) => {
           return {
             url: completeImageURL(image.value),
-            index: 0,
+            index,
             type: 'poster',
             text: '',
           };
         });
-        
+
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
           let imageURL = image.value;
@@ -140,7 +145,6 @@ export class ArticleEditorComponent implements OnInit {
           if (!this.selectedImages.length) this.loadImages();
         });
         // } else this.loadImages();
-
       }
       this.loadingSlides = false;
     }
@@ -219,7 +223,7 @@ export class ArticleEditorComponent implements OnInit {
     if (!ignore) {
       unlockUI();
       this._ItemsService.removeTemporalItem();
-      this._Router.navigate([`admin/entity-detail-metrics`]);
+      this._Router.navigate([`admin/dashboard`]);
     }
   };
 
@@ -353,7 +357,7 @@ export class ArticleEditorComponent implements OnInit {
 
           this._ToastrService.info('¡Item archivado exitosamente!');
 
-          this._Router.navigate([`admin/entity-detail-metrics`]);
+          this._Router.navigate([`admin/dashboard`]);
         },
       },
       {
@@ -384,7 +388,7 @@ export class ArticleEditorComponent implements OnInit {
                       this._MerchantsService.merchantData._id
                     );
 
-                  this._Router.navigate(['/admin/entity-detail-metrics']);
+                  this._Router.navigate(['/admin/dashboard']);
                 }
               },
               btnBackgroundColor: '#272727',

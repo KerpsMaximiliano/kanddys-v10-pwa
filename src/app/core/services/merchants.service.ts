@@ -129,24 +129,14 @@ export class MerchantsService {
 
   async ordersByMerchant(
     merchant: string,
-    pagination?: PaginationInput,
-    justPromise?: boolean
-  ): Promise<{ ordersByMerchant: ItemOrder[] } | any> {
-    if (!justPromise) {
-      const response = await this.graphql.query({
-        query: ordersByMerchant,
-        variables: { pagination, merchant },
-        fetchPolicy: 'no-cache',
-      });
-      return response;
-    } else {
-      const promise = this.graphql.query({
-        query: ordersByMerchant,
-        variables: { pagination, merchant },
-        fetchPolicy: 'no-cache',
-      });
-      return promise;
-    }
+    pagination?: PaginationInput
+  ): Promise<{ ordersByMerchant: ItemOrder[] }> {
+    const response = await this.graphql.query({
+      query: ordersByMerchant,
+      variables: { pagination, merchant },
+      fetchPolicy: 'no-cache',
+    });
+    return response;
   }
 
   async hotOrdersByMerchant(
@@ -393,7 +383,9 @@ export class MerchantsService {
     return response?.incomeMerchant;
   }
 
-  async viewsMerchants(paginate: PaginationInput): Promise<Array<ViewsMerchant>> {
+  async viewsMerchants(
+    paginate: PaginationInput
+  ): Promise<Array<ViewsMerchant>> {
     try {
       const result = await this.graphql.query({
         query: viewsMerchants,

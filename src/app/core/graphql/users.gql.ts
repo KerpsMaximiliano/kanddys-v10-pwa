@@ -44,3 +44,9 @@ export const buyersByItem = gql`
     }
   }
 `;
+
+export const deleteMe = gql`
+  mutation deleteMe  {
+    deleteMe
+  }
+`;

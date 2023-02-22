@@ -78,7 +78,7 @@ export class QrEditComponent implements OnInit {
         return;
       }
       if (this.item.images.length) {
-        this.gridArray = this.item.images.map((image) => {
+        this.gridArray = this.item.images.sort(({index:a},{index:b}) => a>b?1:-1).map((image) => {
           const fileParts = image.value.split('.');
           const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
           let auxiliarImageFileExtension = 'image/' + fileExtension;
@@ -97,11 +97,13 @@ export class QrEditComponent implements OnInit {
               _id: image._id,
               background: image.value,
               _type: auxiliarImageFileExtension,
+              index: image.index
             };
           } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
             return {
               background: image.value,
               _type: auxiliarVideoFileExtension,
+              index: image.index
             };
           }
         });
@@ -170,6 +172,7 @@ export class QrEditComponent implements OnInit {
   }
 
   async dropTagDraggable(event: CdkDragDrop<{ gridItem: any; index: number }>) {
+    const { _id:itemId } = this.item;
     this.gridArray[event.previousContainer.data.index].index =
       event.container.data.index;
     this.gridArray[event.container.data.index].index =
@@ -178,7 +181,26 @@ export class QrEditComponent implements OnInit {
       event.container.data.gridItem;
     this.gridArray[event.container.data.index] =
       event.previousContainer.data.gridItem;
-    console.log('this.gridArray: ', this.gridArray);
+    const {
+      _id,
+      index
+    } = this.gridArray[event.container.data.index];
+    const {
+      _id:_id2,
+      index:index2
+    } = this.gridArray[event.previousContainer.data.index];
+    const itemImage = {index,active:true};
+    const result = await this._ItemsService.itemUpdateImage(
+      itemImage,
+      _id,
+      itemId
+    );
+    const itemImage2 = {index: index2,active:true};
+    const result2 = await this._ItemsService.itemUpdateImage(
+      itemImage2,
+      _id2,
+      itemId
+    );
   }
 
   async loadFile(event: Event) {
@@ -233,7 +255,8 @@ export class QrEditComponent implements OnInit {
           ) {
             const reader = new FileReader();
             reader.onload = (e) => {
-              this.gridArray.push({
+              this.gridArray.unshift({
+                _id: addedImage?.images[addedImage.images.length-1]?._id,
                 background: reader.result,
                 _type: file.type,
               });

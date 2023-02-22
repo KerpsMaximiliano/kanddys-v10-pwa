@@ -5,6 +5,7 @@ import { Item, ItemPackage } from '../models/item';
 import {
   PaginationInput,
   SaleFlow,
+  SaleFlowInput,
   SaleFlowModule,
   SaleFlowModuleInput,
 } from '../models/saleflow';
@@ -28,9 +29,8 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class SaleFlowService {
-  saleflowSubject = new Subject();
-  saleflowData: SaleFlow;
   saleflowLoaded = new Subject();
+  saleflowData: SaleFlow;
 
   constructor(private graphql: GraphQLWrapper, private app: AppService) {}
 
@@ -42,7 +42,6 @@ export class SaleFlowService {
           variables: { id },
           fetchPolicy: 'no-cache',
         });
-        this.saleflowSubject.next(response?.saleflow);
         return response;
       } else {
         const response = await this.graphql.query({
@@ -50,7 +49,6 @@ export class SaleFlowService {
           variables: { id },
           fetchPolicy: 'no-cache',
         });
-        this.saleflowSubject.next(response?.saleflow);
         return response;
       }
     } catch (e) {
@@ -163,7 +161,7 @@ export class SaleFlowService {
     return response?.removeItemFromSaleFlow;
   }
 
-  async createSaleflow(input: any) {
+  async createSaleflow(input: SaleFlowInput) {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: createSaleflow,
@@ -188,7 +186,7 @@ export class SaleFlowService {
     return result;
   }
 
-  async updateSaleflow(input: any, id: any) {
+  async updateSaleflow(input: SaleFlowInput, id: string): Promise<SaleFlow> {
     console.log(input, id);
     const result = await this.graphql.mutate({
       mutation: updateSaleflow,
@@ -196,7 +194,7 @@ export class SaleFlowService {
     });
     if (!result || result?.errors) return undefined;
     console.log(result);
-    return result;
+    return result.updateSaleflow;
   }
 
   async createSaleFlowModule(
