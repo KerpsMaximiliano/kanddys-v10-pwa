@@ -4,6 +4,7 @@
       [src]="imgURL"
       (error)="imgURL = '/assets/images/noimage.png'"
       class="imgBox shadow"
+      [ngStyle]="{ objectFit: imageFit ? imageFit : 'cover' }"
       alt=""
     />
     <div class="infoBox">

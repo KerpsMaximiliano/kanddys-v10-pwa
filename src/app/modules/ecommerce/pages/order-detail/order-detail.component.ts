@@ -150,7 +150,12 @@ export class OrderDetailComponent implements OnInit {
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
-
+    if (!this.order) {
+      this.router.navigate([`others/error-screen/`], {
+        queryParams: { type: 'order' },
+      });
+      return;
+    }
     if (this.order.items) {
       for (const itemSubOrder of this.order.items) {
         itemSubOrder.item.media = itemSubOrder.item.images
@@ -181,6 +186,8 @@ export class OrderDetailComponent implements OnInit {
       }
     }
 
+    this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
+    // if (this.order.orderStatus === 'draft') return unlockUI();
     if (!this.order.ocr) {
       const result = await this.paymentLogService.paymentLogsByOrder({
         findBy: {
@@ -192,14 +199,6 @@ export class OrderDetailComponent implements OnInit {
         this.payedWithAzul = true;
       }
     }
-
-    if (!this.order) {
-      this.router.navigate([`others/error-screen/`], {
-        queryParams: { type: 'order' },
-      });
-      return;
-    }
-    this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
     );
