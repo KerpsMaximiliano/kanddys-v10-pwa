@@ -195,7 +195,7 @@ export class PaymentsComponent implements OnInit {
                 padding: '5px 20px',
                 right: '37px',
                 top: '133px',
-                cursor: 'pointer'
+                cursor: 'pointer',
               },
             },
           ],
@@ -209,31 +209,39 @@ export class PaymentsComponent implements OnInit {
             const { buttonClicked, value, valid } = params;
 
             try {
-              if (valid &&  value.email && value.email.length > 0) {
+              if (valid && value.email && value.email.length > 0) {
                 await this.authService.updateMe({
                   email: value.email,
                 });
                 this.redirectToAzulPaymentPage();
               } else {
-                this.toastrService.error( value.email && value.email.length > 0 ? 'Email invalido' : 'Campo vacio, ingresa un email valido', null, {
-                  timeOut: 1500,
-                });
+                this.toastrService.error(
+                  value.email && value.email.length > 0
+                    ? 'Email invalido'
+                    : 'Campo vacio, ingresa un email valido',
+                  null,
+                  {
+                    timeOut: 1500,
+                  }
+                );
               }
             } catch (error) {
               const user = await this.authService.checkUser(value.email);
 
-              if(user) {
-                this.toastrService.error('Email ya registrado con otro usuario, ingresa un email diferente', null, {
-                  timeOut: 1500,
-                });
+              if (user) {
+                this.toastrService.error(
+                  'Email ya registrado con otro usuario, ingresa un email diferente',
+                  null,
+                  {
+                    timeOut: 1500,
+                  }
+                );
               } else {
                 this.toastrService.error('Ocurrió un error', null, {
                   timeOut: 1500,
-                });                
+                });
               }
-
             }
-           
           },
         },
       ],
@@ -269,7 +277,7 @@ export class PaymentsComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.route.queryParams.subscribe(async (queryParams) => {
         const orderId = params['orderId'];
-        const { redirectToAzul } = queryParams;
+        const { redirectToAzul, privatePost } = queryParams;
 
         this.status = 'loading';
         const redirectToAzulPaymentsPage = Boolean(redirectToAzul);
@@ -345,49 +353,14 @@ export class PaymentsComponent implements OnInit {
           this.redirectToAzulPaymentPage();
         }
 
-        const privatePost = this.route.snapshot.queryParamMap.get('privatePost');
-        if (privatePost === 'true') {
-          const entityTemplate =
-            await this.entityTemplateService.precreateEntityTemplate();
-          await this.entityTemplateService.entityTemplateAuthSetData(
-            entityTemplate._id,
-            {
-              reference: this.order.items[0].post._id,
-              entity: 'post',
-            }
-          );
-
-          if (!this.postsService.postReceiverNumber) {
-            this.postsService.postReceiverNumber = JSON.parse(
-              localStorage.getItem('postReceiverNumber')
-            );
-          }
-          const recipientUser = await this.authService.checkUser(
-            this.postsService.postReceiverNumber
-          );
-
-          if (recipientUser) {
-            const recipient = await this.entityTemplateService.createRecipient({
-              phone: this.postsService.postReceiverNumber,
-            });
-
-            if (this.postsService.privatePost) {
-              await this.entityTemplateService.entityTemplateAddRecipient(
-                entityTemplate._id,
-                {
-                  edit: false,
-                  recipient: recipient._id,
-                }
-              );
-            }
-          }
-        }
-
         if (!this.azulPaymentsSupported) {
           this.onlinePaymentsOptions.pop();
         }
 
-        if (redirectToAzulPaymentsPage && !this.order.user) {
+        if (
+          (redirectToAzulPaymentsPage && !this.order.user) ||
+          (privatePost === 'true' && this.currentUser && !this.order.user)
+        ) {
           this.order = (
             await this.orderService.authOrder(
               this.order._id,
@@ -403,6 +376,40 @@ export class PaymentsComponent implements OnInit {
         }
 
         if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+
+        if (privatePost === 'true' && this.currentUser) {
+          const entityTemplate =
+            await this.entityTemplateService.precreateEntityTemplate();
+          await this.entityTemplateService.entityTemplateAuthSetData(
+            entityTemplate._id,
+            {
+              reference: this.order.items[0].post._id,
+              entity: 'post',
+            }
+          );
+          if (!this.postsService.postReceiverNumber) {
+            this.postsService.postReceiverNumber = JSON.parse(
+              localStorage.getItem('postReceiverNumber')
+            );
+          }
+          const recipientUser = await this.authService.checkUser(
+            this.postsService.postReceiverNumber
+          );
+          if (recipientUser) {
+            const recipient = await this.entityTemplateService.createRecipient({
+              phone: this.postsService.postReceiverNumber,
+            });
+            if (this.postsService.privatePost) {
+              await this.entityTemplateService.entityTemplateAddRecipient(
+                entityTemplate._id,
+                {
+                  edit: false,
+                  recipient: recipient._id,
+                }
+              );
+            }
+          }
+        }
       });
     });
   }
@@ -457,12 +464,12 @@ export class PaymentsComponent implements OnInit {
     lockUI();
     if (this.order) {
       if (this.order.orderStatus === 'draft') {
-        const user = JSON.parse(
-          localStorage.getItem('registered-user')
-        ) as User;
-        if (user) {
+        if (this.currentUser) {
           this.order = (
-            await this.orderService.authOrder(this.order._id, user._id)
+            await this.orderService.authOrder(
+              this.order._id,
+              this.currentUser._id
+            )
           ).authOrder;
           localStorage.removeItem('registered-user');
         } else {
