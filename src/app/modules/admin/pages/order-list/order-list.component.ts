@@ -58,6 +58,14 @@ export class OrderListComponent implements OnInit {
           {
             findBy: {
               orderStatusDelivery: deliveryStatus,
+              orderStatus: [
+                'started',
+                'verifying',
+                'in progress',
+                'to confirm',
+                'completed',
+                'paid',
+              ],
             },
             options: {
               limit: -1,
