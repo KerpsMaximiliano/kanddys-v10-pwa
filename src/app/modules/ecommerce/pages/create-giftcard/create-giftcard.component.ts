@@ -371,31 +371,36 @@ export class CreateGiftcardComponent implements OnInit {
     // );
     const post = this.header.getPost();
     if (post?.targets?.[0]?.name) {
-      this.formSteps[1].fieldsList[0].fieldControl.control = new FormControl(
+      this.formSteps[0].fieldsList[0].fieldControl.control = new FormControl(
         post.targets[0].name,
         Validators.pattern(/[\S]/)
       );
     }
     if (post?.message) {
-      this.formSteps[1].fieldsList[2].fieldControl.control = new FormControl(
+      this.formSteps[0].fieldsList[1].fieldControl.control = new FormControl(
         post.message,
         Validators.pattern(/[\S]/)
       );
     }
 
-    this.giftMessageForm.patchValue({
-      message: this.postsService.post.message,
-      title: this.postsService.post.title,
-      from: this.postsService.post.from,
-    });
+    if (this.postsService.post) {
+      this.giftMessageForm.patchValue({
+        message: this.postsService.post.message,
+        title: this.postsService.post.title,
+        from: this.postsService.post.from,
+      });
+    }
   }
 
   submit() {
     const { message, title, from } = this.giftMessageForm.value;
 
-    this.postsService.post.message = message;
-    this.postsService.post.title = title;
-    this.postsService.post.from = from;
+    this.postsService.post = {
+      ...this.postsService.post,
+      message,
+      title,
+      from,
+    };
 
     localStorage.setItem(
       'post',
