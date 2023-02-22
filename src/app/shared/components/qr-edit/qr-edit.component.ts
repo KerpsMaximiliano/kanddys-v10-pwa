@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { environment } from 'src/environments/environment';
-import { PostInput, SlideInput } from 'src/app/core/models/post';
+import { SlideInput } from 'src/app/core/models/post';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { SettingsComponent } from '../../dialogs/settings/settings.component';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from '../../dialogs/settings/settings.component';
 import { SingleActionDialogComponent } from '../../dialogs/single-action-dialog/single-action-dialog.component';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -101,6 +104,7 @@ export class QrEditComponent implements OnInit {
             };
           } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
             return {
+              _id: image._id,
               background: image.value,
               _type: auxiliarVideoFileExtension,
               index: image.index
@@ -147,7 +151,7 @@ export class QrEditComponent implements OnInit {
             this.gridArray.push({
               ...slide,
               background: fileUrl,
-              _type: 'video',
+              _type: slide.media.type,
             });
           } else if (!slide.media && slide.type === 'text') {
             this.gridArray.push({
@@ -172,7 +176,7 @@ export class QrEditComponent implements OnInit {
   }
 
   async dropTagDraggable(event: CdkDragDrop<{ gridItem: any; index: number }>) {
-    const { _id:itemId } = this.item;
+    const { _id:itemId } = this.item || {};
     this.gridArray[event.previousContainer.data.index].index =
       event.container.data.index;
     this.gridArray[event.container.data.index].index =
@@ -190,12 +194,13 @@ export class QrEditComponent implements OnInit {
       index:index2
     } = this.gridArray[event.previousContainer.data.index];
     const itemImage = {index,active:true};
+    const itemImage2 = {index: index2,active:true};
+    if(!itemId) return;
     const result = await this._ItemsService.itemUpdateImage(
       itemImage,
       _id,
       itemId
     );
-    const itemImage2 = {index: index2,active:true};
     const result2 = await this._ItemsService.itemUpdateImage(
       itemImage2,
       _id2,
@@ -206,6 +211,7 @@ export class QrEditComponent implements OnInit {
   async loadFile(event: Event) {
     const fileList = (event.target as HTMLInputElement).files;
     if (!fileList.length) return;
+    let index = this.gridArray.length - 1;
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList.item(i);
       if (this.item) {
@@ -241,6 +247,7 @@ export class QrEditComponent implements OnInit {
             [
               {
                 file,
+                index
               },
             ],
             this.item._id
@@ -255,7 +262,7 @@ export class QrEditComponent implements OnInit {
           ) {
             const reader = new FileReader();
             reader.onload = (e) => {
-              this.gridArray.unshift({
+              this.gridArray.push({
                 _id: addedImage?.images[addedImage.images.length-1]?._id,
                 background: reader.result,
                 _type: file.type,
@@ -298,6 +305,14 @@ export class QrEditComponent implements OnInit {
         };
         reader.readAsDataURL(file);
       } else {
+        if (
+          ![
+            ...this.imageFiles,
+            ...this.videoFiles,
+            ...this.audioFiles,
+          ].includes(file.type)
+        )
+          return;
         const reader = new FileReader();
 
         if (file.type.includes('video')) {
@@ -388,80 +403,77 @@ export class QrEditComponent implements OnInit {
     return;
   }
 
-  // openSlideSettings(index: number) {
-  //   let list: Array<SettingsDialogButton>;
-  //   if (this.item) {
-  //     list = [
-  //       {
-  //         text: 'Edita este slide (crop, etc..)',
-  //         callback: async () => {
-  //           this._ItemsService.editingImageId = this.gridArray[index]._id;
-  //           this._Router.navigate([`admin/create-article/${this.item._id}`]);
-  //         },
-  //       },
-  //       {
-  //         text: 'Eliminar',
-  //         callback: async () => {
-  //           this.dialog.open(SingleActionDialogComponent, {
-  //             type: 'fullscreen-translucent',
-  //             props: {
-  //               title: 'Eliminar este slide del símbolo',
-  //               buttonText: 'Sí, borrar',
-  //               mainButton: () => {
-  //                 this.deleteImage(index);
-  //               },
-  //               btnBackgroundColor: '#272727',
-  //               btnMaxWidth: '133px',
-  //               btnPadding: '7px 2px',
-  //             },
-  //             customClass: 'app-dialog',
-  //             flags: ['no-header'],
-  //           });
-  //         },
-  //       },
-  //     ];
-  //     if (this.item && isVideo(this.gridArray[index].background)) list.shift();
+  openSlideSettings(index: number) {
+    let list: Array<SettingsDialogButton>;
+    if (this.item) {
+      list = [
+        {
+          text: 'Edita este slide (crop, etc..)',
+          callback: async () => {
+            this._ItemsService.editingImageId = this.gridArray[index]._id;
+            this._Router.navigate([`admin/create-article/${this.item._id}`]);
+          },
+        },
+        {
+          text: 'Eliminar',
+          callback: async () => {
+            this.dialog.open(SingleActionDialogComponent, {
+              type: 'fullscreen-translucent',
+              props: {
+                title: 'Eliminar este slide del símbolo',
+                buttonText: 'Sí, borrar',
+                mainButton: () => {
+                  this.deleteImage(index);
+                },
+                btnBackgroundColor: '#272727',
+                btnMaxWidth: '133px',
+                btnPadding: '7px 2px',
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+          },
+        },
+      ];
+      if (this.item && isVideo(this.gridArray[index].background)) list.shift();
 
-  //     list.forEach((option) => (option.styles = { color: '#383838' }));
-  //   } else {
-  //     list = [
-  //       {
-  //         text: 'Eliminar',
-  //         callback: async () => {
-  //           this.dialog.open(SingleActionDialogComponent, {
-  //             type: 'fullscreen-translucent',
-  //             props: {
-  //               title: 'Eliminar este slide del símbolo',
-  //               buttonText: 'Si, borrar',
-  //               mainButton: () => {
-  //                 this.deleteImage(index);
-  //               },
-  //               btnBackgroundColor: '#272727',
-  //               btnMaxWidth: '133px',
-  //               btnPadding: '7px 2px',
-  //             },
-  //             btnBackgroundColor: '#272727',
-  //             btnMaxWidth: '133px',
-  //             btnPadding: '7px 2px',
-  //           },
-  //           customClass: 'app-dialog',
-  //           flags: ['no-header'],
-  //         });
-  //       },
-  //     },
-  //   ];
-  //   this.dialog.open(SettingsComponent, {
-  //     type: 'fullscreen-translucent',
-  //     props: {
-  //       optionsList: list,
-  //       closeEvent: () => {},
-  //       shareBtn: false,
-  //       title: '',
-  //     },
-  //     customClass: 'app-dialog',
-  //     flags: ['no-header'],
-  //   });
-  // }
+      list.forEach((option) => (option.styles = { color: '#383838' }));
+    } else {
+      list = [
+        {
+          text: 'Eliminar',
+          callback: async () => {
+            this.dialog.open(SingleActionDialogComponent, {
+              type: 'fullscreen-translucent',
+              props: {
+                title: 'Eliminar este slide del símbolo',
+                buttonText: 'Si, borrar',
+                mainButton: () => {
+                  this.deleteImage(index);
+                },
+                btnBackgroundColor: '#272727',
+                btnMaxWidth: '133px',
+                btnPadding: '7px 2px',
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+          },
+        },
+      ];
+    }
+    this.dialog.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        closeEvent: () => {},
+        shareBtn: false,
+        title: '',
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
 
   deleteSlide(index: number) {
     this.dialog.open(SingleActionDialogComponent, {
