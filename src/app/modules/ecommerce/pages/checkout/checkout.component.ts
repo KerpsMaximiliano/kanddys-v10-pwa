@@ -120,7 +120,7 @@ export class CheckoutComponent implements OnInit {
       this.createDialogs();
 
       let storedPrivatePost: string = localStorage.getItem('privatePost');
-      this.postsService.privatePost = Boolean(storedPrivatePost);
+      this.postsService.privatePost = storedPrivatePost === 'true';
 
       if (!this.postsService.post) {
         const storedPost = localStorage.getItem('post');
@@ -202,10 +202,12 @@ export class CheckoutComponent implements OnInit {
           },
         })
       )?.listItems;
-      
+
       for (const item of this.items as Array<ExtendedItem>) {
         item.ready = false;
-        item.images = item.images.sort(({index:a},{index:b}) => a > b ? 1 : -1);
+        item.images = item.images.sort(({ index: a }, { index: b }) =>
+          a > b ? 1 : -1
+        );
         for (const image of item.images) {
           if (
             image.value &&
@@ -342,7 +344,6 @@ export class CheckoutComponent implements OnInit {
     mode: 'item' | 'message' | 'address' | 'reservation' | 'customizer'
   ) {
     this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
-    localStorage.removeItem('privatePost');
     switch (mode) {
       case 'item': {
         this.router.navigate([`../store`], {
@@ -593,7 +594,7 @@ export class CheckoutComponent implements OnInit {
       this.headerService.post = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
-        if (this.postsService.privatePost) {
+        if (this.postsService.privatePost && !this.logged) {
           this.router.navigate([`/auth/login`], {
             queryParams: {
               orderId: createdOrder,
@@ -603,6 +604,7 @@ export class CheckoutComponent implements OnInit {
           return;
         }
         localStorage.removeItem('privatePost');
+        this.postsService.privatePost = false;
         this.router.navigate([`../payments/${this.headerService.orderId}`], {
           relativeTo: this.route,
           replaceUrl: true,
