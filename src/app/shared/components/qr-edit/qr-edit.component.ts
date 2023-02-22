@@ -99,6 +99,7 @@ export class QrEditComponent implements OnInit {
             };
           } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
             return {
+              _id: image._id,
               background: image.value,
               _type: auxiliarVideoFileExtension,
               index: image.index
