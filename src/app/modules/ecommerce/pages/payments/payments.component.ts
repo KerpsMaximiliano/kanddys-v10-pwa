@@ -11,6 +11,7 @@ import { Post } from 'src/app/core/models/post';
 import { User } from 'src/app/core/models/user';
 import { ViewsMerchant } from 'src/app/core/models/views-merchant';
 import { Bank } from 'src/app/core/models/wallet';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { IntegrationsService } from 'src/app/core/services/integrations.service';
@@ -221,7 +222,8 @@ export class PaymentsComponent implements OnInit {
     private integrationService: IntegrationsService,
     private dialogService: DialogService,
     private toastrService: ToastrService,
-    private entityTemplateService: EntityTemplateService
+    private entityTemplateService: EntityTemplateService,
+    private authService: AuthService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -317,6 +319,31 @@ export class PaymentsComponent implements OnInit {
           entity: 'post',
         }
       );
+
+      if (!this.postsService.postReceiverNumber) {
+        this.postsService.postReceiverNumber = JSON.parse(
+          localStorage.getItem('postReceiverNumber')
+        );
+      }
+      const recipientUser = await this.authService.checkUser(
+        this.postsService.postReceiverNumber
+      );
+
+      if (recipientUser) {
+        const recipient = await this.entityTemplateService.createRecipient({
+          phone: this.postsService.postReceiverNumber,
+        });
+
+        if (this.postsService.privatePost) {
+          await this.entityTemplateService.entityTemplateAddRecipient(
+            entityTemplate._id,
+            {
+              edit: false,
+              recipient: recipient._id,
+            }
+          );
+        }
+      }
     }
   }
 
