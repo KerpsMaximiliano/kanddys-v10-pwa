@@ -193,7 +193,6 @@ const routes: Routes = [
     CreateArticleComponent,
     TextEditionAndPreviewComponent,
     TermsOfUseComponent,
-    ContactLandingContainerComponent,
     CollectionsComponent,
     TagItemsComponent,
     GiftDetailComponent,

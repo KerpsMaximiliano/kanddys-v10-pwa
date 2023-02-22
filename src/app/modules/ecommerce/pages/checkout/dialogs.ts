@@ -1038,7 +1038,7 @@ export class Dialogs {
                       sentiment,
                       timing,
                     },
-                    '63e02c8c65c8752d0c5f033c'
+                    '63f58b7ee2f51cbd1a4cd41d'
                   );
 
                 const options = JSON.parse(response).map((option) => ({
@@ -1373,7 +1373,7 @@ export class Dialogs {
                   const response =
                     await this.gpt3Service.generateResponseForTemplate(
                       {},
-                      '63c0ff83e752c40ca8eefcfb'
+                      '63f58ccfe2f51cbd1a4cd42c'
                     );
 
                   unlockUI();
