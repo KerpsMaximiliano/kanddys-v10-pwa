@@ -1079,6 +1079,8 @@ export class Dialogs {
 
                 unlockUI();
               } catch (error) {
+
+                this.dialogFlowService.swiperConfig.allowSlideNext = false;
                 unlockUI();
 
                 console.error(error);

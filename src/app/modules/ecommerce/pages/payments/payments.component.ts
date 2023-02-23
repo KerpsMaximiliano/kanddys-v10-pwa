@@ -377,37 +377,50 @@ export class PaymentsComponent implements OnInit {
 
         if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
 
+        if (this.post && !this.post.author && this.currentUser) await this.postsService.postAddUser(this.post._id, this.currentUser._id);
+
         if (privatePost === 'true' && this.currentUser) {
-          const entityTemplate =
-            await this.entityTemplateService.precreateEntityTemplate();
-          await this.entityTemplateService.entityTemplateAuthSetData(
-            entityTemplate._id,
+          const templateMatches = await this.entityTemplateService.entityTemplates(
             {
-              reference: this.order.items[0].post._id,
-              entity: 'post',
+              findBy: {
+                reference: this.post._id,
+                entity: "post"
+              }
             }
           );
-          if (!this.postsService.postReceiverNumber) {
-            this.postsService.postReceiverNumber = JSON.parse(
-              localStorage.getItem('postReceiverNumber')
+          if (!templateMatches.length) {
+            console.log(templateMatches);
+            const entityTemplate =
+            await this.entityTemplateService.createEntityTemplate();
+            await this.entityTemplateService.entityTemplateAuthSetData(
+              entityTemplate._id,
+              {
+                reference: this.order.items[0].post._id,
+                entity: 'post',
+              }
             );
-          }
-          const recipientUser = await this.authService.checkUser(
-            this.postsService.postReceiverNumber
-          );
-          if (recipientUser) {
-            const recipient = await this.entityTemplateService.createRecipient({
-              phone: this.postsService.postReceiverNumber,
-            });
-            if (this.postsService.privatePost) {
-              await this.entityTemplateService.entityTemplateAddRecipient(
-                entityTemplate._id,
-                {
-                  edit: false,
-                  recipient: recipient._id,
-                }
+            if (!this.postsService.postReceiverNumber) {
+              this.postsService.postReceiverNumber = JSON.parse(
+                localStorage.getItem('postReceiverNumber')
               );
             }
+            const recipientUser = await this.authService.checkUser(
+              this.postsService.postReceiverNumber
+            );
+            if (recipientUser) {
+              const recipient = await this.entityTemplateService.createRecipient({
+                phone: this.postsService.postReceiverNumber,
+              });
+              if (this.postsService.privatePost) {
+                await this.entityTemplateService.entityTemplateAddRecipient(
+                  entityTemplate._id,
+                  {
+                    edit: false,
+                    recipient: recipient._id,
+                  }
+                );
+              }
+            } 
           }
         }
       });
