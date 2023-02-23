@@ -747,8 +747,9 @@ table {
   all: unset;
   display: flex;
   align-items: baseline;
+  justify-content: center;
   width: 100%;
-  padding: 10px 20px;
+  padding: 10px 0px;
   background-color: #82f18d;
   cursor: pointer;
 

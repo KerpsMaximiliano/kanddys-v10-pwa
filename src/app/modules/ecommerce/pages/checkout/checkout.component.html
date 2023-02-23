@@ -19,12 +19,13 @@
     <div style="display: flex; gap: 8px">
       <a> <i class="far fa-angle-double-up" (click)="editOrder('item')"></i></a>
       <p class="title">
-        {{
+        Prefactura
+        <!-- {{
           headerService.saleflow?.merchant?.name.length < 26
             ? headerService.saleflow?.merchant?.name
             : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
                 "Tienda" | titlecase)
-        }}
+        }} -->
       </p>
     </div>
     <div class="right-area" *ngIf="logged || headerService.user">
