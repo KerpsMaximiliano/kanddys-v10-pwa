@@ -64,9 +64,10 @@
   </div>
 </div>
 
-<div class="bottom-content"
+<div
+  class="bottom-content"
   [ngClass]="{
-    'text-slide': slidesPath[currentMediaSlide].mode === 'solidBg'
+    'text-slide': slidesPath[currentMediaSlide]?.mode === 'solidBg'
   }"
 >
   <div
@@ -76,8 +77,7 @@
         slidesPath[currentMediaSlide] &&
         ['fullImg', 'solidBg'].includes(slidesPath[currentMediaSlide].mode),
       'content-container2':
-        slidesPath[currentMediaSlide] &&
-        slidesPath[currentMediaSlide].mode === 'gradientImg'
+        slidesPath[currentMediaSlide]?.mode === 'gradientImg'
     }"
     [ngStyle]="{
       'background-image':
@@ -95,8 +95,7 @@
         <p class="title" (click)="handleMode()">{{ post.title }}</p>
         <p class="subtitle" (click)="handleMode()">
           {{
-            slidesPath[currentMediaSlide] &&
-            slidesPath[currentMediaSlide].mode === "fullImg"
+            slidesPath[currentMediaSlide]?.mode === "fullImg"
               ? post.message.slice(0, 24) +
                 (post.message.length > 24 ? "..." : "")
               : post.message
@@ -131,10 +130,10 @@
     >
       <div class="icons-container" style="margin: 0 23px 0 auto">
         <img
-            [src]="env + '/upload.svg'"
-            style="filter: brightness(10)"
-            alt="Contenedor con flecha saliendo"
-          />
+          [src]="env + '/upload.svg'"
+          style="filter: brightness(10)"
+          alt="Contenedor con flecha saliendo"
+        />
       </div>
     </div>
 

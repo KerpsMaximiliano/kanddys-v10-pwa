@@ -120,9 +120,9 @@ export class PostPreviewComponent implements OnInit {
     });
 
   handleMode(): void {
-    if (this.slidesPath[this.currentMediaSlide].mode === 'gradientImg') {
+    if (this.slidesPath[this.currentMediaSlide]?.mode === 'gradientImg') {
       this.slidesPath[this.currentMediaSlide].mode = 'fullImg';
-    } else if (this.slidesPath[this.currentMediaSlide].mode === 'fullImg') {
+    } else if (this.slidesPath[this.currentMediaSlide]?.mode === 'fullImg') {
       this.slidesPath[this.currentMediaSlide].mode = 'gradientImg';
     }
   }
