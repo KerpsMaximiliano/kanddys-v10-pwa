@@ -283,6 +283,7 @@ export class QrEditComponent implements OnInit {
             console.log(auxiliarFileExtension);
 
             this.gridArray.push({
+              _id: addedImage?.images[addedImage.images.length-1]?._id,
               background: uploadedVideoURL,
               _type: auxiliarFileExtension,
             });
