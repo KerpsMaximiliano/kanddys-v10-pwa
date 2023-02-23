@@ -99,6 +99,7 @@ export class QrEditComponent implements OnInit {
             };
           } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
             return {
+              _id: image._id,
               background: image.value,
               _type: auxiliarVideoFileExtension,
               index: image.index
@@ -198,6 +199,7 @@ export class QrEditComponent implements OnInit {
   async loadFile(event: Event) {
     const fileList = (event.target as HTMLInputElement).files;
     if (!fileList.length) return;
+    let index = this.gridArray.length - 1;
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList.item(i);
       if (this.item) {
@@ -233,6 +235,7 @@ export class QrEditComponent implements OnInit {
             [
               {
                 file,
+                index
               },
             ],
             this.item._id
@@ -247,7 +250,7 @@ export class QrEditComponent implements OnInit {
           ) {
             const reader = new FileReader();
             reader.onload = (e) => {
-              this.gridArray.unshift({
+              this.gridArray.push({
                 _id: addedImage?.images[addedImage.images.length-1]?._id,
                 background: reader.result,
                 _type: file.type,
@@ -280,6 +283,7 @@ export class QrEditComponent implements OnInit {
             console.log(auxiliarFileExtension);
 
             this.gridArray.push({
+              _id: addedImage?.images[addedImage.images.length-1]?._id,
               background: uploadedVideoURL,
               _type: auxiliarFileExtension,
             });
@@ -312,6 +316,7 @@ export class QrEditComponent implements OnInit {
           this._PostsService.post.slides.push(content);
         };
       }
+      index++;
     }
   }
 
