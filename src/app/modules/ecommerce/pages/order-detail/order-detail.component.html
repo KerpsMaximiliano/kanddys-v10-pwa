@@ -38,7 +38,7 @@
       {{ order.items[0].saleflow.merchant.name }}
     </p>
   </a>
-  <ng-container *ngIf="isMerchant">
+  <ng-container *ngIf="isMerchant && order.orderStatus !== 'draft'">
     <div style="padding-top: 5px; margin-bottom: 5px">
       <app-dropdown-menu
         [optionsList]="deliveryStatusOptions"
@@ -96,10 +96,13 @@
       </div>
       <div class="info-display">
         <span class="info" style="margin-left: 0">
-          {{ orderDate }} para
-          <a style="color: #2874ad">
-            {{ order?.user?.name || order?.user?.phone || order?.user?.email }}
-          </a>
+          {{ orderDate }}
+          <ng-container *ngIf="order?.user">
+            para
+            <a style="color: #2874ad">
+              {{ order.user.name || order.user.phone || order.user.email }}
+            </a>
+          </ng-container>
         </span>
       </div>
     </section>
@@ -195,7 +198,11 @@
       </div>
     </section>
 
-    <section class="section" style="margin-top: 50px">
+    <section
+      class="section"
+      style="margin-top: 50px"
+      *ngIf="order?.ocr || payedWithAzul"
+    >
       <h2
         class="section-title"
         [ngClass]="{
@@ -204,11 +211,7 @@
       >
         Pagos:
       </h2>
-      <div
-        class="items-container"
-        style="margin-top: 5px"
-        *ngIf="order?.ocr || payedWithAzul"
-      >
+      <div class="items-container" style="margin-top: 5px">
         <div
           class="image-container"
           #elemt
@@ -304,7 +307,7 @@
           class="address-name"
           *ngIf="
             (order.items[0].deliveryLocation.nickName &&
-              headerService.user?._id === order.user._id) ||
+              headerService.user?._id === order.user?._id) ||
             (order.items[0].deliveryLocation.nickName &&
               !order.items[0].deliveryLocation.street)
           "
@@ -313,8 +316,8 @@
         </p>
         <p
           [ngClass]="{
-            added: headerService.user?._id === order.user._id,
-            'address-name': headerService.user?._id !== order.user._id
+            added: headerService.user?._id === order.user?._id,
+            'address-name': headerService.user?._id !== order.user?._id
           }"
           *ngIf="order.items[0].deliveryLocation.street"
         >

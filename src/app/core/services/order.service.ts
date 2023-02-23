@@ -284,6 +284,8 @@ export class OrderService {
         'in progress': 'en revisión',
         'to confirm': 'por confirmar',
         completed: 'completado',
+        draft: 'por terminar',
+        paid: 'pagada',
       }[status] ?? 'error'
     );
   }

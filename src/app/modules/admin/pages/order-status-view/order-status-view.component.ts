@@ -21,7 +21,8 @@ export class OrderStatusViewComponent implements OnInit {
   // orderDeliveryStatus = this.orderService.orderDeliveryStatus;
   tags: ExtendedTag[] = [];
   orders: ItemOrder[] = [];
-  orderStatus = {
+  draftOrders: ItemOrder[] = [];
+  orderStatusDelivery = {
     inProgress: [],
     delivered: [],
     pending: [],
@@ -56,20 +57,25 @@ export class OrderStatusViewComponent implements OnInit {
       }),
     ]).then((result) => {
       const [{ ordersByMerchant }, tags] = result;
-      this.orders = ordersByMerchant;
-      this.orderStatus.inProgress = this.orders.filter(
+      this.orders = ordersByMerchant.filter(
+        (itemOrder) => itemOrder.orderStatus !== 'draft'
+      );
+      this.draftOrders = ordersByMerchant.filter(
+        (itemOrder) => itemOrder.orderStatus === 'draft'
+      );
+      this.orderStatusDelivery.inProgress = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'in progress'
       );
-      this.orderStatus.pending = this.orders.filter(
+      this.orderStatusDelivery.pending = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'pending'
       );
-      this.orderStatus.pickup = this.orders.filter(
+      this.orderStatusDelivery.pickup = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'pickup'
       );
-      this.orderStatus.shipped = this.orders.filter(
+      this.orderStatusDelivery.shipped = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'shipped'
       );
-      this.orderStatus.delivered = this.orders.filter(
+      this.orderStatusDelivery.delivered = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'delivered'
       );
 
