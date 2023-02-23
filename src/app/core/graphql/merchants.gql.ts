@@ -289,6 +289,7 @@ export const ordersByMerchantHot = gql`
       status {
         status
       }
+      orderStatus
       orderStatusDelivery
       tags
     }
@@ -420,7 +421,7 @@ export const viewsMerchant = gql`
       description
       type
       merchant
-      numeration{
+      numeration {
         value
       }
     }

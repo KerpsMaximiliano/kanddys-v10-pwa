@@ -11,6 +11,7 @@ export class CollectionCardComponent implements OnInit {
   @Input() title: string;
   @Input() description: string;
   @Input() icon: string;
+  @Input() imageFit: string;
 
   environment: string = environment.assetsUrl;
 
