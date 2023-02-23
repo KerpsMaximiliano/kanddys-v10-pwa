@@ -159,6 +159,9 @@ import { CreateTagComponent } from './dialogs/create-tag/create-tag.component';
 import { CollectionCardComponent } from './components/collection-card/collection-card.component';
 import { MatCardModule } from '@angular/material/card';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
+import { InfoCard2Component } from './components/info-card2/info-card2.component';
+import { MerchantStepperFormComponent } from './components/merchant-stepper-form/merchant-stepper-form.component';
+import { StringInputComponent } from './components/string-input/string-input.component';
 
 const imports = [
   CommonModule,
@@ -323,6 +326,9 @@ const declarations = [
   CreateTagComponent,
   CollectionCardComponent,
   CompactCardComponent,
+  InfoCard2Component,
+  MerchantStepperFormComponent,
+  StringInputComponent,
 ];
 
 @NgModule({

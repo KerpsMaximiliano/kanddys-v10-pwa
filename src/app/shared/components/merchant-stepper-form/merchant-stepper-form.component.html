@@ -1,0 +1,221 @@
+<mat-vertical-stepper #stepper [linear]="itemForm.valid">
+  <mat-step>
+    <ng-template matStepLabel>¿Quién recibirá el dinero?</ng-template>
+    <div
+      style="
+        margin: 8px 0;
+        display: grid;
+        gap: 7px;
+        grid-template-columns: 1fr 1fr;
+      "
+    >
+      <app-string-input
+        innerLabel="Nombre"
+        (onInputEvent)="onNameInput($event)"
+        type="text"
+      ></app-string-input>
+      <app-string-input
+        innerLabel="Apellido"
+        (onInputEvent)="onLastNameInput($event)"
+        inputName="lastname"
+        inputId="lastname"
+        type="text"
+      ></app-string-input>
+    </div>
+    <div style="margin: 10px 0px">
+      <app-string-input
+        innerLabel="Correo Electrónico"
+        (onInputEvent)="onMailInput($event)"
+        inputName="mail"
+        inputId="mail"
+        type="email"
+        placeholder="Escribe tu correo (no el de la tienda)"
+      ></app-string-input>
+    </div>
+
+    <div style="margin-bottom: 10px">
+      <app-string-input
+        innerLabel="Número de Celular (Whatsapp)"
+        (onInputEvent)="onPhoneInput($event)"
+        inputName="phone"
+        inputId="phone"
+        type="tel"
+        placeholder="Escribe el tuyo (no el de la tienda)"
+      ></app-string-input>
+    </div>
+
+    <div
+      style="margin-bottom: 25px"
+      *ngIf="
+        inputName.length > 0 &&
+        inputLastName.length > 0 &&
+        inputMail.length > 0 &&
+        inputPhone.length > 0
+      "
+    >
+      <button mat-button matStepperNext>Continuar</button>
+    </div>
+
+    <div>
+      <p
+        style="
+          font-family: SFProLight;
+          font-style: italic;
+          font-size: 15px;
+          color: #7b7b7b;
+        "
+      >
+        Activarás tu cuenta desde la notificación que recibirás en este contacto
+      </p>
+    </div>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Info de la Tienda:</ng-template>
+    <div>
+      <app-string-input
+        inputName="tiendaName"
+        inputId="tiendaName"
+        innerLabel="Nombre de la tienda"
+        (onInputEvent)="onTiendaNameInput($event)"
+      ></app-string-input>
+    </div>
+    <div style="margin-top: 5px">
+      <app-string-input
+        inputName="slug"
+        inputId="slug"
+        innerLabel="Slug de la Tienda"
+        (onInputEvent)="onSlugInput($event)"
+        type="text"
+      >
+      </app-string-input>
+    </div>
+    <div style="margin: 5px 0px">
+      <app-string-input
+        inputName="tiendaMail"
+        inputId="tiendaMail"
+        innerLabel="Correo Electrónico"
+        [disabled]="true"
+        [placeholder]="inputMail"
+      ></app-string-input>
+    </div>
+    <div>
+      <app-string-input
+        inputName="tiendaPhone"
+        inputId="tiendaPhone"
+        innerLabel="Teléfono. Celular (WhatsApp)"
+        [placeholder]="inputPhone"
+        [disabled]="true"
+      >
+      </app-string-input>
+    </div>
+
+    <div
+      style="margin-bottom: 25px"
+      *ngIf="
+        inputName.length > 0 &&
+        inputLastName.length > 0 &&
+        inputMail.length > 0 &&
+        inputPhone.length > 0 &&
+        inputTiendaName.length > 0 &&
+        slug.length > 0
+      "
+    >
+      <button mat-button matStepperNext>Continuar</button>
+    </div>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>¿Que servicios brindas?</ng-template>
+    <div>
+      <app-answer-selector
+        [options]="options"
+        [indicator]="true"
+        (onSelector)="selectedCategory($event)"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+        [isMultipleOption]="true"
+      ></app-answer-selector>
+    </div>
+  </mat-step>
+  <mat-step>
+    <ng-template *ngIf="inputTiendaName !== ''" matStepLabel
+      >Bienvenido! {{ inputTiendaName }}</ng-template
+    >
+    <div>
+      <p
+        style="
+          color: #4f4f4f;
+          font-size: 23px;
+          font-family: SFProBold;
+          text-align: center;
+          margin-bottom: 35px;
+        "
+      >
+        {{ inputTiendaName }}, estamos felices de tenerte y te damos la
+        bienvenida con 3,000 DoCoins
+      </p>
+
+      <div style="width: 70%; margin: 0 auto; text-align: center">
+        <a
+          style="
+            cursor: pointer;
+            color: #2874ad;
+            font-family: SFProMedium;
+            font-size: 17px;
+          "
+          (click)="sendLink()"
+        >
+          Crea tu primer artículo (ganas 700 DoCoins)
+        </a>
+      </div>
+      <p
+        style="
+          color: #7b7b7b;
+          font-family: SFProLight;
+          font-size: 17px;
+          text-align: center;
+          width: 80%;
+          margin: 67px auto 16.5px;
+        "
+      >
+        Recibe esta pantalla por email o whatsapp para hacerlo luego.
+      </p>
+    </div>
+
+    <div
+      style="
+        background-color: #272727;
+        height: 62px;
+        width: 62px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        cursor: pointer;
+      "
+    >
+      <img
+        [src]="env + '/arrow-double-up-black.svg'"
+        alt=""
+        style="
+          filter: invert(79%) sepia(48%) saturate(446%) hue-rotate(67deg)
+            brightness(103%) contrast(89%);
+          height: 34px;
+          width: 30px;
+        "
+      />
+    </div>
+    <p
+      style="
+        color: #272727;
+        font-size: 17px;
+        font-family: SFProRegular;
+        margin: 10px auto;
+        text-align: center;
+      "
+    >
+      WeDoWeLike
+    </p>
+  </mat-step>
+</mat-vertical-stepper>

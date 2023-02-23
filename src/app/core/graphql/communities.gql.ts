@@ -206,7 +206,18 @@ export const hotCommunities = gql`
       _id
       name
       image
-      owner { email }
+      owner {
+        email
+      }
+    }
+  }
+`;
+
+export const communitycategories = gql`
+  query communitycategores($params: ListParams) {
+    communitycategories(params: $params) {
+      _id
+      name
     }
   }
 `;
