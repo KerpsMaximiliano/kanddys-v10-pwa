@@ -352,6 +352,7 @@ export class QrEditComponent implements OnInit {
           };
         }
       }
+      index++;
     }
   }
 
