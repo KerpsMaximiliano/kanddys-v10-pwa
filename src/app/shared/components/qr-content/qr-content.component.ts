@@ -12,6 +12,7 @@ import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
   styleUrls: ['./qr-content.component.scss'],
 })
 export class QrContentComponent implements OnInit {
+  @Input() title: string = 'Contenido del QR';
   @Input() slides: Array<SlideInput> = [];
   @Input() shadows: boolean = true;
   @Input() joke: string = '';
@@ -55,7 +56,7 @@ export class QrContentComponent implements OnInit {
         } else if (slide.url) {
           this.slidesPath.push({
             path: isVideo(slide.url) ? slide.url : `url(${slide.url})`,
-            type: isVideo(slide.url) ? 'VIDEO' : 'IMAGE'
+            type: isVideo(slide.url) ? 'VIDEO' : 'IMAGE',
           });
           this.filesStrings.push(slide.url);
         } else if (slide.type === 'text') {

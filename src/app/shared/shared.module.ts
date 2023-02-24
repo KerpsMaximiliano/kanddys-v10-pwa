@@ -162,6 +162,7 @@ import { CompactCardComponent } from './components/compact-card/compact-card.com
 import { InfoCard2Component } from './components/info-card2/info-card2.component';
 import { MerchantStepperFormComponent } from './components/merchant-stepper-form/merchant-stepper-form.component';
 import { StringInputComponent } from './components/string-input/string-input.component';
+import { ArticleStepperFormComponent } from './components/article-stepper-form/article-stepper-form.component';
 
 const imports = [
   CommonModule,
@@ -329,6 +330,7 @@ const declarations = [
   InfoCard2Component,
   MerchantStepperFormComponent,
   StringInputComponent,
+  ArticleStepperFormComponent,
 ];
 
 @NgModule({

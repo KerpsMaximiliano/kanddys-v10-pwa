@@ -51,6 +51,10 @@ h1 {
   visibility: hidden;
 }
 
+::ng-deep.mat-dialog-container {
+  max-width: 500px;
+}
+
 // ::ng-deep.mat-step-header {
 //   pointer-events: none !important;
 // }

@@ -1,5 +1,9 @@
 <div class="container">
-  <app-helper-headerv2
+  <header class="header">
+    <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
+    <p>Preview</p>
+  </header>
+  <!-- <app-helper-headerv2
     [mode]="'basic'"
     [fixed]="true"
     [icon]="{
@@ -33,10 +37,47 @@
     [returnAble]="false"
     [bgColor]="'#FFFFFF'"
     (return)="goBack()"
-  ></app-helper-headerv2>
+  ></app-helper-headerv2> -->
 
   <div class="toast-status" *ngIf="item?.status === 'disabled'">
     <p>Este artículo solo lo ves tú.</p>
+  </div>
+
+  <button class="config">
+    <img [src]="env + '/settings.svg'" alt="" />
+    <span>Configuraciones</span>
+  </button>
+
+  <div class="section">
+    <!-- <app-title-icon-header
+      title="Slides, contenido del QR"
+      [editing]="!editingSlides"
+      (iconClicked)="editSlides()"
+    >
+    </app-title-icon-header> -->
+    <app-qr-content
+      title="SLIDES"
+      *ngIf="slides"
+      [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
+    <app-qr-content
+      *ngIf="!slides"
+      [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
   </div>
 
   <div class="section" style="padding-top: 52px">
@@ -67,39 +108,8 @@
   </div>
 
   <div class="section">
-    <!-- <app-title-icon-header
-      title="Slides, contenido del QR"
-      [editing]="!editingSlides"
-      (iconClicked)="editSlides()"
-    >
-    </app-title-icon-header> -->
-    <app-qr-content
-      *ngIf="slides"
-      [slides]="slides"
-      [defaultText]="
-        !loadingSlides
-          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
-          : 'Cargando...'
-      "
-      [shadows]="false"
-      (buttonClicked)="goEditSlides()"
-    ></app-qr-content>
-    <app-qr-content
-      *ngIf="!slides"
-      [slides]="slides"
-      [defaultText]="
-        !loadingSlides
-          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
-          : 'Cargando...'
-      "
-      [shadows]="false"
-      (buttonClicked)="goEditSlides()"
-    ></app-qr-content>
-  </div>
-
-  <div class="section">
     <app-title-icon-header
-      title="Headline, article name"
+      title="Nombre"
       [editing]="!editingName"
       (iconClicked)="editingName = true; setFocus('name')"
     >
@@ -120,7 +130,7 @@
 
   <div class="section" style="padding-bottom: 32px">
     <app-title-icon-header
-      title="Body, description, list of things"
+      title="Descripción"
       [editing]="!editingDescription"
       (iconClicked)="editingDescription = true; setFocus('description')"
     >
@@ -139,4 +149,8 @@
       ></textarea>
     </app-card>
   </div>
+  <app-menu-button
+    [position]="{ bottom: '50px' }"
+    [options]="menuOptions"
+  ></app-menu-button>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -25,7 +25,7 @@ export class StepperFormComponent implements OnInit {
     private dialogRef: MatDialogRef<StepperFormComponent>
   ) {}
 
-  ngOnInit(): void {}
+  async ngOnInit() {}
 
   onCurrencyInput(value: number) {
     this.itemForm.get('pricing').patchValue(value);

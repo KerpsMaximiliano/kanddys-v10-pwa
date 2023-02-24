@@ -87,43 +87,35 @@ export class MerchantLandingComponent implements OnInit {
   async ngOnInit() {}
 
   async openDialog() {
-    let dialogRef = this.dialog.open(MerchantStepperFormComponent);
-    dialogRef
-      .afterClosed()
-      .subscribe(
-        async (result: {
-          name: string;
-          lastname: string;
-          email: string;
-          phone: number;
-        }) => {
-          if (!result) return;
-          const { name, lastname, email, phone } = result;
+    this.router.navigate([
+      '/ecommerce/arepera-que-molleja/article-detail/63f6a229e2f51cbd1a4f3f71?signup=true',
+    ]);
+    // let dialogRef = this.dialog.open(MerchantStepperFormComponent);
+    // dialogRef
+    //   .afterClosed()
+    //   .subscribe(
+    //     async (result: {
+    //       name: string;
+    //       lastname: string;
+    //       email: string;
+    //       phone: number;
+    //     }) => {
+    //       if (!result) return;
+    //       const { name, lastname, email, phone } = result;
 
-          const newMerchantData = {
-            name: name,
-            lastname: lastname,
-            email: email,
-            phone: phone,
-          };
+    //       const newMerchantData = {
+    //         name: name,
+    //         lastname: lastname,
+    //         email: email,
+    //         phone: phone,
+    //       };
+    //       console.log(newMerchantData);
 
-          // const itemInput: ItemInput = {
-          //   name: null,
-          //   description: null,
-          //   pricing: pricing,
-          //   merchant: this._MerchantsService.merchantData?._id,
-          //   content: [],
-          //   currencies: [],
-          //   hasExtraPrice: false,
-          //   purchaseLocations: [],
-          // };
-          console.log(newMerchantData);
-
-          this.snackBar.open('Listo papa!', '', {
-            duration: 5000,
-          });
-          unlockUI();
-        }
-      );
+    //       this.snackBar.open('Listo papa!', '', {
+    //         duration: 5000,
+    //       });
+    //       unlockUI();
+    //     }
+    //   );
   }
 }

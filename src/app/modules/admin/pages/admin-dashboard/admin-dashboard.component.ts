@@ -75,6 +75,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                       active: true,
                     };
                   });
+                  console.log(images);
                   if (!pricing) return;
                   lockUI();
                   const itemInput: ItemInput = {

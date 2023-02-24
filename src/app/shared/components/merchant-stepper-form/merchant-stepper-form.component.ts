@@ -45,39 +45,6 @@ export class MerchantStepperFormComponent implements OnInit {
   isLinear = false;
 
   options = [];
-  //   [
-  //   {
-  //     status: true,
-  //     click: true,
-  //     value: 'No tendrá mensaje de regalo',
-  //     valueStyles: {
-  //       'font-family': 'SfProBold',
-  //       'font-size': '13px',
-  //       color: '#202020',
-  //     },
-  //   },
-  //   {
-  //     status: true,
-  //     click: true,
-  //     value: 'Mensaje impreso',
-  //     valueStyles: {
-  //       'font-family': 'SfProBold',
-  //       'font-size': '13px',
-  //       color: '#202020',
-  //     },
-  //     // subtexts: [
-  //     //   {
-  //     //     text: `Agregue texto a la tarjeta.`,
-  //     //     styles: {
-  //     //       fontFamily: 'SfProRegular',
-  //     //       fontSize: '1rem',
-  //     //       color: '#7B7B7B',
-  //     //     },
-  //     //   },
-  //     // ],
-  //   },
-  // ];
-
   merchantCategories = [];
 
   async ngOnInit() {
@@ -165,7 +132,10 @@ export class MerchantStepperFormComponent implements OnInit {
         this.allCommunities.communitycategories[i]._id
       )
     ) {
-      this.merchantCategories.splice(i, 1);
+      const index = this.merchantCategories.indexOf(
+        this.allCommunities.communitycategories[i]._id
+      );
+      this.merchantCategories.splice(index, 1);
     } else {
       this.merchantCategories.push(
         this.allCommunities.communitycategories[i]._id

@@ -3,7 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { AppService } from 'src/app/app.service';
-import { Item, ItemImage, ItemParamValue } from 'src/app/core/models/item';
+import {
+  Item,
+  ItemImage,
+  ItemImageInput,
+  ItemInput,
+  ItemParamValue,
+} from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
@@ -22,6 +28,12 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
 import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
 import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { MerchantStepperFormComponent } from 'src/app/shared/components/merchant-stepper-form/merchant-stepper-form.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { StepperFormComponent } from 'src/app/shared/components/stepper-form/stepper-form.component';
+import { ArticleStepperFormComponent } from 'src/app/shared/components/article-stepper-form/article-stepper-form.component';
 
 SwiperCore.use([Virtual]);
 
@@ -75,6 +87,11 @@ export class ArticleDetailComponent implements OnInit {
   isItemInCart: boolean = false;
   itemsAmount: string;
   mode: 'preview' | 'image-preview' | 'saleflow';
+  signup: 'true' | 'false';
+  createArticle: 'true' | 'false';
+  isCreateArticle: boolean;
+  isSignup: boolean;
+
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
     freeMode: false,
@@ -124,10 +141,22 @@ export class ArticleDetailComponent implements OnInit {
     private entityTemplateService: EntityTemplateService,
     private saleflowService: SaleFlowService,
     private merchantsService: MerchantsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
+    this.signup = this.route.snapshot.queryParamMap.get('signup') as
+      | 'true'
+      | 'false';
+    this.createArticle = this.route.snapshot.queryParamMap.get(
+      'createArticle'
+    ) as 'true' | 'false';
+
+    this.merchantDialog();
+    this.articleDialog();
+
     this.mode = this.route.snapshot.queryParamMap.get('mode') as
       | 'preview'
       | 'image-preview'
@@ -567,5 +596,102 @@ export class ArticleDetailComponent implements OnInit {
       const route = ['ecommerce', 'article-privacy', _id];
       this.router.navigate(route);
     })();
+  }
+
+  merchantDialog() {
+    if (this.signup === 'true') {
+      this.isSignup = true;
+      let dialogRef = this.dialog.open(MerchantStepperFormComponent);
+      dialogRef
+        .afterClosed()
+        .subscribe(
+          async (result: {
+            name: string;
+            lastname: string;
+            email: string;
+            phone: number;
+          }) => {
+            if (!result) return;
+            const { name, lastname, email, phone } = result;
+
+            const newMerchantData = {
+              name: name,
+              lastname: lastname,
+              email: email,
+              phone: phone,
+            };
+            console.log(newMerchantData);
+
+            this.snackBar.open('Done!', '', {
+              duration: 5000,
+            });
+            unlockUI();
+          }
+        );
+    }
+  }
+
+  articleDialog() {
+    if (this.createArticle === 'true') {
+      this.isCreateArticle = true;
+      this.dialog.open(ArticleStepperFormComponent);
+      // let dialogRef2 = this.dialog.open(ArticleStepperFormComponent);
+      //   dialogRef2
+      //     .afterClosed()
+      //     .subscribe(
+      //       async (result: {
+      //         pricing: number;
+      //         images: File[];
+      //         categories: string[];
+      //       }) => {
+      //         if (!result) return;
+      //         const { pricing, images: imagesResult, categories } = result;
+      //         let images: ItemImageInput[] = imagesResult.map((file) => {
+      //           return {
+      //             file: file,
+      //             index: 0,
+      //             active: true,
+      //           };
+      //         });
+      //         if (!pricing) return;
+      //         lockUI();
+      //         const itemInput: ItemInput = {
+      //           name: null,
+      //           description: null,
+      //           pricing: pricing,
+      //           images,
+      //           merchant: this.merchantsService.merchantData?._id,
+      //           content: [],
+      //           currencies: [],
+      //           hasExtraPrice: false,
+      //           purchaseLocations: [],
+      //           showImages: images.length > 0,
+      //           categories: categories,
+      //         };
+      //         this._ItemsService.itemPrice = null;
+
+      //         const { createItem } = await this._ItemsService.createItem(
+      //           itemInput
+      //         );
+      //         await this.saleflowService.addItemToSaleFlow(
+      //           {
+      //             item: createItem._id,
+      //           },
+      //           this.saleflowService.saleflowData._id
+      //         );
+      //         this.snackBar.open('Producto creado satisfactoriamente!', '', {
+      //           duration: 5000,
+      //         });
+      //         unlockUI();
+      //         const reader = new FileReader();
+      //         reader.onload = (e) => {
+      //           this._ItemsService.editingImageId = createItem.images[0]._id;
+      //           this.router.navigate([`admin/article-editor/${createItem._id}`]);
+      //         };
+      //         reader.readAsDataURL(images[0].file as File);
+      //       }
+      //     );
+      // }
+    }
   }
 }

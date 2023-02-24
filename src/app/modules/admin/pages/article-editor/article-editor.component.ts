@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -18,6 +19,7 @@ import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { CurrencyInputComponent } from 'src/app/shared/components/currency-input/currency-input.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import {
   SettingsComponent,
   SettingsDialogButton,
@@ -25,6 +27,9 @@ import {
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 import { environment } from 'src/environments/environment';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-article-editor',
@@ -33,6 +38,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ArticleEditorComponent implements OnInit {
   env: string = environment.assetsUrl;
+  URI: string = environment.uri;
   @ViewChild('inputName') inputName: ElementRef<HTMLInputElement>;
   @ViewChild('inputDescription')
   inputDescription: ElementRef<HTMLTextAreaElement>;
@@ -72,6 +78,79 @@ export class ArticleEditorComponent implements OnInit {
   slides: SlideInput[];
   math = Math;
 
+  menuOptions = [
+    {
+      text: 'Compartelo',
+      callback: async () => {
+        const link = `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`;
+        const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+          data: [
+            {
+              title: 'Links de Visitantes',
+              options: [
+                {
+                  title: 'Ver como lo verá el visitante',
+                  callback: () => {
+                    this._Router.navigate([
+                      `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
+                    ]);
+                  },
+                },
+                {
+                  title: 'Compartir el Link',
+                  callback: () => {
+                    this.ngNavigatorShareService.share({
+                      title: '',
+                      url: link,
+                    });
+                  },
+                },
+                {
+                  title: 'Copiar el Link',
+                  callback: () => {
+                    this.clipboard.copy(link);
+                    this.snackBar.open(
+                      'Enlace copiado en el portapapeles',
+                      '',
+                      {
+                        duration: 2000,
+                      }
+                    );
+                  },
+                },
+                {
+                  title: 'Descargar el qrCode',
+                  link,
+                },
+              ],
+            },
+            {
+              title: 'Links de admins',
+              options: [
+                {
+                  title: 'Descargar el qrCode del admin',
+                  link: `${this.URI}/admin/dashboard`,
+                },
+                {
+                  title: 'Lo vendido',
+                  callback: () => {
+                    this._Router.navigate(['/admin/order-status-view']);
+                  },
+                },
+              ],
+            },
+          ],
+        });
+      },
+    },
+    {
+      text: 'Exhibido en tienda',
+      callback: async () => {
+        this.previewItem();
+      },
+    },
+  ];
+
   constructor(
     private _ItemsService: ItemsService,
     private _MerchantsService: MerchantsService,
@@ -82,7 +161,11 @@ export class ArticleEditorComponent implements OnInit {
     private _TagsService: TagsService,
     private _ToastrService: ToastrService,
     private dialog: DialogService,
-    protected _DomSanitizer: DomSanitizer
+    protected _DomSanitizer: DomSanitizer,
+    private _bottomSheet: MatBottomSheet,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar
   ) {}
 
   async ngOnInit() {
