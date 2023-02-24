@@ -1,8 +1,13 @@
 <div class="page">
-  <div class="top-wrapper">
+  <div class="top-wrapper"
+    #dialogSwiper
+    [ngStyle]="{
+      width: '100%',
+      height: (dialogSwiper.clientWidth * 10) / 7 + 'px'
+    }"
+  >
     <swiper
       [config]="swiperConfig"
-      #dialogSwiper
       (slideChange)="changeSlide($event)"
     >
       <ng-container *ngIf="type === 'POST'">

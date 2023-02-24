@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Banner } from 'src/app/core/models/banner';
 import { PostInput } from 'src/app/core/models/post';
@@ -228,35 +229,48 @@ export class PostEditionComponent implements OnInit {
 
               lockUI();
 
-              const response =
-                await this._Gpt3Service.generateResponseForTemplate(
-                  {},
-                  '63f58ccfe2f51cbd1a4cd42c'
-                );
+              try {
+                const response =
+                  await this._Gpt3Service.generateResponseForTemplate(
+                    {},
+                    '63f58ccfe2f51cbd1a4cd42c'
+                  );
 
-              unlockUI();
+                unlockUI();
 
-              if (response) {
-                const jokes = JSON.parse(response);
-                this.headerService.aiJokes = jokes;
-                localStorage.setItem('aiJokes', response);
-              }
-
-              this.headerService.flowRoute = this.router.url;
-              localStorage.setItem('flowRoute', this.router.url);
-
-              this.router.navigate(
-                [
-                  'ecommerce/' +
-                    this.headerService.saleflow.merchant.slug +
-                    '/text-edition-and-preview',
-                ],
-                {
-                  queryParams: {
-                    type: 'ai-joke',
-                  },
+                if (response) {
+                  const jokes = JSON.parse(response);
+                  this.headerService.aiJokes = jokes;
+                  localStorage.setItem('aiJokes', response);
                 }
-              );
+
+                this.headerService.flowRoute = this.router.url;
+                localStorage.setItem('flowRoute', this.router.url);
+
+                this.router.navigate(
+                  [
+                    'ecommerce/' +
+                      this.headerService.saleflow.merchant.slug +
+                      '/text-edition-and-preview',
+                  ],
+                  {
+                    queryParams: {
+                      type: 'ai-joke',
+                    },
+                  }
+                );
+              } catch (error) {
+                unlockUI();
+                console.error(error);
+
+                this.toastr.error(
+                  'Ocurrió un error, vuelva a intentar',
+                  'error',
+                  {
+                    timeOut: 1500,
+                  }
+                );
+              }
             }
           },
         },
@@ -370,7 +384,8 @@ export class PostEditionComponent implements OnInit {
     private _BannersService: BannersService,
     private _AuthService: AuthService,
     private dialogFlowService: DialogFlowService,
-    private _Gpt3Service: Gpt3Service
+    private _Gpt3Service: Gpt3Service,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
