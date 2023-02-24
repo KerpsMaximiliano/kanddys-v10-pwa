@@ -1,0 +1,59 @@
+<div class="container flex">
+  <section class="top flex">
+    <img class="icon" [src]="environment + '/star.svg'" />
+    <p class="title">
+      Formulario añadido!!<br />
+      <br />
+      <span
+        class="desc"
+        *ngIf="optionalQuestionsNumber > 0 && requiredQuestionsNumber > 0"
+      >
+        Los compradores te responderán {{ requiredQuestionsNumber }} preguntas
+        antes de completar la factura del
+        {{ item.name ? "de " + item.name : "del producto" }} y otras
+        {{ optionalQuestionsNumber }} que no son obligatorias
+      </span>
+
+      <span
+        class="desc"
+        *ngIf="optionalQuestionsNumber === 0 && requiredQuestionsNumber > 0"
+      >
+        Los compradores te responderán {{ requiredQuestionsNumber }} preguntas
+        antes de completar la factura del
+        {{ item.name ? "de " + item.name : "del producto" }}
+      </span>
+
+      <span
+        class="desc"
+        *ngIf="optionalQuestionsNumber > 0 && requiredQuestionsNumber === 0"
+      >
+        Los compradores pueden opcionalmente responder
+        {{ requiredQuestionsNumber }} preguntas antes de completar la factura
+        del
+        {{ item.name ? "de " + item.name : "del producto" }}
+      </span>
+    </p>
+  </section>
+  <section class="middle">
+    <p>
+      <!--
+                <link href="#">Mira como lo verán tus compradores
+                <br>
+                <br>
+                <link href="#">Mira como lo verás tu
+                <br>
+            -->
+      <br />
+      <a [routerLink]="['/admin/article-editor', '63d7ebf3bbd3bc32bcc2ec0b']">
+        Vuelve a la configuración
+        {{ item.name ? "de " + item.name : "del producto" }}
+      </a>
+    </p>
+  </section>
+  <section class="bottom flex">
+    <button class="button flex">
+      <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
+    </button>
+    <div class="text">WeDoWeLike</div>
+  </section>
+</div>

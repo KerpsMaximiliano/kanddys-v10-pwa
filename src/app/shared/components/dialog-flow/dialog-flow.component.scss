@@ -34,7 +34,8 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 82.4%;
+    width: 82.47%;
+    border-radius: 12px;
     margin: auto;
 
     &.notActive {
@@ -49,6 +50,8 @@
 
   .dynamic-component {
     position: relative;
+    overflow-x: hidden;
+    max-height: 80vh;
 
     .navigation {
       position: absolute;
@@ -79,6 +82,7 @@
       left: 26.1px;
       color: #272727;
       z-index: 999;
+      background-color: white;
     }
   }
 }

@@ -11,10 +11,13 @@ import {
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
+import { Webform } from 'src/app/core/models/webform';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { CurrencyInputComponent } from 'src/app/shared/components/currency-input/currency-input.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
@@ -71,6 +74,9 @@ export class ArticleEditorComponent implements OnInit {
 
   slides: SlideInput[];
   math = Math;
+  openedDialogFlow: boolean = false;
+  resumingWebformCreation: boolean = false;
+  webform: Webform = null;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -82,12 +88,16 @@ export class ArticleEditorComponent implements OnInit {
     private _TagsService: TagsService,
     private _ToastrService: ToastrService,
     private dialog: DialogService,
-    protected _DomSanitizer: DomSanitizer
+    public headerService: HeaderService,
+    protected _DomSanitizer: DomSanitizer,
+    private webformsService: WebformsService
   ) {}
 
   async ngOnInit() {
     this.loadingSlides = true;
     const itemId = this._Route.snapshot.paramMap.get('articleId');
+    const resumeWebform =
+      this._Route.snapshot.queryParamMap.get('resumeWebform');
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
@@ -157,6 +167,19 @@ export class ArticleEditorComponent implements OnInit {
     if (this._ItemsService.itemPrice) {
       this.price.setValue(this._ItemsService.itemPrice);
       this.price.markAsDirty();
+    }
+
+    if (resumeWebform) {
+      this.openedDialogFlow = true;
+      this.resumingWebformCreation = true;
+    }
+
+    if (this.item.webForms && this.item.webForms.length) {
+      const webform = await this.webformsService.webform(
+        this.item.webForms[0].reference
+      );
+
+      this.webform = webform;
     }
   }
 
@@ -497,5 +520,13 @@ export class ArticleEditorComponent implements OnInit {
 
   goBack() {
     // TODO
+  }
+
+  openWebformCreator() {
+    this.openedDialogFlow = !this.openedDialogFlow;
+  }
+
+  goToWebformMetrics() {
+    this._Router.navigate(['admin/webform-metrics/' + this.webform._id]);
   }
 }

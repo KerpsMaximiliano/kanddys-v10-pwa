@@ -41,6 +41,7 @@ import { AnexoLandingComponent } from 'src/app/shared/components/anexo-landing/a
 import { DescriptionDialogComponent } from 'src/app/shared/dialogs/description-dialog/description-dialog.component';
 import { environment } from 'src/environments/environment';
 import { WebformQuestionDialogComponent } from 'src/app/shared/components/webform-question-dialog/webform-question-dialog.component';
+import { WebformMultipleSelectionConfirmationComponent } from 'src/app/shared/components/webform-multiple-selection-confirmation/webform-multiple-selection-confirmation.component';
 
 const generalDialogContainerStyles = {
   background: 'rgb(255, 255, 255)',
@@ -266,6 +267,12 @@ export class TestComponent implements OnInit {
         },
       ],
     },
+    {
+      component: WebformMultipleSelectionConfirmationComponent,
+      componentId: 'confirmation',
+      inputs: {},
+      outputs: []
+    }
   ];
   
 

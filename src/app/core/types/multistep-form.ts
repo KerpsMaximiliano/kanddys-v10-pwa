@@ -158,6 +158,8 @@ export interface EmbeddedComponentWithId {
   shouldRerender?: boolean;
   postLabel?: string;
   preLabel?: string;
+  postLabelStyles?: Record<string, any>;
+  preLabelStyles?: Record<string, any>;
 }
 
 export interface EmbeddedComponentWithId extends EmbeddedComponent {

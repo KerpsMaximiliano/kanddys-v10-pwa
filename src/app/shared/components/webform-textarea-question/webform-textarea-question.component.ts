@@ -1,5 +1,6 @@
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { FormControl, Validator } from '@angular/forms';
+import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 @Component({
@@ -17,7 +18,14 @@ export class WebformTextareaQuestionComponent implements OnInit {
     dialogId: string;
     flowId: string;
   };
+  @Input() inputType: string = null;
+  @Input() skipValidationBlock : boolean = false;
   @Output() inputDetected = new EventEmitter();
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
+  PhoneNumberFormat = PhoneNumberFormat;
 
   constructor(private dialogFlowService: DialogFlowService) {}
 
@@ -50,11 +58,17 @@ export class WebformTextareaQuestionComponent implements OnInit {
         this.dialogFlowConfig.dialogId
       ].fields.textarea = this.textarea.value;
 
-      this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
-        this.dialogFlowConfig.dialogId
-      ].swiperConfig.allowSlideNext = this.textarea.valid;
+      if(!this.skipValidationBlock) {
+        this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
+          this.dialogFlowConfig.dialogId
+        ].swiperConfig.allowSlideNext = this.textarea.valid;
+      } else {
+        this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
+          this.dialogFlowConfig.dialogId
+        ].swiperConfig.allowSlideNext = true;        
+      }
     }
 
-    this.inputDetected.emit(this.textarea.value);
+    this.inputDetected.emit( this.inputType !== 'PHONE' ? this.textarea.value : this.textarea.value?.e164Number?.split('+')[1]);
   };
 }

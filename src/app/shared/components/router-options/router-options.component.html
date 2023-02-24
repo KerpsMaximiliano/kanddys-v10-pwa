@@ -1,9 +1,14 @@
 <section class="container">
   <p class="title">{{ title }}</p>
-  <div class="flex" *ngFor="let option of options; index as i">
-    <div class="left"></div>
-    <a routerLink="option.link">
-      {{ option.text }}
-    </a>
-  </div>
+
+  <app-images-card [cards]="options"></app-images-card>
+
+  <ng-container *ngFor="let option of options; index as i">
+    <div class="flex" *ngIf="!option.file">
+      <div class="left"></div>
+      <a routerLink="option.link">
+        {{ option.text }}
+      </a>
+    </div>
+  </ng-container>
 </section>

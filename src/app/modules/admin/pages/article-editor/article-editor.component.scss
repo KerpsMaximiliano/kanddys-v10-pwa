@@ -215,3 +215,24 @@
     font-family: SfProBold;
   }
 }
+
+.header {
+  width: 100%;
+  background-color: #A1A1A1;
+  padding: 13.8px 16px;
+  display: flex;
+  justify-content: space-between;
+
+  .links {
+    display: flex;
+    justify-content: space-between;
+    width: 70%;
+    align-items: center;
+    font-family: SfProMedium;
+    font-size: 13px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

@@ -123,6 +123,10 @@ const fullItem = `
       phone
     }
   }
+  webForms {
+    reference
+    active
+  }
 `;
 
 export const items = gql`

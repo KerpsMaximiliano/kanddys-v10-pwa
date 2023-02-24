@@ -18,7 +18,8 @@ export class WebformQuestionDialogComponent implements OnInit {
     flowId: string;
   };
   @Output() inputDetected = new EventEmitter();
-  @Output() requiredQuestion = false;
+  @Output() checkboxClicked = new EventEmitter();
+  private _requiredQuestion = false;
 
   constructor(private dialogFlowService: DialogFlowService) {}
 
@@ -58,4 +59,14 @@ export class WebformQuestionDialogComponent implements OnInit {
 
     this.inputDetected.emit(this.textarea.value);
   };
+
+  @Input()
+  set requiredQuestion(value: boolean) {
+    this._requiredQuestion = value;
+    this.checkboxClicked.emit(value);
+  }
+
+  get requiredQuestion() {
+    return this._requiredQuestion;
+  }
 }

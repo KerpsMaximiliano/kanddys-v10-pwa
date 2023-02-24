@@ -12,24 +12,12 @@ export class RouterOptionsComponent implements OnInit {
   @Input() title: string =
     '¿Cuáles son los principales desafíos que enfrenta su negocio en este momento?';
 
-  @Input() options = [
-    {
-      text: '14 Baja rentabilidad',
-      link: '/',
-    },
-    {
-      text: '1,457 Competencia Desleal',
-      link: '/',
-    },
-    {
-      text: '255 Escasez de mano de obra',
-      link: '/',
-    },
-    {
-      text: '255 Costos de insumos y materia',
-      link: '/',
-    },
-  ];
+  @Input() options: Array<{
+    text: string;
+    link: string;
+    file?: string;
+    optionValue?: string;
+  }> = [];
 
   ngOnInit(): void {}
 }

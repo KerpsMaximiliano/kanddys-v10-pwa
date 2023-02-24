@@ -2,7 +2,7 @@
   <app-card [shadows]="shadows" [containerStyles]="containerStyles">
     <p class="title" [ngStyle]="labelStyles">{{ question }}</p>
 
-    <div class="imgGrid" *ngIf="type === 2 || type == 3">
+    <div class="imgGrid">
       <div
         *ngFor="let answer of answers; let i = index"
         [id]="id + '-' + i"
@@ -12,12 +12,11 @@
           [src]="answer.img"
           (error)="answer.img = '/assets/images/noimage.png'"
           class="radioImg"
-          (click)="selectOpt(i)"
         />
         <div
           class="radioButton"
-          (click)="selectOpt(i)"
-          [ngClass]="{ active: i === selected }"
+          (click)="selectOpt(i, 'GRID', answer.img)"
+          [ngClass]="{ active: i === selectedImage }"
         >
           <img class="icon" [src]="env + '/check-black.svg'" />
         </div>
@@ -25,7 +24,6 @@
     </div>
 
     <app-answer-selector
-      *ngIf="type === 1 || type == 3"
       style="text-align: left"
       [activeOption]="selected"
       [options]="options"
@@ -42,7 +40,7 @@
         marginBottom: '0px'
       }"
       [alternativeBackground]="'narrow'"
-      (onSelector)="selectOpt($event)"
+      (onSelector)="selectOpt($event, 'OPTIONS-LIST', null)"
     ></app-answer-selector>
   </app-card>
 </div>

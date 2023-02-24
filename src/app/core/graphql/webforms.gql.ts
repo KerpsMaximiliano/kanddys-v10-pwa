@@ -21,6 +21,7 @@ const webformBody = `
           defaultValue
           label
         }
+        answerTextType
         show
         required
         active
@@ -55,6 +56,21 @@ export const webformByMerchant = gql`
   }
 `;
 
+export const answerByOrder = gql`
+  query answerByOrder($orderId: ObjectID!) {
+    answerByOrder(orderId: $orderId) {
+      _id
+      webform
+      response {
+        question
+        value
+        label
+        isMedia
+      }
+    }
+  }
+`;
+
 export const answerPaginate = gql`
   query answerPaginate($input: PaginationInput) {
     answerPaginate(input: $input) {
@@ -78,12 +94,25 @@ export const answerPaginate = gql`
 `;
 
 export const createWebform = gql`
-  mutation createWebform($input: WebformInput!, $merchantId: ObjectID!) {
-    createWebform(input: $input, merchantId: $merchantId) {
+  mutation createWebform($input: WebformInput!) {
+    createWebform(input: $input) {
       _id
     }
   }
 `;
+
+export const itemAddWebForm = gql`
+  mutation itemAddWebForm($input: ItemWebFormInput!, $id: ObjectID!) {
+    itemAddWebForm(input: $input, id: $id) {
+      _id
+      webForms {
+        reference
+        active
+      }
+    }
+  }
+`;
+
 
 export const webformAddQuestion = gql`
   mutation webformAddQuestion($input: [QuestionInput!]!, $id: ObjectID!) {

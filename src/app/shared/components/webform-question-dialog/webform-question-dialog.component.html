@@ -9,7 +9,7 @@
     ></textarea>
 
     <div class="required-wrapper">
-      <mat-checkbox class="required-question-checkbox" [(ngModel)]="requiredQuestion">Obligado responder</mat-checkbox>
+      <mat-checkbox class="required-question-checkbox" [ngModelOptions]="{standalone: true}" [(ngModel)]="requiredQuestion">Obligado responder</mat-checkbox>
     </div>
   </form>
 </div>

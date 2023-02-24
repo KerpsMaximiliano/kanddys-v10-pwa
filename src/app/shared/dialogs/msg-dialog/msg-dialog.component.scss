@@ -1,0 +1,99 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+.flex{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.container{
+    
+    gap: 32px;
+    padding: 30px 28px 40px 28px;
+    max-width: 350px;
+    min-height: 494px;
+    max-height: 90vh;
+    border-radius: 12px;
+    filter: drop-shadow(0px 3px 3.5px rgba(73,118,213,0.31));
+    background-color: #ffffff;
+    border: 5px solid #8aeb89;
+    text-align: center;
+
+    button{
+        all: unset;
+    }
+
+    .top{
+        gap: 10px;
+
+        .title{
+            color: #4F4F4F;
+            font-family: "SfProBold";
+            font-size: 23px;
+            line-height: 23px;
+        }
+        .desc{
+            font-family: "SfProLight";
+            color: #272727;
+            font-size: 17px;
+            line-height: 19px;
+
+        }
+
+        .icon{
+            filter: brightness(0) saturate(100%) invert(37%) sepia(68%) saturate(7466%) hue-rotate(348deg) brightness(100%) contrast(97%);
+            height: 50px;
+            width: auto;
+        }
+    }
+
+    .middle{
+
+        font-family: "SfProLight";
+        color: #174B72;
+        font-size: 17px;
+        line-height: 17px;
+
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    }
+    
+    .bottom{
+        gap: 13px;
+        .button{
+            cursor: pointer;
+            width: 62px;
+            height: 62px;
+            background-color: #272727;
+            border-radius: 50%;
+
+            .icon{
+                filter: brightness(0) saturate(100%) invert(72%) sepia(74%) saturate(293%) hue-rotate(72deg) brightness(107%) contrast(89%);
+                height: auto;
+                width: 30px;
+            }
+        }
+
+        .text{
+            font-family: "SfProBold";
+            color: #272727;
+            font-size: 17px;
+            line-height: 19px;
+        }
+    }
+}
+
+@media (max-width: 374px) {
+    .container{
+        max-width: 280px;
+        &.type2{
+            max-width: 280px;
+        }
+    }
+}

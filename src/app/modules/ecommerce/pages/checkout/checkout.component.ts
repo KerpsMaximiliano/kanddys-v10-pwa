@@ -182,6 +182,7 @@ export class CheckoutComponent implements OnInit {
       isMedia?: boolean;
       multipleSelection?: boolean;
       selectedIndex?: number;
+      selectedImageIndex?: number;
       selectedIndexes?: Array<number>;
       multipleChoicesType?: WebformMultipleChoicesType;
     }
@@ -558,8 +559,6 @@ export class CheckoutComponent implements OnInit {
         if (item.webForms && item.webForms.length) {
           const answer = this.getWebformAnswer(item._id);
 
-          console.log(answer);
-
           const response = await this._WebformsService.createAnswer(answer);
 
           if (response) {
@@ -752,14 +751,78 @@ export class CheckoutComponent implements OnInit {
               question.answerDefault = question.answerDefault.map((option) => ({
                 ...option,
                 img: option.value,
+                isMedia: option.isMedia,
               }));
             }
 
+            let response = '';
+            let responseLabel = '';
+            let selectedIndex = null;
+
             this.answersByQuestion[question._id] = {
               question,
-              response: '',
+              response,
               isMedia,
             };
+
+            if (
+              this.dialogFlowService.dialogsFlows['webform-item-' + item._id] &&
+              this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
+                question._id
+              ]
+            ) {
+              if (question.type === 'text') {
+                this.answersByQuestion[question._id].response =
+                  this.dialogFlowService.dialogsFlows[
+                    'webform-item-' + item._id
+                  ][question._id].fields.textarea;
+              } else if (question.type === 'multiple') {
+                const selectedOption = (
+                  this.dialogFlowService.dialogsFlows[
+                    'webform-item-' + item._id
+                  ][question._id].fields.options as Array<any>
+                ).find((option) => option.selected);
+
+                const selectedIndex = (
+                  this.dialogFlowService.dialogsFlows[
+                    'webform-item-' + item._id
+                  ][question._id].fields.options as Array<any>
+                ).findIndex((option) => option.selected);
+
+                if (selectedOption && !selectedOption.isMedia) {
+                  response = selectedOption.value;
+                }
+
+                if (
+                  selectedOption &&
+                  selectedOption.isMedia &&
+                  selectedOption.label
+                ) {
+                  response = selectedOption.value;
+                  responseLabel = selectedOption.label;
+                }
+
+                if (
+                  selectedOption &&
+                  selectedOption.isMedia &&
+                  !selectedOption.label
+                ) {
+                  response = selectedOption.value;
+                }
+
+                if (response && response !== '')
+                  this.answersByQuestion[question._id]['response'] = response;
+
+                if (responseLabel && responseLabel !== '')
+                  this.answersByQuestion[question._id]['responseLabel'] =
+                    responseLabel;
+
+                if (selectedIndex >= 0) {
+                  this.answersByQuestion[question._id]['selectedIndex'] =
+                    selectedIndex;
+                }
+              }
+            }
           }
         }
       } else {
@@ -780,11 +843,17 @@ export class CheckoutComponent implements OnInit {
             this.webformsByItem[item._id].dialogs.length - 1;
 
           if (question.type === 'text') {
+            const validators = [Validators.required];
+
+            if (question.answerTextType.toUpperCase() === 'EMAIL')
+              validators.push(Validators.email);
+
             this.webformsByItem[item._id].dialogs.push({
               component: WebformTextareaQuestionComponent,
               componentId: question._id,
               inputs: {
                 label: question.value,
+                skipValidationBlock: true,
                 containerStyles: {
                   opacity: '1',
                 },
@@ -792,7 +861,8 @@ export class CheckoutComponent implements OnInit {
                   dialogId: question._id,
                   flowId: 'webform-item-' + item._id,
                 },
-                textarea: new FormControl('', [Validators.required]),
+                inputType: question.answerTextType.toUpperCase(),
+                textarea: new FormControl('', validators),
               },
               outputs: [
                 {
@@ -837,6 +907,7 @@ export class CheckoutComponent implements OnInit {
                       value: string;
                       selected: boolean;
                       label?: string;
+                      isMedia?: boolean;
                     }>
                   ) => {
                     const selected = inputDetected.find(
@@ -847,6 +918,31 @@ export class CheckoutComponent implements OnInit {
                       (option) => option.selected
                     );
 
+                    //////////////// SEPARATES IMAGES GRID FROM OPTIONS IN THE LIST ///////////////
+                    //Get the selected index for the image grid
+                    let selectedIndexFromImageGrid = null;
+                    const justImagesGrid = inputDetected.filter(
+                      (option, index) => option.isMedia && option.value
+                    );
+                    selectedIndexFromImageGrid = justImagesGrid.findIndex(
+                      (option) =>
+                        option.value === inputDetected[selectedIndex]?.value
+                    );
+
+                    //Get the selected index for the list of options in the answer selector
+                    let selectedIndexFromList = null;
+                    const listOptionsGrid = inputDetected.filter(
+                      (option, index) =>
+                        (!option.isMedia && option.value) ||
+                        (option.isMedia && option.label)
+                    );
+                    selectedIndexFromList = listOptionsGrid.findIndex(
+                      (option) =>
+                        option.value === inputDetected[selectedIndex]?.value ||
+                        option.label === inputDetected[selectedIndex]?.value
+                    );
+
+                    //////////////// SEPARATES IMAGES GRID FROM OPTIONS IN THE LIST ///////////////
                     if (!question.answerDefault[0].isMedia) {
                       if (selected)
                         this.answersByQuestion[question._id].response =
@@ -856,7 +952,12 @@ export class CheckoutComponent implements OnInit {
                         this.answersByQuestion[question._id].response =
                           selected.value;
                         this.answersByQuestion[question._id].selectedIndex =
-                          selectedIndex;
+                          selectedIndexFromList;
+
+                        if (selectedIndexFromImageGrid > -1)
+                          this.answersByQuestion[
+                            question._id
+                          ].selectedImageIndex = selectedIndexFromImageGrid;
                       }
 
                       if (selected && selected.label)
@@ -883,7 +984,11 @@ export class CheckoutComponent implements OnInit {
 
   //Select an image from the webform multiple option
   selectWebformMediaOption = (
-    selectedOptionIndex: number,
+    selectedOptions: {
+      option: number;
+      image: number;
+      selectedOptionOrText: string;
+    },
     item: ExtendedItem,
     question: Question
   ) => {
@@ -892,11 +997,25 @@ export class CheckoutComponent implements OnInit {
         question._id
       ].fields.options;
 
+    //Get the selected index from the full list(images-grid, list-option)
+    const selectedOptionIndex = options.findIndex((option, index) => {
+      if (
+        option.isMedia &&
+        (option.value === selectedOptions.selectedOptionOrText ||
+          option.label === selectedOptions.selectedOptionOrText)
+      )
+        return true;
+      if (
+        !option.isMedia &&
+        option.value === selectedOptions.selectedOptionOrText
+      )
+        return true;
+    });
+
     const updatedOptions = options.map((option, index) => ({
       ...option,
       selected: index === selectedOptionIndex,
     }));
-
     this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
       question._id
     ].fields.options = updatedOptions;

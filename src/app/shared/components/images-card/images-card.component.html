@@ -1,8 +1,19 @@
 <section class="container">
-  <p class="title">{{ title }}</p>
   <div class="content">
     <div class="card" *ngFor="let card of cards; index as i">
-      <img [src]="card.img" alt="noimage" />
+      <div
+        class="image"
+        [ngStyle]="{
+          backgroundImage: card.file
+            ? 'url(' +
+              card.file +
+              '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+            : 'url(/assets/images/noimage.png)',
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat'
+        }"
+      ></div>
       <p class="text">{{ card.text }}</p>
     </div>
   </div>

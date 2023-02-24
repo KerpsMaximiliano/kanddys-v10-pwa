@@ -143,7 +143,6 @@
                   "
                 >
                   <app-closed-question-card
-                    [type]="2"
                     [id]="'sadasdaasd'"
                     [shadows]="false"
                     [labelStyles]="{
@@ -155,6 +154,7 @@
                     [question]="question.value"
                     [answers]="question.answerDefault"
                     [selected]="answersByQuestion[question._id].selectedIndex"
+                    [selectedImage]="answersByQuestion[question._id].selectedImageIndex"
                     (onSelector)="selectWebformMediaOption($event, item, question)"
                   >
                   </app-closed-question-card>
@@ -382,7 +382,7 @@
       [dialogFlowId]="'webform-item-' + item._id"
       [status]="this.webformsByItem[item._id].opened ? 'OPEN' : 'CLOSE'"
       [dialogs]="this.webformsByItem[item._id].dialogs"
-      [allowSlideNext]="false"
+      [allowSlideNext]="true"
       (saveConfigRef)="this.webformsByItem[item._id].swiperConfig = $event"
       (moveToDialogRef)="
         this.webformsByItem[item._id].dialogFlowFunctions.moveToDialogByIndex =

@@ -293,15 +293,20 @@ headline="EXPUESTO EN TAB (S)"
   <!--
 
   -->
-  <button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
+  <!--
+      <button (click)="openedDialogFlow = !openedDialogFlow">ABRIR</button>
+    
+      <app-dialog-flow
+        [dialogFlowId]="'flow1'"
+        [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+        [dialogs]="dialogs"
+        (saveConfigRef)="swiperConfig = $event"
+        (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+      ></app-dialog-flow>
 
-  <app-dialog-flow
-    [dialogFlowId]="'flow1'"
-    [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
-    [dialogs]="dialogs"
-    (saveConfigRef)="swiperConfig = $event"
-    (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
-  ></app-dialog-flow>
+  -->
+<app-msg-dialog></app-msg-dialog>
+
 </div>
 
 <!--

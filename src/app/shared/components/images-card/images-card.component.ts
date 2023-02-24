@@ -8,20 +8,12 @@ import { Component, OnInit, Input } from '@angular/core';
 export class ImagesCardComponent implements OnInit {
   @Input() title: string = '¿Pregunta para seleccionar imágenes ID?';
 
-  @Input() cards = [
-    {
-      img: '/assets/images/noimage.png',
-      text: '41 Opción ID',
-    },
-    {
-      img: '/assets/images/noimage.png',
-      text: '42 Opción ID',
-    },
-    {
-      img: '/assets/images/noimage.png',
-      text: '43 Opción ID',
-    },
-  ];
+  @Input() cards: Array<{
+    text: string;
+    link: string;
+    file?: string;
+    optionValue?: string;
+  }> = [];
   constructor() {}
 
   ngOnInit(): void {}

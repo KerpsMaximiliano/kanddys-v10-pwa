@@ -666,13 +666,9 @@ export class OrderDetailComponent implements OnInit {
   async getAnswersForEachItem() {
     this.answersByItem = {};
     const answers: Array<WebformAnswer> =
-      await this.webformsService.answerPaginate({
-        findBy: {
-          _id: {
-            __in: this.order.answers.map((answer) => answer.reference),
-          },
-        },
-      });
+      await this.webformsService.answerByOrder(this.order._id);
+
+    console.log(answers);
 
     if (answers.length) {
       const webformsIds = [];

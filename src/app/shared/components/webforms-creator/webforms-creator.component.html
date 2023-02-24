@@ -1,1 +1,51 @@
-<p>webforms-creator works!</p>
+<ng-container [ngSwitch]="status">
+  <ng-container *ngSwitchCase="'SHOWING_DIALOG_FLOW'">
+    <app-dialog-flow
+      [dialogFlowId]="'webform-creator'"
+      [status]="opened ? 'OPEN' : 'CLOSE'"
+      [dialogs]="dialogs"
+      (saveConfigRef)="swiperConfig = $event"
+      (moveToDialogRef)="setMoveToDialog($event)"
+    ></app-dialog-flow>
+  </ng-container>
+  <ng-container *ngSwitchCase="'ASKING_FOR_ANOTHER_QUESTION'">
+    <div class="overlay-wrapper">
+      <div class="overlay">
+        <div class="dialog-wrapper">
+          <h3>¿Añadiras otra pregunta?</h3>
+          <div class="option-wrapper" (click)="addAnotherQuestion()">
+            <div class="background"></div>
+            <div class="option">Si</div>
+          </div>
+          <div class="option-wrapper" (click)="createWebformForItem()">
+            <div class="background"></div>
+            <div class="option">No</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'ENDED_CREATION'">
+    <div class="overlay-wrapper">
+      <div class="overlay">
+        <app-msg-dialog
+          [item]="item"
+          [optionalQuestionsNumber]="optionalQuestions"
+          [requiredQuestionsNumber]="requiredQuestions"
+        ></app-msg-dialog>
+      </div>
+    </div>
+  </ng-container>
+  <!--
+      <ng-container *ngSwitchCase="'SHOWING_SELECTIONS_EDITOR'">
+        <div class="overlay-wrapper">
+          <div class="overlay">
+            <div class="dialog">
+                <app-webform-multiple-selection-confirmation></app-webform-multiple-selection-confirmation>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+  -->
+</ng-container>

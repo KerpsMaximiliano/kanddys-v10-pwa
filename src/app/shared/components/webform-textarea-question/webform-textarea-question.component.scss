@@ -1,5 +1,5 @@
 .external-wrapper {
-  height: 266.69px;
+  max-height: 266.69px;
 }
 
 .wrapper {
@@ -20,6 +20,22 @@
     padding: 23px 16px 23px 16px;
     resize: none;
     height: 124px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: rgb(210 210 210) 0px 4px 7px 0px inset;
+    font-family: RobotoMedium;
+    color: #000;
+    font-size: 17px;
+    width: 100%;
+
+    &::placeholder {
+      color: #a1a1a1;
+    }
+  }
+
+  .email {
+    padding: 23px 16px 23px 16px;
+    resize: none;
     border: none;
     border-radius: 5px;
     box-shadow: rgb(210 210 210) 0px 4px 7px 0px inset;

@@ -15,6 +15,7 @@ export class WebformMetricsComponent implements OnInit {
   env: string = environment.assetsUrl;
   sub: Subscription;
   webform: Question | any = {};
+  webformQuestions: Record<string, Question> = {};
 
   constructor(
     private _WebformsService: WebformsService,
@@ -33,37 +34,62 @@ export class WebformMetricsComponent implements OnInit {
         const { _id: webformUserId } = user || {};
         if (userId !== webformUserId) this._Router.navigate(['auth', 'login']);
         const answerFrequent = await this._WebformsService.answerFrequent(_id);
-        const _questions = webform.questions
+
+        webform.questions.forEach((question) => {
+          this.webformQuestions[question._id] = question;
+        });
+
+        const metrics = webform.questions
           .sort(({ subIndex: a }, { subIndex: b }) => (a > b ? 1 : -1))
           .map((question: Question | any) => {
             const { _id, type } = question;
             const _answerFrequent: any = answerFrequent.find(
               ({ question: questionId }: any) => questionId === _id
             );
-            if (_answerFrequent)
-              switch (type) {
-                case 'multiple':
-                  question.answers = _answerFrequent.response.map(
-                    ({ value, count }) => ({
-                      text: `${count} ${value}`,
-                      link: '/',
-                    })
-                  );
-                  break;
-                default:
-                  const total =
-                    _answerFrequent.response.length > 1
-                      ? _answerFrequent.response.reduce(
-                          ({ count: a }, { count: b }) => a + b
-                        )
-                      : _answerFrequent.response[0]?.count || 0;
-                  question.total = total;
-                  break;
-              }
+
+            const currentQuestion = this.webformQuestions[question._id];
+
+
+            switch (type) {
+              case 'multiple':
+
+                question.answers = currentQuestion.answerDefault.map(option => ({
+                  text: '0 ' + (!option.label && !option.isMedia ? option.value : option.label),
+                  link: '/',
+                  file: option.isMedia ? option.value : null,
+                  optionValue: !option.label && !option.isMedia ? option.value : option.label
+                }));
+
+                if(_answerFrequent?.response) {
+                  for(const optionNumbers of _answerFrequent?.response) {
+                    const { value, label, count } = optionNumbers;
+  
+                    for(const option of question.answers) {
+                      if(option.optionValue === optionNumbers.label && option.file) {
+                        option.text = `${count} ${label}`;
+                      }
+  
+                      if(option.optionValue === optionNumbers.value && option.file) {
+                        option.text = `${count} ${value}`;
+                      }
+                    }
+                  }
+                }
+                break;
+              default:
+                const total =
+                  _answerFrequent?.response.length > 1
+                    ? _answerFrequent.response.reduce(
+                        ({ count: a }, { count: b }) => a + b
+                      )
+                    : _answerFrequent?.response[0]?.count || 0;
+                question.total = total;
+                break;
+            }
             const result: any = question;
-            return result;
+            return question;
           });
-        webform.questions = _questions.filter(
+        const metricsQuestions = metrics.filter(
           ({ answers = [], total }) => answers?.length || total !== undefined
         );
         this.webform = webform;

@@ -43,4 +43,10 @@ export class DialogFlowService {
     const field = fields.find((field) => field.name === fieldName);
     if (field) field.value = value;
   }
+
+  resetDialogFlow(flowId: string) {
+    Object.keys(this.dialogsFlows[flowId]).forEach(dialogId => {
+      this.dialogsFlows[flowId][dialogId].fields = {};
+    });
+  }
 }

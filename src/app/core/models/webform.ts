@@ -42,6 +42,7 @@ export class AnswerDefaultInput {
   media?: File;
   isMedia?: boolean;
   value?: string;
+  label?: string;
   defaultValue?: string;
 }
 
@@ -59,6 +60,7 @@ export class QuestionInput {
   subIndex?: number;
   value?: string;
   answerDefault?: AnswerDefaultInput[];
+  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME';
   show?: Boolean;
   required?: Boolean;
   answerMedia?: Boolean;
@@ -73,6 +75,7 @@ export class Question extends Model<Question> {
   show: boolean;
   required: boolean;
   active: boolean;
+  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME';
   answerMedia: boolean;
 }
 

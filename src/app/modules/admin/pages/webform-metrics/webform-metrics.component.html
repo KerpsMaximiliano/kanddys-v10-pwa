@@ -26,10 +26,10 @@
       ></app-link-card>
     </ng-container>
   </div>
-  <div class="content" style="margin-top: 10px">
-    <app-images-card></app-images-card>
-  </div>
-  <div style="position: fixed; bottom: 50px">
-    <app-menu-button mode="array"></app-menu-button>
-  </div>
+  <app-menu-button
+    mode="array"
+    [position]="{
+      bottom: '50px'
+    }"
+  ></app-menu-button>
 </div>

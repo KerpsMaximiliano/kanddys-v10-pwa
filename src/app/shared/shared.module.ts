@@ -165,6 +165,10 @@ import { MatCardModule } from '@angular/material/card';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
 import { WebformsCreatorComponent } from './components/webforms-creator/webforms-creator.component';
 import { WebformQuestionDialogComponent } from './components/webform-question-dialog/webform-question-dialog.component';
+import { WebformMultipleSelectionConfirmationComponent } from './components/webform-multiple-selection-confirmation/webform-multiple-selection-confirmation.component';
+import { TextOrImageComponent } from './components/text-or-image/text-or-image.component';
+import { WebformAddAnotherQuestionComponent } from './components/webform-add-another-question/webform-add-another-question.component';
+import { MsgDialogComponent } from './dialogs/msg-dialog/msg-dialog.component';
 
 const imports = [
   CommonModule,
@@ -336,6 +340,10 @@ const declarations = [
   CompactCardComponent,
   WebformsCreatorComponent,
   WebformQuestionDialogComponent,
+  WebformMultipleSelectionConfirmationComponent,
+  TextOrImageComponent,
+  WebformAddAnotherQuestionComponent,
+  MsgDialogComponent
 ];
 
 @NgModule({

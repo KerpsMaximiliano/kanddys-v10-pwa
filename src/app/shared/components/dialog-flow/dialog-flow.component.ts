@@ -96,15 +96,28 @@ export class DialogFlowComponent implements OnInit {
         this.dialogs[index].inputs.containerStyles.opacity = '1';
         this.service.activeDialogId = dialog.componentId;
       }
+    });
+  }
 
-      //this.dialogs[index].shouldRerender = true;
+  slideTransitionEnd() {
+    this.dialogs.forEach((slide, index) => {
+      if (
+        'shouldRerender' in this.dialogs[index] &&
+        this.dialogs[index].shouldRerender
+      ) {
+        this.dialogs[index].shouldRerender = this.dialogs[index].shouldRerender;
+      }
     });
 
-    setTimeout(() => {
-      this.dialogs.forEach((slide, index) => {
-        this.dialogs[index].shouldRerender = false;
-      });
-    }, 100);
+    if (
+      this.dialogs[this.currentDialogIndex].inputs &&
+      this.dialogs[this.currentDialogIndex].inputs.onActiveSlideCallback
+    ) {
+      this.dialogs[this.currentDialogIndex].inputs.onActiveSlideCallback();
+    } else {
+      this.swiperConfig.allowSlideNext = true;
+      this.swiperConfig.allowSlidePrev = true;
+    }
   }
 
   tapEvent(tappedDialogIndex: number) {

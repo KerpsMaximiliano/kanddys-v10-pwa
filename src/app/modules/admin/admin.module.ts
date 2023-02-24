@@ -27,6 +27,7 @@ import { ViewConfigurationComponent } from './pages/view-configuration/view-conf
 import { WebformMetricsComponent } from './pages/webform-metrics/webform-metrics.component';
 import { OrderStatusViewComponent } from './pages/order-status-view/order-status-view.component';
 import { OrderListComponent } from './pages/order-list/order-list.component';
+import { TextOrImageComponent } from 'src/app/shared/components/text-or-image/text-or-image.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -176,6 +177,10 @@ const routes: Routes = [
             component: OrderListComponent,
           },
         ],
+      },
+      {
+        path: 'webform-multiple-selection/:itemId',
+        component: TextOrImageComponent,
       },
     ],
   },

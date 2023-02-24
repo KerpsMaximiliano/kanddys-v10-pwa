@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
+  answerByOrder,
   answerFrequent,
   answerPaginate,
   createAnswer,
   createWebform,
+  itemAddWebForm,
   orderAddAnswer,
   webform,
   webformAddQuestion,
@@ -21,23 +23,40 @@ import {
   WebformAnswerInput,
   WebformInput,
 } from '../models/webform';
+import { EmbeddedComponentWithId } from '../types/multistep-form';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WebformsService {
   webformData: Webform;
+  webformQuestions: Array<QuestionInput> = [];
+  webformCreatorLastDialogs: Array<EmbeddedComponentWithId> = [];
+
   constructor(private graphql: GraphQLWrapper) {}
 
   async createWebform(
     input: WebformInput,
-    merchantId: string
   ): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: createWebform,
-      variables: { input, merchantId },
+      variables: { input },
     });
     return result?.createWebform;
+  }
+
+  async itemAddWebForm(
+    idItem: string,
+    idWebform: string 
+  ): Promise<Webform> {
+    const result = await this.graphql.mutate({
+      mutation: itemAddWebForm,
+      variables: { id: idItem, input: {
+        active: true,
+        reference: idWebform
+      } },
+    });
+    return result?.itemAddWebForm;
   }
 
   async webformAddQuestion(
@@ -92,6 +111,22 @@ export class WebformsService {
       if (!response || response?.errors) return undefined;
 
       return response.results;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async answerByOrder(orderId: string): Promise<any> {
+    try {
+      const { answerByOrder: response } = await this.graphql.query({
+        query: answerByOrder,
+        variables: { orderId },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!response || response?.errors) return undefined;
+
+      return response;
     } catch (error) {
       console.log(error);
     }

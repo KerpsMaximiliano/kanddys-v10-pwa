@@ -1,0 +1,69 @@
+<div class="container">
+  <header class="header">
+    <button>
+      <img class="arrows" [src]="environment + '/arrow-double-up.svg'" alt="" (click)="goBackOrSave()" />
+    </button>
+    <p class="title">Opciones que seleccionará</p>
+  </header>
+  <div class="body">
+    <section class="optionsBox">
+      <div class="option" *ngFor="let option of options; let i = index">
+        <textarea
+          (focusout)="focusOutEvent(i)"
+          (focus)="focusInEvent(i)"
+          [(ngModel)]="option.text"
+          (ngModelChange)="textChanged(i)"
+          class="inputComment"
+          [ngClass]="{ void: option.void }"
+        >
+        </textarea>
+        <label [for]="'file-option' + i">
+          <div class="img" *ngIf="!option.fileData">
+            <img
+              class="icon"
+              [src]="environment + '/galery-black.svg'"
+              alt=""
+            />
+          </div>
+
+          <div
+            class="loaded-image"
+            [ngStyle]="{
+              backgroundImage: 'url(' + option.fileData + ')',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }"
+            *ngIf="option.fileData"
+          ></div>
+        </label>
+        <input
+          type="file"
+          [id]="'file-option' + i"
+          [style.display]="'none'"
+          (change)="loadFile($event, i)"
+          multiple
+          [accept]="[
+            '.png',
+            '.jpg',
+            '.jpeg',
+            '.webp',
+            '.webm',
+            '.mp4',
+            '.m4v',
+            '.mpg',
+            '.mpeg',
+            '.mpeg4',
+            '.mov',
+            '.3gp',
+            '.mts',
+            '.m2ts',
+            '.mxf'
+          ]"
+        />
+      </div>
+    </section>
+  </div>
+  <div class="addBox">
+    <button class="add" (click)="addOption()">Adiciona otra opción</button>
+  </div>
+</div>
