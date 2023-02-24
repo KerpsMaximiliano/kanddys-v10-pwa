@@ -87,9 +87,12 @@ export class MerchantLandingComponent implements OnInit {
   async ngOnInit() {}
 
   async openDialog() {
-    this.router.navigate([
-      '/ecommerce/arepera-que-molleja/article-detail/63f6a229e2f51cbd1a4f3f71?signup=true',
-    ]);
+    this.router.navigate(
+      [
+        `/ecommerce/arepera-que-molleja/article-detail/item/63f6a229e2f51cbd1a4f3f71`,
+      ],
+      { queryParams: { signup: 'true' } }
+    );
     // let dialogRef = this.dialog.open(MerchantStepperFormComponent);
     // dialogRef
     //   .afterClosed()
