@@ -577,6 +577,7 @@ export class CheckoutComponent implements OnInit {
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
+      this.headerService.order.orderStatusDelivery = 'in progress';
       if (this.headerService.user && !anonymous) {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)

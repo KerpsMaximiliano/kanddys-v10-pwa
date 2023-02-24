@@ -137,6 +137,7 @@ export class ItemOrder extends Model<ItemOrder> {
 
 export class ItemOrderInput {
   ocr?: string;
+  orderStatusDelivery?: OrderStatusDeliveryType;
   products?: ItemSubOrderInput[];
   itemPackage?: string;
   tags?: string[];
