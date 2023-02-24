@@ -23,6 +23,20 @@
     }
   }
 
+  .card {
+    width: 100%;
+    font-family: SFProRegular;
+    color: #000000;
+    font-size: 17px;
+    padding: 28.5px 25px;
+    resize: none;
+    border: none;
+    border-radius: 7px;
+    overflow: hidden;
+    background-color: #fff;
+    margin-bottom: 10px;
+  }
+
   .config {
     border-radius: 9px;
     background-color: #e9e9e9;

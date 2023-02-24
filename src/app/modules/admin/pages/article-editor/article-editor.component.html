@@ -124,6 +124,7 @@
         [formControl]="name"
         placeholder="Nombre del producto (opcional)"
         *ngIf="editingName"
+        [(ngModel)]="productName"
       />
     </app-card>
   </div>
@@ -146,9 +147,65 @@
         placeholder="Descripción del producto (opcional)"
         [formControl]="description"
         *ngIf="editingDescription"
+        [(ngModel)]="productDescription"
       ></textarea>
     </app-card>
   </div>
+
+  <div class="section">
+    <form [formGroup]="itemParamsForm" (ngSubmit)="send()">
+      <p
+        style="
+          color: #272727;
+          font-size: 13px;
+          font-family: SFProLight;
+          margin-bottom: 8px;
+        "
+      >
+        LO INCLUIDO
+      </p>
+      <div
+        formArrayName="params"
+        *ngIf="getArrayLength(itemParamsForm, 'params')"
+      >
+        <div
+          *ngFor="
+            let paramsControl of getControls(itemParamsForm, 'params');
+            index as i
+          "
+          [formGroupName]="i"
+        >
+          <div
+            formArrayName="values"
+            *ngIf="getArrayLength(paramsControl, 'values')"
+          >
+            <section
+              class="form-group p-side"
+              *ngFor="
+                let valuesControl of getControls(paramsControl, 'values');
+                index as j
+              "
+              [formGroupName]="j"
+            >
+              <div class="template-grid">
+                <input
+                  class="card"
+                  type="text"
+                  formControlName="name"
+                  placeholder="Escribe..."
+                  (keypress)="dynamicInputKeyPress(j)"
+                />
+              </div>
+            </section>
+            <button style="margin: 0" class="config" (click)="send()">
+              <span style="margin: 0 auto">Actualizar Artículo</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
   <app-menu-button
     [position]="{ bottom: '50px' }"
     [options]="menuOptions"

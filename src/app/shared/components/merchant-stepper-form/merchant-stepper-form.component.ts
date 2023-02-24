@@ -103,7 +103,7 @@ export class MerchantStepperFormComponent implements OnInit {
     this.createMerchant();
     this.authService.generateMagicLink(
       this.inputPhone.replace('+', ''),
-      'admin/dashboard',
+      '/ecommerce/arepera-que-molleja/article-detail/63f6a229e2f51cbd1a4f3f71?createArticle=true',
       '',
       'UserAccess',
       {}
