@@ -70,8 +70,6 @@ export class ClosedQuestionCardComponent implements OnInit {
       this.options[this.selected].valueStyles = {
         'padding-left': '0px',
         marginLeft: '17.5px',
-        'font-family': 'RobotoBold',
-        color: '#272727',
         'font-size': '17px',
       };
 
@@ -115,9 +113,6 @@ export class ClosedQuestionCardComponent implements OnInit {
         this.options[indexInList].valueStyles = {
           'padding-left': '0px',
           marginLeft: '17.5px',
-          'font-family':
-          indexInList === this.selected ? 'RobotoBold' : 'SfProRegular',
-          color: indexInList === this.selected ? '#272727' : '#7b7b7b',
           'font-size': '17px',
         };
 

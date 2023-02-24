@@ -7,6 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ImagesCardComponent implements OnInit {
   @Input() title: string = '¿Pregunta para seleccionar imágenes ID?';
+  @Input() cardsWithImagesCounter: number = 0;
 
   @Input() cards: Array<{
     text: string;
@@ -16,5 +17,9 @@ export class ImagesCardComponent implements OnInit {
   }> = [];
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    for(const card of this.cards) {
+      if(card.file) this.cardsWithImagesCounter++;
+    }
+  }
 }

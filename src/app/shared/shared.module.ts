@@ -168,6 +168,7 @@ import { WebformQuestionDialogComponent } from './components/webform-question-di
 import { WebformMultipleSelectionConfirmationComponent } from './components/webform-multiple-selection-confirmation/webform-multiple-selection-confirmation.component';
 import { TextOrImageComponent } from './components/text-or-image/text-or-image.component';
 import { WebformAddAnotherQuestionComponent } from './components/webform-add-another-question/webform-add-another-question.component';
+import { WebformNameQuestionComponent } from './components/webform-name-question/webform-name-question.component';
 import { MsgDialogComponent } from './dialogs/msg-dialog/msg-dialog.component';
 
 const imports = [
@@ -343,6 +344,7 @@ const declarations = [
   WebformMultipleSelectionConfirmationComponent,
   TextOrImageComponent,
   WebformAddAnotherQuestionComponent,
+  WebformNameQuestionComponent,
   MsgDialogComponent
 ];
 

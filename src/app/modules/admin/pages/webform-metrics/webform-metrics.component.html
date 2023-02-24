@@ -4,9 +4,12 @@
       [src]="env + '/arrow-double-up-black.svg'"
       alt="arrows"
       class="arrows"
+      (click)="goBack()"
     />
-    <button class="right">Preview</button>
-    <button class="hide">Inactivo</button>
+    <!--
+      <button class="right">Preview</button>
+      <button class="hide">Inactivo</button>
+    -->
   </header>
   <div
     *ngFor="let question of webform.questions"
@@ -26,10 +29,13 @@
       ></app-link-card>
     </ng-container>
   </div>
-  <app-menu-button
-    mode="array"
-    [position]="{
-      bottom: '50px'
-    }"
-  ></app-menu-button>
+
+  <!--
+    <app-menu-button
+      mode="array"
+      [position]="{
+        bottom: '50px'
+      }"
+    ></app-menu-button>
+  -->
 </div>

@@ -1,10 +1,8 @@
 <div class="container">
   <div class="question-label">¿Como responderán?</div>
 
-  <div class="selection-number"
-    (click)="editOptions()"
-  >
-    <label> Seleccionando entre {{optionsCreated}} opciones </label>
+  <div class="selection-number" (click)="editOptions()">
+    <label> Seleccionando entre {{ optionsCreated }} opciones </label>
 
     <img
       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpencil_black.svg"
@@ -15,6 +13,7 @@
   <div class="checkbox-wrapper">
     <mat-checkbox
       class="required-question-checkbox"
+      [ngModelOptions]="{ standalone: true }"
       [(ngModel)]="openResponseOption"
       >Tienen la opción “escribe tu respuesta” para escribir
       libremente.</mat-checkbox
@@ -22,7 +21,10 @@
   </div>
 
   <div class="checkbox-wrapper">
-    <mat-checkbox class="required-question-checkbox" [(ngModel)]="singleResponse"
+    <mat-checkbox
+      class="required-question-checkbox"
+      [ngModelOptions]="{ standalone: true }"
+      [(ngModel)]="singleResponseOption"
       >Limitado a una sola respuesta.</mat-checkbox
     >
   </div>

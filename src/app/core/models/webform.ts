@@ -55,12 +55,13 @@ export class AnswerDefault extends Model<AnswerDefault> {
 }
 
 export class QuestionInput {
-  type?: 'text' | 'multiple' | 'default';
+  type?: 'text' | 'multiple' | 'default' | 'multiple-text';
   index?: number;
   subIndex?: number;
   value?: string;
   answerDefault?: AnswerDefaultInput[];
   answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME';
+  answerLimit?: number;
   show?: Boolean;
   required?: Boolean;
   answerMedia?: Boolean;
@@ -77,6 +78,7 @@ export class Question extends Model<Question> {
   active: boolean;
   answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME';
   answerMedia: boolean;
+  answerLimit?: number;
 }
 
 export class WebformInput {

@@ -175,8 +175,11 @@
           >
             <div class="question">
               <p class="top-text">{{ question.question }}</p>
-              <p class="bottom-text" *ngIf="!question.isMedia">
+              <p class="bottom-text" *ngIf="!question.isMedia && !question.label">
                 {{ question.value }}
+              </p>
+              <p class="bottom-text" *ngIf="!question.isMedia && question.label">
+                {{ question.value + ' ' + question.label}}
               </p>
               <p class="bottom-text" *ngIf="question.isMedia && question.label">
                 {{ question.label }}

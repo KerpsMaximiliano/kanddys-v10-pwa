@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -48,6 +48,7 @@ export class WebformsCreatorComponent implements OnInit {
   @Input() item: Item = null;
   @Input() user: User = null;
   @Input() resumingCreation: boolean = false;
+  @Output() closeEvent = new EventEmitter();
   swiperConfig: SwiperOptions = null;
   dialogFlowFunctions: Record<string, any> = {};
   currentQuestion: string = null;
@@ -386,6 +387,36 @@ export class WebformsCreatorComponent implements OnInit {
               }
             },
           },
+          {
+            name: 'openResponseButtonClicked',
+            callback: (clicked) => {
+              /*
+              if (clicked) {
+                this.webformService.webformQuestions[
+                  this.webformService.webformQuestions.length - 1
+                ].type = 'multiple-text';
+              } else {
+                this.webformService.webformQuestions[
+                  this.webformService.webformQuestions.length - 1
+                ].type = 'multiple';
+              }*/
+            },
+          },
+          {
+            name: 'singleResponseButtonClicked',
+            callback: (clicked) => {
+              /*
+              if (clicked) {
+                this.webformService.webformQuestions[
+                  this.webformService.webformQuestions.length - 1
+                ].answerLimit = 1;
+              } else {
+                delete this.webformService.webformQuestions[
+                  this.webformService.webformQuestions.length - 1
+                ].answerLimit
+              }*/
+            },
+          },
         ],
       });
 
@@ -478,5 +509,9 @@ export class WebformsCreatorComponent implements OnInit {
       unlockUI();
       console.error(error);
     }
+  }
+
+  closeDialogFlow() {
+    this.closeEvent.emit(true);
   }
 }

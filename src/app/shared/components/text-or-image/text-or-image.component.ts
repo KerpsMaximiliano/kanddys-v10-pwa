@@ -33,6 +33,10 @@ export class TextOrImageComponent implements OnInit {
       this.route.queryParams.subscribe(async ({ editingQuestion }) => {
         if (itemId) this.itemId = itemId;
 
+        if(this.webformService.webformQuestions.length === 0) {
+          this.router.navigate(['admin/article-editor/' + this.itemId]);
+        }
+
         if (editingQuestion) {
           this.options = [];
           for await (const option of this.webformService.webformQuestions[

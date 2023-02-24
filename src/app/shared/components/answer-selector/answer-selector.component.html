@@ -46,7 +46,12 @@
               ></div>
 
               <ng-container *ngIf="!option.isOptionAnArray">
-                <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+                <span [ngStyle]="option.valueStyles"
+                  [ngClass]="{
+                    selectedBold: boldenWhenSelected && i === activeOption,
+                    unselected: boldenWhenSelected && i !== activeOption
+                  }"
+                >{{ option.value }}</span>
                 <div>
                   <span
                     *ngFor="let subtext of option.subtexts"

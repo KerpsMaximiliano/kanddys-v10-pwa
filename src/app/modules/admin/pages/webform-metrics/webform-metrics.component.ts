@@ -1,7 +1,8 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Question } from 'src/app/core/models/webform';
+import { Question, Webform } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { environment } from 'src/environments/environment';
@@ -21,6 +22,7 @@ export class WebformMetricsComponent implements OnInit {
     private _WebformsService: WebformsService,
     private _AuthService: AuthService,
     private _ActivatedRoute: ActivatedRoute,
+    private location: Location,
     private _Router: Router
   ) {}
 
@@ -49,28 +51,43 @@ export class WebformMetricsComponent implements OnInit {
 
             const currentQuestion = this.webformQuestions[question._id];
 
-
             switch (type) {
               case 'multiple':
+                question.answers = currentQuestion.answerDefault.map(
+                  (option) => ({
+                    text:
+                      '0 ' +
+                      (!option.label && !option.isMedia
+                        ? option.value
+                        : option.label
+                        ? option.label
+                        : ''),
+                    link: '/',
+                    file: option.isMedia ? option.value : null,
+                    optionValue:
+                      !option.label && !option.isMedia
+                        ? option.value
+                        : option.label,
+                  })
+                );
 
-                question.answers = currentQuestion.answerDefault.map(option => ({
-                  text: '0 ' + (!option.label && !option.isMedia ? option.value : option.label),
-                  link: '/',
-                  file: option.isMedia ? option.value : null,
-                  optionValue: !option.label && !option.isMedia ? option.value : option.label
-                }));
-
-                if(_answerFrequent?.response) {
-                  for(const optionNumbers of _answerFrequent?.response) {
+                if (_answerFrequent?.response) {
+                  for (const optionNumbers of _answerFrequent?.response) {
                     const { value, label, count } = optionNumbers;
-  
-                    for(const option of question.answers) {
-                      if(option.optionValue === optionNumbers.label && option.file) {
-                        option.text = `${count} ${label}`;
+
+                    for (const option of question.answers) {
+                      if (option.optionValue === label && option.file) {
+                        if (label) option.text = `${count} ${label}`;
+                        else option.text = `${count}`;
                       }
-  
-                      if(option.optionValue === optionNumbers.value && option.file) {
-                        option.text = `${count} ${value}`;
+
+                      if (option.file && option.file === value) {
+                        option.text = `${count}`;
+                      }
+
+                      if (option.optionValue && option.optionValue === value) {
+                        if (value) option.text = `${count} ${value}`;
+                        else option.text = `${count}`;
                       }
                     }
                   }
@@ -80,7 +97,8 @@ export class WebformMetricsComponent implements OnInit {
                 const total =
                   _answerFrequent?.response.length > 1
                     ? _answerFrequent.response.reduce(
-                        ({ count: a }, { count: b }) => a + b
+                        (total, currentAnswer) => total + currentAnswer.count,
+                        0
                       )
                     : _answerFrequent?.response[0]?.count || 0;
                 question.total = total;
@@ -92,8 +110,12 @@ export class WebformMetricsComponent implements OnInit {
         const metricsQuestions = metrics.filter(
           ({ answers = [], total }) => answers?.length || total !== undefined
         );
-        this.webform = webform;
+        this.webform = { ...webform, _id, user };
       })();
     });
+  }
+
+  async goBack() {
+    this.location.back();
   }
 }

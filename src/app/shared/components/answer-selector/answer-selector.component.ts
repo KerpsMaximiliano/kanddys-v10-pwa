@@ -24,6 +24,7 @@ export class AnswerSelectorComponent {
   @Input() isMultipleOption: boolean = false;
   @Input() isMultipleOption2: boolean = false;
   @Input() hasComplexOptionsLayout: boolean = false;
+  @Input() boldenWhenSelected: boolean = false;
   @Input() useMargins: boolean = true;
   @Input() options: OptionAnswerSelector[] = [
     { value: '¿Cuánto es?', status: true, click: false, description: [] },

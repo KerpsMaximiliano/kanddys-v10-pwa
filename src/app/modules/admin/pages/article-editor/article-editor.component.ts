@@ -94,6 +94,10 @@ export class ArticleEditorComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    await this.executeInitProcesses();
+  }
+
+  async executeInitProcesses() {
     this.loadingSlides = true;
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     const resumeWebform =
@@ -181,7 +185,7 @@ export class ArticleEditorComponent implements OnInit {
 
       this.webform = webform;
     }
-  }
+  };
 
   loadImages() {
     this._ItemsService.itemImages?.forEach((file) => {
@@ -528,5 +532,11 @@ export class ArticleEditorComponent implements OnInit {
 
   goToWebformMetrics() {
     this._Router.navigate(['admin/webform-metrics/' + this.webform._id]);
+  }
+
+  async reloadWebform() {
+    this.openedDialogFlow = false;
+
+    await this.executeInitProcesses();
   }
 }

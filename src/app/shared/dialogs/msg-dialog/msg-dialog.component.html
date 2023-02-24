@@ -9,8 +9,8 @@
         *ngIf="optionalQuestionsNumber > 0 && requiredQuestionsNumber > 0"
       >
         Los compradores te responderán {{ requiredQuestionsNumber }} preguntas
-        antes de completar la factura del
-        {{ item.name ? "de " + item.name : "del producto" }} y otras
+        antes de completar la factura
+        {{ item.name ? " de " + item.name : "del producto" }} y otras
         {{ optionalQuestionsNumber }} que no son obligatorias
       </span>
 
@@ -19,8 +19,8 @@
         *ngIf="optionalQuestionsNumber === 0 && requiredQuestionsNumber > 0"
       >
         Los compradores te responderán {{ requiredQuestionsNumber }} preguntas
-        antes de completar la factura del
-        {{ item.name ? "de " + item.name : "del producto" }}
+        antes de completar la factura
+        {{ item.name ? " de " + item.name : "del producto" }}
       </span>
 
       <span
@@ -29,26 +29,23 @@
       >
         Los compradores pueden opcionalmente responder
         {{ requiredQuestionsNumber }} preguntas antes de completar la factura
-        del
-        {{ item.name ? "de " + item.name : "del producto" }}
+        {{ item.name ? " de " + item.name : "del producto" }}
       </span>
     </p>
   </section>
   <section class="middle">
-    <p>
-      <!--
+    <!--
                 <link href="#">Mira como lo verán tus compradores
                 <br>
                 <br>
                 <link href="#">Mira como lo verás tu
                 <br>
             -->
-      <br />
-      <a [routerLink]="['/admin/article-editor', '63d7ebf3bbd3bc32bcc2ec0b']">
-        Vuelve a la configuración
-        {{ item.name ? "de " + item.name : "del producto" }}
-      </a>
-    </p>
+    <br />
+    <div class="link" (click)="closeDialog()">
+      Vuelve a la configuración
+      {{ item.name ? "de " + item.name : "del producto" }}
+    </div>
   </section>
   <section class="bottom flex">
     <button class="button flex">

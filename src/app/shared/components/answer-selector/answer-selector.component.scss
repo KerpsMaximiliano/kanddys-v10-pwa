@@ -135,3 +135,12 @@ ul {
     flex: 1;
   }
 }
+
+.selectedBold {
+  font-family: RobotoBold !important;
+  color: #272727;
+}
+
+.unselected {
+  font-family: SfProRegular !important;
+}

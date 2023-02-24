@@ -40,7 +40,8 @@
     <button
       class="confirmButton"
       [ngStyle]="{
-        backgroundColor: missingOrderData || !areWebformsValid ? '#e9e9e9' : '#82F18D'
+        backgroundColor:
+          missingOrderData || !areWebformsValid ? '#e9e9e9' : '#82F18D'
       }"
       [disabled]="missingOrderData || !areWebformsValid"
       (click)="createOrder()"
@@ -107,10 +108,26 @@
                       class="question-text-response"
                       *ngIf="
                         answersByQuestion[question._id]?.response &&
+                        !answersByQuestion[question._id]?.responseLabel &&
                         !answersByQuestion[question._id].isMedia
                       "
                     >
                       {{ answersByQuestion[question._id]?.response }}
+                    </div>
+
+                    <div
+                      class="question-text-response"
+                      *ngIf="
+                        answersByQuestion[question._id]?.response &&
+                        answersByQuestion[question._id]?.responseLabel &&
+                        !answersByQuestion[question._id].isMedia
+                      "
+                    >
+                      {{
+                        answersByQuestion[question._id]?.response +
+                          " " +
+                          answersByQuestion[question._id]?.responseLabel
+                      }}
                     </div>
                   </li>
                 </ng-container>
@@ -150,12 +167,16 @@
                       color: '#000',
                       fontSize: '15px'
                     }"
-                    [containerStyles]="{padding: '15px 18px'}"
+                    [containerStyles]="{ padding: '15px 18px' }"
                     [question]="question.value"
                     [answers]="question.answerDefault"
                     [selected]="answersByQuestion[question._id].selectedIndex"
-                    [selectedImage]="answersByQuestion[question._id].selectedImageIndex"
-                    (onSelector)="selectWebformMediaOption($event, item, question)"
+                    [selectedImage]="
+                      answersByQuestion[question._id].selectedImageIndex
+                    "
+                    (onSelector)="
+                      selectWebformMediaOption($event, item, question)
+                    "
                   >
                   </app-closed-question-card>
                 </div>
@@ -378,7 +399,7 @@
 
   <ng-container *ngFor="let item of items">
     <app-dialog-flow
-      *ngIf="this.webformsByItem[item._id]?.dialogs"
+      *ngIf="this.webformsByItem[item._id]?.dialogs && this.webformsByItem[item._id]?.dialogs.length"
       [dialogFlowId]="'webform-item-' + item._id"
       [status]="this.webformsByItem[item._id].opened ? 'OPEN' : 'CLOSE'"
       [dialogs]="this.webformsByItem[item._id].dialogs"

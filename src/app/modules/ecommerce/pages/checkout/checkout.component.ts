@@ -37,6 +37,7 @@ import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WebformMultipleSelectionQuestionComponent } from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
+import { WebformNameQuestionComponent } from 'src/app/shared/components/webform-name-question/webform-name-question.component';
 import { WebformTextareaQuestionComponent } from 'src/app/shared/components/webform-textarea-question/webform-textarea-question.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
@@ -842,7 +843,10 @@ export class CheckoutComponent implements OnInit {
           const lastDialogIndex =
             this.webformsByItem[item._id].dialogs.length - 1;
 
-          if (question.type === 'text') {
+          if (
+            question.type === 'text' &&
+            question.answerTextType.toUpperCase() !== 'NAME'
+          ) {
             const validators = [Validators.required];
 
             if (question.answerTextType.toUpperCase() === 'EMAIL')
@@ -876,6 +880,41 @@ export class CheckoutComponent implements OnInit {
                 },
               ],
             });
+          } else if (
+            question.type === 'text' &&
+            question.answerTextType.toUpperCase() === 'NAME'
+          ) {
+            this.webformsByItem[item._id].dialogs.push({
+              component: WebformNameQuestionComponent,
+              componentId: question._id,
+              inputs: {
+                label: question.value,
+                skipValidationBlock: true,
+                containerStyles: {
+                  opacity: '1',
+                },
+                dialogFlowConfig: {
+                  dialogId: question._id,
+                  flowId: 'webform-item-' + item._id,
+                },
+                inputType: question.answerTextType.toUpperCase(),
+                name: new FormControl('', Validators.required),
+                lastname: new FormControl('', Validators.required),
+              },
+              outputs: [
+                {
+                  name: 'inputDetected',
+                  callback: (inputDetected) => {
+                    this.answersByQuestion[question._id].response =
+                      inputDetected.split(' ')[0]?.trim();
+                    this.answersByQuestion[question._id].responseLabel =
+                      inputDetected.split(' ')[1]?.trim();
+
+                    this.areWebformsValid = this.areItemsQuestionsAnswered();
+                  },
+                },
+              ],
+            });
           } else if (question.type === 'multiple') {
             const activeOptions = question.answerDefault
               .filter((option) => option.active)
@@ -897,6 +936,7 @@ export class CheckoutComponent implements OnInit {
                   dialogId: question._id,
                   flowId: 'webform-item-' + item._id,
                 },
+                //multiple: !question.answerLimit || question.answerLimit > 1,
                 options: activeOptions,
               },
               outputs: [
