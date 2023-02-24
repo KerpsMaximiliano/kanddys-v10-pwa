@@ -57,12 +57,14 @@ export class MerchantStepperFormComponent implements OnInit {
         status: true,
         click: true,
         value: this.allCommunities.communitycategories[i].name,
+        description: this.allCommunities.communitycategories[i].description,
         valueStyles: {
           'font-family': 'SfProBold',
           'font-size': '17px',
           color: '#272727',
         },
       });
+      console.log(this.allCommunities.communitycategories[i].description);
     }
 
     console.log(this.options);

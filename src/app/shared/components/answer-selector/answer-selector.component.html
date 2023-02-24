@@ -165,7 +165,18 @@
                   </ng-container>
                 </span>
               </ng-container>
+
+              <div
+                class="description-container"
+                *ngIf="option.description !== '' && showDescription"
+                (click)="editable && option.status && clickSelector(i)"
+              >
+                <p class="description-label">
+                  {{ option.description }}
+                </p>
+              </div>
             </div>
+
             <div class="icons-flex-wrapper" *ngIf="option.icons?.length > 0">
               <ng-container *ngFor="let icon of option.icons">
                 <button

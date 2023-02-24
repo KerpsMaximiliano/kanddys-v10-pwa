@@ -53,6 +53,7 @@ export class ArticleStepperFormComponent implements OnInit {
         status: true,
         click: true,
         value: this.allCommunities.communitycategories[i].name,
+        description: this.allCommunities.communitycategories[i].description,
         valueStyles: {
           'font-family': 'SfProBold',
           'font-size': '17px',
@@ -108,7 +109,7 @@ export class ArticleStepperFormComponent implements OnInit {
       pricing: this.pricing,
       images,
       merchant: this.merchant._id,
-      // categories: this.merchantCategories,
+      categories: this.merchantCategories,
     };
 
     this.itemCreated = await this._ItemsService.createItem(itemInput);

@@ -218,6 +218,7 @@ export const communitycategories = gql`
     communitycategories(params: $params) {
       _id
       name
+      description
     }
   }
 `;
