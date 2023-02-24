@@ -3,10 +3,7 @@
     class="header"
     [ngStyle]="{ backgroundColor: isMerchant ? '#000000' : '#293628' }"
   >
-    <button
-      (click)="!redirectTo ? returnToStore() : returnEvent()"
-      style="all: unset; cursor: pointer"
-    >
+    <button mat-button (click)="!redirectTo ? returnToStore() : returnEvent()">
       <img
         [src]="env + '/arrow-double-up-black.svg'"
         alt=""
@@ -217,7 +214,11 @@
           (mouseleave)="stopDragging()"
           (mousemove)="moveEvent($event, elemt)"
         >
-          <button (click)="order.ocr ? openImageModal(order.ocr.image) : null">
+          <button
+            mat-button
+            (click)="order.ocr ? openImageModal(order.ocr.image) : null"
+            style="padding: 0"
+          >
             <div
               class="image"
               [ngStyle]="{
