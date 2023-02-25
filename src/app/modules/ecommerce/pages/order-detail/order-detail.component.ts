@@ -714,10 +714,11 @@ export class OrderDetailComponent implements OnInit {
 
                 if (answerInList.question) {
                   answerInList.question = question.value;
+
                   if (
-                    question.answerDefault &&
-                    question.answerDefault.length &&
-                    question.answerDefault[0].isMedia
+                    (!answerInList.isMedia &&
+                      answerInList.value.startsWith('https')) ||
+                    answerInList.value.startsWith('http')
                   )
                     answerInList.isMedia = true;
                 }

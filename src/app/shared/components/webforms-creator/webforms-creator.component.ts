@@ -171,9 +171,10 @@ export class WebformsCreatorComponent implements OnInit {
             const answerType = value.answerType[0];
 
             if (answerType === this.answerTypes['OPEN_ANSWER']) {
+              this.resumingCreation = false;
+
               this.webformQuestions.push({
                 value: this.currentQuestion,
-                subIndex: this.currentQuestionIndex,
                 required: this.currentQuestionRequired,
                 type: 'text',
                 answerTextType: 'DEFAULT',
@@ -193,28 +194,38 @@ export class WebformsCreatorComponent implements OnInit {
                 this.resumingCreation &&
                 this.webformService.webformCreatorLastDialogs.length;
 
-              this.webformQuestions.push({
-                value: this.currentQuestion,
-                subIndex: this.currentQuestionIndex,
-                required: this.currentQuestionRequired,
-                type: 'multiple',
-                answerTextType: 'DEFAULT',
-                index: 0,
-                show: true,
-                answerMedia: false,
-              });
+              if (!cameBackFromAnotherPage) {
+                this.webformQuestions.push({
+                  value: this.currentQuestion,
+                  required: this.currentQuestionRequired,
+                  type: 'multiple',
+                  answerTextType: 'DEFAULT',
+                  index: 0,
+                  show: true,
+                  answerMedia: false,
+                });
 
-              this.webformService.webformQuestions = this.webformQuestions;
-              this.webformService.webformCreatorLastDialogs = this.dialogs;
-              this.router.navigate([
-                'admin/webform-multiple-selection/' + this.item._id,
-              ]);
-              /*else {
+                this.webformService.webformQuestions = this.webformQuestions;
+                this.webformService.webformCreatorLastDialogs = this.dialogs;
+                this.router.navigate([
+                  'admin/webform-multiple-selection/' + this.item._id,
+                ]);
+              } else {
                 this.dialogFlowFunctions.moveToDialogByIndex(
-                  this.dialogs.length - 1
+                  this.dialogs.length - 2
                 );
-              }*/
+              }
             } else if (answerType === this.answerTypes['CONTACT_INFO']) {
+              this.resumingCreation = false;
+
+              const cameFromAnotherPage = this.dialogs.findIndex(
+                (dialog) => dialog.componentId === 'confirm-multiple-selection'
+              );
+
+              if (cameFromAnotherPage > -1) {
+                this.dialogs.splice(cameFromAnotherPage, 2);
+              }
+
               this.dialogs.push(this.contactInfoDialog);
               this.contactInfoDialogVisible = true;
 
@@ -285,7 +296,6 @@ export class WebformsCreatorComponent implements OnInit {
             if (answerType in options) {
               this.webformQuestions.push({
                 value: this.currentQuestion,
-                subIndex: this.currentQuestionIndex,
                 required: this.currentQuestionRequired,
                 type: 'text',
                 answerTextType: options[answerType],
@@ -304,16 +314,68 @@ export class WebformsCreatorComponent implements OnInit {
       },
     ],
   };
+  multipleSelectionConfirmationDialog: EmbeddedComponentWithId = {
+    component: WebformMultipleSelectionConfirmationComponent,
+    componentId: 'confirm-multiple-selection',
+    inputs: {
+      optionsCreated:
+        this.webformService.webformQuestions[
+          this.webformService.webformQuestions.length - 1
+        ]?.answerDefault.length,
+    },
+    outputs: [
+      {
+        name: 'editButtonClicked',
+        callback: (clicked) => {
+          if (clicked) {
+            this.webformService.webformCreatorLastDialogs = this.dialogs;
+            this.webformService.webformCreatorLastDialogs.pop();
+            this.router.navigate(
+              ['admin/webform-multiple-selection/' + this.item._id],
+              {
+                queryParams: {
+                  editingQuestion: true,
+                },
+              }
+            );
+          }
+        },
+      },
+      {
+        name: 'openResponseButtonClicked',
+        callback: (clicked) => {
+          /*
+          if (clicked) {
+            this.webformService.webformQuestions[
+              this.webformService.webformQuestions.length - 1
+            ].type = 'multiple-text';
+          } else {
+            this.webformService.webformQuestions[
+              this.webformService.webformQuestions.length - 1
+            ].type = 'multiple';
+          }*/
+        },
+      },
+      {
+        name: 'singleResponseButtonClicked',
+        callback: (clicked) => {
+          /*
+          if (clicked) {
+            this.webformService.webformQuestions[
+              this.webformService.webformQuestions.length - 1
+            ].answerLimit = 1;
+          } else {
+            delete this.webformService.webformQuestions[
+              this.webformService.webformQuestions.length - 1
+            ].answerLimit
+          }*/
+        },
+      },
+    ],
+  };
   newQuestionDialogs: Array<EmbeddedComponentWithId> = [
     this.questionDialog,
     this.answerType,
-    /*
-    {
-      component: WebformMultipleSelectionConfirmationComponent,
-      componentId: 'confirmation',
-      inputs: {},
-      outputs: [],
-    }*/
   ];
 
   dialogs: Array<EmbeddedComponentWithId> = [];
@@ -360,65 +422,37 @@ export class WebformsCreatorComponent implements OnInit {
       this.webformService.webformCreatorLastDialogs.length
     ) {
       this.dialogs = this.webformService.webformCreatorLastDialogs;
-      this.dialogs.push({
-        component: WebformMultipleSelectionConfirmationComponent,
-        componentId: 'confirm-multiple-selection',
-        inputs: {
-          optionsCreated:
-            this.webformService.webformQuestions[
-              this.webformService.webformQuestions.length - 1
-            ].answerDefault.length,
-        },
-        outputs: [
-          {
-            name: 'editButtonClicked',
-            callback: (clicked) => {
-              if (clicked) {
-                this.webformService.webformCreatorLastDialogs = this.dialogs;
-                this.webformService.webformCreatorLastDialogs.pop();
-                this.router.navigate(
-                  ['admin/webform-multiple-selection/' + this.item._id],
-                  {
-                    queryParams: {
-                      editingQuestion: true,
-                    },
-                  }
-                );
-              }
-            },
-          },
-          {
-            name: 'openResponseButtonClicked',
-            callback: (clicked) => {
-              /*
-              if (clicked) {
-                this.webformService.webformQuestions[
-                  this.webformService.webformQuestions.length - 1
-                ].type = 'multiple-text';
-              } else {
-                this.webformService.webformQuestions[
-                  this.webformService.webformQuestions.length - 1
-                ].type = 'multiple';
-              }*/
-            },
-          },
-          {
-            name: 'singleResponseButtonClicked',
-            callback: (clicked) => {
-              /*
-              if (clicked) {
-                this.webformService.webformQuestions[
-                  this.webformService.webformQuestions.length - 1
-                ].answerLimit = 1;
-              } else {
-                delete this.webformService.webformQuestions[
-                  this.webformService.webformQuestions.length - 1
-                ].answerLimit
-              }*/
-            },
-          },
-        ],
-      });
+
+      const toReplaceIndex = this.dialogs.findIndex(
+        (dialog) => dialog.componentId === 'answerType'
+      );
+
+      if (toReplaceIndex > -1) {
+        this.dialogs[toReplaceIndex] = this.answerType;
+      }
+
+      if (
+        this.dialogs[this.dialogs.length - 1].componentId !==
+        'confirm-multiple-selection'
+      ) {
+        this.dialogs.push(this.multipleSelectionConfirmationDialog);
+
+        if (
+          this.webformService.webformQuestions[
+            this.webformService.webformQuestions.length - 1
+          ].answerDefault.length === 0
+        ) {
+          setTimeout(() => {
+            this.swiperConfig.allowSlideNext = false;
+          }, 1000);
+        }
+      } else {
+        this.dialogs[this.dialogs.length - 1].inputs = {};
+        this.dialogs[this.dialogs.length - 1].inputs.optionsCreated =
+          this.webformService.webformQuestions[
+            this.webformService.webformQuestions.length - 1
+          ].answerDefault.length;
+      }
 
       this.dialogs.push({
         component: WebformAddAnotherQuestionComponent,
@@ -429,6 +463,7 @@ export class WebformsCreatorComponent implements OnInit {
             name: 'pressedButton',
             callback: (addAnotherQuestionText: string) => {
               if (addAnotherQuestionText === 'YES') {
+                this.resumingCreation = false;
                 this.addAnotherQuestion();
               } else {
                 this.createWebformForItem();

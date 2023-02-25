@@ -33,11 +33,16 @@ export class TextOrImageComponent implements OnInit {
       this.route.queryParams.subscribe(async ({ editingQuestion }) => {
         if (itemId) this.itemId = itemId;
 
-        if(this.webformService.webformQuestions.length === 0) {
+        if (this.webformService.webformQuestions.length === 0) {
           this.router.navigate(['admin/article-editor/' + this.itemId]);
         }
 
-        if (editingQuestion) {
+        if (
+          editingQuestion &&
+          this.webformService.webformQuestions[
+            this.webformService.webformQuestions.length - 1
+          ]?.answerDefault.length !== 0
+        ) {
           this.options = [];
           for await (const option of this.webformService.webformQuestions[
             this.webformService.webformQuestions.length - 1
@@ -107,25 +112,29 @@ export class TextOrImageComponent implements OnInit {
     for (const option of this.options) {
       const hasOptionText = option.text && option.text.length;
       const hasOptionMedia = option.file;
+      const isNotPlaceholder = option.text !== 'Escribe..';
 
-      if (hasOptionMedia && hasOptionText) {
+      if (hasOptionMedia && hasOptionText && isNotPlaceholder) {
         optionsToAdd.push({
           active: true,
           isMedia: 'fileData' in option,
           media: 'fileData' in option ? option.file : null,
           value: 'fileData' in option ? null : option.text,
-          label: 'fileData' in option && option.text && !option.void ? option.text : null,
+          label:
+            'fileData' in option && option.text && !option.void
+              ? option.text
+              : null,
         });
       }
 
-      if (!hasOptionText && hasOptionMedia) {
+      if (!hasOptionText && hasOptionMedia && isNotPlaceholder) {
         optionsToAdd.push({
           isMedia: true,
           media: option.file,
         });
       }
 
-      if (hasOptionText && !hasOptionMedia) {
+      if (hasOptionText && !hasOptionMedia && isNotPlaceholder) {
         optionsToAdd.push({
           active: true,
           isMedia: false,
