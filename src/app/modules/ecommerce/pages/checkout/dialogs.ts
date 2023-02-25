@@ -247,7 +247,7 @@ export class Dialogs {
               marginTop: '0px',
               marginBottom: '18.5px',
             },
-            text: '¿Quién recibirá?',
+            text: '¿Quién recibirá el mensaje?',
           },
           fields: {
             styles: {},

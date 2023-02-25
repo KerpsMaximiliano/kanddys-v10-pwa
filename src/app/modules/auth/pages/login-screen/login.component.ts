@@ -1131,6 +1131,19 @@ export class LoginComponent implements OnInit {
       return this.redirectFromQueryParams();
     }
 
+    if (this.auth === 'virtual-message') {
+      this.router.navigate(
+        [`ecommerce/${this.merchant.slug}/payments/${this.orderId}`],
+        {
+          replaceUrl: true,
+          state: {
+            loggedIn: true,
+          },
+        }
+      );
+      return;
+    }
+
     this.router.navigate([`ecommerce/order-detail/${order._id}`], {
       queryParams: { notify: 'true' },
     });
