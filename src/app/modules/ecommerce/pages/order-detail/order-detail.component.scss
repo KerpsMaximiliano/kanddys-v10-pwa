@@ -195,14 +195,12 @@ a {
             border-radius: 6px;
 
             .item-image {
-              min-width: 86px;
-              max-width: 86px;
-              min-height: 74px;
-              max-height: 110px;
+              height: 100%;
+              width: 100%;
               background-color: #e9e371;
               border-radius: 6px;
               -webkit-user-drag: none;
-              object-fit: contain;
+              object-fit: cover;
             }
 
             &:after {
@@ -729,7 +727,6 @@ table {
 .header {
   display: flex;
   align-items: center;
-  padding: 15px 30px 10px;
   color: #fff;
   p {
     margin-left: 17px;
