@@ -13,6 +13,7 @@ export class EnvelopeContentComponent implements OnInit {
   @Input() mensaje: string =
     'Por conseguir lo que veias imposible, por creer en ti, y por demostrarnos a todos lo grande y capaz que eres.';
   @Input() from: string = 'James Bond';
+  @Input() to: string = 'Padme Amidala';
   @Input() shadows: boolean = true;
   constructor(private router: Router, private headerService: HeaderService) {}
 

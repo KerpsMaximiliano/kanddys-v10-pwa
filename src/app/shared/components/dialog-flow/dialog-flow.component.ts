@@ -107,6 +107,26 @@ export class DialogFlowComponent implements OnInit {
     }, 100);
   }
 
+  slideTransitionEnd() {
+    this.dialogs.forEach((slide, index) => {
+      if (
+        'shouldRerender' in this.dialogs[index] &&
+        this.dialogs[index].shouldRerender
+      ) {
+        this.dialogs[index].shouldRerender = this.dialogs[index].shouldRerender;
+      }
+    });
+    if (
+      this.dialogs[this.currentDialogIndex].inputs &&
+      this.dialogs[this.currentDialogIndex].inputs.onActiveSlideCallback
+    ) {
+      this.dialogs[this.currentDialogIndex].inputs.onActiveSlideCallback();
+    } else {
+      this.swiperConfig.allowSlideNext = true;
+      this.swiperConfig.allowSlidePrev = true;
+    }
+  }
+
   tapEvent(tappedDialogIndex: number) {
     this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex);
   }

@@ -26,6 +26,7 @@
       <swiper
         [config]="swiperConfig"
         (slideChange)="changeActiveDialog($event)"
+        (slideChangeTransitionEnd)="slideTransitionEnd()"
         #dialogSwiper
       >
         <div

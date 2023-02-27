@@ -154,7 +154,8 @@ export class CheckoutComponent implements OnInit {
               doesTheDialogsIdsMatch &&
               dialog.componentId === 'receiverRelationshipDialog' &&
               this.postsService.post.message &&
-              this.postsService.post.title
+              this.postsService.post.title &&
+              this.postsService.post.to
             ) {
               generatedMessage = true;
             }

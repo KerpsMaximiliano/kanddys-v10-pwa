@@ -268,7 +268,7 @@ export class Dialogs {
                   text: '',
                 },
                 placeholder:
-                  'Escribe para quien es. Este nombre estara escrito en el sobre.',
+                  'Escribe el nombre del recipiente. Este nombre estara escrito en el sobre.',
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
@@ -327,9 +327,9 @@ export class Dialogs {
               color: '#4F4F4F',
               marginBottom: '12.5px',
               width: '75.60%',
-              minWidth: '220px'
+              minWidth: '220px',
             },
-            text: 'Departe de quien o quienes?',
+            text: 'Departe de quién o quienes?',
           },
           fields: {
             styles: {},
@@ -350,7 +350,7 @@ export class Dialogs {
                   text: '',
                 },
                 placeholder:
-                  'Este (os) nombres (s) estaran escritos debajo del mensaje.',
+                  'Este (os) nombres(s) estarán escritos debajo del mensaje.',
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
@@ -564,7 +564,7 @@ export class Dialogs {
                   },
                   text: '',
                 },
-                placeholder: 'Escribe...',
+                placeholder: '¡Feliz cumpleaños!',
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
@@ -627,7 +627,7 @@ export class Dialogs {
               marginTop: '0',
               color: '#4F4F4F',
               width: '50%',
-              minWidth: '149px'
+              minWidth: '149px',
             },
             text: '¿Que mensaje escribiremos?',
           },
@@ -655,7 +655,7 @@ export class Dialogs {
                   },
                   text: '',
                 },
-                placeholder: 'Escribe...',
+                placeholder: 'Te deseo un maravilloso día...',
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
@@ -970,6 +970,9 @@ export class Dialogs {
           containerStyles: {
             background: 'rgb(255, 255, 255)',
           },
+          onActiveSlideCallback: (params) => {
+            this.dialogFlowService.swiperConfig.allowSlideNext = false;
+          },
         },
         outputs: [
           {
@@ -1079,7 +1082,6 @@ export class Dialogs {
 
                 unlockUI();
               } catch (error) {
-
                 this.dialogFlowService.swiperConfig.allowSlideNext = false;
                 unlockUI();
 
