@@ -178,8 +178,8 @@ export class WebformsCreatorComponent implements OnInit {
                 required: this.currentQuestionRequired,
                 type: 'text',
                 answerTextType: 'DEFAULT',
-                index: 0,
                 show: true,
+                subIndex: this.webformQuestions.length,
                 answerMedia: false,
               });
               this.currentQuestion = null;
@@ -200,8 +200,8 @@ export class WebformsCreatorComponent implements OnInit {
                   required: this.currentQuestionRequired,
                   type: 'multiple',
                   answerTextType: 'DEFAULT',
-                  index: 0,
                   show: true,
+                  subIndex: this.webformQuestions.length,
                   answerMedia: false,
                 });
 
@@ -299,9 +299,9 @@ export class WebformsCreatorComponent implements OnInit {
                 required: this.currentQuestionRequired,
                 type: 'text',
                 answerTextType: options[answerType],
-                index: 0,
                 show: true,
                 answerMedia: false,
+                subIndex: this.webformQuestions.length
               });
               this.currentQuestion = null;
               this.questionDialog.postLabel = null;
@@ -367,7 +367,7 @@ export class WebformsCreatorComponent implements OnInit {
           } else {
             delete this.webformService.webformQuestions[
               this.webformService.webformQuestions.length - 1
-            ].answerLimit
+            ].answerLimit;
           }*/
         },
       },
