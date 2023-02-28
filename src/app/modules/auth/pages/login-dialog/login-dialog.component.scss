@@ -1,0 +1,44 @@
+.wrapper {
+  padding: 8px 0;
+
+  .confirm {
+    top: 27px;
+    right: 6%;
+  }
+}
+
+::ng-deep.mat-stepper-vertical-line::before {
+  display: none;
+}
+
+::ng-deep.mat-vertical-content-container {
+  margin: 0 !important;
+}
+
+::ng-deep.mat-vertical-content {
+  padding: 0 0 24px 0 !important;
+}
+
+::ng-deep.mat-vertical-stepper-content {
+  overflow: visible !important;
+}
+
+::ng-deep.iti .dropdown-menu.country-dropdown {
+  width: auto;
+  max-width: none;
+}
+
+::ng-deep ngx-intl-tel-input input {
+  height: 64px;
+  border-radius: 8px;
+  font-family: RobotoMedium;
+  font-size: 16px;
+  border: 1px solid #7b7b7b87;
+  color: #0b1f38;
+}
+
+::ng-deep ngx-intl-tel-input input:focus {
+  outline: none !important;
+  border-color: #3498db;
+  box-shadow: 0 0 0 0 #000;
+}

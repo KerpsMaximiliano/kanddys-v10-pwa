@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -18,6 +19,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -41,7 +43,8 @@ export class NewAddressComponent implements OnInit {
     private fb: FormBuilder,
     private usersService: UsersService,
     private toastr: ToastrService,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private matDialog: MatDialog
   ) {
     this.addressForm = fb.group({
       nickName: fb.control('Mi casa', [
@@ -324,6 +327,10 @@ export class NewAddressComponent implements OnInit {
     });
   }
 
+  openLoginDialog() {
+    this.matDialog.open(LoginDialogComponent);
+  }
+
   checkAddresses() {
     if (!this.headerService.saleflow.module?.delivery?.isActive) {
       this.toastr.info('Esta tienda no contiene delivery o pick-up.', null, {
@@ -483,7 +490,7 @@ export class NewAddressComponent implements OnInit {
     ]);
   }
 
-  handleData(event):void {
+  handleData(event): void {
     this.selectedDeliveryIndex = event;
     this.selectAddress();
   }

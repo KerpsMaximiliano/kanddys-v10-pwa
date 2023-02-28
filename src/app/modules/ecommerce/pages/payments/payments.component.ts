@@ -30,6 +30,8 @@ import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions } from 'swiper';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
 import { Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-payments',
@@ -194,7 +196,7 @@ export class PaymentsComponent implements OnInit {
                 padding: '5px 20px',
                 right: '37px',
                 top: '133px',
-                cursor: 'pointer'
+                cursor: 'pointer',
               },
             },
           ],
@@ -208,31 +210,39 @@ export class PaymentsComponent implements OnInit {
             const { buttonClicked, value, valid } = params;
 
             try {
-              if (valid &&  value.email && value.email.length > 0) {
+              if (valid && value.email && value.email.length > 0) {
                 await this.authService.updateMe({
                   email: value.email,
                 });
                 this.redirectToAzulPaymentPage();
               } else {
-                this.toastrService.error( value.email && value.email.length > 0 ? 'Email invalido' : 'Campo vacio, ingresa un email valido', null, {
-                  timeOut: 1500,
-                });
+                this.toastrService.error(
+                  value.email && value.email.length > 0
+                    ? 'Email invalido'
+                    : 'Campo vacio, ingresa un email valido',
+                  null,
+                  {
+                    timeOut: 1500,
+                  }
+                );
               }
             } catch (error) {
               const user = await this.authService.checkUser(value.email);
 
-              if(user) {
-                this.toastrService.error('Email ya registrado con otro usuario, ingresa un email diferente', null, {
-                  timeOut: 1500,
-                });
+              if (user) {
+                this.toastrService.error(
+                  'Email ya registrado con otro usuario, ingresa un email diferente',
+                  null,
+                  {
+                    timeOut: 1500,
+                  }
+                );
               } else {
                 this.toastrService.error('Ocurrió un error', null, {
                   timeOut: 1500,
-                });                
+                });
               }
-
             }
-           
           },
         },
       ],
@@ -255,7 +265,8 @@ export class PaymentsComponent implements OnInit {
     private integrationService: IntegrationsService,
     private dialogService: DialogService,
     private authService: AuthService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private matDialog: MatDialog
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -423,30 +434,23 @@ export class PaymentsComponent implements OnInit {
           localStorage.removeItem('registered-user');
         } else {
           unlockUI();
-          this.router.navigate([`/auth/login`], {
-            queryParams: {
-              orderId: this.order._id,
-              auth: 'payment',
+          const dialogRef = this.matDialog.open(LoginDialogComponent, {
+            data: {
+              loginType: 'phone',
             },
-            state: {
-              image: this.image,
-            },
+          });
+          dialogRef.afterClosed().subscribe(async (value) => {
+            if (value._id) {
+              this.order = (
+                await this.orderService.authOrder(this.order._id, value._id)
+              ).authOrder;
+              this.payOrder();
+            }
           });
           return;
         }
       }
-      await this.orderService.payOrder(
-        {
-          image: this.image,
-          platform: 'bank-transfer',
-          transactionCode: '',
-        },
-        this.order.user._id,
-        'bank-transfer',
-        this.order._id
-      );
-      unlockUI();
-      this.orderCompleted();
+      this.payOrder();
       return;
     }
     const payment = await this.orderService.createPartialOCR(
@@ -455,6 +459,21 @@ export class PaymentsComponent implements OnInit {
       this.image,
       this.headerService.user?._id
     );
+    this.orderCompleted();
+  }
+
+  async payOrder() {
+    await this.orderService.payOrder(
+      {
+        image: this.image,
+        platform: 'bank-transfer',
+        transactionCode: '',
+      },
+      this.order.user._id,
+      'bank-transfer',
+      this.order._id
+    );
+    unlockUI();
     this.orderCompleted();
   }
 
