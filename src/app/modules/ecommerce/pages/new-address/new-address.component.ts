@@ -19,7 +19,10 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
+import {
+  LoginDialogComponent,
+  LoginDialogData,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -328,7 +331,17 @@ export class NewAddressComponent implements OnInit {
   }
 
   openLoginDialog() {
-    this.matDialog.open(LoginDialogComponent);
+    this.matDialog.open(LoginDialogComponent, {
+      data: {
+        magicLinkData: {
+          redirectionRoute: `ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
+          entity: 'NonExistingOrder',
+          redirectionRouteQueryParams: {
+            data: localStorage.getItem(this.headerService.saleflow._id),
+          },
+        },
+      } as LoginDialogData,
+    });
   }
 
   checkAddresses() {
