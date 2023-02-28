@@ -1,5 +1,5 @@
-<mat-vertical-stepper #stepper [linear]="itemForm.valid">
-  <mat-step>
+<mat-vertical-stepper #stepper linear>
+  <mat-step [stepControl]="itemForm">
     <ng-template matStepLabel>¿Quién recibirá el dinero?</ng-template>
     <div
       style="
@@ -13,6 +13,7 @@
         innerLabel="Nombre"
         (onInputEvent)="onNameInput($event)"
         type="text"
+        [fullWidth]="false"
       ></app-string-input>
       <app-string-input
         innerLabel="Apellido"
@@ -20,6 +21,7 @@
         inputName="lastname"
         inputId="lastname"
         type="text"
+        [fullWidth]="false"
       ></app-string-input>
     </div>
     <div style="margin: 10px 0px">
@@ -69,7 +71,7 @@
       </p>
     </div>
   </mat-step>
-  <mat-step>
+  <mat-step [stepControl]="itemForm2">
     <ng-template matStepLabel>Info de la Tienda:</ng-template>
     <div>
       <app-string-input
@@ -109,17 +111,7 @@
       </app-string-input>
     </div>
 
-    <div
-      style="margin-bottom: 25px"
-      *ngIf="
-        inputName.length > 0 &&
-        inputLastName.length > 0 &&
-        inputMail.length > 0 &&
-        inputPhone.length > 0 &&
-        inputTiendaName.length > 0 &&
-        slug.length > 0
-      "
-    >
+    <div style="margin-bottom: 25px">
       <button mat-button matStepperNext>Continuar</button>
     </div>
   </mat-step>
@@ -138,7 +130,9 @@
       ></app-answer-selector>
     </div>
     <div>
-      <button mat-button matStepperNext>Continuar</button>
+      <button *ngIf="merchantCategories.length !== 0" mat-button matStepperNext>
+        Continuar
+      </button>
     </div>
   </mat-step>
   <mat-step>

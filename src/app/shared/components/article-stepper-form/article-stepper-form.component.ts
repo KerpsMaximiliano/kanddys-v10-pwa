@@ -29,8 +29,14 @@ export class ArticleStepperFormComponent implements OnInit {
 
   itemForm = this._formBuilder.group({
     pricing: [null, Validators.required],
+  });
+
+  itemForm2 = this._formBuilder.group({
     images: [null, Validators.required],
-    categories: [null, Validators.required],
+  });
+
+  itemForm3 = this._formBuilder.group({
+    categories: [null, Validators.required, Validators.minLength(3)],
   });
   isLinear = false;
 
@@ -89,7 +95,7 @@ export class ArticleStepperFormComponent implements OnInit {
 
   onImageInput(file) {
     this.file = file;
-    this.itemForm.get('images').patchValue(this.file);
+    this.itemForm2.get('images').patchValue(this.file);
   }
 
   async closeDialog() {

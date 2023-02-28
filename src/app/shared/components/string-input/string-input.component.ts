@@ -17,6 +17,7 @@ export class StringInputComponent implements OnInit {
   @Input() inputName: string = 'name';
   @Input() innerLabel: string;
   @Input() required: boolean = true;
+  @Input() fullWidth: boolean = true;
   @Output() onInputEvent = new EventEmitter<string>();
 
   inputText: string;
@@ -25,7 +26,8 @@ export class StringInputComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  changeText() {
+  changeText(event: Event | string, input: HTMLInputElement) {
+    this.inputText = input.value;
     this.onInputEvent.emit(this.inputText);
   }
 }

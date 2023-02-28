@@ -38,9 +38,9 @@
 }
 
 .formatted-input::placeholder {
-  color: #a1a1a1;
-  font-family: RobotoMedium;
-  font-size: 17px;
+  color: #a1a1a1 !important;
+  font-family: RobotoMedium !important;
+  font-size: 17px !important;
 }
 // .blinking-cursor {
 //   animation-name: blinkinCursor;
@@ -91,10 +91,34 @@ input[type="number"] {
   color: #272727;
 }
 
+.disabled {
+  input::placeholder {
+    color: #a1a1a1 !important;
+    font-family: RobotoMedium !important;
+    font-size: 17px !important;
+  }
+}
+
+::ng-deep.mat-input-element::placeholder,
+.mat-form-field-autofill-control::placeholder {
+  color: #a1a1a1 !important;
+  font-family: RobotoMedium !important;
+  font-size: 17px !important;
+}
+
 ::ng-deep.mat-vertical-content-container {
   margin: 0;
 }
 
 ::ng-deep.mat-vertical-content {
   padding: 0;
+}
+
+::ng-deep.mat-form-field {
+  display: unset;
+  width: 100%;
+}
+
+::ng-deep.mat-form-field-wrapper {
+  padding: 0px !important;
 }

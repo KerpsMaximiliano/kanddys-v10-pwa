@@ -35,20 +35,43 @@ export class MerchantStepperFormComponent implements OnInit {
   allCommunitiesObject;
 
   itemForm = this._formBuilder.group({
-    name: [null, Validators.required],
-    lastname: [null, Validators.required],
-    mail: [null, Validators.required],
-    phone: [null, Validators.required],
-    tiendaName: [this.inputName, Validators.required],
-    slug: [null, Validators.required],
+    name: [null, [Validators.required, Validators.minLength(3)]],
+    lastname: [null, [Validators.required, Validators.minLength(3)]],
+    mail: [
+      null,
+      [
+        Validators.required,
+        Validators.pattern(
+          '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'
+        ),
+      ],
+    ],
+    phone: [
+      null,
+      [
+        Validators.required,
+        Validators.pattern(
+          '(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))s*[)]?[-s.]?[(]?[0-9]{1,3}[)]?([-s.]?[0-9]{3})([-s.]?[0-9]{3,4})'
+        ),
+      ],
+    ],
   });
+
+  itemForm2 = this._formBuilder.group({
+    tiendaName: [null, [Validators.required, Validators.minLength(3)]],
+    slug: [null, [Validators.required, Validators.minLength(3)]],
+  });
+
+  // itemForm3 = this._formBuilder.group({
+  //   categories: [null, [Validators.required, Validators.minLength(1)]],
+  // });
   isLinear = false;
 
   options = [];
   merchantCategories = [];
 
   async ngOnInit() {
-    this.itemForm.get('tiendaName').disable();
+    this.itemForm2.get('tiendaName').disable();
     this.allCommunities = await this.communities.communitycategories({});
     console.log(this.allCommunities);
 
@@ -92,12 +115,12 @@ export class MerchantStepperFormComponent implements OnInit {
 
   onTiendaNameInput(name: string) {
     this.inputTiendaName = name;
-    this.itemForm.get('tiendaName').patchValue(name);
+    this.itemForm2.get('tiendaName').patchValue(name);
   }
 
   onSlugInput(slug: string) {
     this.slug = slug;
-    this.itemForm.get('slug').patchValue(slug);
+    this.itemForm2.get('slug').patchValue(slug);
   }
 
   sendLink() {
