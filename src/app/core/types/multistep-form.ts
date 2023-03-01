@@ -143,8 +143,23 @@ export interface EmbeddedComponent {
   preLabel?: string;
 }
 
-export interface EmbeddedComponentWithId extends EmbeddedComponent {
+export interface EmbeddedComponentWithId {
+  component: Type<any>;
   componentId: string;
+  inputs: Record<string, any>;
+  outputs?: Array<EmbeddedComponentOutput>;
+  label?: string;
+  sublabel?: string;
+  labelStyles?: any;
+  sublabelStyles?: any;
+  containerStyles?: any;
+  afterIndex?: number;
+  beforeIndex?: number;
+  shouldRerender?: boolean;
+  postLabel?: string;
+  preLabel?: string;
+  postLabelStyles?: Record<string, any>;
+  preLabelStyles?: Record<string, any>;
 }
 
 export interface EmbeddedComponentWithId extends EmbeddedComponent {
