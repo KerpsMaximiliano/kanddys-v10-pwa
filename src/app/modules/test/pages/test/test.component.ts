@@ -42,6 +42,7 @@ import { DescriptionDialogComponent } from 'src/app/shared/dialogs/description-d
 import { environment } from 'src/environments/environment';
 import { WebformQuestionDialogComponent } from 'src/app/shared/components/webform-question-dialog/webform-question-dialog.component';
 import { WebformMultipleSelectionConfirmationComponent } from 'src/app/shared/components/webform-multiple-selection-confirmation/webform-multiple-selection-confirmation.component';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 
 const generalDialogContainerStyles = {
   background: 'rgb(255, 255, 255)',
@@ -274,6 +275,21 @@ export class TestComponent implements OnInit {
       outputs: []
     }
   ];
+
+  options: Array<OptionAnswerSelector> = [
+    {
+      value: 'Elden ring',
+      status: true
+    },
+    {
+      value: 'Dark souls',
+      status: true
+    },
+    {
+      value: 'Bloodborne',
+      status: true
+    },
+  ]
   
 
   joke: string = '';

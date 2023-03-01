@@ -155,8 +155,12 @@
                 <div
                   class="question-media-response"
                   *ngIf="
-                    answersByQuestion[question._id]?.response &&
+                    (
+                      answersByQuestion[question._id]?.response ||
+                      answersByQuestion[question._id]?.responseLabel
+                    ) &&
                     answersByQuestion[question._id].isMedia
+                    && !this.webformsByItem[item._id].opened
                   "
                 >
                   <app-closed-question-card
@@ -169,11 +173,13 @@
                     }"
                     [containerStyles]="{ padding: '15px 18px' }"
                     [question]="question.value"
-                    [answers]="question.answerDefault"
+                    [questionType]="question.type"
+                    [answers]="addOptionalUserDefinedAnswer(question)"
                     [selected]="answersByQuestion[question._id].selectedIndex"
                     [selectedImage]="
                       answersByQuestion[question._id].selectedImageIndex
                     "
+                    [multiple]="!question.answerLimit || question.answerLimit > 1"
                     (onSelector)="
                       selectWebformMediaOption($event, item, question)
                     "
@@ -399,7 +405,10 @@
 
   <ng-container *ngFor="let item of items">
     <app-dialog-flow
-      *ngIf="this.webformsByItem[item._id]?.dialogs && this.webformsByItem[item._id]?.dialogs.length"
+      *ngIf="
+        this.webformsByItem[item._id]?.dialogs &&
+        this.webformsByItem[item._id]?.dialogs.length
+      "
       [dialogFlowId]="'webform-item-' + item._id"
       [status]="this.webformsByItem[item._id].opened ? 'OPEN' : 'CLOSE'"
       [dialogs]="this.webformsByItem[item._id].dialogs"

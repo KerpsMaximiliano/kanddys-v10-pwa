@@ -25,6 +25,7 @@ import {
   AnswerInput,
   WebformAnswerInput,
   WebformResponseInput,
+  AnswerDefault,
 } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
@@ -36,7 +37,10 @@ import { WebformsService } from 'src/app/core/services/webforms.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { WebformMultipleSelectionQuestionComponent } from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
+import {
+  ExtendedAnswerDefault,
+  WebformMultipleSelectionQuestionComponent,
+} from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
 import { WebformNameQuestionComponent } from 'src/app/shared/components/webform-name-question/webform-name-question.component';
 import { WebformTextareaQuestionComponent } from 'src/app/shared/components/webform-textarea-question/webform-textarea-question.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -915,13 +919,29 @@ export class CheckoutComponent implements OnInit {
                 },
               ],
             });
-          } else if (question.type === 'multiple') {
+          } else if (
+            question.type === 'multiple' ||
+            question.type === 'multiple-text'
+          ) {
             const activeOptions = question.answerDefault
               .filter((option) => option.active)
               .map((option) => ({
                 ...option,
                 selected: false,
               }));
+
+            if (question.type === 'multiple-text')
+              activeOptions.push({
+                value: 'Otra respuesta',
+                isMedia: false,
+                selected: false,
+                active: true,
+                defaultValue: null,
+                label: null,
+                createdAt: null,
+                updatedAt: null,
+                _id: null,
+              });
 
             this.webformsByItem[item._id].dialogs.push({
               component: WebformMultipleSelectionQuestionComponent,
@@ -936,7 +956,8 @@ export class CheckoutComponent implements OnInit {
                   dialogId: question._id,
                   flowId: 'webform-item-' + item._id,
                 },
-                //multiple: !question.answerLimit || question.answerLimit > 1,
+                questionType: question.type,
+                multiple: !question.answerLimit || question.answerLimit > 1,
                 options: activeOptions,
               },
               outputs: [
@@ -948,6 +969,7 @@ export class CheckoutComponent implements OnInit {
                       selected: boolean;
                       label?: string;
                       isMedia?: boolean;
+                      userProvidedAnswer?: string;
                     }>
                   ) => {
                     const selected = inputDetected.find(
@@ -986,11 +1008,15 @@ export class CheckoutComponent implements OnInit {
                     if (!question.answerDefault[0].isMedia) {
                       if (selected)
                         this.answersByQuestion[question._id].response =
-                          selected.value;
+                          question.type === 'multiple'
+                            ? selected.value
+                            : selected.userProvidedAnswer;
                     } else {
                       if (selected) {
                         this.answersByQuestion[question._id].response =
-                          selected.value;
+                          question.type === 'multiple'
+                            ? selected.value
+                            : selected.userProvidedAnswer;
                         this.answersByQuestion[question._id].selectedIndex =
                           selectedIndexFromList;
 
@@ -1003,6 +1029,10 @@ export class CheckoutComponent implements OnInit {
                       if (selected && selected.label)
                         this.answersByQuestion[question._id].responseLabel =
                           selected.label;
+                      else {
+                        this.answersByQuestion[question._id].responseLabel =
+                          null;
+                      }
                     }
 
                     this.areWebformsValid = this.areItemsQuestionsAnswered();
@@ -1040,6 +1070,13 @@ export class CheckoutComponent implements OnInit {
     //Get the selected index from the full list(images-grid, list-option)
     const selectedOptionIndex = options.findIndex((option, index) => {
       if (
+        selectedOptions.option === index &&
+        question.type === 'multiple-text'
+      ) {
+        return true;
+      }
+
+      if (
         option.isMedia &&
         (option.value === selectedOptions.selectedOptionOrText ||
           option.label === selectedOptions.selectedOptionOrText)
@@ -1056,6 +1093,19 @@ export class CheckoutComponent implements OnInit {
       ...option,
       selected: index === selectedOptionIndex,
     }));
+
+    //Adds the user provided answer to the output sent to the parent component
+    if (
+      question.type === 'multiple-text' &&
+      selectedOptions.option === options.length - 1
+    ) {
+      updatedOptions[selectedOptionIndex].userProvidedAnswer =
+        selectedOptions.selectedOptionOrText;
+
+      this.answersByQuestion[question._id].response =
+        selectedOptions.selectedOptionOrText;
+    }
+
     this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
       question._id
     ].fields.options = updatedOptions;
@@ -1136,5 +1186,27 @@ export class CheckoutComponent implements OnInit {
     }
 
     return !doesAnyItemHaveRequiredQuestionLeftUnanswered;
+  }
+
+  addOptionalUserDefinedAnswer(question: Question) {
+    const copyOptions: Array<ExtendedAnswerDefault> = JSON.parse(
+      JSON.stringify(question.answerDefault)
+    );
+
+    if (question.type === 'multiple-text') {
+      copyOptions.push({
+        value: 'Otra respuesta',
+        isMedia: false,
+        active: true,
+        defaultValue: null,
+        userProvidedAnswer: this.answersByQuestion[question._id].response,
+        label: null,
+        createdAt: null,
+        updatedAt: null,
+        _id: null,
+      });
+    }
+
+    return copyOptions;
   }
 }

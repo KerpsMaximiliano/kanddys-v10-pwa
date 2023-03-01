@@ -66,3 +66,21 @@
     }
   }
 }
+
+.another-response {
+  padding: 23px 16px 23px 16px;
+  resize: none;
+  height: 92.19px;
+  border: none;
+  border-radius: 11px;
+  box-shadow: #d2d2d2 0px 4px 7px 0px inset;
+  font-family: RobotoMedium;
+  color: #000;
+  font-size: 17px;
+  width: 100%;
+  margin-top: 15.7px;
+
+  &::placeholder {
+    color: #a1a1a1;
+  }
+}

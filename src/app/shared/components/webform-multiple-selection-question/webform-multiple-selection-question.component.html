@@ -1,10 +1,27 @@
-<app-closed-question-card
-  [id]="'sadasdaasd'"
-  [question]="label"
-  [answers]="optionsInput"
-  [selected]="selectedIndex"
-  [selectedImage]="selectedImageGridIndex"
-  [shadows]="shadows"
-  (onSelector)="emitInput($event)"
->
-</app-closed-question-card>
+<ng-container *ngIf="!multiple">
+  <app-closed-question-card
+    [id]="'sadasdaasd'"
+    [question]="label"
+    [answers]="optionsInput"
+    [selected]="selectedIndex"
+    [selectedImage]="selectedImageGridIndex"
+    [questionType]="questionType"
+    [shadows]="shadows"
+    (onSelector)="emitInput($event)"
+    [multiple]="multiple"
+  >
+  </app-closed-question-card>
+</ng-container>
+
+<ng-container *ngIf="multiple">
+  <app-closed-question-card
+    [id]="'sadasdaasd'"
+    [question]="label"
+    [answers]="optionsInput"
+    [questionType]="questionType"
+    [shadows]="shadows"
+    (onSelectorMultiple)="emitInputMultiple($event)"
+    [multiple]="multiple"
+  >
+  </app-closed-question-card>
+</ng-container>

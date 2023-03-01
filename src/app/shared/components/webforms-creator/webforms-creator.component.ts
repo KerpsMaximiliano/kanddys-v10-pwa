@@ -79,21 +79,19 @@ export class WebformsCreatorComponent implements OnInit {
         dialogId: 'question',
       },
       onActiveSlideCallback: (params) => {
+        const questionDialog =
+          this.dialogFlowService.dialogsFlows['webform-creator']['question'];
+
         if (
-          this.dialogFlowService.dialogsFlows['webform-creator']['question']
-            ?.fields &&
-          this.dialogFlowService.dialogsFlows['webform-creator']['question']
-            ?.fields.textarea &&
-          this.dialogFlowService.dialogsFlows['webform-creator']['question']
-            ?.fields.textarea.length
+          questionDialog?.fields &&
+          questionDialog?.fields.textarea &&
+          questionDialog?.fields.textarea.length
         ) {
-          this.dialogFlowService.dialogsFlows['webform-creator'][
-            'question'
-          ].swiperConfig.allowSlideNext = true;
+          questionDialog.swiperConfig.allowSlideNext = true;
         } else {
-          this.dialogFlowService.dialogsFlows['webform-creator'][
-            'question'
-          ].swiperConfig.allowSlideNext = false;
+          setTimeout(() => {
+            questionDialog.swiperConfig.allowSlideNext = false;
+          });
         }
       },
     },
@@ -111,6 +109,11 @@ export class WebformsCreatorComponent implements OnInit {
               ' y los compradores te responderán..';
           } else {
             this.swiperConfig.allowSlideNext = false;
+          }
+
+          if (this.isMultipleOptionsConfirmationVisible()) {
+            this.webformQuestions[this.webformQuestions.length - 1].value =
+              this.currentQuestion;
           }
         },
       },
@@ -170,6 +173,8 @@ export class WebformsCreatorComponent implements OnInit {
           if (value.answerType && value.answerType) {
             const answerType = value.answerType[0];
 
+            this.detectWetherOrNotToDeleteLastQuestionOfTypeMultiple();
+
             if (answerType === this.answerTypes['OPEN_ANSWER']) {
               this.resumingCreation = false;
 
@@ -218,16 +223,18 @@ export class WebformsCreatorComponent implements OnInit {
             } else if (answerType === this.answerTypes['CONTACT_INFO']) {
               this.resumingCreation = false;
 
-              const cameFromAnotherPage = this.dialogs.findIndex(
-                (dialog) => dialog.componentId === 'confirm-multiple-selection'
+              const contactInfoDialogAlreadyOnThePage = this.dialogs.find(
+                (dialog) => dialog.componentId === 'contact-info'
               );
 
-              if (cameFromAnotherPage > -1) {
-                this.dialogs.splice(cameFromAnotherPage, 2);
-              }
+              this.detectWetherOrNotToDeleteLastQuestionOfTypeMultiple();
 
-              this.dialogs.push(this.contactInfoDialog);
-              this.contactInfoDialogVisible = true;
+              //If you click on contact info button, when selecting the answer type, and the contact info dialog is already
+              //present on the page, then it navigates to it automatically
+              if (!contactInfoDialogAlreadyOnThePage) {
+                this.dialogs.push(this.contactInfoDialog);
+                this.contactInfoDialogVisible = true;
+              }
 
               this.dialogFlowFunctions.moveToDialogByIndex(
                 this.dialogs.length - 1
@@ -301,7 +308,7 @@ export class WebformsCreatorComponent implements OnInit {
                 answerTextType: options[answerType],
                 show: true,
                 answerMedia: false,
-                subIndex: this.webformQuestions.length
+                subIndex: this.webformQuestions.length,
               });
               this.currentQuestion = null;
               this.questionDialog.postLabel = null;
@@ -344,7 +351,6 @@ export class WebformsCreatorComponent implements OnInit {
       {
         name: 'openResponseButtonClicked',
         callback: (clicked) => {
-          /*
           if (clicked) {
             this.webformService.webformQuestions[
               this.webformService.webformQuestions.length - 1
@@ -353,13 +359,12 @@ export class WebformsCreatorComponent implements OnInit {
             this.webformService.webformQuestions[
               this.webformService.webformQuestions.length - 1
             ].type = 'multiple';
-          }*/
+          }
         },
       },
       {
         name: 'singleResponseButtonClicked',
         callback: (clicked) => {
-          /*
           if (clicked) {
             this.webformService.webformQuestions[
               this.webformService.webformQuestions.length - 1
@@ -368,7 +373,7 @@ export class WebformsCreatorComponent implements OnInit {
             delete this.webformService.webformQuestions[
               this.webformService.webformQuestions.length - 1
             ].answerLimit;
-          }*/
+          }
         },
       },
     ],
@@ -404,6 +409,11 @@ export class WebformsCreatorComponent implements OnInit {
               this.user.name +
               ', los formularios son para que el comprador te reesponda cosas que necesitas saber al vender ' +
               (this.item.name ? this.item.name : 'este producto'),
+            onActiveSlideCallback: (params) => {
+              this.dialogFlowService.dialogsFlows['webform-creator'][
+                'welcome'
+              ].swiperConfig.allowSlideNext = true;
+            },
           },
           outputs: [],
           postLabel:
@@ -548,5 +558,24 @@ export class WebformsCreatorComponent implements OnInit {
 
   closeDialogFlow() {
     this.closeEvent.emit(true);
+  }
+
+  detectWetherOrNotToDeleteLastQuestionOfTypeMultiple() {
+    const multipleOptionsQuestionDialogIndex = this.dialogs.findIndex(
+      (dialog) => dialog.componentId === 'confirm-multiple-selection'
+    );
+
+    //If the last question the user was creating, was of the type multiple or multiple-text, and you
+    //go back to the previous dialog and select another question type, then the last question gets erased
+    if (multipleOptionsQuestionDialogIndex > -1) {
+      this.dialogs.splice(multipleOptionsQuestionDialogIndex, 2);
+      this.webformService.webformQuestions.pop();
+    }
+  }
+
+  isMultipleOptionsConfirmationVisible() {
+    return this.dialogs.find(
+      (dialog) => dialog.componentId === 'confirm-multiple-selection'
+    );
   }
 }

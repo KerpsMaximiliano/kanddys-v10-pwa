@@ -2,46 +2,98 @@
   <app-card [shadows]="shadows" [containerStyles]="containerStyles">
     <p class="title" [ngStyle]="labelStyles">{{ question }}</p>
 
-    <div class="imgGrid">
-      <div
-        *ngFor="let answer of answers; let i = index"
-        [id]="id + '-' + i"
-        class="radio"
-      >
-        <img
-          [src]="answer.img"
-          (error)="answer.img = '/assets/images/noimage.png'"
-          class="radioImg"
-        />
-        <div
-          class="radioButton"
-          (click)="selectOpt(i, 'GRID', answer.img)"
-          [ngClass]="{ active: i === selectedImage }"
-        >
-          <img class="icon" [src]="env + '/check-black.svg'" />
-        </div>
+    <ng-container *ngIf="!multiple">
+      <div class="imgGrid">
+        <ng-container *ngFor="let answer of answers; let i = index">
+          <div *ngIf="answer.isMedia" [id]="id + '-' + i" class="radio">
+            <img
+              [src]="answer.img"
+              (error)="answer.img = '/assets/images/noimage.png'"
+              class="radioImg"
+            />
+            <div
+              class="radioButton"
+              (click)="selectOpt(i, 'GRID', answer.img)"
+              [ngClass]="{ active: i === selectedImage }"
+            >
+              <img class="icon" [src]="env + '/check-black.svg'" />
+            </div>
+          </div>
+        </ng-container>
       </div>
-    </div>
 
-    <app-answer-selector
-      style="text-align: left"
-      [activeOption]="selected"
-      [options]="options"
-      [indicator]="true"
-      [containerStyles]="{
-        margin: '0px',
-        marginTop: '17px'
-      }"
-      [itemStyles]="{
-        fontSize: '17px',
-        padding: '7px 0px'
-      }"
-      [boldenWhenSelected]="true"
-      [optionContainerStyles]="{
-        marginBottom: '0px'
-      }"
-      [alternativeBackground]="'narrow'"
-      (onSelector)="selectOpt($event, 'OPTIONS-LIST', null)"
-    ></app-answer-selector>
+      <app-answer-selector
+        style="text-align: left"
+        [activeOption]="selected"
+        [options]="options"
+        [indicator]="true"
+        [containerStyles]="{
+          margin: '0px',
+          marginTop: '17px'
+        }"
+        [itemStyles]="{
+          fontSize: '17px',
+          padding: '7px 0px'
+        }"
+        [boldenWhenSelected]="true"
+        [optionContainerStyles]="{
+          marginBottom: '0px'
+        }"
+        [alternativeBackground]="'narrow'"
+        (onSelector)="selectOpt($event, 'OPTIONS-LIST', null)"
+      ></app-answer-selector>
+    </ng-container>
+
+    <ng-container *ngIf="multiple">
+      <div class="imgGrid">
+        <ng-container *ngFor="let answer of answers; let i = index">
+          <div *ngIf="answer.isMedia" [id]="id + '-' + i" class="radio">
+            <img
+              [src]="answer.img"
+              (error)="answer.img = '/assets/images/noimage.png'"
+              class="radioImg"
+            />
+            <div
+              class="radioButton"
+              (click)="selectOptMultiple(i, 'GRID', answer.img)"
+              [ngClass]="{ active: selectedImagesIndexes.includes(i)}"
+            >
+              <img class="icon" [src]="env + '/check-black.svg'" />
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <app-answer-selector
+        style="text-align: left"
+        [isMultipleOption]="true"
+        [options]="options"
+        [indicator]="true"
+        [containerStyles]="{
+          margin: '0px',
+          marginTop: '17px'
+        }"
+        [itemStyles]="{
+          fontSize: '17px',
+          padding: '7px 0px'
+        }"
+        [boldenWhenSelected]="true"
+        [optionContainerStyles]="{
+          marginBottom: '0px'
+        }"
+        [alternativeBackground]="'narrow'"
+        (activeMultipleOptionValue)="selectOptMultiple($event, 'OPTIONS-LIST', null)"
+      ></app-answer-selector>
+    </ng-container>
+
+    <ng-container
+      *ngIf="questionType === 'multiple-text' && userProvidedAnswerSelected"
+    >
+      <textarea
+        class="another-response"
+        [formControl]="userProvidedAnswer"
+        placeholder="Escribe..."
+      ></textarea>
+    </ng-container>
   </app-card>
 </div>

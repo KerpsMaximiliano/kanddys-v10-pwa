@@ -46,12 +46,14 @@
               ></div>
 
               <ng-container *ngIf="!option.isOptionAnArray">
-                <span [ngStyle]="option.valueStyles"
+                <span
+                  [ngStyle]="option.valueStyles"
                   [ngClass]="{
                     selectedBold: boldenWhenSelected && i === activeOption,
                     unselected: boldenWhenSelected && i !== activeOption
                   }"
-                >{{ option.value }}</span>
+                  >{{ option.value }}</span
+                >
                 <div>
                   <span
                     *ngFor="let subtext of option.subtexts"
@@ -134,10 +136,23 @@
               [ngStyle]="itemStyles ? itemStyles : null"
               (click)="editable && option.status && clickSelector(i)"
             >
-              <div class="background"></div>
+              <div
+                class="background"
+                [ngClass]="{
+                  narrow:
+                    alternativeBackground && alternativeBackground === 'narrow'
+                }"
+              ></div>
 
               <ng-container *ngIf="!option.isOptionAnArray">
-                <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+                <span
+                  [ngStyle]="option.valueStyles"
+                  [ngClass]="{
+                    selectedBold: boldenWhenSelected && activeMultipleOption.includes(i),
+                    unselected: boldenWhenSelected && !activeMultipleOption.includes(i)
+                  }"
+                  >{{ option.value }}</span
+                >
                 <div>
                   <span
                     *ngFor="let subtext of option.subtexts"

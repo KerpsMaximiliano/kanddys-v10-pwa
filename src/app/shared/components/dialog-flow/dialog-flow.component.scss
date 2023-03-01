@@ -29,12 +29,13 @@
 .dialog {
   position: relative;
   height: fit-content !important;
+  width: 82.47% !important;
+  margin: 0px auto;
 
   .dialog-overlay {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 82.47%;
     border-radius: 12px;
     margin: auto;
 

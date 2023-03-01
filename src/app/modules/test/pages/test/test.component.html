@@ -305,12 +305,36 @@ headline="EXPUESTO EN TAB (S)"
       ></app-dialog-flow>
 
   -->
-<app-msg-dialog></app-msg-dialog>
 
-</div>
+  <!--
+    <app-msg-dialog></app-msg-dialog>
+    
+    </div>
+-->
 
-<!--
+  <!--
     <app-qr-edit></app-qr-edit>
     <app-webform-textarea-question></app-webform-textarea-question>
     <app-webform-multiple-selection-question></app-webform-multiple-selection-question>
 -->
+
+  <app-answer-selector
+    style="text-align: left"
+    [isMultipleOption]="true"
+    [options]="options"
+    [indicator]="true"
+    [containerStyles]="{
+      margin: '0px',
+      marginTop: '17px'
+    }"
+    [itemStyles]="{
+      fontSize: '17px',
+      padding: '7px 0px'
+    }"
+    [boldenWhenSelected]="true"
+    [optionContainerStyles]="{
+      marginBottom: '0px'
+    }"
+    [alternativeBackground]="'narrow'"
+  ></app-answer-selector>
+</div>
