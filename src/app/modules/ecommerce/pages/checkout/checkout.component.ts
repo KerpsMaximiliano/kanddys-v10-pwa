@@ -769,6 +769,9 @@ export class CheckoutComponent implements OnInit {
     localStorage.removeItem('post');
     localStorage.removeItem('postReceiverNumber');
     this.openedDialogFlow = false;
+    this.dialogFlowService.resetDialogFlow('flow1');
+    this.createDialogs();
+    this.dialogFlowFunctions.moveToDialogByIndex(0);
   }
 
   executeProcessesBeforeOpening() {

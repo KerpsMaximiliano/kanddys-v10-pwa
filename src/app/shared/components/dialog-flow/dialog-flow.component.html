@@ -27,7 +27,6 @@
         [config]="swiperConfig"
         (slideChange)="changeActiveDialog($event)"
         (slideChangeTransitionEnd)="slideTransitionEnd()"
-        (sliderMove)="onDragging($event)"
         #dialogSwiper
       >
         <div
@@ -48,16 +47,16 @@
           <div
             class="dynamic-component"
             [ngStyle]="{
-              margin: 'auto',
-              borderRadius: '12px'
+              width: '82.47%',
+              margin: 'auto'
             }"
           >
             <div class="navigation" *ngIf="currentDialogIndex !== dialogIndex">
               <div
-                *ngFor="let dialog of dialogs; index as dialogIndex2"
+                *ngFor="let dialog of dialogs; index as dialogIndex"
                 class="current-dialog-indicator"
                 [ngClass]="{
-                  active: dialogIndex2 <= dialogIndex && dialogIndex2 <= currentDialogIndex
+                  active: currentDialogIndex >= dialogIndex
                 }"
               ></div>
             </div>
@@ -65,7 +64,6 @@
             <div
               class="postLabel"
               *ngIf="dialog.postLabel && currentDialogIndex !== dialogIndex"
-              [ngStyle]="dialog.postLabelStyles"
             >
               {{ dialog.postLabel }}
             </div>
