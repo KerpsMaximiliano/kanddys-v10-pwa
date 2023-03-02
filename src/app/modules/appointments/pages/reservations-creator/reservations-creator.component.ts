@@ -372,8 +372,8 @@ export class ReservationsCreatorComponent implements OnInit {
 
     //CONVIRTIENDO LAS HORAS A UTC
 
-    calendarHourRangeStart = calendarHourRangeStart - utcOffset;
-    calendarHourRangeLimit = calendarHourRangeLimit - utcOffset;
+    calendarHourRangeStart = calendarHourRangeStart;
+    calendarHourRangeLimit = calendarHourRangeLimit;
     //FIN - CONVIRTIENDO LAS HORAS A UTC
 
     let isCurrentHourDivisibleByTheChunkSize = false;
@@ -899,6 +899,9 @@ export class ReservationsCreatorComponent implements OnInit {
             this.reservationsService
           )
         : null;
+
+    console.log(fromDateObject)
+    console.log(toDateObject);
 
     //whats passed to the mutation
     const reservationInput: ReservationInput = {
