@@ -122,6 +122,7 @@ export class CheckoutComponent implements OnInit {
   disableButton: boolean;
   currentUser: User;
   date: {
+    year: string;
     month: string;
     day: number;
     weekday: string;
@@ -246,6 +247,9 @@ export class CheckoutComponent implements OnInit {
         }),
         month: fromDate.toLocaleString('es-MX', {
           month: 'short',
+        }),
+        year: fromDate.toLocaleString('es-MX', {
+          year: 'numeric'
         }),
         time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
           untilDate,
