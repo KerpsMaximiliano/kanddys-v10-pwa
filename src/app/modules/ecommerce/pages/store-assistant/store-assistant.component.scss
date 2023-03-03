@@ -12,7 +12,7 @@
     color: white;
 
     .empty {
-      position: absolute;  
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -22,13 +22,18 @@
       text-align: center;
     }
 
-    .question-box {
+    .question-box,
+    .error-box {
       h3 {
         font-size: 1.2rem;
       }
 
       background-color: #343541;
       padding: 10px 20px;
+    }
+
+    .error-box {
+      color: orangered;
     }
 
     .answer-box {
