@@ -35,7 +35,7 @@
       />
 
       a
-      {{ order.items[0].saleflow.merchant.name }}
+      <span>{{ order.items[0].saleflow.merchant.name }}</span>
     </p>
   </a>
   <ng-container *ngIf="isMerchant && order.orderStatus !== 'draft'">
