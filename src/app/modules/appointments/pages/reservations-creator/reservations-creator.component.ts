@@ -460,6 +460,7 @@ export class ReservationsCreatorComponent implements OnInit {
         //stops the loop
         if (loopValidHour > loopCurrentHour) {
           loopCurrentHour = loopValidHour;
+          console.log(loopCurrentHour);
         }
       }
     } else if (
@@ -490,7 +491,7 @@ export class ReservationsCreatorComponent implements OnInit {
     if (
       (selectedDayNumber === currentDayOfTheMonth &&
         loopCurrentHour === calendarHourRangeStart) ||
-      !(selectedDayNumber === currentDayOfTheMonth)
+      !(selectedDayNumber === currentDayOfTheMonth && selectedMonth === currentMonth && selectedYear === currentYear)
     ) {
       //fetches the the minutes part of the hour returned by the backend
       //this is useful to know when to start rendering the list
@@ -501,7 +502,7 @@ export class ReservationsCreatorComponent implements OnInit {
       if (
         currentMinuteNumber >= hourFractionAccumulator &&
         hourFractionAccumulator + this.calendarData.timeChunkSize >= 60 &&
-        selectedDayNumber === currentDayOfTheMonth
+        (selectedDayNumber === currentDayOfTheMonth && selectedMonth === currentMonth && selectedYear === currentYear)
       ) {
         hourFractionAccumulator = 0;
 
@@ -518,7 +519,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     //Gets the first available chunkSize to render(hourFractionAccumulator)
     if (
-      selectedDayNumber === currentDayOfTheMonth &&
+      (selectedDayNumber === currentDayOfTheMonth && selectedMonth === currentMonth && selectedYear === currentYear) &&
       loopCurrentHour > calendarHourRangeStart &&
       !skippedFirstHourSetOfSlots
     ) {
@@ -548,7 +549,7 @@ export class ReservationsCreatorComponent implements OnInit {
       if (
         currentMinuteNumber > hourFraction &&
         60 - currentMinuteNumber >= this.calendarData.timeChunkSize &&
-        currentDayOfTheMonth === selectedDayNumber &&
+        (selectedDayNumber === currentDayOfTheMonth && selectedMonth === currentMonth && selectedYear === currentYear) &&
         !skippedFirstHourSetOfSlots
       )
         hourFractionAccumulator = hourFraction;
