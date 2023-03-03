@@ -266,6 +266,8 @@ export class ReservationsCreatorComponent implements OnInit {
               number: currentMonth.id,
             };
 
+            this.currentYear = dateInput.getFullYear();
+
             this.rerenderAvailableHours(dateInput, date.dateOptionIndex);
           }
         } else {
@@ -351,16 +353,18 @@ export class ReservationsCreatorComponent implements OnInit {
    * @param {Number} index - the day of the month, is Optional
    *
    */
-  async generateHourList(selectedDayNumber: number = null) {
+  async generateHourList(selectedDayNumber: number = null, selectedMonth?: number, selectedYear?: number) {
     this.timeRangeOptions = [];
     this.listOfHourRangesForSelectedDay = [];
     this.hourRangesBlocked = [];
 
     const currentDateObject = new Date();
-    const utcOffset = Math.abs(new Date().getTimezoneOffset() / 60); //Quitar este offset luego
+    // const utcOffset = Math.abs(new Date().getTimezoneOffset() / 60); //Quitar este offset luego
     const currentHour = currentDateObject.getHours(); //aqui tambien
     const currentMinuteNumber = currentDateObject.getMinutes();
     const currentDayOfTheMonth = currentDateObject.getDate();
+    const currentMonth = currentDateObject.getMonth();
+    const currentYear = currentDateObject.getFullYear();
 
     let calendarHourRangeStart: number = Number(
       this.calendarData.limits.fromHour.split(':')[0]
@@ -404,7 +408,7 @@ export class ReservationsCreatorComponent implements OnInit {
     //(because you cant reserve a slot when its time is already passing)
     if (
       currentHour > calendarHourRangeStart &&
-      selectedDayNumber === currentDayOfTheMonth
+      (selectedDayNumber === currentDayOfTheMonth && selectedMonth === currentMonth && selectedYear === currentYear)
     ) {
       if (this.calendarData.timeChunkSize >= 60) {
         loopFirstHour = isCurrentHourDivisibleByTheChunkSize
@@ -590,6 +594,7 @@ export class ReservationsCreatorComponent implements OnInit {
         hourFractionAccumulator = remainingMinutes;
       }
 
+      // if(loopCurrentHour === 0) hourIn12HourFormat = 12;
       if (loopCurrentHour > 12) hourIn12HourFormat = loopCurrentHour - 12;
       else hourIn12HourFormat = loopCurrentHour;
 
@@ -634,7 +639,7 @@ export class ReservationsCreatorComponent implements OnInit {
       ) {
         this.timeRangeOptions.push({
           click: true,
-          value: `De ${fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay} a ${toHour.hourString}:${toHour.minutesString} ${toHour.timeOfDay}`,
+          value: `De ${fromHour.hourString === '00' ? '12' : fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay} a ${toHour.hourString === '00' ? '12' : toHour.hourString}:${toHour.minutesString} ${toHour.timeOfDay}`,
           status: true,
         });
 
@@ -749,6 +754,7 @@ export class ReservationsCreatorComponent implements OnInit {
    */
   rerenderAvailableHours(selectedDateObject: Date, hour?: number) {
     const dayOfTheMonthNumber = selectedDateObject.getDate();
+    const year = selectedDateObject.getFullYear();
     const monthNumber = selectedDateObject.getMonth();
     const dayOfTheWeekNumber = selectedDateObject.getDay();
     this.selectedDate = {
@@ -768,7 +774,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     this.activeReservationIndex = hour; //Is used when you have a previous reservation stored
 
-    this.generateHourList(dayOfTheMonthNumber);
+    this.generateHourList(dayOfTheMonthNumber, monthNumber, year);
 
     //clicks the previous selected reservation when opening the component
     if (this.activeReservationIndex !== null && !this.isOrder) {
@@ -822,7 +828,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     //Creates javascript standar date objects for the from-until selected hour range
     let fromDateObject = new Date(
-      currentYear,
+      this.currentYear,
       this.selectedDate.monthNumber,
       this.selectedDate.dayOfTheMonthNumber,
       this.selectedDate.fromHour.timeOfDay === 'PM' &&
@@ -833,7 +839,7 @@ export class ReservationsCreatorComponent implements OnInit {
     );
 
     let toDateObject = new Date(
-      currentYear,
+      this.currentYear,
       this.selectedDate.monthNumber,
       this.selectedDate.dayOfTheMonthNumber,
       this.selectedDate.toHour.hourNumber,
