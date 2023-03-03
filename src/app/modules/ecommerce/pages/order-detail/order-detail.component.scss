@@ -666,6 +666,10 @@ table {
     line-clamp: 1;
     -webkit-box-orient: vertical;
   }
+
+  span {
+    text-transform: capitalize;
+  }
 }
 
 @media (max-width: 400px) {
