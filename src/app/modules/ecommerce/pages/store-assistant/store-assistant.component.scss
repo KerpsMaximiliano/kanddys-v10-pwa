@@ -1,0 +1,66 @@
+.container {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+
+  .questions-and-answers-wrapper {
+    height: calc(100vh - 50px);
+    overflow-y: scroll;
+    background-color: #343541;
+    font-family: Roboto;
+
+    .question-box {
+      h3 {
+        font-size: 1.2rem;
+      }
+
+      background-color: #343541;
+      padding: 10px 20px;
+      color: white;
+    }
+
+    .answer-box {
+      padding: 10px 20px;
+      background-color: #444654;
+      color: white;
+    }
+  }
+
+  .user-input-area-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    display: flex;
+
+    .user-input-box {
+      height: 50px;
+      width: 100%;
+      resize: none;
+      border: none;
+      box-shadow: 0px 2px 5px inset lightslategray;
+    }
+
+    .submit-button {
+      background-color: olive;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 50px;
+      border: none;
+
+      &:hover {
+        background-color: lighten($color: olive, $amount: 3);
+      }
+
+      img {
+        height: 30px;
+        width: 30px;
+        filter: invert(99%) sepia(0%) saturate(2765%) hue-rotate(173deg)
+          brightness(121%) contrast(100%);
+      }
+    }
+  }
+}
