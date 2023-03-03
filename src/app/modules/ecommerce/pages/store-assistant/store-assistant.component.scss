@@ -8,6 +8,19 @@
     overflow-y: scroll;
     background-color: #343541;
     font-family: Roboto;
+    position: relative;
+    color: white;
+
+    .empty {
+      position: absolute;  
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      font-size: 1.3rem;
+      color: lighten($color: #444654, $amount: 10);
+      text-align: center;
+    }
 
     .question-box {
       h3 {
@@ -16,13 +29,17 @@
 
       background-color: #343541;
       padding: 10px 20px;
-      color: white;
     }
 
     .answer-box {
       padding: 10px 20px;
       background-color: #444654;
-      color: white;
+
+      a {
+        display: block;
+        text-decoration: none;
+        color: #66f;
+      }
     }
   }
 
@@ -40,6 +57,10 @@
       resize: none;
       border: none;
       box-shadow: 0px 2px 5px inset lightslategray;
+      padding: 10px;
+      font-family: Roboto;
+      font-size: 1.5rem;
+      display: flex;
     }
 
     .submit-button {
