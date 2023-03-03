@@ -67,13 +67,17 @@ export class MerchantStepperFormComponent implements OnInit {
   // });
   isLinear = false;
 
-  options = [];
-  merchantCategories = [];
+  options;
+  merchantCategories: string[] = [];
+  category;
+  isAlreadyAdded: boolean;
 
   async ngOnInit() {
     this.itemForm2.get('tiendaName').disable();
     this.allCommunities = await this.communities.communitycategories({});
     console.log(this.allCommunities);
+
+    this.options = [];
 
     for (let i = 0; i < this.allCommunities.communitycategories.length; i++) {
       this.options.push({
@@ -124,7 +128,8 @@ export class MerchantStepperFormComponent implements OnInit {
   }
 
   sendLink() {
-    this.signUp();
+    //this.signUp();
+    console.log(this.merchant);
     this.createMerchant();
     this.authService.generateMagicLink(
       this.inputPhone.replace('+', ''),
@@ -148,10 +153,12 @@ export class MerchantStepperFormComponent implements OnInit {
       false
     );
 
-    console.log(this.merchant);
+    console.log(this.merchant.user._id);
   }
 
   selectedCategory(i: number) {
+    this.category = this.allCommunities.communitycategories[i]._id;
+
     if (
       this.merchantCategories.includes(
         this.allCommunities.communitycategories[i]._id
@@ -161,13 +168,13 @@ export class MerchantStepperFormComponent implements OnInit {
         this.allCommunities.communitycategories[i]._id
       );
       this.merchantCategories.splice(index, 1);
+      console.log(this.merchantCategories);
     } else {
       this.merchantCategories.push(
         this.allCommunities.communitycategories[i]._id
       );
+      console.log(this.merchantCategories);
     }
-
-    console.log(this.merchantCategories);
   }
 
   createMerchant() {
@@ -175,7 +182,7 @@ export class MerchantStepperFormComponent implements OnInit {
       name: this.inputTiendaName,
       slug: this.slug,
       categories: this.merchantCategories,
-      owner: this.merchant._id,
+      owner: this.merchant.user_id,
     });
   }
 }
