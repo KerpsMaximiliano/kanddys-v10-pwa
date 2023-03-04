@@ -5,6 +5,8 @@ import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 export interface ExtendedAnswerDefault extends AnswerDefault {
   userProvidedAnswer?: string;
+  selected?: boolean;
+  img?: string;
 }
 
 @Component({
@@ -28,8 +30,8 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
   };
   @Input() selectedIndex: number = null;
   @Input() selectedImageGridIndex: number = null;
-  @Input() selectedIndexes: number = null;
-  @Input() selectedImagesGridIndexes: number = null;
+  @Input() selectedIndexes: Array<number> = [];
+  @Input() selectedImagesGridIndexes: Array<number> = [];
   @Output() inputDetected = new EventEmitter();
   layoutType = {
     'JUST-TEXT': 1,
@@ -41,7 +43,6 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
   constructor(private dialogFlowService: DialogFlowService) {}
 
   ngOnInit(): void {
-
     //If it's used in combination with dialogFlow, sets the data on the service
     if (this.dialogFlowConfig) {
       if (
@@ -61,7 +62,6 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
       }
     }
 
-    
     this.optionsInput = this.options.map((option) => {
       if (option.isMedia && option.label) {
         return {
@@ -93,7 +93,10 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
     //Get the selected index from the full list(images-grid, list-option)
     const selectedOptionIndex = this.options.findIndex(
       (optionInList, index) => {
-        if (optionsSelected.option === index && this.questionType === 'multiple-text') {
+        if (
+          optionsSelected.option === index &&
+          this.questionType === 'multiple-text'
+        ) {
           return true;
         }
 
@@ -119,9 +122,11 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
 
     this.selectedIndex = selectedOptionIndex;
 
-
     //Adds the user provided answer to the output sent to the parent component
-    if (this.questionType === 'multiple-text'&& optionsSelected.option === this.options.length - 1)
+    if (
+      this.questionType === 'multiple-text' &&
+      optionsSelected.option === this.options.length - 1
+    )
       this.options[this.selectedIndex].userProvidedAnswer =
         optionsSelected.selectedOptionOrText;
 
@@ -165,47 +170,57 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
     }
   };
 
-  emitInputMultiple = (optionsSelected: Array<{
-    option: number;
-    image: number;
-    selectedOptionOrText: string;
-  }>) => {
-    
-    /*
-    //Get the selected index from the full list(images-grid, list-option)
-    const selectedOptionIndex = this.options.findIndex(
+  emitInputMultiple = (
+    optionsSelected: Array<{
+      option: number;
+      image: number;
+      selectedOptionOrText: string;
+    }>
+  ) => {
+    const selectedOptionForFullListIndexes = this.options.map(
       (optionInList, index) => {
-        if (optionsSelected.option === index && this.questionType === 'multiple-text') {
-          return true;
+        for (const selectedOption of optionsSelected) {
+          if (
+            selectedOption.option === index &&
+            this.questionType === 'multiple-text'
+          ) {
+            return index;
+          }
+
+          if (
+            optionInList.isMedia &&
+            (optionInList.value === selectedOption.selectedOptionOrText ||
+              optionInList.label === selectedOption.selectedOptionOrText)
+          )
+            return index;
+          if (
+            !optionInList.isMedia &&
+            optionInList.value === selectedOption.selectedOptionOrText
+          )
+            return index;
         }
 
-        if (
-          optionInList.isMedia &&
-          (optionInList.value === optionsSelected.selectedOptionOrText ||
-            optionInList.label === optionsSelected.selectedOptionOrText)
-        )
-          return true;
-        if (
-          !optionInList.isMedia &&
-          optionInList.value === optionsSelected.selectedOptionOrText
-        )
-          return true;
+        return null;
       }
     );
 
-    //stablish with options in the list are selected
     this.options = this.options.map((option, index) => ({
       ...option,
-      selected: index === selectedOptionIndex,
+      selected: selectedOptionForFullListIndexes.includes(index),
     }));
 
-    this.selectedIndex = selectedOptionIndex;
-
+    //Get the selected index from the full list(images-grid, list-option)
+    this.selectedIndexes = selectedOptionForFullListIndexes;
 
     //Adds the user provided answer to the output sent to the parent component
-    if (this.questionType === 'multiple-text'&& optionsSelected.option === this.options.length - 1)
-      this.options[this.selectedIndex].userProvidedAnswer =
-        optionsSelected.selectedOptionOrText;
+    if (
+      this.questionType === 'multiple-text' &&
+      optionsSelected[optionsSelected.length - 1]?.option ===
+        this.options.length - 1
+    ) {
+      this.options[this.options.length - 1].userProvidedAnswer =
+        optionsSelected[optionsSelected.length - 1].selectedOptionOrText;
+    }
 
     if (this.dialogFlowConfig) {
       this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
@@ -215,35 +230,67 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
 
     this.inputDetected.emit(this.options);
 
+    ////////////////////////////////////////// INICIO - DETERMINA QUE INDICES DEL GRID DE IMAGENES ESTÁN SELECCIONADOS /////////////////////////////////////////
+
     //Get the selected index for the image grid
-    let selectedIndexFromImageGrid = null;
-    let selectedIndexFromList = null;
+    let selectedIndexesFromImageGrid = [];
     const justImagesGrid = this.options.filter(
       (option, index) => option.isMedia && option.value
     );
-    selectedIndexFromImageGrid = justImagesGrid.findIndex(
-      (option) => option.value === this.options[selectedOptionIndex]?.value
+
+    selectedIndexesFromImageGrid = justImagesGrid.map(
+      (option, indexFromGrid) => {
+        let returnValueForOption = null;
+
+        for (const selectedOption of optionsSelected) {
+          if (selectedOption.image >= 0 && indexFromGrid === selectedOption.image) {
+            returnValueForOption = indexFromGrid;
+          }
+        }
+
+        return returnValueForOption;
+      }
     );
 
-    if (selectedIndexFromImageGrid >= 0) {
-      this.selectedImageGridIndex = selectedIndexFromImageGrid;
-    }
+    this.selectedImagesGridIndexes = selectedIndexesFromImageGrid.filter(
+      (index) => index !== null
+    );
+
+    ////////////////////////////////////////// FINAL - DETERMINA QUE INDICES DEL GRID DE IMAGENES ESTÁN SELECCIONADOS /////////////////////////////////////////
+
+    let selectedIndexesFromList = [];
+
+    ////////////////////////////////////////// INICIO - DETERMINA QUE INDICES DEL ANSWER SELECTOR ESTÁN SELECCIONADOS /////////////////////////////////////////
 
     //Get the selected index for the list of options in the answer selector
     const listOptionsGrid = this.options.filter(
       (option, index) =>
         (!option.isMedia && option.value) || (option.isMedia && option.label)
     );
-    selectedIndexFromList = listOptionsGrid.findIndex(
-      (option) =>
-        option.value === this.options[selectedOptionIndex]?.value ||
-        option.label === this.options[selectedOptionIndex]?.value
+
+    selectedIndexesFromList = listOptionsGrid.map(
+      (option, indexFromOptionList) => {
+        let returnValueForOption = null;
+
+        for (let i = 0; i < selectedOptionForFullListIndexes.length; i++) {
+          let index = selectedOptionForFullListIndexes[i];
+
+          if (
+            (index >= 0 &&
+              option?.selected &&
+              option.value === this.options[index]?.value) ||
+            option.label === this.options[index]?.value
+          ) {
+            returnValueForOption = indexFromOptionList;
+          }
+        }
+
+        return returnValueForOption;
+      }
     );
 
-    if (selectedIndexFromList >= 0) {
-      this.selectedIndex = selectedIndexFromList;
-    } else {
-      this.selectedIndex = null;
-    }*/
+    this.selectedIndexes = selectedIndexesFromList;
+
+    ////////////////////////////////////////// FINAL - DETERMINA QUE INDICES DEL ANSWER SELECTOR ESTÁN SELECCIONADOS /////////////////////////////////////////
   };
 }

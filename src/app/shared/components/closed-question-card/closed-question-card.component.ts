@@ -14,9 +14,11 @@ export class ClosedQuestionCardComponent implements OnInit {
   @Input() selectedImage: number = null;
   @Input() selectedIndexes: Array<number> = [];
   @Input() selectedImagesIndexes: Array<number> = [];
+  @Input() alternateImageSelectionCriteria: boolean = false;
   @Input() question: string;
   @Input() id: string;
   @Input() answers: Array<any> = []; //Array of images by options
+  @Input() completeAnswers: Array<any> = []; //Array of images by options
   @Input() type: number = 1;
   @Input() shadows: boolean = true;
   @Input() multiple: boolean = true;
@@ -41,11 +43,14 @@ export class ClosedQuestionCardComponent implements OnInit {
   imagesByOption: Record<number, number> = {}; //index of image, index of option
 
   options: OptionAnswerSelector[] = []; //Array of answer selector options
+  answersWithMedia: Array<any> = []; //Array of images by options
 
   constructor() {}
 
   ngOnInit(): void {
     let selectedListIndex = null;
+
+    this.completeAnswers = this.answers;
 
     this.answers.forEach((answer, fullOptionsIndex) => {
       let value = null;
@@ -105,20 +110,6 @@ export class ClosedQuestionCardComponent implements OnInit {
       });
     }
 
-    if (!this.multiple)
-      this.onSelector.emit({
-        option: this.selected,
-        image: this.selectedImage,
-        selectedOptionOrText:
-          this.questionType === 'multiple-text' &&
-          this.selected === this.options.length - 1
-            ? this.userProvidedAnswer.value
-            : this.options[this.selected]?.value,
-      });
-    else {
-      console.log(this.selectedIndexes, this.selectedImagesIndexes);
-    }
-
     //Fills optionsByImages
     this.answers.forEach((answer, index) => {
       this.options.forEach((option, index2) => {
@@ -133,12 +124,43 @@ export class ClosedQuestionCardComponent implements OnInit {
       });
     });
 
-    this.userProvidedAnswer.valueChanges.subscribe((change) => {
+    if (!this.multiple)
       this.onSelector.emit({
-        option: this.options.length - 1,
-        image: null,
-        selectedOptionOrText: change,
+        option: this.selected,
+        image: this.selectedImage,
+        selectedOptionOrText:
+          this.questionType === 'multiple-text' &&
+          this.selected === this.options.length - 1
+            ? this.userProvidedAnswer.value
+            : this.options[this.selected]?.value,
       });
+    else {
+      this.emitMultipleSelectedOptions(true);
+    }
+
+    if (this.multiple) {
+      this.answersWithMedia = this.answers.filter((answer) => answer.isMedia);
+    }
+
+    this.userProvidedAnswer.valueChanges.subscribe((change) => {
+      if (!this.multiple) {
+        this.onSelector.emit({
+          option: this.options.length - 1,
+          image: null,
+          selectedOptionOrText: change,
+        });
+      } else {
+        this.onSelectorMultiple.emit(
+          this.options
+            .map((option, index) => ({
+              option: this.selectedIndexes.includes(index) ? index : null,
+              image: null,
+              selectedOptionOrText:
+                index !== this.options.length - 1 ? option.value : change,
+            }))
+            .filter((option) => option.option !== null)
+        );
+      }
     });
   }
 
@@ -196,29 +218,149 @@ export class ClosedQuestionCardComponent implements OnInit {
     });
   }
 
-  selectOptMultiple(
-    indexOrIndexes: any,//number for single selection, array of numbers for multiple selection
-    from: 'GRID' | 'OPTIONS-LIST',
-    imageRoute?: string
-  ) {
-    //It handles cases when the event is for some reason triggered without expecting it
-    if (!from || !['GRID', 'OPTIONS-LIST'].includes(from)) return null;
-
-    
-    if (from === 'GRID') {
-      if (!this.selectedImagesIndexes.includes(indexOrIndexes)) {
-        this.selectedImagesIndexes.push(indexOrIndexes);
-        this.selectedIndexes.push(this.imagesByOption[indexOrIndexes]);
-      }
-      else {
-        this.selectedImagesIndexes.splice(indexOrIndexes, 1);
-        this.selectedIndexes.splice(indexOrIndexes, 1);
-      } 
-    } else {
-      this.selectedIndexes = indexOrIndexes;
-      this.selectedImagesIndexes = this.selectedIndexes.map(indexInList => this.optionsByImages[indexInList]);
+  classifyAnswer = (answer: any, completeAnswerStructure = false) => {
+    if (!completeAnswerStructure) {
+      if (answer.text === null && answer.img && answer.img.length)
+        return 'IMAGE_NO_TEXT';
+      if (answer.text && answer.text && answer.img && answer.img.length)
+        return 'IMAGE_AND_TEXT';
+      if (answer.text && answer.text && answer.img === null)
+        return 'TEXT_NO_IMAGE';
     }
 
+    if (completeAnswerStructure) {
+      if (answer.isMedia && answer.label === null) return 'IMAGE_NO_TEXT';
+      if (answer.isMedia && answer.label) return 'IMAGE_AND_TEXT';
+      if (!answer.isMedia && answer.value) return 'TEXT_NO_IMAGE';
+    }
+  };
+
+  emitMultipleSelectedOptions(completeAnswerStructure: boolean = false) {
+    const selectedOptions: Array<{
+      option: number;
+      image: number;
+      selectedOptionOrText: string;
+    }> = [];
+
+    this.selectedIndexes = this.selectedIndexes.filter(
+      (index) => index !== null
+    );
+    this.selectedImagesIndexes = this.selectedImagesIndexes.filter(
+      (index) => index !== null
+    );
+
+    const answersClassified = this.completeAnswers.map((answer, index) => ({
+      classification: this.classifyAnswer(answer, completeAnswerStructure),
+      answerIndex: index,
+      answer: !completeAnswerStructure
+        ? answer
+        : {
+            text: answer.isMedia ? answer.label : answer.value,
+            img: answer.isMedia ? answer.value : null,
+          },
+    }));
+
+    const answersWithText = answersClassified.filter((answer) =>
+      ['IMAGE_AND_TEXT', 'TEXT_NO_IMAGE'].includes(answer.classification)
+    );
+
+    const answersWithImage = answersClassified.filter((answer) =>
+      ['IMAGE_AND_TEXT', 'IMAGE_NO_TEXT'].includes(answer.classification)
+    );
+
+    const alreadyInsertedImages = {};
+
+    //INSERTS OPTIONS THAT HAVE TEXT AND ARE SELECTED
+    this.selectedIndexes.forEach((selectedIndex) => {
+      answersWithText.forEach((answer) => {
+        if (this.options[selectedIndex].value === answer.answer.text) {
+          const toInsert = {
+            option: selectedIndex,
+            image: this.optionsByImages[selectedIndex],
+            selectedOptionOrText: answer.answer.text,
+          };
+
+          if (answer.answer.img !== null) {
+            alreadyInsertedImages[this.optionsByImages[selectedIndex]] = true;
+          }
+
+          selectedOptions.push(toInsert);
+        }
+      });
+    });
+
+    //INSERTS OPTIONS THAT HAVE IMAGES AND ARE SELECTED
+    this.selectedImagesIndexes.forEach((selectedImageIndex) => {
+      answersWithImage.forEach((answer) => {
+        if (
+          this.answers[selectedImageIndex].img === answer.answer.img &&
+          !alreadyInsertedImages[selectedImageIndex] &&
+          answer.answer.text === null
+        ) {
+          const toInsert = {
+            option: this.imagesByOption[selectedImageIndex],
+            image: selectedImageIndex,
+            selectedOptionOrText: answer.answer.text,
+          };
+
+          selectedOptions.push(toInsert);
+        }
+      });
+    });
+
+    this.onSelectorMultiple.emit(selectedOptions);
+  }
+
+  //HANDLES THE CASE WHEN A BUTTON OF THE ANSWER SELECTOR IS CLICKED(WHEN MULTIPLE SELECTION IS ENABLED)
+  selectOptMultipleFromList(
+    indexOrIndexes: Array<number> //number for single selection, array of numbers for multiple selection
+  ) {
+    this.selectedIndexes = indexOrIndexes;
+
+    if (
+      this.questionType === 'multiple-text' &&
+      !this.userProvidedAnswerSelected &&
+      indexOrIndexes.includes(this.options.length - 1)
+    ) {
+      this.userProvidedAnswerSelected = true;
+    } else if (
+      this.questionType === 'multiple-text' &&
+      this.userProvidedAnswerSelected &&
+      !indexOrIndexes.includes(this.options.length - 1)
+    ) {
+      this.userProvidedAnswerSelected = false;
+    }
+
+    this.emitMultipleSelectedOptions();
+  }
+
+  //HANDLES THE CASE WHEN THE RADIO BUTTON OF THE IMAGE GRID IS CLICKED(WHEN MULTIPLE SELECTION IS ENABLED)
+  selectOptMultipleFromGrid(indexClicked: number) {
+    this.selectedIndexes = this.selectedIndexes.filter(
+      (index) => index !== null
+    );
+    this.selectedImagesIndexes = this.selectedImagesIndexes.filter(
+      (index) => index !== null
+    );
+
+    if (this.selectedImagesIndexes.includes(indexClicked)) {
+      const indexFromImageGrid = this.selectedImagesIndexes.findIndex(
+        (index) => index === indexClicked
+      );
+
+      if (indexFromImageGrid >= 0)
+        this.selectedImagesIndexes.splice(indexFromImageGrid, 1);
+
+      const indexFromOptionList = this.selectedIndexes.findIndex(
+        (index) => this.imagesByOption[indexClicked] === index
+      );
+
+      if (indexFromOptionList >= 0)
+        this.selectedIndexes.splice(indexFromOptionList, 1);
+    } else {
+      this.selectedImagesIndexes.push(indexClicked);
+      this.selectedIndexes.push(this.imagesByOption[indexClicked]);
+    }
 
     const selectedOptions: Array<{
       option: number;
@@ -226,46 +368,35 @@ export class ClosedQuestionCardComponent implements OnInit {
       selectedOptionOrText: string;
     }> = [];
 
-    /*
-    this.options.forEach((option, indexInList) => {
-      this.options[indexInList].valueStyles = {
-        'padding-left': '0px',
-        marginLeft: '17.5px',
-        'font-size': '17px',
+    const answersWithImages = this.answers
+      .map((answer, index) => ({
+        classification: this.classifyAnswer(answer),
+        answerIndex: index,
+        answer,
+      }))
+      .filter((answerInList) => answerInList.answer.img);
+
+    this.selectedImagesIndexes.forEach((selectedImagesIndex, orderIndex) => {
+      let selectedOptionOrText = null;
+
+      if (
+        answersWithImages[selectedImagesIndex] &&
+        answersWithImages[selectedImagesIndex].classification ===
+          'IMAGE_AND_TEXT'
+      ) {
+        selectedOptionOrText =
+          answersWithImages[selectedImagesIndex].answer.text;
+      }
+
+      const toInsert = {
+        option: this.imagesByOption[selectedImagesIndex],
+        image: this.selectedImagesIndexes[orderIndex],
+        selectedOptionOrText: selectedOptionOrText,
       };
 
-      if(typeof indexOrIndexes === 'object') {
-        selectedOptions.push({
-          option: indexInList,
-          selectedOptionOrText: this.options[indexInList].value,
-          image: this.answers[this.imagesByOption[indexInList]]?.img
-        })
-      } 
-      
-      if(typeof indexOrIndexes === 'number' && this.selectedImagesIndexes.includes(indexInList)) {
-        selectedOptions.push({
-          option: this.imagesByOption[indexInList],
-          selectedOptionOrText: this.options[this.imagesByOption[indexInList]].value,
-          image: this.answers[indexInList]?.img
-        })
-      } 
+      selectedOptions.push(toInsert);
     });
 
-
-    console.log(selectedOptions);
-
-    /*
-    if (imageRoute) {
-      selectedOptionOrText = imageRoute;
-    } else {
-      selectedOptionOrText = this.options[this.selected].value;
-    }
-
-    this.onSelector.emit({
-      option: this.selected,
-      image: this.selectedImage,
-      selectedOptionOrText,
-    });
-    */
+    this.onSelectorMultiple.emit(selectedOptions);
   }
 }

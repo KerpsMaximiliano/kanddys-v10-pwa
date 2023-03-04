@@ -184,11 +184,19 @@ export class CheckoutComponent implements OnInit {
       question: Question;
       response: any;
       responseLabel?: string;
+      multipleResponses?: Array<{
+        response: any;
+        responseLabel?: string;
+        isMedia?: boolean;
+        isProvidedByUser?: boolean;
+      }>;
       isMedia?: boolean;
+      isMultipleResponse?: boolean;
       multipleSelection?: boolean;
       selectedIndex?: number;
       selectedImageIndex?: number;
       selectedIndexes?: Array<number>;
+      selectedImageIndexes?: Array<number>;
       multipleChoicesType?: WebformMultipleChoicesType;
     }
   > = {};
@@ -747,10 +755,12 @@ export class CheckoutComponent implements OnInit {
 
           //loads the questions in an object that associates each answer with each question
           for (const question of webform.questions) {
-            const isMedia =
-              question.answerDefault &&
-              question.answerDefault.length &&
-              question.answerDefault[0].isMedia;
+            let multipleResponse = question.answerLimit === 0;
+            const isMedia = !multipleResponse
+              ? question.answerDefault &&
+                question.answerDefault.length &&
+                question.answerDefault[0].isMedia
+              : question.answerDefault.some((option) => option.isMedia);
 
             if (isMedia) {
               question.answerDefault = question.answerDefault.map((option) => ({
@@ -768,6 +778,7 @@ export class CheckoutComponent implements OnInit {
               question,
               response,
               isMedia,
+              isMultipleResponse: multipleResponse,
             };
 
             if (
@@ -957,7 +968,7 @@ export class CheckoutComponent implements OnInit {
                   flowId: 'webform-item-' + item._id,
                 },
                 questionType: question.type,
-                multiple: !question.answerLimit || question.answerLimit > 1,
+                multiple: question.answerLimit === 0,
                 options: activeOptions,
               },
               outputs: [
@@ -972,66 +983,162 @@ export class CheckoutComponent implements OnInit {
                       userProvidedAnswer?: string;
                     }>
                   ) => {
-                    const selected = inputDetected.find(
-                      (option) => option.selected
-                    );
+                    const isMultipleSelection = question.answerLimit === 0;
 
-                    const selectedIndex = inputDetected.findIndex(
-                      (option) => option.selected
-                    );
+                    if (!isMultipleSelection) {
+                      const selected = inputDetected.find(
+                        (option) => option.selected
+                      );
 
-                    //////////////// SEPARATES IMAGES GRID FROM OPTIONS IN THE LIST ///////////////
-                    //Get the selected index for the image grid
-                    let selectedIndexFromImageGrid = null;
-                    const justImagesGrid = inputDetected.filter(
-                      (option, index) => option.isMedia && option.value
-                    );
-                    selectedIndexFromImageGrid = justImagesGrid.findIndex(
-                      (option) =>
-                        option.value === inputDetected[selectedIndex]?.value
-                    );
+                      const selectedIndex = inputDetected.findIndex(
+                        (option) => option.selected
+                      );
 
-                    //Get the selected index for the list of options in the answer selector
-                    let selectedIndexFromList = null;
-                    const listOptionsGrid = inputDetected.filter(
-                      (option, index) =>
-                        (!option.isMedia && option.value) ||
-                        (option.isMedia && option.label)
-                    );
-                    selectedIndexFromList = listOptionsGrid.findIndex(
-                      (option) =>
-                        option.value === inputDetected[selectedIndex]?.value ||
-                        option.label === inputDetected[selectedIndex]?.value
-                    );
+                      //////////////// SEPARATES IMAGES GRID FROM OPTIONS IN THE LIST ///////////////
+                      //Get the selected index for the image grid
+                      let selectedIndexFromImageGrid = null;
+                      const justImagesGrid = inputDetected.filter(
+                        (option, index) => option.isMedia && option.value
+                      );
+                      selectedIndexFromImageGrid = justImagesGrid.findIndex(
+                        (option) =>
+                          option.value === inputDetected[selectedIndex]?.value
+                      );
 
-                    //////////////// SEPARATES IMAGES GRID FROM OPTIONS IN THE LIST ///////////////
-                    if (!question.answerDefault[0].isMedia) {
-                      if (selected)
-                        this.answersByQuestion[question._id].response =
-                          question.type === 'multiple'
-                            ? selected.value
-                            : selected.userProvidedAnswer;
+                      //Get the selected index for the list of options in the answer selector
+                      let selectedIndexFromList = null;
+                      const listOptionsGrid = inputDetected.filter(
+                        (option, index) =>
+                          (!option.isMedia && option.value) ||
+                          (option.isMedia && option.label)
+                      );
+                      selectedIndexFromList = listOptionsGrid.findIndex(
+                        (option) =>
+                          option.value ===
+                            inputDetected[selectedIndex]?.value ||
+                          option.label === inputDetected[selectedIndex]?.value
+                      );
+
+                      //////////////// SEPARATES IMAGES GRID FROM OPTIONS IN THE LIST ///////////////
+                      if (!question.answerDefault[0].isMedia) {
+                        if (selected)
+                          this.answersByQuestion[question._id].response =
+                            question.type === 'multiple'
+                              ? selected.value
+                              : selected.userProvidedAnswer;
+                      } else {
+                        if (selected) {
+                          this.answersByQuestion[question._id].response =
+                            question.type === 'multiple'
+                              ? selected.value
+                              : selected.userProvidedAnswer;
+                          this.answersByQuestion[question._id].selectedIndex =
+                            selectedIndexFromList;
+
+                          if (selectedIndexFromImageGrid > -1)
+                            this.answersByQuestion[
+                              question._id
+                            ].selectedImageIndex = selectedIndexFromImageGrid;
+                        }
+
+                        if (selected && selected.label)
+                          this.answersByQuestion[question._id].responseLabel =
+                            selected.label;
+                        else {
+                          this.answersByQuestion[question._id].responseLabel =
+                            null;
+                        }
+                      }
                     } else {
-                      if (selected) {
-                        this.answersByQuestion[question._id].response =
-                          question.type === 'multiple'
-                            ? selected.value
-                            : selected.userProvidedAnswer;
-                        this.answersByQuestion[question._id].selectedIndex =
-                          selectedIndexFromList;
+                      const selectedOptions = inputDetected.filter(
+                        (option) => option.selected
+                      );
 
-                        if (selectedIndexFromImageGrid > -1)
+                      const selectedIndexes = inputDetected
+                        .map((option, index) => {
+                          return option.selected ? index : null;
+                        })
+                        .filter((index) => index !== null);
+
+                      let selectedIndexesFromImageGrid = [];
+                      const justImagesGrid = inputDetected.filter(
+                        (option, index) => option.isMedia && option.value
+                      );
+
+                      selectedIndexesFromImageGrid = justImagesGrid.map(
+                        (option, indexFromGrid) => {
+                          let returnValueForOption = null;
+
+                          for (let i = 0; i < selectedIndexes.length; i++) {
+                            let index = selectedIndexes[i];
+
+                            if (
+                              index >= 0 &&
+                              option.value === inputDetected[index]?.value
+                            ) {
+                              returnValueForOption = indexFromGrid;
+                            }
+                          }
+
+                          return returnValueForOption;
+                        }
+                      );
+
+                      //Get the selected index for the list of options in the answer selector
+                      let selectedIndexesFromList = [];
+                      const listOptionsGrid = inputDetected.filter(
+                        (option, index) =>
+                          (!option.isMedia && option.value) ||
+                          (option.isMedia && option.label)
+                      );
+                      selectedIndexesFromList = listOptionsGrid.map(
+                        (option, indexFromList) => {
+                          let returnValueForOption = null;
+
+                          for (let i = 0; i < selectedIndexes.length; i++) {
+                            let index = selectedIndexes[i];
+
+                            if (
+                              (index >= 0 &&
+                                option.value === inputDetected[index]?.value) ||
+                              option.label === inputDetected[index]?.value
+                            ) {
+                              returnValueForOption = indexFromList;
+                            }
+                          }
+
+                          return returnValueForOption;
+                        }
+                      );
+
+                      if (selectedOptions.length) {
+                        this.answersByQuestion[question._id].selectedIndexes =
+                          selectedIndexesFromList;
+
+                        if (selectedIndexesFromImageGrid.length)
                           this.answersByQuestion[
                             question._id
-                          ].selectedImageIndex = selectedIndexFromImageGrid;
-                      }
+                          ].selectedImageIndexes = selectedIndexesFromImageGrid;
 
-                      if (selected && selected.label)
-                        this.answersByQuestion[question._id].responseLabel =
-                          selected.label;
-                      else {
-                        this.answersByQuestion[question._id].responseLabel =
-                          null;
+                        this.answersByQuestion[question._id].multipleResponses =
+                          [];
+
+                        for (const optionSelected of selectedOptions) {
+                          this.answersByQuestion[
+                            question._id
+                          ].multipleResponses.push({
+                            response: optionSelected.userProvidedAnswer
+                              ? optionSelected.userProvidedAnswer
+                              : optionSelected.value,
+                            responseLabel: optionSelected.label
+                              ? optionSelected.label
+                              : null,
+                            isProvidedByUser: optionSelected.userProvidedAnswer
+                              ? true
+                              : false,
+                            isMedia: optionSelected.isMedia,
+                          });
+                        }
                       }
                     }
 
@@ -1052,7 +1159,7 @@ export class CheckoutComponent implements OnInit {
     this.webformsByItem[itemId].opened = !this.webformsByItem[itemId].opened;
   }
 
-  //Select an image from the webform multiple option
+  //Select an image from the webform multiple option (SINGLE RESPONSE)
   selectWebformMediaOption = (
     selectedOptions: {
       option: number;
@@ -1106,6 +1213,151 @@ export class CheckoutComponent implements OnInit {
         selectedOptions.selectedOptionOrText;
     }
 
+    const selectedResponse = updatedOptions.find((option) => option.selected);
+
+    if (selectedResponse.selected) {
+      this.answersByQuestion[question._id].response = selectedResponse.value;
+      this.answersByQuestion[question._id].responseLabel =
+        selectedResponse?.label;
+      this.answersByQuestion[question._id].selectedIndex =
+        selectedOptions.option;
+      this.answersByQuestion[question._id].selectedImageIndex =
+        selectedOptions.image;
+    }
+
+    this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
+      question._id
+    ].fields.options = updatedOptions;
+  };
+
+  //Select an image from the webform multiple option (MULTIPLE RESPONSE)
+  selectWebformMediaOptionMultiple = (
+    selectedOptions: Array<{
+      option: number;
+      image: number;
+      selectedOptionOrText: string;
+    }>,
+    item: ExtendedItem,
+    question: Question
+  ) => {
+    const options =
+      this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
+        question._id
+      ].fields.options;
+
+    const selectedOptionIndexes = options.map((optionInList, index) => {
+      for (const selectedOption of selectedOptions) {
+        if (
+          selectedOption.option === index &&
+          question.type === 'multiple-text'
+        ) {
+          return index;
+        }
+
+        if (
+          optionInList.isMedia &&
+          (optionInList.value === selectedOption.selectedOptionOrText ||
+            optionInList.label === selectedOption.selectedOptionOrText)
+        )
+          return index;
+        if (
+          !optionInList.isMedia &&
+          optionInList.value === selectedOption.selectedOptionOrText
+        )
+          return index;
+      }
+
+      return null;
+    });
+
+    const updatedOptions = options.map((option, index) => ({
+      ...option,
+      selected: selectedOptionIndexes.includes(index),
+    }));
+
+    //Gets the selected indexes from the image grid, and the answer selector
+    //////////////////////////////////////////////////////////////////////////////
+    //Get the selected index for the image grid
+    let selectedIndexesFromImageGrid = [];
+    const justImagesGrid = updatedOptions.filter(
+      (option, index) => option.isMedia && option.value
+    );
+
+    selectedIndexesFromImageGrid = justImagesGrid.map(
+      (option, indexFromGrid) => {
+        let returnValueForOption = null;
+
+        for (let i = 0; i < selectedOptions.length; i++) {
+          let index = selectedOptions[i].option;
+
+          if (index >= 0 && option?.value === updatedOptions[index]?.value) {
+            returnValueForOption = indexFromGrid;
+          }
+        }
+
+        return returnValueForOption;
+      }
+    );
+
+    this.answersByQuestion[question._id].selectedImageIndexes =
+      selectedIndexesFromImageGrid; //Mark as selected the options in the image grid
+
+    let selectedIndexesFromList = [];
+
+    //Get the selected index for the list of options in the answer selector
+    const listOptionsGrid = updatedOptions.filter(
+      (option, index) =>
+        (!option.isMedia && option.value) || (option.isMedia && option.label)
+    );
+
+    selectedIndexesFromList = listOptionsGrid.map(
+      (option, indexFromOptionList) => {
+        let returnValueForOption = null;
+
+        for (let i = 0; i < selectedOptions.length; i++) {
+          let index = selectedOptions[i].option;
+
+          if (
+            (index >= 0 &&
+              option?.selected &&
+              option.value === updatedOptions[index]?.value) ||
+            option.label === updatedOptions[index]?.value
+          ) {
+            returnValueForOption = indexFromOptionList;
+          }
+        }
+
+        return returnValueForOption;
+      }
+    );
+
+    this.answersByQuestion[question._id].selectedIndexes =
+      selectedIndexesFromList; //Mark as selected the options in answer selector list
+
+    /////////////////////////////////////////////////////////////////////////////
+
+    this.answersByQuestion[question._id].multipleResponses = updatedOptions
+      .filter((option) => option.selected)
+      .map((option) => ({
+        isMedia: option.isMedia,
+        response: option.value,
+        responseLabel: option.label,
+      }));
+
+    //Adds the user provided answer to the output sent to the parent component
+    if (
+      question.type === 'multiple-text' &&
+      selectedOptions[selectedOptions.length - 1]?.option === options.length - 1
+    ) {
+      updatedOptions[updatedOptions.length - 1].userProvidedAnswer =
+        selectedOptions[selectedOptions.length - 1]?.selectedOptionOrText;
+
+      this.answersByQuestion[question._id].multipleResponses[
+        this.answersByQuestion[question._id].multipleResponses.length - 1
+      ].response =
+        selectedOptions[selectedOptions.length - 1]?.selectedOptionOrText;
+    }
+
     this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
       question._id
     ].fields.options = updatedOptions;
@@ -1121,7 +1373,10 @@ export class CheckoutComponent implements OnInit {
     };
 
     for (const question of this.webformsByItem[itemId].webform.questions) {
-      if (this.answersByQuestion[question._id].response) {
+      if (
+        !this.answersByQuestion[question._id].isMultipleResponse &&
+        this.answersByQuestion[question._id].response
+      ) {
         const response: WebformResponseInput = {
           question: question._id,
           value: this.answersByQuestion[question._id].response,
@@ -1131,6 +1386,24 @@ export class CheckoutComponent implements OnInit {
           response.label = this.answersByQuestion[question._id].responseLabel;
 
         answerInput.response.push(response);
+      }
+
+      if (
+        this.answersByQuestion[question._id].isMultipleResponse &&
+        this.answersByQuestion[question._id].multipleResponses.length
+      ) {
+        for (const responseInList of this.answersByQuestion[question._id]
+          .multipleResponses) {
+          const response: WebformResponseInput = {
+            question: question._id,
+            value: responseInList.response,
+          };
+
+          if (responseInList.responseLabel)
+            response.label = responseInList.responseLabel;
+
+          answerInput.response.push(response);
+        }
       }
     }
 
@@ -1163,7 +1436,16 @@ export class CheckoutComponent implements OnInit {
       for (const question of this.webformsByItem[item._id].webform.questions) {
         if (
           question.required &&
+          !this.answersByQuestion[question._id].isMultipleResponse &&
           this.answersByQuestion[question._id].response
+        ) {
+          requiredQuestionsAnsweredCounter++;
+        }
+
+        if (
+          question.required &&
+          this.answersByQuestion[question._id].isMultipleResponse &&
+          this.answersByQuestion[question._id].multipleResponses?.length
         ) {
           requiredQuestionsAnsweredCounter++;
         }
@@ -1188,12 +1470,12 @@ export class CheckoutComponent implements OnInit {
     return !doesAnyItemHaveRequiredQuestionLeftUnanswered;
   }
 
-  addOptionalUserDefinedAnswer(question: Question) {
+  addOptionalUserDefinedAnswer(question: Question, multiple: boolean = false) {
     const copyOptions: Array<ExtendedAnswerDefault> = JSON.parse(
       JSON.stringify(question.answerDefault)
     );
 
-    if (question.type === 'multiple-text') {
+    if (question.type === 'multiple-text' && !multiple) {
       copyOptions.push({
         value: 'Otra respuesta',
         isMedia: false,
@@ -1207,6 +1489,28 @@ export class CheckoutComponent implements OnInit {
       });
     }
 
+    if (question.type === 'multiple-text' && multiple) {
+      const didUserWriteACustomAnswer =
+        this.answersByQuestion[question._id].multipleResponses[
+          this.answersByQuestion[question._id].multipleResponses.length - 1
+        ]?.isProvidedByUser;
+
+      copyOptions.push({
+        value: 'Otra respuesta',
+        isMedia: false,
+        active: true,
+        defaultValue: null,
+        userProvidedAnswer: didUserWriteACustomAnswer
+          ? this.answersByQuestion[question._id].multipleResponses[
+              this.answersByQuestion[question._id].multipleResponses.length - 1
+            ].response
+          : null,
+        label: null,
+        createdAt: null,
+        updatedAt: null,
+        _id: null,
+      });
+    }
     return copyOptions;
   }
 }

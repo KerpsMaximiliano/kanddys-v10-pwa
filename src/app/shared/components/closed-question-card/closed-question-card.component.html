@@ -46,21 +46,42 @@
 
     <ng-container *ngIf="multiple">
       <div class="imgGrid">
-        <ng-container *ngFor="let answer of answers; let i = index">
-          <div *ngIf="answer.isMedia" [id]="id + '-' + i" class="radio">
-            <img
-              [src]="answer.img"
-              (error)="answer.img = '/assets/images/noimage.png'"
-              class="radioImg"
-            />
-            <div
-              class="radioButton"
-              (click)="selectOptMultiple(i, 'GRID', answer.img)"
-              [ngClass]="{ active: selectedImagesIndexes.includes(i)}"
-            >
-              <img class="icon" [src]="env + '/check-black.svg'" />
+        <ng-container *ngIf="!alternateImageSelectionCriteria">
+          <ng-container *ngFor="let answer of answers; let i = index">
+            <div *ngIf="answer.isMedia" [id]="id + '-' + i" class="radio">
+              <img
+                [src]="answer.img"
+                (error)="answer.img = '/assets/images/noimage.png'"
+                class="radioImg"
+              />
+              <div
+                class="radioButton"
+                (click)="selectOptMultipleFromGrid(i)"
+                [ngClass]="{ active: selectedImagesIndexes.includes(i) }"
+              >
+                <img class="icon" [src]="env + '/check-black.svg'" />
+              </div>
             </div>
-          </div>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="alternateImageSelectionCriteria">
+          <ng-container *ngFor="let answer of answersWithMedia; let i = index">
+            <div *ngIf="answer.isMedia" [id]="id + '-' + i" class="radio">
+              <img
+                [src]="answer.img"
+                (error)="answer.img = '/assets/images/noimage.png'"
+                class="radioImg"
+              />
+              <div
+                class="radioButton"
+                (click)="selectOptMultipleFromGrid(i)"
+                [ngClass]="{ active: selectedImagesIndexes.includes(i) }"
+              >
+                <img class="icon" [src]="env + '/check-black.svg'" />
+              </div>
+            </div>
+          </ng-container>
         </ng-container>
       </div>
 
@@ -68,6 +89,7 @@
         style="text-align: left"
         [isMultipleOption]="true"
         [options]="options"
+        [activeMultipleOption]="selectedIndexes"
         [indicator]="true"
         [containerStyles]="{
           margin: '0px',
@@ -82,7 +104,7 @@
           marginBottom: '0px'
         }"
         [alternativeBackground]="'narrow'"
-        (activeMultipleOptionValue)="selectOptMultiple($event, 'OPTIONS-LIST', null)"
+        (activeMultipleOptionValue)="selectOptMultipleFromList($event)"
       ></app-answer-selector>
     </ng-container>
 
