@@ -97,11 +97,12 @@ export type OrderStatusNameType =
   | 'cancelado'
   | 'empezado'
   | 'verificando'
-  | 'verificado'
   | 'en revisión'
   | 'por confirmar'
   | 'completado'
-  | 'error';
+  | 'error'
+  | 'por terminar'
+  | 'pagada';
 
 export type OrderStatusDeliveryType =
   | 'pickup'

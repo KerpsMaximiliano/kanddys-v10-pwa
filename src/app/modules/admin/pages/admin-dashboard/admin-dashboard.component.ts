@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { PaginationInput } from 'src/app/core/models/saleflow';
+import { Tag } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -29,15 +30,11 @@ import { environment } from 'src/environments/environment';
 export class AdminDashboardComponent implements OnInit, OnDestroy {
   URI: string = environment.uri;
   environment: string = environment.assetsUrl;
-  // artID: Array<string> = [
-  //   '63d429d7849f894c1895c659',
-  //   '63d420a8849f894c189544d4',
-  //   '63c93768a6ce9322ca278888',
-  //   '63c61f50a6ce9322ca216714',
-  // ];
+
+  layout: 'simple-card' | 'description-card';
   items: Item[] = [];
   allItems: Item[] = [];
-  itemStatus: 'active' | 'disabled' = 'active';
+  itemStatus: 'active' | 'disabled' | '' | null = 'active';
   renderItemsPromise: Promise<{ listItems: Item[] }>;
   subscription: Subscription;
 
@@ -54,49 +51,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   reachTheEndOfPagination: boolean = false;
   // Pagination
 
-  constructor(
-    public _MerchantsService: MerchantsService,
-    private router: Router,
-    private authService: AuthService,
-    // private itemsService: ItemsService,
-    private _SaleflowService: SaleFlowService,
-    private _ItemsService: ItemsService,
-    private snackBar: MatSnackBar,
-    private _bottomSheet: MatBottomSheet,
-    public dialog: MatDialog,
-    private ngNavigatorShareService: NgNavigatorShareService,
-    private clipboard: Clipboard
-  ) {}
-
-  async ngOnInit() {
-    if (this._SaleflowService.saleflowData) {
-      this.inicializeItems(true, false, true);
-      return;
-    }
-    this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
-      next: (value) => {
-        if (value) {
-          this.inicializeItems(true, false, true);
-        }
-      },
-    });
-
-    // this.artID.forEach(async (element) => {
-    //   let item = await this.itemsService.item(element);
-    //   this.articulos.push(item);
-    // });
-  }
-
-  ngOnDestroy() {
-    if (this.subscription) this.subscription.unsubscribe();
-  }
+  tags: Tag[] = [];
 
   options: BarOptions[] = [
     {
       title: 'articulos',
       menu: [
         {
-          title: 'Nuevo',
+          title: 'Nuevo Artículo',
           icon: 'chevron_right',
           callback: () => {
             let dialogRef = this.dialog.open(StepperFormComponent);
@@ -160,20 +122,38 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           },
         },
         {
-          title: 'Organización',
+          title: 'Todos los artículos',
+          icon: 'chevron_right',
+          callback: () => {
+            if (
+              this.itemStatus === 'active' ||
+              this.itemStatus === 'disabled'
+            ) {
+              this.itemStatus = '';
+            }
+            this.inicializeItems(true, false, true);
+          },
+        },
+        {
+          title: 'Artículos exhibiéndose',
           icon: 'chevron_right',
           callback: () => {},
         },
         {
-          title: 'Invisibles',
+          title: 'Organización de artículos',
+          icon: 'chevron_right',
+          callback: () => {},
+        },
+        {
+          title: 'Artículos invisibles',
           icon: 'chevron_right',
           callback: () => {
             if (this.itemStatus === 'active') {
               this.itemStatus = 'disabled';
-              this.options[0].menu[2].title = 'Visibles';
+              this.options[0].menu[2].title = 'Artículos visibles';
             } else {
               this.itemStatus = 'active';
-              this.options[0].menu[2].title = 'Invisibles';
+              this.options[0].menu[2].title = 'Artículos invisibles';
             }
             this.inicializeItems(true, false, true);
           },
@@ -192,13 +172,51 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         },
       ],
     },
-    { title: 'categorias' },
-    { title: 'colecciones' },
   ];
+
+  constructor(
+    public _MerchantsService: MerchantsService,
+    private _SaleflowService: SaleFlowService,
+    private router: Router,
+    private authService: AuthService,
+    // private itemsService: ItemsService,
+    private _ItemsService: ItemsService,
+    private snackBar: MatSnackBar,
+    private _bottomSheet: MatBottomSheet,
+    public dialog: MatDialog,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private clipboard: Clipboard
+  ) {}
+
+  async ngOnInit() {
+    if (this._SaleflowService.saleflowData) {
+      this.inicializeItems(true, false, true);
+      this.getTags();
+      return;
+    }
+    this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
+      next: (value) => {
+        if (value) {
+          this.inicializeItems(true, false, true);
+          this.getTags();
+        }
+      },
+    });
+    //{ title: 'colecciones' },
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) this.subscription.unsubscribe();
+  }
+
   selected: number;
 
   async infinitePagination() {
-    const page = document.querySelector('.dashboard-page');
+    const targetClass =
+      this.layout === 'simple-card' || !this.layout
+        ? '.saleflows-item-grid'
+        : '.description-card-grid';
+    const page = document.querySelector(targetClass);
     const pageScrollHeight = page.scrollHeight;
     const verticalScroll = window.innerHeight + page.scrollTop;
 
@@ -208,7 +226,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         // this.tagsLoaded &&
         !this.reachTheEndOfPagination
       ) {
-        await this.inicializeItems(false, true);
+        await this.inicializeItems(false, true, true);
       }
     }
   }
@@ -254,6 +272,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.renderItemsPromise.then(async (response) => {
       const items = response;
       const itemsQueryResult = items?.listItems;
+      console.log(itemsQueryResult);
 
       if (getTotalNumberOfItems) {
         pagination.options.limit = -1;
@@ -272,9 +291,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
       if (itemsQueryResult && itemsQueryResult.length > 0) {
         if (this.paginationState.page === 1) {
-          this.allItems = itemsQueryResult;
+          this.allItems = itemsQueryResult.map((item) => ({
+            images: item.images.sort(({ index: a }, { index: b }) =>
+              a > b ? 1 : -1
+            ),
+            ...item,
+          }));
         } else {
-          this.allItems = this.allItems.concat(itemsQueryResult);
+          this.allItems = this.allItems
+            .concat(itemsQueryResult)
+            .map((item) => ({
+              images: item.images.sort(({ index: a }, { index: b }) =>
+                a > b ? 1 : -1
+              ),
+              ...item,
+            }));
         }
       }
       this.paginationState.status = 'complete';
@@ -283,6 +314,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.allItems = [];
       }
     });
+    this.layout = this._SaleflowService.saleflowData.layout;
+  }
+
+  async getTags() {
+    const tagsByMerchant = (
+      await this._MerchantsService.tagsByMerchant(
+        this._MerchantsService.merchantData._id
+      )
+    )?.tagsByMerchant;
+    this.tags = tagsByMerchant.map((value) => value.tags);
+    if (this.tags.length) {
+      this.options.push({
+        title: 'categorias',
+      });
+    }
   }
 
   share() {
@@ -331,6 +377,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               title: 'Descargar el qrCode del admin',
               link: `${this.URI}/admin/dashboard`,
             },
+            {
+              title: 'Lo vendido',
+              callback: () => {
+                this.router.navigate(['/admin/order-status-view']);
+              },
+            },
           ],
         },
       ],
@@ -345,6 +397,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (index != this.selected) {
       this.selected = index;
     }
+    if (index === 1) this.router.navigate([`admin/tags-view`]);
   }
 
   selectedMenuOption(selected: MenuEvent) {

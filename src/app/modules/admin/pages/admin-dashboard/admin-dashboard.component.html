@@ -21,10 +21,10 @@
       <a class="btn" [routerLink]="['../order-status-view']">
         <img class="listIcon" [src]="environment + '/receipt.svg'" />
       </a>
-      <button class="btn blackButton">
+      <!-- <button class="btn blackButton">
         <p>Programas</p>
         <img class="starIcon" [src]="environment + '/star.svg'" />
-      </button>
+      </button> -->
     </div>
   </header>
   <div class="contents">
@@ -36,7 +36,11 @@
     >
     </app-options-bar>
   </div>
-  <div class="saleflows-item-grid" *ngIf="allItems.length">
+  <div
+    class="saleflows-item-grid"
+    (scroll)="infinitePagination()"
+    *ngIf="allItems.length && (layout === 'simple-card' || !layout)"
+  >
     <a
       class="capsize"
       [routerLink]="['../article-editor', item._id]"
@@ -56,8 +60,40 @@
         [showPrice]="true"
         [itemParams]="item.params"
         [responsiveWidthVersion]="true"
-        [featured]="item.status === 'featured'"
       ></app-saleflow-item>
+    </a>
+  </div>
+  <div
+    *ngIf="allItems.length && layout === 'description-card'"
+    class="description-card-grid"
+    style="
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      height: calc(100vh - 98px);
+      overflow-y: scroll;
+      overflow-x: hidden;
+    "
+    (scroll)="infinitePagination()"
+  >
+    <a
+      class="capsize"
+      [routerLink]="['../article-editor', item._id]"
+      *ngFor="let item of allItems; let itemIndex = index"
+      style="text-decoration: none"
+    >
+      <app-buyer-card
+        [index]="itemIndex"
+        [title]="item.name"
+        [description]="item.description"
+        [img]="item.images?.length ? item.images[0].value : ''"
+        [leftAmount]="item.pricing"
+        [cta]="false"
+        [ctaActive]="item.isSelected"
+        [viewsCounter]="true"
+        [views]="item.visitorCounter ? item.visitorCounter.counter : 0"
+      ></app-buyer-card>
     </a>
   </div>
   <div

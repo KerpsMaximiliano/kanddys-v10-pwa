@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ItemsService } from 'src/app/core/services/items.service';
 // import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-view-configuration',
@@ -15,13 +16,14 @@ export class ViewConfigurationComponent implements OnInit {
   title: String;
   itemsArray: Array<any> = [];
   optionsArray: Array<any> = [];
+  isSimpleCard: boolean;
 
   constructor(
     // public merchantsService: MerchantsService,
     public saleflowService: SaleFlowService,
-    private activatedRoute: ActivatedRoute
-  ) // private itemsService: ItemsService
-  {}
+    private activatedRoute: ActivatedRoute, // private itemsService: ItemsService
+    public router: Router
+  ) {}
 
   async ngOnInit() {
     let path = this.activatedRoute.snapshot.routeConfig.path;
@@ -53,7 +55,7 @@ export class ViewConfigurationComponent implements OnInit {
   //   array.push(item);
   // }
 
-  changeView() {
+  async changeView() {
     const newView =
       this.saleflowService.saleflowData.layout === 'description-card'
         ? 'simple-card'

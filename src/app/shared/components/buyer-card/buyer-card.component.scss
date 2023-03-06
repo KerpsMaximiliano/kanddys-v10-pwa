@@ -116,8 +116,16 @@ a {
 
       img {
         width: 18px;
-        filter: brightness(0) invert(16%) sepia(13%) saturate(973%) hue-rotate(68deg) brightness(102%) contrast(90%);
+        filter: brightness(0) invert(16%) sepia(13%) saturate(973%)
+          hue-rotate(68deg) brightness(102%) contrast(90%);
       }
+    }
+
+    .views {
+      color: #7b7b7b;
+      font-size: 16px;
+      font-family: SfProLight;
+      margin-left: auto;
     }
 
     @media (max-width: 385px) {

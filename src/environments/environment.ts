@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  uri: 'http://localhost:4200',
+  uri: 'https://test.kanddys.com',
   whatsAppAPI: 'https://api.whatsapp.com',
   api: {
     // url: 'https://api.rewardcharly.com',

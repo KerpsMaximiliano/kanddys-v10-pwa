@@ -200,12 +200,12 @@ export class ArticleDetailComponent implements OnInit {
         this.itemData.name = this._ItemsService.itemName;
         this.itemData.description = this._ItemsService.itemDesc;
         this.itemData.pricing = this._ItemsService.itemPrice;
-        this.itemData.images = this.itemData.images.map((image) => ({
+        this.itemData.images = this.itemData.images.sort(({index:a},{index:b}) => a>b?-1:1).map((image) => ({
           value: image.value,
         })) as ItemImage[];
       }
 
-      this.itemData.media = this.itemData.images.map((image) => {
+      this.itemData.media = this.itemData.images.sort(({index:a},{index:b}) => a>b?1:-1).map((image) => {
         let url = image.value;
         const fileParts = image.value.split('.');
         const fileExtension = fileParts[fileParts.length - 1].toLowerCase();

@@ -1,6 +1,6 @@
 <div class="container">
   <header class="header">
-    <a [routerLink]="['../dashboard']">
+    <a mat-icon-button [routerLink]="['../dashboard']">
       <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
     </a>
     <p>Data</p>
@@ -19,44 +19,62 @@
 
     <div style="padding: 0px 17px">
       <div style="margin-bottom: 5px">
-        <a [routerLink]="['../order-list/status', 'in-progress']">
+        <a [routerLink]="['../order-list/process', 'in-progress']">
           <app-collection-card
             title="En preparación"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-in-progress.png"
             [description]="
-              orderStatus.inProgress.length + ' facturas en total.'
+              orderStatusDelivery.inProgress.length + ' facturas en total.'
             "
+            imageFit="none"
           ></app-collection-card>
         </a>
       </div>
       <div style="margin-bottom: 5px">
-        <a [routerLink]="['../order-list/status', 'pending']">
+        <a [routerLink]="['../order-list/process', 'pending']">
           <app-collection-card
             title="Listas para enviarse"
-            [description]="orderStatus.pending.length + ' facturas en total.'"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-pending.png"
+            [description]="
+              orderStatusDelivery.pending.length + ' facturas en total.'
+            "
+            imageFit="none"
           ></app-collection-card>
         </a>
       </div>
       <div style="margin-bottom: 5px">
-        <a [routerLink]="['../order-list/status', 'pickup']">
+        <a [routerLink]="['../order-list/process', 'pickup']">
           <app-collection-card
             title="Listas para Pick Up"
-            [description]="orderStatus.pickup.length + ' facturas en total.'"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-pickup.png"
+            [description]="
+              orderStatusDelivery.pickup.length + ' facturas en total.'
+            "
+            imageFit="none"
           ></app-collection-card>
         </a>
       </div>
       <div style="margin-bottom: 5px">
-        <a [routerLink]="['../order-list/status', 'shipped']">
+        <a [routerLink]="['../order-list/process', 'shipped']">
           <app-collection-card
             title="De camino a ser entregadas"
-            [description]="orderStatus.shipped.length + ' facturas en total.'"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-shipped.png"
+            [description]="
+              orderStatusDelivery.shipped.length + ' facturas en total.'
+            "
+            imageFit="none"
           ></app-collection-card>
         </a>
       </div>
       <div style="margin-bottom: 5px">
-        <a [routerLink]="['../order-list/status', 'delivered']">
+        <a [routerLink]="['../order-list/process', 'delivered']">
           <app-collection-card
             title="Entregadas"
-            [description]="orderStatus.delivered.length + ' facturas en total.'"
+            imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Forder-delivered.png"
+            [description]="
+              orderStatusDelivery.delivered.length + ' facturas en total.'
+            "
+            imageFit="none"
           ></app-collection-card>
         </a>
       </div>
@@ -75,7 +93,23 @@
       <a [routerLink]="['../order-list/tags', tag._id]">
         <app-collection-card
           [title]="tag.name"
+          [imgURL]="tag.images?.length ? tag.images[0] : ''"
           [description]="tag.orderAmount + ' facturas en total'"
+        ></app-collection-card>
+      </a>
+    </div>
+  </section>
+  <section>
+    <div class="flex" style="margin-top: 47px">
+      <p class="text">pre-facturas</p>
+    </div>
+    <div style="padding: 0px 17px; margin-bottom: 5px">
+      <a [routerLink]="['../order-list/status', 'draft']">
+        <app-collection-card
+          title="No completadas"
+          imgURL="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpreorder.png"
+          [description]="draftOrders.length + ' facturas en total.'"
+          imageFit="none"
         ></app-collection-card>
       </a>
     </div>

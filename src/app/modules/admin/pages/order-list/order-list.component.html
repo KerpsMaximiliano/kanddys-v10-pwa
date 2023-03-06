@@ -1,9 +1,9 @@
 <div class="container">
   <header class="header">
-    <a [routerLink]="['../../../order-status-view']">
+    <a mat-icon-button [routerLink]="['../../../order-status-view']">
       <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
     </a>
-    <p class="title">{{ tag?.name || orderDeliveryStatus }}</p>
+    <p class="title">{{ tag?.name || orderDeliveryStatus || orderStatus }}</p>
   </header>
 
   <section style="padding: 0 16px">
@@ -13,7 +13,7 @@
       [queryParams]="{ redirectTo: router.url }"
     >
       <app-compact-card
-        [title]="order.user?.name || order.user?.phone"
+        [title]="order.user?.name || order.user?.phone || 'No autenticada'"
         [price]="order.total"
         [image]="order.user?.image"
         [subtitle]="order.transaction"
