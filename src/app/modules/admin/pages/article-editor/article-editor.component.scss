@@ -5,6 +5,63 @@
 .container {
   min-height: 100vh;
 
+  .header {
+    background-color: #a1a1a1;
+    display: flex;
+    align-items: center;
+    padding: 14px 27px 14px 21px;
+
+    img,
+    p {
+      cursor: pointer;
+    }
+    p {
+      margin-left: auto;
+      color: #272727;
+      font-size: 13px;
+      font-family: SFProRegular;
+    }
+  }
+
+  .card {
+    width: 100%;
+    font-family: SFProRegular;
+    color: #000000;
+    font-size: 17px;
+    padding: 28.5px 25px;
+    resize: none;
+    border: none;
+    border-radius: 7px;
+    overflow: hidden;
+    background-color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .config {
+    border-radius: 9px;
+    background-color: #e9e9e9;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+    margin: 21px 22px 23px 17px;
+    border: none;
+    max-width: 460px;
+
+    img {
+      margin-left: auto;
+    }
+    span {
+      margin-left: 12px;
+      margin-right: auto;
+      text-transform: uppercase;
+      color: #272727;
+      font-size: 13px;
+      font-family: SFProLight;
+    }
+  }
+
   .toast-status {
     background-color: #b17608;
     padding: 18px;

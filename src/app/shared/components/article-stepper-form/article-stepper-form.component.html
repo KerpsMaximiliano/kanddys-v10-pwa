@@ -1,0 +1,44 @@
+<mat-vertical-stepper #stepper linear>
+  <mat-step [stepControl]="itemForm">
+    <ng-template matStepLabel
+      >¿Que monto te pagarán por el artículo?
+    </ng-template>
+    <div style="margin: 8px 0">
+      <app-currency-input
+        innerLabel="Pesos Dominicanos"
+        (onInputEvent)="onCurrencyInput($event)"
+        [newInput]="true"
+      ></app-currency-input>
+    </div>
+    <div *ngIf="itemForm.get('pricing').value > 0">
+      <button mat-button matStepperNext>Continuar</button>
+    </div>
+  </mat-step>
+  <mat-step [stepControl]="itemForm2">
+    <ng-template matStepLabel>Imagen del cover:</ng-template>
+    <div>
+      <app-item-images (enteredImages)="onImageInput($event)"></app-item-images>
+    </div>
+  </mat-step>
+  <mat-step [stepControl]="itemForm3">
+    <ng-template matStepLabel
+      >Selecciona lo relacionado a este articulo:</ng-template
+    >
+    <div>
+      <app-answer-selector
+        [options]="options"
+        [indicator]="true"
+        (onSelector)="selectedCategory($event)"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+        [isMultipleOption]="true"
+      ></app-answer-selector>
+    </div>
+    <div>
+      <button mat-button matStepperNext (click)="closeDialog()">
+        Continuar
+      </button>
+    </div>
+  </mat-step>
+</mat-vertical-stepper>

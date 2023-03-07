@@ -1,5 +1,12 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -9,7 +16,7 @@ import {
   isVideo,
 } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item } from 'src/app/core/models/item';
+import { Item, ItemInput } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -18,6 +25,7 @@ import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { CurrencyInputComponent } from 'src/app/shared/components/currency-input/currency-input.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import {
   SettingsComponent,
   SettingsDialogButton,
@@ -25,6 +33,12 @@ import {
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 import { environment } from 'src/environments/environment';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-article-editor',
@@ -33,6 +47,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ArticleEditorComponent implements OnInit {
   env: string = environment.assetsUrl;
+  URI: string = environment.uri;
   @ViewChild('inputName') inputName: ElementRef<HTMLInputElement>;
   @ViewChild('inputDescription')
   inputDescription: ElementRef<HTMLTextAreaElement>;
@@ -72,6 +87,98 @@ export class ArticleEditorComponent implements OnInit {
   slides: SlideInput[];
   math = Math;
 
+  itemParamsForm = new FormGroup({
+    params: new FormArray([]),
+  });
+  submitEventFinished: boolean = true;
+
+  itemForm = new FormGroup({
+    name: new FormControl(),
+  });
+  merchant: Merchant;
+  hasParams: boolean;
+  saleflow: SaleFlow;
+  params;
+  productName: string = '';
+  productDescription: string = '';
+
+  content: string[] = [];
+
+  menuOptions = [
+    {
+      text: 'Compartelo',
+      callback: async () => {
+        const link = `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`;
+        const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+          data: [
+            {
+              title: 'Links de Visitantes',
+              options: [
+                {
+                  title: 'Ver como lo verá el visitante',
+                  callback: () => {
+                    this._Router.navigate([
+                      `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
+                    ]);
+                  },
+                },
+                {
+                  title: 'Compartir el Link',
+                  callback: () => {
+                    this.ngNavigatorShareService.share({
+                      title: '',
+                      url: link,
+                    });
+                  },
+                },
+                {
+                  title: 'Copiar el Link',
+                  callback: () => {
+                    this.clipboard.copy(link);
+                    this.snackBar.open(
+                      'Enlace copiado en el portapapeles',
+                      '',
+                      {
+                        duration: 2000,
+                      }
+                    );
+                  },
+                },
+                {
+                  title: 'Descargar el qrCode',
+                  link,
+                },
+              ],
+            },
+            {
+              title: 'Links de admins',
+              options: [
+                {
+                  title: 'Descargar el qrCode del admin',
+                  link: `${this.URI}/admin/dashboard`,
+                },
+                {
+                  title: 'Lo vendido',
+                  callback: () => {
+                    this._Router.navigate(['/admin/order-status-view']);
+                  },
+                },
+              ],
+            },
+          ],
+        });
+      },
+    },
+    {
+      text: 'Exhibido en tienda',
+      callback: async () => {
+        this.previewItem();
+      },
+    },
+  ];
+
+  status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
+
   constructor(
     private _ItemsService: ItemsService,
     private _MerchantsService: MerchantsService,
@@ -82,12 +189,93 @@ export class ArticleEditorComponent implements OnInit {
     private _TagsService: TagsService,
     private _ToastrService: ToastrService,
     private dialog: DialogService,
-    protected _DomSanitizer: DomSanitizer
+    protected _DomSanitizer: DomSanitizer,
+    private _bottomSheet: MatBottomSheet,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
+    private itemService: ItemsService,
+    private saleflowService: SaleFlowService,
+    private headerService: HeaderService
   ) {}
 
   async ngOnInit() {
-    this.loadingSlides = true;
     const itemId = this._Route.snapshot.paramMap.get('articleId');
+
+    this.headerService.flowRoute = this._Router.url;
+    // const itemId = this.route.snapshot.paramMap.get('itemId');
+    const justdynamicmode =
+      this._Route.snapshot.queryParamMap.get('justdynamicmode');
+
+    const promises: Promise<Merchant | Item>[] = [
+      this._MerchantsService.merchantDefault(),
+    ];
+    if (itemId && !this.itemService.temporalItem)
+      promises.push(this.itemService.item(itemId));
+    this.status = 'loading';
+    const [userMerchant, item] = await Promise.all(promises);
+
+    this.generateFields();
+    this.generateFields();
+
+    const paramsFormArray = this.itemParamsForm.get('params') as FormArray;
+    const valuesArray = paramsFormArray.at(0).get('values') as FormArray;
+
+    // valuesArray.at(0).patchValue({
+    //   name: 'Alegria sin Chinoski',
+    //   price: 1275.0,
+    // });
+    // this.formattedPricing.values[0] = '$127500';
+    // valuesArray.at(1).patchValue({
+    //   name: 'Alegria con Chinoski',
+    //   price: 1675.0,
+    // });
+    // this.formattedPricing.values[1] = '$167500';
+
+    if (!userMerchant) {
+      this.status = 'complete';
+      return;
+    }
+    this.merchant = userMerchant as Merchant;
+    this.saleflow = await this.saleflowService.saleflowDefault(
+      this.merchant._id
+    );
+    if (!item && !this.itemService.temporalItem) {
+      this.status = 'complete';
+      return;
+    }
+    this.item = item as Item;
+    const { name, merchant, params } =
+      this.item || this.itemService.temporalItem;
+    if (merchant && this.merchant.owner._id !== merchant.owner._id) {
+      this.status = 'error';
+      this._Router.navigate(['/admin/merchant-items']);
+      return;
+    }
+
+    this.itemForm.get('name').setValue(name);
+
+    if (params?.[0]?.values?.length) {
+      params[0].values.forEach(() => {
+        if (!this.item) this.generateFields();
+      });
+
+      this.itemParamsForm.get('params').patchValue(params);
+      (
+        (this.itemParamsForm.get('params') as FormArray)
+          .at(0)
+          .get('values') as FormArray
+      ).controls.forEach((control, index) => {});
+      this.hasParams = true;
+    }
+
+    this.status = 'complete';
+
+    this.loadingSlides = true;
+    // const itemId = this._Route.snapshot.paramMap.get('articleId');
+
+    // ------------------------AQUI ESTABA ANTES--------------------------
+
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
@@ -202,12 +390,6 @@ export class ArticleEditorComponent implements OnInit {
     const itemInput = {
       name: this.name.value || null,
       description: this.description.value || null,
-      pricing: this.price.value,
-      content: [],
-      currencies: [],
-      hasExtraPrice: false,
-      purchaseLocations: [],
-      showImages: this._ItemsService.itemImages.length > 0,
     };
     this._ItemsService.itemPrice = null;
     this._ItemsService.itemName = null;
@@ -217,7 +399,6 @@ export class ArticleEditorComponent implements OnInit {
       if (!ignore) lockUI();
       if (this.name.invalid) delete itemInput.name;
       if (this.description.invalid) delete itemInput.description;
-      if (this.price.invalid) delete itemInput.pricing;
       await this._ItemsService.updateItem(itemInput, this.item._id);
     }
     if (!ignore) {
@@ -499,5 +680,66 @@ export class ArticleEditorComponent implements OnInit {
 
   goBack() {
     // TODO
+  }
+
+  dynamicInputKeyPress(index: number) {
+    this.params = (<FormArray>this.itemParamsForm.get('params')).at(0);
+    const valuesLength = this.getArrayLength(this.params, 'values');
+    if (index === valuesLength - 1) {
+      console.log(this.params.value.values);
+      this.generateFields();
+    }
+  }
+
+  async send() {
+    console.log(this.productDescription);
+    console.log(this.productName);
+    for (let i = 0; i < this.params.value.values.length; i++) {
+      let name = this.params.value.values[i].name;
+      if (name !== null && name !== '') {
+        this.content.push(name);
+        console.log(this.content);
+      }
+    }
+
+    const itemId = this._Route.snapshot.paramMap.get('articleId');
+    const itemInput = {
+      name: this.productName,
+      description: this.productDescription,
+      content: this.content,
+    };
+
+    const updatedItem = await this.itemService.updateItem(itemInput, itemId);
+    console.log(updatedItem);
+  }
+
+  generateFields() {
+    const paramValueFormGroupInput: {
+      name: FormControl;
+    } = {
+      name: new FormControl(),
+    };
+
+    const params = <FormArray>this.itemParamsForm.get('params');
+    if (this.getArrayLength(this.itemParamsForm, 'params') === 0) {
+      params.push(
+        new FormGroup({
+          name: new FormControl('name', Validators.required),
+          values: new FormArray([]),
+        })
+      );
+    }
+    const newFormGroup = new FormGroup(paramValueFormGroupInput);
+
+    const values = <FormArray>params.at(0).get('values');
+    values.push(newFormGroup);
+  }
+
+  getControls(form: FormGroup | AbstractControl, controlName: string) {
+    return (form.get(controlName) as FormArray).controls;
+  }
+
+  getArrayLength(form: FormGroup | AbstractControl, controlName: string) {
+    return (form.get(controlName) as FormArray).length;
   }
 }
