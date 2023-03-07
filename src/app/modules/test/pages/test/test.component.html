@@ -590,3 +590,14 @@ headline="EXPUESTO EN TAB (S)"
 >
   <app-dot-loader></app-dot-loader>
 </div>
+
+<app-dialog-flow
+  [dialogFlowId]="'flow1'"
+  [status]="'OPEN'"
+  [dialogs]="dialogsPro"
+  [allowSlideNext]="false"
+  (saveConfigRef)="swiperConfig = $event"
+  (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+  (closingDialogSignal)="close()"
+  (openingDialogSignal)="start()"
+></app-dialog-flow>

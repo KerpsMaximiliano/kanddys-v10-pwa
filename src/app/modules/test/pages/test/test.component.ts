@@ -108,6 +108,7 @@ export class TestComponent implements OnInit {
   firstIndex: number = 0;
 
   dialogsPro: Array<EmbeddedComponentWithId> = [];
+  dialogFlowFunctions: Record<string, any> = {};
 
   constructor(
     private dialog: DialogService,
@@ -120,7 +121,10 @@ export class TestComponent implements OnInit {
   async ngOnInit() {
     console.log(this.firstIndex);
     this.item = await this.itemsService.item('63d7ebf3bbd3bc32bcc2ec0b');
-    this.inject()
+    this.inject();
+    this.dialogFlowFunctions.moveToDialogByIndex(
+      this.dialogs.length - 1
+    );
   }
 
   openDialog() {
@@ -142,6 +146,14 @@ export class TestComponent implements OnInit {
     });
   }
 
+  start() {
+    
+  }
+
+  close() {
+
+  }
+
   inject() {
     this.dialogsPro = [
       {
@@ -157,11 +169,11 @@ export class TestComponent implements OnInit {
                 columns: [
                   {
                     label: "Label pro",
-                    formContro: "input-1"
+                    formControl: "input-1"
                   },
                   {
                     label: "Label pro",
-                    formContro: "input-2"
+                    formControl: "input-2"
                   }
                 ]
               },
@@ -169,7 +181,7 @@ export class TestComponent implements OnInit {
                 columns: [
                   {
                     label: "Label pro",
-                    formContro: "input-3"
+                    formControl: "input-3"
                   }
                 ]
               },
@@ -177,11 +189,11 @@ export class TestComponent implements OnInit {
                 columns: [
                   {
                     label: "Label pro",
-                    formContro: "input-4"
+                    formControl: "input-4"
                   },
                   {
                     label: "Label pro",
-                    formContro: "input-5"
+                    formControl: "input-5"
                   }
                 ]
               },

@@ -1,6 +1,6 @@
 <div class="container">
     <form [formGroup]="form">
-        <div class="input-array">
+        <div formArrayName="inputArray" class="input-array">
             <div *ngFor="let row of fields.rows; let i = index">
                 <div *ngFor="let column of row.columns; let j = index">
                     <input type="text" value="input-{{ i }}-{{ j }}">
