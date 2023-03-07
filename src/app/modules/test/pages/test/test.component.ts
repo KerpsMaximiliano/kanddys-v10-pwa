@@ -13,7 +13,7 @@ import { Questions } from '../../../../shared/components/form-questions/form-que
 import { Tag } from '../../../../core/models/tags';
 import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
 import { ReloadComponent } from 'src/app/shared/dialogs/reload/reload.component';
-import { FormStep, FormField } from 'src/app/core/types/multistep-form';
+import { FormStep, FormField, EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { FormControl } from '@angular/forms';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { InputTransparentComponent } from 'src/app/shared/dialogs/input-transparent/input-transparent.component';
@@ -35,6 +35,7 @@ import { Button } from 'src/app/shared/components/general-item/general-item.comp
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { DescriptionDialogComponent } from 'src/app/shared/dialogs/description-dialog/description-dialog.component';
+import { DialogFormComponent } from 'src/app/shared/dialogs/dialog-form/dialog-form.component';
 
 @Component({
   selector: 'app-test',
@@ -106,6 +107,8 @@ export class TestComponent implements OnInit {
 
   firstIndex: number = 0;
 
+  dialogsPro: Array<EmbeddedComponentWithId> = [];
+
   constructor(
     private dialog: DialogService,
     private itemsService: ItemsService,
@@ -117,6 +120,7 @@ export class TestComponent implements OnInit {
   async ngOnInit() {
     console.log(this.firstIndex);
     this.item = await this.itemsService.item('63d7ebf3bbd3bc32bcc2ec0b');
+    this.inject()
   }
 
   openDialog() {
@@ -136,5 +140,58 @@ export class TestComponent implements OnInit {
       flags: ['no-header'],
       customClass: 'app-dialog',
     });
+  }
+
+  inject() {
+    this.dialogsPro = [
+      {
+        component: DialogFormComponent,
+        componentId: 'dialog',
+        inputs: {
+          title: {
+            text: "Helloooo worlddddd"
+          },
+          fields: {
+            rows: [
+              {
+                columns: [
+                  {
+                    label: "Label pro",
+                    formContro: "input-1"
+                  },
+                  {
+                    label: "Label pro",
+                    formContro: "input-2"
+                  }
+                ]
+              },
+              {
+                columns: [
+                  {
+                    label: "Label pro",
+                    formContro: "input-3"
+                  }
+                ]
+              },
+              {
+                columns: [
+                  {
+                    label: "Label pro",
+                    formContro: "input-4"
+                  },
+                  {
+                    label: "Label pro",
+                    formContro: "input-5"
+                  }
+                ]
+              },
+            ]
+          }
+        },
+        outputs: []
+      }
+    ]
+
+    return this.dialogsPro;
   }
 }

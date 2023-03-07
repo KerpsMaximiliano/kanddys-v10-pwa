@@ -159,6 +159,7 @@ import { CreateTagComponent } from './dialogs/create-tag/create-tag.component';
 import { CollectionCardComponent } from './components/collection-card/collection-card.component';
 import { MatCardModule } from '@angular/material/card';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
+import { DialogFormComponent } from './dialogs/dialog-form/dialog-form.component';
 
 const imports = [
   CommonModule,
@@ -323,6 +324,7 @@ const declarations = [
   CreateTagComponent,
   CollectionCardComponent,
   CompactCardComponent,
+  DialogFormComponent
 ];
 
 @NgModule({
@@ -330,6 +332,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}
