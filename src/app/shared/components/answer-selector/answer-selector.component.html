@@ -121,12 +121,23 @@
                   : 'selector-option'
               "
               [ngStyle]="itemStyles ? itemStyles : null"
-              (click)="editable && option.status && clickSelector(i)"
+              (click)="clickSelector(i)"
             >
               <div class="background"></div>
 
               <ng-container *ngIf="!option.isOptionAnArray">
-                <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+                <div>
+                  <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+                  <div
+                    class="description-container"
+                    style="position: relative; z-index: 1000"
+                    *ngIf="option.description !== '' && showDescription"
+                  >
+                    <p class="description-label">
+                      {{ option.description }}
+                    </p>
+                  </div>
+                </div>
                 <div>
                   <span
                     *ngFor="let subtext of option.subtexts"
@@ -166,6 +177,7 @@
                 </span>
               </ng-container>
             </div>
+
             <div class="icons-flex-wrapper" *ngIf="option.icons?.length > 0">
               <ng-container *ngFor="let icon of option.icons">
                 <button

@@ -187,6 +187,7 @@ export class ItemInput {
   showImages?: boolean;
   status?: ItemStatus;
   collaboration?: number;
+  categories?: string[];
 }
 
 export class ItemImageInput {

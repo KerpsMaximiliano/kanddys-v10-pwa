@@ -142,9 +142,9 @@
         </div>
 
         <button
-          class="cart-btn"    
+          class="cart-btn"
           (click)="saveProduct()"
-          *ngIf="doesModuleDependOnSaleflow && itemData"
+          *ngIf="doesModuleDependOnSaleflow && itemData && isSignup !== true"
           [ngClass]="{
             inCart: isItemInCart
           }"
@@ -164,8 +164,25 @@
             isItemInCart ? "remove_shopping_cart" : "add_shopping_cart"
           }}</mat-icon>
         </button>
+
         <button
-          *ngIf="itemsAmount && mode != 'image-preview'"
+          *ngIf="isSignup === true"
+          style="
+            width: 100%;
+            padding: 12px 0px;
+            background-color: #fed230;
+            text-align: center;
+            font-size: 17px;
+            font-family: SFProBold;
+            cursor: pointer;
+          "
+          (click)="showDialog()"
+        >
+          Crea tu primer artículo (ganas 3,000 DoCoins)
+        </button>
+
+        <button
+          *ngIf="itemsAmount && mode != 'image-preview' && isSignup !== true"
           class="bottom-button right"
           mat-raised-button
           (click)="goToCheckout()"

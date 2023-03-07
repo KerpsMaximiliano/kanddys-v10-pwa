@@ -1,0 +1,25 @@
+<header class="header">
+  <img [src]="env + '/arrow-double-up-black.svg'" alt="" class="arrows" />
+  <p class="bold">WeDoWeLike</p>
+  <p>Revistas virtuales para monetizar</p>
+</header>
+<section class="content">
+  <p class="title">Primera fase: funcionalidades de los comercios</p>
+  <p class="text">
+    Comercios invierten DoCoins en funcionalidades relacionadas a las ventas
+    para aumentarlas o reducir fricciones del proceso.
+  </p>
+  <button (click)="openDialog()">
+    Crea tu primer artículo (ganas 3,000 DoCoins)
+  </button>
+  <p class="text" style="margin-bottom: 0">
+    Invitas a colegas para ganar mas DoCoins
+  </p>
+</section>
+
+<section class="bottom-content">
+  <p class="bottom-title">
+    Mejora la Experiencia del Comprador. Organiza. Analiza. Crea Campañas.
+  </p>
+  <app-info-card2 [cards]="infoCards"></app-info-card2>
+</section>
