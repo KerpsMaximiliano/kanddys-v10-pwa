@@ -1,7 +1,12 @@
 <mat-card class="mat-elevation-z0">
   <div class="container">
-    <img *ngIf="imgURL" [src]="imgURL" class="imgBox shadow" alt="" />
-    <div *ngIf="!imgURL" class="imgBox" alt=""></div>
+    <img
+      [src]="imgURL"
+      (error)="imgURL = '/assets/images/noimage.png'"
+      class="imgBox shadow"
+      [ngStyle]="{ objectFit: imageFit ? imageFit : 'cover' }"
+      alt=""
+    />
     <div class="infoBox">
       <div class="title">
         <p>{{ title }}</p>

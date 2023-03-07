@@ -213,7 +213,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   selected: number;
 
   async infinitePagination() {
-    const page = document.querySelector('.dashboard-page');
+    const targetClass =
+      this.layout === 'simple-card' || !this.layout
+        ? '.saleflows-item-grid'
+        : '.description-card-grid';
+    const page = document.querySelector(targetClass);
     const pageScrollHeight = page.scrollHeight;
     const verticalScroll = window.innerHeight + page.scrollTop;
 
@@ -288,9 +292,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
       if (itemsQueryResult && itemsQueryResult.length > 0) {
         if (this.paginationState.page === 1) {
-          this.allItems = itemsQueryResult;
+          this.allItems = itemsQueryResult.map((item) => ({
+            images: item.images.sort(({ index: a }, { index: b }) =>
+              a > b ? 1 : -1
+            ),
+            ...item,
+          }));
         } else {
-          this.allItems = this.allItems.concat(itemsQueryResult);
+          this.allItems = this.allItems
+            .concat(itemsQueryResult)
+            .map((item) => ({
+              images: item.images.sort(({ index: a }, { index: b }) =>
+                a > b ? 1 : -1
+              ),
+              ...item,
+            }));
         }
       }
       this.paginationState.status = 'complete';

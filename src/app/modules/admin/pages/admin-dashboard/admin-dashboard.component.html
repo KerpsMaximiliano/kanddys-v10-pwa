@@ -38,7 +38,8 @@
   </div>
   <div
     class="saleflows-item-grid"
-    *ngIf="allItems.length && layout === 'simple-card'"
+    (scroll)="infinitePagination()"
+    *ngIf="allItems.length && (layout === 'simple-card' || !layout)"
   >
     <a
       class="capsize"
@@ -64,7 +65,17 @@
   </div>
   <div
     *ngIf="allItems.length && layout === 'description-card'"
-    style="padding: 24px; display: grid; grid-template-columns: 1fr; gap: 15px"
+    class="description-card-grid"
+    style="
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      height: calc(100vh - 98px);
+      overflow-y: scroll;
+      overflow-x: hidden;
+    "
+    (scroll)="infinitePagination()"
   >
     <a
       class="capsize"

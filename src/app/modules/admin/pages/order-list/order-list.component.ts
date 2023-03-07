@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
+import {
+  ItemOrder,
+  OrderStatusDeliveryType,
+  OrderStatusType,
+} from 'src/app/core/models/order';
 import { Tag } from 'src/app/core/models/tags';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -24,6 +28,7 @@ export class OrderListComponent implements OnInit {
   tag: Tag;
   orders: ExtendedOrder[] = [];
   orderDeliveryStatus: string;
+  orderStatus: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,6 +41,7 @@ export class OrderListComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     lockUI();
     const tagId = this.route.snapshot.paramMap.get('tagId');
+    let status = this.route.snapshot.paramMap.get('status');
     let deliveryStatus = this.route.snapshot.paramMap.get('deliveryStatus');
     if (tagId) {
       this.tag = (await this.tagsService.tag(tagId))?.tag;
@@ -52,6 +58,14 @@ export class OrderListComponent implements OnInit {
           {
             findBy: {
               orderStatusDelivery: deliveryStatus,
+              orderStatus: [
+                'started',
+                'verifying',
+                'in progress',
+                'to confirm',
+                'completed',
+                'paid',
+              ],
             },
             options: {
               limit: -1,
@@ -67,6 +81,29 @@ export class OrderListComponent implements OnInit {
         deliveryStatus as OrderStatusDeliveryType
       );
     }
+    if (status) {
+      status = status.replace('-', ' ');
+      const orders = (
+        await this.merchantsService.ordersByMerchant(
+          this.merchantsService.merchantData._id,
+          {
+            findBy: {
+              orderStatus: status,
+            },
+            options: {
+              limit: -1,
+              sortBy: 'createdAt:desc',
+            },
+          }
+        )
+      )?.ordersByMerchant;
+      this.orders = orders.map((itemOrder: ExtendedOrder) => {
+        return this.addInfoToOrder(itemOrder);
+      });
+      this.orderStatus = this.orderService.getOrderStatusName(
+        status as OrderStatusType
+      );
+    }
     unlockUI();
   }
 
@@ -74,16 +111,26 @@ export class OrderListComponent implements OnInit {
     itemOrder.total = itemOrder.subtotals.reduce((a, b) => a + b.amount, 0);
     const temporalDate = new Date(itemOrder.createdAt);
     const currentDate = new Date();
-    const dateDifference = currentDate.getDate() - temporalDate.getDate();
-    switch (dateDifference) {
-      case 0:
-        itemOrder.date = 'Hoy';
-        break;
-      case 1:
-        itemOrder.date = 'Ayer';
-        break;
-      default:
-        itemOrder.date = `Hace ${dateDifference} días`;
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    const dateDifference = Math.round(
+      Math.abs((currentDate.getTime() - temporalDate.getTime()) / oneDay)
+    );
+    const monthDifference = Math.floor(dateDifference / 30);
+
+    if (dateDifference === 0) itemOrder.date = 'Hoy';
+    if (dateDifference === 1) itemOrder.date = 'Ayer';
+    if (dateDifference > 1 && dateDifference < 30)
+      itemOrder.date = `Hace ${dateDifference} días`;
+    if (dateDifference >= 30 && dateDifference < 365) {
+      itemOrder.date = `Hace ${monthDifference} mes${
+        monthDifference === 1 ? '' : 'es'
+      }`;
+    }
+    if (dateDifference >= 365) {
+      const yearDifference = Math.floor(monthDifference / 12);
+      itemOrder.date = `Hace ${yearDifference} año${
+        yearDifference === 1 ? '' : 's'
+      }`;
     }
     if (itemOrder.ocr?.platform) {
       itemOrder.transaction =

@@ -172,7 +172,11 @@ const routes: Routes = [
             component: OrderListComponent,
           },
           {
-            path: 'status/:deliveryStatus',
+            path: 'status/:status',
+            component: OrderListComponent,
+          },
+          {
+            path: 'process/:deliveryStatus',
             component: OrderListComponent,
           },
         ],

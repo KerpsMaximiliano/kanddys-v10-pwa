@@ -71,6 +71,7 @@ export class OrderDetailComponent implements OnInit {
   selectedTags: {
     [key: string]: boolean;
   } = {};
+  selectedTagsLength: number;
   redirectTo: string = null;
   orderMerchant: Merchant;
   orderInDayIndex: number = null;
@@ -149,35 +150,44 @@ export class OrderDetailComponent implements OnInit {
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
-
+    if (!this.order) {
+      this.router.navigate([`others/error-screen/`], {
+        queryParams: { type: 'order' },
+      });
+      return;
+    }
     if (this.order.items) {
       for (const itemSubOrder of this.order.items) {
-        itemSubOrder.item.media = itemSubOrder.item.images.map((image) => {
-          let url = image.value;
-          const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
-          let auxiliarImageFileExtension = 'image/' + fileExtension;
-          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+        itemSubOrder.item.media = itemSubOrder.item.images
+          .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+          .map((image) => {
+            let url = image.value;
+            const fileParts = image.value.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
-          if (url && !url.includes('http') && !url.includes('https')) {
-            url = 'https://' + url;
-          }
+            if (url && !url.includes('http') && !url.includes('https')) {
+              url = 'https://' + url;
+            }
 
-          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-            return {
-              src: url,
-              type: 'IMAGE',
-            };
-          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-            return {
-              src: url,
-              type: 'VIDEO',
-            };
-          }
-        });
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              return {
+                src: url,
+                type: 'IMAGE',
+              };
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              return {
+                src: url,
+                type: 'VIDEO',
+              };
+            }
+          });
       }
     }
 
+    this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
+    // if (this.order.orderStatus === 'draft') return unlockUI();
     if (!this.order.ocr) {
       const result = await this.paymentLogService.paymentLogsByOrder({
         findBy: {
@@ -189,14 +199,6 @@ export class OrderDetailComponent implements OnInit {
         this.payedWithAzul = true;
       }
     }
-
-    if (!this.order) {
-      this.router.navigate([`others/error-screen/`], {
-        queryParams: { type: 'order' },
-      });
-      return;
-    }
-    this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
     );
@@ -323,6 +325,9 @@ export class OrderDetailComponent implements OnInit {
     for (const tag of tags) {
       this.selectedTags[tag._id] = this.order.tags.includes(tag._id);
     }
+    this.selectedTagsLength = Object.entries(this.selectedTags).filter(
+      (value) => value[1]
+    ).length;
     this.tags = tags;
     this.tagOptions = this.tags.map((tag) => {
       return {
@@ -434,6 +439,9 @@ export class OrderDetailComponent implements OnInit {
       this.selectedTags[tagId] = false;
       this.order.tags = this.order.tags.filter((tag) => tag !== tagId);
     }
+    this.selectedTagsLength = Object.entries(this.selectedTags).filter(
+      (value) => value[1]
+    ).length;
   }
 
   // downloadQr() {
