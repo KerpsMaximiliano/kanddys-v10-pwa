@@ -2,8 +2,14 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AppService } from 'src/app/app.service';
+import { Item } from 'src/app/core/models/item';
+import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Question, Webform } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { environment } from 'src/environments/environment';
 
@@ -17,22 +23,30 @@ export class WebformMetricsComponent implements OnInit {
   sub: Subscription;
   webform: Question | any = {};
   webformQuestions: Record<string, Question> = {};
+  itemId: string = null;
+  itemData: Item = null;
 
   constructor(
     private _WebformsService: WebformsService,
     private _AuthService: AuthService,
     private _ActivatedRoute: ActivatedRoute,
     private location: Location,
+    private itemService: ItemsService,
+    private headerService: HeaderService,
+    private appService: AppService,
+    private merchantsService: MerchantsService,
     private _Router: Router
   ) {}
 
   ngOnInit(): void {
-    this.sub = this._ActivatedRoute.params.subscribe(({ formId }) => {
+    this.sub = this._ActivatedRoute.params.subscribe(({ formId, itemId }) => {
       (async () => {
         const { _id: userId } = await this._AuthService.me();
         const { _id, user, ...webform } = await this._WebformsService.webform(
           formId
         );
+        this.itemId = itemId;
+        this.itemData = await this.itemService.item(itemId);
         const { _id: webformUserId } = user || {};
         if (userId !== webformUserId) this._Router.navigate(['auth', 'login']);
         const answerFrequent = await this._WebformsService.answerFrequent(_id);
@@ -117,5 +131,27 @@ export class WebformMetricsComponent implements OnInit {
 
   async goBack() {
     this.location.back();
+  }
+
+  async goToPreview() {
+    const product: ItemSubOrderInput = {
+      item: this.itemId,
+      amount: 1,
+    };
+
+
+    this.headerService.storeOrderProduct(product);
+    
+
+    this.appService.events.emit({
+      type: 'added-item',
+      data: this.itemData._id,
+    });
+    this.headerService.storeItem(
+      // this.selectedParam ? itemParamValue :
+      this.itemData
+    );
+
+    //this.headerService.saleflow = this.merchantsService.sale
   }
 }

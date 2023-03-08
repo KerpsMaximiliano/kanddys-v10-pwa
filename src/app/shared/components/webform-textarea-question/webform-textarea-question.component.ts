@@ -12,14 +12,13 @@ export class WebformTextareaQuestionComponent implements OnInit {
   @Input() label: string = 'PreguntaID';
   @Input() textarea: FormControl = new FormControl('');
   @Input() containerStyles: Record<string, any> = {
-    opacity: 1
+    opacity: 1,
   };
   @Input() dialogFlowConfig: {
     dialogId: string;
     flowId: string;
   };
   @Input() inputType: string = null;
-  @Input() skipValidationBlock : boolean = false;
   @Output() inputDetected = new EventEmitter();
   preferredCountries: CountryISO[] = [
     CountryISO.DominicanRepublic,
@@ -30,6 +29,11 @@ export class WebformTextareaQuestionComponent implements OnInit {
   constructor(private dialogFlowService: DialogFlowService) {}
 
   ngOnInit(): void {
+    const { textarea, phoneInput } =
+      this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
+        this.dialogFlowConfig.dialogId
+      ].fields;
+
     if (this.dialogFlowConfig) {
       if (
         'textarea' in
@@ -38,9 +42,7 @@ export class WebformTextareaQuestionComponent implements OnInit {
         ].fields
       ) {
         this.textarea.setValue(
-          this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
-            this.dialogFlowConfig.dialogId
-          ].fields.textarea
+          this.inputType !== 'PHONE' ? textarea : phoneInput
         );
       } else {
         this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
@@ -56,19 +58,22 @@ export class WebformTextareaQuestionComponent implements OnInit {
     if (this.dialogFlowConfig) {
       this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
         this.dialogFlowConfig.dialogId
-      ].fields.textarea = this.textarea.value;
+      ].fields.textarea =
+        this.inputType !== 'PHONE'
+          ? this.textarea.value
+          : this.textarea.value?.e164Number?.split('+')[1];
 
-      if(!this.skipValidationBlock) {
+      if (this.inputType === 'PHONE') {
         this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
           this.dialogFlowConfig.dialogId
-        ].swiperConfig.allowSlideNext = this.textarea.valid;
-      } else {
-        this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
-          this.dialogFlowConfig.dialogId
-        ].swiperConfig.allowSlideNext = true;        
+        ].fields.phoneInput = this.textarea.value;
       }
+
+      this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
+        this.dialogFlowConfig.dialogId
+      ].fields.valid = this.textarea.valid;
     }
 
-    this.inputDetected.emit( this.inputType !== 'PHONE' ? this.textarea.value : this.textarea.value?.e164Number?.split('+')[1]);
+    this.inputDetected.emit(true);
   };
 }

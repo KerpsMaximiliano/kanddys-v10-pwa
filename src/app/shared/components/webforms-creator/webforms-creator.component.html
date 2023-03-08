@@ -6,6 +6,7 @@
       [dialogs]="dialogs"
       (saveConfigRef)="swiperConfig = $event"
       (moveToDialogRef)="setMoveToDialog($event)"
+      (closingDialogSignal)="closeDialogFlow()"
     ></app-dialog-flow>
   </ng-container>
   <ng-container *ngSwitchCase="'ASKING_FOR_ANOTHER_QUESTION'">

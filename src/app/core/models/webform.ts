@@ -76,7 +76,7 @@ export class Question extends Model<Question> {
   show: boolean;
   required: boolean;
   active: boolean;
-  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME';
+  answerTextType?: 'default' | 'phone' | 'email' | 'phone' | 'name';
   answerMedia: boolean;
   answerLimit?: number;
 }

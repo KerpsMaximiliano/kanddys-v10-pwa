@@ -173,9 +173,9 @@ export class WebformsCreatorComponent implements OnInit {
           if (value.answerType && value.answerType) {
             const answerType = value.answerType[0];
 
-            this.detectWetherOrNotToDeleteLastQuestionOfTypeMultiple();
-
             if (answerType === this.answerTypes['OPEN_ANSWER']) {
+              this.detectWetherOrNotToDeleteLastQuestionOfTypeMultiple();
+
               this.resumingCreation = false;
 
               this.webformQuestions.push({
@@ -329,6 +329,15 @@ export class WebformsCreatorComponent implements OnInit {
         this.webformService.webformQuestions[
           this.webformService.webformQuestions.length - 1
         ]?.answerDefault.length,
+        onActiveSlideCallback: (params) => {
+          if (
+            this.webformService.webformQuestions[
+              this.webformService.webformQuestions.length - 1
+            ].answerDefault.length === 0
+          ) {
+              this.swiperConfig.allowSlideNext = false;
+          }
+        }
     },
     outputs: [
       {
@@ -406,7 +415,7 @@ export class WebformsCreatorComponent implements OnInit {
           inputs: {
             title:
               'Hola ' +
-              this.user.name +
+              (this.user.name || '') +
               ', los formularios son para que el comprador te reesponda cosas que necesitas saber al vender ' +
               (this.item.name ? this.item.name : 'este producto'),
             onActiveSlideCallback: (params) => {
@@ -418,7 +427,7 @@ export class WebformsCreatorComponent implements OnInit {
           outputs: [],
           postLabel:
             'Hola ' +
-            (this.user ? this.user.name : 'UserID ') +
+            (this.user.name || '') +
             ' este formulario es para que el comprador te responda..',
           postLabelStyles: {
             minWidth: '83.7677%',
@@ -446,18 +455,9 @@ export class WebformsCreatorComponent implements OnInit {
         'confirm-multiple-selection'
       ) {
         this.dialogs.push(this.multipleSelectionConfirmationDialog);
-
-        if (
-          this.webformService.webformQuestions[
-            this.webformService.webformQuestions.length - 1
-          ].answerDefault.length === 0
-        ) {
-          setTimeout(() => {
-            this.swiperConfig.allowSlideNext = false;
-          }, 1000);
-        }
       } else {
         this.dialogs[this.dialogs.length - 1].inputs = {};
+        this.dialogs[this.dialogs.length - 1].inputs.onActiveSlideCallback =  this.dialogs[this.dialogs.length - 1].inputs.onActiveSlideCallback;;
         this.dialogs[this.dialogs.length - 1].inputs.optionsCreated =
           this.webformService.webformQuestions[
             this.webformService.webformQuestions.length - 1

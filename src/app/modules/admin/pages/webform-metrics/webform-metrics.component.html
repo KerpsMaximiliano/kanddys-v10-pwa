@@ -6,10 +6,12 @@
       class="arrows"
       (click)="goBack()"
     />
-    <!--
-      <button class="right">Preview</button>
-      <button class="hide">Inactivo</button>
-    -->
+      <button class="right"
+        (click)="goToPreview()"
+      >Preview</button>
+      <!--
+        <button class="hide">Inactivo</button>
+      -->
   </header>
   <div
     *ngFor="let question of webform.questions"

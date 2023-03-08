@@ -80,20 +80,13 @@ export class WebformNameQuestionComponent implements OnInit {
         this.dialogFlowConfig.dialogId
       ].fields.lastname = this.form.get('lastname').value;
 
-      if (!this.skipValidationBlock) {
-        this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
-          this.dialogFlowConfig.dialogId
-        ].swiperConfig.allowSlideNext =
-          this.form.get('lastname').valid && this.form.get('lastname').valid;
-      } else {
-        this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
-          this.dialogFlowConfig.dialogId
-        ].swiperConfig.allowSlideNext = true;
-      }
+      this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
+        this.dialogFlowConfig.dialogId
+      ].fields.valid = this.form.get('lastname').valid && this.form.get('lastname').valid;
     }
 
     this.inputDetected.emit(
-      this.form.get('name').value + ' ' + this.form.get('lastname').value
+      true
     );
   };
 }

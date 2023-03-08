@@ -17,7 +17,6 @@ export interface ExtendedAnswerDefault extends AnswerDefault {
 export class WebformMultipleSelectionQuestionComponent implements OnInit {
   @Input() label: string = 'PreguntaID';
   @Input() options: Array<ExtendedAnswerDefault> = [];
-  @Input() optionsInput: Array<any> = [];
   @Input() multiple: boolean = false;
   @Input() shadows: boolean = true;
   @Input() questionType: 'multiple' | 'multiple-text' = 'multiple';
@@ -61,30 +60,9 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
         ].fields.options = [];
       }
     }
-
-    this.optionsInput = this.options.map((option) => {
-      if (option.isMedia && option.label) {
-        return {
-          text: option.label,
-          img: option.value,
-          isMedia: option.isMedia,
-        };
-      } else if (option.isMedia && !option.label) {
-        return {
-          text: null,
-          img: option.value,
-          isMedia: option.isMedia,
-        };
-      } else if (!option.isMedia && option.value) {
-        return {
-          text: option.value,
-          img: null,
-          isMedia: option.isMedia,
-        };
-      }
-    });
   }
 
+  /*
   emitInput = (optionsSelected: {
     option: number;
     image: number;
@@ -135,9 +113,10 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
         this.dialogFlowConfig.dialogId
       ].fields.options = this.options;
     }
+   
+    this.inputDetected.emit(true);
 
-    this.inputDetected.emit(this.options);
-
+    ================================>
     //Get the selected index for the image grid
     let selectedIndexFromImageGrid = null;
     let selectedIndexFromList = null;
@@ -167,8 +146,8 @@ export class WebformMultipleSelectionQuestionComponent implements OnInit {
       this.selectedIndex = selectedIndexFromList;
     } else {
       this.selectedIndex = null;
-    }
-  };
+    }<================================
+  };*/
 
   emitInputMultiple = (
     optionsSelected: Array<{

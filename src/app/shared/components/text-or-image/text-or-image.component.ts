@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 import { AnswerDefaultInput } from 'src/app/core/models/webform';
@@ -25,7 +26,8 @@ export class TextOrImageComponent implements OnInit {
     private webformService: WebformsService,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -109,12 +111,15 @@ export class TextOrImageComponent implements OnInit {
   goBackOrSave() {
     const optionsToAdd: Array<AnswerDefaultInput> = [];
 
-    for (const option of this.options) {
-      const hasOptionText = option.text && option.text.length;
-      const hasOptionMedia = option.file;
-      const isNotPlaceholder = option.text !== 'Escribe..';
+    let hasInvalidInputs = false;
 
-      if (hasOptionMedia && hasOptionText && isNotPlaceholder) {
+    for (const option of this.options) {
+      const hasOptionText = Boolean(
+        option.text && option.text.length && option.text !== 'Escribe..'
+      );
+      const hasOptionMedia = option.file;
+
+      if (hasOptionMedia && hasOptionText) {
         optionsToAdd.push({
           active: true,
           isMedia: 'fileData' in option,
@@ -127,32 +132,46 @@ export class TextOrImageComponent implements OnInit {
         });
       }
 
-      if (!hasOptionText && hasOptionMedia && isNotPlaceholder) {
+      if (!hasOptionText && hasOptionMedia) {
         optionsToAdd.push({
           isMedia: true,
           media: option.file,
         });
       }
 
-      if (hasOptionText && !hasOptionMedia && isNotPlaceholder) {
+      if (hasOptionText && !hasOptionMedia) {
         optionsToAdd.push({
           active: true,
           isMedia: false,
           value: option.text,
         });
       }
+
+      if (!hasOptionText && !hasOptionMedia && optionsToAdd.length > 0) {
+        hasInvalidInputs = true;
+      }
     }
 
-    this.webformService.webformQuestions[
-      this.webformService.webformQuestions.length - 1
-    ].answerDefault = optionsToAdd;
+    if (!hasInvalidInputs) {
+      this.webformService.webformQuestions[
+        this.webformService.webformQuestions.length - 1
+      ].answerDefault = optionsToAdd;
 
-    if (this.itemId)
-      this.router.navigate(['admin/article-editor/' + this.itemId], {
-        queryParams: {
-          resumeWebform: true,
-        },
-      });
-    this.location.back();
+      if (this.itemId)
+        this.router.navigate(['admin/article-editor/' + this.itemId], {
+          queryParams: {
+            resumeWebform: true,
+          },
+        });
+      this.location.back();
+    } else {
+      this.snackBar.open(
+        'Opciones vacías, debes colocar una imagen, un texto/nombre, o ambas, también puedes borrar las opciones vacías',
+        '',
+        {
+          duration: 2000,
+        }
+      );
+    }
   }
 }

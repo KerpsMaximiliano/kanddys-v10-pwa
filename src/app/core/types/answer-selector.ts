@@ -24,6 +24,7 @@ export interface OptionAnswerSelector {
   hidden?: boolean;
   description?: string[];
   id?: string;
+  selected?: boolean;
 }
 
 export interface BankAnswers {

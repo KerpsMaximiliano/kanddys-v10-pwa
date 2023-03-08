@@ -177,7 +177,7 @@ export class ArticleEditorComponent implements OnInit {
       this.price.markAsDirty();
     }
 
-    if (resumeWebform) {
+    if (resumeWebform && this.webformsService.webformCreatorLastDialogs.length) {
       this.openedDialogFlow = true;
       this.resumingWebformCreation = true;
     }
@@ -545,7 +545,7 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   goToWebformMetrics() {
-    this._Router.navigate(['admin/webform-metrics/' + this.webform._id]);
+    this._Router.navigate(['admin/webform-metrics/' + this.webform._id + '/' + this.item._id]);
   }
 
   async reloadWebform() {

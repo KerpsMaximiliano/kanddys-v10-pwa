@@ -53,16 +53,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    .icon {
-      display: none;
-      transition: transform 0.2s;
-    }
+    background-color: white;
 
     &.active {
-      .icon {
-        display: block;
-      }
+      background-color: #82F18D;
     }
   }
 }

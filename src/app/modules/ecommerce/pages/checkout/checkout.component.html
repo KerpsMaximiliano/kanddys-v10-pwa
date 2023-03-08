@@ -91,7 +91,15 @@
                 "
               >
                 <!--RESPUESTA UNICA-->
-                <ng-container *ngIf="question.answerLimit === 1">
+                <ng-container
+                  *ngIf="
+                    answersByQuestion[question._id] &&
+                    ((question.answerLimit === 1 &&
+                      ['multiple-text', 'multiple'].includes(question.type)) ||
+                      (!['multiple-text', 'multiple'].includes(question.type) &&
+                        question.answerLimit === 0))
+                  "
+                >
                   <!-- RESPONSE HAS NO IMAGES-->
                   <ng-container
                     *ngIf="!answersByQuestion[question._id].isMedia"
@@ -127,7 +135,14 @@
                           !answersByQuestion[question._id].isMedia
                         "
                       >
-                        {{ answersByQuestion[question._id]?.responseLabel }}
+                        {{
+                          question.type === "text" &&
+                          question.answerTextType === "name"
+                            ? answersByQuestion[question._id]?.response +
+                              " " +
+                              answersByQuestion[question._id]?.responseLabel
+                            : answersByQuestion[question._id]?.responseLabel
+                        }}
                       </div>
                     </li>
                   </ng-container>
@@ -172,29 +187,36 @@
                       [containerStyles]="{ padding: '15px 18px' }"
                       [question]="question.value"
                       [questionType]="question.type"
-                      [answers]="addOptionalUserDefinedAnswer(question)"
-                      [selected]="answersByQuestion[question._id].selectedIndex"
-                      [selectedImage]="
-                        answersByQuestion[question._id].selectedImageIndex
-                      "
+                      [startWithDialogFlow]="true"
+                      [restartFromEvent]="false"
                       [multiple]="
                         !question.answerLimit || question.answerLimit > 1
                       "
-                      (onSelector)="
-                        selectWebformMediaOption($event, item, question)
-                      "
+                      [dialogFlowConfig]="{
+                        dialogId: question._id,
+                        flowId: 'webform-item-' + item._id
+                      }"
+                      [required]="question?.required"
+                      (onSelector)="selectOption(question, item, true)"
                     >
                     </app-closed-question-card>
                   </div>
                 </ng-container>
 
                 <!--RESPUESTA MULTIPLE-->
-                <ng-container *ngIf="question.answerLimit === 0">
+                <ng-container
+                  *ngIf="
+                    answersByQuestion[question._id] &&
+                    question.answerLimit === 0 &&
+                      ['multiple-text', 'multiple'].includes(question.type)
+                  "
+                >
                   <!-- RESPONSE HAS NO IMAGES-->
                   <ng-container *ngIf="answersByQuestion[question._id]">
                     <li
                       *ngIf="
-                        !answersByQuestion[question._id]?.multipleResponses && !this.webformsByItem[item._id].opened
+                        !answersByQuestion[question._id]?.multipleResponses &&
+                        !this.webformsByItem[item._id].opened
                       "
                       class="webform-question-container"
                       [ngClass]="{
@@ -212,40 +234,36 @@
                     <div
                       class="question-media-response"
                       *ngIf="
-                        answersByQuestion[question._id]?.multipleResponses && !this.webformsByItem[item._id].opened
+                        answersByQuestion[question._id]?.multipleResponses &&
+                        !this.webformsByItem[item._id].opened
                       "
                     >
-                      <app-closed-question-card
-                        [id]="'multiple-choices-multiple-selection'"
-                        [shadows]="false"
-                        [labelStyles]="{
-                          fontFamily: 'SfProRegular',
-                          color: '#000',
-                          fontSize: '15px'
-                        }"
-                        [containerStyles]="{ padding: '15px 18px' }"
-                        [question]="question.value"
-                        [questionType]="question.type"
-                        [answers]="addOptionalUserDefinedAnswer(question, true)"
-                        [selectedIndexes]="
-                          answersByQuestion[question._id]?.selectedIndexes
-                        "
-                        [selectedImagesIndexes]="
-                          answersByQuestion[question._id]?.selectedImageIndexes
-                        "
-                        [alternateImageSelectionCriteria]="true"
-                        [multiple]="
-                          !question.answerLimit || question.answerLimit > 1
-                        "
-                        (onSelectorMultiple)="
-                          selectWebformMediaOptionMultiple(
-                            $event,
-                            item,
-                            question
-                          )
-                        "
-                      >
-                      </app-closed-question-card>
+                        <app-closed-question-card
+                          [id]="'multiple-choices-multiple-selection'"
+                          [shadows]="false"
+                          [labelStyles]="{
+                            fontFamily: 'SfProRegular',
+                            color: '#000',
+                            fontSize: '15px'
+                          }"
+                          [containerStyles]="{ padding: '15px 18px' }"
+                          [question]="question.value"
+                          [questionType]="question.type"
+                          [multiple]="
+                            !question.answerLimit || question.answerLimit > 1
+                          "
+                          [dialogFlowConfig]="{
+                            dialogId: question._id,
+                            flowId: 'webform-item-' + item._id
+                          }"
+                          [required]="question?.required"
+                          [startWithDialogFlow]="true"
+                          [restartFromEvent]="false"
+                          (onSelector)="
+                            selectOption(question, item, true)
+                          "
+                        >
+                        </app-closed-question-card>
                     </div>
                   </ng-container>
                 </ng-container>
