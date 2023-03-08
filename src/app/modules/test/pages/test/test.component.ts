@@ -161,46 +161,61 @@ export class TestComponent implements OnInit {
         componentId: 'dialog',
         inputs: {
           title: {
-            text: "Helloooo worlddddd"
+            text: "Zona de Entrega #1"
           },
           fields: {
-            rows: [
+            inputs: [
               {
-                columns: [
-                  {
-                    label: "Label pro",
-                    formControl: "input-1"
-                  },
-                  {
-                    label: "Label pro",
-                    formControl: "input-2"
-                  }
-                ]
+                label: "$ de la factura menor a:",
+                formControl: "input-1",
+                row: 0,
+                column: 0,
+                isFlex: true,
+                type: "text"
               },
               {
-                columns: [
-                  {
-                    label: "Label pro",
-                    formControl: "input-3"
-                  }
-                ]
+                label: "$ de la factura mayor a:",
+                formControl: "input-2",
+                row: 0,
+                column: 1,
+                isFlex: true,
+                type: "text"
               },
               {
-                columns: [
-                  {
-                    label: "Label pro",
-                    formControl: "input-4"
-                  },
-                  {
-                    label: "Label pro",
-                    formControl: "input-5"
-                  }
-                ]
+                label: "$ recibes del comprador",
+                formControl: "input-3",
+                row: 1,
+                column: 0,
+                isFlex: false,
+                type: "text"
+              },
+              {
+                label: "$ que te cuesta (egreso)",
+                formControl: "input-4",
+                row: 1,
+                column: 1,
+                isFlex: true,
+                type: "text"
+              },
+              {
+                label: "Nombre de la zona",
+                formControl: "input-5",
+                row: 2,
+                column: 0,
+                isFlex: true,
+                type: "text"
               },
             ]
           }
         },
-        outputs: []
+        outputs: [
+          {
+            name: 'formSubmit',
+            callback: (params) => {
+              console.log(params);
+            },
+          },
+        ],
       }
     ]
 

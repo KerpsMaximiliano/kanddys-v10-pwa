@@ -1,0 +1,36 @@
+.container {
+    background-color: #FFF;
+    padding: 30px;
+
+    .title {
+        font-family: SfProDisplayBold;
+        color: #4F4F4F;
+        margin-top: 0;
+    }
+
+    .row {
+        display: flex;
+        grid-column-gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .input-container {
+        background-color: #FFF;
+        box-shadow: 0px 7px 20px -18px inset;
+        border-radius: 10px;
+        padding: 2px 20px 10px 20px;
+
+        .input-label {
+            color: #272727;
+        }
+        input {
+            border: 0;
+            width: 100%;
+        }
+        ::-webkit-input-placeholder, /* Estilos para Firefox y otros navegadores */
+        ::placeholder { /* Estilos para Chrome, Safari y Opera */
+            color: #A1A1A1;
+            font-style: "RobotoMedium";
+        }
+    }
+}

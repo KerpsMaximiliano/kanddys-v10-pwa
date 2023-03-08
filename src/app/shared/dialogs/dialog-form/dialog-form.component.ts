@@ -1,15 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-
-export interface DialogFormField {
-  columns: Array<{
-    label?: string,
-    placeholder?: string,
-    formControl?: string,
-    type?: string
-    styles?: Record<string, string>;
-  }>
-}
 
 @Component({
   selector: 'app-dialog-form',
@@ -25,27 +15,54 @@ export class DialogFormComponent implements OnInit {
 
   @Input('fields') fields: {
     styles?: Record<string, string>;
-
-    // TODO: Cambiar estructura para que sea un solo array y que cada elemento maneje su respectivo index
-    rows?: Array<DialogFormField>;
+    inputs?: Array<{
+      label?: string,
+      placeholder?: string,
+      formControl?: string,
+      type?: string,
+      styles?: Record<string, string>,
+      row?: number,
+      column?: number,
+      isFlex: boolean
+    }>;
   } = {};
 
   form: FormGroup;
 
+  rows: number[];
+  columns: number[];
+
+  @Output('formSubmit') formSubmit = new EventEmitter<any>();
+
   constructor() {}
 
   ngOnInit(): void {
-    console.log(this.fields.rows);
-    const inputs = this.fields.rows.map(row => {
-      return row.columns
-    });
-
+    const inputs = this.fields.inputs.map(row => row);
     console.log(inputs);
-
     const inputControls = inputs.map(input => new FormControl(""))
     this.form = new FormGroup({
       inputArray: new FormArray(inputControls)
     });
+
+    this.rows = Array.from(new Set(inputs.map(item => item.row)));
+    this.columns = Array.from(new Set(inputs.map(item => item.column)));
+  }
+
+  onKeyPress() {
+    const formData = [];
+    const formValue = this.form.value.inputArray;
+    for (let i = 0; i < formValue.length; i++) {
+      const input = this.fields.inputs[i];
+      formData.push({
+        label: input.label,
+        value: formValue[i],
+        row: input.row,
+        column: input.column
+      });
+    }
+
+    console.log(formData);
+    this.formSubmit.emit(formData);
   }
 
 }

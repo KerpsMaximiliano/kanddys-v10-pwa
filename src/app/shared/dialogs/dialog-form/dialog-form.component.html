@@ -1,9 +1,17 @@
 <div class="container">
+    <h2 class="title">{{ title.text }}</h2>
     <form [formGroup]="form">
         <div formArrayName="inputArray" class="input-array">
-            <div *ngFor="let row of fields.rows; let i = index">
-                <div *ngFor="let column of row.columns; let j = index">
-                    <input type="text" value="input-{{ i }}-{{ j }}">
+            <div *ngFor="let row of rows" class="row">
+                <div *ngFor="let col of columns">
+                  <div *ngFor="let input of fields.inputs">
+                    <div *ngIf="input.row === row && input.column === col">
+                        <div class="input-container">
+                            <p class="input-label">{{ input.label }}</p>
+                            <input [type]="input.type" placeholder="Escribe..." class="" [formControlName]="input.formControl" (keypress)="onKeyPress()">
+                        </div>
+                    </div>
+                  </div>
                 </div>
                 <br>
             </div>
