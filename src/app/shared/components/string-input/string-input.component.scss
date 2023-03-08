@@ -99,6 +99,41 @@ input[type="number"] {
   }
 }
 
+.notFull {
+  width: 100%;
+  max-width: 150px !important;
+}
+
+@media (max-width: 428px) {
+  .notFull {
+    max-width: 135px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .notFull {
+    max-width: 125px !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .notFull {
+    max-width: 115px !important;
+  }
+}
+
+@media (max-width: 350px) {
+  .notFull {
+    max-width: 105px !important;
+  }
+}
+
+@media (max-width: 330px) {
+  .notFull {
+    max-width: 100px !important;
+  }
+}
+
 ::ng-deep.mat-input-element::placeholder,
 .mat-form-field-autofill-control::placeholder {
   color: #a1a1a1 !important;
