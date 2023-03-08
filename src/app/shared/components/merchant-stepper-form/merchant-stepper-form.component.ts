@@ -6,6 +6,11 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { CommunitiesService } from 'src/app/core/services/communities.service';
 import { environment } from 'src/environments/environment';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import {
+  CountryISO,
+  PhoneNumberFormat,
+  SearchCountryField,
+} from 'ngx-intl-tel-input';
 
 @Component({
   selector: 'app-merchant-stepper-form',
@@ -23,10 +28,18 @@ export class MerchantStepperFormComponent implements OnInit {
 
   env: string = environment.assetsUrl;
 
+  CountryISO = CountryISO.DominicanRepublic;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
+  PhoneNumberFormat = PhoneNumberFormat;
+
   inputName: string = '';
   inputLastName: string = '';
   inputMail: string = '';
-  inputPhone = '';
+  inputPhone: string = '';
+  phonePlaceholder: string;
   inputTiendaName: string = '';
   slug: string = '';
   merchant;
@@ -46,15 +59,7 @@ export class MerchantStepperFormComponent implements OnInit {
         ),
       ],
     ],
-    phone: [
-      null,
-      [
-        Validators.required,
-        Validators.pattern(
-          '(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))s*[)]?[-s.]?[(]?[0-9]{1,3}[)]?([-s.]?[0-9]{3})([-s.]?[0-9]{3,4})'
-        ),
-      ],
-    ],
+    phone: [null, [Validators.required, Validators.minLength(10)]],
   });
 
   itemForm2 = this._formBuilder.group({
@@ -112,9 +117,10 @@ export class MerchantStepperFormComponent implements OnInit {
     this.itemForm.get('mail').patchValue(mail);
   }
 
-  onPhoneInput(phone: string) {
-    this.inputPhone = phone;
-    this.itemForm.get('phone').patchValue(phone);
+  onPhoneInput(event) {
+    this.inputPhone = event.target.value;
+    this.phonePlaceholder = this.inputPhone;
+    this.itemForm.get('phone').patchValue(this.inputPhone);
   }
 
   onTiendaNameInput(name: string) {
@@ -128,12 +134,12 @@ export class MerchantStepperFormComponent implements OnInit {
   }
 
   sendLink() {
-    //this.signUp();
+    this.signUp();
     console.log(this.merchant);
     this.createMerchant();
     this.authService.generateMagicLink(
       this.inputPhone.replace('+', ''),
-      '/ecommerce/arepera-que-molleja/article-detail/63f6a229e2f51cbd1a4f3f71?createArticle=true',
+      '/ecommerce/arepera-que-molleja/article-detail/63f6a229e2f51cbd1a4f3f71',
       '',
       'UserAccess',
       {}

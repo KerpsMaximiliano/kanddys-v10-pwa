@@ -80,7 +80,14 @@
   </div>
 </div>
 
-<div *ngIf="disabled === false && fullWidth === true">
+<div
+  *ngIf="
+    disabled === false &&
+    fullWidth === true &&
+    storeName === false &&
+    storeSlug === false
+  "
+>
   <mat-form-field appearance="outline">
     <mat-label>{{ innerLabel }}</mat-label>
     <input
@@ -97,6 +104,48 @@
       (blur)="inputFocused = false"
       (input)="changeText($event, input)"
       onkeydown="return event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38 && event.keyCode !==32"
+    />
+  </mat-form-field>
+</div>
+
+<div *ngIf="storeName === true">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ innerLabel }}</mat-label>
+    <input
+      matInput
+      #input
+      [(ngModel)]="inputText"
+      [placeholder]="placeholder"
+      [type]="type"
+      [id]="inputId"
+      [name]="inputName"
+      [required]="required"
+      [defaultValue]="initialValue"
+      (focus)="inputFocused = true"
+      (blur)="inputFocused = false"
+      (input)="changeText($event, input)"
+      onkeydown="return event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38 && event.keyCode !== 107"
+    />
+  </mat-form-field>
+</div>
+
+<div *ngIf="storeSlug === true">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ innerLabel }}</mat-label>
+    <input
+      matInput
+      #input
+      [(ngModel)]="inputText"
+      [placeholder]="placeholder"
+      [type]="type"
+      [id]="inputId"
+      [name]="inputName"
+      [required]="required"
+      [defaultValue]="initialValue"
+      (focus)="inputFocused = true"
+      (blur)="inputFocused = false"
+      (input)="changeText($event, input)"
+      onkeydown="return  event.keyCode !== 187 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38 && event.keyCode !== 32 && event.keyCode !== 107"
     />
   </mat-form-field>
 </div>
