@@ -123,9 +123,9 @@ export class TestComponent implements OnInit {
     console.log(this.firstIndex);
     this.item = await this.itemsService.item('63d7ebf3bbd3bc32bcc2ec0b');
     this.inject();
-    this.dialogFlowFunctions.moveToDialogByIndex(
-      this.dialogs.length - 1
-    );
+    // this.dialogFlowFunctions.moveToDialogByIndex(
+    //   this.dialogs.length - 1
+    // );
   }
 
   openDialog() {
@@ -447,139 +447,139 @@ export class TestComponent implements OnInit {
           },
         ],
       },
-      {
-        component: DialogFormComponent,
-        componentId: 'yes-depend-amount-2',
-        inputs: {
-          dialogId: 'yes-depend-amount-2',
-          containerStyles: {},
-          title: {
-            text: "Zona de Entrega #2"
-          },
-          fields: {
-            inputs: [
-              {
-                label: "Menor a:",
-                formControl: "input-1",
-                row: 0,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Mayor a:",
-                formControl: "input-2",
-                row: 0,
-                column: 1,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Monto que te pagan por el delivery:",
-                formControl: "input-3",
-                row: 1,
-                column: 0,
-                isFlex: false,
-                type: "text"
-              },
-              {
-                label: "Nombre de la zona",
-                formControl: "input-4",
-                row: 2,
-                column: 0,
-                isFlex: false,
-                type: "text"
-              }
-            ]
-          }
-        },
-        outputs: [
-          {
-            name: 'formSubmit',
-            callback: (params) => {
-              console.log(params);
-            },
-          },
-        ],
-      },
-      {
-        component: DialogFormComponent,
-        componentId: 'no-deliveryzone-1',
-        inputs: {
-          dialogId: 'no-deliveryzone-1',
-          containerStyles: {},
-          title: {
-            text: "Zona de Entrega #1"
-          },
-          fields: {
-            inputs: [
-              {
-                label: "$ que te cuesta (egreso)",
-                formControl: "input-1",
-                row: 0,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Nombre de la zona:",
-                formControl: "input-2",
-                row: 1,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-            ]
-          }
-        },
-        outputs: [
-          {
-            name: 'formSubmit',
-            callback: (params) => {
-              console.log(params);
-            },
-          },
-        ],
-      },
-      {
-        component: DialogFormComponent,
-        componentId: 'no-deliveryzone-2',
-        inputs: {
-          dialogId: 'no-deliveryzone-2',
-          containerStyles: {},
-          title: {
-            text: "Zona de Entrega #2"
-          },
-          fields: {
-            inputs: [
-              {
-                label: "$ que te cuesta (egreso)",
-                formControl: "input-1",
-                row: 0,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Nombre de la zona:",
-                formControl: "input-2",
-                row: 1,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-            ]
-          }
-        },
-        outputs: [
-          {
-            name: 'formSubmit',
-            callback: (params) => {
-              console.log(params);
-            },
-          },
-        ],
-      }
+      // {
+      //   component: DialogFormComponent,
+      //   componentId: 'yes-depend-amount-2',
+      //   inputs: {
+      //     dialogId: 'yes-depend-amount-2',
+      //     containerStyles: {},
+      //     title: {
+      //       text: "Zona de Entrega #2"
+      //     },
+      //     fields: {
+      //       inputs: [
+      //         {
+      //           label: "Menor a:",
+      //           formControl: "input-1",
+      //           row: 0,
+      //           column: 0,
+      //           isFlex: true,
+      //           type: "text"
+      //         },
+      //         {
+      //           label: "Mayor a:",
+      //           formControl: "input-2",
+      //           row: 0,
+      //           column: 1,
+      //           isFlex: true,
+      //           type: "text"
+      //         },
+      //         {
+      //           label: "Monto que te pagan por el delivery:",
+      //           formControl: "input-3",
+      //           row: 1,
+      //           column: 0,
+      //           isFlex: false,
+      //           type: "text"
+      //         },
+      //         {
+      //           label: "Nombre de la zona",
+      //           formControl: "input-4",
+      //           row: 2,
+      //           column: 0,
+      //           isFlex: false,
+      //           type: "text"
+      //         }
+      //       ]
+      //     }
+      //   },
+      //   outputs: [
+      //     {
+      //       name: 'formSubmit',
+      //       callback: (params) => {
+      //         console.log(params);
+      //       },
+      //     },
+      //   ],
+      // },
+      // {
+      //   component: DialogFormComponent,
+      //   componentId: 'no-deliveryzone-1',
+      //   inputs: {
+      //     dialogId: 'no-deliveryzone-1',
+      //     containerStyles: {},
+      //     title: {
+      //       text: "Zona de Entrega #1"
+      //     },
+      //     fields: {
+      //       inputs: [
+      //         {
+      //           label: "$ que te cuesta (egreso)",
+      //           formControl: "input-1",
+      //           row: 0,
+      //           column: 0,
+      //           isFlex: true,
+      //           type: "text"
+      //         },
+      //         {
+      //           label: "Nombre de la zona:",
+      //           formControl: "input-2",
+      //           row: 1,
+      //           column: 0,
+      //           isFlex: true,
+      //           type: "text"
+      //         },
+      //       ]
+      //     }
+      //   },
+      //   outputs: [
+      //     {
+      //       name: 'formSubmit',
+      //       callback: (params) => {
+      //         console.log(params);
+      //       },
+      //     },
+      //   ],
+      // },
+      // {
+      //   component: DialogFormComponent,
+      //   componentId: 'no-deliveryzone-2',
+      //   inputs: {
+      //     dialogId: 'no-deliveryzone-2',
+      //     containerStyles: {},
+      //     title: {
+      //       text: "Zona de Entrega #2"
+      //     },
+      //     fields: {
+      //       inputs: [
+      //         {
+      //           label: "$ que te cuesta (egreso)",
+      //           formControl: "input-1",
+      //           row: 0,
+      //           column: 0,
+      //           isFlex: true,
+      //           type: "text"
+      //         },
+      //         {
+      //           label: "Nombre de la zona:",
+      //           formControl: "input-2",
+      //           row: 1,
+      //           column: 0,
+      //           isFlex: true,
+      //           type: "text"
+      //         },
+      //       ]
+      //     }
+      //   },
+      //   outputs: [
+      //     {
+      //       name: 'formSubmit',
+      //       callback: (params) => {
+      //         console.log(params);
+      //       },
+      //     },
+      //   ],
+      // }
     ]
 
     return this.dialogsPro;

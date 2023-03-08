@@ -595,9 +595,8 @@ headline="EXPUESTO EN TAB (S)"
   [dialogFlowId]="'flow1'"
   [status]="'OPEN'"
   [dialogs]="dialogsPro"
-  [allowSlideNext]="false"
   (saveConfigRef)="swiperConfig = $event"
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
   (closingDialogSignal)="close()"
-  (openingDialogSignal)="start()"
+  
 ></app-dialog-flow>

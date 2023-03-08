@@ -5,6 +5,7 @@ import {
   Output,
   ViewChild,
   EventEmitter,
+  AfterViewInit,
 } from '@angular/core';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions, Swiper } from 'swiper';
@@ -35,8 +36,11 @@ export class DialogFlowComponent implements OnInit {
     spaceBetween: 17,
     watchSlidesProgress: true,
     watchSlidesVisibility: true,
+    preventInteractionOnTransition: true,
+    allowTouchMove: false
   };
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
+  endedTransition: boolean = true;
   currentDialogIndex: number = 0;
 
   @ViewChild('dialogSwiper') dialogSwiper: SwiperComponent;
@@ -54,7 +58,7 @@ export class DialogFlowComponent implements OnInit {
 
           this.service.dialogsFlows[this.dialogFlowId][dialog.componentId] = {
             dialogId: dialog.componentId,
-            swiperConfig: JSON.parse(JSON.stringify(this.swiperConfig)),
+            swiperConfig: this.swiperConfig,
             fields: {},
           };
         });
@@ -96,19 +100,51 @@ export class DialogFlowComponent implements OnInit {
         this.dialogs[index].inputs.containerStyles.opacity = '1';
         this.service.activeDialogId = dialog.componentId;
       }
-
-      this.dialogs[index].shouldRerender = true;
     });
 
-    setTimeout(() => {
-      this.dialogs.forEach((slide, index) => {
-        this.dialogs[index].shouldRerender = false;
-      });
-    }, 100);
+    if (
+      this.dialogs[this.currentDialogIndex].inputs &&
+      this.dialogs[this.currentDialogIndex].inputs.onSlideChangeCallback
+    ) {
+      this.dialogs[this.currentDialogIndex].inputs.onSlideChangeCallback();
+    }
+  }
+
+  slideTransitionEnd() {
+    this.endedTransition = true;
+    this.dialogs.forEach((slide, index) => {
+      if (
+        'shouldRerender' in this.dialogs[index] &&
+        this.dialogs[index].shouldRerender
+      ) {
+        this.dialogs[index].shouldRerender = this.dialogs[index].shouldRerender;
+      }
+    });
+
+    if (
+      this.dialogs[this.currentDialogIndex].inputs &&
+      this.dialogs[this.currentDialogIndex].inputs.onActiveSlideCallback
+    ) {
+      this.dialogs[this.currentDialogIndex].inputs.onActiveSlideCallback();
+    } else {
+      this.swiperConfig.allowSlideNext = true;
+      this.swiperConfig.allowSlidePrev = true;
+    }
   }
 
   tapEvent(tappedDialogIndex: number) {
-    this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex);
+    if (
+      this.endedTransition &&
+      (tappedDialogIndex === this.currentDialogIndex + 1 ||
+        tappedDialogIndex === this.currentDialogIndex - 1)
+    ) {
+      this.endedTransition = false;
+      this.dialogSwiper.directiveRef.setIndex(tappedDialogIndex);
+
+      if (!this.swiperConfig.allowSlideNext) {
+        this.endedTransition = true;
+      }
+    }
   }
 
   changeActiveDialog(eventData: Swiper) {
@@ -127,14 +163,30 @@ export class DialogFlowComponent implements OnInit {
     const triggerElement = eventData.target as HTMLElement;
 
     if (
-      triggerElement.classList.contains('swiper') ||
-      triggerElement.classList.contains('dialog')
+      triggerElement.classList.contains('swiper') || triggerElement.classList.contains('swiper-wrapper')
     ) {
       if (this.status === 'OPEN') {
         this.status = 'CLOSE';
         this.closingDialogSignal.emit(true);
       } else {
         this.status = 'OPEN';
+      }
+    }
+  }
+
+  onDragging(eventData: [Swiper, PointerEvent]) {
+    //const currentDialog = this.service.dialogsFlows[this.dialogFlowId][this.dialogs[this.currentDialogIndex].componentId];
+    
+    if (
+      this.dialogs[this.currentDialogIndex].inputs &&
+      this.dialogs[this.currentDialogIndex].inputs.onDragging
+    ) {
+      const swiper = eventData[0] as any;
+      const distanceLeft =
+        swiper.snapGrid[swiper.activeIndex + 1] - swiper.translate;
+
+      if (distanceLeft >= 0) {
+        this.dialogs[this.currentDialogIndex].inputs.onDragging();
       }
     }
   }
