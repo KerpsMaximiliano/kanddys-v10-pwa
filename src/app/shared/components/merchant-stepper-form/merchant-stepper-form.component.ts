@@ -39,7 +39,7 @@ export class MerchantStepperFormComponent implements OnInit {
   inputLastName: string = '';
   inputMail: string = '';
   inputPhone: string = '';
-  phonePlaceholder: string;
+  phoneNumber: string;
   inputTiendaName: string = '';
   slug: string = '';
   merchant;
@@ -117,10 +117,13 @@ export class MerchantStepperFormComponent implements OnInit {
     this.itemForm.get('mail').patchValue(mail);
   }
 
-  onPhoneInput(event) {
-    this.inputPhone = event.target.value;
-    this.phonePlaceholder = this.inputPhone;
-    this.itemForm.get('phone').patchValue(this.inputPhone);
+  onPhoneInput() {
+    if (this.inputPhone != null) {
+      let data: any = this.inputPhone;
+      this.phoneNumber = data.e164Number;
+      //console.log('full number: ', Data.e164Number);
+    }
+    this.itemForm.get('phone').patchValue(this.phoneNumber);
   }
 
   onTiendaNameInput(name: string) {
@@ -134,12 +137,12 @@ export class MerchantStepperFormComponent implements OnInit {
   }
 
   sendLink() {
-    this.signUp();
+    //this.signUp();
     console.log(this.merchant);
     this.createMerchant();
     this.authService.generateMagicLink(
-      this.inputPhone.replace('+', ''),
-      '/ecommerce/arepera-que-molleja/article-detail/63f6a229e2f51cbd1a4f3f71',
+      this.phoneNumber.replace('+', ''),
+      '/ecommerce/arepera-que-molleja/article-detail/item/63f6a229e2f51cbd1a4f3f71?createArticle=true',
       '',
       'UserAccess',
       {}
@@ -147,19 +150,24 @@ export class MerchantStepperFormComponent implements OnInit {
   }
 
   async signUp() {
+    console.log('name: ', this.inputName);
+    console.log('lastname: ', this.inputLastName);
+    console.log('email: ', this.inputMail);
+    console.log('phone: ', this.phoneNumber);
+
     this.merchant = await this.authService.signup(
       {
         name: this.inputName,
         lastname: this.inputLastName,
         email: this.inputMail,
-        phone: this.inputPhone,
+        phone: this.phoneNumber,
       },
       'none',
       null,
       false
     );
 
-    console.log(this.merchant.user._id);
+    console.log(this.merchant);
   }
 
   selectedCategory(i: number) {
@@ -183,8 +191,9 @@ export class MerchantStepperFormComponent implements OnInit {
     }
   }
 
-  createMerchant() {
-    this.merchantsService.createMerchant({
+  async createMerchant() {
+    console.log(this.merchant);
+    await this.merchantsService.createMerchant({
       name: this.inputTiendaName,
       slug: this.slug,
       categories: this.merchantCategories,

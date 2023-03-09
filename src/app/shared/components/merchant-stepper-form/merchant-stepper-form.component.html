@@ -62,7 +62,7 @@
       tabindex="1"
       id="phone"
       [(ngModel)]="inputPhone"
-      (input)="onPhoneInput($event)"
+      (ngModelChange)="onPhoneInput()"
     ></ngx-intl-tel-input>
 
     <div>
@@ -78,7 +78,7 @@
       </p>
     </div>
 
-    <button mat-button matStepperNext>Continuar</button>
+    <button mat-button matStepperNext (click)="signUp()">Continuar</button>
   </mat-step>
   <mat-step [stepControl]="itemForm2">
     <ng-template matStepLabel>Info de la Tienda:</ng-template>
@@ -119,7 +119,7 @@
         inputName="tiendaPhone"
         inputId="tiendaPhone"
         innerLabel="Teléfono. Celular (WhatsApp)"
-        [placeholder]="phonePlaceholder"
+        [placeholder]="phoneNumber"
         [disabled]="true"
       >
       </app-string-input>
