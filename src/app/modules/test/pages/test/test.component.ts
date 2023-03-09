@@ -121,7 +121,9 @@ export class TestComponent implements OnInit {
   deliveryType: 'yes' | 'no' | 'depend' | 'no-delivery';
   depend: 'amount' | 'zone';
 
-  deliveryZones: DeliveryZoneInput[];
+  deliveryData: any[] = [];
+  deliveryZones: DeliveryZoneInput[] = [];
+
   merchant: Merchant;
 
   constructor(
@@ -143,6 +145,7 @@ export class TestComponent implements OnInit {
     // );
 
     this.merchant = await this.merchantService.merchantDefault();
+    console.log(this.merchant);
   }
 
   openDialog() {
@@ -398,16 +401,29 @@ export class TestComponent implements OnInit {
             name: 'formSubmit',
             callback: (params) => {
               console.log(params);
-              const incomeByBuyer = params.value[0].value
-              const cost = params.value[1].value;
-              const zoneName = params.value[2].value;
+              const incomeByBuyer = params[0].value ? params[0].value : 0;
+              const cost = params[1].value ? params[1].value : 0;
+              const zoneName = params[2].value ? params[2].value : '';
 
-              this.deliveryZones.push({
+              if (
+                this.deliveryData.length > 0 &&
+                this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-1')
+              ) {
+                const index = this.deliveryData.findIndex(
+                  (item) => item.id === 'yes-depend-deliveryzone-1'
+                );
+                this.deliveryData.splice(index, 1);
+              }
+
+              this.deliveryData.push({
                 zona: zoneName,
                 amount: incomeByBuyer as number,
                 cost: cost as number, 
-                type: 'zone'
+                type: 'zone',
+                id: "yes-depend-deliveryzone-1"
               });
+
+              console.log(this.deliveryData);
             },
           },
         ],
@@ -455,16 +471,29 @@ export class TestComponent implements OnInit {
             name: 'formSubmit',
             callback: (params) => {
               console.log(params);
-              const incomeByBuyer = params.value[0].value
-              const cost = params.value[1].value;
-              const zoneName = params.value[2].value;
+              const incomeByBuyer = params[0].value ? params[0].value : 0;
+              const cost = params[1].value ? params[1].value : 0;
+              const zoneName = params[2].value ? params[2].value : '';
 
-              this.deliveryZones.push({
+              if (
+                this.deliveryData.length > 0 &&
+                this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-2')
+              ) {
+                const index = this.deliveryData.findIndex(
+                  (item) => item.id === 'yes-depend-deliveryzone-2'
+                );
+                this.deliveryData.splice(index, 1);
+              }
+
+              this.deliveryData.push({
                 zona: zoneName,
                 amount: incomeByBuyer as number,
                 cost: cost as number, 
-                type: 'zone'
+                type: 'zone',
+                id: "yes-depend-deliveryzone-2"
               });
+
+              console.log(this.deliveryData);
             },
           },
         ],
@@ -528,20 +557,33 @@ export class TestComponent implements OnInit {
             name: 'formSubmit',
             callback: (params) => {
               console.log(params);
-              const lesserAmount = params.value[0].value
-              const greaterAmount = params.value[1].value;
-              const incomeByBuyer = params.value[2].value
-              const cost = params.value[3].value;
-              const zoneName = params.value[4].value;
+              const lesserAmount = params[0].value ? params[0].value : 0;
+              const greaterAmount = params[1].value ? params[1].value : 0;
+              const incomeByBuyer = params[2].value ? params[2].value : 0;
+              const cost = params[3].value ? params[3].value : 0;
+              const zoneName = params[4].value ? params[4].value : '';
+              
+              if (
+                this.deliveryData.length > 0 &&
+                this.deliveryData.find((item) => item.id === 'yes-depend-amount-1')
+              ) {
+                const index = this.deliveryData.findIndex(
+                  (item) => item.id === 'yes-depend-amount-1'
+                );
+                this.deliveryData.splice(index, 1);
+              }
 
-              this.deliveryZones.push({
+              this.deliveryData.push({
                 zona: zoneName,
                 amount: incomeByBuyer as number,
                 cost: cost as number,
                 lesserAmount: lesserAmount as number,
                 greaterAmount: greaterAmount as number,
-                type: 'lesser'
+                type: 'lesser',
+                id: "yes-depend-amount-1"
               });
+
+              console.log(this.deliveryData);
             },
           },
         ],
@@ -597,19 +639,32 @@ export class TestComponent implements OnInit {
             name: 'formSubmit',
             callback: (params) => {
               console.log(params);
-              const lesserAmount = params.value[0].value
-              const greaterAmount = params.value[1].value;
-              const incomeByBuyer = params.value[2].value
-              const zoneName = params.value[3].value;
+              const lesserAmount = params[0].value ? params[0].value : 0;
+              const greaterAmount = params[1].value ? params[1].value : 0;
+              const incomeByBuyer = params[2].value ? params[2].value : 0;
+              const zoneName = params[3].value ? params[3].value : '';
 
-              this.deliveryZones.push({
+              if (
+                this.deliveryData.length > 0 &&
+                this.deliveryData.find((item) => item.id === 'yes-depend-amount-2')
+              ) {
+                const index = this.deliveryData.findIndex(
+                  (item) => item.id === 'yes-depend-amount-2'
+                );
+                this.deliveryData.splice(index, 1);
+              }
+
+              this.deliveryData.push({
                 zona: zoneName,
                 amount: incomeByBuyer as number,
                 // cost: cost,
                 lesserAmount : lesserAmount as number,
                 greaterAmount : greaterAmount as number,
-                type: 'lesser'
+                type: 'lesser',
+                id: "yes-depend-amount-2"
               });
+
+              console.log(this.deliveryData);
             },
           },
         ],
@@ -649,14 +704,27 @@ export class TestComponent implements OnInit {
             name: 'formSubmit',
             callback: (params) => {
               console.log(params);
-              const cost = params.value[0].value;
-              const zoneName = params.value[1].value;
+              const cost = params[0].value ? params[0].value : 0;
+              const zoneName = params[1].value ? params[1].value : '';
 
-              this.deliveryZones.push({
+              if (
+                this.deliveryData.length > 0 &&
+                this.deliveryData.find((item) => item.id === 'no-deliveryzone-1')
+              ) {
+                const index = this.deliveryData.findIndex(
+                  (item) => item.id === 'no-deliveryzone-1'
+                );
+                this.deliveryData.splice(index, 1);
+              }
+
+              this.deliveryData.push({
                 zona: zoneName,
                 cost: cost as number,
-                type: 'free'
+                type: 'free',
+                id: "no-deliveryzone-1"
               });
+
+              console.log(this.deliveryData);
             },
           },
         ],
@@ -696,14 +764,26 @@ export class TestComponent implements OnInit {
             name: 'formSubmit',
             callback: (params) => {
               console.log(params);
-              const cost = params.value[0].value;
-              const zoneName = params.value[1].value;
+              const cost = params[0].value ? params[0].value : 0;
+              const zoneName = params[1].value ? params[1].value : '';
 
-              this.deliveryZones.push({
+              if (
+                this.deliveryData.length > 0 &&
+                this.deliveryData.find((item) => item.id === 'no-deliveryzone-2')
+              ) {
+                const index = this.deliveryData.findIndex(
+                  (item) => item.id === 'no-deliveryzone-2'
+                );
+                this.deliveryData.splice(index, 1);
+              }
+
+              this.deliveryData.push({
                 zona: zoneName,
                 cost: cost as number,
-                type: 'free'
+                type: 'free',
+                id: "no-deliveryzone-2"
               });
+              console.log(this.deliveryData);
             },
           },
         ],
@@ -774,8 +854,20 @@ export class TestComponent implements OnInit {
               const { confirm } = params.value;
               
               if (confirm[0]) {
+                console.log(this.deliveryData);
+                this.deliveryZones = this.deliveryData.map((item) => {
+                  return {
+                    name: item.zona as string,
+                    type: item.type,
+                    cost: Number(item.cost),
+                    amount: Number(item.amount),
+                    // cost: cost,
+                    lesserAmount : Number(item.lesserAmount),
+                    greaterAmount : Number(item.greaterAmount)
+                  };
+                });
                 console.log(this.deliveryZones);
-                this.deliveryZones.forEach(async zone => {
+                this.deliveryData.forEach(async zone => {
                   const deliveryZone = await this.deliveryzonesService.create(
                     this.merchant._id,
                     zone
