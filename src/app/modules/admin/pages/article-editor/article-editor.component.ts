@@ -686,21 +686,20 @@ export class ArticleEditorComponent implements OnInit {
     this.params = (<FormArray>this.itemParamsForm.get('params')).at(0);
     const valuesLength = this.getArrayLength(this.params, 'values');
     if (index === valuesLength - 1) {
+      console.log(this.params);
       console.log(this.params.value.values);
       this.generateFields();
     }
   }
 
   async send() {
-    // console.log(this.productDescription);
-    // console.log(this.productName);
-    // console.log(this.params);
-    // console.log(this.price.value);
-    for (let i = 0; i < this.params.value.values.length; i++) {
-      let name = this.params.value.values[i].name;
-      if (name !== null && name !== '') {
-        this.content.push(name);
-        console.log(this.content);
+    if (this.params) {
+      for (let i = 0; i < this.params.value.values.length; i++) {
+        let name = await this.params.value.values[i].name;
+        if (name !== null && name !== '') {
+          this.content.push(name);
+          console.log(this.content);
+        }
       }
     }
 
