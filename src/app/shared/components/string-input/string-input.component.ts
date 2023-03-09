@@ -18,6 +18,8 @@ export class StringInputComponent implements OnInit {
   @Input() innerLabel: string;
   @Input() required: boolean = true;
   @Input() fullWidth: boolean = true;
+  @Input() storeName: boolean = false;
+  @Input() storeSlug: boolean = false;
   @Output() onInputEvent = new EventEmitter<string>();
 
   inputText: string;

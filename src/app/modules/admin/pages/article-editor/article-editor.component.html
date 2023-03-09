@@ -1,7 +1,7 @@
 <div class="container">
   <header class="header">
-    <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
-    <p>Preview</p>
+    <img [src]="env + '/arrow-double-up-black.svg'" alt="" (click)="send()" />
+    <p (click)="previewItem()">Preview</p>
   </header>
   <!-- <app-helper-headerv2
     [mode]="'basic'"
@@ -129,7 +129,7 @@
     </app-card>
   </div>
 
-  <div class="section" style="padding-bottom: 32px">
+  <div class="section" style="padding-bottom: 0px">
     <app-title-icon-header
       title="Descripción"
       [editing]="!editingDescription"
@@ -197,9 +197,6 @@
                 />
               </div>
             </section>
-            <button style="margin: 0" class="config" (click)="send()">
-              <span style="margin: 0 auto">Actualizar Artículo</span>
-            </button>
           </div>
         </div>
       </div>

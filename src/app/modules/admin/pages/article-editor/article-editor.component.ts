@@ -291,15 +291,15 @@ export class ArticleEditorComponent implements OnInit {
         this.loadingSlides = false;
 
         this.slides = this.item.images
-        .sort(({index:a},{index:b}) => a>b?1:-1)
-        .map(({index, ...image}) => {
-          return {
-            url: completeImageURL(image.value),
-            index,
-            type: 'poster',
-            text: '',
-          };
-        });
+          .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+          .map(({ index, ...image }) => {
+            return {
+              url: completeImageURL(image.value),
+              index,
+              type: 'poster',
+              text: '',
+            };
+          });
 
         // if (!this._ItemsService.itemImages.length) {
         const imagesPromises = this.item.images.map(async (image, index) => {
@@ -679,7 +679,7 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   goBack() {
-    // TODO
+    this._Router.navigate(['/admin/dashboard']);
   }
 
   dynamicInputKeyPress(index: number) {
@@ -692,8 +692,10 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   async send() {
-    console.log(this.productDescription);
-    console.log(this.productName);
+    // console.log(this.productDescription);
+    // console.log(this.productName);
+    // console.log(this.params);
+    // console.log(this.price.value);
     for (let i = 0; i < this.params.value.values.length; i++) {
       let name = this.params.value.values[i].name;
       if (name !== null && name !== '') {
@@ -704,6 +706,7 @@ export class ArticleEditorComponent implements OnInit {
 
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     const itemInput = {
+      pricing: this.price.value,
       name: this.productName,
       description: this.productDescription,
       content: this.content,
@@ -711,6 +714,8 @@ export class ArticleEditorComponent implements OnInit {
 
     const updatedItem = await this.itemService.updateItem(itemInput, itemId);
     console.log(updatedItem);
+
+    this.goBack();
   }
 
   generateFields() {
