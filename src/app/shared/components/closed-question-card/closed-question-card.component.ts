@@ -15,6 +15,7 @@ import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { environment } from 'src/environments/environment';
 import { ExtendedAnswerDefault } from '../webform-multiple-selection-question/webform-multiple-selection-question.component';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-closed-question-card',
@@ -56,7 +57,10 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
   @Input() containerStyles: Record<string, any> = null;
   @Input() labelStyles: Record<string, any> = null;
 
-  constructor(private dialogFlowService: DialogFlowService) {}
+  constructor(
+    private dialogFlowService: DialogFlowService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.initProcesses();
@@ -510,6 +514,25 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
     }
 
     this.emitMultipleSelectedOptions();
+  }
+
+  goToDetail(index: number) {
+    this.dialogFlowService.selectedQuestion = {
+      dialogId: this.dialogFlowConfig.dialogId,
+      flowId: this.dialogFlowConfig.flowId,
+      multiple: this.multiple,
+      required: this.required,
+    };
+
+    this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
+      this.dialogFlowConfig.dialogId
+    ].fields.options = this.completeAnswers;
+
+    this.router.navigate(['/admin/options-selector'], {
+      queryParams: {
+        startAt: index,
+      },
+    });
   }
 
   ngOnDestroy() {

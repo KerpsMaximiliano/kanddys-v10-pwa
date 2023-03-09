@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { environment } from 'src/environments/environment';
 
@@ -35,6 +36,7 @@ export class WebformMetricsComponent implements OnInit {
     private headerService: HeaderService,
     private appService: AppService,
     private merchantsService: MerchantsService,
+    private saleflowService: SaleFlowService,
     private _Router: Router
   ) {}
 
@@ -67,6 +69,7 @@ export class WebformMetricsComponent implements OnInit {
 
             switch (type) {
               case 'multiple':
+              case 'multiple-text':
                 question.answers = currentQuestion.answerDefault.map(
                   (option) => ({
                     text:
@@ -85,9 +88,21 @@ export class WebformMetricsComponent implements OnInit {
                   })
                 );
 
+                const additionalAnswers = [];
+
                 if (_answerFrequent?.response) {
                   for (const optionNumbers of _answerFrequent?.response) {
                     const { value, label, count } = optionNumbers;
+
+                    const isADeclaredOption = question.answers.find(
+                      (option) => option.optionValue === value || value === option.file || value === option.label
+                    );
+
+                    if (!isADeclaredOption)
+                      additionalAnswers.push({
+                        text: count + ' ' + value,
+                        userProvided: true,
+                      });
 
                     for (const option of question.answers) {
                       if (option.optionValue === label && option.file) {
@@ -105,6 +120,10 @@ export class WebformMetricsComponent implements OnInit {
                       }
                     }
                   }
+                }
+
+                if(additionalAnswers.length) {
+                  question.answers = question.answers.concat(additionalAnswers);
                 }
                 break;
               default:
@@ -139,9 +158,16 @@ export class WebformMetricsComponent implements OnInit {
       amount: 1,
     };
 
+    const saleflowDefault = await this.saleflowService.saleflowDefault(
+      this.merchantsService.merchantData._id
+    );
+
+    this.headerService.saleflow = saleflowDefault;
+
+    this.headerService.emptyOrderProducts();
+    this.headerService.emptyItems();
 
     this.headerService.storeOrderProduct(product);
-    
 
     this.appService.events.emit({
       type: 'added-item',
@@ -152,6 +178,13 @@ export class WebformMetricsComponent implements OnInit {
       this.itemData
     );
 
-    //this.headerService.saleflow = this.merchantsService.sale
+    this._Router.navigate(
+      ['/ecommerce/' + this.merchantsService.merchantData.slug + '/checkout'],
+      {
+        queryParams: {
+          webformPreview: true,
+        },
+      }
+    );
   }
 }

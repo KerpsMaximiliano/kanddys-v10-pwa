@@ -204,6 +204,7 @@ export class CheckoutComponent implements OnInit {
     }
   > = {};
   areWebformsValid: boolean = false;
+  webformPreview: boolean = false;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -213,7 +214,7 @@ export class CheckoutComponent implements OnInit {
     private postsService: PostsService,
     public orderService: OrderService,
     private appService: AppService,
-    private location: Location,
+    public location: Location,
     private router: Router,
     private route: ActivatedRoute,
     private toastr: ToastrService,
@@ -224,6 +225,9 @@ export class CheckoutComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.webformPreview = Boolean(
+      this.route.snapshot.queryParamMap.get('webformPreview')
+    );
     this.saleflowId = this.headerService.saleflow.merchant._id;
     let items = this.headerService.getItems();
     if (!items.every((value) => typeof value === 'string')) {
@@ -344,6 +348,13 @@ export class CheckoutComponent implements OnInit {
     if (!this.headerService.orderInputComplete()) {
       this.missingOrderData = true;
     }
+
+    if (this.webformPreview)
+      this.post = {
+        message: 'Dummy post',
+        from: 'Emisor',
+        to: 'Receptor',
+      };
   }
 
   editOrder(
@@ -502,7 +513,7 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    if (!this.areWebformsValid) return;
+    if (!this.areWebformsValid || this.webformPreview) return;
 
     this.disableButton = true;
     lockUI();
@@ -578,7 +589,11 @@ export class CheckoutComponent implements OnInit {
 
       //Answer the webforms of each item and adds it to the order
       for await (const item of this.items) {
-        if (item.webForms && item.webForms.length) {
+        if (
+          item.webForms &&
+          item.webForms.length &&
+          this.webformsByItem[item._id]
+        ) {
           const answer = this.getWebformAnswer(item._id);
 
           const response = await this._WebformsService.createAnswer(answer);
@@ -639,6 +654,8 @@ export class CheckoutComponent implements OnInit {
   }
 
   selectSelect(index: number) {
+    if (this.webformPreview) return;
+
     switch (index) {
       case 0: {
         this.post = {
@@ -745,9 +762,18 @@ export class CheckoutComponent implements OnInit {
     for (const item of this.items) {
       const { webForms } = item;
 
+      const firstActiveWebformIndex = webForms.findIndex(
+        (webform) => webform.active
+      );
+
       //If there's at least 1 webform associated with the item, then, it loads the questions
-      if (webForms && webForms.length > 0) {
-        const itemWebform = webForms[0];
+      if (
+        webForms &&
+        webForms.length > 0 &&
+        firstActiveWebformIndex >= 0 &&
+        webForms[firstActiveWebformIndex].active
+      ) {
+        const itemWebform = webForms[firstActiveWebformIndex];
 
         const webformId = itemWebform.reference;
         const webform = await this._WebformsService.webform(webformId);
@@ -887,23 +913,45 @@ export class CheckoutComponent implements OnInit {
                     this.answersByQuestion[question._id]['selectedIndex'] =
                       selectedIndex;
                   }
+                } else {
+                  const selectedOptions = (
+                    this.dialogFlowService.dialogsFlows[
+                      'webform-item-' + item._id
+                    ][question._id].fields
+                      .options as Array<ExtendedAnswerDefault>
+                  ).filter((option) => option.selected);
+
+                  if (selectedOptions.length > 0) {
+                    this.answersByQuestion[question._id]['multipleResponses'] =
+                      selectedOptions.map((option) => ({
+                        response: option.userProvidedAnswer
+                          ? option.userProvidedAnswer
+                          : option.value,
+                        responseLabel: option.label ? option.label : null,
+                        isProvidedByUser: option.userProvidedAnswer
+                          ? true
+                          : false,
+                        isMedia: option.isMedia,
+                      }));
+                  }
                 }
               }
             }
           }
         }
-      } else {
-        this.webformsByItem[item._id] = null;
       }
     }
 
     this.createDialogFlowForEachQuestion();
+
+    if (Object.keys(this.webformsByItem).length === 0)
+      this.areWebformsValid = true;
   }
 
   //Creates a dialog flow that allows the user to answer each item questions
   createDialogFlowForEachQuestion() {
     for (const item of this.items) {
-      if (this.webformsByItem[item._id]?.webform) {
+      if (this.webformsByItem[item._id]?.webform && item.webForms[0]?.active) {
         for (const question of this.webformsByItem[item._id].webform
           .questions) {
           const lastDialogIndex =
@@ -1128,45 +1176,56 @@ export class CheckoutComponent implements OnInit {
     > = {}; // {itemId: {requiredQuestions: number; valid: boolean}}
 
     for (const item of this.items) {
-      itemRequiredQuestions[item._id] = { requiredQuestions: 0, valid: false };
+      if (this.webformsByItem[item._id]) {
+        itemRequiredQuestions[item._id] = {
+          requiredQuestions: 0,
+          valid: false,
+        };
 
-      for (const question of this.webformsByItem[item._id].webform.questions) {
-        if (question.required) {
-          itemRequiredQuestions[item._id].requiredQuestions++;
+        for (const question of this.webformsByItem[item._id].webform
+          .questions) {
+          if (question.required) {
+            itemRequiredQuestions[item._id].requiredQuestions++;
+          }
         }
       }
     }
 
     for (const item of this.items) {
-      let requiredQuestionsAnsweredCounter = 0;
-      const flowId = 'webform-item-' + item._id;
+      if (this.webformsByItem[item._id]) {
+        let requiredQuestionsAnsweredCounter = 0;
+        const flowId = 'webform-item-' + item._id;
 
-      for (const question of this.webformsByItem[item._id].webform.questions) {
-        const dialogId = question._id;
+        for (const question of this.webformsByItem[item._id].webform
+          .questions) {
+          const dialogId = question._id;
+
+          if (
+            question.required &&
+            this.dialogFlowService.dialogsFlows[flowId][dialogId].fields.valid
+          ) {
+            requiredQuestionsAnsweredCounter++;
+          }
+        }
 
         if (
-          question.required &&
-          this.dialogFlowService.dialogsFlows[flowId][dialogId].fields.valid
+          itemRequiredQuestions[item._id].requiredQuestions ===
+            requiredQuestionsAnsweredCounter ||
+          itemRequiredQuestions[item._id].requiredQuestions === 0
         ) {
-          requiredQuestionsAnsweredCounter++;
+          this.webformsByItem[item._id].valid = true;
+        } else {
+          this.webformsByItem[item._id].valid = false;
         }
-      }
-
-      if (
-        itemRequiredQuestions[item._id].requiredQuestions ===
-          requiredQuestionsAnsweredCounter ||
-        itemRequiredQuestions[item._id].requiredQuestions === 0
-      ) {
-        this.webformsByItem[item._id].valid = true;
-      } else {
-        this.webformsByItem[item._id].valid = false;
       }
     }
 
     let areWebformsValid = true;
 
     Object.keys(this.webformsByItem).forEach((itemId) => {
-      areWebformsValid = areWebformsValid && this.webformsByItem[itemId].valid;
+      areWebformsValid = this.webformsByItem[itemId]
+        ? areWebformsValid && this.webformsByItem[itemId].valid
+        : true;
     });
 
     this.areWebformsValid = areWebformsValid;

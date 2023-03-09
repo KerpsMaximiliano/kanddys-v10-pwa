@@ -14,7 +14,7 @@ export interface FlowSnapshot {
 export interface WebformMultipleOptionIDs {
   flowId: string;
   dialogId: string;
-};
+}
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +24,10 @@ export class DialogFlowService {
   activeDialogId: string = null;
   previouslyActiveDialogId: string = null;
   swiperConfig: SwiperOptions = null;
-  public updateMultipleSelectionDialog: EventEmitter<WebformMultipleOptionIDs> = new EventEmitter();
+  public updateMultipleSelectionDialog: EventEmitter<WebformMultipleOptionIDs> =
+    new EventEmitter();
+  selectedQuestion: { flowId: string; dialogId: string; multiple: boolean; required: boolean } =
+    null;
 
   constructor() {}
 

@@ -17,7 +17,7 @@
     [ngStyle]="{ backgroundColor: headerService.colorTheme }"
   >
     <div style="display: flex; gap: 8px">
-      <a> <i class="far fa-angle-double-up" (click)="editOrder('item')"></i></a>
+      <a> <i class="far fa-angle-double-up" (click)="!webformPreview ? editOrder('item') : location.back()"></i></a>
       <p class="title">
         {{
           headerService.saleflow?.merchant?.name.length < 26

@@ -6,10 +6,8 @@
       class="arrows"
       (click)="goBack()"
     />
-      <button class="right"
-        (click)="goToPreview()"
-      >Preview</button>
-      <!--
+    <button class="right" (click)="goToPreview()">Preview</button>
+    <!--
         <button class="hide">Inactivo</button>
       -->
   </header>
@@ -21,6 +19,11 @@
     <ng-container [ngSwitch]="question.type">
       <app-router-options
         *ngSwitchCase="'multiple'"
+        [title]="question.value"
+        [options]="question.answers"
+      ></app-router-options>
+      <app-router-options
+        *ngSwitchCase="'multiple-text'"
         [title]="question.value"
         [options]="question.answers"
       ></app-router-options>

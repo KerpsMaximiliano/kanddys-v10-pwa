@@ -6,9 +6,9 @@
   <ng-container *ngFor="let option of options; index as i">
     <div class="flex" *ngIf="!option.file">
       <div class="left"></div>
-      <a routerLink="option.link">
+      <div class="answer-selector-option">
         {{ option.text }}
-      </a>
+      </div>
     </div>
   </ng-container>
 </section>

@@ -10,6 +10,7 @@
               [src]="answer.img"
               (error)="answer.img = '/assets/images/noimage.png'"
               class="radioImg"
+              (click)="goToDetail(i)"
             />
             <div
               class="radioButton"
@@ -51,6 +52,7 @@
               [src]="answer.img"
               (error)="answer.img = '/assets/images/noimage.png'"
               class="radioImg"
+              (click)="goToDetail(i)"
             />
             <div
               class="radioButton"

@@ -28,6 +28,7 @@ import { OrderStatusViewComponent } from './pages/order-status-view/order-status
 import { OrderListComponent } from './pages/order-list/order-list.component';
 import { TextOrImageComponent } from 'src/app/shared/components/text-or-image/text-or-image.component';
 import { ItemWebformPreviewComponent } from './pages/item-webform-preview/item-webform-preview.component';
+import { WebformOptionsSelectorComponent } from './pages/webform-options-selector/webform-options-selector.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -158,6 +159,10 @@ const routes: Routes = [
         component: WebformMetricsComponent,
       },
       {
+        path: 'options-selector',
+        component: WebformOptionsSelectorComponent
+      },
+      {
         path: 'webform-preview/:itemId',
         component: ItemWebformPreviewComponent,
       },
@@ -215,6 +220,7 @@ const routes: Routes = [
     OrderStatusViewComponent,
     OrderListComponent,
     ItemWebformPreviewComponent,
+    WebformOptionsSelectorComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
