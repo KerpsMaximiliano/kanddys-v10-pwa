@@ -37,6 +37,10 @@ import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-
 import { DescriptionDialogComponent } from 'src/app/shared/dialogs/description-dialog/description-dialog.component';
 import { DialogFormComponent } from 'src/app/shared/dialogs/dialog-form/dialog-form.component';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import { DeliveryZoneInput } from 'src/app/core/models/deliveryzone';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-test',
@@ -108,24 +112,37 @@ export class TestComponent implements OnInit {
 
   firstIndex: number = 0;
 
+
+  // Variables for dialogProFlow
+
   dialogsPro: Array<EmbeddedComponentWithId> = [];
   dialogFlowFunctions: Record<string, any> = {};
+
+  deliveryType: 'yes' | 'no' | 'depend' | 'no-delivery';
+  depend: 'amount' | 'zone';
+
+  deliveryZones: DeliveryZoneInput[];
+  merchant: Merchant;
 
   constructor(
     private dialog: DialogService,
     private itemsService: ItemsService,
     private merchantService: MerchantsService,
     private saleflowService: SaleFlowService,
-    private _bottomSheet: MatBottomSheet
+    private _bottomSheet: MatBottomSheet,
+    private dialogFlowService: DialogFlowService,
+    private deliveryzonesService: DeliveryZonesService,
+    private headerService: HeaderService
   ) {}
 
   async ngOnInit() {
     console.log(this.firstIndex);
-    this.item = await this.itemsService.item('63d7ebf3bbd3bc32bcc2ec0b');
     this.inject();
     // this.dialogFlowFunctions.moveToDialogByIndex(
     //   this.dialogs.length - 1
     // );
+
+    this.merchant = await this.merchantService.merchantDefault();
   }
 
   openDialog() {
@@ -191,7 +208,7 @@ export class TestComponent implements OnInit {
           fields: {
             list: [
               {
-                name: 'qrContentSelection',
+                name: 'deliveryType',
                 value: '',
                 validators: [Validators.required],
                 type: 'selection',
@@ -225,7 +242,34 @@ export class TestComponent implements OnInit {
           },
           isMultiple: true,
         },
-        outputs: []
+        outputs: [
+          {
+            name: 'data',
+            callback: (params) => {
+              console.log(params);
+              const { value } = params;
+              const { deliveryType } = value;
+              this.deliveryType = 
+              deliveryType[0] === 'Sí' ? 'yes'
+               : deliveryType[0] === 'No' ? 'no' 
+               : deliveryType[0] === 'Depende' ? 'depend' 
+               : 'no-delivery';
+
+              if (this.deliveryType === 'yes' || this.deliveryType === 'depend') {
+                console.log("yes or depend");
+                setTimeout(() => {
+                  this.dialogFlowFunctions.moveToDialogByIndex(1);
+                }, 500);
+                
+              } else if (this.deliveryType === 'no' || this.deliveryType === 'no-delivery') {
+                console.log("no or no-delivery");
+                setTimeout(() => {
+                  this.dialogFlowFunctions.moveToDialogByIndex(6);
+                }, 500);
+              }
+            }
+          }
+        ]
       },
       {
         component: GeneralDialogComponent,
@@ -260,7 +304,7 @@ export class TestComponent implements OnInit {
           fields: {
             list: [
               {
-                name: 'qrContentSelection',
+                name: 'depend',
                 value: '',
                 validators: [Validators.required],
                 type: 'selection',
@@ -288,7 +332,28 @@ export class TestComponent implements OnInit {
           },
           isMultiple: true,
         },
-        outputs: []
+        outputs: [
+          {
+            name: 'data',
+            callback: (params) => {
+              console.log(params);
+              const { value } = params;
+              const { depend } = value;
+              this.depend = depend[0] === 'Del monto de la factura' ? 'amount' : 'zone';
+              // TODO validate if deliveryZones length is 0
+
+              if (this.depend === 'amount') {
+                setTimeout(() => {
+                  this.dialogFlowFunctions.moveToDialogByIndex(4);
+                }, 500);
+              } else if (this.depend === 'zone') {
+                setTimeout(() => {
+                  this.dialogFlowFunctions.moveToDialogByIndex(2);
+                }, 500);
+              }
+            }
+          }
+        ]
       },
       {
         component: DialogFormComponent,
@@ -333,6 +398,16 @@ export class TestComponent implements OnInit {
             name: 'formSubmit',
             callback: (params) => {
               console.log(params);
+              const incomeByBuyer = params.value[0].value
+              const cost = params.value[1].value;
+              const zoneName = params.value[2].value;
+
+              this.deliveryZones.push({
+                zona: zoneName,
+                amount: incomeByBuyer as number,
+                cost: cost as number, 
+                type: 'zone'
+              });
             },
           },
         ],
@@ -380,6 +455,16 @@ export class TestComponent implements OnInit {
             name: 'formSubmit',
             callback: (params) => {
               console.log(params);
+              const incomeByBuyer = params.value[0].value
+              const cost = params.value[1].value;
+              const zoneName = params.value[2].value;
+
+              this.deliveryZones.push({
+                zona: zoneName,
+                amount: incomeByBuyer as number,
+                cost: cost as number, 
+                type: 'zone'
+              });
             },
           },
         ],
@@ -443,143 +528,275 @@ export class TestComponent implements OnInit {
             name: 'formSubmit',
             callback: (params) => {
               console.log(params);
+              const lesserAmount = params.value[0].value
+              const greaterAmount = params.value[1].value;
+              const incomeByBuyer = params.value[2].value
+              const cost = params.value[3].value;
+              const zoneName = params.value[4].value;
+
+              this.deliveryZones.push({
+                zona: zoneName,
+                amount: incomeByBuyer as number,
+                cost: cost as number,
+                lesserAmount: lesserAmount as number,
+                greaterAmount: greaterAmount as number,
+                type: 'lesser'
+              });
             },
           },
         ],
       },
-      // {
-      //   component: DialogFormComponent,
-      //   componentId: 'yes-depend-amount-2',
-      //   inputs: {
-      //     dialogId: 'yes-depend-amount-2',
-      //     containerStyles: {},
-      //     title: {
-      //       text: "Zona de Entrega #2"
-      //     },
-      //     fields: {
-      //       inputs: [
-      //         {
-      //           label: "Menor a:",
-      //           formControl: "input-1",
-      //           row: 0,
-      //           column: 0,
-      //           isFlex: true,
-      //           type: "text"
-      //         },
-      //         {
-      //           label: "Mayor a:",
-      //           formControl: "input-2",
-      //           row: 0,
-      //           column: 1,
-      //           isFlex: true,
-      //           type: "text"
-      //         },
-      //         {
-      //           label: "Monto que te pagan por el delivery:",
-      //           formControl: "input-3",
-      //           row: 1,
-      //           column: 0,
-      //           isFlex: false,
-      //           type: "text"
-      //         },
-      //         {
-      //           label: "Nombre de la zona",
-      //           formControl: "input-4",
-      //           row: 2,
-      //           column: 0,
-      //           isFlex: false,
-      //           type: "text"
-      //         }
-      //       ]
-      //     }
-      //   },
-      //   outputs: [
-      //     {
-      //       name: 'formSubmit',
-      //       callback: (params) => {
-      //         console.log(params);
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   component: DialogFormComponent,
-      //   componentId: 'no-deliveryzone-1',
-      //   inputs: {
-      //     dialogId: 'no-deliveryzone-1',
-      //     containerStyles: {},
-      //     title: {
-      //       text: "Zona de Entrega #1"
-      //     },
-      //     fields: {
-      //       inputs: [
-      //         {
-      //           label: "$ que te cuesta (egreso)",
-      //           formControl: "input-1",
-      //           row: 0,
-      //           column: 0,
-      //           isFlex: true,
-      //           type: "text"
-      //         },
-      //         {
-      //           label: "Nombre de la zona:",
-      //           formControl: "input-2",
-      //           row: 1,
-      //           column: 0,
-      //           isFlex: true,
-      //           type: "text"
-      //         },
-      //       ]
-      //     }
-      //   },
-      //   outputs: [
-      //     {
-      //       name: 'formSubmit',
-      //       callback: (params) => {
-      //         console.log(params);
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   component: DialogFormComponent,
-      //   componentId: 'no-deliveryzone-2',
-      //   inputs: {
-      //     dialogId: 'no-deliveryzone-2',
-      //     containerStyles: {},
-      //     title: {
-      //       text: "Zona de Entrega #2"
-      //     },
-      //     fields: {
-      //       inputs: [
-      //         {
-      //           label: "$ que te cuesta (egreso)",
-      //           formControl: "input-1",
-      //           row: 0,
-      //           column: 0,
-      //           isFlex: true,
-      //           type: "text"
-      //         },
-      //         {
-      //           label: "Nombre de la zona:",
-      //           formControl: "input-2",
-      //           row: 1,
-      //           column: 0,
-      //           isFlex: true,
-      //           type: "text"
-      //         },
-      //       ]
-      //     }
-      //   },
-      //   outputs: [
-      //     {
-      //       name: 'formSubmit',
-      //       callback: (params) => {
-      //         console.log(params);
-      //       },
-      //     },
-      //   ],
-      // }
+      {
+        component: DialogFormComponent,
+        componentId: 'yes-depend-amount-2',
+        inputs: {
+          dialogId: 'yes-depend-amount-2',
+          containerStyles: {},
+          title: {
+            text: "Zona de Entrega #2"
+          },
+          fields: {
+            inputs: [
+              {
+                label: "Menor a:",
+                formControl: "input-1",
+                row: 0,
+                column: 0,
+                isFlex: true,
+                type: "text"
+              },
+              {
+                label: "Mayor a:",
+                formControl: "input-2",
+                row: 0,
+                column: 1,
+                isFlex: true,
+                type: "text"
+              },
+              {
+                label: "Monto que te pagan por el delivery:",
+                formControl: "input-3",
+                row: 1,
+                column: 0,
+                isFlex: false,
+                type: "text"
+              },
+              {
+                label: "Nombre de la zona",
+                formControl: "input-4",
+                row: 2,
+                column: 0,
+                isFlex: false,
+                type: "text"
+              }
+            ]
+          }
+        },
+        outputs: [
+          {
+            name: 'formSubmit',
+            callback: (params) => {
+              console.log(params);
+              const lesserAmount = params.value[0].value
+              const greaterAmount = params.value[1].value;
+              const incomeByBuyer = params.value[2].value
+              const zoneName = params.value[3].value;
+
+              this.deliveryZones.push({
+                zona: zoneName,
+                amount: incomeByBuyer as number,
+                // cost: cost,
+                lesserAmount : lesserAmount as number,
+                greaterAmount : greaterAmount as number,
+                type: 'lesser'
+              });
+            },
+          },
+        ],
+      },
+      {
+        component: DialogFormComponent,
+        componentId: 'no-deliveryzone-1',
+        inputs: {
+          dialogId: 'no-deliveryzone-1',
+          containerStyles: {},
+          title: {
+            text: "Zona de Entrega #1"
+          },
+          fields: {
+            inputs: [
+              {
+                label: "$ que te cuesta (egreso)",
+                formControl: "input-1",
+                row: 0,
+                column: 0,
+                isFlex: true,
+                type: "text"
+              },
+              {
+                label: "Nombre de la zona:",
+                formControl: "input-2",
+                row: 1,
+                column: 0,
+                isFlex: true,
+                type: "text"
+              },
+            ]
+          }
+        },
+        outputs: [
+          {
+            name: 'formSubmit',
+            callback: (params) => {
+              console.log(params);
+              const cost = params.value[0].value;
+              const zoneName = params.value[1].value;
+
+              this.deliveryZones.push({
+                zona: zoneName,
+                cost: cost as number,
+                type: 'free'
+              });
+            },
+          },
+        ],
+      },
+      {
+        component: DialogFormComponent,
+        componentId: 'no-deliveryzone-2',
+        inputs: {
+          dialogId: 'no-deliveryzone-2',
+          containerStyles: {},
+          title: {
+            text: "Zona de Entrega #2"
+          },
+          fields: {
+            inputs: [
+              {
+                label: "$ que te cuesta (egreso)",
+                formControl: "input-1",
+                row: 0,
+                column: 0,
+                isFlex: true,
+                type: "text"
+              },
+              {
+                label: "Nombre de la zona:",
+                formControl: "input-2",
+                row: 1,
+                column: 0,
+                isFlex: true,
+                type: "text"
+              },
+            ]
+          }
+        },
+        outputs: [
+          {
+            name: 'formSubmit',
+            callback: (params) => {
+              console.log(params);
+              const cost = params.value[0].value;
+              const zoneName = params.value[1].value;
+
+              this.deliveryZones.push({
+                zona: zoneName,
+                cost: cost as number,
+                type: 'free'
+              });
+            },
+          },
+        ],
+      },
+      {
+        component: GeneralDialogComponent,
+        componentId: 'end',
+        inputs: {
+          dialogId: 'end',
+          containerStyles: {
+            background: 'rgb(255, 255, 255)',
+            borderRadius: '12px',
+            opacity: '1',
+            padding: '37px 36.6px 18.9px 31px',
+          },
+          header: {
+            styles: {
+              fontSize: '21px',
+              fontFamily: 'SfProBold',
+              marginBottom: '21.2px',
+              marginTop: '0',
+              color: '#4F4F4F',
+            },
+            text: '¿Desea guardar los datos?',
+          },
+          title: {
+            styles: {
+              fontSize: '15px',
+              color: '#7B7B7B',
+              fontStyle: 'italic',
+              margin: '0',
+            },
+            text: '',
+          },
+          fields: {
+            list: [
+              {
+                name: 'confirm',
+                value: '',
+                validators: [Validators.required],
+                type: 'selection',
+                selection: {
+                  styles: {
+                    display: 'block',
+                    fontFamily: '"SfProBold"',
+                    fontSize: '17px',
+                    color: '#272727',
+                    marginLeft: '19.5px',
+                  },
+                  list: [
+                    {
+                      text: 'Sí',
+                    }
+                  ],
+                },
+                // styles: {},
+                prop: 'text',
+              },
+            ],
+          },
+          isMultiple: true,
+        },
+        outputs: [
+          {
+            name: 'data',
+            callback: async (params) => {
+              console.log(params);
+              const { confirm } = params.value;
+              
+              if (confirm[0]) {
+                console.log(this.deliveryZones);
+                this.deliveryZones.forEach(async zone => {
+                  const deliveryZone = await this.deliveryzonesService.create(
+                    this.merchant._id,
+                    zone
+                  )
+                  if (zone.cost) {
+                    const expenditure = await this.deliveryzonesService.createExpenditure(
+                      this.merchant._id,
+                      {
+                        type: "delivery-zone",
+                        amount: zone.cost
+                      }
+                    );
+
+                    await this.deliveryzonesService.addExpenditure(expenditure._id, deliveryZone._id);
+                  }
+                });
+              }
+            }
+          }
+        ]
+      },
     ]
 
     return this.dialogsPro;

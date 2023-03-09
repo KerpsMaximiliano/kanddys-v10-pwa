@@ -1,14 +1,14 @@
 <div class="container">
     <h2 class="title">{{ title.text }}</h2>
-    <form [formGroup]="form">
+    <form [formGroup]="form" *ngIf="form">
         <div formArrayName="inputArray" class="input-array">
             <div *ngFor="let row of rows" class="row">
                 <div *ngFor="let col of columns">
-                  <div *ngFor="let input of fields.inputs">
+                  <div *ngFor="let input of inputs; let i = index;">
                     <div *ngIf="input.row === row && input.column === col">
                         <div class="input-container">
                             <p class="input-label">{{ input.label }}</p>
-                            <input [type]="input.type" placeholder="Escribe..." class="" [formControlName]="input.formControl" (keypress)="onKeyPress()">
+                            <input [type]="input.type" placeholder="Escribe..." class="" [formControlName]="i" (keyup)="onKeyPress()">
                         </div>
                     </div>
                   </div>

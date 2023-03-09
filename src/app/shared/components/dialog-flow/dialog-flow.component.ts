@@ -154,6 +154,7 @@ export class DialogFlowComponent implements OnInit {
   }
 
   moveToDialogByIndex(dialogNumber: number) {
+    console.log(dialogNumber);
     setTimeout(() => {
       this.dialogSwiper.directiveRef.setIndex(dialogNumber);
     }, 100);
