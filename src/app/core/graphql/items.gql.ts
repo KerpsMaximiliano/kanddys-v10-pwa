@@ -124,6 +124,7 @@ const fullItem = `
     }
   }
   webForms {
+    _id
     reference
     active
   }

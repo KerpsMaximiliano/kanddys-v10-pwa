@@ -7,6 +7,7 @@ import {
   createAnswer,
   createWebform,
   itemAddWebForm,
+  itemUpdateWebForm,
   orderAddAnswer,
   webform,
   webformAddQuestion,
@@ -162,6 +163,14 @@ export class WebformsService {
       variables: { answerId, id },
     });
     return result?.orderAddAnswer;
+  }
+
+  async itemUpdateWebForm(input: any, webformId: string, id: string): Promise<any> {
+    const result = await this.graphql.mutate({
+      mutation: itemUpdateWebForm,
+      variables: { input, webformId, id },
+    });
+    return result?.itemUpdateWebForm;
   }
 
   async webforms(input: PaginationInput): Promise<Array<Webform>> {

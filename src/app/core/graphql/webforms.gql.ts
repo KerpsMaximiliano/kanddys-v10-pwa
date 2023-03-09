@@ -150,3 +150,15 @@ export const orderAddAnswer = gql`
     }
   }
 `;
+
+export const itemUpdateWebForm = gql`
+  mutation itemUpdateWebForm($input: ItemWebFormInput! $webformId: ObjectID!, $id: ObjectID!) {
+    itemUpdateWebForm(input: $input, webformId: $webformId, id: $id) {
+      webForms {
+        _id
+        reference
+        active
+      }
+    }
+  }
+`;

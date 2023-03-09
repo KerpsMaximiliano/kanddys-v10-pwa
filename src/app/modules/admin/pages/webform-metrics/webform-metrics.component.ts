@@ -1,8 +1,10 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AppService } from 'src/app/app.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Question, Webform } from 'src/app/core/models/webform';
@@ -26,6 +28,8 @@ export class WebformMetricsComponent implements OnInit {
   webformQuestions: Record<string, Question> = {};
   itemId: string = null;
   itemData: Item = null;
+  webformStatus: 'ACTIVE' | 'INACTIVE' = 'ACTIVE';
+  webformInternalId: string = null;
 
   constructor(
     private _WebformsService: WebformsService,
@@ -37,7 +41,8 @@ export class WebformMetricsComponent implements OnInit {
     private appService: AppService,
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
-    private _Router: Router
+    private _Router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +54,14 @@ export class WebformMetricsComponent implements OnInit {
         );
         this.itemId = itemId;
         this.itemData = await this.itemService.item(itemId);
+
+        if (this.itemData.webForms.length) {
+          this.webformStatus = this.itemData.webForms[0].active
+            ? 'ACTIVE'
+            : 'INACTIVE';
+          this.webformInternalId = this.itemData.webForms[0]._id;
+        }
+
         const { _id: webformUserId } = user || {};
         if (userId !== webformUserId) this._Router.navigate(['auth', 'login']);
         const answerFrequent = await this._WebformsService.answerFrequent(_id);
@@ -95,7 +108,10 @@ export class WebformMetricsComponent implements OnInit {
                     const { value, label, count } = optionNumbers;
 
                     const isADeclaredOption = question.answers.find(
-                      (option) => option.optionValue === value || value === option.file || value === option.label
+                      (option) =>
+                        option.optionValue === value ||
+                        value === option.file ||
+                        value === option.label
                     );
 
                     if (!isADeclaredOption)
@@ -122,8 +138,14 @@ export class WebformMetricsComponent implements OnInit {
                   }
                 }
 
-                if(additionalAnswers.length) {
-                  question.answers = question.answers.concat(additionalAnswers);
+                if (additionalAnswers.length) {
+                  const toAdd = [
+                    {
+                      text: additionalAnswers.length + ' Otras respuestas',
+                    },
+                  ];
+
+                  question.answers = question.answers.concat(toAdd);
                 }
                 break;
               default:
@@ -187,4 +209,33 @@ export class WebformMetricsComponent implements OnInit {
       }
     );
   }
+
+  switchWebformStatus = () => {
+    lockUI();
+
+    this._WebformsService
+      .itemUpdateWebForm(
+        {
+          active: this.webformStatus === 'ACTIVE' ? false : true,
+        },
+        this.webformInternalId,
+        this.itemId
+      )
+      .then((response) => {
+        if (response) {
+          this.webformStatus =
+            this.webformStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+
+          unlockUI();
+
+          this.snackBar.open('Cambio aplicado con exito', '', {
+            duration: 2000,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        unlockUI();
+      });
+  };
 }

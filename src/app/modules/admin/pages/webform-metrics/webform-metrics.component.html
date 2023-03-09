@@ -7,9 +7,9 @@
       (click)="goBack()"
     />
     <button class="right" (click)="goToPreview()">Preview</button>
-    <!--
-        <button class="hide">Inactivo</button>
-      -->
+    <button class="hide"
+      *ngIf="webformStatus === 'INACTIVE'"
+    >Inactivo</button>
   </header>
   <div
     *ngFor="let question of webform.questions"
@@ -35,12 +35,16 @@
     </ng-container>
   </div>
 
-  <!--
-    <app-menu-button
-      mode="array"
-      [position]="{
-        bottom: '50px'
-      }"
-    ></app-menu-button>
-  -->
+  <app-menu-button
+    mode="basic"
+    [options]="[
+      {
+        text: webformStatus === 'ACTIVE' ? 'Inactiva el formulario' : 'Activa el formulario',
+        callback: switchWebformStatus
+      }
+    ]"
+    [position]="{
+      bottom: '50px'
+    }"
+  ></app-menu-button>
 </div>
