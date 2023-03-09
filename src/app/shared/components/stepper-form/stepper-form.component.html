@@ -1,5 +1,5 @@
 <mat-vertical-stepper #stepper>
-  <mat-step>
+  <mat-step [completed]="itemForm.get('pricing').value > 0">
     <ng-template matStepLabel>Ingresa el precio del artículo</ng-template>
     <div style="margin: 8px 0">
       <app-currency-input

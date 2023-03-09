@@ -474,7 +474,7 @@ export class StoreComponent implements OnInit {
       type: 'added-item',
       data: item._id,
     });
-    this.headerService.storeItem(item);
+    // this.headerService.storeItem(item);
 
     this.items[index].isSelected = !this.items[index].isSelected;
   }

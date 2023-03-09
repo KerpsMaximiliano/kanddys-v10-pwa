@@ -303,25 +303,6 @@ export class HeaderService {
     localStorage.setItem(this.saleflow._id, JSON.stringify({ order, ...rest }));
   }
 
-  // Stores item data in localStorage
-  storeItem(product: Item | ItemParamValue) {
-    let { itemData, ...rest }: SaleflowData =
-      JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
-    if (!itemData) itemData = [];
-    const index = itemData.findIndex((item) => item === product._id);
-    if (index >= 0) {
-      itemData = itemData.filter((item) => item !== product._id);
-      this.items = this.items.filter((item) => item !== product._id);
-    } else {
-      itemData.push(product._id);
-      this.items.push(product._id);
-    }
-    localStorage.setItem(
-      this.saleflow._id,
-      JSON.stringify({ ...rest, itemData })
-    );
-  }
-
   // Adds params to first order product in localStorage
   addParams(params: ItemSubOrderParamsInput) {
     let { order, ...rest }: SaleflowData =

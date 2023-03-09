@@ -1,0 +1,48 @@
+.card {
+  padding: 12px;
+  border-top-left-radius: 17px;
+}
+.title {
+  font-size: 1rem;
+}
+.percentage {
+  color: #7b7b7b;
+  font-size: 0.75rem;
+  font-family: SfProMedium;
+}
+.benefits {
+  padding-top: 8px;
+  padding-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+
+  * {
+    margin: 0;
+    font-family: SfProMedium;
+    font-size: 1rem;
+    color: #7b7b7b;
+    font-weight: normal;
+  }
+}
+.avatar {
+  width: 34px;
+  height: 34px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 2px solid #f6f6f6;
+}
+table {
+  width: 100%;
+  td {
+    font-family: SfProMedium;
+    color: #7b7b7b;
+    font-size: 0.75rem;
+  }
+  .amount {
+    text-align: right;
+  }
+}
+::ng-deep .mat-button-wrapper {
+  padding: 0 !important;
+}
