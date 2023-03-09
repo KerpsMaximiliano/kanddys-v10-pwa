@@ -35,7 +35,7 @@
       ></app-string-input>
     </div>
 
-    <div style="margin-bottom: 10px">
+    <!-- <div style="margin-bottom: 10px">
       <app-string-input
         innerLabel="Número de Celular (Whatsapp)"
         (onInputEvent)="onPhoneInput($event)"
@@ -44,19 +44,26 @@
         type="tel"
         placeholder="Escribe el tuyo (no el de la tienda)"
       ></app-string-input>
-    </div>
-
-    <div
-      style="margin-bottom: 25px"
-      *ngIf="
-        inputName.length > 0 &&
-        inputLastName.length > 0 &&
-        inputMail.length > 0 &&
-        inputPhone.length > 0
-      "
-    >
-      <button mat-button matStepperNext (click)="signUp()">Continuar</button>
-    </div>
+    </div> -->
+    <ngx-intl-tel-input
+      [cssClass]="'custom'"
+      [enableAutoCountrySelect]="true"
+      [enablePlaceholder]="true"
+      [searchCountryFlag]="true"
+      [selectFirstCountry]="false"
+      [preferredCountries]="preferredCountries"
+      [selectedCountryISO]="CountryISO"
+      maxLength="13"
+      minlength="10"
+      [phoneValidation]="true"
+      [separateDialCode]="true"
+      [customPlaceholder]="'(000) 000-0000'"
+      [numberFormat]="PhoneNumberFormat.International"
+      tabindex="1"
+      id="phone"
+      [(ngModel)]="inputPhone"
+      (ngModelChange)="onPhoneInput()"
+    ></ngx-intl-tel-input>
 
     <div>
       <p
@@ -70,27 +77,34 @@
         Activarás tu cuenta desde la notificación que recibirás en este contacto
       </p>
     </div>
+
+    <button mat-button matStepperNext (click)="signUp()">Continuar</button>
   </mat-step>
   <mat-step [stepControl]="itemForm2">
     <ng-template matStepLabel>Info de la Tienda:</ng-template>
+
     <div>
       <app-string-input
         inputName="tiendaName"
         inputId="tiendaName"
         innerLabel="Nombre de la tienda"
+        [storeName]="true"
         (onInputEvent)="onTiendaNameInput($event)"
       ></app-string-input>
     </div>
+
     <div style="margin-top: 5px">
       <app-string-input
         inputName="slug"
         inputId="slug"
         innerLabel="Slug de la Tienda"
+        [storeSlug]="true"
         (onInputEvent)="onSlugInput($event)"
         type="text"
       >
       </app-string-input>
     </div>
+
     <div style="margin: 5px 0px">
       <app-string-input
         inputName="tiendaMail"
@@ -105,7 +119,7 @@
         inputName="tiendaPhone"
         inputId="tiendaPhone"
         innerLabel="Teléfono. Celular (WhatsApp)"
-        [placeholder]="inputPhone"
+        [placeholder]="phoneNumber"
         [disabled]="true"
       >
       </app-string-input>
