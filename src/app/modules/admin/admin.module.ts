@@ -29,6 +29,7 @@ import { OrderListComponent } from './pages/order-list/order-list.component';
 import { BenefitsComponent } from './pages/benefits/benefits.component';
 import { OrderExpensesComponent } from './pages/order-expenses/order-expenses.component';
 import { FilteredBenefitsComponent } from './pages/filtered-benefits/filtered-benefits.component';
+import { MerchantLandingComponent } from './pages/merchant-landing/merchant-landing.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -163,6 +164,10 @@ const routes: Routes = [
         component: OrderStatusViewComponent,
       },
       {
+        path: 'merchant-landing',
+        component: MerchantLandingComponent,
+      },
+      {
         path: 'order-list',
         children: [
           {
@@ -222,6 +227,7 @@ const routes: Routes = [
     BenefitsComponent,
     OrderExpensesComponent,
     FilteredBenefitsComponent,
+    MerchantLandingComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

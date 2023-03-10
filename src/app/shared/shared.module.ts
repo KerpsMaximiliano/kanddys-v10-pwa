@@ -164,6 +164,10 @@ import { CompactCardComponent } from './components/compact-card/compact-card.com
 import { NamedExpenseComponent } from './components/named-expense/named-expense.component';
 import { TitledExpenseComponent } from './components/titled-expense/titled-expense.component';
 import { OrderExpensesListComponent } from './components/order-expenses-list/order-expenses-list.component';
+import { InfoCard2Component } from './components/info-card2/info-card2.component';
+import { MerchantStepperFormComponent } from './components/merchant-stepper-form/merchant-stepper-form.component';
+import { StringInputComponent } from './components/string-input/string-input.component';
+import { ArticleStepperFormComponent } from './components/article-stepper-form/article-stepper-form.component';
 
 const imports = [
   CommonModule,
@@ -333,6 +337,10 @@ const declarations = [
   NamedExpenseComponent,
   TitledExpenseComponent,
   OrderExpensesListComponent,
+  InfoCard2Component,
+  MerchantStepperFormComponent,
+  StringInputComponent,
+  ArticleStepperFormComponent,
 ];
 
 @NgModule({

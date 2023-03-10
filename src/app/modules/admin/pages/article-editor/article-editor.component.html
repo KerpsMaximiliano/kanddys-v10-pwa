@@ -1,5 +1,9 @@
 <div class="container">
-  <app-helper-headerv2
+  <header class="header">
+    <img [src]="env + '/arrow-double-up-black.svg'" alt="" (click)="send()" />
+    <p (click)="previewItem()">Preview</p>
+  </header>
+  <!-- <app-helper-headerv2
     [mode]="'basic'"
     [fixed]="true"
     [icon]="{
@@ -33,10 +37,47 @@
     [returnAble]="false"
     [bgColor]="'#FFFFFF'"
     (return)="goBack()"
-  ></app-helper-headerv2>
+  ></app-helper-headerv2> -->
 
   <div class="toast-status" *ngIf="item?.status === 'disabled'">
     <p>Este artículo solo lo ves tú.</p>
+  </div>
+
+  <button class="config">
+    <img [src]="env + '/settings.svg'" alt="" />
+    <span>Configuraciones</span>
+  </button>
+
+  <div class="section">
+    <!-- <app-title-icon-header
+      title="Slides, contenido del QR"
+      [editing]="!editingSlides"
+      (iconClicked)="editSlides()"
+    >
+    </app-title-icon-header> -->
+    <app-qr-content
+      title="SLIDES"
+      *ngIf="slides"
+      [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
+    <app-qr-content
+      *ngIf="!slides"
+      [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
   </div>
 
   <div class="section" style="padding-top: 52px">
@@ -67,39 +108,8 @@
   </div>
 
   <div class="section">
-    <!-- <app-title-icon-header
-      title="Slides, contenido del QR"
-      [editing]="!editingSlides"
-      (iconClicked)="editSlides()"
-    >
-    </app-title-icon-header> -->
-    <app-qr-content
-      *ngIf="slides"
-      [slides]="slides"
-      [defaultText]="
-        !loadingSlides
-          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
-          : 'Cargando...'
-      "
-      [shadows]="false"
-      (buttonClicked)="goEditSlides()"
-    ></app-qr-content>
-    <app-qr-content
-      *ngIf="!slides"
-      [slides]="slides"
-      [defaultText]="
-        !loadingSlides
-          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
-          : 'Cargando...'
-      "
-      [shadows]="false"
-      (buttonClicked)="goEditSlides()"
-    ></app-qr-content>
-  </div>
-
-  <div class="section">
     <app-title-icon-header
-      title="Headline, article name"
+      title="Nombre"
       [editing]="!editingName"
       (iconClicked)="editingName = true; setFocus('name')"
     >
@@ -114,13 +124,14 @@
         [formControl]="name"
         placeholder="Nombre del producto (opcional)"
         *ngIf="editingName"
+        [(ngModel)]="productName"
       />
     </app-card>
   </div>
 
-  <div class="section" style="padding-bottom: 32px">
+  <div class="section" style="padding-bottom: 0px">
     <app-title-icon-header
-      title="Body, description, list of things"
+      title="Descripción"
       [editing]="!editingDescription"
       (iconClicked)="editingDescription = true; setFocus('description')"
     >
@@ -136,7 +147,64 @@
         placeholder="Descripción del producto (opcional)"
         [formControl]="description"
         *ngIf="editingDescription"
+        [(ngModel)]="productDescription"
       ></textarea>
     </app-card>
   </div>
+
+  <div class="section">
+    <form [formGroup]="itemParamsForm" (ngSubmit)="send()">
+      <p
+        style="
+          color: #272727;
+          font-size: 13px;
+          font-family: SFProLight;
+          margin-bottom: 8px;
+        "
+      >
+        LO INCLUIDO
+      </p>
+      <div
+        formArrayName="params"
+        *ngIf="getArrayLength(itemParamsForm, 'params')"
+      >
+        <div
+          *ngFor="
+            let paramsControl of getControls(itemParamsForm, 'params');
+            index as i
+          "
+          [formGroupName]="i"
+        >
+          <div
+            formArrayName="values"
+            *ngIf="getArrayLength(paramsControl, 'values')"
+          >
+            <section
+              class="form-group p-side"
+              *ngFor="
+                let valuesControl of getControls(paramsControl, 'values');
+                index as j
+              "
+              [formGroupName]="j"
+            >
+              <div class="template-grid">
+                <input
+                  class="card"
+                  type="text"
+                  formControlName="name"
+                  placeholder="Escribe..."
+                  (keypress)="dynamicInputKeyPress(j)"
+                />
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <app-menu-button
+    [position]="{ bottom: '50px' }"
+    [options]="menuOptions"
+  ></app-menu-button>
 </div>
