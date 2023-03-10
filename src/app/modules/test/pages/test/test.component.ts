@@ -247,7 +247,7 @@ export class TestComponent implements OnInit {
           },
         ],
       },
-      isMultiple: true,
+      isMultiple: false,
     },
     outputs: [
       {
@@ -256,39 +256,67 @@ export class TestComponent implements OnInit {
           console.log(params);
           const { value } = params;
           const { depend } = value;
-          this.depend = depend[0] === 'Del monto de la factura' ? 'amount' : 'zone';
-          // TODO validate if deliveryZones length is 0
 
-          if (this.depend === 'amount') {
-            this.dialogsPro.splice(
-              2,
-              0,
-              this.yesDependAmountDialogs[0]
-            );
+          if (!(depend.length === 0)) {
+            this.depend = depend[0] === 'Del monto de la factura' ? 'amount' : 'zone';
+            // TODO validate if deliveryZones length is 0
 
-            this.dialogsPro.splice(
-              3,
-              0,
-              this.yesDependAmountDialogs[1]
-            );
-            setTimeout(() => {
-              this.dialogFlowFunctions.moveToDialogByIndex(2);
-            }, 500);
-          } else if (this.depend === 'zone') {
-            this.dialogsPro.splice(
-              2,
-              0,
-              this.yesDependDeliveryDialogs[0]
-            );
+            if (this.depend === 'amount') {
 
-            this.dialogsPro.splice(
-              3,
-              0,
-              this.yesDependDeliveryDialogs[1]
-            );
-            setTimeout(() => {
-              this.dialogFlowFunctions.moveToDialogByIndex(2);
-            }, 500);
+              if (!(this.dialogsPro[2].componentId === 'yes-depend-amount-1')) {
+                // Deleting any other dialog except for the last one
+                console.log(this.dialogsPro.length);
+                if (this.dialogsPro.length > 3) {
+                  this.dialogsPro.splice(
+                    2,
+                    2
+                  )
+                  if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
+                }
+                
+                this.dialogsPro.splice(
+                  2,
+                  0,
+                  this.yesDependAmountDialogs[0]
+                );
+  
+                this.dialogsPro.splice(
+                  3,
+                  0,
+                  this.yesDependAmountDialogs[1]
+                );
+              }
+              setTimeout(() => {
+                this.dialogFlowFunctions.moveToDialogByIndex(2);
+              }, 500);
+            } else if (this.depend === 'zone') {
+              if (!(this.dialogsPro[2].componentId === 'yes-depend-deliveryzone-1')) {
+                // Deleting any other dialog except for the last one
+                console.log(this.dialogsPro.length);
+                if (this.dialogsPro.length > 3) {
+                  this.dialogsPro.splice(
+                    2,
+                    2
+                  )
+                  if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
+                }
+
+                this.dialogsPro.splice(
+                  2,
+                  0,
+                  this.yesDependDeliveryDialogs[0]
+                );
+  
+                this.dialogsPro.splice(
+                  3,
+                  0,
+                  this.yesDependDeliveryDialogs[1]
+                );
+              }
+              setTimeout(() => {
+                this.dialogFlowFunctions.moveToDialogByIndex(2);
+              }, 500);
+            }
           }
         }
       }
@@ -520,6 +548,8 @@ export class TestComponent implements OnInit {
               cost: Number(cost),
               lesserAmount: Number(lesserAmount),
               greaterAmount: Number(greaterAmount),
+              greaterAmountLimit: Number(greaterAmount),
+              lesserAmountLimit: Number(lesserAmount),
               type: 'lesser',
               id: "yes-depend-amount-1"
             });
@@ -601,6 +631,8 @@ export class TestComponent implements OnInit {
               // cost: cost,
               lesserAmount : Number(lesserAmount),
               greaterAmount : Number(greaterAmount),
+              greaterAmountLimit: Number(greaterAmount),
+              lesserAmountLimit: Number(lesserAmount),
               type: 'lesser',
               id: "yes-depend-amount-2"
             });
@@ -802,7 +834,7 @@ export class TestComponent implements OnInit {
               },
             ],
           },
-          isMultiple: true,
+          isMultiple: false,
         },
         outputs: [
           {
@@ -811,39 +843,81 @@ export class TestComponent implements OnInit {
               console.log(params);
               const { value } = params;
               const { deliveryType } = value;
-              this.deliveryType = 
-              deliveryType[0] === 'Sí' ? 'yes'
-               : deliveryType[0] === 'No' ? 'no' 
-               : deliveryType[0] === 'Depende' ? 'depend' 
-               : 'no-delivery';
 
-              if (this.deliveryType === 'yes' || this.deliveryType === 'depend') {
-                console.log("yes or depend");
-                this.dialogsPro.splice(
-                  1,
-                  0,
-                  this.yesDependDialog
-                )
-                setTimeout(() => {
-                  this.dialogFlowFunctions.moveToDialogByIndex(1);
-                }, 500);
-                
-              } else if (this.deliveryType === 'no' || this.deliveryType === 'no-delivery') {
-                console.log("no or no-delivery");
-                this.dialogsPro.splice(
-                  1,
-                  0,
-                  this.noDependDialogs[0]
-                );
-                this.dialogsPro.splice(
-                  2,
-                  0,
-                  this.noDependDialogs[1]
-                );
+              if (!(deliveryType.length === 0)) {
+                this.deliveryType = 
+                  deliveryType[0] === 'Sí' ? 'yes'
+                  : deliveryType[0] === 'No' ? 'no' 
+                  : deliveryType[0] === 'Depende' ? 'depend' 
+                  : 'no-delivery';
 
-                setTimeout(() => {
-                  this.dialogFlowFunctions.moveToDialogByIndex(1);
-                }, 500);
+                if (this.deliveryType === 'yes' || this.deliveryType === 'depend') {
+                  console.log("yes or depend");
+
+                  if (!(this.dialogsPro[1].componentId === 'yes-depend')) {
+                    // Deleting any other dialog except for the last one
+                    if (this.dialogsPro.length > 2) {
+                      this.dialogsPro.splice(
+                        1,
+                        this.dialogsPro.length === 3
+                          ? 1 :
+                          this.dialogsPro.length === 4
+                          ? 2 :
+                          3
+                      )
+                      
+                      console.log(this.deliveryData);
+                      if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
+                      console.log(this.deliveryData);
+                    }
+
+                    // Adding dialog yesDepend to the array
+                    this.dialogsPro.splice(
+                      1,
+                      0,
+                      this.yesDependDialog
+                    )
+                  }
+
+                  setTimeout(() => {
+                    this.dialogFlowFunctions.moveToDialogByIndex(1);
+                  }, 500);
+                  
+                } else if (this.deliveryType === 'no' || this.deliveryType === 'no-delivery') {
+                  console.log("no or no-delivery");
+
+                  if (!(this.dialogsPro[1].componentId === 'no-deliveryzone-1')) {
+                    // Deleting any other dialog except for the last one
+                    if (this.dialogsPro.length > 2) {
+                      this.dialogsPro.splice(
+                        1,
+                        this.dialogsPro.length === 3
+                          ? 1 :
+                          this.dialogsPro.length === 4
+                          ? 2 :
+                          3
+                      )
+                      console.log(this.deliveryData);
+                      if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
+                      console.log(this.deliveryData);
+                    }
+                    
+                    this.dialogsPro.splice(
+                      1,
+                      0,
+                      this.noDependDialogs[0]
+                    );
+                    this.dialogsPro.splice(
+                      2,
+                      0,
+                      this.noDependDialogs[1]
+                    );
+                  }
+
+                  setTimeout(() => {
+                    this.dialogFlowFunctions.moveToDialogByIndex(1);
+                  }, 500);
+                }
               }
             }
           }
@@ -905,7 +979,7 @@ export class TestComponent implements OnInit {
               },
             ],
           },
-          isMultiple: true,
+          isMultiple: false,
         },
         outputs: [
           {
@@ -924,35 +998,46 @@ export class TestComponent implements OnInit {
                     amount: Number(item.amount),
                     // cost: cost,
                     lesserAmount : Number(item.lesserAmount),
-                    greaterAmount : Number(item.greaterAmount)
+                    greaterAmount : Number(item.greaterAmount),
+                    greaterAmountLimit: Number(item.greaterAmountLimit) || Number(item.greaterAmount),
+                    lesserAmountLimit: Number(item.lesserAmountLimit) || Number(item.lesserAmount),
                   };
                 });
 
                 console.log(this.deliveryZones);
 
                 this.deliveryData.forEach(async zone => {
-                  const deliveryZone = await this.deliveryzonesService.create(
-                    this.merchant._id,
-                    {
-                      amount: zone.amount,
-                      greaterAmount: zone.greaterAmount,
-                      lesserAmount: zone.lesserAmount,
-                      greaterAmountLimit: zone.greaterAmountLimit,
-                      lesserAmountLimit: zone.lesserAmountLimit,
-                      zona: zone.zona,
-                      type: zone.type
-                    }
-                  )
-                  if (zone.cost) {
-                    const expenditure = await this.deliveryzonesService.createExpenditure(
+                  let deliveryZone;
+                  try {
+                    deliveryZone = await this.deliveryzonesService.create(
                       this.merchant._id,
                       {
-                        type: "delivery-zone",
-                        amount: zone.cost
+                        amount: zone.amount,
+                        greaterAmount: zone.greaterAmount,
+                        lesserAmount: zone.lesserAmount,
+                        greaterAmountLimit: zone.greaterAmountLimit,
+                        lesserAmountLimit: zone.lesserAmountLimit,
+                        zona: zone.zona,
+                        type: zone.type
                       }
-                    );
+                    )
+                  } catch (error) {
+                    console.log(error);
+                  }
 
-                    await this.deliveryzonesService.addExpenditure(expenditure._id, deliveryZone._id);
+                  if (deliveryZone && zone.cost) {
+                    try {
+                      const expenditure = await this.deliveryzonesService.createExpenditure(
+                        this.merchant._id,
+                        {
+                          type: "delivery-zone",
+                          amount: zone.cost
+                        }
+                      );
+                      await this.deliveryzonesService.addExpenditure(expenditure._id, deliveryZone._id);
+                    } catch (error) {
+                      console.log(error);
+                    }
                   }
                 });
               }
