@@ -9,6 +9,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 
 @Component({
   selector: 'app-article-stepper-form',
@@ -45,10 +46,13 @@ export class ArticleStepperFormComponent implements OnInit {
   merchantCategories = [];
   pricing: number;
   file;
+  images;
   merchant;
   itemCreated;
+  base64: string;
 
   async ngOnInit() {
+    console.log(this.file);
     this.merchant = await this.merchantsService.merchantDefault();
     console.log(this.merchant);
     this.allCommunities = await this.communities.communitycategories({});
@@ -93,12 +97,12 @@ export class ArticleStepperFormComponent implements OnInit {
     this.itemForm.get('pricing').patchValue(this.pricing);
   }
 
-  onImageInput(file) {
+  async onImageInput(file) {
     this.file = file;
+    console.log(this.file);
+    this.base64 = await fileToBase64(file[0]);
+    console.log(this.base64);
     this.itemForm2.get('images').patchValue(this.file);
-  }
-
-  async closeDialog() {
     let images: ItemImageInput[] = this.file.map((file) => {
       return {
         file: file,
@@ -106,6 +110,19 @@ export class ArticleStepperFormComponent implements OnInit {
         active: true,
       };
     });
+
+    this.images = images;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this._ItemsService.editingImageId = this.images[0]._id;
+    };
+    //reader.readAsDataURL(this.file[0] as File);
+
+    // console.log(reader.result);
+  }
+
+  async closeDialog() {
     console.log(this.file);
     console.log(this.pricing);
     console.log(this.merchant._id);
@@ -113,7 +130,7 @@ export class ArticleStepperFormComponent implements OnInit {
     lockUI();
     const itemInput: ItemInput = {
       pricing: this.pricing,
-      images,
+      images: this.images,
       merchant: this.merchant._id,
       categories: this.merchantCategories,
     };
@@ -123,12 +140,15 @@ export class ArticleStepperFormComponent implements OnInit {
     this.snackBar.open('Producto creado satisfactoriamente!', '', {
       duration: 5000,
     });
+    console.log(this.itemCreated);
+    this.dialogRef.close();
     unlockUI();
     const reader = new FileReader();
     reader.onload = (e) => {
       this._ItemsService.editingImageId = this.itemCreated.images[0]._id;
-      this.router.navigate([`admin/article-editor/${this.itemCreated._id}`]);
     };
     reader.readAsDataURL(this.file as File);
+
+    // this.router.navigate([`admin/article-editor/${this.itemCreated._id}`]);
   }
 }

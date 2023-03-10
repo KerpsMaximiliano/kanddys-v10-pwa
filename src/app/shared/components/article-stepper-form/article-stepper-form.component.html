@@ -16,9 +16,13 @@
   </mat-step>
   <mat-step [stepControl]="itemForm2">
     <ng-template matStepLabel>Imagen del cover:</ng-template>
-    <div>
+    <div *ngIf="!file">
       <app-item-images (enteredImages)="onImageInput($event)"></app-item-images>
     </div>
+    <div *ngIf="file" class="preview">
+      <img [src]="base64" alt="" />
+    </div>
+    <button mat-button matStepperNext *ngIf="file">Continuar</button>
   </mat-step>
   <mat-step [stepControl]="itemForm3">
     <ng-template matStepLabel

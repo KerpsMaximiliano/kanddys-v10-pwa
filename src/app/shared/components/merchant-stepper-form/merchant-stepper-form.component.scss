@@ -43,6 +43,23 @@ h1 {
   }
 }
 
+.message-title {
+  color: #4f4f4f;
+  font-size: 23px;
+  font-family: SFProBold;
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.message {
+  color: #7b7b7b;
+  font-family: SFProLight;
+  font-size: 17px;
+  text-align: center;
+  width: 80%;
+  margin: 67px auto 16.5px;
+}
+
 ::ng-deep.mat-stepper-vertical-line::before {
   display: none;
 }
@@ -53,6 +70,32 @@ h1 {
 
 ::ng-deep.mat-dialog-container {
   max-width: 360px;
+}
+
+@media (max-height: 770px) {
+  .message {
+    margin-top: 45px;
+  }
+}
+@media (max-height: 700px) {
+  .message {
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+  .message-title {
+    margin: 20px auto;
+  }
+}
+
+@media (max-height: 650px) {
+  .message {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .message-title {
+    margin: 10px auto;
+    font-size: 20px;
+  }
 }
 
 // ::ng-deep.mat-step-header {

@@ -1,0 +1,21 @@
+::ng-deep.mat-dialog-container {
+  max-width: 360px;
+}
+
+.preview {
+  width: 110px;
+  height: 140px;
+  border-radius: 15px;
+  cursor: pointer;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20%;
+  padding: 8px;
+  img {
+    height: 100%;
+    width: 100%;
+  }
+}
