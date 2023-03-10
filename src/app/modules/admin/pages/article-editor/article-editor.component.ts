@@ -387,9 +387,20 @@ export class ArticleEditorComponent implements OnInit {
       this.updated = true;
     }
 
+    console.log(this.params);
+    const contentChanged = 
+      this.params && 
+      this.params.controls.values.length && 
+      this.params.controls.values.controls.some((value) => value.dirty);
+
+    if (contentChanged) this.content = this.params.value.values.map((value) => value.name);
+
+    console.log(this.content);
+
     const itemInput = {
       name: this.name.value || null,
       description: this.description.value || null,
+      content: this.content.length > 0 ? this.content : null,
     };
     this._ItemsService.itemPrice = null;
     this._ItemsService.itemName = null;
@@ -399,6 +410,7 @@ export class ArticleEditorComponent implements OnInit {
       if (!ignore) lockUI();
       if (this.name.invalid) delete itemInput.name;
       if (this.description.invalid) delete itemInput.description;
+      console.log(itemInput);
       await this._ItemsService.updateItem(itemInput, this.item._id);
     }
     if (!ignore) {
@@ -686,21 +698,20 @@ export class ArticleEditorComponent implements OnInit {
     this.params = (<FormArray>this.itemParamsForm.get('params')).at(0);
     const valuesLength = this.getArrayLength(this.params, 'values');
     if (index === valuesLength - 1) {
+      console.log(this.params);
       console.log(this.params.value.values);
       this.generateFields();
     }
   }
 
   async send() {
-    // console.log(this.productDescription);
-    // console.log(this.productName);
-    // console.log(this.params);
-    // console.log(this.price.value);
-    for (let i = 0; i < this.params.value.values.length; i++) {
-      let name = this.params.value.values[i].name;
-      if (name !== null && name !== '') {
-        this.content.push(name);
-        console.log(this.content);
+    if (this.params) {
+      for (let i = 0; i < this.params.value.values.length; i++) {
+        let name = await this.params.value.values[i].name;
+        if (name !== null && name !== '') {
+          this.content.push(name);
+          console.log(this.content);
+        }
       }
     }
 
