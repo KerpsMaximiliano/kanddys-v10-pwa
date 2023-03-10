@@ -296,6 +296,7 @@ export class OrderService {
   async expenditures(paginate: PaginationInput): Promise<Expenditure[]> {
     const result = await this.graphql.query({
       query: expenditures,
+      fetchPolicy: 'no-cache',
       variables: { paginate },
     });
     return result?.expenditures;
@@ -340,6 +341,7 @@ export class OrderService {
   ): Promise<ItemOrder> {
     const result = await this.graphql.mutate({
       mutation: orderRemoveExpenditure,
+      fetchPolicy: 'no-cache',
       variables: { expenditureId, id },
     });
     return result.orderRemoveExpenditure;

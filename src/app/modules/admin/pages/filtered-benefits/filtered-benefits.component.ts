@@ -44,6 +44,7 @@ export class FilteredBenefitsComponent implements OnInit {
         this.merchantsService.merchantData._id,
         {
           options: {
+            sortBy: "createdAt:desc",
             range: {
               from: `01 ${month} ${this.year} 00:00:00 GMT`,
               to: `${day} ${month} ${this.year} 23:59:59 GMT`,

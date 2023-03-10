@@ -149,6 +149,7 @@ export class OrderExpensesComponent implements OnInit {
 
     this.orderService.orderAddExpenditure(newExpenditure._id, this.order._id);
     this.order.expenditures.push(newExpenditure._id);
+    this.calculateExpenses();
   }
 
   onCurrencyInput(value: number) {
