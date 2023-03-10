@@ -1,0 +1,43 @@
+<div style="min-height: 100vh">
+  <header class="header">
+    <a mat-icon-button [routerLink]="['../dashboard']">
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+    </a>
+    <!-- <button mat-button>
+      <p>Filtra por fechas</p>
+    </button> -->
+  </header>
+  <main>
+    <div class="info">
+      <span class="title">INGRESOS MENOS EGRESOS</span>
+      <div class="benefits">
+        <span class="amount"
+          >${{
+            (benefits ? benefits.data.benefits - benefits.data.less : 0)
+              | number
+          }}</span
+        >
+        <span class="percentage">
+          {{
+            (benefits ? benefits.data.percentageBenefits * 100 : 0) | number
+          }}% de beneficio
+        </span>
+      </div>
+    </div>
+    <div class="month-list">
+      <ng-container *ngFor="let item of benefitsByMonth">
+        <a
+          [routerLink]="['./date']"
+          *ngIf="item.benefits.data.benefits"
+          [queryParams]="{ month: item.monthNumber, year: item.year }"
+        >
+          <app-titled-expense
+            [month]="item.month + ' - ' + item.year"
+            [percentage]="item.benefits.data.percentageBenefits * 100"
+            [amount]="item.benefits.data.benefits - item.benefits.data.less"
+          ></app-titled-expense>
+        </a>
+      </ng-container>
+    </div>
+  </main>
+</div>

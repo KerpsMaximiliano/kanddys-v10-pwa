@@ -1,0 +1,51 @@
+<div class="container">
+  <div class="questions-and-answers-wrapper">
+    <ng-container *ngFor="let historyEntry of history">
+      <div *ngIf="historyEntry.type === 'QUESTION'" class="question-box">
+        <h3>Preguntaste:</h3>
+        <p class="content">{{ historyEntry.value }}</p>
+      </div>
+
+      <div *ngIf="historyEntry.type === 'ANSWER'" class="answer-box">
+        <p>{{ historyEntry.label }}</p>
+
+        <ng-container *ngIf="historyEntry.links">
+          <ul>
+            <ng-container *ngFor="let link of historyEntry.links">
+              <li>
+                <a class="btn" [routerLink]="[link.route]">
+                  {{ link.label }}
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+        </ng-container>
+      </div>
+
+      <div *ngIf="historyEntry.type === 'ERROR'" class="error-box">
+        <p class="content">{{ historyEntry.value }}</p>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="history.length === 0">
+      <div class="empty">
+        Escribe algo en la caja de texto y obten información sobre los productos
+        de
+      </div>
+    </ng-container>
+  </div>
+
+  <form class="user-input-area-wrapper" [formGroup]="qaForm">
+    <textarea
+      class="user-input-box"
+      placeholder="Escribe algo..."
+      formControlName="input"
+    ></textarea>
+    <button class="submit-button" (click)="sendQuestion()">
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fsend_black.svg"
+        alt="send"
+      />
+    </button>
+  </form>
+</div>

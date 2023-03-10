@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { getDaysAgo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   ItemOrder,
@@ -109,29 +110,7 @@ export class OrderListComponent implements OnInit {
 
   addInfoToOrder(itemOrder: ExtendedOrder) {
     itemOrder.total = itemOrder.subtotals.reduce((a, b) => a + b.amount, 0);
-    const temporalDate = new Date(itemOrder.createdAt);
-    const currentDate = new Date();
-    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-    const dateDifference = Math.round(
-      Math.abs((currentDate.getTime() - temporalDate.getTime()) / oneDay)
-    );
-    const monthDifference = Math.floor(dateDifference / 30);
-
-    if (dateDifference === 0) itemOrder.date = 'Hoy';
-    if (dateDifference === 1) itemOrder.date = 'Ayer';
-    if (dateDifference > 1 && dateDifference < 30)
-      itemOrder.date = `Hace ${dateDifference} días`;
-    if (dateDifference >= 30 && dateDifference < 365) {
-      itemOrder.date = `Hace ${monthDifference} mes${
-        monthDifference === 1 ? '' : 'es'
-      }`;
-    }
-    if (dateDifference >= 365) {
-      const yearDifference = Math.floor(monthDifference / 12);
-      itemOrder.date = `Hace ${yearDifference} año${
-        yearDifference === 1 ? '' : 's'
-      }`;
-    }
+    itemOrder.date = getDaysAgo(itemOrder.createdAt);
     if (itemOrder.ocr?.platform) {
       itemOrder.transaction =
         {

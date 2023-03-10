@@ -158,7 +158,12 @@ import { StepperFormComponent } from './components/stepper-form/stepper-form.com
 import { CreateTagComponent } from './dialogs/create-tag/create-tag.component';
 import { CollectionCardComponent } from './components/collection-card/collection-card.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTabsModule } from '@angular/material/tabs';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
+import { NamedExpenseComponent } from './components/named-expense/named-expense.component';
+import { TitledExpenseComponent } from './components/titled-expense/titled-expense.component';
+import { OrderExpensesListComponent } from './components/order-expenses-list/order-expenses-list.component';
 import { InfoCard2Component } from './components/info-card2/info-card2.component';
 import { MerchantStepperFormComponent } from './components/merchant-stepper-form/merchant-stepper-form.component';
 import { StringInputComponent } from './components/string-input/string-input.component';
@@ -193,6 +198,8 @@ const imports = [
   MatInputModule,
   MatSnackBarModule,
   MatCardModule,
+  MatGridListModule,
+  MatTabsModule,
 ];
 const declarations = [
   // Pages
@@ -327,6 +334,9 @@ const declarations = [
   CreateTagComponent,
   CollectionCardComponent,
   CompactCardComponent,
+  NamedExpenseComponent,
+  TitledExpenseComponent,
+  OrderExpensesListComponent,
   InfoCard2Component,
   MerchantStepperFormComponent,
   StringInputComponent,
