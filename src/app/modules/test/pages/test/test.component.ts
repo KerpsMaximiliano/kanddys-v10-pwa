@@ -41,6 +41,7 @@ import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { DeliveryZoneInput } from 'src/app/core/models/deliveryzone';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { type } from 'os';
 
 @Component({
   selector: 'app-test',
@@ -121,7 +122,17 @@ export class TestComponent implements OnInit {
   deliveryType: 'yes' | 'no' | 'depend' | 'no-delivery';
   depend: 'amount' | 'zone';
 
-  deliveryData: any[] = [];
+  deliveryData: Array<{
+    id: string;
+    type?: 'zone' | 'free' | 'greater' | 'lesser';
+    amount?: number;
+    zona?: string;
+    greaterAmount?: number;
+    lesserAmount?: number;
+    cost?: number;
+    lesserAmountLimit?: number;
+    greaterAmountLimit?: number;
+  }> = [];
   deliveryZones: DeliveryZoneInput[] = [];
 
   merchant: Merchant;
@@ -147,6 +158,8 @@ export class TestComponent implements OnInit {
     this.merchant = await this.merchantService.merchantDefault();
     console.log(this.merchant);
   }
+
+  
 
   openDialog() {
     this.dialog.open(LinkDialogComponent, {
@@ -174,6 +187,552 @@ export class TestComponent implements OnInit {
   close() {
 
   }
+
+  yesDependDialog: EmbeddedComponentWithId = {
+    component: GeneralDialogComponent,
+    componentId: 'yes-depend',
+    inputs: {
+      dialogId: 'yes-depend',
+      containerStyles: {
+        background: 'rgb(255, 255, 255)',
+        borderRadius: '12px',
+        opacity: '1',
+        padding: '37px 36.6px 18.9px 31px',
+      },
+      header: {
+        styles: {
+          fontSize: '21px',
+          fontFamily: 'SfProBold',
+          marginBottom: '21.2px',
+          marginTop: '0',
+          color: '#4F4F4F',
+        },
+        text: '¿De qué depende?',
+      },
+      title: {
+        styles: {
+          fontSize: '15px',
+          color: '#7B7B7B',
+          fontStyle: 'italic',
+          margin: '0',
+        },
+        text: '',
+      },
+      fields: {
+        list: [
+          {
+            name: 'depend',
+            value: '',
+            validators: [Validators.required],
+            type: 'selection',
+            selection: {
+              styles: {
+                display: 'block',
+                fontFamily: '"SfProBold"',
+                fontSize: '17px',
+                color: '#272727',
+                marginLeft: '19.5px',
+              },
+              list: [
+                {
+                  text: 'Del monto de la factura',
+                },
+                {
+                  text: 'De la zona de entrega',
+                }
+              ],
+            },
+            // styles: {},
+            prop: 'text',
+          },
+        ],
+      },
+      isMultiple: true,
+    },
+    outputs: [
+      {
+        name: 'data',
+        callback: (params) => {
+          console.log(params);
+          const { value } = params;
+          const { depend } = value;
+          this.depend = depend[0] === 'Del monto de la factura' ? 'amount' : 'zone';
+          // TODO validate if deliveryZones length is 0
+
+          if (this.depend === 'amount') {
+            this.dialogsPro.splice(
+              2,
+              0,
+              this.yesDependAmountDialogs[0]
+            );
+
+            this.dialogsPro.splice(
+              3,
+              0,
+              this.yesDependAmountDialogs[1]
+            );
+            setTimeout(() => {
+              this.dialogFlowFunctions.moveToDialogByIndex(2);
+            }, 500);
+          } else if (this.depend === 'zone') {
+            this.dialogsPro.splice(
+              2,
+              0,
+              this.yesDependDeliveryDialogs[0]
+            );
+
+            this.dialogsPro.splice(
+              3,
+              0,
+              this.yesDependDeliveryDialogs[1]
+            );
+            setTimeout(() => {
+              this.dialogFlowFunctions.moveToDialogByIndex(2);
+            }, 500);
+          }
+        }
+      }
+    ]
+  }
+
+  yesDependDeliveryDialogs: Array<EmbeddedComponentWithId> = [
+    {
+      component: DialogFormComponent,
+      componentId: 'yes-depend-deliveryzone-1',
+      inputs: {
+        dialogId: 'yes-depend-deliveryzone-1',
+        containerStyles: {},
+        title: {
+          text: "Zona de Entrega #1"
+        },
+        fields: {
+          inputs: [
+            {
+              label: "$ recibes del comprador:",
+              formControl: "input-1",
+              row: 0,
+              column: 0,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "$ que te cuesta (egreso)",
+              formControl: "input-2",
+              row: 0,
+              column: 1,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "Nombre de la zona",
+              formControl: "input-3",
+              row: 1,
+              column: 0,
+              isFlex: false,
+              type: "text"
+            }
+          ]
+        }
+      },
+      outputs: [
+        {
+          name: 'formSubmit',
+          callback: (params) => {
+            console.log(params);
+            const incomeByBuyer = params[0].value ? params[0].value : 0;
+            const cost = params[1].value ? params[1].value : 0;
+            const zoneName = params[2].value ? params[2].value : '';
+
+            if (
+              this.deliveryData.length > 0 &&
+              this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-1')
+            ) {
+              const index = this.deliveryData.findIndex(
+                (item) => item.id === 'yes-depend-deliveryzone-1'
+              );
+              this.deliveryData.splice(index, 1);
+            }
+
+            this.deliveryData.push({
+              zona: zoneName,
+              amount: Number(incomeByBuyer),
+              cost: Number(cost), 
+              type: 'zone',
+              id: "yes-depend-deliveryzone-1"
+            });
+
+            console.log(this.deliveryData);
+          },
+        },
+      ],
+    },
+    {
+      component: DialogFormComponent,
+      componentId: 'yes-depend-deliveryzone-2',
+      inputs: {
+        dialogId: 'yes-depend-deliveryzone-2',
+        containerStyles: {},
+        title: {
+          text: "Zona de Entrega #2"
+        },
+        fields: {
+          inputs: [
+            {
+              label: "$ recibes del comprador:",
+              formControl: "input-1",
+              row: 0,
+              column: 0,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "$ que te cuesta (egreso)",
+              formControl: "input-2",
+              row: 0,
+              column: 1,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "Nombre de la zona",
+              formControl: "input-3",
+              row: 1,
+              column: 0,
+              isFlex: false,
+              type: "text"
+            }
+          ]
+        }
+      },
+      outputs: [
+        {
+          name: 'formSubmit',
+          callback: (params) => {
+            console.log(params);
+            const incomeByBuyer = params[0].value ? params[0].value : 0;
+            const cost = params[1].value ? params[1].value : 0;
+            const zoneName = params[2].value ? params[2].value : '';
+
+            if (
+              this.deliveryData.length > 0 &&
+              this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-2')
+            ) {
+              const index = this.deliveryData.findIndex(
+                (item) => item.id === 'yes-depend-deliveryzone-2'
+              );
+              this.deliveryData.splice(index, 1);
+            }
+
+            this.deliveryData.push({
+              zona: zoneName,
+              amount: Number(incomeByBuyer),
+              cost: Number(cost), 
+              type: 'zone',
+              id: "yes-depend-deliveryzone-2"
+            });
+
+            console.log(this.deliveryData);
+          },
+        },
+      ],
+    }
+  ];
+
+  yesDependAmountDialogs: Array<EmbeddedComponentWithId> = [
+    {
+      component: DialogFormComponent,
+      componentId: 'yes-depend-amount-1',
+      inputs: {
+        dialogId: 'yes-depend-amount-1',
+        containerStyles: {},
+        title: {
+          text: "Zona de Entrega #1"
+        },
+        fields: {
+          inputs: [
+            {
+              label: "$ de la factura menor a:",
+              formControl: "input-1",
+              row: 0,
+              column: 0,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "$ de la factura mayor a:",
+              formControl: "input-2",
+              row: 0,
+              column: 1,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "$ recibes del comprador",
+              formControl: "input-3",
+              row: 1,
+              column: 0,
+              isFlex: false,
+              type: "text"
+            },
+            {
+              label: "$ que te cuesta (egreso)",
+              formControl: "input-4",
+              row: 1,
+              column: 1,
+              isFlex: false,
+              type: "text"
+            },
+            {
+              label: "Nombre de la zona",
+              formControl: "input-5",
+              row: 2,
+              column: 0,
+              isFlex: false,
+              type: "text"
+            }
+          ]
+        }
+      },
+      outputs: [
+        {
+          name: 'formSubmit',
+          callback: (params) => {
+            console.log(params);
+            const lesserAmount = params[0].value ? params[0].value : 0;
+            const greaterAmount = params[1].value ? params[1].value : 0;
+            const incomeByBuyer = params[2].value ? params[2].value : 0;
+            const cost = params[3].value ? params[3].value : 0;
+            const zoneName = params[4].value ? params[4].value : '';
+            
+            if (
+              this.deliveryData.length > 0 &&
+              this.deliveryData.find((item) => item.id === 'yes-depend-amount-1')
+            ) {
+              const index = this.deliveryData.findIndex(
+                (item) => item.id === 'yes-depend-amount-1'
+              );
+              this.deliveryData.splice(index, 1);
+            }
+
+            this.deliveryData.push({
+              zona: zoneName,
+              amount: Number(incomeByBuyer),
+              cost: Number(cost),
+              lesserAmount: Number(lesserAmount),
+              greaterAmount: Number(greaterAmount),
+              type: 'lesser',
+              id: "yes-depend-amount-1"
+            });
+
+            console.log(this.deliveryData);
+          },
+        },
+      ],
+    },
+    {
+      component: DialogFormComponent,
+      componentId: 'yes-depend-amount-2',
+      inputs: {
+        dialogId: 'yes-depend-amount-2',
+        containerStyles: {},
+        title: {
+          text: "Zona de Entrega #2"
+        },
+        fields: {
+          inputs: [
+            {
+              label: "Menor a:",
+              formControl: "input-1",
+              row: 0,
+              column: 0,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "Mayor a:",
+              formControl: "input-2",
+              row: 0,
+              column: 1,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "Monto que te pagan por el delivery:",
+              formControl: "input-3",
+              row: 1,
+              column: 0,
+              isFlex: false,
+              type: "text"
+            },
+            {
+              label: "Nombre de la zona",
+              formControl: "input-4",
+              row: 2,
+              column: 0,
+              isFlex: false,
+              type: "text"
+            }
+          ]
+        }
+      },
+      outputs: [
+        {
+          name: 'formSubmit',
+          callback: (params) => {
+            console.log(params);
+            const lesserAmount = params[0].value ? params[0].value : 0;
+            const greaterAmount = params[1].value ? params[1].value : 0;
+            const incomeByBuyer = params[2].value ? params[2].value : 0;
+            const zoneName = params[3].value ? params[3].value : '';
+
+            if (
+              this.deliveryData.length > 0 &&
+              this.deliveryData.find((item) => item.id === 'yes-depend-amount-2')
+            ) {
+              const index = this.deliveryData.findIndex(
+                (item) => item.id === 'yes-depend-amount-2'
+              );
+              this.deliveryData.splice(index, 1);
+            }
+
+            this.deliveryData.push({
+              zona: zoneName,
+              amount: Number(incomeByBuyer),
+              // cost: cost,
+              lesserAmount : Number(lesserAmount),
+              greaterAmount : Number(greaterAmount),
+              type: 'lesser',
+              id: "yes-depend-amount-2"
+            });
+
+            console.log(this.deliveryData);
+          },
+        },
+      ],
+    }
+  ];
+
+  noDependDialogs = [
+    {
+      component: DialogFormComponent,
+      componentId: 'no-deliveryzone-1',
+      inputs: {
+        dialogId: 'no-deliveryzone-1',
+        containerStyles: {},
+        title: {
+          text: "Zona de Entrega #1"
+        },
+        fields: {
+          inputs: [
+            {
+              label: "$ que te cuesta (egreso)",
+              formControl: "input-1",
+              row: 0,
+              column: 0,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "Nombre de la zona:",
+              formControl: "input-2",
+              row: 1,
+              column: 0,
+              isFlex: true,
+              type: "text"
+            },
+          ]
+        }
+      },
+      outputs: [
+        {
+          name: 'formSubmit',
+          callback: (params) => {
+            console.log(params);
+            const cost = params[0].value ? params[0].value : 0;
+            const zoneName = params[1].value ? params[1].value : '';
+
+            if (
+              this.deliveryData.length > 0 &&
+              this.deliveryData.find((item) => item.id === 'no-deliveryzone-1')
+            ) {
+              const index = this.deliveryData.findIndex(
+                (item) => item.id === 'no-deliveryzone-1'
+              );
+              this.deliveryData.splice(index, 1);
+            }
+
+            this.deliveryData.push({
+              zona: zoneName,
+              cost: Number(cost),
+              type: 'free',
+              id: "no-deliveryzone-1"
+            });
+
+            console.log(this.deliveryData);
+          },
+        },
+      ],
+    },
+    {
+      component: DialogFormComponent,
+      componentId: 'no-deliveryzone-2',
+      inputs: {
+        dialogId: 'no-deliveryzone-2',
+        containerStyles: {},
+        title: {
+          text: "Zona de Entrega #2"
+        },
+        fields: {
+          inputs: [
+            {
+              label: "$ que te cuesta (egreso)",
+              formControl: "input-1",
+              row: 0,
+              column: 0,
+              isFlex: true,
+              type: "text"
+            },
+            {
+              label: "Nombre de la zona:",
+              formControl: "input-2",
+              row: 1,
+              column: 0,
+              isFlex: true,
+              type: "text"
+            },
+          ]
+        }
+      },
+      outputs: [
+        {
+          name: 'formSubmit',
+          callback: (params) => {
+            console.log(params);
+            const cost = params[0].value ? params[0].value : 0;
+            const zoneName = params[1].value ? params[1].value : '';
+
+            if (
+              this.deliveryData.length > 0 &&
+              this.deliveryData.find((item) => item.id === 'no-deliveryzone-2')
+            ) {
+              const index = this.deliveryData.findIndex(
+                (item) => item.id === 'no-deliveryzone-2'
+              );
+              this.deliveryData.splice(index, 1);
+            }
+
+            this.deliveryData.push({
+              zona: zoneName,
+              cost: Number(cost),
+              type: 'free',
+              id: "no-deliveryzone-2"
+            });
+            console.log(this.deliveryData);
+          },
+        },
+      ],
+    }
+  ];
 
   inject() {
     this.dialogsPro = [
@@ -260,533 +819,35 @@ export class TestComponent implements OnInit {
 
               if (this.deliveryType === 'yes' || this.deliveryType === 'depend') {
                 console.log("yes or depend");
+                this.dialogsPro.splice(
+                  1,
+                  0,
+                  this.yesDependDialog
+                )
                 setTimeout(() => {
                   this.dialogFlowFunctions.moveToDialogByIndex(1);
                 }, 500);
                 
               } else if (this.deliveryType === 'no' || this.deliveryType === 'no-delivery') {
                 console.log("no or no-delivery");
+                this.dialogsPro.splice(
+                  1,
+                  0,
+                  this.noDependDialogs[0]
+                );
+                this.dialogsPro.splice(
+                  2,
+                  0,
+                  this.noDependDialogs[1]
+                );
+
                 setTimeout(() => {
-                  this.dialogFlowFunctions.moveToDialogByIndex(6);
+                  this.dialogFlowFunctions.moveToDialogByIndex(1);
                 }, 500);
               }
             }
           }
         ]
-      },
-      {
-        component: GeneralDialogComponent,
-        componentId: 'yes-depend',
-        inputs: {
-          dialogId: 'yes-depend',
-          containerStyles: {
-            background: 'rgb(255, 255, 255)',
-            borderRadius: '12px',
-            opacity: '1',
-            padding: '37px 36.6px 18.9px 31px',
-          },
-          header: {
-            styles: {
-              fontSize: '21px',
-              fontFamily: 'SfProBold',
-              marginBottom: '21.2px',
-              marginTop: '0',
-              color: '#4F4F4F',
-            },
-            text: '¿De qué depende?',
-          },
-          title: {
-            styles: {
-              fontSize: '15px',
-              color: '#7B7B7B',
-              fontStyle: 'italic',
-              margin: '0',
-            },
-            text: '',
-          },
-          fields: {
-            list: [
-              {
-                name: 'depend',
-                value: '',
-                validators: [Validators.required],
-                type: 'selection',
-                selection: {
-                  styles: {
-                    display: 'block',
-                    fontFamily: '"SfProBold"',
-                    fontSize: '17px',
-                    color: '#272727',
-                    marginLeft: '19.5px',
-                  },
-                  list: [
-                    {
-                      text: 'Del monto de la factura',
-                    },
-                    {
-                      text: 'De la zona de entrega',
-                    }
-                  ],
-                },
-                // styles: {},
-                prop: 'text',
-              },
-            ],
-          },
-          isMultiple: true,
-        },
-        outputs: [
-          {
-            name: 'data',
-            callback: (params) => {
-              console.log(params);
-              const { value } = params;
-              const { depend } = value;
-              this.depend = depend[0] === 'Del monto de la factura' ? 'amount' : 'zone';
-              // TODO validate if deliveryZones length is 0
-
-              if (this.depend === 'amount') {
-                setTimeout(() => {
-                  this.dialogFlowFunctions.moveToDialogByIndex(4);
-                }, 500);
-              } else if (this.depend === 'zone') {
-                setTimeout(() => {
-                  this.dialogFlowFunctions.moveToDialogByIndex(2);
-                }, 500);
-              }
-            }
-          }
-        ]
-      },
-      {
-        component: DialogFormComponent,
-        componentId: 'yes-depend-deliveryzone-1',
-        inputs: {
-          dialogId: 'yes-depend-deliveryzone-1',
-          containerStyles: {},
-          title: {
-            text: "Zona de Entrega #1"
-          },
-          fields: {
-            inputs: [
-              {
-                label: "$ recibes del comprador:",
-                formControl: "input-1",
-                row: 0,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "$ que te cuesta (egreso)",
-                formControl: "input-2",
-                row: 0,
-                column: 1,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Nombre de la zona",
-                formControl: "input-3",
-                row: 1,
-                column: 0,
-                isFlex: false,
-                type: "text"
-              }
-            ]
-          }
-        },
-        outputs: [
-          {
-            name: 'formSubmit',
-            callback: (params) => {
-              console.log(params);
-              const incomeByBuyer = params[0].value ? params[0].value : 0;
-              const cost = params[1].value ? params[1].value : 0;
-              const zoneName = params[2].value ? params[2].value : '';
-
-              if (
-                this.deliveryData.length > 0 &&
-                this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-1')
-              ) {
-                const index = this.deliveryData.findIndex(
-                  (item) => item.id === 'yes-depend-deliveryzone-1'
-                );
-                this.deliveryData.splice(index, 1);
-              }
-
-              this.deliveryData.push({
-                zona: zoneName,
-                amount: incomeByBuyer as number,
-                cost: cost as number, 
-                type: 'zone',
-                id: "yes-depend-deliveryzone-1"
-              });
-
-              console.log(this.deliveryData);
-            },
-          },
-        ],
-      },
-      {
-        component: DialogFormComponent,
-        componentId: 'yes-depend-deliveryzone-2',
-        inputs: {
-          dialogId: 'yes-depend-deliveryzone-2',
-          containerStyles: {},
-          title: {
-            text: "Zona de Entrega #2"
-          },
-          fields: {
-            inputs: [
-              {
-                label: "$ recibes del comprador:",
-                formControl: "input-1",
-                row: 0,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "$ que te cuesta (egreso)",
-                formControl: "input-2",
-                row: 0,
-                column: 1,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Nombre de la zona",
-                formControl: "input-3",
-                row: 1,
-                column: 0,
-                isFlex: false,
-                type: "text"
-              }
-            ]
-          }
-        },
-        outputs: [
-          {
-            name: 'formSubmit',
-            callback: (params) => {
-              console.log(params);
-              const incomeByBuyer = params[0].value ? params[0].value : 0;
-              const cost = params[1].value ? params[1].value : 0;
-              const zoneName = params[2].value ? params[2].value : '';
-
-              if (
-                this.deliveryData.length > 0 &&
-                this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-2')
-              ) {
-                const index = this.deliveryData.findIndex(
-                  (item) => item.id === 'yes-depend-deliveryzone-2'
-                );
-                this.deliveryData.splice(index, 1);
-              }
-
-              this.deliveryData.push({
-                zona: zoneName,
-                amount: incomeByBuyer as number,
-                cost: cost as number, 
-                type: 'zone',
-                id: "yes-depend-deliveryzone-2"
-              });
-
-              console.log(this.deliveryData);
-            },
-          },
-        ],
-      },
-      {
-        component: DialogFormComponent,
-        componentId: 'yes-depend-amount-1',
-        inputs: {
-          dialogId: 'yes-depend-amount-1',
-          containerStyles: {},
-          title: {
-            text: "Zona de Entrega #1"
-          },
-          fields: {
-            inputs: [
-              {
-                label: "$ de la factura menor a:",
-                formControl: "input-1",
-                row: 0,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "$ de la factura mayor a:",
-                formControl: "input-2",
-                row: 0,
-                column: 1,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "$ recibes del comprador",
-                formControl: "input-3",
-                row: 1,
-                column: 0,
-                isFlex: false,
-                type: "text"
-              },
-              {
-                label: "$ que te cuesta (egreso)",
-                formControl: "input-4",
-                row: 1,
-                column: 1,
-                isFlex: false,
-                type: "text"
-              },
-              {
-                label: "Nombre de la zona",
-                formControl: "input-5",
-                row: 2,
-                column: 0,
-                isFlex: false,
-                type: "text"
-              }
-            ]
-          }
-        },
-        outputs: [
-          {
-            name: 'formSubmit',
-            callback: (params) => {
-              console.log(params);
-              const lesserAmount = params[0].value ? params[0].value : 0;
-              const greaterAmount = params[1].value ? params[1].value : 0;
-              const incomeByBuyer = params[2].value ? params[2].value : 0;
-              const cost = params[3].value ? params[3].value : 0;
-              const zoneName = params[4].value ? params[4].value : '';
-              
-              if (
-                this.deliveryData.length > 0 &&
-                this.deliveryData.find((item) => item.id === 'yes-depend-amount-1')
-              ) {
-                const index = this.deliveryData.findIndex(
-                  (item) => item.id === 'yes-depend-amount-1'
-                );
-                this.deliveryData.splice(index, 1);
-              }
-
-              this.deliveryData.push({
-                zona: zoneName,
-                amount: incomeByBuyer as number,
-                cost: cost as number,
-                lesserAmount: lesserAmount as number,
-                greaterAmount: greaterAmount as number,
-                type: 'lesser',
-                id: "yes-depend-amount-1"
-              });
-
-              console.log(this.deliveryData);
-            },
-          },
-        ],
-      },
-      {
-        component: DialogFormComponent,
-        componentId: 'yes-depend-amount-2',
-        inputs: {
-          dialogId: 'yes-depend-amount-2',
-          containerStyles: {},
-          title: {
-            text: "Zona de Entrega #2"
-          },
-          fields: {
-            inputs: [
-              {
-                label: "Menor a:",
-                formControl: "input-1",
-                row: 0,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Mayor a:",
-                formControl: "input-2",
-                row: 0,
-                column: 1,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Monto que te pagan por el delivery:",
-                formControl: "input-3",
-                row: 1,
-                column: 0,
-                isFlex: false,
-                type: "text"
-              },
-              {
-                label: "Nombre de la zona",
-                formControl: "input-4",
-                row: 2,
-                column: 0,
-                isFlex: false,
-                type: "text"
-              }
-            ]
-          }
-        },
-        outputs: [
-          {
-            name: 'formSubmit',
-            callback: (params) => {
-              console.log(params);
-              const lesserAmount = params[0].value ? params[0].value : 0;
-              const greaterAmount = params[1].value ? params[1].value : 0;
-              const incomeByBuyer = params[2].value ? params[2].value : 0;
-              const zoneName = params[3].value ? params[3].value : '';
-
-              if (
-                this.deliveryData.length > 0 &&
-                this.deliveryData.find((item) => item.id === 'yes-depend-amount-2')
-              ) {
-                const index = this.deliveryData.findIndex(
-                  (item) => item.id === 'yes-depend-amount-2'
-                );
-                this.deliveryData.splice(index, 1);
-              }
-
-              this.deliveryData.push({
-                zona: zoneName,
-                amount: incomeByBuyer as number,
-                // cost: cost,
-                lesserAmount : lesserAmount as number,
-                greaterAmount : greaterAmount as number,
-                type: 'lesser',
-                id: "yes-depend-amount-2"
-              });
-
-              console.log(this.deliveryData);
-            },
-          },
-        ],
-      },
-      {
-        component: DialogFormComponent,
-        componentId: 'no-deliveryzone-1',
-        inputs: {
-          dialogId: 'no-deliveryzone-1',
-          containerStyles: {},
-          title: {
-            text: "Zona de Entrega #1"
-          },
-          fields: {
-            inputs: [
-              {
-                label: "$ que te cuesta (egreso)",
-                formControl: "input-1",
-                row: 0,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Nombre de la zona:",
-                formControl: "input-2",
-                row: 1,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-            ]
-          }
-        },
-        outputs: [
-          {
-            name: 'formSubmit',
-            callback: (params) => {
-              console.log(params);
-              const cost = params[0].value ? params[0].value : 0;
-              const zoneName = params[1].value ? params[1].value : '';
-
-              if (
-                this.deliveryData.length > 0 &&
-                this.deliveryData.find((item) => item.id === 'no-deliveryzone-1')
-              ) {
-                const index = this.deliveryData.findIndex(
-                  (item) => item.id === 'no-deliveryzone-1'
-                );
-                this.deliveryData.splice(index, 1);
-              }
-
-              this.deliveryData.push({
-                zona: zoneName,
-                cost: cost as number,
-                type: 'free',
-                id: "no-deliveryzone-1"
-              });
-
-              console.log(this.deliveryData);
-            },
-          },
-        ],
-      },
-      {
-        component: DialogFormComponent,
-        componentId: 'no-deliveryzone-2',
-        inputs: {
-          dialogId: 'no-deliveryzone-2',
-          containerStyles: {},
-          title: {
-            text: "Zona de Entrega #2"
-          },
-          fields: {
-            inputs: [
-              {
-                label: "$ que te cuesta (egreso)",
-                formControl: "input-1",
-                row: 0,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-              {
-                label: "Nombre de la zona:",
-                formControl: "input-2",
-                row: 1,
-                column: 0,
-                isFlex: true,
-                type: "text"
-              },
-            ]
-          }
-        },
-        outputs: [
-          {
-            name: 'formSubmit',
-            callback: (params) => {
-              console.log(params);
-              const cost = params[0].value ? params[0].value : 0;
-              const zoneName = params[1].value ? params[1].value : '';
-
-              if (
-                this.deliveryData.length > 0 &&
-                this.deliveryData.find((item) => item.id === 'no-deliveryzone-2')
-              ) {
-                const index = this.deliveryData.findIndex(
-                  (item) => item.id === 'no-deliveryzone-2'
-                );
-                this.deliveryData.splice(index, 1);
-              }
-
-              this.deliveryData.push({
-                zona: zoneName,
-                cost: cost as number,
-                type: 'free',
-                id: "no-deliveryzone-2"
-              });
-              console.log(this.deliveryData);
-            },
-          },
-        ],
       },
       {
         component: GeneralDialogComponent,
@@ -866,11 +927,21 @@ export class TestComponent implements OnInit {
                     greaterAmount : Number(item.greaterAmount)
                   };
                 });
+
                 console.log(this.deliveryZones);
+
                 this.deliveryData.forEach(async zone => {
                   const deliveryZone = await this.deliveryzonesService.create(
                     this.merchant._id,
-                    zone
+                    {
+                      amount: zone.amount,
+                      greaterAmount: zone.greaterAmount,
+                      lesserAmount: zone.lesserAmount,
+                      greaterAmountLimit: zone.greaterAmountLimit,
+                      lesserAmountLimit: zone.lesserAmountLimit,
+                      zona: zone.zona,
+                      type: zone.type
+                    }
                   )
                   if (zone.cost) {
                     const expenditure = await this.deliveryzonesService.createExpenditure(
