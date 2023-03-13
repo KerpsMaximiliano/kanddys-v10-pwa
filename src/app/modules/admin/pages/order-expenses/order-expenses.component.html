@@ -1,0 +1,115 @@
+<div style="min-height: 100vh">
+  <header class="header">
+    <a
+      *ngIf="order && !adding"
+      mat-icon-button
+      [routerLink]="['../../../ecommerce/order-detail', order._id]"
+      queryParamsHandling="merge"
+    >
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+    </a>
+    <button
+      mat-icon-button
+      *ngIf="order && adding"
+      (click)="createExpenditure()"
+    >
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+    </button>
+    <button mat-button *ngIf="!adding" (click)="adding = !adding">
+      <p>Adiciona un egreso</p>
+    </button>
+  </header>
+  <main>
+    <ng-container *ngIf="!adding">
+      <section>
+        <div class="expenses-list" *ngIf="orderExpenditures.length">
+          <app-named-expense
+            *ngFor="let expenditure of orderExpenditures"
+            [title]="expenditure.name"
+            [subtitle]="daysAgo(expenditure.createdAt)"
+            [pricing]="expenditure.amount"
+            (onDelete)="onDelete(expenditure)"
+          ></app-named-expense>
+        </div>
+        <h4 class="no-expends" *ngIf="!orderExpenditures.length">
+          Esta orden aún no tiene egresos
+        </h4>
+      </section>
+      <section style="padding: 12px">
+        <div class="flex-between light">
+          <span>Ingresos</span>
+          <span>${{ benefits.benefits | number }}</span>
+        </div>
+        <div class="flex-between light">
+          <span>Egresos</span>
+          <span>(${{ benefits.less | number }})</span>
+        </div>
+        <div class="flex-between bold">
+          <span>Ingresos menos egresos</span>
+          <span>${{ benefits.benefits - benefits.less | number }}</span>
+        </div>
+      </section>
+    </ng-container>
+    <ng-container *ngIf="adding">
+      <form class="form" [formGroup]="expenseForm">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+        <mat-card style="width: 100%; height: 100%">
+          <app-currency-input
+            [fieldStyles]="{
+              boxShadow: 'none',
+              backgroundColor: 'transparent',
+              borderRadius: '6px',
+              padding: '8px 0px'
+            }"
+            (onInputEvent)="onCurrencyInput($event)"
+          ></app-currency-input>
+        </mat-card>
+      </form>
+      <mat-tab-group mat-align-tabs="center">
+        <mat-tab label="PREVIAMENTE USADOS" style="font-size: 12px">
+          <div class="expenses-list" *ngIf="expendituresByUsed.length">
+            <button
+              class="btn"
+              (click)="addExpenditure(expenditure)"
+              *ngFor="let expenditure of expendituresByUsed"
+            >
+              <app-named-expense
+                [title]="expenditure.name"
+                [subtitle]="daysAgo(expenditure.createdAt)"
+                [pricing]="expenditure.amount"
+                [shadow]="true"
+                [showIcon]="false"
+              ></app-named-expense>
+            </button>
+          </div>
+          <h4 class="no-expends" *ngIf="!expendituresByUsed.length">
+            No quedan egresos por agregar
+          </h4>
+        </mat-tab>
+        <mat-tab label="POR ZONA DE ENTREGA" style="font-size: 12px">
+          <div class="expenses-list" *ngIf="expendituresByZone.length">
+            <button
+              class="btn"
+              (click)="addExpenditure(expenditure)"
+              *ngFor="let expenditure of expendituresByZone"
+            >
+              <app-named-expense
+                [title]="expenditure.name"
+                [subtitle]="daysAgo(expenditure.createdAt)"
+                [pricing]="expenditure.amount"
+                [shadow]="true"
+                [showIcon]="false"
+              ></app-named-expense>
+            </button>
+          </div>
+          <h4 class="no-expends" *ngIf="!expendituresByZone.length">
+            No quedan egresos por agregar
+          </h4>
+        </mat-tab>
+      </mat-tab-group>
+    </ng-container>
+  </main>
+</div>

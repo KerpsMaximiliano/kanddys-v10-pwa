@@ -1,0 +1,13 @@
+<mat-card class="card mat-elevation-z0">
+  <div class="card">
+    <div class="flex-between" style="padding-bottom: 8px">
+      <span class="title">{{ month }}</span>
+      <span>{{ percentage | number }}% de beneficio</span>
+    </div>
+    <mat-divider [inset]="true"></mat-divider>
+    <div class="flex-between" style="padding-top: 8px">
+      <span>Ingresos menos egresos</span>
+      <span>${{ amount | number }}</span>
+    </div>
+  </div>
+</mat-card>

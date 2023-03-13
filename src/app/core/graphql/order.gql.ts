@@ -114,6 +114,7 @@ const orderData = `
   orderStatus
   orderStatusDelivery
   statusDelivery
+  expenditures
   itemPackage {
     _id
     name
@@ -235,6 +236,16 @@ const preOrderData = `
     platform
     from
   }
+`;
+
+const expenditureData = `
+  _id
+  createdAt
+  type
+  name
+  description
+  amount
+  useDate
 `;
 
 export const toggleUserNotifications = gql`
@@ -375,6 +386,71 @@ export const ordersByItemHot = gql`
     ordersByItem(paginate: $paginate) {
       _id
     }
+  }
+`;
+
+export const expenditure = gql`
+  query expenditure($id: ObjectID!) {
+    expenditure(id: $id) {
+      ${expenditureData}
+    }
+  }
+`;
+
+export const expenditures = gql`
+  query expenditures($paginate: PaginationInput!) {
+    expenditures(paginate: $paginate) {
+      ${expenditureData}
+    }
+  }
+`;
+
+export const createExpenditure = gql`
+  mutation createExpenditure(
+    $merchantId: ObjectID!
+    $input: ExpenditureInput!
+  ) {
+    createExpenditure(merchantId: $merchantId, input: $input) {
+      _id
+    }
+  }
+`;
+
+export const updateExpenditure = gql`
+  mutation updateExpenditure($input: ExpenditureInput!, $id: ObjectID!) {
+    updateExpenditure(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
+
+export const orderAddExpenditure = gql`
+  mutation orderAddExpenditure($expenditureId: ObjectID!, $id: ObjectID!) {
+    orderAddExpenditure(expenditureId: $expenditureId, id: $id) {
+      _id
+      expenditures
+    }
+  }
+`;
+
+export const orderRemoveExpenditure = gql`
+  mutation orderRemoveExpenditure($expenditureId: ObjectID!, $id: ObjectID!) {
+    orderRemoveExpenditure(expenditureId: $expenditureId, id: $id) {
+      _id
+      expenditures
+    }
+  }
+`;
+
+export const orderBenefits = gql`
+  query orderBenefits($id: ObjectID!) {
+    orderBenefits(id: $id)
+  }
+`;
+
+export const orderBenefitsByMerchant = gql`
+  query orderBenefitsByMerchant($pagination: PaginationInput) {
+    orderBenefitsByMerchant(pagination: $pagination)
   }
 `;
 

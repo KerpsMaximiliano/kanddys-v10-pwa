@@ -133,6 +133,7 @@ export class ItemOrder extends Model<ItemOrder> {
     status: string;
     access: string;
   }>;
+  expenditures: string[];
 }
 
 export class ItemOrderInput {
@@ -148,4 +149,36 @@ export class OCRInput {
   transactionCode?: string;
   image?: File;
   platform?: string;
+}
+
+export type ExpenditureType = 'delivery-zone' | 'others' | 'employee';
+
+export class Expenditure extends Model<Expenditure> {
+  type: ExpenditureType;
+  merchant: string;
+  name: string;
+  description: string;
+  amount: number;
+  useDate: Date;
+}
+
+export class ExpenditureInput {
+  type: ExpenditureType;
+  name: string;
+  description?: string;
+  amount: number;
+}
+
+export class OrderBenefits {
+  benefits: number;
+  less: number;
+  percentageBenefits: number;
+  percentageLess: number;
+}
+
+export class Benefits {
+  data: OrderBenefits;
+  moreResult: boolean;
+  pageResultCount: number;
+  totalResults: number;
 }
