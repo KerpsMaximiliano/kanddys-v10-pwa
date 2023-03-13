@@ -13,6 +13,7 @@ export class DeliveryZonesService {
     merchantId: string,
     input: DeliveryZoneInput
   ): Promise<DeliveryZone> {
+    console.log(input);
     try {
       const result = await this.graphql.query({
         query: createDeliveryZone,

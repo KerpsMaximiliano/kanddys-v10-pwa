@@ -338,25 +338,29 @@ export class TestComponent implements OnInit {
             {
               label: "$ recibes del comprador:",
               formControl: "input-1",
+              index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "$ que te cuesta (egreso)",
               formControl: "input-2",
+              index: 1,
               row: 0,
               column: 1,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "Nombre de la zona",
               formControl: "input-3",
+              index: 2,
               row: 1,
               column: 0,
               isFlex: false,
+              halfWidth: false,
               type: "text"
             }
           ]
@@ -408,22 +412,25 @@ export class TestComponent implements OnInit {
             {
               label: "$ recibes del comprador:",
               formControl: "input-1",
+              index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "$ que te cuesta (egreso)",
               formControl: "input-2",
+              index: 1,
               row: 0,
               column: 1,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "Nombre de la zona",
               formControl: "input-3",
+              index: 2,
               row: 1,
               column: 0,
               isFlex: false,
@@ -481,38 +488,43 @@ export class TestComponent implements OnInit {
             {
               label: "$ de la factura menor a:",
               formControl: "input-1",
+              index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "$ de la factura mayor a:",
               formControl: "input-2",
+              index: 1,
               row: 0,
               column: 1,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "$ recibes del comprador",
               formControl: "input-3",
+              index: 2,
               row: 1,
               column: 0,
-              isFlex: false,
-              type: "text"
+              isFlex: true,
+              type: "number"
             },
             {
               label: "$ que te cuesta (egreso)",
               formControl: "input-4",
+              index: 3,
               row: 1,
               column: 1,
-              isFlex: false,
-              type: "text"
+              isFlex: true,
+              type: "number"
             },
             {
               label: "Nombre de la zona",
               formControl: "input-5",
+              index: 4,
               row: 2,
               column: 0,
               isFlex: false,
@@ -573,30 +585,34 @@ export class TestComponent implements OnInit {
             {
               label: "Menor a:",
               formControl: "input-1",
+              index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "Mayor a:",
               formControl: "input-2",
+              index: 1,
               row: 0,
               column: 1,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "Monto que te pagan por el delivery:",
               formControl: "input-3",
+              index: 2,
               row: 1,
               column: 0,
               isFlex: false,
-              type: "text"
+              type: "number"
             },
             {
               label: "Nombre de la zona",
               formControl: "input-4",
+              index: 3,
               row: 2,
               column: 0,
               isFlex: false,
@@ -659,14 +675,16 @@ export class TestComponent implements OnInit {
             {
               label: "$ que te cuesta (egreso)",
               formControl: "input-1",
+              index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "Nombre de la zona:",
               formControl: "input-2",
+              index: 1,
               row: 1,
               column: 0,
               isFlex: true,
@@ -719,14 +737,16 @@ export class TestComponent implements OnInit {
             {
               label: "$ que te cuesta (egreso)",
               formControl: "input-1",
+              index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "text"
+              type: "number"
             },
             {
               label: "Nombre de la zona:",
               formControl: "input-2",
+              index: 1,
               row: 1,
               column: 0,
               isFlex: true,

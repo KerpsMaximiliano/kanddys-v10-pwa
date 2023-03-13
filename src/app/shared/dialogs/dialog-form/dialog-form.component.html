@@ -2,14 +2,20 @@
     <h2 class="title">{{ title.text }}</h2>
     <form [formGroup]="form" *ngIf="form">
         <div formArrayName="inputArray" class="input-array">
-            <div *ngFor="let row of rows" class="row">
-                <div *ngFor="let col of columns">
+            <div *ngFor="let row of rows" [ngClass]="{ row: row.isFlex }">
+                <div *ngFor="let col of columns" [ngClass]="{ fullWidth: row.isFlex }">
                   <div *ngFor="let input of inputs; let i = index;">
-                    <div *ngIf="input.row === row && input.column === col">
-                        <div class="input-container">
+                    <div *ngIf="input.row === row.index && input.column === col">
+                        <div class="input-container" *ngIf="input.type !== 'number'">
                             <p class="input-label">{{ input.label }}</p>
                             <input [type]="input.type" placeholder="Escribe..." class="" [formControlName]="i" (keyup)="onKeyPress()">
                         </div>
+                        <app-currency-input
+                            [innerLabel]="input.label"
+                            [inputId]="input.formControl"
+                            (onInputEvent)="onKeyPress($event, input.formControl)"
+                            *ngIf="input.type === 'number'"
+                        ></app-currency-input>
                     </div>
                   </div>
                 </div>
