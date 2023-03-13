@@ -91,6 +91,8 @@ export class ArticleDetailComponent implements OnInit {
   createArticle: 'true' | 'false';
   isCreateArticle: boolean;
   isSignup: boolean;
+  merchantId: string = '';
+  isMerchant: boolean;
 
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
@@ -157,13 +159,19 @@ export class ArticleDetailComponent implements OnInit {
       'createArticle'
     ) as 'true' | 'false';
 
-    //this.merchantDialog();
+    this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
+    console.log(this.merchantId);
+    if (this.merchantId !== '') {
+      this.isMerchant = true;
+    }
+
     this.articleDialog();
 
     this.mode = this.route.snapshot.queryParamMap.get('mode') as
       | 'preview'
       | 'image-preview'
       | 'saleflow';
+
     this.route.params.subscribe(async (routeParams) => {
       await this.verifyIfUserIsLogged();
       const validEntities = ['item', 'post', 'template', 'collection'];
@@ -232,34 +240,38 @@ export class ArticleDetailComponent implements OnInit {
         this.itemData.name = this._ItemsService.itemName;
         this.itemData.description = this._ItemsService.itemDesc;
         this.itemData.pricing = this._ItemsService.itemPrice;
-        this.itemData.images = this.itemData.images.sort(({index:a},{index:b}) => a>b?-1:1).map((image) => ({
-          value: image.value,
-        })) as ItemImage[];
+        this.itemData.images = this.itemData.images
+          .sort(({ index: a }, { index: b }) => (a > b ? -1 : 1))
+          .map((image) => ({
+            value: image.value,
+          })) as ItemImage[];
       }
 
-      this.itemData.media = this.itemData.images.sort(({index:a},{index:b}) => a>b?1:-1).map((image) => {
-        let url = image.value;
-        const fileParts = image.value.split('.');
-        const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
-        let auxiliarImageFileExtension = 'image/' + fileExtension;
-        let auxiliarVideoFileExtension = 'video/' + fileExtension;
+      this.itemData.media = this.itemData.images
+        .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+        .map((image) => {
+          let url = image.value;
+          const fileParts = image.value.split('.');
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+          let auxiliarImageFileExtension = 'image/' + fileExtension;
+          let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
-        if (url && !url.includes('http') && !url.includes('https')) {
-          url = 'https://' + url;
-        }
+          if (url && !url.includes('http') && !url.includes('https')) {
+            url = 'https://' + url;
+          }
 
-        if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-          return {
-            src: url,
-            type: 'IMAGE',
-          };
-        } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-          return {
-            src: url,
-            type: 'VIDEO',
-          };
-        }
-      });
+          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+            return {
+              src: url,
+              type: 'IMAGE',
+            };
+          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+            return {
+              src: url,
+              type: 'VIDEO',
+            };
+          }
+        });
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
       this.itemTags?.forEach((tag) => {

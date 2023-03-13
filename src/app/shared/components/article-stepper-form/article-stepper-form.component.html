@@ -19,8 +19,12 @@
     <div *ngIf="!file">
       <app-item-images (enteredImages)="onImageInput($event)"></app-item-images>
     </div>
-    <div *ngIf="file" class="preview">
-      <img [src]="base64" alt="" />
+    <div
+      *ngIf="file"
+      [ngStyle]="{ backgroundImage: 'url(' + base64 + ')' }"
+      class="preview"
+    >
+      <!-- <img [src]="base64" alt="" /> -->
     </div>
     <button mat-button matStepperNext *ngIf="file">Continuar</button>
   </mat-step>

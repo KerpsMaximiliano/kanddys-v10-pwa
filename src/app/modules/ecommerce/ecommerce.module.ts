@@ -26,6 +26,7 @@ import { ContactLandingComponent } from 'src/app/shared/components/contact-landi
 import { CollectionsComponent } from 'src/app/modules/ecommerce/pages/collections/collections.component';
 import { TagItemsComponent } from 'src/app/modules/ecommerce/pages/tag-items/tag-items.component';
 import { GiftDetailComponent } from './pages/gift-detail/gift-detail.component';
+import { MerchantLandingComponent } from '../admin/pages/merchant-landing/merchant-landing.component';
 
 const routes: Routes = [
   {
@@ -70,6 +71,10 @@ const routes: Routes = [
   {
     path: 'gift-detail/:orderId',
     component: GiftDetailComponent,
+  },
+  {
+    path: 'merchant-landing',
+    component: MerchantLandingComponent,
   },
   {
     path: ':merchantSlug',
@@ -142,7 +147,7 @@ const routes: Routes = [
       {
         path: 'contact-landing/:idUser',
         component: ContactLandingContainerComponent,
-      }
+      },
     ],
   },
 ];
@@ -170,6 +175,7 @@ const routes: Routes = [
     CollectionsComponent,
     TagItemsComponent,
     GiftDetailComponent,
+    MerchantLandingComponent,
   ],
   imports: [
     CommonModule,

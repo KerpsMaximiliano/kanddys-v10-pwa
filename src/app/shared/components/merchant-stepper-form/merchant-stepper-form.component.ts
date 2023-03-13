@@ -42,7 +42,8 @@ export class MerchantStepperFormComponent implements OnInit {
   phoneNumber: string;
   inputTiendaName: string = '';
   slug: string = '';
-  merchant;
+  user;
+  merchantId;
 
   allCommunities;
   allCommunitiesObject;
@@ -136,13 +137,14 @@ export class MerchantStepperFormComponent implements OnInit {
     this.itemForm2.get('slug').patchValue(slug);
   }
 
-  sendLink() {
+  async sendLink() {
     //this.signUp();
-    console.log(this.merchant);
-    this.createMerchant();
+    console.log(this.user);
+    await this.createMerchant();
+    console.log(this.merchantId);
     this.authService.generateMagicLink(
       this.phoneNumber.replace('+', ''),
-      '/ecommerce/arepera-que-molleja/article-detail/item/63f6a229e2f51cbd1a4f3f71?createArticle=true',
+      `/ecommerce/arepera-que-molleja/article-detail/item/63f6a229e2f51cbd1a4f3f71?createArticle=true&merchant=${this.merchantId}`,
       '',
       'UserAccess',
       {}
@@ -155,7 +157,7 @@ export class MerchantStepperFormComponent implements OnInit {
     console.log('email: ', this.inputMail);
     console.log('phone: ', this.phoneNumber);
 
-    this.merchant = await this.authService.signup(
+    this.user = await this.authService.signup(
       {
         name: this.inputName,
         lastname: this.inputLastName,
@@ -167,7 +169,7 @@ export class MerchantStepperFormComponent implements OnInit {
       false
     );
 
-    console.log(this.merchant);
+    console.log(this.user);
   }
 
   selectedCategory(i: number) {
@@ -192,12 +194,16 @@ export class MerchantStepperFormComponent implements OnInit {
   }
 
   async createMerchant() {
-    console.log(this.merchant);
-    await this.merchantsService.createMerchant({
+    console.log(this.user);
+    const merchant = await this.merchantsService.createMerchant({
       name: this.inputTiendaName,
       slug: this.slug,
       categories: this.merchantCategories,
-      owner: this.merchant.user_id,
+      owner: this.user.user_id,
     });
+
+    this.merchantId = merchant.createMerchant._id;
+    console.log(merchant);
+    console.log(this.merchantId);
   }
 }
