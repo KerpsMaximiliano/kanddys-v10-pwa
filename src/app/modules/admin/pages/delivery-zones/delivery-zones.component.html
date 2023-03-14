@@ -62,3 +62,12 @@
     </div>
 
 </div>
+
+<app-dialog-flow
+  [dialogFlowId]="'flow1'"
+  [status]="'OPEN'"
+  [dialogs]="dialogsPro"
+  (saveConfigRef)="swiperConfig = $event"
+  (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+  (closingDialogSignal)="close()"
+></app-dialog-flow>

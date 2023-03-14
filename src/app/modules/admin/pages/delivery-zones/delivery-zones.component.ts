@@ -3,9 +3,11 @@ import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Expenditure, ItemOrder } from 'src/app/core/models/order';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { environment } from 'src/environments/environment';
+import { ZoneDialogs } from './zone-dialogs';
 
 @Component({
   selector: 'app-delivery-zones',
@@ -33,7 +35,8 @@ export class DeliveryZonesComponent implements OnInit {
   constructor(
     private deliveryzonesService: DeliveryZonesService,
     private merchantsService: MerchantsService,
-    private ordersService: OrderService
+    private ordersService: OrderService,
+    private dialogflowService: DialogFlowService,
   ) { }
 
   async ngOnInit() {
@@ -160,6 +163,17 @@ export class DeliveryZonesComponent implements OnInit {
     }, 0);
 
     return totalAmount;
+  }
+
+  createDialogs() {
+    return new ZoneDialogs(
+      this.dialogflowService,
+      this.deliveryzonesService
+    );
+  }
+
+  close() {
+
   }
 
 }
