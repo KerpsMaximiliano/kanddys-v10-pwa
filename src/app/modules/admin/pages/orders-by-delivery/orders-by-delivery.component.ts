@@ -19,6 +19,12 @@ export class OrdersByDeliveryComponent implements OnInit {
   routeParamsSubscription: Subscription;
   merchant: Merchant;
   orders: ItemOrder[] = [];
+  facturasDisplayArray: Array<{
+    image: string
+    username: string,
+    total: number,
+    date: Date
+  }> = [];
   totalIncome: number = 0;
   deliveryZone: DeliveryZone;
 
@@ -81,6 +87,18 @@ export class OrdersByDeliveryComponent implements OnInit {
       );
 
       this.orders = result.ordersByMerchant;
+
+      this.facturasDisplayArray = this.orders.map(order => {
+        return {
+          image: order.user.image ? order.user.image : 'https://www.gravatar.com/avatar/0?s=250&d=mp',
+          username: order.user.name,
+          total: order.subtotals.reduce((subtotalAccumulator, subtotal) => {
+            return subtotalAccumulator + subtotal.amount;
+          }, 0),
+          date: new Date(order.createdAt)
+        }
+      });
+
       this.totalIncome = this.calculateIncomeByDelivery(this.orders);
       
     } catch (error) {
