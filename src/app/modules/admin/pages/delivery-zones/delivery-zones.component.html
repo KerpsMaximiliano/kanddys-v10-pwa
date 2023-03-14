@@ -3,7 +3,7 @@
         <a mat-icon-button [routerLink]="['../dashboard']">
             <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
         </a>
-        <button mat-button>
+        <button mat-button (click)="openDialogFlow()">
             <p>Adiciona otra zona de entrega</p>
         </button>
     </header>
@@ -15,7 +15,7 @@
         </div>
 
         <mat-card class="card" *ngFor="let deliveryIncome of deliveryIncomes">
-            <div mat-button class="card-settings">
+            <div mat-button class="card-settings" (click)="openSettingsDialogByZone()">
                 <img [src]="env + '/dots-black.svg'" alt="settings">
             </div>
             <div class="card-content">
@@ -65,8 +65,8 @@
 
 <app-dialog-flow
   [dialogFlowId]="'flow1'"
-  [status]="isDialogOpen ? 'OPEN' : 'CLOSED'"
-  [dialogs]="dialogsPro"
+  [status]="isDialogOpen ? 'OPEN' : 'CLOSE'"
+  [dialogs]="dialogs"
   (saveConfigRef)="swiperConfig = $event"
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
   (closingDialogSignal)="close()"

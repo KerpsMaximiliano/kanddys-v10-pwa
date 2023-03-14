@@ -1,4 +1,9 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Expenditure, ItemOrder } from 'src/app/core/models/order';
@@ -7,6 +12,7 @@ import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { ZoneDialogs } from './zone-dialogs';
@@ -19,6 +25,7 @@ import { ZoneDialogs } from './zone-dialogs';
 export class DeliveryZonesComponent implements OnInit {
 
   env: string = environment.assetsUrl;
+  URI: string = environment.uri;
   deliveryZones: DeliveryZone[] = [];
   merchant: Merchant;
 
@@ -37,7 +44,7 @@ export class DeliveryZonesComponent implements OnInit {
   // Dialog flow variables
   swiperConfig: SwiperOptions = null;
   dialogs: Array<EmbeddedComponentWithId> = [];
-  ialogFlowFunctions: Record<string, any> = {};
+  dialogFlowFunctions: Record<string, any> = {};
   isDialogOpen: boolean = false;
 
   constructor(
@@ -45,6 +52,11 @@ export class DeliveryZonesComponent implements OnInit {
     private merchantsService: MerchantsService,
     private ordersService: OrderService,
     private dialogflowService: DialogFlowService,
+    private _bottomSheet: MatBottomSheet,
+    private router: Router,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
   ) { }
 
   async ngOnInit() {
@@ -57,7 +69,7 @@ export class DeliveryZonesComponent implements OnInit {
 
     await this.getExpenditures();
 
-    console.log(this.deliveryIncomes);
+    this.createDialogs();
   }
 
   async getDeliveryZones() {
@@ -180,9 +192,30 @@ export class DeliveryZonesComponent implements OnInit {
     ).inject();
   }
 
-  open() {
-    this.createDialogs();
+  openDialogFlow() {
+    console.log("Abriendo dialog");
     this.isDialogOpen = true;
+  }
+
+  openSettingsDialogByZone() {
+    const link = `${this.URI}/ecommerce/${this.merchant.slug}/store`;
+    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+      data: [
+        {
+          title: 'Settings de Zona de Entrega',
+          options: [
+            {
+              title: 'Editar zona de entrega',
+              callback: () => {
+                this.router.navigate([
+                  `/ecommerce/${this.merchant.slug}/store`,
+                ]);
+              },
+            }
+          ],
+        }
+      ],
+    });
   }
 
   close() {
