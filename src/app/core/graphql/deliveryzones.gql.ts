@@ -23,3 +23,20 @@ export const createExpenditure = gql`
     }
   }
 `;
+
+export const deliveryZones = gql`
+  query deliveryZones($paginate: PaginationInput) {
+    deliveryZones(paginate: $paginate) {
+      _id
+      zona
+      type
+      amount
+      greaterAmount
+      lesserAmount
+      lesserAmountLimit
+      greaterAmountLimit
+      expenditure
+      createdAt
+    }
+  }
+`;

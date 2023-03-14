@@ -1,0 +1,64 @@
+<div class="container">
+    <header class="header">
+        <a mat-icon-button [routerLink]="['../dashboard']">
+            <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+        </a>
+        <button mat-button>
+            <p>Adiciona otra zona de entrega</p>
+        </button>
+    </header>
+
+    <div class="section">
+        <div class="label-flex">
+            <p class="description-label">ZONAS DE ENTREGAS</p>
+            <p class="data-label">{{ totalDeliveries }} entregas, ${{ totalIncome | number : "1.2-2" }}</p>
+        </div>
+
+        <mat-card class="card" *ngFor="let deliveryIncome of deliveryIncomes">
+            <div mat-button class="card-settings">
+                <img [src]="env + '/dots-black.svg'" alt="settings">
+            </div>
+            <div class="card-content">
+                <div class="card-flex">
+                    <div>
+                        <h4 class="highlight-text">{{ deliveryIncome.deliveryZone.zona ? deliveryIncome.deliveryZone.zona : 'Sin nombre' }}</h4>
+                        <p>{{ deliveryIncome.orders.length }} entregas</p>
+                    </div>
+                    <h4 class="highlight-text">${{ deliveryIncome.income | number : "1.2-2" }}</h4>
+                </div>
+
+            </div>
+        </mat-card>
+    </div>
+
+    <div class="section">
+        <div class="label-flex">
+            <p class="description-label">EGRESOS FIJOS</p>
+            <p class="data-label">${{ totalExpenditures | number : "1.2-2" }}</p>
+        </div>
+
+        <mat-card class="card" *ngFor="let expenditure of expenditures">
+            <div mat-button class="card-settings">
+                <img [src]="env + '/dots-black.svg'" alt="settings">
+            </div>
+            <div class="card-content">
+                <div class="card-flex">
+                    <div>
+                        <h4 class="highlight-text">{{ expenditure.name ? expenditure.name : 'Sin nombre' }}</h4>
+                        <p class="grayout">Creado {{ expenditure.useDate | date }}</p>
+                    </div>
+                    <h4 class="highlight-text">(${{ expenditure.amount | number : "1.2-2" }})</h4>
+                </div>
+
+            </div>
+        </mat-card>
+    </div>
+
+    <div class="section">
+        <div class="label-flex">
+            <p class="bold-description">INGRESOS MENOS EGRESOS</p>
+            <p class="data-label">{{ totalIncome - totalExpenditures | number : "1.2-2" }}$</p>
+        </div>
+    </div>
+
+</div>

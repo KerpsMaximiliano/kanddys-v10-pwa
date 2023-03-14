@@ -30,6 +30,7 @@ import { BenefitsComponent } from './pages/benefits/benefits.component';
 import { OrderExpensesComponent } from './pages/order-expenses/order-expenses.component';
 import { FilteredBenefitsComponent } from './pages/filtered-benefits/filtered-benefits.component';
 import { MerchantLandingComponent } from './pages/merchant-landing/merchant-landing.component';
+import { DeliveryZonesComponent } from './pages/delivery-zones/delivery-zones.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -196,6 +197,10 @@ const routes: Routes = [
         path: 'order-expenses/:orderId',
         component: OrderExpensesComponent,
       },
+      {
+        path: 'delivery-zones',
+        component: DeliveryZonesComponent,
+      },
     ],
   },
   {
@@ -228,6 +233,7 @@ const routes: Routes = [
     OrderExpensesComponent,
     FilteredBenefitsComponent,
     MerchantLandingComponent,
+    DeliveryZonesComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
