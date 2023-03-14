@@ -65,7 +65,7 @@
 
 <app-dialog-flow
   [dialogFlowId]="'flow1'"
-  [status]="'OPEN'"
+  [status]="isDialogOpen ? 'OPEN' : 'CLOSED'"
   [dialogs]="dialogsPro"
   (saveConfigRef)="swiperConfig = $event"
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"

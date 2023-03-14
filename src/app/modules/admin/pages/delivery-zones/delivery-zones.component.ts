@@ -6,7 +6,9 @@ import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.servic
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 import { ZoneDialogs } from './zone-dialogs';
 
 @Component({
@@ -31,6 +33,12 @@ export class DeliveryZonesComponent implements OnInit {
   totalDeliveries: number = 0;
   totalIncome: number = 0;
   totalExpenditures: number = 0;
+
+  // Dialog flow variables
+  swiperConfig: SwiperOptions = null;
+  dialogs: Array<EmbeddedComponentWithId> = [];
+  ialogFlowFunctions: Record<string, any> = {};
+  isDialogOpen: boolean = false;
 
   constructor(
     private deliveryzonesService: DeliveryZonesService,
@@ -166,14 +174,19 @@ export class DeliveryZonesComponent implements OnInit {
   }
 
   createDialogs() {
-    return new ZoneDialogs(
+    this.dialogs = new ZoneDialogs(
       this.dialogflowService,
       this.deliveryzonesService
-    );
+    ).inject();
+  }
+
+  open() {
+    this.createDialogs();
+    this.isDialogOpen = true;
   }
 
   close() {
-
+    this.isDialogOpen = false;
   }
 
 }
