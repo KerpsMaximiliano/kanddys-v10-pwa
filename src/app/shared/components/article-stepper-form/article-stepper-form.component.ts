@@ -54,16 +54,6 @@ export class ArticleStepperFormComponent implements OnInit {
   base64: string;
 
   async ngOnInit() {
-    this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
-    console.log(this.merchantId);
-    const merchantDefault = await this.merchantsService.setDefaultMerchant(
-      this.merchantId
-    );
-    console.log(merchantDefault);
-
-    this.merchant = await this.merchantsService.merchantDefault();
-    console.log(this.merchant);
-
     this.allCommunities = await this.communities.communitycategories({});
     console.log(this.allCommunities);
 
@@ -79,7 +69,22 @@ export class ArticleStepperFormComponent implements OnInit {
           color: '#272727',
         },
       });
+
+      console.log(this.options);
     }
+
+    this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
+    console.log(this.merchantId);
+
+    this.merchantsService.merchantAuthorize(this.merchantId);
+
+    this.merchant = await this.merchantsService.setDefaultMerchant(
+      this.merchantId
+    );
+    console.log(this.merchant);
+
+    // this.merchant = await this.merchantsService.merchantDefault();
+    // console.log(this.merchant);
   }
 
   selectedCategory(i: number) {

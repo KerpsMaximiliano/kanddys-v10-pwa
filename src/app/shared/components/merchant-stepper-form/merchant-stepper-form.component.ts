@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { generateMagicLink } from 'src/app/core/graphql/auth.gql';
@@ -11,6 +11,8 @@ import {
   PhoneNumberFormat,
   SearchCountryField,
 } from 'ngx-intl-tel-input';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatStepper } from '@angular/material/stepper';
 
 @Component({
   selector: 'app-merchant-stepper-form',
@@ -23,8 +25,11 @@ export class MerchantStepperFormComponent implements OnInit {
     private dialogRef: MatDialogRef<MerchantStepperFormComponent>,
     private authService: AuthService,
     private communities: CommunitiesService,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private snackBar: MatSnackBar
   ) {}
+
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
 
   env: string = environment.assetsUrl;
 
@@ -44,6 +49,8 @@ export class MerchantStepperFormComponent implements OnInit {
   slug: string = '';
   user;
   merchantId;
+
+  isNotAlreadyUser: boolean;
 
   allCommunities;
   allCommunitiesObject;
@@ -152,24 +159,41 @@ export class MerchantStepperFormComponent implements OnInit {
   }
 
   async signUp() {
-    console.log('name: ', this.inputName);
-    console.log('lastname: ', this.inputLastName);
-    console.log('email: ', this.inputMail);
-    console.log('phone: ', this.phoneNumber);
+    // console.log('name: ', this.inputName);
+    // console.log('lastname: ', this.inputLastName);
+    // console.log('email: ', this.inputMail);
+    // console.log('phone: ', this.phoneNumber);
 
-    this.user = await this.authService.signup(
-      {
-        name: this.inputName,
-        lastname: this.inputLastName,
-        email: this.inputMail,
-        phone: this.phoneNumber,
-      },
-      'none',
-      null,
-      false
-    );
+    const checkUser = await this.authService.checkUser(this.phoneNumber);
 
-    console.log(this.user);
+    console.log(checkUser);
+
+    if (!checkUser) {
+      this.isNotAlreadyUser = true;
+      this.stepper.next();
+      this.user = await this.authService.signup(
+        {
+          name: this.inputName,
+          lastname: this.inputLastName,
+          email: this.inputMail,
+          phone: this.phoneNumber,
+        },
+        'none',
+        null,
+        false
+      );
+      console.log(this.user);
+      this.user = this.user.user;
+      console.log(this.user);
+    } else {
+      this.snackBar.open(
+        'Este número telefónico ya pertenece a un usuario',
+        '',
+        {
+          duration: 5000,
+        }
+      );
+    }
   }
 
   selectedCategory(i: number) {
@@ -194,16 +218,21 @@ export class MerchantStepperFormComponent implements OnInit {
   }
 
   async createMerchant() {
-    console.log(this.user);
+    // console.log(this.user);
+    // console.log(this.user._id);
+
+    await this.signUp();
+    const userId = this.user?._id;
+    console.log(userId);
     const merchant = await this.merchantsService.createMerchant({
       name: this.inputTiendaName,
       slug: this.slug,
       categories: this.merchantCategories,
-      owner: this.user.user_id,
+      //owner: userId,
     });
 
     this.merchantId = merchant.createMerchant._id;
-    console.log(merchant);
-    console.log(this.merchantId);
+    // console.log(merchant);
+    // console.log(this.merchantId);
   }
 }
