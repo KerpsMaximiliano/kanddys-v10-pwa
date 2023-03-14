@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { createDeliveryZone, createExpenditure, deliveryZoneAddExpenditure, deliveryZones } from '../graphql/deliveryzones.gql';
+import { createDeliveryZone, createExpenditure, deliveryZone, deliveryZoneAddExpenditure, deliveryZones } from '../graphql/deliveryzones.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { DeliveryZone, DeliveryZoneInput } from '../models/deliveryzone';
 import { PaginationInput } from '../models/saleflow';
@@ -9,6 +9,22 @@ import { PaginationInput } from '../models/saleflow';
 })
 export class DeliveryZonesService {
   constructor(private graphql: GraphQLWrapper) {}
+
+  async deliveryZone(
+    id: string
+  ): Promise<DeliveryZone> {
+    try {
+      const result = await this.graphql.query({
+        query: deliveryZone,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return undefined;
+      return result.deliveryZone;
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   async deliveryZones(
     paginate: PaginationInput = { options: { limit: -1 } }

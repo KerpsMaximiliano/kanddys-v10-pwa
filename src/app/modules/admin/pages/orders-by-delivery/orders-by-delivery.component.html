@@ -1,0 +1,18 @@
+<div class="container">
+    <header class="header">
+        <div class="flex">
+            <a mat-icon-button [routerLink]="['../../dashboard']">
+                <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+            </a>
+            <h4 class="header-title">{{ deliveryZone.zona }}</h4>
+            <h4 class="header-title">${{ totalIncome | number : "1.2-2" }}</h4>
+        </div>
+        <button mat-button>
+            <img [src]="env + '/dots-black.svg'" alt="settings">
+        </button>
+    </header>
+
+    <div class="section">
+        
+    </div>
+</div>
