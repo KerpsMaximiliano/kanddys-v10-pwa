@@ -30,6 +30,7 @@ import { BenefitsComponent } from './pages/benefits/benefits.component';
 import { OrderExpensesComponent } from './pages/order-expenses/order-expenses.component';
 import { FilteredBenefitsComponent } from './pages/filtered-benefits/filtered-benefits.component';
 import { MerchantLandingComponent } from './pages/merchant-landing/merchant-landing.component';
+import { OrderProcessComponent } from './pages/order-process/order-process.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -202,6 +203,10 @@ const routes: Routes = [
     path: 'tags',
     component: TagsComponent,
   },
+  {
+    path: 'order-process/:orderId',
+    component: OrderProcessComponent,
+  }
 ];
 
 @NgModule({
@@ -228,6 +233,7 @@ const routes: Routes = [
     OrderExpensesComponent,
     FilteredBenefitsComponent,
     MerchantLandingComponent,
+    OrderProcessComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

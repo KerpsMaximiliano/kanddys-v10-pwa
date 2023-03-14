@@ -1,0 +1,25 @@
+<div class="container">
+    <div>
+        <app-dropdown-menu
+            [optionsList]="deliveryStatusOptions"
+            [multiple]="false"
+            title="STATUS DE LA FACTURA"
+            [listTitle]="orderDeliveryStatus(order.orderStatusDelivery)"
+            (listValue)="changeOrderStatus($event)"
+        ></app-dropdown-menu>
+    </div>
+    <div>
+        <app-dropdown-menu
+            logo="/assets/images/noimage.png"
+            title="MIS LISTAS DE FACTURAS"
+            [listTitle]="
+            selectedTagsLength
+                ? 'En ' + selectedTagsLength + ' lista(s)'
+                : 'Añadela a una lista'
+            "
+            [optionsList]="tagOptions"
+            (listValue)="addTag($event)"
+            (panelState)="tagPanelState = $event"
+        ></app-dropdown-menu>
+    </div>
+</div>
