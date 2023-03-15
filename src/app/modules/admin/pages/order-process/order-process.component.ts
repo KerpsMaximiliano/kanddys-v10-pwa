@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder, OrderStatusDeliveryType, OrderStatusNameType } from 'src/app/core/models/order';
@@ -12,6 +13,7 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-order-process',
@@ -20,9 +22,12 @@ import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/drop
 })
 export class OrderProcessComponent implements OnInit {
 
+  env: string = environment.assetsUrl;
+
   order: ItemOrder;
 
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
+  formatId = formatID;
   deliveryStatusOptions: DropdownOptionItem[] = [
     {
       text: 'En preparación',

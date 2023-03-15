@@ -1,3 +1,94 @@
 .container {
     min-height: 100vh;
+
+    .section {
+        background-color: #FFF;
+        margin-top: 5px;
+        padding: 40px 25px;
+
+        .title, .subtitle, .meta-description {
+            color: #7B7B7B;
+            margin: 5px 0px;
+        }
+
+        .title {
+            font-family: SfProDisplayBold;
+            font-size: 21px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .subtitle {
+            font-family: RobotoMedium;
+            font-size: 14px;
+            margin: 5px 0px;
+        }
+
+        .meta-description {
+            font-family: RobotoRegular;
+            font-size: 13px;
+        }
+
+        .section-label {
+            font-family: SfProLight;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .item-image {
+            width: 90px;
+            height: 90px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .item-bold-caption {
+            font-family: SfProBold;
+            color: #000;
+            font-size: 13px;
+        }
+        
+        .item-caption {
+            font-family: SfProMedium;
+            color: #7B7B7B;
+            font-size: 13px;
+        }
+        .caption {
+            margin-left: 20px;
+            width: 50%;
+        }
+        .questions {
+            margin: 2em 0;
+
+            p {
+                margin: 0;
+            }
+            .gray-out {
+                margin-top: 10px;
+            }
+            .label {
+                font-family: SfProMedium;
+                font-size: 17px;
+            }
+        }
+    }
+}
+
+.flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.gray-out {
+    color: #7B7B7B;
+}
+
+.link-button {
+    cursor: pointer;
+    text-align: left;
+    color: #2874AD;
+    border: 0;
+    background: none;
 }

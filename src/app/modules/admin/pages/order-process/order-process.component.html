@@ -1,5 +1,8 @@
 <div class="container">
+
+    <!-- DROPDOWNS -->
     <div>
+        <!-- DROPDOWN FOR DELIVERY STATUS -->
         <app-dropdown-menu
             [optionsList]="deliveryStatusOptions"
             [multiple]="false"
@@ -9,6 +12,7 @@
         ></app-dropdown-menu>
     </div>
     <div>
+        <!-- DROPDOWN FOR TAGS -->
         <app-dropdown-menu
             logo="/assets/images/noimage.png"
             title="MIS LISTAS DE FACTURAS"
@@ -21,5 +25,94 @@
             (listValue)="addTag($event)"
             (panelState)="tagPanelState = $event"
         ></app-dropdown-menu>
+    </div>
+
+    <!-- ITEMS SECTION -->
+    <div class="section">
+        <h5 class="subtitle">FACTURA {{ formatId(order.dateId) }}</h5>
+        <h3 class="title">{{ orderMerchant?.name ? orderMerchant.name : '' }}</h3>
+        <p class="meta-description" *ngIf="orderMerchant?.address">{{ orderMerchant?.address ? orderMerchant.address : '' }}</p>
+        <p class="meta-description">{{ orderDate }}</p>
+    </div>
+
+    <div class="section">
+        <p class="section-label">ARTÍCULOS FACTURADOS</p>
+        <div style="margin-top: 20px" *ngFor="let item of order?.items; index as i">
+            <div class="flex">
+                <div
+                    class="item-image"
+                    [ngStyle]="{
+                        backgroundImage: item.item.images?.length
+                        ? 'url(' + item.item.images[0].value + ')'
+                        : '/assets/images/noimage.png'
+                    }"
+                ></div>
+                <div class="caption">
+                    <p class="item-bold-caption">{{ item.amount }}x {{ item.item?.name ? item.item.name : '' }}</p>
+                    <p class="item-caption" *ngIf="item.item?.description">{{ item.item.description }}</p>
+                </div>
+            </div>
+
+            <div class="questions">
+                <p class="label">Que irá escrito en el globo?</p>
+                <p class="label gray-out">RespuestaID</p>
+            </div>
+
+            <div class="questions">
+                <p class="label">Que irá escrito en el globo?</p>
+                <p class="label gray-out">RespuestaID</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- POST SECTION -->
+    <div class="section">
+        <p class="section-label">CONTENIDO VISIBLE</p>
+
+        <div class="questions">
+            <p class="label">Escrito en tarjetita física</p>
+            <p class="label gray-out">MensajeID</p>
+        </div>
+
+        <div class="questions">
+            <p class="label">Nombre del sobre</p>
+            <p class="label gray-out">MensajeID</p>
+        </div>
+    </div>
+
+    <!-- VIRTUAL POST SECTION -->
+    <div class="section">
+        <p class="section-label">CONTENIDO VIRTUAL PRIVADO</p>
+
+        <br><br><br>
+
+        <div class="flex">
+            <div
+                class="item-image"
+                [ngStyle]="{
+                    backgroundImage: 'url(' + env + '/qr-code.svg' + ')',
+                    filter: 'brightness(0) invert(13%) sepia(9%) saturate(1833%) hue-rotate(68deg) brightness(99%) contrast(83%)'
+                }"
+            ></div>
+            <div class="caption">
+                <button class="link-button">Accesa al contenido</button>
+                <br><br>
+                <button class="link-button">Copy el ID</button>
+                <br><br>
+                <button class="link-button">Imprime o descarga el QR</button>
+            </div>
+        </div>
+
+        <div class="flex" style="margin-top: 30px">
+            <div
+                class="item-image"
+                [ngStyle]="{
+                    backgroundColor: '#E9E371'
+                }"
+            ></div>
+            <div class="caption">
+                <button class="link-button">Imprime o descarga la imagen sugerida por IA (Inteligencia Artificial)</button>
+            </div>
+        </div>
     </div>
 </div>
