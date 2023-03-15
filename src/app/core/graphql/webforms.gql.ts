@@ -115,6 +115,14 @@ export const itemAddWebForm = gql`
 `;
 
 
+export const questionAddAnswerDefault = gql`
+  mutation questionAddAnswerDefault($input: [AnswerDefaultInput!]!, $questionId: ObjectID!, $webformId: ObjectID!) {
+    questionAddAnswerDefault(input: $input, questionId: $questionId, webformId: $webformId) {
+      ${webformBody}
+    }
+  }
+`;
+
 export const webformAddQuestion = gql`
   mutation webformAddQuestion($input: [QuestionInput!]!, $id: ObjectID!) {
     webformAddQuestion(input: $input, id: $id) {
@@ -162,3 +170,5 @@ export const itemUpdateWebForm = gql`
     }
   }
 `;
+
+

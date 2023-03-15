@@ -1145,7 +1145,7 @@ export class CheckoutComponent implements OnInit {
 
       if (
         this.answersByQuestion[question._id].isMultipleResponse &&
-        this.answersByQuestion[question._id].multipleResponses.length
+        this.answersByQuestion[question._id].multipleResponses?.length
       ) {
         for (const responseInList of this.answersByQuestion[question._id]
           .multipleResponses) {

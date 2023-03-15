@@ -9,6 +9,7 @@ import {
   itemAddWebForm,
   itemUpdateWebForm,
   orderAddAnswer,
+  questionAddAnswerDefault,
   webform,
   webformAddQuestion,
   webformByMerchant,
@@ -17,6 +18,7 @@ import {
 import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import {
+  AnswerDefaultInput,
   AnswerInput,
   QuestionInput,
   Webform,
@@ -70,6 +72,19 @@ export class WebformsService {
       context: { useMultipart: true },
     });
     return result?.webformAddQuestion;
+  }
+
+  async questionAddAnswerDefault(
+    input: AnswerDefaultInput[],
+    questionId: string,
+    webformId: string,
+  ): Promise<Webform> {
+    const result = await this.graphql.mutate({
+      mutation: questionAddAnswerDefault,
+      variables: { input, questionId, webformId },
+      context: { useMultipart: true },
+    });
+    return result?.questionAddAnswerDefault;
   }
 
   async webform(id: string): Promise<Webform> {

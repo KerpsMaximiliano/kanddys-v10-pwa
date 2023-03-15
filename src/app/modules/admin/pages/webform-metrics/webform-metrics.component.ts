@@ -103,6 +103,7 @@ export class WebformMetricsComponent implements OnInit {
 
                 const additionalAnswers = [];
 
+
                 if (_answerFrequent?.response) {
                   for (const optionNumbers of _answerFrequent?.response) {
                     const { value, label, count } = optionNumbers;
@@ -124,15 +125,14 @@ export class WebformMetricsComponent implements OnInit {
                       if (option.optionValue === label && option.file) {
                         if (label) option.text = `${count} ${label}`;
                         else option.text = `${count}`;
-                      }
-
-                      if (option.file && option.file === value) {
-                        option.text = `${count}`;
-                      }
-
-                      if (option.optionValue && option.optionValue === value) {
+                      } else if (option.file && option.file === value) {
+                        option.text = `${count} veces escogida`;
+                      } else if (
+                        option.optionValue &&
+                        option.optionValue === value
+                      ) {
                         if (value) option.text = `${count} ${value}`;
-                        else option.text = `${count}`;
+                        else option.text = `${count} veces escogida`;
                       }
                     }
                   }
@@ -142,6 +142,7 @@ export class WebformMetricsComponent implements OnInit {
                   const toAdd = [
                     {
                       text: additionalAnswers.length + ' Otras respuestas',
+                      freeResponse: true,
                     },
                   ];
 

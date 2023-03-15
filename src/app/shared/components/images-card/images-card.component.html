@@ -1,7 +1,7 @@
 <section class="container" *ngIf="cardsWithImagesCounter > 0">
   <div class="content">
     <ng-container *ngFor="let card of cards; index as i">
-      <div class="card" *ngIf="card.file">
+      <div class="card" *ngIf="card.file" (click)="emitClick(i)">
         <div
           class="image"
           [ngStyle]="{

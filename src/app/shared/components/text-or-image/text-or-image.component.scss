@@ -82,7 +82,7 @@ button{
     .inputComment{
         border: none;
         width: 100%;
-        height: 113px;
+        height: 132.51px;
         border-radius: 9px;
         background-color: #FFFFFF;
         padding: 17px;
@@ -114,4 +114,9 @@ button{
     font-family: "SfProRegular";
     color: #FFFFFF;
     font-size: 17px;
+}
+
+.flex-buttons {
+    display: flex;
+    flex-direction: column;
 }

@@ -506,7 +506,8 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
       return;
     } else if (
       this.questionType === 'multiple-text' &&
-      this.userProvidedAnswerSelected
+      this.userProvidedAnswerSelected &&
+      !indexes.includes(this.optionsInAnswerSelector.length - 1)
     ) {
       this.userProvidedAnswerSelected = false;
       this.completeAnswers[this.completeAnswers.length - 1].userProvidedAnswer =

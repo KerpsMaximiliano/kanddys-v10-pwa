@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Question } from 'src/app/core/models/webform';
 
 @Component({
   selector: 'app-router-options',
@@ -7,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./router-options.component.scss'],
 })
 export class RouterOptionsComponent implements OnInit {
-  constructor() {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   @Input() title: string =
     '¿Cuáles son los principales desafíos que enfrenta su negocio en este momento?';
@@ -17,7 +18,27 @@ export class RouterOptionsComponent implements OnInit {
     link: string;
     file?: string;
     optionValue?: string;
+    freeResponse?: boolean;
   }> = [];
 
+  @Input() question: Question = null;
+  @Input() webformId: string = null;
+
   ngOnInit(): void {}
+
+  selectOption(selectedIndex: number, userProvidedResponses: boolean = false) {
+    const queryParams: any = {
+      question: this.question._id,
+      selectedOption: selectedIndex,
+    };
+
+    if(userProvidedResponses) {
+      delete queryParams.selectedOption;
+      queryParams.openResponses = true;
+    };
+
+    this.router.navigate(['/admin/webform-responses/' + this.webformId], {
+      queryParams,
+    });
+  }
 }

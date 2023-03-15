@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
@@ -329,15 +330,15 @@ export class WebformsCreatorComponent implements OnInit {
         this.webformService.webformQuestions[
           this.webformService.webformQuestions.length - 1
         ]?.answerDefault.length,
-        onActiveSlideCallback: (params) => {
-          if (
-            this.webformService.webformQuestions[
-              this.webformService.webformQuestions.length - 1
-            ].answerDefault.length === 0
-          ) {
-              this.swiperConfig.allowSlideNext = false;
-          }
+      onActiveSlideCallback: (params) => {
+        if (
+          this.webformService.webformQuestions[
+            this.webformService.webformQuestions.length - 1
+          ].answerDefault.length === 0
+        ) {
+          this.swiperConfig.allowSlideNext = false;
         }
+      },
     },
     outputs: [
       {
@@ -399,6 +400,7 @@ export class WebformsCreatorComponent implements OnInit {
     private dialogFlowService: DialogFlowService,
     private router: Router,
     private headerService: HeaderService,
+    private snackbar: MatSnackBar,
     private webformService: WebformsService
   ) {}
 
@@ -457,7 +459,8 @@ export class WebformsCreatorComponent implements OnInit {
         this.dialogs.push(this.multipleSelectionConfirmationDialog);
       } else {
         this.dialogs[this.dialogs.length - 1].inputs = {};
-        this.dialogs[this.dialogs.length - 1].inputs.onActiveSlideCallback =  this.dialogs[this.dialogs.length - 1].inputs.onActiveSlideCallback;;
+        this.dialogs[this.dialogs.length - 1].inputs.onActiveSlideCallback =
+          this.dialogs[this.dialogs.length - 1].inputs.onActiveSlideCallback;
         this.dialogs[this.dialogs.length - 1].inputs.optionsCreated =
           this.webformService.webformQuestions[
             this.webformService.webformQuestions.length - 1
@@ -525,10 +528,68 @@ export class WebformsCreatorComponent implements OnInit {
           createdWebform._id
         );
 
-        await this.webformService.webformAddQuestion(
-          this.webformQuestions,
-          createdWebform._id
-        );
+        const largeInputQuestions: QuestionInput[] =
+          this.webformQuestions.filter(
+            (question) => question.answerDefault?.length > 20
+          );
+        const smallInputQuestions: QuestionInput[] =
+          this.webformQuestions.filter(
+            (question) => question.answerDefault?.length <= 20
+          );
+
+        if (smallInputQuestions.length > 0) {
+          await this.webformService.webformAddQuestion(
+            smallInputQuestions,
+            createdWebform._id
+          );
+        }
+
+        if (largeInputQuestions.length > 0) {
+          for await (const question of largeInputQuestions) {
+            const answerDefault = question.answerDefault;
+  
+            const partsInAnswerDefault = [];
+  
+            for (let i = 0; i < Math.ceil(answerDefault.length / 20); i++) {
+              const topLimit = i * 20 + 20;
+              const lowerLimit = i * 20;
+              console.log(topLimit, lowerLimit);
+              partsInAnswerDefault.push(
+                answerDefault.slice(lowerLimit, topLimit)
+              );
+            }
+  
+            question.answerDefault = partsInAnswerDefault[0];
+  
+            try {
+              const results = await this.webformService.webformAddQuestion(
+                [question],
+                createdWebform._id
+              );
+  
+              if (results && partsInAnswerDefault.length > 1) {
+                for (let i = 1; i < partsInAnswerDefault.length; i++) {
+                  const questionId =
+                    results.questions[results.questions.length - 1]._id;
+                  const answerDefault = partsInAnswerDefault[i];
+                  const result =
+                    await this.webformService.questionAddAnswerDefault(
+                      answerDefault,
+                      questionId,
+                      results._id
+                    );
+  
+                  console.log('Resultados', result);
+                }
+              }
+            } catch (error) {
+              this.snackbar.open('Error al crear el formulario', 'Cerrar', {
+                duration: 3000,
+              });
+              console.error(error);
+            }
+          }
+        }
 
         this.optionalQuestions = this.webformQuestions.reduce(
           (sum, currentQuestion) => {
@@ -543,6 +604,9 @@ export class WebformsCreatorComponent implements OnInit {
           },
           0
         );
+
+        console.log("Preguntas opcionales", this.optionalQuestions);
+        console.log("Preguntas obligatorias", this.requiredQuestions);
 
         this.status = 'ENDED_CREATION';
       }

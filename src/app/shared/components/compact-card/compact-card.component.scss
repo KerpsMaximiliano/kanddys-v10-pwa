@@ -53,6 +53,10 @@
     font-family: SFProMedium;
     font-size: 15px;
     font-weight: 500;
+    width: calc(100% - 112px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .bottom-left {

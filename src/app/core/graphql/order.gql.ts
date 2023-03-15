@@ -272,6 +272,16 @@ export const order = gql`
   }
 `;
 
+export const orders = gql`
+  query orders($pagination: PaginationInput!) {
+    orders(pagination: $pagination) {
+      orders {
+        ${orderData}
+      }
+    }
+  }
+`;
+
 export const preOrder = gql`
   query order($orderId: ObjectID!) {
     order(orderId: $orderId) {

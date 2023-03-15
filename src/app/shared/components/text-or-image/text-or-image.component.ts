@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { AnswerDefaultInput } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { environment } from 'src/environments/environment';
@@ -92,19 +93,52 @@ export class TextOrImageComponent implements OnInit {
     this.options.push({ text: 'Escribe..', void: true });
   }
 
-  async loadFile(event: Event, optionIndex: number) {
+  async loadFile(
+    event: Event,
+    optionIndex: number,
+    directory: boolean = false
+  ) {
     const fileList = (event.target as HTMLInputElement).files;
     if (!fileList.length) return;
-    for (let i = 0; i < fileList.length; i++) {
-      const file = fileList.item(i);
+
+    if (!directory) {
+      const file = fileList.item(0);
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = async (e) => {
         this.options[optionIndex].file = file;
         this.options[optionIndex].fileData = reader.result;
-        console.log(this.options[optionIndex]);
         //content['background'] = result;
       };
+    } else {
+      const toAdd = fileList.length - 1;
+
+      if (toAdd > 0) {
+        for (let i = 0; i < fileList.length; i++) {
+          if (i > 0) this.addOption();
+        }
+      }
+
+
+      let loadedFiles = 0;
+
+      lockUI();
+
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList.item(i);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async (e) => {
+          loadedFiles++;
+          this.options[optionIndex + i].file = file;
+          this.options[optionIndex + i].fileData = reader.result;
+          //content['background'] = result;
+
+          if(loadedFiles === fileList.length) {
+            unlockUI();
+          }
+        };
+      }
     }
   }
 

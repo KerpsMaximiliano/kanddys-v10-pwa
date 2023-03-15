@@ -21,16 +21,22 @@
         *ngSwitchCase="'multiple'"
         [title]="question.value"
         [options]="question.answers"
+        [question]="question"
+        [webformId]="webform._id"
       ></app-router-options>
       <app-router-options
         *ngSwitchCase="'multiple-text'"
         [title]="question.value"
         [options]="question.answers"
+        [question]="question"
+        [webformId]="webform._id"
       ></app-router-options>
       <app-link-card
         *ngSwitchDefault
         [title]="question.value"
         [text]="question.total + ' Respuestas'"
+        [question]="question"
+        [webformId]="webform._id"
       ></app-link-card>
     </ng-container>
   </div>

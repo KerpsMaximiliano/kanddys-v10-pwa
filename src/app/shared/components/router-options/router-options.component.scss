@@ -33,6 +33,12 @@
       color: #7b7b7b;
       font-family: SFProRegular;
       font-size: 17px;
+
+      &.link {
+        text-decoration: none;
+        color: #2874ad;
+        cursor: pointer;
+      }
     }
   }
 }

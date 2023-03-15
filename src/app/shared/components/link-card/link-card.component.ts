@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Question } from 'src/app/core/models/webform';
 
 @Component({
   selector: 'app-link-card',
@@ -8,8 +10,19 @@ import { Component, Input, OnInit } from '@angular/core';
 export class LinkCardComponent implements OnInit {
   @Input() title: string = '¿Pregunta abiertaID?';
   @Input() text: string = '144 RespuestaID';
+  @Input() question: Question = null;
+  @Input() webformId: string = null;
 
-  constructor() {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {}
+
+  selectOption() {
+    this.router.navigate(['/admin/webform-responses/' + this.webformId], {
+      queryParams: {
+        question: this.question._id,
+        openResponses: true,
+      },
+    });
+  }
 }

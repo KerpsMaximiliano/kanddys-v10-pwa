@@ -10,8 +10,8 @@
       >
         Los compradores te responderán {{ requiredQuestionsNumber }} preguntas
         antes de completar la factura
-        {{ item.name ? " de " + item.name : "del producto" }} y otras
-        {{ optionalQuestionsNumber }} que no son obligatorias
+        {{ item.name ? " de " + item.name : "del producto" }} y pueden responder
+        otras {{ optionalQuestionsNumber }} que no son obligatorias
       </span>
 
       <span
@@ -28,7 +28,7 @@
         *ngIf="optionalQuestionsNumber > 0 && requiredQuestionsNumber === 0"
       >
         Los compradores pueden opcionalmente responder
-        {{ requiredQuestionsNumber }} preguntas antes de completar la factura
+        {{ optionalQuestionsNumber }} preguntas antes de completar la factura
         {{ item.name ? " de " + item.name : "del producto" }}
       </span>
     </p>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-images-card',
@@ -15,11 +15,17 @@ export class ImagesCardComponent implements OnInit {
     file?: string;
     optionValue?: string;
   }> = [];
+  @Output() clicked = new EventEmitter();
+
   constructor() {}
 
   ngOnInit(): void {
     for(const card of this.cards) {
       if(card.file) this.cardsWithImagesCounter++;
     }
+  }
+
+  emitClick(index: number) {
+    this.clicked.emit(index);
   }
 }
