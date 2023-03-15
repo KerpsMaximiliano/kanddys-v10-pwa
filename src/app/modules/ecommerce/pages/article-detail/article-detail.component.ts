@@ -128,6 +128,7 @@ export class ArticleDetailComponent implements OnInit {
   logged: boolean = false;
   isProductMine: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  articleId: string = '';
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -176,6 +177,9 @@ export class ArticleDetailComponent implements OnInit {
       await this.verifyIfUserIsLogged();
       const validEntities = ['item', 'post', 'template', 'collection'];
       const { entity, entityId } = routeParams;
+
+      this.articleId = entityId;
+      console.log(this.articleId);
 
       if (this.headerService.saleflow?._id)
         this.doesModuleDependOnSaleflow = true;
@@ -618,7 +622,11 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   merchantDialog() {
-    let dialogRef = this.dialog.open(MerchantStepperFormComponent);
+    let dialogRef = this.dialog.open(MerchantStepperFormComponent, {
+      data: {
+        articleId: this.articleId,
+      },
+    });
     dialogRef
       .afterClosed()
       .subscribe(

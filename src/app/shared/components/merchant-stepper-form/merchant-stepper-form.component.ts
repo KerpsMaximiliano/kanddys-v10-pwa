@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { generateMagicLink } from 'src/app/core/graphql/auth.gql';
@@ -13,6 +13,8 @@ import {
 } from 'ngx-intl-tel-input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper } from '@angular/material/stepper';
+import { ActivatedRoute } from '@angular/router';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-merchant-stepper-form',
@@ -26,7 +28,9 @@ export class MerchantStepperFormComponent implements OnInit {
     private authService: AuthService,
     private communities: CommunitiesService,
     private merchantsService: MerchantsService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   @ViewChild('stepper', { static: false }) stepper: MatStepper;
@@ -84,11 +88,15 @@ export class MerchantStepperFormComponent implements OnInit {
   merchantCategories: string[] = [];
   category;
   isAlreadyAdded: boolean;
+  articleId: string = '';
 
   async ngOnInit() {
     this.itemForm2.get('tiendaName').disable();
     this.allCommunities = await this.communities.communitycategories({});
     console.log(this.allCommunities);
+
+    this.articleId = this.data.articleId;
+    console.log(this.articleId);
 
     this.options = [];
 
@@ -151,11 +159,15 @@ export class MerchantStepperFormComponent implements OnInit {
     console.log(this.merchantId);
     this.authService.generateMagicLink(
       this.phoneNumber.replace('+', ''),
-      `/ecommerce/arepera-que-molleja/article-detail/item/63f6a229e2f51cbd1a4f3f71?createArticle=true&merchant=${this.merchantId}`,
+      `/ecommerce/arepera-que-molleja/article-detail/item/${this.articleId}?createArticle=true&merchant=${this.merchantId}`,
       '',
       'UserAccess',
       {}
     );
+
+    this.snackBar.open('Te hemos enviado un link de acceso vía Whatsapp', '', {
+      duration: 5000,
+    });
   }
 
   async signUp() {
@@ -221,7 +233,7 @@ export class MerchantStepperFormComponent implements OnInit {
     // console.log(this.user);
     // console.log(this.user._id);
 
-    await this.signUp();
+    //await this.signUp();
     const userId = this.user?._id;
     console.log(userId);
     const merchant = await this.merchantsService.createMerchant({

@@ -155,7 +155,7 @@ export class ArticleStepperFormComponent implements OnInit {
     this.snackBar.open('Producto creado satisfactoriamente!', '', {
       duration: 5000,
     });
-    console.log(this.itemCreated);
+    console.log(this.itemCreated.createItem._id);
     this.dialogRef.close();
     unlockUI();
     const reader = new FileReader();
@@ -164,6 +164,8 @@ export class ArticleStepperFormComponent implements OnInit {
     };
     //reader.readAsDataURL(this.file as File);
 
-    // this.router.navigate([`admin/article-editor/${this.itemCreated._id}`]);
+    this.router.navigate([
+      `admin/article-editor/${this.itemCreated.createItem._id}`,
+    ]);
   }
 }
