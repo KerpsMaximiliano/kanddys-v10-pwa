@@ -66,17 +66,22 @@
     </div>
 
     <!-- POST SECTION -->
-    <div class="section">
+    <div class="section" *ngIf="
+        post &&
+        (post?.message ||
+        post?.from ||
+        (post?.targets?.length && post.targets[0].name))
+    ">
         <p class="section-label">CONTENIDO VISIBLE</p>
 
         <div class="questions">
             <p class="label">Escrito en tarjetita física</p>
-            <p class="label gray-out">MensajeID</p>
+            <p class="label gray-out">{{ post?.message }}</p>
         </div>
 
         <div class="questions">
             <p class="label">Nombre del sobre</p>
-            <p class="label gray-out">MensajeID</p>
+            <p class="label gray-out">{{ post?.targets[0]?.name || post?.title }}</p>
         </div>
     </div>
 
