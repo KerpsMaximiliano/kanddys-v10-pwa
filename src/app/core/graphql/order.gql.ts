@@ -130,6 +130,9 @@ const orderData = `
     platform
     from
   }
+  deliveryData {
+    image
+  }
 `;
 
 const shortOrderData = `
@@ -168,6 +171,9 @@ const shortOrderData = `
     status
     platform
     from
+  }
+  deliveryData {
+    image
   }
 `;
 

@@ -19,6 +19,7 @@ import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/drop
 import { environment } from 'src/environments/environment';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-order-process',
@@ -85,6 +86,10 @@ export class OrderProcessComponent implements OnInit {
   orderDelivered: boolean = false;
 
   deliveryImage: any;
+
+  deliveryForm = new FormGroup({
+    image: new FormControl(),
+  });
 
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
 
@@ -296,6 +301,15 @@ export class OrderProcessComponent implements OnInit {
         selected: this.order.tags.includes(tag._id),
       };
     });
+
+    if (this.order.deliveryData) {
+      this.deliveryImage = this.order.deliveryData.image;
+      if (this.order.orderStatusDelivery !== 'delivered') {
+        // TODO validar que se ejecute la función de actualización de status pública, si no se está logged.
+        await this.changeOrderStatus('delivered');
+      }
+    }
+
     unlockUI();
   }
 
@@ -406,8 +420,14 @@ export class OrderProcessComponent implements OnInit {
 
   async onImageInput(input: File) {
     console.log(input);
+    this.deliveryForm.get('image').patchValue(input);
+    console.log(this.deliveryForm);
+    console.log(this.deliveryForm.get('image').value[0]);
+
+    
+
     const result = await this.orderService.updateOrderDeliveryData(
-      { image: input },
+      { image: this.deliveryForm.get('image').value[0] },
       this.order._id
     );
 
