@@ -174,12 +174,11 @@ export class MerchantStepperFormComponent implements OnInit {
           duration: 5000,
         }
       );
+      // const authorize = await this.merchantsService.merchantAuthorize(
+      //   this.merchantId
+      // );
+      // console.log(authorize);
     }
-
-    // const authorize = await this.merchantsService.merchantAuthorize(
-    //   this.merchantId
-    // );
-    // console.log(authorize);
   }
 
   async signUp() {

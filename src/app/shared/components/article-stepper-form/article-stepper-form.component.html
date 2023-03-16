@@ -11,8 +11,13 @@
       ></app-currency-input>
     </div>
     <div *ngIf="itemForm.get('pricing').value > 0">
-      <button mat-button matStepperNext>Continuar</button>
+      <button mat-button matStepperNext (click)="authorizeMerchant()">
+        Continuar
+      </button>
     </div>
+    <!-- <div>
+      <button (click)="authorizeMerchant()">Autorizar</button>
+    </div> -->
   </mat-step>
   <mat-step [stepControl]="itemForm2">
     <ng-template matStepLabel>Imagen del cover:</ng-template>
