@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { base64ToBlob, fileToBase64 } from 'src/app/core/helpers/files.helpers';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder, OrderStatusDeliveryType, OrderStatusNameType } from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -14,6 +17,8 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
 import { environment } from 'src/environments/environment';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-order-process',
@@ -23,8 +28,10 @@ import { environment } from 'src/environments/environment';
 export class OrderProcessComponent implements OnInit {
 
   env: string = environment.assetsUrl;
+  URI: string = environment.uri;
 
   order: ItemOrder;
+  ordersReadyToDeliver: ItemOrder[] = [];
 
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
   formatId = formatID;
@@ -61,7 +68,10 @@ export class OrderProcessComponent implements OnInit {
   isMerchant: boolean;
 
   post: Post;
-  slides: Slide[];
+  slides: Slide[] = [];
+
+  entityTemplate: EntityTemplate;
+  entityTemplateLink: string;
 
   selectedTags: {
     [key: string]: boolean;
@@ -71,15 +81,25 @@ export class OrderProcessComponent implements OnInit {
   tagOptions: DropdownOptionItem[];
   tagPanelState: boolean;
 
+  orderReadyToDeliver: boolean = false;
+  orderDelivered: boolean = false;
+
+  deliveryImage: any;
+
+  @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
+
   constructor(
     private orderService: OrderService,
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private headerService: HeaderService,
     private authService: AuthService,
     private merchantsService: MerchantsService,
     private postsService: PostsService,
-    private tagsService: TagsService
+    private tagsService: TagsService,
+    private entityTemplateService: EntityTemplateService,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
   ) { }
 
   ngOnInit(): void {
@@ -93,6 +113,13 @@ export class OrderProcessComponent implements OnInit {
         const { orderId } = params;
 
         await this.executeProcessesAfterLoading(orderId);
+        await this.getOrders();
+
+        this.orderReadyToDeliver = 
+          (
+            this.order.orderStatusDelivery === 'pending' || 
+            this.order.orderStatusDelivery === 'delivered'
+          );
       });
     });
   }
@@ -101,6 +128,7 @@ export class OrderProcessComponent implements OnInit {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
     if (!this.order) {
+      unlockUI();
       this.router.navigate([`others/error-screen/`], {
         queryParams: { type: 'order' },
       });
@@ -159,6 +187,20 @@ export class OrderProcessComponent implements OnInit {
       ).post;
       this.slides = await this.postsService.slidesByPost(this.post._id);
     }
+
+    if (this.post && this.slides.length > 0) {
+      const results = await this.entityTemplateService.entityTemplateByReference(
+        this.post._id,
+        'post'
+      );
+
+      if (results) {
+        this.entityTemplate = results;
+        this.entityTemplateLink =
+          this.URI + '/qr/article-template/' + this.entityTemplate._id;
+      }
+    }
+
     // if (this.order.items[0].reservation) {
     //   const reservation = await this.reservationService.getReservation(
     //     this.order.items[0].reservation._id
@@ -257,6 +299,22 @@ export class OrderProcessComponent implements OnInit {
     unlockUI();
   }
 
+  async getOrders() {
+    try {
+      const result = await this.orderService.orderByMerchantDelivery(
+        {
+          findBy: {
+            merchant: this.order.items[0].saleflow.merchant._id,
+          }
+        }
+      );
+
+      this.ordersReadyToDeliver = result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async addTag(tagId: string) {
     if (!this.selectedTags[tagId]) {
       await this.tagsService.addTagsInOrder(
@@ -288,13 +346,75 @@ export class OrderProcessComponent implements OnInit {
   async changeOrderStatus(value: OrderStatusDeliveryType) {
     this.order.orderStatusDelivery = value;
     this.handleStatusOptions(value);
-    await this.orderService.orderSetStatusDelivery(value, this.order._id);
+    
+    try {
+      await this.orderService.orderSetStatusDelivery(value, this.order._id);
+      if (value === 'pending')  this.orderReadyToDeliver = true;
+      if (value === 'delivered') this.orderDelivered = true;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   handleStatusOptions(value: OrderStatusDeliveryType) {
     this.deliveryStatusOptions.forEach((option) => {
       option.hide = option.value === value;
     });
+  }
+
+  goToPost() {
+    this.router.navigate([
+      '/qr/' +
+      '/article-template/' +
+      this.entityTemplate._id
+    ]);
+  }
+
+  downloadQr(qrElment: ElementRef) {
+    const parentElement = qrElment.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData,
+        this.formatId(this.order.dateId)
+      );
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.formatId(this.order.dateId);
+      link.click();
+    }
+  }
+
+  copyEntityTemplateID(id: string) {
+    const entityId = this.formatId(id);
+    this.clipboard.copy(entityId);
+
+    this.snackBar.open('Enlace copiado en el portapapeles', '', {
+      duration: 2000,
+    });
+  }
+
+  share() {
+    console.log("compartiendo...");
+  }
+
+  async onImageInput(input: File) {
+    console.log(input);
+    const result = await this.orderService.updateOrderDeliveryData(
+      { image: input },
+      this.order._id
+    );
+
+    // TODO ejecutar la función de actualizar el status de la orden
+    this.orderReadyToDeliver = true;
+    
+    this.deliveryImage = result.deliveryData.image;
   }
 
 }

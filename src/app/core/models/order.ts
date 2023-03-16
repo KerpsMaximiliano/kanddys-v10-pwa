@@ -134,6 +134,7 @@ export class ItemOrder extends Model<ItemOrder> {
     access: string;
   }>;
   expenditures: string[];
+  deliveryData?: DeliveryData;
 }
 
 export class ItemOrderInput {
@@ -142,6 +143,15 @@ export class ItemOrderInput {
   itemPackage?: string;
   tags?: string[];
 }
+
+export class DeliveryDataInput {
+  image: File;
+}
+
+export class DeliveryData extends Model<DeliveryData> {
+  image: string;
+}
+
 
 export class OCRInput {
   total?: number;

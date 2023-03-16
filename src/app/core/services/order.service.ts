@@ -29,6 +29,9 @@ import {
   updateExpenditure,
   orderAddExpenditure,
   orderRemoveExpenditure,
+  orderByMerchantDelivery,
+  hotOrderByMerchantDelivery,
+  updateOrderDeliveryData,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -43,6 +46,7 @@ import {
   ExpenditureInput,
   Benefits,
   OrderBenefits,
+  DeliveryDataInput,
 } from '../models/order';
 
 import { PaginationInput } from '../models/saleflow';
@@ -386,6 +390,17 @@ export class OrderService {
     return (await this.preOrder(id))?.order;
   }
 
+  async orderByMerchantDelivery(pagination: PaginationInput): Promise<ItemOrder[]> {
+    const result = await this.graphql.query({
+      query: hotOrderByMerchantDelivery,
+      variables: { pagination },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    return result?.orderByMerchantDelivery;
+  }
+
   async orderSetStatusDelivery(orderStatusDelivery: string, id: string) {
     const result = await this.graphql.mutate({
       mutation: orderSetStatusDelivery,
@@ -394,6 +409,16 @@ export class OrderService {
     });
     if (!result || result?.errors) return undefined;
     return result.orderSetStatusDelivery;
+  }
+
+  async updateOrderDeliveryData(input: DeliveryDataInput, id: string): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: updateOrderDeliveryData,
+      variables: { input, id },
+      context: { useMultipart: true },
+    });
+    if (!result || result?.errors) return undefined;
+    return result.updateOrderDeliveryData;
   }
 
   orderDeliveryStatus(status: OrderStatusDeliveryType) {

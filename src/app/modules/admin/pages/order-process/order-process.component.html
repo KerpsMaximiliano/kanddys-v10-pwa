@@ -11,7 +11,7 @@
             (listValue)="changeOrderStatus($event)"
         ></app-dropdown-menu>
     </div>
-    <div>
+    <div style="margin-top: 3px">
         <!-- DROPDOWN FOR TAGS -->
         <app-dropdown-menu
             logo="/assets/images/noimage.png"
@@ -30,7 +30,7 @@
     <!-- ITEMS SECTION -->
     <div class="section">
         <h5 class="subtitle">FACTURA {{ formatId(order.dateId) }}</h5>
-        <h3 class="title">{{ orderMerchant?.name ? orderMerchant.name : '' }}</h3>
+        <h3 class="title">{{ order.items[0].saleflow.merchant?.name ? order.items[0].saleflow.merchant?.name : '' }}</h3>
         <p class="meta-description" *ngIf="orderMerchant?.address">{{ orderMerchant?.address ? orderMerchant.address : '' }}</p>
         <p class="meta-description">{{ orderDate }}</p>
     </div>
@@ -67,6 +67,7 @@
 
     <!-- POST SECTION -->
     <div class="section" *ngIf="
+        isMerchant &&
         post &&
         (post?.message ||
         post?.from ||
@@ -86,7 +87,7 @@
     </div>
 
     <!-- VIRTUAL POST SECTION -->
-    <div class="section">
+    <div class="section" *ngIf="isMerchant && entityTemplate && entityTemplateLink">
         <p class="section-label">CONTENIDO VIRTUAL PRIVADO</p>
 
         <br><br><br>
@@ -100,15 +101,15 @@
                 }"
             ></div>
             <div class="caption">
-                <button class="link-button">Accesa al contenido</button>
+                <button class="link-button" (click)="goToPost()">Accesa al contenido</button>
                 <br><br>
-                <button class="link-button">Copy el ID</button>
+                <button class="link-button" (click)="copyEntityTemplateID(entityTemplate.dateId)">Copy el ID</button>
                 <br><br>
-                <button class="link-button">Imprime o descarga el QR</button>
+                <button class="link-button" (click)="downloadQr(qrcodeTemplate)">Imprime o descarga el QR</button>
             </div>
         </div>
 
-        <div class="flex" style="margin-top: 30px">
+        <!-- <div class="flex" style="margin-top: 30px">
             <div
                 class="item-image"
                 [ngStyle]="{
@@ -118,6 +119,64 @@
             <div class="caption">
                 <button class="link-button">Imprime o descarga la imagen sugerida por IA (Inteligencia Artificial)</button>
             </div>
+        </div> -->
+    </div>
+
+    <!-- DELIVERY EVIDENCE SECTION -->
+    <div class="section" *ngIf="!isMerchant">
+        <p class="section-label">FLUJO DE LA ENTREGA</p>
+        <div class="input-image-container">
+            <app-item-images 
+                (enteredImages)="onImageInput($event)"
+                [containerStyles]="{ padding: '0' }"
+                [inputPosition]="'left'"
+                *ngIf="!deliveryImage">
+            </app-item-images>
+            <div class="image" [ngStyle]="{ backgroundImage: 'url(' + deliveryImage + ')' }" *ngIf="deliveryImage"></div>
+            <p class="delivery-image-caption">Imagen de la entrega</p>
         </div>
+    </div>
+
+    <div class="footer">
+        <div class="top-footer">
+            <mat-checkbox 
+                class="example-margin"
+                [(ngModel)]="orderReadyToDeliver"
+                (change)="changeOrderStatus('pending')"
+                [disabled]="orderReadyToDeliver"
+            >
+                Marcar como lista para entregarse
+            </mat-checkbox>
+        </div>
+        <div class="bottom-footer">
+            <a
+                [routerLink]="['../../../ecommerce/order-detail', order._id]"
+                [queryParams]="{ redirectTo: router.url }"
+                *ngIf="isMerchant"
+            >
+                Ir a la factura
+            </a>
+            <a href="">Ver todas ({{ ordersReadyToDeliver.length }})</a>
+            <button (click)="share()" *ngIf="isMerchant">
+                <img
+                    [src]="env + '/upload.svg'"
+                    alt="Contenedor con flecha saliendo"
+                />
+            </button>
+        </div>
+    </div>
+
+    <div style="visibility: hidden; position: absolute; z-index: -99">
+        <qrcode
+          *ngIf="entityTemplate"
+          #qrcodeTemplate
+          [qrdata]="entityTemplateLink"
+          [elementType]="'img'"
+          [width]="500"
+          [style.margin-top.px]="-25"
+          [errorCorrectionLevel]="'M'"
+          [allowEmptyString]="true"
+          colorDark="#000000"
+        ></qrcode>
     </div>
 </div>

@@ -31,6 +31,7 @@ import { OrderExpensesComponent } from './pages/order-expenses/order-expenses.co
 import { FilteredBenefitsComponent } from './pages/filtered-benefits/filtered-benefits.component';
 import { MerchantLandingComponent } from './pages/merchant-landing/merchant-landing.component';
 import { OrderProcessComponent } from './pages/order-process/order-process.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -236,6 +237,6 @@ const routes: Routes = [
     OrderProcessComponent,
   ],
   exports: [ArticleCreatorComponent],
-  imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
+  imports: [CommonModule, SharedModule, MatCheckboxModule, RouterModule.forChild(routes)],
 })
 export class AdminModule {}
