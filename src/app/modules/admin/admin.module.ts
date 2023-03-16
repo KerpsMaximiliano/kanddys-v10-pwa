@@ -32,6 +32,7 @@ import { FilteredBenefitsComponent } from './pages/filtered-benefits/filtered-be
 import { MerchantLandingComponent } from './pages/merchant-landing/merchant-landing.component';
 import { OrderProcessComponent } from './pages/order-process/order-process.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -198,6 +199,10 @@ const routes: Routes = [
         path: 'order-expenses/:orderId',
         component: OrderExpensesComponent,
       },
+      {
+        path: 'delivery-orders',
+        component: DeliveryOrdersComponent,
+      }
     ],
   },
   {
@@ -235,6 +240,7 @@ const routes: Routes = [
     FilteredBenefitsComponent,
     MerchantLandingComponent,
     OrderProcessComponent,
+    DeliveryOrdersComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, MatCheckboxModule, RouterModule.forChild(routes)],
