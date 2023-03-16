@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-delivery-orders',
@@ -6,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./delivery-orders.component.scss']
 })
 export class DeliveryOrdersComponent implements OnInit {
+
+  env: string = environment.assetsUrl;
 
   constructor() { }
 
