@@ -73,10 +73,13 @@ export class ArticleStepperFormComponent implements OnInit {
       console.log(this.options);
     }
 
-    this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
+    this.merchantId = await this.route.snapshot.queryParamMap.get('merchant');
     console.log(this.merchantId);
 
-    this.merchantsService.merchantAuthorize(this.merchantId);
+    // const authorize = await this.merchantsService.merchantAuthorize(
+    //   this.merchantId
+    // );
+    // console.log(authorize);
 
     this.merchant = await this.merchantsService.setDefaultMerchant(
       this.merchantId

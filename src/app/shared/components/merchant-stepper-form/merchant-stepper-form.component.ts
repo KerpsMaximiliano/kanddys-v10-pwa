@@ -159,15 +159,27 @@ export class MerchantStepperFormComponent implements OnInit {
     console.log(this.merchantId);
     this.authService.generateMagicLink(
       this.phoneNumber.replace('+', ''),
+      // '584149646755',
       `/ecommerce/arepera-que-molleja/article-detail/item/${this.articleId}?createArticle=true&merchant=${this.merchantId}`,
       '',
       'UserAccess',
       {}
     );
 
-    this.snackBar.open('Te hemos enviado un link de acceso vía Whatsapp', '', {
-      duration: 5000,
-    });
+    if (this.merchantId != undefined) {
+      this.snackBar.open(
+        'Te hemos enviado un link de acceso vía Whatsapp',
+        '',
+        {
+          duration: 5000,
+        }
+      );
+    }
+
+    // const authorize = await this.merchantsService.merchantAuthorize(
+    //   this.merchantId
+    // );
+    // console.log(authorize);
   }
 
   async signUp() {
@@ -234,16 +246,36 @@ export class MerchantStepperFormComponent implements OnInit {
     // console.log(this.user._id);
 
     //await this.signUp();
+
+    const checkName = await this.merchantsService.merchantByName(
+      this.inputTiendaName
+    );
+    console.log(checkName);
+
+    const checkSlug = await this.merchantsService.merchantBySlug(this.slug);
+    console.log(checkSlug);
+
     const userId = this.user?._id;
     console.log(userId);
-    const merchant = await this.merchantsService.createMerchant({
-      name: this.inputTiendaName,
-      slug: this.slug,
-      categories: this.merchantCategories,
-      //owner: userId,
-    });
 
-    this.merchantId = merchant.createMerchant._id;
+    if (!checkName && !checkSlug) {
+      const merchant = await this.merchantsService.createMerchant({
+        name: this.inputTiendaName,
+        slug: this.slug,
+        categories: this.merchantCategories,
+        //owner: userId,
+      });
+
+      this.merchantId = merchant.createMerchant._id;
+    } else {
+      this.snackBar.open(
+        ' ERROR! Este nombre y/o slug ya se encuentra registrado',
+        '',
+        {
+          duration: 5000,
+        }
+      );
+    }
     // console.log(merchant);
     // console.log(this.merchantId);
   }
