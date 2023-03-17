@@ -54,6 +54,7 @@ export class MerchantStepperFormComponent implements OnInit {
   user;
   merchantId;
   userId: string;
+  error: boolean;
 
   isNotAlreadyUser: boolean;
 
@@ -192,17 +193,77 @@ export class MerchantStepperFormComponent implements OnInit {
     // console.log('email: ', this.inputMail);
     // console.log('phone: ', this.phoneNumber);
 
-    const checkPhone = await this.authService.checkUser(this.phoneNumber);
+    if (!this.user) {
+      const checkPhone = await this.authService.checkUser(this.phoneNumber);
 
-    console.log(checkPhone);
+      console.log(checkPhone);
 
-    const checkMail = await this.authService.checkUser(this.inputMail);
+      const checkMail = await this.authService.checkUser(this.inputMail);
 
-    console.log(checkMail);
+      console.log(checkMail);
 
-    if (!checkPhone && !checkMail) {
-      this.isNotAlreadyUser = true;
+      if (!checkPhone && !checkMail) {
+        this.isNotAlreadyUser = true;
+        this.error = false;
+        this.user = await this.authService.signup(
+          {
+            name: this.inputName,
+            lastname: this.inputLastName,
+            email: this.inputMail,
+            phone: this.phoneNumber,
+          },
+          'none',
+          null,
+          false
+        );
+        console.log(this.user);
+        this.user = this.user.user;
+        console.log(this.user);
+      } else if (checkPhone && !checkMail) {
+        this.error = true;
+        this.snackBar.open(
+          'ERROR! Este número telefónico ya pertenece a un usuario',
+          '',
+          {
+            duration: 5000,
+          }
+        );
+      } else if (checkMail && !checkPhone) {
+        this.error = true;
+        this.snackBar.open(
+          'ERROR! Este correo electrónico ya pertenece a un usuario',
+          '',
+          {
+            duration: 5000,
+          }
+        );
+      } else if (checkMail && checkPhone) {
+        this.error = true;
+        this.snackBar.open(
+          'ERROR! Tanto el número telefónico cómo el email ya pertenecen a un usuario',
+          '',
+          {
+            duration: 5000,
+          }
+        );
+      }
+
+      console.log(this.error);
+
+      if (this.error === false) {
+        console.log(this.error);
+        this.stepper.next();
+      }
+    } else if (
+      this.user.email === this.inputMail ||
+      this.user.phone === this.inputPhone
+    ) {
+      console.log(this.user);
+      this.snackBar.open('Este usuario ya fue registrado previamente!', '', {
+        duration: 5000,
+      });
       this.stepper.next();
+    } else {
       this.user = await this.authService.signup(
         {
           name: this.inputName,
@@ -214,34 +275,14 @@ export class MerchantStepperFormComponent implements OnInit {
         null,
         false
       );
+      this.stepper.next();
+
       console.log(this.user);
-      this.user = this.user.user;
-      console.log(this.user);
-    } else if (checkPhone && !checkMail) {
-      this.snackBar.open(
-        'ERROR! Este número telefónico ya pertenece a un usuario',
-        '',
-        {
-          duration: 5000,
-        }
-      );
-    } else if (checkMail && !checkPhone) {
-      this.snackBar.open(
-        'ERROR! Este correo electrónico ya pertenece a un usuario',
-        '',
-        {
-          duration: 5000,
-        }
-      );
-    } else if (checkMail && checkPhone) {
-      this.snackBar.open(
-        'ERROR! Tanto el número telefónico cómo el email ya pertenecen a un usuario',
-        '',
-        {
-          duration: 5000,
-        }
-      );
     }
+  }
+
+  previousStep() {
+    this.stepper.previous();
   }
 
   selectedCategory(i: number) {
@@ -288,34 +329,52 @@ export class MerchantStepperFormComponent implements OnInit {
   }
 
   async checkMerchant() {
-    const checkName = await this.merchantsService.merchantByName(
-      this.inputTiendaName
-    );
-    console.log(checkName);
-    this.checkName = checkName;
+    if (this.inputTiendaName !== '') {
+      const checkName = await this.merchantsService.merchantByName(
+        this.inputTiendaName
+      );
+      console.log(checkName);
+      this.checkName = checkName;
 
-    const checkSlug = await this.merchantsService.merchantBySlug(this.slug);
-    console.log(checkSlug);
-    this.checkSlug = checkSlug;
+      if (this.slug !== '') {
+        const checkSlug = await this.merchantsService.merchantBySlug(this.slug);
+        console.log(checkSlug);
+        this.checkSlug = checkSlug;
+      } else if (this.slug === '') {
+        this.snackBar.open(' ERROR! Debes ingresar un slug', '', {
+          duration: 5000,
+        });
+      }
+    } else if (this.inputTiendaName === '') {
+      this.snackBar.open(' ERROR! Debes ingresar un nombre', '', {
+        duration: 5000,
+      });
+    }
 
     if (!this.checkName && !this.checkSlug) {
       this.stepper.next();
     } else if (this.checkName && !this.checkSlug) {
+      console.log(this.checkName);
+      console.log(this.inputTiendaName);
+      console.log(this.slug);
       this.snackBar.open(' ERROR! Este nombre ya se encuentra registrado', '', {
         duration: 5000,
       });
     } else if (!this.checkName && this.checkSlug) {
+      console.log(this.slug);
       this.snackBar.open(' ERROR! Este slug ya se encuentra registrado', '', {
         duration: 5000,
       });
     } else if (this.checkName && this.checkSlug) {
-      this.snackBar.open(
-        ' ERROR! Tanto el nombre como el slug ya se encuentran registrados',
-        '',
-        {
-          duration: 5000,
-        }
-      );
+      if (this.checkName !== '' && this.checkSlug !== '') {
+        this.snackBar.open(
+          ' ERROR! Tanto el nombre como el slug ya se encuentran registrados',
+          '',
+          {
+            duration: 5000,
+          }
+        );
+      }
     }
   }
 }

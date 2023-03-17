@@ -125,7 +125,10 @@
       </app-string-input>
     </div>
 
-    <div style="margin-bottom: 25px">
+    <div style="margin-bottom: 25px; display: flex; align-items: center">
+      <button mat-button (click)="previousStep()" style="margin-right: 25px">
+        Atrás
+      </button>
       <button mat-button (click)="checkMerchant()">Continuar</button>
     </div>
   </mat-step>
