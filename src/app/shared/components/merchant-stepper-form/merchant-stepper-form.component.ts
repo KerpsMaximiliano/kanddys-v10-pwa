@@ -53,6 +53,7 @@ export class MerchantStepperFormComponent implements OnInit {
   slug: string = '';
   user;
   merchantId;
+  userId: string;
 
   isNotAlreadyUser: boolean;
 
@@ -89,6 +90,10 @@ export class MerchantStepperFormComponent implements OnInit {
   category;
   isAlreadyAdded: boolean;
   articleId: string = '';
+  checkPhone;
+  checkMail;
+  checkName;
+  checkSlug;
 
   async ngOnInit() {
     this.itemForm2.get('tiendaName').disable();
@@ -187,11 +192,15 @@ export class MerchantStepperFormComponent implements OnInit {
     // console.log('email: ', this.inputMail);
     // console.log('phone: ', this.phoneNumber);
 
-    const checkUser = await this.authService.checkUser(this.phoneNumber);
+    const checkPhone = await this.authService.checkUser(this.phoneNumber);
 
-    console.log(checkUser);
+    console.log(checkPhone);
 
-    if (!checkUser) {
+    const checkMail = await this.authService.checkUser(this.inputMail);
+
+    console.log(checkMail);
+
+    if (!checkPhone && !checkMail) {
       this.isNotAlreadyUser = true;
       this.stepper.next();
       this.user = await this.authService.signup(
@@ -208,9 +217,25 @@ export class MerchantStepperFormComponent implements OnInit {
       console.log(this.user);
       this.user = this.user.user;
       console.log(this.user);
-    } else {
+    } else if (checkPhone && !checkMail) {
       this.snackBar.open(
-        'Este número telefónico ya pertenece a un usuario',
+        'ERROR! Este número telefónico ya pertenece a un usuario',
+        '',
+        {
+          duration: 5000,
+        }
+      );
+    } else if (checkMail && !checkPhone) {
+      this.snackBar.open(
+        'ERROR! Este correo electrónico ya pertenece a un usuario',
+        '',
+        {
+          duration: 5000,
+        }
+      );
+    } else if (checkMail && checkPhone) {
+      this.snackBar.open(
+        'ERROR! Tanto el número telefónico cómo el email ya pertenecen a un usuario',
         '',
         {
           duration: 5000,
@@ -245,37 +270,52 @@ export class MerchantStepperFormComponent implements OnInit {
     // console.log(this.user._id);
 
     //await this.signUp();
+    this.userId = this.user?._id;
+    console.log(this.userId);
 
-    const checkName = await this.merchantsService.merchantByName(
-      this.inputTiendaName
-    );
-    console.log(checkName);
-
-    const checkSlug = await this.merchantsService.merchantBySlug(this.slug);
-    console.log(checkSlug);
-
-    const userId = this.user?._id;
-    console.log(userId);
-
-    if (!checkName && !checkSlug) {
+    if (!this.checkName && !this.checkSlug) {
       const merchant = await this.merchantsService.createMerchant({
         name: this.inputTiendaName,
         slug: this.slug,
         categories: this.merchantCategories,
-        //owner: userId,
+        // owner: this.user,
       });
 
       this.merchantId = merchant.createMerchant._id;
-    } else {
+    }
+    // console.log(merchant);
+    // console.log(this.merchantId);
+  }
+
+  async checkMerchant() {
+    const checkName = await this.merchantsService.merchantByName(
+      this.inputTiendaName
+    );
+    console.log(checkName);
+    this.checkName = checkName;
+
+    const checkSlug = await this.merchantsService.merchantBySlug(this.slug);
+    console.log(checkSlug);
+    this.checkSlug = checkSlug;
+
+    if (!this.checkName && !this.checkSlug) {
+      this.stepper.next();
+    } else if (this.checkName && !this.checkSlug) {
+      this.snackBar.open(' ERROR! Este nombre ya se encuentra registrado', '', {
+        duration: 5000,
+      });
+    } else if (!this.checkName && this.checkSlug) {
+      this.snackBar.open(' ERROR! Este slug ya se encuentra registrado', '', {
+        duration: 5000,
+      });
+    } else if (this.checkName && this.checkSlug) {
       this.snackBar.open(
-        ' ERROR! Este nombre y/o slug ya se encuentra registrado',
+        ' ERROR! Tanto el nombre como el slug ya se encuentran registrados',
         '',
         {
           duration: 5000,
         }
       );
     }
-    // console.log(merchant);
-    // console.log(this.merchantId);
   }
 }

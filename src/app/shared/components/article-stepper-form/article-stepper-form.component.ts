@@ -81,16 +81,16 @@ export class ArticleStepperFormComponent implements OnInit {
     // );
     // console.log(authorize);
 
-    this.merchant = await this.merchantsService.setDefaultMerchant(
-      this.merchantId
-    );
-    console.log(this.merchant);
+    // this.merchant = await this.merchantsService.setDefaultMerchant(
+    //   this.merchantId
+    // );
+    // console.log(this.merchant);
 
     // this.merchant = await this.merchantsService.merchantDefault();
     // console.log(this.merchant);
   }
 
-  authorizeMerchant() {
+  async authorizeMerchant() {
     // const authorize = await this.merchantsService.merchantAuthorize(
     //   this.merchantId
     // );

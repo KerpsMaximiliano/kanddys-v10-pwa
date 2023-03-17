@@ -164,6 +164,7 @@ export class ArticleDetailComponent implements OnInit {
     console.log(this.merchantId);
     if (this.merchantId !== '') {
       this.isMerchant = true;
+      this.setMerchantDefault();
     }
 
     this.articleDialog();
@@ -229,6 +230,17 @@ export class ArticleDetailComponent implements OnInit {
         this.router.navigate([`others/error-screen/`]);
       }
     });
+  }
+
+  async setMerchantDefault() {
+    const authorize = await this.merchantsService.merchantAuthorize(
+      this.merchantId
+    );
+    console.log(authorize);
+    const merchantDefault = await this.merchantsService.setDefaultMerchant(
+      this.merchantId
+    );
+    console.log(merchantDefault);
   }
 
   async getCollection() {
