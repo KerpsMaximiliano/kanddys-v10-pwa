@@ -581,3 +581,12 @@ export const updateOrderDeliveryData = gql`
     }
   }
 `;
+
+export const orderSetStatusDeliveryWithoutAuth = gql`
+  mutation orderSetStatusDeliveryWithoutAuth(
+    $orderStatusDelivery: String!
+    $id: ObjectID!
+  ) {
+    orderSetStatusDeliveryWithoutAuth(orderStatusDelivery: $orderStatusDelivery, id: $id)
+  }
+`;

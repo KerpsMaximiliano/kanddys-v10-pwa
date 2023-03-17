@@ -13,6 +13,61 @@
           font-size: 1rem;
           font-family: SfProMedium;
         }
+
+        button {
+            cursor: pointer;
+            background: none;
+            border: none;
+            img {
+                width: 20px;
+            }
+        }
+    }
+
+    .content {
+        margin-top: 2em;
+        margin-bottom: 40em;
+
+        .label-flex {
+            margin: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+    
+            .description-label {
+                font-family: SfProLight;
+                font-size: 15px;
+            }
+            .data-label {
+                font-family: SfProHeavy;
+                color: #293628;
+                font-size: 17px;
+            }
+        }
+    }
+
+    .sticky-bar {
+        background-color: #FED230;
+        position: fixed;
+        bottom: 0;
+        padding: 5px;
+        width: 100%;
+        max-width: 500px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+
+        button {
+            cursor: pointer;
+            border: 0;
+            background: none;
+
+            img {
+                width: 30px;
+                height: 30px;
+                filter: brightness(0) invert(13%) sepia(9%) saturate(1833%) hue-rotate(68deg) brightness(99%) contrast(83%);
+            }
+        }
     }
 }
 

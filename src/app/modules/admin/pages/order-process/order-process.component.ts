@@ -20,6 +20,7 @@ import { environment } from 'src/environments/environment';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
+import Swiper, { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-order-process',
@@ -46,6 +47,7 @@ export class OrderProcessComponent implements OnInit {
   ];
 
   redirectTo: string = null;
+  view: 'delivery' | 'assistant' | 'admin';
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = [
@@ -91,6 +93,12 @@ export class OrderProcessComponent implements OnInit {
     image: new FormControl(),
   });
 
+  swiperConfig: SwiperOptions = {
+    slidesPerView: 1,
+    freeMode: false,
+    spaceBetween: 0
+  };
+
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
 
   constructor(
@@ -109,8 +117,9 @@ export class OrderProcessComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const {  redirectTo } = queryParams;
+      const { redirectTo, view } = queryParams;
       this.redirectTo = redirectTo;
+      if (view) this.view = view;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
 
@@ -304,9 +313,12 @@ export class OrderProcessComponent implements OnInit {
 
     if (this.order.deliveryData) {
       this.deliveryImage = this.order.deliveryData.image;
+      this.orderReadyToDeliver = true;
+      this.orderDelivered = true;
       if (this.order.orderStatusDelivery !== 'delivered') {
-        // TODO validar que se ejecute la función de actualización de status pública, si no se está logged.
-        await this.changeOrderStatus('delivered');
+        if (this.isMerchant) await this.changeOrderStatus('delivered');
+        else if (this.view === 'assistant') await this.changeOrderStatusAuthless('delivered');
+        else if (this.view === 'delivery') await this.changeOrderStatusAuthless('delivered');
       }
     }
 
@@ -319,6 +331,7 @@ export class OrderProcessComponent implements OnInit {
         {
           findBy: {
             merchant: this.order.items[0].saleflow.merchant._id,
+            orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? ['pending', 'in progress', 'delivered'] : null,
           }
         }
       );
@@ -363,6 +376,19 @@ export class OrderProcessComponent implements OnInit {
     
     try {
       await this.orderService.orderSetStatusDelivery(value, this.order._id);
+      if (value === 'pending')  this.orderReadyToDeliver = true;
+      if (value === 'delivered') this.orderDelivered = true;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async changeOrderStatusAuthless(value: OrderStatusDeliveryType) {
+    this.order.orderStatusDelivery = value;
+    this.handleStatusOptions(value);
+    
+    try {
+      await this.orderService.orderSetStatusDeliveryWithoutAuth(value, this.order._id);
       if (value === 'pending')  this.orderReadyToDeliver = true;
       if (value === 'delivered') this.orderDelivered = true;
     } catch (error) {
@@ -419,22 +445,22 @@ export class OrderProcessComponent implements OnInit {
   }
 
   async onImageInput(input: File) {
-    console.log(input);
-    this.deliveryForm.get('image').patchValue(input);
-    console.log(this.deliveryForm);
-    console.log(this.deliveryForm.get('image').value[0]);
-
-    
-
-    const result = await this.orderService.updateOrderDeliveryData(
-      { image: this.deliveryForm.get('image').value[0] },
-      this.order._id
-    );
-
-    // TODO ejecutar la función de actualizar el status de la orden
-    this.orderReadyToDeliver = true;
-    
-    this.deliveryImage = result.deliveryData.image;
+    if (this.view === 'delivery') {
+      lockUI();
+      this.deliveryForm.get('image').patchValue(input);
+      try {
+        const result = await this.orderService.updateOrderDeliveryData(
+          { image: this.deliveryForm.get('image').value[0] },
+          this.order._id
+        );
+        this.deliveryImage = result.deliveryData.image;
+        await this.orderService.orderSetStatusDeliveryWithoutAuth('delivered', this.order._id);
+        unlockUI();
+      } catch (error) {
+        console.log(error);
+        unlockUI();
+      }
+    }
   }
 
 }

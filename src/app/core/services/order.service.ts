@@ -32,6 +32,7 @@ import {
   orderByMerchantDelivery,
   hotOrderByMerchantDelivery,
   updateOrderDeliveryData,
+  orderSetStatusDeliveryWithoutAuth,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -415,10 +416,21 @@ export class OrderService {
     const result = await this.graphql.mutate({
       mutation: updateOrderDeliveryData,
       variables: { input, id },
-      context: { useMultipart: true },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true }
     });
     if (!result || result?.errors) return undefined;
     return result.updateOrderDeliveryData;
+  }
+
+  async orderSetStatusDeliveryWithoutAuth(orderStatusDelivery: string, id: string): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: orderSetStatusDeliveryWithoutAuth,
+      variables: { orderStatusDelivery, id },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
   }
 
   orderDeliveryStatus(status: OrderStatusDeliveryType) {

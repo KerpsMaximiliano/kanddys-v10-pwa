@@ -210,9 +210,13 @@ const routes: Routes = [
     component: TagsComponent,
   },
   {
+    path: 'order-process',
+    component: OrderProcessComponent,
+  },
+  {
     path: 'order-process/:orderId',
     component: OrderProcessComponent,
-  }
+  },
 ];
 
 @NgModule({
