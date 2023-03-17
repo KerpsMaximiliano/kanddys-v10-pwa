@@ -1,9 +1,11 @@
 <div class="container">
 
-    <swiper
+    <!-- <swiper
+        #ordersSwiper
         [config]="swiperConfig"
+        (slideChange)="updateCurrentSlideData($event)"
     >
-        <div class="slide">
+        <div class="slide" *ngFor="let deliveryOrder of ordersReadyToDeliver; let i = index"> -->
             <!-- DROPDOWNS -->
             <div>
                 <!-- DROPDOWN FOR DELIVERY STATUS -->
@@ -141,8 +143,8 @@
                 </div>
             </div>
 
-        </div>
-    </swiper>
+        <!-- </div>
+    </swiper> -->
 
             <div class="footer">
                 <div class="controls-footer">

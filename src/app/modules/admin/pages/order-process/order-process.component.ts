@@ -21,6 +21,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
 import Swiper, { SwiperOptions } from 'swiper';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
 
 @Component({
   selector: 'app-order-process',
@@ -99,7 +100,10 @@ export class OrderProcessComponent implements OnInit {
     spaceBetween: 0
   };
 
+  initialSlide: number;
+
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
+  @ViewChild('ordersSwiper') ordersSwiper: SwiperComponent;
 
   constructor(
     private orderService: OrderService,
@@ -337,6 +341,14 @@ export class OrderProcessComponent implements OnInit {
       );
 
       this.ordersReadyToDeliver = result;
+
+      // const index = this.ordersReadyToDeliver.map(order => order._id).indexOf(this.order._id);
+      // console.log(index);
+      
+      // if (index !== -1) this.ordersReadyToDeliver.splice(index, 1, this.order);
+      // this.initialSlide = index;
+      // this.swiperConfig.initialSlide = index;
+
     } catch (error) {
       console.log(error);
     }
@@ -461,6 +473,10 @@ export class OrderProcessComponent implements OnInit {
         unlockUI();
       }
     }
+  }
+
+  updateCurrentSlideData(event: any) {
+    console.log("Cambiando de slide", event);
   }
 
 }
