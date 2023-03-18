@@ -1,6 +1,10 @@
 .container {
     min-height: 100vh;
 
+    .slide {
+        margin-bottom: 20em;
+    }
+
     .section {
         background-color: #FFF;
         margin-top: 5px;
@@ -74,12 +78,44 @@
         }
     }
     .footer {
+        position: fixed;
+        width: 100%;
+        max-width: 500px;
+        z-index: 999;
+        bottom: 0;
+
+        .inner-wrapper-top {
+            padding-top: 3px;
+            background: #293628;
+            
+            .current-media-shown-indicators {
+                // position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                max-width: 500px;
+                background-color: white;
+                display: grid;
+            }
+          
+            .indicator {
+                flex: 1;
+                border-left: 1px solid black;
+                border-right: 1px solid black;
+            
+                &.active {
+                    background-color: #82f18d;
+                }
+            }
+        }
+
         .top-footer {
             background-color: #293628;
             padding: 35px 40px;
             text-align: center;
 
-            .mat-checkbox-label {
+            .checkbox-label {
                 color: #FFF !important;
                 font-style: italic;
             }
@@ -130,6 +166,40 @@
             width: 110px;
             margin: 10px 0 0 0;
         }
+    }
+}
+
+.float-paginator {
+    width: 40px;
+    height: 50px;
+    background-color: #293628;
+    position: fixed;
+    top: 40%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+
+    img {
+        width: 10px;
+        filter: brightness(0) invert(81%) sepia(41%) saturate(529%) hue-rotate(66deg) brightness(104%) contrast(89%);
+    }
+}
+
+.left {
+    border-radius: 0 100% 100% 0px;
+    left: -15px;
+    justify-content: end;
+    padding-right: 10px;
+}
+
+.right {
+    border-radius: 100% 0 0 100%;
+    right: -15px;
+    justify-content: start;
+    padding-left: 10px;
+
+    img {
+        transform: rotate(180deg);
     }
 }
 

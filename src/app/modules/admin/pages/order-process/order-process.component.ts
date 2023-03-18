@@ -22,6 +22,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup } from '@angular/forms';
 import Swiper, { SwiperOptions } from 'swiper';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 
 @Component({
   selector: 'app-order-process',
@@ -68,6 +71,7 @@ export class OrderProcessComponent implements OnInit {
 
   orderStatus: OrderStatusNameType;
   orderDate: string;
+  merchant: Merchant;
   orderMerchant: Merchant;
   isMerchant: boolean;
 
@@ -97,12 +101,17 @@ export class OrderProcessComponent implements OnInit {
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
     freeMode: false,
-    spaceBetween: 0
+    spaceBetween: 0,
+    loop: false,
+    slideDuplicateNextClass: 'swiper-slide-duplicate-next',
+    slideDuplicatePrevClass: 'swiper-slide-duplicate-prev',
   };
 
   initialSlide: number;
+  activeIndex: number = 0;
 
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
+  @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
   @ViewChild('ordersSwiper') ordersSwiper: SwiperComponent;
 
   constructor(
@@ -117,21 +126,23 @@ export class OrderProcessComponent implements OnInit {
     private entityTemplateService: EntityTemplateService,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
-  ) { }
+    private _bottomSheet: MatBottomSheet,
+    private ngNavigatorShareService: NgNavigatorShareService,
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { redirectTo, view } = queryParams;
+      const { redirectTo, view, orderId } = queryParams;
       this.redirectTo = redirectTo;
       if (view) this.view = view;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
 
       this.route.params.subscribe(async (params) => {
-        const { orderId } = params;
+        const { merchantId } = params;
 
-        await this.executeProcessesAfterLoading(orderId);
-        await this.getOrders();
+        await this.executeProcessesAfterLoading(merchantId, orderId);
+        if (orderId) await this.getOrders(this.merchant._id);
 
         this.orderReadyToDeliver = 
           (
@@ -142,9 +153,18 @@ export class OrderProcessComponent implements OnInit {
     });
   }
 
-  async executeProcessesAfterLoading(orderId: string) {
+  async executeProcessesAfterLoading(merchantId: string, orderId?: string) {
     lockUI();
-    this.order = (await this.orderService.order(orderId))?.order;
+
+    
+
+    this.merchant = await this.merchantsService.merchant(merchantId);
+
+    if (!orderId) {
+      await this.getOrders(this.merchant._id);
+      this.order = (await this.orderService.order(this.ordersReadyToDeliver[0]._id))?.order;
+    } else this.order = (await this.orderService.order(orderId))?.order;
+
     if (!this.order) {
       unlockUI();
       this.router.navigate([`others/error-screen/`], {
@@ -152,6 +172,9 @@ export class OrderProcessComponent implements OnInit {
       });
       return;
     }
+
+    await this.populateOrder(0, 3);
+
     if (this.order.items) {
       for (const itemSubOrder of this.order.items) {
         itemSubOrder.item.media = itemSubOrder.item.images
@@ -329,16 +352,22 @@ export class OrderProcessComponent implements OnInit {
     unlockUI();
   }
 
-  async getOrders() {
+  async getOrders(merchantId: string) {
     try {
       const result = await this.orderService.orderByMerchantDelivery(
         {
+          options: {
+            limit: 20,
+            sortBy: "createdAt:desc"
+          },
           findBy: {
-            merchant: this.order.items[0].saleflow.merchant._id,
+            merchant: merchantId,
             orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? ['pending', 'in progress', 'delivered'] : null,
           }
         }
       );
+
+      console.log(result);
 
       this.ordersReadyToDeliver = result;
 
@@ -422,27 +451,6 @@ export class OrderProcessComponent implements OnInit {
     ]);
   }
 
-  downloadQr(qrElment: ElementRef) {
-    const parentElement = qrElment.nativeElement.querySelector('img').src;
-    let blobData = base64ToBlob(parentElement);
-    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
-      //IE
-      (window.navigator as any).msSaveOrOpenBlob(
-        blobData,
-        this.formatId(this.order.dateId)
-      );
-    } else {
-      // chrome
-      const blob = new Blob([blobData], { type: 'image/png' });
-      const url = window.URL.createObjectURL(blob);
-      // window.open(url);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = this.formatId(this.order.dateId);
-      link.click();
-    }
-  }
-
   copyEntityTemplateID(id: string) {
     const entityId = this.formatId(id);
     this.clipboard.copy(entityId);
@@ -452,8 +460,48 @@ export class OrderProcessComponent implements OnInit {
     });
   }
 
-  share() {
-    console.log("compartiendo...");
+  share(order: ItemOrder) {
+    const link = `${this.URI}/ecommerce/order-detail/${order._id}`;
+    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+      data: [
+        {
+          title: `Vista e interfaz con ${this.isMerchant ? 'toda la info' : 'la info limitada'} `,
+          options: [
+            {
+              title: 'Ver como lo verá el visitante',
+              callback: () => {
+                this.router.navigate([
+                  `/ecommerce/order-detail/${order._id}`,
+                ],
+                { queryParams: { redirectTo: this.router.url } });
+              },
+            },
+            {
+              title: 'Compartir el Link de esta sola factura',
+              callback: () => {
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: link,
+                });
+              },
+            },
+            {
+              title: 'Copiar el Link de esta sola factura',
+              callback: () => {
+                this.clipboard.copy(link);
+                this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                  duration: 2000,
+                });
+              },
+            },
+            {
+              title: 'Descargar el qrCode de esta sola factura',
+              callback: () => this.downloadQr(order)
+            },
+          ],
+        }
+      ],
+    });
   }
 
   async onImageInput(input: File) {
@@ -475,8 +523,122 @@ export class OrderProcessComponent implements OnInit {
     }
   }
 
+  getOrderIndex(order: ItemOrder) {
+    const index = this.ordersReadyToDeliver.map(order => order._id).indexOf(order._id);
+    console.log(index);
+    return index;
+  }
+
   updateCurrentSlideData(event: any) {
     console.log("Cambiando de slide", event);
+    console.log(event.activeIndex);
+
+    this.activeIndex = event.activeIndex;   
+
+    // TODO validar si el slide fue hacia adelante o atrás
+
+    // NOTA: La función no tiene await a propósito, pero modificar si es necesario
+    this.populateOrder(event.activeIndex, 3, true);
+  }
+
+  isPopulated(order: ItemOrder): boolean {
+    if (order.createdAt) return true;
+    else return false
+  }
+
+  async populateOrder(index: number, n: number = 1, w: boolean = true) {
+    console.log(this.ordersReadyToDeliver);
+    if (w) {
+      console.log("adelante")
+      for (let i = index; i < index + n; i++) {
+        console.log(i);
+        if (i < this.ordersReadyToDeliver.length) {
+          if (!this.isPopulated(this.ordersReadyToDeliver[i])) {
+            const order = (await this.orderService.order(this.ordersReadyToDeliver[i]._id))?.order;
+            this.ordersReadyToDeliver.splice(i, 1, order);
+            console.log(`Posición ${i} reemplazada`);
+          } else {
+            console.log(`Posición ${i} ya está populada`);
+            continue;
+          };
+        } else {
+          console.log("Array fuera de límite superior");
+        }
+      }
+    } else {
+      console.log("atrás");
+      for (let i = index; i > index + n; i--) {
+        if (i > 0) {
+          if (!this.isPopulated(this.ordersReadyToDeliver[i])) {
+            const order = (await this.orderService.order(this.ordersReadyToDeliver[i]._id))?.order;
+            this.ordersReadyToDeliver.splice(i, 1, order);
+            console.log(`Posición ${i} reemplazada`);
+          } else continue;
+        } else {
+          console.log("Array fuera de límite inferior");
+        }
+      }
+    }
+
+    console.log(this.ordersReadyToDeliver);
+  }
+
+  convertDate(dateString: string) {
+
+    const date = new Date(dateString);
+
+    return date
+      .toLocaleString('es-MX', {
+        hour12: true,
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      .toLocaleUpperCase();
+  }
+
+  downloadEntityTemplateQr(qrElment: ElementRef) {
+    const parentElement = qrElment.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData,
+        this.formatId(this.order.dateId)
+      );
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.formatId(this.order.dateId);
+      link.click();
+    }
+  }
+
+  downloadQr(order: ItemOrder) {
+    const parentElement = this.orderQrCode.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData,
+        this.formatId(order.dateId)
+      );
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.formatId(order.dateId);
+      link.click();
+    }
   }
 
 }
