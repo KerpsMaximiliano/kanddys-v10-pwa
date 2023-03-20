@@ -167,7 +167,10 @@ export class ArticleDetailComponent implements OnInit {
       this.setMerchantDefault();
     }
 
-    this.articleDialog();
+    if (this.createArticle === 'true') {
+      this.isCreateArticle = true;
+      this.articleDialog();
+    }
 
     this.mode = this.route.snapshot.queryParamMap.get('mode') as
       | 'preview'
@@ -668,9 +671,6 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   articleDialog() {
-    if (this.createArticle === 'true') {
-      this.isCreateArticle = true;
-      this.dialog.open(ArticleStepperFormComponent);
-    }
+    this.dialog.open(ArticleStepperFormComponent);
   }
 }
