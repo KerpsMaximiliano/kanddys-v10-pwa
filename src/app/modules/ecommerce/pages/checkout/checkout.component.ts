@@ -122,6 +122,7 @@ export class CheckoutComponent implements OnInit {
   disableButton: boolean;
   currentUser: User;
   date: {
+    year: string;
     month: string;
     day: number;
     weekday: string;
@@ -157,7 +158,9 @@ export class CheckoutComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.saleflowId = this.headerService.saleflow.merchant._id;
-    let items = this.headerService.getItems();
+    let items = this.headerService.order.products.map(
+      (subOrder) => subOrder.item
+    );
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
     }
@@ -173,7 +176,9 @@ export class CheckoutComponent implements OnInit {
 
     for (const item of this.items as Array<ExtendedItem>) {
       item.ready = false;
-      item.images = item.images.sort(({index:a},{index:b}) => a>b?1:-1);
+      item.images = item.images.sort(({ index: a }, { index: b }) =>
+        a > b ? 1 : -1
+      );
       for (const image of item.images) {
         if (
           image.value &&
@@ -246,6 +251,9 @@ export class CheckoutComponent implements OnInit {
         }),
         month: fromDate.toLocaleString('es-MX', {
           month: 'short',
+        }),
+        year: fromDate.toLocaleString('es-MX', {
+          year: 'numeric',
         }),
         time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
           untilDate,

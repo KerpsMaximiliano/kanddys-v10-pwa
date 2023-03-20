@@ -450,10 +450,10 @@ export class ArticleDetailComponent implements OnInit {
       type: 'added-item',
       data: this.itemData._id,
     });
-    this.headerService.storeItem(
-      // this.selectedParam ? itemParamValue :
-      this.itemData
-    );
+    // this.headerService.storeItem(
+    //   // this.selectedParam ? itemParamValue :
+    //   this.itemData
+    // );
     this.itemInCart();
   }
 
@@ -473,7 +473,9 @@ export class ArticleDetailComponent implements OnInit {
   // }
 
   itemInCart() {
-    const productData = this.headerService.getItems();
+    const productData = this.headerService.order.products.map(
+      (subOrder) => subOrder.item
+    );
     if (productData?.length) {
       this.isItemInCart = productData.some(
         (item) => item === this.itemData._id
