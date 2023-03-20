@@ -144,7 +144,12 @@
         <button
           class="cart-btn"
           (click)="saveProduct()"
-          *ngIf="doesModuleDependOnSaleflow && itemData && isSignup !== true"
+          *ngIf="
+            doesModuleDependOnSaleflow &&
+            itemData &&
+            isSignup !== true &&
+            isCreateArticle !== true
+          "
           [ngClass]="{
             inCart: isItemInCart
           }"
@@ -179,6 +184,21 @@
           (click)="showDialog()"
         >
           Crea tu primer artículo (ganas 3,000 DoCoins)
+        </button>
+        <button
+          *ngIf="isCreateArticle === true"
+          style="
+            width: 100%;
+            padding: 12px 0px;
+            background-color: #fed230;
+            text-align: center;
+            font-size: 17px;
+            font-family: SFProBold;
+            cursor: pointer;
+          "
+          (click)="articleDialog()"
+        >
+          Abrir diálogo
         </button>
 
         <button

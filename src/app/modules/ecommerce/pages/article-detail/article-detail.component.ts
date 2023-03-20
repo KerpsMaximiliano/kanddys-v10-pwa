@@ -91,6 +91,8 @@ export class ArticleDetailComponent implements OnInit {
   createArticle: 'true' | 'false';
   isCreateArticle: boolean;
   isSignup: boolean;
+  merchantId: string = '';
+  isMerchant: boolean;
 
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
@@ -126,6 +128,7 @@ export class ArticleDetailComponent implements OnInit {
   logged: boolean = false;
   isProductMine: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  articleId: string = '';
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -157,17 +160,30 @@ export class ArticleDetailComponent implements OnInit {
       'createArticle'
     ) as 'true' | 'false';
 
-    //this.merchantDialog();
-    this.articleDialog();
+    this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
+    console.log(this.merchantId);
+    if (this.merchantId !== '') {
+      this.isMerchant = true;
+      this.setMerchantDefault();
+    }
+
+    if (this.createArticle === 'true') {
+      this.isCreateArticle = true;
+      this.articleDialog();
+    }
 
     this.mode = this.route.snapshot.queryParamMap.get('mode') as
       | 'preview'
       | 'image-preview'
       | 'saleflow';
+
     this.route.params.subscribe(async (routeParams) => {
       await this.verifyIfUserIsLogged();
       const validEntities = ['item', 'post', 'template', 'collection'];
       const { entity, entityId } = routeParams;
+
+      this.articleId = entityId;
+      console.log(this.articleId);
 
       if (this.headerService.saleflow?._id)
         this.doesModuleDependOnSaleflow = true;
@@ -219,6 +235,17 @@ export class ArticleDetailComponent implements OnInit {
     });
   }
 
+  async setMerchantDefault() {
+    const authorize = await this.merchantsService.merchantAuthorize(
+      this.merchantId
+    );
+    console.log(authorize);
+    const merchantDefault = await this.merchantsService.setDefaultMerchant(
+      this.merchantId
+    );
+    console.log(merchantDefault);
+  }
+
   async getCollection() {
     this.tagData = (await this.tagsService.tag(this.entityId)).tag;
   }
@@ -232,34 +259,38 @@ export class ArticleDetailComponent implements OnInit {
         this.itemData.name = this._ItemsService.itemName;
         this.itemData.description = this._ItemsService.itemDesc;
         this.itemData.pricing = this._ItemsService.itemPrice;
-        this.itemData.images = this.itemData.images.sort(({index:a},{index:b}) => a>b?-1:1).map((image) => ({
-          value: image.value,
-        })) as ItemImage[];
+        this.itemData.images = this.itemData.images
+          .sort(({ index: a }, { index: b }) => (a > b ? -1 : 1))
+          .map((image) => ({
+            value: image.value,
+          })) as ItemImage[];
       }
 
-      this.itemData.media = this.itemData.images.sort(({index:a},{index:b}) => a>b?1:-1).map((image) => {
-        let url = image.value;
-        const fileParts = image.value.split('.');
-        const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
-        let auxiliarImageFileExtension = 'image/' + fileExtension;
-        let auxiliarVideoFileExtension = 'video/' + fileExtension;
+      this.itemData.media = this.itemData.images
+        .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+        .map((image) => {
+          let url = image.value;
+          const fileParts = image.value.split('.');
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+          let auxiliarImageFileExtension = 'image/' + fileExtension;
+          let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
-        if (url && !url.includes('http') && !url.includes('https')) {
-          url = 'https://' + url;
-        }
+          if (url && !url.includes('http') && !url.includes('https')) {
+            url = 'https://' + url;
+          }
 
-        if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-          return {
-            src: url,
-            type: 'IMAGE',
-          };
-        } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-          return {
-            src: url,
-            type: 'VIDEO',
-          };
-        }
-      });
+          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+            return {
+              src: url,
+              type: 'IMAGE',
+            };
+          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+            return {
+              src: url,
+              type: 'VIDEO',
+            };
+          }
+        });
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
       this.itemTags?.forEach((tag) => {
@@ -419,10 +450,10 @@ export class ArticleDetailComponent implements OnInit {
       type: 'added-item',
       data: this.itemData._id,
     });
-    this.headerService.storeItem(
-      // this.selectedParam ? itemParamValue :
-      this.itemData
-    );
+    // this.headerService.storeItem(
+    //   // this.selectedParam ? itemParamValue :
+    //   this.itemData
+    // );
     this.itemInCart();
   }
 
@@ -442,7 +473,9 @@ export class ArticleDetailComponent implements OnInit {
   // }
 
   itemInCart() {
-    const productData = this.headerService.getItems();
+    const productData = this.headerService.order.products.map(
+      (subOrder) => subOrder.item
+    );
     if (productData?.length) {
       this.isItemInCart = productData.some(
         (item) => item === this.itemData._id
@@ -606,7 +639,11 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   merchantDialog() {
-    let dialogRef = this.dialog.open(MerchantStepperFormComponent);
+    let dialogRef = this.dialog.open(MerchantStepperFormComponent, {
+      data: {
+        articleId: this.articleId,
+      },
+    });
     dialogRef
       .afterClosed()
       .subscribe(
@@ -636,9 +673,6 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   articleDialog() {
-    if (this.createArticle === 'true') {
-      this.isCreateArticle = true;
-      this.dialog.open(ArticleStepperFormComponent);
-    }
+    this.dialog.open(ArticleStepperFormComponent);
   }
 }
