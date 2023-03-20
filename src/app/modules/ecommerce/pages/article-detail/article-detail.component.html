@@ -144,12 +144,7 @@
         <button
           class="cart-btn"
           (click)="saveProduct()"
-          *ngIf="
-            doesModuleDependOnSaleflow &&
-            itemData &&
-            isSignup !== true &&
-            isMerchant !== true
-          "
+          *ngIf="doesModuleDependOnSaleflow && itemData"
           [ngClass]="{
             inCart: isItemInCart
           }"
@@ -186,7 +181,11 @@
           Crea tu primer artículo (ganas 3,000 DoCoins)
         </button>
         <button
-          *ngIf="isMerchant === true && isSignup !== true"
+          *ngIf="
+            isMerchant === true &&
+            isSignup !== true &&
+            !doesModuleDependOnSaleflow
+          "
           style="
             width: 100%;
             padding: 12px 0px;
