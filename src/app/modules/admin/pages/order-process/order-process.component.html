@@ -131,16 +131,16 @@
                 </div>
 
                 <!-- DELIVERY EVIDENCE SECTION -->
-                <div class="section" *ngIf="(isMerchant && deliveryImage) || view === 'delivery'">
+                <div class="section" *ngIf="deliveryImages.length && ((isMerchant && deliveryImages[i]?.image) || view === 'delivery')">
                     <p class="section-label">FLUJO DE LA ENTREGA</p>
                     <div class="input-image-container">
                         <app-item-images 
                             (enteredImages)="onImageInput($event)"
                             [containerStyles]="{ padding: '0' }"
                             [inputPosition]="'left'"
-                            *ngIf="!deliveryImage">
+                            *ngIf="!deliveryImages[i]?.image">
                         </app-item-images>
-                        <div class="image" [ngStyle]="{ backgroundImage: 'url(' + deliveryImage + ')' }" *ngIf="deliveryImage"></div>
+                        <div class="image" [ngStyle]="{ backgroundImage: 'url(' + deliveryImages[i]?.image + ')' }" *ngIf="deliveryImages[i]?.image"></div>
                         <p class="delivery-image-caption">Imagen de la entrega</p>
                     </div>
                 </div>

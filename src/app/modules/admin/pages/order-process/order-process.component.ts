@@ -92,7 +92,10 @@ export class OrderProcessComponent implements OnInit {
   orderReadyToDeliver: boolean = false;
   orderDelivered: boolean = false;
 
-  deliveryImage: any;
+  deliveryImages: Array<{
+    image?: string;
+    order: string;
+  }> = [];
 
   deliveryForm = new FormGroup({
     image: new FormControl(),
@@ -172,6 +175,15 @@ export class OrderProcessComponent implements OnInit {
       });
       return;
     }
+
+    this.ordersReadyToDeliver.forEach((order) => {
+      this.deliveryImages.push({
+        image: this.isPopulated(order) ? (order.deliveryData.image ? order.deliveryData.image : null) : null,
+        order: order._id
+      })
+    });
+
+    console.log(this.deliveryImages);
 
     await this.populateOrder(0, 3);
 
@@ -339,7 +351,6 @@ export class OrderProcessComponent implements OnInit {
     });
 
     if (this.order.deliveryData) {
-      this.deliveryImage = this.order.deliveryData.image;
       this.orderReadyToDeliver = true;
       this.orderDelivered = true;
       if (this.order.orderStatusDelivery !== 'delivered') {
@@ -425,11 +436,11 @@ export class OrderProcessComponent implements OnInit {
   }
 
   async changeOrderStatusAuthless(value: OrderStatusDeliveryType) {
-    this.order.orderStatusDelivery = value;
+    this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = value;
     this.handleStatusOptions(value);
     
     try {
-      await this.orderService.orderSetStatusDeliveryWithoutAuth(value, this.order._id);
+      await this.orderService.orderSetStatusDeliveryWithoutAuth(value, this.ordersReadyToDeliver[this.activeIndex]._id);
       if (value === 'pending')  this.orderReadyToDeliver = true;
       if (value === 'delivered') this.orderDelivered = true;
     } catch (error) {
@@ -511,9 +522,13 @@ export class OrderProcessComponent implements OnInit {
       try {
         const result = await this.orderService.updateOrderDeliveryData(
           { image: this.deliveryForm.get('image').value[0] },
-          this.order._id
+          this.ordersReadyToDeliver[this.activeIndex]._id
         );
-        this.deliveryImage = result.deliveryData.image;
+
+        this.deliveryImages.forEach(deliveryImage => {
+          if (deliveryImage.order === result._id) deliveryImage.image = result.deliveryData.image;
+        });
+
         await this.orderService.orderSetStatusDeliveryWithoutAuth('delivered', this.order._id);
         unlockUI();
       } catch (error) {
@@ -546,6 +561,12 @@ export class OrderProcessComponent implements OnInit {
     else return false
   }
 
+  /**
+   * Función que popula progresivamente las órdenes del swiper
+   * @param index  // Posición del arreglo de órdenes a partir de la cual se empieza a popular
+   * @param n  // Número de órdenes a popular partiendo del index
+   * @param w  // Dirección en la que se mueve el swiper (true: adelante, false: atrás)
+   */
   async populateOrder(index: number, n: number = 1, w: boolean = true) {
     console.log(this.ordersReadyToDeliver);
     if (w) {
@@ -556,6 +577,8 @@ export class OrderProcessComponent implements OnInit {
           if (!this.isPopulated(this.ordersReadyToDeliver[i])) {
             const order = (await this.orderService.order(this.ordersReadyToDeliver[i]._id))?.order;
             this.ordersReadyToDeliver.splice(i, 1, order);
+            console.log(this.deliveryImages[i]);
+            this.deliveryImages[i].image = order.deliveryData?.image ? order.deliveryData?.image : null;
             console.log(`Posición ${i} reemplazada`);
           } else {
             console.log(`Posición ${i} ya está populada`);
