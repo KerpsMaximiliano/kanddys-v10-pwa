@@ -222,8 +222,7 @@ const routes: Routes = [
     OrderListComponent,
     BenefitsComponent,
     OrderExpensesComponent,
-    FilteredBenefitsComponent,
-    MerchantLandingComponent,
+    FilteredBenefitsComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
