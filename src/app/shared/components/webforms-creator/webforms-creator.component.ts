@@ -6,7 +6,11 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { ItemOrder } from 'src/app/core/models/order';
 import { User } from 'src/app/core/models/user';
-import { WebformInput, QuestionInput } from 'src/app/core/models/webform';
+import {
+  WebformInput,
+  QuestionInput,
+  Webform,
+} from 'src/app/core/models/webform';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
@@ -47,6 +51,7 @@ const selectionStyles = {
 export class WebformsCreatorComponent implements OnInit {
   @Input() opened = false;
   @Input() item: Item = null;
+  @Input() webform: Webform = null;
   @Input() user: User = null;
   @Input() resumingCreation: boolean = false;
   @Output() closeEvent = new EventEmitter();
@@ -213,9 +218,21 @@ export class WebformsCreatorComponent implements OnInit {
 
                 this.webformService.webformQuestions = this.webformQuestions;
                 this.webformService.webformCreatorLastDialogs = this.dialogs;
-                this.router.navigate([
-                  'admin/webform-multiple-selection/' + this.item._id,
-                ]);
+
+                if(!this.webform) {
+                  this.router.navigate([
+                    'admin/webform-multiple-selection/' + this.item._id,
+                  ]);
+                } else {
+                  this.router.navigate([
+                    'admin/webform-multiple-selection/' + this.item._id,
+                  ], {
+                    queryParams: {
+                      updatingWebform: true,
+                      webformId: this.webform._id
+                    }
+                  });                  
+                }
               } else {
                 this.dialogFlowFunctions.moveToDialogByIndex(
                   this.dialogs.length - 2
@@ -410,6 +427,7 @@ export class WebformsCreatorComponent implements OnInit {
         !this.webformService.webformQuestions.length) &&
       !this.resumingCreation
     ) {
+      alert("1")
       this.dialogs = [
         {
           component: DescriptionDialogComponent,
@@ -442,6 +460,7 @@ export class WebformsCreatorComponent implements OnInit {
       this.resumingCreation &&
       this.webformService.webformCreatorLastDialogs.length
     ) {
+      alert("2")
       this.dialogs = this.webformService.webformCreatorLastDialogs;
 
       const toReplaceIndex = this.dialogs.findIndex(
@@ -491,6 +510,7 @@ export class WebformsCreatorComponent implements OnInit {
       this.webformQuestions.length === 0 &&
       this.webformService.webformQuestions.length
     ) {
+      alert("3")
       this.webformQuestions = this.webformService.webformQuestions;
     }
   }
@@ -547,9 +567,9 @@ export class WebformsCreatorComponent implements OnInit {
         if (largeInputQuestions.length > 0) {
           for await (const question of largeInputQuestions) {
             const answerDefault = question.answerDefault;
-  
+
             const partsInAnswerDefault = [];
-  
+
             for (let i = 0; i < Math.ceil(answerDefault.length / 20); i++) {
               const topLimit = i * 20 + 20;
               const lowerLimit = i * 20;
@@ -558,15 +578,15 @@ export class WebformsCreatorComponent implements OnInit {
                 answerDefault.slice(lowerLimit, topLimit)
               );
             }
-  
+
             question.answerDefault = partsInAnswerDefault[0];
-  
+
             try {
               const results = await this.webformService.webformAddQuestion(
                 [question],
                 createdWebform._id
               );
-  
+
               if (results && partsInAnswerDefault.length > 1) {
                 for (let i = 1; i < partsInAnswerDefault.length; i++) {
                   const questionId =
@@ -578,7 +598,7 @@ export class WebformsCreatorComponent implements OnInit {
                       questionId,
                       results._id
                     );
-  
+
                   console.log('Resultados', result);
                 }
               }
@@ -605,11 +625,102 @@ export class WebformsCreatorComponent implements OnInit {
           0
         );
 
-        console.log("Preguntas opcionales", this.optionalQuestions);
-        console.log("Preguntas obligatorias", this.requiredQuestions);
+        console.log('Preguntas opcionales', this.optionalQuestions);
+        console.log('Preguntas obligatorias', this.requiredQuestions);
 
         this.status = 'ENDED_CREATION';
       }
+
+      unlockUI();
+
+      this.status = 'ENDED_CREATION';
+    } catch (error) {
+      unlockUI();
+      console.error(error);
+    }
+  }
+
+  async updateWebformForItem() {
+    try {
+      this.webformQuestions.forEach(question => {
+        if(!question.answerDefault) question.answerDefault = [];
+      })
+
+      lockUI();
+      const largeInputQuestions: QuestionInput[] = this.webformQuestions.filter(
+        (question) => question.answerDefault?.length > 20
+      );
+      const smallInputQuestions: QuestionInput[] = this.webformQuestions.filter(
+        (question) => question.answerDefault?.length <= 20 || !question.answerDefault
+      );
+
+      if (smallInputQuestions.length > 0) {
+        await this.webformService.webformAddQuestion(
+          smallInputQuestions,
+          this.webform._id
+        );
+      }
+
+      if (largeInputQuestions.length > 0) {
+        for await (const question of largeInputQuestions) {
+          const answerDefault = question.answerDefault;
+
+          const partsInAnswerDefault = [];
+
+          for (let i = 0; i < Math.ceil(answerDefault.length / 20); i++) {
+            const topLimit = i * 20 + 20;
+            const lowerLimit = i * 20;
+            console.log(topLimit, lowerLimit);
+            partsInAnswerDefault.push(
+              answerDefault.slice(lowerLimit, topLimit)
+            );
+          }
+
+          question.answerDefault = partsInAnswerDefault[0];
+
+          try {
+            const results = await this.webformService.webformAddQuestion(
+              [question],
+              this.webform._id
+            );
+
+            if (results && partsInAnswerDefault.length > 1) {
+              for (let i = 1; i < partsInAnswerDefault.length; i++) {
+                const questionId =
+                  results.questions[results.questions.length - 1]._id;
+                const answerDefault = partsInAnswerDefault[i];
+                const result =
+                  await this.webformService.questionAddAnswerDefault(
+                    answerDefault,
+                    questionId,
+                    results._id
+                  );
+
+                console.log('Resultados', result);
+              }
+            }
+          } catch (error) {
+            this.snackbar.open('Error al crear el formulario', 'Cerrar', {
+              duration: 3000,
+            });
+            console.error(error);
+          }
+        }
+      }
+
+      this.optionalQuestions = this.webformQuestions.reduce(
+        (sum, currentQuestion) => {
+          return sum + (!currentQuestion.required ? 1 : 0);
+        },
+        0
+      );
+
+      this.requiredQuestions = this.webformQuestions.reduce(
+        (sum, currentQuestion) => {
+          return sum + (currentQuestion.required ? 1 : 0);
+        },
+        0
+      );
 
       unlockUI();
 

@@ -131,6 +131,11 @@ export class FormResponsesComponent implements OnInit {
                   answersById[answer.reference].isMedia &&
                   answersById[answer.reference].label
                     ? answersById[answer.reference].label
+                    : !answersById[answer.reference].isMedia &&
+                      answersById[answer.reference].label
+                    ? answersById[answer.reference].value +
+                      ' ' +
+                      answersById[answer.reference].label
                     : answersById[answer.reference].value,
               });
             }

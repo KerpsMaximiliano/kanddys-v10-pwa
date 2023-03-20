@@ -499,5 +499,8 @@ table {
 }
 
 .question-media-response {
+  overflow-y: scroll;
+  max-height: 515px;
+  border-radius: 12px;
   margin-bottom: 3.6px;
 }

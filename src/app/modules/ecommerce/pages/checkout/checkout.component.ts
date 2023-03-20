@@ -361,6 +361,9 @@ export class CheckoutComponent implements OnInit {
     mode: 'item' | 'message' | 'address' | 'reservation' | 'customizer'
   ) {
     this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
+
+    if(this.webformPreview) return;
+
     switch (mode) {
       case 'item': {
         this.router.navigate([`../store`], {

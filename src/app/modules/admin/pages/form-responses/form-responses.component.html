@@ -59,6 +59,17 @@
         [callback]="goToDetail"
         [callbackParams]="[entry.order]"
       ></app-compact-card>
+
+      <ng-container *ngIf="ordersAndAnswers.length === 0">
+        <p
+          [ngStyle]="{
+            textAlign: 'center',
+            fontFamily: 'Roboto'
+          }"
+        >
+          Todavía no hay respuestas para esta pregunta
+        </p>
+      </ng-container>
     </ng-container>
   </main>
 </div>

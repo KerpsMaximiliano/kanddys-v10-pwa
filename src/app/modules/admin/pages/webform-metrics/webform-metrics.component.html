@@ -45,6 +45,14 @@
     mode="basic"
     [options]="[
       {
+        text: 'Nueva pregunta',
+        callback: addNewQuestion
+      },
+      {
+        text: 'Preview de compradores',
+        callback: goToPreview
+      },
+      {
         text: webformStatus === 'ACTIVE' ? 'Inactiva el formulario' : 'Activa el formulario',
         callback: switchWebformStatus
       }
@@ -54,3 +62,13 @@
     }"
   ></app-menu-button>
 </div>
+
+<app-webforms-creator
+  *ngIf="headerService.user && itemData && webform"
+  [opened]="openedDialogFlow"
+  [item]="itemData"
+  [user]="headerService.user"
+  [resumingCreation]="resumingWebformCreation"
+  [webform]="webform"
+  (closeEvent)="null"
+></app-webforms-creator>

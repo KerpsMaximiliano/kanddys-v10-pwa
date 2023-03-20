@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -21,15 +21,18 @@ import { environment } from 'src/environments/environment';
   templateUrl: './webform-metrics.component.html',
   styleUrls: ['./webform-metrics.component.scss'],
 })
-export class WebformMetricsComponent implements OnInit {
+export class WebformMetricsComponent implements OnInit, OnDestroy {
   env: string = environment.assetsUrl;
   sub: Subscription;
-  webform: Question | any = {};
+  sub2: Subscription;
+  webform: Question | Webform | any = {};
   webformQuestions: Record<string, Question> = {};
   itemId: string = null;
   itemData: Item = null;
   webformStatus: 'ACTIVE' | 'INACTIVE' = 'ACTIVE';
+  resumingWebformCreation: boolean = false;
   webformInternalId: string = null;
+  openedDialogFlow: boolean = false;
 
   constructor(
     private _WebformsService: WebformsService,
@@ -37,7 +40,7 @@ export class WebformMetricsComponent implements OnInit {
     private _ActivatedRoute: ActivatedRoute,
     private location: Location,
     private itemService: ItemsService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     private appService: AppService,
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
@@ -45,137 +48,153 @@ export class WebformMetricsComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void {
-    this.sub = this._ActivatedRoute.params.subscribe(({ formId, itemId }) => {
-      (async () => {
-        const { _id: userId } = await this._AuthService.me();
-        const { _id, user, ...webform } = await this._WebformsService.webform(
-          formId
-        );
-        this.itemId = itemId;
-        this.itemData = await this.itemService.item(itemId);
+  async ngOnInit() {
+    await this.executeInitProcesses();
+  }
 
-        if (this.itemData.webForms.length) {
-          this.webformStatus = this.itemData.webForms[0].active
-            ? 'ACTIVE'
-            : 'INACTIVE';
-          this.webformInternalId = this.itemData.webForms[0]._id;
-        }
+  executeInitProcesses = async () => {
+    this.sub = this._ActivatedRoute.params.subscribe(
+      async ({ formId, itemId }) => {
+        this.sub2 = this._ActivatedRoute.queryParams.subscribe(
+          async ({ resumeWebform }) => {
+            const { _id: userId } = await this._AuthService.me();
+            const { _id, user, ...webform } =
+              await this._WebformsService.webform(formId);
+            this.itemId = itemId;
+            this.itemData = await this.itemService.item(itemId);
 
-        const { _id: webformUserId } = user || {};
-        if (userId !== webformUserId) this._Router.navigate(['auth', 'login']);
-        const answerFrequent = await this._WebformsService.answerFrequent(_id);
+            if (this.itemData.webForms.length) {
+              this.webformStatus = this.itemData.webForms[0].active
+                ? 'ACTIVE'
+                : 'INACTIVE';
+              this.webformInternalId = this.itemData.webForms[0]._id;
+            }
 
-        webform.questions.forEach((question) => {
-          this.webformQuestions[question._id] = question;
-        });
-
-        const metrics = webform.questions
-          .sort(({ subIndex: a }, { subIndex: b }) => (a > b ? 1 : -1))
-          .map((question: Question | any) => {
-            const { _id, type } = question;
-            const _answerFrequent: any = answerFrequent.find(
-              ({ question: questionId }: any) => questionId === _id
+            const { _id: webformUserId } = user || {};
+            if (userId !== webformUserId)
+              this._Router.navigate(['auth', 'login']);
+            const answerFrequent = await this._WebformsService.answerFrequent(
+              _id
             );
 
-            const currentQuestion = this.webformQuestions[question._id];
+            webform.questions.forEach((question) => {
+              this.webformQuestions[question._id] = question;
+            });
 
-            switch (type) {
-              case 'multiple':
-              case 'multiple-text':
-                question.answers = currentQuestion.answerDefault.map(
-                  (option) => ({
-                    text:
-                      '0 ' +
-                      (!option.label && !option.isMedia
-                        ? option.value
-                        : option.label
-                        ? option.label
-                        : ''),
-                    link: '/',
-                    file: option.isMedia ? option.value : null,
-                    optionValue:
-                      !option.label && !option.isMedia
-                        ? option.value
-                        : option.label,
-                  })
+            const metrics = webform.questions
+              .sort(({ subIndex: a }, { subIndex: b }) => (a > b ? 1 : -1))
+              .map((question: Question | any) => {
+                const { _id, type } = question;
+                const _answerFrequent: any = answerFrequent.find(
+                  ({ question: questionId }: any) => questionId === _id
                 );
 
-                const additionalAnswers = [];
+                const currentQuestion = this.webformQuestions[question._id];
 
-
-                if (_answerFrequent?.response) {
-                  for (const optionNumbers of _answerFrequent?.response) {
-                    const { value, label, count } = optionNumbers;
-
-                    const isADeclaredOption = question.answers.find(
-                      (option) =>
-                        option.optionValue === value ||
-                        value === option.file ||
-                        value === option.label
+                switch (type) {
+                  case 'multiple':
+                  case 'multiple-text':
+                    question.answers = currentQuestion.answerDefault.map(
+                      (option) => ({
+                        text:
+                          '0 ' +
+                          (!option.label && !option.isMedia
+                            ? option.value
+                            : option.label
+                            ? option.label
+                            : ''),
+                        link: '/',
+                        file: option.isMedia ? option.value : null,
+                        optionValue:
+                          !option.label && !option.isMedia
+                            ? option.value
+                            : option.label,
+                      })
                     );
 
-                    if (!isADeclaredOption)
-                      additionalAnswers.push({
-                        text: count + ' ' + value,
-                        userProvided: true,
-                      });
+                    const additionalAnswers = [];
 
-                    for (const option of question.answers) {
-                      if (option.optionValue === label && option.file) {
-                        if (label) option.text = `${count} ${label}`;
-                        else option.text = `${count}`;
-                      } else if (option.file && option.file === value) {
-                        option.text = `${count} veces escogida`;
-                      } else if (
-                        option.optionValue &&
-                        option.optionValue === value
-                      ) {
-                        if (value) option.text = `${count} ${value}`;
-                        else option.text = `${count} veces escogida`;
+                    if (_answerFrequent?.response) {
+                      for (const optionNumbers of _answerFrequent?.response) {
+                        const { value, label, count } = optionNumbers;
+
+                        const isADeclaredOption = question.answers.find(
+                          (option) =>
+                            option.optionValue === value ||
+                            value === option.file ||
+                            value === option.label
+                        );
+
+                        if (!isADeclaredOption)
+                          additionalAnswers.push({
+                            text: count + ' ' + value,
+                            userProvided: true,
+                          });
+
+                        for (const option of question.answers) {
+                          if (option.optionValue === label && option.file) {
+                            if (label) option.text = `${count} ${label}`;
+                            else option.text = `${count}`;
+                          } else if (option.file && option.file === value) {
+                            option.text = `${count} veces escogida`;
+                          } else if (
+                            option.optionValue &&
+                            option.optionValue === value
+                          ) {
+                            if (value) option.text = `${count} ${value}`;
+                            else option.text = `${count} veces escogida`;
+                          }
+                        }
                       }
                     }
-                  }
-                }
 
-                if (additionalAnswers.length) {
-                  const toAdd = [
-                    {
-                      text: additionalAnswers.length + ' Otras respuestas',
-                      freeResponse: true,
-                    },
-                  ];
+                    if (additionalAnswers.length) {
+                      const toAdd = [
+                        {
+                          text: additionalAnswers.length + ' Otras respuestas',
+                          freeResponse: true,
+                        },
+                      ];
 
-                  question.answers = question.answers.concat(toAdd);
+                      question.answers = question.answers.concat(toAdd);
+                    }
+                    break;
+                  default:
+                    const total =
+                      _answerFrequent?.response.length > 1
+                        ? _answerFrequent.response.reduce(
+                            (total, currentAnswer) =>
+                              total + currentAnswer.count,
+                            0
+                          )
+                        : _answerFrequent?.response[0]?.count || 0;
+                    question.total = total;
+                    break;
                 }
-                break;
-              default:
-                const total =
-                  _answerFrequent?.response.length > 1
-                    ? _answerFrequent.response.reduce(
-                        (total, currentAnswer) => total + currentAnswer.count,
-                        0
-                      )
-                    : _answerFrequent?.response[0]?.count || 0;
-                question.total = total;
-                break;
+                const result: any = question;
+                return question;
+              });
+            const metricsQuestions = metrics.filter(
+              ({ answers = [], total }) =>
+                answers?.length || total !== undefined
+            );
+            this.webform = { ...webform, _id, user };
+
+            if (resumeWebform && this._WebformsService.webformCreatorLastDialogs.length) {
+              this.openedDialogFlow = true;
+              this.resumingWebformCreation = true;
             }
-            const result: any = question;
-            return question;
-          });
-        const metricsQuestions = metrics.filter(
-          ({ answers = [], total }) => answers?.length || total !== undefined
+          }
         );
-        this.webform = { ...webform, _id, user };
-      })();
-    });
-  }
+      }
+    );
+  };
 
   async goBack() {
     this.location.back();
   }
 
-  async goToPreview() {
+  goToPreview = async () => {
     const product: ItemSubOrderInput = {
       item: this.itemId,
       amount: 1,
@@ -209,7 +228,11 @@ export class WebformMetricsComponent implements OnInit {
         },
       }
     );
-  }
+  };
+
+  addNewQuestion = async () => {
+    this.openedDialogFlow = !this.openedDialogFlow;
+  };
 
   switchWebformStatus = () => {
     lockUI();
@@ -239,4 +262,15 @@ export class WebformMetricsComponent implements OnInit {
         unlockUI();
       });
   };
+
+  async reloadWebform() {
+    this.openedDialogFlow = false;
+
+    await this.executeInitProcesses();
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+    this.sub2.unsubscribe();
+  }
 }

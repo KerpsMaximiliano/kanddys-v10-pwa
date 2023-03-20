@@ -16,6 +16,8 @@ import { environment } from 'src/environments/environment';
 export class TextOrImageComponent implements OnInit {
   environment: string = environment.assetsUrl;
   itemId: string = null;
+  updatingWebform: boolean = false;
+  webformId: string = null;
   options: Array<{
     text: string;
     void: boolean;
@@ -33,40 +35,47 @@ export class TextOrImageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(({ itemId }) => {
-      this.route.queryParams.subscribe(async ({ editingQuestion }) => {
-        if (itemId) this.itemId = itemId;
+      this.route.queryParams.subscribe(
+        async ({ editingQuestion, updatingWebform, webformId }) => {
+          if (itemId) this.itemId = itemId;
 
-        if (this.webformService.webformQuestions.length === 0) {
-          this.router.navigate(['admin/article-editor/' + this.itemId]);
-        }
+          if (updatingWebform && webformId) {
+            this.updatingWebform = Boolean(updatingWebform);
+            this.webformId = webformId;
+          }
 
-        if (
-          editingQuestion &&
-          this.webformService.webformQuestions[
-            this.webformService.webformQuestions.length - 1
-          ]?.answerDefault.length !== 0
-        ) {
-          this.options = [];
-          for await (const option of this.webformService.webformQuestions[
-            this.webformService.webformQuestions.length - 1
-          ].answerDefault) {
-            const fileData = option.media
-              ? await fileToBase64(option.media)
-              : null;
+          if (this.webformService.webformQuestions.length === 0) {
+            this.router.navigate(['admin/article-editor/' + this.itemId]);
+          }
 
-            this.options.push({
-              text: !option.media
-                ? option.value
-                : option.label
-                ? option.label
-                : null,
-              file: !option.media ? null : option.media,
-              void: false,
-              fileData,
-            });
+          if (
+            editingQuestion &&
+            this.webformService.webformQuestions[
+              this.webformService.webformQuestions.length - 1
+            ]?.answerDefault.length !== 0
+          ) {
+            this.options = [];
+            for await (const option of this.webformService.webformQuestions[
+              this.webformService.webformQuestions.length - 1
+            ].answerDefault) {
+              const fileData = option.media
+                ? await fileToBase64(option.media)
+                : null;
+
+              this.options.push({
+                text: !option.media
+                  ? option.value
+                  : option.label
+                  ? option.label
+                  : null,
+                file: !option.media ? null : option.media,
+                void: false,
+                fileData,
+              });
+            }
           }
         }
-      });
+      );
     });
   }
 
@@ -91,6 +100,10 @@ export class TextOrImageComponent implements OnInit {
 
   addOption() {
     this.options.push({ text: 'Escribe..', void: true });
+  }
+
+  deleteOption(index: number) {
+    this.options.splice(index, 1);
   }
 
   async loadFile(
@@ -119,7 +132,6 @@ export class TextOrImageComponent implements OnInit {
         }
       }
 
-
       let loadedFiles = 0;
 
       lockUI();
@@ -134,7 +146,7 @@ export class TextOrImageComponent implements OnInit {
           this.options[optionIndex + i].fileData = reader.result;
           //content['background'] = result;
 
-          if(loadedFiles === fileList.length) {
+          if (loadedFiles === fileList.length) {
             unlockUI();
           }
         };
@@ -191,12 +203,24 @@ export class TextOrImageComponent implements OnInit {
         this.webformService.webformQuestions.length - 1
       ].answerDefault = optionsToAdd;
 
-      if (this.itemId)
-        this.router.navigate(['admin/article-editor/' + this.itemId], {
+      if (this.itemId && !this.updatingWebform)
+        return this.router.navigate(['admin/article-editor/' + this.itemId], {
           queryParams: {
             resumeWebform: true,
           },
         });
+
+      if (this.updatingWebform) {
+        return this.router.navigate(
+          ['admin/webform-metrics/' + this.webformId + '/' + this.itemId],
+          {
+            queryParams: {
+              resumeWebform: true,
+            },
+          }
+        );
+      }
+
       this.location.back();
     } else {
       this.snackBar.open(
