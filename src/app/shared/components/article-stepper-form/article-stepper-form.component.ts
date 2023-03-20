@@ -52,6 +52,10 @@ export class ArticleStepperFormComponent implements OnInit {
   merchantId: string;
   itemCreated;
   base64: string;
+  itemId: string;
+  saleflow;
+  saleflowId: string;
+  saleflowDefault;
 
   async ngOnInit() {
     this.allCommunities = await this.communities.communitycategories({});
@@ -172,6 +176,35 @@ export class ArticleStepperFormComponent implements OnInit {
       duration: 5000,
     });
     console.log(this.itemCreated.createItem._id);
+    this.itemId = this.itemCreated.createItem._id;
+
+    this.saleflow = await this.saleflowService.createSaleflow({
+      name: 'Dummy Name',
+      headline: 'Dummy Headline',
+      merchant: this.merchantId,
+    });
+
+    console.log(this.saleflow);
+
+    this.saleflowId = this.saleflow.createSaleflow?._id;
+    console.log(this.saleflowId);
+
+    this.saleflowDefault = await this.saleflowService.setDefaultSaleflow(
+      this.merchantId,
+      this.saleflowId
+    );
+
+    console.log(this.saleflowDefault);
+
+    const addItem = await this.saleflowService.addItemToSaleFlow(
+      {
+        item: this.itemId,
+      },
+      this.saleflowId
+    );
+
+    console.log(addItem);
+
     this.dialogRef.close();
     unlockUI();
     const reader = new FileReader();
