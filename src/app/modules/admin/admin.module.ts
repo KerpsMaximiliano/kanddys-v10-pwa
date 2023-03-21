@@ -234,7 +234,6 @@ const routes: Routes = [
     BenefitsComponent,
     OrderExpensesComponent,
     FilteredBenefitsComponent,
-    MerchantLandingComponent,
     OrderProcessComponent,
     DeliveryOrdersComponent,
   ],
