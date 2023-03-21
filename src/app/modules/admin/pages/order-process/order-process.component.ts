@@ -529,7 +529,11 @@ export class OrderProcessComponent implements OnInit {
           if (deliveryImage.order === result._id) deliveryImage.image = result.deliveryData.image;
         });
 
-        await this.orderService.orderSetStatusDeliveryWithoutAuth('delivered', this.order._id);
+        await this.orderService.orderSetStatusDeliveryWithoutAuth('delivered', this.ordersReadyToDeliver[this.activeIndex]._id);
+
+        this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = 'delivered';
+        this.orderReadyToDeliver = false;
+        this.orderDelivered = true;
         unlockUI();
       } catch (error) {
         console.log(error);
@@ -538,13 +542,7 @@ export class OrderProcessComponent implements OnInit {
     }
   }
 
-  getOrderIndex(order: ItemOrder) {
-    const index = this.ordersReadyToDeliver.map(order => order._id).indexOf(order._id);
-    console.log(index);
-    return index;
-  }
-
-  updateCurrentSlideData(event: any) {
+  async updateCurrentSlideData(event: any) {
     console.log("Cambiando de slide", event);
     console.log(event.activeIndex);
 
@@ -552,8 +550,23 @@ export class OrderProcessComponent implements OnInit {
 
     // TODO validar si el slide fue hacia adelante o atrás
 
-    // NOTA: La función no tiene await a propósito, pero modificar si es necesario
-    this.populateOrder(event.activeIndex, 3, true);
+    // NOTA: La función tiene await pero podría no tenerlo para hacer más smooth el infinite scroll
+    await this.populateOrder(event.activeIndex, 3, true);
+
+    if (this.ordersReadyToDeliver[this.activeIndex].deliveryData?.image) {
+      this.orderReadyToDeliver = false;
+      this.orderDelivered = true;
+      if (this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'pending') {
+        await this.orderService.orderSetStatusDeliveryWithoutAuth('delivered', this.ordersReadyToDeliver[this.activeIndex]._id);
+        this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = 'delivered';
+      }
+    } else if (this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'pending') {
+      this.orderReadyToDeliver = true;
+      this.orderDelivered = false;
+    } else {
+      this.orderReadyToDeliver = false;
+      this.orderDelivered = false;
+    }
   }
 
   isPopulated(order: ItemOrder): boolean {
