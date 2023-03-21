@@ -2,7 +2,7 @@
   <div class="cards" *ngIf="cardsArray">
     <div class="card" *ngFor="let item of cardsArray; let i = index">
       <p class="top-box-text">{{ item.title }}</p>
-      <p class="bottom-box-text">{{ item.subtitle }}</p>
+      <p class="bottom-box-text">${{ item.subtitle }}</p>
     </div>
   </div>
 
@@ -14,7 +14,7 @@
           backgroundColor: barColor
         }"
       ></div>
-      <div *ngIf="displayImage" class="square" [style.background]="order.image"></div>
+      <div *ngIf="displayImage" class="square" [ngStyle]="{ backgroundImage: 'url(' + order.image + ')' }"></div>
       <span class="top-left">{{ order.username }}</span>
       <span class="top-right">${{ order.total | number : "1.2-2" }}</span>
       <span class="middle">Facturas</span>

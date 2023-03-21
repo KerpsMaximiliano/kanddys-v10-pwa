@@ -32,6 +32,9 @@ import { FilteredBenefitsComponent } from './pages/filtered-benefits/filtered-be
 import { MerchantLandingComponent } from './pages/merchant-landing/merchant-landing.component';
 import { DeliveryZonesComponent } from './pages/delivery-zones/delivery-zones.component';
 import { OrdersByDeliveryComponent } from './pages/orders-by-delivery/orders-by-delivery.component';
+import { OrderProcessComponent } from './pages/order-process/order-process.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -166,10 +169,6 @@ const routes: Routes = [
         component: OrderStatusViewComponent,
       },
       {
-        path: 'merchant-landing',
-        component: MerchantLandingComponent,
-      },
-      {
         path: 'order-list',
         children: [
           {
@@ -206,11 +205,19 @@ const routes: Routes = [
         path: 'orders-by-delivery/:deliveryId',
         component: OrdersByDeliveryComponent,
       },
+      {
+        path: 'delivery-orders',
+        component: DeliveryOrdersComponent,
+      }
     ],
   },
   {
     path: 'tags',
     component: TagsComponent,
+  },
+  {
+    path: 'order-process/:merchantId',
+    component: OrderProcessComponent,
   },
 ];
 
@@ -240,8 +247,10 @@ const routes: Routes = [
     MerchantLandingComponent,
     DeliveryZonesComponent,
     OrdersByDeliveryComponent,
+    OrderProcessComponent,
+    DeliveryOrdersComponent,
   ],
   exports: [ArticleCreatorComponent],
-  imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
+  imports: [CommonModule, SharedModule, MatCheckboxModule, RouterModule.forChild(routes)],
 })
 export class AdminModule {}

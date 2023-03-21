@@ -91,6 +91,8 @@ export class ArticleDetailComponent implements OnInit {
   createArticle: 'true' | 'false';
   isCreateArticle: boolean;
   isSignup: boolean;
+  merchantId: string = '';
+  isMerchant: boolean;
 
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
@@ -126,6 +128,7 @@ export class ArticleDetailComponent implements OnInit {
   logged: boolean = false;
   isProductMine: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  articleId: string = '';
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -157,17 +160,30 @@ export class ArticleDetailComponent implements OnInit {
       'createArticle'
     ) as 'true' | 'false';
 
-    //this.merchantDialog();
-    this.articleDialog();
+    this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
+    console.log(this.merchantId);
+    if (this.merchantId !== '') {
+      this.isMerchant = true;
+      this.setMerchantDefault();
+    }
+
+    if (this.createArticle === 'true') {
+      this.isCreateArticle = true;
+      this.articleDialog();
+    }
 
     this.mode = this.route.snapshot.queryParamMap.get('mode') as
       | 'preview'
       | 'image-preview'
       | 'saleflow';
+
     this.route.params.subscribe(async (routeParams) => {
       await this.verifyIfUserIsLogged();
       const validEntities = ['item', 'post', 'template', 'collection'];
       const { entity, entityId } = routeParams;
+
+      this.articleId = entityId;
+      console.log(this.articleId);
 
       if (this.headerService.saleflow?._id)
         this.doesModuleDependOnSaleflow = true;
@@ -217,6 +233,17 @@ export class ArticleDetailComponent implements OnInit {
         this.router.navigate([`others/error-screen/`]);
       }
     });
+  }
+
+  async setMerchantDefault() {
+    const authorize = await this.merchantsService.merchantAuthorize(
+      this.merchantId
+    );
+    console.log(authorize);
+    const merchantDefault = await this.merchantsService.setDefaultMerchant(
+      this.merchantId
+    );
+    console.log(merchantDefault);
   }
 
   async getCollection() {
@@ -580,6 +607,8 @@ export class ArticleDetailComponent implements OnInit {
     )
       .map(() => `${'1'}fr`)
       .join(' ');
+
+      console.log(this.fractions);
   }
 
   getRandomArbitrary(min, max) {
@@ -612,7 +641,11 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   merchantDialog() {
-    let dialogRef = this.dialog.open(MerchantStepperFormComponent);
+    let dialogRef = this.dialog.open(MerchantStepperFormComponent, {
+      data: {
+        articleId: this.articleId,
+      },
+    });
     dialogRef
       .afterClosed()
       .subscribe(
@@ -642,9 +675,6 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   articleDialog() {
-    if (this.createArticle === 'true') {
-      this.isCreateArticle = true;
-      this.dialog.open(ArticleStepperFormComponent);
-    }
+    this.dialog.open(ArticleStepperFormComponent);
   }
 }

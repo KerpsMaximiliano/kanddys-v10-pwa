@@ -13,6 +13,24 @@ export function base64ToFile(base64: string): File {
   return new File([u8arr], filename, { type: mime });
 }
 
+export function base64ToBlob(base64: string): Blob {
+  // SPLIT INTO TWO PARTS
+  const parts = base64.split(';base64,');
+  // HOLD THE CONTENT TYPE
+  const imageType = parts[0].split(':')[1];
+  // DECODE BASE64 STRING
+  const decodedData = window.atob(parts[1]);
+  // CREATE UNIT8ARRAY OF SIZE SAME AS ROW DATA LENGTH
+  const uInt8Array = new Uint8Array(decodedData.length);
+  // INSERT ALL CHARACTER CODE INTO UINT8ARRAY
+  for (let i = 0; i < decodedData.length; ++i) {
+    uInt8Array[i] = decodedData.charCodeAt(i);
+  }
+  // RETURN BLOB IMAGE AFTER CONVERSION
+  return new Blob([uInt8Array], { type: imageType });
+}
+
+
 export function fileToBase64(file: File): Promise<any> {
   const base64File = new Promise((resolve, reject) => {
     const reader = new FileReader();
