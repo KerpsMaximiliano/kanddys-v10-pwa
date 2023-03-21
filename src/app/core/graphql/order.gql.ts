@@ -130,6 +130,51 @@ const orderData = `
     platform
     from
   }
+  deliveryData {
+    image
+  }
+`;
+
+const shortOrderData = `
+  _id
+  dateId
+  createdAt
+  tags
+  userNotifications
+  subtotals {
+    amount
+  }
+  merchants {
+    _id
+  }
+  user {
+    _id
+    phone
+    name
+    email
+  }
+  orderStatus
+  orderStatusDelivery
+  statusDelivery
+  expenditures
+  itemPackage {
+    _id
+    name
+    images
+    price
+  }
+  ocr {
+    _id
+    image
+    transactionCode
+    total
+    status
+    platform
+    from
+  }
+  deliveryData {
+    image
+  }
 `;
 
 const preOrderData = `
@@ -503,5 +548,45 @@ export const orderSetStatusDelivery = gql`
       _id
       orderStatusDelivery
     }
+  }
+`;
+
+export const orderByMerchantDelivery = gql`
+  query orderByMerchantDelivery($pagination: PaginationInput) {
+    orderByMerchantDelivery(pagination: $pagination) {
+      ${shortOrderData}
+    }
+  }
+`;
+
+export const hotOrderByMerchantDelivery = gql`
+  query orderByMerchantDelivery($pagination: PaginationInput) {
+    orderByMerchantDelivery(pagination: $pagination) {
+      _id
+    }
+  }
+`;
+
+export const updateOrderDeliveryData = gql`
+  mutation updateOrderDeliveryData(
+    $input: DeliveryDataInput!
+    $id: ObjectID!
+  ) {
+    updateOrderDeliveryData(input: $input, id: $id) {
+      _id
+      orderStatusDelivery
+      deliveryData {
+        image
+      }
+    }
+  }
+`;
+
+export const orderSetStatusDeliveryWithoutAuth = gql`
+  mutation orderSetStatusDeliveryWithoutAuth(
+    $orderStatusDelivery: String!
+    $id: ObjectID!
+  ) {
+    orderSetStatusDeliveryWithoutAuth(orderStatusDelivery: $orderStatusDelivery, id: $id)
   }
 `;

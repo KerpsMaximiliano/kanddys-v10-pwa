@@ -28,6 +28,7 @@ import { TagItemsComponent } from 'src/app/modules/ecommerce/pages/tag-items/tag
 import { GiftDetailComponent } from './pages/gift-detail/gift-detail.component';
 import { MerchantLandingComponent } from '../admin/pages/merchant-landing/merchant-landing.component';
 import { StoreAssistantComponent } from './pages/store-assistant/store-assistant.component';
+import { OrderProcessComponent } from '../admin/pages/order-process/order-process.component';
 
 const routes: Routes = [
   {
@@ -152,6 +153,10 @@ const routes: Routes = [
       {
         path: 'store-assistant',
         component: StoreAssistantComponent,
+      },
+      {
+        path: 'order-process/:orderId',
+        component: OrderProcessComponent
       }
     ],
   },
