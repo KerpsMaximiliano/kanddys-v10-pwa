@@ -607,6 +607,8 @@ export class ArticleDetailComponent implements OnInit {
     )
       .map(() => `${'1'}fr`)
       .join(' ');
+
+      console.log(this.fractions);
   }
 
   getRandomArbitrary(min, max) {
