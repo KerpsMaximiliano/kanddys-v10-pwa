@@ -1,0 +1,222 @@
+.container {
+    min-height: 100vh;
+
+    .slide {
+        margin-bottom: 20em;
+    }
+
+    .section {
+        background-color: #FFF;
+        margin-top: 5px;
+        padding: 40px 25px;
+
+        .title, .subtitle, .meta-description {
+            color: #7B7B7B;
+            margin: 5px 0px;
+        }
+
+        .title {
+            font-family: SfProDisplayBold;
+            font-size: 21px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .subtitle {
+            font-family: RobotoMedium;
+            font-size: 14px;
+            margin: 5px 0px;
+        }
+
+        .meta-description {
+            font-family: RobotoRegular;
+            font-size: 13px;
+        }
+
+        .section-label {
+            font-family: SfProLight;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .item-image {
+            width: 90px;
+            height: 90px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .item-bold-caption {
+            font-family: SfProBold;
+            color: #000;
+            font-size: 13px;
+        }
+        
+        .item-caption {
+            font-family: SfProMedium;
+            color: #7B7B7B;
+            font-size: 13px;
+        }
+        .caption {
+            margin-left: 20px;
+            width: 50%;
+        }
+        .questions {
+            margin: 2em 0;
+
+            p {
+                margin: 0;
+            }
+            .gray-out {
+                margin-top: 10px;
+            }
+            .label {
+                font-family: SfProMedium;
+                font-size: 17px;
+            }
+        }
+    }
+    .footer {
+        position: fixed;
+        width: 100%;
+        max-width: 500px;
+        z-index: 999;
+        bottom: 0;
+
+        .inner-wrapper-top {
+            padding-top: 3px;
+            background: #293628;
+            
+            .current-media-shown-indicators {
+                // position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                max-width: 500px;
+                background-color: white;
+                display: grid;
+            }
+          
+            .indicator {
+                flex: 1;
+                border-left: 1px solid black;
+                border-right: 1px solid black;
+            
+                &.active {
+                    background-color: #82f18d;
+                }
+            }
+        }
+
+        .top-footer {
+            background-color: #293628;
+            padding: 35px 40px;
+            text-align: center;
+
+            .checkbox-label {
+                color: #FFF !important;
+                font-style: italic;
+            }
+        }
+        .bottom-footer {
+            background-color: #FED230;
+            padding: 10px 25px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            align-items: center;
+
+            a {
+                color: #293628;
+                font-family: SfProDisplayBold;
+                font-size: 17px;
+            }
+
+            button {
+                cursor: pointer;
+                border: 0;
+                background: none;
+
+                img {
+                    width: 30px;
+                    height: 30px;
+                    filter: brightness(0) invert(13%) sepia(9%) saturate(1833%) hue-rotate(68deg) brightness(99%) contrast(83%);
+                }
+            }
+        }
+    }
+    .input-image-container {
+        margin-top: 20px;
+
+        .image {
+            width: 110px;
+            height: 140px;
+            border-radius: 15px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .delivery-image-caption {
+            text-align: center;
+            color: #7B7B7B;
+            font-family: SfProDisplayBold;
+            font-size: 15px;
+            width: 110px;
+            margin: 10px 0 0 0;
+        }
+    }
+}
+
+.float-paginator {
+    width: 40px;
+    height: 50px;
+    background-color: #293628;
+    position: fixed;
+    top: 40%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+
+    img {
+        width: 10px;
+        filter: brightness(0) invert(81%) sepia(41%) saturate(529%) hue-rotate(66deg) brightness(104%) contrast(89%);
+    }
+}
+
+.left {
+    border-radius: 0 100% 100% 0px;
+    left: -15px;
+    justify-content: end;
+    padding-right: 10px;
+}
+
+.right {
+    border-radius: 100% 0 0 100%;
+    right: -15px;
+    justify-content: start;
+    padding-left: 10px;
+
+    img {
+        transform: rotate(180deg);
+    }
+}
+
+.flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.gray-out {
+    color: #7B7B7B;
+}
+
+.link-button {
+    cursor: pointer;
+    text-align: left;
+    color: #2874AD;
+    border: 0;
+    background: none;
+}

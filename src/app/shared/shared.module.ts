@@ -168,6 +168,7 @@ import { InfoCard2Component } from './components/info-card2/info-card2.component
 import { MerchantStepperFormComponent } from './components/merchant-stepper-form/merchant-stepper-form.component';
 import { StringInputComponent } from './components/string-input/string-input.component';
 import { ArticleStepperFormComponent } from './components/article-stepper-form/article-stepper-form.component';
+import { FacturasDisplay2Component } from './components/facturas-display2/facturas-display2.component';
 
 const imports = [
   CommonModule,
@@ -341,6 +342,7 @@ const declarations = [
   MerchantStepperFormComponent,
   StringInputComponent,
   ArticleStepperFormComponent,
+  FacturasDisplay2Component
 ];
 
 @NgModule({

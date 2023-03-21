@@ -29,6 +29,10 @@ import {
   updateExpenditure,
   orderAddExpenditure,
   orderRemoveExpenditure,
+  orderByMerchantDelivery,
+  hotOrderByMerchantDelivery,
+  updateOrderDeliveryData,
+  orderSetStatusDeliveryWithoutAuth,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -43,6 +47,7 @@ import {
   ExpenditureInput,
   Benefits,
   OrderBenefits,
+  DeliveryDataInput,
 } from '../models/order';
 
 import { PaginationInput } from '../models/saleflow';
@@ -386,6 +391,17 @@ export class OrderService {
     return (await this.preOrder(id))?.order;
   }
 
+  async orderByMerchantDelivery(pagination: PaginationInput): Promise<ItemOrder[]> {
+    const result = await this.graphql.query({
+      query: hotOrderByMerchantDelivery,
+      variables: { pagination },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    return result?.orderByMerchantDelivery;
+  }
+
   async orderSetStatusDelivery(orderStatusDelivery: string, id: string) {
     const result = await this.graphql.mutate({
       mutation: orderSetStatusDelivery,
@@ -394,6 +410,27 @@ export class OrderService {
     });
     if (!result || result?.errors) return undefined;
     return result.orderSetStatusDelivery;
+  }
+
+  async updateOrderDeliveryData(input: DeliveryDataInput, id: string): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: updateOrderDeliveryData,
+      variables: { input, id },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true }
+    });
+    if (!result || result?.errors) return undefined;
+    return result.updateOrderDeliveryData;
+  }
+
+  async orderSetStatusDeliveryWithoutAuth(orderStatusDelivery: string, id: string): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: orderSetStatusDeliveryWithoutAuth,
+      variables: { orderStatusDelivery, id },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
   }
 
   orderDeliveryStatus(status: OrderStatusDeliveryType) {
