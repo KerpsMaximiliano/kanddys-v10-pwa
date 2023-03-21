@@ -167,10 +167,6 @@ const routes: Routes = [
         component: OrderStatusViewComponent,
       },
       {
-        path: 'merchant-landing',
-        component: MerchantLandingComponent,
-      },
-      {
         path: 'order-list',
         children: [
           {

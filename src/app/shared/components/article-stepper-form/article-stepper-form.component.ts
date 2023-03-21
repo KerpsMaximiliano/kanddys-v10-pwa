@@ -7,8 +7,9 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 
 @Component({
   selector: 'app-article-stepper-form',
@@ -24,7 +25,8 @@ export class ArticleStepperFormComponent implements OnInit {
     private _ItemsService: ItemsService,
     private saleflowService: SaleFlowService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute
   ) {}
 
   itemForm = this._formBuilder.group({
@@ -45,12 +47,17 @@ export class ArticleStepperFormComponent implements OnInit {
   merchantCategories = [];
   pricing: number;
   file;
+  images;
   merchant;
+  merchantId: string;
   itemCreated;
+  base64: string;
+  itemId: string;
+  saleflow;
+  saleflowId: string;
+  saleflowDefault;
 
   async ngOnInit() {
-    this.merchant = await this.merchantsService.merchantDefault();
-    console.log(this.merchant);
     this.allCommunities = await this.communities.communitycategories({});
     console.log(this.allCommunities);
 
@@ -66,7 +73,38 @@ export class ArticleStepperFormComponent implements OnInit {
           color: '#272727',
         },
       });
+
+      console.log(this.options);
     }
+
+    this.merchantId = await this.route.snapshot.queryParamMap.get('merchant');
+    console.log(this.merchantId);
+
+    // const authorize = await this.merchantsService.merchantAuthorize(
+    //   this.merchantId
+    // );
+    // console.log(authorize);
+
+    // this.merchant = await this.merchantsService.setDefaultMerchant(
+    //   this.merchantId
+    // );
+    // console.log(this.merchant);
+
+    // this.merchant = await this.merchantsService.merchantDefault();
+    // console.log(this.merchant);
+  }
+
+  async authorizeMerchant() {
+    // const authorize = await this.merchantsService.merchantAuthorize(
+    //   this.merchantId
+    // );
+    // console.log(authorize);
+    // this.merchant = await this.merchantsService.setDefaultMerchant(
+    //   this.merchantId
+    // );
+    // console.log(this.merchant);
+    // this.merchant = await this.merchantsService.merchantDefault();
+    // console.log(this.merchant);
   }
 
   selectedCategory(i: number) {
@@ -93,12 +131,13 @@ export class ArticleStepperFormComponent implements OnInit {
     this.itemForm.get('pricing').patchValue(this.pricing);
   }
 
-  onImageInput(file) {
+  async onImageInput(file) {
     this.file = file;
+    console.log(this.file);
+    this.base64 = await fileToBase64(file[0]);
+    console.log(this.base64);
+    console.log(this.base64);
     this.itemForm2.get('images').patchValue(this.file);
-  }
-
-  async closeDialog() {
     let images: ItemImageInput[] = this.file.map((file) => {
       return {
         file: file,
@@ -106,15 +145,28 @@ export class ArticleStepperFormComponent implements OnInit {
         active: true,
       };
     });
+
+    this.images = images;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this._ItemsService.editingImageId = this.images[0]._id;
+    };
+    //reader.readAsDataURL(this.file[0] as File);
+
+    // console.log(reader.result);
+  }
+
+  async closeDialog() {
     console.log(this.file);
     console.log(this.pricing);
-    console.log(this.merchant._id);
+    console.log(this.merchantId);
     console.log(this.merchantCategories);
     lockUI();
     const itemInput: ItemInput = {
       pricing: this.pricing,
-      images,
-      merchant: this.merchant._id,
+      images: this.images,
+      merchant: this.merchantId,
       categories: this.merchantCategories,
     };
 
@@ -123,12 +175,46 @@ export class ArticleStepperFormComponent implements OnInit {
     this.snackBar.open('Producto creado satisfactoriamente!', '', {
       duration: 5000,
     });
+    console.log(this.itemCreated.createItem._id);
+    this.itemId = this.itemCreated.createItem._id;
+
+    this.saleflow = await this.saleflowService.createSaleflow({
+      name: 'Dummy Name',
+      headline: 'Dummy Headline',
+      merchant: this.merchantId,
+    });
+
+    console.log(this.saleflow);
+
+    this.saleflowId = this.saleflow.createSaleflow?._id;
+    console.log(this.saleflowId);
+
+    this.saleflowDefault = await this.saleflowService.setDefaultSaleflow(
+      this.merchantId,
+      this.saleflowId
+    );
+
+    console.log(this.saleflowDefault);
+
+    const addItem = await this.saleflowService.addItemToSaleFlow(
+      {
+        item: this.itemId,
+      },
+      this.saleflowId
+    );
+
+    console.log(addItem);
+
+    this.dialogRef.close();
     unlockUI();
     const reader = new FileReader();
     reader.onload = (e) => {
       this._ItemsService.editingImageId = this.itemCreated.images[0]._id;
-      this.router.navigate([`admin/article-editor/${this.itemCreated._id}`]);
     };
-    reader.readAsDataURL(this.file as File);
+    //reader.readAsDataURL(this.file as File);
+
+    this.router.navigate([
+      `admin/article-editor/${this.itemCreated.createItem._id}`,
+    ]);
   }
 }
