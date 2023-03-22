@@ -12,7 +12,6 @@ import { DialogFormComponent } from "src/app/shared/dialogs/dialog-form/dialog-f
 export class ZoneDialogs {
 
     dialogsPro: Array<EmbeddedComponentWithId> = [];
-    dialogFlowFunctions: Record<string, any> = {};
 
     deliveryType: 'yes' | 'no' | 'depend' | 'no-delivery';
     depend: 'amount' | 'zone';
@@ -34,6 +33,7 @@ export class ZoneDialogs {
 
     constructor(
         private dialogFlowService: DialogFlowService,
+        private dialogFlowFunctions: Record<string, any>,
         private deliveryzonesService: DeliveryZonesService,
       ) {}
 

@@ -190,6 +190,7 @@ export class DeliveryZonesComponent implements OnInit {
   createDialogs() {
     this.dialogs = new ZoneDialogs(
       this.dialogflowService,
+      this.dialogFlowFunctions,
       this.deliveryzonesService
     ).inject();
   }
