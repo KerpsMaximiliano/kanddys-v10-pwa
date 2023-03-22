@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 
 export interface formInput {
   label?: string,
@@ -46,7 +46,7 @@ export class DialogFormComponent implements OnInit {
 
   ngOnInit(): void {
     const inputs = this.fields.inputs.map(row => row);
-    const inputControls = inputs.map(input => new FormControl(""));
+    const inputControls = inputs.map(input => new FormControl("", input.required ? [Validators.required] : []));
     this.form = new FormGroup({
       inputArray: new FormArray(inputControls)
     });

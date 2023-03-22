@@ -61,6 +61,13 @@ export class DeliveryZonesComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+
+    this.createDialogs();
+
+    setTimeout(() => {
+      this.dialogFlowFunctions.moveToDialogByIndex(0);
+    }, 500);
+
     await this.getMerchant();
     await this.getDeliveryZones();
 
@@ -69,8 +76,6 @@ export class DeliveryZonesComponent implements OnInit {
     });
 
     await this.getExpenditures();
-
-    this.createDialogs();
   }
 
   async getDeliveryZones() {
@@ -97,6 +102,8 @@ export class DeliveryZonesComponent implements OnInit {
     try {
       const result = await this.merchantsService.merchantDefault();
       this.merchant = result;
+
+      this.merchantsService.merchantData = result;
     } catch (error) {
       console.log(error);
     }
@@ -189,8 +196,8 @@ export class DeliveryZonesComponent implements OnInit {
 
   createDialogs() {
     this.dialogs = new ZoneDialogs(
-      this.dialogflowService,
       this.dialogFlowFunctions,
+      this.merchantsService,
       this.deliveryzonesService
     ).inject();
   }

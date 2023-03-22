@@ -29,11 +29,9 @@ export class ZoneDialogs {
     }> = [];
     deliveryZones: DeliveryZoneInput[] = [];
 
-    merchant: Merchant;
-
     constructor(
-        private dialogFlowService: DialogFlowService,
         private dialogFlowFunctions: Record<string, any>,
+        private merchantService: MerchantsService,
         private deliveryzonesService: DeliveryZonesService,
       ) {}
 
@@ -192,7 +190,8 @@ export class ZoneDialogs {
                   row: 0,
                   column: 0,
                   isFlex: true,
-                  type: "number"
+                  type: "number",
+                  required: true
                 },
                 {
                   label: "$ que te cuesta (egreso)",
@@ -201,7 +200,8 @@ export class ZoneDialogs {
                   row: 0,
                   column: 1,
                   isFlex: true,
-                  type: "number"
+                  type: "number",
+                  required: false
                 },
                 {
                   label: "Nombre de la zona",
@@ -211,7 +211,8 @@ export class ZoneDialogs {
                   column: 0,
                   isFlex: false,
                   halfWidth: false,
-                  type: "text"
+                  type: "text",
+                  required: true
                 }
               ]
             }
@@ -266,7 +267,8 @@ export class ZoneDialogs {
                   row: 0,
                   column: 0,
                   isFlex: true,
-                  type: "number"
+                  type: "number",
+                  required: true
                 },
                 {
                   label: "$ que te cuesta (egreso)",
@@ -275,7 +277,8 @@ export class ZoneDialogs {
                   row: 0,
                   column: 1,
                   isFlex: true,
-                  type: "number"
+                  type: "number",
+                  required: true
                 },
                 {
                   label: "Nombre de la zona",
@@ -284,7 +287,8 @@ export class ZoneDialogs {
                   row: 1,
                   column: 0,
                   isFlex: false,
-                  type: "text"
+                  type: "text",
+                  required: true
                 }
               ]
             }
@@ -880,7 +884,7 @@ export class ZoneDialogs {
                       let deliveryZone;
                       try {
                         deliveryZone = await this.deliveryzonesService.create(
-                          this.merchant._id,
+                          this.merchantService.merchantData._id,
                           {
                             amount: zone.amount,
                             greaterAmount: zone.greaterAmount,
@@ -898,7 +902,7 @@ export class ZoneDialogs {
                       if (deliveryZone && zone.cost) {
                         try {
                           const expenditure = await this.deliveryzonesService.createExpenditure(
-                            this.merchant._id,
+                            this.merchantService.merchantData._id,
                             {
                               type: "delivery-zone",
                               amount: zone.cost
