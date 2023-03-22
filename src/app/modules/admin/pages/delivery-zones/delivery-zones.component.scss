@@ -38,7 +38,6 @@
         }
 
         .card {
-            cursor: pointer;
             box-shadow: none;
             border-radius: 25px 10px 10px 10px;
             margin-bottom: 5px;
@@ -80,7 +79,6 @@
                     p {
                         font-family: SfProMedium;
                         font-size: 15px;
-                        color: #2874AD;
                         margin-top: 5px !important;
                     }
 
@@ -92,4 +90,9 @@
 
 .grayout {
     color: #A1A1A1 !important;
+}
+
+.link {
+    cursor: pointer;
+    color: #2874AD;
 }

@@ -25,6 +25,7 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { NgNavigatorShareService } from 'ng-navigator-share';
+import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 
 @Component({
   selector: 'app-order-process',
@@ -38,6 +39,8 @@ export class OrderProcessComponent implements OnInit {
 
   order: ItemOrder;
   ordersReadyToDeliver: ItemOrder[] = [];
+
+  deliveryZone: DeliveryZone;
 
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
   formatId = formatID;
@@ -135,7 +138,8 @@ export class OrderProcessComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { redirectTo, view, orderId } = queryParams;
+      const { redirectTo, view, orderId, deliveryZone } = queryParams;
+
       this.redirectTo = redirectTo;
       if (view) this.view = view;
 
@@ -144,8 +148,8 @@ export class OrderProcessComponent implements OnInit {
       this.route.params.subscribe(async (params) => {
         const { merchantId } = params;
 
-        await this.executeProcessesAfterLoading(merchantId, orderId);
-        if (orderId) await this.getOrders(this.merchant._id);
+        await this.executeProcessesAfterLoading(merchantId, orderId, deliveryZone);
+        if (orderId) await this.getOrders(this.merchant._id, deliveryZone);
 
         this.orderReadyToDeliver = 
           (
@@ -156,7 +160,7 @@ export class OrderProcessComponent implements OnInit {
     });
   }
 
-  async executeProcessesAfterLoading(merchantId: string, orderId?: string) {
+  async executeProcessesAfterLoading(merchantId: string, orderId?: string, deliveryZone?: string) {
     lockUI();
 
     
@@ -164,7 +168,7 @@ export class OrderProcessComponent implements OnInit {
     this.merchant = await this.merchantsService.merchant(merchantId);
 
     if (!orderId) {
-      await this.getOrders(this.merchant._id);
+      await this.getOrders(this.merchant._id, deliveryZone);
       this.order = (await this.orderService.order(this.ordersReadyToDeliver[0]._id))?.order;
     } else this.order = (await this.orderService.order(orderId))?.order;
 
@@ -363,7 +367,7 @@ export class OrderProcessComponent implements OnInit {
     unlockUI();
   }
 
-  async getOrders(merchantId: string) {
+  async getOrders(merchantId: string, deliveryZone?: string) {
     try {
       const result = await this.orderService.orderByMerchantDelivery(
         {
@@ -373,6 +377,7 @@ export class OrderProcessComponent implements OnInit {
           },
           findBy: {
             merchant: merchantId,
+            deliveryZone: deliveryZone,
             orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? ['pending', 'in progress', 'delivered'] : null,
           }
         }

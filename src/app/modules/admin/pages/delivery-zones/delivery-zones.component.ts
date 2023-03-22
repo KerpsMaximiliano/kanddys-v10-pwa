@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
@@ -12,6 +13,7 @@ import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
@@ -54,9 +56,8 @@ export class DeliveryZonesComponent implements OnInit {
     private dialogflowService: DialogFlowService,
     private _bottomSheet: MatBottomSheet,
     private router: Router,
-    private ngNavigatorShareService: NgNavigatorShareService,
-    private clipboard: Clipboard,
     private snackBar: MatSnackBar,
+    public dialog: MatDialog
   ) { }
 
   async ngOnInit() {
@@ -82,6 +83,7 @@ export class DeliveryZonesComponent implements OnInit {
           },
           findBy: {
             merchant: this.merchant._id,
+            // active: true
           }
         }
       );
@@ -197,7 +199,7 @@ export class DeliveryZonesComponent implements OnInit {
     this.isDialogOpen = true;
   }
 
-  openSettingsDialogByZone() {
+  openSettingsDialogByZone(deliveryZone: DeliveryZone) {
     const link = `${this.URI}/ecommerce/${this.merchant.slug}/store`;
     const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
       data: [
@@ -211,6 +213,33 @@ export class DeliveryZonesComponent implements OnInit {
                   `/ecommerce/${this.merchant.slug}/store`,
                 ]);
               },
+            },
+            {
+              title: 'Eliminar zona de entrega',
+              callback: async () => {
+                let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+                  data: {
+                    title: `Eliminando zona de entrega '${deliveryZone.zona}'`,
+                    description: `¿Estás seguro que deseas eliminar la zona de entrega '${deliveryZone.zona}'?`,
+                  },
+                });
+
+                dialogRef.afterClosed().subscribe(async (result) => {
+                  if (result === 'confirm') {
+                    try {
+                      await this.deliveryzonesService.delete(deliveryZone._id);
+                      const index = this.deliveryIncomes.map(deliveryIncome => deliveryIncome.deliveryZone._id).indexOf(deliveryZone._id);
+                      if (index !== -1) this.deliveryIncomes.splice(index, 1);
+
+                      this.snackBar.open('Zona de entrega eliminada', '', {
+                        duration: 2000,
+                      });
+                    } catch (error) {
+                      console.log(error);
+                    }
+                  }
+                });
+              },
             }
           ],
         }
@@ -220,6 +249,13 @@ export class DeliveryZonesComponent implements OnInit {
 
   close() {
     this.isDialogOpen = false;
+  }
+
+  goToOrders(deliveryZone: string) {
+    this.router.navigate(
+      [`/admin/order-process`, this.merchant._id],
+      { queryParams: { deliveryZone: deliveryZone } }
+    );
   }
 
 }

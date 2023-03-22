@@ -8,6 +8,12 @@ export const createDeliveryZone = gql`
   }
 `;
 
+export const deleteDeliveryZone = gql`
+  mutation deleteDeliveryZone($id: ObjectID!) {
+    deleteDeliveryZone(id: $id)
+  }
+`;
+
 export const deliveryZoneAddExpenditure = gql`
   mutation deliveryZoneAddExpenditure($expenditureId: ObjectID!, $id: ObjectID!) {
     deliveryZoneAddExpenditure(expenditureId: $expenditureId, id: $id) {

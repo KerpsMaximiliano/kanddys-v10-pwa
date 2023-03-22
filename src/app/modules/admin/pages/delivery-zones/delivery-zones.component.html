@@ -15,14 +15,14 @@
         </div>
 
         <mat-card class="card" *ngFor="let deliveryIncome of deliveryIncomes">
-            <div mat-button class="card-settings" (click)="openSettingsDialogByZone()">
+            <div mat-button class="card-settings" (click)="openSettingsDialogByZone(deliveryIncome.deliveryZone)">
                 <img [src]="env + '/dots-black.svg'" alt="settings">
             </div>
             <div class="card-content">
                 <div class="card-flex">
                     <div>
                         <h4 class="highlight-text">{{ deliveryIncome.deliveryZone.zona ? deliveryIncome.deliveryZone.zona : 'Sin nombre' }}</h4>
-                        <p>{{ deliveryIncome.orders.length }} entregas</p>
+                        <p class="link" (click)="goToOrders(deliveryIncome.deliveryZone._id)">{{ deliveryIncome.orders.length }} entregas</p>
                     </div>
                     <h4 class="highlight-text">${{ deliveryIncome.income | number : "1.2-2" }}</h4>
                 </div>

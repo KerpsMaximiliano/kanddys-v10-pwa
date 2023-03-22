@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { createDeliveryZone, createExpenditure, deliveryZone, deliveryZoneAddExpenditure, deliveryZones } from '../graphql/deliveryzones.gql';
+import { createDeliveryZone, createExpenditure, deleteDeliveryZone, deliveryZone, deliveryZoneAddExpenditure, deliveryZones } from '../graphql/deliveryzones.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { DeliveryZone, DeliveryZoneInput } from '../models/deliveryzone';
 import { PaginationInput } from '../models/saleflow';
@@ -55,6 +55,22 @@ export class DeliveryZonesService {
       });
       if (!result) return undefined;
       return result.createDeliveryZone;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async delete(
+    id: string
+  ): Promise<boolean> {
+    try {
+      const result = await this.graphql.query({
+        query: deleteDeliveryZone,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return undefined;
+      return result.deleteDeliveryZone;
     } catch (e) {
       console.log(e);
     }
