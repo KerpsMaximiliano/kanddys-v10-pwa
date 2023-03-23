@@ -198,7 +198,8 @@ export class DeliveryZonesComponent implements OnInit {
     this.dialogs = new ZoneDialogs(
       this.dialogFlowFunctions,
       this.merchantsService,
-      this.deliveryzonesService
+      this.deliveryzonesService,
+      this.dialogflowService
     ).inject();
   }
 

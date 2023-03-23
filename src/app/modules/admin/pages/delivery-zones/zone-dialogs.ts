@@ -33,6 +33,7 @@ export class ZoneDialogs {
         private dialogFlowFunctions: Record<string, any>,
         private merchantService: MerchantsService,
         private deliveryzonesService: DeliveryZonesService,
+        private dialogFlowService: DialogFlowService,
       ) {}
 
 
@@ -245,6 +246,14 @@ export class ZoneDialogs {
                 });
     
                 console.log(this.deliveryData);
+
+                const zone = this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-1');
+                if (zone.amount === 0 || zone.zona === '') {
+                  console.log("Step inválido");
+                  this.dialogFlowService.swiperConfig.allowSlideNext = false;
+                } else {
+                  this.dialogFlowService.swiperConfig.allowSlideNext = true;
+                }
               },
             },
           ],
@@ -321,6 +330,14 @@ export class ZoneDialogs {
                 });
     
                 console.log(this.deliveryData);
+
+                const zone = this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-2');
+                if (zone.amount === 0 || zone.zona === '') {
+                  console.log("Step inválido");
+                  this.dialogFlowService.swiperConfig.allowSlideNext = false;
+                } else {
+                  this.dialogFlowService.swiperConfig.allowSlideNext = true;
+                }
               },
             },
           ],
@@ -413,14 +430,27 @@ export class ZoneDialogs {
                   amount: Number(incomeByBuyer),
                   cost: Number(cost),
                   lesserAmount: Number(lesserAmount),
-                  greaterAmount: Number(greaterAmount),
-                  greaterAmountLimit: Number(greaterAmount),
+                  greaterAmount: (greaterAmount && greaterAmount > 0) ? Number(greaterAmount) : null,
+                  greaterAmountLimit: (greaterAmount && greaterAmount > 0) ? Number(greaterAmount) : null,
                   lesserAmountLimit: Number(lesserAmount),
                   type: 'lesser',
                   id: "yes-depend-amount-1"
                 });
     
                 console.log(this.deliveryData);
+
+                const zone = this.deliveryData.find((item) => item.id === 'yes-depend-amount-1');
+                if (
+                  zone.lesserAmount === 0 ||
+                  zone.lesserAmountLimit === 0 ||
+                  zone.amount === 0 ||
+                  zone.zona === ''
+                ) {
+                  console.log("Step inválido");
+                  this.dialogFlowService.swiperConfig.allowSlideNext = false;
+                } else {
+                  this.dialogFlowService.swiperConfig.allowSlideNext = true;
+                }
               },
             },
           ],
@@ -508,6 +538,19 @@ export class ZoneDialogs {
                 });
     
                 console.log(this.deliveryData);
+
+                const zone = this.deliveryData.find((item) => item.id === 'yes-depend-amount-2');
+                if (
+                  zone.lesserAmount === 0 ||
+                  zone.lesserAmountLimit === 0 ||
+                  zone.amount === 0 ||
+                  zone.zona === ''
+                ) {
+                  console.log("Step inválido");
+                  this.dialogFlowService.swiperConfig.allowSlideNext = false;
+                } else {
+                  this.dialogFlowService.swiperConfig.allowSlideNext = true;
+                }
               },
             },
           ],
@@ -573,6 +616,14 @@ export class ZoneDialogs {
                 });
     
                 console.log(this.deliveryData);
+
+                const zone = this.deliveryData.find((item) => item.id === 'no-deliveryzone-1');
+                if (zone.zona === '') {
+                  console.log("Step inválido");
+                  this.dialogFlowService.swiperConfig.allowSlideNext = false;
+                } else {
+                  this.dialogFlowService.swiperConfig.allowSlideNext = true;
+                }
               },
             },
           ],
@@ -634,6 +685,14 @@ export class ZoneDialogs {
                   id: "no-deliveryzone-2"
                 });
                 console.log(this.deliveryData);
+
+                const zone = this.deliveryData.find((item) => item.id === 'no-deliveryzone-2');
+                if (zone.zona === '') {
+                  console.log("Step inválido");
+                  this.dialogFlowService.swiperConfig.allowSlideNext = false;
+                } else {
+                  this.dialogFlowService.swiperConfig.allowSlideNext = true;
+                }
               },
             },
           ],

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 export interface formInput {
   label?: string,
@@ -22,6 +23,8 @@ export interface formInput {
 })
 export class DialogFormComponent implements OnInit {
 
+  @Input('dialogId') dialogId: string;
+
   @Input('title') title: {
     styles?: Record<string, string>;
     text?: string;
@@ -42,7 +45,7 @@ export class DialogFormComponent implements OnInit {
 
   @Output('formSubmit') formSubmit = new EventEmitter<any>();
 
-  constructor() {}
+  constructor(private dialogFlowService: DialogFlowService) {}
 
   ngOnInit(): void {
     const inputs = this.fields.inputs.map(row => row);
@@ -77,7 +80,8 @@ export class DialogFormComponent implements OnInit {
     this.formValues = this.form.value.inputArray;
     const formValue = this.form.value.inputArray;
 
-    if (event && id) {
+    if ((event || event === 0) && id) {
+      console.log(event);
       const inputIndex = this.fields.inputs.indexOf(this.fields.inputs.find(input => input.formControl === id));
       (this.form.get('inputArray') as FormArray).controls[inputIndex].setValue(event);
       console.log(this.form.value.inputArray);
