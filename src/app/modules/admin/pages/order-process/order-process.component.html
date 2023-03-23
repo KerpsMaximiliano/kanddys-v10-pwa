@@ -240,7 +240,7 @@
             </a>
             <a 
                 [routerLink]="['../../delivery-orders']"
-                [queryParams]="{ redirectTo: router.url }"
+                [queryParams]="{ redirectTo: router.url, deliveryZone: deliveryZone }"
                 *ngIf="isMerchant"
             >
                 Ver todas ({{ ordersReadyToDeliver.length }})

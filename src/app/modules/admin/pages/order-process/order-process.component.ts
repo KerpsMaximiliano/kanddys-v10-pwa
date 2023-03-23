@@ -141,9 +141,11 @@ export class OrderProcessComponent implements OnInit {
       const { redirectTo, view, orderId, deliveryZone } = queryParams;
 
       this.redirectTo = redirectTo;
+      this.deliveryZone = deliveryZone;
       if (view) this.view = view;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
+      if (typeof deliveryZone === 'undefined') this.deliveryZone = null;
 
       this.route.params.subscribe(async (params) => {
         const { merchantId } = params;
@@ -166,6 +168,7 @@ export class OrderProcessComponent implements OnInit {
     
 
     this.merchant = await this.merchantsService.merchant(merchantId);
+    await this.isMerchantOwner(merchantId);
 
     if (!orderId) {
       await this.getOrders(this.merchant._id, deliveryZone);
@@ -236,7 +239,6 @@ export class OrderProcessComponent implements OnInit {
       })
       .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
-    await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
 
     if (this.order.items[0].post) {
       this.post = (
@@ -368,6 +370,7 @@ export class OrderProcessComponent implements OnInit {
   }
 
   async getOrders(merchantId: string, deliveryZone?: string) {
+    console.log(this.isMerchant);
     try {
       const result = await this.orderService.orderByMerchantDelivery(
         {
@@ -424,6 +427,7 @@ export class OrderProcessComponent implements OnInit {
 
   async isMerchantOwner(merchant: string) {
     this.orderMerchant = await this.merchantsService.merchantDefault();
+    console.log(this.orderMerchant);
     this.isMerchant = merchant === this.orderMerchant?._id;
   }
 

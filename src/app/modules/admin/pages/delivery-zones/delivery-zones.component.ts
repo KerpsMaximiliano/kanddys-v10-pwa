@@ -88,7 +88,7 @@ export class DeliveryZonesComponent implements OnInit {
           },
           findBy: {
             merchant: this.merchant._id,
-            // active: true
+            active: true
           }
         }
       );
@@ -218,9 +218,8 @@ export class DeliveryZonesComponent implements OnInit {
             {
               title: 'Editar zona de entrega',
               callback: () => {
-                this.router.navigate([
-                  `/ecommerce/${this.merchant.slug}/store`,
-                ]);
+                // this.seedDialogFlow('flow1', deliveryZone);
+                // this.isDialogOpen = true;
               },
             },
             {
@@ -258,13 +257,35 @@ export class DeliveryZonesComponent implements OnInit {
 
   close() {
     this.isDialogOpen = false;
+    console.log("Cerrando dialogo");
   }
 
   goToOrders(deliveryZone: string) {
     this.router.navigate(
       [`/admin/order-process`, this.merchant._id],
-      { queryParams: { deliveryZone: deliveryZone } }
+      { queryParams: { deliveryZone: deliveryZone, redirectTo: this.router.url } }
     );
+  }
+
+  async seedDialogFlow(flowId: string, deliveryZone: DeliveryZone) {
+    this.dialogflowService.resetDialogFlow(flowId);
+
+    switch (deliveryZone.type) {
+      case 'zone':
+        // this.dialogflowService.dialogsFlows[flowId]['start'].dialogId = 'start';
+        // this.dialogflowService.dialogsFlows[flowId]['start'].fields = [
+        //   {
+
+        //   }
+        // ]
+        break;
+      case 'lesser':
+
+        break;
+      case 'lesser':
+
+        break;
+    }
   }
 
 }

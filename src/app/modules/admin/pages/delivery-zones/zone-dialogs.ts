@@ -922,6 +922,9 @@ export class ZoneDialogs {
                   const { confirm } = params.value;
                   
                   if (confirm[0]) {
+
+                    let canReload = true;
+
                     console.log(this.deliveryData);
                     this.deliveryZones = this.deliveryData.map((item) => {
                       return {
@@ -956,6 +959,7 @@ export class ZoneDialogs {
                         )
                       } catch (error) {
                         console.log(error);
+                        canReload = false;
                       }
     
                       if (deliveryZone && zone.cost) {
@@ -970,9 +974,12 @@ export class ZoneDialogs {
                           await this.deliveryzonesService.addExpenditure(expenditure._id, deliveryZone._id);
                         } catch (error) {
                           console.log(error);
+                          canReload = false;
                         }
                       }
                     });
+
+                    // if (canReload) window.location.reload();
                   }
                 }
               }
