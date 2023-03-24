@@ -30,6 +30,8 @@ import { BenefitsComponent } from './pages/benefits/benefits.component';
 import { OrderExpensesComponent } from './pages/order-expenses/order-expenses.component';
 import { FilteredBenefitsComponent } from './pages/filtered-benefits/filtered-benefits.component';
 import { MerchantLandingComponent } from './pages/merchant-landing/merchant-landing.component';
+import { DeliveryZonesComponent } from './pages/delivery-zones/delivery-zones.component';
+import { OrdersByDeliveryComponent } from './pages/orders-by-delivery/orders-by-delivery.component';
 import { OrderProcessComponent } from './pages/order-process/order-process.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders.component';
@@ -196,6 +198,14 @@ const routes: Routes = [
         component: OrderExpensesComponent,
       },
       {
+        path: 'delivery-zones',
+        component: DeliveryZonesComponent,
+      },
+      {
+        path: 'orders-by-delivery/:deliveryId',
+        component: OrdersByDeliveryComponent,
+      },
+      {
         path: 'delivery-orders',
         component: DeliveryOrdersComponent,
       }
@@ -234,6 +244,8 @@ const routes: Routes = [
     BenefitsComponent,
     OrderExpensesComponent,
     FilteredBenefitsComponent,
+    DeliveryZonesComponent,
+    OrdersByDeliveryComponent,
     OrderProcessComponent,
     DeliveryOrdersComponent,
   ],

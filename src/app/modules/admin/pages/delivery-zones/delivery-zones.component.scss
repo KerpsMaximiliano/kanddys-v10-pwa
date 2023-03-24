@@ -1,0 +1,98 @@
+.container {
+    min-height: 100vh;
+
+    .header {
+        display: flex;
+        align-items: center;
+        background-color: #a1a1a1;
+        justify-content: space-between;
+      
+        p {
+          margin: 0;
+          color: #293628;
+          font-size: 1rem;
+          font-family: SfProMedium;
+        }
+    }
+
+    .section {
+        margin: 3em 1.5em;
+
+        .label-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .description-label {
+                font-family: SfProLight;
+                font-size: 15px;
+            }
+            .data-label {
+                font-family: SfProMedium;
+                font-size: 17px;
+            }
+            .bold-description {
+                font-family: SfProSemiBold;
+                font-size: 15px;
+            }
+        }
+
+        .card {
+            box-shadow: none;
+            border-radius: 25px 10px 10px 10px;
+            margin-bottom: 5px;
+            
+            .card-settings {
+                cursor: pointer;
+                border-radius: 50%;
+                background-color: #FFF;
+                border: 2px solid #F4F4F4;
+                width: 50px;
+                height: 50px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: absolute;
+                left: 0;
+                top: 0;
+                
+                img {
+                    width: 25px;
+                }
+            }
+
+            .card-content {
+                margin: 10px 0px 10px 50px;
+
+                .card-flex {
+                    display: flex;
+                    justify-content: space-between;
+                    
+                    h1,h2,h3,h4,h5,h6,p {
+                        margin: 0 !important;
+                    }
+
+                    .highlight-text {
+                        font-family: SfProMedium;
+                        font-size: 17px;
+                    }
+                    p {
+                        font-family: SfProMedium;
+                        font-size: 15px;
+                        margin-top: 5px !important;
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+.grayout {
+    color: #A1A1A1 !important;
+}
+
+.link {
+    cursor: pointer;
+    color: #2874AD;
+}
