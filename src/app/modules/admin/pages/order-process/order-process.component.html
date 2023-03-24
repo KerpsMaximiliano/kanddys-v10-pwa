@@ -233,7 +233,7 @@
                     class="example-margin"
                     [(ngModel)]="orderReadyToDeliver"
                     [disabled]="true"
-                    *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery !== ('delivered' || 'pending')"
+                    *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'in progress'"
                 >
                     <p class="checkbox-label">En preparación</p>
                 </mat-checkbox>

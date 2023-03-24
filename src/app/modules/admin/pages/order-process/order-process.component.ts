@@ -623,7 +623,9 @@ export class OrderProcessComponent implements OnInit {
               if (order.deliveryZone) {
                 deliveryZone = await this.deliveryzoneService.deliveryZone(order.deliveryZone);
                 this.deliveryImages[i].deliveryZone = deliveryZone;
+              }
 
+              if (order.items[0].reservation) {
                 reservation = await this.reservationsService.getReservation(order.items[0].reservation._id)
                 this.deliveryImages[i].reservation = reservation;
               }
@@ -743,7 +745,7 @@ export class OrderProcessComponent implements OnInit {
         
   }
 
-  formatHour(date: Date, breakTime?: number) {
+  private formatHour(date: Date, breakTime?: number) {
     if (breakTime) date = new Date(date.getTime() - breakTime * 60000);
 
     let result = date.toLocaleTimeString([], {
