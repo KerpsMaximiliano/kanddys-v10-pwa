@@ -117,6 +117,7 @@ export class ItemOrder extends Model<ItemOrder> {
   orderStatus: OrderStatusType;
   orderStatusDelivery: OrderStatusDeliveryType;
   orderType: OrderType;
+  deliveryZone: string;
   isComplete: boolean;
   subtotals: OrderSubtotal[];
   ocr: OCR;

@@ -161,6 +161,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
+import { DialogFormComponent } from './dialogs/dialog-form/dialog-form.component';
 import { NamedExpenseComponent } from './components/named-expense/named-expense.component';
 import { TitledExpenseComponent } from './components/titled-expense/titled-expense.component';
 import { OrderExpensesListComponent } from './components/order-expenses-list/order-expenses-list.component';
@@ -335,6 +336,7 @@ const declarations = [
   CreateTagComponent,
   CollectionCardComponent,
   CompactCardComponent,
+  DialogFormComponent,
   NamedExpenseComponent,
   TitledExpenseComponent,
   OrderExpensesListComponent,
@@ -350,6 +352,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}
