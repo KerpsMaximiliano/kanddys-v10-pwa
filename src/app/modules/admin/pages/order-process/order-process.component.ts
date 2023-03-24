@@ -26,6 +26,9 @@ import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { DeliveryZone } from 'src/app/core/models/deliveryzone';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
+import { Reservation } from 'src/app/core/models/reservation';
+import { ReservationService } from 'src/app/core/services/reservations.service';
 
 @Component({
   selector: 'app-order-process',
@@ -97,6 +100,8 @@ export class OrderProcessComponent implements OnInit {
 
   deliveryImages: Array<{
     image?: string;
+    deliveryZone?: DeliveryZone,
+    reservation?: Reservation,
     order: string;
   }> = [];
 
@@ -134,6 +139,8 @@ export class OrderProcessComponent implements OnInit {
     private snackBar: MatSnackBar,
     private _bottomSheet: MatBottomSheet,
     private ngNavigatorShareService: NgNavigatorShareService,
+    private deliveryzoneService: DeliveryZonesService,
+    private reservationsService: ReservationService
   ) {}
 
   ngOnInit(): void {
@@ -183,9 +190,17 @@ export class OrderProcessComponent implements OnInit {
       return;
     }
 
-    this.ordersReadyToDeliver.forEach((order) => {
+    this.ordersReadyToDeliver.forEach(async (order) => {
+      let deliveryZone: DeliveryZone;
+      let reservation: Reservation;
+      if ((this.isMerchant || this.view === 'delivery') && this.isPopulated(order) && order.deliveryZone) {
+        deliveryZone = await this.deliveryzoneService.deliveryZone(order.deliveryZone);
+        reservation = await this.reservationsService.getReservation(order.items[0].reservation._id)
+      }
       this.deliveryImages.push({
         image: this.isPopulated(order) ? (order.deliveryData.image ? order.deliveryData.image : null) : null,
+        deliveryZone: deliveryZone ? deliveryZone : null,
+        reservation: reservation ? reservation : null,
         order: order._id
       })
     });
@@ -601,6 +616,18 @@ export class OrderProcessComponent implements OnInit {
             this.ordersReadyToDeliver.splice(i, 1, order);
             console.log(this.deliveryImages[i]);
             this.deliveryImages[i].image = order.deliveryData?.image ? order.deliveryData?.image : null;
+
+            if (this.isMerchant || this.view === 'delivery') {
+              let deliveryZone: DeliveryZone;
+              let reservation: Reservation;
+              if (order.deliveryZone) {
+                deliveryZone = await this.deliveryzoneService.deliveryZone(order.deliveryZone);
+                this.deliveryImages[i].deliveryZone = deliveryZone;
+
+                reservation = await this.reservationsService.getReservation(order.items[0].reservation._id)
+                this.deliveryImages[i].reservation = reservation;
+              }
+            }
             console.log(`Posición ${i} reemplazada`);
           } else {
             console.log(`Posición ${i} ya está populada`);
@@ -684,6 +711,52 @@ export class OrderProcessComponent implements OnInit {
       link.download = this.formatId(order.dateId);
       link.click();
     }
+  }
+
+  orderHasDelivery(
+    deliveryZone: DeliveryZone,
+    order: ItemOrder
+  ) {
+    if (deliveryZone) return true;
+    if (order.items[0]?.deliveryLocation?.street) return true;
+
+    return false;
+  }
+
+  displayReservation(reservation: Reservation) {
+    const fromDate = new Date(reservation.date.from);
+    const untilDate = new Date(reservation.date.until);
+    
+    const day = fromDate.getDate();
+    const weekday = fromDate.toLocaleString('es-MX', {
+      weekday: 'short',
+    });
+    const month = fromDate.toLocaleString('es-MX', {
+      month: 'short',
+    });
+    const time = `De ${this.formatHour(fromDate)} a ${this.formatHour(
+      untilDate,
+      reservation.breakTime
+    )}`
+
+    return `${weekday}, ${day} de ${month}. ${time}`;
+        
+  }
+
+  formatHour(date: Date, breakTime?: number) {
+    if (breakTime) date = new Date(date.getTime() - breakTime * 60000);
+
+    let result = date.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
+    if (result.startsWith('0:')) {
+      result = result.replace('0:', '12:');
+    }
+
+    return result;
   }
 
 }

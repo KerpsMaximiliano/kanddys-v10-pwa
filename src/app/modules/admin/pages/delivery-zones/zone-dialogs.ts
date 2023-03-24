@@ -112,13 +112,13 @@ export class ZoneDialogs {
     
                 if (this.depend === 'amount') {
     
-                  if (!(this.dialogsPro[2].componentId === 'yes-depend-amount-1')) {
-                    // Deleting any other dialog except for the last one
+                  if (!this.dialogsPro.find(dialog => dialog.componentId === 'yes-depend-amount-1')) {
+                    // Deleting any other dialog
                     console.log(this.dialogsPro.length);
                     if (this.dialogsPro.length > 3) {
                       this.dialogsPro.splice(
                         2,
-                        2
+                        3
                       )
                       if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
                     }
@@ -139,13 +139,13 @@ export class ZoneDialogs {
                     this.dialogFlowFunctions.moveToDialogByIndex(2);
                   }, 500);
                 } else if (this.depend === 'zone') {
-                  if (!(this.dialogsPro[2].componentId === 'yes-depend-deliveryzone-1')) {
-                    // Deleting any other dialog except for the last one
+                  if (!this.dialogsPro.find(dialog => dialog.componentId === 'yes-depend-deliveryzone-1')) {
+                    // Deleting any other dialog
                     console.log(this.dialogsPro.length);
                     if (this.dialogsPro.length > 3) {
                       this.dialogsPro.splice(
                         2,
-                        2
+                        3
                       )
                       if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
                     }
@@ -254,6 +254,8 @@ export class ZoneDialogs {
                 } else {
                   this.dialogFlowService.swiperConfig.allowSlideNext = true;
                 }
+                
+                if (!(this.dialogsPro[this.dialogsPro.length - 1].componentId === 'end')) this.dialogsPro.push(this.endDialog);
               },
             },
           ],
@@ -338,6 +340,8 @@ export class ZoneDialogs {
                 } else {
                   this.dialogFlowService.swiperConfig.allowSlideNext = true;
                 }
+
+                if (!(this.dialogsPro[this.dialogsPro.length - 1].componentId === 'end')) this.dialogsPro.push(this.endDialog);
               },
             },
           ],
@@ -451,6 +455,8 @@ export class ZoneDialogs {
                 } else {
                   this.dialogFlowService.swiperConfig.allowSlideNext = true;
                 }
+
+                if (!(this.dialogsPro[this.dialogsPro.length - 1].componentId === 'end')) this.dialogsPro.push(this.endDialog);
               },
             },
           ],
@@ -551,6 +557,8 @@ export class ZoneDialogs {
                 } else {
                   this.dialogFlowService.swiperConfig.allowSlideNext = true;
                 }
+
+                if (!(this.dialogsPro[this.dialogsPro.length - 1].componentId === 'end')) this.dialogsPro.push(this.endDialog);
               },
             },
           ],
@@ -624,6 +632,8 @@ export class ZoneDialogs {
                 } else {
                   this.dialogFlowService.swiperConfig.allowSlideNext = true;
                 }
+
+                if (!(this.dialogsPro[this.dialogsPro.length - 1].componentId === 'end')) this.dialogsPro.push(this.endDialog);
               },
             },
           ],
@@ -693,11 +703,143 @@ export class ZoneDialogs {
                 } else {
                   this.dialogFlowService.swiperConfig.allowSlideNext = true;
                 }
+
+                if (!(this.dialogsPro[this.dialogsPro.length - 1].componentId === 'end')) this.dialogsPro.push(this.endDialog);
               },
             },
           ],
         }
       ];
+
+      endDialog: EmbeddedComponentWithId = {
+        component: GeneralDialogComponent,
+        componentId: 'end',
+        inputs: {
+          dialogId: 'end',
+          containerStyles: {
+            background: 'rgb(255, 255, 255)',
+            borderRadius: '12px',
+            opacity: '1',
+            padding: '37px 36.6px 18.9px 31px',
+          },
+          header: {
+            styles: {
+              fontSize: '21px',
+              fontFamily: 'SfProBold',
+              marginBottom: '21.2px',
+              marginTop: '0',
+              color: '#4F4F4F',
+            },
+            text: '¿Desea guardar los datos?',
+          },
+          title: {
+            styles: {
+              fontSize: '15px',
+              color: '#7B7B7B',
+              fontStyle: 'italic',
+              margin: '0',
+            },
+            text: '',
+          },
+          fields: {
+            list: [
+              {
+                name: 'confirm',
+                value: '',
+                validators: [Validators.required],
+                type: 'selection',
+                selection: {
+                  styles: {
+                    display: 'block',
+                    fontFamily: '"SfProBold"',
+                    fontSize: '17px',
+                    color: '#272727',
+                    marginLeft: '19.5px',
+                  },
+                  list: [
+                    {
+                      text: 'Sí',
+                    }
+                  ],
+                },
+                // styles: {},
+                prop: 'text',
+              },
+            ],
+          },
+          isMultiple: false,
+        },
+        outputs: [
+          {
+            name: 'data',
+            callback: async (params) => {
+              console.log(params);
+              const { confirm } = params.value;
+              
+              if (confirm[0]) {
+
+                let canReload = true;
+
+                console.log(this.deliveryData);
+                this.deliveryZones = this.deliveryData.map((item) => {
+                  return {
+                    name: item.zona as string,
+                    type: item.type,
+                    cost: Number(item.cost),
+                    amount: Number(item.amount),
+                    // cost: cost,
+                    lesserAmount : Number(item.lesserAmount),
+                    greaterAmount : Number(item.greaterAmount),
+                    greaterAmountLimit: Number(item.greaterAmountLimit) || Number(item.greaterAmount),
+                    lesserAmountLimit: Number(item.lesserAmountLimit) || Number(item.lesserAmount),
+                  };
+                });
+
+                console.log(this.deliveryZones);
+
+                this.deliveryData.forEach(async zone => {
+                  let deliveryZone;
+                  try {
+                    deliveryZone = await this.deliveryzonesService.create(
+                      this.merchantService.merchantData._id,
+                      {
+                        amount: zone.amount,
+                        greaterAmount: zone.greaterAmount,
+                        lesserAmount: zone.lesserAmount,
+                        greaterAmountLimit: zone.greaterAmountLimit,
+                        lesserAmountLimit: zone.lesserAmountLimit,
+                        zona: zone.zona,
+                        type: zone.type
+                      }
+                    )
+                  } catch (error) {
+                    console.log(error);
+                    canReload = false;
+                  }
+
+                  if (deliveryZone && zone.cost) {
+                    try {
+                      const expenditure = await this.deliveryzonesService.createExpenditure(
+                        this.merchantService.merchantData._id,
+                        {
+                          type: "delivery-zone",
+                          amount: zone.cost
+                        }
+                      );
+                      await this.deliveryzonesService.addExpenditure(expenditure._id, deliveryZone._id);
+                    } catch (error) {
+                      console.log(error);
+                      canReload = false;
+                    }
+                  }
+                });
+
+                // if (canReload) window.location.reload();
+              }
+            }
+          }
+        ]
+      }
     
       inject() {
         this.dialogsPro = [
@@ -787,15 +929,15 @@ export class ZoneDialogs {
                     if (this.deliveryType === 'yes' || this.deliveryType === 'depend') {
                       console.log("yes or depend");
     
-                      if (!(this.dialogsPro[1].componentId === 'yes-depend')) {
-                        // Deleting any other dialog except for the last one
+                      if (!this.dialogsPro.find(dialog => dialog.componentId === 'yes-depend')) {
+                        // Deleting any other dialog
                         if (this.dialogsPro.length > 2) {
                           this.dialogsPro.splice(
                             1,
                             this.dialogsPro.length === 3
-                              ? 1 :
-                              this.dialogsPro.length === 4
                               ? 2 :
+                              this.dialogsPro.length === 4
+                              ? 3 :
                               3
                           )
                           
@@ -819,16 +961,18 @@ export class ZoneDialogs {
                     } else if (this.deliveryType === 'no' || this.deliveryType === 'no-delivery') {
                       console.log("no or no-delivery");
     
-                      if (!(this.dialogsPro[1].componentId === 'no-deliveryzone-1')) {
-                        // Deleting any other dialog except for the last one
+                      if (!this.dialogsPro.find(dialog => dialog.componentId === 'no-deliveryzone-1')) {
+                        // Deleting any other dialog
                         if (this.dialogsPro.length > 2) {
                           this.dialogsPro.splice(
                             1,
                             this.dialogsPro.length === 3
-                              ? 1 :
-                              this.dialogsPro.length === 4
                               ? 2 :
-                              3
+                              this.dialogsPro.length === 4
+                              ? 3 :
+                              this.dialogsPro.length === 5
+                              ? 4 :
+                              4
                           )
                           console.log(this.deliveryData);
                           if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
@@ -855,136 +999,7 @@ export class ZoneDialogs {
                 }
               }
             ]
-          },
-          {
-            component: GeneralDialogComponent,
-            componentId: 'end',
-            inputs: {
-              dialogId: 'end',
-              containerStyles: {
-                background: 'rgb(255, 255, 255)',
-                borderRadius: '12px',
-                opacity: '1',
-                padding: '37px 36.6px 18.9px 31px',
-              },
-              header: {
-                styles: {
-                  fontSize: '21px',
-                  fontFamily: 'SfProBold',
-                  marginBottom: '21.2px',
-                  marginTop: '0',
-                  color: '#4F4F4F',
-                },
-                text: '¿Desea guardar los datos?',
-              },
-              title: {
-                styles: {
-                  fontSize: '15px',
-                  color: '#7B7B7B',
-                  fontStyle: 'italic',
-                  margin: '0',
-                },
-                text: '',
-              },
-              fields: {
-                list: [
-                  {
-                    name: 'confirm',
-                    value: '',
-                    validators: [Validators.required],
-                    type: 'selection',
-                    selection: {
-                      styles: {
-                        display: 'block',
-                        fontFamily: '"SfProBold"',
-                        fontSize: '17px',
-                        color: '#272727',
-                        marginLeft: '19.5px',
-                      },
-                      list: [
-                        {
-                          text: 'Sí',
-                        }
-                      ],
-                    },
-                    // styles: {},
-                    prop: 'text',
-                  },
-                ],
-              },
-              isMultiple: false,
-            },
-            outputs: [
-              {
-                name: 'data',
-                callback: async (params) => {
-                  console.log(params);
-                  const { confirm } = params.value;
-                  
-                  if (confirm[0]) {
-
-                    let canReload = true;
-
-                    console.log(this.deliveryData);
-                    this.deliveryZones = this.deliveryData.map((item) => {
-                      return {
-                        name: item.zona as string,
-                        type: item.type,
-                        cost: Number(item.cost),
-                        amount: Number(item.amount),
-                        // cost: cost,
-                        lesserAmount : Number(item.lesserAmount),
-                        greaterAmount : Number(item.greaterAmount),
-                        greaterAmountLimit: Number(item.greaterAmountLimit) || Number(item.greaterAmount),
-                        lesserAmountLimit: Number(item.lesserAmountLimit) || Number(item.lesserAmount),
-                      };
-                    });
-    
-                    console.log(this.deliveryZones);
-    
-                    this.deliveryData.forEach(async zone => {
-                      let deliveryZone;
-                      try {
-                        deliveryZone = await this.deliveryzonesService.create(
-                          this.merchantService.merchantData._id,
-                          {
-                            amount: zone.amount,
-                            greaterAmount: zone.greaterAmount,
-                            lesserAmount: zone.lesserAmount,
-                            greaterAmountLimit: zone.greaterAmountLimit,
-                            lesserAmountLimit: zone.lesserAmountLimit,
-                            zona: zone.zona,
-                            type: zone.type
-                          }
-                        )
-                      } catch (error) {
-                        console.log(error);
-                        canReload = false;
-                      }
-    
-                      if (deliveryZone && zone.cost) {
-                        try {
-                          const expenditure = await this.deliveryzonesService.createExpenditure(
-                            this.merchantService.merchantData._id,
-                            {
-                              type: "delivery-zone",
-                              amount: zone.cost
-                            }
-                          );
-                          await this.deliveryzonesService.addExpenditure(expenditure._id, deliveryZone._id);
-                        } catch (error) {
-                          console.log(error);
-                          canReload = false;
-                        }
-                      }
-                    });
-
-                    // if (canReload) window.location.reload();
-                  }
-                }
-              }
-            ]
-          },
+          }
         ]
     
         return this.dialogsPro;

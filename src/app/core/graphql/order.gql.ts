@@ -114,6 +114,7 @@ const orderData = `
   orderStatus
   orderStatusDelivery
   statusDelivery
+  deliveryZone
   expenditures
   itemPackage {
     _id
@@ -156,6 +157,7 @@ const shortOrderData = `
   orderStatus
   orderStatusDelivery
   statusDelivery
+  deliveryZone
   expenditures
   itemPackage {
     _id
