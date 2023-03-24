@@ -130,6 +130,36 @@
                     </div> -->
                 </div>
 
+                <div class="section" *ngIf="(isMerchant || view === 'delivery') && orderHasDelivery(deliveryImages[i]?.deliveryZone, deliveryOrder)">
+                    <p class="section-label">ENTREGA</p>
+                    <div class="questions">
+                        <p class="label">Donde entregaremos?</p>
+                        <p class="label gray-out"*ngIf="deliveryImages[i]?.deliveryZone">{{ deliveryImages[i]?.deliveryZone.zona }}</p>
+                        <p class="label gray-out capitalize"*ngIf="!deliveryImages[i]?.deliveryZone && deliveryOrder.items[0].deliveryLocation">
+                            {{
+                                deliveryOrder.items[0].deliveryLocation.houseNumber
+                                  ? "#" + deliveryOrder.items[0].deliveryLocation.houseNumber + ", "
+                                  : ""
+                            }}
+                            {{ deliveryOrder.items[0].deliveryLocation.street }},
+                            {{
+                            deliveryOrder.items[0].deliveryLocation.referencePoint
+                                ? deliveryOrder.items[0].deliveryLocation.referencePoint + ", "
+                                : ""
+                            }}
+                            {{ deliveryOrder.items[0].deliveryLocation.city }}, República Dominicana
+                        </p>
+                    </div>
+                    <div class="questions">
+                        <p class="label">A quien entregaremos?</p>
+                        <p class="label gray-out capitalize">{{ deliveryOrder?.user.name ? deliveryOrder?.user.name : deliveryOrder?.user.phone }}</p>
+                    </div>
+                    <div class="questions" *ngIf="deliveryImages[i]?.reservation">
+                        <p class="label">Cuando entregaremos?</p>
+                        <p class="label gray-out capitalize">{{ displayReservation(deliveryImages[i]?.reservation) }}</p>
+                    </div>
+                </div>
+
                 <!-- DELIVERY EVIDENCE SECTION -->
                 <div class="section" *ngIf="deliveryImages.length && ((isMerchant && deliveryImages[i]?.image) || view === 'delivery')">
                     <p class="section-label">FLUJO DE LA ENTREGA</p>
@@ -203,7 +233,7 @@
                     class="example-margin"
                     [(ngModel)]="orderReadyToDeliver"
                     [disabled]="true"
-                    *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery !== ('delivered' || 'pending')"
+                    *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'in progress'"
                 >
                     <p class="checkbox-label">En preparación</p>
                 </mat-checkbox>
@@ -232,7 +262,7 @@
         </div>
         <div class="bottom-footer">
             <a
-                [routerLink]="['../../../ecommerce/order-detail', ordersReadyToDeliver[activeIndex]._id]"
+                [routerLink]="['../../../ecommerce/order-detail', ordersReadyToDeliver[activeIndex]?._id]"
                 [queryParams]="{ redirectTo: router.url }"
                 *ngIf="isMerchant"
             >
@@ -240,7 +270,7 @@
             </a>
             <a 
                 [routerLink]="['../../delivery-orders']"
-                [queryParams]="{ redirectTo: router.url }"
+                [queryParams]="{ redirectTo: router.url, deliveryZone: deliveryZone }"
                 *ngIf="isMerchant"
             >
                 Ver todas ({{ ordersReadyToDeliver.length }})

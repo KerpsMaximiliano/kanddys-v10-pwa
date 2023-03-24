@@ -9,6 +9,8 @@ import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-
 import { environment } from 'src/environments/environment';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DeliveryZone } from 'src/app/core/models/deliveryzone';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 
 
 @Component({
@@ -22,6 +24,8 @@ export class DeliveryOrdersComponent implements OnInit {
   URI: string = environment.uri;
 
   redirectTo: string = null;
+
+  deliveryZone: DeliveryZone;
 
   merchant: Merchant;
   orders: ItemOrder[] = [];
@@ -42,18 +46,22 @@ export class DeliveryOrdersComponent implements OnInit {
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
+    private deliveryzoneService: DeliveryZonesService,
   ) { }
 
   async ngOnInit() {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { redirectTo } = queryParams;
+      const { redirectTo, deliveryZone } = queryParams;
+
       this.redirectTo = redirectTo;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
+
+      await this.getMerchant();
+      if (deliveryZone) await this.getDeliveryZone(deliveryZone);
+      await this.getOrders(this.merchant._id, deliveryZone);
+      this.getTotalIncome(this.orders);
     });
-    await this.getMerchant();
-    await this.getOrders(this.merchant._id);
-    this.getTotalIncome(this.orders);
   }
 
   async getMerchant() {
@@ -65,7 +73,16 @@ export class DeliveryOrdersComponent implements OnInit {
     }
   }
 
-  async getOrders(merchantId: string) {
+  async getDeliveryZone(deliveryZoneId: string) {
+    try {
+      const result = await this.deliveryzoneService.deliveryZone(deliveryZoneId);
+      this.deliveryZone = result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getOrders(merchantId: string, deliveryzone?: string) {
     try {
       const result = await this.merchantsService.ordersByMerchant(
         merchantId,
@@ -76,6 +93,7 @@ export class DeliveryOrdersComponent implements OnInit {
           },
           findBy: {
             orderStatusDelivery: [ 'in progress', 'pending'],
+            deliveryZone: deliveryzone ? deliveryzone : undefined,
           }
         }
       );
