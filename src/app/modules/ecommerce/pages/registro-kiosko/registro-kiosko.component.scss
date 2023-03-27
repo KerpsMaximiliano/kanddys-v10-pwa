@@ -1,0 +1,94 @@
+* {
+  margin: 0;
+}
+
+.container {
+  background-color: #293628;
+
+  header {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+
+    button {
+      all: unset;
+      cursor: pointer;
+    }
+  }
+
+  .content {
+    padding: 30px 22px;
+
+    .title {
+      color: #ffffff;
+      font-size: 17px;
+      font-family: SFProMedium;
+    }
+
+    .green-text-wrapper {
+      margin-top: 50px;
+      margin-left: 20px;
+      margin-right: 35px;
+      display: flex;
+      align-items: center;
+      .subtitle {
+        font-size: 13px;
+        font-family: SFProLight;
+      }
+
+      .green {
+        color: #82f18d;
+      }
+    }
+
+    .btn {
+      cursor: pointer;
+      background-color: transparent;
+      align-items: center;
+      height: 54px !important;
+      padding: 0px 35px;
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 27px;
+      border: 1px solid #7b7b7b;
+      color: #ffffff;
+      font-size: 17px;
+      font-family: SFProLight;
+    }
+
+    .input-wrapper {
+      margin-top: 37.5px;
+      .input-title {
+        color: #7b7b7b;
+        font-size: 11px;
+        font-family: SFProMedium;
+      }
+
+      input {
+        border: none;
+        padding: 17.5px 0px;
+        background-color: transparent;
+        border-bottom: 1px solid #82f18d;
+        width: 100%;
+        font-size: 17px;
+        color: #ffffff;
+        font-family: SFProSemibold;
+      }
+
+      input::placeholder {
+        color: #7b7b7b;
+      }
+    }
+
+    .swipe {
+      all: unset;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+      color: #7b7b7b;
+      background-color: transparent;
+      border: none;
+      margin-top: 65vh;
+    }
+  }
+}

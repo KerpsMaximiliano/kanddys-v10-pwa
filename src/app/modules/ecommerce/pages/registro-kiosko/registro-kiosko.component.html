@@ -1,0 +1,169 @@
+<div class="container">
+  <header>
+    <button>
+      <mat-icon [ngStyle]="{ color: '#7B7B7B' }">chevron_left</mat-icon>
+    </button>
+    <button style="margin-left: auto">
+      <mat-icon [ngStyle]="{ color: '#7B7B7B' }">close</mat-icon>
+    </button>
+  </header>
+
+  <swiper [config]="swiperConfig">
+    <div class="content">
+      <p class="title">¿Qué actividad te interesa más?</p>
+      <div class="green-text-wrapper">
+        <span class="title green">Comerciantes de productos</span>
+        <svg
+          style="margin-left: auto; margin-right: 10px"
+          xmlns="http://www.w3.org/2000/svg"
+          width="12.003"
+          height="13.499"
+          viewBox="0 0 12.003 13.499"
+        >
+          <g id="play" transform="translate(-12 -10.505)">
+            <g
+              id="Group_76058"
+              data-name="Group 76058"
+              transform="translate(12 10.505)"
+            >
+              <path
+                id="Path_29066"
+                data-name="Path 29066"
+                d="M22.209,17.254,13.5,12.2v10.1ZM23.4,16.21a1.2,1.2,0,0,1,0,2.089l-9.547,5.54A1.228,1.228,0,0,1,12,22.794V11.715a1.228,1.228,0,0,1,1.85-1.044Z"
+                transform="translate(-12 -10.505)"
+                fill="#82f18d"
+              />
+            </g>
+          </g>
+        </svg>
+        <span class="subtitle green" style="margin: 0">0:50 segundos</span>
+      </div>
+      <button class="btn">Exhibir y vender mis cosas</button>
+      <button class="btn">
+        Lo anterior y tambien premiar a otros Kioskeros que vendan mis cosas
+      </button>
+
+      <!-- --------------------------------------------------------------------------- -->
+
+      <div class="green-text-wrapper">
+        <span class="title green">Comerciantes de Servicios</span>
+        <svg
+          style="margin-left: auto; margin-right: 10px"
+          xmlns="http://www.w3.org/2000/svg"
+          width="12.003"
+          height="13.499"
+          viewBox="0 0 12.003 13.499"
+        >
+          <g id="play" transform="translate(-12 -10.505)">
+            <g
+              id="Group_76058"
+              data-name="Group 76058"
+              transform="translate(12 10.505)"
+            >
+              <path
+                id="Path_29066"
+                data-name="Path 29066"
+                d="M22.209,17.254,13.5,12.2v10.1ZM23.4,16.21a1.2,1.2,0,0,1,0,2.089l-9.547,5.54A1.228,1.228,0,0,1,12,22.794V11.715a1.228,1.228,0,0,1,1.85-1.044Z"
+                transform="translate(-12 -10.505)"
+                fill="#82f18d"
+              />
+            </g>
+          </g>
+        </svg>
+        <span class="subtitle green" style="margin: 0">0:50 segundos</span>
+      </div>
+      <button class="btn">
+        Facturar y controlar los costos de cada facturas
+      </button>
+
+      <!-- ---------------------------------------------------------------------------------------- -->
+
+      <div class="green-text-wrapper">
+        <span class="title green">Kioskeros</span>
+        <svg
+          style="margin-left: auto; margin-right: 10px"
+          xmlns="http://www.w3.org/2000/svg"
+          width="12.003"
+          height="13.499"
+          viewBox="0 0 12.003 13.499"
+        >
+          <g id="play" transform="translate(-12 -10.505)">
+            <g
+              id="Group_76058"
+              data-name="Group 76058"
+              transform="translate(12 10.505)"
+            >
+              <path
+                id="Path_29066"
+                data-name="Path 29066"
+                d="M22.209,17.254,13.5,12.2v10.1ZM23.4,16.21a1.2,1.2,0,0,1,0,2.089l-9.547,5.54A1.228,1.228,0,0,1,12,22.794V11.715a1.228,1.228,0,0,1,1.85-1.044Z"
+                transform="translate(-12 -10.505)"
+                fill="#82f18d"
+              />
+            </g>
+          </g>
+        </svg>
+        <span class="subtitle green" style="margin: 0">0:50 segundos</span>
+      </div>
+      <button class="btn">
+        Exhibiré páginas y compilaciones y ganaré la comisión de lo que se venda
+      </button>
+      <button class="btn">
+        Lo anterior y también crearé mis propias páginas como los stories y
+        reels
+      </button>
+    </div>
+
+    <!-- ---------------------- 2DO SLIDE ------------------------ -->
+
+    <div
+      class="content"
+      style="
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 0px 64px;
+      "
+    >
+      <p class="title" style="margin: 0; text-align: center">
+        ¿Qué contenido tendrá el letrero que identificará tu Kiosko entre otros?
+      </p>
+    </div>
+
+    <!-- ---------------------- 3ER SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">¿Qué nombre tendrá tu Kiosko?</p>
+
+      <div class="input-wrapper">
+        <p class="input-title">Tu respuesta</p>
+        <input
+          #input
+          type="text"
+          placeholder="Escribe tu nombre comercial o marca..."
+          [(ngModel)]="kioskoName"
+          (input)="onNameInput($event, input)"
+        />
+      </div>
+
+      <button class="swipe">Swipe para no responder ahora</button>
+    </div>
+
+    <!-- ---------------------- 4TO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">¿Qué irá debajo del {{ kioskoName }}?</p>
+
+      <div class="input-wrapper">
+        <p class="input-title">Tu respuesta</p>
+        <input
+          type="text"
+          placeholder="Escribe tu nombre comercial o marca..."
+          [(ngModel)]="description"
+        />
+      </div>
+
+      <button class="swipe">Swipe para no responder ahora</button>
+    </div>
+  </swiper>
+</div>

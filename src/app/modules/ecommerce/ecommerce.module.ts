@@ -29,6 +29,7 @@ import { GiftDetailComponent } from './pages/gift-detail/gift-detail.component';
 import { MerchantLandingComponent } from '../admin/pages/merchant-landing/merchant-landing.component';
 import { StoreAssistantComponent } from './pages/store-assistant/store-assistant.component';
 import { OrderProcessComponent } from '../admin/pages/order-process/order-process.component';
+import { RegistroKioskoComponent } from './pages/registro-kiosko/registro-kiosko.component';
 
 const routes: Routes = [
   {
@@ -77,6 +78,10 @@ const routes: Routes = [
   {
     path: 'merchant-landing',
     component: MerchantLandingComponent,
+  },
+  {
+    path: 'registro-kiosko',
+    component: RegistroKioskoComponent,
   },
   {
     path: ':merchantSlug',
@@ -156,8 +161,8 @@ const routes: Routes = [
       },
       {
         path: 'order-process/:orderId',
-        component: OrderProcessComponent
-      }
+        component: OrderProcessComponent,
+      },
     ],
   },
 ];
@@ -187,6 +192,7 @@ const routes: Routes = [
     GiftDetailComponent,
     MerchantLandingComponent,
     StoreAssistantComponent,
+    RegistroKioskoComponent,
   ],
   imports: [
     CommonModule,
