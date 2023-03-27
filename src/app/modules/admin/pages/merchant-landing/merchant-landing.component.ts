@@ -23,13 +23,27 @@ export class MerchantLandingComponent implements OnInit {
   infoCards = [
     {
       bg: '#fff',
+      title: 'La entrega al comprador',
+      subtitle:
+        'Configura las zonas de donde haces las entregas y el monto que te pagarán.',
+      bottom: true,
+      bottomTextBold: 'INGRESOS MENOS EGRESOS',
+      bottomText: '',
+      rightBotttomText: '$7,579',
+      img: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fstar-red.png',
+      callback: () => {
+        this.router.navigate([`/admin/delivery-zones`]);
+      }
+    },
+    {
+      bg: '#fff',
       title: 'Recibe el dinero de lo vendido',
       subtitle:
         'Vende tu producto por WhatsApp y las redes sociales, recibe el pago por transferencia, tarjeta de crédito, paypal',
       bottom: true,
       bottomTextBold: '87 DoCoins',
       bottomText: 'US $0.87 por factura para mantener el cloud',
-      img: '../assets/images/noimage.png',
+      img: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fstar-red.png',
     },
     {
       bg: '#fff',
@@ -39,7 +53,7 @@ export class MerchantLandingComponent implements OnInit {
       bottom: true,
       bottomTextBold: '3 DoCoins',
       bottomText: 'US $0.03 por factura para mantener el cloud',
-      img: '../assets/images/noimage.png',
+      img: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fstar-red.png',
     },
     {
       bg: '#fff',
@@ -47,7 +61,7 @@ export class MerchantLandingComponent implements OnInit {
       subtitle:
         'Con esta funcionalidad, podrás organizar y segmentar tus productos de manera más eficiente…',
       bottom: false,
-      img: '../assets/images/noimage.png',
+      img: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fstar-red.png',
     },
     {
       bg: '#fff',
@@ -55,7 +69,7 @@ export class MerchantLandingComponent implements OnInit {
       subtitle:
         'Con esta funcionalidad, podrás organizar y segmentar tus productos de manera más eficiente…',
       bottom: false,
-      img: '../assets/images/noimage.png',
+      img: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fstar-red.png',
     },
     {
       bg: '#fff',
@@ -63,7 +77,7 @@ export class MerchantLandingComponent implements OnInit {
       subtitle:
         'Con esta funcionalidad, podrás organizar y segmentar tus productos de manera más eficiente…',
       bottom: false,
-      img: '../assets/images/noimage.png',
+      img: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fstar-red.png',
     },
     {
       bg: '#fff',
@@ -71,7 +85,7 @@ export class MerchantLandingComponent implements OnInit {
       subtitle:
         'Con esta funcionalidad, podrás organizar y segmentar tus productos de manera más eficiente…',
       bottom: false,
-      img: '../assets/images/noimage.png',
+      img: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fstar-red.png',
     },
   ];
 

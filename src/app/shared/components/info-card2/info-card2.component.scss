@@ -3,6 +3,7 @@
 }
 
 .container {
+  cursor: pointer;
   padding: 30px 10px 12px;
   background-color: #fff;
   width: 100%;
@@ -60,4 +61,17 @@
       -webkit-box-orient: vertical;
     }
   }
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+
+  .bold {
+    font-family: SFProBold;
+    font-size: 13px;
+  }
+  
 }

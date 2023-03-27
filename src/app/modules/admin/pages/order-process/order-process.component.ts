@@ -534,6 +534,52 @@ export class OrderProcessComponent implements OnInit {
               callback: () => this.downloadQr(order)
             },
           ],
+        },
+        {
+          title: `Opciones para el mensajero`,
+          options: [
+            {
+              title: 'Compartir el Link',
+              callback: () => {
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`,
+                });
+              },
+            },
+            {
+              title: 'Copiar el Link de esta sola factura',
+              callback: () => {
+                this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`);
+                this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                  duration: 2000,
+                });
+              },
+            }
+          ],
+        },
+        {
+          title: `Opciones para quien prepara la orden`,
+          options: [
+            {
+              title: 'Compartir el Link',
+              callback: () => {
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`,
+                });
+              },
+            },
+            {
+              title: 'Copiar el Link de esta sola factura',
+              callback: () => {
+                this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`);
+                this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                  duration: 2000,
+                });
+              },
+            }
+          ],
         }
       ],
     });
