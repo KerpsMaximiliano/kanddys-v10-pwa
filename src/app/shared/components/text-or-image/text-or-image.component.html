@@ -72,7 +72,7 @@
             ]"
           />
 
-          <ng-container *ngIf="i === options.length - 1">
+          <ng-container *ngIf="i === (options.length - 1) && isUserOnDesktop">
             <label [for]="'directory-option' + i" style="margin-top: 9px">
               <div class="img" *ngIf="!option.fileData">
                 <img class="icon" [src]="environment + '/folder.svg'" alt="" />

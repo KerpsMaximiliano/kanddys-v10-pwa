@@ -13,13 +13,16 @@ import {
   webform,
   webformAddQuestion,
   webformByMerchant,
+  webformRemoveQuestion,
   webforms,
+  webformUpdateQuestion,
 } from '../graphql/webforms.gql';
 import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import {
   AnswerDefaultInput,
   AnswerInput,
+  Question,
   QuestionInput,
   Webform,
   WebformAnswer,
@@ -35,6 +38,8 @@ export class WebformsService {
   webformData: Webform;
   webformQuestions: Array<QuestionInput> = [];
   webformCreatorLastDialogs: Array<EmbeddedComponentWithId> = [];
+  currentEditingQuestion: Question = null;
+  currentEditingQuestionChoices: AnswerDefaultInput[] = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 
@@ -72,6 +77,17 @@ export class WebformsService {
       context: { useMultipart: true },
     });
     return result?.webformAddQuestion;
+  }
+
+  async webformRemoveQuestion(
+    questionId: Array<string>,
+    id: string
+  ): Promise<Webform> {
+    const result = await this.graphql.mutate({
+      mutation: webformRemoveQuestion,
+      variables: { questionId, id },
+    });
+    return result?.webformRemoveQuestion;
   }
 
   async questionAddAnswerDefault(
@@ -178,6 +194,15 @@ export class WebformsService {
       variables: { answerId, id },
     });
     return result?.orderAddAnswer;
+  }
+
+  async webformUpdateQuestion(input: QuestionInput, questionId: string, id: string): Promise<Question> {
+    const result = await this.graphql.mutate({
+      mutation: webformUpdateQuestion,
+      variables: { input, questionId, id },
+      context: { useMultipart: true },
+    });
+    return result?.webformUpdateQuestion;
   }
 
   async itemUpdateWebForm(input: any, webformId: string, id: string): Promise<any> {

@@ -39,8 +39,9 @@ export class WebformQuestionDialogComponent implements OnInit {
       } else {
         this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
           this.dialogFlowConfig.dialogId
-        ].fields.textarea = '';
+        ].fields.textarea = this.textarea.value;
       }
+
 
       this.textarea.valueChanges.subscribe(this.emitInput);
     }

@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -25,12 +25,12 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
   env: string = environment.assetsUrl;
   sub: Subscription;
   sub2: Subscription;
-  webform: Question | Webform | any = {};
+  webform: Question | Webform | any = null;
   webformQuestions: Record<string, Question> = {};
   itemId: string = null;
   itemData: Item = null;
   webformStatus: 'ACTIVE' | 'INACTIVE' = 'ACTIVE';
-  resumingWebformCreation: boolean = false;
+  resumingWebformCreation: boolean = null;
   webformInternalId: string = null;
   openedDialogFlow: boolean = false;
 
@@ -151,7 +151,8 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
                     if (additionalAnswers.length) {
                       const toAdd = [
                         {
-                          text: additionalAnswers.length + ' Otras respuestas',
+                          text:
+                            additionalAnswers.length + ' respuestas escritas',
                           freeResponse: true,
                         },
                       ];
@@ -180,7 +181,10 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
             );
             this.webform = { ...webform, _id, user };
 
-            if (resumeWebform && this._WebformsService.webformCreatorLastDialogs.length) {
+            if (
+              resumeWebform &&
+              this._WebformsService.webformCreatorLastDialogs.length
+            ) {
               this.openedDialogFlow = true;
               this.resumingWebformCreation = true;
             }
@@ -220,6 +224,9 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
       this.itemData
     );
 
+    //Clears the temporal dialogs from the webform service
+    //this._WebformsService.webformCreatorLastDialogs = [];
+
     this._Router.navigate(
       ['/ecommerce/' + this.merchantsService.merchantData.slug + '/checkout'],
       {
@@ -232,6 +239,12 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
 
   addNewQuestion = async () => {
     this.openedDialogFlow = !this.openedDialogFlow;
+  };
+
+  editForm = async () => {
+    this._Router.navigate([
+      'admin/webforms-editor/' + this.webform._id + '/' + this.itemId,
+    ]);
   };
 
   switchWebformStatus = () => {
@@ -263,10 +276,20 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
       });
   };
 
-  async reloadWebform() {
+  async reloadWebform(endedCreation: boolean = false) {
+    let queryParams = { ...this._ActivatedRoute.snapshot.queryParams };
+    delete queryParams['resumeWebform'];
+
+    let navigationExtras: NavigationExtras = {
+      replaceUrl: true,
+      queryParams: queryParams,
+    };
+
+    this._Router.navigate([], navigationExtras);
+
     this.openedDialogFlow = false;
 
-    await this.executeInitProcesses();
+    if (endedCreation) await this.executeInitProcesses();
   }
 
   ngOnDestroy(): void {

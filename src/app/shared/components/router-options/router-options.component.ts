@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Question } from 'src/app/core/models/webform';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 
 @Component({
   selector: 'app-router-options',
@@ -8,7 +9,7 @@ import { Question } from 'src/app/core/models/webform';
   styleUrls: ['./router-options.component.scss'],
 })
 export class RouterOptionsComponent implements OnInit {
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(private router: Router, private route: ActivatedRoute, private webformsService: WebformsService) {}
 
   @Input() title: string =
     '¿Cuáles son los principales desafíos que enfrenta su negocio en este momento?';
@@ -36,6 +37,8 @@ export class RouterOptionsComponent implements OnInit {
       delete queryParams.selectedOption;
       queryParams.openResponses = true;
     };
+
+    this.webformsService.webformCreatorLastDialogs = [];
 
     this.router.navigate(['/admin/webform-responses/' + this.webformId], {
       queryParams,

@@ -2,7 +2,7 @@
   <ng-container *ngSwitchCase="'SHOWING_DIALOG_FLOW'">
     <app-dialog-flow
       *ngIf="dialogs?.length"
-      [dialogFlowId]="'webform-creator'"
+      [dialogFlowId]="flowId"
       [status]="opened ? 'OPEN' : 'CLOSE'"
       [dialogs]="dialogs"
       (saveConfigRef)="swiperConfig = $event"
@@ -14,12 +14,12 @@
     <div class="overlay-wrapper" *ngIf="opened">
       <div class="overlay">
         <div class="dialog-wrapper">
-          <h3>¿Añadiras otra pregunta?</h3>
-          <div class="option-wrapper" (click)="addAnotherQuestion()">
+          <h3>{{questionEditMode ? '¿Estás seguro de los cambios?' : '¿Añadiras otra pregunta?'}}</h3>
+          <div class="option-wrapper" (click)="addAnotherQuestionOrUpdateWebform()">
             <div class="background"></div>
             <div class="option">Si</div>
           </div>
-          <div class="option-wrapper" (click)="!webform ? createWebformForItem() : updateWebformForItem()">
+          <div class="option-wrapper" (click)="createWebformOrCancelChanges()">
             <div class="background"></div>
             <div class="option">No</div>
           </div>
@@ -35,7 +35,7 @@
           [item]="item"
           [optionalQuestionsNumber]="optionalQuestions"
           [requiredQuestionsNumber]="requiredQuestions"
-          (closeSignal)="closeDialogFlow()"
+          (closeSignal)="closeDialogFlow(true)"
         ></app-msg-dialog>
       </div>
     </div>

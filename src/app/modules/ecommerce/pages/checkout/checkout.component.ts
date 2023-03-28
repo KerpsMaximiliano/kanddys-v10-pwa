@@ -949,6 +949,9 @@ export class CheckoutComponent implements OnInit {
 
     if (Object.keys(this.webformsByItem).length === 0)
       this.areWebformsValid = true;
+    else {
+      this.areItemsQuestionsAnswered();
+    }
   }
 
   //Creates a dialog flow that allows the user to answer each item questions

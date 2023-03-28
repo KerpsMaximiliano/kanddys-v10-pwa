@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-import { Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -10,6 +11,7 @@ import {
   WebformInput,
   QuestionInput,
   Webform,
+  Question,
 } from 'src/app/core/models/webform';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -52,8 +54,11 @@ export class WebformsCreatorComponent implements OnInit {
   @Input() opened = false;
   @Input() item: Item = null;
   @Input() webform: Webform = null;
+  @Input() questionEditMode: boolean = false;
+  @Input() question: Question = null;
   @Input() user: User = null;
-  @Input() resumingCreation: boolean = false;
+  @Input() flowId: string = 'webform-creator';
+  @Input() resumingCreation: boolean = null;
   @Output() closeEvent = new EventEmitter();
   swiperConfig: SwiperOptions = null;
   dialogFlowFunctions: Record<string, any> = {};
@@ -81,22 +86,22 @@ export class WebformsCreatorComponent implements OnInit {
     componentId: 'question',
     inputs: {
       dialogFlowConfig: {
-        flowId: 'webform-creator',
+        flowId: this.flowId,
         dialogId: 'question',
       },
       onActiveSlideCallback: (params) => {
         const questionDialog =
-          this.dialogFlowService.dialogsFlows['webform-creator']['question'];
+          this.dialogFlowService.dialogsFlows[this.flowId]['question'];
 
         if (
           questionDialog?.fields &&
           questionDialog?.fields.textarea &&
           questionDialog?.fields.textarea.length
         ) {
-          questionDialog.swiperConfig.allowSlideNext = true;
+          this.swiperConfig.allowSlideNext = true;
         } else {
           setTimeout(() => {
-            questionDialog.swiperConfig.allowSlideNext = false;
+            this.swiperConfig.allowSlideNext = false;
           });
         }
       },
@@ -176,6 +181,7 @@ export class WebformsCreatorComponent implements OnInit {
         name: 'data',
         callback: (params) => {
           const { value } = params;
+
           if (value.answerType && value.answerType) {
             const answerType = value.answerType[0];
 
@@ -219,19 +225,34 @@ export class WebformsCreatorComponent implements OnInit {
                 this.webformService.webformQuestions = this.webformQuestions;
                 this.webformService.webformCreatorLastDialogs = this.dialogs;
 
-                if(!this.webform) {
+                if (!this.webform && !this.questionEditMode) {
                   this.router.navigate([
                     'admin/webform-multiple-selection/' + this.item._id,
                   ]);
-                } else {
-                  this.router.navigate([
-                    'admin/webform-multiple-selection/' + this.item._id,
-                  ], {
-                    queryParams: {
-                      updatingWebform: true,
-                      webformId: this.webform._id
+                } else if (this.questionEditMode && this.webform._id) {
+                  this.webformService.webformCreatorLastDialogs = this.dialogs;
+
+                  this.webformService.currentEditingQuestion = this.question;
+                  this.router.navigate(
+                    ['admin/webform-multiple-selection/' + this.item._id],
+                    {
+                      queryParams: {
+                        updatingQuestion: true,
+                        webformId: this.webform._id,
+                        questionId: this.question._id,
+                      },
                     }
-                  });                  
+                  );
+                } else {
+                  this.router.navigate(
+                    ['admin/webform-multiple-selection/' + this.item._id],
+                    {
+                      queryParams: {
+                        updatingWebform: true,
+                        webformId: this.webform._id,
+                      },
+                    }
+                  );
                 }
               } else {
                 this.dialogFlowFunctions.moveToDialogByIndex(
@@ -346,12 +367,12 @@ export class WebformsCreatorComponent implements OnInit {
       optionsCreated:
         this.webformService.webformQuestions[
           this.webformService.webformQuestions.length - 1
-        ]?.answerDefault.length,
+        ]?.answerDefault?.length || 0,
       onActiveSlideCallback: (params) => {
         if (
           this.webformService.webformQuestions[
             this.webformService.webformQuestions.length - 1
-          ].answerDefault.length === 0
+          ].answerDefault?.length === 0
         ) {
           this.swiperConfig.allowSlideNext = false;
         }
@@ -364,14 +385,33 @@ export class WebformsCreatorComponent implements OnInit {
           if (clicked) {
             this.webformService.webformCreatorLastDialogs = this.dialogs;
             this.webformService.webformCreatorLastDialogs.pop();
-            this.router.navigate(
-              ['admin/webform-multiple-selection/' + this.item._id],
-              {
-                queryParams: {
-                  editingQuestion: true,
-                },
-              }
-            );
+
+            if (!this.questionEditMode) {
+              this.router.navigate(
+                ['admin/webform-multiple-selection/' + this.item._id],
+                {
+                  queryParams: {
+                    editingQuestion: true,
+                  },
+                }
+              );
+            } else if (this.questionEditMode && this.webform._id) {
+              const options = this.webformQuestions[0].answerDefault;
+
+              this.webformService.currentEditingQuestionChoices = options;
+              this.webformService.currentEditingQuestion = this.question;
+
+              this.router.navigate(
+                ['admin/webform-multiple-selection/' + this.item._id],
+                {
+                  queryParams: {
+                    updatingQuestion: true,
+                    webformId: this.webform._id,
+                    questionId: this.question._id,
+                  },
+                }
+              );
+            }
           }
         },
       },
@@ -417,17 +457,53 @@ export class WebformsCreatorComponent implements OnInit {
     private dialogFlowService: DialogFlowService,
     private router: Router,
     private headerService: HeaderService,
+    public dialog: MatDialog,
     private snackbar: MatSnackBar,
     private webformService: WebformsService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    await this.executeInitProcesses();
+  }
+
+  async executeInitProcesses() {
+    //When the user was editing the form, but for some reason he left the page, then we need to restart the creation process
+
+    if (this.resumingCreation === null) {
+      this.webformService.webformQuestions = [];
+      this.webformQuestions = [];
+
+      if (this.dialogFlowService.dialogsFlows[this.flowId]) {
+        Object.keys(this.dialogFlowService.dialogsFlows[this.flowId]).forEach(
+          (dialogId) => {
+            Object.keys(
+              this.dialogFlowService.dialogsFlows[this.flowId][dialogId].fields
+            ).forEach((fieldKey) => {
+              this.dialogFlowService.dialogsFlows[this.flowId][dialogId].fields[
+                fieldKey
+              ] = '';
+            });
+          }
+        );
+      }
+    }
+
+    console.log(
+      'Resuming creation',
+      this.resumingCreation,
+      this.webformService.webformQuestions
+    );
+    console.log(
+      (!this.webformService.webformQuestions ||
+        !this.webformService.webformQuestions.length) &&
+        !this.resumingCreation
+    );
+
     if (
       (!this.webformService.webformQuestions ||
         !this.webformService.webformQuestions.length) &&
       !this.resumingCreation
     ) {
-      alert("1")
       this.dialogs = [
         {
           component: DescriptionDialogComponent,
@@ -439,7 +515,7 @@ export class WebformsCreatorComponent implements OnInit {
               ', los formularios son para que el comprador te reesponda cosas que necesitas saber al vender ' +
               (this.item.name ? this.item.name : 'este producto'),
             onActiveSlideCallback: (params) => {
-              this.dialogFlowService.dialogsFlows['webform-creator'][
+              this.dialogFlowService.dialogsFlows[this.flowId][
                 'welcome'
               ].swiperConfig.allowSlideNext = true;
             },
@@ -456,11 +532,17 @@ export class WebformsCreatorComponent implements OnInit {
         },
         ...this.newQuestionDialogs,
       ];
+
+      if (this.questionEditMode && this.question) {
+        this.dialogs[0].inputs.title =
+          'Hola, aqui puedes editar las preguntas, y el tipo de respuesta que quieres que el comprador te de, pero, cambiar las preguntas hace que las estadisticas del formulario se reinicien, asi que ten cuidado';
+        this.dialogs[1].inputs.textarea = new FormControl(this.question.value);
+        this.questionDialog.inputs.dialogFlowConfig.flowId = this.flowId;
+      }
     } else if (
       this.resumingCreation &&
-      this.webformService.webformCreatorLastDialogs.length
+      this.webformService.webformCreatorLastDialogs?.length
     ) {
-      alert("2")
       this.dialogs = this.webformService.webformCreatorLastDialogs;
 
       const toReplaceIndex = this.dialogs.findIndex(
@@ -489,16 +571,20 @@ export class WebformsCreatorComponent implements OnInit {
       this.dialogs.push({
         component: WebformAddAnotherQuestionComponent,
         componentId: 'add-another-question',
-        inputs: {},
+        inputs: {
+          title: !this.questionEditMode
+            ? '¿Añadiras otra pregunta?'
+            : '¿Estás seguro de los cambios?',
+        },
         outputs: [
           {
             name: 'pressedButton',
             callback: (addAnotherQuestionText: string) => {
               if (addAnotherQuestionText === 'YES') {
                 this.resumingCreation = false;
-                this.addAnotherQuestion();
+                this.addAnotherQuestionOrUpdateWebform();
               } else {
-                this.createWebformForItem();
+                this.createWebformOrCancelChanges();
               }
             },
           },
@@ -510,17 +596,22 @@ export class WebformsCreatorComponent implements OnInit {
       this.webformQuestions.length === 0 &&
       this.webformService.webformQuestions.length
     ) {
-      alert("3")
       this.webformQuestions = this.webformService.webformQuestions;
     }
   }
 
-  addAnotherQuestion() {
+  async addAnotherQuestionOrUpdateWebform() {
+    if (this.webform && this.webform._id && !this.questionEditMode)
+      return await this.updateWebformForItem();
+
+    if (this.webform && this.webform._id && this.questionEditMode)
+      return await this.updateQuestion();
+
     this.dialogs = [];
     this.dialogs = [...this.newQuestionDialogs];
     this.dialogFlowFunctions.moveToDialogByIndex(0);
     this.status = 'SHOWING_DIALOG_FLOW';
-    this.dialogFlowService.resetDialogFlow('webform-creator');
+    this.dialogFlowService.resetDialogFlow(this.flowId);
   }
 
   //When resuming form creation, it moves to the last dialog
@@ -531,6 +622,12 @@ export class WebformsCreatorComponent implements OnInit {
       this.dialogFlowFunctions.moveToDialogByIndex = eventData;
       this.dialogFlowFunctions.moveToDialogByIndex(this.dialogs.length - 2);
     }
+  }
+
+  async createWebformOrCancelChanges() {
+    if (this.webform && this.webform._id && !this.questionEditMode)
+      await this.updateWebformForItem();
+    else this.createWebformForItem();
   }
 
   async createWebformForItem() {
@@ -573,7 +670,6 @@ export class WebformsCreatorComponent implements OnInit {
             for (let i = 0; i < Math.ceil(answerDefault.length / 20); i++) {
               const topLimit = i * 20 + 20;
               const lowerLimit = i * 20;
-              console.log(topLimit, lowerLimit);
               partsInAnswerDefault.push(
                 answerDefault.slice(lowerLimit, topLimit)
               );
@@ -598,8 +694,6 @@ export class WebformsCreatorComponent implements OnInit {
                       questionId,
                       results._id
                     );
-
-                  console.log('Resultados', result);
                 }
               }
             } catch (error) {
@@ -625,9 +719,6 @@ export class WebformsCreatorComponent implements OnInit {
           0
         );
 
-        console.log('Preguntas opcionales', this.optionalQuestions);
-        console.log('Preguntas obligatorias', this.requiredQuestions);
-
         this.status = 'ENDED_CREATION';
       }
 
@@ -642,16 +733,17 @@ export class WebformsCreatorComponent implements OnInit {
 
   async updateWebformForItem() {
     try {
-      this.webformQuestions.forEach(question => {
-        if(!question.answerDefault) question.answerDefault = [];
-      })
+      this.webformQuestions.forEach((question) => {
+        if (!question.answerDefault) question.answerDefault = [];
+      });
 
       lockUI();
       const largeInputQuestions: QuestionInput[] = this.webformQuestions.filter(
         (question) => question.answerDefault?.length > 20
       );
       const smallInputQuestions: QuestionInput[] = this.webformQuestions.filter(
-        (question) => question.answerDefault?.length <= 20 || !question.answerDefault
+        (question) =>
+          question.answerDefault?.length <= 20 || !question.answerDefault
       );
 
       if (smallInputQuestions.length > 0) {
@@ -670,7 +762,6 @@ export class WebformsCreatorComponent implements OnInit {
           for (let i = 0; i < Math.ceil(answerDefault.length / 20); i++) {
             const topLimit = i * 20 + 20;
             const lowerLimit = i * 20;
-            console.log(topLimit, lowerLimit);
             partsInAnswerDefault.push(
               answerDefault.slice(lowerLimit, topLimit)
             );
@@ -695,8 +786,6 @@ export class WebformsCreatorComponent implements OnInit {
                     questionId,
                     results._id
                   );
-
-                console.log('Resultados', result);
               }
             }
           } catch (error) {
@@ -708,18 +797,28 @@ export class WebformsCreatorComponent implements OnInit {
         }
       }
 
+      const optionalQuestionsInTheExistingWebform =
+        this.webform.questions.reduce((sum, currentQuestion) => {
+          return sum + (!currentQuestion.required ? 1 : 0);
+        }, 0);
+
+      const requiredQuestionsInTheExistingWebform =
+        this.webform.questions.reduce((sum, currentQuestion) => {
+          return sum + (currentQuestion.required ? 1 : 0);
+        }, 0);
+
       this.optionalQuestions = this.webformQuestions.reduce(
         (sum, currentQuestion) => {
           return sum + (!currentQuestion.required ? 1 : 0);
         },
-        0
+        optionalQuestionsInTheExistingWebform
       );
 
       this.requiredQuestions = this.webformQuestions.reduce(
         (sum, currentQuestion) => {
           return sum + (currentQuestion.required ? 1 : 0);
         },
-        0
+        requiredQuestionsInTheExistingWebform
       );
 
       unlockUI();
@@ -731,8 +830,93 @@ export class WebformsCreatorComponent implements OnInit {
     }
   }
 
-  closeDialogFlow() {
-    this.closeEvent.emit(true);
+  async updateQuestion() {
+    try {
+      const largeInputQuestions: QuestionInput[] = this.webformQuestions.filter(
+        (question) => question.answerDefault?.length > 20
+      );
+      const smallInputQuestions: QuestionInput[] = this.webformQuestions.filter(
+        (question) => question.answerDefault?.length <= 20
+      );
+
+      if (smallInputQuestions.length > 0) {
+        await this.webformService.webformUpdateQuestion(
+          smallInputQuestions[0],
+          this.question._id,
+          this.webform._id
+        );
+      }
+
+      if (largeInputQuestions.length > 0) {
+        for await (const question of largeInputQuestions) {
+          const answerDefault = question.answerDefault;
+
+          const partsInAnswerDefault = [];
+
+          for (let i = 0; i < Math.ceil(answerDefault.length / 20); i++) {
+            const topLimit = i * 20 + 20;
+            const lowerLimit = i * 20;
+            partsInAnswerDefault.push(
+              answerDefault.slice(lowerLimit, topLimit)
+            );
+          }
+
+          question.answerDefault = partsInAnswerDefault[0];
+
+          try {
+            lockUI();
+            const results = await this.webformService.webformUpdateQuestion(
+              question,
+              this.question._id,
+              this.webform._id
+            );
+
+            if (results && partsInAnswerDefault.length > 1) {
+              for (let i = 1; i < partsInAnswerDefault.length; i++) {
+                const answerDefault = partsInAnswerDefault[i];
+
+                const result =
+                  await this.webformService.questionAddAnswerDefault(
+                    answerDefault,
+                    this.question._id,
+                    this.webform._id
+                  );
+              }
+
+              unlockUI();
+
+              this.optionalQuestions = this.webformQuestions.reduce(
+                (sum, currentQuestion) => {
+                  return sum + (!currentQuestion.required ? 1 : 0);
+                },
+                0
+              );
+
+              this.requiredQuestions = this.webformQuestions.reduce(
+                (sum, currentQuestion) => {
+                  return sum + (currentQuestion.required ? 1 : 0);
+                },
+                0
+              );
+
+              this.status = 'ENDED_CREATION';
+            } else unlockUI();
+          } catch (error) {
+            this.snackbar.open('Error al crear el formulario', 'Cerrar', {
+              duration: 3000,
+            });
+            console.error(error);
+          }
+        }
+      }
+    } catch (error) {
+      unlockUI();
+      console.error(error);
+    }
+  }
+
+  closeDialogFlow(endedCreation: boolean = false) {
+    this.closeEvent.emit(endedCreation);
   }
 
   detectWetherOrNotToDeleteLastQuestionOfTypeMultiple() {

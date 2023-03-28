@@ -31,6 +31,7 @@ import { ItemWebformPreviewComponent } from './pages/item-webform-preview/item-w
 import { WebformOptionsSelectorComponent } from './pages/webform-options-selector/webform-options-selector.component';
 import { FormResponsesComponent } from './pages/form-responses/form-responses.component';
 import { OpenFormResponsesComponent } from './pages/open-form-responses/open-form-responses.component';
+import { WebformsEditorComponent } from './pages/webforms-editor/webforms-editor.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -201,6 +202,10 @@ const routes: Routes = [
         path: 'webform-multiple-selection/:itemId',
         component: TextOrImageComponent,
       },
+      {
+        path: 'webforms-editor/:formId/:itemId',
+        component: WebformsEditorComponent
+      }
     ],
   },
   {
@@ -233,6 +238,7 @@ const routes: Routes = [
     WebformOptionsSelectorComponent,
     FormResponsesComponent,
     OpenFormResponsesComponent,
+    WebformsEditorComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

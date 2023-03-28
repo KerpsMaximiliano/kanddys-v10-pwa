@@ -1,4 +1,5 @@
 import Compressor from 'compressorjs';
+import { lockUI, unlockUI } from './ui.helpers';
 
 export function base64ToFile(base64: string): File {
   const [datatype, data] = base64.split(',');
@@ -24,6 +25,27 @@ export function fileToBase64(file: File): Promise<any> {
   
   return base64File;
 }
+
+export const arrayOfRoutesToBase64 = async (imageRoutes: any[]): Promise<string[]> => {
+  lockUI();
+
+  const base64Strings = await Promise.all(imageRoutes.map(async (imageObject) => {
+    const response = await fetch(imageObject.value);
+    const blob = await response.blob();
+    const base64String = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+    return base64String;
+  }));
+
+  unlockUI();
+
+  return base64Strings;
+}
+
 
 export async function compressImage(
   file: File | Blob,

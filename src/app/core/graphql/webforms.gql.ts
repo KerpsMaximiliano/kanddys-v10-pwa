@@ -48,7 +48,6 @@ export const webforms = gql`
     }
 `;
 
-
 export const webformByMerchant = gql`
   query webformByMerchant($merchantId: ObjectID!) {
     webformByMerchant(merchantId: $merchantId) {
@@ -114,7 +113,6 @@ export const itemAddWebForm = gql`
   }
 `;
 
-
 export const questionAddAnswerDefault = gql`
   mutation questionAddAnswerDefault($input: [AnswerDefaultInput!]!, $questionId: ObjectID!, $webformId: ObjectID!) {
     questionAddAnswerDefault(input: $input, questionId: $questionId, webformId: $webformId) {
@@ -131,6 +129,14 @@ export const webformAddQuestion = gql`
   }
 `;
 
+export const webformRemoveQuestion = gql`
+  mutation webformRemoveQuestion($questionId: [ObjectID!]!, $id: ObjectID!) {
+    webformRemoveQuestion(questionId: $questionId, id: $id) {
+      ${webformBody}
+    }
+  }
+`;
+
 export const createAnswer = gql`
   mutation createAnswer($input: AnswerInput!) {
     createAnswer(input: $input) {
@@ -138,6 +144,35 @@ export const createAnswer = gql`
       response {
         value
       }
+    }
+  }
+`;
+
+export const webformUpdateQuestion = gql`
+  mutation webformUpdateQuestion(
+    $input: QuestionInput!
+    $questionId: ObjectID!
+    $id: ObjectID!
+  ) {
+    webformUpdateQuestion(input: $input, questionId: $questionId, id: $id) {
+      _id
+      type
+      index
+      subIndex
+      value
+      answerLimit
+      answerDefault {
+        active
+        isMedia
+        value
+        defaultValue
+        label
+      }
+      answerTextType
+      show
+      required
+      active
+      answerMedia
     }
   }
 `;
@@ -160,7 +195,11 @@ export const orderAddAnswer = gql`
 `;
 
 export const itemUpdateWebForm = gql`
-  mutation itemUpdateWebForm($input: ItemWebFormInput! $webformId: ObjectID!, $id: ObjectID!) {
+  mutation itemUpdateWebForm(
+    $input: ItemWebFormInput!
+    $webformId: ObjectID!
+    $id: ObjectID!
+  ) {
     itemUpdateWebForm(input: $input, webformId: $webformId, id: $id) {
       webForms {
         _id
@@ -170,5 +209,3 @@ export const itemUpdateWebForm = gql`
     }
   }
 `;
-
-
