@@ -178,12 +178,16 @@
         </div>
     </swiper>
 
-    <div class="float-paginator swiper-slide-duplicate-prev left" *ngIf="activeIndex > 0">
-        <img [src]="env + '/arrow-left.svg'" alt="">
+    <div class="float-paginator">
+        <div class="button swiper-slide-duplicate-prev left" *ngIf="activeIndex > 0">
+            <img [src]="env + '/arrow-left.svg'" alt="">
+        </div>
     </div>
 
-    <div class="float-paginator swiper-slide-duplicate-next right" *ngIf="activeIndex < ordersReadyToDeliver.length - 1">
-        <img [src]="env + '/arrow-left.svg'" alt="">
+    <div class="float-paginator">
+        <div class="button swiper-slide-duplicate-next right" *ngIf="activeIndex < ordersReadyToDeliver.length - 1">
+            <img [src]="env + '/arrow-left.svg'" alt="">
+        </div>
     </div>
 
     <div class="footer">
@@ -260,18 +264,16 @@
                 </mat-checkbox>
             </ng-container>
         </div>
-        <div class="bottom-footer">
+        <div class="bottom-footer" *ngIf="isMerchant">
             <a
                 [routerLink]="['../../../ecommerce/order-detail', ordersReadyToDeliver[activeIndex]?._id]"
                 [queryParams]="{ redirectTo: router.url }"
-                *ngIf="isMerchant"
             >
                 Ir a la factura
             </a>
             <a 
                 [routerLink]="['../../delivery-orders']"
                 [queryParams]="{ redirectTo: router.url, deliveryZone: deliveryZone }"
-                *ngIf="isMerchant"
             >
                 Ver todas ({{ ordersReadyToDeliver.length }})
             </a>

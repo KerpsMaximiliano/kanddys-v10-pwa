@@ -623,7 +623,10 @@ export class OrderProcessComponent implements OnInit {
     // NOTA: La función tiene await pero podría no tenerlo para hacer más smooth el infinite scroll
     await this.populateOrder(event.activeIndex, 3, true);
 
-    if (this.ordersReadyToDeliver[this.activeIndex].deliveryData?.image) {
+    if (
+      this.ordersReadyToDeliver[this.activeIndex].deliveryData?.image ||
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'delivered'
+    ) {
       this.orderReadyToDeliver = false;
       this.orderDelivered = true;
       if (this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'pending') {
