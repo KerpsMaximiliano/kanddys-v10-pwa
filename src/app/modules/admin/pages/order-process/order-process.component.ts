@@ -113,7 +113,7 @@ export class OrderProcessComponent implements OnInit {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
-    loop: false,
+    loop: true,
     slideDuplicateNextClass: 'swiper-slide-duplicate-next',
     slideDuplicatePrevClass: 'swiper-slide-duplicate-prev',
   };

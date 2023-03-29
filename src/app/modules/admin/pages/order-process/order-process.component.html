@@ -40,7 +40,7 @@
                     <h5 class="subtitle">FACTURA {{ formatId(deliveryOrder?.dateId) }}</h5>
                     <h3 class="title">{{ deliveryOrder?.items[0].saleflow.merchant?.name ? deliveryOrder?.items[0].saleflow.merchant?.name : '' }}</h3>
                     <p class="meta-description" *ngIf="orderMerchant?.address">{{ orderMerchant?.address ? orderMerchant.address : '' }}</p>
-                    <p class="meta-description">{{ convertDate(deliveryOrder.createdAt) }}</p>
+                    <p class="meta-description">{{ convertDate(deliveryOrder?.createdAt) }}</p>
                 </div>
 
                 <div class="section">
@@ -137,22 +137,22 @@
                         <p class="label gray-out"*ngIf="deliveryImages[i]?.deliveryZone">{{ deliveryImages[i]?.deliveryZone.zona }}</p>
                         <p class="label gray-out capitalize"*ngIf="!deliveryImages[i]?.deliveryZone && deliveryOrder.items[0].deliveryLocation">
                             {{
-                                deliveryOrder.items[0].deliveryLocation.houseNumber
-                                  ? "#" + deliveryOrder.items[0].deliveryLocation.houseNumber + ", "
+                                deliveryOrder?.items[0]?.deliveryLocation?.houseNumber
+                                  ? "#" + deliveryOrder?.items[0]?.deliveryLocation?.houseNumber + ", "
                                   : ""
                             }}
-                            {{ deliveryOrder.items[0].deliveryLocation.street }},
+                            {{ deliveryOrder?.items[0]?.deliveryLocation?.street }},
                             {{
-                            deliveryOrder.items[0].deliveryLocation.referencePoint
-                                ? deliveryOrder.items[0].deliveryLocation.referencePoint + ", "
+                            deliveryOrder?.items[0]?.deliveryLocation?.referencePoint
+                                ? deliveryOrder?.items[0]?.deliveryLocation?.referencePoint + ", "
                                 : ""
                             }}
-                            {{ deliveryOrder.items[0].deliveryLocation.city }}, República Dominicana
+                            {{ deliveryOrder?.items[0]?.deliveryLocation?.city }}, República Dominicana
                         </p>
                     </div>
                     <div class="questions">
                         <p class="label">A quien entregaremos?</p>
-                        <p class="label gray-out capitalize">{{ deliveryOrder?.user.name ? deliveryOrder?.user.name : deliveryOrder?.user.phone }}</p>
+                        <p class="label gray-out capitalize">{{ deliveryOrder?.user?.name ? deliveryOrder?.user?.name : deliveryOrder?.user?.phone }}</p>
                     </div>
                     <div class="questions" *ngIf="deliveryImages[i]?.reservation">
                         <p class="label">Cuando entregaremos?</p>

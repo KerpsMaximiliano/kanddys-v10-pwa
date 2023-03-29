@@ -10,6 +10,8 @@ import { IpUser, User } from './user';
 export class OrderSubtotal {
   currency: string;
   amount: number;
+  item: string;
+  type: 'item' | 'delivery';
 }
 
 export class OCR extends Model<OCR> {
