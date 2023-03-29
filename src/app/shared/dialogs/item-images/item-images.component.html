@@ -1,4 +1,4 @@
-<div class="container" [ngStyle]="containerStyles">
+<div class="container" [ngStyle]="containerStyles" *ngIf="!round">
   <h1 *ngIf="title">{{ title }}</h1>
   <div class="image-selector">
     <div class="image-area">
@@ -27,11 +27,67 @@
         ]"
       />
       <div class="btn-add">
-        <label for="filemultiple" [ngStyle]="{ margin: inputPosition === 'center' ? 'auto' : 'initial' }">
+        <label
+          for="filemultiple"
+          [ngStyle]="{
+            margin: inputPosition === 'center' ? 'auto' : 'initial'
+          }"
+        >
           <span class="icon">+</span>
           <span>Adiciona</span>
         </label>
-        <p class="caption" *ngIf="caption" [ngStyle]="{ margin: inputPosition === 'center' ? 'auto' : 'initial' }">{{ caption }}</p>
+        <p
+          class="caption"
+          *ngIf="caption"
+          [ngStyle]="{
+            margin: inputPosition === 'center' ? 'auto' : 'initial'
+          }"
+        >
+          {{ caption }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- --------------------------------------- ROUND VERSION ------------------------------------------- -->
+
+<div class="container2" [ngStyle]="containerStyles" *ngIf="round">
+  <div class="image-selector">
+    <div class="image-area">
+      <input
+        id="filemultiple"
+        (change)="fileProgressMultiple($event)"
+        type="file"
+        style="display: none"
+        accept="video/*,image/*"
+        multiple
+        [accept]="[
+          '.png',
+          '.jpg',
+          '.jpeg',
+          '.webp',
+          '.webm',
+          '.mp4',
+          '.m4v',
+          '.mpg',
+          '.mpeg',
+          '.mpeg4',
+          '.mov',
+          '.3gp',
+          '.mts/m2ts',
+          '.mxf'
+        ]"
+      />
+      <div class="btn-add">
+        <label
+          for="filemultiple"
+          [ngStyle]="{
+            margin: inputPosition === 'center' ? 'auto' : 'initial'
+          }"
+        >
+          <span class="icon2">+</span>
+        </label>
       </div>
     </div>
   </div>

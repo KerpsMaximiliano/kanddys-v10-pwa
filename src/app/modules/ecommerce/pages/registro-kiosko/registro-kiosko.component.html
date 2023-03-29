@@ -8,7 +8,28 @@
     </button>
   </header>
 
-  <swiper [config]="swiperConfig">
+  <div
+    class="current-media-shown-indicators"
+    [style]="{
+      'grid-template-columns': 'repeat(12, 1fr)'
+    }"
+  >
+    <ng-container>
+      <div
+        class="indicator"
+        [ngClass]="{
+          active: i === currentMediaSlide
+        }"
+        *ngFor="let slide of slides; let i = index"
+      ></div>
+    </ng-container>
+  </div>
+
+  <swiper
+    [config]="swiperConfig"
+    #mediaSwiper
+    (slideChange)="updateCurrentSlideData($event)"
+  >
     <div class="content">
       <p class="title">¿Qué actividad te interesa más?</p>
       <div class="green-text-wrapper">
@@ -146,13 +167,17 @@
         />
       </div>
 
-      <button class="swipe">Swipe para no responder ahora</button>
+      <button class="swipe" (click)="nextSlide()">
+        Swipe para no responder ahora
+      </button>
     </div>
 
     <!-- ---------------------- 4TO SLIDE ------------------------ -->
 
     <div class="content">
-      <p class="title">¿Qué irá debajo del {{ kioskoName }}?</p>
+      <p class="title">
+        ¿Qué irá debajo de {{ kioskoName ? kioskoName : "NombreID" }}?
+      </p>
 
       <div class="input-wrapper">
         <p class="input-title">Tu respuesta</p>
@@ -163,7 +188,246 @@
         />
       </div>
 
-      <button class="swipe">Swipe para no responder ahora</button>
+      <button class="swipe" (click)="nextSlide()">
+        Swipe para no responder ahora
+      </button>
     </div>
+
+    <!-- ---------------------- 5TO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">¿Qué imágen?</p>
+      <div style="margin-top: 50px; display: flex; justify-content: center">
+        <div *ngIf="!file">
+          <app-item-images
+            [round]="true"
+            (enteredImages)="onImageInput($event)"
+          ></app-item-images>
+        </div>
+
+        <div
+          *ngIf="file"
+          [ngStyle]="{ backgroundImage: 'url(' + base64 + ')' }"
+          class="preview"
+        ></div>
+      </div>
+      <button class="swipe" (click)="nextSlide()" style="margin-top: 46vh">
+        Swipe para no responder ahora
+      </button>
+    </div>
+
+    <!-- ---------------------- 5TO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title" style="width: 85%">
+        ¿En cuál correo electrónico recibirás las notificaciones generadas en tu
+        KiosKo?
+      </p>
+      <div class="input-wrapper">
+        <p class="input-title">Tu respuesta</p>
+        <input
+          #input2
+          type="text"
+          placeholder="Escribe..."
+          [(ngModel)]="mail"
+          (input)="onMailInput($event, input2)"
+        />
+      </div>
+    </div>
+
+    <!-- ---------------------- 6TO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title" style="width: 85%">
+        ¿Desde cuál WhatsApp mandarás y recibirás las confirmaciones generadas
+        del KiosKo?
+      </p>
+      <div class="input-wrapper">
+        <p class="input-title">Tu respuesta</p>
+        <ngx-intl-tel-input
+          [cssClass]="'custom'"
+          [enableAutoCountrySelect]="true"
+          [enablePlaceholder]="true"
+          [searchCountryFlag]="true"
+          [selectFirstCountry]="false"
+          [preferredCountries]="preferredCountries"
+          [selectedCountryISO]="CountryISO"
+          maxLength="13"
+          minlength="10"
+          [phoneValidation]="true"
+          [separateDialCode]="true"
+          [customPlaceholder]="'(000) 000-0000'"
+          [numberFormat]="PhoneNumberFormat.International"
+          tabindex="1"
+          id="phone"
+          [(ngModel)]="inputPhone"
+          (ngModelChange)="onPhoneInput()"
+        ></ngx-intl-tel-input>
+
+        <!-- <button class="btn" (click)="nextSlide()">No usaré WhatsApp</button> -->
+      </div>
+
+      <button class="swipe" (click)="nextSlide()" style="margin-top: 60vh">
+        Swipe para no responder ahora
+      </button>
+    </div>
+
+    <!-- ---------------------- 7MO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">¿Cómo recibirás el dinero?</p>
+      <div class="input-wrapper" style="margin-top: 10px">
+        <p class="input-title">Respuesta</p>
+      </div>
+      <button class="btn">Por transferencia directo a mi cuenta</button>
+      <button class="btn">Por tarjeta de crédito, afiliado a azul</button>
+      <button class="btn">PayPal</button>
+      <button class="btn">Xyz</button>
+      <button class="btn">
+        Agregaré esto después de generarle la factura a mi cliente
+      </button>
+      <button class="swipe" (click)="nextSlide()" style="margin-top: 35vh">
+        Swipe para no responder ahora
+      </button>
+    </div>
+
+    <!-- ---------------------- 8VO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">Datos de tu banco</p>
+
+      <div class="input-wrapper" style="margin-top: 10px">
+        <p class="input-title">Nombre del Banco</p>
+        <input
+          #input3
+          type="text"
+          placeholder="Escribe..."
+          [(ngModel)]="bankName"
+          (input)="onBankInput($event, input3)"
+        />
+      </div>
+      <div class="input-wrapper" style="margin-top: 60px">
+        <p class="input-title">Cuenta donde transferirán el dinero</p>
+        <input
+          #input4
+          type="text"
+          placeholder="Escribe la cuenta donde transferirán el dinero..."
+          [(ngModel)]="account"
+          (input)="onAccountInput($event, input4)"
+        />
+      </div>
+
+      <div style="display: grid; justify-content: center; margin-top: 113.5px">
+        <svg
+          style="margin: 0 auto; cursor: pointer"
+          xmlns="http://www.w3.org/2000/svg"
+          width="23.999"
+          height="26.991"
+          viewBox="0 0 23.999 26.991"
+        >
+          <g id="play" transform="translate(-12 -10.505)">
+            <g id="Group_76058" data-name="Group 76058">
+              <path
+                id="Path_29066"
+                data-name="Path 29066"
+                d="M32.412,24,15,13.9V34.1Zm2.376-2.088a2.406,2.406,0,0,1,0,4.176L15.7,37.164A2.455,2.455,0,0,1,12,35.076V12.924a2.455,2.455,0,0,1,3.7-2.088Z"
+                fill="#82f18d"
+              />
+            </g>
+          </g>
+        </svg>
+
+        <p class="title green" style="margin: 5px auto">
+          Mira como funcionan las transferencias bancarias
+        </p>
+        <p class="subtitle green" style="margin: 0 auto">0:50 segundos</p>
+      </div>
+
+      <button class="swipe" (click)="nextSlide()" style="margin-top: 20vh">
+        Swipe para no responder ahora
+      </button>
+    </div>
+
+    <!-- ---------------------- 9NO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">¿En que país promocionaremos tu KiosKo?</p>
+
+      <div class="input-wrapper" style="margin-bottom: 18.5px">
+        <p class="input-title">Tu respuesta</p>
+        <input
+          #input5
+          type="text"
+          placeholder="Escribe..."
+          [(ngModel)]="searchText"
+          (input)="filterCountries()"
+        />
+      </div>
+
+      <div *ngIf="searchText === ''">
+        <div *ngFor="let country of countries; index as i">
+          <button
+            class="btn"
+            (click)="selectedCountry(i)"
+            [ngClass]="country.selected ? 'selected' : ''"
+          >
+            {{ country.country }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="searchText !== ''">
+        <div *ngFor="let country of filteredCountries; index as i">
+          <button
+            class="btn"
+            (click)="selectedCountry(i)"
+            [ngClass]="country.selected ? 'selected' : ''"
+          >
+            {{ country.country }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------------------- 10MO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">¿En que ciudad?</p>
+
+      <div class="input-wrapper" style="margin-bottom: 18.5px">
+        <p class="input-title">Tu respuesta</p>
+        <input
+          #input6
+          type="text"
+          placeholder="Escribe..."
+          [(ngModel)]="city"
+          (input)="onCityInput($event, input6)"
+        />
+      </div>
+
+      <div *ngFor="let city of cities">
+        <button class="btn">{{ city.city }}</button>
+      </div>
+    </div>
+
+    <!-- ---------------------- 11VO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title" style="margin-bottom: 40px">
+        ¿Que Industria predominará lo que exhibirás en tu KiosKo?
+      </p>
+
+      <div *ngFor="let item of industrias; index as i">
+        <button
+          class="btn"
+          (click)="industrySelected(i)"
+          [ngClass]="item.selected ? 'selected' : ''"
+        >
+          {{ item.industria }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ---------------------- FINAL DE LOS SLIDES ------------------------ -->
   </swiper>
 </div>

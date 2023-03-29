@@ -1,0 +1,92 @@
+<mat-expansion-panel
+  hideToggle
+  (opened)="(panelOpenState === true)"
+  (closed)="(panelOpenState === false)"
+>
+  <mat-expansion-panel-header>
+    <div class="options">
+      <button class="option" style="background-color: #fff">KioskoID</button>
+      <button class="option" style="margin: 0 auto">Mercado</button>
+      <button class="option">Banco Editorial</button>
+    </div>
+    <svg
+      *ngIf="!panelOpenState"
+      class="toggle"
+      (click)="togglePanel()"
+      xmlns="http://www.w3.org/2000/svg"
+      width="27.602"
+      height="27.602"
+      viewBox="0 0 27.602 27.602"
+    >
+      <g id="info" transform="translate(-1.5 -1.5)">
+        <path
+          id="Path_29070"
+          data-name="Path 29070"
+          d="M24,9h2.008v2.008H24Z"
+          transform="translate(-8.699 -2.9)"
+          fill="#293628"
+        />
+        <path
+          id="Path_29071"
+          data-name="Path 29071"
+          d="M1.5,29.1H29.1V1.5H1.5ZM3.34,3.34H27.262V27.262H3.34Z"
+          fill="#293628"
+        />
+        <path
+          id="Path_29072"
+          data-name="Path 29072"
+          d="M23.039,26.444a1.038,1.038,0,0,1-1.893-.816L23.2,18.654a2.851,2.851,0,0,0-5.368-1.9l-.674,1.624,1.7.705.674-1.624a1.011,1.011,0,0,1,1.9.673L19.38,25.109a2.878,2.878,0,0,0,5.248,2.262l.868-1.49-1.59-.927Z"
+          transform="translate(-6.053 -5.218)"
+          fill="#293628"
+        />
+      </g>
+    </svg>
+
+    <div *ngIf="panelOpenState" (click)="togglePanel()" class="square toggle">
+      <mat-icon [ngStyle]="{ color: 'white' }">expand_less</mat-icon>
+    </div>
+  </mat-expansion-panel-header>
+  <button class="green">
+    Mira los KiosKos donde ganas “Estrellas” al comprar
+  </button>
+  <button class="green">
+    Mira como canjear los WeCoins del Mercado por dinero
+  </button>
+  <button class="green">
+    Mira las herramientas disponibles de WeDoWeLike para recompensar con
+    Estrellas a compradores y mas
+  </button>
+  <button class="green">
+    Mira las facturas generadas y las herramientas para incrementar tus ingresos
+  </button>
+  <button class="green">Mira las opciones de Ads</button>
+
+  <div class="bar"></div>
+
+  <button class="green">Editar KioskoID</button>
+  <br />
+
+  <button class="green">Ocultar KioskoID</button>
+  <br />
+
+  <button class="green">Eliminar KioskoID (se eliminará toda la data)</button>
+  <br />
+
+  <button class="green">Sign Out</button>
+</mat-expansion-panel>
+
+<div class="content">
+  <p class="text" style="margin-bottom: 20px">
+    Agrega el enlace de tu KiosKo a los bios de tus canales sociales para:
+  </p>
+  <p class="text">- Exhibir y vender tus propios artículos.</p>
+  <p class="text">
+    - Exhibir los artículos del “Mercado” que decidas y ser premiado con WeCoins
+    al venderse.
+  </p>
+</div>
+
+<div class="bottom-bar">
+  <button style="margin-right: auto">preview de un kiosko</button>
+  <button>preview de una página de enlaces</button>
+</div>

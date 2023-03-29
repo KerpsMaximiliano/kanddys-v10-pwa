@@ -30,6 +30,7 @@ import { MerchantLandingComponent } from '../admin/pages/merchant-landing/mercha
 import { StoreAssistantComponent } from './pages/store-assistant/store-assistant.component';
 import { OrderProcessComponent } from '../admin/pages/order-process/order-process.component';
 import { RegistroKioskoComponent } from './pages/registro-kiosko/registro-kiosko.component';
+import { KioskoViewComponent } from './pages/kiosko-view/kiosko-view.component';
 
 const routes: Routes = [
   {
@@ -82,6 +83,10 @@ const routes: Routes = [
   {
     path: 'registro-kiosko',
     component: RegistroKioskoComponent,
+  },
+  {
+    path: 'kiosko-view',
+    component: KioskoViewComponent,
   },
   {
     path: ':merchantSlug',
@@ -193,6 +198,7 @@ const routes: Routes = [
     MerchantLandingComponent,
     StoreAssistantComponent,
     RegistroKioskoComponent,
+    KioskoViewComponent,
   ],
   imports: [
     CommonModule,

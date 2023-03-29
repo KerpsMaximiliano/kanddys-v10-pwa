@@ -1,0 +1,105 @@
+* {
+  margin: 0;
+}
+
+::ng-deep .mat-expansion-panel-header {
+  background-color: #c1c4c1 !important;
+  box-shadow: 0px 3px 6px rgba(#000000, 0.16) inset !important;
+  padding: 9px 18px !important;
+  border-radius: 0 !important;
+  align-items: center !important;
+  pointer-events: none;
+
+  .options {
+    padding: 2.5px 5px;
+    border: 1px solid #fff;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .option {
+      padding: 0.5px 15px;
+      border-radius: 2px;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+    }
+  }
+
+  .toggle {
+    pointer-events: all !important;
+    margin-left: 5px;
+  }
+
+  .square {
+    height: 27.5px;
+    width: 27.5px;
+    background-color: #293628;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.content {
+  margin-top: 30px;
+  padding: 0px 20px;
+  min-height: 90vh;
+
+  .text {
+    font-size: 16px;
+    font-family: SFProLight;
+    color: #272727;
+  }
+}
+.bottom-bar {
+  padding: 7.5px 20px;
+  background-color: #82f18d;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+  max-width: 500px;
+  bottom: 0;
+
+  button {
+    all: unset;
+    cursor: pointer;
+    color: #272727;
+    font-size: 13px;
+    font-family: SFProLight;
+    text-transform: uppercase;
+  }
+}
+
+::ng-deep .mat-expansion-panel-header:hover {
+  background-color: #c1c4c1 !important;
+}
+
+::ng-deep .mat-expansion-panel {
+  //background-color: #c1c4c1;
+  border-radius: 0 !important;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  background-color: #293628 !important;
+  border-radius: 2px !important;
+  padding: 30px 20px !important;
+
+  .green {
+    all: unset;
+    color: #82f18d;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: SFProLight;
+    margin-bottom: 12px;
+  }
+
+  .bar {
+    height: 1px;
+    background-color: rgba(#82f18d, 0.37);
+    width: 100%;
+    margin-bottom: 40px;
+  }
+}
