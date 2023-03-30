@@ -13,6 +13,7 @@
     </div>
     <button
       *ngIf="
+        !hasDeliveryZones &&
         mode === 'normal' &&
         headerService.saleflow?.module?.delivery?.deliveryLocation &&
         user
@@ -25,7 +26,21 @@
       <div class="dot"></div>
     </button>
   </header>
-  <main>
+  <main *ngIf="hasDeliveryZones">
+    <h3 class="title">Seleccione entre:</h3>
+    <div>
+      <app-answer-selector
+        [options]="addressesOptions"
+        [activeOption]="selectedDeliveryIndex"
+        [indicator]="true"
+        (onSelector)="handleSelectedDeliveryZone($event)"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+      ></app-answer-selector>
+    </div>
+  </main>
+  <main *ngIf="!hasDeliveryZones">
     <ng-container *ngIf="mode !== 'add' && !editingId">
       <h3 class="title">Seleccione entre:</h3>
       <div>

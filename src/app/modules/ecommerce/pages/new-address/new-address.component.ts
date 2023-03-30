@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import {
   DeliveryLocation,
   DeliveryLocationInput,
@@ -10,6 +11,7 @@ import {
 import { User } from 'src/app/core/models/user';
 import { ViewsMerchant } from 'src/app/core/models/views-merchant';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import {
   HeaderService,
   SaleflowData,
@@ -41,7 +43,8 @@ export class NewAddressComponent implements OnInit {
     private fb: FormBuilder,
     private usersService: UsersService,
     private toastr: ToastrService,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private deliveryzonesService: DeliveryZonesService
   ) {
     this.addressForm = fb.group({
       nickName: fb.control('Mi casa', [
@@ -96,6 +99,10 @@ export class NewAddressComponent implements OnInit {
       ],
     },
   ];
+
+  deliveryZones: DeliveryZone[] = [];
+  hasDeliveryZones: boolean = false;
+
   selectedDeliveryIndex: number;
   // selectedAuthIndex: number;
   magicLinkLocation: DeliveryLocationInput;
@@ -121,7 +128,33 @@ export class NewAddressComponent implements OnInit {
         });
       }
     }
-    this.checkAddresses();
+
+    await this.getDeliveryZones(this.headerService.saleflow.merchant._id);
+
+    if (this.hasDeliveryZones) {
+      this.deliveryZones.forEach((zone) => {
+        this.addressesOptions.push({
+          status: true,
+          id: zone._id,
+          value: zone.zona,
+          valueStyles: {
+            fontFamily: 'SfProBold',
+            fontSize: '0.875rem',
+            color: '#000000',
+          },
+          subtexts: [
+            {
+              text: "Santo Domingo, República Dominicana",
+              styles: {
+                fontFamily: 'SfProRegular',
+                fontSize: '1rem',
+              },
+            },
+          ]
+        });
+      });
+    } else {
+      this.checkAddresses();
     this.user = await this.authService.me();
     if (this.headerService.saleflow.module?.delivery?.pickUpLocations?.length) {
       this.addresses.push(
@@ -193,6 +226,7 @@ export class NewAddressComponent implements OnInit {
       this.addressForm.patchValue({ ...this.magicLinkLocation, save: true });
       this.mode = 'add';
       this.formSubmit();
+    }
     }
 
     const viewsMerchants = await this.merchantsService.viewsMerchants({
@@ -318,6 +352,23 @@ export class NewAddressComponent implements OnInit {
     });
   }
 
+  selectZone() {
+    const { ...deliveryZoneInput } = this.deliveryZones[this.selectedDeliveryIndex];
+    console.log(deliveryZoneInput);
+
+    this.headerService.storeZone({
+      amount: deliveryZoneInput.amount,
+      zona: deliveryZoneInput.zona,
+      id: deliveryZoneInput._id,
+    });
+    this.headerService.orderProgress.delivery = true;
+    this.headerService.storeOrderProgress();
+    this.router.navigate([`../checkout`], {
+      replaceUrl: this.headerService.checkoutRoute ? true : false,
+      relativeTo: this.route,
+    });
+  }
+
   authSelect(auth: 'order' | 'address') {
     this.router.navigate([`auth/login`], {
       queryParams: { auth, saleflow: this.headerService.saleflow._id },
@@ -432,6 +483,28 @@ export class NewAddressComponent implements OnInit {
     this.goBack();
   }
 
+  async getDeliveryZones(merchantId: string) {
+    try {
+      const result = await this.deliveryzonesService.deliveryZones(
+        {
+          options: {
+            limit: -1,
+            sortBy: "createdAt:desc"
+          },
+          findBy: {
+            merchant: merchantId,
+            active: true
+          }
+        }
+      );
+
+      this.deliveryZones = result;
+      if (this.deliveryZones.length > 0) this.hasDeliveryZones = true;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   goBack() {
     if (this.mode === 'normal')
       return this.router.navigate([`../checkout`], {
@@ -486,5 +559,10 @@ export class NewAddressComponent implements OnInit {
   handleData(event):void {
     this.selectedDeliveryIndex = event;
     this.selectAddress();
+  }
+
+  handleSelectedDeliveryZone(event): void {
+    this.selectedDeliveryIndex = event;
+    this.selectZone();
   }
 }

@@ -11,6 +11,7 @@ import {
   playVideoOnFullscreen,
   unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
+import { DeliveryZoneInput } from 'src/app/core/models/deliveryzone';
 import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput, ItemSubOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
@@ -116,6 +117,7 @@ export class CheckoutComponent implements OnInit {
   items: ExtendedItem[];
   post: PostInput;
   deliveryLocation: DeliveryLocationInput;
+  deliveryZone: DeliveryZoneInput;
   reservation: ReservationInput;
   payment: number;
   hasPaymentModule: boolean;
@@ -221,9 +223,10 @@ export class CheckoutComponent implements OnInit {
         }
       });
     }
+    this.deliveryZone = this.headerService.getZone();
     this.deliveryLocation = this.headerService.getLocation();
     // Validation for stores with only one address of pickup and no delivery for customers
-    if (!this.deliveryLocation) {
+    if (!this.deliveryZone || !this.deliveryLocation) {
       if (
         this.headerService.saleflow.module.delivery.pickUpLocations.length ==
           1 &&
