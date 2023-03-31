@@ -107,15 +107,7 @@
         </h2>
       </div>
 
-      <ng-container *ngIf="deliveryZone">
-        <button
-          class="items-container ready"
-          (click)="editOrder('address')"
-        >
-          <ng-container *ngTemplateOutlet="deliveryZoneTemplate"></ng-container>
-        </button>
-      </ng-container>
-      <ng-container *ngIf="deliveryLocation && !deliveryZone">
+      <ng-container *ngIf="deliveryLocation">
         <button
           *ngIf="
             headerService.saleflow?.module?.delivery?.pickUpLocations?.length >
@@ -135,10 +127,36 @@
       </ng-container>
       <button
         class="items-container column pointer green"
-        *ngIf="!deliveryZone && !deliveryLocation"
+        *ngIf="!deliveryLocation"
         (click)="editOrder('address')"
       >
         <p class="address-name">Selecciona una dirección...</p>
+      </button>
+    </section>
+
+    <section class="section" *ngIf="hasDeliveryZone && deliveryLocation && deliveryLocation.street">
+
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Zona de entrega</h2>
+      </div>
+
+      <ng-container *ngIf="deliveryZone">
+        <button
+          class="items-container ready"
+          (click)="openDeliveryZones()"
+        >
+          <p class="address-name">
+            {{ deliveryZone?.zona }}
+          </p>
+        </button>
+      </ng-container>
+
+      <button
+        class="items-container column pointer green"
+        *ngIf="!deliveryZone"
+        (click)="openDeliveryZones()"
+      >
+        <p class="address-name">Selecciona una zona de entrega</p>
       </button>
     </section>
 
@@ -384,11 +402,6 @@
       </div>
     </div>
   </div>
-</ng-template>
-
-<ng-template #deliveryZoneTemplate>
-  <p class="address-name">{{ deliveryZone.zona }}</p>
-  <p class="added address-name">Santo Domingo, República Dominicana</p>
 </ng-template>
 
 <ng-template #deliveryTemplate>

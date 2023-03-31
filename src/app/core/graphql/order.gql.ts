@@ -603,11 +603,11 @@ export const orderSetStatusDeliveryWithoutAuth = gql`
 
 export const orderSetDeliveryZone = gql`
   mutation orderSetDeliveryZone(
-    $userId: ObjectID!
     $deliveryZoneId: ObjectID!
     $id: ObjectID!
+    $userId: ObjectID
   ) {
-    orderSetStatusDeliveryWithoutAuth(userId: $userId, deliveryZoneId: $deliveryZoneId, id: $id) {
+    orderSetDeliveryZone(userId: $userId, deliveryZoneId: $deliveryZoneId, id: $id) {
       _id
     }
   }

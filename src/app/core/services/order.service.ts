@@ -434,10 +434,10 @@ export class OrderService {
     return result;
   }
 
-  async orderSetDeliveryZone(userId: string, deliveryZoneId: string, id: string): Promise<ItemOrder> {
+  async orderSetDeliveryZone(deliveryZoneId: string, id: string, userId?: string): Promise<ItemOrder> {
     const result = await this.graphql.mutate({
       mutation: orderSetDeliveryZone,
-      variables: { userId, deliveryZoneId, id },
+      variables: { deliveryZoneId, id, userId },
       fetchPolicy: 'no-cache',
     });
     if (!result || result?.errors) return undefined;
