@@ -31,6 +31,7 @@ import { StoreAssistantComponent } from './pages/store-assistant/store-assistant
 import { OrderProcessComponent } from '../admin/pages/order-process/order-process.component';
 import { RegistroKioskoComponent } from './pages/registro-kiosko/registro-kiosko.component';
 import { KioskoViewComponent } from './pages/kiosko-view/kiosko-view.component';
+import { LinksPageComponent } from './pages/links-page/links-page.component';
 
 const routes: Routes = [
   {
@@ -85,8 +86,12 @@ const routes: Routes = [
     component: RegistroKioskoComponent,
   },
   {
-    path: 'kiosko-view',
+    path: 'kiosko-view/:userId',
     component: KioskoViewComponent,
+  },
+  {
+    path: 'links-view/:userId',
+    component: LinksPageComponent,
   },
   {
     path: ':merchantSlug',
@@ -199,6 +204,7 @@ const routes: Routes = [
     StoreAssistantComponent,
     RegistroKioskoComponent,
     KioskoViewComponent,
+    LinksPageComponent,
   ],
   imports: [
     CommonModule,

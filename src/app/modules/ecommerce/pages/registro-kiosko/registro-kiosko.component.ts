@@ -4,6 +4,7 @@ import SwiperCore, { Virtual } from 'swiper/core';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 import { ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import {
@@ -11,6 +12,11 @@ import {
   PhoneNumberFormat,
   SearchCountryField,
 } from 'ngx-intl-tel-input';
+import { Country, State, City } from 'country-state-city';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { NotificationDialogComponent } from '../../../../shared/dialogs/notification-dialog/notification-dialog.component';
+import { Router } from '@angular/router';
 
 SwiperCore.use([Virtual]);
 
@@ -28,11 +34,23 @@ export class RegistroKioskoComponent implements OnInit {
   country: string = '';
   city: string = '';
 
+  user;
+  userId: string;
+
+  checkPhone;
+  checkMail;
+
+  signUpInput;
+
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
   constructor(
     private _ItemsService: ItemsService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private snackBar: MatSnackBar,
+    private authService: AuthService,
+    private dialog: DialogService,
+    private router: Router
   ) {}
 
   CountryISO = CountryISO.DominicanRepublic;
@@ -60,49 +78,73 @@ export class RegistroKioskoComponent implements OnInit {
   ];
 
   countries = [
-    { country: 'Estados Unidos', selected: false },
-    { country: 'México', selected: false },
-    { country: 'Colombia', selected: false },
-    { country: 'España', selected: false },
-    { country: 'Argentina', selected: false },
-    { country: 'Perú', selected: false },
-    { country: 'Venezuela', selected: false },
-    { country: 'Chile', selected: false },
-    { country: 'Ecuador', selected: false },
-    { country: 'Guatemala', selected: false },
-    { country: 'Bolivia', selected: false },
-    { country: 'Costa Rica', selected: false },
-    { country: 'República Dominicana', selected: false },
-    { country: 'El Salvador', selected: false },
-    { country: 'Honduras', selected: false },
-    { country: 'Nicaragua', selected: false },
-    { country: 'Panamá', selected: false },
-    { country: 'Paraguay', selected: false },
-    { country: 'Puerto Rico', selected: false },
-    { country: 'Uruguay', selected: false },
+    { country: 'Estados Unidos', code: 'US' },
+    { country: 'México', code: 'MX' },
+    { country: 'Colombia', code: 'CO' },
+    { country: 'España', code: 'ES' },
+    { country: 'Argentina', code: 'AR' },
+    { country: 'Perú', code: 'PE' },
+    { country: 'Venezuela', code: 'VE' },
+    { country: 'Chile', code: 'CL' },
+    { country: 'Ecuador', code: 'EC' },
+    { country: 'Guatemala', code: 'GT' },
+    { country: 'Bolivia', code: 'BO' },
+    { country: 'Costa Rica', code: 'CR' },
+    { country: 'República Dominicana', code: 'DO' },
+    { country: 'El Salvador', code: 'SV' },
+    { country: 'Honduras', code: 'HN' },
+    { country: 'Nicaragua', code: 'NI' },
+    { country: 'Panamá', code: 'PA' },
+    { country: 'Paraguay', code: 'PY' },
+    { country: 'Puerto Rico', code: 'PR' },
+    { country: 'Uruguay', code: 'UY' },
   ];
 
   filteredCountries: any[] = [];
+  filteredCities: any[] = [];
 
-  searchText: string = '';
+  searchCountry: string = '';
+  searchCity: string = '';
 
-  cities = [
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
-    { city: 'Ciudad ID xy' },
+  selectedCountryCode: string;
+  selectedCityCode: string;
+
+  selectedCountryName: string;
+  selectedCityName: string;
+
+  cities;
+
+  payOptions = [
+    {
+      text: 'Por transferencia directo a mi cuenta',
+      callback: async () => {
+        this.nextSlide();
+      },
+    },
+    {
+      text: 'Por tarjeta de crédito, afiliado a azul',
+      callback: async () => {
+        this.openDialog();
+      },
+    },
+    {
+      text: 'PayPal',
+      callback: async () => {
+        this.openDialog();
+      },
+    },
+    {
+      text: 'Xyz',
+      callback: async () => {
+        this.openDialog();
+      },
+    },
+    {
+      text: 'Agregaré esto después de generarle la factura a mi cliente',
+      callback: async () => {
+        this.openDialog();
+      },
+    },
   ];
 
   industrias = [
@@ -130,7 +172,7 @@ export class RegistroKioskoComponent implements OnInit {
   });
 
   itemFormPhone = this._formBuilder.group({
-    phone: [null, [Validators.required, Validators.minLength(10)]],
+    phone: [null, [Validators.required, Validators.minLength(12)]],
   });
 
   itemFormBank = this._formBuilder.group({
@@ -164,40 +206,49 @@ export class RegistroKioskoComponent implements OnInit {
   inputPhone: string = '';
   phoneNumber: string = '';
 
+  isCountrySelected: boolean = false;
+  isCitySelected: boolean = false;
+
   ngOnInit(): void {
     this.currentMediaSlide = 0;
 
     console.log(this.itemFormMail.valid);
+    console.log(this.phoneNumber);
+
+    // console.log(Country.getAllCountries());
+
+    // console.log(State.getStatesOfCountry('AR'));
+    // console.log(City.getCitiesOfCountry('AR'));
+
+    // console.log(State.getAllStates());
+    // console.log(City.getAllCities());
   }
 
-  updateCurrentSlideData(event: any) {
-    this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+  async updateCurrentSlideData() {
+    this.currentMediaSlide = await this.mediaSwiper.directiveRef.getIndex();
     console.log(this.currentMediaSlide);
-    // if (this.currentMediaSlide === 5 && !this.itemFormMail.valid) {
-    //   console.log('No se puede');
-    //   this.swiperConfig.allowSlideNext = false;
-    // }
-    // else if (this.currentMediaSlide === 6 && !this.itemFormPhone.valid) {
-    //   this.swiperConfig.allowSlideNext = false;
-    // }
-    // else if (this.itemFormMail.valid) {
-    //   this.swiperConfig.allowSlideNext = true;
-    // }
-    // else if (this.currentMediaSlide === 6 && !this.itemFormPhone.valid) {
-    //   this.swiperConfig.allowSlideNext = false;
-    // }
-    // else if (this.currentMediaSlide === 5 && this.itemFormMail.valid) {
-    //   this.swiperConfig.allowSlideNext = true;
-    // } else if (this.currentMediaSlide === 6 && this.itemFormPhone.valid) {
-    //   this.swiperConfig.allowSlideNext = true;
-    // }
+
+    if (this.currentMediaSlide === 5 && !this.itemFormMail.valid) {
+      this.swiperConfig.allowSlideNext = false;
+    } else if (
+      this.currentMediaSlide === 6 &&
+      !this.itemFormPhone.valid &&
+      this.inputPhone !== null
+    ) {
+      this.swiperConfig.allowSlideNext = false;
+    } else if (this.currentMediaSlide === 9 && !this.isCountrySelected) {
+      this.swiperConfig.allowSlideNext = false;
+    } else if (this.currentMediaSlide === 10 && !this.isCitySelected) {
+      this.swiperConfig.allowSlideNext = false;
+    } else {
+      this.swiperConfig.allowSlideNext = true;
+    }
   }
 
   async onImageInput(file) {
     this.file = file;
     console.log(this.file);
     this.base64 = await fileToBase64(file[0]);
-    console.log(this.base64);
     console.log(this.base64);
     let images: ItemImageInput[] = this.file.map((file) => {
       return {
@@ -217,11 +268,20 @@ export class RegistroKioskoComponent implements OnInit {
 
   async onNameInput(event: Event | string, input: HTMLInputElement) {
     this.kioskoName = input.value;
+    console.log(this.kioskoName);
+  }
+
+  onTitleInput(event: Event | string, input: HTMLInputElement) {
+    this.description = input.value;
+    console.log(this.description);
   }
 
   async onMailInput(event: Event | string, input: HTMLInputElement) {
     this.mail = input.value;
     this.itemFormMail.get('mail').patchValue(this.mail);
+
+    await this.updateCurrentSlideData();
+
     //console.log(this.itemFormMail.valid);
   }
 
@@ -245,22 +305,43 @@ export class RegistroKioskoComponent implements OnInit {
     this.itemFormCountry.get('city').patchValue(this.city);
   }
 
-  onPhoneInput() {
+  async onPhoneInput() {
     if (this.inputPhone != null) {
       let data: any = this.inputPhone;
       this.phoneNumber = data.e164Number;
-      //console.log('full number: ', Data.e164Number);
+      console.log('full number: ', data.e164Number);
     }
     this.itemFormPhone.get('phone').patchValue(this.phoneNumber);
+    await this.updateCurrentSlideData();
+    console.log(this.itemFormPhone.valid);
+  }
+
+  openDialog() {
+    this.dialog.open(NotificationDialogComponent, {
+      type: 'flat-action-sheet',
+      flags: ['no-header'],
+      customClass: 'app-dialog',
+      props: {
+        mail: this.mail,
+      },
+    });
   }
 
   filterCountries() {
     this.filteredCountries = this.countries.filter((item) => {
-      return item.country.toLowerCase().includes(this.searchText.toLowerCase());
+      return item.country
+        .toLowerCase()
+        .includes(this.searchCountry.toLowerCase());
     });
   }
 
-  nextSlide() {
+  async filterCities() {
+    this.filteredCities = await this.cities.filter((item) => {
+      return item.name.toLowerCase().includes(this.searchCity.toLowerCase());
+    });
+  }
+
+  async nextSlide() {
     // this.swiperConfig.allowSlideNext = true;
     this.mediaSwiper.directiveRef.nextSlide();
   }
@@ -281,5 +362,251 @@ export class RegistroKioskoComponent implements OnInit {
     }
   }
 
-  selectedCountry(index: number) {}
+  async selectedCountry(index: number) {
+    this.swiperConfig.allowSlideNext = true;
+    this.isCountrySelected = true;
+    await this.updateCurrentSlideData();
+    if (this.searchCountry === '') {
+      this.selectedCountryCode = this.countries[index].code;
+      this.selectedCountryName = this.countries[index].country;
+      console.log(this.countries[index]);
+    } else {
+      this.selectedCountryCode = this.filteredCountries[index].code;
+      this.selectedCountryName = this.filteredCountries[index].country;
+      console.log(this.filteredCountries[index]);
+    }
+
+    this.cities = await City.getCitiesOfCountry(this.selectedCountryCode);
+
+    console.log(this.cities);
+
+    await this.nextSlide();
+  }
+
+  async selectedCity(index: number) {
+    this.swiperConfig.allowSlideNext = true;
+    this.isCitySelected = true;
+    await this.updateCurrentSlideData();
+    if (this.searchCity === '') {
+      this.selectedCityCode = this.cities[index].code;
+      this.selectedCityName = this.cities[index].name;
+      console.log(this.selectedCityName);
+    } else {
+      this.selectedCityCode = this.filteredCountries[index].code;
+      this.selectedCityName = this.filteredCountries[index].name;
+      console.log(this.selectedCityName);
+    }
+    await this.nextSlide();
+  }
+
+  async checkUser() {
+    if (!this.user) {
+      if (this.itemFormPhone.valid) {
+        this.checkPhone = await this.authService.checkUser(this.phoneNumber);
+        console.log(this.checkPhone);
+      }
+      if (this.itemFormMail.valid) {
+        this.checkMail = await this.authService.checkUser(this.mail);
+        console.log(this.checkMail);
+      }
+    }
+  }
+
+  async createUser() {
+    console.log('Aqui creo el User');
+    console.log(this.kioskoName);
+    console.log(this.description);
+
+    await this.checkUser();
+
+    if (
+      this.kioskoName !== '' &&
+      this.description !== '' &&
+      this.itemFormPhone.valid &&
+      this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        title: this.description,
+        username: this.kioskoName,
+        phone: this.phoneNumber,
+        image: this.base64,
+      };
+    } else if (
+      this.kioskoName !== '' &&
+      this.description !== '' &&
+      this.itemFormPhone.valid &&
+      !this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        title: this.description,
+        username: this.kioskoName,
+        phone: this.phoneNumber,
+      };
+    } else if (
+      this.kioskoName !== '' &&
+      this.description !== '' &&
+      !this.itemFormPhone.valid &&
+      !this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        username: this.kioskoName,
+        title: this.description,
+      };
+    } else if (
+      this.kioskoName !== '' &&
+      this.description === '' &&
+      !this.itemFormPhone.valid &&
+      !this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        username: this.kioskoName,
+      };
+    } else if (
+      this.kioskoName === '' &&
+      this.description === '' &&
+      !this.itemFormPhone.valid &&
+      !this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+      };
+    } else if (
+      this.kioskoName === '' &&
+      this.description !== '' &&
+      !this.itemFormPhone.valid &&
+      !this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        title: this.description,
+      };
+    } else if (
+      this.kioskoName === '' &&
+      this.description === '' &&
+      this.itemFormPhone.valid &&
+      !this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        phone: this.phoneNumber,
+      };
+    } else if (
+      this.kioskoName === '' &&
+      this.description === '' &&
+      !this.itemFormPhone.valid &&
+      this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        image: this.base64,
+      };
+    } else if (
+      this.kioskoName !== '' &&
+      this.description === '' &&
+      this.itemFormPhone.valid &&
+      !this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        username: this.kioskoName,
+        phone: this.phoneNumber,
+      };
+    } else if (
+      this.kioskoName !== '' &&
+      this.description === '' &&
+      !this.itemFormPhone.valid &&
+      this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        username: this.kioskoName,
+        image: this.base64,
+      };
+    } else if (
+      this.kioskoName === '' &&
+      this.description !== '' &&
+      this.itemFormPhone.valid &&
+      !this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        title: this.description,
+        phone: this.phoneNumber,
+      };
+    } else if (
+      this.kioskoName === '' &&
+      this.description !== '' &&
+      !this.itemFormPhone.valid &&
+      this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        title: this.description,
+        image: this.base64,
+      };
+    } else if (
+      this.kioskoName === '' &&
+      this.description === '' &&
+      this.itemFormPhone.valid &&
+      this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        phone: this.phoneNumber,
+        image: this.base64,
+      };
+    } else if (
+      this.kioskoName !== '' &&
+      this.description !== '' &&
+      !this.itemFormPhone.valid &&
+      this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        username: this.kioskoName,
+        title: this.description,
+        image: this.base64,
+      };
+    } else if (
+      this.kioskoName !== '' &&
+      this.description === '' &&
+      this.itemFormPhone.valid &&
+      this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        username: this.kioskoName,
+        phone: this.phoneNumber,
+        image: this.base64,
+      };
+    } else if (
+      this.kioskoName === '' &&
+      this.description !== '' &&
+      this.itemFormPhone.valid &&
+      this.base64
+    ) {
+      this.signUpInput = {
+        email: this.mail,
+        title: this.description,
+        phone: this.phoneNumber,
+        image: this.base64,
+      };
+    }
+
+    if (!this.checkMail && !this.checkPhone) {
+      this.user = await this.authService.signup(
+        this.signUpInput,
+        'none',
+        null,
+        false
+      );
+      console.log(this.user);
+
+      this.router.navigate([`ecommerce/kiosko-view/${this.user.user._id}`]);
+    }
+  }
 }

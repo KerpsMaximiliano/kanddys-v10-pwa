@@ -28,7 +28,7 @@
   <swiper
     [config]="swiperConfig"
     #mediaSwiper
-    (slideChange)="updateCurrentSlideData($event)"
+    (slideChange)="updateCurrentSlideData()"
   >
     <div class="content">
       <p class="title">¿Qué actividad te interesa más?</p>
@@ -182,9 +182,11 @@
       <div class="input-wrapper">
         <p class="input-title">Tu respuesta</p>
         <input
+          #input6
           type="text"
           placeholder="Escribe tu nombre comercial o marca..."
           [(ngModel)]="description"
+          (input)="onTitleInput($event, input6)"
         />
       </div>
 
@@ -279,12 +281,12 @@
       <div class="input-wrapper" style="margin-top: 10px">
         <p class="input-title">Respuesta</p>
       </div>
-      <button class="btn">Por transferencia directo a mi cuenta</button>
-      <button class="btn">Por tarjeta de crédito, afiliado a azul</button>
-      <button class="btn">PayPal</button>
-      <button class="btn">Xyz</button>
-      <button class="btn">
-        Agregaré esto después de generarle la factura a mi cliente
+      <button
+        class="btn"
+        *ngFor="let option of payOptions"
+        (click)="option.callback()"
+      >
+        {{ option.text }}
       </button>
       <button class="swipe" (click)="nextSlide()" style="margin-top: 35vh">
         Swipe para no responder ahora
@@ -343,7 +345,7 @@
         <p class="subtitle green" style="margin: 0 auto">0:50 segundos</p>
       </div>
 
-      <button class="swipe" (click)="nextSlide()" style="margin-top: 20vh">
+      <button class="swipe" (click)="nextSlide()" style="margin-top: 27.5vh">
         Swipe para no responder ahora
       </button>
     </div>
@@ -359,30 +361,22 @@
           #input5
           type="text"
           placeholder="Escribe..."
-          [(ngModel)]="searchText"
+          [(ngModel)]="searchCountry"
           (input)="filterCountries()"
         />
       </div>
 
-      <div *ngIf="searchText === ''">
+      <div *ngIf="searchCountry === ''">
         <div *ngFor="let country of countries; index as i">
-          <button
-            class="btn"
-            (click)="selectedCountry(i)"
-            [ngClass]="country.selected ? 'selected' : ''"
-          >
+          <button class="btn" (click)="selectedCountry(i)">
             {{ country.country }}
           </button>
         </div>
       </div>
 
-      <div *ngIf="searchText !== ''">
+      <div *ngIf="searchCountry !== ''">
         <div *ngFor="let country of filteredCountries; index as i">
-          <button
-            class="btn"
-            (click)="selectedCountry(i)"
-            [ngClass]="country.selected ? 'selected' : ''"
-          >
+          <button class="btn" (click)="selectedCountry(i)">
             {{ country.country }}
           </button>
         </div>
@@ -397,16 +391,23 @@
       <div class="input-wrapper" style="margin-bottom: 18.5px">
         <p class="input-title">Tu respuesta</p>
         <input
-          #input6
           type="text"
           placeholder="Escribe..."
-          [(ngModel)]="city"
-          (input)="onCityInput($event, input6)"
+          [(ngModel)]="searchCity"
+          (input)="filterCities()"
         />
       </div>
 
-      <div *ngFor="let city of cities">
-        <button class="btn">{{ city.city }}</button>
+      <div *ngIf="searchCity === ''">
+        <div *ngFor="let city of cities; index as i">
+          <button class="btn" (click)="selectedCity(i)">{{ city.name }}</button>
+        </div>
+      </div>
+
+      <div *ngIf="searchCity !== ''">
+        <div *ngFor="let city of filteredCities; index as i">
+          <button class="btn" (click)="selectedCity(i)">{{ city.name }}</button>
+        </div>
       </div>
     </div>
 
@@ -426,6 +427,14 @@
           {{ item.industria }}
         </button>
       </div>
+
+      <button
+        class="btn save"
+        *ngIf="selectedIndustries.length"
+        (click)="createUser()"
+      >
+        Crear Kiosko
+      </button>
     </div>
 
     <!-- ---------------------- FINAL DE LOS SLIDES ------------------------ -->

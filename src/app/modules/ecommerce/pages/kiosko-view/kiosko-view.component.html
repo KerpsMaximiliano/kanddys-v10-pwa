@@ -88,5 +88,11 @@
 
 <div class="bottom-bar">
   <button style="margin-right: auto">preview de un kiosko</button>
-  <button>preview de una página de enlaces</button>
+  <button (click)="goToLinks()">preview de una página de enlaces</button>
 </div>
+
+<app-full-menu-button
+  [position]="{ bottom: '50px' }"
+  [optionsTop]="menuOptions"
+  [optionsBottom]="menuOptions2"
+></app-full-menu-button>

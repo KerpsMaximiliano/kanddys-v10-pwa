@@ -114,6 +114,17 @@
     border: none;
     margin-top: 65vh;
   }
+
+  .save {
+    background-color: #82f18d;
+    color: #272727;
+    border: 2px solid #fff;
+    font-family: SFProBold;
+    // position: fixed;
+    // bottom: 25px;
+    width: 100%;
+    max-width: 456px;
+  }
 }
 
 .preview {
