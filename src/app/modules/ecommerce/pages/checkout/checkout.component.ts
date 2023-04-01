@@ -288,8 +288,7 @@ export class CheckoutComponent implements OnInit {
     if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
       this.hasPaymentModule = true;
     this.checkLogged();
-    if (!this.headerService.orderInputComplete() && (this.hasDeliveryZone && !this.deliveryZone)) {
-      console.log(this.headerService.orderInputComplete(), "AAAAAAAAAAAAAA");
+    if (!this.headerService.orderInputComplete() || (this.hasDeliveryZone && this.deliveryLocation.street && !this.deliveryZone)) {
       this.missingOrderData = true;
     }
   }
@@ -309,7 +308,7 @@ export class CheckoutComponent implements OnInit {
       case 'message': {
         this.post = null;
         this.headerService.emptyPost();
-        if (!this.headerService.orderInputComplete() && (this.hasDeliveryZone && !this.deliveryZone))
+        if (!this.headerService.orderInputComplete() || (this.hasDeliveryZone && this.deliveryLocation.street && !this.deliveryZone))
           this.missingOrderData = true;
         break;
       }
@@ -604,7 +603,7 @@ export class CheckoutComponent implements OnInit {
       }
     });
 
-    this.dialogService.open(GeneralDialogComponent,
+    const dialog = this.dialogService.open(GeneralDialogComponent,
       {
         type: 'centralized-fullscreen',
         props: {
@@ -670,12 +669,13 @@ export class CheckoutComponent implements OnInit {
 
             this.deliveryZone = this.headerService.getZone();
 
-            if (!this.headerService.orderInputComplete() && (this.hasDeliveryZone && !this.deliveryZone)) {
+            if (!this.headerService.orderInputComplete() || (this.hasDeliveryZone && this.deliveryLocation.street && !this.deliveryZone)) {
               this.missingOrderData = true;
             } else {
               this.missingOrderData = false;
             }
             
+            dialog.close();
           }
         },
         customClass: 'app-dialog',
@@ -719,7 +719,7 @@ export class CheckoutComponent implements OnInit {
           ],
         };
         this.headerService.storePost(this.post);
-        if (!this.headerService.orderInputComplete() && (this.hasDeliveryZone && !this.deliveryZone)) {
+        if (!this.headerService.orderInputComplete() || (this.hasDeliveryZone && this.deliveryLocation.street && !this.deliveryZone)) {
           this.missingOrderData = true;
         } else {
           this.missingOrderData = false;
