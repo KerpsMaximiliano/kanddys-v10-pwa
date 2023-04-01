@@ -117,7 +117,7 @@ export class DeliveryZonesComponent implements OnInit {
         {
           findBy: {
             deliveryZone: deliveryZone._id,
-            orderStatus: ["to confirm", "paid", "completed"]
+            orderStatus: ["to confirm", "paid", "completed"],
           }
         }
       )
