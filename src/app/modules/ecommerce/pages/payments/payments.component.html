@@ -21,7 +21,7 @@
     -->
 
     <div class="amount-list">
-      <ng-container *ngIf="azulPaymentsSupported">
+      <ng-container>
         <div class="amount-flex-wrapper">
           <h3 class="label">Subtotal a pagar</h3>
           <h2 class="amount">RD $ {{ subtotal | number : "1.2-2" }}</h2>
@@ -30,11 +30,11 @@
           <h3 class="label">Costo de envio</h3>
           <h2 class="amount">RD $ {{ deliveryAmount | number : "1.2-2" }}</h2>
         </div>
-        <div class="amount-flex-wrapper">
+        <div class="amount-flex-wrapper" *ngIf="azulPaymentsSupported">
           <h3 class="label">Descuento</h3>
           <h2 class="amount">RD $ 0</h2>
         </div>
-        <div class="amount-flex-wrapper">
+        <div class="amount-flex-wrapper" *ngIf="azulPaymentsSupported">
           <h3 class="label">Impuestos</h3>
           <h2 class="amount">RD $ 0</h2>
         </div>
