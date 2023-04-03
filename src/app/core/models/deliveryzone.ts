@@ -9,6 +9,7 @@ export class DeliveryZoneInput {
     lesserAmount?: number;
     cost?: number;
     zona?: string;
+    id?: string;
 }
 
 export class DeliveryZone extends Model<DeliveryZone> {

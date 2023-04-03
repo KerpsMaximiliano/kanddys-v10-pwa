@@ -13,6 +13,7 @@
                         <app-currency-input
                             [innerLabel]="input.label"
                             [inputId]="input.formControl"
+                            [initialValue]="input.value"
                             (onInputEvent)="onKeyPress($event, input.formControl)"
                             *ngIf="input.type === 'number'"
                         ></app-currency-input>

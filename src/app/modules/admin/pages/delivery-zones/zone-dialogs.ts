@@ -823,7 +823,8 @@ export class ZoneDialogs {
                         this.merchantService.merchantData._id,
                         {
                           type: "delivery-zone",
-                          amount: zone.cost
+                          amount: zone.cost,
+                          name: `Egreso de zona de entrega '${zone.zona}'`
                         }
                       );
                       await this.deliveryzonesService.addExpenditure(expenditure._id, deliveryZone._id);

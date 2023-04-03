@@ -33,6 +33,7 @@ import {
   hotOrderByMerchantDelivery,
   updateOrderDeliveryData,
   orderSetStatusDeliveryWithoutAuth,
+  orderSetDeliveryZone,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -427,6 +428,16 @@ export class OrderService {
     const result = await this.graphql.mutate({
       mutation: orderSetStatusDeliveryWithoutAuth,
       variables: { orderStatusDelivery, id },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async orderSetDeliveryZone(deliveryZoneId: string, id: string, userId?: string): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: orderSetDeliveryZone,
+      variables: { deliveryZoneId, id, userId },
       fetchPolicy: 'no-cache',
     });
     if (!result || result?.errors) return undefined;
