@@ -32,6 +32,7 @@ import { OrderProcessComponent } from '../admin/pages/order-process/order-proces
 import { RegistroKioskoComponent } from './pages/registro-kiosko/registro-kiosko.component';
 import { KioskoViewComponent } from './pages/kiosko-view/kiosko-view.component';
 import { LinksPageComponent } from './pages/links-page/links-page.component';
+import { LinkRegisterComponent } from './pages/link-register/link-register.component';
 
 const routes: Routes = [
   {
@@ -92,6 +93,10 @@ const routes: Routes = [
   {
     path: 'links-view/:userId',
     component: LinksPageComponent,
+  },
+  {
+    path: 'link-register/:userId',
+    component: LinkRegisterComponent,
   },
   {
     path: ':merchantSlug',
@@ -205,6 +210,7 @@ const routes: Routes = [
     RegistroKioskoComponent,
     KioskoViewComponent,
     LinksPageComponent,
+    LinkRegisterComponent,
   ],
   imports: [
     CommonModule,

@@ -1,22 +1,52 @@
-<div
-  class="container"
-  *ngFor="let card of cards"
-  [style]="{ background: card.bg }"
->
-  <div class="top">
-    <img [src]="card.img" alt="" />
-    <div class="right">
-      <p class="title">{{ card.title }}</p>
-      <p class="subtitle">{{ card.subtitle }}</p>
+<div *ngIf="!kioskoView">
+  <div
+    class="container"
+    *ngFor="let card of cards"
+    [style]="{ background: card.bg }"
+  >
+    <div class="top">
+      <img [src]="card.img" alt="" />
+      <div class="right">
+        <p class="title">{{ card.title }}</p>
+        <p class="subtitle">{{ card.subtitle }}</p>
+      </div>
+    </div>
+    <div class="bottom" *ngIf="card.bottom === true">
+      <p class="bottomText">
+        <span style="font-family: SFProBold; font-size: 17px">{{
+          card.bottomTextBold
+        }}</span>
+        ó
+        {{ card.bottomText }}
+      </p>
     </div>
   </div>
-  <div class="bottom" *ngIf="card.bottom === true">
-    <p class="bottomText">
-      <span style="font-family: SFProBold; font-size: 17px">{{
-        card.bottomTextBold
-      }}</span>
-      ó
-      {{ card.bottomText }}
-    </p>
+</div>
+
+<!-- -------------------------------------------- KIOSKO MODE -------------------------------------------- -->
+
+<div *ngIf="kioskoView">
+  <div
+    class="container"
+    style="padding-top: 0px"
+    *ngFor="let card of cards"
+    [style]="{ background: card.bg }"
+  >
+    <div class="circle">
+      <img [src]="env + '/dots-black.svg'" alt="" />
+    </div>
+    <div class="top">
+      <img [src]="card.img" alt="" />
+      <div class="right">
+        <p class="title">{{ card.title }}</p>
+        <p class="subtitle">{{ card.subtitle }}</p>
+        <p class="subtitle" style="color: #2874ad">{{ card.bottomTextBold }}</p>
+      </div>
+    </div>
+    <!-- <div class="bottom" style="border: none" *ngIf="card.bottom === true">
+      <p class="bottomText">
+        <span style="color: #2874ad">{{ card.bottomTextBold }}</span>
+      </p>
+    </div> -->
   </div>
 </div>

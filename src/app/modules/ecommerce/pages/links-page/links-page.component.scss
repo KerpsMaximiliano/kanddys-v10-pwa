@@ -30,3 +30,29 @@
     font-family: SFProBold;
   }
 }
+
+.container {
+  background-color: #f6f6f6;
+  padding: 20px 15px;
+  min-height: 100vh;
+}
+
+.bottom-bar {
+  padding: 7.5px 20px;
+  background-color: #82f18d;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  bottom: 0;
+
+  button {
+    all: unset;
+    cursor: pointer;
+    color: #272727;
+    font-size: 13px;
+    font-family: SFProLight;
+    text-transform: uppercase;
+  }
+}

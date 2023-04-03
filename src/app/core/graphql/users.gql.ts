@@ -29,6 +29,7 @@ export const user = gql`
         name
         url
       }
+      username
     }
   }
 `;
@@ -46,7 +47,7 @@ export const buyersByItem = gql`
 `;
 
 export const deleteMe = gql`
-  mutation deleteMe  {
+  mutation deleteMe {
     deleteMe
   }
 `;

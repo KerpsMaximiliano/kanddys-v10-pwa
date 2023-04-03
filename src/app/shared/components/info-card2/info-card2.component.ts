@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class InfoCard2Component implements OnInit {
   env: string = environment.assetsUrl;
 
+  @Input() kioskoView: boolean = false;
   @Input() cards = [];
 
   constructor() {}
