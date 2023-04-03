@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 export interface formInput {
   label?: string,
   placeholder?: string,
   formControl?: string,
+  value: any,
   type?: 'text' | 'number',
   required?: boolean,
   styles?: Record<string, string>,
@@ -45,11 +45,11 @@ export class DialogFormComponent implements OnInit {
 
   @Output('formSubmit') formSubmit = new EventEmitter<any>();
 
-  constructor(private dialogFlowService: DialogFlowService) {}
+  constructor() {}
 
   ngOnInit(): void {
     const inputs = this.fields.inputs.map(row => row);
-    const inputControls = inputs.map(input => new FormControl("", input.required ? [Validators.required] : []));
+    const inputControls = inputs.map(input => new FormControl(input.value, input.required ? [Validators.required] : []));
     this.form = new FormGroup({
       inputArray: new FormArray(inputControls)
     });
@@ -60,9 +60,7 @@ export class DialogFormComponent implements OnInit {
 
     inputs.forEach((input) => {
       const index = input.row;
-      // Verificamos si el index no está en el Set
       if (!rowSet.has(index)) {
-        // Agregamos el index al Set y al array de rows
         rowSet.add(index);
         this.rows.push({
           index,
@@ -73,6 +71,8 @@ export class DialogFormComponent implements OnInit {
     });
     console.log(this.rows);
     this.columns = Array.from(new Set(inputs.map(item => item.column)));
+
+    console.log(this.fields.inputs);
   }
 
   onKeyPress(event?: any, id?: any) {

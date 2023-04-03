@@ -18,6 +18,7 @@ import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { ZoneDialogs } from './zone-dialogs';
+import { EditZoneDialogs } from './edit-delivery-zones.component';
 
 @Component({
   selector: 'app-delivery-zones',
@@ -45,9 +46,15 @@ export class DeliveryZonesComponent implements OnInit {
 
   // Dialog flow variables
   swiperConfig: SwiperOptions = null;
+  editSwiperConfig: SwiperOptions = null;
+
   dialogs: Array<EmbeddedComponentWithId> = [];
   dialogFlowFunctions: Record<string, any> = {};
   isDialogOpen: boolean = false;
+
+  editDialogs: Array<EmbeddedComponentWithId> = [];
+  editDialogFlowFunctions: Record<string, any> = {};
+  isEditDialogOpen: boolean = false;
 
   constructor(
     private deliveryzonesService: DeliveryZonesService,
@@ -66,6 +73,7 @@ export class DeliveryZonesComponent implements OnInit {
 
     setTimeout(() => {
       this.dialogFlowFunctions.moveToDialogByIndex(0);
+      this.editDialogFlowFunctions.moveToDialogByIndex(0);
     }, 500);
 
     await this.getMerchant();
@@ -117,7 +125,7 @@ export class DeliveryZonesComponent implements OnInit {
         {
           findBy: {
             deliveryZone: deliveryZone._id,
-            orderStatus: ["to confirm", "paid", "completed"]
+            orderStatus: ["to confirm", "paid", "completed"],
           }
         }
       )
@@ -218,8 +226,19 @@ export class DeliveryZonesComponent implements OnInit {
             {
               title: 'Editar zona de entrega',
               callback: () => {
-                // this.seedDialogFlow('flow1', deliveryZone);
-                // this.isDialogOpen = true;
+                this.deliveryzonesService.deliveryZoneData = deliveryZone;
+
+                const expenditure = this.expenditures.find(expenditure => expenditure._id === deliveryZone.expenditure[0]);
+                this.deliveryzonesService.expenditureData = expenditure ? expenditure : null;
+
+                this.editDialogs = new EditZoneDialogs(
+                  this.dialogFlowFunctions,
+                  this.merchantsService,
+                  this.deliveryzonesService,
+                  this.dialogflowService
+                ).inject();
+                
+                this.isEditDialogOpen = true;
               },
             },
             {
@@ -258,6 +277,11 @@ export class DeliveryZonesComponent implements OnInit {
   close() {
     this.isDialogOpen = false;
     console.log("Cerrando dialogo");
+  }
+
+  closeEdition() {
+    this.isEditDialogOpen = false;
+    console.log("Cerrando dialogo de edición");
   }
 
   goToOrders(deliveryZone: string) {

@@ -71,3 +71,12 @@
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
   (closingDialogSignal)="close()"
 ></app-dialog-flow>
+
+<app-dialog-flow
+  [dialogFlowId]="'flow2'"
+  [status]="isEditDialogOpen ? 'OPEN' : 'CLOSE'"
+  [dialogs]="editDialogs"
+  (saveConfigRef)="editSwiperConfig = $event"
+  (moveToDialogRef)="editDialogFlowFunctions.moveToDialogByIndex = $event"
+  (closingDialogSignal)="closeEdition()"
+></app-dialog-flow>

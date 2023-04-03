@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
-import { createDeliveryZone, createExpenditure, deleteDeliveryZone, deliveryZone, deliveryZoneAddExpenditure, deliveryZones } from '../graphql/deliveryzones.gql';
+import { createDeliveryZone, createExpenditure, deleteDeliveryZone, deliveryZone, deliveryZoneAddExpenditure, deliveryZones, updateDeliveryZone, updateExpenditure } from '../graphql/deliveryzones.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { DeliveryZone, DeliveryZoneInput } from '../models/deliveryzone';
 import { PaginationInput } from '../models/saleflow';
+import { Expenditure } from '../models/order';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DeliveryZonesService {
   constructor(private graphql: GraphQLWrapper) {}
+
+  deliveryZoneData: DeliveryZone;
+  expenditureData: Expenditure;
 
   async deliveryZone(
     id: string
@@ -60,6 +64,24 @@ export class DeliveryZonesService {
     }
   }
 
+  async update(
+    id: string,
+    input: DeliveryZoneInput
+  ): Promise<DeliveryZone> {
+    console.log(input);
+    try {
+      const result = await this.graphql.query({
+        query: updateDeliveryZone,
+        variables: { input, id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return undefined;
+      return result.updateDeliveryZone;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async delete(
     id: string
   ): Promise<boolean> {
@@ -88,6 +110,23 @@ export class DeliveryZonesService {
       });
       if (!result) return undefined;
       return result.createExpenditure;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async updateExpenditure(
+    input: any,
+    id: string
+  ) {
+    try {
+      const result = await this.graphql.query({
+        query: updateExpenditure,
+        variables: { input, id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return undefined;
+      return result.updateExpenditure;
     } catch (e) {
       console.log(e);
     }
