@@ -113,7 +113,7 @@ export class OrderProcessComponent implements OnInit {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
-    loop: false,
+    loop: true,
     slideDuplicateNextClass: 'swiper-slide-duplicate-next',
     slideDuplicatePrevClass: 'swiper-slide-duplicate-prev',
   };
@@ -160,7 +160,7 @@ export class OrderProcessComponent implements OnInit {
         await this.executeProcessesAfterLoading(merchantId, orderId, deliveryZone);
         if (orderId) await this.getOrders(this.merchant._id, deliveryZone);
 
-        this.orderReadyToDeliver = 
+        if (this.ordersReadyToDeliver.length > 0) this.orderReadyToDeliver = 
           (
             this.order.orderStatusDelivery === 'pending' || 
             this.order.orderStatusDelivery === 'delivered'
@@ -179,14 +179,14 @@ export class OrderProcessComponent implements OnInit {
 
     if (!orderId) {
       await this.getOrders(this.merchant._id, deliveryZone);
-      this.order = (await this.orderService.order(this.ordersReadyToDeliver[0]._id))?.order;
+      this.order = this.ordersReadyToDeliver.length > 0 ? (await this.orderService.order(this.ordersReadyToDeliver[0]._id))?.order : null;
     } else this.order = (await this.orderService.order(orderId))?.order;
 
     if (!this.order) {
       unlockUI();
-      this.router.navigate([`others/error-screen/`], {
-        queryParams: { type: 'order' },
-      });
+      // this.router.navigate([`others/error-screen/`], {
+      //   queryParams: { type: 'order' },
+      // });
       return;
     }
 
@@ -396,7 +396,8 @@ export class OrderProcessComponent implements OnInit {
           findBy: {
             merchant: merchantId,
             deliveryZone: deliveryZone,
-            orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? ['pending', 'in progress', 'delivered'] : null,
+            orderStatus: ["to confirm", "paid", "completed"],
+            orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? null : null,
           }
         }
       );
@@ -623,7 +624,10 @@ export class OrderProcessComponent implements OnInit {
     // NOTA: La función tiene await pero podría no tenerlo para hacer más smooth el infinite scroll
     await this.populateOrder(event.activeIndex, 3, true);
 
-    if (this.ordersReadyToDeliver[this.activeIndex].deliveryData?.image) {
+    if (
+      this.ordersReadyToDeliver[this.activeIndex].deliveryData?.image ||
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'delivered'
+    ) {
       this.orderReadyToDeliver = false;
       this.orderDelivered = true;
       if (this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'pending') {
@@ -805,6 +809,22 @@ export class OrderProcessComponent implements OnInit {
     }
 
     return result;
+  }
+
+  returnEvent() {
+    let queryParams = {};
+    if (this.redirectTo.includes('?')) {
+      const url = this.redirectTo.split('?');
+      this.redirectTo = url[0];
+      const queryParamList = url[1].split('&');
+      for (const param in queryParamList) {
+        const keyValue = queryParamList[param].split('=');
+        queryParams[keyValue[0]] = keyValue[1];
+      }
+    }
+    this.router.navigate([this.redirectTo], {
+      queryParams,
+    });
   }
 
 }

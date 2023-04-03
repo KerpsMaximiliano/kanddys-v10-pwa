@@ -8,6 +8,14 @@ export const createDeliveryZone = gql`
   }
 `;
 
+export const updateDeliveryZone = gql`
+  mutation updateDeliveryZone($input: DeliveryZoneInput!, $id: ObjectID!) {
+    updateDeliveryZone(input: $input, id: $id) {
+        _id
+    }
+  }
+`;
+
 export const deleteDeliveryZone = gql`
   mutation deleteDeliveryZone($id: ObjectID!) {
     deleteDeliveryZone(id: $id)
@@ -25,6 +33,14 @@ export const deliveryZoneAddExpenditure = gql`
 export const createExpenditure = gql`
   mutation createExpenditure($merchantId: ObjectID!, $input: ExpenditureInput!) {
     createExpenditure(merchantId: $merchantId, input: $input) {
+        _id
+    }
+  }
+`;
+
+export const updateExpenditure = gql`
+  mutation updateExpenditure($input: ExpenditureInput!, $id: ObjectID!) {
+    updateExpenditure(input: $input, id: $id) {
         _id
     }
   }

@@ -8,6 +8,8 @@ const orderData = `
   userNotifications
   subtotals {
     amount
+    type
+    item
   }
   merchants {
     _id
@@ -144,6 +146,8 @@ const shortOrderData = `
   userNotifications
   subtotals {
     amount
+    type
+    item
   }
   merchants {
     _id
@@ -187,6 +191,8 @@ const preOrderData = `
   userNotifications
   subtotals {
     amount
+    type
+    item
   }
   merchants {
     _id
@@ -421,6 +427,8 @@ export const ordersByItem = gql`
       }
       subtotals {
         amount
+        type
+        item
       }
       dateId
       createdAt
@@ -590,5 +598,17 @@ export const orderSetStatusDeliveryWithoutAuth = gql`
     $id: ObjectID!
   ) {
     orderSetStatusDeliveryWithoutAuth(orderStatusDelivery: $orderStatusDelivery, id: $id)
+  }
+`;
+
+export const orderSetDeliveryZone = gql`
+  mutation orderSetDeliveryZone(
+    $deliveryZoneId: ObjectID!
+    $id: ObjectID!
+    $userId: ObjectID
+  ) {
+    orderSetDeliveryZone(userId: $userId, deliveryZoneId: $deliveryZoneId, id: $id) {
+      _id
+    }
   }
 `;

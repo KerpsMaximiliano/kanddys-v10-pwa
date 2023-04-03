@@ -43,6 +43,8 @@ export class PaymentsComponent implements OnInit {
   selectedBank: Bank;
   selectedOption: number;
   image: File;
+  subtotal: number;
+  deliveryAmount: number;
   paymentAmount: number;
   banks: Bank[];
   order: ItemOrder;
@@ -292,10 +294,22 @@ export class PaymentsComponent implements OnInit {
             this.orderCompleted();
             return;
           }
+          // Cálculo del subtotal (monto acumulado de todos los artículos involucrados en la orden)
+          this.subtotal = this.order.subtotals.reduce(
+            (a, b) => b?.type === 'item' ? a + b.amount : a,
+            0
+          );
+          // Cálculo del monto de los costos de envío
+          this.deliveryAmount = this.order.subtotals.reduce(
+            (a, b) => b?.type === 'delivery' ? a + b.amount : a,
+            0
+          );
+          // Cálculo del monto total de la orden (sumatoria de todos los subtotales)
           this.paymentAmount = this.order.subtotals.reduce(
             (a, b) => a + b.amount,
             0
           );
+
           if (this.order.items[0].customizer)
             this.paymentAmount = this.paymentAmount * 1.18;
           this.merchant = await this.merchantService.merchant(
