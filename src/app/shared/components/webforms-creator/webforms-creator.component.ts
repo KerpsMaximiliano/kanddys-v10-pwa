@@ -601,9 +601,6 @@ export class WebformsCreatorComponent implements OnInit {
   }
 
   async addAnotherQuestionOrUpdateWebform() {
-    if (this.webform && this.webform._id && !this.questionEditMode)
-      return await this.updateWebformForItem();
-
     if (this.webform && this.webform._id && this.questionEditMode)
       return await this.updateQuestion();
 
@@ -625,9 +622,14 @@ export class WebformsCreatorComponent implements OnInit {
   }
 
   async createWebformOrCancelChanges() {
-    if (this.webform && this.webform._id && !this.questionEditMode)
-      await this.updateWebformForItem();
-    else this.createWebformForItem();
+    if (this.questionEditMode && this.question)
+      return this.closeDialogFlow(true);
+
+    if (this.webform && this.webform._id) await this.updateWebformForItem();
+
+    if (!this.webform) {
+      await this.createWebformForItem();
+    }
   }
 
   async createWebformForItem() {
@@ -732,6 +734,7 @@ export class WebformsCreatorComponent implements OnInit {
   }
 
   async updateWebformForItem() {
+    console.log('POR AQUI');
     try {
       this.webformQuestions.forEach((question) => {
         if (!question.answerDefault) question.answerDefault = [];
@@ -830,83 +833,93 @@ export class WebformsCreatorComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates a question on the webform
+   * If the question has a large set of options, it splits the question options into parts and updates the question bit by bit
+   */
   async updateQuestion() {
     try {
-      const largeInputQuestions: QuestionInput[] = this.webformQuestions.filter(
-        (question) => question.answerDefault?.length > 20
-      );
-      const smallInputQuestions: QuestionInput[] = this.webformQuestions.filter(
-        (question) => question.answerDefault?.length <= 20
-      );
+      const question = this.webformQuestions[0];
 
-      if (smallInputQuestions.length > 0) {
+      const hasSmallSetOfOptionsOrNoneAtAll =
+        question.answerDefault?.length <= 20 || !question.answerDefault;
+      const hasLargeSetOfOptions = question.answerDefault?.length > 20;
+
+      //If the question doesn't have selectable options or has 20 options or less
+      if (hasSmallSetOfOptionsOrNoneAtAll) {
+        question.answerDefault = !question.answerDefault ? [] : question.answerDefault;
+
+        lockUI();
+
+        console.log("PREGUNTA", question);
+
         await this.webformService.webformUpdateQuestion(
-          smallInputQuestions[0],
+          question,
           this.question._id,
           this.webform._id
         );
+
+        unlockUI();
+
+        this.status = 'ENDED_CREATION';
       }
 
-      if (largeInputQuestions.length > 0) {
-        for await (const question of largeInputQuestions) {
-          const answerDefault = question.answerDefault;
+      //If the question has more than 20 options
+      if (hasLargeSetOfOptions) {
+        const answerDefault = question.answerDefault;
 
-          const partsInAnswerDefault = [];
+        const partsInAnswerDefault = [];
 
-          for (let i = 0; i < Math.ceil(answerDefault.length / 20); i++) {
-            const topLimit = i * 20 + 20;
-            const lowerLimit = i * 20;
-            partsInAnswerDefault.push(
-              answerDefault.slice(lowerLimit, topLimit)
-            );
-          }
+        for (let i = 0; i < Math.ceil(answerDefault.length / 20); i++) {
+          const topLimit = i * 20 + 20;
+          const lowerLimit = i * 20;
+          partsInAnswerDefault.push(answerDefault.slice(lowerLimit, topLimit));
+        }
 
-          question.answerDefault = partsInAnswerDefault[0];
+        question.answerDefault = partsInAnswerDefault[0];
 
-          try {
-            lockUI();
-            const results = await this.webformService.webformUpdateQuestion(
-              question,
-              this.question._id,
-              this.webform._id
-            );
+        try {
+          lockUI();
+          const results = await this.webformService.webformUpdateQuestion(
+            question,
+            this.question._id,
+            this.webform._id
+          );
 
-            if (results && partsInAnswerDefault.length > 1) {
-              for (let i = 1; i < partsInAnswerDefault.length; i++) {
-                const answerDefault = partsInAnswerDefault[i];
+          if (results && partsInAnswerDefault.length > 1) {
+            for (let i = 1; i < partsInAnswerDefault.length; i++) {
+              const answerDefault = partsInAnswerDefault[i];
 
-                const result =
-                  await this.webformService.questionAddAnswerDefault(
-                    answerDefault,
-                    this.question._id,
-                    this.webform._id
-                  );
-              }
-
-              unlockUI();
-
-              this.optionalQuestions = this.webformQuestions.reduce(
-                (sum, currentQuestion) => {
-                  return sum + (!currentQuestion.required ? 1 : 0);
-                },
-                0
+              const result = await this.webformService.questionAddAnswerDefault(
+                answerDefault,
+                this.question._id,
+                this.webform._id
               );
+            }
 
-              this.requiredQuestions = this.webformQuestions.reduce(
-                (sum, currentQuestion) => {
-                  return sum + (currentQuestion.required ? 1 : 0);
-                },
-                0
-              );
+            unlockUI();
 
-              this.status = 'ENDED_CREATION';
-            } else unlockUI();
-          } catch (error) {
-            this.snackbar.open('Error al crear el formulario', 'Cerrar', {
-              duration: 3000,
-            });
-            console.error(error);
-          }
+            this.optionalQuestions = this.webformQuestions.reduce(
+              (sum, currentQuestion) => {
+                return sum + (!currentQuestion.required ? 1 : 0);
+              },
+              0
+            );
+
+            this.requiredQuestions = this.webformQuestions.reduce(
+              (sum, currentQuestion) => {
+                return sum + (currentQuestion.required ? 1 : 0);
+              },
+              0
+            );
+
+            this.status = 'ENDED_CREATION';
+          } else unlockUI();
+        } catch (error) {
+          this.snackbar.open('Error al crear el formulario', 'Cerrar', {
+            duration: 3000,
+          });
+          console.error(error);
         }
       }
     } catch (error) {

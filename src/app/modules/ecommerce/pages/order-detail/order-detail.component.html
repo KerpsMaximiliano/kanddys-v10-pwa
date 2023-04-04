@@ -117,9 +117,13 @@
       </h2>
 
       <ng-container *ngFor="let item of order?.items; index as i">
-        <div class="items-container" style="margin-bottom: 4px" [ngStyle]="{
-          marginTop: i !== 0 ? '10px' : '0px'
-        }">
+        <div
+          class="items-container"
+          style="margin-bottom: 4px"
+          [ngStyle]="{
+            marginTop: i !== 0 ? '10px' : '0px'
+          }"
+        >
           <div class="image-container">
             <button class="btn">
               <div
@@ -178,36 +182,49 @@
         </div>
 
         <ng-container *ngIf="answersByItem[item._id]">
-          <div
-            class="webform-question-wrapper"
+          <ng-container
             *ngFor="let question of answersByItem[item._id].response"
           >
-            <div class="question">
-              <p class="top-text">{{ question.question }}</p>
-              <p class="bottom-text" *ngIf="!question.isMedia && !question.label">
-                {{ question.value }}
-              </p>
-              <p class="bottom-text" *ngIf="!question.isMedia && question.label">
-                {{ question.value + ' ' + question.label}}
-              </p>
-              <p class="bottom-text" *ngIf="question.isMedia && question.label">
-                {{ question.label }}
-              </p>
+            <div *ngIf="question.question" class="webform-question-wrapper">
+              <div class="question">
+                <p class="top-text">{{ question.question }}</p>
+                <p
+                  class="bottom-text"
+                  *ngIf="!question.isMedia && !question.label"
+                >
+                  {{ question.value }}
+                </p>
+                <p
+                  class="bottom-text"
+                  *ngIf="!question.isMedia && question.label"
+                >
+                  {{ question.value + " " + question.label }}
+                </p>
+                <p
+                  class="bottom-text"
+                  *ngIf="question.isMedia && question.label"
+                >
+                  {{ question.label }}
+                </p>
 
-              <div class="question-img-wrapper" *ngIf="question.isMedia">
-                <div
-                  class="image"
-                  (click)="openImageModal(question.value)"
-                  [ngStyle]="{
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
-                    backgroundSize: 'cover',
-                    backgroundImage: 'url(' + question.value + '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
-                  }"
-                ></div>
+                <div class="question-img-wrapper" *ngIf="question.isMedia">
+                  <div
+                    class="image"
+                    (click)="openImageModal(question.value)"
+                    [ngStyle]="{
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover',
+                      backgroundImage:
+                        'url(' +
+                        question.value +
+                        '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                    }"
+                  ></div>
+                </div>
               </div>
             </div>
-          </div>
+          </ng-container>
         </ng-container>
       </ng-container>
 

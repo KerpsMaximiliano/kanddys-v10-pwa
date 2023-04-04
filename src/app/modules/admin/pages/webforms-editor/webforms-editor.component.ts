@@ -151,6 +151,7 @@ export class WebformsEditorComponent implements OnInit {
     this.webformsService.currentEditingQuestionChoices = null;
     this.webformsService.webformCreatorLastDialogs = null;
 
+    this.webformQuestions[this.webform.questions[webformCreatorIndex]._id].opened = false;
 
     const webformCreator: WebformsCreatorComponent = this.webformsCreator.toArray()[webformCreatorIndex] as any;
   

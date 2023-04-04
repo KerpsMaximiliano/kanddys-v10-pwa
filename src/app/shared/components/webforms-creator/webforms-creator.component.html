@@ -33,6 +33,7 @@
       <div class="overlay">
         <app-msg-dialog
           [item]="item"
+          [title]="questionEditMode ? 'Pregunta actualizada!!!' : 'Formulario actualizado!!!'"
           [optionalQuestionsNumber]="optionalQuestions"
           [requiredQuestionsNumber]="requiredQuestions"
           (closeSignal)="closeDialogFlow(true)"

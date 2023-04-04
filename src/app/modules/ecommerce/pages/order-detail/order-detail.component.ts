@@ -679,8 +679,6 @@ export class OrderDetailComponent implements OnInit {
     const answers: Array<WebformAnswer> =
       await this.webformsService.answerByOrder(this.order._id);
 
-    console.log(answers);
-
     if (answers.length) {
       const webformsIds = [];
       for (const item of this.order.items) {
@@ -717,13 +715,13 @@ export class OrderDetailComponent implements OnInit {
             if (webformObject) {
               this.webformsByItem[item._id] = webformObject;
 
-              answersForWebform.response.forEach((answerInList) => {
+              answersForWebform.response.filter((answerInList) => {
                 const question = webformObject.questions.find(
                   (questionInList) =>
                     questionInList._id === answerInList.question
                 );
 
-                if (answerInList.question) {
+                if (answerInList.question && question) {
                   answerInList.question = question.value;
 
                   if (
@@ -732,6 +730,8 @@ export class OrderDetailComponent implements OnInit {
                     answerInList.value.startsWith('http')
                   )
                     answerInList.isMedia = true;
+                } else {
+                  answerInList.question = null;
                 }
               });
             }

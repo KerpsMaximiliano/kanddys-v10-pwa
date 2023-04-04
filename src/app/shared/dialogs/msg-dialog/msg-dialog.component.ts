@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 export class MsgDialogComponent implements OnInit {
 
   environment: string = environment.assetsUrl;
+  @Input() title: string = 'Formulario añadido!!';
   @Input() item: Item = null;
   @Input() optionalQuestionsNumber: number = 0;
   @Input() requiredQuestionsNumber: number = 0;
@@ -23,7 +24,6 @@ export class MsgDialogComponent implements OnInit {
 
   closeDialog() {
     this.closeSignal.emit(true);
-    console.log("emitiendo señal");
-    this.router.navigate(['admin/article-editor/' + this.item._id]);
+    //this.router.navigate(['admin/article-editor/' + this.item._id]);
   }
 }
