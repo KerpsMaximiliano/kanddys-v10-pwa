@@ -234,8 +234,7 @@
             <div class="top-footer">
 
                 <ng-container *ngIf="isMerchant">
-                    <mat-checkbox 
-                        class="example-margin"
+                    <mat-checkbox
                         [(ngModel)]="orderReadyToDeliver"
                         (change)="changeOrderStatusAuthless('pending')"
                         [disabled]="orderReadyToDeliver"
@@ -244,8 +243,7 @@
                         <p class="checkbox-label">Lista para entregarse</p>
                     </mat-checkbox>
 
-                    <mat-checkbox 
-                        class="example-margin"
+                    <mat-checkbox
                         [(ngModel)]="orderDelivered"
                         (change)="changeOrderStatusAuthless('delivered')"
                         [disabled]="orderDelivered"
@@ -254,19 +252,25 @@
                         <p class="checkbox-label">Entregada</p>
                     </mat-checkbox>
 
-                    <mat-checkbox 
-                        class="example-margin"
+                    <mat-checkbox
                         [(ngModel)]="orderReadyToDeliver"
                         [disabled]="true"
                         *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'in progress'"
                     >
                         <p class="checkbox-label">En preparación</p>
                     </mat-checkbox>
+
+                    <a
+                        class="featured-cta"
+                        [routerLink]="['../../create-notification']"
+                        [queryParams]="{ redirectTo: router.url }"
+                    >
+                        Automatiza una notificación por WhatsApp para el comprador al marcar este progreso
+                    </a>
                 </ng-container>
 
                 <ng-container *ngIf="!isMerchant">
-                    <mat-checkbox 
-                        class="example-margin"
+                    <mat-checkbox
                         [(ngModel)]="orderReadyToDeliver"
                         (change)="changeOrderStatusAuthless('pending')"
                         [disabled]="orderReadyToDeliver"
@@ -274,8 +278,7 @@
                     >
                         <p class="checkbox-label">Marcar como lista para entregarse</p>
                     </mat-checkbox>
-                    <mat-checkbox 
-                        class="example-margin"
+                    <mat-checkbox
                         [(ngModel)]="orderDelivered"
                         (change)="changeOrderStatusAuthless('delivered')"
                         [disabled]="orderDelivered"
