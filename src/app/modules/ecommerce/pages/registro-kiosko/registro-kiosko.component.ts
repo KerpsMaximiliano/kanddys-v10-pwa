@@ -17,6 +17,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { NotificationDialogComponent } from '../../../../shared/dialogs/notification-dialog/notification-dialog.component';
 import { Router } from '@angular/router';
+import { IpusersService } from 'src/app/core/services/ipusers.service';
 
 SwiperCore.use([Virtual]);
 
@@ -41,6 +42,7 @@ export class RegistroKioskoComponent implements OnInit {
   checkMail;
 
   signUpInput;
+  columns: number = 12;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -50,7 +52,8 @@ export class RegistroKioskoComponent implements OnInit {
     private snackBar: MatSnackBar,
     private authService: AuthService,
     private dialog: DialogService,
-    private router: Router
+    private router: Router,
+    private ipuser: IpusersService
   ) {}
 
   CountryISO = CountryISO.DominicanRepublic;
@@ -211,33 +214,43 @@ export class RegistroKioskoComponent implements OnInit {
 
   isCountrySelected: boolean = false;
   isCitySelected: boolean = false;
+  isCurrentCountrySelected: boolean = false;
 
-  ngOnInit(): void {
+  userStorage;
+
+  currentCity: string = '';
+  currentCountry: string = '';
+
+  async ngOnInit() {
+    await this.getIp();
     this.currentMediaSlide = 0;
 
     console.log(this.itemFormMail.valid);
     console.log(this.phoneNumber);
 
-    const options = {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0,
-    };
+    // const options = {
+    //   enableHighAccuracy: true,
+    //   timeout: 5000,
+    //   maximumAge: 0,
+    // };
 
-    function success(pos) {
-      const crd = pos.coords;
+    // this.userStorage = localStorage.getItem('user-data');
+    // console.log(this.userStorage);
 
-      console.log('Your current position is:');
-      console.log(`Latitude : ${crd.latitude}`);
-      console.log(`Longitude: ${crd.longitude}`);
-      console.log(`More or less ${crd.accuracy} meters.`);
-    }
+    // function success(pos) {
+    //   const crd = pos.coords;
 
-    function error(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
-    }
+    //   console.log('Your current position is:');
+    //   console.log(`Latitude : ${crd.latitude}`);
+    //   console.log(`Longitude: ${crd.longitude}`);
+    //   console.log(`More or less ${crd.accuracy} meters.`);
+    // }
 
-    navigator.geolocation.getCurrentPosition(success, error, options);
+    // function error(err) {
+    //   console.warn(`ERROR(${err.code}): ${err.message}`);
+    // }
+
+    // navigator.geolocation.getCurrentPosition(success, error, options);
 
     // console.log(Country.getAllCountries());
 
@@ -246,6 +259,31 @@ export class RegistroKioskoComponent implements OnInit {
 
     // console.log(State.getAllStates());
     // console.log(City.getAllCities());
+  }
+
+  async getIp() {
+    let request;
+    try {
+      request = await fetch(
+        'https://api.ipdata.co/?api-key=b193221ea697d98a5232c0a38625a79259f1b27f062a09b23e6ecc82',
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
+        }
+      );
+      let response = await request.json();
+
+      // console.log(`Country: ${response.country_name}`);
+      // console.log(`City: ${response.city}`);
+
+      this.currentCity = response.city;
+      this.currentCountry = response.country_name;
+    } catch (error) {
+      console.log(request);
+      console.log(error);
+    }
   }
 
   async updateCurrentSlideData() {
@@ -405,6 +443,23 @@ export class RegistroKioskoComponent implements OnInit {
     console.log(this.cities);
 
     await this.nextSlide();
+  }
+
+  async selectCurrentCountry() {
+    this.swiperConfig.allowSlideNext = true;
+    this.isCountrySelected = true;
+    this.isCurrentCountrySelected = true;
+    this.columns = this.columns - 1;
+    await this.nextSlide();
+  }
+
+  async noPayOption() {
+    this.columns = this.columns - 1;
+    await this.nextSlide();
+  }
+
+  public templateStyles() {
+    return { 'grid-template-columns': `repeat(${this.columns}, 1fr)` };
   }
 
   async selectedCity(index: number) {

@@ -8,12 +8,7 @@
     </button>
   </header>
 
-  <div
-    class="current-media-shown-indicators"
-    [style]="{
-      'grid-template-columns': 'repeat(12, 1fr)'
-    }"
-  >
+  <div class="current-media-shown-indicators" [style]="templateStyles()">
     <ng-container>
       <div
         class="indicator"
@@ -288,7 +283,7 @@
       >
         {{ option.text }}
       </button>
-      <button class="swipe" (click)="nextSlide()" style="margin-top: 35vh">
+      <button class="swipe" (click)="noPayOption()" style="margin-top: 35vh">
         Swipe para no responder ahora
       </button>
     </div>
@@ -366,6 +361,10 @@
         />
       </div>
 
+      <button class="btn" (click)="selectCurrentCountry()">
+        {{ currentCountry }}, {{ currentCity }}
+      </button>
+
       <div *ngIf="searchCountry === ''">
         <div *ngFor="let country of countries; index as i">
           <button class="btn" (click)="selectedCountry(i)">
@@ -385,7 +384,7 @@
 
     <!-- ---------------------- 10MO SLIDE ------------------------ -->
 
-    <div class="content">
+    <div class="content" *ngIf="!isCurrentCountrySelected">
       <p class="title">¿En que ciudad?</p>
 
       <div class="input-wrapper" style="margin-bottom: 18.5px">
