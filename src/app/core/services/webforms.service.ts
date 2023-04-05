@@ -40,6 +40,7 @@ export class WebformsService {
   webformCreatorLastDialogs: Array<EmbeddedComponentWithId> = [];
   currentEditingQuestion: Question = null;
   currentEditingQuestionChoices: AnswerDefaultInput[] = null;
+  webformQuestionsRoute: string;
 
   constructor(private graphql: GraphQLWrapper) {}
 

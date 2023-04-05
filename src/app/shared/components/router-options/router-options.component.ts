@@ -24,6 +24,7 @@ export class RouterOptionsComponent implements OnInit {
 
   @Input() question: Question = null;
   @Input() webformId: string = null;
+  @Input() itemId: string = null;
 
   ngOnInit(): void {}
 
@@ -40,7 +41,7 @@ export class RouterOptionsComponent implements OnInit {
 
     this.webformsService.webformCreatorLastDialogs = [];
 
-    this.router.navigate(['/admin/webform-responses/' + this.webformId], {
+    this.router.navigate(['/admin/webform-responses/' + this.webformId + '/' + this.itemId], {
       queryParams,
     });
   }

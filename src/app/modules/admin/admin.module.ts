@@ -170,7 +170,7 @@ const routes: Routes = [
         component: ItemWebformPreviewComponent,
       },
       {
-        path: 'webform-responses/:formId',
+        path: 'webform-responses/:formId/:itemId',
         component: FormResponsesComponent
       },
       {

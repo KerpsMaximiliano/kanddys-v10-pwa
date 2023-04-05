@@ -12,13 +12,14 @@ export class LinkCardComponent implements OnInit {
   @Input() text: string = '144 RespuestaID';
   @Input() question: Question = null;
   @Input() webformId: string = null;
+  @Input() itemId: string = null;
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {}
 
   selectOption() {
-    this.router.navigate(['/admin/webform-responses/' + this.webformId], {
+    this.router.navigate(['/admin/webform-responses/' + this.webformId + '/' + this.itemId], {
       queryParams: {
         question: this.question._id,
         openResponses: true,

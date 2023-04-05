@@ -148,7 +148,7 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
                       }
                     }
 
-                    if (additionalAnswers.length) {
+                    if (additionalAnswers.length && question.type === 'multiple-text') {
                       const toAdd = [
                         {
                           text:

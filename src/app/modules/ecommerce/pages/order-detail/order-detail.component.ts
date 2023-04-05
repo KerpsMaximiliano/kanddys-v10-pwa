@@ -120,6 +120,7 @@ export class OrderDetailComponent implements OnInit {
   tagPanelState: boolean;
   webformsByItem: Record<string, Webform> = {};
   answersByItem: Record<string, WebformAnswer> = {};
+  from: string;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
@@ -147,9 +148,10 @@ export class OrderDetailComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { notify: notification, redirectTo } = queryParams;
+      const { notify: notification, redirectTo, from } = queryParams;
       this.notify = Boolean(notification);
       this.redirectTo = redirectTo;
+      this.from = from;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
 
@@ -419,6 +421,37 @@ export class OrderDetailComponent implements OnInit {
     ]);
   };
 
+  redirectFromQueryParams() {
+    if (this.from.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
+      const routeParts = this.from.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return { [queryStringElements[0]]: queryStringElements[1] };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([this.from], {
+        replaceUrl: true,
+      });
+    }
+  }
+
   async changeOrderStatus(value: OrderStatusDeliveryType) {
     this.order.orderStatusDelivery = value;
     this.handleStatusOptions(value);
@@ -641,6 +674,10 @@ export class OrderDetailComponent implements OnInit {
   }
 
   returnEvent() {
+    if(!this.redirectTo && !this.from) return this.returnToStore();
+
+    if(!this.redirectTo && this.from) return this.redirectFromQueryParams();
+
     this.router.navigate([this.redirectTo]);
   }
 

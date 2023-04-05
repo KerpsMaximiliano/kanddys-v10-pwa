@@ -24,6 +24,7 @@
             [options]="question.answers"
             [question]="question"
             [webformId]="webform._id"
+            [itemId]="itemData._id"
           ></app-router-options>
           <app-router-options
             *ngSwitchCase="'multiple-text'"
@@ -31,6 +32,7 @@
             [options]="question.answers"
             [question]="question"
             [webformId]="webform._id"
+            [itemId]="itemData._id"
           ></app-router-options>
           <app-link-card
             *ngSwitchDefault
@@ -38,6 +40,7 @@
             [text]="question.total + ' Respuestas'"
             [question]="question"
             [webformId]="webform._id"
+            [itemId]="itemData._id"
           ></app-link-card>
         </ng-container>
       </div>

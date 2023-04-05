@@ -17,6 +17,7 @@ import { Location } from '@angular/common';
 export class FormResponsesComponent implements OnInit {
   env = environment.assetsUrl;
   webform: Webform;
+  itemId: string;
   orders: Array<ItemOrder> = [];
   selectedOption: AnswerDefault;
   openResponses: boolean;
@@ -37,9 +38,10 @@ export class FormResponsesComponent implements OnInit {
     this.route.params.subscribe(async (params) => {
       this.route.queryParams.subscribe(async (queryParams) => {
         const { question, selectedOption, openResponses } = queryParams;
-        const { formId } = params;
+        const { formId, itemId } = params;
 
         this.webform = await this.webformService.webform(formId);
+        this.itemId = itemId;
         this.openResponses = Boolean(openResponses);
 
         const selectedQuestion = this.webform?.questions.find(
@@ -215,7 +217,11 @@ export class FormResponsesComponent implements OnInit {
   }
 
   goToDetail = (order: ItemOrder) => {
-    return this.router.navigate(['/ecommerce/order-detail/' + order._id]);
+    return this.router.navigate(['/ecommerce/order-detail/' + order._id], {
+      queryParams: {
+        from: this.router.url,
+      },
+    });
   };
 
   getCreationDateDifferenceAsItsSaid(dateISOString) {
@@ -230,6 +236,8 @@ export class FormResponsesComponent implements OnInit {
   }
 
   back() {
-    this.location.back();
+    this.router.navigate([
+      '/admin/webform-metrics/' + this.webform._id + '/' + this.itemId,
+    ]);
   }
 }
