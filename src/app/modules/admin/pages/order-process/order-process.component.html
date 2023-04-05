@@ -263,9 +263,18 @@
                     <a
                         class="featured-cta"
                         [routerLink]="['../../create-notification']"
-                        [queryParams]="{ redirectTo: router.url }"
+                        [queryParams]="{ redirectTo: router.url, orderId: ordersReadyToDeliver[activeIndex]?._id }"
+                        *ngIf="!ordersReadyToDeliver[activeIndex]?.notifications || ordersReadyToDeliver[activeIndex]?.notifications.length === 0"
                     >
                         Automatiza una notificación por WhatsApp para el comprador al marcar este progreso
+                    </a>
+                    <a
+                        class="featured-cta"
+                        [routerLink]="['../../create-notification', ordersReadyToDeliver[activeIndex]?.notifications[0]]"
+                        [queryParams]="{ redirectTo: router.url, orderId: ordersReadyToDeliver[activeIndex]?._id }"
+                        *ngIf="ordersReadyToDeliver[activeIndex]?.notifications && ordersReadyToDeliver[activeIndex]?.notifications.length > 0"
+                    >
+                        Ver o editar la notificación al comprador al marcar este progreso
                     </a>
                 </ng-container>
 

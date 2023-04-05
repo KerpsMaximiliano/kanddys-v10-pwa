@@ -1,5 +1,6 @@
 import { Model } from '../objects/model';
 import { Merchant } from './merchant';
+import { OrderStatusDeliveryType } from './order';
 import { OrderStatusType } from './order';
 import { User } from './user';
 
@@ -26,13 +27,18 @@ export class StatusTriggerInput {
   value: OrderStatusType;
 }
 
+export class DeliveryStatusInput {
+  key: 'orderStatusDelivery';
+  value: OrderStatusDeliveryType;
+}
+
 export class NotificationInput {
-  message: string;
-  merchant: string;
-  phoneNumbers: PhoneNumbersInput[];
-  entity: string;
-  trigger: (GenericTriggerInput | StatusTriggerInput)[];
-  offsetTime: OffsetTimeInput[];
+  message?: string;
+  merchant?: string;
+  phoneNumbers?: PhoneNumbersInput[];
+  entity?: string;
+  trigger?: (GenericTriggerInput | StatusTriggerInput | DeliveryStatusInput)[];
+  offsetTime?: OffsetTimeInput[];
   _id?: string;
 }
 

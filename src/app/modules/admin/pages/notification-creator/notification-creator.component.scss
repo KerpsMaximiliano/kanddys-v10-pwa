@@ -78,6 +78,12 @@
         color: #272727;
         font-family: SfProDisplayBold;
         font-size: 18px;
+        transition: all 0.2s;
+    }
+    .main-cta:disabled {
+        cursor: not-allowed;
+        background-color: #7B7B7B;
+        color: #E9E9E9;
     }
 }
 
