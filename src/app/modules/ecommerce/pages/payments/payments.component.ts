@@ -454,6 +454,7 @@ export class PaymentsComponent implements OnInit {
           image: this.image,
           platform: 'bank-transfer',
           transactionCode: '',
+          subtotal: this.paymentAmount
         },
         this.order.user._id,
         'bank-transfer',
