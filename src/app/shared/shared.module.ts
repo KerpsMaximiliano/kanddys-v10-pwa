@@ -211,7 +211,7 @@ const imports = [
   MatInputModule,
   MatSnackBarModule,
   MatCardModule,
-  MatCheckboxModule
+  MatCheckboxModule,
   MatGridListModule,
   MatTabsModule,
 ];
@@ -358,7 +358,7 @@ const declarations = [
   TextOrImageComponent,
   WebformAddAnotherQuestionComponent,
   WebformNameQuestionComponent,
-  MsgDialogComponent
+  MsgDialogComponent,
   DialogFormComponent,
   NamedExpenseComponent,
   TitledExpenseComponent,

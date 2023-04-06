@@ -20,7 +20,6 @@ import { Item, ItemInput } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
 import { Webform } from 'src/app/core/models/webform';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
-import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -196,6 +195,12 @@ export class ArticleEditorComponent implements OnInit {
     private _TagsService: TagsService,
     private _ToastrService: ToastrService,
     private dialog: DialogService,
+    private _bottomSheet: MatBottomSheet,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
+    private itemService: ItemsService,
+    private saleflowService: SaleFlowService,
     public headerService: HeaderService,
     protected _DomSanitizer: DomSanitizer,
     private dialogFlowService: DialogFlowService,

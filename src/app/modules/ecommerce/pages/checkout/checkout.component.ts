@@ -228,7 +228,7 @@ export class CheckoutComponent implements OnInit {
     private authService: AuthService,
     public dialog: MatDialog,
     private dialogFlowService: DialogFlowService,
-    private _WebformsService: WebformsService
+    private _WebformsService: WebformsService,
     private deliveryzonesService: DeliveryZonesService,
   ) {}
 

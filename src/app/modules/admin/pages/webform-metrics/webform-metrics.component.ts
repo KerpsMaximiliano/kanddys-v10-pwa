@@ -215,10 +215,7 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
       type: 'added-item',
       data: this.itemData._id,
     });
-    this.headerService.storeItem(
-      // this.selectedParam ? itemParamValue :
-      this.itemData
-    );
+    
 
     //Clears the temporal dialogs from the webform service
     //this._WebformsService.webformCreatorLastDialogs = [];

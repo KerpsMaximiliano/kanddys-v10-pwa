@@ -275,7 +275,7 @@ const routes: Routes = [
     WebformOptionsSelectorComponent,
     FormResponsesComponent,
     OpenFormResponsesComponent,
-    WebformsEditorComponent
+    WebformsEditorComponent,
     BenefitsComponent,
     OrderExpensesComponent,
     FilteredBenefitsComponent,

@@ -26,7 +26,6 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
-import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { BlankComponent } from 'src/app/shared/dialogs/blank/blank.component';
 import { SwiperOptions } from 'swiper';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
@@ -302,7 +301,6 @@ export class TestComponent implements OnInit {
   // Variables for dialogProFlow
 
   dialogsPro: Array<EmbeddedComponentWithId> = [];
-  dialogFlowFunctions: Record<string, any> = {};
 
   deliveryType: 'yes' | 'no' | 'depend' | 'no-delivery';
   depend: 'amount' | 'zone';
@@ -327,7 +325,8 @@ export class TestComponent implements OnInit {
     private postsService: PostsService,
     private headerService: HeaderService,
     private router: Router,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private deliveryzonesService: DeliveryZonesService
   ) {}
 
   async ngOnInit() {}
