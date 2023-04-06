@@ -18,34 +18,46 @@ export function fileToBase64(file: File): Promise<any> {
   const base64File = new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result)
+    reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
-  })
+  });
 
-  
   return base64File;
 }
 
-export const arrayOfRoutesToBase64 = async (imageRoutes: any[]): Promise<string[]> => {
+export const arrayOfRoutesToBase64 = async (
+  imageRoutes: any[]
+): Promise<{ image: string; label: string }[]> => {
   lockUI();
 
-  const base64Strings = await Promise.all(imageRoutes.map(async (imageObject) => {
-    const response = await fetch(imageObject.value);
-    const blob = await response.blob();
-    const base64String = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
-    });
-    return base64String;
-  }));
+  const base64Strings = await Promise.all(
+    imageRoutes.map(async (imageObject) => {
+      if (imageObject.isMedia) {
+        const response = await fetch(imageObject.value);
+        const blob = await response.blob();
+        const base64String = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = (error) => reject(error);
+        });
+        return {
+          image: base64String,
+          label: imageObject.label,
+        };
+      } else {
+        return {
+          label: imageObject.value,
+          image: null,
+        };
+      }
+    })
+  );
 
   unlockUI();
 
   return base64Strings;
-}
-
+};
 
 export async function compressImage(
   file: File | Blob,

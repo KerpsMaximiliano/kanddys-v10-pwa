@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   completeImageURL,
@@ -549,6 +549,16 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   async reloadWebform() {
+    let queryParams = { ...this._Route.snapshot.queryParams };
+    delete queryParams['resumeWebform'];
+
+    let navigationExtras: NavigationExtras = {
+      replaceUrl: true,
+      queryParams: queryParams,
+    };
+
+    this._Router.navigate([], navigationExtras);
+
     this.openedDialogFlow = false;
 
     await this.executeInitProcesses();

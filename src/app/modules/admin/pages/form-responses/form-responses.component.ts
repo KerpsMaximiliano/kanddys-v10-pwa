@@ -127,19 +127,20 @@ export class FormResponsesComponent implements OnInit {
             );
 
             if (answer) {
-              this.ordersAndAnswers.push({
-                order,
-                answer:
-                  answersById[answer.reference].isMedia &&
-                  answersById[answer.reference].label
-                    ? answersById[answer.reference].label
-                    : !answersById[answer.reference].isMedia &&
-                      answersById[answer.reference].label
-                    ? answersById[answer.reference].value +
-                      ' ' +
-                      answersById[answer.reference].label
-                    : answersById[answer.reference].value,
-              });
+              if (selectedQuestion._id && answersById[answer.reference].question)
+                this.ordersAndAnswers.push({
+                  order,
+                  answer:
+                    answersById[answer.reference].isMedia &&
+                    answersById[answer.reference].label
+                      ? answersById[answer.reference].label
+                      : !answersById[answer.reference].isMedia &&
+                        answersById[answer.reference].label
+                      ? answersById[answer.reference].value +
+                        ' ' +
+                        answersById[answer.reference].label
+                      : answersById[answer.reference].value,
+                });
             }
           }
 

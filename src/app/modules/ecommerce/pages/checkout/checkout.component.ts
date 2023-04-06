@@ -349,12 +349,27 @@ export class CheckoutComponent implements OnInit {
       this.missingOrderData = true;
     }
 
-    if (this.webformPreview)
+    if (this.webformPreview) {
       this.post = {
         message: 'Dummy post',
         from: 'Emisor',
         to: 'Receptor',
       };
+
+      this.reservation = {
+        breakTime: 15,
+        calendar: 'dummyid',
+        date: {
+          dateType: 'RANGE',
+          from: new Date('2023-04-07T16:00:00.000Z').toISOString(),
+          until: new Date('2023-04-07T17:00:00.000Z').toISOString(),
+          fromHour: '16:00',
+          toHour: '16:45',
+        },
+        merchant: this.headerService.saleflow.merchant._id,
+        type: 'ORDER',
+      };
+    }
   }
 
   editOrder(
@@ -362,7 +377,7 @@ export class CheckoutComponent implements OnInit {
   ) {
     this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`;
 
-    if(this.webformPreview) return;
+    if (this.webformPreview) return;
 
     switch (mode) {
       case 'item': {
@@ -453,11 +468,15 @@ export class CheckoutComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'confirm') {
+        delete this.webformsByItem[deletedID];
+
         if (index >= 0) this.items.splice(index, 1);
         this.headerService.removeOrderProduct(deletedID);
         this.headerService.removeItem(deletedID);
         this.updatePayment();
         if (!this.items.length) this.editOrder('item');
+
+        this.areItemsQuestionsAnswered();
       }
     });
   }
@@ -1140,6 +1159,7 @@ export class CheckoutComponent implements OnInit {
       ) {
         const response: WebformResponseInput = {
           question: question._id,
+          isMedia: this.answersByQuestion[question._id].isMedia,
           value: this.answersByQuestion[question._id].response,
         };
 
@@ -1157,6 +1177,7 @@ export class CheckoutComponent implements OnInit {
           .multipleResponses) {
           const response: WebformResponseInput = {
             question: question._id,
+            isMedia: this.answersByQuestion[question._id].isMedia,
             value: responseInList.response,
           };
 

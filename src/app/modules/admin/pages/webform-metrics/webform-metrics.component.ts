@@ -81,9 +81,9 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
               this.webformQuestions[question._id] = question;
             });
 
-            const metrics = webform.questions
+            webform.questions
               .sort(({ subIndex: a }, { subIndex: b }) => (a > b ? 1 : -1))
-              .map((question: Question | any) => {
+              .forEach((question: Question | any) => {
                 const { _id, type } = question;
                 const _answerFrequent: any = answerFrequent.find(
                   ({ question: questionId }: any) => questionId === _id
@@ -175,10 +175,6 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
                 const result: any = question;
                 return question;
               });
-            const metricsQuestions = metrics.filter(
-              ({ answers = [], total }) =>
-                answers?.length || total !== undefined
-            );
             this.webform = { ...webform, _id, user };
 
             if (
@@ -195,7 +191,7 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
   };
 
   async goBack() {
-    this.location.back();
+    return this._Router.navigate(['/admin/article-editor/' + this.itemId]);
   }
 
   goToPreview = async () => {

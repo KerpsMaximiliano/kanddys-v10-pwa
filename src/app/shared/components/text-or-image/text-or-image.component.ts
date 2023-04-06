@@ -106,22 +106,17 @@ export class TextOrImageComponent implements OnInit {
 
             let options = [];
 
-            console.log(
-              'options',
-              this.webformService.currentEditingQuestionChoices
-            );
-
             if (this.webformService.currentEditingQuestionChoices === null) {
               options = await arrayOfRoutesToBase64(
                 this.webformService.currentEditingQuestion.answerDefault
               );
 
               for await (const option of options) {
-                const fileData = option as string;
+                const fileData = option.image as string;
 
                 this.options.push({
-                  text: '',
-                  file: base64ToFile(option),
+                  text: option.label,
+                  file: option.image ? base64ToFile(option.image as string) : null,
                   void: false,
                   fileData,
                 });

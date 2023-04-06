@@ -456,7 +456,6 @@ export class WebformsCreatorComponent implements OnInit {
   constructor(
     private dialogFlowService: DialogFlowService,
     private router: Router,
-    private headerService: HeaderService,
     public dialog: MatDialog,
     private snackbar: MatSnackBar,
     private webformService: WebformsService
@@ -468,11 +467,11 @@ export class WebformsCreatorComponent implements OnInit {
 
   async executeInitProcesses() {
     //When the user was editing the form, but for some reason he left the page, then we need to restart the creation process
-
     if (this.resumingCreation === null) {
       this.webformService.webformQuestions = [];
       this.webformQuestions = [];
 
+      //Resets the values in the dialogs flow, so when you open the dialog flow again, it starts with all empty
       if (this.dialogFlowService.dialogsFlows[this.flowId]) {
         Object.keys(this.dialogFlowService.dialogsFlows[this.flowId]).forEach(
           (dialogId) => {
@@ -487,17 +486,6 @@ export class WebformsCreatorComponent implements OnInit {
         );
       }
     }
-
-    console.log(
-      'Resuming creation',
-      this.resumingCreation,
-      this.webformService.webformQuestions
-    );
-    console.log(
-      (!this.webformService.webformQuestions ||
-        !this.webformService.webformQuestions.length) &&
-        !this.resumingCreation
-    );
 
     if (
       (!this.webformService.webformQuestions ||
@@ -929,6 +917,8 @@ export class WebformsCreatorComponent implements OnInit {
   }
 
   closeDialogFlow(endedCreation: boolean = false) {
+    console.log("CERRANDOSE INTERIOR");
+
     this.closeEvent.emit(endedCreation);
   }
 
