@@ -78,7 +78,7 @@
       </p>
     </div>
 
-    <button mat-button matStepperNext (click)="signUp()">Continuar</button>
+    <button mat-button (click)="signUp()">Continuar</button>
   </mat-step>
   <mat-step [stepControl]="itemForm2">
     <ng-template matStepLabel>Info de la Tienda:</ng-template>
@@ -125,8 +125,11 @@
       </app-string-input>
     </div>
 
-    <div style="margin-bottom: 25px">
-      <button mat-button matStepperNext>Continuar</button>
+    <div style="margin-bottom: 25px; display: flex; align-items: center">
+      <button mat-button (click)="previousStep()" style="margin-right: 25px">
+        Atrás
+      </button>
+      <button mat-button (click)="checkMerchant()">Continuar</button>
     </div>
   </mat-step>
   <mat-step>
@@ -154,15 +157,7 @@
       >Bienvenido! {{ inputTiendaName }}</ng-template
     >
     <div>
-      <p
-        style="
-          color: #4f4f4f;
-          font-size: 23px;
-          font-family: SFProBold;
-          text-align: center;
-          margin-bottom: 35px;
-        "
-      >
+      <p class="message-title">
         {{ inputTiendaName }}, estamos felices de tenerte y te damos la
         bienvenida con 3,000 DoCoins
       </p>
@@ -180,16 +175,7 @@
           Crea tu primer artículo (ganas 700 DoCoins)
         </a>
       </div>
-      <p
-        style="
-          color: #7b7b7b;
-          font-family: SFProLight;
-          font-size: 17px;
-          text-align: center;
-          width: 80%;
-          margin: 67px auto 16.5px;
-        "
-      >
+      <p class="message">
         Recibe esta pantalla por email o whatsapp para hacerlo luego.
       </p>
     </div>

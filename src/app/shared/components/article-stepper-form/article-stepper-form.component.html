@@ -11,14 +11,27 @@
       ></app-currency-input>
     </div>
     <div *ngIf="itemForm.get('pricing').value > 0">
-      <button mat-button matStepperNext>Continuar</button>
+      <button mat-button matStepperNext (click)="authorizeMerchant()">
+        Continuar
+      </button>
     </div>
+    <!-- <div>
+      <button (click)="authorizeMerchant()">Autorizar</button>
+    </div> -->
   </mat-step>
   <mat-step [stepControl]="itemForm2">
     <ng-template matStepLabel>Imagen del cover:</ng-template>
-    <div>
+    <div *ngIf="!file">
       <app-item-images (enteredImages)="onImageInput($event)"></app-item-images>
     </div>
+    <div
+      *ngIf="file"
+      [ngStyle]="{ backgroundImage: 'url(' + base64 + ')' }"
+      class="preview"
+    >
+      <!-- <img [src]="base64" alt="" /> -->
+    </div>
+    <button mat-button matStepperNext *ngIf="file">Continuar</button>
   </mat-step>
   <mat-step [stepControl]="itemForm3">
     <ng-template matStepLabel

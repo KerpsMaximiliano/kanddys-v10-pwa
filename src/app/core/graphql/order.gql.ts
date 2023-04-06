@@ -8,6 +8,8 @@ const orderData = `
   userNotifications
   subtotals {
     amount
+    type
+    item
   }
   merchants {
     _id
@@ -114,6 +116,8 @@ const orderData = `
   orderStatus
   orderStatusDelivery
   statusDelivery
+  deliveryZone
+  expenditures
   itemPackage {
     _id
     name
@@ -129,6 +133,54 @@ const orderData = `
     platform
     from
   }
+  deliveryData {
+    image
+  }
+`;
+
+const shortOrderData = `
+  _id
+  dateId
+  createdAt
+  tags
+  userNotifications
+  subtotals {
+    amount
+    type
+    item
+  }
+  merchants {
+    _id
+  }
+  user {
+    _id
+    phone
+    name
+    email
+  }
+  orderStatus
+  orderStatusDelivery
+  statusDelivery
+  deliveryZone
+  expenditures
+  itemPackage {
+    _id
+    name
+    images
+    price
+  }
+  ocr {
+    _id
+    image
+    transactionCode
+    total
+    status
+    platform
+    from
+  }
+  deliveryData {
+    image
+  }
 `;
 
 const preOrderData = `
@@ -139,6 +191,8 @@ const preOrderData = `
   userNotifications
   subtotals {
     amount
+    type
+    item
   }
   merchants {
     _id
@@ -235,6 +289,16 @@ const preOrderData = `
     platform
     from
   }
+`;
+
+const expenditureData = `
+  _id
+  createdAt
+  type
+  name
+  description
+  amount
+  useDate
 `;
 
 export const toggleUserNotifications = gql`
@@ -363,6 +427,8 @@ export const ordersByItem = gql`
       }
       subtotals {
         amount
+        type
+        item
       }
       dateId
       createdAt
@@ -375,6 +441,71 @@ export const ordersByItemHot = gql`
     ordersByItem(paginate: $paginate) {
       _id
     }
+  }
+`;
+
+export const expenditure = gql`
+  query expenditure($id: ObjectID!) {
+    expenditure(id: $id) {
+      ${expenditureData}
+    }
+  }
+`;
+
+export const expenditures = gql`
+  query expenditures($paginate: PaginationInput!) {
+    expenditures(paginate: $paginate) {
+      ${expenditureData}
+    }
+  }
+`;
+
+export const createExpenditure = gql`
+  mutation createExpenditure(
+    $merchantId: ObjectID!
+    $input: ExpenditureInput!
+  ) {
+    createExpenditure(merchantId: $merchantId, input: $input) {
+      _id
+    }
+  }
+`;
+
+export const updateExpenditure = gql`
+  mutation updateExpenditure($input: ExpenditureInput!, $id: ObjectID!) {
+    updateExpenditure(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
+
+export const orderAddExpenditure = gql`
+  mutation orderAddExpenditure($expenditureId: ObjectID!, $id: ObjectID!) {
+    orderAddExpenditure(expenditureId: $expenditureId, id: $id) {
+      _id
+      expenditures
+    }
+  }
+`;
+
+export const orderRemoveExpenditure = gql`
+  mutation orderRemoveExpenditure($expenditureId: ObjectID!, $id: ObjectID!) {
+    orderRemoveExpenditure(expenditureId: $expenditureId, id: $id) {
+      _id
+      expenditures
+    }
+  }
+`;
+
+export const orderBenefits = gql`
+  query orderBenefits($id: ObjectID!) {
+    orderBenefits(id: $id)
+  }
+`;
+
+export const orderBenefitsByMerchant = gql`
+  query orderBenefitsByMerchant($pagination: PaginationInput) {
+    orderBenefitsByMerchant(pagination: $pagination)
   }
 `;
 
@@ -426,6 +557,58 @@ export const orderSetStatusDelivery = gql`
     orderSetStatusDelivery(orderStatusDelivery: $orderStatusDelivery, id: $id) {
       _id
       orderStatusDelivery
+    }
+  }
+`;
+
+export const orderByMerchantDelivery = gql`
+  query orderByMerchantDelivery($pagination: PaginationInput) {
+    orderByMerchantDelivery(pagination: $pagination) {
+      ${shortOrderData}
+    }
+  }
+`;
+
+export const hotOrderByMerchantDelivery = gql`
+  query orderByMerchantDelivery($pagination: PaginationInput) {
+    orderByMerchantDelivery(pagination: $pagination) {
+      _id
+    }
+  }
+`;
+
+export const updateOrderDeliveryData = gql`
+  mutation updateOrderDeliveryData(
+    $input: DeliveryDataInput!
+    $id: ObjectID!
+  ) {
+    updateOrderDeliveryData(input: $input, id: $id) {
+      _id
+      orderStatusDelivery
+      deliveryData {
+        image
+      }
+    }
+  }
+`;
+
+export const orderSetStatusDeliveryWithoutAuth = gql`
+  mutation orderSetStatusDeliveryWithoutAuth(
+    $orderStatusDelivery: String!
+    $id: ObjectID!
+  ) {
+    orderSetStatusDeliveryWithoutAuth(orderStatusDelivery: $orderStatusDelivery, id: $id)
+  }
+`;
+
+export const orderSetDeliveryZone = gql`
+  mutation orderSetDeliveryZone(
+    $deliveryZoneId: ObjectID!
+    $id: ObjectID!
+    $userId: ObjectID
+  ) {
+    orderSetDeliveryZone(userId: $userId, deliveryZoneId: $deliveryZoneId, id: $id) {
+      _id
     }
   }
 `;

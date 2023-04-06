@@ -1,0 +1,56 @@
+.header {
+  display: flex;
+  align-items: center;
+  background-color: #a1a1a1;
+  justify-content: space-between;
+
+  p {
+    margin: 0;
+    color: #293628;
+    font-size: 1rem;
+    font-family: SfProMedium;
+  }
+}
+.form {
+  display: flex;
+  padding: 12px;
+  height: 54px;
+  box-sizing: content-box;
+  gap: 8px;
+}
+.expenses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+}
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  color: #272727;
+  margin: 16px 0;
+}
+.light {
+  font-family: SfProLight;
+}
+.bold {
+  font-family: SfProBold;
+}
+.btn {
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+.no-expends {
+  font-family: SfProMedium;
+  font-weight: normal;
+  text-align: center;
+}
+::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+::ng-deep .mat-tab-label {
+  font-size: 12px;
+  padding: 0 12px !important;
+}

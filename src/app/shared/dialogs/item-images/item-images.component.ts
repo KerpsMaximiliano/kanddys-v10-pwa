@@ -7,7 +7,9 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class ItemImagesComponent implements OnInit {
   @Input() containerStyles: Record<string, any> = {};
+  @Input() inputPosition: 'left' | 'center' = 'center';
   @Input() title: string;
+  @Input() caption: string;
   @Output() enteredImages = new EventEmitter();
 
   constructor() {}
@@ -18,22 +20,16 @@ export class ItemImagesComponent implements OnInit {
     const fileList = (e.target as HTMLInputElement).files;
     if (!fileList.length) return;
     const images: File[] = [];
+
     for (let i = 0; i < fileList.length; i++) {
-      const file = fileList.item(i);
-      // let isFileAValidImage = ['png', 'jpg', 'jpeg', 'webp'].some((type) =>
-      //   file.type.includes(type)
-      // );
-
-      // let isFileAValidVideo = ['webm', 'mp4', 'm4v', 'mpg', 'mpeg', 'mpeg4'].some((type) =>
-      //   file.type.includes(type)
-      // );
-
-      // if (!isFileAValidImage && !isFileAValidVideo) {
-      //   return;
-      // }
-
-      images.push(file);
+      const reader = new FileReader();
+      reader.readAsDataURL(fileList[i]);
+      reader.onload = () => {
+        images.push(fileList[i]);
+        if (images.length === fileList.length) {
+          this.enteredImages.emit(images);
+        }
+      };
     }
-    this.enteredImages.emit(images);
   }
 }

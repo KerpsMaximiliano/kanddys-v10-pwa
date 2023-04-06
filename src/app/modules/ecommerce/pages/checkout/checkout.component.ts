@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,6 +12,7 @@ import {
   playVideoOnFullscreen,
   unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
+import { DeliveryZone, DeliveryZoneInput } from 'src/app/core/models/deliveryzone';
 import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput, ItemSubOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
@@ -18,16 +20,19 @@ import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { environment } from 'src/environments/environment';
+import { filter } from 'rxjs/operators';
 
 const options = [
   {
@@ -116,6 +121,9 @@ export class CheckoutComponent implements OnInit {
   items: ExtendedItem[];
   post: PostInput;
   deliveryLocation: DeliveryLocationInput;
+  deliveryZones: DeliveryZone[] = [];
+  deliveryZone: DeliveryZoneInput;
+  hasDeliveryZone: boolean = false;
   reservation: ReservationInput;
   payment: number;
   hasPaymentModule: boolean;
@@ -153,12 +161,15 @@ export class CheckoutComponent implements OnInit {
     private route: ActivatedRoute,
     private toastr: ToastrService,
     private authService: AuthService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private deliveryzonesService: DeliveryZonesService,
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.saleflowId = this.headerService.saleflow.merchant._id;
-    let items = this.headerService.getItems();
+    let items = this.headerService.order.products.map(
+      (subOrder) => subOrder.item
+    );
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
     }
@@ -174,7 +185,9 @@ export class CheckoutComponent implements OnInit {
 
     for (const item of this.items as Array<ExtendedItem>) {
       item.ready = false;
-      item.images = item.images.sort(({index:a},{index:b}) => a>b?1:-1);
+      item.images = item.images.sort(({ index: a }, { index: b }) =>
+        a > b ? 1 : -1
+      );
       for (const image of item.images) {
         if (
           image.value &&
@@ -217,6 +230,10 @@ export class CheckoutComponent implements OnInit {
         }
       });
     }
+
+    await this.getDeliveryZones(this.headerService.saleflow.merchant._id);
+
+    this.deliveryZone = this.headerService.getZone();
     this.deliveryLocation = this.headerService.getLocation();
     // Validation for stores with only one address of pickup and no delivery for customers
     if (!this.deliveryLocation) {
@@ -249,7 +266,7 @@ export class CheckoutComponent implements OnInit {
           month: 'short',
         }),
         year: fromDate.toLocaleString('es-MX', {
-          year: 'numeric'
+          year: 'numeric',
         }),
         time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
           untilDate,
@@ -271,7 +288,7 @@ export class CheckoutComponent implements OnInit {
     if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
       this.hasPaymentModule = true;
     this.checkLogged();
-    if (!this.headerService.orderInputComplete()) {
+    if (!this.headerService.orderInputComplete() || (this.hasDeliveryZone && this.deliveryLocation.street && !this.deliveryZone)) {
       this.missingOrderData = true;
     }
   }
@@ -291,7 +308,7 @@ export class CheckoutComponent implements OnInit {
       case 'message': {
         this.post = null;
         this.headerService.emptyPost();
-        if (!this.headerService.orderInputComplete())
+        if (!this.headerService.orderInputComplete() || (this.hasDeliveryZone && this.deliveryLocation.street && !this.deliveryZone))
           this.missingOrderData = true;
         break;
       }
@@ -492,10 +509,25 @@ export class CheckoutComponent implements OnInit {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)
         ).createOrder._id;
+
+        if (this.hasDeliveryZone && this.deliveryZone && this.deliveryLocation.street) {
+          await this.orderService.orderSetDeliveryZone(
+            this.deliveryZone.id,
+            createdOrder,
+            this.headerService.user._id
+          )
+        }
       } else {
         createdOrder = (
           await this.orderService.createPreOrder(this.headerService.order)
         )?.createPreOrder._id;
+
+        if (this.hasDeliveryZone && this.deliveryZone && this.deliveryLocation.street) {
+          await this.orderService.orderSetDeliveryZone(
+            this.deliveryZone.id,
+            createdOrder
+          )
+        }
       }
       this.headerService.deleteSaleflowOrder();
       this.headerService.resetOrderProgress();
@@ -532,6 +564,126 @@ export class CheckoutComponent implements OnInit {
     }
   };
 
+  async getDeliveryZones(merchanId: string) {
+    try {
+      const result = await this.deliveryzonesService.deliveryZones(
+        {
+          options: {
+            limit: -1,
+            sortBy: "createdAt:desc"
+          },
+          findBy: {
+            merchant: merchanId,
+            active: true
+          }
+        }
+      );
+      this.deliveryZones = result;
+      if (this.deliveryZones.length > 0) this.hasDeliveryZone = true;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  openDeliveryZones() {
+    const zones = this.deliveryZones.map((zone) => {
+      return {
+        text: zone.zona,
+        subText: {
+          text: `RD $${zone?.amount ? zone.amount : 0}`,
+          styles: {
+            display: 'block',
+            fontFamily: '"SFProLight"',
+            fontStyle: 'italic',
+            fontSize: '15px',
+            color: '#7B7B7B',
+            marginLeft: '19.5px',
+          }
+        }
+      }
+    });
+
+    const dialog = this.dialogService.open(GeneralDialogComponent,
+      {
+        type: 'centralized-fullscreen',
+        props: {
+          // dialogId: 'start',
+          // omitTabFocus: false,
+          containerStyles: {
+            background: 'rgb(255, 255, 255)',
+            borderRadius: '12px',
+            opacity: '1',
+            padding: '37px 36.6px 18.9px 31px',
+          },
+          header: {
+            styles: {
+              fontSize: '21px',
+              fontFamily: 'SfProBold',
+              marginBottom: '21.2px',
+              marginTop: '0',
+              color: '#4F4F4F',
+            },
+            text: '¿En qué zona entregaremos?',
+          },
+          title: {
+            styles: {
+              fontSize: '15px',
+              color: '#7B7B7B',
+              fontStyle: 'italic',
+              margin: '0',
+            },
+            text: '',
+          },
+          fields: {
+            list: [
+              {
+                name: 'deliveryType',
+                value: '',
+                validators: [Validators.required],
+                type: 'selection',
+                selection: {
+                  styles: {
+                    display: 'block',
+                    fontFamily: '"SfProBold"',
+                    fontSize: '17px',
+                    color: '#272727',
+                    marginLeft: '19.5px',
+                  },
+                  list: zones
+                },
+                // styles: {},
+                prop: 'text',
+              },
+            ],
+          },
+          isMultiple: false,
+          optionAction: (data) => {
+            const selectedIndex = zones.findIndex((zone) => zone.text === data.value.deliveryType[0]);
+            const { ...deliveryZoneInput } = this.deliveryZones[selectedIndex];
+
+            this.headerService.storeZone({
+              amount: deliveryZoneInput.amount,
+              zona: deliveryZoneInput.zona,
+              id: deliveryZoneInput._id,
+            });
+
+            this.deliveryZone = this.headerService.getZone();
+
+            if (!this.headerService.orderInputComplete() || (this.hasDeliveryZone && this.deliveryLocation.street && !this.deliveryZone)) {
+              this.missingOrderData = true;
+            } else {
+              this.missingOrderData = false;
+            }
+            
+            dialog.close();
+          }
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      }
+    );
+  }
+
   async checkLogged() {
     try {
       const anonymous = this.headerService.getOrderAnonymous();
@@ -567,7 +719,7 @@ export class CheckoutComponent implements OnInit {
           ],
         };
         this.headerService.storePost(this.post);
-        if (!this.headerService.orderInputComplete()) {
+        if (!this.headerService.orderInputComplete() || (this.hasDeliveryZone && this.deliveryLocation.street && !this.deliveryZone)) {
           this.missingOrderData = true;
         } else {
           this.missingOrderData = false;
