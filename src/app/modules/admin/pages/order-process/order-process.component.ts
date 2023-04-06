@@ -459,9 +459,11 @@ export class OrderProcessComponent implements OnInit {
     this.handleStatusOptions(value);
     
     try {
-      await this.orderService.orderSetStatusDelivery(value, this.order._id);
+      await this.orderService.orderSetStatusDelivery(value, this.ordersReadyToDeliver[this.activeIndex]._id);
       if (value === 'pending')  this.orderReadyToDeliver = true;
       if (value === 'delivered') this.orderDelivered = true;
+
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = value;
     } catch (error) {
       console.log(error);
     }

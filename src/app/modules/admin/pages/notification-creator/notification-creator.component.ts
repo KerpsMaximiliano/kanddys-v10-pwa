@@ -60,12 +60,13 @@ export class NotificationCreatorComponent implements OnInit {
   async save() {
     console.log("Saving...");
 
+    const message = this.replaceWord(this.notificationText, "comprador", "[name]");
     try {
       lockUI();
       if (!this.orderHasNotification) {
         const notification = await this.notificationsService.createNotification(
           {
-            message: this.notificationText,
+            message,
             entity: "order",
             merchant: this.merchant._id,
             phoneNumbers: [],
@@ -90,7 +91,7 @@ export class NotificationCreatorComponent implements OnInit {
         });
       } else {
         await this.notificationsService.updateNotification(
-          { message: this.notificationText },
+          { message },
           this.notification._id
         );
         this.snackBar.open('El mensaje ha sido actualizado', '', {
@@ -121,7 +122,7 @@ export class NotificationCreatorComponent implements OnInit {
         this.orderHasNotification = true;
         const notification = await this.notificationsService.notification(merchanId, order.notifications[0]);
         this.notification = notification;
-        this.notificationText = this.notification.message;
+        this.notificationText = this.replaceWord(this.notification.message, this.escapeRegExp("[name]"), "comprador");
       }
     } catch (error) {
       console.log(error);
@@ -133,7 +134,7 @@ export class NotificationCreatorComponent implements OnInit {
     try {
       const result = await this.notificationsService.notification(merchantId, notificationId);
       this.notification = result;
-      this.notificationText = result.message;
+      this.notificationText = this.replaceWord(result.message, this.escapeRegExp("[name]"), "comprador");
       this.orderHasNotification = true;
       // TODO validar si la notificación está contenida en el array de notificaciones de la orden
     } catch (error) {
@@ -156,6 +157,15 @@ export class NotificationCreatorComponent implements OnInit {
     this.router.navigate([this.redirectTo], {
       queryParams,
     });
+  }
+
+  private replaceWord(original, formerWord, newWord) {
+    const regex = new RegExp(formerWord, "g");
+    return original.replace(regex, newWord);
+  }
+
+  private escapeRegExp(cadena) {
+    return cadena.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
 }
