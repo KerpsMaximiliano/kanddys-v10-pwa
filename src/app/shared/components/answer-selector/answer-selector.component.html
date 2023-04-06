@@ -37,10 +37,23 @@
                   : null
               "
             >
-              <div class="background"></div>
+              <div
+                class="background"
+                [ngClass]="{
+                  narrow:
+                    alternativeBackground && alternativeBackground === 'narrow'
+                }"
+              ></div>
 
               <ng-container *ngIf="!option.isOptionAnArray">
-                <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+                <span
+                  [ngStyle]="option.valueStyles"
+                  [ngClass]="{
+                    selectedBold: boldenWhenSelected && i === activeOption,
+                    unselected: boldenWhenSelected && i !== activeOption
+                  }"
+                  >{{ option.value }}</span
+                >
                 <div>
                   <span
                     *ngFor="let subtext of option.subtexts"
@@ -123,11 +136,25 @@
               [ngStyle]="itemStyles ? itemStyles : null"
               (click)="clickSelector(i)"
             >
-              <div class="background"></div>
+              <div
+                class="background"
+                [ngClass]="{
+                  narrow:
+                    alternativeBackground && alternativeBackground === 'narrow'
+                }"
+              ></div>
 
               <ng-container *ngIf="!option.isOptionAnArray">
                 <div>
-                  <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+                  <span
+                    [ngStyle]="option.valueStyles"
+                    [ngClass]="{
+                      selectedBold: boldenWhenSelected && activeMultipleOption.includes(i),
+                      unselected: boldenWhenSelected && !activeMultipleOption.includes(i)
+                    }"
+                    >{{ option.value }}</span
+                  >
+                  
                   <div
                     class="description-container"
                     style="position: relative; z-index: 1000"
@@ -138,6 +165,7 @@
                     </p>
                   </div>
                 </div>
+                
                 <div>
                   <span
                     *ngFor="let subtext of option.subtexts"

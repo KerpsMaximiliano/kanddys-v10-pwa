@@ -21,6 +21,7 @@ import {
   orderSetStatus,
   ordersByItemHot,
   orderSetStatusDelivery,
+  orders,
   orderBenefitsByMerchant,
   orderBenefits,
   expenditure,
@@ -155,6 +156,19 @@ export class OrderService {
       const response = await this.graphql.query({
         query: order,
         variables: { orderId },
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async ordersPaginate(pagination: PaginationInput): Promise<Array<{ order: ItemOrder }>> {
+    try {
+      const response = await this.graphql.query({
+        query: orders,
+        variables: { pagination },
+        fetchPolicy: 'no-cache',
       });
       return response;
     } catch (e) {

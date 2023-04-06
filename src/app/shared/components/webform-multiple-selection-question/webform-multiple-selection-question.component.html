@@ -1,0 +1,26 @@
+<ng-container *ngIf="!multiple">
+  <app-closed-question-card
+    [id]="'sadasdaasd'"
+    [question]="label"
+    [questionType]="questionType"
+    [shadows]="shadows"
+  >
+  </app-closed-question-card>
+</ng-container>
+
+<!--
+  <ng-container *ngIf="multiple">
+    <app-closed-question-card
+      [id]="'sadasdaasd'"
+      [question]="label"
+      [answers]="optionsInput"
+      [questionType]="questionType"
+      [shadows]="shadows"
+      (onSelectorMultiple)="emitInputMultiple($event)"
+      [selectedIndexes]="selectedIndexes"
+      [selectedImagesIndexes]="selectedImagesGridIndexes"
+      [multiple]="multiple"
+    >
+    </app-closed-question-card>
+  </ng-container>
+-->

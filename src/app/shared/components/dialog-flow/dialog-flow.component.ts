@@ -72,6 +72,13 @@ export class DialogFlowComponent implements OnInit {
       this.swiperConfig.allowSlideNext = this.allowSlideNext;
       this.saveConfigRef.emit(this.swiperConfig);
       this.moveToDialogRef.emit(this.moveToDialogByIndex.bind(this));
+
+      if (
+        this.dialogs[this.currentDialogIndex].inputs &&
+        this.dialogs[this.currentDialogIndex].inputs.onActiveSlideCallback
+      ) {
+        this.dialogs[this.currentDialogIndex].inputs.onActiveSlideCallback();
+      }
     }, 100);
 
     /*

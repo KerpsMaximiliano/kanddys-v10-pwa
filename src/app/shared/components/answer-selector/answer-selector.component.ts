@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import {
   BankAnswers,
   ComplexOptionAnswerSelector,
@@ -10,7 +10,7 @@ import {
   templateUrl: './answer-selector.component.html',
   styleUrls: ['./answer-selector.component.scss'],
 })
-export class AnswerSelectorComponent {
+export class AnswerSelectorComponent implements OnInit {
   @Input() activeOption: number;
   @Input() activeMultipleOption: number[] = [];
   @Output() activeMultipleOptionValue = new EventEmitter();
@@ -24,6 +24,7 @@ export class AnswerSelectorComponent {
   @Input() isMultipleOption: boolean = false;
   @Input() isMultipleOption2: boolean = false;
   @Input() hasComplexOptionsLayout: boolean = false;
+  @Input() boldenWhenSelected: boolean = false;
   @Input() useMargins: boolean = true;
   @Input() options: OptionAnswerSelector[] = [
     { value: '¿Cuánto es?', status: true, click: false },
@@ -33,10 +34,14 @@ export class AnswerSelectorComponent {
   @Input() blockIndexes: number[];
   @Input() complexOptions: ComplexOptionAnswerSelector[];
   @Input() values: BankAnswers;
+  @Input() alternativeBackground: string;
 
   @Output() onSelector = new EventEmitter<number>();
 
   constructor() {}
+
+  ngOnInit(): void {
+  }
 
   activateOption(option: number) {
     if (option === this.activeOption) return;
@@ -46,6 +51,7 @@ export class AnswerSelectorComponent {
 
   activateMultipleOption(option: number) {
     this.options[option].click = !this.options[option].click;
+    this.activeMultipleOption = this.activeMultipleOption.filter(optionIndex => optionIndex !== null);
 
     if (!this.activeMultipleOption.includes(option)) {
       this.activeMultipleOption.push(option);
@@ -54,8 +60,10 @@ export class AnswerSelectorComponent {
       this.activeMultipleOption = this.activeMultipleOption.filter(
         (item) => item !== option
       );
+
       this.activeMultipleOption.sort();
     }
+
     this.activeMultipleOptionValue.emit(this.activeMultipleOption);
   }
 

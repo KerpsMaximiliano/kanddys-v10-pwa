@@ -26,6 +26,12 @@ import { ViewConfigurationComponent } from './pages/view-configuration/view-conf
 import { WebformMetricsComponent } from './pages/webform-metrics/webform-metrics.component';
 import { OrderStatusViewComponent } from './pages/order-status-view/order-status-view.component';
 import { OrderListComponent } from './pages/order-list/order-list.component';
+import { TextOrImageComponent } from 'src/app/shared/components/text-or-image/text-or-image.component';
+import { ItemWebformPreviewComponent } from './pages/item-webform-preview/item-webform-preview.component';
+import { WebformOptionsSelectorComponent } from './pages/webform-options-selector/webform-options-selector.component';
+import { FormResponsesComponent } from './pages/form-responses/form-responses.component';
+import { OpenFormResponsesComponent } from './pages/open-form-responses/open-form-responses.component';
+import { WebformsEditorComponent } from './pages/webforms-editor/webforms-editor.component';
 import { BenefitsComponent } from './pages/benefits/benefits.component';
 import { OrderExpensesComponent } from './pages/order-expenses/order-expenses.component';
 import { FilteredBenefitsComponent } from './pages/filtered-benefits/filtered-benefits.component';
@@ -161,8 +167,24 @@ const routes: Routes = [
         component: ViewConfigurationComponent,
       },
       {
-        path: 'webform-metrics',
+        path: 'webform-metrics/:formId/:itemId',
         component: WebformMetricsComponent,
+      },
+      {
+        path: 'options-selector',
+        component: WebformOptionsSelectorComponent
+      },
+      {
+        path: 'webform-preview/:itemId',
+        component: ItemWebformPreviewComponent,
+      },
+      {
+        path: 'webform-responses/:formId/:itemId',
+        component: FormResponsesComponent
+      },
+      {
+        path: 'webform-open-responses/:formId',
+        component: OpenFormResponsesComponent
       },
       {
         path: 'order-status-view',
@@ -184,6 +206,14 @@ const routes: Routes = [
             component: OrderListComponent,
           },
         ],
+      },
+      {
+        path: 'webform-multiple-selection/:itemId',
+        component: TextOrImageComponent,
+      },
+      {
+        path: 'webforms-editor/:formId/:itemId',
+        component: WebformsEditorComponent
       },
       {
         path: 'benefits',
@@ -241,6 +271,11 @@ const routes: Routes = [
     WebformMetricsComponent,
     OrderStatusViewComponent,
     OrderListComponent,
+    ItemWebformPreviewComponent,
+    WebformOptionsSelectorComponent,
+    FormResponsesComponent,
+    OpenFormResponsesComponent,
+    WebformsEditorComponent
     BenefitsComponent,
     OrderExpensesComponent,
     FilteredBenefitsComponent,
