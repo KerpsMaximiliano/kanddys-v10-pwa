@@ -162,6 +162,8 @@ import { StepperFormComponent } from './components/stepper-form/stepper-form.com
 import { CreateTagComponent } from './dialogs/create-tag/create-tag.component';
 import { CollectionCardComponent } from './components/collection-card/collection-card.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTabsModule } from '@angular/material/tabs';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
 import { WebformsCreatorComponent } from './components/webforms-creator/webforms-creator.component';
 import { WebformQuestionDialogComponent } from './components/webform-question-dialog/webform-question-dialog.component';
@@ -170,6 +172,15 @@ import { TextOrImageComponent } from './components/text-or-image/text-or-image.c
 import { WebformAddAnotherQuestionComponent } from './components/webform-add-another-question/webform-add-another-question.component';
 import { WebformNameQuestionComponent } from './components/webform-name-question/webform-name-question.component';
 import { MsgDialogComponent } from './dialogs/msg-dialog/msg-dialog.component';
+import { DialogFormComponent } from './dialogs/dialog-form/dialog-form.component';
+import { NamedExpenseComponent } from './components/named-expense/named-expense.component';
+import { TitledExpenseComponent } from './components/titled-expense/titled-expense.component';
+import { OrderExpensesListComponent } from './components/order-expenses-list/order-expenses-list.component';
+import { InfoCard2Component } from './components/info-card2/info-card2.component';
+import { MerchantStepperFormComponent } from './components/merchant-stepper-form/merchant-stepper-form.component';
+import { StringInputComponent } from './components/string-input/string-input.component';
+import { ArticleStepperFormComponent } from './components/article-stepper-form/article-stepper-form.component';
+import { FacturasDisplay2Component } from './components/facturas-display2/facturas-display2.component';
 
 const imports = [
   CommonModule,
@@ -201,6 +212,8 @@ const imports = [
   MatSnackBarModule,
   MatCardModule,
   MatCheckboxModule
+  MatGridListModule,
+  MatTabsModule,
 ];
 const declarations = [
   // Pages
@@ -346,6 +359,15 @@ const declarations = [
   WebformAddAnotherQuestionComponent,
   WebformNameQuestionComponent,
   MsgDialogComponent
+  DialogFormComponent,
+  NamedExpenseComponent,
+  TitledExpenseComponent,
+  OrderExpensesListComponent,
+  InfoCard2Component,
+  MerchantStepperFormComponent,
+  StringInputComponent,
+  ArticleStepperFormComponent,
+  FacturasDisplay2Component
 ];
 
 @NgModule({
@@ -353,6 +375,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}

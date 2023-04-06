@@ -35,7 +35,7 @@
             <div>
               <div class="grid-content">
                 <span [style]="field.selection.styles">{{ item.text }}</span>
-                <span *ngIf="item.subText" [style]="item.subText.styles">{{
+                <span [style]="item.styles" *ngIf="item.subText" [style]="item.subText.styles">{{
                   item.subText.text
                 }}</span>
                 <span *ngIf="item.subText" [style]="item.subText.styles">{{

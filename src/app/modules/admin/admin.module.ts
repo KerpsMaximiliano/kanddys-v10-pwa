@@ -32,6 +32,15 @@ import { WebformOptionsSelectorComponent } from './pages/webform-options-selecto
 import { FormResponsesComponent } from './pages/form-responses/form-responses.component';
 import { OpenFormResponsesComponent } from './pages/open-form-responses/open-form-responses.component';
 import { WebformsEditorComponent } from './pages/webforms-editor/webforms-editor.component';
+import { BenefitsComponent } from './pages/benefits/benefits.component';
+import { OrderExpensesComponent } from './pages/order-expenses/order-expenses.component';
+import { FilteredBenefitsComponent } from './pages/filtered-benefits/filtered-benefits.component';
+import { MerchantLandingComponent } from './pages/merchant-landing/merchant-landing.component';
+import { DeliveryZonesComponent } from './pages/delivery-zones/delivery-zones.component';
+import { OrdersByDeliveryComponent } from './pages/orders-by-delivery/orders-by-delivery.component';
+import { OrderProcessComponent } from './pages/order-process/order-process.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -205,12 +214,40 @@ const routes: Routes = [
       {
         path: 'webforms-editor/:formId/:itemId',
         component: WebformsEditorComponent
+      },
+      {
+        path: 'benefits',
+        component: BenefitsComponent,
+      },
+      {
+        path: 'benefits/date',
+        component: FilteredBenefitsComponent,
+      },
+      {
+        path: 'order-expenses/:orderId',
+        component: OrderExpensesComponent,
+      },
+      {
+        path: 'delivery-zones',
+        component: DeliveryZonesComponent,
+      },
+      {
+        path: 'orders-by-delivery/:deliveryId',
+        component: OrdersByDeliveryComponent,
+      },
+      {
+        path: 'delivery-orders',
+        component: DeliveryOrdersComponent,
       }
     ],
   },
   {
     path: 'tags',
     component: TagsComponent,
+  },
+  {
+    path: 'order-process/:merchantId',
+    component: OrderProcessComponent,
   },
 ];
 
@@ -239,8 +276,15 @@ const routes: Routes = [
     FormResponsesComponent,
     OpenFormResponsesComponent,
     WebformsEditorComponent
+    BenefitsComponent,
+    OrderExpensesComponent,
+    FilteredBenefitsComponent,
+    DeliveryZonesComponent,
+    OrdersByDeliveryComponent,
+    OrderProcessComponent,
+    DeliveryOrdersComponent,
   ],
   exports: [ArticleCreatorComponent],
-  imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
+  imports: [CommonModule, SharedModule, MatCheckboxModule, RouterModule.forChild(routes)],
 })
 export class AdminModule {}

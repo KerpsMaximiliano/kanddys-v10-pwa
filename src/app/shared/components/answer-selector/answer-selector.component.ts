@@ -27,9 +27,9 @@ export class AnswerSelectorComponent implements OnInit {
   @Input() boldenWhenSelected: boolean = false;
   @Input() useMargins: boolean = true;
   @Input() options: OptionAnswerSelector[] = [
-    { value: '¿Cuánto es?', status: true, click: false, description: [] },
-    { value: '¿Dónde es?', status: true, click: false, description: [] },
-    { value: '¿Qué es?', status: false, click: false, description: [] },
+    { value: '¿Cuánto es?', status: true, click: false },
+    { value: '¿Dónde es?', status: true, click: false },
+    { value: '¿Qué es?', status: false, click: false },
   ];
   @Input() blockIndexes: number[];
   @Input() complexOptions: ComplexOptionAnswerSelector[];

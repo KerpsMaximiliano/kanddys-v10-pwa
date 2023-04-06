@@ -75,6 +75,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                       active: true,
                     };
                   });
+                  console.log(images);
                   if (!pricing) return;
                   lockUI();
                   const itemInput: ItemInput = {
@@ -272,7 +273,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.renderItemsPromise.then(async (response) => {
       const items = response;
       const itemsQueryResult = items?.listItems;
-      console.log(itemsQueryResult);
 
       if (getTotalNumberOfItems) {
         pagination.options.limit = -1;

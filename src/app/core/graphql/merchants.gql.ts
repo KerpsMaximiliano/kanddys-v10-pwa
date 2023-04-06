@@ -278,6 +278,7 @@ export const ordersByMerchant = gql`
         status
         access
       }
+      expenditures
       dateId
       createdAt
       tags

@@ -69,6 +69,12 @@ export class OrderDetailComponent implements OnInit {
   slides: Slide[];
   payment: number;
   isMerchant: boolean;
+  benefits: {
+    benefits: number;
+    less: number;
+    percentageBenefits: number;
+    percentageLess: number;
+  };
   orderStatus: OrderStatusNameType;
   orderDate: string;
   date: {
@@ -355,6 +361,7 @@ export class OrderDetailComponent implements OnInit {
         selected: this.order.tags.includes(tag._id),
       };
     });
+    this.benefits = await this.orderService.orderBenefits(this.order._id);
     unlockUI();
   }
 
@@ -363,7 +370,6 @@ export class OrderDetailComponent implements OnInit {
     this.router.navigate([], {
       relativeTo: this.route,
     });
-    console.log(this.order.tags);
     const tags =
       (await this.tagsService.tagsByUser({
         findBy: {
@@ -568,12 +574,12 @@ export class OrderDetailComponent implements OnInit {
     this.headerService.deleteSaleflowOrder();
     this.headerService.order = {
       products: this.order.items.map((item) => {
-        if (item.params?.length) {
-          const paramItem = item.item.params[0].values.find(
-            (itemParam) => itemParam._id === item.params[0].paramValue
-          );
-          this.headerService.storeItem(paramItem);
-        } else this.headerService.storeItem(item.item);
+        // if (item.params?.length) {
+        //   const paramItem = item.item.params[0].values.find(
+        //     (itemParam) => itemParam._id === item.params[0].paramValue
+        //   );
+        //   this.headerService.storeItem(paramItem);
+        // } else this.headerService.storeItem(item.item);
         return {
           amount: item.amount,
           item: item.item._id,
@@ -678,7 +684,19 @@ export class OrderDetailComponent implements OnInit {
 
     if(!this.redirectTo && this.from) return this.redirectFromQueryParams();
 
-    this.router.navigate([this.redirectTo]);
+    let queryParams = {};
+    if (this.redirectTo.includes('?')) {
+      const url = this.redirectTo.split('?');
+      this.redirectTo = url[0];
+      const queryParamList = url[1].split('&');
+      for (const param in queryParamList) {
+        const keyValue = queryParamList[param].split('=');
+        queryParams[keyValue[0]] = keyValue[1];
+      }
+    }
+    this.router.navigate([this.redirectTo], {
+      queryParams,
+    });
   }
 
   goToPostDetail() {

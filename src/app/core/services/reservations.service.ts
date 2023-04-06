@@ -89,7 +89,6 @@ export class ReservationService {
       const response = await this.graphql.query({
         query: getReservation,
         variables: { id },
-        fetchPolicy: 'no-cache',
       });
       if (!response || response?.errors) return undefined;
       return response.getReservation;

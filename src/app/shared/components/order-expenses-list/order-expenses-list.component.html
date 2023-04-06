@@ -1,0 +1,33 @@
+<mat-card class="card mat-elevation-z0">
+  <div
+    mat-card-avatar
+    class="avatar"
+    [ngStyle]="{
+      backgroundImage: 'url(' + image + ')',
+      backgroundSize: 'cover'
+    }"
+  ></div>
+  <mat-card-header style="padding-left: 16px">
+    <mat-card-title class="title">{{ buyer }}</mat-card-title>
+    <div style="flex: 1"></div>
+    <div class="percentage">{{ percentage | number }}% de beneficio</div>
+  </mat-card-header>
+  <mat-divider [inset]="true"></mat-divider>
+  <mat-card-content>
+    <div class="benefits">
+      <h4>Ingresos menos egresos</h4>
+      <span>${{ total | number }}</span>
+    </div>
+    <table *ngIf="list?.length">
+      <tr *ngFor="let item of list">
+        <td *ngIf="item.date">{{ item.date }}</td>
+        <td>{{ item.name }}</td>
+        <td class="amount">
+          {{ item.type === "egreso" ? "(" : "" }}
+          ${{ item.amount | number }}
+          {{ item.type === "egreso" ? ")" : "" }}
+        </td>
+      </tr>
+    </table>
+  </mat-card-content>
+</mat-card>

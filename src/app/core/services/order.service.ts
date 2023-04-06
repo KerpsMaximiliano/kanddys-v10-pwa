@@ -22,6 +22,19 @@ import {
   ordersByItemHot,
   orderSetStatusDelivery,
   orders,
+  orderBenefitsByMerchant,
+  orderBenefits,
+  expenditure,
+  expenditures,
+  createExpenditure,
+  updateExpenditure,
+  orderAddExpenditure,
+  orderRemoveExpenditure,
+  orderByMerchantDelivery,
+  hotOrderByMerchantDelivery,
+  updateOrderDeliveryData,
+  orderSetStatusDeliveryWithoutAuth,
+  orderSetDeliveryZone,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -32,6 +45,11 @@ import {
   OrderStatusType,
   OrderStatusType2,
   OrderStatusDeliveryType,
+  Expenditure,
+  ExpenditureInput,
+  Benefits,
+  OrderBenefits,
+  DeliveryDataInput,
 } from '../models/order';
 
 import { PaginationInput } from '../models/saleflow';
@@ -138,7 +156,6 @@ export class OrderService {
       const response = await this.graphql.query({
         query: order,
         variables: { orderId },
-        fetchPolicy: 'no-cache',
       });
       return response;
     } catch (e) {
@@ -288,6 +305,87 @@ export class OrderService {
     return result?.createPartialOCR;
   }
 
+  async expenditure(id: string): Promise<Expenditure> {
+    const result = await this.graphql.query({
+      query: expenditure,
+      variables: { id },
+    });
+    return result?.expenditure;
+  }
+
+  async expenditures(paginate: PaginationInput): Promise<Expenditure[]> {
+    const result = await this.graphql.query({
+      query: expenditures,
+      fetchPolicy: 'no-cache',
+      variables: { paginate },
+    });
+    return result?.expenditures;
+  }
+
+  async createExpenditure(
+    merchantId: string,
+    input: ExpenditureInput
+  ): Promise<Expenditure> {
+    const result = await this.graphql.mutate({
+      mutation: createExpenditure,
+      variables: { merchantId, input },
+    });
+    return result.createExpenditure;
+  }
+
+  async updateExpenditure(
+    input: ExpenditureInput,
+    id: string
+  ): Promise<Expenditure> {
+    const result = await this.graphql.mutate({
+      mutation: updateExpenditure,
+      variables: { input, id },
+    });
+    return result.updateExpenditure;
+  }
+
+  async orderAddExpenditure(
+    expenditureId: string,
+    id: string
+  ): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: orderAddExpenditure,
+      variables: { expenditureId, id },
+    });
+    return result.orderAddExpenditure;
+  }
+
+  async orderRemoveExpenditure(
+    expenditureId: string,
+    id: string
+  ): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: orderRemoveExpenditure,
+      fetchPolicy: 'no-cache',
+      variables: { expenditureId, id },
+    });
+    return result.orderRemoveExpenditure;
+  }
+
+  async orderBenefits(id: string): Promise<OrderBenefits> {
+    const result = await this.graphql.query({
+      query: orderBenefits,
+      variables: { id },
+      fetchPolicy: 'no-cache',
+    });
+    return result?.orderBenefits;
+  }
+
+  async orderBenefitsByMerchant(
+    pagination: PaginationInput
+  ): Promise<Benefits> {
+    const result = await this.graphql.query({
+      query: orderBenefitsByMerchant,
+      variables: { pagination },
+    });
+    return result?.orderBenefitsByMerchant;
+  }
+
   getOrderStatusName(status: OrderStatusType): OrderStatusNameType {
     return (
       {
@@ -308,6 +406,17 @@ export class OrderService {
     return (await this.preOrder(id))?.order;
   }
 
+  async orderByMerchantDelivery(pagination: PaginationInput): Promise<ItemOrder[]> {
+    const result = await this.graphql.query({
+      query: hotOrderByMerchantDelivery,
+      variables: { pagination },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    return result?.orderByMerchantDelivery;
+  }
+
   async orderSetStatusDelivery(orderStatusDelivery: string, id: string) {
     const result = await this.graphql.mutate({
       mutation: orderSetStatusDelivery,
@@ -316,6 +425,37 @@ export class OrderService {
     });
     if (!result || result?.errors) return undefined;
     return result.orderSetStatusDelivery;
+  }
+
+  async updateOrderDeliveryData(input: DeliveryDataInput, id: string): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: updateOrderDeliveryData,
+      variables: { input, id },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true }
+    });
+    if (!result || result?.errors) return undefined;
+    return result.updateOrderDeliveryData;
+  }
+
+  async orderSetStatusDeliveryWithoutAuth(orderStatusDelivery: string, id: string): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: orderSetStatusDeliveryWithoutAuth,
+      variables: { orderStatusDelivery, id },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async orderSetDeliveryZone(deliveryZoneId: string, id: string, userId?: string): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: orderSetDeliveryZone,
+      variables: { deliveryZoneId, id, userId },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
   }
 
   orderDeliveryStatus(status: OrderStatusDeliveryType) {

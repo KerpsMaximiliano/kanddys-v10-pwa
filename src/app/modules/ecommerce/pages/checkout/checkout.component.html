@@ -325,6 +325,32 @@
       </button>
     </section>
 
+    <section class="section" *ngIf="hasDeliveryZone && deliveryLocation && deliveryLocation.street">
+
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Zona de entrega</h2>
+      </div>
+
+      <ng-container *ngIf="deliveryZone">
+        <button
+          class="items-container ready"
+          (click)="openDeliveryZones()"
+        >
+          <p class="address-name">
+            {{ deliveryZone?.zona }}
+          </p>
+        </button>
+      </ng-container>
+
+      <button
+        class="items-container column pointer green"
+        *ngIf="!deliveryZone"
+        (click)="openDeliveryZones()"
+      >
+        <p class="address-name">Selecciona una zona de entrega</p>
+      </button>
+    </section>
+
     <section
       class="section"
       *ngIf="

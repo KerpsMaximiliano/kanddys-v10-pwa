@@ -1,0 +1,29 @@
+<div style="min-height: 100vh">
+  <header class="header">
+    <a mat-icon-button [routerLink]="['../']">
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+    </a>
+    <h5>{{ month }} - {{ year }}</h5>
+  </header>
+  <main>
+    <div class="order-list">
+      <a
+        *ngFor="let order of orders"
+        [routerLink]="['../../../ecommerce/order-detail', order._id]"
+        [queryParams]="{ redirectTo: router.url }"
+      >
+        <app-order-expenses-list
+          [buyer]="
+            order.user?.name || order?.user?.phone || 'Usuario eliminado'
+          "
+          [percentage]="order.percentageBenefits * 100"
+          [total]="order.benefits - order.less"
+          [list]="order.expenditureList"
+          [image]="
+            order.user?.image || 'https://www.gravatar.com/avatar/0?s=250&d=mp'
+          "
+        ></app-order-expenses-list>
+      </a>
+    </div>
+  </main>
+</div>

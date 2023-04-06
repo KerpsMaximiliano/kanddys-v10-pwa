@@ -112,3 +112,26 @@ export function unformatID(
 export function capitalize(text) {
   return text.replace(/\b\w/g, (l) => l.toUpperCase());
 }
+
+export function getDaysAgo(date: string) {
+  const temporalDate = new Date(date);
+  const currentDate = new Date();
+  const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+  const dateDifference = Math.round(
+    Math.abs((currentDate.getTime() - temporalDate.getTime()) / oneDay)
+  );
+  const monthDifference = Math.floor(dateDifference / 30);
+  let daysAgo: string;
+  if (dateDifference === 0) daysAgo = 'Hoy';
+  if (dateDifference === 1) daysAgo = 'Ayer';
+  if (dateDifference > 1 && dateDifference < 30)
+    daysAgo = `Hace ${dateDifference} días`;
+  if (dateDifference >= 30 && dateDifference < 365) {
+    daysAgo = `Hace ${monthDifference} mes${monthDifference === 1 ? '' : 'es'}`;
+  }
+  if (dateDifference >= 365) {
+    const yearDifference = Math.floor(monthDifference / 12);
+    daysAgo = `Hace ${yearDifference} año${yearDifference === 1 ? '' : 's'}`;
+  }
+  return daysAgo;
+}

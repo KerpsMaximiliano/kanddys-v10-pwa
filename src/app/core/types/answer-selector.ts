@@ -22,7 +22,7 @@ export interface OptionAnswerSelector {
   status: boolean;
   click?: boolean;
   hidden?: boolean;
-  description?: string[];
+  description?: string | string[];
   id?: string;
   selected?: boolean;
 }

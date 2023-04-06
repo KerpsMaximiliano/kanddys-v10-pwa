@@ -27,10 +27,11 @@
         ]"
       />
       <div class="btn-add">
-        <label for="filemultiple">
+        <label for="filemultiple" [ngStyle]="{ margin: inputPosition === 'center' ? 'auto' : 'initial' }">
           <span class="icon">+</span>
           <span>Adiciona</span>
         </label>
+        <p class="caption" *ngIf="caption" [ngStyle]="{ margin: inputPosition === 'center' ? 'auto' : 'initial' }">{{ caption }}</p>
       </div>
     </div>
   </div>
