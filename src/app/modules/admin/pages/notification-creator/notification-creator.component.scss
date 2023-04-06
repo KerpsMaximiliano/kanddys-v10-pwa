@@ -1,6 +1,5 @@
 .container {
     min-height: 100vh;
-    background-color: #293628;
 
     header {
         display: flex;
@@ -99,4 +98,8 @@
     font-style: italic;
     font-size: 15px;
     font-family: SfProLight;
+}
+
+.dark-background {
+    background-color: #293628;
 }

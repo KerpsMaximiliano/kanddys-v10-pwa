@@ -29,6 +29,8 @@ import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { Reservation } from 'src/app/core/models/reservation';
 import { ReservationService } from 'src/app/core/services/reservations.service';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 
 @Component({
   selector: 'app-order-process',
@@ -140,7 +142,8 @@ export class OrderProcessComponent implements OnInit {
     private _bottomSheet: MatBottomSheet,
     private ngNavigatorShareService: NgNavigatorShareService,
     private deliveryzoneService: DeliveryZonesService,
-    private reservationsService: ReservationService
+    private reservationsService: ReservationService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -341,6 +344,8 @@ export class OrderProcessComponent implements OnInit {
       this.handleStatusOptions(this.order.orderStatusDelivery);
     }
 
+    if (!this.isMerchant) this.deliveryStatusOptions = [];
+
     let giftMessage = '';
     if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
     if (this.post?.targets?.[0]?.name)
@@ -386,6 +391,13 @@ export class OrderProcessComponent implements OnInit {
 
   async getOrders(merchantId: string, deliveryZone?: string) {
     console.log(this.isMerchant);
+    const findBy = {
+      merchant: merchantId,
+      deliveryZone: deliveryZone,
+      orderStatus: ["to confirm", "paid", "completed"],
+      orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? null : null,
+    }
+    if (this.isMerchant) delete findBy.orderStatusDelivery;
     try {
       const result = await this.orderService.orderByMerchantDelivery(
         {
@@ -393,12 +405,7 @@ export class OrderProcessComponent implements OnInit {
             limit: 20,
             sortBy: "createdAt:desc"
           },
-          findBy: {
-            merchant: merchantId,
-            deliveryZone: deliveryZone,
-            orderStatus: ["to confirm", "paid", "completed"],
-            orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? null : null,
-          }
+          findBy
         }
       );
 
@@ -549,7 +556,7 @@ export class OrderProcessComponent implements OnInit {
               },
             },
             {
-              title: 'Copiar el Link de esta sola factura',
+              title: 'Copiar el Link',
               callback: () => {
                 this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`);
                 this.snackBar.open('Enlace copiado en el portapapeles', '', {
@@ -572,7 +579,7 @@ export class OrderProcessComponent implements OnInit {
               },
             },
             {
-              title: 'Copiar el Link de esta sola factura',
+              title: 'Copiar el Link',
               callback: () => {
                 this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`);
                 this.snackBar.open('Enlace copiado en el portapapeles', '', {
@@ -721,6 +728,17 @@ export class OrderProcessComponent implements OnInit {
         minute: '2-digit',
       })
       .toLocaleUpperCase();
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialogService.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   downloadEntityTemplateQr(qrElment: ElementRef) {
