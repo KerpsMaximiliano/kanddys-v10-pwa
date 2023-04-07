@@ -9,7 +9,16 @@
       <button class="option" style="margin: 0 auto">Mercado</button>
       <button class="option">Banco Editorial</button>
     </div>
-    <svg
+    <button style="all: unset">
+      <img
+        [src]="env + '/info_square.svg'"
+        alt=""
+        class="toggle"
+        (click)="togglePanel()"
+        *ngIf="!panelOpenState"
+      />
+    </button>
+    <!-- <svg
       *ngIf="!panelOpenState"
       class="toggle"
       (click)="togglePanel()"
@@ -40,7 +49,7 @@
           fill="#293628"
         />
       </g>
-    </svg>
+    </svg> -->
 
     <div *ngIf="panelOpenState" (click)="togglePanel()" class="square toggle">
       <mat-icon [ngStyle]="{ color: 'white' }">expand_less</mat-icon>

@@ -12,6 +12,7 @@ export class ItemImagesComponent implements OnInit {
   @Input() caption: string;
   @Output() enteredImages = new EventEmitter();
   @Input() round: boolean = false;
+  @Input() contact: boolean = false;
 
   constructor() {}
 

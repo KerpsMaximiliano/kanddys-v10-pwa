@@ -18,6 +18,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { NotificationDialogComponent } from '../../../../shared/dialogs/notification-dialog/notification-dialog.component';
 import { Router } from '@angular/router';
 import { IpusersService } from 'src/app/core/services/ipusers.service';
+import { ContactService } from 'src/app/core/services/contact.service';
 
 SwiperCore.use([Virtual]);
 
@@ -53,7 +54,8 @@ export class RegistroKioskoComponent implements OnInit {
     private authService: AuthService,
     private dialog: DialogService,
     private router: Router,
-    private ipuser: IpusersService
+    private ipuser: IpusersService,
+    private contactService: ContactService
   ) {}
 
   CountryISO = CountryISO.DominicanRepublic;
@@ -292,11 +294,7 @@ export class RegistroKioskoComponent implements OnInit {
 
     if (this.currentMediaSlide === 5 && !this.itemFormMail.valid) {
       this.swiperConfig.allowSlideNext = false;
-    } else if (
-      this.currentMediaSlide === 6 &&
-      !this.itemFormPhone.valid &&
-      this.inputPhone !== null
-    ) {
+    } else if (this.currentMediaSlide === 6 && !this.itemFormPhone.valid) {
       this.swiperConfig.allowSlideNext = false;
     } else if (this.currentMediaSlide === 9 && !this.isCountrySelected) {
       this.swiperConfig.allowSlideNext = false;
@@ -685,7 +683,23 @@ export class RegistroKioskoComponent implements OnInit {
       );
       console.log(this.user);
 
-      this.router.navigate([`ecommerce/kiosko-view/${this.user.user._id}`]);
+      this.authService.generateMagicLink(
+        this.phoneNumber.replace('+', ''),
+        `/ecommerce/kiosko-view/${this.user.user._id}`,
+        '',
+        'UserAccess',
+        {}
+      );
+
+      this.snackBar.open(
+        'Te hemos enviado un link de acceso vía Whatsapp',
+        '',
+        {
+          duration: 5000,
+        }
+      );
+
+      // this.router.navigate([`ecommerce/kiosko-view/${this.user.user._id}`]);
     }
   }
 }
