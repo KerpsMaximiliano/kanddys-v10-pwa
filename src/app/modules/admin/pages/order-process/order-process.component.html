@@ -288,7 +288,7 @@
                     </a>
                     <a
                         class="featured-cta"
-                        [routerLink]="['../../create-notification', ordersReadyToDeliver[activeIndex]?.notifications[0]]"
+                        [routerLink]="['../../create-notification', checkNotificationDeliveryStatus(ordersReadyToDeliver[activeIndex]?.orderStatusDelivery)._id]"
                         [queryParams]="{
                             redirectTo: router.url,
                             orderId: ordersReadyToDeliver[activeIndex]?._id,
