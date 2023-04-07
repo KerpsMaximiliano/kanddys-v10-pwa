@@ -39,7 +39,7 @@ export class NotificationsService {
   async notifications(
     paginate: PaginationInput,
     merchantId: string,
-    notificationId: string[]
+    notificationId?: string[]
   ): Promise<Notification[]> {
     const result = await this.graphql.mutate({
       mutation: notifications,

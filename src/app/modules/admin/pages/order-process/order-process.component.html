@@ -274,16 +274,30 @@
                     <a
                         class="featured-cta"
                         [routerLink]="['../../create-notification']"
-                        [queryParams]="{ redirectTo: router.url, orderId: ordersReadyToDeliver[activeIndex]?._id }"
-                        *ngIf="!ordersReadyToDeliver[activeIndex]?.notifications || ordersReadyToDeliver[activeIndex]?.notifications.length === 0"
+                        [queryParams]="{ 
+                            redirectTo: router.url,
+                            orderId: ordersReadyToDeliver[activeIndex]?._id,
+                            status: ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
+                        }"
+                        *ngIf="
+                            ordersReadyToDeliver[activeIndex]?.orderStatusDelivery &&
+                            !checkNotificationDeliveryStatus(ordersReadyToDeliver[activeIndex]?.orderStatusDelivery)
+                        "
                     >
                         Automatiza una notificación por WhatsApp para el comprador al marcar este progreso
                     </a>
                     <a
                         class="featured-cta"
                         [routerLink]="['../../create-notification', ordersReadyToDeliver[activeIndex]?.notifications[0]]"
-                        [queryParams]="{ redirectTo: router.url, orderId: ordersReadyToDeliver[activeIndex]?._id }"
-                        *ngIf="ordersReadyToDeliver[activeIndex]?.notifications && ordersReadyToDeliver[activeIndex]?.notifications.length > 0"
+                        [queryParams]="{
+                            redirectTo: router.url,
+                            orderId: ordersReadyToDeliver[activeIndex]?._id,
+                            status: ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
+                        }"
+                        *ngIf="
+                            ordersReadyToDeliver[activeIndex]?.orderStatusDelivery &&
+                            checkNotificationDeliveryStatus(ordersReadyToDeliver[activeIndex]?.orderStatusDelivery)
+                        "
                     >
                         Ver o editar la notificación al comprador al marcar este progreso
                     </a>

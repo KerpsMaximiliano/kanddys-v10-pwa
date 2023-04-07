@@ -31,6 +31,8 @@ import { Reservation } from 'src/app/core/models/reservation';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
+import { Notification } from 'src/app/core/models/notification';
 
 @Component({
   selector: 'app-order-process',
@@ -123,6 +125,8 @@ export class OrderProcessComponent implements OnInit {
   initialSlide: number;
   activeIndex: number = 0;
 
+  notifications: Notification[] = [];
+
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
   @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
   @ViewChild('ordersSwiper') ordersSwiper: SwiperComponent;
@@ -143,7 +147,8 @@ export class OrderProcessComponent implements OnInit {
     private ngNavigatorShareService: NgNavigatorShareService,
     private deliveryzoneService: DeliveryZonesService,
     private reservationsService: ReservationService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private notificationsService: NotificationsService
   ) {}
 
   ngOnInit(): void {
@@ -257,6 +262,8 @@ export class OrderProcessComponent implements OnInit {
       })
       .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
+
+    await this.getDeliveryNotifications(this.merchant._id);
 
     if (this.order.items[0].post) {
       this.post = (
@@ -385,7 +392,6 @@ export class OrderProcessComponent implements OnInit {
         else if (this.view === 'delivery') await this.changeOrderStatusAuthless('delivered');
       }
     }
-
     unlockUI();
   }
 
@@ -446,6 +452,40 @@ export class OrderProcessComponent implements OnInit {
     this.selectedTagsLength = Object.entries(this.selectedTags).filter(
       (value) => value[1]
     ).length;
+  }
+
+  async getDeliveryNotifications(merchantId: string) {
+    try {
+      const result = await this.notificationsService.notifications(
+        {
+          options: {
+            limit: -1,
+            sortBy: 'createdAt:desc',
+          },
+          findBy: {
+            entity: "order",
+            type: "standard",
+            mode: "default"
+          }
+        },
+        merchantId
+      );
+
+      const notifications = result.filter((notification) => {
+        return notification.trigger[0].key === 'orderStatusDelivery'
+      });
+
+      console.log(notifications);
+
+      this.notifications = notifications;
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  checkNotificationDeliveryStatus(status: string) {
+    return this.notifications.find((option) => option.trigger[0].value === status);
   }
 
   async isMerchantOwner(merchant: string) {

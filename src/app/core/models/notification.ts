@@ -63,12 +63,17 @@ export class StatusTrigger {
   value: OrderStatusType;
 }
 
+export class DeliveryStatusTrigger {
+  key: 'orderStatusDelivery';
+  value: OrderStatusDeliveryType;
+}
+
 export class Notification extends Model<Notification> {
   message: string;
   merchant: Merchant;
   phoneNumbers: PhoneNumbers[];
   entity: string;
-  trigger: (GenericTrigger | StatusTrigger)[];
+  trigger: (GenericTrigger | StatusTrigger | DeliveryStatusTrigger)[];
   offsetTime: OffsetTime[];
   active: boolean;
 
@@ -80,5 +85,5 @@ export class NotificationChecker extends Model<NotificationChecker> {
   user: User;
   date: Date;
   status: string;
-  trigger: GenericTrigger | StatusTrigger;
+  trigger: GenericTrigger | StatusTrigger | DeliveryStatusTrigger;
 }

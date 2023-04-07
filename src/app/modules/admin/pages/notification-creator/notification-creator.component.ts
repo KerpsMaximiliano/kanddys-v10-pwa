@@ -9,6 +9,7 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { OrderService } from 'src/app/core/services/order.service';
 import { Notification } from 'src/app/core/models/notification';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
 
 @Component({
   selector: 'app-notification-creator',
@@ -22,10 +23,13 @@ export class NotificationCreatorComponent implements OnInit {
 
   redirectTo: string = null;
   orderId: string = null;
+  status: string = null;
   orderHasNotification: boolean = false;
 
   notificationText: string = "";
   notification: Notification;
+
+  order: ItemOrder;
 
   merchant: Merchant;
 
@@ -40,30 +44,35 @@ export class NotificationCreatorComponent implements OnInit {
 
   async ngOnInit() {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { redirectTo, orderId } = queryParams;
+      const { redirectTo, orderId, status } = queryParams;
 
       this.redirectTo = redirectTo;
       this.orderId = orderId;
+      this.status = status;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
       if (typeof orderId === 'undefined') this.orderId = null;
+      if (typeof status === 'undefined') this.status = null;
 
       
       await this.getMerchant();
       const notificationId = this.route.snapshot.paramMap.get('notificationId');
       if (notificationId) await this.getNotification(this.merchant._id, notificationId);
-      else await this.checkIfOrderHasNotification(orderId, this.merchant._id);
-      
+      if (status) await this.getDeliveryNotifications(this.merchant._id, status);
+
+      if (orderId) await this.getOrder(orderId);
+      if (this.notification) this.checkIfOrderHasNotification(this.order, this.notification._id);
     });
   }
 
   async save() {
     console.log("Saving...");
+    console.log(this.status);
 
     const message = this.replaceWord(this.notificationText, "comprador", "[name]");
     try {
       lockUI();
-      if (!this.orderHasNotification) {
+      if (!this.notification) {
         const notification = await this.notificationsService.createNotification(
           {
             message,
@@ -73,7 +82,7 @@ export class NotificationCreatorComponent implements OnInit {
             trigger: [
               {
                 key: "orderStatusDelivery",
-                value: "pending"
+                value: this.status as OrderStatusDeliveryType
               }
             ],
             offsetTime: []
@@ -94,6 +103,14 @@ export class NotificationCreatorComponent implements OnInit {
           { message },
           this.notification._id
         );
+
+        if (!this.orderHasNotification) {
+          await this.notificationsService.orderAddNotification(
+            [this.notification._id],
+            this.orderId
+          );
+          this.orderHasNotification = true;
+        }
         this.snackBar.open('El mensaje ha sido actualizado', '', {
           duration: 2000,
         });
@@ -115,19 +132,21 @@ export class NotificationCreatorComponent implements OnInit {
     }
   }
 
-  async checkIfOrderHasNotification(orderId: string, merchanId: string) {
+  async getOrder(orderId: string) {
     try {
       const { order } = await this.ordersService.order(orderId);
-      if (order.notifications.length > 0) {
-        this.orderHasNotification = true;
-        const notification = await this.notificationsService.notification(merchanId, order.notifications[0]);
-        this.notification = notification;
-        this.notificationText = this.replaceWord(this.notification.message, this.escapeRegExp("[name]"), "comprador");
-      }
+      this.order = order;
     } catch (error) {
       console.log(error);
-      // this.returnEvent();
+      this.returnEvent();
     }
+  }
+
+  private checkIfOrderHasNotification(order: ItemOrder, notificationId: string) {
+    if (
+      order.notifications.length > 0 && 
+      order.notifications.find((notification) => notification === notificationId)
+    ) this.orderHasNotification = true;
   }
 
   async getNotification(merchantId: string, notificationId: string) {
@@ -135,11 +154,47 @@ export class NotificationCreatorComponent implements OnInit {
       const result = await this.notificationsService.notification(merchantId, notificationId);
       this.notification = result;
       this.notificationText = this.replaceWord(result.message, this.escapeRegExp("[name]"), "comprador");
-      this.orderHasNotification = true;
       // TODO validar si la notificación está contenida en el array de notificaciones de la orden
     } catch (error) {
       console.log(error);
       // this.returnEvent();
+    }
+  }
+
+  async getDeliveryNotifications(merchantId: string, status: string) {
+    try {
+
+      if (!this.notification) {
+        const result = await this.notificationsService.notifications(
+          {
+            options: {
+              limit: -1,
+              sortBy: 'createdAt:desc',
+            },
+            findBy: {
+              entity: "order",
+              type: "standard",
+              mode: "default"
+            }
+          },
+          merchantId
+        );
+  
+        const notification = result.find((notification) => {
+          return notification.trigger[0].key === 'orderStatusDelivery' && notification.trigger[0].value === status;
+        });
+  
+        if (notification) {
+          this.notification = notification;
+          this.notificationText = this.replaceWord(notification.message, this.escapeRegExp("[name]"), "comprador");
+        }
+      } else {
+        const notification = (this.notification.trigger[0].key === 'orderStatusDelivery' && this.notification.trigger[0].value === status) ? this.notification : null;
+        if (!notification) this.returnEvent();
+      }
+      
+    } catch (error) {
+      console.log(error);
     }
   }
 

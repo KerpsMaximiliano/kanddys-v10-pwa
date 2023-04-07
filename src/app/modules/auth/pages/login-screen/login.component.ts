@@ -1090,6 +1090,7 @@ export class LoginComponent implements OnInit {
           image: this.image,
           platform: 'bank-transfer',
           transactionCode: '',
+          subtotal: this.paymentAmount
         },
         order.user._id,
         'bank-transfer',
