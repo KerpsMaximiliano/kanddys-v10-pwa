@@ -465,7 +465,8 @@ export class OrderProcessComponent implements OnInit {
           findBy: {
             entity: "order",
             type: "standard",
-            mode: "default"
+            mode: "default",
+            active: true
           }
         },
         merchantId

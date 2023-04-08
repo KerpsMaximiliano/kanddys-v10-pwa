@@ -1098,6 +1098,8 @@ export class LoginComponent implements OnInit {
       );
     }
 
+    // if (!order.orderStatusDelivery) await this.orderService.orderSetStatusDeliveryWithoutAuth("in progress", order._id);
+
     if (order.items[0].post) {
       this.postsService.postAddUser(order.items[0].post._id, id);
     }

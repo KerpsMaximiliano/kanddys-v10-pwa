@@ -30,5 +30,5 @@
         </div>
     </div>
 
-    <button mat-button class="main-cta" [disabled]="notificationText === ''" (click)="save()">{{ !orderHasNotification ? 'Salva el mensaje' : 'Actualiza el mensaje'}}</button>
+    <button mat-button class="main-cta" [disabled]="notificationText === ''" (click)="save()">{{ !notification ? 'Salva el mensaje' : 'Actualiza el mensaje'}}</button>
 </div>

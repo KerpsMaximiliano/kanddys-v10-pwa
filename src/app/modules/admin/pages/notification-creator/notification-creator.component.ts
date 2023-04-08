@@ -24,7 +24,7 @@ export class NotificationCreatorComponent implements OnInit {
   redirectTo: string = null;
   orderId: string = null;
   status: string = null;
-  orderHasNotification: boolean = false;
+  // orderHasNotification: boolean = false;
 
   notificationText: string = "";
   notification: Notification;
@@ -60,8 +60,8 @@ export class NotificationCreatorComponent implements OnInit {
       if (notificationId) await this.getNotification(this.merchant._id, notificationId);
       if (status) await this.getDeliveryNotifications(this.merchant._id, status);
 
-      if (orderId) await this.getOrder(orderId);
-      if (this.notification) this.checkIfOrderHasNotification(this.order, this.notification._id);
+      // if (orderId) await this.getOrder(orderId);
+      // if (this.notification) this.checkIfOrderHasNotification(this.order, this.notification._id);
     });
   }
 
@@ -89,12 +89,11 @@ export class NotificationCreatorComponent implements OnInit {
           }
         );
 
-        await this.notificationsService.orderAddNotification(
-          [notification._id],
-          this.orderId
-        );
+        // await this.notificationsService.orderAddNotification(
+        //   [notification._id],
+        //   this.orderId
+        // );
         this.notification = notification;
-        this.orderHasNotification = true;
         this.snackBar.open('El mensaje ha sido guardado', '', {
           duration: 2000,
         });
@@ -104,13 +103,13 @@ export class NotificationCreatorComponent implements OnInit {
           this.notification._id
         );
 
-        if (!this.orderHasNotification) {
-          await this.notificationsService.orderAddNotification(
-            [this.notification._id],
-            this.orderId
-          );
-          this.orderHasNotification = true;
-        }
+        // if (!this.orderHasNotification) {
+        //   await this.notificationsService.orderAddNotification(
+        //     [this.notification._id],
+        //     this.orderId
+        //   );
+        //   this.orderHasNotification = true;
+        // }
         this.snackBar.open('El mensaje ha sido actualizado', '', {
           duration: 2000,
         });
@@ -132,22 +131,22 @@ export class NotificationCreatorComponent implements OnInit {
     }
   }
 
-  async getOrder(orderId: string) {
-    try {
-      const { order } = await this.ordersService.order(orderId);
-      this.order = order;
-    } catch (error) {
-      console.log(error);
-      this.returnEvent();
-    }
-  }
+  // async getOrder(orderId: string) {
+  //   try {
+  //     const { order } = await this.ordersService.order(orderId);
+  //     this.order = order;
+  //   } catch (error) {
+  //     console.log(error);
+  //     this.returnEvent();
+  //   }
+  // }
 
-  private checkIfOrderHasNotification(order: ItemOrder, notificationId: string) {
-    if (
-      order.notifications.length > 0 && 
-      order.notifications.find((notification) => notification === notificationId)
-    ) this.orderHasNotification = true;
-  }
+  // private checkIfOrderHasNotification(order: ItemOrder, notificationId: string) {
+  //   if (
+  //     order.notifications.length > 0 && 
+  //     order.notifications.find((notification) => notification === notificationId)
+  //   ) this.orderHasNotification = true;
+  // }
 
   async getNotification(merchantId: string, notificationId: string) {
     try {
@@ -174,7 +173,8 @@ export class NotificationCreatorComponent implements OnInit {
             findBy: {
               entity: "order",
               type: "standard",
-              mode: "default"
+              mode: "default",
+              active: true
             }
           },
           merchantId
