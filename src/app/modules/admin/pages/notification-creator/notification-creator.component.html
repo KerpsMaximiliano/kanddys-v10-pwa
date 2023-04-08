@@ -1,0 +1,34 @@
+<div class="container dark-background">
+    <header>
+        <div>
+            <img [src]="env + '/arrow-double-up-black.svg'" alt="back" (click)="returnEvent()">
+        </div>
+    </header>
+
+    <div class="content">
+        <form>
+            <p class="label">Mensaje</p>
+            <mat-form-field class="field-container">
+              <mat-label>Escribe el mensaje..</mat-label>
+              <textarea matInput name="message" id="input-form" [(ngModel)]="notificationText"></textarea>
+            </mat-form-field>
+            <p class="post-label">La palabra “comprador“ se sustituye por el nombre del cliente de la factura.</p>
+        </form>
+
+        <div class="description">
+            <p class="description-text">Como funciona?</p>
+            <p class="description-text">
+                1. Salvas el mensaje personalizado que llegará.
+            </p>
+            <p class="description-text">
+                2. Al marcar el progreso de “<span>EnPreparaciónID</span>” a “<span>Listas para entregarseID</span>”
+                te llegará un enlace que abrirá la plantilla de la notificación con el WhatsApp del comprador.
+            </p>
+            <p class="description-text">
+                3. Lo envías desde tu WhatsApp al comprador.
+            </p>
+        </div>
+    </div>
+
+    <button mat-button class="main-cta" [disabled]="notificationText === ''" (click)="save()">{{ !notification ? 'Salva el mensaje' : 'Actualiza el mensaje'}}</button>
+</div>
