@@ -454,11 +454,14 @@ export class PaymentsComponent implements OnInit {
           image: this.image,
           platform: 'bank-transfer',
           transactionCode: '',
+          subtotal: this.paymentAmount
         },
         this.order.user._id,
         'bank-transfer',
         this.order._id
       );
+
+      // if (!this.order.orderStatusDelivery) await this.orderService.orderSetStatusDeliveryWithoutAuth("in progress", this.order._id);
       unlockUI();
       this.orderCompleted();
       return;

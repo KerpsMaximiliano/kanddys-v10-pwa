@@ -137,6 +137,7 @@ export class ItemOrder extends Model<ItemOrder> {
     access: string;
   }>;
   expenditures: string[];
+  notifications: string[];
   deliveryData?: DeliveryData;
 }
 

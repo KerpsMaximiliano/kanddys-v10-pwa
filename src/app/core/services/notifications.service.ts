@@ -7,6 +7,7 @@ import {
   itemAddNotification,
   notificationCheckers,
   addNotificationInTag,
+  orderAddNotification,
 } from '../graphql/notifications.gql';
 import { Item } from '../models/item';
 import { Tag } from '../models/tags';
@@ -17,6 +18,7 @@ import {
 } from '../models/notification';
 import { PaginationInput } from '../models/saleflow';
 import { GraphQLWrapper } from './../graphql/graphql-wrapper.service';
+import { ItemOrder } from '../models/order';
 
 @Injectable({
   providedIn: 'root',
@@ -37,7 +39,7 @@ export class NotificationsService {
   async notifications(
     paginate: PaginationInput,
     merchantId: string,
-    notificationId: string[]
+    notificationId?: string[]
   ): Promise<Notification[]> {
     const result = await this.graphql.mutate({
       mutation: notifications,
@@ -78,6 +80,17 @@ export class NotificationsService {
       context: { useMultipart: true },
     });
     return result?.itemAddNotification;
+  }
+
+  async orderAddNotification(
+    notificationId: string[],
+    id: string
+  ): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: orderAddNotification,
+      variables: { notificationId, id }
+    });
+    return result?.orderAddNotification;
   }
 
   async notificationCheckers(

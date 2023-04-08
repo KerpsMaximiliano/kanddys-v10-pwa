@@ -29,6 +29,10 @@ import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { Reservation } from 'src/app/core/models/reservation';
 import { ReservationService } from 'src/app/core/services/reservations.service';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
+import { Notification } from 'src/app/core/models/notification';
 
 @Component({
   selector: 'app-order-process',
@@ -121,6 +125,8 @@ export class OrderProcessComponent implements OnInit {
   initialSlide: number;
   activeIndex: number = 0;
 
+  notifications: Notification[] = [];
+
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
   @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
   @ViewChild('ordersSwiper') ordersSwiper: SwiperComponent;
@@ -140,7 +146,9 @@ export class OrderProcessComponent implements OnInit {
     private _bottomSheet: MatBottomSheet,
     private ngNavigatorShareService: NgNavigatorShareService,
     private deliveryzoneService: DeliveryZonesService,
-    private reservationsService: ReservationService
+    private reservationsService: ReservationService,
+    private dialogService: DialogService,
+    private notificationsService: NotificationsService
   ) {}
 
   ngOnInit(): void {
@@ -255,6 +263,8 @@ export class OrderProcessComponent implements OnInit {
       .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
 
+    await this.getDeliveryNotifications(this.merchant._id);
+
     if (this.order.items[0].post) {
       this.post = (
         await this.postsService.getPost(this.order.items[0].post._id)
@@ -341,6 +351,8 @@ export class OrderProcessComponent implements OnInit {
       this.handleStatusOptions(this.order.orderStatusDelivery);
     }
 
+    if (!this.isMerchant) this.deliveryStatusOptions = [];
+
     let giftMessage = '';
     if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
     if (this.post?.targets?.[0]?.name)
@@ -380,12 +392,18 @@ export class OrderProcessComponent implements OnInit {
         else if (this.view === 'delivery') await this.changeOrderStatusAuthless('delivered');
       }
     }
-
     unlockUI();
   }
 
   async getOrders(merchantId: string, deliveryZone?: string) {
     console.log(this.isMerchant);
+    const findBy = {
+      merchant: merchantId,
+      deliveryZone: deliveryZone,
+      orderStatus: ["to confirm", "paid", "completed"],
+      orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? null : null,
+    }
+    if (this.isMerchant) delete findBy.orderStatusDelivery;
     try {
       const result = await this.orderService.orderByMerchantDelivery(
         {
@@ -393,12 +411,7 @@ export class OrderProcessComponent implements OnInit {
             limit: 20,
             sortBy: "createdAt:desc"
           },
-          findBy: {
-            merchant: merchantId,
-            deliveryZone: deliveryZone,
-            orderStatus: ["to confirm", "paid", "completed"],
-            orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? null : null,
-          }
+          findBy
         }
       );
 
@@ -441,6 +454,41 @@ export class OrderProcessComponent implements OnInit {
     ).length;
   }
 
+  async getDeliveryNotifications(merchantId: string) {
+    try {
+      const result = await this.notificationsService.notifications(
+        {
+          options: {
+            limit: -1,
+            sortBy: 'createdAt:desc',
+          },
+          findBy: {
+            entity: "order",
+            type: "standard",
+            mode: "default",
+            active: true
+          }
+        },
+        merchantId
+      );
+
+      const notifications = result.filter((notification) => {
+        return notification.trigger[0].key === 'orderStatusDelivery'
+      });
+
+      console.log(notifications);
+
+      this.notifications = notifications;
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  checkNotificationDeliveryStatus(status: string) {
+    return this.notifications.find((option) => option.trigger[0].value === status);
+  }
+
   async isMerchantOwner(merchant: string) {
     this.orderMerchant = await this.merchantsService.merchantDefault();
     console.log(this.orderMerchant);
@@ -452,9 +500,11 @@ export class OrderProcessComponent implements OnInit {
     this.handleStatusOptions(value);
     
     try {
-      await this.orderService.orderSetStatusDelivery(value, this.order._id);
+      await this.orderService.orderSetStatusDelivery(value, this.ordersReadyToDeliver[this.activeIndex]._id);
       if (value === 'pending')  this.orderReadyToDeliver = true;
       if (value === 'delivered') this.orderDelivered = true;
+
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = value;
     } catch (error) {
       console.log(error);
     }
@@ -549,7 +599,7 @@ export class OrderProcessComponent implements OnInit {
               },
             },
             {
-              title: 'Copiar el Link de esta sola factura',
+              title: 'Copiar el Link',
               callback: () => {
                 this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`);
                 this.snackBar.open('Enlace copiado en el portapapeles', '', {
@@ -572,7 +622,7 @@ export class OrderProcessComponent implements OnInit {
               },
             },
             {
-              title: 'Copiar el Link de esta sola factura',
+              title: 'Copiar el Link',
               callback: () => {
                 this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`);
                 this.snackBar.open('Enlace copiado en el portapapeles', '', {
@@ -721,6 +771,17 @@ export class OrderProcessComponent implements OnInit {
         minute: '2-digit',
       })
       .toLocaleUpperCase();
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialogService.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   downloadEntityTemplateQr(qrElment: ElementRef) {

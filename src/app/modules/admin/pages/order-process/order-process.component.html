@@ -75,6 +75,7 @@
                                         ? 'url(' + item.item.images[0].value + '), url(' + env + '/noimage.png' + ')'
                                         : '/assets/images/noimage.png'
                                     }"
+                                    (click)="openImageModal(item.item?.images[0]?.value || '/assets/images/noimage.png')"
                                 ></div>
                                 <div class="caption">
                                     <p class="item-bold-caption">{{ item.amount }}x {{ item.item?.name ? item.item.name : '' }}</p>
@@ -153,10 +154,13 @@
 
                     <div class="section" *ngIf="(isMerchant || view === 'delivery') && orderHasDelivery(deliveryImages[i]?.deliveryZone, deliveryOrder)">
                         <p class="section-label">ENTREGA</p>
-                        <div class="questions">
+                        <div class="questions" *ngIf="deliveryImages[i]?.deliveryZone">
+                            <p class="label">Zona de entrega</p>
+                            <p class="label gray-out capitalize">{{ deliveryImages[i]?.deliveryZone.zona }}</p>
+                        </div>
+                        <div class="questions" *ngIf="deliveryOrder.items[0].deliveryLocation">
                             <p class="label">Donde entregaremos?</p>
-                            <p class="label gray-out"*ngIf="deliveryImages[i]?.deliveryZone">{{ deliveryImages[i]?.deliveryZone.zona }}</p>
-                            <p class="label gray-out capitalize"*ngIf="!deliveryImages[i]?.deliveryZone && deliveryOrder.items[0].deliveryLocation">
+                            <p class="label gray-out capitalize">
                                 {{
                                     deliveryOrder?.items[0]?.deliveryLocation?.houseNumber
                                     ? "#" + deliveryOrder?.items[0]?.deliveryLocation?.houseNumber + ", "
@@ -191,7 +195,7 @@
                                 [inputPosition]="'left'"
                                 *ngIf="!deliveryImages[i]?.image">
                             </app-item-images>
-                            <div class="image" [ngStyle]="{ backgroundImage: 'url(' + deliveryImages[i]?.image + ')' }" *ngIf="deliveryImages[i]?.image"></div>
+                            <div class="image" [ngStyle]="{ backgroundImage: 'url(' + deliveryImages[i]?.image + ')' }" (click)="openImageModal(deliveryImages[i]?.image)" *ngIf="deliveryImages[i]?.image"></div>
                             <p class="delivery-image-caption">Imagen de la entrega</p>
                         </div>
                     </div>
@@ -234,39 +238,73 @@
             <div class="top-footer">
 
                 <ng-container *ngIf="isMerchant">
-                    <mat-checkbox 
-                        class="example-margin"
-                        [(ngModel)]="orderReadyToDeliver"
-                        (change)="changeOrderStatusAuthless('pending')"
-                        [disabled]="orderReadyToDeliver"
-                        *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'pending'"
-                    >
-                        <p class="checkbox-label">Lista para entregarse</p>
-                    </mat-checkbox>
+                    <ng-container *ngIf="
+                        ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'pending' ||
+                        ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'delivered'
+                        ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'in progress'
+                    ">
+                        <mat-checkbox
+                            [(ngModel)]="orderReadyToDeliver"
+                            (change)="changeOrderStatusAuthless('pending')"
+                            [disabled]="orderReadyToDeliver"
+                            *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'pending'"
+                        >
+                            <p class="checkbox-label">Lista para entregarse</p>
+                        </mat-checkbox>
 
-                    <mat-checkbox 
-                        class="example-margin"
-                        [(ngModel)]="orderDelivered"
-                        (change)="changeOrderStatusAuthless('delivered')"
-                        [disabled]="orderDelivered"
-                        *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'delivered'"
-                    >
-                        <p class="checkbox-label">Entregada</p>
-                    </mat-checkbox>
+                        <mat-checkbox
+                            [(ngModel)]="orderDelivered"
+                            (change)="changeOrderStatusAuthless('delivered')"
+                            [disabled]="orderDelivered"
+                            *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'delivered'"
+                        >
+                            <p class="checkbox-label">Entregada</p>
+                        </mat-checkbox>
 
-                    <mat-checkbox 
-                        class="example-margin"
-                        [(ngModel)]="orderReadyToDeliver"
-                        [disabled]="true"
-                        *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'in progress'"
+                        <mat-checkbox
+                            [(ngModel)]="orderReadyToDeliver"
+                            [disabled]="true"
+                            *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'in progress'"
+                        >
+                            <p class="checkbox-label">En preparación</p>
+                        </mat-checkbox>
+                        <br>
+                    </ng-container>
+
+                    <a
+                        class="featured-cta"
+                        [routerLink]="['../../create-notification']"
+                        [queryParams]="{ 
+                            redirectTo: router.url,
+                            orderId: ordersReadyToDeliver[activeIndex]?._id,
+                            status: ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
+                        }"
+                        *ngIf="
+                            ordersReadyToDeliver[activeIndex]?.orderStatusDelivery &&
+                            !checkNotificationDeliveryStatus(ordersReadyToDeliver[activeIndex]?.orderStatusDelivery)
+                        "
                     >
-                        <p class="checkbox-label">En preparación</p>
-                    </mat-checkbox>
+                        Automatiza una notificación por WhatsApp para el comprador al marcar este progreso
+                    </a>
+                    <a
+                        class="featured-cta"
+                        [routerLink]="['../../create-notification', checkNotificationDeliveryStatus(ordersReadyToDeliver[activeIndex]?.orderStatusDelivery)._id]"
+                        [queryParams]="{
+                            redirectTo: router.url,
+                            orderId: ordersReadyToDeliver[activeIndex]?._id,
+                            status: ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
+                        }"
+                        *ngIf="
+                            ordersReadyToDeliver[activeIndex]?.orderStatusDelivery &&
+                            checkNotificationDeliveryStatus(ordersReadyToDeliver[activeIndex]?.orderStatusDelivery)
+                        "
+                    >
+                        Ver o editar la notificación al comprador al marcar este progreso
+                    </a>
                 </ng-container>
 
                 <ng-container *ngIf="!isMerchant">
-                    <mat-checkbox 
-                        class="example-margin"
+                    <mat-checkbox
                         [(ngModel)]="orderReadyToDeliver"
                         (change)="changeOrderStatusAuthless('pending')"
                         [disabled]="orderReadyToDeliver"
@@ -274,8 +312,7 @@
                     >
                         <p class="checkbox-label">Marcar como lista para entregarse</p>
                     </mat-checkbox>
-                    <mat-checkbox 
-                        class="example-margin"
+                    <mat-checkbox
                         [(ngModel)]="orderDelivered"
                         (change)="changeOrderStatusAuthless('delivered')"
                         [disabled]="orderDelivered"

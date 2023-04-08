@@ -238,17 +238,20 @@
                     ? 'url(' + order.ocr.image + ') '
                     : payedWithAzul
                     ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
-                    : 'url(/assets/images/noimage.png)'
+                    : 'url(/assets/images/noimage.png)',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundSize: 'cover'
               }"
             >
-              <img
+              <!-- <img
                 *ngIf="order.ocr"
                 [src]="
                   order.ocr ? order.ocr.image : '/assets/images/noimage.png'
                 "
                 alt="item image"
                 class="item-image"
-              />
+              /> -->
             </div>
           </button>
         </div>
