@@ -1,5 +1,6 @@
 import { Model } from '../objects/model';
 import { Merchant } from './merchant';
+import { OrderStatusDeliveryType } from './order';
 import { OrderStatusType } from './order';
 import { User } from './user';
 
@@ -26,13 +27,18 @@ export class StatusTriggerInput {
   value: OrderStatusType;
 }
 
+export class DeliveryStatusInput {
+  key: 'orderStatusDelivery';
+  value: OrderStatusDeliveryType;
+}
+
 export class NotificationInput {
-  message: string;
-  merchant: string;
-  phoneNumbers: PhoneNumbersInput[];
-  entity: string;
-  trigger: (GenericTriggerInput | StatusTriggerInput)[];
-  offsetTime: OffsetTimeInput[];
+  message?: string;
+  merchant?: string;
+  phoneNumbers?: PhoneNumbersInput[];
+  entity?: string;
+  trigger?: (GenericTriggerInput | StatusTriggerInput | DeliveryStatusInput)[];
+  offsetTime?: OffsetTimeInput[];
   _id?: string;
 }
 
@@ -57,12 +63,17 @@ export class StatusTrigger {
   value: OrderStatusType;
 }
 
+export class DeliveryStatusTrigger {
+  key: 'orderStatusDelivery';
+  value: OrderStatusDeliveryType;
+}
+
 export class Notification extends Model<Notification> {
   message: string;
   merchant: Merchant;
   phoneNumbers: PhoneNumbers[];
   entity: string;
-  trigger: (GenericTrigger | StatusTrigger)[];
+  trigger: (GenericTrigger | StatusTrigger | DeliveryStatusTrigger)[];
   offsetTime: OffsetTime[];
   active: boolean;
 
@@ -74,5 +85,5 @@ export class NotificationChecker extends Model<NotificationChecker> {
   user: User;
   date: Date;
   status: string;
-  trigger: GenericTrigger | StatusTrigger;
+  trigger: GenericTrigger | StatusTrigger | DeliveryStatusTrigger;
 }

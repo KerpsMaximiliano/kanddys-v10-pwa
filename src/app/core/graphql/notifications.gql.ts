@@ -58,6 +58,14 @@ export const itemAddNotification = gql`
   }
 `;
 
+export const orderAddNotification = gql`
+  mutation orderAddNotification($notificationId: [ObjectID!]!, $id: ObjectID!) {
+    orderAddNotification(notificationId: $notificationId, id: $id) {
+      _id
+    }
+  }
+`;
+
 export const notificationCheckers = gql`
   query notificationCheckers($paginate: PaginationInput!) {
     notificationCheckers(paginate: $paginate) {
