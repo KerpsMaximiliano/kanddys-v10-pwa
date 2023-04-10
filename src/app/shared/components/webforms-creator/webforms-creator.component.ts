@@ -526,6 +526,8 @@ export class WebformsCreatorComponent implements OnInit {
           'Hola, aqui puedes editar las preguntas, y el tipo de respuesta que quieres que el comprador te de, pero, cambiar las preguntas hace que las estadisticas del formulario se reinicien, asi que ten cuidado';
         this.dialogs[1].inputs.textarea = new FormControl(this.question.value);
         this.questionDialog.inputs.dialogFlowConfig.flowId = this.flowId;
+
+        this.currentQuestion = this.question.value;
       }
     } else if (
       this.resumingCreation &&
@@ -835,11 +837,13 @@ export class WebformsCreatorComponent implements OnInit {
 
       //If the question doesn't have selectable options or has 20 options or less
       if (hasSmallSetOfOptionsOrNoneAtAll) {
-        question.answerDefault = !question.answerDefault ? [] : question.answerDefault;
+        question.answerDefault = !question.answerDefault
+          ? []
+          : question.answerDefault;
 
         lockUI();
 
-        console.log("PREGUNTA", question);
+        console.log('PREGUNTA', question);
 
         await this.webformService.webformUpdateQuestion(
           question,
@@ -917,7 +921,7 @@ export class WebformsCreatorComponent implements OnInit {
   }
 
   closeDialogFlow(endedCreation: boolean = false) {
-    console.log("CERRANDOSE INTERIOR");
+    console.log('CERRANDOSE INTERIOR');
 
     this.closeEvent.emit(endedCreation);
   }

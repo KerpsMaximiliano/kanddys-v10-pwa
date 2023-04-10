@@ -235,7 +235,7 @@
 </div>
 
 <app-webforms-creator
-  *ngIf="headerService.user && item"
+  *ngIf="headerService.user && item && endedOnInit"
   [opened]="openedDialogFlow"
   [resumingCreation]="resumingWebformCreation"
   [item]="item"

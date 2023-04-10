@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemOrder } from 'src/app/core/models/order';
-import { AnswerDefault, Webform } from 'src/app/core/models/webform';
+import { AnswerDefault, Webform, answer } from 'src/app/core/models/webform';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
@@ -23,6 +23,7 @@ export class FormResponsesComponent implements OnInit {
   openResponses: boolean;
   ordersAndAnswers: Array<{
     order: ItemOrder;
+    isMedia: boolean;
     answer: string;
   }> = [];
 
@@ -127,9 +128,24 @@ export class FormResponsesComponent implements OnInit {
             );
 
             if (answer) {
-              if (selectedQuestion._id && answersById[answer.reference].question)
+              let shouldIncludeAnswers = false;
+
+              //For questions of type text, that can accept any answer, we need to check if the answer is not a media
+              if (
+                selectedQuestion.type === 'text' &&
+                !answersById[answer.reference].isMedia
+              ) {
+                shouldIncludeAnswers = true;
+              }
+
+              if (
+                selectedQuestion._id &&
+                answersById[answer.reference].question &&
+                shouldIncludeAnswers
+              )
                 this.ordersAndAnswers.push({
                   order,
+                  isMedia: answersById[answer.reference].isMedia,
                   answer:
                     answersById[answer.reference].isMedia &&
                     answersById[answer.reference].label
@@ -202,6 +218,7 @@ export class FormResponsesComponent implements OnInit {
             if (answer) {
               this.ordersAndAnswers.push({
                 order,
+                isMedia: answersById[answer.reference].isMedia,
                 answer:
                   answersById[answer.reference].isMedia &&
                   answersById[answer.reference].label
@@ -215,6 +232,10 @@ export class FormResponsesComponent implements OnInit {
         }
       });
     });
+  }
+
+  isAnswerInOptions(answer, options) {
+
   }
 
   goToDetail = (order: ItemOrder) => {

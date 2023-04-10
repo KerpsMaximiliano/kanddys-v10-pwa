@@ -52,7 +52,7 @@
           entry.order.user?.email
         "
         [image]="entry.order.user?.image"
-        [subtitle]="entry.answer"
+        [subtitle]="!entry.isMedia ? entry.answer : null"
         [description]="
           getCreationDateDifferenceAsItsSaid(entry.order.createdAt)
         "

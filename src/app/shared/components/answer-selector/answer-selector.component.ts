@@ -89,4 +89,8 @@ export class AnswerSelectorComponent implements OnInit {
   getObjectKeysAsArray(object) {
     return Object.keys(object);
   }
+
+  showDescription2(option: any) {
+    console.log(option.description !== '' && 'description' in option && this.showDescription);
+  }
 }

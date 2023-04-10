@@ -182,6 +182,7 @@ export class ArticleEditorComponent implements OnInit {
       },
     },
   ];
+  endedOnInit: boolean = false;
 
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
@@ -363,7 +364,11 @@ export class ArticleEditorComponent implements OnInit {
       this.price.markAsDirty();
     }
 
-    if (resumeWebform && this.webformsService.webformCreatorLastDialogs.length) {
+    if (
+      resumeWebform &&
+      this.webformsService.webformCreatorLastDialogs.length &&
+      !this.endedOnInit
+    ) {
       this.openedDialogFlow = true;
       this.resumingWebformCreation = true;
     }
@@ -375,7 +380,9 @@ export class ArticleEditorComponent implements OnInit {
 
       this.webform = webform;
     }
-  };
+
+    if (!this.endedOnInit) this.endedOnInit = true;
+  }
 
   loadImages() {
     this._ItemsService.itemImages?.forEach((file) => {
@@ -415,12 +422,13 @@ export class ArticleEditorComponent implements OnInit {
     }
 
     console.log(this.params);
-    const contentChanged = 
-      this.params && 
-      this.params.controls.values.length && 
+    const contentChanged =
+      this.params &&
+      this.params.controls.values.length &&
       this.params.controls.values.controls.some((value) => value.dirty);
 
-    if (contentChanged) this.content = this.params.value.values.map((value) => value.name);
+    if (contentChanged)
+      this.content = this.params.value.values.map((value) => value.name);
 
     console.log(this.content);
 
@@ -443,8 +451,8 @@ export class ArticleEditorComponent implements OnInit {
 
     this.dialogFlowService.resetDialogFlow('webform-creator');
 
-    if(
-      this.webformsService.webformQuestions && 
+    if (
+      this.webformsService.webformQuestions &&
       this.webformsService.webformQuestions.length
     ) {
       this.webformsService.webformQuestions = [];
@@ -801,7 +809,9 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   goToWebformMetrics() {
-    this._Router.navigate(['admin/webform-metrics/' + this.webform._id + '/' + this.item._id]);
+    this._Router.navigate([
+      'admin/webform-metrics/' + this.webform._id + '/' + this.item._id,
+    ]);
   }
 
   async reloadWebform() {

@@ -158,7 +158,7 @@
                   <div
                     class="description-container"
                     style="position: relative; z-index: 1000"
-                    *ngIf="option.description !== '' && showDescription"
+                    *ngIf="option.description !== '' && option.description && showDescription"
                   >
                     <p class="description-label">
                       {{ option.description }}

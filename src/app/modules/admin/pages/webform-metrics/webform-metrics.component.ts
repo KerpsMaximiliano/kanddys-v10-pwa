@@ -77,6 +77,8 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
               _id
             );
 
+            console.log("AnswerFrequent", answerFrequent)
+
             webform.questions.forEach((question) => {
               this.webformQuestions[question._id] = question;
             });
@@ -148,7 +150,10 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
                       }
                     }
 
-                    if (additionalAnswers.length && question.type === 'multiple-text') {
+                    if (
+                      additionalAnswers.length &&
+                      question.type === 'multiple-text'
+                    ) {
                       const toAdd = [
                         {
                           text:
@@ -164,8 +169,11 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
                     const total =
                       _answerFrequent?.response.length > 1
                         ? _answerFrequent.response.reduce(
-                            (total, currentAnswer) =>
-                              total + currentAnswer.count,
+                            (total, currentAnswer) => {
+                              console.log('currentAnswer: ', currentAnswer);
+
+                              return total + currentAnswer.count;
+                            },
                             0
                           )
                         : _answerFrequent?.response[0]?.count || 0;
@@ -215,7 +223,6 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
       type: 'added-item',
       data: this.itemData._id,
     });
-    
 
     //Clears the temporal dialogs from the webform service
     //this._WebformsService.webformCreatorLastDialogs = [];

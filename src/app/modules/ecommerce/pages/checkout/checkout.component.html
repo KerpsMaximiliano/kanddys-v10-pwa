@@ -17,7 +17,12 @@
     [ngStyle]="{ backgroundColor: headerService.colorTheme }"
   >
     <div style="display: flex; gap: 8px">
-      <a> <i class="far fa-angle-double-up" (click)="!webformPreview ? editOrder('item') : location.back()"></i></a>
+      <a>
+        <i
+          class="far fa-angle-double-up"
+          (click)="!webformPreview ? editOrder('item') : location.back()"
+        ></i
+      ></a>
       <p class="title">
         {{
           headerService.saleflow?.merchant?.name.length < 26
@@ -97,7 +102,9 @@
                     ((question.answerLimit === 1 &&
                       ['multiple-text', 'multiple'].includes(question.type)) ||
                       (!['multiple-text', 'multiple'].includes(question.type) &&
-                        question.answerLimit === 0))
+                        question.answerLimit === 0) ||
+                      (!['multiple-text', 'multiple'].includes(question.type) &&
+                        question.answerLimit === 1))
                   "
                 >
                   <!-- RESPONSE HAS NO IMAGES-->
@@ -208,7 +215,7 @@
                   *ngIf="
                     answersByQuestion[question._id] &&
                     question.answerLimit === 0 &&
-                      ['multiple-text', 'multiple'].includes(question.type)
+                    ['multiple-text', 'multiple'].includes(question.type)
                   "
                 >
                   <!-- RESPONSE HAS NO IMAGES-->
@@ -238,32 +245,30 @@
                         !this.webformsByItem[item._id].opened
                       "
                     >
-                        <app-closed-question-card
-                          [id]="'multiple-choices-multiple-selection'"
-                          [shadows]="false"
-                          [labelStyles]="{
-                            fontFamily: 'SfProRegular',
-                            color: '#000',
-                            fontSize: '15px'
-                          }"
-                          [containerStyles]="{ padding: '15px 18px' }"
-                          [question]="question.value"
-                          [questionType]="question.type"
-                          [multiple]="
-                            !question.answerLimit || question.answerLimit > 1
-                          "
-                          [dialogFlowConfig]="{
-                            dialogId: question._id,
-                            flowId: 'webform-item-' + item._id
-                          }"
-                          [required]="question?.required"
-                          [startWithDialogFlow]="true"
-                          [restartFromEvent]="false"
-                          (onSelector)="
-                            selectOption(question, item, true)
-                          "
-                        >
-                        </app-closed-question-card>
+                      <app-closed-question-card
+                        [id]="'multiple-choices-multiple-selection'"
+                        [shadows]="false"
+                        [labelStyles]="{
+                          fontFamily: 'SfProRegular',
+                          color: '#000',
+                          fontSize: '15px'
+                        }"
+                        [containerStyles]="{ padding: '15px 18px' }"
+                        [question]="question.value"
+                        [questionType]="question.type"
+                        [multiple]="
+                          !question.answerLimit || question.answerLimit > 1
+                        "
+                        [dialogFlowConfig]="{
+                          dialogId: question._id,
+                          flowId: 'webform-item-' + item._id
+                        }"
+                        [required]="question?.required"
+                        [startWithDialogFlow]="true"
+                        [restartFromEvent]="false"
+                        (onSelector)="selectOption(question, item, true)"
+                      >
+                      </app-closed-question-card>
                     </div>
                   </ng-container>
                 </ng-container>
@@ -325,17 +330,16 @@
       </button>
     </section>
 
-    <section class="section" *ngIf="hasDeliveryZone && deliveryLocation && deliveryLocation.street">
-
+    <section
+      class="section"
+      *ngIf="hasDeliveryZone && deliveryLocation && deliveryLocation.street"
+    >
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Zona de entrega</h2>
       </div>
 
       <ng-container *ngIf="deliveryZone">
-        <button
-          class="items-container ready"
-          (click)="openDeliveryZones()"
-        >
+        <button class="items-container ready" (click)="openDeliveryZones()">
           <p class="address-name">
             {{ deliveryZone?.zona }}
           </p>

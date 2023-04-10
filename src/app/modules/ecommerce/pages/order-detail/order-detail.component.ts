@@ -680,9 +680,9 @@ export class OrderDetailComponent implements OnInit {
   }
 
   returnEvent() {
-    if(!this.redirectTo && !this.from) return this.returnToStore();
+    if (!this.redirectTo && !this.from) return this.returnToStore();
 
-    if(!this.redirectTo && this.from) return this.redirectFromQueryParams();
+    if (!this.redirectTo && this.from) return this.redirectFromQueryParams();
 
     let queryParams = {};
     if (this.redirectTo.includes('?')) {
@@ -779,10 +779,13 @@ export class OrderDetailComponent implements OnInit {
                 if (answerInList.question && question) {
                   answerInList.question = question.value;
 
+                  console.log('answerInlist', answerInList);
+
                   if (
-                    (!answerInList.isMedia &&
+                    answerInList.value &&
+                    ((!answerInList.isMedia &&
                       answerInList.value.startsWith('https')) ||
-                    answerInList.value.startsWith('http')
+                      answerInList.value.startsWith('http'))
                   )
                     answerInList.isMedia = true;
                 } else {
