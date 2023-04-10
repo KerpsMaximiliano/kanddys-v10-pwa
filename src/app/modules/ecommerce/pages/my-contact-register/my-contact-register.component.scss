@@ -50,3 +50,17 @@
   background-size: cover;
   background-position: center;
 }
+
+.cta {
+  all: unset;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  background-color: #fed230;
+  color: #272727;
+  margin-top: 35px;
+  cursor: pointer;
+  justify-content: center;
+}
