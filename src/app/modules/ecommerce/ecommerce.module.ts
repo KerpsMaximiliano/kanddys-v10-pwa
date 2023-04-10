@@ -33,6 +33,8 @@ import { RegistroKioskoComponent } from './pages/registro-kiosko/registro-kiosko
 import { KioskoViewComponent } from './pages/kiosko-view/kiosko-view.component';
 import { LinksPageComponent } from './pages/links-page/links-page.component';
 import { LinkRegisterComponent } from './pages/link-register/link-register.component';
+import { LinkUpdateComponent } from './pages/link-update/link-update.component';
+import { MyContactRegisterComponent } from './pages/my-contact-register/my-contact-register.component';
 
 const routes: Routes = [
   {
@@ -97,6 +99,14 @@ const routes: Routes = [
   {
     path: 'link-register/:userId',
     component: LinkRegisterComponent,
+  },
+  {
+    path: 'link-update/:userId',
+    component: LinkUpdateComponent,
+  },
+  {
+    path: 'register-my-contact/:userId',
+    component: MyContactRegisterComponent,
   },
   {
     path: ':merchantSlug',
@@ -211,6 +221,8 @@ const routes: Routes = [
     KioskoViewComponent,
     LinksPageComponent,
     LinkRegisterComponent,
+    LinkUpdateComponent,
+    MyContactRegisterComponent,
   ],
   imports: [
     CommonModule,

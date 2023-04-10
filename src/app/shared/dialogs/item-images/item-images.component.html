@@ -1,4 +1,8 @@
-<div class="container" [ngStyle]="containerStyles" *ngIf="!round && !contact">
+<div
+  class="container"
+  [ngStyle]="containerStyles"
+  *ngIf="!round && !contact && !myContact"
+>
   <h1 *ngIf="title">{{ title }}</h1>
   <div class="image-selector">
     <div class="image-area">
@@ -95,7 +99,54 @@
 
 <!-- --------------------------------------- CONTACT VERSION ------------------------------------------- -->
 
-<div class="container3" [ngStyle]="containerStyles" *ngIf="contact && !round">
+<div
+  class="container3"
+  [ngStyle]="containerStyles"
+  *ngIf="contact && !round && !myContact"
+>
+  <div class="image-selector">
+    <div class="image-area">
+      <input
+        id="filemultiple"
+        (change)="fileProgressMultiple($event)"
+        type="file"
+        style="display: none"
+        accept="video/*,image/*"
+        multiple
+        [accept]="[
+          '.png',
+          '.jpg',
+          '.jpeg',
+          '.webp',
+          '.webm',
+          '.mp4',
+          '.m4v',
+          '.mpg',
+          '.mpeg',
+          '.mpeg4',
+          '.mov',
+          '.3gp',
+          '.mts/m2ts',
+          '.mxf'
+        ]"
+      />
+      <div class="btn-add">
+        <label
+          for="filemultiple"
+          [ngStyle]="{
+            margin: inputPosition === 'center' ? 'auto' : 'initial'
+          }"
+        >
+          <span class="icon3">+</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- --------------------------------------- MY CONTACT VERSION ------------------------------------------- -->
+
+<div class="container4" [ngStyle]="containerStyles" *ngIf="myContact">
   <div class="image-selector">
     <div class="image-area">
       <input

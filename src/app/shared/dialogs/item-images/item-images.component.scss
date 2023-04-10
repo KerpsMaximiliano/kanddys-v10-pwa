@@ -101,3 +101,30 @@ h1 {
     color: #c1c4c1;
   }
 }
+
+.container4 {
+  border: 1px solid #707070;
+  height: 90px;
+  max-width: 85px;
+  width: 100%;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0 auto;
+
+  label {
+    background-color: transparent;
+    height: 100%;
+    width: 100%;
+    border-radius: 11px;
+  }
+
+  .icon3 {
+    margin: auto;
+    font-size: 38px;
+    font-family: SFProBold;
+    color: #c1c4c1;
+  }
+}

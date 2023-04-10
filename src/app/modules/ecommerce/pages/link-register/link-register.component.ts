@@ -153,8 +153,9 @@ export class LinkRegisterComponent implements OnInit {
       callback: async () => {
         this.isBasicContact = false;
         this.isOtherContact = false;
-        this.contactImage = this.contactLogos[7].img;
-        this.nextSlide();
+        //this.contactImage = this.contactLogos[7].img;
+        //this.nextSlide();
+        this.router.navigate([`ecommerce/register-my-contact/${this.userId}`]);
       },
     },
 
@@ -236,9 +237,10 @@ export class LinkRegisterComponent implements OnInit {
       null,
       [
         Validators.required,
-        Validators.pattern(
-          '[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)'
-        ),
+        // Validators.pattern(
+        //   '[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)'
+        // ),
+        Validators.minLength(4),
       ],
     ],
     name: [null, [Validators.required, Validators.minLength(4)]],

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -11,8 +11,18 @@ export class InfoCard2Component implements OnInit {
 
   @Input() kioskoView: boolean = false;
   @Input() cards = [];
+  @Input() options = [];
+  @Output() emitIndex = new EventEmitter<any>();
+
+  clickedIndex: number;
 
   constructor() {}
 
   ngOnInit(): void {}
+
+  sendIndex(index: number) {
+    console.log(index);
+    this.clickedIndex = index;
+    this.emitIndex.emit(this.clickedIndex);
+  }
 }

@@ -1,0 +1,88 @@
+<div class="container">
+  <header>
+    <button>
+      <img [src]="env + '/arrow-double-up.svg'" alt="" class="arrows" />
+    </button>
+    <button style="margin-left: auto">
+      <mat-icon [ngStyle]="{ color: '#7B7B7B' }">close</mat-icon>
+    </button>
+  </header>
+
+  <!-- <div
+    class="current-media-shown-indicators"
+    [style]="{ 'grid-template-columns': 'repeat(2,1fr)' }"
+  >
+    <ng-container>
+      <div
+        class="indicator"
+        [ngClass]="{
+          active: i === currentMediaSlide
+        }"
+        *ngFor="let slide of slides; let i = index"
+      ></div>
+    </ng-container>
+  </div> -->
+
+  <!-- ---------------------------1ER SLIDE-------------------------- -->
+
+  <!-- <div class="content">
+      <p class="title">¿Cuál enlace incluirás?</p>
+
+      <button
+        class="btn"
+        *ngFor="let option of linkOptions"
+        (click)="option.callback()"
+      >
+        {{ option.name }}
+      </button>
+    </div> -->
+
+  <!-- ---------------------------2DO SLIDE-------------------------- -->
+
+  <div>
+    <div class="content">
+      <p class="title">¿Cuál es el enlace?</p>
+
+      <div class="input-wrapper">
+        <p class="input-title">Tu respuesta</p>
+        <input
+          type="text"
+          #input1
+          placeholder="Escribe..."
+          [(ngModel)]="link"
+          (input)="onLinkInput(input1)"
+        />
+      </div>
+      <div style="display: grid; justify-content: center; margin-top: 321.5px">
+        <svg
+          style="margin: 0 auto"
+          xmlns="http://www.w3.org/2000/svg"
+          width="23.999"
+          height="26.991"
+          viewBox="0 0 23.999 26.991"
+        >
+          <g id="play" transform="translate(-12 -10.505)">
+            <g id="Group_76058" data-name="Group 76058">
+              <path
+                id="Path_29066"
+                data-name="Path 29066"
+                d="M32.412,24,15,13.9V34.1Zm2.376-2.088a2.406,2.406,0,0,1,0,4.176L15.7,37.164A2.455,2.455,0,0,1,12,35.076V12.924a2.455,2.455,0,0,1,3.7-2.088Z"
+                fill="#6fcf97"
+              />
+            </g>
+          </g>
+        </svg>
+        <p class="title green" style="margin: 0 auto">
+          Mira como funciona la página de contacto
+        </p>
+        <p class="subtitle green" style="margin: 0 auto">0:50 segundos</p>
+      </div>
+    </div>
+    <div class="cta" style="margin-top: 19%">
+      <!-- <button>Adicionar otro enlace</button> -->
+      <button style="margin-left: auto" (click)="save()">Salvar</button>
+    </div>
+  </div>
+
+  <!-- ---------------------------OTRO SLIDE-------------------------- -->
+</div>

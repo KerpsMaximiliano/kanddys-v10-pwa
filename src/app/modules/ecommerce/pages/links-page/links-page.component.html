@@ -7,8 +7,17 @@
 </header>
 
 <div class="container">
-  <app-info-card2 [kioskoView]="true" [cards]="card"></app-info-card2>
-  <app-info-card2 [kioskoView]="true" [cards]="contactCards"></app-info-card2>
+  <!-- <app-info-card2
+    [kioskoView]="true"
+    [options]="options"
+    [cards]="card"
+  ></app-info-card2> -->
+  <app-info-card2
+    [kioskoView]="true"
+    [options]="options"
+    [cards]="contactCards"
+    (emitIndex)="getIndex($event)"
+  ></app-info-card2>
 </div>
 
 <!-- <div class="bottom-bar">

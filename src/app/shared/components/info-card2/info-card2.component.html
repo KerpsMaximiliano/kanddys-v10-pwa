@@ -29,12 +29,32 @@
   <div
     class="container"
     style="padding-top: 0px"
-    *ngFor="let card of cards"
+    *ngFor="let card of cards; index as i"
     [style]="{ background: card.bg }"
   >
-    <div class="circle">
+    <button
+      class="circle"
+      (click)="sendIndex(i)"
+      mat-fab
+      [matMenuTriggerFor]="menu"
+      aria-label="Menu button"
+      class="btn"
+    >
       <img [src]="env + '/dots-black.svg'" alt="" />
-    </div>
+    </button>
+    <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
+      <ng-container *ngIf="options.length">
+        <button
+          mat-menu-item
+          class="menu-item"
+          (click)="option.callback()"
+          *ngFor="let option of options; index as i"
+        >
+          <span>{{ option.text }}</span>
+          <!-- <mat-icon *ngIf="option.icon">{{ option.icon }}</mat-icon> -->
+        </button>
+      </ng-container>
+    </mat-menu>
     <div class="top">
       <img [src]="card.img" alt="" />
       <div class="right">
