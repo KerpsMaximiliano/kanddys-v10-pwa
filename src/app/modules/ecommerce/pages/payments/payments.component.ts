@@ -440,9 +440,11 @@ export class PaymentsComponent implements OnInit {
             },
           });
           dialogRef.afterClosed().subscribe(async (value) => {
-            if (value._id) {
+            if (!value) return;
+            const userId = value.user?._id || value.session.user._id;
+            if (userId) {
               this.order = (
-                await this.orderService.authOrder(this.order._id, value._id)
+                await this.orderService.authOrder(this.order._id, userId)
               ).authOrder;
               this.payOrder();
             }

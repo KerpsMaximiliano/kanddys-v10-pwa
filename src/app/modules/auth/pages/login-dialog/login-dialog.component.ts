@@ -124,7 +124,7 @@ export class LoginDialogComponent implements OnInit {
           null,
           false
         );
-        this.dialogRef.close(newUser);
+        this.dialogRef.close({ user: newUser, new: true });
         return;
       }
       console.log('el usuario no existe, ir a ingresar password');
@@ -142,7 +142,7 @@ export class LoginDialogComponent implements OnInit {
     }
     // El usuario existe
     if (this.data?.loginType === 'phone') {
-      this.dialogRef.close(this.user);
+      this.dialogRef.close({ user: this.user, new: false });
       return;
     }
 
@@ -204,6 +204,7 @@ export class LoginDialogComponent implements OnInit {
         this.matSnackBar.open('Código inválido', '', {
           duration: 2000,
         });
+        this.passwordStep.get('password').reset();
         return;
       }
       console.log(authCoded);
@@ -225,7 +226,7 @@ export class LoginDialogComponent implements OnInit {
         this.passwordStep.get('password').value,
         true
       );
-      if (session) this.dialogRef.close(session);
+      if (session) this.dialogRef.close({ session, new: true });
       return;
     }
     if (password.length === 4 || password.length === 6) {
@@ -244,10 +245,11 @@ export class LoginDialogComponent implements OnInit {
       this.matSnackBar.open('Código o contraseña incorrecto', '', {
         duration: 2000,
       });
+      this.codeStep.get('code').reset();
       return;
     }
     // Código o contraseña válido
-    this.dialogRef.close(session);
+    this.dialogRef.close({ session, new: false });
   }
 
   async signUp() {
@@ -261,6 +263,7 @@ export class LoginDialogComponent implements OnInit {
         {
           phone,
           password,
+          ...this.data.extraUserInput,
         },
         'none',
         null,

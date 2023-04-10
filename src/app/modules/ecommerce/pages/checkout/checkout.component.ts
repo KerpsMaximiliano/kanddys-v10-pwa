@@ -24,6 +24,9 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  LoginDialogComponent,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
@@ -152,7 +155,7 @@ export class CheckoutComponent implements OnInit {
     private route: ActivatedRoute,
     private toastr: ToastrService,
     private authService: AuthService,
-    public dialog: MatDialog
+    public matDialog: MatDialog
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -173,7 +176,9 @@ export class CheckoutComponent implements OnInit {
 
     for (const item of this.items as Array<ExtendedItem>) {
       item.ready = false;
-      item.images = item.images.sort(({index:a},{index:b}) => a>b?1:-1);
+      item.images = item.images.sort(({ index: a }, { index: b }) =>
+        a > b ? 1 : -1
+      );
       for (const image of item.images) {
         if (
           image.value &&
@@ -355,7 +360,7 @@ export class CheckoutComponent implements OnInit {
   deleteProduct(i: number) {
     let deletedID = this.items[i]._id;
     const index = this.items.findIndex((product) => product._id === deletedID);
-    let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    let dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
       data: {
         title: `Borrar producto`,
         description: `Estás seguro que deseas borrar ${
@@ -506,11 +511,20 @@ export class CheckoutComponent implements OnInit {
         });
       } else {
         if (!this.headerService.user || anonymous) {
-          this.router.navigate([`/auth/login`], {
-            queryParams: {
-              orderId: createdOrder,
-              auth: 'anonymous',
+          const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+            data: {
+              loginType: 'phone',
             },
+          });
+          matDialogRef.afterClosed().subscribe(async (value) => {
+            if (!value) return;
+            if (value.user?._id || value.session.user._id) {
+              await this.orderService.authOrder(createdOrder, value._id);
+              this.router.navigate([`../../order-detail/${createdOrder}`], {
+                relativeTo: this.route,
+                replaceUrl: true,
+              });
+            }
           });
           return;
         }
