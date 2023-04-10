@@ -140,6 +140,7 @@ export class ItemOrder extends Model<ItemOrder> {
     reference: string;
   }>
   expenditures: string[];
+  notifications: string[];
   deliveryData?: DeliveryData;
 }
 

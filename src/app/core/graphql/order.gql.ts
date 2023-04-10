@@ -143,6 +143,7 @@ const orderData = `
   deliveryData {
     image
   }
+  notifications
 `;
 
 const shortOrderData = `
@@ -188,6 +189,7 @@ const shortOrderData = `
   deliveryData {
     image
   }
+  notifications
 `;
 
 const preOrderData = `
@@ -296,6 +298,7 @@ const preOrderData = `
     platform
     from
   }
+  notifications
 `;
 
 const expenditureData = `
