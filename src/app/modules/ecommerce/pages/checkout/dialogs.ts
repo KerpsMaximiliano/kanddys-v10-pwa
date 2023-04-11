@@ -128,7 +128,6 @@ export class Dialogs {
       containerStyles: {
         background: 'rgb(255, 255, 255)',
         borderRadius: '12px',
-        opacity: '0.5',
         padding: '37.1px 23.6px 52.6px 31px',
         overflow: 'auto',
       },
@@ -239,6 +238,9 @@ export class Dialogs {
             opacity: '1',
             padding: '37.1px 23.6px 38.6px 31px',
           },
+          onActiveSlideCallback: (params) => {
+            this.checkIfDialogIsNotEmpty('whoReceives', 'receiverName');
+          },
           header: {
             styles: {
               fontSize: '23px',
@@ -319,6 +321,9 @@ export class Dialogs {
             borderRadius: '12px',
             opacity: '1',
             padding: '37.1px 23.6px 30.6px 31px',
+          },
+          onActiveSlideCallback: (params) => {
+            this.checkIfDialogIsNotEmpty('whoSends', 'senderName');
           },
           header: {
             styles: {
@@ -474,6 +479,7 @@ export class Dialogs {
                 if (this.dialogs.length === 7) {
                   this.temporalDialogs2 = this.dialogs.splice(3, 2);
                   this.dialogs.splice(3, 0, ...this.temporalDialogs);
+                 
                   this.dialogFlowFunctions.moveToDialogByIndex(3);
                 } else {
                   this.temporalDialogs2 = this.dialogs.splice(3, 2);
@@ -529,6 +535,9 @@ export class Dialogs {
             borderRadius: '12px',
             opacity: '1',
             padding: '37.1px 23.6px 29.6px 31px',
+          },
+          onActiveSlideCallback: (params) => {
+            this.checkIfDialogIsNotEmpty('messageDialog', 'messageTitle');
           },
           header: {
             styles: {
@@ -618,6 +627,9 @@ export class Dialogs {
             borderRadius: '12px',
             opacity: '1',
             padding: '37.1px 23.6px 29.6px 31px',
+          },
+          onActiveSlideCallback: (params) => {
+            this.checkIfDialogIsNotEmpty('messageDialog', 'message');
           },
           header: {
             styles: {
@@ -1041,7 +1053,7 @@ export class Dialogs {
                       sentiment,
                       timing,
                     },
-                    '63f58b7ee2f51cbd1a4cd41d'
+                    '63e0306165c8752d0c5f0345'
                   );
 
                 const options = JSON.parse(response).map((option) => ({
@@ -1108,6 +1120,9 @@ export class Dialogs {
             borderRadius: '12px',
             opacity: '1',
             padding: '37px 36.6px 50.4px 31px',
+          },
+          onActiveSlideCallback: (params) => {
+            this.checkIfDialogIsNotEmpty('wantToAddQrDialog', 'wantToAddQr');
           },
           header: {
             styles: {
@@ -1377,7 +1392,7 @@ export class Dialogs {
                   const response =
                     await this.gpt3Service.generateResponseForTemplate(
                       {},
-                      '63f58ccfe2f51cbd1a4cd42c'
+                      '63ec85e366995b47742d2891'
                     );
 
                   unlockUI();
@@ -1453,4 +1468,21 @@ export class Dialogs {
       )
     );
   }
+
+  checkIfDialogIsNotEmpty = (dialogId: string, fieldName: string) => {
+    const questionDialog =
+      this.dialogFlowService.dialogsFlows['flow1'][dialogId];
+
+    if (
+      questionDialog?.fields &&
+      questionDialog?.fields[fieldName] &&
+      questionDialog?.fields[fieldName].length
+    ) {
+      this.dialogFlowService.swiperConfig.allowSlideNext = true;
+    } else {
+      setTimeout(() => {
+        this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      });
+    }
+  };
 }
