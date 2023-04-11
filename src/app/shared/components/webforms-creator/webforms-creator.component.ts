@@ -118,6 +118,10 @@ export class WebformsCreatorComponent implements OnInit {
               'Estas creando un formulario y le preguntaste ' +
               question +
               ' y los compradores te responderán..';
+
+            this.questionDialog.postLabelStyles = {
+              bottom: '19.7px',
+            };
           } else {
             this.swiperConfig.allowSlideNext = false;
           }
@@ -637,13 +641,20 @@ export class WebformsCreatorComponent implements OnInit {
           createdWebform._id
         );
 
+        this.webformQuestions.forEach((question) => {
+          if (!question.answerDefault) {
+            question.answerDefault = [];
+          }
+        });
+
         const largeInputQuestions: QuestionInput[] =
           this.webformQuestions.filter(
             (question) => question.answerDefault?.length > 20
           );
         const smallInputQuestions: QuestionInput[] =
           this.webformQuestions.filter(
-            (question) => question.answerDefault?.length <= 20
+            (question) =>
+              question.answerDefault?.length <= 20 || !question.answerDefault
           );
 
         if (smallInputQuestions.length > 0) {
@@ -696,6 +707,9 @@ export class WebformsCreatorComponent implements OnInit {
             }
           }
         }
+
+        console.log('Small input questions', smallInputQuestions);
+        console.log('Large input questions', largeInputQuestions);
 
         this.optionalQuestions = this.webformQuestions.reduce(
           (sum, currentQuestion) => {
