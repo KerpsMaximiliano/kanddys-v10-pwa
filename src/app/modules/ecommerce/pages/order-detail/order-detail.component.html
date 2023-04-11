@@ -35,11 +35,21 @@
       />
 
       a
-      {{ order.items[0].saleflow.merchant.name }}
+      <span>{{ order.items[0].saleflow.merchant.name }}</span>
     </p>
   </a>
   <ng-container *ngIf="isMerchant && order.orderStatus !== 'draft'">
-    <div style="padding-top: 5px; margin-bottom: 5px">
+    <a
+      class="benefits-btn"
+      [routerLink]="['../../../admin/order-expenses', order._id]"
+      queryParamsHandling="merge"
+    >
+      <p>INGRESOS MENOS EGRESOS</p>
+      <span>
+        ${{ (benefits ? benefits.benefits - benefits.less : 0) | number }}
+      </span>
+    </a>
+    <div style="padding-top: 4px; margin-bottom: 4px">
       <app-dropdown-menu
         [optionsList]="deliveryStatusOptions"
         [multiple]="false"
@@ -219,7 +229,10 @@
           (mouseleave)="stopDragging()"
           (mousemove)="moveEvent($event, elemt)"
         >
-          <button (click)="order.ocr ? openImageModal(order.ocr.image) : null">
+          <button
+            class="btn"
+            (click)="order.ocr ? openImageModal(order.ocr.image) : null"
+          >
             <div
               class="image"
               [ngStyle]="{
@@ -228,17 +241,20 @@
                     ? 'url(' + order.ocr.image + ') '
                     : payedWithAzul
                     ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
-                    : 'url(/assets/images/noimage.png)'
+                    : 'url(/assets/images/noimage.png)',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundSize: 'cover'
               }"
             >
-              <img
+              <!-- <img
                 *ngIf="order.ocr"
                 [src]="
                   order.ocr ? order.ocr.image : '/assets/images/noimage.png'
                 "
                 alt="item image"
                 class="item-image"
-              />
+              /> -->
             </div>
           </button>
         </div>

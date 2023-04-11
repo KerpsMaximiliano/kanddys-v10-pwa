@@ -3,7 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { AppService } from 'src/app/app.service';
-import { Item, ItemImage, ItemParamValue } from 'src/app/core/models/item';
+import {
+  Item,
+  ItemImage,
+  ItemImageInput,
+  ItemInput,
+  ItemParamValue,
+} from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
@@ -22,6 +28,12 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
 import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
 import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { MerchantStepperFormComponent } from 'src/app/shared/components/merchant-stepper-form/merchant-stepper-form.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { StepperFormComponent } from 'src/app/shared/components/stepper-form/stepper-form.component';
+import { ArticleStepperFormComponent } from 'src/app/shared/components/article-stepper-form/article-stepper-form.component';
 
 SwiperCore.use([Virtual]);
 
@@ -75,6 +87,13 @@ export class ArticleDetailComponent implements OnInit {
   isItemInCart: boolean = false;
   itemsAmount: string;
   mode: 'preview' | 'image-preview' | 'saleflow';
+  signup: 'true' | 'false';
+  createArticle: 'true' | 'false';
+  isCreateArticle: boolean;
+  isSignup: boolean;
+  merchantId: string = '';
+  isMerchant: boolean;
+
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
     freeMode: false,
@@ -109,6 +128,7 @@ export class ArticleDetailComponent implements OnInit {
   logged: boolean = false;
   isProductMine: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  articleId: string = '';
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -124,18 +144,46 @@ export class ArticleDetailComponent implements OnInit {
     private entityTemplateService: EntityTemplateService,
     private saleflowService: SaleFlowService,
     private merchantsService: MerchantsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
+    this.signup = this.route.snapshot.queryParamMap.get('signup') as
+      | 'true'
+      | 'false';
+    if (this.signup === 'true') {
+      this.isSignup = true;
+    }
+    this.createArticle = this.route.snapshot.queryParamMap.get(
+      'createArticle'
+    ) as 'true' | 'false';
+
+    this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
+    console.log(this.merchantId);
+    if (this.merchantId !== '') {
+      this.isMerchant = true;
+      this.setMerchantDefault();
+    }
+
+    if (this.createArticle === 'true') {
+      this.isCreateArticle = true;
+      this.articleDialog();
+    }
+
     this.mode = this.route.snapshot.queryParamMap.get('mode') as
       | 'preview'
       | 'image-preview'
       | 'saleflow';
+
     this.route.params.subscribe(async (routeParams) => {
       await this.verifyIfUserIsLogged();
       const validEntities = ['item', 'post', 'template', 'collection'];
       const { entity, entityId } = routeParams;
+
+      this.articleId = entityId;
+      console.log(this.articleId);
 
       if (this.headerService.saleflow?._id)
         this.doesModuleDependOnSaleflow = true;
@@ -187,6 +235,17 @@ export class ArticleDetailComponent implements OnInit {
     });
   }
 
+  async setMerchantDefault() {
+    const authorize = await this.merchantsService.merchantAuthorize(
+      this.merchantId
+    );
+    console.log(authorize);
+    const merchantDefault = await this.merchantsService.setDefaultMerchant(
+      this.merchantId
+    );
+    console.log(merchantDefault);
+  }
+
   async getCollection() {
     this.tagData = (await this.tagsService.tag(this.entityId)).tag;
   }
@@ -200,34 +259,38 @@ export class ArticleDetailComponent implements OnInit {
         this.itemData.name = this._ItemsService.itemName;
         this.itemData.description = this._ItemsService.itemDesc;
         this.itemData.pricing = this._ItemsService.itemPrice;
-        this.itemData.images = this.itemData.images.sort(({index:a},{index:b}) => a>b?-1:1).map((image) => ({
-          value: image.value,
-        })) as ItemImage[];
+        this.itemData.images = this.itemData.images
+          .sort(({ index: a }, { index: b }) => (a > b ? -1 : 1))
+          .map((image) => ({
+            value: image.value,
+          })) as ItemImage[];
       }
 
-      this.itemData.media = this.itemData.images.sort(({index:a},{index:b}) => a>b?1:-1).map((image) => {
-        let url = image.value;
-        const fileParts = image.value.split('.');
-        const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
-        let auxiliarImageFileExtension = 'image/' + fileExtension;
-        let auxiliarVideoFileExtension = 'video/' + fileExtension;
+      this.itemData.media = this.itemData.images
+        .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+        .map((image) => {
+          let url = image.value;
+          const fileParts = image.value.split('.');
+          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+          let auxiliarImageFileExtension = 'image/' + fileExtension;
+          let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
-        if (url && !url.includes('http') && !url.includes('https')) {
-          url = 'https://' + url;
-        }
+          if (url && !url.includes('http') && !url.includes('https')) {
+            url = 'https://' + url;
+          }
 
-        if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-          return {
-            src: url,
-            type: 'IMAGE',
-          };
-        } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-          return {
-            src: url,
-            type: 'VIDEO',
-          };
-        }
-      });
+          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+            return {
+              src: url,
+              type: 'IMAGE',
+            };
+          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+            return {
+              src: url,
+              type: 'VIDEO',
+            };
+          }
+        });
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
       this.itemTags?.forEach((tag) => {
@@ -387,10 +450,10 @@ export class ArticleDetailComponent implements OnInit {
       type: 'added-item',
       data: this.itemData._id,
     });
-    this.headerService.storeItem(
-      // this.selectedParam ? itemParamValue :
-      this.itemData
-    );
+    // this.headerService.storeItem(
+    //   // this.selectedParam ? itemParamValue :
+    //   this.itemData
+    // );
     this.itemInCart();
   }
 
@@ -410,7 +473,9 @@ export class ArticleDetailComponent implements OnInit {
   // }
 
   itemInCart() {
-    const productData = this.headerService.getItems();
+    const productData = this.headerService.order.products.map(
+      (subOrder) => subOrder.item
+    );
     if (productData?.length) {
       this.isItemInCart = productData.some(
         (item) => item === this.itemData._id
@@ -542,6 +607,8 @@ export class ArticleDetailComponent implements OnInit {
     )
       .map(() => `${'1'}fr`)
       .join(' ');
+
+      console.log(this.fractions);
   }
 
   getRandomArbitrary(min, max) {
@@ -567,5 +634,47 @@ export class ArticleDetailComponent implements OnInit {
       const route = ['ecommerce', 'article-privacy', _id];
       this.router.navigate(route);
     })();
+  }
+
+  showDialog() {
+    this.merchantDialog();
+  }
+
+  merchantDialog() {
+    let dialogRef = this.dialog.open(MerchantStepperFormComponent, {
+      data: {
+        articleId: this.articleId,
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe(
+        async (result: {
+          name: string;
+          lastname: string;
+          email: string;
+          phone: number;
+        }) => {
+          if (!result) return;
+          const { name, lastname, email, phone } = result;
+
+          const newMerchantData = {
+            name: name,
+            lastname: lastname,
+            email: email,
+            phone: phone,
+          };
+          console.log(newMerchantData);
+
+          this.snackBar.open('Done!', '', {
+            duration: 5000,
+          });
+          unlockUI();
+        }
+      );
+  }
+
+  articleDialog() {
+    this.dialog.open(ArticleStepperFormComponent);
   }
 }

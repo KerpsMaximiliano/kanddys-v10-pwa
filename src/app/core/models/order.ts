@@ -10,6 +10,8 @@ import { IpUser, User } from './user';
 export class OrderSubtotal {
   currency: string;
   amount: number;
+  item: string;
+  type: 'item' | 'delivery';
 }
 
 export class OCR extends Model<OCR> {
@@ -117,6 +119,7 @@ export class ItemOrder extends Model<ItemOrder> {
   orderStatus: OrderStatusType;
   orderStatusDelivery: OrderStatusDeliveryType;
   orderType: OrderType;
+  deliveryZone: string;
   isComplete: boolean;
   subtotals: OrderSubtotal[];
   ocr: OCR;
@@ -133,6 +136,9 @@ export class ItemOrder extends Model<ItemOrder> {
     status: string;
     access: string;
   }>;
+  expenditures: string[];
+  notifications: string[];
+  deliveryData?: DeliveryData;
 }
 
 export class ItemOrderInput {
@@ -142,10 +148,51 @@ export class ItemOrderInput {
   tags?: string[];
 }
 
+export class DeliveryDataInput {
+  image: File;
+}
+
+export class DeliveryData extends Model<DeliveryData> {
+  image: string;
+}
+
+
 export class OCRInput {
   total?: number;
   subtotal?: number;
   transactionCode?: string;
   image?: File;
   platform?: string;
+}
+
+export type ExpenditureType = 'delivery-zone' | 'others' | 'employee';
+
+export class Expenditure extends Model<Expenditure> {
+  type: ExpenditureType;
+  merchant: string;
+  name: string;
+  description: string;
+  amount: number;
+  useDate: Date;
+}
+
+export class ExpenditureInput {
+  type: ExpenditureType;
+  name: string;
+  description?: string;
+  amount: number;
+}
+
+export class OrderBenefits {
+  benefits: number;
+  less: number;
+  percentageBenefits: number;
+  percentageLess: number;
+}
+
+export class Benefits {
+  data: OrderBenefits;
+  moreResult: boolean;
+  pageResultCount: number;
+  totalResults: number;
 }
