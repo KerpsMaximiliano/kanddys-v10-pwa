@@ -31,7 +31,10 @@ import { SwiperOptions } from 'swiper';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
 import { Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
+import {
+  LoginDialogComponent,
+  LoginDialogData,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-payments',
@@ -504,12 +507,17 @@ export class PaymentsComponent implements OnInit {
           window.location.href = result.url;
         }
       } else {
-        this.router.navigate([`/auth/login`], {
-          queryParams: {
-            orderId: this.order._id,
-            onlinePayment: 'payment-with-stripe',
+        this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'full',
           },
         });
+        // this.router.navigate([`/auth/login`], {
+        //   queryParams: {
+        //     orderId: this.order._id,
+        //     onlinePayment: 'payment-with-stripe',
+        //   },
+        // });
       }
     } else if (paymentOptionName === 'Paypal') {
       if (this.currentUser) {
@@ -522,12 +530,17 @@ export class PaymentsComponent implements OnInit {
           window.location.href = result;
         }
       } else {
-        this.router.navigate([`/auth/login`], {
-          queryParams: {
-            orderId: this.order._id,
-            onlinePayment: 'payment-with-stripe',
+        this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'full',
           },
         });
+        // this.router.navigate([`/auth/login`], {
+        //   queryParams: {
+        //     orderId: this.order._id,
+        //     onlinePayment: 'payment-with-stripe',
+        //   },
+        // });
       }
     } else if (paymentOptionName === 'Tarjeta de crédito') {
       if (this.currentUser && this.logged && this.currentUser.email)
@@ -535,16 +548,37 @@ export class PaymentsComponent implements OnInit {
       else if (this.currentUser && this.logged && !this.currentUser.email) {
         this.openedDialogFlow = true;
       } else {
-        this.router.navigate(['auth/login'], {
-          queryParams: {
-            orderId: this.order._id,
-            auth: 'azul-login',
-            paymentWithAzul: true,
-            redirect:
-              window.location.href.split('/').slice(3).join('/') +
-              '?redirectToAzul=true',
-          },
+        const dialogRef = this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'full',
+            magicLinkData: {
+              redirectionRoute:
+                window.location.href.split('/').slice(3).join('/') +
+                '?redirectToAzul=true',
+              entity: 'UserAccess',
+            },
+          } as LoginDialogData,
         });
+        dialogRef.afterClosed().subscribe(async (value) => {
+          if (!value) return;
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+              redirectToAzul: true,
+            },
+          });
+        });
+
+        // this.router.navigate(['auth/login'], {
+        //   queryParams: {
+        //     orderId: this.order._id,
+        //     auth: 'azul-login',
+        //     paymentWithAzul: true,
+        //     redirect:
+        //       window.location.href.split('/').slice(3).join('/') +
+        //       '?redirectToAzul=true',
+        //   },
+        // });
       }
     }
   }

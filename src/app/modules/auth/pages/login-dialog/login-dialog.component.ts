@@ -1,6 +1,5 @@
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { Session } from 'src/app/core/models/session';
-import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import {
   FormBuilder,
   FormControl,
@@ -42,7 +41,9 @@ export class LoginDialogComponent implements OnInit {
   PhoneNumberFormat = PhoneNumberFormat;
   user: User;
   newUser = false;
-  phoneStep: FormGroup;
+  inputType: 'phone' | 'email' = 'phone';
+  phoneNumber: FormControl;
+  email: FormControl;
   passwordStep: FormGroup;
   codeStep: FormGroup;
   sentCode = false;
@@ -63,9 +64,16 @@ export class LoginDialogComponent implements OnInit {
         ...this.data,
       };
     }
-    this.phoneStep = this._formBuilder.group({
-      phoneNumber: ['', [Validators.required, Validators.minLength(10)]],
-    });
+    this.phoneNumber = this._formBuilder.control('', [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.pattern(/[\S]/),
+    ]);
+    this.email = this._formBuilder.control('', [
+      Validators.required,
+      Validators.email,
+      Validators.pattern(/[\S]/),
+    ]);
     this.passwordStep = this._formBuilder.group({
       password: [
         '',
@@ -88,60 +96,83 @@ export class LoginDialogComponent implements OnInit {
     });
   }
 
-  onStepChange(event: StepperSelectionEvent) {
-    if (event.previouslySelectedIndex === 0) this.submitPhone();
+  changeInputType() {
+    this.inputType = this.inputType === 'email' ? 'phone' : 'email';
+    this.email.reset();
+    this.phoneNumber.reset();
   }
 
   async submitPhone() {
-    if (this.phoneStep.get('phoneNumber').invalid) {
+    if (this.inputType === 'email' && this.email.invalid) {
+      this.matSnackBar.open('Introduce un correo electrónico válido', '', {
+        duration: 2000,
+      });
+      return;
+    }
+    if (this.inputType === 'phone' && this.phoneNumber.invalid) {
       this.matSnackBar.open('Introduce un número válido', '', {
         duration: 2000,
       });
       return;
     }
     lockUI();
-    const phone = this.phoneStep
-      .get('phoneNumber')
-      .value.e164Number.split('+')[1];
-    this.user = await this.authService.checkUser(phone);
+    const emailOrPhone =
+      this.inputType === 'email'
+        ? this.email.value
+        : this.phoneNumber.value.e164Number.split('+')[1];
+    this.user = await this.authService.checkUser(emailOrPhone);
+    if (this.inputType === 'email' && !this.user) {
+      unlockUI();
+      this.matSnackBar.open(
+        'Correo electrónico no registrado. Regístrate con tu número telefónico',
+        '',
+        {
+          duration: 5000,
+        }
+      );
+      return;
+    }
+    // const phone = this.phoneNumber.value.e164Number.split('+')[1] as string;
     this.userStep = 'password';
-    localStorage.setItem(
-      'phone-number',
-      JSON.stringify(this.phoneStep.get('phoneNumber').value)
-    );
-    if (!this.user) {
+    if (this.inputType === 'phone' && !this.user) {
       this.newUser = true; // Valor asignado para verificar si hace refresh
       // El número de teléfono ingresado no existe, creando usuario
       if (this.data?.loginType === 'phone') {
         // Signup rápido, sin ingresar datos
         const newUser = await this.authService.signup(
           {
-            phone,
-            password: phone.slice(-4),
+            phone: emailOrPhone,
+            password: emailOrPhone.slice(-4),
             ...this.data.extraUserInput,
           },
           'none',
           null,
           false
         );
+        this.matSnackBar.open('Usuario registrado exitosamente', '', {
+          duration: 2000,
+        });
         this.dialogRef.close({ user: newUser, new: true });
         return;
       }
       console.log('el usuario no existe, ir a ingresar password');
       // SignUp con todos los datos
-      this.passwordStep.get('password').patchValue(phone.slice(-4));
+      this.passwordStep.get('password').patchValue(emailOrPhone.slice(-4));
       unlockUI();
       return;
     }
     // El usuario existe pero no está validado
     if (!this.user.validatedAt) {
       console.log('El usuario existe pero no está validado');
-      await this.generateOTP(phone);
+      await this.generateOTP(emailOrPhone);
       unlockUI();
       return;
     }
     // El usuario existe
     if (this.data?.loginType === 'phone') {
+      this.matSnackBar.open('Usuario validado exitosamente', '', {
+        duration: 2000,
+      });
       this.dialogRef.close({ user: this.user, new: false });
       return;
     }
@@ -151,7 +182,7 @@ export class LoginDialogComponent implements OnInit {
       console.log('si hay magic link data');
       // Si hay magicLinkData, enviar el magic link con los datos
       await this.authService.generateMagicLink(
-        phone,
+        emailOrPhone,
         this.data.magicLinkData.redirectionRoute,
         this.data.magicLinkData.redirectionRouteId,
         this.data.magicLinkData.entity,
@@ -159,14 +190,16 @@ export class LoginDialogComponent implements OnInit {
         this.data.magicLinkData.attachments
       );
       this.matSnackBar.open(
-        'Se ha enviado un link de acceso a tu telefono',
+        `Se ha enviado un link de acceso a tu ${
+          this.inputType === 'phone' ? 'teléfono' : 'correo electrónico'
+        }`,
         '',
         {
           duration: 5000,
         }
       );
     }
-
+    this.myStepper.next();
     // if(this.phoneCallback) this.phoneCallback();
 
     // this.phoneStep.get('phoneNumber').setValue(nationalNumber);
@@ -226,7 +259,12 @@ export class LoginDialogComponent implements OnInit {
         this.passwordStep.get('password').value,
         true
       );
-      if (session) this.dialogRef.close({ session, new: true });
+      if (session) {
+        this.matSnackBar.open('Inicio de sesión exitoso', '', {
+          duration: 3000,
+        });
+        this.dialogRef.close({ session, new: true });
+      }
       return;
     }
     if (password.length === 4 || password.length === 6) {
@@ -249,13 +287,14 @@ export class LoginDialogComponent implements OnInit {
       return;
     }
     // Código o contraseña válido
+    this.matSnackBar.open('Inicio de sesión exitoso', '', {
+      duration: 3000,
+    });
     this.dialogRef.close({ session, new: false });
   }
 
   async signUp() {
-    const phone = this.phoneStep
-      .get('phoneNumber')
-      .value.e164Number.split('+')[1];
+    const phone = this.phoneNumber.value.e164Number.split('+')[1];
     const password = this.passwordStep.get('password').value;
     if (!this.user) {
       console.log('usuario nuevo, creando...');
@@ -290,8 +329,8 @@ export class LoginDialogComponent implements OnInit {
     }
   }
 
-  async generateOTP(phone: string) {
-    const OTP = await this.authService.generateOTP(phone);
+  async generateOTP(emailOrPhone: string) {
+    const OTP = await this.authService.generateOTP(emailOrPhone);
     if (OTP) {
       this.matSnackBar.open('¡Se ha enviado un código para verificar', '', {
         duration: 5000,

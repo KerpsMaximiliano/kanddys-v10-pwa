@@ -1,35 +1,74 @@
-<mat-vertical-stepper
-  [linear]="true"
-  #stepper
-  (selectionChange)="onStepChange($event)"
->
-  <mat-step label="Número de teléfono" state="phone" [stepControl]="phoneStep" [editable]="!newUser">
-    <form [formGroup]="phoneStep">
-      <div class="wrapper">
-        <ngx-intl-tel-input
-          [cssClass]="'custom'"
-          [enableAutoCountrySelect]="true"
-          [enablePlaceholder]="true"
-          [searchCountryFlag]="true"
-          [selectFirstCountry]="false"
-          [preferredCountries]="preferredCountries"
-          [selectedCountryISO]="CountryISO"
-          maxLength="13"
-          minlength="10"
-          [phoneValidation]="true"
-          [separateDialCode]="true"
-          [customPlaceholder]="'(000) 000-0000'"
-          [numberFormat]="PhoneNumberFormat.International"
-          formControlName="phoneNumber"
-          tabindex="1"
-        ></ngx-intl-tel-input>
+<mat-vertical-stepper [linear]="true" #stepper style="min-width: 252px">
+  <mat-step
+    [label]="
+      inputType === 'phone' ? 'Número de teléfono' : 'Correo electrónico'
+    "
+    state="phone"
+    [completed]="phoneNumber.valid || email.valid"
+    [editable]="!newUser"
+  >
+    <form>
+      <div *ngIf="inputType === 'phone'">
+        <div class="wrapper">
+          <ngx-intl-tel-input
+            [cssClass]="'custom'"
+            [enableAutoCountrySelect]="true"
+            [enablePlaceholder]="true"
+            [searchCountryFlag]="true"
+            [selectFirstCountry]="false"
+            [preferredCountries]="preferredCountries"
+            [selectedCountryISO]="CountryISO"
+            maxLength="13"
+            minlength="10"
+            [phoneValidation]="true"
+            [separateDialCode]="true"
+            [customPlaceholder]="'(000) 000-0000'"
+            [numberFormat]="PhoneNumberFormat.International"
+            [formControl]="phoneNumber"
+            tabindex="1"
+          ></ngx-intl-tel-input>
+        </div>
+      </div>
+      <div
+        *ngIf="inputType === 'email'"
+        style="display: flex; flex-direction: column"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>Correo electrónico</mat-label>
+          <input
+            type="email"
+            matInput
+            [formControl]="email"
+            placeholder="Ej. email@ejemplo.com"
+          />
+          <mat-error
+            *ngIf="email.hasError('email') && !email.hasError('required')"
+          >
+            Por favor ingresa un correo electrónico válido
+          </mat-error>
+          <mat-error *ngIf="email.hasError('required')">
+            El correo electrónico es <strong>obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div style="margin-bottom: 8px">
+        <button mat-button type="button" (click)="changeInputType()">
+          Ingresar con
+          {{
+            inputType === "phone" ? "número telefónico" : "correo electrónico"
+          }}
+        </button>
       </div>
       <button
         mat-button
-        matStepperNext
-        [disabled]="phoneStep.invalid"
-        (click)="data?.loginType === 'phone' && submitPhone()"
+        type="button"
+        [disabled]="
+          (inputType === 'phone' && phoneNumber.invalid) ||
+          (inputType === 'email' && email.invalid)
+        "
+        (click)="submitPhone()"
       >
+        <!-- (click)="data?.loginType === 'phone' && submitPhone()" -->
         Continuar
       </button>
     </form>
@@ -46,6 +85,12 @@
           this.user ? "Código o contraseña" : "Contraseña"
         }}</mat-label>
         <input matInput type="password" formControlName="password" required />
+        <mat-hint *ngIf="user"
+          >Te llegará un código y un MagicLink a tu
+          {{
+            inputType === "phone" ? "WhatsApp" : "correo electrónico"
+          }}</mat-hint
+        >
         <mat-hint *ngIf="!user"
           >Por defecto son los últimos 4 dígitos de tu teléfono</mat-hint
         >
@@ -53,7 +98,7 @@
       <div>
         <button
           mat-button
-          matStepperNext
+          type="button"
           (click)="submitCodePassword()"
           [ngStyle]="{ marginTop: !user && '12px' }"
         >
