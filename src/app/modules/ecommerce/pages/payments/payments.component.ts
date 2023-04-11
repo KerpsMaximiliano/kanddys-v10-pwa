@@ -374,7 +374,7 @@ export class PaymentsComponent implements OnInit {
           this.openedDialogFlow = true;
         }
 
-        if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+        // if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
       });
     });
   }
@@ -607,6 +607,7 @@ export class PaymentsComponent implements OnInit {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         document.querySelector('#AuthHash').setAttribute('value', data.hash);
         document
           .querySelector('#MerchantID')
