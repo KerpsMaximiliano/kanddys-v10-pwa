@@ -473,7 +473,7 @@ export class ArticleDetailComponent implements OnInit {
   // }
 
   itemInCart() {
-    const productData = this.headerService.order.products.map(
+    const productData = this.headerService.order?.products.map(
       (subOrder) => subOrder.item
     );
     if (productData?.length) {
@@ -608,7 +608,7 @@ export class ArticleDetailComponent implements OnInit {
       .map(() => `${'1'}fr`)
       .join(' ');
 
-      console.log(this.fractions);
+    console.log(this.fractions);
   }
 
   getRandomArbitrary(min, max) {

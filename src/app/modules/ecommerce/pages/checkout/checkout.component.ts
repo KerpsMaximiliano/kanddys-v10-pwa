@@ -242,7 +242,7 @@ export class CheckoutComponent implements OnInit {
     // Validation for stores with only one address of pickup and no delivery for customers
     if (!this.deliveryLocation) {
       if (
-        this.headerService.saleflow.module.delivery.pickUpLocations.length ==
+        this.headerService.saleflow.module.delivery?.pickUpLocations.length ==
           1 &&
         !this.headerService.saleflow.module.delivery.deliveryLocation
       ) {
