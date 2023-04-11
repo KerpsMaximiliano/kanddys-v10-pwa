@@ -30,6 +30,7 @@ import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions } from 'swiper';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
 import { Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-payments',
@@ -257,7 +258,8 @@ export class PaymentsComponent implements OnInit {
     private integrationService: IntegrationsService,
     private dialogService: DialogService,
     private authService: AuthService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private snackBar: MatSnackBar
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -689,5 +691,12 @@ export class PaymentsComponent implements OnInit {
         window.location.href = response.url;
       }
     });*/
+  }
+
+  remindRefundPolicies() {
+    this.snackBar.open('Debes aceptar las políticas de reembolso antes de continuar con tu orden', 'OK', {
+      duration: 3000,
+      panelClass: ['mat-accent']
+    });
   }
 }

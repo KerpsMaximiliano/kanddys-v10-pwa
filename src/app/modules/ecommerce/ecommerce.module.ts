@@ -67,10 +67,6 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'terms-of-use/:viewsMerchantId',
-    component: TermsOfUseComponent,
-  },
-  {
     path: 'gift-detail/:orderId',
     component: GiftDetailComponent,
   },
@@ -157,7 +153,11 @@ const routes: Routes = [
       {
         path: 'order-process/:orderId',
         component: OrderProcessComponent
-      }
+      }, 
+      {
+        path: 'terms-of-use/:viewsMerchantId',
+        component: TermsOfUseComponent,
+      },
     ],
   },
 ];
