@@ -21,8 +21,6 @@ export class ContactLandingContainerComponent implements OnInit {
   img: string;
   contactID: string;
   address: string;
-  whatsapp: string;
-  telegram: string;
   _phone: string;
   idUser: string;
   image: string;
@@ -31,25 +29,24 @@ export class ContactLandingContainerComponent implements OnInit {
   location: string;
 
   constructor(
-    private _UsersService: UsersService,
-    private _ActivatedRoute: ActivatedRoute,
-    private _MerchantService: MerchantsService,
-    private _ContactService: ContactService
+    private usersService: UsersService,
+    private route: ActivatedRoute,
+    private merchantService: MerchantsService,
+    private contactService: ContactService
   ) {}
 
   ngOnInit(): void {
-    this._ActivatedRoute.params.subscribe(({ idUser }) => {
+    this.route.params.subscribe(({ idUser }) => {
       (async () => {
         this.idUser = idUser;
-        let _merchantDefault = await this._MerchantService.merchantDefault();
+        const _merchantDefault = await this.merchantService.merchantDefault();
+        const { address, image } = _merchantDefault || {};
 
-        console.log(_merchantDefault);
-        if (_merchantDefault && _merchantDefault.address)
-          this.address = _merchantDefault.address;
+        if (_merchantDefault && address)
+          this.address = address;
 
-        const { image } = _merchantDefault || {};
         this.image = image;
-        const { _id } = _merchantDefault || {};
+
         const paginate: PaginationInput = {
           findBy: {
             user: idUser,
@@ -59,7 +56,8 @@ export class ContactLandingContainerComponent implements OnInit {
             limit: -1,
           },
         };
-        const [contact] = await this._ContactService.contacts(paginate);
+        const [contact] = await this.contactService.contacts(paginate);
+
         if (contact) {
           const { _id, name, description, link, image } = contact || {};
           this.contactID = name;
@@ -73,10 +71,11 @@ export class ContactLandingContainerComponent implements OnInit {
           this.location = direction?.value || '';
         } else {
           let { name, phone, email, bio, social, image, ...test }: any =
-            (await this._UsersService.user(idUser)) || {
+            (await this.usersService.user(idUser)) || {
               social: [],
             };
-          const merchantDefault = await this._MerchantService.merchants({
+
+          const merchantDefault = await this.merchantService.merchants({
             findBy: {
               owner: idUser,
               default: true,
