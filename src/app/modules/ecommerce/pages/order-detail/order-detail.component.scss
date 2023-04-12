@@ -629,10 +629,16 @@ table {
     color: #000000;
     font-family: SFProMedium;
     font-size: 17px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .bottom-text {
     margin-top: 12.5px;
     color: #7b7b7b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
