@@ -935,9 +935,26 @@ export class WebformsCreatorComponent implements OnInit {
   }
 
   closeDialogFlow(endedCreation: boolean = false) {
-    console.log('CERRANDOSE INTERIOR');
-
     this.closeEvent.emit(endedCreation);
+
+    if (endedCreation) {
+      this.status = 'SHOWING_DIALOG_FLOW';
+
+      //Resets the values in the dialogs flow, so when you open the dialog flow again, it starts with all empty
+      if (this.dialogFlowService.dialogsFlows[this.flowId]) {
+        Object.keys(this.dialogFlowService.dialogsFlows[this.flowId]).forEach(
+          (dialogId) => {
+            Object.keys(
+              this.dialogFlowService.dialogsFlows[this.flowId][dialogId].fields
+            ).forEach((fieldKey) => {
+              this.dialogFlowService.dialogsFlows[this.flowId][dialogId].fields[
+                fieldKey
+              ] = '';
+            });
+          }
+        );
+      }
+    }
   }
 
   detectWetherOrNotToDeleteLastQuestionOfTypeMultiple() {

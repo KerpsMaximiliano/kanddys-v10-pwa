@@ -49,6 +49,8 @@ export class FormResponsesComponent implements OnInit {
           (questionInList) => questionInList._id === question
         );
 
+        console.log('selectedQuestion', selectedQuestion);
+
         if (
           selectedOption !== null &&
           selectedOption !== undefined &&
@@ -67,6 +69,9 @@ export class FormResponsesComponent implements OnInit {
             findBy: {
               'response.question': question,
               'response.value': selectedAnswerDefault.value,
+            },
+            options: {
+              limit: -1,
             },
           });
 
@@ -94,6 +99,9 @@ export class FormResponsesComponent implements OnInit {
           const answers = await this.webformService.answerPaginate({
             findBy: {
               'response.question': question,
+            },
+            options: {
+              limit: -1,
             },
           });
 
@@ -177,7 +185,12 @@ export class FormResponsesComponent implements OnInit {
             findBy: {
               'response.question': question,
             },
+            options: {
+              limit: -1,
+            },
           });
+
+          console.log(answers);
 
           const answersById = {};
 
@@ -185,7 +198,7 @@ export class FormResponsesComponent implements OnInit {
             answersById[answer._id] = answer.response.find((answer) => {
               return (
                 answer.question === question &&
-                !answer.value.includes('http') &&
+                !answer.value?.includes('http') &&
                 optionsForQuestion[answer.value] === undefined &&
                 optionsForQuestion[answer.label] === undefined
               );
@@ -234,9 +247,7 @@ export class FormResponsesComponent implements OnInit {
     });
   }
 
-  isAnswerInOptions(answer, options) {
-
-  }
+  isAnswerInOptions(answer, options) {}
 
   goToDetail = (order: ItemOrder) => {
     return this.router.navigate(['/ecommerce/order-detail/' + order._id], {

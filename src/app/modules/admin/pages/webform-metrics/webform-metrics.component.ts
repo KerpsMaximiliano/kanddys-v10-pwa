@@ -191,6 +191,11 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
             ) {
               this.openedDialogFlow = true;
               this.resumingWebformCreation = true;
+            } 
+
+            if(!resumeWebform) {
+              this.openedDialogFlow = false;
+              this.resumingWebformCreation = null;
             }
           }
         );
