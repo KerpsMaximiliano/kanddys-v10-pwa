@@ -675,6 +675,8 @@ export class CheckoutComponent implements OnInit {
               response._id,
               createdOrder
             );
+
+            this.dialogFlowService.resetDialogFlow('webform-item-' + item._id);
           }
         }
       }
