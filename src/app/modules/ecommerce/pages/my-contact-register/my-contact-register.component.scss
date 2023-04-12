@@ -2,65 +2,70 @@
   margin: 0;
 }
 
-.header {
-  padding: 14px 21px;
-  background-color: #c1c4c1;
-  box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+.container {
+  height: 100vh;
+  .header {
+    padding: 14px 21px;
+    background-color: #c1c4c1;
+    box-shadow: 0px 3px 6px rgba(#000000, 0.16);
 
-  button {
-    all: unset;
-    cursor: pointer;
-  }
-}
-
-.content {
-  padding: 30px 15px;
-
-  .label {
-    color: #272727;
-    font-size: 13px;
-    font-family: SFProLight;
-    margin-bottom: 10px;
-    text-transform: uppercase;
+    button {
+      all: unset;
+      cursor: pointer;
+    }
   }
 
-  input {
-    border: none;
-    background-color: #fff;
-    border-radius: 7px;
+  .content {
+    padding: 30px 15px;
+
+    .label {
+      color: #272727;
+      font-size: 13px;
+      font-family: SFProLight;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    input {
+      border: none;
+      background-color: #fff;
+      border-radius: 7px;
+      width: 100%;
+      color: #000000;
+      padding: 21px 15px 14px 15px;
+      font-size: 17px;
+      font-family: SFProBold;
+    }
+  }
+
+  .preview {
+    border: 1px solid #707070;
+    height: 90px;
+    max-width: 85px;
     width: 100%;
-    color: #000000;
-    padding: 21px 15px 14px 15px;
-    font-size: 17px;
-    font-family: SFProBold;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin: 0 auto;
+    background-size: cover;
+    background-position: center;
   }
-}
 
-.preview {
-  border: 1px solid #707070;
-  height: 90px;
-  max-width: 85px;
-  width: 100%;
-  border-radius: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin: 0 auto;
-  background-size: cover;
-  background-position: center;
-}
-
-.cta {
-  all: unset;
-  width: 100%;
-  max-width: 500px;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  background-color: #fed230;
-  color: #272727;
-  margin-top: 35px;
-  cursor: pointer;
-  justify-content: center;
+  .cta {
+    all: unset;
+    width: 100%;
+    max-width: 500px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    background-color: #fed230;
+    color: #272727;
+    margin-top: 35px;
+    cursor: pointer;
+    justify-content: center;
+    position: absolute;
+    bottom: 0;
+  }
 }

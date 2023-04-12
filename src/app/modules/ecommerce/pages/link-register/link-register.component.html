@@ -1,6 +1,6 @@
 <div class="container">
   <header>
-    <button>
+    <button (click)="goBack()">
       <img [src]="env + '/arrow-double-up.svg'" alt="" class="arrows" />
     </button>
     <button style="margin-left: auto">
@@ -108,9 +108,9 @@
           />
         </div>
       </div>
-      <div class="cta" style="margin-top: 96%">
-        <button style="margin: 0 auto">Continue</button>
-      </div>
+      <button class="cta" style="margin-top: 96%" (click)="nextSlide()">
+        Continue
+      </button>
     </div>
 
     <!-- ---------------------------OTRO SLIDE-------------------------- -->
@@ -157,8 +157,8 @@
         </div>
       </div>
       <div class="cta" style="margin-top: 19%">
-        <button>Adicionar otro enlace</button>
-        <button style="margin-left: auto">Salvar</button>
+        <button (click)="goBack2()">Adicionar otro enlace</button>
+        <button style="margin-left: auto" (click)="save()">Salvar</button>
       </div>
     </div>
 

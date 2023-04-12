@@ -4,6 +4,7 @@
 
 .container {
   background-color: #293628;
+  height: 100vh;
 
   header {
     padding: 8px;
@@ -142,4 +143,19 @@
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #82f18d;
+}
+
+.cta {
+  all: unset;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  background-color: #fed230;
+  color: #272727;
+  cursor: pointer;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
 }

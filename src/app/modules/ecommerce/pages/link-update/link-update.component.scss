@@ -4,6 +4,7 @@
 
 .container {
   background-color: #293628;
+  height: 100vh;
 
   header {
     padding: 8px;
@@ -143,6 +144,7 @@
 }
 
 .cta {
+  all: unset;
   width: 100%;
   max-width: 500px;
   padding: 10px;
@@ -150,12 +152,11 @@
   align-items: center;
   background-color: #fed230;
   color: #272727;
-  position: relative;
 
-  button {
-    all: unset;
-    cursor: pointer;
-  }
+  cursor: pointer;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
 }
 
 .square {

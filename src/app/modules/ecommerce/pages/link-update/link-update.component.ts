@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ContactService } from 'src/app/core/services/contact.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-link-update',
@@ -42,7 +43,9 @@ export class LinkUpdateComponent implements OnInit {
   constructor(
     private _formBuilder: FormBuilder,
     private route: ActivatedRoute,
-    private contactService: ContactService
+    private contactService: ContactService,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
   contactLogos = [
@@ -139,9 +142,17 @@ export class LinkUpdateComponent implements OnInit {
     );
 
     console.log(updatedContact);
+    this.snackBar.open('Ha actualizado su link de contacto con exito', '', {
+      duration: 5000,
+    });
+    this.router.navigate([`ecommerce/links-view/${this.userId}`]);
   }
 
   nextSlide() {
     this.mediaSwiper.directiveRef.nextSlide();
+  }
+
+  goBack() {
+    this.router.navigate([`ecommerce/link-register/${this.userId}`]);
   }
 }

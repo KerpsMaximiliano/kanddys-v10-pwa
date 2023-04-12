@@ -164,6 +164,10 @@ export class LinksPageComponent implements OnInit {
     ];
   }
 
+  goBack() {
+    this.router.navigate([`ecommerce/kiosko-view/${this.userId}`]);
+  }
+
   goToLinkRegister() {
     this.router.navigate([`ecommerce/link-register/${this.userId}`]);
   }

@@ -64,7 +64,12 @@ export class LinkRegisterComponent implements OnInit {
     this.mediaSwiper.directiveRef.nextSlide();
   }
 
-  goBack2() {
+  goBack() {
+    this.router.navigate([`ecommerce/links-view/${this.userId}`]);
+  }
+
+  async goBack2() {
+    await this.save();
     this.mediaSwiper.directiveRef.prevSlide();
     this.mediaSwiper.directiveRef.prevSlide();
   }
@@ -292,10 +297,13 @@ export class LinkRegisterComponent implements OnInit {
       const newContact = await this.contactService.createContact(contactInput);
 
       console.log(newContact);
+      this.snackBar.open('Ha creado un link de contacto con exito', '', {
+        duration: 5000,
+      });
 
       this.router.navigate([`ecommerce/links-view/${this.userId}`]);
     } else {
-      this.snackBar.open('', '', {
+      this.snackBar.open('Debe llenar todos los campos', '', {
         duration: 5000,
       });
     }

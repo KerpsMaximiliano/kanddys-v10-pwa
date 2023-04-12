@@ -78,6 +78,17 @@ export class KioskoViewComponent implements OnInit {
       this.userId = params.userId;
       console.log(this.userId);
     });
+
+    this.user = await this.authService.me();
+    console.log(this.user);
+
+    const data = this.route.snapshot.queryParamMap.get('data');
+    if (data) {
+      const bankData = JSON.parse(decodeURIComponent(data));
+      console.log(bankData);
+    } else {
+      console.log('No hay data');
+    }
   }
 
   togglePanel() {

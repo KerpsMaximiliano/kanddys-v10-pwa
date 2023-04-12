@@ -54,7 +54,9 @@
         </svg>
         <span class="subtitle green" style="margin: 0">0:50 segundos</span>
       </div>
-      <button class="btn">Exhibir y vender mis cosas</button>
+      <button class="btn" (click)="nextSlide()">
+        Exhibir y vender mis cosas
+      </button>
       <button class="btn">
         Lo anterior y tambien premiar a otros Kioskeros que vendan mis cosas
       </button>
@@ -243,13 +245,13 @@
         <p class="input-title">Tu respuesta</p>
         <ngx-intl-tel-input
           [cssClass]="'custom'"
-          [enableAutoCountrySelect]="true"
+          [enableAutoCountrySelect]="false"
           [enablePlaceholder]="true"
           [searchCountryFlag]="true"
           [selectFirstCountry]="false"
           [preferredCountries]="preferredCountries"
           [selectedCountryISO]="CountryISO"
-          maxLength="13"
+          maxLength="15"
           minlength="10"
           [phoneValidation]="true"
           [separateDialCode]="true"
@@ -264,9 +266,9 @@
         <!-- <button class="btn" (click)="nextSlide()">No usaré WhatsApp</button> -->
       </div>
 
-      <button class="swipe" (click)="nextSlide()" style="margin-top: 60vh">
+      <!-- <button class="swipe" (click)="nextSlide()" style="margin-top: 60vh">
         Swipe para no responder ahora
-      </button>
+      </button> -->
     </div>
 
     <!-- ---------------------- 7MO SLIDE ------------------------ -->
@@ -340,9 +342,17 @@
         <p class="subtitle green" style="margin: 0 auto">0:50 segundos</p>
       </div>
 
-      <button class="swipe" (click)="nextSlide()" style="margin-top: 27.5vh">
+      <button
+        *ngIf="!itemFormBank.valid"
+        class="swipe"
+        (click)="nextSlide()"
+        style="margin-top: 27.5vh"
+      >
         Swipe para no responder ahora
       </button>
+      <!-- <button *ngIf="itemFormBank.valid" class="cta" (click)="saveBankData()">
+        Guardar datos
+      </button> -->
     </div>
 
     <!-- ---------------------- 9NO SLIDE ------------------------ -->
@@ -384,7 +394,7 @@
 
     <!-- ---------------------- 10MO SLIDE ------------------------ -->
 
-    <div class="content" *ngIf="!isCurrentCountrySelected">
+    <div class="content" *ngIf="isCountrySelected && !isCurrentCountrySelected">
       <p class="title">¿En que ciudad?</p>
 
       <div class="input-wrapper" style="margin-bottom: 18.5px">
@@ -412,25 +422,28 @@
 
     <!-- ---------------------- 11VO SLIDE ------------------------ -->
 
-    <div class="content">
-      <p class="title" style="margin-bottom: 40px">
-        ¿Que Industria predominará lo que exhibirás en tu KiosKo?
-      </p>
+    <div>
+      <div class="content">
+        <p class="title" style="margin-bottom: 40px">
+          ¿Que Industria predominará lo que exhibirás en tu KiosKo?
+        </p>
 
-      <div *ngFor="let item of industrias; index as i">
-        <button
-          class="btn"
-          (click)="industrySelected(i)"
-          [ngClass]="item.selected ? 'selected' : ''"
-        >
-          {{ item.industria }}
-        </button>
+        <div *ngFor="let item of industrias; index as i">
+          <button
+            class="btn"
+            (click)="industrySelected(i)"
+            [ngClass]="item.selected ? 'selected' : ''"
+          >
+            {{ item.industria }}
+          </button>
+        </div>
       </div>
 
       <button
-        class="btn save"
+        class="cta"
         *ngIf="selectedIndustries.length"
         (click)="createUser()"
+        style="position: relative; margin-top: 70.5%"
       >
         Crear Kiosko
       </button>

@@ -19,6 +19,13 @@ import { NotificationDialogComponent } from '../../../../shared/dialogs/notifica
 import { Router } from '@angular/router';
 import { IpusersService } from 'src/app/core/services/ipusers.service';
 import { ContactService } from 'src/app/core/services/contact.service';
+import { WalletService } from 'src/app/core/services/wallet.service';
+import { CommunitiesService } from 'src/app/core/services/communities.service';
+
+interface industry {
+  industria: string;
+  selected: boolean;
+}
 
 SwiperCore.use([Virtual]);
 
@@ -44,6 +51,8 @@ export class RegistroKioskoComponent implements OnInit {
 
   signUpInput;
   columns: number = 12;
+  minLength: number = 10;
+  maxLength: number = 15;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -55,7 +64,9 @@ export class RegistroKioskoComponent implements OnInit {
     private dialog: DialogService,
     private router: Router,
     private ipuser: IpusersService,
-    private contactService: ContactService
+    private contactService: ContactService,
+    private wallet: WalletService,
+    private communities: CommunitiesService
   ) {}
 
   CountryISO = CountryISO.DominicanRepublic;
@@ -155,17 +166,19 @@ export class RegistroKioskoComponent implements OnInit {
     },
   ];
 
-  industrias = [
-    { industria: 'Artículos del hogar', selected: false },
-    { industria: 'Artículos personales', selected: false },
-    { industria: 'Artículos de regalos', selected: false },
-    { industria: 'Artículos del Amazon', selected: false },
-    { industria: 'Servicios personales', selected: false },
-    { industria: 'Servicios del hogar', selected: false },
-    { industria: 'Comidas', selected: false },
-    { industria: 'Spas', selected: false },
-    { industria: 'Flores', selected: false },
-  ];
+  // industrias = [
+  //   { industria: 'Artículos del hogar', selected: false },
+  //   { industria: 'Artículos personales', selected: false },
+  //   { industria: 'Artículos de regalos', selected: false },
+  //   { industria: 'Artículos del Amazon', selected: false },
+  //   { industria: 'Servicios personales', selected: false },
+  //   { industria: 'Servicios del hogar', selected: false },
+  //   { industria: 'Comidas', selected: false },
+  //   { industria: 'Spas', selected: false },
+  //   { industria: 'Flores', selected: false },
+  // ];
+
+  industrias: industry[] = [];
 
   itemFormMail = this._formBuilder.group({
     mail: [
@@ -184,8 +197,11 @@ export class RegistroKioskoComponent implements OnInit {
   });
 
   itemFormBank = this._formBuilder.group({
-    name: [null, [Validators.required, Validators.minLength(10)]],
-    account: [null, [Validators.required, Validators.minLength(16)]],
+    name: [null, [Validators.required, Validators.minLength(4)]],
+    account: [
+      null,
+      [Validators.required, Validators.minLength(16), Validators.maxLength(20)],
+    ],
   });
 
   itemFormCountry = this._formBuilder.group({
@@ -223,7 +239,25 @@ export class RegistroKioskoComponent implements OnInit {
   currentCity: string = '';
   currentCountry: string = '';
 
+  allIndustries;
+
   async ngOnInit() {
+    this.allIndustries = await this.communities.communitycategories({});
+    console.log(this.allIndustries);
+
+    console.log(this.allIndustries.communitycategories.length);
+
+    for (let i = 0; i < this.allIndustries.communitycategories.length; i++) {
+      let industry = {
+        industria: this.allIndustries.communitycategories[i]?.name,
+        selected: false,
+      };
+      console.log(industry);
+      this.industrias.push(industry);
+      console.log(this.industrias);
+    }
+    console.log(this.industrias);
+
     await this.getIp();
     this.currentMediaSlide = 0;
 
@@ -409,7 +443,6 @@ export class RegistroKioskoComponent implements OnInit {
   async industrySelected(selected: number) {
     this.industrias[selected].selected = !this.industrias[selected].selected;
     console.log(this.industrias[selected].selected);
-
     if (this.selectedIndustries.includes(this.industrias[selected].industria)) {
       const index = this.selectedIndustries.indexOf(
         this.industrias[selected].industria
@@ -425,6 +458,7 @@ export class RegistroKioskoComponent implements OnInit {
   async selectedCountry(index: number) {
     this.swiperConfig.allowSlideNext = true;
     this.isCountrySelected = true;
+    this.isCurrentCountrySelected = false;
     await this.updateCurrentSlideData();
     if (this.searchCountry === '') {
       this.selectedCountryCode = this.countries[index].code;
@@ -445,7 +479,7 @@ export class RegistroKioskoComponent implements OnInit {
 
   async selectCurrentCountry() {
     this.swiperConfig.allowSlideNext = true;
-    this.isCountrySelected = true;
+    this.isCountrySelected = false;
     this.isCurrentCountrySelected = true;
     this.columns = this.columns - 1;
     await this.nextSlide();
@@ -488,6 +522,8 @@ export class RegistroKioskoComponent implements OnInit {
       }
     }
   }
+
+  saveBankData() {}
 
   async createUser() {
     console.log('Aqui creo el User');
@@ -674,7 +710,7 @@ export class RegistroKioskoComponent implements OnInit {
       };
     }
 
-    if (!this.checkMail && !this.checkPhone) {
+    if (!this.checkMail && !this.checkPhone && this.itemFormBank.valid) {
       this.user = await this.authService.signup(
         this.signUpInput,
         'none',
@@ -683,12 +719,17 @@ export class RegistroKioskoComponent implements OnInit {
       );
       console.log(this.user);
 
+      const bankData = {
+        name: this.bankName,
+        account: this.account,
+      };
+
       this.authService.generateMagicLink(
         this.phoneNumber.replace('+', ''),
         `/ecommerce/kiosko-view/${this.user.user._id}`,
         '',
         'UserAccess',
-        {}
+        { data: bankData }
       );
 
       this.snackBar.open(
@@ -699,7 +740,31 @@ export class RegistroKioskoComponent implements OnInit {
         }
       );
 
+      // if (this.itemFormBank.valid) {
+      //   const bankData = await this.wallet.createExchangeData({
+      //     bank: [
+      //       {
+      //         bankName: this.bankName,
+      //         account: this.account,
+      //         typeAccount: 'tipo de cuenta',
+      //         ownerAccount: '',
+      //         isActive: true,
+      //         routingNumber: 88888,
+      //       },
+      //     ],
+      //   });
+      //   console.log(bankData);
+      // } else {
+      //   this.snackBar.open('Los datos del banco son incorrectos', '', {
+      //     duration: 5000,
+      //   });
+      // }
+
       // this.router.navigate([`ecommerce/kiosko-view/${this.user.user._id}`]);
+    } else if (!this.itemFormBank.valid) {
+      this.snackBar.open('Los datos del banco son incorrectos', '', {
+        duration: 5000,
+      });
     }
   }
 }

@@ -56,32 +56,35 @@
     </div>
   </mat-expansion-panel-header>
   <button class="green">
-    Mira los KiosKos donde ganas “Estrellas” al comprar
+    Mira los KiosKos donde ganas “Estrellas” al comprar (ESTO ES DUMMY)
   </button>
   <button class="green">
-    Mira como canjear los WeCoins del Mercado por dinero
+    Mira como canjear los WeCoins del Mercado por dinero (ESTO ES DUMMY)
   </button>
   <button class="green">
     Mira las herramientas disponibles de WeDoWeLike para recompensar con
-    Estrellas a compradores y mas
+    Estrellas a compradores y mas (ESTO ES DUMMY)
   </button>
   <button class="green">
     Mira las facturas generadas y las herramientas para incrementar tus ingresos
+    (ESTO ES DUMMY)
   </button>
-  <button class="green">Mira las opciones de Ads</button>
+  <button class="green">Mira las opciones de Ads (ESTO ES DUMMY)</button>
 
   <div class="bar"></div>
 
-  <button class="green">Editar KioskoID</button>
+  <button class="green" *ngIf="user">Editar KioskoID (ESTO ES DUMMY)</button>
   <br />
 
-  <button class="green">Ocultar KioskoID</button>
+  <button class="green">Ocultar KioskoID (ESTO ES DUMMY)</button>
   <br />
 
-  <button class="green">Eliminar KioskoID (se eliminará toda la data)</button>
+  <button class="green" *ngIf="user">
+    Eliminar KioskoID (se eliminará toda la data) (ESTO ES DUMMY)
+  </button>
   <br />
 
-  <button class="green">Sign Out</button>
+  <button *ngIf="user" class="green">Sign Out (ESTO ES DUMMY)</button>
 </mat-expansion-panel>
 
 <div class="content">
