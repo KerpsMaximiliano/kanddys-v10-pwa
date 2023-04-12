@@ -10,6 +10,7 @@ import {
   itemUpdateWebForm,
   orderAddAnswer,
   questionAddAnswerDefault,
+  questionPaginate,
   webform,
   webformAddQuestion,
   webformByMerchant,
@@ -225,6 +226,22 @@ export class WebformsService {
       if (!response || response?.errors) return undefined;
 
       return response.webforms?.results;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async questionPaginate(paginate: PaginationInput): Promise<Array<Question>> {
+    try {
+      const response  = await this.graphql.query({
+        query: questionPaginate,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!response || response?.errors) return undefined;
+
+      return response?.questionPaginate;
     } catch (error) {
       console.log(error);
     }

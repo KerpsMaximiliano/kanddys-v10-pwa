@@ -209,3 +209,28 @@ export const itemUpdateWebForm = gql`
     }
   }
 `;
+
+export const questionPaginate = gql`
+  query questionPaginate($paginate: PaginationInput) {
+    questionPaginate(paginate: $paginate) {
+      _id
+      type
+      index
+      subIndex
+      value
+      answerLimit
+      answerDefault {
+        active
+        isMedia
+        value
+        defaultValue
+        label
+      }
+      answerTextType
+      show
+      required
+      active
+      answerMedia
+    }
+  }
+`;

@@ -39,6 +39,7 @@ import {
   WebformAnswer,
 } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
+import { answerByOrder } from 'src/app/core/graphql/webforms.gql';
 
 interface Image {
   src: string;
@@ -113,6 +114,7 @@ export class OrderDetailComponent implements OnInit {
   playVideoOnFullscreen = playVideoOnFullscreen;
   notify: boolean = false;
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
+  questionsForAnswers: Record<string, Question> = {};
 
   deliveryStatusOptions: DropdownOptionItem[] = [
     {
@@ -734,6 +736,8 @@ export class OrderDetailComponent implements OnInit {
     const answers: Array<WebformAnswer> =
       await this.webformsService.answerByOrder(this.order._id);
 
+    console.log("AnswersByOrder", answers);
+
     if (answers.length) {
       const webformsIds = [];
       for (const item of this.order.items) {
@@ -770,16 +774,28 @@ export class OrderDetailComponent implements OnInit {
             if (webformObject) {
               this.webformsByItem[item._id] = webformObject;
 
-              answersForWebform.response.filter((answerInList) => {
-                const question = webformObject.questions.find(
+              const questionsToQuery = [];
+
+              answersForWebform.response.forEach((answerInList) => {
+                if (answerInList.question) questionsToQuery.push(answerInList.question);
+              });
+
+              const questions = await this.webformsService.questionPaginate({
+                findBy: {
+                  _id: {
+                    __in: questionsToQuery,
+                  },
+                }
+              });
+
+              answersForWebform.response.forEach((answerInList) => {
+                const question = questions.find(
                   (questionInList) =>
                     questionInList._id === answerInList.question
                 );
 
                 if (answerInList.question && question) {
                   answerInList.question = question.value;
-
-                  console.log('answerInlist', answerInList);
 
                   if (
                     answerInList.value &&
