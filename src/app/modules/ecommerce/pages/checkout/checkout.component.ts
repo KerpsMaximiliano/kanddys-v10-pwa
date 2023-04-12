@@ -1413,7 +1413,7 @@ export class CheckoutComponent implements OnInit {
 
           if (
             question.required &&
-            this.dialogFlowService.dialogsFlows[flowId][dialogId].fields.valid
+            this.dialogFlowService.dialogsFlows[flowId]?.[dialogId]?.fields.valid
           ) {
             requiredQuestionsAnsweredCounter++;
           }
@@ -1507,12 +1507,22 @@ export class CheckoutComponent implements OnInit {
         (option) => option.isMedia
       );
 
+
+
       if (!doesOptionsHaveMedia) {
         if (selected) {
+
+          /* PORSIACASO
           this.answersByQuestion[question._id].response =
             question.type === 'multiple'
               ? selected.value
               : selected.userProvidedAnswer;
+              */
+
+          this.answersByQuestion[question._id].response =
+            question.type === 'multiple'
+              ? selected.value
+              : question.type === 'multiple-text' && selected.userProvidedAnswer === undefined ? selected.value : selected.userProvidedAnswer;
 
           this.answersByQuestion[question._id].valid = Boolean(
             question.type === 'multiple'

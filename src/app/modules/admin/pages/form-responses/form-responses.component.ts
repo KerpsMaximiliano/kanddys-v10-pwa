@@ -49,7 +49,7 @@ export class FormResponsesComponent implements OnInit {
           (questionInList) => questionInList._id === question
         );
 
-        console.log('selectedQuestion', selectedQuestion);
+        //console.log('selectedQuestion', selectedQuestion);
 
         if (
           selectedOption !== null &&
@@ -190,7 +190,7 @@ export class FormResponsesComponent implements OnInit {
             },
           });
 
-          console.log(answers);
+          //console.log(answers);
 
           const answersById = {};
 

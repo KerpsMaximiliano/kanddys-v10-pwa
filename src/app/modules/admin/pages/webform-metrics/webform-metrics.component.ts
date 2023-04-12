@@ -77,7 +77,7 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
               _id
             );
 
-            console.log("AnswerFrequent", answerFrequent)
+            //console.log("AnswerFrequent", answerFrequent)
 
             webform.questions.forEach((question) => {
               this.webformQuestions[question._id] = question;
@@ -170,7 +170,7 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
                       _answerFrequent?.response.length > 1
                         ? _answerFrequent.response.reduce(
                             (total, currentAnswer) => {
-                              console.log('currentAnswer: ', currentAnswer);
+                             //console.log('currentAnswer: ', currentAnswer);
 
                               return total + currentAnswer.count;
                             },

@@ -334,7 +334,7 @@ export class ArticleEditorComponent implements OnInit {
           );
         });
         Promise.all(imagesPromises).then((result) => {
-          console.log(result);
+          //console.log(result);
           // this.loadingSlides = false;
           this._ItemsService.itemImages = result;
           // this.slides = this._ItemsService.itemImages.map((image) => {
@@ -421,7 +421,7 @@ export class ArticleEditorComponent implements OnInit {
       this.updated = true;
     }
 
-    console.log(this.params);
+    //console.log(this.params);
     const contentChanged =
       this.params &&
       this.params.controls.values.length &&
@@ -430,7 +430,7 @@ export class ArticleEditorComponent implements OnInit {
     if (contentChanged)
       this.content = this.params.value.values.map((value) => value.name);
 
-    console.log(this.content);
+    //console.log(this.content);
 
     const itemInput = {
       name: this.name.value || null,
@@ -445,7 +445,7 @@ export class ArticleEditorComponent implements OnInit {
       if (!ignore) lockUI();
       if (this.name.invalid) delete itemInput.name;
       if (this.description.invalid) delete itemInput.description;
-      console.log(itemInput);
+      //console.log(itemInput);
       await this._ItemsService.updateItem(itemInput, this.item._id);
     }
 
@@ -743,8 +743,8 @@ export class ArticleEditorComponent implements OnInit {
     this.params = (<FormArray>this.itemParamsForm.get('params')).at(0);
     const valuesLength = this.getArrayLength(this.params, 'values');
     if (index === valuesLength - 1) {
-      console.log(this.params);
-      console.log(this.params.value.values);
+      //console.log(this.params);
+      //console.log(this.params.value.values);
       this.generateFields();
     }
   }
@@ -755,7 +755,7 @@ export class ArticleEditorComponent implements OnInit {
         let name = await this.params.value.values[i].name;
         if (name !== null && name !== '') {
           this.content.push(name);
-          console.log(this.content);
+          //console.log(this.content);
         }
       }
     }
@@ -769,7 +769,7 @@ export class ArticleEditorComponent implements OnInit {
     };
 
     const updatedItem = await this.itemService.updateItem(itemInput, itemId);
-    console.log(updatedItem);
+    //console.log(updatedItem);
 
     this.goBack();
   }
