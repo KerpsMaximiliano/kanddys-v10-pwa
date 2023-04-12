@@ -457,7 +457,10 @@ export class PaymentsComponent implements OnInit {
             },
           });
           dialogRef.afterClosed().subscribe(async (value) => {
-            if (!value) return;
+            if (!value) {
+              this.disableButton = false;
+              return;
+            }
             const userId = value.user?._id || value.session.user._id;
             if (userId) {
               this.order = (

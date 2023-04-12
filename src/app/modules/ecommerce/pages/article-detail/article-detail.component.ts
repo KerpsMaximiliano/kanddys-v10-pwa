@@ -488,7 +488,7 @@ export class ArticleDetailComponent implements OnInit {
 
     // Validation to avoid getting deleted or unavailable items in the count of the cart
     const itemsInCart = this.headerService.saleflow.items.filter((item) =>
-      productData.some((product) => product === item.item._id)
+      productData?.some((product) => product === item.item._id)
     );
 
     this.itemsAmount = itemsInCart.length > 0 ? itemsInCart.length + '' : null;

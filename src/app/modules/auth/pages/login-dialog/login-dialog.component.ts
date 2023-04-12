@@ -157,6 +157,7 @@ export class LoginDialogComponent implements OnInit {
       }
       console.log('el usuario no existe, ir a ingresar password');
       // SignUp con todos los datos
+      this.myStepper.next();
       this.passwordStep.get('password').patchValue(emailOrPhone.slice(-4));
       unlockUI();
       return;
