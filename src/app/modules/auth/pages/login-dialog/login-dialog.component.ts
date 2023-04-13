@@ -72,7 +72,7 @@ export class LoginDialogComponent implements OnInit {
     this.email = this._formBuilder.control('', [
       Validators.required,
       Validators.email,
-      Validators.pattern(/[\S]/),
+      Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
     ]);
     this.passwordStep = this._formBuilder.group({
       password: [

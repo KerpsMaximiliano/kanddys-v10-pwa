@@ -3,7 +3,7 @@
     [label]="
       inputType === 'phone' ? 'Número de teléfono' : 'Correo electrónico'
     "
-    state="phone"
+    [state]="inputType === 'phone' ? 'phone' : 'email'"
     [completed]="phoneNumber.valid || email.valid"
     [editable]="!newUser"
   >
