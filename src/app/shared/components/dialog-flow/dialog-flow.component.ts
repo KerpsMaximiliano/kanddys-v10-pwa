@@ -37,7 +37,7 @@ export class DialogFlowComponent implements OnInit {
     watchSlidesProgress: true,
     watchSlidesVisibility: true,
     preventInteractionOnTransition: true,
-    allowTouchMove: false
+    allowTouchMove: false,
   };
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
   endedTransition: boolean = true;
@@ -164,7 +164,7 @@ export class DialogFlowComponent implements OnInit {
   }
 
   moveToDialogByIndex(dialogNumber: number) {
-    console.log(dialogNumber);
+    //console.log(dialogNumber);
     setTimeout(() => {
       this.dialogSwiper.directiveRef.setIndex(dialogNumber);
     }, 100);
@@ -174,7 +174,8 @@ export class DialogFlowComponent implements OnInit {
     const triggerElement = eventData.target as HTMLElement;
 
     if (
-      triggerElement.classList.contains('swiper') || triggerElement.classList.contains('swiper-wrapper')
+      triggerElement.classList.contains('swiper') ||
+      triggerElement.classList.contains('swiper-wrapper')
     ) {
       if (this.status === 'OPEN') {
         this.status = 'CLOSE';
@@ -187,7 +188,7 @@ export class DialogFlowComponent implements OnInit {
 
   onDragging(eventData: [Swiper, PointerEvent]) {
     //const currentDialog = this.service.dialogsFlows[this.dialogFlowId][this.dialogs[this.currentDialogIndex].componentId];
-    
+
     if (
       this.dialogs[this.currentDialogIndex].inputs &&
       this.dialogs[this.currentDialogIndex].inputs.onDragging

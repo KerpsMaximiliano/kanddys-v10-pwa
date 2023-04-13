@@ -124,6 +124,7 @@ export class WebformsCreatorComponent implements OnInit {
             };
           } else {
             this.swiperConfig.allowSlideNext = false;
+            this.questionDialog.postLabel = null;
           }
 
           if (this.isMultipleOptionsConfirmationVisible()) {
@@ -504,12 +505,21 @@ export class WebformsCreatorComponent implements OnInit {
             title:
               'Hola ' +
               (this.user.name || '') +
-              ', los formularios son para que el comprador te reesponda cosas que necesitas saber al vender ' +
-              (this.item.name ? this.item.name : 'este producto'),
+              ', los formularios son para que el comprador te responda cosas que necesitas saber en cada venta que incluya este producto',
             onActiveSlideCallback: (params) => {
               this.dialogFlowService.dialogsFlows[this.flowId][
                 'welcome'
               ].swiperConfig.allowSlideNext = true;
+
+              //HUMMM, No estoy seguro de que daña esto, pero lo que pasa es que las variables deberian tener la referencia en memoria
+              //del swiperConfig, y el swiperConfig del dialogService se desincroniza con el swiperConfig local de este componente,
+              //Provocando una excepcion que hace que no puedas pasar del 1er dialog, al regresar de la pantalla de edicion del form
+              if(!this.dialogFlowService.swiperConfig.allowSlideNext) {
+                //console.log("Ocurrio la excepcion")
+                this.swiperConfig.allowSlideNext = true;
+
+                this.dialogFlowService.swiperConfig = this.swiperConfig;
+              }
             },
           },
           outputs: [],

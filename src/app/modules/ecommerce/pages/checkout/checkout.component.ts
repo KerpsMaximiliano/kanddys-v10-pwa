@@ -1297,6 +1297,9 @@ export class CheckoutComponent implements OnInit {
                   dialogId: question._id,
                   flowId: 'webform-item-' + item._id,
                 },
+                startWithDialogFlow:
+                  this.answersByQuestion[question._id]?.response ||
+                  this.answersByQuestion[question._id]?.responseLabel || this.answersByQuestion[question._id]?.multipleResponses?.length > 0 ,
                 multiple: question.answerLimit === 0,
                 completeAnswers: activeOptions,
                 required: question.required,
@@ -1413,7 +1416,8 @@ export class CheckoutComponent implements OnInit {
 
           if (
             question.required &&
-            this.dialogFlowService.dialogsFlows[flowId]?.[dialogId]?.fields.valid
+            this.dialogFlowService.dialogsFlows[flowId]?.[dialogId]?.fields
+              .valid
           ) {
             requiredQuestionsAnsweredCounter++;
           }
@@ -1507,11 +1511,8 @@ export class CheckoutComponent implements OnInit {
         (option) => option.isMedia
       );
 
-
-
       if (!doesOptionsHaveMedia) {
         if (selected) {
-
           /* PORSIACASO
           this.answersByQuestion[question._id].response =
             question.type === 'multiple'
@@ -1522,7 +1523,10 @@ export class CheckoutComponent implements OnInit {
           this.answersByQuestion[question._id].response =
             question.type === 'multiple'
               ? selected.value
-              : question.type === 'multiple-text' && selected.userProvidedAnswer === undefined ? selected.value : selected.userProvidedAnswer;
+              : question.type === 'multiple-text' &&
+                selected.userProvidedAnswer === undefined
+              ? selected.value
+              : selected.userProvidedAnswer;
 
           this.answersByQuestion[question._id].valid = Boolean(
             question.type === 'multiple'
