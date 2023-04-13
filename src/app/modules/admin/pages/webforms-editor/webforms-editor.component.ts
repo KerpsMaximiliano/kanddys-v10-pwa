@@ -48,7 +48,6 @@ export class WebformsEditorComponent implements OnInit {
     private snackbar: MatSnackBar,
     private router: Router,
     public dialog: MatDialog,
-    private componentFactoryResolver: ComponentFactoryResolver,
     private location: Location
   ) {}
 
@@ -74,7 +73,7 @@ export class WebformsEditorComponent implements OnInit {
 
           if (
             resumingCreation &&
-            Boolean(this.webformsService.webformCreatorLastDialogs.length)
+            Boolean(this.webformsService.webformCreatorLastDialogs?.length)
           ) {
             this.openedDialogFlow = true;
             this.resumingWebformCreation = true;

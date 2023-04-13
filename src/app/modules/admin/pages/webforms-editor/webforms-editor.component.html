@@ -50,7 +50,7 @@
   <ng-container *ngFor="let question of webform.questions; let i = index">
     <app-webforms-creator
       *ngIf="headerService.user && itemData && question"
-      [opened]="this.webformQuestions[question._id].opened"
+      [opened]="webformQuestions[question._id]?.opened"
       [item]="itemData"
       [question]="question"
       [webform]="webform"

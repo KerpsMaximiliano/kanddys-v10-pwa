@@ -312,7 +312,7 @@ export class CheckoutComponent implements OnInit {
     // Validation for stores with only one address of pickup and no delivery for customers
     if (!this.deliveryLocation) {
       if (
-        this.headerService.saleflow.module.delivery.pickUpLocations.length ==
+        this.headerService.saleflow.module.delivery?.pickUpLocations.length ==
           1 &&
         !this.headerService.saleflow.module.delivery.deliveryLocation
       ) {
@@ -391,6 +391,32 @@ export class CheckoutComponent implements OnInit {
         merchant: this.headerService.saleflow.merchant._id,
         type: 'ORDER',
       };
+
+      if (this.reservation) {
+        const fromDate = new Date(this.reservation.date.from);
+        if (fromDate < new Date()) {
+          this.headerService.emptyReservation();
+          this.editOrder('reservation');
+        }
+        const untilDate = new Date(this.reservation.date.until);
+        this.date = {
+          day: fromDate.getDate(),
+          weekday: fromDate.toLocaleString('es-MX', {
+            weekday: 'short',
+          }),
+          month: fromDate.toLocaleString('es-MX', {
+            month: 'short',
+          }),
+          year: fromDate.toLocaleString('es-MX', {
+            year: 'numeric',
+          }),
+          time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
+            untilDate,
+            this.reservation.breakTime
+          )}`,
+        };
+        this.headerService.orderProgress.reservation = true;
+      }
     }
   }
 
@@ -502,6 +528,8 @@ export class CheckoutComponent implements OnInit {
         this.headerService.removeItem(deletedID);
         this.updatePayment();
         if (!this.items.length) this.editOrder('item');
+
+        this.dialogFlowService.resetDialogFlow('webform-item-' + deletedID);
 
         this.areItemsQuestionsAnswered();
       }
