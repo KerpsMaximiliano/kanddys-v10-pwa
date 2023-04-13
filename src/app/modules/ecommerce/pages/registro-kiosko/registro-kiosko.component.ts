@@ -729,7 +729,7 @@ export class RegistroKioskoComponent implements OnInit {
         `/ecommerce/kiosko-view/${this.user.user._id}`,
         '',
         'UserAccess',
-        { data: bankData }
+        { data: JSON.stringify(bankData) }
       );
 
       this.snackBar.open(

@@ -8,6 +8,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { WalletService } from 'src/app/core/services/wallet.service';
 
 @Component({
   selector: 'app-kiosko-view',
@@ -23,7 +24,8 @@ export class KioskoViewComponent implements OnInit {
     private snackBar: MatSnackBar,
     private clipboard: Clipboard,
     private merchantsService: MerchantsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private wallet: WalletService
   ) {}
 
   panelOpenState: boolean = false;
@@ -86,6 +88,21 @@ export class KioskoViewComponent implements OnInit {
     if (data) {
       const bankData = JSON.parse(decodeURIComponent(data));
       console.log(bankData);
+
+      const exchangeData = await this.wallet.createExchangeData({
+        bank: [
+          {
+            bankName: bankData.name,
+            account: bankData.account,
+            typeAccount: 'tipo de cuenta',
+            ownerAccount: '',
+            isActive: true,
+            routingNumber: 88888,
+          },
+        ],
+      });
+
+      console.log(exchangeData);
     } else {
       console.log('No hay data');
     }
