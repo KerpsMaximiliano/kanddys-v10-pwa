@@ -1,0 +1,130 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+
+  .header {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 23px;
+
+    .title {
+      text-transform: capitalize;
+      color: #fff;
+      font-family: SfProBold;
+      font-size: 21px;
+      overflow: hidden;
+      display: -webkit-box;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .far {
+      color: #ffffff;
+      font-size: 1.752rem;
+    }
+
+    img {
+      width: 35px;
+      margin-left: 15%;
+      cursor: pointer;
+    }
+
+    .right-area {
+      display: flex;
+      align-items: flex-end;
+
+      .header-text {
+        font-family: "RobotoRegular";
+        font-size: 0.875rem;
+        color: #ffffff;
+        margin-right: 6px;
+      }
+
+      img {
+        width: 14px;
+        margin: 0;
+        filter: brightness(2);
+      }
+    }
+  }
+
+  .page-content {
+    padding: 1rem;
+  }
+}
+
+.list-of-webform-questions {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+.webform-question-container {
+  cursor: pointer;
+  margin: 0px;
+  margin-bottom: 3.6px;
+  padding: 15px 18px;
+  background: #fff;
+  border-radius: 8px;
+  font-family: "SfProRegular";
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  p {
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .icons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .iconBtn {
+    background-color: white;
+    border-radius: 21px;
+    padding: 6px 8px;
+    font-size: 17px;
+    color: #fc2727;
+    transition: 0.2s all;
+    border: none;
+    margin-left: 7px;
+
+    img {
+      width: 15px;
+      height: 15px;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &:active {
+      background-color: rgb(235, 235, 235);
+      transition: 0.2s all;
+      cursor: pointer;
+    }
+  }
+
+  &.required {
+    box-shadow: 0px 1px 4px -2px #7b7b7b;
+  }
+
+  .question-text-response {
+    margin-top: 5px;
+    list-style: none;
+    color: #7b7b7b;
+    word-break: break-word;
+  }
+}

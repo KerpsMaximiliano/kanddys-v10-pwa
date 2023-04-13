@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { SwiperOptions, Swiper } from 'swiper';
 
 export interface EmbeddedDialog {
@@ -11,6 +11,11 @@ export interface FlowSnapshot {
   lastDialogId: string;
 }
 
+export interface WebformMultipleOptionIDs {
+  flowId: string;
+  dialogId: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,6 +24,10 @@ export class DialogFlowService {
   activeDialogId: string = null;
   previouslyActiveDialogId: string = null;
   swiperConfig: SwiperOptions = null;
+  public updateMultipleSelectionDialog: EventEmitter<WebformMultipleOptionIDs> =
+    new EventEmitter();
+  selectedQuestion: { flowId: string; dialogId: string; multiple: boolean; required: boolean } =
+    null;
 
   constructor() {}
 

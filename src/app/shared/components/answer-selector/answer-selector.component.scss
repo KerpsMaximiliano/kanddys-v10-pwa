@@ -11,7 +11,7 @@ ul {
 }
 
 .container-text-option {
-  margin-bottom: 1rem;
+  margin-bottom: 0px;
 }
 
 .selector-flex-wrapper {
@@ -134,4 +134,13 @@ ul {
   .logo {
     flex: 1;
   }
+}
+
+.selectedBold {
+  font-family: RobotoBold !important;
+  color: #272727;
+}
+
+.unselected {
+  font-family: SfProRegular !important;
 }

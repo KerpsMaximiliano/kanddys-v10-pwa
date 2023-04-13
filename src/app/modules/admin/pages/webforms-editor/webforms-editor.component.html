@@ -1,0 +1,67 @@
+<div class="container">
+  <header class="header" [ngStyle]="{ backgroundColor: '#000000' }">
+    <div style="display: flex; gap: 8px">
+      <a> <i class="far fa-angle-double-up" (click)="goBackOrSave()"></i></a>
+      <p class="title">Editando el formulario</p>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <ul class="list-of-webform-questions">
+      <ng-container *ngIf="webform && webform.questions">
+        <ng-container *ngFor="let question of webform.questions; let i = index">
+          <!--RESPUESTA UNICA-->
+          <!-- RESPONSE HAS NO IMAGES-->
+          <li
+            class="webform-question-container"
+            [ngClass]="{
+              required: question.required
+            }"
+            (click)="(null)"
+          >
+            <p>
+              {{ question.value }}
+            </p>
+
+            <div class="icons">
+              <button class="iconBtn" (click)="editQuestion(question._id)">
+                <img
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fedit.svg"
+                  alt="edit"
+                  class="icon"
+                />
+              </button>
+
+              <button
+                class="iconBtn"
+                (click)="openDeleteConfirmationDialog(question._id)"
+              >
+                <i class="far fa-trash-alt"></i>
+              </button>
+            </div>
+          </li>
+        </ng-container>
+      </ng-container>
+    </ul>
+  </main>
+</div>
+
+<ng-container *ngIf="webform && webform.questions">
+  <ng-container *ngFor="let question of webform.questions; let i = index">
+    <app-webforms-creator
+      *ngIf="headerService.user && itemData && question"
+      [opened]="webformQuestions[question._id]?.opened"
+      [item]="itemData"
+      [question]="question"
+      [webform]="webform"
+      [questionEditMode]="true"
+      [resumingCreation]="
+        resumingWebformCreation && question._id === lastOpenedQuestionId && webformsService.webformQuestions.length > 0
+      "
+      [flowId]="'webform-creator-' + question._id"
+      [user]="headerService.user"
+      (closeEvent)="reloadWebform($event, i)"
+      #webformCreator
+    ></app-webforms-creator>
+  </ng-container>
+</ng-container>

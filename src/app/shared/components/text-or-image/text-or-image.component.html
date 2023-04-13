@@ -1,0 +1,115 @@
+<div class="container">
+  <header class="header">
+    <button>
+      <img
+        class="arrows"
+        [src]="environment + '/arrow-double-up.svg'"
+        alt=""
+        (click)="goBackOrSave()"
+      />
+    </button>
+    <p class="title">Opciones que seleccionará</p>
+  </header>
+  <div class="body">
+    <section class="optionsBox">
+      <div class="option" *ngFor="let option of options; let i = index">
+        <button class="circleButton" *ngIf="options.length >= 2" (click)="deleteOption(i)">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+
+        <textarea
+          (focusout)="focusOutEvent(i)"
+          (focus)="focusInEvent(i)"
+          [(ngModel)]="option.text"
+          (ngModelChange)="textChanged(i)"
+          class="inputComment"
+          [ngClass]="{ void: option.void }"
+        >
+        </textarea>
+
+        <div class="flex-buttons">
+          <label [for]="'file-option' + i">
+            <div class="img" *ngIf="!option.fileData">
+              <img
+                class="icon"
+                [src]="environment + '/galery-black.svg'"
+                alt=""
+              />
+            </div>
+
+            <div
+              class="loaded-image"
+              [ngStyle]="{
+                backgroundImage: 'url(' + option.fileData + ')',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }"
+              *ngIf="option.fileData"
+            ></div>
+          </label>
+          <input
+            type="file"
+            [id]="'file-option' + i"
+            [style.display]="'none'"
+            (change)="loadFile($event, i)"
+            multiple
+            [accept]="[
+              '.png',
+              '.jpg',
+              '.jpeg',
+              '.webp',
+              '.webm',
+              '.mp4',
+              '.m4v',
+              '.mpg',
+              '.mpeg',
+              '.mpeg4',
+              '.mov',
+              '.3gp',
+              '.mts',
+              '.m2ts',
+              '.mxf'
+            ]"
+          />
+
+          <ng-container *ngIf="i === (options.length - 1) && isUserOnDesktop">
+            <label [for]="'directory-option' + i" style="margin-top: 9px">
+              <div class="img" *ngIf="!option.fileData">
+                <img class="icon" [src]="environment + '/folder.svg'" alt="" />
+              </div>
+            </label>
+
+            <input
+              type="file"
+              [id]="'directory-option' + i"
+              [style.display]="'none'"
+              (change)="loadFile($event, i, true)"
+              webkitdirectory
+              multiple
+              [accept]="[
+                '.png',
+                '.jpg',
+                '.jpeg',
+                '.webp',
+                '.webm',
+                '.mp4',
+                '.m4v',
+                '.mpg',
+                '.mpeg',
+                '.mpeg4',
+                '.mov',
+                '.3gp',
+                '.mts',
+                '.m2ts',
+                '.mxf'
+              ]"
+            />
+          </ng-container>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="addBox">
+    <button class="add" (click)="addOption()">Adiciona otra opción</button>
+  </div>
+</div>

@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   completeImageURL,
@@ -18,10 +18,13 @@ import {
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemInput } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
+import { Webform } from 'src/app/core/models/webform';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { CurrencyInputComponent } from 'src/app/shared/components/currency-input/currency-input.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
@@ -86,6 +89,9 @@ export class ArticleEditorComponent implements OnInit {
 
   slides: SlideInput[];
   math = Math;
+  openedDialogFlow: boolean = false;
+  resumingWebformCreation: boolean = false;
+  webform: Webform = null;
 
   itemParamsForm = new FormGroup({
     params: new FormArray([]),
@@ -176,6 +182,7 @@ export class ArticleEditorComponent implements OnInit {
       },
     },
   ];
+  endedOnInit: boolean = false;
 
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
@@ -189,18 +196,27 @@ export class ArticleEditorComponent implements OnInit {
     private _TagsService: TagsService,
     private _ToastrService: ToastrService,
     private dialog: DialogService,
-    protected _DomSanitizer: DomSanitizer,
     private _bottomSheet: MatBottomSheet,
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
     private itemService: ItemsService,
     private saleflowService: SaleFlowService,
-    private headerService: HeaderService
+    public headerService: HeaderService,
+    protected _DomSanitizer: DomSanitizer,
+    private dialogFlowService: DialogFlowService,
+    private webformsService: WebformsService
   ) {}
 
   async ngOnInit() {
+    await this.executeInitProcesses();
+  }
+
+  async executeInitProcesses() {
+    this.loadingSlides = true;
     const itemId = this._Route.snapshot.paramMap.get('articleId');
+    const resumeWebform =
+      this._Route.snapshot.queryParamMap.get('resumeWebform');
 
     this.headerService.flowRoute = this._Router.url;
     // const itemId = this.route.snapshot.paramMap.get('itemId');
@@ -275,7 +291,6 @@ export class ArticleEditorComponent implements OnInit {
     // const itemId = this._Route.snapshot.paramMap.get('articleId');
 
     // ------------------------AQUI ESTABA ANTES--------------------------
-
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
@@ -319,7 +334,7 @@ export class ArticleEditorComponent implements OnInit {
           );
         });
         Promise.all(imagesPromises).then((result) => {
-          console.log(result);
+          //console.log(result);
           // this.loadingSlides = false;
           this._ItemsService.itemImages = result;
           // this.slides = this._ItemsService.itemImages.map((image) => {
@@ -348,6 +363,25 @@ export class ArticleEditorComponent implements OnInit {
       this.price.setValue(this._ItemsService.itemPrice);
       this.price.markAsDirty();
     }
+
+    if (
+      resumeWebform &&
+      this.webformsService.webformCreatorLastDialogs.length &&
+      !this.endedOnInit
+    ) {
+      this.openedDialogFlow = true;
+      this.resumingWebformCreation = true;
+    }
+
+    if (this.item.webForms && this.item.webForms.length) {
+      const webform = await this.webformsService.webform(
+        this.item.webForms[0].reference
+      );
+
+      this.webform = webform;
+    }
+
+    if (!this.endedOnInit) this.endedOnInit = true;
   }
 
   loadImages() {
@@ -387,15 +421,16 @@ export class ArticleEditorComponent implements OnInit {
       this.updated = true;
     }
 
-    console.log(this.params);
-    const contentChanged = 
-      this.params && 
-      this.params.controls.values.length && 
+    //console.log(this.params);
+    const contentChanged =
+      this.params &&
+      this.params.controls.values.length &&
       this.params.controls.values.controls.some((value) => value.dirty);
 
-    if (contentChanged) this.content = this.params.value.values.map((value) => value.name);
+    if (contentChanged)
+      this.content = this.params.value.values.map((value) => value.name);
 
-    console.log(this.content);
+    //console.log(this.content);
 
     const itemInput = {
       name: this.name.value || null,
@@ -410,9 +445,19 @@ export class ArticleEditorComponent implements OnInit {
       if (!ignore) lockUI();
       if (this.name.invalid) delete itemInput.name;
       if (this.description.invalid) delete itemInput.description;
-      console.log(itemInput);
+      //console.log(itemInput);
       await this._ItemsService.updateItem(itemInput, this.item._id);
     }
+
+    this.dialogFlowService.resetDialogFlow('webform-creator');
+
+    if (
+      this.webformsService.webformQuestions &&
+      this.webformsService.webformQuestions.length
+    ) {
+      this.webformsService.webformQuestions = [];
+    }
+
     if (!ignore) {
       unlockUI();
       this._ItemsService.removeTemporalItem();
@@ -698,8 +743,8 @@ export class ArticleEditorComponent implements OnInit {
     this.params = (<FormArray>this.itemParamsForm.get('params')).at(0);
     const valuesLength = this.getArrayLength(this.params, 'values');
     if (index === valuesLength - 1) {
-      console.log(this.params);
-      console.log(this.params.value.values);
+      //console.log(this.params);
+      //console.log(this.params.value.values);
       this.generateFields();
     }
   }
@@ -710,7 +755,7 @@ export class ArticleEditorComponent implements OnInit {
         let name = await this.params.value.values[i].name;
         if (name !== null && name !== '') {
           this.content.push(name);
-          console.log(this.content);
+          //console.log(this.content);
         }
       }
     }
@@ -724,7 +769,7 @@ export class ArticleEditorComponent implements OnInit {
     };
 
     const updatedItem = await this.itemService.updateItem(itemInput, itemId);
-    console.log(updatedItem);
+    //console.log(updatedItem);
 
     this.goBack();
   }
@@ -757,5 +802,31 @@ export class ArticleEditorComponent implements OnInit {
 
   getArrayLength(form: FormGroup | AbstractControl, controlName: string) {
     return (form.get(controlName) as FormArray).length;
+  }
+
+  openWebformCreator() {
+    this.openedDialogFlow = !this.openedDialogFlow;
+  }
+
+  goToWebformMetrics() {
+    this._Router.navigate([
+      'admin/webform-metrics/' + this.webform._id + '/' + this.item._id,
+    ]);
+  }
+
+  async reloadWebform() {
+    let queryParams = { ...this._Route.snapshot.queryParams };
+    delete queryParams['resumeWebform'];
+
+    let navigationExtras: NavigationExtras = {
+      replaceUrl: true,
+      queryParams: queryParams,
+    };
+
+    this._Router.navigate([], navigationExtras);
+
+    this.openedDialogFlow = false;
+
+    await this.executeInitProcesses();
   }
 }

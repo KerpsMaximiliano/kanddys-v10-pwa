@@ -20,6 +20,9 @@ const orderData = `
     name
     email
   }
+  answers {
+    reference
+  }
   items {
     _id
     deliveryLocation {
@@ -84,6 +87,11 @@ const orderData = `
         index
         active
       }
+      webForms {
+        _id
+        reference
+        active
+      }
       hasSelection
       params {
         _id
@@ -114,7 +122,6 @@ const orderData = `
     }
   }
   orderStatus
-  orderStatusDelivery
   statusDelivery
   deliveryZone
   expenditures
@@ -328,6 +335,16 @@ export const order = gql`
   query order($orderId: ObjectID!) {
     order(orderId: $orderId) {
       ${orderData}
+    }
+  }
+`;
+
+export const orders = gql`
+  query orders($pagination: PaginationInput!) {
+    orders(pagination: $pagination) {
+      orders {
+        ${orderData}
+      }
     }
   }
 `;
