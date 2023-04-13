@@ -26,22 +26,47 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
-import { EmbeddedComponent } from 'src/app/core/types/multistep-form';
 import { BlankComponent } from 'src/app/shared/dialogs/blank/blank.component';
 import { SwiperOptions } from 'swiper';
-import { LinkDialogComponent } from 'src/app/shared/dialogs/link-dialog/link-dialog.component';
-import { environment } from 'src/environments/environment';
-import { Button } from 'src/app/shared/components/general-item/general-item.component';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
+import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
+import { PostInput } from 'src/app/core/models/post';
+import { EntityTemplateInput } from 'src/app/core/models/entity-template';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import { Router } from '@angular/router';
+import { PostsService } from 'src/app/core/services/posts.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { AnexoLandingComponent } from 'src/app/shared/components/anexo-landing/anexo-landing.component';
 import { DescriptionDialogComponent } from 'src/app/shared/dialogs/description-dialog/description-dialog.component';
 import { DialogFormComponent } from 'src/app/shared/dialogs/dialog-form/dialog-form.component';
-import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
-import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { DeliveryZoneInput } from 'src/app/core/models/deliveryzone';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
-import { HeaderService } from 'src/app/core/services/header.service';
 import { type } from 'os';
+import { environment } from 'src/environments/environment';
+import { WebformQuestionDialogComponent } from 'src/app/shared/components/webform-question-dialog/webform-question-dialog.component';
+import { WebformMultipleSelectionConfirmationComponent } from 'src/app/shared/components/webform-multiple-selection-confirmation/webform-multiple-selection-confirmation.component';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+
+const generalDialogContainerStyles = {
+  background: 'rgb(255, 255, 255)',
+  borderRadius: '12px',
+  opacity: '1',
+  padding: '37px 29.6px 13.2px 22px',
+};
+
+const generalDialogHeaderStyles = {
+  fontSize: '21px',
+  fontFamily: 'SfProBold',
+  color: '#4F4F4F',
+  marginBottom: '25px',
+  marginTop: '0',
+};
+
+const selectionStyles = {
+  display: 'block',
+  fontFamily: '"SfProRegular"',
+  marginLeft: '10px',
+};
 
 @Component({
   selector: 'app-test',
@@ -54,70 +79,228 @@ export class TestComponent implements OnInit {
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
   @Input() status: 'OPEN' | 'CLOSE' = 'CLOSE';
-  item: Item = null;
-  dialogs: Array<EmbeddedComponent> = [
-    {
-      component: BlankComponent,
-      inputs: {
-        containerStyles: {
-          height: '500px',
-        },
-      },
-      outputs: [
-        {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.swiperConfig.allowSlideNext = true;
-          },
-        },
-      ],
-    },
-    {
-      component: BlankComponent,
-      inputs: {
-        containerStyles: {
-          height: '200px',
-        },
-      },
-    },
-    {
-      component: BlankComponent,
-      inputs: {
-        containerStyles: {
-          height: '500px',
-        },
-      },
-    },
-    {
-      component: BlankComponent,
-      inputs: {
-        containerStyles: {
-          height: '200px',
-        },
-      },
-      outputs: [
-        {
-          name: 'threeClicksDetected',
-          callback: (timeOfDay) => {
-            this.openedDialogFlow = false;
-          },
-        },
-      ],
-    },
-  ];
-  optionsButton: Button = {
-    clickEvent: (params: Tag) => {
-      alert('clicked');
-    },
-  };
+  dialogFlowFunctions: Record<string, any> = {};
+  temporalPost: PostInput = null;
+  temporalEntityTemplate: EntityTemplateInput = null;
 
-  firstIndex: number = 0;
+  title = '¿Cuál(es) seria el motivo?';
+  title2 = '¿Que emoción(es) quieres transmitir con el mensaje?';
+  title3 = '¿El tiempo del motivo?';
+
+  words = [
+    { keyword: 'wedding', text: 'Bodas' },
+    { keyword: 'baptism', text: 'Bautizos' },
+    { keyword: 'christmas', text: 'Navidad' },
+    { keyword: 'mothersDay', text: 'Madres' },
+    { keyword: 'fathersDay', text: 'Padres' },
+    { keyword: 'newborn', text: 'New Born' },
+    { keyword: 'birthday', text: 'Cumpleaños' },
+    { keyword: 'anniversary', text: 'Aniversarios' },
+    { keyword: 'condolences', text: 'Condolencias' },
+    { keyword: 'goldenWedding', text: 'Boda de Oro' },
+    { keyword: 'valentinesDay', text: 'San Valentín' },
+    { keyword: 'silverWedding', text: 'Boda de Plata' },
+    { keyword: 'communion', text: 'Comuniones' },
+    { keyword: 'teachersDay', text: 'Día del Maestro' },
+    { keyword: 'prommotion', text: 'Promoción' },
+    { keyword: 'mothersDay', text: 'Día de la Madre' },
+    { keyword: 'workersDay', text: 'Dia del Trabajador' },
+    { keyword: 'graduation', text: 'Graduación' },
+    { keyword: 'singleMothersDay', text: 'Día de la madre Soltera' },
+    { keyword: 'stepmotherDay', text: 'Día de la Madrina' },
+    { keyword: 'showAffection', text: 'Mostrar Afecto' },
+  ];
+
+  words2 = [
+    { keyword: 'happiness', text: 'Alegría' },
+    { keyword: 'sadness', text: 'Tristeza' },
+    { keyword: 'euphoria', text: 'Euforia' },
+    { keyword: 'surprise', text: 'Sorpresa' },
+    { keyword: 'love', text: 'Amor' },
+    { keyword: 'subtle', text: 'Sutil' },
+    { keyword: 'melancholia', text: 'Melancolía' },
+    { keyword: 'concern', text: 'Preocupación' },
+    { keyword: 'gratitude', text: 'Gratitud' },
+    { keyword: 'passion', text: 'Pasión' },
+    { keyword: 'support', text: 'Apoyo' },
+    { keyword: 'hope', text: 'Esperanza' },
+    { keyword: 'satisfaction', text: 'Satisfacción' },
+    { keyword: 'acceptance', text: 'Aceptación' },
+    { keyword: 'curiosity', text: 'Curiosidad' },
+    { keyword: 'devotion', text: 'Devoción' },
+    { keyword: 'pride', text: 'Orgullo' },
+    { keyword: 'peace', text: 'Paz' },
+    { keyword: 'compassion', text: 'Compasión' },
+    { keyword: 'embarrassment', text: 'Vergüenza' },
+    { keyword: 'optimism', text: 'Optimismo' },
+    { keyword: 'resentment', text: 'Resentimiento' },
+  ];
+
+  words3 = [
+    { keyword: 'past', text: 'Ya pasó' },
+    { keyword: 'future', text: 'Pasará' },
+    { keyword: 'instant', text: 'En cuando reciba el mensaje' },
+  ];
+
+  words4 = [
+    { text: 'Mi Hijo', keyword: 'son' },
+    { text: 'Mi Amigo', keyword: 'friend' },
+    { text: 'Mi Papá', keyword: 'dad' },
+    { text: 'Mi Primo', keyword: 'cousin' },
+    { text: 'Vecino', keyword: 'neighbor' },
+    { text: 'Cuñado', keyword: 'brotherinlaw' },
+    { text: 'Mi Hermano', keyword: 'brother' },
+    { text: 'Mi Abuelo', keyword: 'grandfather' },
+    { text: 'Compañero de Trabajo', keyword: 'coworker' },
+    { text: 'Mi Jefe', keyword: 'boss' },
+    { text: 'Suegra', keyword: 'motherinlaw' },
+    { text: 'Nuero', keyword: 'soninlaw' },
+    { text: 'Mi compadre', keyword: 'buddy' },
+    { text: 'Mi Comadre', keyword: 'midwife' },
+  ];
+
+  motiveWordsObjects: Array<{ text: string; active: boolean }> = [];
+  sentimentWordsObjects: Array<{ text: string; active: boolean }> = [];
+  timingWordsObjects: Array<{ text: string; active: boolean }> = [];
+  receiverGenderWordsObjects: Array<{ text: string; active: boolean }> = [];
+  receiverRelationshipWordsObjects: Array<{ text: string; active: boolean }> =
+    [];
+
+  temporalDialogs: Array<EmbeddedComponentWithId> = [];
+
+  dialogs: Array<EmbeddedComponentWithId> = [
+    {
+      component: DescriptionDialogComponent,
+      componentId: 'welcome',
+      inputs: {},
+      outputs: []
+    },
+    {
+      component: WebformQuestionDialogComponent,
+      componentId: 'question',
+      inputs: {},
+      outputs: []
+    },
+    {
+      component: GeneralDialogComponent,
+      componentId: 'answerType',
+      inputs: {
+        dialogId: 'messageTypeDialog',
+        containerStyles: generalDialogContainerStyles,
+        header: {
+          styles: generalDialogHeaderStyles,
+          text: '¿Como responderán?',
+        },
+        fields: {
+          styles: {
+            // paddingTop: '20px',
+          },
+          list: [
+            {
+              name: 'messageType',
+              value: '',
+              validators: [Validators.required],
+              type: 'selection',
+              selection: {
+                styles: selectionStyles,
+                list: [
+                  {
+                    text: 'Escribiendo libremente',
+                  },
+                  {
+                    text: 'Seleccionando entre opciones',
+                  },
+                ],
+              },
+              prop: 'text',
+            },
+          ],
+        },
+        isMultiple: false,
+      },
+      outputs: [
+        {
+          name: 'data',
+          callback: (params) => {
+          },
+        },
+      ],
+    },
+    {
+      component: GeneralDialogComponent,
+      componentId: 'answerType',
+      inputs: {
+        dialogId: 'messageTypeDialog',
+        containerStyles: generalDialogContainerStyles,
+        header: {
+          styles: generalDialogHeaderStyles,
+          text: '¿Añadirás otra pregunta?',
+        },
+        fields: {
+          styles: {
+            // paddingTop: '20px',
+          },
+          list: [
+            {
+              name: 'messageType',
+              value: '',
+              validators: [Validators.required],
+              type: 'selection',
+              selection: {
+                styles: selectionStyles,
+                list: [
+                  {
+                    text: 'Si',
+                  },
+                  {
+                    text: 'No',
+                  },
+                ],
+              },
+              prop: 'text',
+            },
+          ],
+        },
+        isMultiple: false,
+      },
+      outputs: [
+        {
+          name: 'data',
+          callback: (params) => {
+          },
+        },
+      ],
+    },
+    {
+      component: WebformMultipleSelectionConfirmationComponent,
+      componentId: 'confirmation',
+      inputs: {},
+      outputs: []
+    }
+  ];
+
+  options: Array<OptionAnswerSelector> = [
+    {
+      value: 'Elden ring',
+      status: true
+    },
+    {
+      value: 'Dark souls',
+      status: true
+    },
+    {
+      value: 'Bloodborne',
+      status: true
+    },
+  ]
+  
+
+  joke: string = '';
 
 
   // Variables for dialogProFlow
 
   dialogsPro: Array<EmbeddedComponentWithId> = [];
-  dialogFlowFunctions: Record<string, any> = {};
 
   deliveryType: 'yes' | 'no' | 'depend' | 'no-delivery';
   depend: 'amount' | 'zone';
@@ -138,39 +321,15 @@ export class TestComponent implements OnInit {
   merchant: Merchant;
 
   constructor(
-    private dialog: DialogService,
-    private itemsService: ItemsService,
-    private merchantService: MerchantsService,
-    private saleflowService: SaleFlowService,
-    private _bottomSheet: MatBottomSheet,
     private dialogFlowService: DialogFlowService,
-    private deliveryzonesService: DeliveryZonesService,
-    private headerService: HeaderService
+    private postsService: PostsService,
+    private headerService: HeaderService,
+    private router: Router,
+    private dialog: DialogService,
+    private deliveryzonesService: DeliveryZonesService
   ) {}
 
-  async ngOnInit() {
-    console.log(this.firstIndex);
-    this.inject();
-    // this.dialogFlowFunctions.moveToDialogByIndex(
-    //   this.dialogs.length - 1
-    // );
-
-    this.merchant = await this.merchantService.merchantDefault();
-    console.log(this.merchant);
-  }
-
-  
-
-  openDialog() {
-    this.dialog.open(LinkDialogComponent, {
-      type: 'flat-action-sheet',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-    });
-  }
-  openBottomSheet(): void {
-    this._bottomSheet.open(LinksDialogComponent);
-  }
+  async ngOnInit() {}
 
   openDescriptionDialog() {
     this.dialog.open(DescriptionDialogComponent, {

@@ -11,7 +11,7 @@
     color: #000000;
     font-family: SFProMedium;
     font-size: 17px;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
   }
 
   .flex {
@@ -27,12 +27,18 @@
       height: 28.55px;
     }
 
-    a {
+    .answer-selector-option {
       text-decoration: none;
       font-style: none;
       color: #7b7b7b;
-      font-family: SFProRegular;
+      font-family: SFProMedium;
       font-size: 17px;
+
+      &.link {
+        text-decoration: none;
+        color: #2874ad;
+        cursor: pointer;
+      }
     }
   }
 }

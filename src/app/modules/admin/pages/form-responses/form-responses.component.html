@@ -1,0 +1,75 @@
+<div class="container">
+  <header class="top-bar">
+    <img
+      [src]="env + '/arrow-double-up-black.svg'"
+      (click)="back()"
+      alt="open info"
+    />
+
+    <span *ngIf="!openResponses && selectedOption"
+      >{{ orders.length }}
+      {{
+        !selectedOption.isMedia
+          ? selectedOption.value
+          : selectedOption.label
+          ? selectedOption.label
+          : " veces seleccionada"
+      }}</span
+    >
+
+    <span *ngIf="openResponses">Respuestas</span>
+  </header>
+
+  <main class="list">
+    <ng-container *ngIf="!openResponses">
+      <app-compact-card
+        *ngFor="let order of orders"
+        [title]="order.user?.name || order.user?.phone || order.user?.email"
+        [image]="order.user?.image"
+        [description]="getCreationDateDifferenceAsItsSaid(order.createdAt)"
+        [callback]="goToDetail"
+        [callbackParams]="[order]"
+      ></app-compact-card>
+
+      <ng-container *ngIf="orders.length === 0">
+        <p
+          [ngStyle]="{
+            textAlign: 'center',
+            fontFamily: 'Roboto'
+          }"
+        >
+          Ningún usuario ha seleccionado esta opción
+        </p>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="openResponses">
+      <app-compact-card
+        *ngFor="let entry of ordersAndAnswers"
+        [title]="
+          entry.order.user?.name ||
+          entry.order.user?.phone ||
+          entry.order.user?.email
+        "
+        [image]="entry.order.user?.image"
+        [subtitle]="!entry.isMedia ? entry.answer : null"
+        [description]="
+          getCreationDateDifferenceAsItsSaid(entry.order.createdAt)
+        "
+        [callback]="goToDetail"
+        [callbackParams]="[entry.order]"
+      ></app-compact-card>
+
+      <ng-container *ngIf="ordersAndAnswers.length === 0">
+        <p
+          [ngStyle]="{
+            textAlign: 'center',
+            fontFamily: 'Roboto'
+          }"
+        >
+          Todavía no hay respuestas para esta pregunta
+        </p>
+      </ng-container>
+    </ng-container>
+  </main>
+</div>
