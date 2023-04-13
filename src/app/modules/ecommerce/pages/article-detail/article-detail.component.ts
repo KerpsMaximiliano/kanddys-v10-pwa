@@ -590,6 +590,9 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   goToCheckout() {
+
+    if(this.mode === 'preview') return;
+
     this.router.navigate([
       '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
     ]);

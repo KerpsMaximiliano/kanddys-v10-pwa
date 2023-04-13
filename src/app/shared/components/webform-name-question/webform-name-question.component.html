@@ -1,0 +1,16 @@
+<div class="external-wrapper" [ngStyle]="containerStyles">
+  <form class="wrapper" [formGroup]="form">
+    <label for="question">{{ label }}</label>
+    <div class="name-lastname-flex" *ngIf="inputType === 'NAME'">
+      <div class="field">
+        <label for="name">Nombre: </label>
+        <input type="text" [formControlName]="'name'" class="name" id="name" />
+      </div>
+
+      <div class="field">
+        <label for="lastname">Apellido: </label>
+        <input type="text" [formControlName]="'lastname'" class="lastname" id="lastname" />
+      </div>
+    </div>
+  </form>
+</div>

@@ -13,7 +13,7 @@
               [style]="field.styles"
               (change)="checkboxChange($event, controller.get(field.name))"
             />
-            <label [style]="field.label.styles">
+            <label *ngIf="field.label" [style]="field.label.styles">
               {{ field.label.text }}
             </label>
           </div>
@@ -46,7 +46,7 @@
           </div>
         </div>
         <div *ngSwitchCase="'textarea'">
-          <label *ngIf="field.label.text" [style]="field.label.styles">
+          <label *ngIf="field.label" [style]="field.label.styles">
             {{ field.label.text }}
           </label>
           <textarea
@@ -57,7 +57,7 @@
           ></textarea>
         </div>
         <div *ngSwitchCase="'phone'">
-          <label [style]="field.label.styles">
+          <label *ngIf="field.label" [style]="field.label.styles">
             {{ field.label.text }}
           </label>
 
@@ -79,7 +79,7 @@
           ></ngx-intl-tel-input>
         </div>
         <div *ngSwitchCase="'email'">
-          <label [style]="field.label.styles">
+          <label *ngIf="field.label" [style]="field.label.styles">
             {{ field.label.text }}
           </label>
           <input
@@ -106,7 +106,7 @@
           </button>
         </div>
         <div *ngSwitchDefault>
-          <label [style]="field.label.styles">
+          <label *ngIf="field.label" [style]="field.label.styles">
             {{ field.label.text }}
           </label>
           <input

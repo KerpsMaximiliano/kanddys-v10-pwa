@@ -1,0 +1,38 @@
+<div class="external-wrapper" [ngStyle]="containerStyles">
+  <form class="wrapper">
+    <label for="question">{{ label }}</label>
+    <textarea
+      *ngIf="inputType === 'DEFAULT'"
+      tabindex="-1"
+      [formControl]="textarea"
+      placeholder="Escribe aqui"
+      id="question"
+    ></textarea>
+
+    <input
+      type="email"
+      class="email"
+      *ngIf="inputType === 'EMAIL'"
+      tabindex="-1"
+      [formControl]="textarea"
+      placeholder="Escribe aqui"
+    />
+
+    <ngx-intl-tel-input
+      *ngIf="inputType === 'PHONE'"
+      [enableAutoCountrySelect]="true"
+      [enablePlaceholder]="true"
+      [searchCountryFlag]="true"
+      [selectFirstCountry]="false"
+      [preferredCountries]="preferredCountries"
+      [selectedCountryISO]="preferredCountries[0]"
+      maxLength="15"
+      [phoneValidation]="true"
+      [separateDialCode]="true"
+      [customPlaceholder]="'El # de WhatsApp es..'"
+      [numberFormat]="PhoneNumberFormat.International"
+      [tabindex]="-1"
+      [formControl]="textarea"
+    ></ngx-intl-tel-input>
+  </form>
+</div>
