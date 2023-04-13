@@ -137,6 +137,9 @@ export class DialogFlowComponent implements OnInit {
       this.swiperConfig.allowSlideNext = true;
       this.swiperConfig.allowSlidePrev = true;
     }
+
+    var event = new Event('resize');
+    window.dispatchEvent(event);
   }
 
   tapEvent(tappedDialogIndex: number) {
