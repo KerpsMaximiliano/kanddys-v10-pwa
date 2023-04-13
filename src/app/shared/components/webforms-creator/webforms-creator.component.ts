@@ -121,6 +121,10 @@ export class WebformsCreatorComponent implements OnInit {
 
             this.questionDialog.postLabelStyles = {
               bottom: '19.7px',
+              minWidth: '83.7677%',
+              width: '88.7677%',
+              wordBreak: 'break-word',
+              textAlign: 'justify'
             };
           } else {
             this.swiperConfig.allowSlideNext = false;
@@ -511,10 +515,10 @@ export class WebformsCreatorComponent implements OnInit {
                 'welcome'
               ].swiperConfig.allowSlideNext = true;
 
-              //HUMMM, No estoy seguro de que daña esto, pero lo que pasa es que las variables deberian tener la referencia en memoria
+              //HUMMM, No estoy seguro de que daña esto, pero lo que pasa es que las variables deberian tener la misma referencia en memoria
               //del swiperConfig, y el swiperConfig del dialogService se desincroniza con el swiperConfig local de este componente,
               //Provocando una excepcion que hace que no puedas pasar del 1er dialog, al regresar de la pantalla de edicion del form
-              if(!this.dialogFlowService.swiperConfig.allowSlideNext) {
+              if (!this.dialogFlowService.swiperConfig.allowSlideNext) {
                 //console.log("Ocurrio la excepcion")
                 this.swiperConfig.allowSlideNext = true;
 
