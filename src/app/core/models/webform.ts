@@ -13,9 +13,9 @@ export class AnswersQuestionInput {
 
 export class AnswersQuestion extends Model<AnswersQuestion> {
   question: string;
-  value: string;
-  isMedia: boolean;
-  type: string;
+  value?: string;
+  label?: string;
+  isMedia?: boolean;
 }
 
 export class AnswerInput {
@@ -42,6 +42,7 @@ export class AnswerDefaultInput {
   media?: File;
   isMedia?: boolean;
   value?: string;
+  label?: string;
   defaultValue?: string;
 }
 
@@ -50,14 +51,17 @@ export class AnswerDefault extends Model<AnswerDefault> {
   isMedia: boolean;
   value: string;
   defaultValue: string;
+  label: string;
 }
 
 export class QuestionInput {
-  type?: 'text' | 'multiple' | 'default';
+  type?: 'text' | 'multiple' | 'default' | 'multiple-text';
   index?: number;
   subIndex?: number;
   value?: string;
   answerDefault?: AnswerDefaultInput[];
+  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME';
+  answerLimit?: number;
   show?: Boolean;
   required?: Boolean;
   answerMedia?: Boolean;
@@ -72,7 +76,9 @@ export class Question extends Model<Question> {
   show: boolean;
   required: boolean;
   active: boolean;
+  answerTextType?: 'default' | 'phone' | 'email' | 'phone' | 'name';
   answerMedia: boolean;
+  answerLimit?: number;
 }
 
 export class WebformInput {
@@ -90,4 +96,39 @@ export class Webform extends Model<Webform> {
   bookmark: BookMark;
   exchangeData: ExchangeData;
   active: Boolean;
+  user: User
+}
+
+export interface WebformAnswer extends Model<Answer> {
+  webform: string;
+  response: Array<{
+    question?: string;
+    value?: string;
+    label?: string;
+    isMedia?: boolean;
+  }>;
+  entity: string;
+  reference: string;
+}
+
+
+
+export interface WebformResponseInput {
+  question: string;
+  value?: string;
+  label?: string;
+  media?: File;
+  isMedia?: boolean;
+};
+
+export interface WebformAnswerInput {
+  webform: string;
+  response: Array<WebformResponseInput>;
+  entity: string;
+  reference: string;
+}
+
+export class ItemWebform extends Model<ItemWebform> {
+  reference: string;
+  active: boolean;
 }

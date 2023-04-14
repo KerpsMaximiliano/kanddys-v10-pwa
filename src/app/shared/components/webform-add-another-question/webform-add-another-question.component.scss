@@ -1,0 +1,34 @@
+.dialog-wrapper {
+  background-color: white;
+  padding: 42.1px 31px 41.4px 31px;
+  border-radius: 12px;
+
+  h3 {
+    font-family: SfProBold;
+    font-size: 21px;
+    margin-bottom: 33.6px;
+  }
+
+  .option-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 7.8px;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    .background {
+      background-color: #82f18d;
+      margin-right: 19.5px;
+      height: 29.75px;
+      width: 7.5px;
+      border-radius: 6px;
+    }
+
+    .option {
+      font-size: 17px;
+      font-family: SfProRegular;
+    }
+  }
+}

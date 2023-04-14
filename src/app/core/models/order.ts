@@ -10,6 +10,8 @@ import { IpUser, User } from './user';
 export class OrderSubtotal {
   currency: string;
   amount: number;
+  item: string;
+  type: 'item' | 'delivery';
 }
 
 export class OCR extends Model<OCR> {
@@ -117,6 +119,7 @@ export class ItemOrder extends Model<ItemOrder> {
   orderStatus: OrderStatusType;
   orderStatusDelivery: OrderStatusDeliveryType;
   orderType: OrderType;
+  deliveryZone: string;
   isComplete: boolean;
   subtotals: OrderSubtotal[];
   ocr: OCR;
@@ -133,7 +136,11 @@ export class ItemOrder extends Model<ItemOrder> {
     status: string;
     access: string;
   }>;
+  answers?: Array<{
+    reference: string;
+  }>
   expenditures: string[];
+  notifications: string[];
   deliveryData?: DeliveryData;
 }
 

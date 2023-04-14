@@ -473,7 +473,7 @@ export class ArticleDetailComponent implements OnInit {
   // }
 
   itemInCart() {
-    const productData = this.headerService.order.products.map(
+    const productData = this.headerService.order?.products.map(
       (subOrder) => subOrder.item
     );
     if (productData?.length) {
@@ -488,7 +488,7 @@ export class ArticleDetailComponent implements OnInit {
 
     // Validation to avoid getting deleted or unavailable items in the count of the cart
     const itemsInCart = this.headerService.saleflow.items.filter((item) =>
-      productData.some((product) => product === item.item._id)
+      productData?.some((product) => product === item.item._id)
     );
 
     this.itemsAmount = itemsInCart.length > 0 ? itemsInCart.length + '' : null;
@@ -590,6 +590,9 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   goToCheckout() {
+
+    if(this.mode === 'preview') return;
+
     this.router.navigate([
       '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
     ]);
@@ -608,7 +611,7 @@ export class ArticleDetailComponent implements OnInit {
       .map(() => `${'1'}fr`)
       .join(' ');
 
-      console.log(this.fractions);
+    console.log(this.fractions);
   }
 
   getRandomArbitrary(min, max) {

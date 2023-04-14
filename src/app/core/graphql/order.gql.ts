@@ -8,6 +8,8 @@ const orderData = `
   userNotifications
   subtotals {
     amount
+    type
+    item
   }
   merchants {
     _id
@@ -17,6 +19,9 @@ const orderData = `
     phone
     name
     email
+  }
+  answers {
+    reference
   }
   items {
     _id
@@ -82,6 +87,11 @@ const orderData = `
         index
         active
       }
+      webForms {
+        _id
+        reference
+        active
+      }
       hasSelection
       params {
         _id
@@ -112,8 +122,8 @@ const orderData = `
     }
   }
   orderStatus
-  orderStatusDelivery
   statusDelivery
+  deliveryZone
   expenditures
   itemPackage {
     _id
@@ -133,6 +143,7 @@ const orderData = `
   deliveryData {
     image
   }
+  notifications
 `;
 
 const shortOrderData = `
@@ -143,6 +154,8 @@ const shortOrderData = `
   userNotifications
   subtotals {
     amount
+    type
+    item
   }
   merchants {
     _id
@@ -156,6 +169,7 @@ const shortOrderData = `
   orderStatus
   orderStatusDelivery
   statusDelivery
+  deliveryZone
   expenditures
   itemPackage {
     _id
@@ -175,6 +189,7 @@ const shortOrderData = `
   deliveryData {
     image
   }
+  notifications
 `;
 
 const preOrderData = `
@@ -185,6 +200,8 @@ const preOrderData = `
   userNotifications
   subtotals {
     amount
+    type
+    item
   }
   merchants {
     _id
@@ -281,6 +298,7 @@ const preOrderData = `
     platform
     from
   }
+  notifications
 `;
 
 const expenditureData = `
@@ -317,6 +335,16 @@ export const order = gql`
   query order($orderId: ObjectID!) {
     order(orderId: $orderId) {
       ${orderData}
+    }
+  }
+`;
+
+export const orders = gql`
+  query orders($pagination: PaginationInput!) {
+    orders(pagination: $pagination) {
+      orders {
+        ${orderData}
+      }
     }
   }
 `;
@@ -419,6 +447,8 @@ export const ordersByItem = gql`
       }
       subtotals {
         amount
+        type
+        item
       }
       dateId
       createdAt
@@ -588,5 +618,17 @@ export const orderSetStatusDeliveryWithoutAuth = gql`
     $id: ObjectID!
   ) {
     orderSetStatusDeliveryWithoutAuth(orderStatusDelivery: $orderStatusDelivery, id: $id)
+  }
+`;
+
+export const orderSetDeliveryZone = gql`
+  mutation orderSetDeliveryZone(
+    $deliveryZoneId: ObjectID!
+    $id: ObjectID!
+    $userId: ObjectID
+  ) {
+    orderSetDeliveryZone(userId: $userId, deliveryZoneId: $deliveryZoneId, id: $id) {
+      _id
+    }
   }
 `;

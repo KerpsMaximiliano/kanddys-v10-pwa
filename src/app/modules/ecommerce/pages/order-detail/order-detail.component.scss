@@ -164,6 +164,7 @@ a {
           column-gap: 8px;
 
           .image {
+            cursor: pointer;
             position: relative;
             background-size: cover;
             background-position: center;
@@ -628,10 +629,16 @@ table {
     color: #000000;
     font-family: SFProMedium;
     font-size: 17px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .bottom-text {
     margin-top: 12.5px;
     color: #7b7b7b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -696,6 +703,29 @@ table {
 
   span {
     text-transform: capitalize;
+  }
+}
+
+.question-img-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  .image {
+    margin-top: 12.5px;
+    width: 86px;
+    height: 86px;
+    border-radius: 6px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .bottom-label {
+    margin-top: 5px;
+    color: #7b7b7b;
+    font-size: 13px;
+    font-family: SfProBold;
   }
 }
 

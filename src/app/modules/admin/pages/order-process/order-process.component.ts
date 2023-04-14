@@ -25,6 +25,14 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { NgNavigatorShareService } from 'ng-navigator-share';
+import { DeliveryZone } from 'src/app/core/models/deliveryzone';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
+import { Reservation } from 'src/app/core/models/reservation';
+import { ReservationService } from 'src/app/core/services/reservations.service';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
+import { Notification } from 'src/app/core/models/notification';
 
 @Component({
   selector: 'app-order-process',
@@ -38,6 +46,8 @@ export class OrderProcessComponent implements OnInit {
 
   order: ItemOrder;
   ordersReadyToDeliver: ItemOrder[] = [];
+
+  deliveryZone: DeliveryZone;
 
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
   formatId = formatID;
@@ -94,6 +104,8 @@ export class OrderProcessComponent implements OnInit {
 
   deliveryImages: Array<{
     image?: string;
+    deliveryZone?: DeliveryZone,
+    reservation?: Reservation,
     order: string;
   }> = [];
 
@@ -105,13 +117,15 @@ export class OrderProcessComponent implements OnInit {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
-    loop: false,
+    loop: true,
     slideDuplicateNextClass: 'swiper-slide-duplicate-next',
     slideDuplicatePrevClass: 'swiper-slide-duplicate-prev',
   };
 
   initialSlide: number;
   activeIndex: number = 0;
+
+  notifications: Notification[] = [];
 
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
   @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
@@ -131,23 +145,30 @@ export class OrderProcessComponent implements OnInit {
     private snackBar: MatSnackBar,
     private _bottomSheet: MatBottomSheet,
     private ngNavigatorShareService: NgNavigatorShareService,
+    private deliveryzoneService: DeliveryZonesService,
+    private reservationsService: ReservationService,
+    private dialogService: DialogService,
+    private notificationsService: NotificationsService
   ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { redirectTo, view, orderId } = queryParams;
+      const { redirectTo, view, orderId, deliveryZone } = queryParams;
+
       this.redirectTo = redirectTo;
+      this.deliveryZone = deliveryZone;
       if (view) this.view = view;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
+      if (typeof deliveryZone === 'undefined') this.deliveryZone = null;
 
       this.route.params.subscribe(async (params) => {
         const { merchantId } = params;
 
-        await this.executeProcessesAfterLoading(merchantId, orderId);
-        if (orderId) await this.getOrders(this.merchant._id);
+        await this.executeProcessesAfterLoading(merchantId, orderId, deliveryZone);
+        if (orderId) await this.getOrders(this.merchant._id, deliveryZone);
 
-        this.orderReadyToDeliver = 
+        if (this.ordersReadyToDeliver.length > 0) this.orderReadyToDeliver = 
           (
             this.order.orderStatusDelivery === 'pending' || 
             this.order.orderStatusDelivery === 'delivered'
@@ -156,29 +177,38 @@ export class OrderProcessComponent implements OnInit {
     });
   }
 
-  async executeProcessesAfterLoading(merchantId: string, orderId?: string) {
+  async executeProcessesAfterLoading(merchantId: string, orderId?: string, deliveryZone?: string) {
     lockUI();
 
     
 
     this.merchant = await this.merchantsService.merchant(merchantId);
+    await this.isMerchantOwner(merchantId);
 
     if (!orderId) {
-      await this.getOrders(this.merchant._id);
-      this.order = (await this.orderService.order(this.ordersReadyToDeliver[0]._id))?.order;
+      await this.getOrders(this.merchant._id, deliveryZone);
+      this.order = this.ordersReadyToDeliver.length > 0 ? (await this.orderService.order(this.ordersReadyToDeliver[0]._id))?.order : null;
     } else this.order = (await this.orderService.order(orderId))?.order;
 
     if (!this.order) {
       unlockUI();
-      this.router.navigate([`others/error-screen/`], {
-        queryParams: { type: 'order' },
-      });
+      // this.router.navigate([`others/error-screen/`], {
+      //   queryParams: { type: 'order' },
+      // });
       return;
     }
 
-    this.ordersReadyToDeliver.forEach((order) => {
+    this.ordersReadyToDeliver.forEach(async (order) => {
+      let deliveryZone: DeliveryZone;
+      let reservation: Reservation;
+      if ((this.isMerchant || this.view === 'delivery') && this.isPopulated(order) && order.deliveryZone) {
+        deliveryZone = await this.deliveryzoneService.deliveryZone(order.deliveryZone);
+        reservation = await this.reservationsService.getReservation(order.items[0].reservation._id)
+      }
       this.deliveryImages.push({
         image: this.isPopulated(order) ? (order.deliveryData.image ? order.deliveryData.image : null) : null,
+        deliveryZone: deliveryZone ? deliveryZone : null,
+        reservation: reservation ? reservation : null,
         order: order._id
       })
     });
@@ -232,7 +262,8 @@ export class OrderProcessComponent implements OnInit {
       })
       .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
-    await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+
+    await this.getDeliveryNotifications(this.merchant._id);
 
     if (this.order.items[0].post) {
       this.post = (
@@ -320,6 +351,8 @@ export class OrderProcessComponent implements OnInit {
       this.handleStatusOptions(this.order.orderStatusDelivery);
     }
 
+    if (!this.isMerchant) this.deliveryStatusOptions = [];
+
     let giftMessage = '';
     if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
     if (this.post?.targets?.[0]?.name)
@@ -359,11 +392,18 @@ export class OrderProcessComponent implements OnInit {
         else if (this.view === 'delivery') await this.changeOrderStatusAuthless('delivered');
       }
     }
-
     unlockUI();
   }
 
-  async getOrders(merchantId: string) {
+  async getOrders(merchantId: string, deliveryZone?: string) {
+    console.log(this.isMerchant);
+    const findBy = {
+      merchant: merchantId,
+      deliveryZone: deliveryZone,
+      orderStatus: ["to confirm", "paid", "completed"],
+      orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? null : null,
+    }
+    if (this.isMerchant) delete findBy.orderStatusDelivery;
     try {
       const result = await this.orderService.orderByMerchantDelivery(
         {
@@ -371,10 +411,7 @@ export class OrderProcessComponent implements OnInit {
             limit: 20,
             sortBy: "createdAt:desc"
           },
-          findBy: {
-            merchant: merchantId,
-            orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? ['pending', 'in progress', 'delivered'] : null,
-          }
+          findBy
         }
       );
 
@@ -417,8 +454,44 @@ export class OrderProcessComponent implements OnInit {
     ).length;
   }
 
+  async getDeliveryNotifications(merchantId: string) {
+    try {
+      const result = await this.notificationsService.notifications(
+        {
+          options: {
+            limit: -1,
+            sortBy: 'createdAt:desc',
+          },
+          findBy: {
+            entity: "order",
+            type: "standard",
+            mode: "default",
+            active: true
+          }
+        },
+        merchantId
+      );
+
+      const notifications = result.filter((notification) => {
+        return notification.trigger[0].key === 'orderStatusDelivery'
+      });
+
+      console.log(notifications);
+
+      this.notifications = notifications;
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  checkNotificationDeliveryStatus(status: string) {
+    return this.notifications.find((option) => option.trigger[0].value === status);
+  }
+
   async isMerchantOwner(merchant: string) {
     this.orderMerchant = await this.merchantsService.merchantDefault();
+    console.log(this.orderMerchant);
     this.isMerchant = merchant === this.orderMerchant?._id;
   }
 
@@ -427,9 +500,11 @@ export class OrderProcessComponent implements OnInit {
     this.handleStatusOptions(value);
     
     try {
-      await this.orderService.orderSetStatusDelivery(value, this.order._id);
+      await this.orderService.orderSetStatusDelivery(value, this.ordersReadyToDeliver[this.activeIndex]._id);
       if (value === 'pending')  this.orderReadyToDeliver = true;
       if (value === 'delivered') this.orderDelivered = true;
+
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = value;
     } catch (error) {
       console.log(error);
     }
@@ -510,6 +585,52 @@ export class OrderProcessComponent implements OnInit {
               callback: () => this.downloadQr(order)
             },
           ],
+        },
+        {
+          title: `Opciones para el mensajero`,
+          options: [
+            {
+              title: 'Compartir el Link',
+              callback: () => {
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`,
+                });
+              },
+            },
+            {
+              title: 'Copiar el Link',
+              callback: () => {
+                this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`);
+                this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                  duration: 2000,
+                });
+              },
+            }
+          ],
+        },
+        {
+          title: `Opciones para quien prepara la orden`,
+          options: [
+            {
+              title: 'Compartir el Link',
+              callback: () => {
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`,
+                });
+              },
+            },
+            {
+              title: 'Copiar el Link',
+              callback: () => {
+                this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`);
+                this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                  duration: 2000,
+                });
+              },
+            }
+          ],
         }
       ],
     });
@@ -553,7 +674,10 @@ export class OrderProcessComponent implements OnInit {
     // NOTA: La función tiene await pero podría no tenerlo para hacer más smooth el infinite scroll
     await this.populateOrder(event.activeIndex, 3, true);
 
-    if (this.ordersReadyToDeliver[this.activeIndex].deliveryData?.image) {
+    if (
+      this.ordersReadyToDeliver[this.activeIndex].deliveryData?.image ||
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'delivered'
+    ) {
       this.orderReadyToDeliver = false;
       this.orderDelivered = true;
       if (this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'pending') {
@@ -592,6 +716,20 @@ export class OrderProcessComponent implements OnInit {
             this.ordersReadyToDeliver.splice(i, 1, order);
             console.log(this.deliveryImages[i]);
             this.deliveryImages[i].image = order.deliveryData?.image ? order.deliveryData?.image : null;
+
+            if (this.isMerchant || this.view === 'delivery') {
+              let deliveryZone: DeliveryZone;
+              let reservation: Reservation;
+              if (order.deliveryZone) {
+                deliveryZone = await this.deliveryzoneService.deliveryZone(order.deliveryZone);
+                this.deliveryImages[i].deliveryZone = deliveryZone;
+              }
+
+              if (order.items[0].reservation) {
+                reservation = await this.reservationsService.getReservation(order.items[0].reservation._id)
+                this.deliveryImages[i].reservation = reservation;
+              }
+            }
             console.log(`Posición ${i} reemplazada`);
           } else {
             console.log(`Posición ${i} ya está populada`);
@@ -635,6 +773,17 @@ export class OrderProcessComponent implements OnInit {
       .toLocaleUpperCase();
   }
 
+  openImageModal(imageSourceURL: string) {
+    this.dialogService.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
   downloadEntityTemplateQr(qrElment: ElementRef) {
     const parentElement = qrElment.nativeElement.querySelector('img').src;
     let blobData = base64ToBlob(parentElement);
@@ -675,6 +824,68 @@ export class OrderProcessComponent implements OnInit {
       link.download = this.formatId(order.dateId);
       link.click();
     }
+  }
+
+  orderHasDelivery(
+    deliveryZone: DeliveryZone,
+    order: ItemOrder
+  ) {
+    if (deliveryZone) return true;
+    if (order.items[0]?.deliveryLocation?.street) return true;
+
+    return false;
+  }
+
+  displayReservation(reservation: Reservation) {
+    const fromDate = new Date(reservation.date.from);
+    const untilDate = new Date(reservation.date.until);
+    
+    const day = fromDate.getDate();
+    const weekday = fromDate.toLocaleString('es-MX', {
+      weekday: 'short',
+    });
+    const month = fromDate.toLocaleString('es-MX', {
+      month: 'short',
+    });
+    const time = `De ${this.formatHour(fromDate)} a ${this.formatHour(
+      untilDate,
+      reservation.breakTime
+    )}`
+
+    return `${weekday}, ${day} de ${month}. ${time}`;
+        
+  }
+
+  private formatHour(date: Date, breakTime?: number) {
+    if (breakTime) date = new Date(date.getTime() - breakTime * 60000);
+
+    let result = date.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
+    if (result.startsWith('0:')) {
+      result = result.replace('0:', '12:');
+    }
+
+    return result;
+  }
+
+  returnEvent() {
+    let queryParams = {};
+    if (this.redirectTo.includes('?')) {
+      const url = this.redirectTo.split('?');
+      this.redirectTo = url[0];
+      const queryParamList = url[1].split('&');
+      for (const param in queryParamList) {
+        const keyValue = queryParamList[param].split('=');
+        queryParams[keyValue[0]] = keyValue[1];
+      }
+    }
+    this.router.navigate([this.redirectTo], {
+      queryParams,
+    });
   }
 
 }

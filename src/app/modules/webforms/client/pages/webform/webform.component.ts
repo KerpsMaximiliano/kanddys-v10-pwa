@@ -112,6 +112,7 @@ export class WebformComponent implements OnInit {
           this.form.value[i] instanceof File ? this.form.value[i].trim() : null,
       });
     }
+    /*
     const input: AnswerInput = {
       webform: this.webform._id,
       response,
@@ -134,6 +135,7 @@ export class WebformComponent implements OnInit {
       this.webform.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
     window.location.href = whatsappLink;
+    */
   }
 
   onCurrencyInput(form: FormControl | AbstractControl, value: number) {

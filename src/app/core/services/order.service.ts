@@ -21,6 +21,7 @@ import {
   orderSetStatus,
   ordersByItemHot,
   orderSetStatusDelivery,
+  orders,
   orderBenefitsByMerchant,
   orderBenefits,
   expenditure,
@@ -33,6 +34,7 @@ import {
   hotOrderByMerchantDelivery,
   updateOrderDeliveryData,
   orderSetStatusDeliveryWithoutAuth,
+  orderSetDeliveryZone,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -154,6 +156,19 @@ export class OrderService {
       const response = await this.graphql.query({
         query: order,
         variables: { orderId },
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async ordersPaginate(pagination: PaginationInput): Promise<Array<{ order: ItemOrder }>> {
+    try {
+      const response = await this.graphql.query({
+        query: orders,
+        variables: { pagination },
+        fetchPolicy: 'no-cache',
       });
       return response;
     } catch (e) {
@@ -427,6 +442,16 @@ export class OrderService {
     const result = await this.graphql.mutate({
       mutation: orderSetStatusDeliveryWithoutAuth,
       variables: { orderStatusDelivery, id },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async orderSetDeliveryZone(deliveryZoneId: string, id: string, userId?: string): Promise<ItemOrder> {
+    const result = await this.graphql.mutate({
+      mutation: orderSetDeliveryZone,
+      variables: { deliveryZoneId, id, userId },
       fetchPolicy: 'no-cache',
     });
     if (!result || result?.errors) return undefined;

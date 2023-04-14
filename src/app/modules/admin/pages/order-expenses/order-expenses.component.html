@@ -25,7 +25,7 @@
         <div class="expenses-list" *ngIf="orderExpenditures.length">
           <app-named-expense
             *ngFor="let expenditure of orderExpenditures"
-            [title]="expenditure.name"
+            [title]="expenditure?.name ? expenditure.name : 'Sin nombre'"
             [subtitle]="daysAgo(expenditure.createdAt)"
             [pricing]="expenditure.amount"
             (onDelete)="onDelete(expenditure)"

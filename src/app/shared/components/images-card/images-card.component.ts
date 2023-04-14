@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-images-card',
@@ -7,22 +7,25 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ImagesCardComponent implements OnInit {
   @Input() title: string = '¿Pregunta para seleccionar imágenes ID?';
+  @Input() cardsWithImagesCounter: number = 0;
 
-  @Input() cards = [
-    {
-      img: '/assets/images/noimage.png',
-      text: '41 Opción ID',
-    },
-    {
-      img: '/assets/images/noimage.png',
-      text: '42 Opción ID',
-    },
-    {
-      img: '/assets/images/noimage.png',
-      text: '43 Opción ID',
-    },
-  ];
+  @Input() cards: Array<{
+    text: string;
+    link: string;
+    file?: string;
+    optionValue?: string;
+  }> = [];
+  @Output() clicked = new EventEmitter();
+
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    for(const card of this.cards) {
+      if(card.file) this.cardsWithImagesCounter++;
+    }
+  }
+
+  emitClick(index: number) {
+    this.clicked.emit(index);
+  }
 }

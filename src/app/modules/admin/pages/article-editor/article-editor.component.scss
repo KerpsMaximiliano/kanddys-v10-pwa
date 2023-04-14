@@ -45,8 +45,8 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    width: 100%;
-    margin: 21px 22px 23px 17px;
+    width: calc(100% - 39px);
+    margin: 21px auto 23px auto;
     border: none;
     max-width: 460px;
 
@@ -271,5 +271,26 @@
     font-size: 3rem;
     color: white;
     font-family: SfProBold;
+  }
+}
+
+.header {
+  width: 100%;
+  background-color: #A1A1A1;
+  padding: 13.8px 16px;
+  display: flex;
+  justify-content: space-between;
+
+  .links {
+    display: flex;
+    justify-content: space-between;
+    width: 70%;
+    align-items: center;
+    font-family: SfProMedium;
+    font-size: 13px;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 }

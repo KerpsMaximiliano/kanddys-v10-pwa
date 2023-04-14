@@ -1,0 +1,73 @@
+<div class="container">
+  <button class="fixed-top-button left" (click)="back()">
+    <img [src]="env + '/arrow-double-up.svg'" alt="Volver" />
+  </button>
+
+  <div class="media-swiper-wrapper" *ngIf="optionsInImageGrid.length">
+    <div
+      #swiperContainer
+      [ngStyle]="{
+        width: '100%',
+        height: (swiperContainer.clientWidth * 10) / 7 + 'px'
+      }"
+    >
+      <swiper
+        [config]="swiperConfig"
+        #mediaSwiper
+        (slideChange)="updateCurrentSlideData($event)"
+      >
+        <ng-container *ngIf="optionsInImageGrid?.length">
+          <ng-container *ngFor="let option of optionsInImageGrid; index as i">
+            <div
+              class="entity-image"
+              [ngStyle]="{
+                backgroundImage: 'url(' + option.img + ')'
+              }"
+            ></div>
+          </ng-container>
+        </ng-container>
+      </swiper>
+    </div>
+
+    <div class="bottom-user-actions-panel">
+      <div class="inner-wrapper-top">
+        <div
+          class="current-media-shown-indicators"
+          [style]="{
+            'grid-template-columns':
+              'repeat(' + optionsInImageGrid?.length + ', 1fr)'
+          }"
+        >
+          <ng-container *ngIf="optionsInImageGrid?.length">
+            <div
+              class="indicator"
+              [ngClass]="{
+                active: optionIndex === currentMediaSlide
+              }"
+              *ngFor="let option of optionsInImageGrid; let optionIndex = index"
+            ></div>
+          </ng-container>
+        </div>
+
+        <button
+          class="select-button"
+          (click)="(null)"
+          [ngClass]="{
+            selected: optionsInImageGrid[currentMediaSlide].selected
+          }"
+          (click)="
+            !multiple
+              ? selectOpt(currentMediaSlide)
+              : selectOptMultipleFromGrid(currentMediaSlide)
+          "
+        >
+          {{
+            optionsInImageGrid[currentMediaSlide].selected
+              ? "SELECCIONADA"
+              : "SIN SELECCIONAR"
+          }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
