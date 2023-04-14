@@ -193,7 +193,10 @@ export class RegistroKioskoComponent implements OnInit {
   });
 
   itemFormPhone = this._formBuilder.group({
-    phone: [null, [Validators.required, Validators.minLength(12)]],
+    phone: [
+      null,
+      [Validators.required, Validators.minLength(12), Validators.maxLength(15)],
+    ],
   });
 
   itemFormBank = this._formBuilder.group({

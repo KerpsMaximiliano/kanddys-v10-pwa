@@ -3,7 +3,9 @@
     <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
   </button>
 
-  <button class="add" (click)="goToLinkRegister()">Adiciona otro enlace</button>
+  <button class="add" (click)="goToLinkRegister()">
+    {{ contactCards.length ? "Adiciona otro enlace" : "Adiciona un enlace" }}
+  </button>
 </header>
 
 <div class="container">
