@@ -1,3 +1,88 @@
+<<<<<<< HEAD
+<div
+  class="wrapper"
+  [ngStyle]="{
+    zIndex: status === 'OPEN' ? 999 : -999
+  }"
+>
+  <div class="wrapper-relative">
+    <div
+      class="overlay"
+      [ngStyle]="{
+        animation:
+          status === 'OPEN'
+            ? 'darkenOverlay 0.5s ease-in-out 0s 1 normal forwards'
+            : 'lightenOverlay 0.5s ease-in-out 0s 1 normal forwards'
+      }"
+    ></div>
+
+    <div
+      class="flow-contents"
+      id="flow-contents"
+      [ngClass]="{
+        visible: status === 'OPEN'
+      }"
+      (click)="!blockClosure ? openOrClose($event) : null"
+    >
+      <swiper
+        [config]="swiperConfig"
+        (slideChange)="changeActiveDialog($event)"
+        #dialogSwiper
+      >
+        <div
+          class="dialog"
+          *ngFor="let dialog of dialogs; index as dialogIndex"
+        >
+          <div
+            class="dialog-overlay"
+            [ngClass]="{
+              active: currentDialogIndex === dialogIndex,
+              notActive: currentDialogIndex !== dialogIndex
+            }"
+            (click)="
+              currentDialogIndex !== dialogIndex ? tapEvent(dialogIndex) : null
+            "
+          ></div>
+
+          <div
+            class="dynamic-component"
+            [ngStyle]="{
+              width: '82.47%',
+              margin: 'auto'
+            }"
+          >
+            <div class="navigation" *ngIf="currentDialogIndex !== dialogIndex">
+              <div
+                *ngFor="let dialog of dialogs; index as dialogIndex"
+                class="current-dialog-indicator"
+                [ngClass]="{
+                  active: currentDialogIndex >= dialogIndex
+                }"
+              ></div>
+            </div>
+
+            <div
+              class="postLabel"
+              *ngIf="dialog.postLabel && currentDialogIndex !== dialogIndex"
+            >
+              {{ dialog.postLabel }}
+            </div>
+
+            <app-dynamic-component
+              [component]="dialog.component"
+              [componentInputs]="dialog.inputs"
+              [componentOutputs]="dialog.outputs"
+              [shouldRemoveItFromTheView]="dialog.shouldRerender"
+            >
+              ></app-dynamic-component
+            >
+          </div>
+        </div>
+      </swiper>
+    </div>
+  </div>
+</div>
+=======
 <div
   class="wrapper"
   [ngStyle]="{
@@ -84,3 +169,4 @@
     </div>
   </div>
 </div>
+>>>>>>> staging-v3
