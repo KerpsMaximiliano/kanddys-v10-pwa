@@ -4,20 +4,92 @@
       [src]="env + '/arrow-double-up-black.svg'"
       alt="arrows"
       class="arrows"
+      (click)="goBack()"
     />
-    <button class="right">Preview</button>
-    <button class="hide">Inactivo</button>
+    <button class="right" (click)="goToPreview()">Preview</button>
+    <button class="hide" *ngIf="webformStatus === 'INACTIVE'">Inactivo</button>
   </header>
-  <div class="content">
-    <app-router-options></app-router-options>
-  </div>
-  <div class="content" style="margin-top: 8px">
-    <app-link-card></app-link-card>
-  </div>
-  <div class="content" style="margin-top: 10px">
-    <app-images-card></app-images-card>
-  </div>
-  <div style="position: fixed; bottom: 50px">
-    <app-menu-button mode="array"></app-menu-button>
+
+  <div class="questions-wrapper">
+    <ng-container *ngIf="webform">
+      <div
+        *ngFor="let question of webform.questions"
+        class="content"
+        style="margin-top: 10px"
+      >
+        <ng-container [ngSwitch]="question.type">
+          <app-router-options
+            *ngSwitchCase="'multiple'"
+            [title]="question.value"
+            [options]="question.answers"
+            [question]="question"
+            [webformId]="webform._id"
+            [itemId]="itemData._id"
+          ></app-router-options>
+          <app-router-options
+            *ngSwitchCase="'multiple-text'"
+            [title]="question.value"
+            [options]="question.answers"
+            [question]="question"
+            [webformId]="webform._id"
+            [itemId]="itemData._id"
+          ></app-router-options>
+          <app-link-card
+            *ngSwitchDefault
+            [title]="question.value"
+            [text]="question.total + ' Respuestas'"
+            [question]="question"
+            [webformId]="webform._id"
+            [itemId]="itemData._id"
+          ></app-link-card>
+        </ng-container>
+      </div>
+      <app-menu-button
+        mode="basic"
+        [options]="[
+          {
+            text: 'Nueva pregunta',
+            callback: addNewQuestion
+          },
+          {
+            text: 'Edita el formulario',
+            callback: editForm
+          },
+          {
+            text: 'Preview de compradores',
+            callback: goToPreview
+          },
+          {
+            text:
+              webformStatus === 'ACTIVE'
+                ? 'Inactiva el formulario'
+                : 'Activa el formulario',
+            callback: switchWebformStatus
+          }
+        ]"
+        [position]="{
+          bottom: '50px'
+        }"
+      ></app-menu-button>
+  
+      <app-webforms-creator
+        *ngIf="headerService.user && itemData && resumingWebformCreation === null"
+        [opened]="openedDialogFlow"
+        [item]="itemData"
+        [user]="headerService.user"
+        [webform]="webform"
+        (closeEvent)="reloadWebform($event)"
+      ></app-webforms-creator>
+  
+      <app-webforms-creator
+        *ngIf="headerService.user && itemData && resumingWebformCreation === true"
+        [opened]="openedDialogFlow"
+        [item]="itemData"
+        [user]="headerService.user"
+        [resumingCreation]="resumingWebformCreation"
+        [webform]="webform"
+        (closeEvent)="reloadWebform($event)"
+      ></app-webforms-creator>
+    </ng-container>
   </div>
 </div>

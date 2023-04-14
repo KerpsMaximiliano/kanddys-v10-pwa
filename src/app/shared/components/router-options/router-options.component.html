@@ -1,9 +1,19 @@
 <section class="container">
   <p class="title">{{ title }}</p>
-  <div class="flex" *ngFor="let option of options; index as i">
-    <div class="left"></div>
-    <a routerLink="option.link">
-      {{ option.text }}
-    </a>
-  </div>
+
+  <app-images-card
+    [cards]="options"
+    (clicked)="selectOption($event)"
+  ></app-images-card>
+
+  <ng-container *ngFor="let option of options; index as i">
+    <div class="flex" (click)="selectOption(i, option.freeResponse)" *ngIf="!option.file">
+      <div class="left" *ngIf="!option.freeResponse"></div>
+      <div class="answer-selector-option" [ngClass]="{
+        link: option.freeResponse
+      }">
+        {{ option.text }}
+      </div>
+    </div>
+  </ng-container>
 </section>

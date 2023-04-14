@@ -9,6 +9,7 @@ export interface AnswerIcon {
 export interface OptionAnswerSelector {
   value?: string;
   valueStyles?: Record<string, any>;
+  selectedValueStyles?: Record<string, any>;
   subtexts?: {
     text: string;
     callback?(...params): any;
@@ -23,6 +24,7 @@ export interface OptionAnswerSelector {
   hidden?: boolean;
   description?: string | string[];
   id?: string;
+  selected?: boolean;
 }
 
 export interface BankAnswers {
