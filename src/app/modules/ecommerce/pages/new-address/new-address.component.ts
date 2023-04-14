@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -18,6 +19,10 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  LoginDialogComponent,
+  LoginDialogData,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -41,7 +46,8 @@ export class NewAddressComponent implements OnInit {
     private fb: FormBuilder,
     private usersService: UsersService,
     private toastr: ToastrService,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private matDialog: MatDialog
   ) {
     this.addressForm = fb.group({
       nickName: fb.control('Mi casa', [
@@ -107,10 +113,7 @@ export class NewAddressComponent implements OnInit {
       const orderData = JSON.parse(
         decodeURIComponent(magicLinkData)
       ) as SaleflowData;
-      if (
-        orderData?.order?.products?.[0]?.saleflow ===
-        this.headerService.saleflow._id
-      ) {
+      if (orderData?.order?.products?.[0]) {
         localStorage.setItem(
           this.headerService.saleflow._id,
           JSON.stringify(orderData)
@@ -123,6 +126,29 @@ export class NewAddressComponent implements OnInit {
     }
     this.checkAddresses();
     this.user = await this.authService.me();
+    this.onInitSetup();
+    if (this.magicLinkLocation) {
+      this.addressForm.patchValue({ ...this.magicLinkLocation, save: true });
+      this.mode = 'add';
+      this.formSubmit();
+    }
+
+    const viewsMerchants = await this.merchantsService.viewsMerchants({
+      findBy: {
+        merchant: this.headerService.saleflow.merchant._id,
+        type: 'delivery-politics',
+      },
+    });
+
+    if (viewsMerchants && viewsMerchants.length > 0) {
+      this.viewMerchantForDelivery = viewsMerchants[0];
+    }
+  }
+
+  onInitSetup() {
+    this.addresses = [];
+    this.addressesOptions = [];
+    this.newAddressOption = [];
     if (this.headerService.saleflow.module?.delivery?.pickUpLocations?.length) {
       this.addresses.push(
         ...this.headerService.saleflow.module.delivery.pickUpLocations
@@ -188,22 +214,6 @@ export class NewAddressComponent implements OnInit {
           ],
         });
       });
-    }
-    if (this.magicLinkLocation) {
-      this.addressForm.patchValue({ ...this.magicLinkLocation, save: true });
-      this.mode = 'add';
-      this.formSubmit();
-    }
-
-    const viewsMerchants = await this.merchantsService.viewsMerchants({
-      findBy: {
-        merchant: this.headerService.saleflow.merchant._id,
-        type: 'delivery-politics',
-      },
-    });
-
-    if (viewsMerchants && viewsMerchants.length > 0) {
-      this.viewMerchantForDelivery = viewsMerchants[0];
     }
   }
 
@@ -302,14 +312,50 @@ export class NewAddressComponent implements OnInit {
     if (this.addressesOptions.length === 1) this.goBack();
   }
 
-  selectAddress(save?: boolean) {
-    const { _id, ...addressInput } = this.addresses[this.selectedDeliveryIndex];
+  selectAddress(
+    save?: boolean,
+    loginData?: {
+      result: DeliveryLocation;
+      addedAddressOption: any;
+    }
+  ) {
+    const { _id, ...addressInput } =
+      this.addresses[this.selectedDeliveryIndex] || loginData.result;
     this.headerService.order.products[0].deliveryLocation = addressInput;
     this.headerService.storeLocation(addressInput);
     this.headerService.orderProgress.delivery = true;
     this.headerService.storeOrderProgress();
     if (save && !this.headerService.user) {
-      this.authSelect('address');
+      // this.authSelect('address');
+
+      const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+        data: {
+          magicLinkData: {
+            redirectionRoute: `ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
+            entity: 'NonExistingOrder',
+            redirectionRouteQueryParams: {
+              data: localStorage.getItem(this.headerService.saleflow._id),
+            },
+          },
+          extraUserInput: {
+            deliveryLocations: [addressInput],
+          },
+        } as LoginDialogData,
+      });
+      matDialogRef.afterClosed().subscribe((result) => {
+        if (!result) return;
+        this.user = result.user || result.session.user;
+        if (this.user) this.onInitSetup();
+        this.addresses.push(loginData.result);
+        this.addressesOptions.push(loginData.addedAddressOption);
+        this.selectedDeliveryIndex = this.addresses.length - 1;
+        if (!result.new) this.usersService.addLocation(loginData.result);
+        this.router.navigate([`../checkout`], {
+          replaceUrl: this.headerService.checkoutRoute ? true : false,
+          relativeTo: this.route,
+        });
+      });
+
       return;
     }
     this.router.navigate([`../checkout`], {
@@ -321,6 +367,25 @@ export class NewAddressComponent implements OnInit {
   authSelect(auth: 'order' | 'address') {
     this.router.navigate([`auth/login`], {
       queryParams: { auth, saleflow: this.headerService.saleflow._id },
+    });
+  }
+
+  openLoginDialog() {
+    const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+      data: {
+        magicLinkData: {
+          redirectionRoute: `ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
+          entity: 'NonExistingOrder',
+          redirectionRouteQueryParams: {
+            data: localStorage.getItem(this.headerService.saleflow._id),
+          },
+        },
+      } as LoginDialogData,
+    });
+    matDialogRef.afterClosed().subscribe((result) => {
+      if (!result) return;
+      this.user = result.user || result.session.user;
+      if (this.user) this.onInitSetup();
     });
   }
 
@@ -422,10 +487,15 @@ export class NewAddressComponent implements OnInit {
       this.addresses[addressIndex] = result;
       this.addressesOptions[optionIndex] = addedAddressOption;
     } else {
-      this.addresses.push(result);
-      this.addressesOptions.push(addedAddressOption);
-      this.selectedDeliveryIndex = this.addresses.length - 1;
-      this.selectAddress(this.addressForm.value.save);
+      if (this.headerService.user) {
+        this.addresses.push(result);
+        this.addressesOptions.push(addedAddressOption);
+        this.selectedDeliveryIndex = this.addresses.length - 1;
+      }
+      this.selectAddress(this.addressForm.value.save, {
+        result,
+        addedAddressOption,
+      });
     }
     this.disableButton = false;
     unlockUI();
@@ -483,7 +553,7 @@ export class NewAddressComponent implements OnInit {
     ]);
   }
 
-  handleData(event):void {
+  handleData(event): void {
     this.selectedDeliveryIndex = event;
     this.selectAddress();
   }
