@@ -53,8 +53,43 @@
       >
         <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
       </div>
-
-      <p class="title" style="margin-left: 8px">Store</p>
+      <div style="flex: 1 1 auto"></div>
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="menu"
+        style="width: 30px; height: 30px; line-height: 0"
+      >
+        <div
+          *ngIf="headerService.user"
+          class="icon"
+          [style.background]="
+            _DomSanitizer.bypassSecurityTrustStyle(
+              'url(' +
+                headerService.user?.image +
+                ') no-repeat center center / cover #e9e371'
+            )
+          "
+        ></div>
+        <mat-icon *ngIf="!headerService.user" style="color: #fff"
+          >account_circle</mat-icon
+        >
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="login()" *ngIf="!headerService.user">
+          <mat-icon>input</mat-icon>
+          <span>Iniciar Sesión</span>
+        </button>
+        <ng-container *ngIf="headerService.user">
+          <a mat-menu-item [routerLink]="['']">
+            <mat-icon>settings</mat-icon>
+            <span>Configuración</span>
+          </a>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>Cerrar Sesión</span>
+          </button>
+        </ng-container>
+      </mat-menu>
     </nav>
     <main>
       <div class="top-input-area" *ngIf="hasCollections">
@@ -197,7 +232,9 @@
         </div>
       </div>
       <div id="footerbtn" class="display-footer">
-        <button class="info-button" (click)="displayFooter()">i</button>
+        <button mat-mini-fab class="info-button" (click)="displayFooter()">
+          i
+        </button>
       </div>
     </main>
   </div>

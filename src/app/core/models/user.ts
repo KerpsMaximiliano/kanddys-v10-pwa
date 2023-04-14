@@ -1,14 +1,18 @@
 import { Form, Control } from '@mukuve/ngx-forms';
 import { Community } from 'src/app/core/models/community';
 import { Model } from './../objects/model';
-import { DeliveryLocation, SocialMediaModel, DeliveryLocationInput} from './saleflow';
+import {
+  DeliveryLocation,
+  SocialMediaModel,
+  DeliveryLocationInput,
+} from './saleflow';
 import { Tag } from './tags';
 
 export class IpUser extends Model<IpUser> {
   ip: string;
   country: string;
   city: string;
-  user: User
+  user: User;
 }
 
 export class Role {
@@ -18,7 +22,7 @@ export class Role {
   code: string;
   name: string;
   description: string;
-  }
+}
 
 export class User extends Model<User> {
   email: string;
@@ -45,26 +49,40 @@ export class User extends Model<User> {
   }
 }
 
+export type MagicLinkEntities =
+  | 'Order'
+  | 'NonExistingOrder'
+  | 'UserAccess'
+  | 'PostAccess'
+  | 'TemplateAccess'
+  | 'MerchantAccess'
+  | 'Item'
+  | 'NewUser'
+  | 'NewMerchant'
+  | 'UserUpdate'
+  | 'MerchantUpdate'
+  | 'NewMerchantToExistingUser';
+
 export class UserInput {
-   phone?: string
-   name?: string
-   lastname?: string
-   title?: string
-   email?: string
-   password?: string
-   birthdate?: Date
-   image?: File
-   roles?: string[]
-   defaultCommunity?: string
-   facebook?: string
-   instagram?: string
-   web?: string
-   bio?: string
-   deliveryLocations?: DeliveryLocationInput[]
-   social?: SocialMediaModel[]
-   tags?: string[]
-   clientOfMerchants?: string[]
-   }
+  phone?: string;
+  name?: string;
+  lastname?: string;
+  title?: string;
+  email?: string;
+  password?: string;
+  birthdate?: Date;
+  image?: File;
+  roles?: string[];
+  defaultCommunity?: string;
+  facebook?: string;
+  instagram?: string;
+  web?: string;
+  bio?: string;
+  deliveryLocations?: DeliveryLocationInput[];
+  social?: SocialMediaModel[];
+  tags?: string[];
+  clientOfMerchants?: string[];
+}
 
 export class UserForm extends Form {
   constructor(

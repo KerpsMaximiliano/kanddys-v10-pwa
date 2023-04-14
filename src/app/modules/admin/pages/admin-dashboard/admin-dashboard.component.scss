@@ -32,10 +32,10 @@
 			display: flex;
 			align-items: center;
 			gap: 8px;
+			cursor: pointer;
 		}
 
 		.img {
-			cursor: pointer;
 			width: 31px;
 			height: 31px;
 			object-fit: cover;

@@ -5,6 +5,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { Authentication } from './pages/authentication/authentication.component';
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 import { LoginComponent } from './pages/login-screen/login.component';
+import { LoginDialogComponent } from './pages/login-dialog/login-dialog.component';
 
 const routes: Routes = [
   {
@@ -26,7 +27,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [Authentication, UserCreatorComponent, LoginComponent],
+  declarations: [Authentication, UserCreatorComponent, LoginComponent, LoginDialogComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
 export class AuthModule {}
