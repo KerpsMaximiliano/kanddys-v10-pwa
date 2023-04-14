@@ -1,0 +1,79 @@
+<div class="container" [ngStyle]="position">
+  <button
+    *ngIf="size === 'normal'"
+    mat-fab
+    [matMenuTriggerFor]="menu"
+    aria-label="Menu button"
+    class="btn"
+  >
+    <mat-icon class="btn-icon">menu</mat-icon>
+  </button>
+  <button
+    *ngIf="size === 'mini'"
+    mat-mini-fab
+    [matMenuTriggerFor]="menu"
+    aria-label="Menu button"
+    class="btn"
+  >
+    <mat-icon class="btn-icon">menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
+    <ng-container
+      *ngIf="!options.length && !optionsTop.length && !optionsBottom.length"
+    >
+      <button mat-menu-item class="menu-item" (click)="goToWhatsapp()">
+        <span>Chat con {{ merchantName }}</span>
+        <img [src]="env + '/whatsapp_verde.svg'" alt="circle" class="circle" />
+      </button>
+      <button mat-menu-item class="menu-item" (click)="shareStore()">
+        <span>Comparte la tienda</span>
+        <img [src]="env + '/upload.svg'" alt="circle" class="circle" />
+      </button>
+      <button
+        mat-menu-item
+        class="menu-item"
+        (click)="logout()"
+        *ngIf="headerService.user"
+      >
+        <span>Cerrar sesión</span>
+      </button>
+    </ng-container>
+    <ng-container *ngIf="options.length">
+      <button
+        mat-menu-item
+        class="menu-item"
+        (click)="option.callback()"
+        *ngFor="let option of options; index as i"
+      >
+        <span>{{ option.text }}</span>
+        <mat-icon *ngIf="option.icon">{{ option.icon }}</mat-icon>
+      </button>
+    </ng-container>
+
+    <ng-container
+      *ngIf="optionsTop.length && optionsBottom.length && !options.length"
+    >
+      <button
+        mat-menu-item
+        class="menu-item"
+        (click)="option.callback()"
+        *ngFor="let option of optionsTop; index as i"
+      >
+        <span>{{ option.text }}</span>
+        <mat-icon *ngIf="option.icon">{{ option.icon }}</mat-icon>
+      </button>
+
+      <div class="bar"></div>
+
+      <button
+        mat-menu-item
+        class="menu-item"
+        (click)="option.callback()"
+        *ngFor="let option of optionsBottom; index as i"
+      >
+        <span>{{ option.text }}</span>
+        <mat-icon *ngIf="option.icon">{{ option.icon }}</mat-icon>
+      </button>
+    </ng-container>
+  </mat-menu>
+</div>

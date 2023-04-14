@@ -29,6 +29,12 @@ import { GiftDetailComponent } from './pages/gift-detail/gift-detail.component';
 import { MerchantLandingComponent } from '../admin/pages/merchant-landing/merchant-landing.component';
 import { StoreAssistantComponent } from './pages/store-assistant/store-assistant.component';
 import { OrderProcessComponent } from '../admin/pages/order-process/order-process.component';
+import { RegistroKioskoComponent } from './pages/registro-kiosko/registro-kiosko.component';
+import { KioskoViewComponent } from './pages/kiosko-view/kiosko-view.component';
+import { LinksPageComponent } from './pages/links-page/links-page.component';
+import { LinkRegisterComponent } from './pages/link-register/link-register.component';
+import { LinkUpdateComponent } from './pages/link-update/link-update.component';
+import { MyContactRegisterComponent } from './pages/my-contact-register/my-contact-register.component';
 
 const routes: Routes = [
   {
@@ -77,6 +83,30 @@ const routes: Routes = [
   {
     path: 'merchant-landing',
     component: MerchantLandingComponent,
+  },
+  {
+    path: 'registro-kiosko',
+    component: RegistroKioskoComponent,
+  },
+  {
+    path: 'kiosko-view/:userId',
+    component: KioskoViewComponent,
+  },
+  {
+    path: 'links-view/:userId',
+    component: LinksPageComponent,
+  },
+  {
+    path: 'link-register/:userId',
+    component: LinkRegisterComponent,
+  },
+  {
+    path: 'link-update/:userId',
+    component: LinkUpdateComponent,
+  },
+  {
+    path: 'register-my-contact/:userId',
+    component: MyContactRegisterComponent,
   },
   {
     path: ':merchantSlug',
@@ -156,8 +186,8 @@ const routes: Routes = [
       },
       {
         path: 'order-process/:orderId',
-        component: OrderProcessComponent
-      }
+        component: OrderProcessComponent,
+      },
     ],
   },
 ];
@@ -187,6 +217,12 @@ const routes: Routes = [
     GiftDetailComponent,
     MerchantLandingComponent,
     StoreAssistantComponent,
+    RegistroKioskoComponent,
+    KioskoViewComponent,
+    LinksPageComponent,
+    LinkRegisterComponent,
+    LinkUpdateComponent,
+    MyContactRegisterComponent,
   ],
   imports: [
     CommonModule,
