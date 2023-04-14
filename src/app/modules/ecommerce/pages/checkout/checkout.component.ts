@@ -42,6 +42,7 @@ import { WebformsService } from 'src/app/core/services/webforms.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { ClosedQuestionCardComponent } from 'src/app/shared/components/closed-question-card/closed-question-card.component';
 import {
   ExtendedAnswerDefault,
@@ -229,6 +230,7 @@ export class CheckoutComponent implements OnInit {
     private route: ActivatedRoute,
     private toastr: ToastrService,
     private authService: AuthService,
+    public matDialog: MatDialog,
     public dialog: MatDialog,
     private dialogFlowService: DialogFlowService,
     private _WebformsService: WebformsService,
@@ -511,7 +513,7 @@ export class CheckoutComponent implements OnInit {
   deleteProduct(i: number) {
     let deletedID = this.items[i]._id;
     const index = this.items.findIndex((product) => product._id === deletedID);
-    let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    let dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
       data: {
         title: `Borrar producto`,
         description: `Estás seguro que deseas borrar ${
@@ -717,11 +719,20 @@ export class CheckoutComponent implements OnInit {
         });
       } else {
         if (!this.headerService.user || anonymous) {
-          this.router.navigate([`/auth/login`], {
-            queryParams: {
-              orderId: createdOrder,
-              auth: 'anonymous',
+          const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+            data: {
+              loginType: 'phone',
             },
+          });
+          matDialogRef.afterClosed().subscribe(async (value) => {
+            if (!value) return;
+            if (value.user?._id || value.session.user._id) {
+              await this.orderService.authOrder(createdOrder, value._id);
+              this.router.navigate([`../../order-detail/${createdOrder}`], {
+                relativeTo: this.route,
+                replaceUrl: true,
+              });
+            }
           });
           return;
         }

@@ -148,7 +148,7 @@ export class AuthService {
         useMultipart: true,
       },
     });
-    return result ? new User(result) : undefined;
+    return result?.user ? new User(result.user) : undefined;
   }
 
   public async verify(code: string, userId: string, use = true) {

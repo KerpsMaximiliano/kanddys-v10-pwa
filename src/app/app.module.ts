@@ -17,6 +17,7 @@ import { AppComponent } from './app.component';
 import { GraphQLModule } from './graphql.module';
 import { SharedModule } from './shared/shared.module';
 import { NgxImageCompressService } from 'ngx-image-compress';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 @NgModule({
   declarations: [AppComponent],
@@ -46,6 +47,10 @@ import { NgxImageCompressService } from 'ngx-image-compress';
     },
     DecimalPipe,
     NgxImageCompressService,
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: { displayDefaultIndicatorType: false },
+    },
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

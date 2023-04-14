@@ -1,0 +1,144 @@
+<mat-vertical-stepper [linear]="true" #stepper style="min-width: 252px">
+  <mat-step
+    [label]="
+      inputType === 'phone' ? 'Número de teléfono' : 'Correo electrónico'
+    "
+    [state]="inputType === 'phone' ? 'phone' : 'email'"
+    [completed]="phoneNumber.valid || email.valid"
+    [editable]="!newUser"
+  >
+    <form>
+      <div *ngIf="inputType === 'phone'">
+        <div class="wrapper">
+          <ngx-intl-tel-input
+            [cssClass]="'custom'"
+            [enableAutoCountrySelect]="true"
+            [enablePlaceholder]="true"
+            [searchCountryFlag]="true"
+            [selectFirstCountry]="false"
+            [preferredCountries]="preferredCountries"
+            [selectedCountryISO]="CountryISO"
+            maxLength="13"
+            minlength="10"
+            [phoneValidation]="true"
+            [separateDialCode]="true"
+            [customPlaceholder]="'(000) 000-0000'"
+            [numberFormat]="PhoneNumberFormat.International"
+            [formControl]="phoneNumber"
+            tabindex="1"
+          ></ngx-intl-tel-input>
+        </div>
+      </div>
+      <div
+        *ngIf="inputType === 'email'"
+        style="display: flex; flex-direction: column"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>Correo electrónico</mat-label>
+          <input
+            type="email"
+            matInput
+            [formControl]="email"
+            placeholder="Ej. email@ejemplo.com"
+          />
+          <mat-error
+            *ngIf="email.hasError('email') && !email.hasError('required')"
+          >
+            Por favor ingresa un correo electrónico válido
+          </mat-error>
+          <mat-error *ngIf="email.hasError('required')">
+            El correo electrónico es <strong>obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div style="margin-bottom: 8px">
+        <button mat-button type="button" (click)="changeInputType()">
+          Ingresar con
+          {{
+            inputType === "email" ? "número de teléfono" : "correo electrónico"
+          }}
+        </button>
+      </div>
+      <button
+        mat-button
+        type="button"
+        [disabled]="
+          (inputType === 'phone' && phoneNumber.invalid) ||
+          (inputType === 'email' && email.invalid)
+        "
+        (click)="submitPhone()"
+      >
+        <!-- (click)="data?.loginType === 'phone' && submitPhone()" -->
+        Continuar
+      </button>
+    </form>
+  </mat-step>
+  <mat-step
+    [stepControl]="passwordStep"
+    *ngIf="data?.loginType === 'full'"
+    [editable]="false"
+  >
+    <form [formGroup]="passwordStep">
+      <ng-template matStepLabel>Código o contraseña</ng-template>
+      <mat-form-field appearance="outline">
+        <mat-label>{{
+          this.user ? "Código o contraseña" : "Contraseña"
+        }}</mat-label>
+        <input matInput type="password" formControlName="password" required />
+        <mat-hint *ngIf="user"
+          >Te llegará un código y un MagicLink a tu
+          {{
+            inputType === "phone" ? "WhatsApp" : "correo electrónico"
+          }}</mat-hint
+        >
+        <mat-hint *ngIf="!user"
+          >Por defecto son los últimos 4 dígitos de tu teléfono</mat-hint
+        >
+      </mat-form-field>
+      <div>
+        <button
+          mat-button
+          type="button"
+          (click)="submitCodePassword()"
+          [ngStyle]="{ marginTop: !user && '12px' }"
+        >
+          {{ this.user ? "Ingresar" : "Continuar" }}
+        </button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step *ngIf="data?.loginType === 'full' && userStep === 'code'">
+    <form [formGroup]="codeStep">
+      <ng-template matStepLabel>{{
+        userStep === "code" ? "Código de verificación" : "Contraseña"
+      }}</ng-template>
+      <mat-form-field appearance="outline">
+        <mat-label>{{
+          userStep === "code" ? "Código" : "Contraseña"
+        }}</mat-label>
+        <input matInput type="password" formControlName="code" required />
+      </mat-form-field>
+      <div>
+        <button mat-button (click)="submitCodePassword()">Ingresar</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <!-- <mat-step
+    *ngIf="
+      data?.loginType === 'full' &&
+      ((!user?.validatedAt && userStep !== 'phone') || userStep === 'code')
+    "
+  >
+    <form [formGroup]="passwordStep">
+      <ng-template matStepLabel>Contraseña</ng-template>
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" formControlName="password" required />
+      </mat-form-field>
+      <div>
+        <button mat-button (click)="submitCodePassword()">Ingresar</button>
+      </div>
+    </form>
+  </mat-step> -->
+</mat-vertical-stepper>
