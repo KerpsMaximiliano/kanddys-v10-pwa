@@ -1,0 +1,26 @@
+.card {
+  padding: 12px;
+}
+.title {
+  font-size: 1rem;
+}
+.subtitle {
+  margin-bottom: 0;
+  font-size: 0.75;
+}
+.pricing {
+  color: #272727;
+  font-size: 1rem;
+  font-family: SfProMedium;
+}
+.delete-btn {
+  transform: scale(0.85);
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  border: 2px solid #f6f6f6;
+  background-color: #fff;
+}
+::ng-deep .mat-button-wrapper {
+  padding: 0 !important;
+}

@@ -19,7 +19,15 @@ import SwiperCore, { Virtual } from 'swiper/core';
 import { IntegrationsService } from 'src/app/core/services/integrations.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  LoginDialogComponent,
+  LoginDialogData,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 
 SwiperCore.use([Virtual]);
 
@@ -100,8 +108,9 @@ export class StoreComponent implements OnInit {
     public _DomSanitizer: DomSanitizer,
     private authService: AuthService,
     private integrationService: IntegrationsService,
-    private dialog: DialogService,
-    private appService: AppService
+    private dialogService: DialogService,
+    private appService: AppService,
+    private matDialog: MatDialog
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -226,9 +235,14 @@ export class StoreComponent implements OnInit {
       ? this.headerService.order.products.map((subOrder) => subOrder.item)
       : [];
     // Filtrando los productos activos y destacados
-    this.items = items?.listItems.filter(
-      (item) => item.status === 'active' || item.status === 'featured'
-    ).map((item) => ({images: item.images.sort(({index:a},{index:b}) => a>b?1:-1),...item}));
+    this.items = items?.listItems
+      .filter((item) => item.status === 'active' || item.status === 'featured')
+      .map((item) => ({
+        images: item.images.sort(({ index: a }, { index: b }) =>
+          a > b ? 1 : -1
+        ),
+        ...item,
+      }));
 
     for (let i = 0; i < this.items?.length; i++) {
       // Asignando el status a los items del saleflow
@@ -315,7 +329,7 @@ export class StoreComponent implements OnInit {
       });
     }
 
-    this.dialog.open(StoreShareComponent, {
+    this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
         list,
@@ -421,6 +435,21 @@ export class StoreComponent implements OnInit {
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
   }
 
+  logout() {
+    this.authService.signoutThree();
+  }
+
+  login() {
+    this.matDialog.open(LoginDialogComponent, {
+      data: {
+        magicLinkData: {
+          redirectionRoute: `ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
+          entity: 'UserAccess',
+        },
+      } as LoginDialogData,
+    });
+  }
+
   getPageSnapshot() {
     for (const property of Object.keys(this.headerService.storeTemporalData)) {
       if (property !== 'searchBar') {
@@ -474,7 +503,7 @@ export class StoreComponent implements OnInit {
       type: 'added-item',
       data: item._id,
     });
-    this.headerService.storeItem(item);
+    // this.headerService.storeItem(item);
 
     this.items[index].isSelected = !this.items[index].isSelected;
   }

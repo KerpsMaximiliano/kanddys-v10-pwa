@@ -1,0 +1,55 @@
+<ng-container [ngSwitch]="status">
+  <ng-container *ngSwitchCase="'SHOWING_DIALOG_FLOW'">
+    <app-dialog-flow
+      *ngIf="dialogs?.length"
+      [dialogFlowId]="flowId"
+      [status]="opened ? 'OPEN' : 'CLOSE'"
+      [dialogs]="dialogs"
+      (saveConfigRef)="swiperConfig = $event"
+      (moveToDialogRef)="setMoveToDialog($event)"
+      (closingDialogSignal)="closeDialogFlow()"
+    ></app-dialog-flow>
+  </ng-container>
+  <ng-container *ngSwitchCase="'ASKING_FOR_ANOTHER_QUESTION'">
+    <div class="overlay-wrapper" *ngIf="opened">
+      <div class="overlay">
+        <div class="dialog-wrapper">
+          <h3>{{questionEditMode ? '¿Estás seguro de los cambios?' : '¿Añadiras otra pregunta?'}}</h3>
+          <div class="option-wrapper" (click)="addAnotherQuestionOrUpdateWebform()">
+            <div class="background"></div>
+            <div class="option">Si</div>
+          </div>
+          <div class="option-wrapper" (click)="createWebformOrCancelChanges()">
+            <div class="background"></div>
+            <div class="option">No</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'ENDED_CREATION'">
+    <div class="overlay-wrapper" *ngIf="opened">
+      <div class="overlay">
+        <app-msg-dialog
+          [item]="item"
+          [title]="questionEditMode ? 'Pregunta actualizada!!!' : 'Formulario actualizado!!!'"
+          [optionalQuestionsNumber]="optionalQuestions"
+          [requiredQuestionsNumber]="requiredQuestions"
+          (closeSignal)="closeDialogFlow(true)"
+        ></app-msg-dialog>
+      </div>
+    </div>
+  </ng-container>
+  <!--
+      <ng-container *ngSwitchCase="'SHOWING_SELECTIONS_EDITOR'">
+        <div class="overlay-wrapper">
+          <div class="overlay">
+            <div class="dialog">
+                <app-webform-multiple-selection-confirmation></app-webform-multiple-selection-confirmation>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+  -->
+</ng-container>

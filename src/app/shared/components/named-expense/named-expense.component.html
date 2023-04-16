@@ -1,0 +1,30 @@
+<mat-card
+  class="card"
+  [ngClass]="{
+    'mat-elevation-z0': !shadow,
+    'mat-elevation-z2': shadow
+  }"
+  [ngStyle]="{
+    borderTopLeftRadius: showIcon ? '17px' : '0',
+    paddingLeft: showIcon ? '32px' : '0'
+  }"
+>
+  <button
+    *ngIf="showIcon"
+    class="delete-btn mat-elevation-z0"
+    mat-mini-fab
+    aria-label="Delete expense"
+    style="color: #000"
+    (click)="onDelete.emit()"
+  >
+    <mat-icon>delete_outline</mat-icon>
+  </button>
+  <mat-card-header>
+    <mat-card-title class="title">{{ title }}</mat-card-title>
+    <mat-card-subtitle class="subtitle">{{ subtitle }}</mat-card-subtitle>
+    <div style="flex: 1"></div>
+    <div class="pricing">
+      <span>${{ pricing | number }}</span>
+    </div>
+  </mat-card-header>
+</mat-card>

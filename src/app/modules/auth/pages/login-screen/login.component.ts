@@ -1116,12 +1116,15 @@ export class LoginComponent implements OnInit {
           image: this.image,
           platform: 'bank-transfer',
           transactionCode: '',
+          subtotal: this.paymentAmount
         },
         order.user._id,
         'bank-transfer',
         order._id
       );
     }
+
+    // if (!order.orderStatusDelivery) await this.orderService.orderSetStatusDeliveryWithoutAuth("in progress", order._id);
 
     if (order.items[0].post) {
       this.postsService.postAddUser(order.items[0].post._id, id);

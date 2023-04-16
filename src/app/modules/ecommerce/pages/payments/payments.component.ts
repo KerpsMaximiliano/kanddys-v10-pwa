@@ -31,6 +31,11 @@ import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions } from 'swiper';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
 import { Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  LoginDialogComponent,
+  LoginDialogData,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-payments',
@@ -44,6 +49,8 @@ export class PaymentsComponent implements OnInit {
   selectedBank: Bank;
   selectedOption: number;
   image: File;
+  subtotal: number;
+  deliveryAmount: number;
   paymentAmount: number;
   banks: Bank[];
   order: ItemOrder;
@@ -265,7 +272,8 @@ export class PaymentsComponent implements OnInit {
     private dialogService: DialogService,
     private toastrService: ToastrService,
     private entityTemplateService: EntityTemplateService,
-    private authService: AuthService
+    private authService: AuthService,
+    private matDialog: MatDialog
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -302,10 +310,22 @@ export class PaymentsComponent implements OnInit {
             this.orderCompleted();
             return;
           }
+          // Cálculo del subtotal (monto acumulado de todos los artículos involucrados en la orden)
+          this.subtotal = this.order.subtotals.reduce(
+            (a, b) => (b?.type === 'item' ? a + b.amount : a),
+            0
+          );
+          // Cálculo del monto de los costos de envío
+          this.deliveryAmount = this.order.subtotals.reduce(
+            (a, b) => (b?.type === 'delivery' ? a + b.amount : a),
+            0
+          );
+          // Cálculo del monto total de la orden (sumatoria de todos los subtotales)
           this.paymentAmount = this.order.subtotals.reduce(
             (a, b) => a + b.amount,
             0
           );
+
           if (this.order.items[0].customizer)
             this.paymentAmount = this.paymentAmount * 1.18;
           this.merchant = await this.merchantService.merchant(
@@ -487,30 +507,28 @@ export class PaymentsComponent implements OnInit {
           localStorage.removeItem('registered-user');
         } else {
           unlockUI();
-          this.router.navigate([`/auth/login`], {
-            queryParams: {
-              orderId: this.order._id,
-              auth: 'payment',
+          const dialogRef = this.matDialog.open(LoginDialogComponent, {
+            data: {
+              loginType: 'phone',
             },
-            state: {
-              image: this.image,
-            },
+          });
+          dialogRef.afterClosed().subscribe(async (value) => {
+            if (!value) {
+              this.disableButton = false;
+              return;
+            }
+            const userId = value.user?._id || value.session.user._id;
+            if (userId) {
+              this.order = (
+                await this.orderService.authOrder(this.order._id, userId)
+              ).authOrder;
+              this.payOrder();
+            }
           });
           return;
         }
       }
-      await this.orderService.payOrder(
-        {
-          image: this.image,
-          platform: 'bank-transfer',
-          transactionCode: '',
-        },
-        this.order.user._id,
-        'bank-transfer',
-        this.order._id
-      );
-      unlockUI();
-      this.orderCompleted();
+      this.payOrder();
       return;
     }
     const payment = await this.orderService.createPartialOCR(
@@ -519,6 +537,22 @@ export class PaymentsComponent implements OnInit {
       this.image,
       this.headerService.user?._id
     );
+    this.orderCompleted();
+  }
+
+  async payOrder() {
+    await this.orderService.payOrder(
+      {
+        image: this.image,
+        platform: 'bank-transfer',
+        transactionCode: '',
+        subtotal: this.paymentAmount,
+      },
+      this.order.user._id,
+      'bank-transfer',
+      this.order._id
+    );
+    unlockUI();
     this.orderCompleted();
   }
 
@@ -547,12 +581,17 @@ export class PaymentsComponent implements OnInit {
           window.location.href = result.url;
         }
       } else {
-        this.router.navigate([`/auth/login`], {
-          queryParams: {
-            orderId: this.order._id,
-            onlinePayment: 'payment-with-stripe',
+        this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'full',
           },
         });
+        // this.router.navigate([`/auth/login`], {
+        //   queryParams: {
+        //     orderId: this.order._id,
+        //     onlinePayment: 'payment-with-stripe',
+        //   },
+        // });
       }
     } else if (paymentOptionName === 'Paypal') {
       if (this.currentUser) {
@@ -565,12 +604,17 @@ export class PaymentsComponent implements OnInit {
           window.location.href = result;
         }
       } else {
-        this.router.navigate([`/auth/login`], {
-          queryParams: {
-            orderId: this.order._id,
-            onlinePayment: 'payment-with-stripe',
+        this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'full',
           },
         });
+        // this.router.navigate([`/auth/login`], {
+        //   queryParams: {
+        //     orderId: this.order._id,
+        //     onlinePayment: 'payment-with-stripe',
+        //   },
+        // });
       }
     } else if (paymentOptionName === 'Tarjeta de crédito') {
       if (this.currentUser && this.logged && this.currentUser.email)
@@ -578,16 +622,37 @@ export class PaymentsComponent implements OnInit {
       else if (this.currentUser && this.logged && !this.currentUser.email) {
         this.openedDialogFlow = true;
       } else {
-        this.router.navigate(['auth/login'], {
-          queryParams: {
-            orderId: this.order._id,
-            auth: 'azul-login',
-            paymentWithAzul: true,
-            redirect:
-              window.location.href.split('/').slice(3).join('/') +
-              '?redirectToAzul=true',
-          },
+        const dialogRef = this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'full',
+            magicLinkData: {
+              redirectionRoute:
+                window.location.href.split('/').slice(3).join('/') +
+                '?redirectToAzul=true',
+              entity: 'UserAccess',
+            },
+          } as LoginDialogData,
         });
+        dialogRef.afterClosed().subscribe(async (value) => {
+          if (!value) return;
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+              redirectToAzul: true,
+            },
+          });
+        });
+
+        // this.router.navigate(['auth/login'], {
+        //   queryParams: {
+        //     orderId: this.order._id,
+        //     auth: 'azul-login',
+        //     paymentWithAzul: true,
+        //     redirect:
+        //       window.location.href.split('/').slice(3).join('/') +
+        //       '?redirectToAzul=true',
+        //   },
+        // });
       }
     }
   }

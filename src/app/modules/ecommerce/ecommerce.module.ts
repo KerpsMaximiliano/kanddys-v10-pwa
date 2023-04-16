@@ -20,18 +20,23 @@ import { ArticleAccessComponent } from './pages/article-access/article-access.co
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
-import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
-import { PostEditionComponent } from './pages/post-edition/post-edition.component';
-import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
-import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
-
-import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { ContactLandingComponent } from 'src/app/shared/components/contact-landing/contact-landing.component';
 import { CollectionsComponent } from 'src/app/modules/ecommerce/pages/collections/collections.component';
 import { TagItemsComponent } from 'src/app/modules/ecommerce/pages/tag-items/tag-items.component';
 import { GiftDetailComponent } from './pages/gift-detail/gift-detail.component';
+import { MerchantLandingComponent } from '../admin/pages/merchant-landing/merchant-landing.component';
+import { StoreAssistantComponent } from './pages/store-assistant/store-assistant.component';
+import { OrderProcessComponent } from '../admin/pages/order-process/order-process.component';
+import { RegistroKioskoComponent } from './pages/registro-kiosko/registro-kiosko.component';
+import { KioskoViewComponent } from './pages/kiosko-view/kiosko-view.component';
+import { LinksPageComponent } from './pages/links-page/links-page.component';
+import { LinkRegisterComponent } from './pages/link-register/link-register.component';
+import { LinkUpdateComponent } from './pages/link-update/link-update.component';
+import { MyContactRegisterComponent } from './pages/my-contact-register/my-contact-register.component';
+import { PostEditionComponent } from './pages/post-edition/post-edition.component';
+import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 
 const routes: Routes = [
   {
@@ -76,6 +81,34 @@ const routes: Routes = [
   {
     path: 'gift-detail/:orderId',
     component: GiftDetailComponent,
+  },
+  {
+    path: 'merchant-landing',
+    component: MerchantLandingComponent,
+  },
+  {
+    path: 'registro-kiosko',
+    component: RegistroKioskoComponent,
+  },
+  {
+    path: 'kiosko-view/:userId',
+    component: KioskoViewComponent,
+  },
+  {
+    path: 'links-view/:userId',
+    component: LinksPageComponent,
+  },
+  {
+    path: 'link-register/:userId',
+    component: LinkRegisterComponent,
+  },
+  {
+    path: 'link-update/:userId',
+    component: LinkUpdateComponent,
+  },
+  {
+    path: 'register-my-contact/:userId',
+    component: MyContactRegisterComponent,
   },
   {
     path: ':merchantSlug',
@@ -130,26 +163,6 @@ const routes: Routes = [
         component: PaymentsComponent,
       },
       {
-        path: 'post-edition',
-        component: PostEditionComponent,
-      },
-      {
-        path: 'post-preview',
-        component: PostPreviewComponent,
-      },
-      {
-        path: 'image-banner',
-        component: ImageBannerComponent,
-      },
-      {
-        path: 'qr-edit',
-        component: QrEditComponent,
-      },
-      {
-        path: 'text-edition-and-preview',
-        component: TextEditionAndPreviewComponent,
-      },
-      {
         path: 'collections',
         component: CollectionsComponent,
       },
@@ -168,7 +181,23 @@ const routes: Routes = [
       {
         path: 'contact-landing/:idUser',
         component: ContactLandingContainerComponent,
-      }
+      },
+      {
+        path: 'store-assistant',
+        component: StoreAssistantComponent,
+      },
+      {
+        path: 'order-process/:orderId',
+        component: OrderProcessComponent,
+      },
+      {
+        path: 'post-edition',
+        component: PostEditionComponent,
+      },
+      {
+        path: 'post-preview',
+        component: PostPreviewComponent,
+      },
     ],
   },
 ];
@@ -191,11 +220,21 @@ const routes: Routes = [
     ArticleAccessComponent,
     ArticleDetailComponent,
     CreateArticleComponent,
-    TextEditionAndPreviewComponent,
     TermsOfUseComponent,
+    ContactLandingContainerComponent,
     CollectionsComponent,
     TagItemsComponent,
     GiftDetailComponent,
+    MerchantLandingComponent,
+    StoreAssistantComponent,
+    RegistroKioskoComponent,
+    KioskoViewComponent,
+    LinksPageComponent,
+    LinkRegisterComponent,
+    LinkUpdateComponent,
+    MyContactRegisterComponent,
+    PostEditionComponent,
+    PostPreviewComponent
   ],
   imports: [
     CommonModule,

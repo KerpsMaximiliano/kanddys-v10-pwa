@@ -1,0 +1,81 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.imgGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  gap: 5px;
+}
+
+.title {
+  font-family: SfProBold;
+  font-size: 23px;
+}
+
+.radio {
+  margin-top: 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+
+  .radioImg {
+    cursor: pointer;
+    object-fit: cover;
+    border-radius: 9px;
+    width: 104px;
+    height: 142px;
+  }
+
+  @media (max-width: 427px) {
+    .radioImg {
+      width: 88px;
+      height: 120px;
+    }
+  }
+  @media (max-width: 374px) {
+    .radioImg {
+      width: 73px;
+      height: 100px;
+    }
+  }
+
+  .radioButton {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1px solid #707070;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+
+    &.active {
+      border: none;
+      background-color: #82F18D;
+    }
+  }
+}
+
+.another-response {
+  padding: 23px 16px 23px 16px;
+  resize: none;
+  height: 92.19px;
+  border: none;
+  border-radius: 11px;
+  box-shadow: #d2d2d2 0px 4px 7px 0px inset;
+  font-family: RobotoMedium;
+  color: #000;
+  font-size: 17px;
+  width: 100%;
+  margin-top: 15.7px;
+
+  &::placeholder {
+    color: #a1a1a1;
+  }
+}

@@ -1,0 +1,46 @@
+.header {
+  display: flex;
+  align-items: center;
+  background-color: #a1a1a1;
+  justify-content: space-between;
+
+  p {
+    margin: 0;
+    color: #293628;
+    font-size: 1rem;
+    font-family: SfProMedium;
+  }
+}
+.info {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 12px;
+
+  .title {
+    font-family: SfProSemiBold;
+    font-size: 0.75rem;
+    color: #272727;
+  }
+}
+.benefits {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+
+  .amount {
+    font-size: 1rem;
+    font-family: SfProBold;
+    color: #293628;
+  }
+  .percentage {
+    font-family: SfProMedium;
+    font-size: 0.875rem;
+    color: #7b7b7b;
+  }
+}
+.month-list {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

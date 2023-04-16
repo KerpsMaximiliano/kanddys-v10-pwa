@@ -62,11 +62,12 @@ export class WebformInputSelectorComponent implements OnInit {
 
   async save() {
     console.log("saving...");
+
+    /*
     await this.webforms.createWebform(
       {
         name: "Webform pro"
-      },
-      this.merchant._id
+      }
     ).then(async webform => {
       if (webform) {
         console.log(webform);
@@ -109,7 +110,7 @@ export class WebformInputSelectorComponent implements OnInit {
           })
         }
       }
-    });
+    });*/
   }
 
 }

@@ -104,6 +104,8 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
     CountryISO.UnitedStates,
   ];
 
+  @Input() public optionAction?: (args?: any) => any;
+
   constructor(private dialogFlowService: DialogFlowService) {}
 
   ngOnInit(): void {
@@ -150,6 +152,8 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
         fields: this.fields.list,
         valid: this.controller.valid,
       });
+
+      this.optionAction?.({ value, fields: this.fields.list, valid: this.controller.valid });
     });
   }
 

@@ -1,0 +1,72 @@
+<div *ngIf="!kioskoView">
+  <div
+    class="container"
+    *ngFor="let card of cards"
+    [style]="{ background: card.bg }"
+  >
+    <div class="top">
+      <img [src]="card.img" alt="" />
+      <div class="right">
+        <p class="title">{{ card.title }}</p>
+        <p class="subtitle">{{ card.subtitle }}</p>
+      </div>
+    </div>
+    <div class="bottom" *ngIf="card.bottom === true">
+      <p class="bottomText">
+        <span style="font-family: SFProBold; font-size: 17px">{{
+          card.bottomTextBold
+        }}</span>
+        ó
+        {{ card.bottomText }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- -------------------------------------------- KIOSKO MODE -------------------------------------------- -->
+
+<div *ngIf="kioskoView">
+  <div
+    class="container"
+    style="padding-top: 0px"
+    *ngFor="let card of cards; index as i"
+    [style]="{ background: card.bg }"
+  >
+    <button
+      class="circle"
+      (click)="sendIndex(i)"
+      mat-fab
+      [matMenuTriggerFor]="menu"
+      aria-label="Menu button"
+      class="btn"
+    >
+      <img [src]="env + '/dots-black.svg'" alt="" />
+    </button>
+    <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
+      <ng-container *ngIf="options.length">
+        <button
+          mat-menu-item
+          class="menu-item"
+          (click)="option.callback()"
+          *ngFor="let option of options; index as i"
+        >
+          <span>{{ option.text }}</span>
+          <!-- <mat-icon *ngIf="option.icon">{{ option.icon }}</mat-icon> -->
+        </button>
+      </ng-container>
+    </mat-menu>
+    <div class="top">
+      <img [src]="card.img" alt="" />
+      <div class="right">
+        <p class="title">{{ card.title }}</p>
+        <p class="subtitle">{{ card.subtitle }}</p>
+        <p class="subtitle" style="color: #2874ad">{{ card.bottomTextBold }}</p>
+      </div>
+    </div>
+    <!-- <div class="bottom" style="border: none" *ngIf="card.bottom === true">
+      <p class="bottomText">
+        <span style="color: #2874ad">{{ card.bottomTextBold }}</span>
+      </p>
+    </div> -->
+  </div>
+</div>

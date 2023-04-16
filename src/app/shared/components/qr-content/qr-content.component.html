@@ -1,5 +1,5 @@
 <div class="top-flex">
-  <h4>Contenido del QR</h4>
+  <h4>{{ title }}</h4>
 
   <svg
     (click)="emitClick()"
@@ -95,8 +95,6 @@
     class="placeholder"
     *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)"
   >
-    <!-- Incluyes fotos, memes, videos, música o chistes de la Inteligencia
-    Artificial. -->
     {{ defaultText }}
   </p>
 </div>

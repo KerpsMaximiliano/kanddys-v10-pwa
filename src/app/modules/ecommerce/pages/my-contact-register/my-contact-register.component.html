@@ -1,0 +1,48 @@
+<div class="container">
+  <header class="header">
+    <button (click)="goBack()">
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
+    </button>
+  </header>
+
+  <div class="content">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px">
+      <div class="input-wrapper">
+        <p class="label">Nombre</p>
+        <input type="text" #name (input)="onNameInput(name)" />
+      </div>
+      <div class="input-wrapper">
+        <p class="label">Apellido</p>
+        <input type="text" #lastname (input)="onLastInput(lastname)" />
+      </div>
+    </div>
+
+    <div class="input-wrapper" style="margin-top: 67px">
+      <p class="label">TITULO DEBAJO DEL NOMBRE DEL EMPRENDEDOR</p>
+      <input type="text" #title (input)="onTitleInput(title)" />
+    </div>
+
+    <div class="input-wrapper" style="margin-top: 67px">
+      <p class="label">bio del emprendedor</p>
+      <input type="text" #bio (input)="onBioInput(bio)" />
+    </div>
+
+    <div class="input-wrapper" style="margin-top: 42.5px">
+      <p class="label">imagen</p>
+
+      <div *ngIf="!file">
+        <app-item-images
+          [myContact]="true"
+          (enteredImages)="onImageInput($event)"
+        ></app-item-images>
+      </div>
+      <div
+        *ngIf="file"
+        [ngStyle]="{ backgroundImage: 'url(' + base64 + ')' }"
+        class="preview"
+      ></div>
+    </div>
+  </div>
+
+  <button class="cta" (click)="save()">Guarda tu contacto</button>
+</div>

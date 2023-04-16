@@ -446,6 +446,33 @@ a {
   box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
 }
 
+.benefits-btn {
+  height: 48px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  cursor: pointer;
+
+  p {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  span {
+    font-family: SfProBold;
+    color: #293628;
+    font-size: 1rem;
+  }
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
 .space-between {
   display: flex;
   justify-content: space-between;
@@ -621,10 +648,16 @@ table {
     color: #000000;
     font-family: SFProMedium;
     font-size: 17px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .bottom-text {
     margin-top: 12.5px;
     color: #7b7b7b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -760,6 +793,33 @@ table {
     -webkit-line-clamp: 1;
     line-clamp: 1;
     -webkit-box-orient: vertical;
+  }
+
+  span {
+    text-transform: capitalize;
+  }
+}
+
+.question-img-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  .image {
+    margin-top: 12.5px;
+    width: 86px;
+    height: 86px;
+    border-radius: 6px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .bottom-label {
+    margin-top: 5px;
+    color: #7b7b7b;
+    font-size: 13px;
+    font-family: SfProBold;
   }
 }
 

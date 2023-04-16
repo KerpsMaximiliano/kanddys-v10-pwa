@@ -30,10 +30,23 @@
         alt=""
         style="margin: 0px 5px; margin-bottom: -4px"
       />
+
+      a
+      <span>{{ order.items[0].saleflow.merchant.name }}</span>
     </p>
   </a>
   <ng-container *ngIf="isMerchant && order.orderStatus !== 'draft'">
-    <div style="padding-top: 5px; margin-bottom: 5px">
+    <a
+      class="benefits-btn"
+      [routerLink]="['../../../admin/order-expenses', order._id]"
+      queryParamsHandling="merge"
+    >
+      <p>INGRESOS MENOS EGRESOS</p>
+      <span>
+        ${{ (benefits ? benefits.benefits - benefits.less : 0) | number }}
+      </span>
+    </a>
+    <div style="padding-top: 4px; margin-bottom: 4px">
       <app-dropdown-menu
         [optionsList]="deliveryStatusOptions"
         [multiple]="false"
@@ -145,33 +158,81 @@
                 style="padding: 1rem !important; z-index: 99"
               />
 
-              <video
-                [src]="item.item.images[0].value"
-                [id]="'media' + item._id"
-                class="video"
-                [muted]="true"
-              ></video>
-            </div>
-          </button>
-          <div class="right" style="width: 100%">
-            <div class="top-flex">
-              <p class="left-text">
-                {{ item.amount }}x {{ item.item.name || "artículo(s)" }}
+                <video
+                  [src]="item.item.images[0].value"
+                  [id]="'media' + item._id"
+                  class="video"
+                  [muted]="true"
+                ></video>
+              </div>
+            </button>
+            <div class="right" style="width: 100%">
+              <div class="top-flex">
+                <p class="left-text">
+                  {{ item.amount }}x {{ item.item.name || "artículo(s)" }}
+                </p>
+                <p class="right-text">
+                  ${{ order.subtotals[i].amount | number }}
+                </p>
+              </div>
+              <p class="grey">
+                {{ item.item.description }}
               </p>
-              <p class="right-text">
-                ${{ order.subtotals[i].amount | number }}
-              </p>
             </div>
-            <p class="grey">
-              {{ item.item.description }}
-            </p>
+            <!-- <div class="question">
+              <p class="top-text">Que irá escrito en el globo?</p>
+              <p class="bottom-text">RespuestaID</p>
+            </div> -->
           </div>
-          <!-- <div class="question">
-            <p class="top-text">Que irá escrito en el globo?</p>
-            <p class="bottom-text">RespuestaID</p>
-          </div> -->
         </div>
-      </div>
+
+        <ng-container *ngIf="answersByItem[item._id]">
+          <ng-container
+            *ngFor="let question of answersByItem[item._id].response"
+          >
+            <div *ngIf="question.question" class="webform-question-wrapper">
+              <div class="question">
+                <p class="top-text">{{ question.question }}</p>
+                <p
+                  class="bottom-text"
+                  *ngIf="!question.isMedia && !question.label"
+                >
+                  {{ question.value }}
+                </p>
+                <p
+                  class="bottom-text"
+                  *ngIf="!question.isMedia && question.label"
+                >
+                  {{ question.value + " " + question.label }}
+                </p>
+                <p
+                  class="bottom-text"
+                  *ngIf="question.isMedia && question.label"
+                >
+                  {{ question.label }}
+                </p>
+
+                <div class="question-img-wrapper" *ngIf="question.isMedia">
+                  <div
+                    class="image"
+                    (click)="openImageModal(question.value)"
+                    [ngStyle]="{
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover',
+                      backgroundImage:
+                        'url(' +
+                        question.value +
+                        '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                    }"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
       <div
         class="items-container space-between"
         style="padding: 11px 30px 12px 33px; margin-top: 5px"
@@ -215,9 +276,8 @@
           (mousemove)="moveEvent($event, elemt)"
         >
           <button
-            mat-button
+            class="btn"
             (click)="order.ocr ? openImageModal(order.ocr.image) : null"
-            style="padding: 0"
           >
             <div
               class="image"
@@ -227,17 +287,20 @@
                     ? 'url(' + order.ocr.image + ') '
                     : payedWithAzul
                     ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
-                    : 'url(/assets/images/noimage.png)'
+                    : 'url(/assets/images/noimage.png)',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundSize: 'cover'
               }"
             >
-              <img
+              <!-- <img
                 *ngIf="order.ocr"
                 [src]="
                   order.ocr ? order.ocr.image : '/assets/images/noimage.png'
                 "
                 alt="item image"
                 class="item-image"
-              />
+              /> -->
             </div>
           </button>
         </div>

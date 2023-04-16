@@ -1,0 +1,111 @@
+.example-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+}
+
+.container {
+  // position: fixed;
+  // width: 100%;
+  // max-width: 500px;
+  // display: flex;
+  // z-index: 999;
+
+  width: 100%;
+  max-width: 500px;
+  position: fixed;
+  top: auto;
+  bottom: 0px;
+  z-index: 1001;
+
+  button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 24px;
+    bottom: 0;
+  }
+}
+
+::ng-deep .mat-fab .mat-button-wrapper {
+  padding: 0px !important;
+}
+
+.mat-flat-button.mat-accent,
+.mat-raised-button.mat-accent,
+.mat-fab.mat-accent,
+.mat-mini-fab.mat-accent {
+  background-color: #293628;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+
+  .btn-icon {
+    padding: 0;
+    color: #82f18d;
+  }
+}
+
+::ng-deep .menu {
+  background-color: #272727;
+  border-radius: 11px !important;
+  margin-bottom: 5px;
+  position: relative !important;
+  z-index: 999 !important;
+
+  .menu-item {
+    // border-bottom: 1px solid #707070;
+    // width: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    line-height: 35px !important;
+    height: 35px !important;
+    span {
+      font-family: SFProLight;
+      font-size: 17px;
+      color: #82f18d;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    mat-icon {
+      color: #fff;
+      margin: 0;
+    }
+    .circle {
+      height: 30px;
+      width: 30px;
+      filter: brightness(0) invert(100%) sepia(0%) saturate(7467%)
+        hue-rotate(300deg) brightness(115%) contrast(100%);
+    }
+  }
+
+  .menu-item:last-child {
+    border-bottom: none;
+  }
+}
+
+::ng-deep .cdk-overlay-pane {
+  width: 100% !important;
+  max-width: 500px !important;
+  margin-right: -24px !important;
+}
+
+::ng-deep .mat-menu-panel {
+  max-width: 500px !important;
+  width: 100% !important;
+  border-radius: 2px !important;
+  background-color: #293628 !important;
+}
+
+.bar {
+  height: 1px;
+  background-color: rgba(#82f18d, 0.37);
+  width: 100%;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}

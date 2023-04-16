@@ -8,16 +8,15 @@
   border-top-right-radius: 0px;
   border-color: #c7cace;
   margin-top: -1px;
-  // max-width: calc(500px - 66px);
-  // width: calc(100vw - 66px);
-  width: 358px;
+  max-width: calc(500px - 66px);
+  width: calc(100vw - 66px);
 }
 
 .iti .iti__country-list {
   box-shadow: none;
   font-size: 14px;
   margin-left: 0;
-  //   width: 244px;
+//   width: 244px;
   max-height: 170px;
 }
 
@@ -38,12 +37,9 @@
 }
 
 @media screen and (max-width: 479px) {
-  //   .iti .iti__country-list {
-  // width: 88.3vw;
-  //   }
-  .iti .dropdown-menu.country-dropdown {
-    width: 255px;
-  }
+//   .iti .iti__country-list {
+    // width: 88.3vw;
+//   }
 }
 
 ngx-intl-tel-input input {
@@ -59,7 +55,7 @@ ngx-intl-tel-input input {
   border-radius: 10px;
   padding: 0px 20px;
   width: 100%;
-  height: 64px;
+  height: 73px;
   font-family: RobotoMedium;
   font-size: 20px;
   border: none;

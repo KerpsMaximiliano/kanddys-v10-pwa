@@ -5,3 +5,10 @@ export const generateResponseForTemplate = gql`
     generateResponseForTemplate(templateObject: $templateObject, templateId: $templateId)
   }
 `;
+
+
+export const requestQAResponse = gql`
+  query requestQAResponse($saleflowId: String!, $prompt: String!) {
+    requestQAResponse(saleflowId: $saleflowId, prompt: $prompt)
+  }
+`;

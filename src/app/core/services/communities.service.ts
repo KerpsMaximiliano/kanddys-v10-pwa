@@ -9,13 +9,13 @@ import {
   createCommunity,
   myCommunities,
   removeMember,
-  communities, 
+  communities,
   hotCommunity,
-  hotCommunities
+  hotCommunities,
+  communitycategories,
 } from './../graphql/communities.gql';
 import { Community } from './../models/community';
 import { User } from './../models/user';
-
 
 @Injectable({ providedIn: 'root' })
 export class CommunitiesService {
@@ -43,7 +43,7 @@ export class CommunitiesService {
         fetchPolicy: 'no-cache',
       });
       return new Community(result);
-    }else{
+    } else {
       const { community: result } = await this.graphql.query({
         query: community,
         variables: { id },
@@ -62,7 +62,10 @@ export class CommunitiesService {
     return (result || []).map((r: any) => new Community(r));
   }
 
-  async showCommunities(params: ListParams = {}, isHot?: boolean): Promise<Community[]> {
+  async showCommunities(
+    params: ListParams = {},
+    isHot?: boolean
+  ): Promise<Community[]> {
     if (isHot) {
       const { communities: result = [] } = await this.graphql.query({
         query: hotCommunities,
@@ -109,5 +112,16 @@ export class CommunitiesService {
     });
     if (!result) return undefined;
     return new Community(result);
+  }
+
+  async communitycategories(params: ListParams) {
+    const result = await this.graphql.query({
+      query: communitycategories,
+      variables: { params },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return undefined;
+    console.log(result);
+    return result;
   }
 }

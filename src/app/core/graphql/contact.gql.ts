@@ -9,6 +9,7 @@ export const createContact = gql`
       name
       decription
       banner
+      type
     }
   }
 `;

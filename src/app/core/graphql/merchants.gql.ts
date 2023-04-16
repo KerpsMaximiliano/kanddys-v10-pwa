@@ -231,6 +231,9 @@ export const ordersByMerchant = gql`
       subtotals {
         amount
       }
+      answers {
+        reference
+      }
       user {
         phone
         email
@@ -275,6 +278,7 @@ export const ordersByMerchant = gql`
         status
         access
       }
+      expenditures
       dateId
       createdAt
       tags

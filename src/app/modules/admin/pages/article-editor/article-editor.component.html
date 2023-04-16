@@ -1,42 +1,108 @@
 <div class="container">
-  <app-helper-headerv2
-    [mode]="'basic'"
-    [fixed]="true"
-    [icon]="{
-      src: '/arrow-double-up.svg',
-      width: 17,
-      height: 21,
-      callback: iconCallback,
-      filter: 'brightness(0)'
-    }"
-    [rightText]="{
-      text: 'PREVIEW',
-      fontSize: '0.963rem',
-      fontFamily: 'SfProBold',
-      color: '#272727',
-      pointer: true
-    }"
-    [icons]="[
-      {
-        src: '/bookmark-plus.svg',
-        color: 'brightness(0)',
-        margin: '1px',
-        callback: openTagDialog
-      }
-    ]"
-    [dots]="{
-      active: true,
-      color: '#272727'
-    }"
-    (dotEvent)="openOptionsForThisArticle()"
-    (agnosticAction)="previewItem()"
-    [returnAble]="false"
-    [bgColor]="'#FFFFFF'"
-    (return)="goBack()"
-  ></app-helper-headerv2>
+  <div class="header">
+    <img
+      [src]="env + '/arrow-double-up-black.svg'"
+      alt="go back"
+      class="back-icon"
+      (click)="iconCallback()"
+    />
+
+    <div class="links">
+      <div
+        class="link"
+        (click)="!webform ? openWebformCreator() : goToWebformMetrics()"
+      >
+        Formulario
+      </div>
+      <div class="link">Facturas</div>
+      <div class="link" (click)="previewItem()">Preview</div>
+    </div>
+
+    <img
+      [src]="env + '/dots-black.svg'"
+      alt="go back"
+      class="dots"
+      (click)="openOptionsForThisArticle()"
+    />
+  </div>
+
+  <!--
+    <app-helper-headerv2
+      [mode]="'basic'"
+      [fixed]="true"
+      [icon]="{
+        src: '/arrow-double-up.svg',
+        width: 17,
+        height: 21,
+        callback: iconCallback,
+        filter: 'brightness(0)'
+      }"
+      [rightText]="{
+        text: 'PREVIEW',
+        fontSize: '0.963rem',
+        fontFamily: 'SfProBold',
+        color: '#272727',
+        pointer: true
+      }"
+      [icons]="[
+        {
+          src: '/bookmark-plus.svg',
+          color: 'brightness(0)',
+          margin: '1px',
+          callback: openTagDialog
+        }
+      ]"
+      [dots]="{
+        active: true,
+        color: '#272727'
+      }"
+      (dotEvent)="openOptionsForThisArticle()"
+      (agnosticAction)="previewItem()"
+      [returnAble]="false"
+      [bgColor]="'#FFFFFF'"
+      (return)="goBack()"
+    ></app-helper-headerv2>
+  -->
 
   <div class="toast-status" *ngIf="item?.status === 'disabled'">
     <p>Este artículo solo lo ves tú.</p>
+  </div>
+
+  <button class="config">
+    <img [src]="env + '/settings.svg'" alt="" />
+    <span>Configuraciones</span>
+  </button>
+
+  <div class="section">
+    <!-- <app-title-icon-header
+      title="Slides, contenido del QR"
+      [editing]="!editingSlides"
+      (iconClicked)="editSlides()"
+    >
+    </app-title-icon-header> -->
+    <app-qr-content
+      title="SLIDES"
+      *ngIf="slides"
+      [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
+    <app-qr-content
+      *ngIf="!slides"
+      [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
+      [shadows]="false"
+      (buttonClicked)="goEditSlides()"
+    ></app-qr-content>
   </div>
 
   <div class="section" style="padding-top: 52px">
@@ -67,39 +133,8 @@
   </div>
 
   <div class="section">
-    <!-- <app-title-icon-header
-      title="Slides, contenido del QR"
-      [editing]="!editingSlides"
-      (iconClicked)="editSlides()"
-    >
-    </app-title-icon-header> -->
-    <app-qr-content
-      *ngIf="slides"
-      [slides]="slides"
-      [defaultText]="
-        !loadingSlides
-          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
-          : 'Cargando...'
-      "
-      [shadows]="false"
-      (buttonClicked)="goEditSlides()"
-    ></app-qr-content>
-    <app-qr-content
-      *ngIf="!slides"
-      [slides]="slides"
-      [defaultText]="
-        !loadingSlides
-          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
-          : 'Cargando...'
-      "
-      [shadows]="false"
-      (buttonClicked)="goEditSlides()"
-    ></app-qr-content>
-  </div>
-
-  <div class="section">
     <app-title-icon-header
-      title="Headline, article name"
+      title="Nombre"
       [editing]="!editingName"
       (iconClicked)="editingName = true; setFocus('name')"
     >
@@ -114,13 +149,14 @@
         [formControl]="name"
         placeholder="Nombre del producto (opcional)"
         *ngIf="editingName"
+        [(ngModel)]="productName"
       />
     </app-card>
   </div>
 
-  <div class="section" style="padding-bottom: 32px">
+  <div class="section" style="padding-bottom: 0px">
     <app-title-icon-header
-      title="Body, description, list of things"
+      title="Descripción"
       [editing]="!editingDescription"
       (iconClicked)="editingDescription = true; setFocus('description')"
     >
@@ -136,7 +172,73 @@
         placeholder="Descripción del producto (opcional)"
         [formControl]="description"
         *ngIf="editingDescription"
+        [(ngModel)]="productDescription"
       ></textarea>
     </app-card>
   </div>
+
+  <div class="section">
+    <form [formGroup]="itemParamsForm" (ngSubmit)="send()">
+      <p
+        style="
+          color: #272727;
+          font-size: 13px;
+          font-family: SFProLight;
+          margin-bottom: 8px;
+        "
+      >
+        LO INCLUIDO
+      </p>
+      <div
+        formArrayName="params"
+        *ngIf="getArrayLength(itemParamsForm, 'params')"
+      >
+        <div
+          *ngFor="
+            let paramsControl of getControls(itemParamsForm, 'params');
+            index as i
+          "
+          [formGroupName]="i"
+        >
+          <div
+            formArrayName="values"
+            *ngIf="getArrayLength(paramsControl, 'values')"
+          >
+            <section
+              class="form-group p-side"
+              *ngFor="
+                let valuesControl of getControls(paramsControl, 'values');
+                index as j
+              "
+              [formGroupName]="j"
+            >
+              <div class="template-grid">
+                <input
+                  class="card"
+                  type="text"
+                  formControlName="name"
+                  placeholder="Escribe..."
+                  (keypress)="dynamicInputKeyPress(j)"
+                />
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <app-menu-button
+    [position]="{ bottom: '50px' }"
+    [options]="menuOptions"
+  ></app-menu-button>
 </div>
+
+<app-webforms-creator
+  *ngIf="headerService.user && item && endedOnInit"
+  [opened]="openedDialogFlow"
+  [resumingCreation]="resumingWebformCreation"
+  [item]="item"
+  [user]="headerService.user"
+  (closeEvent)="reloadWebform()"
+></app-webforms-creator>

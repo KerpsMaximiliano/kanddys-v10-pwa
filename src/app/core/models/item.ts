@@ -1,6 +1,7 @@
 import { Model } from '../objects/model';
 import { Merchant } from './merchant';
 import { Calendar } from './calendar';
+import { ItemWebform, Webform } from './webform';
 
 export class ItemParamValue extends Model<ItemParamValue> {
   name?: string;
@@ -92,6 +93,7 @@ export class Item extends Model<Item> {
   };
   index?: number;
   visitorCounter?: VisitorCounter;
+  webForms: Array<ItemWebform>
 }
 
 export class ItemImage extends Model<ItemImage> {
@@ -187,6 +189,7 @@ export class ItemInput {
   showImages?: boolean;
   status?: ItemStatus;
   collaboration?: number;
+  categories?: string[];
 }
 
 export class ItemImageInput {

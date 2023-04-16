@@ -4,6 +4,64 @@
 
 .container {
   min-height: 100vh;
+  margin-bottom: 35px;
+
+  .header {
+    background-color: #a1a1a1;
+    display: flex;
+    align-items: center;
+    padding: 14px 27px 14px 21px;
+
+    img,
+    p {
+      cursor: pointer;
+    }
+    p {
+      margin-left: auto;
+      color: #272727;
+      font-size: 13px;
+      font-family: SFProRegular;
+    }
+  }
+
+  .card {
+    width: 100%;
+    font-family: SFProRegular;
+    color: #000000;
+    font-size: 17px;
+    padding: 28.5px 25px;
+    resize: none;
+    border: none;
+    border-radius: 7px;
+    overflow: hidden;
+    background-color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .config {
+    border-radius: 9px;
+    background-color: #e9e9e9;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: calc(100% - 39px);
+    margin: 21px auto 23px auto;
+    border: none;
+    max-width: 460px;
+
+    img {
+      margin-left: auto;
+    }
+    span {
+      margin-left: 12px;
+      margin-right: auto;
+      text-transform: uppercase;
+      color: #272727;
+      font-size: 13px;
+      font-family: SFProLight;
+    }
+  }
 
   .toast-status {
     background-color: #b17608;
@@ -213,5 +271,26 @@
     font-size: 3rem;
     color: white;
     font-family: SfProBold;
+  }
+}
+
+.header {
+  width: 100%;
+  background-color: #A1A1A1;
+  padding: 13.8px 16px;
+  display: flex;
+  justify-content: space-between;
+
+  .links {
+    display: flex;
+    justify-content: space-between;
+    width: 70%;
+    align-items: center;
+    font-family: SfProMedium;
+    font-size: 13px;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 }
