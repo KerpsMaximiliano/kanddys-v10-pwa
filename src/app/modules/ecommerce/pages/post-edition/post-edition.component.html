@@ -39,12 +39,18 @@
       <app-invites-notifications title="Acceso & Notificaciones" text="Acceso de Invitados: (000) 000 - 0000"></app-invites-notifications>
       <app-invites-notifications title="Notificaciones" text="Notificación de cuando accesan: (000) 000 - 0000 ó sin Notificación"></app-invites-notifications>
        -->
-    <app-qr-content
+    <!-- <app-qr-content
       [slides]="data.slides"
       [joke]="data.joke"
       [defaultText]="
         'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
       "
+      (buttonClicked)="openQrContentDialog()"
+    ></app-qr-content> -->
+    <app-qr-content
+      [slides]="data.slides"
+      [joke]="data.joke"
+      [defaultText]="'Incluyes fotos, memes, videos o música.'"
       (buttonClicked)="openQrContentDialog()"
     ></app-qr-content>
     <app-envelope-content

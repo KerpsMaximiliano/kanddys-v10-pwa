@@ -165,35 +165,39 @@ export class CheckoutComponent implements OnInit {
 
           if (generatedMessage) lastActiveDialogIndex += 1;
 
-          if (addedQr) {
-            if (addedPhotos || addedAIJoke) {
-              this.dialogs[this.dialogs.length - 1].inputs.header.text =
-                '¿Deseas incluir alguna otra cosa?';
+          // if (addedQr) {
+          //   if (addedPhotos || addedAIJoke) {
+          //     this.dialogs[this.dialogs.length - 1].inputs.header.text =
+          //       '¿Deseas incluir alguna otra cosa?';
 
-              this.dialogs[
-                this.dialogs.length - 1
-              ].inputs.fields.list[0].selection.list[0].text = 'No';
+          //     this.dialogs[
+          //       this.dialogs.length - 1
+          //     ].inputs.fields.list[0].selection.list[0].text = 'No';
 
-              this.dialogs[
-                this.dialogs.length - 1
-              ].inputs.fields.list[0].selection.list[1].text = addedPhotos
-                ? 'Un chiste de la IA'
-                : 'Fotos, videos de mi device';
-            }
+          //     this.dialogs[
+          //       this.dialogs.length - 1
+          //     ].inputs.fields.list[0].selection.list[1].text = addedPhotos
+          //       ? 'Un chiste de la IA'
+          //       : 'Fotos, videos de mi device';
+          //   }
 
-            return this.dialogFlowFunctions.moveToDialogByIndex(
-              this.dialogs.length - 1
-            );
-          }
+          //   return this.dialogFlowFunctions.moveToDialogByIndex(
+          //     this.dialogs.length - 1
+          //   );
+          // }
 
           this.dialogFlowFunctions.moveToDialogByIndex(lastActiveDialogIndex);
         }, 500);
       }
 
-      let items = this.headerService.getItems();
+      let items = this.headerService.order.products.map(
+        (subOrder) => subOrder.item
+      );
+      if (!this.headerService.order?.products) this.editOrder('item');
       if (!items.every((value) => typeof value === 'string')) {
         items = items.map((item: any) => item?._id || item);
       }
+      if (!items?.length) this.editOrder('item');
       this.items = (
         await this.saleflowService.listItems({
           findBy: {
@@ -219,8 +223,6 @@ export class CheckoutComponent implements OnInit {
           }
         }
       }
-
-      if (!this.items?.length) this.editOrder('item');
 
       this.post = this.headerService.getPost();
 
@@ -301,10 +303,7 @@ export class CheckoutComponent implements OnInit {
       this.headerService.checkoutRoute = null;
       this.headerService.order.products.forEach((product) => {
         if (product.amount) this.itemObjects[product.item] = product;
-        else {
-          this.headerService.removeOrderProduct(product.item);
-          this.headerService.removeItem(product.item);
-        }
+        else this.headerService.removeOrderProduct(product.item);
       });
       this.updatePayment();
       if (
@@ -431,7 +430,6 @@ export class CheckoutComponent implements OnInit {
       if (result === 'confirm') {
         if (index >= 0) this.items.splice(index, 1);
         this.headerService.removeOrderProduct(deletedID);
-        this.headerService.removeItem(deletedID);
         this.updatePayment();
         if (!this.items.length) this.editOrder('item');
       }
@@ -452,10 +450,7 @@ export class CheckoutComponent implements OnInit {
     this.headerService.changeItemAmount(product.item, type);
     this.headerService.order.products.forEach((product) => {
       if (product.amount) this.itemObjects[product.item] = product;
-      else {
-        this.headerService.removeOrderProduct(product.item);
-        this.headerService.removeItem(product.item);
-      }
+      else this.headerService.removeOrderProduct(product.item);
     });
     this.updatePayment();
   }
@@ -765,13 +760,23 @@ export class CheckoutComponent implements OnInit {
   }
 
   deletePost() {
-    this.postsService.post = null;
-    localStorage.removeItem('post');
-    localStorage.removeItem('postReceiverNumber');
-    this.openedDialogFlow = false;
-    this.dialogFlowService.resetDialogFlow('flow1');
-    this.createDialogs();
-    this.dialogFlowFunctions.moveToDialogByIndex(0);
+    let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Borrar mensaje`,
+        description: `No se guardarán los datos ingresados. Deseas borrar tu mensaje?`,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        this.postsService.post = null;
+        localStorage.removeItem('post');
+        localStorage.removeItem('postReceiverNumber');
+        this.openedDialogFlow = false;
+        this.dialogFlowService.resetDialogFlow('flow1');
+        this.createDialogs();
+        this.dialogFlowFunctions.moveToDialogByIndex(0);
+      }
+    });
   }
 
   executeProcessesBeforeOpening() {

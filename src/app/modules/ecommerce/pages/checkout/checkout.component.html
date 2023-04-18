@@ -44,9 +44,7 @@
         backgroundColor: missingOrderData ? '#e9e9e9' : '#82F18D'
       }"
       [disabled]="missingOrderData"
-      (click)="
-        createOrder()
-      "
+      (click)="createOrder()"
     >
       Confirmar y pagar
     </button>
@@ -151,7 +149,14 @@
       (click)="editOrder('reservation')"
     >
       <div class="between" style="margin-top: 32px">
-        <h2 class="section-title">Fecha de {{ headerService.saleflow._id === '62ed5ad9bd70dde4db98b924' ? "la sesión" : "entrega" }}:</h2>
+        <h2 class="section-title">
+          Fecha de
+          {{
+            headerService.saleflow._id === "62ed5ad9bd70dde4db98b924"
+              ? "la sesión"
+              : "entrega"
+          }}:
+        </h2>
       </div>
 
       <button class="items-container ready" *ngIf="reservation && date">
@@ -358,9 +363,10 @@
   [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
   [dialogs]="dialogs"
   [allowSlideNext]="false"
+  [signalBeforeClosing]="true"
   (saveConfigRef)="swiperConfig = $event"
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
-  (closingDialogSignal)="deletePost()"
+  (beforeClosingSignal)="deletePost()"
   (openingDialogSignal)="executeProcessesBeforeOpening()"
 ></app-dialog-flow>
 

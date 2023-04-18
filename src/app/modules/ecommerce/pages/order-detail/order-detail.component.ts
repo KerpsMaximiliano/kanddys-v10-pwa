@@ -29,10 +29,7 @@ import { EntityTemplateService } from 'src/app/core/services/entity-template.ser
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
-import {
-  lockUI,
-  unlockUI,
-} from 'src/app/core/helpers/ui.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateTagComponent } from 'src/app/shared/dialogs/create-tag/create-tag.component';
 import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
@@ -237,10 +234,7 @@ export class OrderDetailComponent implements OnInit {
       this.slides = await this.postsService.slidesByPost(this.post._id);
 
       for (const slide of this.slides) {
-        if (
-          slide.type === 'poster' &&
-          isVideo(slide.media)
-        ) {
+        if (slide.type === 'poster' && isVideo(slide.media)) {
           slide.isVideo = true;
 
           if (
@@ -562,12 +556,12 @@ export class OrderDetailComponent implements OnInit {
     this.headerService.deleteSaleflowOrder();
     this.headerService.order = {
       products: this.order.items.map((item) => {
-        if (item.params?.length) {
-          const paramItem = item.item.params[0].values.find(
-            (itemParam) => itemParam._id === item.params[0].paramValue
-          );
-          this.headerService.storeItem(paramItem);
-        } else this.headerService.storeItem(item.item);
+        // if (item.params?.length) {
+        //   const paramItem = item.item.params[0].values.find(
+        //     (itemParam) => itemParam._id === item.params[0].paramValue
+        //   );
+        //   this.headerService.storeItem(paramItem);
+        // } else this.headerService.storeItem(item.item);
         return {
           amount: item.amount,
           item: item.item._id,

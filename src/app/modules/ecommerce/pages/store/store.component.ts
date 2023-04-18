@@ -19,7 +19,10 @@ import SwiperCore, { Virtual } from 'swiper/core';
 import { IntegrationsService } from 'src/app/core/services/integrations.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 
 SwiperCore.use([Virtual]);
 
@@ -226,9 +229,14 @@ export class StoreComponent implements OnInit {
       ? this.headerService.order.products.map((subOrder) => subOrder.item)
       : [];
     // Filtrando los productos activos y destacados
-    this.items = items?.listItems.filter(
-      (item) => item.status === 'active' || item.status === 'featured'
-    ).map((item) => ({images: item.images.sort(({index:a},{index:b}) => a>b?1:-1),...item}));
+    this.items = items?.listItems
+      .filter((item) => item.status === 'active' || item.status === 'featured')
+      .map((item) => ({
+        images: item.images.sort(({ index: a }, { index: b }) =>
+          a > b ? 1 : -1
+        ),
+        ...item,
+      }));
 
     for (let i = 0; i < this.items?.length; i++) {
       // Asignando el status a los items del saleflow
@@ -247,7 +255,6 @@ export class StoreComponent implements OnInit {
         if (!allItems.some((product) => product._id === item.item)) {
           itemIDs.push(item.item);
           this.headerService.removeOrderProduct(item.item);
-          this.headerService.removeItem(item.item);
         }
       });
       this.headerService.order.products =
@@ -459,10 +466,8 @@ export class StoreComponent implements OnInit {
     const item = this.items[index];
 
     /* Validaciones para saleflows donde solo se puede comprar un item a la vez */
-    if (!item.isSelected && !this.headerService.saleflow.canBuyMultipleItems) {
+    if (!item.isSelected && !this.headerService.saleflow.canBuyMultipleItems)
       this.headerService.emptyOrderProducts();
-      this.headerService.emptyItems();
-    }
     /* ... */
 
     const product: ItemSubOrderInput = {
@@ -474,7 +479,6 @@ export class StoreComponent implements OnInit {
       type: 'added-item',
       data: item._id,
     });
-    this.headerService.storeItem(item);
 
     this.items[index].isSelected = !this.items[index].isSelected;
   }

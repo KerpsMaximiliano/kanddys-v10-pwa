@@ -176,9 +176,9 @@ export class PostEditionComponent implements OnInit {
                   {
                     text: 'Fotos, videos de mi device',
                   },
-                  {
-                    text: 'Un chiste de la IA',
-                  },
+                  // {
+                  //   text: 'Un chiste de la IA',
+                  // },
                 ],
               },
               prop: 'text',
@@ -385,7 +385,7 @@ export class PostEditionComponent implements OnInit {
     private _AuthService: AuthService,
     private dialogFlowService: DialogFlowService,
     private _Gpt3Service: Gpt3Service,
-    private toastr: ToastrService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -484,6 +484,19 @@ export class PostEditionComponent implements OnInit {
       };
     }
 
-    this.openedDialogFlow = true;
+    // this.openedDialogFlow = true;
+    localStorage.setItem(
+      'post',
+      JSON.stringify({
+        message: this.postsService.post.message,
+        title: this.postsService.post.title,
+        to: this.postsService.post.to,
+        from: this.postsService.post.from,
+      })
+    );
+
+    this.router.navigate([
+      'ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit',
+    ]);
   }
 }
