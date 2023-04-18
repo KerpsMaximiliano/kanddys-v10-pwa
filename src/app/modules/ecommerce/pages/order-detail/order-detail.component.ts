@@ -57,13 +57,8 @@ interface Image {
   callback?(...param): any;
 }
 
-<<<<<<< HEAD
 interface ExtendedSlide extends Slide {
   isVideo?: boolean;
-=======
-interface ExtendedWebformAnswer extends WebformAnswer {
-  questionLabel: string;
->>>>>>> staging-v3
 }
 
 @Component({
@@ -778,7 +773,6 @@ export class OrderDetailComponent implements OnInit {
     ]);
   };
 
-<<<<<<< HEAD
   copyEntityId(id: string) {
     const entityId = this.formatId(id);
 
@@ -787,7 +781,8 @@ export class OrderDetailComponent implements OnInit {
     this.toastr.info('Id copiado al portapapeles', null, {
       timeOut: 3000,
     });
-=======
+  }
+  
   async getAnswersForEachItem() {
     this.answersByItem = {};
     const answers: Array<WebformAnswer> =
@@ -872,6 +867,5 @@ export class OrderDetailComponent implements OnInit {
         }
       }
     }
->>>>>>> staging-v3
   }
 }

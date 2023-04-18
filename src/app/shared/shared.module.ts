@@ -123,7 +123,6 @@ import { TagTypeDialogComponent } from './dialogs/tag-type-dialog/tag-type-dialo
 import { OptionsGridComponent } from './dialogs/options-grid/options-grid.component';
 import { DataDisplayComponent } from './components/data-display/data-display.component';
 import { PostHeaderComponent } from './components/post-header/post-header.component';
-import { PostEditionComponent } from '../modules/ecommerce/pages/post-edition/post-edition.component';
 import { EnvelopeContentComponent } from './components/envelope-content/envelope-content.component';
 import { EnvelopeDataComponent } from './components/envelope-data/envelope-data.component';
 import { PostPreviewComponent } from '../modules/ecommerce/pages/post-preview/post-preview.component';
@@ -336,7 +335,6 @@ const declarations = [
   QrEditComponent,
   DataDisplayComponent,
   PostHeaderComponent,
-  PostEditionComponent,
   PostPreviewComponent,
   QrContentComponent,
   EnvelopeContentComponent,

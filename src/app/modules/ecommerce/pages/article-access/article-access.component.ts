@@ -38,6 +38,7 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    _Subscription: Subscription;
    targets:Recipient[] = [];
    templateId:string;
+   templateEntity: string;
 
   constructor(
    private dialog: DialogService,
@@ -56,7 +57,8 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    this._Subscription = this._ActivatedRoute.params.subscribe(({ templateId }) => {
       this.templateId = templateId;
       const post = async () => {
-         const { recipients, hasPassword, access } = (await this._EntityTemplateService.entityTemplate(templateId)) || { recipients: [] };
+         const { recipients, hasPassword, access, entity } = (await this._EntityTemplateService.entityTemplate(templateId)) || { recipients: [] };
+         this.templateEntity = entity;
          if(access==='public')
             this._Router.navigate(['qr', 'article-detail', 'entity-template', this.templateId]);
          this.hasPassword = hasPassword;
@@ -190,9 +192,10 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
    this.code = this.check[e].subtexts.length?this.check[e].subtexts[0].text:this.check[e].value; 
    const generateMagicLink = async () => {
       const emailOrPhone = this.targets[e].phone || this.targets[e].email;
+      console.log("qr/article-detail/" + this.templateEntity)
       const result = await this._AuthService.generateMagicLink(
          emailOrPhone.replace('+',''),
-         'qr/article-detail',
+         'qr/article-detail/' + this.templateEntity,
          this.templateId,
          'TemplateAccess',
          {}

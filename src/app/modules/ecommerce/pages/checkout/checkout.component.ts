@@ -24,17 +24,12 @@ import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
 import {
-  ItemWebform,
   Question,
   Webform,
-  AnswerInput,
   WebformAnswerInput,
   WebformResponseInput,
-  AnswerDefault,
 } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
-import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
@@ -44,14 +39,12 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
-import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { ClosedQuestionCardComponent } from 'src/app/shared/components/closed-question-card/closed-question-card.component';
 import {
   ExtendedAnswerDefault,
-  WebformMultipleSelectionQuestionComponent,
 } from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
 import { WebformNameQuestionComponent } from 'src/app/shared/components/webform-name-question/webform-name-question.component';
 import { WebformTextareaQuestionComponent } from 'src/app/shared/components/webform-textarea-question/webform-textarea-question.component';
@@ -62,7 +55,6 @@ import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Dialogs } from './dialogs';
-import { filter } from 'rxjs/operators';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -271,7 +263,9 @@ export class CheckoutComponent implements OnInit {
         }, 500);
       }
 
-      let items = this.headerService.getItems();
+      let items = this.headerService.order.products.map(
+        (subOrder) => subOrder.item
+      );
       if (!items.every((value) => typeof value === 'string')) {
         items = items.map((item: any) => item?._id || item);
       }
@@ -284,6 +278,7 @@ export class CheckoutComponent implements OnInit {
           },
         })
       )?.listItems;
+      this.getQuestions();
 
       for (const item of this.items as Array<ExtendedItem>) {
         item.ready = false;
@@ -376,6 +371,9 @@ export class CheckoutComponent implements OnInit {
           }),
           month: fromDate.toLocaleString('es-MX', {
             month: 'short',
+          }),
+          year: fromDate.toLocaleString('es-MX', {
+            year: 'numeric',
           }),
           time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
             untilDate,

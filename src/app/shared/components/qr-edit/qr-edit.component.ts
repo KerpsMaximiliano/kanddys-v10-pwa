@@ -176,7 +176,7 @@ export class QrEditComponent implements OnInit {
   }
 
   async dropTagDraggable(event: CdkDragDrop<{ gridItem: any; index: number }>) {
-    const { _id:itemId } = this.item;
+    const { _id:itemId } = this.item || {} 
     this.gridArray[event.previousContainer.data.index].index =
       event.container.data.index;
     this.gridArray[event.container.data.index].index =
@@ -194,12 +194,13 @@ export class QrEditComponent implements OnInit {
       index:index2
     } = this.gridArray[event.previousContainer.data.index];
     const itemImage = {index,active:true};
+    const itemImage2 = {index: index2,active:true};
+    if(!itemId) return;
     const result = await this._ItemsService.itemUpdateImage(
       itemImage,
       _id,
       itemId
     );
-    const itemImage2 = {index: index2,active:true};
     const result2 = await this._ItemsService.itemUpdateImage(
       itemImage2,
       _id2,

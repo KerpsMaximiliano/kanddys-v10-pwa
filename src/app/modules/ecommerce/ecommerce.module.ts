@@ -37,6 +37,8 @@ import { LinkUpdateComponent } from './pages/link-update/link-update.component';
 import { MyContactRegisterComponent } from './pages/my-contact-register/my-contact-register.component';
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
+import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
 
 const routes: Routes = [
   {
@@ -198,6 +200,14 @@ const routes: Routes = [
         path: 'post-preview',
         component: PostPreviewComponent,
       },
+      {
+        path: 'qr-edit',
+        component: QrEditComponent,
+      },
+      {
+        path: 'text-edition-and-preview',
+        component: TextEditionAndPreviewComponent,
+      },
     ],
   },
 ];
@@ -221,7 +231,6 @@ const routes: Routes = [
     ArticleDetailComponent,
     CreateArticleComponent,
     TermsOfUseComponent,
-    ContactLandingContainerComponent,
     CollectionsComponent,
     TagItemsComponent,
     GiftDetailComponent,
@@ -234,7 +243,7 @@ const routes: Routes = [
     LinkUpdateComponent,
     MyContactRegisterComponent,
     PostEditionComponent,
-    PostPreviewComponent
+    TextEditionAndPreviewComponent
   ],
   imports: [
     CommonModule,

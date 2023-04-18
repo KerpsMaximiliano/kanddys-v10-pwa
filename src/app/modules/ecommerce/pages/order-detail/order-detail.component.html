@@ -3,7 +3,7 @@
     class="header"
     [ngStyle]="{ backgroundColor: isMerchant ? '#000000' : '#293628' }"
   >
-    <button mat-button (click)="!redirectTo ? returnToStore() : returnEvent()">
+    <button mat-button (click)="returnEvent()">
       <img
         [src]="env + '/arrow-double-up-black.svg'"
         alt=""
@@ -123,40 +123,37 @@
         Artículos facturados:
       </h2>
 
-      <div
-        class="items-container"
-        *ngFor="let item of order?.items; index as i"
-        style="margin-bottom: 4px"
-      >
-        <div class="image-container">
-          <button class="btn">
-            <div
-              class="image"
-              *ngIf="!urlIsVideo(item.item.images[0].value)"
-              (click)="
-                item.item.images?.length &&
-                  openImageModal(item.item.images[0].value)
-              "
-              [ngStyle]="{
-                backgroundImage: item.item.images?.length
-                  ? 'url(' + item.item.images[0].value + ')'
-                  : '/assets/images/noimage.png',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundSize: 'cover'
-              }"
-            ></div>
-            <div
-              class="video-wrapper videoThumbnail"
-              *ngIf="urlIsVideo(item.item.images[0].value)"
-              (click)="playVideoOnFullscreen('media' + item._id)"
-            >
-              <img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
-                alt="play"
-                class="playVideoIcon"
-                style="padding: 1rem !important; z-index: 99"
-              />
+      <ng-container *ngFor="let item of order?.items; index as i">
+        <div class="items-container" style="margin-bottom: 4px">
+          <div class="image-container">
+            <button class="btn">
+              <div
+                class="image"
+                *ngIf="!urlIsVideo(item.item.images[0].value)"
+                (click)="
+                  item.item.images?.length &&
+                    openImageModal(item.item.images[0].value)
+                "
+                [ngStyle]="{
+                  backgroundImage: item.item.images?.length
+                    ? 'url(' + item.item.images[0].value + ')'
+                    : '/assets/images/noimage.png',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover'
+                }"
+              ></div>
+              <div
+                class="video-wrapper videoThumbnail"
+                *ngIf="urlIsVideo(item.item.images[0].value)"
+                (click)="playVideoOnFullscreen('media' + item._id)"
+              >
+                <img
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                  alt="play"
+                  class="playVideoIcon"
+                  style="padding: 1rem !important; z-index: 99"
+                />
 
                 <video
                   [src]="item.item.images[0].value"

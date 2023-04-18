@@ -26,7 +26,7 @@ import SwiperCore, { Virtual } from 'swiper/core';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
-import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   SettingsComponent,
   SettingsDialogButton,

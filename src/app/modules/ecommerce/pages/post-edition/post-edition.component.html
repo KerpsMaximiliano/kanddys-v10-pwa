@@ -39,6 +39,21 @@
       <app-invites-notifications title="Acceso & Notificaciones" text="Acceso de Invitados: (000) 000 - 0000"></app-invites-notifications>
       <app-invites-notifications title="Notificaciones" text="Notificación de cuando accesan: (000) 000 - 0000 ó sin Notificación"></app-invites-notifications>
        -->
+
+    <div style="margin-bottom: 32px">
+      <app-title-icon-header
+        title="Notificaciones"
+        (iconClicked)="openNotificationsDialog()"
+      ></app-title-icon-header>
+      <app-card>
+        {{
+          postsService.notificationType === "NONE"
+            ? "No se envía ninguna notificación"
+            : "Recibes una notificación cuando " + choosedNotificationType
+        }}
+      </app-card>
+    </div>
+
     <app-qr-content
       [slides]="data.slides"
       [joke]="data.joke"
@@ -62,6 +77,15 @@
       (saveConfigRef)="swiperConfig = $event"
       (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
       (closingDialogSignal)="closeDialogFlow()"
+    ></app-dialog-flow>
+
+    <app-dialog-flow
+      [dialogFlowId]="'notifications'"
+      [status]="openedNotificationsDialog ? 'OPEN' : 'CLOSE'"
+      [dialogs]="[notificationsDialog]"
+      [allowSlideNext]="false"
+      (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+      (closingDialogSignal)="openedNotificationsDialog = false"
     ></app-dialog-flow>
 
     <!--

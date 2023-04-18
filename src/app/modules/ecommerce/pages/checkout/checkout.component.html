@@ -558,7 +558,7 @@
   [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
   [dialogs]="dialogs"
   [allowSlideNext]="false"
-  (saveConfigRef)="swiperConfig = $event"
+  (saveConfigRef)="postsService.swiperConfig = $event"
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
   (closingDialogSignal)="deletePost()"
   (openingDialogSignal)="executeProcessesBeforeOpening()"

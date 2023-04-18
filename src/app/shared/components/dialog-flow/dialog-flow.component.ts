@@ -65,8 +65,6 @@ export class DialogFlowComponent implements OnInit {
       }
     }
 
-    this.service.swiperConfig = this.swiperConfig;
-
     setTimeout(() => {
       this.applyTransparencyToSlidesThatArentActive();
       this.swiperConfig.allowSlideNext = this.allowSlideNext;
