@@ -21,6 +21,7 @@ import {
 import { StepperFormComponent } from 'src/app/shared/components/stepper-form/stepper-form.component';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -30,6 +31,12 @@ import { environment } from 'src/environments/environment';
 export class AdminDashboardComponent implements OnInit, OnDestroy {
   URI: string = environment.uri;
   environment: string = environment.assetsUrl;
+
+  swiperConfig: SwiperOptions = {
+    slidesPerView: 4,
+    freeMode: true,
+    spaceBetween: 1,
+  };
 
   layout: 'simple-card' | 'description-card';
   items: Item[] = [];
@@ -52,6 +59,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   // Pagination
 
   tags: Tag[] = [];
+  selectedTags: Tag[] = [];
 
   options: BarOptions[] = [
     {
@@ -398,6 +406,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.selected = index;
     }
     if (index === 1) this.router.navigate([`admin/tags-view`]);
+  }
+
+  filterTag(index: number) {
+    const selectedTag = this.tags[index];
+    if (this.selectedTags.find((tag) => tag._id === selectedTag._id)) {
+      this.selectedTags.splice(index, 1);
+    } else {
+      this.selectedTags.push(selectedTag);
+    }
+  }
+
+  isTagActive(tag: Tag) {
+    return this.selectedTags.find((selectedTag) => selectedTag._id === tag._id);
   }
 
   selectedMenuOption(selected: MenuEvent) {

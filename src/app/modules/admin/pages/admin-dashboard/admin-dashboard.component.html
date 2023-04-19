@@ -19,7 +19,7 @@
 
     <div class="right">
       <a class="btn" [routerLink]="['../benefits']">
-        <img class="listIcon" [src]="environment + '/receipt.svg'" />
+        <img class="listIcon" [src]="environment + '/icon-i.svg'" />
       </a>
       <!-- <button class="btn blackButton">
         <p>Programas</p>
@@ -27,7 +27,19 @@
       </button> -->
     </div>
   </header>
-  <div class="contents">
+
+  <div class="categories">
+    <swiper [config]="swiperConfig">
+      <div class="category-item active">
+        TODOS
+      </div>
+      <div class="category-item" *ngFor="let tag of tags; let i = index" [ngClass]="{ active: isTagActive(tag) }" (click)="filterTag(i)">
+        {{ tag.name }}
+      </div>
+    </swiper>
+  </div>
+
+  <!-- <div class="contents">
     <app-options-bar
       [type]="'3'"
       [options]="options"
@@ -35,7 +47,56 @@
       (selectedMenuIndex)="selectedMenuOption($event)"
     >
     </app-options-bar>
+  </div> -->
+
+  <div class="section">
+    <div class="section-header">
+      <h3 class="section-title">
+        Ventas recientes
+      </h3>
+
+      <div class="section-description">
+        <p>
+          4 de los últimos 7 días
+        </p>
+        <img [src]="environment + '/arrow-left.svg'" alt="">
+      </div>
+    </div>
+
+    <div class="section-content">
+      <mat-card class="card">
+        <div class="card-body">
+          <div class="card-l-side">
+            <h2 class="card-title">Paquete de 24 Lavados</h2>
+            <p class="card-description"> Lavado por fuera, aspiradora por dentro y brillo en las gomas.</p>
+          </div>
+          <div class="card-r-side">
+            <div class="featured-image">
+              <div class="caption">
+                <img [src]="environment + '/closed-eye-black.svg'" alt="">
+                Oculto al visitante
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="bottom-title">
+            <h3>RD $ 3.800</h3>
+          </div>
+          <div class="bottom-icons">
+            <div class="text-icon">
+              <p>14</p>
+              <img [src]="environment + '/closed-eye-black.svg'" alt="">
+            </div>
+            <div class="text-icon">
+              <img [src]="environment + '/dots-black.svg'" alt="">
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
   </div>
+
   <div
     class="saleflows-item-grid"
     (scroll)="infinitePagination()"
