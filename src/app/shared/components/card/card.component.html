@@ -1,3 +1,9 @@
-<div class="card" [ngClass]="shadows ? 'box-shadow' : ''">
+<div
+  class="card"
+  [ngClass]="{
+    'box-shadow': shadows
+  }"
+  [ngStyle]="containerStyles"
+>
   <ng-content></ng-content>
 </div>

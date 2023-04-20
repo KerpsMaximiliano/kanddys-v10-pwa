@@ -33,6 +33,14 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateTagComponent } from 'src/app/shared/dialogs/create-tag/create-tag.component';
 import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
+import {
+  AnswersQuestion,
+  Question,
+  Webform,
+  WebformAnswer,
+} from 'src/app/core/models/webform';
+import { WebformsService } from 'src/app/core/services/webforms.service';
+import { answerByOrder } from 'src/app/core/graphql/webforms.gql';
 
 interface Image {
   src: string;
@@ -49,6 +57,9 @@ interface Image {
 interface ExtendedSlide extends Slide {
   isVideo?: boolean;
 }
+interface ExtendedWebformAnswer extends WebformAnswer {
+  questionLabel: string;
+}
 
 @Component({
   selector: 'app-order-detail',
@@ -63,6 +74,12 @@ export class OrderDetailComponent implements OnInit {
   slides: ExtendedSlide[];
   payment: number;
   isMerchant: boolean;
+  benefits: {
+    benefits: number;
+    less: number;
+    percentageBenefits: number;
+    percentageLess: number;
+  };
   orderStatus: OrderStatusNameType;
   orderDate: string;
   date: {
@@ -103,6 +120,7 @@ export class OrderDetailComponent implements OnInit {
   entityTemplateLink: string;
   notify: boolean = false;
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
+  questionsForAnswers: Record<string, Question> = {};
 
   deliveryStatusOptions: DropdownOptionItem[] = [
     {
@@ -114,6 +132,9 @@ export class OrderDetailComponent implements OnInit {
   ];
   tagOptions: DropdownOptionItem[];
   tagPanelState: boolean;
+  webformsByItem: Record<string, Webform> = {};
+  answersByItem: Record<string, WebformAnswer> = {};
+  from: string;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -134,7 +155,8 @@ export class OrderDetailComponent implements OnInit {
     private clipboard: Clipboard,
     private toastr: ToastrService,
     private tagsService: TagsService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private webformsService: WebformsService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -144,9 +166,10 @@ export class OrderDetailComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { notify: notification, redirectTo } = queryParams;
+      const { notify: notification, redirectTo, from } = queryParams;
       this.notify = Boolean(notification);
       this.redirectTo = redirectTo;
+      this.from = from;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
 
@@ -161,6 +184,9 @@ export class OrderDetailComponent implements OnInit {
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
+
+    await this.getAnswersForEachItem();
+
     if (!this.order) {
       this.router.navigate([`others/error-screen/`], {
         queryParams: { type: 'order' },
@@ -374,6 +400,7 @@ export class OrderDetailComponent implements OnInit {
         selected: this.order.tags.includes(tag._id),
       };
     });
+    this.benefits = await this.orderService.orderBenefits(this.order._id);
     unlockUI();
   }
 
@@ -382,7 +409,6 @@ export class OrderDetailComponent implements OnInit {
     this.router.navigate([], {
       relativeTo: this.route,
     });
-    console.log(this.order.tags);
     const tags =
       (await this.tagsService.tagsByUser({
         findBy: {
@@ -439,6 +465,37 @@ export class OrderDetailComponent implements OnInit {
       `/others/user-contact-landing/${this.order.user._id}`,
     ]);
   };
+
+  redirectFromQueryParams() {
+    if (this.from.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
+      const routeParts = this.from.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return { [queryStringElements[0]]: queryStringElements[1] };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([this.from], {
+        replaceUrl: true,
+      });
+    }
+  }
 
   async changeOrderStatus(value: OrderStatusDeliveryType) {
     this.order.orderStatusDelivery = value;
@@ -662,7 +719,23 @@ export class OrderDetailComponent implements OnInit {
   }
 
   returnEvent() {
-    this.router.navigate([this.redirectTo]);
+    if (!this.redirectTo && !this.from) return this.returnToStore();
+
+    if (!this.redirectTo && this.from) return this.redirectFromQueryParams();
+
+    let queryParams = {};
+    if (this.redirectTo.includes('?')) {
+      const url = this.redirectTo.split('?');
+      this.redirectTo = url[0];
+      const queryParamList = url[1].split('&');
+      for (const param in queryParamList) {
+        const keyValue = queryParamList[param].split('=');
+        queryParams[keyValue[0]] = keyValue[1];
+      }
+    }
+    this.router.navigate([this.redirectTo], {
+      queryParams,
+    });
   }
 
   goToPostDetail() {
@@ -705,5 +778,92 @@ export class OrderDetailComponent implements OnInit {
     this.toastr.info('Id copiado al portapapeles', null, {
       timeOut: 3000,
     });
+  }
+
+  async getAnswersForEachItem() {
+    this.answersByItem = {};
+    const answers: Array<WebformAnswer> =
+      await this.webformsService.answerByOrder(this.order._id);
+
+    console.log('AnswersByOrder', answers);
+
+    if (answers.length) {
+      const webformsIds = [];
+      for (const item of this.order.items) {
+        if (item.item.webForms && item.item.webForms.length) {
+          const webform = item.item.webForms[0];
+          webformsIds.push(webform.reference);
+        }
+      }
+
+      const webforms = await this.webformsService.webforms({
+        findBy: {
+          _id: {
+            __in: webformsIds,
+          },
+        },
+        options: {
+          limit: -1,
+        },
+      });
+
+      for (const item of this.order.items) {
+        if (item.item.webForms && item.item.webForms.length) {
+          const webform = item.item.webForms[0];
+
+          const answersForWebform = answers.find(
+            (answerInList) => answerInList.webform === webform.reference
+          );
+
+          if (answersForWebform) {
+            const webformObject = webforms.find(
+              (webformInList) => webformInList._id === webform.reference
+            );
+
+            if (webformObject) {
+              this.webformsByItem[item._id] = webformObject;
+
+              const questionsToQuery = [];
+
+              answersForWebform.response.forEach((answerInList) => {
+                if (answerInList.question)
+                  questionsToQuery.push(answerInList.question);
+              });
+
+              const questions = await this.webformsService.questionPaginate({
+                findBy: {
+                  _id: {
+                    __in: questionsToQuery,
+                  },
+                },
+              });
+
+              answersForWebform.response.forEach((answerInList) => {
+                const question = questions.find(
+                  (questionInList) =>
+                    questionInList._id === answerInList.question
+                );
+
+                if (answerInList.question && question) {
+                  answerInList.question = question.value;
+
+                  if (
+                    answerInList.value &&
+                    ((!answerInList.isMedia &&
+                      answerInList.value.startsWith('https')) ||
+                      answerInList.value.startsWith('http'))
+                  )
+                    answerInList.isMedia = true;
+                } else {
+                  answerInList.question = null;
+                }
+              });
+            }
+
+            this.answersByItem[item._id] = answersForWebform;
+          }
+        }
+      }
+    }
   }
 }

@@ -8,6 +8,10 @@
 
   .circle-container {
     margin-right: 16px;
+    align-items: center;
+    display: flex;
+    flex-basis: 25%;
+    justify-content: center;
 
     .circle {
       box-shadow: 0px 3px 6px #70707063;

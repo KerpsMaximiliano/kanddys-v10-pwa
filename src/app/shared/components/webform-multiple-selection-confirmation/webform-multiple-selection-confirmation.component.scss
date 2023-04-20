@@ -1,0 +1,55 @@
+.container {
+  background-color: white;
+  padding: 37.1px 33.1px 66.5px 31.1px;
+  border-radius: 12px;
+
+  .question-label {
+    font-family: SfProBold;
+    font-size: 23px;
+    margin-bottom: 11.2px;
+  }
+
+  .selection-number {
+    display: flex;
+    background-color: #82f18d;
+    justify-content: space-between;
+    border-radius: 4px;
+    padding: 9px 6px 4px 3px;
+    margin-bottom: 26.6px;
+
+    label {
+      font-family: SfProBold;
+      font-size: 17px;
+    }
+
+    img {
+      filter: invert(100%);
+    }
+  }
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-inner-container {
+  height: 20px;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-frame {
+  border-color: #707070;
+  border-radius: 4px;
+  height: 18px;
+  width: 18px;
+  border-width: thin;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-background {
+  height: 18px;
+  width: 18px;
+}
+
+.checkbox-wrapper {
+    margin-top: 20.3px;
+    font-family: SfProLight;
+    font-style: italic;
+    color: #7b7b7b;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-layout { white-space: normal !important; }

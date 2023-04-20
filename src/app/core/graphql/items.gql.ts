@@ -123,6 +123,11 @@ const fullItem = `
       phone
     }
   }
+  webForms {
+    _id
+    reference
+    active
+  }
 `;
 
 export const items = gql`
@@ -254,6 +259,13 @@ export const listItems = gql`
         name
       }
       tags
+      webForms {
+        _id
+        createdAt
+        updatedAt
+        reference
+        active
+      }
     }
   }
 `;

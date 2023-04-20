@@ -23,6 +23,7 @@ import { OrderService } from './order.service';
 import { PostsService } from './posts.service';
 import { SaleFlowService } from './saleflow.service';
 import { WalletService } from './wallet.service';
+import { DeliveryZoneInput } from '../models/deliveryzone';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -34,6 +35,7 @@ class OrderProgress {
 }
 
 export class SaleflowData {
+  deliveryZone: DeliveryZoneInput;
   order: ItemOrderInput;
   post: PostInput;
   deliveryLocation: DeliveryLocationInput;
@@ -180,7 +182,8 @@ export class HeaderService {
     if (!this.saleflow) return;
     if (this.saleflow.module?.delivery?.isActive) {
       const location = this.getLocation();
-      if (!location || !this.orderProgress.delivery) return;
+      const zone = this.getZone();
+      if ((!location && !zone) || !this.orderProgress.delivery) return;
     }
     if (this.saleflow.items.some((item) => item.customizer)) {
       if (!this.orderProgress.qualityQuantity) return;
@@ -365,6 +368,19 @@ export class HeaderService {
     );
   }
 
+  // Stores location to first order product in localStorage
+  storeZone(deliveryZone: DeliveryZoneInput) {
+    let rest: SaleflowData =
+      JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+    localStorage.setItem(
+      this.saleflow._id,
+      JSON.stringify({
+        ...rest,
+        deliveryZone,
+      })
+    );
+  }
+
   storeOrderProgress() {
     let rest: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
@@ -456,6 +472,12 @@ export class HeaderService {
     let { deliveryLocation }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     return deliveryLocation;
+  }
+
+  getZone() {
+    let { deliveryZone }: SaleflowData =
+      JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+    return deliveryZone;
   }
 
   // Returns order creation progress

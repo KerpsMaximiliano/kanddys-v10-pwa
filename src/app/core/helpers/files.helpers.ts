@@ -1,4 +1,5 @@
 import Compressor from 'compressorjs';
+import { lockUI, unlockUI } from './ui.helpers';
 
 export function base64ToFile(base64: string): File {
   const [datatype, data] = base64.split(',');
@@ -13,17 +14,67 @@ export function base64ToFile(base64: string): File {
   return new File([u8arr], filename, { type: mime });
 }
 
-export function fileToBase64(file: File): Promise<any> {
-    const base64File = new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result)
-      reader.onerror = (error) => reject(error);
-    })
-
-    
-    return base64File;
+export function base64ToBlob(base64: string): Blob {
+  // SPLIT INTO TWO PARTS
+  const parts = base64.split(';base64,');
+  // HOLD THE CONTENT TYPE
+  const imageType = parts[0].split(':')[1];
+  // DECODE BASE64 STRING
+  const decodedData = window.atob(parts[1]);
+  // CREATE UNIT8ARRAY OF SIZE SAME AS ROW DATA LENGTH
+  const uInt8Array = new Uint8Array(decodedData.length);
+  // INSERT ALL CHARACTER CODE INTO UINT8ARRAY
+  for (let i = 0; i < decodedData.length; ++i) {
+    uInt8Array[i] = decodedData.charCodeAt(i);
+  }
+  // RETURN BLOB IMAGE AFTER CONVERSION
+  return new Blob([uInt8Array], { type: imageType });
 }
+
+export function fileToBase64(file: File): Promise<any> {
+  const base64File = new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
+  return base64File;
+}
+
+export const arrayOfRoutesToBase64 = async (
+  imageRoutes: any[]
+): Promise<{ image: string; label: string }[]> => {
+  lockUI();
+
+  const base64Strings = await Promise.all(
+    imageRoutes.map(async (imageObject) => {
+      if (imageObject.isMedia) {
+        const response = await fetch(imageObject.value);
+        const blob = await response.blob();
+        const base64String = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = (error) => reject(error);
+        });
+        return {
+          image: base64String,
+          label: imageObject.label,
+        };
+      } else {
+        return {
+          label: imageObject.value,
+          image: null,
+        };
+      }
+    })
+  );
+
+  unlockUI();
+
+  return base64Strings;
+};
 
 export async function compressImage(
   file: File | Blob,

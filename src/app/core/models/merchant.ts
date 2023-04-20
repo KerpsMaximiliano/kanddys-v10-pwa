@@ -70,4 +70,6 @@ export class MerchantInput {
   receiveNotifications?: Boolean;
   notes?: string;
   address?: string;
+  slug?: string;
+  categories?: string[];
 }

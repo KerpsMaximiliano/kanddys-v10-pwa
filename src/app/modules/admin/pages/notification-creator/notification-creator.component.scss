@@ -1,0 +1,105 @@
+.container {
+    min-height: 100vh;
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        // border-bottom: 1px solid #7B7B7B;
+
+        img {
+            cursor: pointer;
+            padding: 10px;
+            filter: invert(54%) sepia(0%) saturate(8%) hue-rotate(286deg) brightness(89%) contrast(89%);
+        }
+    }
+
+    .content {
+        margin: 10px 25px;
+
+        form {
+            margin-top: 2em;
+            .field-container {
+                width: 100%;
+
+                .mat-input-element {
+                    // font-family: SfProSemiBold;
+                    // font-size: 18px;
+                    color: #7B7B7B;
+                }
+                .mat-form-field-label {
+                    color: #7B7B7B;
+                    font-family: SfProSemiBold;
+                    font-size: 18px;
+                }
+                .mat-form-field-underline {
+                    background-color: #E9E9E9;
+                }
+                .mat-form-field-wrapper {
+                    // padding-bottom: 0;
+                }
+            }
+
+            .field-container.mat-focused {
+                .mat-form-field-underline {
+                    background-color: #E9E9E9;
+                }
+                .mat-form-field-ripple {
+                    background-color: #82F18D;
+                }
+            }
+        }
+
+        .description {
+            margin-top: 3em;
+            .description-text {
+                color: #E9E9E9;
+                font-size: 18px;
+                font-style: italic;
+                font-family: SfProLight;
+
+                span {
+                    color: #82F18D;
+                    font-size: bold;
+                }
+            }
+        }
+    }
+
+    .main-cta {
+        position: absolute;
+        bottom: 0;
+        border-radius: 0;
+        z-index: 999;
+        width: 100%;
+        padding: 10px 20px;
+        background-color: #FED230;
+        color: #272727;
+        font-family: SfProDisplayBold;
+        font-size: 18px;
+        transition: all 0.2s;
+    }
+    .main-cta:disabled {
+        cursor: not-allowed;
+        background-color: #7B7B7B;
+        color: #E9E9E9;
+    }
+}
+
+.label {
+    color: #7B7B7B;
+    font-family: SfProDisplay;
+    font-size: 13px;
+}
+
+.post-label {
+    margin-top: 0;
+    color: #E9E9E9;
+    font-style: italic;
+    font-size: 15px;
+    font-family: SfProLight;
+}
+
+.dark-background {
+    background-color: #293628;
+}

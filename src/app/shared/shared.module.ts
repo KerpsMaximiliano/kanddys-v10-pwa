@@ -137,11 +137,15 @@ import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component
 import { BuyerCardComponent } from './components/buyer-card/buyer-card.component';
 import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
 import { OptionsBarComponent } from './components/options-bar/options-bar.component';
+import { DescriptionDialogComponent } from './dialogs/description-dialog/description-dialog.component';
 import { MenuButtonComponent } from './components/menu-button/menu-button.component';
-import { LinksDialogComponent } from './dialogs/links-dialog/links-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
+import { ImagesCardComponent } from './components/images-card/images-card.component';
+import { LinkCardComponent } from './components/link-card/link-card.component';
+import { RouterOptionsComponent } from './components/router-options/router-options.component';
+import { LinksDialogComponent } from './dialogs/links-dialog/links-dialog.component';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -150,10 +154,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { GradientCardComponent } from './components/gradient-card/gradient-card.component';
 import { ItemImagesComponent } from './dialogs/item-images/item-images.component';
 import { DotLoaderComponent } from './components/dot-loader/dot-loader.component';
-import { RouterOptionsComponent } from './components/router-options/router-options.component';
-import { LinkCardComponent } from './components/link-card/link-card.component';
-import { ImagesCardComponent } from './components/images-card/images-card.component';
-import { DescriptionDialogComponent } from './dialogs/description-dialog/description-dialog.component';
 import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
@@ -161,12 +161,36 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
+import { WebformTextareaQuestionComponent } from './components/webform-textarea-question/webform-textarea-question.component';
+import { WebformMultipleSelectionQuestionComponent } from './components/webform-multiple-selection-question/webform-multiple-selection-question.component';
+import { ClosedQuestionCardComponent } from './components/closed-question-card/closed-question-card.component';
 import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
 import { CreateTagComponent } from './dialogs/create-tag/create-tag.component';
 import { CollectionCardComponent } from './components/collection-card/collection-card.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTabsModule } from '@angular/material/tabs';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
+import { WebformsCreatorComponent } from './components/webforms-creator/webforms-creator.component';
+import { WebformQuestionDialogComponent } from './components/webform-question-dialog/webform-question-dialog.component';
+import { WebformMultipleSelectionConfirmationComponent } from './components/webform-multiple-selection-confirmation/webform-multiple-selection-confirmation.component';
+import { TextOrImageComponent } from './components/text-or-image/text-or-image.component';
+import { WebformAddAnotherQuestionComponent } from './components/webform-add-another-question/webform-add-another-question.component';
+import { WebformNameQuestionComponent } from './components/webform-name-question/webform-name-question.component';
+import { MsgDialogComponent } from './dialogs/msg-dialog/msg-dialog.component';
+import { DialogFormComponent } from './dialogs/dialog-form/dialog-form.component';
+import { NamedExpenseComponent } from './components/named-expense/named-expense.component';
+import { TitledExpenseComponent } from './components/titled-expense/titled-expense.component';
+import { OrderExpensesListComponent } from './components/order-expenses-list/order-expenses-list.component';
+import { InfoCard2Component } from './components/info-card2/info-card2.component';
+import { MerchantStepperFormComponent } from './components/merchant-stepper-form/merchant-stepper-form.component';
+import { StringInputComponent } from './components/string-input/string-input.component';
+import { ArticleStepperFormComponent } from './components/article-stepper-form/article-stepper-form.component';
+import { FacturasDisplay2Component } from './components/facturas-display2/facturas-display2.component';
+import { FullMenuButtonComponent } from './components/full-menu-button/full-menu-button.component';
+import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
 
 const imports = [
   CommonModule,
@@ -182,11 +206,11 @@ const imports = [
   ClipboardModule,
   GooglePlaceModule,
   DragDropModule,
+  MatButtonModule,
   MatMenuModule,
   MatIconModule,
   MatBottomSheetModule,
   MatDividerModule,
-  MatButtonModule,
   MatExpansionModule,
   MatBadgeModule,
   MatSelectModule,
@@ -197,6 +221,9 @@ const imports = [
   MatInputModule,
   MatSnackBarModule,
   MatCardModule,
+  MatCheckboxModule,
+  MatGridListModule,
+  MatTabsModule,
 ];
 const declarations = [
   // Pages
@@ -327,21 +354,43 @@ const declarations = [
   GradientFooterComponent,
   OptionsBarComponent,
   ImageEditorComponent,
+  GeneralDialogComponent,
+  DescriptionDialogComponent,
   MenuButtonComponent,
+  ImagesCardComponent,
+  LinkCardComponent,
+  RouterOptionsComponent,
   LinksDialogComponent,
   GradientCardComponent,
   CalendarSwiperComponent,
   ConfirmationDialogComponent,
   DotLoaderComponent,
-  RouterOptionsComponent,
-  LinkCardComponent,
-  ImagesCardComponent,
-  DescriptionDialogComponent,
   DropdownMenuComponent,
+  WebformTextareaQuestionComponent,
+  WebformMultipleSelectionQuestionComponent,
+  ClosedQuestionCardComponent,
   StepperFormComponent,
   CreateTagComponent,
   CollectionCardComponent,
   CompactCardComponent,
+  WebformsCreatorComponent,
+  WebformQuestionDialogComponent,
+  WebformMultipleSelectionConfirmationComponent,
+  TextOrImageComponent,
+  WebformAddAnotherQuestionComponent,
+  WebformNameQuestionComponent,
+  MsgDialogComponent,
+  DialogFormComponent,
+  NamedExpenseComponent,
+  TitledExpenseComponent,
+  OrderExpensesListComponent,
+  InfoCard2Component,
+  MerchantStepperFormComponent,
+  StringInputComponent,
+  ArticleStepperFormComponent,
+  FacturasDisplay2Component,
+  FullMenuButtonComponent,
+  NotificationDialogComponent
 ];
 
 @NgModule({
@@ -349,6 +398,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}

@@ -12,6 +12,7 @@ import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
   styleUrls: ['./qr-content.component.scss'],
 })
 export class QrContentComponent implements OnInit {
+  @Input() title: string = 'Contenido del QR';
   @Input() slides: Array<SlideInput> = [];
   @Input() shadows: boolean = true;
   @Input() joke: string = '';

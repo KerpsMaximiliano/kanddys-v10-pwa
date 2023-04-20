@@ -13,7 +13,7 @@
               [style]="field.styles"
               (change)="checkboxChange($event, controller.get(field.name))"
             />
-            <label [style]="field.label.styles">
+            <label *ngIf="field.label" [style]="field.label.styles">
               {{ field.label.text }}
             </label>
           </div>
@@ -35,9 +35,12 @@
             <div>
               <div class="grid-content">
                 <span [style]="field.selection.styles">{{ item.text }}</span>
-                <span *ngIf="item.subText" [style]="item.subText.styles">{{
-                  item.subText.text
-                }}</span>
+                <span
+                  [style]="item.styles"
+                  *ngIf="item.subText"
+                  [style]="item.subText.styles"
+                  >{{ item.subText.text }}</span
+                >
                 <span *ngIf="item.subText" [style]="item.subText.styles">{{
                   item.subText.text2
                 }}</span>
@@ -57,7 +60,7 @@
           ></textarea>
         </div>
         <div *ngSwitchCase="'phone'">
-          <label [style]="field.label.styles">
+          <label *ngIf="field.label" [style]="field.label.styles">
             {{ field.label.text }}
           </label>
 

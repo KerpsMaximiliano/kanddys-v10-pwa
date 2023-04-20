@@ -108,7 +108,6 @@ export class PostsService {
     let value = await this.graphql.query({
       query: post,
       variables: { id },
-      fetchPolicy: 'no-cache',
     });
 
     // console.log(value);
@@ -130,7 +129,6 @@ export class PostsService {
     let value = await this.graphql.query({
       query: slidesByPost,
       variables: { postId },
-      fetchPolicy: 'no-cache',
     });
 
     if (!value || value?.errors) return undefined;

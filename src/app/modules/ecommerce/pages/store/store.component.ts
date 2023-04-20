@@ -23,6 +23,11 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  LoginDialogComponent,
+  LoginDialogData,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 
 SwiperCore.use([Virtual]);
 
@@ -103,8 +108,9 @@ export class StoreComponent implements OnInit {
     public _DomSanitizer: DomSanitizer,
     private authService: AuthService,
     private integrationService: IntegrationsService,
-    private dialog: DialogService,
-    private appService: AppService
+    private dialogService: DialogService,
+    private appService: AppService,
+    private matDialog: MatDialog
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -322,7 +328,7 @@ export class StoreComponent implements OnInit {
       });
     }
 
-    this.dialog.open(StoreShareComponent, {
+    this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
         list,
@@ -426,6 +432,21 @@ export class StoreComponent implements OnInit {
 
     this.headerService.flowRoute = this.router.url + '?startOnSnapshot=true';
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
+  }
+
+  logout() {
+    this.authService.signoutThree();
+  }
+
+  login() {
+    this.matDialog.open(LoginDialogComponent, {
+      data: {
+        magicLinkData: {
+          redirectionRoute: `ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
+          entity: 'UserAccess',
+        },
+      } as LoginDialogData,
+    });
   }
 
   getPageSnapshot() {

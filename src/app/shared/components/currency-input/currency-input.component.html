@@ -1,7 +1,12 @@
 <div class="input-wrapper">
   <div class="currency-wrapper" [ngStyle]="fieldStyles">
     <span class="inner-label" *ngIf="innerLabel">{{ innerLabel }}</span>
-    <div class="formatted-price" [ngStyle]="{color: formattedPricing === '$0.00' ? placeholderColor : ''}">
+    <div
+      class="formatted-price"
+      [ngStyle]="{
+        color: formattedPricing === '$0.00' ? placeholderColor : ''
+      }"
+    >
       {{ currencyLabel }} {{ formattedPricing }}
       <div
         class="cursor blinking-cursor"

@@ -252,6 +252,13 @@ export const listItems = gql`
         active
         createdAt
       }
+      webForms {
+        _id
+        createdAt
+        updatedAt
+        reference
+        active
+      }
     }
   }
 `;

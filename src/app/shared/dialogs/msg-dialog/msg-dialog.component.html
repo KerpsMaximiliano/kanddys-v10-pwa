@@ -1,0 +1,56 @@
+<div class="container flex">
+  <section class="top flex">
+    <img class="icon" [src]="environment + '/star.svg'" />
+    <p class="title">
+      {{title}}<br />
+      <br />
+      <span
+        class="desc"
+        *ngIf="optionalQuestionsNumber > 0 && requiredQuestionsNumber > 0"
+      >
+        Los compradores te responderán {{ requiredQuestionsNumber }} preguntas
+        antes de completar la factura
+        {{ item.name ? " de " + item.name : "del producto" }} y pueden responder
+        otras {{ optionalQuestionsNumber }} que no son obligatorias
+      </span>
+
+      <span
+        class="desc"
+        *ngIf="optionalQuestionsNumber === 0 && requiredQuestionsNumber > 0"
+      >
+        Los compradores te responderán {{ requiredQuestionsNumber }} preguntas
+        antes de completar la factura
+        {{ item.name ? " de " + item.name : "del producto" }}
+      </span>
+
+      <span
+        class="desc"
+        *ngIf="optionalQuestionsNumber > 0 && requiredQuestionsNumber === 0"
+      >
+        Los compradores pueden opcionalmente responder
+        {{ optionalQuestionsNumber }} preguntas antes de completar la factura
+        {{ item.name ? " de " + item.name : "del producto" }}
+      </span>
+    </p>
+  </section>
+  <section class="middle">
+    <!--
+                <link href="#">Mira como lo verán tus compradores
+                <br>
+                <br>
+                <link href="#">Mira como lo verás tu
+                <br>
+            -->
+    <br />
+    <div class="link" (click)="closeDialog()">
+      Vuelve a la configuración
+      {{ item.name ? "de " + item.name : "del producto" }}
+    </div>
+  </section>
+  <section class="bottom flex">
+    <button class="button flex">
+      <img class="icon" [src]="environment + '/arrow-double-up.svg'" />
+    </button>
+    <div class="text">WeDoWeLike</div>
+  </section>
+</div>

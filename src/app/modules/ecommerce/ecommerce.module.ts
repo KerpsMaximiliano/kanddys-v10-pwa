@@ -32,6 +32,15 @@ import { ContactLandingComponent } from 'src/app/shared/components/contact-landi
 import { CollectionsComponent } from 'src/app/modules/ecommerce/pages/collections/collections.component';
 import { TagItemsComponent } from 'src/app/modules/ecommerce/pages/tag-items/tag-items.component';
 import { GiftDetailComponent } from './pages/gift-detail/gift-detail.component';
+import { MerchantLandingComponent } from '../admin/pages/merchant-landing/merchant-landing.component';
+import { StoreAssistantComponent } from './pages/store-assistant/store-assistant.component';
+import { OrderProcessComponent } from '../admin/pages/order-process/order-process.component';
+import { RegistroKioskoComponent } from './pages/registro-kiosko/registro-kiosko.component';
+import { KioskoViewComponent } from './pages/kiosko-view/kiosko-view.component';
+import { LinksPageComponent } from './pages/links-page/links-page.component';
+import { LinkRegisterComponent } from './pages/link-register/link-register.component';
+import { LinkUpdateComponent } from './pages/link-update/link-update.component';
+import { MyContactRegisterComponent } from './pages/my-contact-register/my-contact-register.component';
 
 const routes: Routes = [
   {
@@ -76,6 +85,34 @@ const routes: Routes = [
   {
     path: 'gift-detail/:orderId',
     component: GiftDetailComponent,
+  },
+  {
+    path: 'merchant-landing',
+    component: MerchantLandingComponent,
+  },
+  {
+    path: 'registro-kiosko',
+    component: RegistroKioskoComponent,
+  },
+  {
+    path: 'kiosko-view/:userId',
+    component: KioskoViewComponent,
+  },
+  {
+    path: 'links-view/:userId',
+    component: LinksPageComponent,
+  },
+  {
+    path: 'link-register/:userId',
+    component: LinkRegisterComponent,
+  },
+  {
+    path: 'link-update/:userId',
+    component: LinkUpdateComponent,
+  },
+  {
+    path: 'register-my-contact/:userId',
+    component: MyContactRegisterComponent,
   },
   {
     path: ':merchantSlug',
@@ -168,7 +205,15 @@ const routes: Routes = [
       {
         path: 'contact-landing/:idUser',
         component: ContactLandingContainerComponent,
-      }
+      },
+      {
+        path: 'store-assistant',
+        component: StoreAssistantComponent,
+      },
+      {
+        path: 'order-process/:orderId',
+        component: OrderProcessComponent,
+      },
     ],
   },
 ];
@@ -196,6 +241,14 @@ const routes: Routes = [
     CollectionsComponent,
     TagItemsComponent,
     GiftDetailComponent,
+    MerchantLandingComponent,
+    StoreAssistantComponent,
+    RegistroKioskoComponent,
+    KioskoViewComponent,
+    LinksPageComponent,
+    LinkRegisterComponent,
+    LinkUpdateComponent,
+    MyContactRegisterComponent,
   ],
   imports: [
     CommonModule,
