@@ -98,6 +98,7 @@
 }
 
 .section {
+	margin-bottom: 2em;
 	.section-header {
 		margin: 1em 1.5em;
 		display: flex;
@@ -137,7 +138,12 @@
 	box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
 	padding-bottom: 7px;
 
+	a {
+		all: unset;
+	}
+
 	.card-body {
+		cursor: pointer;
 		display: flex;
 		justify-content: space-between;
 		margin-bottom: 10px;
@@ -159,6 +165,9 @@
 		.card-r-side {
 			max-width: 50%;
 			.featured-image {
+				background-size: cover;
+				background-position: center;
+				background-repeat: no-repeat;
 				width: 150px;
 				height: 170px;
 				background-color: #293628;
@@ -215,11 +224,47 @@
 				margin-right: 7px;
 				p {
 					color: #A1A1A1;
+					margin-right: 1px;
 				}
 				img {
+					width: 15px;
 					filter: invert(60%) sepia(47%) saturate(0%) hue-rotate(291deg) brightness(98%) contrast(92%);
 				}
 			}
+		}
+	}
+}
+
+.sticky-bar {
+	position: fixed;
+	max-width: 500px;
+	width: 100%;
+	background-color: #6FCF97;
+	padding: 5px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	z-index: 999;
+	bottom: 0;
+
+	p {
+		color: #272727;
+		font-family: SfProLight;
+		font-size: 13px;
+	}
+
+	div {
+		display: flex;
+		justify-content: space-between;
+		align-items: end;
+
+		p {
+			margin-right: 10px;
+		}
+
+		img {
+			width: 15px;
+			filter: brightness(0) invert(18%) sepia(11%) saturate(1049%) hue-rotate(68deg) brightness(93%) contrast(91%);
 		}
 	}
 }
@@ -255,6 +300,7 @@
 	width: 100%;
 	max-width: 500px;
 	bottom: 0;
+	z-index: 999;
 
 	.button {
 		position: absolute;

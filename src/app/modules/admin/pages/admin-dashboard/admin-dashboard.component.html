@@ -64,40 +64,163 @@
     </div>
 
     <div class="section-content">
-      <mat-card class="card">
-        <div class="card-body">
-          <div class="card-l-side">
-            <h2 class="card-title">Paquete de 24 Lavados</h2>
-            <p class="card-description"> Lavado por fuera, aspiradora por dentro y brillo en las gomas.</p>
-          </div>
-          <div class="card-r-side">
-            <div class="featured-image">
-              <div class="caption">
-                <img [src]="environment + '/closed-eye-black.svg'" alt="">
-                Oculto al visitante
+      <swiper [config]="cardSwiperConfig" >
+        <mat-card class="card" *ngFor="let item of recentlySoldItems">
+          <a [routerLink]="['../article-editor', item._id]">
+            <div class="card-body">
+              <div class="card-l-side">
+                <h2 class="card-title">{{ item.name ? item.name : 'Sin nombre...' }}</h2>
+                <p class="card-description"> {{ item.description }}</p>
+              </div>
+              <div class="card-r-side">
+                <div class="featured-image" [ngStyle]="{ backgroundImage: 'url(' + item?.images[0]?.value + ')' }">
+                  <div class="caption" *ngIf="item.status === 'disabled'">
+                    <img [src]="environment + '/closed-eye-black.svg'" alt="">
+                    Oculto al visitante
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+          <div class="card-footer">
+            <div class="bottom-title">
+              <h3>RD $ {{ item.pricing | number }}</h3>
+            </div>
+            <div class="bottom-icons">
+              <div class="text-icon">
+                <p>{{ item?.visitorCounter?.counter ? item?.visitorCounter?.counter : '0' }}</p>
+                <img [src]="environment + '/open-eye.svg'" alt="">
+              </div>
+              <div class="text-icon">
+                <img [src]="environment + '/dots-black.svg'" alt="">
               </div>
             </div>
           </div>
-        </div>
-        <div class="card-footer">
-          <div class="bottom-title">
-            <h3>RD $ 3.800</h3>
-          </div>
-          <div class="bottom-icons">
-            <div class="text-icon">
-              <p>14</p>
-              <img [src]="environment + '/closed-eye-black.svg'" alt="">
-            </div>
-            <div class="text-icon">
-              <img [src]="environment + '/dots-black.svg'" alt="">
-            </div>
-          </div>
-        </div>
-      </mat-card>
+        </mat-card>
+      </swiper>
     </div>
   </div>
 
-  <div
+  <div class="section">
+    <div class="section-header">
+      <h3 class="section-title">
+        20% menos vendidos
+      </h3>
+
+      <div class="section-description">
+        <p>
+          4 de los últimos 7 días
+        </p>
+        <img [src]="environment + '/arrow-left.svg'" alt="">
+      </div>
+    </div>
+
+    <div class="section-content">
+      <swiper [config]="cardSwiperConfig" >
+        <mat-card class="card" *ngFor="let item of lessSoldItems">
+          <a [routerLink]="['../article-editor', item._id]">
+            <div class="card-body">
+              <div class="card-l-side">
+                <h2 class="card-title">{{ item.name ? item.name : 'Sin nombre...' }}</h2>
+                <p class="card-description"> {{ item.description }}</p>
+              </div>
+              <div class="card-r-side">
+                <div class="featured-image" [ngStyle]="{ backgroundImage: 'url(' + item?.images[0]?.value + ')' }">
+                  <div class="caption" *ngIf="item.status === 'disabled'">
+                    <img [src]="environment + '/closed-eye-black.svg'" alt="">
+                    Oculto al visitante
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+          <div class="card-footer">
+            <div class="bottom-title">
+              <h3>RD $ {{ item.pricing | number }}</h3>
+            </div>
+            <div class="bottom-icons">
+              <div class="text-icon">
+                <p>{{ item.visitorCounter.counter }}</p>
+                <img [src]="environment + '/open-eye.svg'" alt="">
+              </div>
+              <div class="text-icon">
+                <img [src]="environment + '/dots-black.svg'" alt="">
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </swiper>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h3 class="section-title">
+        20% más vendidos
+      </h3>
+
+      <div class="section-description">
+        <p>
+          4 de los últimos 7 días
+        </p>
+        <img [src]="environment + '/arrow-left.svg'" alt="">
+      </div>
+    </div>
+
+    <div class="section-content">
+      <swiper [config]="cardSwiperConfig" >
+        <mat-card class="card" *ngFor="let item of mostSoldItems">
+          <a [routerLink]="['../article-editor', item._id]">
+            <div class="card-body">
+              <div class="card-l-side">
+                <h2 class="card-title">{{ item.name ? item.name : 'Sin nombre...' }}</h2>
+                <p class="card-description"> {{ item.description }}</p>
+              </div>
+              <div class="card-r-side">
+                <div class="featured-image" [ngStyle]="{ backgroundImage: 'url(' + item?.images[0]?.value + ')' }">
+                  <div class="caption" *ngIf="item.status === 'disabled'">
+                    <img [src]="environment + '/closed-eye-black.svg'" alt="">
+                    Oculto al visitante
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+          <div class="card-footer">
+            <div class="bottom-title">
+              <h3>RD $ {{ item.pricing | number }}</h3>
+            </div>
+            <div class="bottom-icons">
+              <div class="text-icon">
+                <p>{{ item.visitorCounter.counter }}</p>
+                <img [src]="environment + '/open-eye.svg'" alt="">
+              </div>
+              <div class="text-icon">
+                <img [src]="environment + '/dots-black.svg'" alt="">
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </swiper>
+    </div>
+  </div>
+
+  <div class="uploadButton">
+    <button mat-fab class="button" (click)="settings()">
+      <mat-icon style="color: #82f18d">menu</mat-icon>
+      <!-- <img class="icon" [src]="environment + '/upload.svg'" /> -->
+    </button>
+  </div>
+
+  <div class="sticky-bar">
+    <p>PREVIEW</p>
+    <div>
+      <p>VISIBLE EN: URL.COM</p>
+      <img [src]="environment + '/upload.svg'" alt="">
+    </div>
+  </div>
+
+  <!-- <div
     class="saleflows-item-grid"
     (scroll)="infinitePagination()"
     *ngIf="allItems.length && (layout === 'simple-card' || !layout)"
@@ -156,7 +279,7 @@
         [views]="item.visitorCounter ? item.visitorCounter.counter : 0"
       ></app-buyer-card>
     </a>
-  </div>
+  </div> -->
   <div
     [ngStyle]="{
       width: '100%',
@@ -168,11 +291,5 @@
     *ngIf="paginationState.status === 'loading'"
   >
     <app-dot-loader></app-dot-loader>
-  </div>
-  <div class="uploadButton">
-    <button mat-fab class="button" (click)="share()">
-      <mat-icon style="color: #82f18d">share</mat-icon>
-      <!-- <img class="icon" [src]="environment + '/upload.svg'" /> -->
-    </button>
   </div>
 </div>
