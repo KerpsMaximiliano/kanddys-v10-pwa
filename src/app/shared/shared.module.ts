@@ -183,6 +183,8 @@ import { ArticleStepperFormComponent } from './components/article-stepper-form/a
 import { FacturasDisplay2Component } from './components/facturas-display2/facturas-display2.component';
 import { FullMenuButtonComponent } from './components/full-menu-button/full-menu-button.component';
 import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
+import { InfoContainerComponent } from './components/info-container/info-container.component';
+import { CardInfoComponent } from './components/card-info/card-info.component';
 
 const imports = [
   CommonModule,
@@ -371,13 +373,15 @@ const declarations = [
   ArticleStepperFormComponent,
   FacturasDisplay2Component,
   FullMenuButtonComponent,
-  NotificationDialogComponent
+  NotificationDialogComponent,
+  InfoContainerComponent,
+  CardInfoComponent
 ];
 
 @NgModule({
   declarations,
   imports: [...imports, RouterModule],
-  exports: [...declarations, ...imports],
+  exports: [...declarations, InfoContainerComponent, CardInfoComponent, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: []
 })
