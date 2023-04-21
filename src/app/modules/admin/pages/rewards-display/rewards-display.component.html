@@ -6,7 +6,18 @@
     <button><img [src]="env + '/QR.svg'" alt="" class="qr" /></button>
   </header>
   <div class="content">
-    <app-card-info></app-card-info>
+
+    <div class="card-container" *ngFor="let card of cards; index as i">
+      <div *ngIf="card.notification === true" class="notification"></div>
+      <div class="top">
+        <img [src]="card.img" alt="" />
+        <p class="title">{{ card.title }}</p>
+        <p class="subtitle">{{ card.subtitle }}</p>
+        <p class="amount">{{ card.amount }}</p>
+      </div>
+      <p *ngIf="card.bottomText" class="bottomText">{{ card.bottomText }}</p>
+    </div>    
+
     <!-- <app-info-container [cards]="cards"></app-info-container> -->
     <p class="title">Progreso y listados de las Facturas</p>
     <!-- <app-info-container [cards]="cards2"></app-info-container> -->
