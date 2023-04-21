@@ -8,6 +8,7 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
+import { ItemOrder } from 'src/app/core/models/order';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -52,6 +53,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   mostSoldItems: Item[] = [];
   lessSoldItems: Item[] = [];
   hiddenItems: Item[] = [];
+
+  ordersToConfirm: ItemOrder[] = [];
+
   itemStatus: 'active' | 'disabled' | '' | null = 'active';
   renderItemsPromise: Promise<{ listItems: Item[] }>;
   subscription: Subscription;
@@ -197,7 +201,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   constructor(
     public _MerchantsService: MerchantsService,
     private _SaleflowService: SaleFlowService,
-    private router: Router,
+    public router: Router,
     private authService: AuthService,
     // private itemsService: ItemsService,
     private _ItemsService: ItemsService,
@@ -212,6 +216,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (this._SaleflowService.saleflowData) {
       this.inicializeItems(true, false, true);
       this.getTags();
+      this.getOrders();
+      this.getMostSoldItems();
+      this.getLessSoldItems();
+      this.getHiddenItems();
+      this.getOrdersToConfirm();
       return;
     }
     this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
@@ -223,6 +232,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           this.getMostSoldItems();
           this.getLessSoldItems();
           this.getHiddenItems();
+          this.getOrdersToConfirm();
         }
       },
     });
@@ -387,6 +397,29 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       );
 
       this.recentlySoldItems = listItems;
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getOrdersToConfirm() {
+    try {
+      const { ordersByMerchant } = await this._MerchantsService.ordersByMerchant(
+        this._MerchantsService.merchantData._id,
+        {
+          options: {
+            limit: -1,
+            sortBy: 'createdAt:desc'
+          },
+          findBy: {
+            orderStatus: 'to confirm'
+          }
+        }
+      );
+
+      this.ordersToConfirm = ordersByMerchant;
+
 
     } catch (error) {
       console.log(error);

@@ -18,8 +18,24 @@
     </div>
 
     <div class="right">
-      <a class="btn" [routerLink]="['../benefits']">
+      <a class="btn"
+        [routerLink]="['../notifications-menu']"
+        [queryParams]="{ 
+          redirectTo: router.url
+        }"
+        *ngIf="ordersToConfirm.length === 0"
+      >
         <img class="listIcon" [src]="environment + '/icon-i.svg'" />
+      </a>
+
+      <a class="btn"
+        [routerLink]="['../notifications-menu']"
+        [queryParams]="{ 
+          redirectTo: router.url
+        }"
+        *ngIf="ordersToConfirm.length > 0"
+      >
+        <img class="listIcon" [src]="environment + '/bell-notification.svg'" />
       </a>
       <!-- <button class="btn blackButton">
         <p>Programas</p>

@@ -1,0 +1,66 @@
+* {
+  margin: 0;
+}
+
+.container {
+
+  min-height: 100vh;
+
+  .header {
+    padding: 14px 21px;
+    display: flex;
+    align-items: center;
+    background-color: #c1c4c1;
+    box-shadow: 0px 3px 6px rgba(#000000, 0.16) inset;
+
+    .header-title {
+      color: #272727;
+      font-size: 16px;
+      font-family: SFProRegular;
+      margin-left: 16px;
+      margin-right: auto;
+    }
+
+    button {
+      all: unset;
+      cursor: pointer;
+    }
+    .star {
+      height: 21px;
+      width: 22px;
+      filter: brightness(0) invert(15%) sepia(34%) saturate(378%)
+        hue-rotate(68deg) brightness(98%) contrast(90%);
+      margin-right: 18.5px;
+    }
+
+    .qr {
+      height: 21px;
+      width: 21px;
+    }
+  }
+
+  .content {
+    padding: 67px 20px;
+    .title {
+      color: #272727;
+      font-size: 13px;
+      text-transform: uppercase;
+      font-family: SFProRegular;
+      margin-top: 42px;
+      margin-bottom: 13px;
+    }
+
+    .wrapper {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+
+      p {
+        color: #293628;
+        font-size: 17px;
+        font-family: SFProMedium;
+        margin-left: 13px;
+      }
+    }
+  }
+}
