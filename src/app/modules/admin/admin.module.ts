@@ -42,6 +42,7 @@ import { OrderProcessComponent } from './pages/order-process/order-process.compo
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
+import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -247,7 +248,12 @@ const routes: Routes = [
       {
         path: 'create-notification/:notificationId',
         component: NotificationCreatorComponent
-      }
+      },
+      {
+        path: 'create-notification/:notificationId',
+        component: NotificationCreatorComponent
+      },
+      
     ],
   },
   {
@@ -257,6 +263,10 @@ const routes: Routes = [
   {
     path: 'order-process/:merchantId',
     component: OrderProcessComponent,
+  },
+  {
+    path: 'article-detail/:id',
+    component: ArticleDetailComponent
   },
 ];
 
@@ -293,6 +303,7 @@ const routes: Routes = [
     OrderProcessComponent,
     DeliveryOrdersComponent,
     NotificationCreatorComponent,
+    ArticleDetailComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, MatCheckboxModule, RouterModule.forChild(routes)],

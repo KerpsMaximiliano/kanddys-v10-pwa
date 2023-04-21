@@ -1,0 +1,87 @@
+<!-- <app-article-editor></app-article-editor> -->
+<div class="main-container">
+  <div class="header">
+    <div class="flex">
+      <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
+      <p>ArticleID</p>
+    </div>
+    <div class="bell-container">
+        <img src="../../../../../assets/icons/bell.svg" />
+    </div>
+  </div>
+  <div class="content">
+    <div class="sales-block">
+      <p>7,785 ventas</p>
+      <p>$0.00</p>
+    </div>
+    <div class="row-item-price row-item-price-first-row">
+      <p>Precio Normal</p>
+      <div class="row-item-price-block-container">
+        <div class="row-item-price-block row-item-price-first-block">
+          <p>$1,500</p>
+        </div>
+        <div class="row-item-price-block row-item-price-second-block">
+          <p>40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3% = $3500</p>
+        </div>
+        <div class="row-item-price-block row-item-price-third-block">
+          <p>457</p>
+        </div>
+      </div>
+    </div>
+    <div class="row-item-price">
+      <p>Precio VIP</p>
+      <div class="row-item-price-block-container">
+        <div class="row-item-price-block row-item-price-first-block">
+          <p>$1,500</p>
+        </div>
+        <div class="row-item-price-block row-item-price-second-block">
+          <p>40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3% = $3500</p>
+        </div>
+        <div class="row-item-price-block row-item-price-third-block">
+          <p>457</p>
+        </div>
+      </div>
+    </div>
+    <div class="row-item-price">
+      <p>RECOMPENSA A COMPRADORES Y PREMIO A VENDEDORES</p>
+      <div class="row-item-price-block-container">
+        <div class="row-item-price-block row-item-price-first-block">
+          <p>$1,500</p>
+        </div>
+        <div class="row-item-price-block row-item-price-second-block">
+          <p>40  <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3% = $3500</p>
+        </div>
+        <div class="row-item-price-block row-item-price-third-block">
+          <p>457</p>
+        </div>
+      </div>
+    </div>
+    <div class="row-item-price">
+      <p>nombre del articulo</p>
+      <input placeholder="ID" />
+    </div>
+    <div class="row-item-price row-item-price-description">
+      <p>DESCRIPCION</p>
+      <textarea
+        >{{ description }}
+        </textarea
+      >
+    </div>
+    <div class="row-item-price">
+      <p>LO INCLUIDO</p>
+      <input placeholder="ID" />
+      <input placeholder="ID" />
+    </div>
+    <div class="row-item-price">
+      <p>DISPONIBILIDAD (STOCK)</p>
+      <input placeholder="ID" />
+    </div>
+  </div>
+  <div class="footer">
+    <p>Preview</p>
+    <div class="flex">
+      <p>VISIBLE EN: URL.COM</p>
+      <img [src]="env + '/upload.svg'" class="upload-icon" />
+    </div>
+  </div>
+</div>
