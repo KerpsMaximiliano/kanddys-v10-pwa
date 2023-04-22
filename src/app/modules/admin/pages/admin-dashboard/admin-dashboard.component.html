@@ -71,7 +71,7 @@
         Ventas recientes
       </h3>
 
-      <div class="section-description">
+      <div class="section-description" (click)="goToDetail('recent')">
         <p>
           4 de los últimos 7 días
         </p>
@@ -123,7 +123,7 @@
         20% menos vendidos
       </h3>
 
-      <div class="section-description">
+      <div class="section-description" (click)="goToDetail('lessSold')">
         <p>
           4 de los últimos 7 días
         </p>
@@ -175,7 +175,7 @@
         20% más vendidos
       </h3>
 
-      <div class="section-description">
+      <div class="section-description" (click)="goToDetail('mostSold')">
         <p>
           4 de los últimos 7 días
         </p>

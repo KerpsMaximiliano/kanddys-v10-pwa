@@ -44,6 +44,7 @@ import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 import { OrderSlidesComponent } from './pages/order-slides/order-slides.component';
 import { RewardsDisplayComponent } from './pages/rewards-display/rewards-display.component';
+import { DashboardLibraryComponent } from './pages/dashboard-library/dashboard-library.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -268,6 +269,10 @@ const routes: Routes = [
     path: 'order-process/:merchantId',
     component: OrderProcessComponent,
   },
+  {
+    path: 'dashboard-library',
+    component: DashboardLibraryComponent,
+  },
 ];
 
 @NgModule({
@@ -304,6 +309,7 @@ const routes: Routes = [
     DeliveryOrdersComponent,
     NotificationCreatorComponent,
     OrderSlidesComponent,
+    DashboardLibraryComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
