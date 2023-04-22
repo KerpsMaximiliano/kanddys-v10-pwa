@@ -381,7 +381,7 @@ const declarations = [
 @NgModule({
   declarations,
   imports: [...imports, RouterModule],
-  exports: [...declarations, InfoContainerComponent, CardInfoComponent, ...imports],
+  exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: []
 })
