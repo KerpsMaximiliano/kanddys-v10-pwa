@@ -90,6 +90,7 @@
     padding-right: 10px;
     color: #000000;
     resize: none;
+    padding-top:15px;
   }
 }
 
@@ -125,8 +126,10 @@
 }
 
 .row-item-price-first-block {
-  width: 25%;
+  width: 25% !important;
   margin-right: 3px;
+  // margin-top: 0 !important;
+  
 }
 
 .row-item-price-second-block {

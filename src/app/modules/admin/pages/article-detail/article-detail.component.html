@@ -3,13 +3,25 @@
   <div class="header">
     <div class="flex">
       <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
-      <p>ArticleID</p>
+      <p>{{ itemId }}</p>
     </div>
     <div class="bell-container">
-        <img src="../../../../../assets/icons/bell.svg" />
+      <img src="../../../../../assets/icons/bell.svg" />
     </div>
   </div>
   <div class="content">
+    <app-qr-content
+      title="Slides"
+      *ngIf="slides"
+      [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
+      [shadows]="false"
+      [showButton]="false"
+    ></app-qr-content>
     <div class="sales-block">
       <p>7,785 ventas</p>
       <p>$0.00</p>
@@ -18,10 +30,16 @@
       <p>Precio Normal</p>
       <div class="row-item-price-block-container">
         <div class="row-item-price-block row-item-price-first-block">
-          <p>$1,500</p>
+          <p>
+            {{ item.pricing | currency }}
+          </p>
         </div>
+
         <div class="row-item-price-block row-item-price-second-block">
-          <p>40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3% = $3500</p>
+          <p>
+            40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
+            = $3500
+          </p>
         </div>
         <div class="row-item-price-block row-item-price-third-block">
           <p>457</p>
@@ -35,7 +53,10 @@
           <p>$1,500</p>
         </div>
         <div class="row-item-price-block row-item-price-second-block">
-          <p>40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3% = $3500</p>
+          <p>
+            40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
+            = $3500
+          </p>
         </div>
         <div class="row-item-price-block row-item-price-third-block">
           <p>457</p>
@@ -49,7 +70,10 @@
           <p>$1,500</p>
         </div>
         <div class="row-item-price-block row-item-price-second-block">
-          <p>40  <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3% = $3500</p>
+          <p>
+            40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
+            = $3500
+          </p>
         </div>
         <div class="row-item-price-block row-item-price-third-block">
           <p>457</p>
@@ -57,25 +81,32 @@
       </div>
     </div>
     <div class="row-item-price">
-      <p>nombre del articulo</p>
-      <input placeholder="ID" />
+      <p>Nombre del articulo</p>
+      <textarea disabled placeholder="ID">
+        {{ item.name }}
+        </textarea
+      >
     </div>
     <div class="row-item-price row-item-price-description">
       <p>DESCRIPCION</p>
-      <textarea
-        >{{ description }}
+      <textarea disabled
+        >{{ item.description }}
         </textarea
       >
     </div>
     <div class="row-item-price">
       <p>LO INCLUIDO</p>
-      <input placeholder="ID" />
-      <input placeholder="ID" />
+      <textarea disabled placeholder="ID">{{ id }} </textarea>
+      <textarea disabled placeholder="ID">{{ id }} </textarea>
     </div>
     <div class="row-item-price">
       <p>DISPONIBILIDAD (STOCK)</p>
-      <input placeholder="ID" />
+      <textarea disabled placeholder="ID">{{ id }} </textarea>
     </div>
+    <app-menu-button
+      [position]="{ bottom: '50px' }"
+      [options]="menuOptions"
+    ></app-menu-button>
   </div>
   <div class="footer">
     <p>Preview</p>

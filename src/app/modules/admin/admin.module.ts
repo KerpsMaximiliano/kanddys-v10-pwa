@@ -265,7 +265,7 @@ const routes: Routes = [
     component: OrderProcessComponent,
   },
   {
-    path: 'article-detail/:id',
+    path: 'article-detail/:articleId',
     component: ArticleDetailComponent
   },
 ];
