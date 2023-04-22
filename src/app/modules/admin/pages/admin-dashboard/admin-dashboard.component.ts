@@ -607,4 +607,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   selectedMenuOption(selected: MenuEvent) {
     this.options[selected.index].menu[selected.menuIndex].callback();
   }
+
+  goToDetail(dataToRequest: string) {
+    this.router.navigate([`admin/dashboard-library`], {
+      queryParams: {
+        data: dataToRequest,
+      },
+    });
+  }
 }
