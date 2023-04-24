@@ -549,7 +549,7 @@ export class NewAddressComponent implements OnInit {
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
     this.router.navigate([
-      '/ecommerce/terms-of-use/' + this.viewMerchantForDelivery._id,
+      `/ecommerce/${this.headerService.saleflow.merchant.slug}/terms-of-use/${this.viewMerchantForDelivery._id}`,
     ]);
   }
 

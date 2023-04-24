@@ -35,6 +35,7 @@ import {
   LoginDialogComponent,
   LoginDialogData,
 } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-payments',
@@ -271,7 +272,8 @@ export class PaymentsComponent implements OnInit {
     private dialogService: DialogService,
     private authService: AuthService,
     private toastrService: ToastrService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -386,7 +388,7 @@ export class PaymentsComponent implements OnInit {
           this.openedDialogFlow = true;
         }
 
-        if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+        // if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
       });
     });
   }
@@ -661,6 +663,7 @@ export class PaymentsComponent implements OnInit {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         document.querySelector('#AuthHash').setAttribute('value', data.hash);
         document
           .querySelector('#MerchantID')
@@ -745,5 +748,12 @@ export class PaymentsComponent implements OnInit {
         window.location.href = response.url;
       }
     });*/
+  }
+
+  remindRefundPolicies() {
+    this.snackBar.open('Debes aceptar las políticas de reembolso antes de continuar con tu orden', 'OK', {
+      duration: 3000,
+      panelClass: ['mat-accent']
+    });
   }
 }
