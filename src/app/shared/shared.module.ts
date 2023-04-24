@@ -184,6 +184,7 @@ import { FacturasDisplay2Component } from './components/facturas-display2/factur
 import { FullMenuButtonComponent } from './components/full-menu-button/full-menu-button.component';
 import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
 import { FormCreatorComponent } from './components/form-creator/form-creator.component';
+import { MediaUploadDndComponentComponent } from './components/media-upload-dnd-component/media-upload-dnd-component.component';
 
 const imports = [
   CommonModule,
@@ -373,7 +374,8 @@ const declarations = [
   FacturasDisplay2Component,
   FullMenuButtonComponent,
   NotificationDialogComponent,
-  FormCreatorComponent
+  FormCreatorComponent,
+  MediaUploadDndComponentComponent
 ];
 
 @NgModule({

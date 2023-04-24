@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swiper, { SwiperOptions } from 'swiper';
@@ -6,6 +6,7 @@ import {
   WebformCreatorStepsNames,
   WebformsService,
 } from 'src/app/core/services/webforms.service';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
 
 interface OptionInList {
   name: string;
@@ -22,7 +23,6 @@ export class FormCreatorComponent implements OnInit {
   currentStepIndex: number = 0;
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
-    resistance: false,
     freeMode: false,
     spaceBetween: 0,
     allowSlideNext: true,
@@ -96,6 +96,7 @@ export class FormCreatorComponent implements OnInit {
       ],
     },
   };
+  @ViewChild('stepsSwiper') stepsSwiper: SwiperComponent;
 
   constructor(
     private route: ActivatedRoute,
@@ -118,16 +119,26 @@ export class FormCreatorComponent implements OnInit {
         }),
       });
 
-      this.steps.push({
-        name: 'QUESTION_EDITION',
-        fields: new FormGroup({
-          question: new FormControl('', Validators.required),
-          selectedResponseType: new FormControl('', Validators.required),
-          selectedResponseValidation: new FormControl('', Validators.required),
-        }),
-      });
+      this.addAQuestionToTheForm();
     } else {
       //Codigo para continuar
+    }
+  }
+
+  addAQuestionToTheForm(navigateToNextQuestion = false) {
+    this.steps.push({
+      name: 'QUESTION_EDITION',
+      fields: new FormGroup({
+        question: new FormControl('', Validators.required),
+        selectedResponseType: new FormControl('', Validators.required),
+        selectedResponseValidation: new FormControl('', Validators.required),
+      }),
+    });
+
+    if (navigateToNextQuestion) {
+      setTimeout(() => {
+        this.stepsSwiper.directiveRef.setIndex(this.currentStepIndex + 1);
+      }, 100);
     }
   }
 
@@ -138,6 +149,9 @@ export class FormCreatorComponent implements OnInit {
   selectOptionInList(listName: string, value: string) {
     const selectedOption =
       this.steps[this.currentStepIndex].fields.controls[listName].value;
+    const validationsOptionsFieldControl = this.steps[
+      this.currentStepIndex
+    ].fields.get('selectedResponseValidation');
 
     const isFalsy = (text: string) =>
       text === null || text === undefined || text === '';
@@ -177,16 +191,18 @@ export class FormCreatorComponent implements OnInit {
           }),
         ])
       );
-      console.log(
-        'OPTIONS',
-        this.steps[this.currentStepIndex].fields.get('responseOptions')
-      );
+
+      validationsOptionsFieldControl.setValidators([]);
+      validationsOptionsFieldControl.updateValueAndValidity();
     } else if (
       listName === 'selectedResponseType' &&
       value === 'multiple' &&
       this.steps[this.currentStepIndex].fields.controls['responseOptions']
     ) {
       this.steps[this.currentStepIndex].fields.removeControl('responseOptions');
+    } else if (value !== 'multiple' && listName === 'selectedResponseType') {
+      validationsOptionsFieldControl.setValidators([Validators.required]);
+      validationsOptionsFieldControl.updateValueAndValidity();
     }
   }
 
@@ -207,16 +223,23 @@ export class FormCreatorComponent implements OnInit {
   onMultipleInputEnterPress(
     event: any,
     fieldformArray: any,
-    index
+    textOrImage: string,
+    index: number
   ) {
-    console.log('Event', event);
-    console.log('index', index);
+    const formArray = this.steps[this.currentStepIndex].fields.get(
+      'responseOptions'
+    ) as FormArray;
 
-    if (index + 1 === fieldformArray.length) {
+    if (index + 1 === formArray.controls.length) {
       if (this.timeoutId) clearTimeout(this.timeoutId);
 
       this.timeoutId = setTimeout(() => {
-        //callback(fieldformArray, fieldName);
+        formArray.push(
+          new FormGroup({
+            text: new FormControl(''),
+            fileInput: new FormControl(null), // the file input value will be a File object
+          })
+        );
       }, 1000);
     }
 
@@ -235,5 +258,30 @@ export class FormCreatorComponent implements OnInit {
     if (event.key === 'Backspace' && this.timeoutId)
       clearTimeout(this.timeoutId);
     */
+  }
+
+  removeInputToCurrentFormArray(
+    fieldformArray: FormArray,
+    textOrImage: string,
+    fieldIndex: number
+  ): void {
+    let newIndexToFocus: string =
+      fieldformArray.controls.length - 1 === fieldIndex
+        ? String(fieldIndex - 1)
+        : String(fieldIndex);
+
+    fieldformArray.removeAt(fieldIndex);
+
+    setTimeout(() => {
+      if (textOrImage === 'text') {
+        {
+          document
+            .getElementById(
+              'step-' + this.currentStepIndex + '-field-text' + newIndexToFocus
+            )
+            .focus();
+        }
+      }
+    }, 100);
   }
 }

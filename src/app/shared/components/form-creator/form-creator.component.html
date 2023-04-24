@@ -54,7 +54,7 @@
 <main>
   <swiper
     [config]="swiperConfig"
-    #mediaSwiper
+    #stepsSwiper
     (slideChange)="updateCurrentStepData($event)"
   >
     <div class="step" *ngFor="let step of steps" [formGroup]="step.fields">
@@ -79,6 +79,7 @@
             [ngClass]="{
               invalid: !step.fields.valid
             }"
+            (click)="stepsSwiper.directiveRef.setIndex(1)"
           >
             Empieza
           </button>
@@ -176,16 +177,32 @@
                 "
               >
                 <div class="input-wrapper" [formGroup]="getFormGroup(control)">
-                  <input
-                    (keyup)="
-                      onMultipleInputEnterPress(
-                        $event,
-                        control,
+                  <div
+                    class="x-delete-btn"
+                    (click)="
+                      removeInputToCurrentFormArray(
+                        getFormArray(step.fields.controls['responseOptions']),
+                        'text',
                         i
                       )
                     "
+                    *ngIf="control.value.text?.length > 0"
+                  >
+                    <div class="x-wrapper">
+                      <div class="x-btn">X</div>
+                    </div>
+                  </div>
+
+                  <input
+                    [ngClass]="{
+                      'with-content': control.value.text?.length > 0
+                    }"
+                    (keyup)="
+                      onMultipleInputEnterPress($event, control, 'text', i)
+                    "
                     [formControlName]="'text'"
                     type="text"
+                    [id]="'step-' + currentStepIndex + '-field-text' + i"
                     placeholder="Escribe..."
                   />
 
@@ -204,7 +221,7 @@
                     <img
                       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery.svg"
                       class="swipe-icon"
-                      alt="let ai generate a question for you"
+                      alt="uploadFiles"
                     />
                   </div>
                 </div>
@@ -242,6 +259,14 @@
               </ul>
             </ng-template>
           </div>
+
+          <footer *ngIf="step.fields.valid">
+            <button (click)="addAQuestionToTheForm(true)">
+              Adiciona otra pregunta
+            </button>
+
+            <button>Preview</button>
+          </footer>
         </section>
       </ng-container>
     </div>
