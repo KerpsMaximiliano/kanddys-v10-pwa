@@ -183,6 +183,7 @@ import { ArticleStepperFormComponent } from './components/article-stepper-form/a
 import { FacturasDisplay2Component } from './components/facturas-display2/facturas-display2.component';
 import { FullMenuButtonComponent } from './components/full-menu-button/full-menu-button.component';
 import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
+import { FormCreatorComponent } from './components/form-creator/form-creator.component';
 
 const imports = [
   CommonModule,
@@ -371,7 +372,8 @@ const declarations = [
   ArticleStepperFormComponent,
   FacturasDisplay2Component,
   FullMenuButtonComponent,
-  NotificationDialogComponent
+  NotificationDialogComponent,
+  FormCreatorComponent
 ];
 
 @NgModule({
@@ -379,6 +381,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: []
+  providers: [],
 })
 export class SharedModule {}

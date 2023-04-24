@@ -42,6 +42,7 @@ import { OrderProcessComponent } from './pages/order-process/order-process.compo
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
+import { FormCreatorComponent } from 'src/app/shared/components/form-creator/form-creator.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -258,6 +259,10 @@ const routes: Routes = [
     path: 'order-process/:merchantId',
     component: OrderProcessComponent,
   },
+  {
+    path: 'form-creator',
+    component: FormCreatorComponent
+  }
 ];
 
 @NgModule({

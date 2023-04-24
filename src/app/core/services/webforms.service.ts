@@ -31,6 +31,9 @@ import {
   WebformInput,
 } from '../models/webform';
 import { EmbeddedComponentWithId } from '../types/multistep-form';
+import { FormGroup } from '@angular/forms';
+
+export type WebformCreatorStepsNames = 'ADMIN_NOTE' | 'INTRODUCTION' | 'QUESTION_EDITION' | 'FILES_UPLOAD';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +45,14 @@ export class WebformsService {
   currentEditingQuestion: Question = null;
   currentEditingQuestionChoices: AnswerDefaultInput[] = null;
   webformQuestionsRoute: string;
+  formCreationData: {
+    currentStep : WebformCreatorStepsNames;
+    steps: Array<{
+      name: string,
+      fields: FormGroup;
+    }>;
+    currentStepIndex: number;
+  } = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 

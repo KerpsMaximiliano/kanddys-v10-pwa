@@ -1,0 +1,249 @@
+<header>
+  <ng-container *ngIf="currentStepName === 'ADMIN_NOTE'">
+    <div class="note-header">
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-black.svg"
+        class="back-btn"
+        alt="back"
+      />
+      <div class="title">Creando un formulario de preguntas</div>
+      <div class="x-btn">X</div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="currentStepName === 'QUESTION_EDITION'">
+    <div class="question-header">
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-black.svg"
+        class="back-btn"
+        alt="back"
+      />
+      <div class="right-area">
+        <div class="title">Slide #{{ steps.length - 1 }}</div>
+
+        <div class="arrows">
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/swipe-left.svg"
+            class="swipe-icon"
+            alt="swipe left"
+          />
+
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/swipe-right.svg"
+            class="swipe-icon"
+            alt="swipe right"
+          />
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</header>
+
+<div class="current-media-shown-indicators" [style]="templateStyles()">
+  <ng-container>
+    <div
+      class="indicator"
+      [ngClass]="{
+        active: i === currentStepIndex
+      }"
+      *ngFor="let step of steps; let i = index"
+    ></div>
+  </ng-container>
+</div>
+
+<main>
+  <swiper
+    [config]="swiperConfig"
+    #mediaSwiper
+    (slideChange)="updateCurrentStepData($event)"
+  >
+    <div class="step" *ngFor="let step of steps" [formGroup]="step.fields">
+      <ng-container [ngSwitch]="step.name">
+        <section *ngSwitchCase="'ADMIN_NOTE'" class="note-step">
+          <h3>
+            Para que te servirá este formulario (solo tu verás esta nota):
+          </h3>
+
+          <label for="note">
+            Tu respuesta
+            <input
+              type="text"
+              placeholder="Escribe..."
+              id="note"
+              formControlName="note"
+            />
+          </label>
+
+          <button
+            class="next-btn"
+            [ngClass]="{
+              invalid: !step.fields.valid
+            }"
+          >
+            Empieza
+          </button>
+        </section>
+
+        <section *ngSwitchCase="'QUESTION_EDITION'" class="question-edition">
+          <div class="question-wrapper">
+            <div class="question-input-and-input-options">
+              <label for="question-input"> Pregunta </label>
+
+              <div class="input-options-icons">
+                <img
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/camera-minimalistic.svg"
+                  class="swipe-icon"
+                  alt="enter your question though photo scan"
+                />
+
+                <img
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/microphone.svg"
+                  class="swipe-icon"
+                  alt="enter your question though voice recognizition"
+                />
+                <img
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/AI.svg"
+                  class="swipe-icon"
+                  alt="let ai generate a question for you"
+                />
+              </div>
+            </div>
+
+            <input
+              type="text"
+              placeholder="Escribe..."
+              id="question-input"
+              formControlName="question"
+            />
+          </div>
+
+          <!--
+            ALLOWS THE ADMIN TO SELECT HOW THE USER RESPONDS THE QUESTION
+          -->
+          <div class="list-wrapper">
+            <h4>Tipo de respuesta</h4>
+
+            <ul>
+              <li
+                class="list-button"
+                [ngClass]="{
+                  selected:
+                    step.fields.controls['selectedResponseType'].value ===
+                    responseType.name
+                }"
+                *ngFor="let responseType of responseTypesList; index as i"
+                (click)="
+                  selectOptionInList('selectedResponseType', responseType.name)
+                "
+              >
+                {{ responseType.label }}
+              </li>
+            </ul>
+          </div>
+
+          <!--
+            BASED ON THE SELECTED RESPONSE TYPE THE ADMIN CAN ADD OPTIONS FOR THE USER TO SELECT,
+            OR ADD VALIDATIONS THE ANSWERS MUST ABIDE TO
+          -->
+          <div
+            class="list-wrapper"
+            *ngIf="step.fields.controls['selectedResponseType'].value"
+          >
+            <h4>
+              {{
+                validationsForResponseType[
+                  step.fields.controls["selectedResponseType"].value
+                ].title
+              }}
+            </h4>
+
+            <!--
+              OPTIONS INPUTS FOR multiple and multiple-text RESPONSE TYPES
+            -->
+            <ng-container
+              *ngIf="
+                step.fields.controls['selectedResponseType'].value ===
+                  'multiple';
+                else validations
+              "
+            >
+              <div
+                *ngFor="
+                  let control of getFormArray(
+                    step.fields.controls['responseOptions']
+                  ).controls;
+                  let i = index
+                "
+              >
+                <div class="input-wrapper" [formGroup]="getFormGroup(control)">
+                  <input
+                    (keyup)="
+                      onMultipleInputEnterPress(
+                        $event,
+                        control,
+                        i
+                      )
+                    "
+                    [formControlName]="'text'"
+                    type="text"
+                    placeholder="Escribe..."
+                  />
+
+                  <div class="input-options-icons">
+                    <img
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/camera-minimalistic.svg"
+                      class="swipe-icon"
+                      alt="enter your question though photo scan"
+                    />
+
+                    <img
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/microphone.svg"
+                      class="swipe-icon"
+                      alt="enter your question though voice recognizition"
+                    />
+                    <img
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery.svg"
+                      class="swipe-icon"
+                      alt="let ai generate a question for you"
+                    />
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!--
+              BASED ON THE SELECTED RESPONSE TYPE THE ADMIN CAN SELECT WHICH 
+              VALIDATIONS ARE APPLIED
+            -->
+            <ng-template #validations>
+              <ul>
+                <li
+                  class="list-button"
+                  [ngClass]="{
+                    selected:
+                      step.fields.controls['selectedResponseValidation']
+                        .value === validationOption.name
+                  }"
+                  *ngFor="
+                    let validationOption of validationsForResponseType[
+                      step.fields.controls['selectedResponseType'].value
+                    ].validations;
+                    index as i
+                  "
+                  (click)="
+                    selectOptionInList(
+                      'selectedResponseValidation',
+                      validationOption.name
+                    )
+                  "
+                >
+                  {{ validationOption.label }}
+                </li>
+              </ul>
+            </ng-template>
+          </div>
+        </section>
+      </ng-container>
+    </div>
+  </swiper>
+</main>
