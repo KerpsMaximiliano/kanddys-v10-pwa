@@ -35,6 +35,8 @@ import { LinksPageComponent } from './pages/links-page/links-page.component';
 import { LinkRegisterComponent } from './pages/link-register/link-register.component';
 import { LinkUpdateComponent } from './pages/link-update/link-update.component';
 import { MyContactRegisterComponent } from './pages/my-contact-register/my-contact-register.component';
+import { Fase1LandingComponent } from './pages/fase1-landing/fase1-landing.component';
+import { ArticleUploadComponent } from './pages/article-upload/article-upload.component';
 
 const routes: Routes = [
   {
@@ -103,6 +105,14 @@ const routes: Routes = [
   {
     path: 'register-my-contact/:userId',
     component: MyContactRegisterComponent,
+  },
+  {
+    path: 'fase1-landing',
+    component: Fase1LandingComponent,
+  },
+  {
+    path: 'article-upload',
+    component: ArticleUploadComponent,
   },
   {
     path: ':merchantSlug',
@@ -223,6 +233,8 @@ const routes: Routes = [
     LinkRegisterComponent,
     LinkUpdateComponent,
     MyContactRegisterComponent,
+    Fase1LandingComponent,
+    ArticleUploadComponent,
   ],
   imports: [
     CommonModule,

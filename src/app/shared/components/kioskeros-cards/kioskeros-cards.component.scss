@@ -1,0 +1,49 @@
+* {
+  margin: 0;
+}
+
+.container {
+  padding: 34px 21px 23px;
+  display: grid;
+  justify-content: center;
+  border-radius: 6px;
+  margin-bottom: 3px;
+
+  p {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .top {
+    color: #272727;
+    font-size: 17px;
+    font-family: SFProLight;
+    margin-bottom: 15px;
+  }
+
+  .mid {
+    color: #171d16;
+    font-size: 24px;
+    font-family: SFProMedium;
+  }
+  .bottom {
+    margin-top: 5px;
+    font-size: 17px;
+    font-family: SFProMedium;
+    color: #171d16;
+    margin-bottom: 35px;
+    width: 80%;
+  }
+  .cta {
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    background-color: #fed230;
+    border-radius: 22px;
+    color: #272727;
+    font-family: SFProBold;
+    font-size: 17px;
+    padding: 10px;
+  }
+}

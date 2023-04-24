@@ -1,0 +1,46 @@
+* {
+  margin: 0;
+}
+
+.container {
+  min-height: 100vh;
+
+  .header {
+    background-color: #171d16;
+    display: grid;
+    justify-content: center;
+    color: #6fcf97;
+
+    button {
+      all: unset;
+      text-align: center;
+    }
+
+    svg {
+      margin: 0 auto;
+      cursor: pointer;
+      margin-top: 30px;
+      margin-bottom: 11px;
+    }
+
+    p {
+      margin: 0 auto;
+    }
+
+    .header-title {
+      font-size: 36px;
+      font-family: SFProBold;
+    }
+
+    .header-subtitle,
+    .header-text {
+      font-size: 15px;
+      font-family: SFProLight;
+    }
+
+    .header-text {
+      color: #f6f6f6;
+      margin: 24px auto 32px;
+    }
+  }
+}

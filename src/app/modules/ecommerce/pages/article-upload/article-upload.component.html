@@ -1,0 +1,150 @@
+<div class="container">
+  <header>
+    <button>
+      <mat-icon [ngStyle]="{ color: '#7B7B7B' }">chevron_left</mat-icon>
+    </button>
+    <button style="margin-left: auto">
+      <mat-icon [ngStyle]="{ color: '#7B7B7B' }">close</mat-icon>
+    </button>
+  </header>
+
+  <div class="current-media-shown-indicators" [style]="templateStyles()">
+    <ng-container>
+      <div
+        class="indicator"
+        [ngClass]="{
+          active: i === currentMediaSlide
+        }"
+        *ngFor="let slide of slides; let i = index"
+      ></div>
+    </ng-container>
+  </div>
+
+  <swiper
+    [config]="swiperConfig"
+    #mediaSwiper
+    (slideChange)="updateCurrentSlideData()"
+  >
+    <!-- ---------------------- 1ER SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">Nombre comercial:</p>
+
+      <div class="inputWrapper">
+        <p class="input-title">Tu respuesta</p>
+        <input
+          #input
+          type="text"
+          placeholder="Escribe tu nombre comercial"
+          [(ngModel)]="kioskoName"
+          (input)="onNameInput($event, input)"
+        />
+      </div>
+    </div>
+
+    <!-- ---------------------- 2DO SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">Imagen:</p>
+      <div style="margin-top: 50px; display: flex; justify-content: center">
+        <div *ngIf="!file">
+          <app-item-images
+            [round]="true"
+            (enteredImages)="onImageInput($event)"
+          ></app-item-images>
+        </div>
+
+        <div
+          *ngIf="file"
+          [ngStyle]="{ backgroundImage: 'url(' + base64 + ')' }"
+          class="preview"
+        ></div>
+      </div>
+      <!-- <button class="swipe" (click)="nextSlide()" style="margin-top: 46vh">
+        Swipe para no responder ahora
+      </button> -->
+    </div>
+
+    <!-- ---------------------- 3ER SLIDE ------------------------ -->
+
+    <div class="content">
+      <p class="title">Monto que pagará el comprador:</p>
+
+      <div class="inputWrapper">
+        <p class="input-title">Precio en pesos Dominicanos</p>
+      </div>
+
+      <app-currency-input
+        innerLabel="Pesos Dominicanos"
+        (onInputEvent)="onCurrencyInput($event)"
+      ></app-currency-input>
+      <!-- 
+      <input
+        #price
+        class="price"
+        type="number"
+        [defaultValue]="initialValue"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38"
+        (input)="formatNumber($event, true, price)"
+      /> -->
+
+      <button *ngIf="pricing > 0" (click)="sendMessage()">
+        Confirmar por WhatsApp
+      </button>
+    </div>
+
+    <!-- ---------------------- 5TO SLIDE ------------------------ -->
+
+    <!-- <div class="content">
+      <p class="title" style="width: 85%">
+        ¿En cuál correo electrónico recibirás las notificaciones generadas en tu
+        KiosKo?
+      </p>
+      <div class="inputWrapper">
+        <p class="input-title">Tu respuesta</p>
+        <input
+          #input2
+          type="text"
+          placeholder="Escribe..."
+          [(ngModel)]="mail"
+          (input)="onMailInput($event, input2)"
+        />
+      </div>
+    </div> -->
+
+    <!-- ---------------------- 6TO SLIDE ------------------------ -->
+
+    <!-- <div class="content">
+      <p class="title" style="width: 85%">
+        ¿Desde cuál WhatsApp mandarás y recibirás las confirmaciones generadas
+        del KiosKo?
+      </p>
+      <div class="inputWrapper">
+        <p class="input-title">Tu respuesta</p>
+        <ngx-intl-tel-input
+          [cssClass]="'custom'"
+          [enableAutoCountrySelect]="true"
+          [enablePlaceholder]="true"
+          [searchCountryFlag]="true"
+          [selectFirstCountry]="false"
+          [preferredCountries]="preferredCountries"
+          [selectedCountryISO]="CountryISO"
+          maxLength="13"
+          minlength="10"
+          [phoneValidation]="true"
+          [separateDialCode]="true"
+          [customPlaceholder]="'(000) 000-0000'"
+          [numberFormat]="PhoneNumberFormat.International"
+          tabindex="1"
+          id="phone"
+          [(ngModel)]="inputPhone"
+          (ngModelChange)="onPhoneInput()"
+        ></ngx-intl-tel-input>
+      </div>
+    </div> -->
+
+    <!-- ---------------------- FINAL DE LOS SLIDES ------------------------ -->
+  </swiper>
+</div>
