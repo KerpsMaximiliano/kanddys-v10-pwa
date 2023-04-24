@@ -246,6 +246,7 @@ export const ordersByMerchant = gql`
       }
       items {
         item {
+          _id
           name
           images {
             value
