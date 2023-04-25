@@ -20,6 +20,7 @@ import {
   entityTemplateRemoveRecipient,
   entityTemplateUpdateRecipient,
   entityTemplates,
+  entityTemplateAddNotification,
 } from '../graphql/entity-template.gql';
 import { PaginationEvents } from 'swiper/types/components/pagination';
 import { PaginationInput } from '../models/saleflow';
@@ -218,6 +219,25 @@ export class EntityTemplateService {
       });
 
       return result?.preCreateEntityTemplate;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async entityTemplateAddNotification(
+    notificationId: string,
+    merchantId: string,
+    id: string
+  ): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateAddNotification,
+        variables: { notificationId, merchantId, id },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.entityTemplateAddNotification;
     } catch (error) {
       console.log(error);
       return null;

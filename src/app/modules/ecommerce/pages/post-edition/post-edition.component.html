@@ -40,16 +40,22 @@
       <app-invites-notifications title="Notificaciones" text="Notificación de cuando accesan: (000) 000 - 0000 ó sin Notificación"></app-invites-notifications>
        -->
 
-    <div style="margin-bottom: 32px">
+    <div
+      style="margin-bottom: 32px"
+      *ngIf="this.postsService.postReceiverNumber"
+    >
       <app-title-icon-header
         title="Notificaciones"
         (iconClicked)="openNotificationsDialog()"
       ></app-title-icon-header>
-      <app-card>
+      <app-card
+        [shadows]="postsService.entityTemplateNotificationsToAdd.length === 0"
+      >
         {{
-          postsService.notificationType === "NONE"
+          postsService.entityTemplateNotificationsToAdd.length === 0
             ? "No se envía ninguna notificación"
-            : "Recibes una notificación cuando " + choosedNotificationType
+            : "Recibes una notificación cuando:\n" +
+              choosedNotificationTypesMessage
         }}
       </app-card>
     </div>

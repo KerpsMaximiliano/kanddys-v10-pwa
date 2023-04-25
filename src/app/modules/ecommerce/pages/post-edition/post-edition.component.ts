@@ -46,11 +46,10 @@ export class PostEditionComponent implements OnInit {
     'Ni al Escanear, ni cuando accedan': 'NONE',
   };
   notificationTypesReversed: Record<string, string> = {
-    'ACCESS': 'Acceden al contenido del QR',
-    'SCAN': 'Escanean el QR',
-    'NONE': 'Ni al Escanear, ni cuando accedan',
+    ACCESS: 'Acceden al contenido del QR',
+    SCAN: 'Escanean el QR',
   };
-  choosedNotificationType: string = 'NONE';
+  choosedNotificationTypesMessage: string = 'NONE';
 
   recipientPhoneDialog: EmbeddedComponentWithId = {
     component: GeneralDialogComponent,
@@ -70,7 +69,7 @@ export class PostEditionComponent implements OnInit {
           marginBottom: '12.5px',
           marginTop: '0',
         },
-        text: 'Cual es el Whatsapp de quien Recibirá',
+        text: 'Cual es el Whatsapp del recipiente?',
       },
       fields: {
         styles: {},
@@ -191,16 +190,13 @@ export class PostEditionComponent implements OnInit {
                 {
                   text: 'Acceden al contenido del QR',
                 },
-                {
-                  text: 'Ni al Escanear, ni cuando accedan',
-                },
               ],
             },
             prop: 'text',
           },
         ],
       },
-      isMultiple: false,
+      isMultiple: true,
     },
     outputs: [
       {
@@ -209,9 +205,21 @@ export class PostEditionComponent implements OnInit {
           const { value, valid } = params;
           const { notificationsTrigger } = value;
 
-          this.choosedNotificationType = notificationsTrigger;
-          this.postsService.notificationType =
-            this.notificationTypes[notificationsTrigger];
+          this.postsService.entityTemplateNotificationsToAdd = (
+            notificationsTrigger as Array<string>
+          ).map(
+            (notificationString) => this.notificationTypes[notificationString]
+          );
+
+          this.choosedNotificationTypesMessage =
+            this.postsService.entityTemplateNotificationsToAdd.length > 0
+              ? this.postsService.entityTemplateNotificationsToAdd
+                  .map(
+                    (notificationKeyword) =>
+                      this.notificationTypesReversed[notificationKeyword]
+                  )
+                  .join(' y ')
+              : '';
         },
       },
     ],
@@ -504,7 +512,15 @@ export class PostEditionComponent implements OnInit {
       }
     }
 
-    this.choosedNotificationType = this.notificationTypesReversed[this.postsService.notificationType];
+    this.choosedNotificationTypesMessage =
+      this.postsService.entityTemplateNotificationsToAdd.length > 0
+        ? this.postsService.entityTemplateNotificationsToAdd
+            .map(
+              (notificationKeyword) =>
+                this.notificationTypesReversed[notificationKeyword]
+            )
+            .join(', ')
+        : '';
 
     /*
     (async () => {

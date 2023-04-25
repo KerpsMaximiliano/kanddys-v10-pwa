@@ -43,7 +43,7 @@ export class PostsService {
   dialogs: Array<EmbeddedComponentWithId> = [];
   temporalDialogs: Array<EmbeddedComponentWithId> = [];
   temporalDialogs2: Array<EmbeddedComponentWithId> = [];
-  notificationType: string = 'NONE';
+  entityTemplateNotificationsToAdd: Array<string> = [];
   postMessageOptions: Array<{
     title: string;
     message: string;

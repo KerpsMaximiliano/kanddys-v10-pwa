@@ -18,6 +18,7 @@ export class EntityTemplateInput {
   dateId?: string;
   user?: string;
   recipients?: any;
+  access?: string;
 }
 
 export class RecipientsInput {

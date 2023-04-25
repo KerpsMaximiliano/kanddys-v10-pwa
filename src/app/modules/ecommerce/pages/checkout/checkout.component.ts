@@ -43,9 +43,7 @@ import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { ClosedQuestionCardComponent } from 'src/app/shared/components/closed-question-card/closed-question-card.component';
-import {
-  ExtendedAnswerDefault,
-} from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
+import { ExtendedAnswerDefault } from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
 import { WebformNameQuestionComponent } from 'src/app/shared/components/webform-name-question/webform-name-question.component';
 import { WebformTextareaQuestionComponent } from 'src/app/shared/components/webform-textarea-question/webform-textarea-question.component';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
@@ -55,6 +53,7 @@ import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Dialogs } from './dialogs';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -171,7 +170,8 @@ export class CheckoutComponent implements OnInit {
     public matDialog: MatDialog,
     public dialog: MatDialog,
     private _WebformsService: WebformsService,
-    private deliveryzonesService: DeliveryZonesService
+    private deliveryzonesService: DeliveryZonesService,
+    private notificationsService: NotificationsService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -404,14 +404,14 @@ export class CheckoutComponent implements OnInit {
       ) {
         this.missingOrderData = true;
       }
-  
+
       if (this.webformPreview) {
         this.post = {
           message: 'Dummy post',
           from: 'Emisor',
           to: 'Receptor',
         };
-  
+
         this.reservation = {
           breakTime: 15,
           calendar: 'dummyid',
@@ -425,7 +425,7 @@ export class CheckoutComponent implements OnInit {
           merchant: this.headerService.saleflow.merchant._id,
           type: 'ORDER',
         };
-  
+
         if (this.reservation) {
           const fromDate = new Date(this.reservation.date.from);
           if (fromDate < new Date()) {
@@ -701,6 +701,9 @@ export class CheckoutComponent implements OnInit {
             {
               reference: postResult,
               entity: 'post',
+              access: Boolean(this.postsService.privatePost)
+                ? 'private'
+                : 'public',
             }
           );
 
@@ -721,6 +724,31 @@ export class CheckoutComponent implements OnInit {
                   recipient: recipient._id,
                 }
               );
+
+              console.log(
+                'notificaciones',
+                this.postsService.entityTemplateNotificationsToAdd
+              );
+
+              for await (const notification of this.postsService
+                .entityTemplateNotificationsToAdd) {
+                const notificationID =
+                  await this.notificationsService.createNotification({
+                    message:
+                      notification === 'SCAN'
+                        ? 'Han escaneado el QR de tu mensaje de regalo!!!'
+                        : 'Han accedido al QR de tu mensaje de regalo',
+                    merchant: this.headerService.saleflow.merchant._id,
+                    entity: 'entity-template',
+                    offsetTime: [],
+                  });
+
+                await this.entityTemplateService.entityTemplateAddNotification(
+                  notificationID._id,
+                  this.headerService.saleflow.merchant._id,
+                  entityTemplate._id
+                );
+              }
             }
           }
         } catch (error) {
@@ -1465,7 +1493,9 @@ export class CheckoutComponent implements OnInit {
                 },
                 startWithDialogFlow:
                   this.answersByQuestion[question._id]?.response ||
-                  this.answersByQuestion[question._id]?.responseLabel || this.answersByQuestion[question._id]?.multipleResponses?.length > 0 ,
+                  this.answersByQuestion[question._id]?.responseLabel ||
+                  this.answersByQuestion[question._id]?.multipleResponses
+                    ?.length > 0,
                 multiple: question.answerLimit === 0,
                 completeAnswers: activeOptions,
                 required: question.required,
