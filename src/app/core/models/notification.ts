@@ -33,6 +33,7 @@ export class DeliveryStatusInput {
 }
 
 export class NotificationInput {
+  name?: string;
   message?: string;
   merchant?: string;
   phoneNumbers?: PhoneNumbersInput[];
@@ -69,6 +70,7 @@ export class DeliveryStatusTrigger {
 }
 
 export class Notification extends Model<Notification> {
+  name: string;
   message: string;
   merchant: Merchant;
   phoneNumbers: PhoneNumbers[];
