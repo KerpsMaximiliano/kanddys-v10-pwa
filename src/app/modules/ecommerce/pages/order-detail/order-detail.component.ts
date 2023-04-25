@@ -29,10 +29,7 @@ import { EntityTemplateService } from 'src/app/core/services/entity-template.ser
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
-import {
-  lockUI,
-  unlockUI,
-} from 'src/app/core/helpers/ui.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateTagComponent } from 'src/app/shared/dialogs/create-tag/create-tag.component';
 import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
@@ -260,10 +257,7 @@ export class OrderDetailComponent implements OnInit {
       this.slides = await this.postsService.slidesByPost(this.post._id);
 
       for (const slide of this.slides) {
-        if (
-          slide.type === 'poster' &&
-          isVideo(slide.media)
-        ) {
+        if (slide.type === 'poster' && isVideo(slide.media)) {
           slide.isVideo = true;
 
           if (
@@ -284,8 +278,14 @@ export class OrderDetailComponent implements OnInit {
 
         if (results.length > 0) {
           this.entityTemplate = results[0];
+
           this.entityTemplateLink =
-            this.URI + '/qr/article-template/' + this.entityTemplate._id;
+            this.entityTemplate.access === 'public' ||
+            this.entityTemplate.recipients === 0
+              ? this.URI + '/qr/article-template/' + this.entityTemplate._id
+              : this.URI +
+                '/ecommerce/article-access/' +
+                this.entityTemplate._id;
         }
       }
     }
@@ -782,13 +782,13 @@ export class OrderDetailComponent implements OnInit {
       timeOut: 3000,
     });
   }
-  
+
   async getAnswersForEachItem() {
     this.answersByItem = {};
     const answers: Array<WebformAnswer> =
       await this.webformsService.answerByOrder(this.order._id);
 
-    console.log("AnswersByOrder", answers);
+    console.log('AnswersByOrder', answers);
 
     if (answers.length) {
       const webformsIds = [];
@@ -829,7 +829,8 @@ export class OrderDetailComponent implements OnInit {
               const questionsToQuery = [];
 
               answersForWebform.response.forEach((answerInList) => {
-                if (answerInList.question) questionsToQuery.push(answerInList.question);
+                if (answerInList.question)
+                  questionsToQuery.push(answerInList.question);
               });
 
               const questions = await this.webformsService.questionPaginate({
@@ -837,7 +838,7 @@ export class OrderDetailComponent implements OnInit {
                   _id: {
                     __in: questionsToQuery,
                   },
-                }
+                },
               });
 
               answersForWebform.response.forEach((answerInList) => {

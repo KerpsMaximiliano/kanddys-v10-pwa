@@ -704,6 +704,16 @@ export class CheckoutComponent implements OnInit {
               access: Boolean(this.postsService.privatePost)
                 ? 'private'
                 : 'public',
+              templateNotifications:
+                this.postsService.entityTemplateNotificationsToAdd.map(
+                  (keyword) => ({
+                    key: keyword,
+                    message:
+                      keyword === 'SCAN'
+                        ? 'Han escaneado el QR de tu mensaje de regalo!!!'
+                        : 'Han accedido a tu mensaje de regalo!!!, Recipiente: ',
+                  })
+                ),
             }
           );
 
@@ -724,31 +734,6 @@ export class CheckoutComponent implements OnInit {
                   recipient: recipient._id,
                 }
               );
-
-              console.log(
-                'notificaciones',
-                this.postsService.entityTemplateNotificationsToAdd
-              );
-
-              for await (const notification of this.postsService
-                .entityTemplateNotificationsToAdd) {
-                const notificationID =
-                  await this.notificationsService.createNotification({
-                    message:
-                      notification === 'SCAN'
-                        ? 'Han escaneado el QR de tu mensaje de regalo!!!'
-                        : 'Han accedido al QR de tu mensaje de regalo',
-                    merchant: this.headerService.saleflow.merchant._id,
-                    entity: 'entity-template',
-                    offsetTime: [],
-                  });
-
-                await this.entityTemplateService.entityTemplateAddNotification(
-                  notificationID._id,
-                  this.headerService.saleflow.merchant._id,
-                  entityTemplate._id
-                );
-              }
             }
           }
         } catch (error) {

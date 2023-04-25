@@ -86,24 +86,40 @@ export class RedirectionsComponent implements OnInit {
 
           unlockUI();
 
+          console.log(
+            'URL',
+            redirectURL.url,
+            'Query Params',
+            redirectURL.queryParams
+          );
+          alert('ENTRANDO 1');
+
           this.router.navigate([redirectURL.url], {
             queryParams: redirectURL.queryParams,
           });
         } else {
           (async () => {
+            alert('ENTRANDO 2');
+
             const list = redirectionRoute.split('/');
-            const text = list[list.length-1];
-            const {
-              entity,
-              reference
-            } = (await this._EntityTemplateService.entityTemplateRecipient(text)) || {
-              entity: '',
-              reference: ''
-            };
-            if(entity&&reference)
-              this.router.navigate(['qr', 'article-detail', entity, reference]);
-            else
-              this.router.navigate([redirectionRoute]);
+            const text = list[list.length - 1];
+            const { entity, reference } =
+              (await this._EntityTemplateService.entityTemplateRecipient(
+                text
+              )) || {
+                entity: '',
+                reference: '',
+              };
+            if (entity && reference)
+              this.router.navigate(
+                ['qr', 'article-detail', entity, reference],
+                {
+                  queryParams: {
+                    fromQR: true,
+                  },
+                }
+              );
+            else this.router.navigate([redirectionRoute]);
           })();
 
           unlockUI();
