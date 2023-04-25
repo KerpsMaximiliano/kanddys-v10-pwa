@@ -266,12 +266,12 @@
                 *ngIf="postContentMinimized"
                 (click)="postContentMinimized = !postContentMinimized"
               >
-                <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
+                <p class="title2" *ngIf="slide.title">{{ postData.title }}</p>
                 <p class="subtitle2" *ngIf="slide.text">
                   {{
-                    slide.text.length > 24
-                      ? slide.text.slice(0, 24) + "..."
-                      : slide.text
+                    postData.message.length > 24
+                      ? postData.message.slice(0, 24) + "..."
+                      : postData.message
                   }}
                 </p>
               </div>
@@ -281,9 +281,9 @@
                 *ngIf="!postContentMinimized"
                 (click)="postContentMinimized = !postContentMinimized"
               >
-                <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
+                <p class="title2" *ngIf="slide.title">{{ postData.message }}</p>
                 <p class="subtitle2" *ngIf="slide.text">
-                  {{ slide.text }}
+                  {{ postData.message }}
                 </p>
               </div>
             </div>
