@@ -20,6 +20,12 @@ import { ArticleAccessComponent } from './pages/article-access/article-access.co
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { CreateArticleComponent } from './pages/create-article/create-article.component';
 import { AdminModule } from '../admin/admin.module';
+import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
+import { PostEditionComponent } from './pages/post-edition/post-edition.component';
+import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
+import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
+
+import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { ContactLandingComponent } from 'src/app/shared/components/contact-landing/contact-landing.component';
@@ -71,6 +77,10 @@ const routes: Routes = [
     path: 'store/:merchantSlug',
     redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
+  },
+  {
+    path: 'terms-of-use/:viewsMerchantId',
+    component: TermsOfUseComponent,
   },
   {
     path: 'gift-detail/:orderId',
@@ -157,6 +167,26 @@ const routes: Routes = [
         component: PaymentsComponent,
       },
       {
+        path: 'post-edition',
+        component: PostEditionComponent,
+      },
+      {
+        path: 'post-preview',
+        component: PostPreviewComponent,
+      },
+      {
+        path: 'image-banner',
+        component: ImageBannerComponent,
+      },
+      {
+        path: 'qr-edit',
+        component: QrEditComponent,
+      },
+      {
+        path: 'text-edition-and-preview',
+        component: TextEditionAndPreviewComponent,
+      },
+      {
         path: 'collections',
         component: CollectionsComponent,
       },
@@ -184,10 +214,6 @@ const routes: Routes = [
         path: 'order-process/:orderId',
         component: OrderProcessComponent,
       },
-      {
-        path: 'terms-of-use/:viewsMerchantId',
-        component: TermsOfUseComponent,
-      },
     ],
   },
 ];
@@ -210,8 +236,8 @@ const routes: Routes = [
     ArticleAccessComponent,
     ArticleDetailComponent,
     CreateArticleComponent,
+    TextEditionAndPreviewComponent,
     TermsOfUseComponent,
-    ContactLandingContainerComponent,
     CollectionsComponent,
     TagItemsComponent,
     GiftDetailComponent,

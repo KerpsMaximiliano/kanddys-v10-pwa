@@ -31,7 +31,6 @@ export function base64ToBlob(base64: string): Blob {
   return new Blob([uInt8Array], { type: imageType });
 }
 
-
 export function fileToBase64(file: File): Promise<any> {
   const base64File = new Promise((resolve, reject) => {
     const reader = new FileReader();

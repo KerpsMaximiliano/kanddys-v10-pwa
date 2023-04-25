@@ -1,9 +1,9 @@
 export const environment = {
   production: true,
-  uri: 'https://test.kanddys.com',
+  uri: 'http://localhost:4200',
   whatsAppAPI: 'https://api.whatsapp.com',
   api: {
-    // url: 'https://api.rewardcharly.com',
+    //url: 'https://api.kanddys.com',
     //url: 'http://165.227.28.4:3000',
     url: 'http://localhost:3500',
     // url: 'https://api.kanddys.com',

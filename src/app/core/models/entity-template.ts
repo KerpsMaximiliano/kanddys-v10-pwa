@@ -19,3 +19,17 @@ export class EntityTemplateInput {
   user?: string;
   recipients?: any;
 }
+
+export class RecipientsInput {
+  edit: boolean;
+  recipient: string;
+}
+
+export class RecipientInput {
+  phone?: string;
+  email?: string;
+  nickname?: string;
+  name?: string;
+  lastName?: string;
+  image?: File;
+}

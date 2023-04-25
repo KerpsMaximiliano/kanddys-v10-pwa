@@ -1,10 +1,11 @@
 <div
   class="container"
   [ngStyle]="
-    spreadOperator(containerStyles, {
-      backgroundImage:
-        'url(' + cardMainImage + ')' + ',url(/assets/images/noimage.png)'
-    })
+    spreadOperator(containerStyles, 
+      !removeBackgroundImage 
+        ? { backgroundImage: 'url(' + cardMainImage + ')' + ',url(/assets/images/noimage.png)' } 
+        : { backgroundImage: 'none' }
+    )
   "
   [ngClass]="{
     selectedCard: itemSelected
