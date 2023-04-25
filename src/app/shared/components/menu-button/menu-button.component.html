@@ -27,6 +27,16 @@
         <span>Comparte la tienda</span>
         <img [src]="env + '/upload.svg'" alt="circle" class="circle" />
       </button>
+      
+      <button
+        mat-menu-item
+        class="menu-item"
+        (click)="goToProfile()"
+        *ngIf="headerService.user"
+      >
+        <span>Ver mi perfil</span>
+      </button>
+
       <button
         mat-menu-item
         class="menu-item"
