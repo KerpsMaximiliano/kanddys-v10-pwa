@@ -34,6 +34,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { StepperFormComponent } from 'src/app/shared/components/stepper-form/stepper-form.component';
 import { ArticleStepperFormComponent } from 'src/app/shared/components/article-stepper-form/article-stepper-form.component';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
+import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import { ToastrService } from 'ngx-toastr';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 
 SwiperCore.use([Virtual]);
 
@@ -128,6 +136,7 @@ export class ArticleDetailComponent implements OnInit {
   logged: boolean = false;
   isProductMine: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  postContentMinimized: boolean = true;
   articleId: string = '';
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
@@ -146,7 +155,10 @@ export class ArticleDetailComponent implements OnInit {
     private merchantsService: MerchantsService,
     private authService: AuthService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private clipboard: Clipboard,
+    private toastr: ToastrService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -316,11 +328,15 @@ export class ArticleDetailComponent implements OnInit {
         this.postSlides = slides;
 
         for (const slide of this.postSlides) {
-          if (
-            slide.type === 'poster' &&
-            (slide.media.includes('mp4') || slide.media.includes('webm'))
-          ) {
+          if (slide.type === 'poster' && isVideo(slide.media)) {
             slide.isVideo = true;
+
+            if (
+              !slide.media.includes('https://') &&
+              !slide.media.includes('http://')
+            ) {
+              slide.media = 'https://' + slide.media;
+            }
           }
         }
 
@@ -403,13 +419,8 @@ export class ArticleDetailComponent implements OnInit {
 
   saveProduct() {
     if (this.mode === 'preview' || this.mode === 'image-preview') return;
-    if (
-      !this.isItemInCart &&
-      !this.headerService.saleflow.canBuyMultipleItems
-    ) {
+    if (!this.isItemInCart && !this.headerService.saleflow.canBuyMultipleItems)
       this.headerService.emptyOrderProducts();
-      this.headerService.emptyItems();
-    }
     const product: ItemSubOrderInput = {
       item: this.itemData._id,
       amount: 1,
@@ -450,10 +461,6 @@ export class ArticleDetailComponent implements OnInit {
       type: 'added-item',
       data: this.itemData._id,
     });
-    // this.headerService.storeItem(
-    //   // this.selectedParam ? itemParamValue :
-    //   this.itemData
-    // );
     this.itemInCart();
   }
 
@@ -616,6 +623,76 @@ export class ArticleDetailComponent implements OnInit {
 
   getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
+  }
+
+  moreOptions() {
+    const list: Array<SettingsDialogButton> = [
+      {
+        text: 'Comparte el link',
+        callback: async () => {
+          this.share();
+        },
+      },
+      {
+        text: 'Simbolo ID',
+        callback: async () => {
+          try {
+            let result = null;
+
+            result = await this.entityTemplateService.entityTemplateByReference(
+              this.entity === 'item' ? this.itemData._id : this.postData._id,
+              this.entity
+            );
+
+            let createdEntityTemplate = this.logged
+              ? await this.entityTemplateService.createEntityTemplate()
+              : await this.entityTemplateService.precreateEntityTemplate();
+
+            if (createdEntityTemplate) {
+              createdEntityTemplate =
+                await this.entityTemplateService.entityTemplateSetData(
+                  createdEntityTemplate._id,
+                  {
+                    entity: 'entity-template',
+                    reference: result._id,
+                  }
+                );
+
+              this.clipboard.copy(
+                formatID(createdEntityTemplate.dateId, true).slice(1)
+              );
+            }
+
+            this.toastr.info('Simbolo ID copiado al portapapeles', null, {
+              timeOut: 1500,
+            });
+          } catch (error) {
+            this.toastr.error('Ocurrió un error', null, {
+              timeOut: 1500,
+            });
+
+            console.error(error);
+          }
+        },
+      },
+    ];
+
+    this.dialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        //qr code in the xd's too small to scanning to work
+        title:
+          this.entity === 'item'
+            ? this.itemData.name
+            : 'Opciones de mensaje virtual',
+        cancelButton: {
+          text: 'Cerrar',
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   async verifyIfUserIsLogged() {

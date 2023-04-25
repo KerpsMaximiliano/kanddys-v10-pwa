@@ -13,15 +13,17 @@ import { ArticleCreatorComponent } from './pages/article-creator/article-creator
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/anexo-choices.component';
+import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
+import { ImageBannerComponent } from './pages/image-banner/image-banner.component';
+import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { PostEditionComponent } from '../ecommerce/pages/post-edition/post-edition.component';
+import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
-import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { ArticleEditorComponent } from './pages/article-editor/article-editor.component';
-import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { TagsViewComponent } from './pages/tags-view/tags-view.component';
-import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 import { ViewConfigurationComponent } from './pages/view-configuration/view-configuration.component';
 import { WebformMetricsComponent } from './pages/webform-metrics/webform-metrics.component';
 import { OrderStatusViewComponent } from './pages/order-status-view/order-status-view.component';
@@ -129,6 +131,18 @@ const routes: Routes = [
       {
         path: 'article-choices',
         component: AnexoChoicesComponent,
+      },
+      {
+        path: 'bios-edit',
+        component: BiosEditComponent,
+      },
+      {
+        path: 'image-banner',
+        component: ImageBannerComponent
+      },
+      {
+        path: 'qr-edit',
+        component: QrEditComponent,
       },
       {
         path: 'manage-tag',
@@ -262,6 +276,10 @@ const routes: Routes = [
     ],
   },
   {
+    path: 'contact-landing/:idUser',
+    component: ContactLandingContainerComponent,
+  },
+  {
     path: 'tags',
     component: TagsComponent,
   },
@@ -285,6 +303,8 @@ const routes: Routes = [
     ArticleCreatorComponent,
     ItemsDashboardComponent,
     CreateTagComponent,
+    BiosEditComponent,
+    ImageBannerComponent,
     TagsComponent,
     ManageTagComponent,
     ArticleEditorComponent,

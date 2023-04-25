@@ -65,6 +65,7 @@ export class OrderService {
   ) {}
 
   orders: any = [];
+  itemsReady: boolean = false;
 
   async createOrder(
     input: ItemOrderInput

@@ -35,9 +35,12 @@
             <div>
               <div class="grid-content">
                 <span [style]="field.selection.styles">{{ item.text }}</span>
-                <span [style]="item.styles" *ngIf="item.subText" [style]="item.subText.styles">{{
-                  item.subText.text
-                }}</span>
+                <span
+                  [style]="item.styles"
+                  *ngIf="item.subText"
+                  [style]="item.subText.styles"
+                  >{{ item.subText.text }}</span
+                >
                 <span *ngIf="item.subText" [style]="item.subText.styles">{{
                   item.subText.text2
                 }}</span>
@@ -46,7 +49,7 @@
           </div>
         </div>
         <div *ngSwitchCase="'textarea'">
-          <label *ngIf="field.label" [style]="field.label.styles">
+          <label *ngIf="field.label.text" [style]="field.label.styles">
             {{ field.label.text }}
           </label>
           <textarea
@@ -79,7 +82,7 @@
           ></ngx-intl-tel-input>
         </div>
         <div *ngSwitchCase="'email'">
-          <label *ngIf="field.label" [style]="field.label.styles">
+          <label [style]="field.label.styles">
             {{ field.label.text }}
           </label>
           <input
@@ -106,7 +109,7 @@
           </button>
         </div>
         <div *ngSwitchDefault>
-          <label *ngIf="field.label" [style]="field.label.styles">
+          <label [style]="field.label.styles">
             {{ field.label.text }}
           </label>
           <input
