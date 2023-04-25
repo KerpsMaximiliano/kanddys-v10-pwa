@@ -34,6 +34,7 @@ type AuthTypes =
   | 'anonymous'
   | 'payment'
   | 'merchant'
+  | 'virtual-message'
   | 'azul-login';
 
 interface ValidateData {
@@ -268,6 +269,9 @@ export class LoginComponent implements OnInit {
       }
     } else if (this.auth === 'merchant') {
       console.log('merchant access');
+    } else if (this.auth === 'virtual-message') {
+      this.saleflow = await this.headerService.fetchSaleflow(SaleFlow);
+      unlockUI();
     } else if (this.auth === 'azul-login') {
     } else {
       this.auth = 'phone';
@@ -381,11 +385,23 @@ export class LoginComponent implements OnInit {
               }
             );
           }
+          if (this.auth === 'virtual-message') {
+            // Se le envia el magic link para autenticar
+            await this.authService.generateMagicLink(
+              this.merchantNumber,
+              `ecommerce/${this.merchant.slug}/payments`,
+              this.orderId,
+              'Order',
+              {
+                privatePost: localStorage.getItem('privatePost'),
+              }
+            );
+          }
 
           // if (this.action === 'precreateitem') {
           //   await this.authService.generateMagicLink(
           //     this.merchantNumber,
-          //     `admin/create-article/`,
+          //     `admin/create-article/`,F
           //     this.itemId,
           //     'NewItem',
           //     {}
@@ -564,6 +580,16 @@ export class LoginComponent implements OnInit {
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
+        if (this.auth === 'virtual-message') {
+          this.router.navigate(
+            [`ecommerce/${this.merchant.slug}/payments/${this.orderId}`],
+            {
+              replaceUrl: true,
+            }
+          );
+          this.status = 'ready';
+          return;
+        }
         if (this.auth === 'address') {
           const address = this.headerService.getLocation();
           const result = await this.usersService.addLocation(address);
@@ -1106,6 +1132,19 @@ export class LoginComponent implements OnInit {
 
     if (this.redirectionRoute) {
       return this.redirectFromQueryParams();
+    }
+
+    if (this.auth === 'virtual-message') {
+      this.router.navigate(
+        [`ecommerce/${this.merchant.slug}/payments/${this.orderId}`],
+        {
+          replaceUrl: true,
+          state: {
+            loggedIn: true,
+          },
+        }
+      );
+      return;
     }
 
     this.router.navigate([`ecommerce/order-detail/${order._id}`], {

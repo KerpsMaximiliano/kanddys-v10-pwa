@@ -1,0 +1,56 @@
+<div class="page-container">
+    <app-helper-headerv2
+        [bgColor]="'#ffffff'"
+        [icon]="icon"
+        [mainText]="{ color: '#000000', fontFamily: 'SfProBold', fontSize: '17px', text: 'Una imagen' }"
+        [mode]="'basic'"
+        [returnAble]="false">
+    </app-helper-headerv2>
+
+    <form class="content-container" [formGroup]="createTagForm">
+        <div class="input-container">
+            <label class="input-label"> URL </label>
+            <div class="input-container">
+                <input 
+                    autocomplete="off"
+                    class="input-text" 
+                    id="name" 
+                    name="name" 
+                    placeholder="Escribe o pega"
+                    type="text"
+                    [style.height.px]="65"
+                    [style.paddingLeft.px]="20"
+                    [style.paddingRight.px]="20"
+                    formControlName="name"
+                />
+            </div>
+        </div>
+    
+        <div class="input-container">
+            <label class="input-label"> Imagen </label>
+        
+            <div class="input-text">
+                <app-image-input
+                    [allowDeletion]="false"
+                    [allowedTypes]="['png', 'jpg', 'jpeg']"
+                    [circleInputMode]="false"
+                    [containerStyles]="{ height: '120px', width: '100%' }"
+                    [fileStyles]="{ background: 'white', border: 'none', borderRadius: '9px', height: '120px', width: '100%' }"
+                    [expandImage]="true"
+                    [id]="'tag-image'"
+                    [innerLabel]="''"
+                    [max]="1"
+                    [multiple]="true"
+                    [placeholderImage]="false"
+                    [placeholderImageSize]="'SMALL'"
+                    [uploadImagesWithoutPlaceholderBox]="true"
+                    [useSwiper]="false"
+                    (onFileInputMultiple)="handleImageInput($event, 'ADD')"
+                    (onFileDeletion)="handleImageInput($event, 'DELETE')"
+                    [imageField]="[createTagForm.get('images').value]"
+                >
+                </app-image-input>
+            </div>
+        </div>
+    </form>
+</div>

@@ -25,8 +25,10 @@ export class DialogFlowComponent implements OnInit {
   @Input() dialogs: Array<EmbeddedComponentWithId> = [];
   @Input() allowSlideNext = true;
   @Input() blockClosure = false;
+  @Input() signalBeforeClosing = false;
   @Output() saveConfigRef = new EventEmitter();
   @Output() moveToDialogRef = new EventEmitter();
+  @Output() beforeClosingSignal = new EventEmitter();
   @Output() closingDialogSignal = new EventEmitter();
   @Output() openingDialogSignal = new EventEmitter();
   swiperConfig: SwiperOptions = {
@@ -164,7 +166,7 @@ export class DialogFlowComponent implements OnInit {
   }
 
   moveToDialogByIndex(dialogNumber: number) {
-    //console.log(dialogNumber);
+    console.log(dialogNumber);
     setTimeout(() => {
       this.dialogSwiper.directiveRef.setIndex(dialogNumber);
     }, 100);
@@ -178,6 +180,7 @@ export class DialogFlowComponent implements OnInit {
       triggerElement.classList.contains('swiper-wrapper')
     ) {
       if (this.status === 'OPEN') {
+        if (this.signalBeforeClosing) return this.beforeClosingSignal.emit();
         this.status = 'CLOSE';
         this.closingDialogSignal.emit(true);
       } else {

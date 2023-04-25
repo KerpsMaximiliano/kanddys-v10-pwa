@@ -212,6 +212,7 @@ export const listItems = gql`
       description
       createdAt
       images {
+        _id
         value
         index
         active

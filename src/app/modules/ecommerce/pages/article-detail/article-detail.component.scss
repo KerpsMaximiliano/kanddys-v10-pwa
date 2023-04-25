@@ -30,8 +30,8 @@ a {
   img {
     width: 28px;
     height: 28px;
-    filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%) hue-rotate(62deg) brightness(99%)
-      contrast(91%);
+    filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%)
+      hue-rotate(62deg) brightness(99%) contrast(91%);
   }
 }
 .bottom-button {
@@ -47,7 +47,11 @@ a {
 .text-container {
   width: 100%;
   min-height: 64px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 1) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(0, 0, 0, 1) 100%
+  );
   padding: 0 3% 10px;
   cursor: pointer;
   box-sizing: border-box;
@@ -61,7 +65,6 @@ a {
 
   .bottom-text {
     font-family: "SfProRegular";
-    font-size: 1rem;
     color: #ffffff;
   }
 }
@@ -89,6 +92,18 @@ a {
   }
 }
 
+.icons-flex-2 {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+
+  .round-button {
+    margin-right: 23px;
+  }
+}
+
 .container {
   height: 100vh;
   background-color: #000;
@@ -99,6 +114,7 @@ a {
     background-repeat: no-repeat;
     background-color: #2e2e2e;
     background-size: contain;
+    position: relative;
   }
 
   video {
@@ -203,7 +219,8 @@ audio {
 /* ACTIONS*/
 .bottom-user-actions-panel {
   z-index: 1;
-  bottom: -117px;
+  //bottom: -117px;
+  background-color: #000;
   left: 0;
   right: 0;
   position: absolute;
@@ -214,6 +231,12 @@ audio {
     background-color: #000;
 
     position: relative;
+
+    .transform-icon {
+      position: absolute;
+      right: 17px;
+      top: 13px;
+    }
 
     .current-media-shown-indicators {
       position: absolute;
@@ -234,6 +257,10 @@ audio {
       &.active {
         background-color: #82f18d;
       }
+    }
+
+    &.post {
+      height: 100%;
     }
   }
 
@@ -270,6 +297,8 @@ audio {
   &.tagView {
     border: 0px;
     width: 100%;
+    padding: 12px 0px;
+    border-top-right-radius: 0;
   }
 
   &.inCart {
@@ -282,6 +311,41 @@ audio {
 
     &.inCart {
       background-color: darken($color: #82f18d, $amount: 30);
+    }
+  }
+}
+
+// :host ::ng-deep .swiper-button-next,
+// :host ::ng-deep .swiper-button-prev {
+//   display: none;
+// }
+
+// TODO: revisar si esta clase y sus estilos internos se pueden eliminar
+.text-content {
+  background-color: rgb(39, 39, 39);
+  height: 100%;
+  overflow-y: scroll;
+  padding: 98px 31px 55px 17px;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    height: 47.5vh;
+    overflow-y: scroll;
+
+    .title2 {
+      color: #ffffff;
+      font-family: SFProBold;
+      font-size: 21px;
+      margin: 0px 0px 10px 0px;
+    }
+
+    .subtitle2 {
+      color: #ffffff;
+      font-family: SFProRegular;
+      font-size: 15px;
+      overflow-y: scroll;
+      margin: 5px 15px 0px 0px;
     }
   }
 }
@@ -303,5 +367,64 @@ audio {
 @media (max-width: 320px) {
   .cart-btn {
     width: 65%;
+  }
+}
+
+.post-content-minimized {
+  position: absolute;
+  bottom: 0px;
+  height: 101px;
+  background-image: linear-gradient(rgba(72, 72, 72, 0), rgb(0, 0, 0));
+  color: white;
+  width: 100%;
+  padding-left: 15px;
+
+  .title2 {
+    margin-top: 30px;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProBold;
+    font-size: 21px;
+  }
+
+  .subtitle2 {
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProRegular;
+    font-size: 15px;
+    margin: 5px 5px 0px 0px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 20px;
+  }
+}
+
+.post-content-maximized {
+  position: absolute;
+  bottom: 0px;
+  height: 100%;
+  background-image: linear-gradient(rgba(72, 72, 72, 0), rgb(0, 0, 0));
+  color: white;
+  width: 100%;
+  padding-left: 17px;
+  display: flex;
+  flex-direction: column;
+
+  .title2 {
+    margin-top: auto;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProBold;
+    font-size: 21px;
+  }
+
+  .subtitle2 {
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProRegular;
+    font-size: 15px;
+    margin: 5px 5px 0px 0px;
+    margin-bottom: 20px;
+    word-break: break-word;
   }
 }
