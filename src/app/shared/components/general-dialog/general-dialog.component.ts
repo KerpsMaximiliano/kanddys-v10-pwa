@@ -153,7 +153,11 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
         valid: this.controller.valid,
       });
 
-      this.optionAction?.({ value, fields: this.fields.list, valid: this.controller.valid });
+      this.optionAction?.({
+        value,
+        fields: this.fields.list,
+        valid: this.controller.valid,
+      });
     });
   }
 

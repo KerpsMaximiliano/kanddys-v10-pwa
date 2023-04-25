@@ -57,6 +57,7 @@ export class Post extends Model<Post> {
   status: String;
   tags: string[];
   visitorCounter: VisitorCounter;
+  joke?: string;
 }
 
 export class PostInput {
@@ -77,6 +78,7 @@ export class PostInput {
   expiration?: string;
   password?: string;
   type?: string;
+  joke?: string;
 }
 
 export class Slide extends Model<Slide> {

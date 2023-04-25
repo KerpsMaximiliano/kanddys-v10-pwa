@@ -73,6 +73,10 @@
     <span class="payment-selection"> Como prefieres pagar?</span>
 
     <ng-container *ngIf="!selectedBank">
+      <div 
+        class="payment-options-wrapper"
+        (click)="acceptedRefundPolicies || !viewMerchantForRefund ? null : remindRefundPolicies()"
+      >
       <app-answer-selector
         [values]="{
           type: 'bank',
@@ -92,21 +96,22 @@
         }"
       ></app-answer-selector>
 
-      <app-answer-selector
-        [complexOptions]="onlinePaymentsOptions"
-        [hasComplexOptionsLayout]="true"
-        [indicator]="true"
-        (onSelector)="selectOnlinePayment($event)"
-        [blockIndexes]="
-          acceptedRefundPolicies || !viewMerchantForRefund
-            ? []
-            : fillIndexesUpTo(1)
-        "
-        [containerStyles]="{
-          margin: '-20px 0px 0px 0px'
-        }"
-      >
-      </app-answer-selector>
+        <app-answer-selector
+          [complexOptions]="onlinePaymentsOptions"
+          [hasComplexOptionsLayout]="true"
+          [indicator]="true"
+          (onSelector)="selectOnlinePayment($event)"
+          [blockIndexes]="
+            acceptedRefundPolicies || !viewMerchantForRefund
+              ? []
+              : fillIndexesUpTo(1)
+          "
+          [containerStyles]="{
+            margin: '-20px 0px 0px 0px'
+          }"
+        >
+        </app-answer-selector>
+      </div>
     </ng-container>
 
     <ng-container *ngIf="selectedBank">

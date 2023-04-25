@@ -8,6 +8,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { Item } from 'src/app/core/models/item';
+import { PostInput } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
 import { environment } from 'src/environments/environment';
 
@@ -18,7 +19,7 @@ export interface Button {
   clickEvent(...params): any;
 }
 
-type EntitiesAllowed = 'ITEM' | 'ORDER' | 'TAG';
+type EntitiesAllowed = 'ITEM' | 'ORDER' | 'TAG' | 'POST-SLIDE';
 
 type CSSStyles = Record<string, string | number>;
 
@@ -70,6 +71,9 @@ export class GeneralItemComponent implements OnInit {
   @Input() tag: Tag = null;
   @Input() showIconForTagStatus: boolean = false;
 
+  //Post-slides specific variables
+  @Input() slides: PostInput = null;
+
   //card theming
   @Input() stylePreset: Array<GeneralItemStylesPresets> = null;
   @Input() mainColor: string = '#020202';
@@ -98,6 +102,7 @@ export class GeneralItemComponent implements OnInit {
   @Input() viewsCounterStyles: CSSStyles = null;
   @Input() innerWrapperStyles: CSSStyles = null;
   @Input() textColor: string = '#fff';
+  @Input() removeBackgroundImage: boolean = false;
 
   //buttons
   @Input() topRightButton: Button = null;
@@ -171,7 +176,6 @@ export class GeneralItemComponent implements OnInit {
                 text = 'Articulos';
                 break;
             }
-
             this.topInnerButtons = [];
             this.topInnerButtons.push({
               text,
@@ -183,6 +187,8 @@ export class GeneralItemComponent implements OnInit {
         if (this.tag.images && this.tag.images.length > 0)
           this.cardMainImage = this.tag.images[0];
 
+        break;
+      case 'POST-SLIDE':
         break;
     }
 

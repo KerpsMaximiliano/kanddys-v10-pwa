@@ -13,11 +13,11 @@ import { PaginationInput } from '../models/saleflow';
 export class PaymentLogsService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async createPaymentLogAzul(input: PaymentLogInput) {
+  async createPaymentLogAzul(input: PaymentLogInput, azulResponse: any, authHash: string) {
     try {
       const result = await this.graphql.mutate({
         mutation: createPaymentLogAzul,
-        variables: { input },
+        variables: { input, responseInput: azulResponse, authHash },
         fetchPolicy: 'no-cache',
       });
 
