@@ -1,8 +1,9 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDatepicker } from '@angular/material/datepicker';
 import { Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
@@ -197,6 +198,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       ],
     },
   ];
+
+  @ViewChild(MatDatepicker) datePicker: MatDatepicker<Date>;
 
   constructor(
     public _MerchantsService: MerchantsService,
@@ -606,6 +609,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   selectedMenuOption(selected: MenuEvent) {
     this.options[selected.index].menu[selected.menuIndex].callback();
+  }
+
+  openDatePicker() {
+    this.datePicker.open();
   }
 
   goToDetail(dataToRequest: string) {
