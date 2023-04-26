@@ -60,6 +60,7 @@ export const entityTemplateRecipient = gql`
       _id
       entity
       reference
+      user
       recipients {
         _id
         edit

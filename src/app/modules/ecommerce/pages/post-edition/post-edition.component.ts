@@ -69,7 +69,7 @@ export class PostEditionComponent implements OnInit {
           marginBottom: '12.5px',
           marginTop: '0',
         },
-        text: 'Cual es el Whatsapp del recipiente?',
+        text: 'Cual es el Whatsapp del receptor?',
       },
       fields: {
         styles: {},

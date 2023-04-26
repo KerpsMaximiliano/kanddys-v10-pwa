@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -72,19 +73,38 @@ export class ArticleTemplateComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (param) => {
       const { entityTemplateId } = param;
-      const entityTemplate = await this.entityTemplateService.entityTemplate(
+      let entityTemplate = await this.entityTemplateService.entityTemplate(
         entityTemplateId
       );
 
+      const user = await this.authService.me();
+
+      lockUI();
+
+      if (
+        entityTemplate &&
+        entityTemplate.access === 'private' &&
+        user._id === entityTemplate.user
+      ) {
+        entityTemplate =
+          await this.entityTemplateService.entityTemplateRecipient(
+            entityTemplateId
+          );
+      }
+
       if (entityTemplate.reference && entityTemplate.entity) {
+        unlockUI();
+
         let entity = entityTemplate.entity;
 
         if (entity === 'entity-template') entity = 'template';
 
         this.router.navigate([
-          `qr/article-detail/${entity}/${entityTemplate.reference}`,
+          `qr/article-detail/template/${entityTemplate._id}`,
         ]);
       } else {
+        unlockUI();
+
         this.entityTemplate = entityTemplate;
       }
     });
@@ -96,9 +116,7 @@ export class ArticleTemplateComponent implements OnInit {
     else this.selectedOption = option;
   }
 
-  handleDialog(): void {
-
-  }
+  handleDialog(): void {}
 
   async backButtonHandler(option: Options) {
     this.selectedOption = null;

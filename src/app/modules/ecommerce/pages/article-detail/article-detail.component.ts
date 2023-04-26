@@ -140,6 +140,7 @@ export class ArticleDetailComponent implements OnInit {
   playVideoOnFullscreen = playVideoOnFullscreen;
   postContentMinimized: boolean = true;
   articleId: string = '';
+  fromQR: boolean = false;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -173,6 +174,8 @@ export class ArticleDetailComponent implements OnInit {
     this.createArticle = this.route.snapshot.queryParamMap.get(
       'createArticle'
     ) as 'true' | 'false';
+
+    this.fromQR = Boolean(this.route.snapshot.queryParamMap.get('fromQR'));
 
     this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
     if (this.merchantId !== '') {
@@ -236,6 +239,8 @@ export class ArticleDetailComponent implements OnInit {
                 ]);
               else {
                 entityTemplate = result;
+
+                this.fromQR = true;
               }
 
               this.entityTemplate = entityTemplate;
@@ -528,13 +533,35 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   async share() {
+    if (
+      this.fromQR ||
+      this.entityTemplate?.user === this.headerService.user._id
+    ) {
+      return await this.ngNavigatorShareService
+        .share({
+          title: '',
+          url:
+            environment.uri +
+            '/qr/article-detail/template' +
+            '/' +
+            this.entityTemplate._id +
+            '?fromQR=true',
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
     await this.ngNavigatorShareService
       .share({
         title: '',
         url:
           environment.uri +
           '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
+          this.headerService.saleflow?.merchant.slug +
           '/article-detail/' +
           this.entity +
           '/' +

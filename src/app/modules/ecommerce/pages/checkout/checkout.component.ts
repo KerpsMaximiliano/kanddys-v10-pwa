@@ -152,6 +152,7 @@ export class CheckoutComponent implements OnInit {
   > = {};
   areWebformsValid: boolean = false;
   webformPreview: boolean = false;
+  URI: string = environment.uri;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -850,8 +851,15 @@ export class CheckoutComponent implements OnInit {
                 key: keyword,
                 message:
                   keyword === 'SCAN'
-                    ? 'Han escaneado el QR de tu mensaje de regalo!!!'
-                    : 'Han accedido a tu mensaje de regalo!!!, Recipiente: ',
+                    ? 'Han escaneado el QR de tu mensaje de regalo!!!\nRecuerda que puedes acceder a el usando este link: ' +
+                      this.URI +
+                      '/qr/article-template/' +
+                      entityTemplate._id
+                    : 'Han accedido a tu mensaje de regalo!!!\nRecuerda que puedes acceder a el usando este link: ' +
+                      this.URI +
+                      '/qr/article-template/' +
+                      entityTemplate._id +
+                      '\nAccedió el receptor: ',
               })
             ),
         }

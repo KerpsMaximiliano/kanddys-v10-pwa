@@ -269,7 +269,7 @@ export class Dialogs {
                   text: '',
                 },
                 placeholder:
-                  'Escribe el nombre del recipiente. Este nombre estara escrito en el sobre.',
+                  'Escribe el nombre del receptor. Este nombre estara escrito en el sobre.',
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
