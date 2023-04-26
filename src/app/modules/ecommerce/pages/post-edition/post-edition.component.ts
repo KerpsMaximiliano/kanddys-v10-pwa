@@ -596,7 +596,7 @@ export class PostEditionComponent implements OnInit {
       };
     }
 
-    // this.openedDialogFlow = true;
+    this.openedDialogFlow = !(this.data.slides && this.data.slides.length > 0);
     localStorage.setItem(
       'post',
       JSON.stringify({
@@ -607,8 +607,9 @@ export class PostEditionComponent implements OnInit {
       })
     );
 
-    this.router.navigate([
-      'ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit',
-    ]);
+    if (this.data.slides && this.data.slides.length > 0)
+      this.router.navigate([
+        'ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit',
+      ]);
   }
 }

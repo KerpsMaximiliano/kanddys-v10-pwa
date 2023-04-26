@@ -875,6 +875,8 @@ export class CheckoutComponent implements OnInit {
             }
           );
         }
+
+        this.postsService.entityTemplateNotificationsToAdd = [];
       }
     } catch (error) {
       console.error('ocurrio un error al crear el simbolo', error);
