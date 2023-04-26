@@ -51,6 +51,8 @@ import { OrderDataComponent } from './pages/order-data/order-data.component';
 import { BuyerDataComponent } from './pages/buyer-data/buyer-data.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 import { FilterPipeSearchPipe } from 'src/app/core/pipes/filter-pipe-search.pipe';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -376,6 +378,9 @@ const routes: Routes = [
     CommonModule,
     SharedModule,
     MatCheckboxModule,
+    // MatDaterangepickerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     RouterModule.forChild(routes),
   ],
 })

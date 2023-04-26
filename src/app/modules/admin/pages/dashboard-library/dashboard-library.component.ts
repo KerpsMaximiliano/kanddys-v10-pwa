@@ -2,11 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
+import { QueryParameter } from 'src/app/core/models/query-parameters';
 import { Tag } from 'src/app/core/models/tags';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { QueryparametersService } from 'src/app/core/services/queryparameters.service';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { FilterCriteria } from '../admin-dashboard/admin-dashboard.component';
+import * as moment from 'moment';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 
 @Component({
   selector: 'app-dashboard-library',
@@ -28,6 +35,16 @@ export class DashboardLibraryComponent implements OnInit {
   tags: Tag[] = [];
   selectedTags: Tag[] = [];
 
+  filters: FilterCriteria[] = [];
+
+  queryParameters: QueryParameter[] = [];
+  dateString: string = "Aún no hay filtros aplicados";
+
+  range = new FormGroup({
+    start: new FormControl(''),
+    end: new FormControl(''),
+  })
+
   redirectTo: string = null;
   dataToRequest: 'recent' | 'mostSold' | 'lessSold' = 'recent';
 
@@ -37,7 +54,9 @@ export class DashboardLibraryComponent implements OnInit {
     private _MerchantsService: MerchantsService,
     private _ItemsService: ItemsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private queryParameterService: QueryparametersService,
+    private _bottomSheet: MatBottomSheet,
   ) { }
 
   async ngOnInit() {
@@ -51,6 +70,7 @@ export class DashboardLibraryComponent implements OnInit {
       if (typeof data === 'undefined') this.returnEvent();
 
       await this.getMerchant();
+      await this.getQueryParameters();
       await this.getTags();
       await this.getData();
     });
@@ -162,6 +182,66 @@ export class DashboardLibraryComponent implements OnInit {
     }
   }
 
+  async getQueryParameters() {
+    try {
+      const result = await this.queryParameterService.queryParameters({
+        options: {
+          limit: 10,
+          sortBy: 'createdAt:desc'
+        },
+        findBy: {
+          merchant: this.merchant._id
+        }
+      });
+      this.queryParameters = result;
+
+      if (this.queryParameters.length > 0) {
+        const startDate = new Date(this.queryParameters[0].from.date);
+        const endDate = new Date(this.queryParameters[0].until.date);
+        this.dateString = `Desde ${this.formatDate(startDate)} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+
+        const filters: FilterCriteria[] = this.queryParameters.map((queryParameter) => {
+          return {
+            type: "queryParameter",
+            queryParameter: queryParameter,
+            _id: queryParameter._id
+          }
+        });
+
+        this.filters.push(...filters);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async deleteQueryParameter(id: string) {
+    try {
+      await this.queryParameterService.deleteQueryParameter(id);
+      this.queryParameters = this.queryParameters.splice(this.queryParameters.findIndex((queryParameter) => queryParameter._id === id), 1);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  openDeleteQueryParameterDialog(id: string) {
+    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+      data: [
+        {
+          title: 'Eliminando registro',
+          options: [
+            {
+              title: 'Eliminar el filtro',
+              callback: async () => {
+                await this.deleteQueryParameter(id);
+              },
+            }
+          ],
+        },
+      ],
+    });
+  }
+
   shortenText(text, limit) {
     if (text.length > limit) return text.substring(0, limit) + "..."; 
     else return text;
@@ -178,6 +258,11 @@ export class DashboardLibraryComponent implements OnInit {
 
   isTagActive(tag: Tag) {
     return this.selectedTags.find((selectedTag) => selectedTag._id === tag._id);
+  }
+
+  formatDate(date: Date, short?: boolean) {
+    if (!short) return moment(date).format('DD/MM/YYYY');
+    else return `${moment(date).locale('es-es').format('MMM')} ${moment(date).locale('es-es').format('DD')}`;
   }
 
   returnEvent() {
