@@ -27,7 +27,7 @@
             cursor: pointer;
             text-align: center;
             text-transform: capitalize;
-            max-width: 100px;
+            max-width: 200px;
             border: 1px solid #707070;
             border-radius: 20px;
             padding: 10px 20px;
@@ -173,4 +173,10 @@
 			}
 		}
 	}
+}
+
+.flex {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }

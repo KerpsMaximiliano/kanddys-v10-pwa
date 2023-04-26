@@ -47,6 +47,8 @@ import { NotificationCreatorComponent } from './pages/notification-creator/notif
 import { OrderSlidesComponent } from './pages/order-slides/order-slides.component';
 import { RewardsDisplayComponent } from './pages/rewards-display/rewards-display.component';
 import { DashboardLibraryComponent } from './pages/dashboard-library/dashboard-library.component';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -336,6 +338,9 @@ const routes: Routes = [
     CommonModule,
     SharedModule,
     MatCheckboxModule,
+    // MatDaterangepickerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     RouterModule.forChild(routes),
   ],
 })
