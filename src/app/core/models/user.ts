@@ -84,6 +84,12 @@ export class UserInput {
   clientOfMerchants?: string[];
 }
 
+export class RecurrentUserData {
+  _id: string;
+  count: number;
+  user: User;
+}
+
 export class UserForm extends Form {
   constructor(
     title: string = '',

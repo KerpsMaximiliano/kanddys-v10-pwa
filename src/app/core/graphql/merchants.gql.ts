@@ -291,12 +291,6 @@ export const ordersByMerchantHot = gql`
   query ordersByMerchant($pagination: PaginationInput, $merchant: ObjectID!) {
     ordersByMerchant(pagination: $pagination, merchant: $merchant) {
       _id
-      status {
-        status
-      }
-      orderStatus
-      orderStatusDelivery
-      tags
     }
   }
 `;
@@ -430,5 +424,31 @@ export const viewsMerchant = gql`
         value
       }
     }
+  }
+`;
+
+export const buyersByMerchant = gql`
+  query buyersByMerchant($paginate: PaginationInput!) {
+    buyersByMerchant(paginate: $paginate) {
+      _id
+      name
+      phone
+      email
+      image
+    }
+  }
+`;
+
+export const hotBuyersByMerchant = gql`
+  query buyersByMerchant($paginate: PaginationInput!) {
+    buyersByMerchant(paginate: $paginate) {
+      _id
+    }
+  }
+`;
+
+export const recurringBuyersByMerchant = gql`
+  query recurringBuyersByMerchant($paginate: PaginationInput!) {
+    recurringBuyersByMerchant(paginate: $paginate)
   }
 `;

@@ -1,0 +1,62 @@
+<div>
+  <!-- 20% que más facturan -->
+  <section>
+    <div class="heading flex space-between">
+      <div class="title">20% que más facturan</div>
+      <a class="info" [routerLink]="['list', 'recurrent']">
+        {{ recurrentBuyers?.length || 0 }}
+        <i class="fas fa-chevron-right"></i>
+      </a>
+    </div>
+    <ng-container *ngIf="recurrentBuyers?.status === 'loading'">
+      Cargando...
+    </ng-container>
+    <div *ngIf="recurrentBuyers.status === 'complete'">
+      <div *ngIf="!recurrentBuyers.users.length">
+        Aún no tienes compradores.
+      </div>
+      <swiper [config]="cardSwiperConfig" *ngIf="recurrentBuyers.users.length">
+        <app-small-info-card
+          *ngFor="let user of recurrentBuyers.users"
+          [image]="user.image"
+          [title]="user.name || user.phone || user.email"
+          [bottomInfo]="
+            user.income >= 0
+              ? '$' + user.income.toLocaleString('es-MX') + ' en compras'
+              : 'Cargando...'
+          "
+        ></app-small-info-card>
+      </swiper>
+    </div>
+  </section>
+  <!-- 20% que más facturan -->
+  <!-- Todos -->
+  <section>
+    <div class="heading flex space-between">
+      <div class="title">Todos</div>
+      <a class="info" [routerLink]="['list']">
+        {{ allBuyers?.length || 0 }}
+        <i class="fas fa-chevron-right"></i>
+      </a>
+    </div>
+    <ng-container *ngIf="allBuyers?.status === 'loading'">
+      Cargando...
+    </ng-container>
+    <div *ngIf="allBuyers.status === 'complete'">
+      <div *ngIf="!allBuyers.users.length">Aún no tienes compradores.</div>
+      <swiper [config]="cardSwiperConfig" *ngIf="allBuyers.users.length">
+        <app-small-info-card
+          *ngFor="let user of allBuyers.users"
+          [image]="user.image"
+          [title]="user.name || user.phone || user.email"
+          [bottomInfo]="
+            user.income >= 0
+              ? '$' + user.income.toLocaleString('es-MX') + ' en compras'
+              : 'Cargando...'
+          "
+        ></app-small-info-card>
+      </swiper>
+    </div>
+  </section>
+  <!-- Todos -->
+</div>

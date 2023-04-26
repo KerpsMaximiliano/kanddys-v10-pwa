@@ -193,6 +193,7 @@ import { FullMenuButtonComponent } from './components/full-menu-button/full-menu
 import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
 import { InfoContainerComponent } from './components/info-container/info-container.component';
 import { CardInfoComponent } from './components/card-info/card-info.component';
+import { SmallInfoCardComponent } from './components/small-info-card/small-info-card.component';
 
 const imports = [
   CommonModule,
@@ -394,7 +395,8 @@ const declarations = [
   FullMenuButtonComponent,
   NotificationDialogComponent,
   InfoContainerComponent,
-  CardInfoComponent
+  CardInfoComponent,
+  SmallInfoCardComponent,
 ];
 
 @NgModule({
@@ -402,6 +404,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: []
+  providers: [],
 })
 export class SharedModule {}

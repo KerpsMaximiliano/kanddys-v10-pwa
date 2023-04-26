@@ -1,0 +1,26 @@
+section {
+  margin-top: 32px;
+  .heading {
+    margin-bottom: 12px;
+    color: #171d16;
+
+    .title {
+      font-family: SfProBold;
+      font-size: 17px;
+    }
+    .info {
+      font-family: SfProLight;
+      font-size: 16px;
+      color: #272727;
+    }
+  }
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.space-between {
+  justify-content: space-between;
+}

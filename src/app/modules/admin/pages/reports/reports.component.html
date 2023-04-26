@@ -1,0 +1,36 @@
+<div class="container">
+  <header>
+    <div>
+      <button mat-icon-button>
+        <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+      </button>
+      <p>Facturas</p>
+    </div>
+  </header>
+  <main>
+    <div
+      class="chip-list"
+      #elemt
+      (mousedown)="startDragging($event, elemt)"
+      (mouseup)="stopDragging()"
+      (mouseleave)="stopDragging()"
+      (mousemove)="moveEvent($event, elemt)"
+    >
+      <a
+        class="chip"
+        [routerLink]="['orders']"
+        routerLinkActive="chip-selected"
+      >
+        Facturas
+      </a>
+      <a
+        class="chip"
+        [routerLink]="['buyers']"
+        routerLinkActive="chip-selected"
+      >
+        Compradores
+      </a>
+    </div>
+    <router-outlet></router-outlet>
+  </main>
+</div>
