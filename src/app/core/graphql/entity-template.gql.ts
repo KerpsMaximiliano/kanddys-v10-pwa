@@ -1,8 +1,16 @@
 import gql from 'graphql-tag';
 
 export const entityTemplate = gql`
-  query entityTemplate($id: ObjectID!, $password: String) {
-    entityTemplate(id: $id, password: $password) {
+  query entityTemplate(
+    $id: ObjectID!
+    $password: String
+    $notificationsToTrigger: [String!]
+  ) {
+    entityTemplate(
+      id: $id
+      password: $password
+      notificationsToTrigger: $notificationsToTrigger
+    ) {
       _id
       reference
       entity
@@ -41,8 +49,14 @@ export const entityTemplates = gql`
 `;
 
 export const entityTemplateRecipient = gql`
-  query entityTemplateRecipient($id: ObjectID!) {
-    entityTemplateRecipient(id: $id) {
+  query entityTemplateRecipient(
+    $id: ObjectID!
+    $notificationsToTrigger: [String!]
+  ) {
+    entityTemplateRecipient(
+      id: $id
+      notificationsToTrigger: $notificationsToTrigger
+    ) {
       _id
       entity
       reference

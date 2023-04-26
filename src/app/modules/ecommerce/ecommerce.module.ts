@@ -35,13 +35,10 @@ import { LinksPageComponent } from './pages/links-page/links-page.component';
 import { LinkRegisterComponent } from './pages/link-register/link-register.component';
 import { LinkUpdateComponent } from './pages/link-update/link-update.component';
 import { MyContactRegisterComponent } from './pages/my-contact-register/my-contact-register.component';
-<<<<<<< HEAD
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
-=======
->>>>>>> staging-v3
 
 const routes: Routes = [
   {

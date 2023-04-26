@@ -27,7 +27,6 @@ import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
 import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { StepperFormComponent } from 'src/app/shared/components/stepper-form/stepper-form.component';
 import {
   SettingsComponent,
@@ -41,6 +40,10 @@ import { MerchantStepperFormComponent } from 'src/app/shared/components/merchant
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ArticleStepperFormComponent } from 'src/app/shared/components/article-stepper-form/article-stepper-form.component';
+import {
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
 
 SwiperCore.use([Virtual]);
 
@@ -172,7 +175,6 @@ export class ArticleDetailComponent implements OnInit {
     ) as 'true' | 'false';
 
     this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
-    console.log(this.merchantId);
     if (this.merchantId !== '') {
       this.isMerchant = true;
       this.setMerchantDefault();
@@ -194,7 +196,6 @@ export class ArticleDetailComponent implements OnInit {
       const { entity, entityId } = routeParams;
 
       this.articleId = entityId;
-      console.log(this.articleId);
 
       if (this.headerService.saleflow?._id)
         this.doesModuleDependOnSaleflow = true;
@@ -213,9 +214,35 @@ export class ArticleDetailComponent implements OnInit {
             await this.getCollection();
           }
         } else {
-          const entityTemplate =
-            await this.entityTemplateService.entityTemplate(entityId);
+          let entityTemplate = await this.entityTemplateService.entityTemplate(
+            entityId
+          );
           this.entityTemplate = entityTemplate;
+
+          if (
+            entityTemplate.access === 'private' &&
+            this.entityTemplate.recipients?.length > 0
+          ) {
+            try {
+              const result =
+                await this.entityTemplateService.entityTemplateRecipient(
+                  entityId,
+                  ['ACCESS']
+                );
+
+              if (!result)
+                return this.router.navigate([
+                  'ecommerce/article-access/' + entityTemplate._id,
+                ]);
+              else {
+                entityTemplate = result;
+              }
+
+              this.entityTemplate = entityTemplate;
+            } catch (error) {
+              this.router.navigate(['qr/article-access/' + entityTemplate._id]);
+            }
+          }
 
           if (entityTemplate.reference && entityTemplate.entity) {
             this.entityId = entityTemplate.reference;
@@ -596,8 +623,7 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   goToCheckout() {
-
-    if(this.mode === 'preview') return;
+    if (this.mode === 'preview') return;
 
     this.router.navigate([
       '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',

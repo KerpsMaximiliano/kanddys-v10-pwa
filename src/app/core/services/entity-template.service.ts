@@ -31,9 +31,16 @@ import { PaginationInput } from '../models/saleflow';
 export class EntityTemplateService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async entityTemplate(id: string, password?: string): Promise<EntityTemplate> {
+  async entityTemplate(
+    id: string,
+    password?: string,
+    notificationsToTrigger?: Array<string>
+  ): Promise<EntityTemplate> {
     let variables: any = { id };
     if (password) variables.password = password;
+    if (notificationsToTrigger)
+      variables.notificationsToTrigger = notificationsToTrigger;
+
     const result = await this.graphql.query({
       query: entityTemplate,
       variables,
@@ -126,10 +133,11 @@ export class EntityTemplateService {
 
   async entityTemplateRecipient(
     id: string,
-    password?: string
+    notificationsToTrigger?: Array<string>
   ): Promise<EntityTemplate> {
     let variables: any = { id };
-    if (password) variables.password = password;
+    if (notificationsToTrigger)
+      variables.notificationsToTrigger = notificationsToTrigger;
     const result = await this.graphql.query({
       query: entityTemplateRecipient,
       variables,

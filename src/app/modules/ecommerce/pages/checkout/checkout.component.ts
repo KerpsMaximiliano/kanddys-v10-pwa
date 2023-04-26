@@ -680,61 +680,50 @@ export class CheckoutComponent implements OnInit {
       localStorage.removeItem('post');
       localStorage.removeItem('postReceiverNumber');
       delete this.post.joke;
-      const postResult = (await this.postsService.createPost(this.post))
-        ?.createPost?._id;
-      this.headerService.order.products[0].post = postResult;
 
       if (this.logged) {
-        try {
-          const entityTemplate =
-            await this.entityTemplateService.createEntityTemplate();
+        const postResult = (await this.postsService.createPost(this.post))
+          ?.createPost?._id;
+        this.headerService.order.products[0].post = postResult;
 
-          await this.entityTemplateService.entityTemplateAuthSetData(
-            entityTemplate._id,
-            {
-              reference: postResult,
-              entity: 'post',
-              access: Boolean(this.postsService.privatePost)
-                ? 'private'
-                : 'public',
-              templateNotifications:
-                this.postsService.entityTemplateNotificationsToAdd.map(
-                  (keyword) => ({
-                    key: keyword,
-                    message:
-                      keyword === 'SCAN'
-                        ? 'Han escaneado el QR de tu mensaje de regalo!!!'
-                        : 'Han accedido a tu mensaje de regalo!!!, Recipiente: ',
-                  })
-                ),
-            }
-          );
+        await this.createEntityTemplateForOrderPost(postResult);
+        await this.finishOrderCreation();
+      } else {
+        unlockUI();
 
-          const recipientUser = await this.authService.checkUser(
-            this.postsService.postReceiverNumber
-          );
+        const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'full',
+            magicLinkData: {
+              redirectionRoute:
+                'ecommerce/' +
+                this.headerService.saleflow.merchant.slug +
+                '/checkout',
+              entity: 'EntityTemplatePostCreation',
+            },
+          },
+        });
+        matDialogRef.afterClosed().subscribe(async (value) => {
+          if (!value) return;
+          if (value.user?._id || value.session.user._id) {
+            this.logged = true;
 
-          if (recipientUser) {
-            const recipient = await this.entityTemplateService.createRecipient({
-              phone: this.postsService.postReceiverNumber,
-            });
+            lockUI();
+            const postResult = (await this.postsService.createPost(this.post))
+              ?.createPost?._id;
+            this.headerService.order.products[0].post = postResult;
 
-            if (this.postsService.privatePost) {
-              await this.entityTemplateService.entityTemplateAddRecipient(
-                entityTemplate._id,
-                {
-                  edit: false,
-                  recipient: recipient._id,
-                }
-              );
-            }
+            await this.createEntityTemplateForOrderPost(postResult);
+            await this.finishOrderCreation();
           }
-        } catch (error) {
-          console.error('ocurrio un error al crear el simbolo', error);
-        }
+        });
+
+        return;
       }
     }
-    // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
+  };
+
+  finishOrderCreation = async () => {
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
@@ -803,13 +792,7 @@ export class CheckoutComponent implements OnInit {
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
         if (this.postsService.privatePost && !this.logged) {
-          this.router.navigate([`/auth/login`], {
-            queryParams: {
-              orderId: createdOrder,
-              auth: 'virtual-message',
-            },
-          });
-          return;
+          //REEMPLAZAR AQUI
         }
         localStorage.removeItem('privatePost');
         this.postsService.privatePost = false;
@@ -847,6 +830,54 @@ export class CheckoutComponent implements OnInit {
       console.log(error);
       unlockUI();
       this.disableButton = false;
+    }
+  };
+
+  createEntityTemplateForOrderPost = async (postId: string) => {
+    try {
+      const entityTemplate =
+        await this.entityTemplateService.createEntityTemplate();
+
+      await this.entityTemplateService.entityTemplateAuthSetData(
+        entityTemplate._id,
+        {
+          reference: postId,
+          entity: 'post',
+          access: Boolean(this.postsService.privatePost) ? 'private' : 'public',
+          templateNotifications:
+            this.postsService.entityTemplateNotificationsToAdd.map(
+              (keyword) => ({
+                key: keyword,
+                message:
+                  keyword === 'SCAN'
+                    ? 'Han escaneado el QR de tu mensaje de regalo!!!'
+                    : 'Han accedido a tu mensaje de regalo!!!, Recipiente: ',
+              })
+            ),
+        }
+      );
+
+      const recipientUser = await this.authService.checkUser(
+        this.postsService.postReceiverNumber
+      );
+
+      if (recipientUser) {
+        const recipient = await this.entityTemplateService.createRecipient({
+          phone: this.postsService.postReceiverNumber,
+        });
+
+        if (this.postsService.privatePost) {
+          await this.entityTemplateService.entityTemplateAddRecipient(
+            entityTemplate._id,
+            {
+              edit: false,
+              recipient: recipient._id,
+            }
+          );
+        }
+      }
+    } catch (error) {
+      console.error('ocurrio un error al crear el simbolo', error);
     }
   };
 

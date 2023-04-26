@@ -86,21 +86,11 @@ export class RedirectionsComponent implements OnInit {
 
           unlockUI();
 
-          console.log(
-            'URL',
-            redirectURL.url,
-            'Query Params',
-            redirectURL.queryParams
-          );
-          alert('ENTRANDO 1');
-
           this.router.navigate([redirectURL.url], {
             queryParams: redirectURL.queryParams,
           });
         } else {
           (async () => {
-            alert('ENTRANDO 2');
-
             const list = redirectionRoute.split('/');
             const text = list[list.length - 1];
             const { entity, reference } =
@@ -112,7 +102,7 @@ export class RedirectionsComponent implements OnInit {
               };
             if (entity && reference)
               this.router.navigate(
-                ['qr', 'article-detail', entity, reference],
+                ['qr', 'article-detail', 'template', text],
                 {
                   queryParams: {
                     fromQR: true,

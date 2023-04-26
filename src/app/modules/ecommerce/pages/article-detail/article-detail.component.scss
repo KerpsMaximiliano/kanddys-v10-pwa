@@ -227,7 +227,6 @@ audio {
 /* ACTIONS*/
 .bottom-user-actions-panel {
   z-index: 1;
-  bottom: -117px;
   left: 0;
   right: 0;
   position: absolute;
@@ -390,5 +389,17 @@ audio {
     margin: 5px 5px 0px 0px;
     margin-bottom: 20px;
     word-break: break-word;
+  }
+}
+
+.icons-flex-2 {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+
+  .round-button {
+    margin-right: 23px;
   }
 }
