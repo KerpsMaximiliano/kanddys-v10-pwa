@@ -73,13 +73,15 @@ export class ArticleTemplateComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (param) => {
       const { entityTemplateId } = param;
-      let entityTemplate = await this.entityTemplateService.entityTemplate(
+      let entityTemplate: EntityTemplate;
+
+      lockUI();
+
+      entityTemplate = await this.entityTemplateService.entityTemplate(
         entityTemplateId
       );
 
       const user = await this.authService.me();
-
-      lockUI();
 
       if (
         entityTemplate &&
@@ -156,7 +158,7 @@ export class ArticleTemplateComponent implements OnInit {
           entityTemplateToMimic &&
           (!entityTemplateToMimic.entity || !entityTemplateToMimic.reference)
         ) {
-          this.toastr.error('Simbolo vacio', null, { timeOut: 2000 });
+          this.toastr.error('Simbolo vacio o privado', null, { timeOut: 2000 });
         }
 
         if (!entityTemplateToMimic) {

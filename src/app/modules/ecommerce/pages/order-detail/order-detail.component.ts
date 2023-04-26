@@ -779,7 +779,7 @@ export class OrderDetailComponent implements OnInit {
   };
 
   copyEntityId(id: string) {
-    const entityId = this.formatId(id);
+    const entityId = id;
 
     this.clipboard.copy(entityId);
 
