@@ -19,6 +19,14 @@
           <div class="category-item active">
             TODOS
           </div>
+          <div class="category-item flex" *ngFor="let filter of filters; let i = index">
+            <img [src]="environment + '/dots-black.svg'" alt="" (click)="openDeleteQueryParameterDialog(filter._id)">
+            {{ 
+              filter.type === 'queryParameter' ? 
+              formatDate(filter.queryParameter.from.date, true) + ' - ' + formatDate(filter.queryParameter.until.date, true) :
+              'Otro'
+            }}
+          </div>
           <div class="category-item" *ngFor="let tag of tags; let i = index" [ngClass]="{ active: isTagActive(tag) }" (click)="filterTag(i)">
             {{ tag.name }}
           </div>

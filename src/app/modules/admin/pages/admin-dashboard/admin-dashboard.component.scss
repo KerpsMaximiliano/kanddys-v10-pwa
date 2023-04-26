@@ -237,18 +237,20 @@
 }
 
 .sticky-bar {
+	cursor: pointer;
 	position: fixed;
 	max-width: 500px;
 	width: 100%;
 	background-color: #6FCF97;
 	padding: 5px 20px;
 	display: flex;
-	justify-content: space-between;
+	justify-content: space-around;
 	align-items: center;
 	z-index: 999;
 	bottom: 0;
 
 	p {
+		max-width: 80%;
 		color: #272727;
 		font-family: SfProLight;
 		font-size: 13px;
