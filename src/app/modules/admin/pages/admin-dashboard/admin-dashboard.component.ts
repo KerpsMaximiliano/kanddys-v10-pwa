@@ -25,6 +25,17 @@ import { StepperFormComponent } from 'src/app/shared/components/stepper-form/ste
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { FormControl, FormGroup } from '@angular/forms';
+import { QueryparametersService } from 'src/app/core/services/queryparameters.service';
+import { QueryParameter } from 'src/app/core/models/query-parameters';
+import * as moment from 'moment';
+
+export class FilterCriteria {
+  _id?: string;
+  type: 'all' | 'tag' | 'queryParameter';
+  tag?: Tag;
+  queryParameter?: QueryParameter;
+}
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -76,6 +87,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   tags: Tag[] = [];
   selectedTags: Tag[] = [];
+
+  filters: FilterCriteria[] = [];
 
   options: BarOptions[] = [
     {
@@ -199,7 +212,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     },
   ];
 
-  @ViewChild(MatDatepicker) datePicker: MatDatepicker<Date>;
+  queryParamaters: QueryParameter[] = [];
+
+  range = new FormGroup({
+    start: new FormControl(''),
+    end: new FormControl(''),
+  });
+
+  dateString: string = "Aún no hay filtros aplicados";
+
+  @ViewChild('picker') datePicker: MatDatepicker<Date>;
 
   constructor(
     public _MerchantsService: MerchantsService,
@@ -212,30 +234,38 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private _bottomSheet: MatBottomSheet,
     public dialog: MatDialog,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    private queryParameterService: QueryparametersService
   ) {}
 
   async ngOnInit() {
     if (this._SaleflowService.saleflowData) {
       this.inicializeItems(true, false, true);
+      this.getQueryParameters();
       this.getTags();
       this.getOrders();
       this.getMostSoldItems();
       this.getLessSoldItems();
       this.getHiddenItems();
       this.getOrdersToConfirm();
+
+      console.log(this.filters);
+
       return;
     }
     this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
       next: (value) => {
         if (value) {
           this.inicializeItems(true, false, true);
+          this.getQueryParameters();
           this.getTags();
           this.getOrders();
           this.getMostSoldItems();
           this.getLessSoldItems();
           this.getHiddenItems();
           this.getOrdersToConfirm();
+
+          console.log(this.filters);
         }
       },
     });
@@ -364,6 +394,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.options.push({
         title: 'categorias',
       });
+
+      // const filters: FilterCriteria[] = this.tags.map((tag) => {
+      //   return {
+      //     type: "tag",
+      //     tag: tag,
+      //     _id: tag._id
+      //   }
+      // });
+      // this.filters.push(...filters);
     }
   }
 
@@ -613,6 +652,76 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   openDatePicker() {
     this.datePicker.open();
+  }
+
+  async onDateChange() {
+    if (this.range.get('start').value && this.range.get('end').value) {
+      console.log("AZUCARRRRRRRRRR");
+      lockUI();
+      try {
+        const result = await this.queryParameterService.createQueryParameter(
+          this._MerchantsService.merchantData._id,
+          {
+            from: {
+              date: this.range.get('start').value
+            },
+            until: {
+              date: this.range.get('end').value
+            }
+          }
+        )
+
+        if (result) this.queryParamaters.unshift(result);
+
+        const startDate = new Date(result.from.date);
+        const endDate = new Date(result.until.date);
+
+        this.dateString = `Desde ${this.formatDate(startDate)} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+        unlockUI();
+      } catch (error) {
+        unlockUI();
+        console.log(error);
+      }
+    }
+    // this.dateString = `Desde ${this.startDate} hasta ${this.endDate} N artículos vendidos. $XXX`
+  }
+
+  async getQueryParameters() {
+    try {
+      const result = await this.queryParameterService.queryParameters({
+        options: {
+          limit: 10,
+          sortBy: 'createdAt:desc'
+        },
+        findBy: {
+          merchant: this._MerchantsService.merchantData._id
+        }
+      });
+      this.queryParamaters = result;
+
+      if (this.queryParamaters.length > 0) {
+        const startDate = new Date(this.queryParamaters[0].from.date);
+        const endDate = new Date(this.queryParamaters[0].until.date);
+        this.dateString = `Desde ${this.formatDate(startDate)} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+
+        const filters: FilterCriteria[] = this.queryParamaters.map((queryParameter) => {
+          return {
+            type: "queryParameter",
+            queryParameter: queryParameter,
+            _id: queryParameter._id
+          }
+        });
+
+        this.filters.push(...filters);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  formatDate(date: Date, short?: boolean) {
+    if (!short) return moment(date).format('DD/MM/YYYY');
+    else return `${moment(date).locale('es-es').format('MMM')} ${moment(date).locale('es-es').format('DD')}`;
   }
 
   goToDetail(dataToRequest: string) {
