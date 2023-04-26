@@ -58,6 +58,10 @@ interface ExtendedSlide extends Slide {
   isVideo?: boolean;
 }
 
+interface ExtendedWebformAnswer extends WebformAnswer {
+  questionLabel: string;
+}
+
 @Component({
   selector: 'app-order-detail',
   templateUrl: './order-detail.component.html',

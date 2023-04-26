@@ -26,7 +26,9 @@ import SwiperCore, { Virtual } from 'swiper/core';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
-import { playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { StepperFormComponent } from 'src/app/shared/components/stepper-form/stepper-form.component';
 import {
   SettingsComponent,
   SettingsDialogButton,
@@ -151,11 +153,11 @@ export class ArticleDetailComponent implements OnInit {
     private saleflowService: SaleFlowService,
     private merchantsService: MerchantsService,
     private authService: AuthService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private clipboard: Clipboard,
     private toastr: ToastrService,
-    private dialogService: DialogService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -416,13 +418,8 @@ export class ArticleDetailComponent implements OnInit {
 
   saveProduct() {
     if (this.mode === 'preview' || this.mode === 'image-preview') return;
-    if (
-      !this.isItemInCart &&
-      !this.headerService.saleflow.canBuyMultipleItems
-    ) {
+    if (!this.isItemInCart && !this.headerService.saleflow.canBuyMultipleItems)
       this.headerService.emptyOrderProducts();
-      this.headerService.emptyItems();
-    }
     const product: ItemSubOrderInput = {
       item: this.itemData._id,
       amount: 1,
@@ -463,10 +460,6 @@ export class ArticleDetailComponent implements OnInit {
       type: 'added-item',
       data: this.itemData._id,
     });
-    // this.headerService.storeItem(
-    //   // this.selectedParam ? itemParamValue :
-    //   this.itemData
-    // );
     this.itemInCart();
   }
 

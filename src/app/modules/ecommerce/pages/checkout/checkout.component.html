@@ -54,11 +54,16 @@
     >
       Confirmar y pagar
     </button>
-    <a class="bannerLink" (click)="createOrEditMessage()">{{
-      !postsService.post
-        ? "Incluir mensaje de regalo"
-        : "Editar mensaje de regalo"
-    }}</a>
+    <a
+      class="bannerLink"
+      *ngIf="headerService.saleflow.module?.post?.isActive"
+      (click)="createOrEditMessage()"
+      >{{
+        !postsService.post
+          ? "Incluir mensaje de regalo"
+          : "Editar mensaje de regalo"
+      }}</a
+    >
   </section>
 
   <main class="information">
@@ -302,7 +307,7 @@
         <h2 class="section-title">
           Lugar de
           {{
-            saleflowId === "62ed55eecd8fc9d59c8d7b6b"
+            headerService.saleflow.merchant._id === "62ed55eecd8fc9d59c8d7b6b"
               ? " la sesión:"
               : " Entrega:"
           }}
@@ -558,9 +563,10 @@
   [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
   [dialogs]="dialogs"
   [allowSlideNext]="false"
-  (saveConfigRef)="postsService.swiperConfig = $event"
+  [signalBeforeClosing]="true"
+  (saveConfigRef)="swiperConfig = $event"
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
-  (closingDialogSignal)="deletePost()"
+  (beforeClosingSignal)="deletePost()"
   (openingDialogSignal)="executeProcessesBeforeOpening()"
 ></app-dialog-flow>
 

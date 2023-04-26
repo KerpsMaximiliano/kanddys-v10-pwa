@@ -13,7 +13,11 @@ import { Questions } from '../../../../shared/components/form-questions/form-que
 import { Tag } from '../../../../core/models/tags';
 import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
 import { ReloadComponent } from 'src/app/shared/dialogs/reload/reload.component';
-import { FormStep, FormField, EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
+import {
+  FormStep,
+  FormField,
+  EmbeddedComponentWithId,
+} from 'src/app/core/types/multistep-form';
 import { FormControl, Validators } from '@angular/forms';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { InputTransparentComponent } from 'src/app/shared/dialogs/input-transparent/input-transparent.component';
@@ -46,6 +50,7 @@ import { environment } from 'src/environments/environment';
 import { WebformQuestionDialogComponent } from 'src/app/shared/components/webform-question-dialog/webform-question-dialog.component';
 import { WebformMultipleSelectionConfirmationComponent } from 'src/app/shared/components/webform-multiple-selection-confirmation/webform-multiple-selection-confirmation.component';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 
 const generalDialogContainerStyles = {
   background: 'rgb(255, 255, 255)',
@@ -173,13 +178,13 @@ export class TestComponent implements OnInit {
       component: DescriptionDialogComponent,
       componentId: 'welcome',
       inputs: {},
-      outputs: []
+      outputs: [],
     },
     {
       component: WebformQuestionDialogComponent,
       componentId: 'question',
       inputs: {},
-      outputs: []
+      outputs: [],
     },
     {
       component: GeneralDialogComponent,
@@ -221,8 +226,7 @@ export class TestComponent implements OnInit {
       outputs: [
         {
           name: 'data',
-          callback: (params) => {
-          },
+          callback: (params) => {},
         },
       ],
     },
@@ -266,8 +270,7 @@ export class TestComponent implements OnInit {
       outputs: [
         {
           name: 'data',
-          callback: (params) => {
-          },
+          callback: (params) => {},
         },
       ],
     },
@@ -275,28 +278,26 @@ export class TestComponent implements OnInit {
       component: WebformMultipleSelectionConfirmationComponent,
       componentId: 'confirmation',
       inputs: {},
-      outputs: []
-    }
+      outputs: [],
+    },
   ];
 
   options: Array<OptionAnswerSelector> = [
     {
       value: 'Elden ring',
-      status: true
+      status: true,
     },
     {
       value: 'Dark souls',
-      status: true
+      status: true,
     },
     {
       value: 'Bloodborne',
-      status: true
+      status: true,
     },
-  ]
-  
+  ];
 
   joke: string = '';
-
 
   // Variables for dialogProFlow
 
@@ -323,13 +324,26 @@ export class TestComponent implements OnInit {
   constructor(
     private dialogFlowService: DialogFlowService,
     private postsService: PostsService,
+    private gpt3Service: Gpt3Service,
     private headerService: HeaderService,
     private router: Router,
-    private dialog: DialogService,
     private deliveryzonesService: DeliveryZonesService
   ) {}
 
-  async ngOnInit() {
+  async ngOnInit() {}
+
+  async generateGPT3Response() {
+    // const templateID = "63b7976096612318e8983786"; Chiste sobre {subject}
+    const templateID = '63ec8dbd12adcf783c420946';
+    const templateObject = {
+      subject1: 'maracuchos',
+    };
+    const response = await this.gpt3Service.generateResponseForTemplate(
+      templateObject,
+      templateID
+    );
+    this.gpt3Service.gpt3Response = response;
+
     this.router.navigate([`ecommerce/post-preview`], {
       queryParams: {
         mode: 'solidBg',
@@ -337,13 +351,9 @@ export class TestComponent implements OnInit {
     });
   }
 
-  start() {
-    
-  }
+  start() {}
 
-  close() {
-
-  }
+  close() {}
 
   yesDependDialog: EmbeddedComponentWithId = {
     component: GeneralDialogComponent,
@@ -396,7 +406,7 @@ export class TestComponent implements OnInit {
                 },
                 {
                   text: 'De la zona de entrega',
-                }
+                },
               ],
             },
             // styles: {},
@@ -415,70 +425,54 @@ export class TestComponent implements OnInit {
           const { depend } = value;
 
           if (!(depend.length === 0)) {
-            this.depend = depend[0] === 'Del monto de la factura' ? 'amount' : 'zone';
+            this.depend =
+              depend[0] === 'Del monto de la factura' ? 'amount' : 'zone';
             // TODO validate if deliveryZones length is 0
 
             if (this.depend === 'amount') {
-
               if (!(this.dialogsPro[2].componentId === 'yes-depend-amount-1')) {
                 // Deleting any other dialog except for the last one
                 console.log(this.dialogsPro.length);
                 if (this.dialogsPro.length > 3) {
-                  this.dialogsPro.splice(
-                    2,
-                    2
-                  )
-                  if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
+                  this.dialogsPro.splice(2, 2);
+                  if (this.deliveryData.length > 0)
+                    this.deliveryData.splice(0, this.deliveryData.length);
                 }
-                
-                this.dialogsPro.splice(
-                  2,
-                  0,
-                  this.yesDependAmountDialogs[0]
-                );
-  
-                this.dialogsPro.splice(
-                  3,
-                  0,
-                  this.yesDependAmountDialogs[1]
-                );
+
+                this.dialogsPro.splice(2, 0, this.yesDependAmountDialogs[0]);
+
+                this.dialogsPro.splice(3, 0, this.yesDependAmountDialogs[1]);
               }
               setTimeout(() => {
                 this.dialogFlowFunctions.moveToDialogByIndex(2);
               }, 500);
             } else if (this.depend === 'zone') {
-              if (!(this.dialogsPro[2].componentId === 'yes-depend-deliveryzone-1')) {
+              if (
+                !(
+                  this.dialogsPro[2].componentId === 'yes-depend-deliveryzone-1'
+                )
+              ) {
                 // Deleting any other dialog except for the last one
                 console.log(this.dialogsPro.length);
                 if (this.dialogsPro.length > 3) {
-                  this.dialogsPro.splice(
-                    2,
-                    2
-                  )
-                  if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
+                  this.dialogsPro.splice(2, 2);
+                  if (this.deliveryData.length > 0)
+                    this.deliveryData.splice(0, this.deliveryData.length);
                 }
 
-                this.dialogsPro.splice(
-                  2,
-                  0,
-                  this.yesDependDeliveryDialogs[0]
-                );
-  
-                this.dialogsPro.splice(
-                  3,
-                  0,
-                  this.yesDependDeliveryDialogs[1]
-                );
+                this.dialogsPro.splice(2, 0, this.yesDependDeliveryDialogs[0]);
+
+                this.dialogsPro.splice(3, 0, this.yesDependDeliveryDialogs[1]);
               }
               setTimeout(() => {
                 this.dialogFlowFunctions.moveToDialogByIndex(2);
               }, 500);
             }
           }
-        }
-      }
-    ]
-  }
+        },
+      },
+    ],
+  };
 
   yesDependDeliveryDialogs: Array<EmbeddedComponentWithId> = [
     {
@@ -488,40 +482,40 @@ export class TestComponent implements OnInit {
         dialogId: 'yes-depend-deliveryzone-1',
         containerStyles: {},
         title: {
-          text: "Zona de Entrega #1"
+          text: 'Zona de Entrega #1',
         },
         fields: {
           inputs: [
             {
-              label: "$ recibes del comprador:",
-              formControl: "input-1",
+              label: '$ recibes del comprador:',
+              formControl: 'input-1',
               index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "$ que te cuesta (egreso)",
-              formControl: "input-2",
+              label: '$ que te cuesta (egreso)',
+              formControl: 'input-2',
               index: 1,
               row: 0,
               column: 1,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "Nombre de la zona",
-              formControl: "input-3",
+              label: 'Nombre de la zona',
+              formControl: 'input-3',
               index: 2,
               row: 1,
               column: 0,
               isFlex: false,
               halfWidth: false,
-              type: "text"
-            }
-          ]
-        }
+              type: 'text',
+            },
+          ],
+        },
       },
       outputs: [
         {
@@ -534,7 +528,9 @@ export class TestComponent implements OnInit {
 
             if (
               this.deliveryData.length > 0 &&
-              this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-1')
+              this.deliveryData.find(
+                (item) => item.id === 'yes-depend-deliveryzone-1'
+              )
             ) {
               const index = this.deliveryData.findIndex(
                 (item) => item.id === 'yes-depend-deliveryzone-1'
@@ -545,9 +541,9 @@ export class TestComponent implements OnInit {
             this.deliveryData.push({
               zona: zoneName,
               amount: Number(incomeByBuyer),
-              cost: Number(cost), 
+              cost: Number(cost),
               type: 'zone',
-              id: "yes-depend-deliveryzone-1"
+              id: 'yes-depend-deliveryzone-1',
             });
 
             console.log(this.deliveryData);
@@ -562,39 +558,39 @@ export class TestComponent implements OnInit {
         dialogId: 'yes-depend-deliveryzone-2',
         containerStyles: {},
         title: {
-          text: "Zona de Entrega #2"
+          text: 'Zona de Entrega #2',
         },
         fields: {
           inputs: [
             {
-              label: "$ recibes del comprador:",
-              formControl: "input-1",
+              label: '$ recibes del comprador:',
+              formControl: 'input-1',
               index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "$ que te cuesta (egreso)",
-              formControl: "input-2",
+              label: '$ que te cuesta (egreso)',
+              formControl: 'input-2',
               index: 1,
               row: 0,
               column: 1,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "Nombre de la zona",
-              formControl: "input-3",
+              label: 'Nombre de la zona',
+              formControl: 'input-3',
               index: 2,
               row: 1,
               column: 0,
               isFlex: false,
-              type: "text"
-            }
-          ]
-        }
+              type: 'text',
+            },
+          ],
+        },
       },
       outputs: [
         {
@@ -607,7 +603,9 @@ export class TestComponent implements OnInit {
 
             if (
               this.deliveryData.length > 0 &&
-              this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-2')
+              this.deliveryData.find(
+                (item) => item.id === 'yes-depend-deliveryzone-2'
+              )
             ) {
               const index = this.deliveryData.findIndex(
                 (item) => item.id === 'yes-depend-deliveryzone-2'
@@ -618,16 +616,16 @@ export class TestComponent implements OnInit {
             this.deliveryData.push({
               zona: zoneName,
               amount: Number(incomeByBuyer),
-              cost: Number(cost), 
+              cost: Number(cost),
               type: 'zone',
-              id: "yes-depend-deliveryzone-2"
+              id: 'yes-depend-deliveryzone-2',
             });
 
             console.log(this.deliveryData);
           },
         },
       ],
-    }
+    },
   ];
 
   yesDependAmountDialogs: Array<EmbeddedComponentWithId> = [
@@ -638,57 +636,57 @@ export class TestComponent implements OnInit {
         dialogId: 'yes-depend-amount-1',
         containerStyles: {},
         title: {
-          text: "Zona de Entrega #1"
+          text: 'Zona de Entrega #1',
         },
         fields: {
           inputs: [
             {
-              label: "$ de la factura menor a:",
-              formControl: "input-1",
+              label: '$ de la factura menor a:',
+              formControl: 'input-1',
               index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "$ de la factura mayor a:",
-              formControl: "input-2",
+              label: '$ de la factura mayor a:',
+              formControl: 'input-2',
               index: 1,
               row: 0,
               column: 1,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "$ recibes del comprador",
-              formControl: "input-3",
+              label: '$ recibes del comprador',
+              formControl: 'input-3',
               index: 2,
               row: 1,
               column: 0,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "$ que te cuesta (egreso)",
-              formControl: "input-4",
+              label: '$ que te cuesta (egreso)',
+              formControl: 'input-4',
               index: 3,
               row: 1,
               column: 1,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "Nombre de la zona",
-              formControl: "input-5",
+              label: 'Nombre de la zona',
+              formControl: 'input-5',
               index: 4,
               row: 2,
               column: 0,
               isFlex: false,
-              type: "text"
-            }
-          ]
-        }
+              type: 'text',
+            },
+          ],
+        },
       },
       outputs: [
         {
@@ -700,10 +698,12 @@ export class TestComponent implements OnInit {
             const incomeByBuyer = params[2].value ? params[2].value : 0;
             const cost = params[3].value ? params[3].value : 0;
             const zoneName = params[4].value ? params[4].value : '';
-            
+
             if (
               this.deliveryData.length > 0 &&
-              this.deliveryData.find((item) => item.id === 'yes-depend-amount-1')
+              this.deliveryData.find(
+                (item) => item.id === 'yes-depend-amount-1'
+              )
             ) {
               const index = this.deliveryData.findIndex(
                 (item) => item.id === 'yes-depend-amount-1'
@@ -720,7 +720,7 @@ export class TestComponent implements OnInit {
               greaterAmountLimit: Number(greaterAmount),
               lesserAmountLimit: Number(lesserAmount),
               type: 'lesser',
-              id: "yes-depend-amount-1"
+              id: 'yes-depend-amount-1',
             });
 
             console.log(this.deliveryData);
@@ -735,48 +735,48 @@ export class TestComponent implements OnInit {
         dialogId: 'yes-depend-amount-2',
         containerStyles: {},
         title: {
-          text: "Zona de Entrega #2"
+          text: 'Zona de Entrega #2',
         },
         fields: {
           inputs: [
             {
-              label: "Menor a:",
-              formControl: "input-1",
+              label: 'Menor a:',
+              formControl: 'input-1',
               index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "Mayor a:",
-              formControl: "input-2",
+              label: 'Mayor a:',
+              formControl: 'input-2',
               index: 1,
               row: 0,
               column: 1,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "Monto que te pagan por el delivery:",
-              formControl: "input-3",
+              label: 'Monto que te pagan por el delivery:',
+              formControl: 'input-3',
               index: 2,
               row: 1,
               column: 0,
               isFlex: false,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "Nombre de la zona",
-              formControl: "input-4",
+              label: 'Nombre de la zona',
+              formControl: 'input-4',
               index: 3,
               row: 2,
               column: 0,
               isFlex: false,
-              type: "text"
-            }
-          ]
-        }
+              type: 'text',
+            },
+          ],
+        },
       },
       outputs: [
         {
@@ -790,7 +790,9 @@ export class TestComponent implements OnInit {
 
             if (
               this.deliveryData.length > 0 &&
-              this.deliveryData.find((item) => item.id === 'yes-depend-amount-2')
+              this.deliveryData.find(
+                (item) => item.id === 'yes-depend-amount-2'
+              )
             ) {
               const index = this.deliveryData.findIndex(
                 (item) => item.id === 'yes-depend-amount-2'
@@ -802,19 +804,19 @@ export class TestComponent implements OnInit {
               zona: zoneName,
               amount: Number(incomeByBuyer),
               // cost: cost,
-              lesserAmount : Number(lesserAmount),
-              greaterAmount : Number(greaterAmount),
+              lesserAmount: Number(lesserAmount),
+              greaterAmount: Number(greaterAmount),
               greaterAmountLimit: Number(greaterAmount),
               lesserAmountLimit: Number(lesserAmount),
               type: 'lesser',
-              id: "yes-depend-amount-2"
+              id: 'yes-depend-amount-2',
             });
 
             console.log(this.deliveryData);
           },
         },
       ],
-    }
+    },
   ];
 
   noDependDialogs = [
@@ -825,30 +827,30 @@ export class TestComponent implements OnInit {
         dialogId: 'no-deliveryzone-1',
         containerStyles: {},
         title: {
-          text: "Zona de Entrega #1"
+          text: 'Zona de Entrega #1',
         },
         fields: {
           inputs: [
             {
-              label: "$ que te cuesta (egreso)",
-              formControl: "input-1",
+              label: '$ que te cuesta (egreso)',
+              formControl: 'input-1',
               index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "Nombre de la zona:",
-              formControl: "input-2",
+              label: 'Nombre de la zona:',
+              formControl: 'input-2',
               index: 1,
               row: 1,
               column: 0,
               isFlex: true,
-              type: "text"
+              type: 'text',
             },
-          ]
-        }
+          ],
+        },
       },
       outputs: [
         {
@@ -872,7 +874,7 @@ export class TestComponent implements OnInit {
               zona: zoneName,
               cost: Number(cost),
               type: 'free',
-              id: "no-deliveryzone-1"
+              id: 'no-deliveryzone-1',
             });
 
             console.log(this.deliveryData);
@@ -887,30 +889,30 @@ export class TestComponent implements OnInit {
         dialogId: 'no-deliveryzone-2',
         containerStyles: {},
         title: {
-          text: "Zona de Entrega #2"
+          text: 'Zona de Entrega #2',
         },
         fields: {
           inputs: [
             {
-              label: "$ que te cuesta (egreso)",
-              formControl: "input-1",
+              label: '$ que te cuesta (egreso)',
+              formControl: 'input-1',
               index: 0,
               row: 0,
               column: 0,
               isFlex: true,
-              type: "number"
+              type: 'number',
             },
             {
-              label: "Nombre de la zona:",
-              formControl: "input-2",
+              label: 'Nombre de la zona:',
+              formControl: 'input-2',
               index: 1,
               row: 1,
               column: 0,
               isFlex: true,
-              type: "text"
+              type: 'text',
             },
-          ]
-        }
+          ],
+        },
       },
       outputs: [
         {
@@ -934,13 +936,13 @@ export class TestComponent implements OnInit {
               zona: zoneName,
               cost: Number(cost),
               type: 'free',
-              id: "no-deliveryzone-2"
+              id: 'no-deliveryzone-2',
             });
             console.log(this.deliveryData);
           },
         },
       ],
-    }
+    },
   ];
 
   inject() {
@@ -1003,7 +1005,7 @@ export class TestComponent implements OnInit {
                     },
                     {
                       text: 'Mi producto no se entrega físicamente',
-                    }
+                    },
                   ],
                 },
                 // styles: {},
@@ -1022,14 +1024,20 @@ export class TestComponent implements OnInit {
               const { deliveryType } = value;
 
               if (!(deliveryType.length === 0)) {
-                this.deliveryType = 
-                  deliveryType[0] === 'Sí' ? 'yes'
-                  : deliveryType[0] === 'No' ? 'no' 
-                  : deliveryType[0] === 'Depende' ? 'depend' 
-                  : 'no-delivery';
+                this.deliveryType =
+                  deliveryType[0] === 'Sí'
+                    ? 'yes'
+                    : deliveryType[0] === 'No'
+                    ? 'no'
+                    : deliveryType[0] === 'Depende'
+                    ? 'depend'
+                    : 'no-delivery';
 
-                if (this.deliveryType === 'yes' || this.deliveryType === 'depend') {
-                  console.log("yes or depend");
+                if (
+                  this.deliveryType === 'yes' ||
+                  this.deliveryType === 'depend'
+                ) {
+                  console.log('yes or depend');
 
                   if (!(this.dialogsPro[1].componentId === 'yes-depend')) {
                     // Deleting any other dialog except for the last one
@@ -1037,58 +1045,52 @@ export class TestComponent implements OnInit {
                       this.dialogsPro.splice(
                         1,
                         this.dialogsPro.length === 3
-                          ? 1 :
-                          this.dialogsPro.length === 4
-                          ? 2 :
-                          3
-                      )
-                      
+                          ? 1
+                          : this.dialogsPro.length === 4
+                          ? 2
+                          : 3
+                      );
+
                       console.log(this.deliveryData);
-                      if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
+                      if (this.deliveryData.length > 0)
+                        this.deliveryData.splice(0, this.deliveryData.length);
                       console.log(this.deliveryData);
                     }
 
                     // Adding dialog yesDepend to the array
-                    this.dialogsPro.splice(
-                      1,
-                      0,
-                      this.yesDependDialog
-                    )
+                    this.dialogsPro.splice(1, 0, this.yesDependDialog);
                   }
 
                   setTimeout(() => {
                     this.dialogFlowFunctions.moveToDialogByIndex(1);
                   }, 500);
-                  
-                } else if (this.deliveryType === 'no' || this.deliveryType === 'no-delivery') {
-                  console.log("no or no-delivery");
+                } else if (
+                  this.deliveryType === 'no' ||
+                  this.deliveryType === 'no-delivery'
+                ) {
+                  console.log('no or no-delivery');
 
-                  if (!(this.dialogsPro[1].componentId === 'no-deliveryzone-1')) {
+                  if (
+                    !(this.dialogsPro[1].componentId === 'no-deliveryzone-1')
+                  ) {
                     // Deleting any other dialog except for the last one
                     if (this.dialogsPro.length > 2) {
                       this.dialogsPro.splice(
                         1,
                         this.dialogsPro.length === 3
-                          ? 1 :
-                          this.dialogsPro.length === 4
-                          ? 2 :
-                          3
-                      )
+                          ? 1
+                          : this.dialogsPro.length === 4
+                          ? 2
+                          : 3
+                      );
                       console.log(this.deliveryData);
-                      if (this.deliveryData.length > 0) this.deliveryData.splice(0, this.deliveryData.length);
+                      if (this.deliveryData.length > 0)
+                        this.deliveryData.splice(0, this.deliveryData.length);
                       console.log(this.deliveryData);
                     }
-                    
-                    this.dialogsPro.splice(
-                      1,
-                      0,
-                      this.noDependDialogs[0]
-                    );
-                    this.dialogsPro.splice(
-                      2,
-                      0,
-                      this.noDependDialogs[1]
-                    );
+
+                    this.dialogsPro.splice(1, 0, this.noDependDialogs[0]);
+                    this.dialogsPro.splice(2, 0, this.noDependDialogs[1]);
                   }
 
                   setTimeout(() => {
@@ -1096,9 +1098,9 @@ export class TestComponent implements OnInit {
                   }, 500);
                 }
               }
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       {
         component: GeneralDialogComponent,
@@ -1148,7 +1150,7 @@ export class TestComponent implements OnInit {
                   list: [
                     {
                       text: 'Sí',
-                    }
+                    },
                   ],
                 },
                 // styles: {},
@@ -1164,7 +1166,7 @@ export class TestComponent implements OnInit {
             callback: async (params) => {
               console.log(params);
               const { confirm } = params.value;
-              
+
               if (confirm[0]) {
                 console.log(this.deliveryData);
                 this.deliveryZones = this.deliveryData.map((item) => {
@@ -1174,16 +1176,20 @@ export class TestComponent implements OnInit {
                     cost: Number(item.cost),
                     amount: Number(item.amount),
                     // cost: cost,
-                    lesserAmount : Number(item.lesserAmount),
-                    greaterAmount : Number(item.greaterAmount),
-                    greaterAmountLimit: Number(item.greaterAmountLimit) || Number(item.greaterAmount),
-                    lesserAmountLimit: Number(item.lesserAmountLimit) || Number(item.lesserAmount),
+                    lesserAmount: Number(item.lesserAmount),
+                    greaterAmount: Number(item.greaterAmount),
+                    greaterAmountLimit:
+                      Number(item.greaterAmountLimit) ||
+                      Number(item.greaterAmount),
+                    lesserAmountLimit:
+                      Number(item.lesserAmountLimit) ||
+                      Number(item.lesserAmount),
                   };
                 });
 
                 console.log(this.deliveryZones);
 
-                this.deliveryData.forEach(async zone => {
+                this.deliveryData.forEach(async (zone) => {
                   let deliveryZone;
                   try {
                     deliveryZone = await this.deliveryzonesService.create(
@@ -1195,34 +1201,38 @@ export class TestComponent implements OnInit {
                         greaterAmountLimit: zone.greaterAmountLimit,
                         lesserAmountLimit: zone.lesserAmountLimit,
                         zona: zone.zona,
-                        type: zone.type
+                        type: zone.type,
                       }
-                    )
+                    );
                   } catch (error) {
                     console.log(error);
                   }
 
                   if (deliveryZone && zone.cost) {
                     try {
-                      const expenditure = await this.deliveryzonesService.createExpenditure(
-                        this.merchant._id,
-                        {
-                          type: "delivery-zone",
-                          amount: zone.cost
-                        }
+                      const expenditure =
+                        await this.deliveryzonesService.createExpenditure(
+                          this.merchant._id,
+                          {
+                            type: 'delivery-zone',
+                            amount: zone.cost,
+                          }
+                        );
+                      await this.deliveryzonesService.addExpenditure(
+                        expenditure._id,
+                        deliveryZone._id
                       );
-                      await this.deliveryzonesService.addExpenditure(expenditure._id, deliveryZone._id);
                     } catch (error) {
                       console.log(error);
                     }
                   }
                 });
               }
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
-    ]
+    ];
 
     return this.dialogsPro;
   }

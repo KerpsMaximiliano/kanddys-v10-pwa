@@ -247,13 +247,52 @@
           <div
             class="entity-image"
             [ngStyle]="{
-              backgroundImage: 'url(' + slide.media + ')'
+              'background-image': 'url(' + slide.media + ')'
             }"
-          ></div>
+          >
+            <div
+              class="post-content-minimized"
+              *ngIf="postContentMinimized"
+              (click)="postContentMinimized = !postContentMinimized"
+            >
+              <p class="title2" *ngIf="slide.title">{{ postData.title }}</p>
+              <p class="subtitle2" *ngIf="slide.text">
+                {{
+                  postData.message.length > 24
+                    ? postData.message.slice(0, 24) + "..."
+                    : postData.message
+                }}
+              </p>
+            </div>
+
+            <div
+              class="post-content-maximized"
+              *ngIf="!postContentMinimized"
+              (click)="postContentMinimized = !postContentMinimized"
+            >
+              <p class="title2" *ngIf="slide.title">{{ postData.message }}</p>
+              <p class="subtitle2" *ngIf="slide.text">
+                {{ postData.message }}
+              </p>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="slide.type === 'text'">
+          <div class="text-content">
+            <div class="content">
+              <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
+              <p class="subtitle2" *ngIf="slide.text">{{ slide.text }}</p>
+            </div>
+          </div>
         </ng-container>
 
         <ng-container *ngIf="slide.type === 'poster' && slide.isVideo">
-          <video controls [id]="'post-media' + i" [src]="slide.media"></video>
+          <video
+            [id]="'post-media' + i"
+            [src]="slide.media"
+            (click)="playVideoOnFullscreen('post-media' + i)"
+          ></video>
         </ng-container>
 
         <div *ngIf="slide.type === 'audio'" class="audio">

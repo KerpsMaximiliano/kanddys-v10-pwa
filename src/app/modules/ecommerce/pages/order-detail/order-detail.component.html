@@ -3,7 +3,7 @@
     class="header"
     [ngStyle]="{ backgroundColor: isMerchant ? '#000000' : '#293628' }"
   >
-    <button mat-button (click)="returnEvent()">
+    <button mat-button (click)="!redirectTo ? returnToStore() : returnEvent()">
       <img
         [src]="env + '/arrow-double-up-black.svg'"
         alt=""
@@ -30,9 +30,6 @@
         alt=""
         style="margin: 0px 5px; margin-bottom: -4px"
       />
-
-      a
-      <span>{{ order.items[0].saleflow.merchant.name }}</span>
     </p>
   </a>
   <ng-container *ngIf="isMerchant && order.orderStatus !== 'draft'">
@@ -273,8 +270,9 @@
           (mousemove)="moveEvent($event, elemt)"
         >
           <button
-            class="btn"
+            mat-button
             (click)="order.ocr ? openImageModal(order.ocr.image) : null"
+            style="padding: 0"
           >
             <div
               class="image"

@@ -30,15 +30,17 @@ import {
   WebformResponseInput,
 } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
+import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
-import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
@@ -54,6 +56,7 @@ import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Dialogs } from './dialogs';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
+import { filter } from 'rxjs/operators';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -88,7 +91,7 @@ export class CheckoutComponent implements OnInit {
   disableButton: boolean;
   currentUser: User;
   date: {
-    year: string;
+    year?: string;
     month: string;
     day: number;
     weekday: string;
@@ -101,7 +104,6 @@ export class CheckoutComponent implements OnInit {
   postSlideImages: (string | ArrayBuffer)[] = [];
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
-  saleflowId: string;
   playVideoOnFullscreen = playVideoOnFullscreen;
   openedDialogFlow: boolean = false;
   swiperConfig: SwiperOptions = null;
@@ -166,19 +168,18 @@ export class CheckoutComponent implements OnInit {
     private dialogFlowService: DialogFlowService,
     private entityTemplateService: EntityTemplateService,
     private gpt3Service: Gpt3Service,
-    private toastr: ToastrService,
-    public matDialog: MatDialog,
     public dialog: MatDialog,
+    private notificationsService: NotificationsService,
+    public matDialog: MatDialog,
+    private toastr: ToastrService,
     private _WebformsService: WebformsService,
-    private deliveryzonesService: DeliveryZonesService,
-    private notificationsService: NotificationsService
+    private deliveryzonesService: DeliveryZonesService
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.webformPreview = Boolean(
       this.route.snapshot.queryParamMap.get('webformPreview')
     );
-    this.saleflowId = this.headerService.saleflow.merchant._id;
     this.route.queryParams.subscribe(async (queryParams) => {
       const { startOnDialogFlow, addedQr, addedPhotos, addedAIJoke } =
         queryParams;
@@ -238,26 +239,26 @@ export class CheckoutComponent implements OnInit {
 
           if (generatedMessage) lastActiveDialogIndex += 1;
 
-          if (addedQr) {
-            if (addedPhotos || addedAIJoke) {
-              this.dialogs[this.dialogs.length - 1].inputs.header.text =
-                '¿Deseas incluir alguna otra cosa?';
+          // if (addedQr) {
+          //   if (addedPhotos || addedAIJoke) {
+          //     this.dialogs[this.dialogs.length - 1].inputs.header.text =
+          //       '¿Deseas incluir alguna otra cosa?';
 
-              this.dialogs[
-                this.dialogs.length - 1
-              ].inputs.fields.list[0].selection.list[0].text = 'No';
+          //     this.dialogs[
+          //       this.dialogs.length - 1
+          //     ].inputs.fields.list[0].selection.list[0].text = 'No';
 
-              this.dialogs[
-                this.dialogs.length - 1
-              ].inputs.fields.list[0].selection.list[1].text = addedPhotos
-                ? 'Un chiste de la IA'
-                : 'Fotos, videos de mi device';
-            }
+          //     this.dialogs[
+          //       this.dialogs.length - 1
+          //     ].inputs.fields.list[0].selection.list[1].text = addedPhotos
+          //       ? 'Un chiste de la IA'
+          //       : 'Fotos, videos de mi device';
+          //   }
 
-            return this.dialogFlowFunctions.moveToDialogByIndex(
-              this.dialogs.length - 1
-            );
-          }
+          //   return this.dialogFlowFunctions.moveToDialogByIndex(
+          //     this.dialogs.length - 1
+          //   );
+          // }
 
           this.dialogFlowFunctions.moveToDialogByIndex(lastActiveDialogIndex);
         }, 500);
@@ -266,9 +267,11 @@ export class CheckoutComponent implements OnInit {
       let items = this.headerService.order.products.map(
         (subOrder) => subOrder.item
       );
+      if (!this.headerService.order?.products) this.editOrder('item');
       if (!items.every((value) => typeof value === 'string')) {
         items = items.map((item: any) => item?._id || item);
       }
+      if (!items?.length) this.editOrder('item');
       this.items = (
         await this.saleflowService.listItems({
           findBy: {
@@ -295,8 +298,6 @@ export class CheckoutComponent implements OnInit {
           }
         }
       }
-
-      if (!this.items?.length) this.editOrder('item');
 
       this.post = this.headerService.getPost();
 
@@ -340,12 +341,11 @@ export class CheckoutComponent implements OnInit {
       await this.getDeliveryZones(this.headerService.saleflow.merchant._id);
 
       this.deliveryZone = this.headerService.getZone();
-
       this.deliveryLocation = this.headerService.getLocation();
       // Validation for stores with only one address of pickup and no delivery for customers
       if (!this.deliveryLocation) {
         if (
-          this.headerService.saleflow.module.delivery.pickUpLocations.length ==
+          this.headerService.saleflow.module.delivery?.pickUpLocations.length ==
             1 &&
           !this.headerService.saleflow.module.delivery.deliveryLocation
         ) {
@@ -385,10 +385,7 @@ export class CheckoutComponent implements OnInit {
       this.headerService.checkoutRoute = null;
       this.headerService.order.products.forEach((product) => {
         if (product.amount) this.itemObjects[product.item] = product;
-        else {
-          this.headerService.removeOrderProduct(product.item);
-          this.headerService.removeItem(product.item);
-        }
+        else this.headerService.removeOrderProduct(product.item);
       });
       this.updatePayment();
       if (
@@ -578,7 +575,6 @@ export class CheckoutComponent implements OnInit {
 
         if (index >= 0) this.items.splice(index, 1);
         this.headerService.removeOrderProduct(deletedID);
-        this.headerService.removeItem(deletedID);
         this.updatePayment();
         if (!this.items.length) this.editOrder('item');
 
@@ -603,10 +599,7 @@ export class CheckoutComponent implements OnInit {
     this.headerService.changeItemAmount(product.item, type);
     this.headerService.order.products.forEach((product) => {
       if (product.amount) this.itemObjects[product.item] = product;
-      else {
-        this.headerService.removeOrderProduct(product.item);
-        this.headerService.removeItem(product.item);
-      }
+      else this.headerService.removeOrderProduct(product.item);
     });
     this.updatePayment();
   }
@@ -666,7 +659,7 @@ export class CheckoutComponent implements OnInit {
     if (this.reservation)
       this.headerService.order.products[0].reservation = this.reservation;
     // ---------------------- Managing Post ----------------------------
-    if (this.headerService.saleflow.module?.post) {
+    if (this.headerService.saleflow.module?.post?.isActive) {
       if (!this.post)
         this.post = {
           message: '',
@@ -856,6 +849,15 @@ export class CheckoutComponent implements OnInit {
       this.disableButton = false;
     }
   };
+
+  login() {
+    localStorage.removeItem('privatePost');
+    this.router.navigate(['auth/login'], {
+      queryParams: {
+        redirect: `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+      },
+    });
+  }
 
   async getDeliveryZones(merchanId: string) {
     try {
@@ -1108,13 +1110,23 @@ export class CheckoutComponent implements OnInit {
   }
 
   deletePost() {
-    this.postsService.post = null;
-    localStorage.removeItem('post');
-    localStorage.removeItem('postReceiverNumber');
-    this.openedDialogFlow = false;
-    this.dialogFlowService.resetDialogFlow('flow1');
-    this.createDialogs();
-    this.dialogFlowFunctions.moveToDialogByIndex(0);
+    let dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Borrar mensaje`,
+        description: `No se guardarán los datos ingresados. Deseas borrar tu mensaje?`,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        this.postsService.post = null;
+        localStorage.removeItem('post');
+        localStorage.removeItem('postReceiverNumber');
+        this.openedDialogFlow = false;
+        this.dialogFlowService.resetDialogFlow('flow1');
+        this.createDialogs();
+        this.dialogFlowFunctions.moveToDialogByIndex(0);
+      }
+    });
   }
 
   executeProcessesBeforeOpening() {

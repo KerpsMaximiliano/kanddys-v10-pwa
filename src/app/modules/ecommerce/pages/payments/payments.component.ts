@@ -36,6 +36,7 @@ import {
   LoginDialogComponent,
   LoginDialogData,
 } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-payments',
@@ -273,7 +274,8 @@ export class PaymentsComponent implements OnInit {
     private toastrService: ToastrService,
     private entityTemplateService: EntityTemplateService,
     private authService: AuthService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -397,21 +399,24 @@ export class PaymentsComponent implements OnInit {
 
         if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
 
-        if (this.post && !this.post.author && this.currentUser) await this.postsService.postAddUser(this.post._id, this.currentUser._id);
+        if (this.post && !this.post.author && this.currentUser)
+          await this.postsService.postAddUser(
+            this.post._id,
+            this.currentUser._id
+          );
 
         if (privatePost === 'true' && this.currentUser) {
-          const templateMatches = await this.entityTemplateService.entityTemplates(
-            {
+          const templateMatches =
+            await this.entityTemplateService.entityTemplates({
               findBy: {
                 reference: this.post._id,
-                entity: "post"
-              }
-            }
-          );
+                entity: 'post',
+              },
+            });
           if (!templateMatches.length) {
             console.log(templateMatches);
             const entityTemplate =
-            await this.entityTemplateService.createEntityTemplate();
+              await this.entityTemplateService.createEntityTemplate();
             await this.entityTemplateService.entityTemplateAuthSetData(
               entityTemplate._id,
               {
@@ -428,9 +433,10 @@ export class PaymentsComponent implements OnInit {
               this.postsService.postReceiverNumber
             );
             if (recipientUser) {
-              const recipient = await this.entityTemplateService.createRecipient({
-                phone: this.postsService.postReceiverNumber,
-              });
+              const recipient =
+                await this.entityTemplateService.createRecipient({
+                  phone: this.postsService.postReceiverNumber,
+                });
               if (this.postsService.privatePost) {
                 await this.entityTemplateService.entityTemplateAddRecipient(
                   entityTemplate._id,
@@ -440,7 +446,7 @@ export class PaymentsComponent implements OnInit {
                   }
                 );
               }
-            } 
+            }
           }
         }
       });
@@ -717,6 +723,7 @@ export class PaymentsComponent implements OnInit {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         document.querySelector('#AuthHash').setAttribute('value', data.hash);
         document
           .querySelector('#MerchantID')
@@ -810,5 +817,12 @@ export class PaymentsComponent implements OnInit {
         window.location.href = response.url;
       }
     });*/
+  }
+
+  remindRefundPolicies() {
+    this.snackBar.open('Debes aceptar las políticas de reembolso antes de continuar con tu orden', 'OK', {
+      duration: 3000,
+      panelClass: ['mat-accent']
+    });
   }
 }

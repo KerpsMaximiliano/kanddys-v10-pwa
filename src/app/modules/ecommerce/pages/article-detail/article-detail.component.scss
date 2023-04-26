@@ -333,3 +333,62 @@ audio {
     width: 65%;
   }
 }
+
+.post-content-minimized {
+  position: absolute;
+  bottom: 0px;
+  height: 101px;
+  background-image: linear-gradient(rgba(72, 72, 72, 0), rgb(0, 0, 0));
+  color: white;
+  width: 100%;
+  padding-left: 15px;
+
+  .title2 {
+    margin-top: 30px;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProBold;
+    font-size: 21px;
+  }
+
+  .subtitle2 {
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProRegular;
+    font-size: 15px;
+    margin: 5px 5px 0px 0px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 20px;
+  }
+}
+
+.post-content-maximized {
+  position: absolute;
+  bottom: 0px;
+  height: 100%;
+  background-image: linear-gradient(rgba(72, 72, 72, 0), rgb(0, 0, 0));
+  color: white;
+  width: 100%;
+  padding-left: 17px;
+  display: flex;
+  flex-direction: column;
+
+  .title2 {
+    margin-top: auto;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProBold;
+    font-size: 21px;
+  }
+
+  .subtitle2 {
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProRegular;
+    font-size: 15px;
+    margin: 5px 5px 0px 0px;
+    margin-bottom: 20px;
+    word-break: break-word;
+  }
+}

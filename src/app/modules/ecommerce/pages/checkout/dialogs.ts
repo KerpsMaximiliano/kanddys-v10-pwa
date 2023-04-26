@@ -24,99 +24,98 @@ export class Dialogs {
   title2 = '¿Que emoción(es) quieres transmitir con el mensaje?';
   title3 = '¿El tiempo del motivo?';
 
-  words = [
-    { keyword: 'wedding', text: 'Bodas' },
-    { keyword: 'baptism', text: 'Bautizos' },
-    { keyword: 'christmas', text: 'Navidad' },
-    { keyword: 'mothersDay', text: 'Madres' },
-    { keyword: 'fathersDay', text: 'Padres' },
-    { keyword: 'newborn', text: 'New Born' },
-    { keyword: 'birthday', text: 'Cumpleaños' },
-    { keyword: 'anniversary', text: 'Aniversarios' },
-    { keyword: 'condolences', text: 'Condolencias' },
-    { keyword: 'goldenWedding', text: 'Boda de Oro' },
-    { keyword: 'valentinesDay', text: 'San Valentín' },
-    { keyword: 'silverWedding', text: 'Boda de Plata' },
-    { keyword: 'communion', text: 'Comuniones' },
-    { keyword: 'teachersDay', text: 'Día del Maestro' },
-    { keyword: 'prommotion', text: 'Promoción' },
-    { keyword: 'mothersDay', text: 'Día de la Madre' },
-    { keyword: 'workersDay', text: 'Dia del Trabajador' },
-    { keyword: 'graduation', text: 'Graduación' },
-    { keyword: 'singleMothersDay', text: 'Día de la madre Soltera' },
-    { keyword: 'stepmotherDay', text: 'Día de la Madrina' },
-    { keyword: 'showAffection', text: 'Mostrar Afecto' },
-  ];
+  // words = [
+  //   { keyword: 'wedding', text: 'Bodas' },
+  //   { keyword: 'baptism', text: 'Bautizos' },
+  //   { keyword: 'christmas', text: 'Navidad' },
+  //   { keyword: 'mothersDay', text: 'Madres' },
+  //   { keyword: 'fathersDay', text: 'Padres' },
+  //   { keyword: 'newborn', text: 'New Born' },
+  //   { keyword: 'birthday', text: 'Cumpleaños' },
+  //   { keyword: 'anniversary', text: 'Aniversarios' },
+  //   { keyword: 'condolences', text: 'Condolencias' },
+  //   { keyword: 'goldenWedding', text: 'Boda de Oro' },
+  //   { keyword: 'valentinesDay', text: 'San Valentín' },
+  //   { keyword: 'silverWedding', text: 'Boda de Plata' },
+  //   { keyword: 'communion', text: 'Comuniones' },
+  //   { keyword: 'teachersDay', text: 'Día del Maestro' },
+  //   { keyword: 'prommotion', text: 'Promoción' },
+  //   { keyword: 'mothersDay', text: 'Día de la Madre' },
+  //   { keyword: 'workersDay', text: 'Dia del Trabajador' },
+  //   { keyword: 'graduation', text: 'Graduación' },
+  //   { keyword: 'singleMothersDay', text: 'Día de la madre Soltera' },
+  //   { keyword: 'stepmotherDay', text: 'Día de la Madrina' },
+  //   { keyword: 'showAffection', text: 'Mostrar Afecto' },
+  // ];
 
-  words2 = [
-    { keyword: 'happiness', text: 'Alegría' },
-    { keyword: 'sadness', text: 'Tristeza' },
-    { keyword: 'euphoria', text: 'Euforia' },
-    { keyword: 'surprise', text: 'Sorpresa' },
-    { keyword: 'love', text: 'Amor' },
-    { keyword: 'subtle', text: 'Sutil' },
-    { keyword: 'melancholia', text: 'Melancolía' },
-    { keyword: 'concern', text: 'Preocupación' },
-    { keyword: 'gratitude', text: 'Gratitud' },
-    { keyword: 'passion', text: 'Pasión' },
-    { keyword: 'support', text: 'Apoyo' },
-    { keyword: 'hope', text: 'Esperanza' },
-    { keyword: 'satisfaction', text: 'Satisfacción' },
-    { keyword: 'acceptance', text: 'Aceptación' },
-    { keyword: 'curiosity', text: 'Curiosidad' },
-    { keyword: 'devotion', text: 'Devoción' },
-    { keyword: 'pride', text: 'Orgullo' },
-    { keyword: 'peace', text: 'Paz' },
-    { keyword: 'compassion', text: 'Compasión' },
-    { keyword: 'embarrassment', text: 'Vergüenza' },
-    { keyword: 'optimism', text: 'Optimismo' },
-    { keyword: 'resentment', text: 'Resentimiento' },
-  ];
+  // words2 = [
+  //   { keyword: 'happiness', text: 'Alegría' },
+  //   { keyword: 'sadness', text: 'Tristeza' },
+  //   { keyword: 'euphoria', text: 'Euforia' },
+  //   { keyword: 'surprise', text: 'Sorpresa' },
+  //   { keyword: 'love', text: 'Amor' },
+  //   { keyword: 'subtle', text: 'Sutil' },
+  //   { keyword: 'melancholia', text: 'Melancolía' },
+  //   { keyword: 'concern', text: 'Preocupación' },
+  //   { keyword: 'gratitude', text: 'Gratitud' },
+  //   { keyword: 'passion', text: 'Pasión' },
+  //   { keyword: 'support', text: 'Apoyo' },
+  //   { keyword: 'hope', text: 'Esperanza' },
+  //   { keyword: 'satisfaction', text: 'Satisfacción' },
+  //   { keyword: 'acceptance', text: 'Aceptación' },
+  //   { keyword: 'curiosity', text: 'Curiosidad' },
+  //   { keyword: 'devotion', text: 'Devoción' },
+  //   { keyword: 'pride', text: 'Orgullo' },
+  //   { keyword: 'peace', text: 'Paz' },
+  //   { keyword: 'compassion', text: 'Compasión' },
+  //   { keyword: 'embarrassment', text: 'Vergüenza' },
+  //   { keyword: 'optimism', text: 'Optimismo' },
+  //   { keyword: 'resentment', text: 'Resentimiento' },
+  // ];
 
-  words3 = [
-    { keyword: 'past', text: 'Ya pasó' },
-    { keyword: 'future', text: 'Pasará' },
-    { keyword: 'instant', text: 'En cuando reciba el mensaje' },
-  ];
+  // words3 = [
+  //   { keyword: 'past', text: 'Ya pasó' },
+  //   { keyword: 'future', text: 'Pasará' },
+  //   { keyword: 'instant', text: 'En cuando reciba el mensaje' },
+  // ];
 
-  words4 = [
-    { text: 'Mi Hijo', keyword: 'son' },
-    { text: 'Mi Amigo', keyword: 'male_friend' },
-    { text: 'Mi Papá', keyword: 'dad' },
-    { text: 'Mi Primo', keyword: 'male_cousin' },
-    { text: 'Mi Vecino', keyword: 'male_neighbor' },
-    { text: 'Mi Cuñado', keyword: 'brotherinlaw' },
-    { text: 'Mi Hermano', keyword: 'brother' },
-    { text: 'Mi Abuelo', keyword: 'grandfather' },
-    { text: 'Mi Compañero de Trabajo', keyword: 'male_coworker' },
-    { text: 'Mi Jefe', keyword: 'male_boss' },
-    { text: 'Mi Suegro', keyword: 'fatherinlaw' },
-    { text: 'Mi Nuero', keyword: 'soninlaw' },
-    { text: 'Mi compadre', keyword: 'buddy' },
-  ];
+  // words4 = [
+  //   { text: 'Mi Hijo', keyword: 'son' },
+  //   { text: 'Mi Amigo', keyword: 'male_friend' },
+  //   { text: 'Mi Papá', keyword: 'dad' },
+  //   { text: 'Mi Primo', keyword: 'male_cousin' },
+  //   { text: 'Mi Vecino', keyword: 'male_neighbor' },
+  //   { text: 'Mi Cuñado', keyword: 'brotherinlaw' },
+  //   { text: 'Mi Hermano', keyword: 'brother' },
+  //   { text: 'Mi Abuelo', keyword: 'grandfather' },
+  //   { text: 'Mi Compañero de Trabajo', keyword: 'male_coworker' },
+  //   { text: 'Mi Jefe', keyword: 'male_boss' },
+  //   { text: 'Mi Suegro', keyword: 'fatherinlaw' },
+  //   { text: 'Mi Nuero', keyword: 'soninlaw' },
+  //   { text: 'Mi compadre', keyword: 'buddy' },
+  // ];
 
-  words5 = [
-    { text: 'Mi Hija', keyword: 'daughter' },
-    { text: 'Mi Amiga', keyword: 'female_friend' },
-    { text: 'Mi Mamá', keyword: 'mom' },
-    { text: 'Mi Prima', keyword: 'female_cousin' },
-    { text: 'Mi Vecina', keyword: 'female_neighbor' },
-    { text: 'Mi Cuñada', keyword: 'sisterinlaw' },
-    { text: 'Mi Hermana', keyword: 'sister' },
-    { text: 'Mi Abuela', keyword: 'grandmother' },
-    { text: 'Mi Compañera de Trabajo', keyword: 'female_coworker' },
-    { text: 'Mi Jefa', keyword: 'female_boss' },
-    { text: 'Mi Suegra', keyword: 'motherinlaw' },
-    { text: 'Mi Nuera', keyword: 'daughterinlaw' },
-    { text: 'Mi Comadre', keyword: 'midwife' },
-  ];
+  // words5 = [
+  //   { text: 'Mi Hija', keyword: 'daughter' },
+  //   { text: 'Mi Amiga', keyword: 'female_friend' },
+  //   { text: 'Mi Mamá', keyword: 'mom' },
+  //   { text: 'Mi Prima', keyword: 'female_cousin' },
+  //   { text: 'Mi Vecina', keyword: 'female_neighbor' },
+  //   { text: 'Mi Cuñada', keyword: 'sisterinlaw' },
+  //   { text: 'Mi Hermana', keyword: 'sister' },
+  //   { text: 'Mi Abuela', keyword: 'grandmother' },
+  //   { text: 'Mi Compañera de Trabajo', keyword: 'female_coworker' },
+  //   { text: 'Mi Jefa', keyword: 'female_boss' },
+  //   { text: 'Mi Suegra', keyword: 'motherinlaw' },
+  //   { text: 'Mi Nuera', keyword: 'daughterinlaw' },
+  //   { text: 'Mi Comadre', keyword: 'midwife' },
+  // ];
 
-  motiveWordsObjects: Array<{ text: string; active: boolean }> = [];
-  sentimentWordsObjects: Array<{ text: string; active: boolean }> = [];
-  timingWordsObjects: Array<{ text: string; active: boolean }> = [];
-  receiverGenderWordsObjects: Array<{ text: string; active: boolean }> = [];
-  receiverRelationshipWordsObjects: Array<{ text: string; active: boolean }> =
-    [];
+  // motiveWordsObjects: Array<{ text: string; active: boolean }> = [];
+  // sentimentWordsObjects: Array<{ text: string; active: boolean }> = [];
+  // timingWordsObjects: Array<{ text: string; active: boolean }> = [];
+  // receiverGenderWordsObjects: Array<{ text: string; active: boolean }> = [];
+  // receiverRelationshipWordsObjects: Array<{ text: string; active: boolean }> = [];
 
   insertedRecipientDialog: boolean;
 
@@ -409,138 +408,138 @@ export class Dialogs {
           },
         ],
       },
-      {
-        component: GeneralDialogComponent,
-        componentId: 'messageTypeDialog',
-        inputs: {
-          dialogId: 'messageTypeDialog',
-          containerStyles: {
-            background: 'rgb(255, 255, 255)',
-            borderRadius: '12px',
-            opacity: '1',
-            padding: '37px 29.6px 13.2px 22px',
-          },
-          header: {
-            styles: {
-              fontSize: '21px',
-              fontFamily: 'SfProBold',
-              color: '#4F4F4F',
-              marginBottom: '25px',
-              marginTop: '0',
-            },
-            text: 'El mensaje',
-          },
-          fields: {
-            styles: {
-              // paddingTop: '20px',
-            },
-            list: [
-              {
-                name: 'messageType',
-                value: '',
-                validators: [Validators.required],
-                type: 'selection',
-                selection: {
-                  styles: {
-                    display: 'block',
-                    fontFamily: '"SfProRegular"',
-                    marginLeft: '10px',
-                  },
-                  list: [
-                    {
-                      text: 'Quiero ver el draft de opciones de inteligencia artificial',
-                      subText: {
-                        text: 'EXPERIMENTAL, PUEDE TARDAR EN RESPONDER',
-                        styles: {
-                          color: '#91812f',
-                          display: 'block',
-                          fontFamily: '"SfProBold"',
-                          fontSize: '13px',
-                          marginLeft: '10px',
-                        },
-                      },
-                    },
-                    {
-                      text: 'Lo escribire directo de mi cabeza.',
-                    },
-                  ],
-                },
+      // {
+      //   component: GeneralDialogComponent,
+      //   componentId: 'messageTypeDialog',
+      //   inputs: {
+      //     dialogId: 'messageTypeDialog',
+      //     containerStyles: {
+      //       background: 'rgb(255, 255, 255)',
+      //       borderRadius: '12px',
+      //       opacity: '1',
+      //       padding: '37px 29.6px 13.2px 22px',
+      //     },
+      //     header: {
+      //       styles: {
+      //         fontSize: '21px',
+      //         fontFamily: 'SfProBold',
+      //         color: '#4F4F4F',
+      //         marginBottom: '25px',
+      //         marginTop: '0',
+      //       },
+      //       text: 'El mensaje',
+      //     },
+      //     fields: {
+      //       styles: {
+      //         // paddingTop: '20px',
+      //       },
+      //       list: [
+      //         {
+      //           name: 'messageType',
+      //           value: '',
+      //           validators: [Validators.required],
+      //           type: 'selection',
+      //           selection: {
+      //             styles: {
+      //               display: 'block',
+      //               fontFamily: '"SfProRegular"',
+      //               marginLeft: '10px',
+      //             },
+      //             list: [
+      //               {
+      //                 text: 'Quiero ver el draft de opciones de inteligencia artificial',
+      //                 subText: {
+      //                   text: 'EXPERIMENTAL, PUEDE TARDAR EN RESPONDER',
+      //                   styles: {
+      //                     color: '#91812f',
+      //                     display: 'block',
+      //                     fontFamily: '"SfProBold"',
+      //                     fontSize: '13px',
+      //                     marginLeft: '10px',
+      //                   },
+      //                 },
+      //               },
+      //               {
+      //                 text: 'Lo escribire directo de mi cabeza.',
+      //               },
+      //             ],
+      //           },
 
-                prop: 'text',
-              },
-            ],
-          },
-          isMultiple: false,
-        },
-        outputs: [
-          {
-            name: 'data',
-            callback: (params) => {
-              const { value, fields, valid } = params;
-              const { messageType } = value;
-              let typeOfMessageValue = messageType[0];
+      //           prop: 'text',
+      //         },
+      //       ],
+      //     },
+      //     isMultiple: false,
+      //   },
+      //   outputs: [
+      //     {
+      //       name: 'data',
+      //       callback: (params) => {
+      //         const { value, fields, valid } = params;
+      //         const { messageType } = value;
+      //         let typeOfMessageValue = messageType[0];
 
-              if (
-                typeOfMessageValue
-                  .toLowerCase()
-                  .includes('inteligencia artificial')
-              ) {
-                typeOfMessageValue = 'AI';
+      //         if (
+      //           typeOfMessageValue
+      //             .toLowerCase()
+      //             .includes('inteligencia artificial')
+      //         ) {
+      //           typeOfMessageValue = 'AI';
 
-                if (this.temporalDialogs2.length) {
-                  this.dialogs.splice(3, 0, ...this.temporalDialogs2);
-                  this.temporalDialogs2 = [];
-                }
+      //           if (this.temporalDialogs2.length) {
+      //             this.dialogs.splice(3, 0, ...this.temporalDialogs2);
+      //             this.temporalDialogs2 = [];
+      //           }
 
-                if (this.dialogs.length === 7) {
-                  this.temporalDialogs2 = this.dialogs.splice(3, 2);
-                  this.dialogs.splice(3, 0, ...this.temporalDialogs);
-                 
-                  this.dialogFlowFunctions.moveToDialogByIndex(3);
-                } else {
-                  this.temporalDialogs2 = this.dialogs.splice(3, 2);
-                  this.dialogFlowFunctions.moveToDialogByIndex(3);
-                }
+      //           if (this.dialogs.length === 7) {
+      //             this.temporalDialogs2 = this.dialogs.splice(3, 2);
+      //             this.dialogs.splice(3, 0, ...this.temporalDialogs);
 
-                this.dialogs[6].inputs.title =
-                  '¿Que es ' +
-                  this.dialogFlowService.dialogsFlows['flow1']['whoReceives']
-                    .fields.receiverName +
-                  '?';
+      //             this.dialogFlowFunctions.moveToDialogByIndex(3);
+      //           } else {
+      //             this.temporalDialogs2 = this.dialogs.splice(3, 2);
+      //             this.dialogFlowFunctions.moveToDialogByIndex(3);
+      //           }
 
-                this.dialogs[7].inputs.title =
-                  'Más de ' +
-                  this.dialogFlowService.dialogsFlows['flow1']['whoReceives']
-                    .fields.receiverName;
-              } else {
-                typeOfMessageValue = 'Manual';
+      //           this.dialogs[6].inputs.title =
+      //             '¿Que es ' +
+      //             this.dialogFlowService.dialogsFlows['flow1']['whoReceives']
+      //               .fields.receiverName +
+      //             '?';
 
-                if (this.temporalDialogs2.length) {
-                  this.dialogs.splice(3, 0, ...this.temporalDialogs2);
-                  this.temporalDialogs2 = [];
-                }
+      //           this.dialogs[7].inputs.title =
+      //             'Más de ' +
+      //             this.dialogFlowService.dialogsFlows['flow1']['whoReceives']
+      //               .fields.receiverName;
+      //         } else {
+      //           typeOfMessageValue = 'Manual';
 
-                this.dialogFlowFunctions.moveToDialogByIndex(3);
+      //           if (this.temporalDialogs2.length) {
+      //             this.dialogs.splice(3, 0, ...this.temporalDialogs2);
+      //             this.temporalDialogs2 = [];
+      //           }
 
-                if (this.temporalDialogs.length !== 5)
-                  this.temporalDialogs = this.dialogs.splice(5, 5);
+      //           this.dialogFlowFunctions.moveToDialogByIndex(3);
 
-                setTimeout(() => {
-                  this.postsService.swiperConfig.allowSlideNext = false;
-                }, 500);
-              }
+      //           if (this.temporalDialogs.length !== 5)
+      //             this.temporalDialogs = this.dialogs.splice(5, 5);
 
-              this.dialogFlowService.saveGeneralDialogData(
-                typeOfMessageValue,
-                'flow1',
-                'messageTypeDialog',
-                'messageType',
-                fields
-              );
-            },
-          },
-        ],
-      },
+      //           setTimeout(() => {
+      //             this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      //           }, 500);
+      //         }
+
+      //         this.dialogFlowService.saveGeneralDialogData(
+      //           typeOfMessageValue,
+      //           'flow1',
+      //           'messageTypeDialog',
+      //           'messageType',
+      //           fields
+      //         );
+      //       },
+      //     },
+      //   ],
+      // },
       {
         component: GeneralDialogComponent,
         componentId: 'messageTitleDialog',
@@ -702,405 +701,405 @@ export class Dialogs {
           },
         ],
       },
-      {
-        component: OptionsGridComponent,
-        componentId: 'motiveDialog',
-        inputs: {
-          dialogId: 'motiveDialog',
-          flowId: 'flow1',
-          mode: 'default',
-          words: this.words,
-          wordsObjects: this.motiveWordsObjects,
-          title: this.title,
-          containerStyles: {
-            background: 'rgb(255, 255, 255)',
-            borderRadius: '12px',
-            opacity: '1',
-            // padding: '37px 36.6px 70.4px 31px',
-          },
-        },
-        outputs: [
-          {
-            name: 'optionClick',
-            callback: (data: {
-              text: string;
-              keyword: string;
-              wordsObjects: Array<{
-                text: string;
-                keyword: string;
-                active: boolean;
-              }>;
-            }) => {
-              const { text, keyword, wordsObjects } = data;
+      // {
+      //   component: OptionsGridComponent,
+      //   componentId: 'motiveDialog',
+      //   inputs: {
+      //     dialogId: 'motiveDialog',
+      //     flowId: 'flow1',
+      //     mode: 'default',
+      //     words: this.words,
+      //     wordsObjects: this.motiveWordsObjects,
+      //     title: this.title,
+      //     containerStyles: {
+      //       background: 'rgb(255, 255, 255)',
+      //       borderRadius: '12px',
+      //       opacity: '1',
+      //       // padding: '37px 36.6px 70.4px 31px',
+      //     },
+      //   },
+      //   outputs: [
+      //     {
+      //       name: 'optionClick',
+      //       callback: (data: {
+      //         text: string;
+      //         keyword: string;
+      //         wordsObjects: Array<{
+      //           text: string;
+      //           keyword: string;
+      //           active: boolean;
+      //         }>;
+      //       }) => {
+      //         const { text, keyword, wordsObjects } = data;
 
-              this.motiveWordsObjects = wordsObjects;
+      //         this.motiveWordsObjects = wordsObjects;
 
-              this.dialogFlowService.saveData(
-                keyword,
-                'flow1',
-                'motiveDialog',
-                'motive'
-              );
+      //         this.dialogFlowService.saveData(
+      //           keyword,
+      //           'flow1',
+      //           'motiveDialog',
+      //           'motive'
+      //         );
 
-              if (this.checkIfTheAIOptionsAreSelected() && keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'flex';
-              } else if (!keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'none';
-              }
+      //         if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'flex';
+      //         } else if (!keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'none';
+      //         }
 
-              if (!keyword)
-                this.postsService.swiperConfig.allowSlideNext = false;
-              else this.postsService.swiperConfig.allowSlideNext = true;
-            },
-          },
-        ],
-      },
-      {
-        component: OptionsGridComponent,
-        componentId: 'sentimentDialog',
-        inputs: {
-          dialogId: 'sentimentDialog',
-          flowId: 'flow1',
-          mode: 'default',
-          words: this.words2,
-          wordsObjects: this.sentimentWordsObjects,
-          title: this.title2,
-          containerStyles: {},
-        },
-        outputs: [
-          {
-            name: 'optionClick',
-            callback: (data: {
-              text: string;
-              keyword: string;
-              wordsObjects: Array<{
-                text: string;
-                keyword: string;
-                active: boolean;
-              }>;
-            }) => {
-              const { text, keyword, wordsObjects } = data;
+      //         if (!keyword)
+      //           this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      //         else this.dialogFlowService.swiperConfig.allowSlideNext = true;
+      //       },
+      //     },
+      //   ],
+      // },
+      // {
+      //   component: OptionsGridComponent,
+      //   componentId: 'sentimentDialog',
+      //   inputs: {
+      //     dialogId: 'sentimentDialog',
+      //     flowId: 'flow1',
+      //     mode: 'default',
+      //     words: this.words2,
+      //     wordsObjects: this.sentimentWordsObjects,
+      //     title: this.title2,
+      //     containerStyles: {},
+      //   },
+      //   outputs: [
+      //     {
+      //       name: 'optionClick',
+      //       callback: (data: {
+      //         text: string;
+      //         keyword: string;
+      //         wordsObjects: Array<{
+      //           text: string;
+      //           keyword: string;
+      //           active: boolean;
+      //         }>;
+      //       }) => {
+      //         const { text, keyword, wordsObjects } = data;
 
-              this.sentimentWordsObjects = wordsObjects;
-              this.dialogFlowService.saveData(
-                keyword,
-                'flow1',
-                'sentimentDialog',
-                'sentiment'
-              );
+      //         this.sentimentWordsObjects = wordsObjects;
+      //         this.dialogFlowService.saveData(
+      //           keyword,
+      //           'flow1',
+      //           'sentimentDialog',
+      //           'sentiment'
+      //         );
 
-              if (this.checkIfTheAIOptionsAreSelected() && keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'flex';
-              } else if (!keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'none';
-              }
+      //         if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'flex';
+      //         } else if (!keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'none';
+      //         }
 
-              if (!keyword)
-                this.postsService.swiperConfig.allowSlideNext = false;
-              else this.postsService.swiperConfig.allowSlideNext = true;
-            },
-          },
-        ],
-      },
-      {
-        component: OptionsGridComponent,
-        componentId: 'timingDialog',
-        inputs: {
-          dialogId: 'timingDialog',
-          flowId: 'flow1',
-          mode: 'time',
-          words: this.words3,
-          wordsObjects: this.timingWordsObjects,
-          title: this.title3,
-          containerStyles: {
-            opacity: '1',
-          },
-        },
-        outputs: [
-          {
-            name: 'optionClick',
-            callback: (data: {
-              text: string;
-              keyword: string;
-              wordsObjects: Array<{
-                text: string;
-                keyword: string;
-                active: boolean;
-              }>;
-            }) => {
-              const { text, keyword, wordsObjects } = data;
+      //         if (!keyword)
+      //           this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      //         else this.dialogFlowService.swiperConfig.allowSlideNext = true;
+      //       },
+      //     },
+      //   ],
+      // },
+      // {
+      //   component: OptionsGridComponent,
+      //   componentId: 'timingDialog',
+      //   inputs: {
+      //     dialogId: 'timingDialog',
+      //     flowId: 'flow1',
+      //     mode: 'time',
+      //     words: this.words3,
+      //     wordsObjects: this.timingWordsObjects,
+      //     title: this.title3,
+      //     containerStyles: {
+      //       opacity: '1',
+      //     },
+      //   },
+      //   outputs: [
+      //     {
+      //       name: 'optionClick',
+      //       callback: (data: {
+      //         text: string;
+      //         keyword: string;
+      //         wordsObjects: Array<{
+      //           text: string;
+      //           keyword: string;
+      //           active: boolean;
+      //         }>;
+      //       }) => {
+      //         const { text, keyword, wordsObjects } = data;
 
-              this.timingWordsObjects = wordsObjects;
-              this.dialogFlowService.saveData(
-                keyword,
-                'flow1',
-                'timingDialog',
-                'timing'
-              );
+      //         this.timingWordsObjects = wordsObjects;
+      //         this.dialogFlowService.saveData(
+      //           keyword,
+      //           'flow1',
+      //           'timingDialog',
+      //           'timing'
+      //         );
 
-              if (this.checkIfTheAIOptionsAreSelected() && keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'flex';
-              } else if (!keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'none';
-              }
+      //         if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'flex';
+      //         } else if (!keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'none';
+      //         }
 
-              if (!keyword)
-                this.postsService.swiperConfig.allowSlideNext = false;
-              else this.postsService.swiperConfig.allowSlideNext = true;
-            },
-          },
-        ],
-      },
-      {
-        component: OptionsGridComponent,
-        componentId: 'recipientGenderDialog',
-        inputs: {
-          dialogId: 'recipientGenderDialog',
-          flowId: 'flow1',
-          mode: 'time',
-          words: [
-            { keyword: 'male', text: 'Hombre' },
-            { keyword: 'female', text: 'Mujer' },
-          ],
-          wordsObjects: this.receiverGenderWordsObjects,
-          title: '¿Que es RecipienteID?',
-          titleCenter: false,
-          containerStyles: {},
-        },
-        outputs: [
-          {
-            name: 'optionClick',
-            callback: (data: {
-              text: string;
-              keyword: string;
-              wordsObjects: Array<{
-                text: string;
-                keyword: string;
-                active: boolean;
-              }>;
-            }) => {
-              const { text, keyword, wordsObjects } = data;
+      //         if (!keyword)
+      //           this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      //         else this.dialogFlowService.swiperConfig.allowSlideNext = true;
+      //       },
+      //     },
+      //   ],
+      // },
+      // {
+      //   component: OptionsGridComponent,
+      //   componentId: 'recipientGenderDialog',
+      //   inputs: {
+      //     dialogId: 'recipientGenderDialog',
+      //     flowId: 'flow1',
+      //     mode: 'time',
+      //     words: [
+      //       { keyword: 'male', text: 'Hombre' },
+      //       { keyword: 'female', text: 'Mujer' },
+      //     ],
+      //     wordsObjects: this.receiverGenderWordsObjects,
+      //     title: '¿Que es RecipienteID?',
+      //     titleCenter: false,
+      //     containerStyles: {},
+      //   },
+      //   outputs: [
+      //     {
+      //       name: 'optionClick',
+      //       callback: (data: {
+      //         text: string;
+      //         keyword: string;
+      //         wordsObjects: Array<{
+      //           text: string;
+      //           keyword: string;
+      //           active: boolean;
+      //         }>;
+      //       }) => {
+      //         const { text, keyword, wordsObjects } = data;
 
-              this.receiverGenderWordsObjects = wordsObjects;
-              this.dialogFlowService.saveData(
-                keyword,
-                'flow1',
-                'recipientGenderDialog',
-                'recipientGender'
-              );
+      //         this.receiverGenderWordsObjects = wordsObjects;
+      //         this.dialogFlowService.saveData(
+      //           keyword,
+      //           'flow1',
+      //           'recipientGenderDialog',
+      //           'recipientGender'
+      //         );
 
-              const targetDetailsIndex = this.dialogs.findIndex(
-                (dialog) => dialog.componentId === 'receiverRelationshipDialog'
-              );
+      //         const targetDetailsIndex = this.dialogs.findIndex(
+      //           (dialog) => dialog.componentId === 'receiverRelationshipDialog'
+      //         );
 
-              if (keyword === 'male') {
-                this.dialogs[targetDetailsIndex].inputs.words = this.words4;
-              } else if (keyword === 'female') {
-                this.dialogs[targetDetailsIndex].inputs.words = this.words5;
-              }
+      //         if (keyword === 'male') {
+      //           this.dialogs[targetDetailsIndex].inputs.words = this.words4;
+      //         } else if (keyword === 'female') {
+      //           this.dialogs[targetDetailsIndex].inputs.words = this.words5;
+      //         }
 
-              this.dialogs[targetDetailsIndex].inputs.wordsObjects = [];
-              for (const word of this.dialogs[targetDetailsIndex].inputs
-                .words) {
-                this.dialogs[targetDetailsIndex].inputs.wordsObjects.push({
-                  ...word,
-                  active: false,
-                });
-              }
+      //         this.dialogs[targetDetailsIndex].inputs.wordsObjects = [];
+      //         for (const word of this.dialogs[targetDetailsIndex].inputs
+      //           .words) {
+      //           this.dialogs[targetDetailsIndex].inputs.wordsObjects.push({
+      //             ...word,
+      //             active: false,
+      //           });
+      //         }
 
-              this.dialogs[targetDetailsIndex].shouldRerender = true;
+      //         this.dialogs[targetDetailsIndex].shouldRerender = true;
 
-              setTimeout(() => {
-                this.dialogs[targetDetailsIndex].shouldRerender = false;
-              }, 300);
+      //         setTimeout(() => {
+      //           this.dialogs[targetDetailsIndex].shouldRerender = false;
+      //         }, 300);
 
-              if (this.checkIfTheAIOptionsAreSelected() && keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'flex';
-              } else if (!keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'none';
-              }
+      //         if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'flex';
+      //         } else if (!keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'none';
+      //         }
 
-              if (!keyword)
-                this.postsService.swiperConfig.allowSlideNext = false;
-              else this.postsService.swiperConfig.allowSlideNext = true;
-            },
-          },
-        ],
-      },
-      {
-        component: OptionsGridComponent,
-        componentId: 'receiverRelationshipDialog',
-        inputs: {
-          dialogId: 'receiverRelationshipDialog',
-          flowId: 'flow1',
-          mode: 'default',
-          words: this.words4,
-          wordsObjects: this.receiverRelationshipWordsObjects,
-          title: 'Más de RecipienteID',
-          titleCenter: false,
-          submitButton: {
-            text: 'Generar mensajes',
-            styles: {
-              display: 'none',
-              border: 'none',
-              padding: '5px 20px',
-              cursor: 'pointer',
-              margin: 'auto',
-              fontFamily: 'SfProBold',
-              borderRadius: '6px',
-              fontSize: '18px',
-              marginTop: '1rem',
-              backgroundColor: 'lightgreen',
-            },
-          },
-          containerStyles: {
-            background: 'rgb(255, 255, 255)',
-          },
-          onActiveSlideCallback: (params) => {
-            this.postsService.swiperConfig.allowSlideNext = false;
-          },
-        },
-        outputs: [
-          {
-            name: 'optionClick',
-            callback: (data: {
-              text: string;
-              keyword: string;
-              wordsObjects: Array<{
-                text: string;
-                keyword: string;
-                active: boolean;
-              }>;
-            }) => {
-              const { text, keyword, wordsObjects } = data;
+      //         if (!keyword)
+      //           this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      //         else this.dialogFlowService.swiperConfig.allowSlideNext = true;
+      //       },
+      //     },
+      //   ],
+      // },
+      // {
+      //   component: OptionsGridComponent,
+      //   componentId: 'receiverRelationshipDialog',
+      //   inputs: {
+      //     dialogId: 'receiverRelationshipDialog',
+      //     flowId: 'flow1',
+      //     mode: 'default',
+      //     words: this.words4,
+      //     wordsObjects: this.receiverRelationshipWordsObjects,
+      //     title: 'Más de RecipienteID',
+      //     titleCenter: false,
+      //     submitButton: {
+      //       text: 'Generar mensajes',
+      //       styles: {
+      //         display: 'none',
+      //         border: 'none',
+      //         padding: '5px 20px',
+      //         cursor: 'pointer',
+      //         margin: 'auto',
+      //         fontFamily: 'SfProBold',
+      //         borderRadius: '6px',
+      //         fontSize: '18px',
+      //         marginTop: '1rem',
+      //         backgroundColor: 'lightgreen',
+      //       },
+      //     },
+      //     containerStyles: {
+      //       background: 'rgb(255, 255, 255)',
+      //     },
+      //     onActiveSlideCallback: (params) => {
+      //       this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      //     },
+      //   },
+      //   outputs: [
+      //     {
+      //       name: 'optionClick',
+      //       callback: (data: {
+      //         text: string;
+      //         keyword: string;
+      //         wordsObjects: Array<{
+      //           text: string;
+      //           keyword: string;
+      //           active: boolean;
+      //         }>;
+      //       }) => {
+      //         const { text, keyword, wordsObjects } = data;
 
-              this.receiverRelationshipWordsObjects = wordsObjects;
-              this.dialogFlowService.saveData(
-                keyword,
-                'flow1',
-                'receiverRelationshipDialog',
-                'receiverRelationship'
-              );
+      //         this.receiverRelationshipWordsObjects = wordsObjects;
+      //         this.dialogFlowService.saveData(
+      //           keyword,
+      //           'flow1',
+      //           'receiverRelationshipDialog',
+      //           'receiverRelationship'
+      //         );
 
-              if (this.checkIfTheAIOptionsAreSelected() && keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'flex';
-              } else if (!keyword) {
-                this.dialogs[
-                  this.dialogs.length - 3
-                ].inputs.submitButton.styles.display = 'none';
-              }
+      //         if (this.checkIfTheAIOptionsAreSelected() && keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'flex';
+      //         } else if (!keyword) {
+      //           this.dialogs[
+      //             this.dialogs.length - 3
+      //           ].inputs.submitButton.styles.display = 'none';
+      //         }
 
-              this.postsService.swiperConfig.allowSlideNext = false;
-            },
-          },
-          {
-            name: 'buttonClicked',
-            callback: async (
-              data: Array<{ text: string; keyword: string; active: boolean }>
-            ) => {
-              const motive =
-                this.dialogFlowService.dialogsFlows['flow1'].motiveDialog.fields
-                  .motive;
-              const sentiment =
-                this.dialogFlowService.dialogsFlows['flow1'].sentimentDialog
-                  .fields.sentiment;
-              const timing =
-                this.dialogFlowService.dialogsFlows['flow1'].timingDialog.fields
-                  .timing;
-              const recipientGender =
-                this.dialogFlowService.dialogsFlows['flow1']
-                  .recipientGenderDialog.fields.recipientGender;
-              const receiverRelationship =
-                this.dialogFlowService.dialogsFlows['flow1']
-                  .receiverRelationshipDialog.fields.receiverRelationship;
+      //         this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      //       },
+      //     },
+      //     {
+      //       name: 'buttonClicked',
+      //       callback: async (
+      //         data: Array<{ text: string; keyword: string; active: boolean }>
+      //       ) => {
+      //         const motive =
+      //           this.dialogFlowService.dialogsFlows['flow1'].motiveDialog.fields
+      //             .motive;
+      //         const sentiment =
+      //           this.dialogFlowService.dialogsFlows['flow1'].sentimentDialog
+      //             .fields.sentiment;
+      //         const timing =
+      //           this.dialogFlowService.dialogsFlows['flow1'].timingDialog.fields
+      //             .timing;
+      //         const recipientGender =
+      //           this.dialogFlowService.dialogsFlows['flow1']
+      //             .recipientGenderDialog.fields.recipientGender;
+      //         const receiverRelationship =
+      //           this.dialogFlowService.dialogsFlows['flow1']
+      //             .receiverRelationshipDialog.fields.receiverRelationship;
 
-              lockUI();
+      //         lockUI();
 
-              try {
-                const response =
-                  await this.gpt3Service.generateResponseForTemplate(
-                    {
-                      motive,
-                      target: receiverRelationship,
-                      sentiment,
-                      timing,
-                    },
-                    '63e0306165c8752d0c5f0345'
-                  );
+      //         try {
+      //           const response =
+      //             await this.gpt3Service.generateResponseForTemplate(
+      //               {
+      //                 motive,
+      //                 target: receiverRelationship,
+      //                 sentiment,
+      //                 timing,
+      //               },
+      //               '63e0306165c8752d0c5f0345'
+      //             );
 
-                const options = JSON.parse(response).map((option) => ({
-                  title: option.titulo,
-                  message: option.mensaje,
-                }));
+      //           const options = JSON.parse(response).map((option) => ({
+      //             title: option.titulo,
+      //             message: option.mensaje,
+      //           }));
 
-                this.postsService.postMessageOptions = options;
+      //           this.postsService.postMessageOptions = options;
 
-                localStorage.setItem(
-                  'temporal-post-options',
-                  JSON.stringify(options)
-                );
+      //           localStorage.setItem(
+      //             'temporal-post-options',
+      //             JSON.stringify(options)
+      //           );
 
-                this.postsService.temporalDialogs = this.temporalDialogs;
-                this.postsService.temporalDialogs2 = this.temporalDialogs2;
-                this.postsService.dialogs = this.dialogs;
+      //           this.postsService.temporalDialogs = this.temporalDialogs;
+      //           this.postsService.temporalDialogs2 = this.temporalDialogs2;
+      //           this.postsService.dialogs = this.dialogs;
 
-                this.router.navigate(
-                  [
-                    'ecommerce/' +
-                      this.headerService.saleflow.merchant.slug +
-                      '/text-edition-and-preview',
-                  ],
-                  {
-                    queryParams: {
-                      type: 'post',
-                    },
-                  }
-                );
+      //           this.router.navigate(
+      //             [
+      //               'ecommerce/' +
+      //                 this.headerService.saleflow.merchant.slug +
+      //                 '/text-edition-and-preview',
+      //             ],
+      //             {
+      //               queryParams: {
+      //                 type: 'post',
+      //               },
+      //             }
+      //           );
 
-                this.postsService.temporalDialogs = this.temporalDialogs;
-                this.postsService.temporalDialogs2 = this.temporalDialogs2;
-                this.postsService.dialogs = this.dialogs;
-                this.headerService.flowRoute =
-                  this.router.url + '?startOnDialogFlow=true';
-                localStorage.setItem('flowRoute', this.headerService.flowRoute);
+      //           this.postsService.temporalDialogs = this.temporalDialogs;
+      //           this.postsService.temporalDialogs2 = this.temporalDialogs2;
+      //           this.postsService.dialogs = this.dialogs;
+      //           this.headerService.flowRoute =
+      //             this.router.url + '?startOnDialogFlow=true';
+      //           localStorage.setItem('flowRoute', this.headerService.flowRoute);
 
-                unlockUI();
-              } catch (error) {
-                this.postsService.swiperConfig.allowSlideNext = false;
-                unlockUI();
+      //           unlockUI();
+      //         } catch (error) {
+      //           this.dialogFlowService.swiperConfig.allowSlideNext = false;
+      //           unlockUI();
 
-                console.error(error);
+      //           console.error(error);
 
-                this.toastr.error(
-                  'Ocurrió un error, vuelva a intentar',
-                  'error',
-                  {
-                    timeOut: 1500,
-                  }
-                );
-              }
-            },
-          },
-        ],
-      },
+      //           this.toastr.error(
+      //             'Ocurrió un error, vuelva a intentar',
+      //             'error',
+      //             {
+      //               timeOut: 1500,
+      //             }
+      //           );
+      //         }
+      //       },
+      //     },
+      //   ],
+      // },
       {
         component: GeneralDialogComponent,
         componentId: 'wantToAddQrDialog',
@@ -1160,7 +1159,8 @@ export class Dialogs {
                       //   borderRadius: '4px',
                       // },
                       subText: {
-                        text: 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.',
+                        text: 'Incluyes fotos, memes, videos o música.',
+                        // text: 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.',
                         styles: {
                           color: '#7B7B7B',
                           display: 'block',
@@ -1304,9 +1304,9 @@ export class Dialogs {
                     {
                       text: 'Fotos, videos de mi device',
                     },
-                    {
-                      text: 'Un chiste de la IA',
-                    },
+                    // {
+                    //   text: 'Un chiste de la IA',
+                    // },
                   ],
                 },
                 // styles: {},
@@ -1355,12 +1355,12 @@ export class Dialogs {
                     'ecommerce/' +
                       this.headerService.saleflow.merchant.slug +
                       '/qr-edit',
-                  ],
-                  {
-                    queryParams: {
-                      returnTo: 'checkout',
-                    },
-                  }
+                  ]
+                  // {
+                  //   queryParams: {
+                  //     returnTo: 'checkout',
+                  //   },
+                  // }
                 );
               } else if (
                 qrContentSelection.includes('Un chiste de la IA') &&

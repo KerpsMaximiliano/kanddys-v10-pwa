@@ -43,6 +43,9 @@ import { OrderProcessComponent } from './pages/order-process/order-process.compo
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
+import { OrderSlidesComponent } from './pages/order-slides/order-slides.component';
+import { RewardsDisplayComponent } from './pages/rewards-display/rewards-display.component';
+import { DashboardLibraryComponent } from './pages/dashboard-library/dashboard-library.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -186,7 +189,7 @@ const routes: Routes = [
       },
       {
         path: 'options-selector',
-        component: WebformOptionsSelectorComponent
+        component: WebformOptionsSelectorComponent,
       },
       {
         path: 'webform-preview/:itemId',
@@ -194,11 +197,11 @@ const routes: Routes = [
       },
       {
         path: 'webform-responses/:formId/:itemId',
-        component: FormResponsesComponent
+        component: FormResponsesComponent,
       },
       {
         path: 'webform-open-responses/:formId',
-        component: OpenFormResponsesComponent
+        component: OpenFormResponsesComponent,
       },
       {
         path: 'order-status-view',
@@ -227,7 +230,7 @@ const routes: Routes = [
       },
       {
         path: 'webforms-editor/:formId/:itemId',
-        component: WebformsEditorComponent
+        component: WebformsEditorComponent,
       },
       {
         path: 'benefits',
@@ -255,11 +258,19 @@ const routes: Routes = [
       },
       {
         path: 'create-notification',
-        component: NotificationCreatorComponent
+        component: NotificationCreatorComponent,
       },
       {
         path: 'create-notification/:notificationId',
-        component: NotificationCreatorComponent
+        component: NotificationCreatorComponent,
+      },
+      {
+        path: 'order-slides',
+        component: OrderSlidesComponent,
+      },
+      {
+        path: 'notifications-menu',
+        component: RewardsDisplayComponent
       }
     ],
   },
@@ -274,6 +285,10 @@ const routes: Routes = [
   {
     path: 'order-process/:merchantId',
     component: OrderProcessComponent,
+  },
+  {
+    path: 'dashboard-library',
+    component: DashboardLibraryComponent,
   },
 ];
 
@@ -312,8 +327,15 @@ const routes: Routes = [
     OrderProcessComponent,
     DeliveryOrdersComponent,
     NotificationCreatorComponent,
+    OrderSlidesComponent,
+    DashboardLibraryComponent,
   ],
   exports: [ArticleCreatorComponent],
-  imports: [CommonModule, SharedModule, MatCheckboxModule, RouterModule.forChild(routes)],
+  imports: [
+    CommonModule,
+    SharedModule,
+    MatCheckboxModule,
+    RouterModule.forChild(routes),
+  ],
 })
 export class AdminModule {}
