@@ -53,6 +53,7 @@ import { ReportsComponent } from './pages/reports/reports.component';
 import { FilterPipeSearchPipe } from 'src/app/core/pipes/filter-pipe-search.pipe';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -372,6 +373,7 @@ const routes: Routes = [
     OrderDataComponent,
     BuyerDataComponent,
     FilterPipeSearchPipe,
+    AutofocusDirective,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
