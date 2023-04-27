@@ -23,6 +23,8 @@ import {
 } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
+import { WebformsService } from 'src/app/core/services/webforms.service';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-media-upload-dnd-component',
@@ -50,124 +52,86 @@ export class MediaUploadDndComponentComponent implements OnInit {
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;
+  entity: 'ITEM' | 'POST' | 'WEBFORM-QUESTION' = 'WEBFORM-QUESTION';
   gridArray: Array<any> = [];
   playVideoOnFullscreen = playVideoOnFullscreen;
+  webformQuestionIndex: number = null;
+  webformSelectedOption: number = null;
 
   constructor(
-    private _ItemsService: ItemsService,
-    private _MerchantsService: MerchantsService,
-    private _SaleflowService: SaleFlowService,
-    private _PostsService: PostsService,
-    private _Router: Router,
-    private _Route: ActivatedRoute,
+    private itemsService: ItemsService,
+    private webformsService: WebformsService,
+    private merchantsService: MerchantsService,
+    private saleflowService: SaleFlowService,
+    private postsService: PostsService,
+    private router: Router,
+    private route: ActivatedRoute,
     private headerService: HeaderService,
     private dialog: DialogService,
-    private _DomSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer
   ) {}
 
   async ngOnInit() {
-    const itemId = this._Route.snapshot.paramMap.get('articleId');
-    if (itemId) {
-      this.item = await this._ItemsService.item(itemId);
-      if (this.item?.merchant._id !== this._MerchantsService.merchantData._id) {
-        this._Router.navigate(['../../'], {
-          relativeTo: this._Route,
-        });
-        return;
-      }
-      if (this.item.images.length) {
-        this.gridArray = this.item.images
-          .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
-          .map((image) => {
-            const fileParts = image.value.split('.');
-            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
-            let auxiliarImageFileExtension = 'image/' + fileExtension;
-            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+    this.route.params.subscribe(({ entity, entityId }) => {
+      this.route.queryParams.subscribe(
+        ({
+          webformQuestionIndex,
+          webformSelectedOption,
+          webformQuestionID,
+        }) => {
+          this.entity = entity;
+          this.webformQuestionIndex = Number(webformQuestionIndex);
 
+          if (
+            this.entity.toUpperCase() === 'WEBFORM-QUESTION' &&
+            this.webformQuestionIndex >= 0
+          ) {
             if (
-              image.value &&
-              !image.value.includes('http') &&
-              !image.value.includes('https')
+              this.webformsService.formCreationData.steps[
+                1 + this.webformQuestionIndex
+              ].fields.controls['responseOptions']?.value?.fileInput?.length
             ) {
-              image.value = 'https://' + image.value;
+              console.log('Con archivos');
+              /*
+              for await (const slide of this.postsService.post.slides) {
+                if (slide.media && slide.media.type.includes('image')) {
+                  await fileToBase64(slide.media).then((result) => {
+                    this.gridArray.push({
+                      ...slide,
+                      background: result,
+                      _type: slide.media.type,
+                    });
+                  });
+                } else if (slide.media && slide.media.type.includes('video')) {
+                  const fileUrl = this.domSanitizer.bypassSecurityTrustUrl(
+                    URL.createObjectURL(slide.media)
+                  );
+                  this.gridArray.push({
+                    ...slide,
+                    background: fileUrl,
+                    _type: slide.media.type,
+                  });
+                } else if (!slide.media && slide.type === 'text') {
+                  this.gridArray.push({
+                    ...slide,
+                  });
+                }
+              }*/
             }
-
-            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-              return {
-                _id: image._id,
-                background: image.value,
-                _type: auxiliarImageFileExtension,
-                index: image.index,
-              };
-            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-              return {
-                _id: image._id,
-                background: image.value,
-                _type: auxiliarVideoFileExtension,
-                index: image.index,
-              };
-            }
-          });
-      }
-      return;
-    }
-
-    if (!itemId) {
-      if (!this._PostsService.post) {
-        const storedPost = localStorage.getItem('post');
-        if (storedPost) this._PostsService.post = JSON.parse(storedPost);
-      }
-      if (!this._PostsService.post) {
-        this._Router.navigate([
-          'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
-        ]);
-        return;
-      }
-
-      this._PostsService.post = {
-        ...this._PostsService.post,
-        slides: this._PostsService.post?.slides
-          ? this._PostsService.post?.slides
-          : [],
-      };
-
-      if (this._PostsService.post.slides.length) {
-        for await (const slide of this._PostsService.post.slides) {
-          if (slide.media && slide.media.type.includes('image')) {
-            await fileToBase64(slide.media).then((result) => {
-              this.gridArray.push({
-                ...slide,
-                background: result,
-                _type: slide.media.type,
-              });
-            });
-          } else if (slide.media && slide.media.type.includes('video')) {
-            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(slide.media)
-            );
-            this.gridArray.push({
-              ...slide,
-              background: fileUrl,
-              _type: slide.media.type,
-            });
-          } else if (!slide.media && slide.type === 'text') {
-            this.gridArray.push({
-              ...slide,
-            });
           }
-        }
-      }
-    }
 
-    this.availableFiles = [
-      ...this.imageFiles,
-      ...this.videoFiles,
-      ...this.audioFiles,
-    ].join(', ');
+          this.availableFiles = [
+            ...this.imageFiles,
+            ...this.videoFiles,
+            ...this.audioFiles,
+          ].join(', ');
+        }
+      );
+    });
   }
 
   async dropTagDraggable(event: CdkDragDrop<{ gridItem: any; index: number }>) {
-    const { _id: itemId } = this.item;
+    //const { _id: itemId } = this.item;
     this.gridArray[event.previousContainer.data.index].index =
       event.container.data.index;
     this.gridArray[event.container.data.index].index =
@@ -176,21 +140,23 @@ export class MediaUploadDndComponentComponent implements OnInit {
       event.container.data.gridItem;
     this.gridArray[event.container.data.index] =
       event.previousContainer.data.gridItem;
+
+    /*
     const { _id, index } = this.gridArray[event.container.data.index];
     const { _id: _id2, index: index2 } =
       this.gridArray[event.previousContainer.data.index];
     const itemImage = { index, active: true };
-    const result = await this._ItemsService.itemUpdateImage(
+    const result = await this.itemsService.itemUpdateImage(
       itemImage,
       _id,
       itemId
     );
     const itemImage2 = { index: index2, active: true };
-    const result2 = await this._ItemsService.itemUpdateImage(
+    const result2 = await this.itemsService.itemUpdateImage(
       itemImage2,
       _id2,
       itemId
-    );
+    );*/
   }
 
   async loadFile(event: Event) {
@@ -199,95 +165,8 @@ export class MediaUploadDndComponentComponent implements OnInit {
     let index = this.gridArray.length - 1;
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList.item(i);
-      if (this.item) {
-        this._ItemsService.itemImages.push(file);
 
-        // let isFileAValidImage = ['png', 'jpg', 'jpeg'].some((type) =>
-        //   file.type.toLowerCase().includes(type)
-        // );
-
-        // let isFileAValidVideo = [
-        //   'webm',
-        //   'mp4',
-        //   'm4v',
-        //   'mpg',
-        //   'mpeg',
-        //   'mpeg4',
-        //   'mov',
-        //   '3gp',
-        //   'mts',
-        //   'm2ts',
-        //   'mxf',
-        // ].some((type) => file.type.toLowerCase().includes(type));
-
-        // if (!isFileAValidImage && !isFileAValidVideo) {
-        //   alert('Archivo no valido');
-        //   return;
-        // }
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          lockUI();
-          const addedImage = await this._ItemsService.itemAddImage(
-            [
-              {
-                file,
-                index,
-              },
-            ],
-            this.item._id
-          );
-          const itemUpdated: Item = addedImage;
-
-          unlockUI();
-          // this._ItemsService.editingImageId =
-          //   addedImage.images[addedImage.images.length - 1]._id;
-          if (
-            isImage(itemUpdated.images[itemUpdated.images.length - 1].value)
-          ) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              this.gridArray.push({
-                _id: addedImage?.images[addedImage.images.length - 1]?._id,
-                background: reader.result,
-                _type: file.type,
-              });
-            };
-            reader.readAsDataURL(file);
-          }
-          //   this._Router.navigate([`admin/create-article/${this.item._id}`]);
-
-          if (
-            itemUpdated &&
-            isVideo(itemUpdated.images[itemUpdated.images.length - 1].value)
-          ) {
-            let uploadedVideoURL =
-              itemUpdated.images[itemUpdated.images.length - 1].value;
-            const fileParts = uploadedVideoURL.split('.');
-            const fileExtension = fileParts[fileParts.length - 1];
-            let auxiliarFileExtension = isVideo(uploadedVideoURL)
-              ? `video/${fileExtension}`
-              : `image/${fileExtension}`;
-
-            if (
-              uploadedVideoURL &&
-              !uploadedVideoURL.includes('http') &&
-              !uploadedVideoURL.includes('https')
-            ) {
-              uploadedVideoURL = 'https://' + uploadedVideoURL;
-            }
-
-            console.log(auxiliarFileExtension);
-
-            this.gridArray.push({
-              _id: addedImage?.images[addedImage.images.length - 1]?._id,
-              background: uploadedVideoURL,
-              _type: auxiliarFileExtension,
-            });
-          }
-        };
-        reader.readAsDataURL(file);
-      } else {
+      if (this.entity.toUpperCase() === 'WEBFORM-QUESTION') {
         if (
           ![
             ...this.imageFiles,
@@ -310,7 +189,6 @@ export class MediaUploadDndComponentComponent implements OnInit {
           content['background'] = result;
           content['_type'] = file.type;
           this.gridArray.push(content);
-          this._PostsService.post.slides.push(content);
         };
       }
       index++;
@@ -318,100 +196,46 @@ export class MediaUploadDndComponentComponent implements OnInit {
   }
 
   async submit() {
-    if (this.item) {
-      this._Router.navigate([`admin/article-editor/${this.item._id}`]);
-      return;
-    }
-    const slides: Array<SlideInput> = this.gridArray.map(
-      ({ text, title, media, type, index }) => {
-        const result = {
-          text,
-          title,
-          media,
-          type,
-          index,
-        };
-        return result;
-      }
-    );
-    this._PostsService.post.slides = slides;
-    this._Router.navigate([
-      'ecommerce',
-      this.headerService.saleflow.merchant.slug,
-      'post-edition',
-    ]);
-  }
+    if (
+      this.entity.toUpperCase() === 'WEBFORM-QUESTION' &&
+      this.webformQuestionIndex >= 0
+    ) {
+      (
+        this.webformsService.formCreationData.steps[
+          1 + this.webformQuestionIndex
+        ].fields.controls['responseOptions'] as FormArray
+      ).clear();
 
-  openSlideSettings(index: number) {
-    let list: Array<SettingsDialogButton>;
-    if (this.item) {
-      list = [
-        {
-          text: 'Edita este slide (crop, etc..)',
-          callback: async () => {
-            this._ItemsService.editingImageId = this.gridArray[index]._id;
-            this._Router.navigate([`admin/create-article/${this.item._id}`]);
-          },
-        },
-        {
-          text: 'Eliminar',
-          callback: async () => {
-            this.dialog.open(SingleActionDialogComponent, {
-              type: 'fullscreen-translucent',
-              props: {
-                title: 'Eliminar este slide del símbolo',
-                buttonText: 'Sí, borrar',
-                mainButton: () => {
-                  this.deleteImage(index);
-                },
-                btnBackgroundColor: '#272727',
-                btnMaxWidth: '133px',
-                btnPadding: '7px 2px',
-              },
-              customClass: 'app-dialog',
-              flags: ['no-header'],
-            });
-          },
-        },
-      ];
-      if (this.item && isVideo(this.gridArray[index].background)) list.shift();
+      this.gridArray.forEach((gridItem) => {
+        const BASE64_MARKER = ';base64,';
+        const parts = gridItem.background.split(BASE64_MARKER);
+        const contentType = parts[0].split(':')[1];
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
 
-      list.forEach((option) => (option.styles = { color: '#383838' }));
-    } else {
-      list = [
-        {
-          text: 'Eliminar',
-          callback: async () => {
-            this.dialog.open(SingleActionDialogComponent, {
-              type: 'fullscreen-translucent',
-              props: {
-                title: 'Eliminar este slide del símbolo',
-                buttonText: 'Si, borrar',
-                mainButton: () => {
-                  this.deleteImage(index);
-                },
-                btnBackgroundColor: '#272727',
-                btnMaxWidth: '133px',
-                btnPadding: '7px 2px',
-              },
-              customClass: 'app-dialog',
-              flags: ['no-header'],
-            });
-          },
-        },
-      ];
+        for (let i = 0; i < rawLength; ++i) {
+          uInt8Array[i] = raw.charCodeAt(i);
+        }
+
+        const blob = new Blob([uInt8Array], { type: contentType });
+        const fileData = URL.createObjectURL(blob);
+
+        (
+          this.webformsService.formCreationData.steps[
+            1 + this.webformQuestionIndex
+          ].fields.controls['responseOptions'] as FormArray
+        ).push(
+          new FormGroup({
+            text: new FormControl(''),
+            fileInput: new FormControl(gridItem.media),
+            fileData: new FormControl(fileData),
+          })
+        );
+      });
+
+      this.router.navigate(['/admin/form-creator']);
     }
-    this.dialog.open(SettingsComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        optionsList: list,
-        closeEvent: () => {},
-        shareBtn: false,
-        title: '',
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
   }
 
   deleteSlide(index: number) {
@@ -432,18 +256,12 @@ export class MediaUploadDndComponentComponent implements OnInit {
     });
   }
 
-  editSlide(index: number) {
-    this._ItemsService.editingImageId = this.gridArray[index]._id;
-    lockUI();
-    this._Router.navigate([`admin/create-article/${this.item._id}`]);
-  }
-
   async deleteImage(index: number) {
     if (this.item) {
-      this._ItemsService.itemImages.splice(index, 1);
+      this.itemsService.itemImages.splice(index, 1);
 
       if (this.item.images.length === 1) {
-        await this._ItemsService.updateItem(
+        await this.itemsService.updateItem(
           {
             showImages: false,
           },
@@ -455,7 +273,7 @@ export class MediaUploadDndComponentComponent implements OnInit {
           (itemImage) => itemImage.value === this.gridArray[index].background
         )
       ) {
-        await this._ItemsService.itemRemoveImage(
+        await this.itemsService.itemRemoveImage(
           [this.item.images[index]._id],
           this.item._id
         );
@@ -464,27 +282,8 @@ export class MediaUploadDndComponentComponent implements OnInit {
       return;
     }
     this.gridArray.splice(index, 1);
-    if (this._PostsService.post?.slides.length)
-      this._PostsService.post.slides.splice(index, 1);
-  }
-
-  previewItem() {
-    this._ItemsService.itemName = this.item.name;
-    this._ItemsService.itemDesc = this.item.description;
-    this._ItemsService.itemPrice = this.item.pricing;
-    this._ItemsService.itemUrls = this.gridArray.map(
-      (gridArray) => gridArray.background
-    );
-    this._Router.navigate(
-      [
-        `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${this.item._id}`,
-      ],
-      {
-        queryParams: {
-          mode: 'image-preview',
-        },
-      }
-    );
+    if (this.postsService.post?.slides.length)
+      this.postsService.post.slides.splice(index, 1);
   }
 
   isSlideVideo(index: number) {

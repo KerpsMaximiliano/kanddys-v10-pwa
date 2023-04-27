@@ -132,6 +132,7 @@ header {
   padding-left: clamp(10px, 5.37vw, 22px);
   padding-right: clamp(10px, 5.37vw, 22px);
   padding-top: 32px;
+  padding-bottom: 110px;
   width: 100%;
 
   .question-input-and-input-options {
@@ -327,5 +328,40 @@ input {
         cursor: pointer;
       }
     }
+  }
+}
+
+.grid-for-media-files {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(102px, 1fr));
+  column-gap: 7px;
+  row-gap: 19px;
+  justify-items: center;
+}
+
+.media-item {
+  height: 120px;
+  width: 100%;
+  max-width: 102px;
+  border-radius: 15px;
+  background-color: #174b72;
+  border: 1.5px solid #fed230;
+  display: inline-block;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  &.add {
+    color: #171d16;
+    font-size: 60px;
+    font-family: SfProBold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fed230;
+  }
+
+  &:hover {
+    cursor: pointer;
   }
 }

@@ -168,63 +168,149 @@
                 else validations
               "
             >
-              <div
-                *ngFor="
-                  let control of getFormArray(
-                    step.fields.controls['responseOptions']
-                  ).controls;
-                  let i = index
+              <ng-container
+                *ngIf="
+                  step.fields.controls['responseOptions'].value[0].fileInput ===
+                  null
                 "
               >
-                <div class="input-wrapper" [formGroup]="getFormGroup(control)">
+                <ng-container
+                  *ngFor="
+                    let control of getFormArray(
+                      step.fields.controls['responseOptions']
+                    ).controls;
+                    let i = index
+                  "
+                >
                   <div
-                    class="x-delete-btn"
-                    (click)="
-                      removeInputToCurrentFormArray(
-                        getFormArray(step.fields.controls['responseOptions']),
-                        'text',
-                        i
-                      )
-                    "
-                    *ngIf="control.value.text?.length > 0"
+                    class="input-wrapper"
+                    [formGroup]="getFormGroup(control)"
                   >
-                    <div class="x-wrapper">
-                      <div class="x-btn">X</div>
+                    <div
+                      class="x-delete-btn"
+                      (click)="
+                        removeInputToCurrentFormArray(
+                          getFormArray(step.fields.controls['responseOptions']),
+                          'text',
+                          i
+                        )
+                      "
+                      *ngIf="control.value.text?.length > 0"
+                    >
+                      <div class="x-wrapper">
+                        <div class="x-btn">X</div>
+                      </div>
+                    </div>
+
+                    <input
+                      [ngClass]="{
+                        'with-content': control.value.text?.length > 0
+                      }"
+                      (keyup)="
+                        onMultipleInputEnterPress($event, control, 'text', i)
+                      "
+                      [formControlName]="'text'"
+                      type="text"
+                      [id]="'step-' + currentStepIndex + '-field-text' + i"
+                      placeholder="Escribe..."
+                    />
+
+                    <div class="input-options-icons">
+                      <img
+                        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/camera-minimalistic.svg"
+                        class="swipe-icon"
+                        alt="enter your question though photo scan"
+                      />
+
+                      <img
+                        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/microphone.svg"
+                        class="swipe-icon"
+                        alt="enter your question though voice recognizition"
+                      />
+                      <a
+                        [routerLink]="['/admin/media-upload/webform-question']"
+                        [queryParams]="{
+                          webformQuestionIndex: this.currentStepIndex - 1,
+                          webformSelectedOption: i
+                        }"
+                      >
+                        <img
+                          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery.svg"
+                          class="swipe-icon"
+                          alt="uploadFiles"
+                        />
+                      </a>
                     </div>
                   </div>
+                </ng-container>
+              </ng-container>
 
-                  <input
-                    [ngClass]="{
-                      'with-content': control.value.text?.length > 0
+              <div
+                class="grid-for-media-files"
+                cdkDropListGroup
+                *ngIf="
+                  step.fields.controls['responseOptions'].value[0].fileInput !==
+                  null
+                "
+              >
+                <div
+                  cdkDropList
+                  *ngFor="
+                    let valueObject of step.fields.controls['responseOptions']
+                      .value;
+                    let i = index
+                  "
+                  style="width: 100%"
+                >
+                  <div
+                    cdkDrag
+                    class="media-item"
+                    [ngStyle]="{
+                      backgroundImage:
+                        'url(' +
+                        valueObject.fileData +
+                        '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
                     }"
-                    (keyup)="
-                      onMultipleInputEnterPress($event, control, 'text', i)
-                    "
-                    [formControlName]="'text'"
-                    type="text"
-                    [id]="'step-' + currentStepIndex + '-field-text' + i"
-                    placeholder="Escribe..."
-                  />
-
-                  <div class="input-options-icons">
-                    <img
-                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/camera-minimalistic.svg"
-                      class="swipe-icon"
-                      alt="enter your question though photo scan"
-                    />
-
-                    <img
-                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/microphone.svg"
-                      class="swipe-icon"
-                      alt="enter your question though voice recognizition"
-                    />
-                    <img
-                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery.svg"
-                      class="swipe-icon"
-                      alt="uploadFiles"
-                    />
+                  >
+                    <div
+                      class="example-custom-placeholder"
+                      *cdkDragPlaceholder
+                    ></div>
                   </div>
                 </div>
+
+                <input
+                  type="file"
+                  [id]="'file-input-step' + currentStepIndex"
+                  [style.display]="'none'"
+                  (change)="loadFile($event)"
+                  multiple
+                  [accept]="[
+                    '.png',
+                    '.jpg',
+                    '.jpeg',
+                    '.webp',
+                    '.webm',
+                    '.mp4',
+                    '.m4v',
+                    '.mpg',
+                    '.mpeg',
+                    '.mpeg4',
+                    '.mov',
+                    '.3gp',
+                    '.mts',
+                    '.m2ts',
+                    '.mxf'
+                  ]"
+                />
+
+                <label
+                  [for]="'file-input-step' + currentStepIndex"
+                  class="media-item add"
+                  [style.cursor]="'pointer'"
+                >
+                  <p>+</p>
+                </label>
               </div>
             </ng-container>
 

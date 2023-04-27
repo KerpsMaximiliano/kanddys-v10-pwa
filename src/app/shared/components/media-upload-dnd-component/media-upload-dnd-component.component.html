@@ -1,33 +1,18 @@
 <div class="container">
   <div class="header">
     <i
-      class="far fa-angle-double-up icon"
+      class="fas fa-chevron-up icon"
       [style.cursor]="'pointer'"
       (click)="submit()"
     ></i>
-    <button class="preview-btn" (click)="previewItem()" *ngIf="item">
-      PREVIEW
-    </button>
-  </div>
 
-  <!--<div class="itemsGrid">
-        <div class="itemContainer add">
-          <div class="labelBox"></div>
-          <div class="imgBox">
-            <p>+</p>
-          </div>
-          <div class="label">Adiciona</div>
-        </div>
-        <div class="itemContainer" *ngFor= "let gridItem of gridArray">
-          <div class="imgBox"[ngStyle]="{background: 'url(' + environment + '/' + gridItem.background + ') #272727 no-repeat  center/cover'}"></div>
-          <div class="labelBox"></div>
-          <p class="text">{{gridItem.text}}</p>
-          <div class="label">{{gridItem.label}}</div>
-          <div class="circleButton">
-            <img class="icon" [src]="environment + '/dots-black.svg'">
-          </div>
-        </div>
-      </div>-->
+    <img
+      src="
+    https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/directory.svg
+    "
+      alt="upload folder"
+    />
+  </div>
 
   <div class="tags-grid-drag-and-drop" cdkDropListGroup>
     <div class="tag-wrapper" style="width: 100%; margin: 0px; padding: 0px">
@@ -61,7 +46,6 @@
           <div class="imgBox">
             <p>+</p>
           </div>
-          <div class="label">Adiciona</div>
         </label>
       </div>
     </div>
@@ -78,7 +62,6 @@
         <div class="itemContainer">
           <div
             *ngIf="imageFiles.includes(gridItem._type)"
-            (click)="this.item && editSlide(i)"
             class="imgBox"
             [ngStyle]="{
               backgroundImage:
@@ -110,21 +93,17 @@
           <div
             class="labelBox"
             (click)="
-              item && !isSlideVideo(i)
-                ? editSlide(i)
-                : playVideoOnFullscreen('media' + i)
+              isSlideVideo(i) ? playVideoOnFullscreen('media' + i) : null
             "
           ></div>
           <button class="circleButton" (click)="deleteSlide(i)">
-            <i class="fa fa-times" aria-hidden="true"></i>
+            <i
+              class="fa fa-times"
+              aria-hidden="true"
+              style="color: #7b7b7b"
+            ></i>
           </button>
         </div>
-        <img
-          class="drag-handler"
-          cdkDragHandle
-          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/drag-area.svg"
-          alt="drag"
-        />
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swiper, { SwiperOptions } from 'swiper';
@@ -7,6 +7,7 @@ import {
   WebformsService,
 } from 'src/app/core/services/webforms.service';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 interface OptionInList {
   name: string;
@@ -18,7 +19,7 @@ interface OptionInList {
   templateUrl: './form-creator.component.html',
   styleUrls: ['./form-creator.component.scss'],
 })
-export class FormCreatorComponent implements OnInit {
+export class FormCreatorComponent implements OnInit, AfterViewInit {
   currentStepName: WebformCreatorStepsNames = 'ADMIN_NOTE';
   currentStepIndex: number = 0;
   swiperConfig: SwiperOptions = {
@@ -26,6 +27,8 @@ export class FormCreatorComponent implements OnInit {
     freeMode: false,
     spaceBetween: 0,
     allowSlideNext: true,
+    allowSlidePrev: true,
+    allowTouchMove: true,
   };
   steps: Array<{
     name: string;
@@ -97,6 +100,22 @@ export class FormCreatorComponent implements OnInit {
     },
   };
   @ViewChild('stepsSwiper') stepsSwiper: SwiperComponent;
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/mpg',
+    'video/mp4',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mts',
+    'video/m2ts',
+    'video/mxf',
+  ];
+  audioFiles: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -121,7 +140,22 @@ export class FormCreatorComponent implements OnInit {
 
       this.addAQuestionToTheForm();
     } else {
-      //Codigo para continuar
+      this.steps = this.webformsService.formCreationData.steps;
+
+      /*
+      this.stepsSwiper.directiveRef.setIndex(
+        this.webformsService.formCreationData.currentStepIndex
+      );*/
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.webformsService.formCreationData) {
+      setTimeout(() => {
+        this.stepsSwiper.directiveRef.setIndex(
+          this.webformsService.formCreationData.currentStepIndex
+        );
+      }, 200);
     }
   }
 
@@ -208,15 +242,19 @@ export class FormCreatorComponent implements OnInit {
 
   updateCurrentStepData(swiper: Swiper) {
     this.currentStepIndex = swiper.activeIndex;
+    this.webformsService.formCreationData.currentStepIndex =
+      this.currentStepIndex;
     this.currentStepName = this.steps[this.currentStepIndex]
       .name as WebformCreatorStepsNames;
   }
 
   getFormArray(data: any): FormArray {
+    console.log('EJECUTANDO 2');
     return data;
   }
 
   getFormGroup(data: any): FormGroup {
+    console.log('EJECUTANDO');
     return data;
   }
 
@@ -283,5 +321,89 @@ export class FormCreatorComponent implements OnInit {
         }
       }
     }, 100);
+  }
+
+  async loadFile(event: Event) {
+    const fileList = (event.target as HTMLInputElement).files;
+    if (!fileList.length) return;
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList.item(i);
+
+      if (
+        ![...this.imageFiles, ...this.videoFiles, ...this.audioFiles].includes(
+          file.type
+        )
+      )
+        return;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async (e) => {
+        (
+          this.steps[this.currentStepIndex].fields.controls[
+            'responseOptions'
+          ] as FormArray
+        ).push(
+          new FormGroup({
+            text: new FormControl(''),
+            fileInput: new FormControl(file),
+            fileData: new FormControl(reader.result),
+          })
+        );
+      };
+    }
+  }
+
+  async dropTagDraggable(event: CdkDragDrop<{ gridItem: any; index: number }>) {
+    // Enable swiper's behavior
+    /*    this.swiperConfig.allowSlidePrev = true;
+    this.swiperConfig.allowSlideNext = true;
+    this.swiperConfig.allowTouchMove = true;
+  */
+    // handle item drop logic here
+
+    //const { _id: itemId } = this.item;
+
+    console.log('Event', event);
+
+    /*
+    this.gridArray[event.previousContainer.data.index].index =
+      event.container.data.index;
+    this.gridArray[event.container.data.index].index =
+      event.previousContainer.data.index;
+    this.gridArray[event.previousContainer.data.index] =
+      event.container.data.gridItem;
+    this.gridArray[event.container.data.index] =
+      event.previousContainer.data.gridItem;*/
+
+    /*
+    const { _id, index } = this.gridArray[event.container.data.index];
+    const { _id: _id2, index: index2 } =
+      this.gridArray[event.previousContainer.data.index];
+    const itemImage = { index, active: true };
+    const result = await this.itemsService.itemUpdateImage(
+      itemImage,
+      _id,
+      itemId
+    );
+    const itemImage2 = { index: index2, active: true };
+    const result2 = await this.itemsService.itemUpdateImage(
+      itemImage2,
+      _id2,
+      itemId
+    );*/
+  }
+
+
+  getBackgroundImage(src: string, elementId: string) {
+    const image = new Image();
+
+    const element = document.getElementById(elementId);
+
+    image.onload = () => {
+      // Set the background image when the image has finished loading
+      element.style.backgroundImage = `url('${image.src}')`;
+    };
+
+    image.src = src;
   }
 }
