@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { LoginDialogComponent, LoginDialogData } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-fase1-landing',
@@ -102,11 +104,25 @@ export class Fase1LandingComponent implements OnInit {
     },
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private matDialog: MatDialog
+  ) {}
 
   ngOnInit(): void {}
 
   goTo() {
     this.router.navigate([`ecommerce/article-upload`]);
+  }
+
+  openLoginDialog() {
+    this.matDialog.open(LoginDialogComponent, {
+      data: {
+        magicLinkData: {
+          redirectionRoute: `admin/dashboard`,
+          entity: 'UserAccess',
+        },
+      } as LoginDialogData,
+    });
   }
 }

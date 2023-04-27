@@ -112,7 +112,7 @@ const routes: Routes = [
     component: MyContactRegisterComponent,
   },
   {
-    path: 'fase1-landing',
+    path: 'merchant-signup',
     component: Fase1LandingComponent,
   },
   {
