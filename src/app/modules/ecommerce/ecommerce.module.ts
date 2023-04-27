@@ -35,10 +35,13 @@ import { LinksPageComponent } from './pages/links-page/links-page.component';
 import { LinkRegisterComponent } from './pages/link-register/link-register.component';
 import { LinkUpdateComponent } from './pages/link-update/link-update.component';
 import { MyContactRegisterComponent } from './pages/my-contact-register/my-contact-register.component';
-import { PostEditionComponent } from './pages/post-edition/post-edition.component';
-import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
-import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { Fase1LandingComponent } from './pages/fase1-landing/fase1-landing.component';
+import { ArticleUploadComponent } from './pages/article-upload/article-upload.component';
 import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
+import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
+import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
+import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 
 const routes: Routes = [
   {
@@ -77,10 +80,6 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'terms-of-use/:viewsMerchantId',
-    component: TermsOfUseComponent,
-  },
-  {
     path: 'gift-detail/:orderId',
     component: GiftDetailComponent,
   },
@@ -111,6 +110,14 @@ const routes: Routes = [
   {
     path: 'register-my-contact/:userId',
     component: MyContactRegisterComponent,
+  },
+  {
+    path: 'merchant-signup',
+    component: Fase1LandingComponent,
+  },
+  {
+    path: 'article-upload',
+    component: ArticleUploadComponent,
   },
   {
     path: ':merchantSlug',
@@ -165,6 +172,14 @@ const routes: Routes = [
         component: PaymentsComponent,
       },
       {
+        path: 'image-banner',
+        component: ImageBannerComponent,
+      },
+      {
+        path: 'text-edition-and-preview',
+        component: TextEditionAndPreviewComponent,
+      },
+      {
         path: 'collections',
         component: CollectionsComponent,
       },
@@ -193,6 +208,10 @@ const routes: Routes = [
         component: OrderProcessComponent,
       },
       {
+        path: 'terms-of-use/:viewsMerchantId',
+        component: TermsOfUseComponent,
+      },
+      {
         path: 'post-edition',
         component: PostEditionComponent,
       },
@@ -203,11 +222,7 @@ const routes: Routes = [
       {
         path: 'qr-edit',
         component: QrEditComponent,
-      },
-      {
-        path: 'text-edition-and-preview',
-        component: TextEditionAndPreviewComponent,
-      },
+      }
     ],
   },
 ];
@@ -243,6 +258,8 @@ const routes: Routes = [
     LinkUpdateComponent,
     MyContactRegisterComponent,
     PostEditionComponent,
+    Fase1LandingComponent,
+    ArticleUploadComponent,
     TextEditionAndPreviewComponent
   ],
   imports: [
