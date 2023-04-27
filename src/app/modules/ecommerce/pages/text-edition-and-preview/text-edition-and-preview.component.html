@@ -1,0 +1,105 @@
+<div class="page">
+  <div class="top-wrapper"
+    #dialogSwiper
+    [ngStyle]="{
+      width: '100%',
+      height: (dialogSwiper.clientWidth * 10) / 7 + 'px'
+    }"
+  >
+    <swiper
+      [config]="swiperConfig"
+      (slideChange)="changeSlide($event)"
+    >
+      <ng-container *ngIf="type === 'POST'">
+        <div
+          class="top"
+          *ngFor="let option of postService.postMessageOptions; index as i"
+        >
+          <nav class="header">
+            <button class="cancel" (click)="back()">Cancelar mensaje</button>
+
+            <div class="options">
+              Opción {{ i + 1 }} de {{ postService.postMessageOptions.length }}
+            </div>
+          </nav>
+
+          <div class="content">
+            <ng-container *ngIf="mode === 'PREVIEW'">
+              <div class="title">{{ option.title || "titulo" }}</div>
+              <div class="paragraphs">
+                {{ option.message }}
+              </div>
+            </ng-container>
+
+            <form [formGroup]="messageForm" *ngIf="mode === 'EDIT'">
+              <input type="text" formControlName="title" class="title-edit" />
+
+              <textarea formControlName="message" class="paragraphs-edit">
+              </textarea>
+            </form>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="type === 'AI-JOKE'">
+        <div
+          class="top"
+          *ngFor="let option of headerService.aiJokes; index as i"
+        >
+          <nav class="header">
+            <button class="cancel" (click)="back()">Cancelar chiste</button>
+
+            <div class="options">
+              Opción {{ i + 1 }} de {{ headerService.aiJokes.length }}
+            </div>
+          </nav>
+
+          <div class="content">
+            <ng-container *ngIf="mode === 'PREVIEW'">
+              <div class="paragraphs">
+                {{ option }}
+              </div>
+            </ng-container>
+
+            <form [formGroup]="jokeForm" *ngIf="mode === 'EDIT'">
+              <textarea formControlName="joke" class="paragraphs-edit">
+              </textarea>
+            </form>
+          </div>
+        </div>
+      </ng-container>
+    </swiper>
+  </div>
+  <div class="bottom">
+    <div class="bars">
+      <ng-container *ngIf="type === 'POST'">
+        <div
+          class="bar"
+          *ngFor="let option of postService.postMessageOptions; index as i"
+          [ngClass]="{
+            active: currentMessageIndex === i
+          }"
+        ></div>
+      </ng-container>
+
+      <ng-container *ngIf="type === 'AI-JOKE'">
+        <div
+          class="bar"
+          *ngFor="let joke of headerService.aiJokes; index as i"
+          [ngClass]="{
+            active: currentMessageIndex === i
+          }"
+        ></div>
+      </ng-container>
+    </div>
+
+    <span
+      class="edit-btn"
+      (click)="switchToMode('EDIT')"
+      [ngClass]="{
+        selected: mode === 'EDIT'
+      }"
+      >Editar</span
+    >
+    <button class="save-btn" (click)="saveMessage()">Salvar texto</button>
+  </div>
+</div>

@@ -37,6 +37,11 @@ import { LinkUpdateComponent } from './pages/link-update/link-update.component';
 import { MyContactRegisterComponent } from './pages/my-contact-register/my-contact-register.component';
 import { Fase1LandingComponent } from './pages/fase1-landing/fase1-landing.component';
 import { ArticleUploadComponent } from './pages/article-upload/article-upload.component';
+import { TextEditionAndPreviewComponent } from './pages/text-edition-and-preview/text-edition-and-preview.component';
+import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.component';
+import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
+import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 
 const routes: Routes = [
   {
@@ -167,6 +172,14 @@ const routes: Routes = [
         component: PaymentsComponent,
       },
       {
+        path: 'image-banner',
+        component: ImageBannerComponent,
+      },
+      {
+        path: 'text-edition-and-preview',
+        component: TextEditionAndPreviewComponent,
+      },
+      {
         path: 'collections',
         component: CollectionsComponent,
       },
@@ -198,6 +211,22 @@ const routes: Routes = [
         path: 'terms-of-use/:viewsMerchantId',
         component: TermsOfUseComponent,
       },
+      {
+        path: 'post-edition',
+        component: PostEditionComponent,
+      },
+      {
+        path: 'post-preview',
+        component: PostPreviewComponent,
+      },
+      {
+        path: 'image-banner',
+        component: ImageBannerComponent,
+      },
+      {
+        path: 'qr-edit',
+        component: QrEditComponent,
+      }
     ],
   },
 ];

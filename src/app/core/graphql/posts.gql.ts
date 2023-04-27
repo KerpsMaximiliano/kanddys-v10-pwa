@@ -48,6 +48,8 @@ export const post = gql`
       }
       message
       from
+      to
+      title
       multimedia
       socialNetworks {
         url
