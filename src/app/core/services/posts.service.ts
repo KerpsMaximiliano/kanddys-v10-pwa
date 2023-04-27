@@ -15,6 +15,7 @@ import {
 } from '../graphql/posts.gql';
 import { Post, PostInput, Slide, SlideInput } from '../models/post';
 import { EmbeddedComponentWithId } from '../types/multistep-form';
+import { SwiperOptions } from 'swiper';
 
 export interface PostContent {
   _id?: string;
@@ -38,9 +39,11 @@ export class PostsService {
   privatePost: boolean;
   postReceiverNumber: string;
   content: PostContent;
+  swiperConfig: SwiperOptions;
   dialogs: Array<EmbeddedComponentWithId> = [];
   temporalDialogs: Array<EmbeddedComponentWithId> = [];
   temporalDialogs2: Array<EmbeddedComponentWithId> = [];
+  entityTemplateNotificationsToAdd: Array<string> = [];
   postMessageOptions: Array<{
     title: string;
     message: string;

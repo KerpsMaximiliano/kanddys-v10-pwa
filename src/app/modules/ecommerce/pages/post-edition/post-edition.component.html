@@ -39,14 +39,27 @@
       <app-invites-notifications title="Acceso & Notificaciones" text="Acceso de Invitados: (000) 000 - 0000"></app-invites-notifications>
       <app-invites-notifications title="Notificaciones" text="Notificación de cuando accesan: (000) 000 - 0000 ó sin Notificación"></app-invites-notifications>
        -->
-    <!-- <app-qr-content
-      [slides]="data.slides"
-      [joke]="data.joke"
-      [defaultText]="
-        'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
-      "
-      (buttonClicked)="openQrContentDialog()"
-    ></app-qr-content> -->
+
+    <div
+      style="margin-bottom: 32px"
+      *ngIf="this.postsService.postReceiverNumber"
+    >
+      <app-title-icon-header
+        title="Notificaciones"
+        (iconClicked)="openNotificationsDialog()"
+      ></app-title-icon-header>
+      <app-card
+        [shadows]="postsService.entityTemplateNotificationsToAdd.length === 0"
+      >
+        {{
+          postsService.entityTemplateNotificationsToAdd.length === 0
+            ? "No se envía ninguna notificación"
+            : "Recibes una notificación cuando:\n" +
+              choosedNotificationTypesMessage
+        }}
+      </app-card>
+    </div>
+
     <app-qr-content
       [slides]="data.slides"
       [joke]="data.joke"
@@ -68,6 +81,15 @@
       (saveConfigRef)="swiperConfig = $event"
       (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
       (closingDialogSignal)="closeDialogFlow()"
+    ></app-dialog-flow>
+
+    <app-dialog-flow
+      [dialogFlowId]="'notifications'"
+      [status]="openedNotificationsDialog ? 'OPEN' : 'CLOSE'"
+      [dialogs]="[notificationsDialog]"
+      [allowSlideNext]="false"
+      (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+      (closingDialogSignal)="openedNotificationsDialog = false"
     ></app-dialog-flow>
 
     <!--
