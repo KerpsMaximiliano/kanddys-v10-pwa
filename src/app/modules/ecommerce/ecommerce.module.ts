@@ -220,10 +220,6 @@ const routes: Routes = [
         component: PostPreviewComponent,
       },
       {
-        path: 'image-banner',
-        component: ImageBannerComponent,
-      },
-      {
         path: 'qr-edit',
         component: QrEditComponent,
       }
@@ -261,6 +257,7 @@ const routes: Routes = [
     LinkRegisterComponent,
     LinkUpdateComponent,
     MyContactRegisterComponent,
+    PostEditionComponent,
     Fase1LandingComponent,
     ArticleUploadComponent,
     TextEditionAndPreviewComponent

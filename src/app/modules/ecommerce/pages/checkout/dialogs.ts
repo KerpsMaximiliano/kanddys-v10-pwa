@@ -269,7 +269,7 @@ export class Dialogs {
                   text: '',
                 },
                 placeholder:
-                  'Escribe el nombre del recipiente. Este nombre estara escrito en el sobre.',
+                  'Escribe el nombre del receptor. Este nombre estara escrito en el sobre.',
                 styles: {
                   border: 'none',
                   borderRadius: '9px',
@@ -294,6 +294,12 @@ export class Dialogs {
             callback: (params) => {
               const { fields, value, valid } = params;
               const { receiverName } = value;
+
+              if (receiverName && receiverName.length > 0) {
+                this.postsService.swiperConfig.allowSlideNext = true;
+              } else {
+                this.postsService.swiperConfig.allowSlideNext = false;
+              }
 
               this.dialogFlowService.saveGeneralDialogData(
                 receiverName,
@@ -378,6 +384,16 @@ export class Dialogs {
             callback: (params) => {
               const { fields, value, valid } = params;
               const { senderName } = value;
+
+              console.log("valido", senderName && senderName.length > 0);
+
+              if (senderName && senderName.length > 0) {
+                this.postsService.swiperConfig.allowSlideNext = true;
+              } else {
+                this.postsService.swiperConfig.allowSlideNext = false;
+              }
+
+              console.log("Permite pasar", this.postsService.swiperConfig.allowSlideNext);
 
               this.dialogFlowService.saveGeneralDialogData(
                 senderName,
@@ -557,19 +573,6 @@ export class Dialogs {
                 validators: [Validators.required],
                 type: 'textarea',
                 label: {
-                  styles: {
-                    border: 'none',
-                    borderRadius: '9px',
-                    boxShadow: 'rgb(210 210 210) 0px 4px 7px 0px inset',
-                    display: 'block',
-                    fontFamily: 'RobotoMedium',
-                    fontSize: '17px',
-                    minHeight: '130px',
-                    resize: 'none',
-                    width: '100%',
-                    padding: '26px 26.3px 56.6px 16px',
-                    color: '#A1A1A1',
-                  },
                   text: '',
                 },
                 placeholder: '¡Feliz cumpleaños!',
@@ -598,9 +601,9 @@ export class Dialogs {
               const { messageTitle } = value;
 
               if (messageTitle && messageTitle.length > 0) {
-                this.dialogFlowService.swiperConfig.allowSlideNext = true;
+                this.postsService.swiperConfig.allowSlideNext = true;
               } else {
-                this.dialogFlowService.swiperConfig.allowSlideNext = false;
+                this.postsService.swiperConfig.allowSlideNext = false;
               }
 
               this.dialogFlowService.saveGeneralDialogData(
@@ -651,19 +654,6 @@ export class Dialogs {
                 validators: [Validators.required],
                 type: 'textarea',
                 label: {
-                  styles: {
-                    border: 'none',
-                    borderRadius: '9px',
-                    boxShadow: 'rgb(210 210 210) 0px 4px 7px 0px inset',
-                    display: 'block',
-                    fontFamily: 'RobotoMedium',
-                    fontSize: '17px',
-                    minHeight: '130px',
-                    resize: 'none',
-                    width: '100%',
-                    padding: '26px 26.3px 56.6px 16px',
-                    color: '#A1A1A1',
-                  },
                   text: '',
                 },
                 placeholder: 'Te deseo un maravilloso día...',
@@ -693,9 +683,9 @@ export class Dialogs {
               let messageValue = message;
 
               if (messageValue && messageValue.length > 0) {
-                this.dialogFlowService.swiperConfig.allowSlideNext = true;
+                this.postsService.swiperConfig.allowSlideNext = true;
               } else {
-                this.dialogFlowService.swiperConfig.allowSlideNext = false;
+                this.postsService.swiperConfig.allowSlideNext = false;
               }
 
               this.dialogFlowService.saveGeneralDialogData(
@@ -1235,7 +1225,7 @@ export class Dialogs {
                     '/post-edition',
                 ]);
               } else {
-                this.dialogFlowService.swiperConfig.allowSlideNext = true;
+                this.postsService.swiperConfig.allowSlideNext = true;
                 if (
                   this.dialogs[this.dialogs.length - 2].componentId !==
                   'whatsappNumberDialog'
@@ -1478,10 +1468,10 @@ export class Dialogs {
       questionDialog?.fields[fieldName] &&
       questionDialog?.fields[fieldName].length
     ) {
-      this.dialogFlowService.swiperConfig.allowSlideNext = true;
+      this.postsService.swiperConfig.allowSlideNext = true;
     } else {
       setTimeout(() => {
-        this.dialogFlowService.swiperConfig.allowSlideNext = false;
+        this.postsService.swiperConfig.allowSlideNext = false;
       });
     }
   };

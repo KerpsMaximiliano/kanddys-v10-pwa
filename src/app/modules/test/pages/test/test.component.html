@@ -375,27 +375,13 @@ headline="EXPUESTO EN TAB (S)"
     [viewsCounterStyles]="{
       color: '#000'
     }"
-    [showPrice]="true"
-    [priceLabel]="'Desde '"
-    [singleIconStyles]="{
-      marginRight: '6.1px'
+    [itemStyles]="{
+      fontSize: '17px',
+      padding: '7px 0px'
     }"
-    [showIconForTagStatus]="
-      item.status === 'disabled' || item.status === 'featured'
-    "
-    [statusIcon]="
-      'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/heart.svg'
-    "
-    [statusIconLabel]="'save n’ win'"
-    [showIconForItemStatus]="true"
-    [showVisitorCounter]="false"
-    [titleStyles]="{
-      display: '-webkit-box',
-      '-webkit-line-clamp': 1,
-      'line-clamp': 1,
-      '-webkit-box-orient': 'vertical',
-      overflow: 'hidden',
-      'word-break': 'break-all'
+    [boldenWhenSelected]="true"
+    [optionContainerStyles]="{
+      marginBottom: '0px'
     }"
     [topInnerButtonStyles]="{
       backgroundColor: item.status !== 'disabled' ? '#272727' : '#b17608'

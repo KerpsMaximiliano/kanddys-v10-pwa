@@ -27,13 +27,7 @@ import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
 import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
-import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
-import { MerchantStepperFormComponent } from 'src/app/shared/components/merchant-stepper-form/merchant-stepper-form.component';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { StepperFormComponent } from 'src/app/shared/components/stepper-form/stepper-form.component';
-import { ArticleStepperFormComponent } from 'src/app/shared/components/article-stepper-form/article-stepper-form.component';
 import {
   SettingsComponent,
   SettingsDialogButton,
@@ -42,6 +36,14 @@ import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { ToastrService } from 'ngx-toastr';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { MerchantStepperFormComponent } from 'src/app/shared/components/merchant-stepper-form/merchant-stepper-form.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ArticleStepperFormComponent } from 'src/app/shared/components/article-stepper-form/article-stepper-form.component';
+import {
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
 
 SwiperCore.use([Virtual]);
 
@@ -138,6 +140,7 @@ export class ArticleDetailComponent implements OnInit {
   playVideoOnFullscreen = playVideoOnFullscreen;
   postContentMinimized: boolean = true;
   articleId: string = '';
+  fromQR: boolean = false;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -172,8 +175,9 @@ export class ArticleDetailComponent implements OnInit {
       'createArticle'
     ) as 'true' | 'false';
 
+    this.fromQR = Boolean(this.route.snapshot.queryParamMap.get('fromQR'));
+
     this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
-    console.log(this.merchantId);
     if (this.merchantId !== '') {
       this.isMerchant = true;
       this.setMerchantDefault();
@@ -195,7 +199,6 @@ export class ArticleDetailComponent implements OnInit {
       const { entity, entityId } = routeParams;
 
       this.articleId = entityId;
-      console.log(this.articleId);
 
       if (this.headerService.saleflow?._id)
         this.doesModuleDependOnSaleflow = true;
@@ -214,9 +217,37 @@ export class ArticleDetailComponent implements OnInit {
             await this.getCollection();
           }
         } else {
-          const entityTemplate =
-            await this.entityTemplateService.entityTemplate(entityId);
+          let entityTemplate = await this.entityTemplateService.entityTemplate(
+            entityId
+          );
           this.entityTemplate = entityTemplate;
+
+          if (
+            entityTemplate.access === 'private' &&
+            this.entityTemplate.recipients?.length > 0
+          ) {
+            try {
+              const result =
+                await this.entityTemplateService.entityTemplateRecipient(
+                  entityId,
+                  ['ACCESS']
+                );
+
+              if (!result)
+                return this.router.navigate([
+                  'ecommerce/article-access/' + entityTemplate._id,
+                ]);
+              else {
+                entityTemplate = result;
+
+                this.fromQR = true;
+              }
+
+              this.entityTemplate = entityTemplate;
+            } catch (error) {
+              this.router.navigate(['qr/article-access/' + entityTemplate._id]);
+            }
+          }
 
           if (entityTemplate.reference && entityTemplate.entity) {
             this.entityId = entityTemplate.reference;
@@ -502,13 +533,35 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   async share() {
+    if (
+      this.fromQR ||
+      this.entityTemplate?.user === this.headerService.user._id
+    ) {
+      return await this.ngNavigatorShareService
+        .share({
+          title: '',
+          url:
+            environment.uri +
+            '/qr/article-detail/template' +
+            '/' +
+            this.entityTemplate._id +
+            '?fromQR=true',
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
     await this.ngNavigatorShareService
       .share({
         title: '',
         url:
           environment.uri +
           '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
+          this.headerService.saleflow?.merchant.slug +
           '/article-detail/' +
           this.entity +
           '/' +
@@ -597,8 +650,7 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   goToCheckout() {
-
-    if(this.mode === 'preview') return;
+    if (this.mode === 'preview') return;
 
     this.router.navigate([
       '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
