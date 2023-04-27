@@ -250,7 +250,6 @@ const routes: Routes = [
     ArticleDetailComponent,
     CreateArticleComponent,
     TermsOfUseComponent,
-    ContactLandingContainerComponent,
     CollectionsComponent,
     TagItemsComponent,
     GiftDetailComponent,
@@ -264,6 +263,7 @@ const routes: Routes = [
     MyContactRegisterComponent,
     Fase1LandingComponent,
     ArticleUploadComponent,
+    TextEditionAndPreviewComponent
   ],
   imports: [
     CommonModule,

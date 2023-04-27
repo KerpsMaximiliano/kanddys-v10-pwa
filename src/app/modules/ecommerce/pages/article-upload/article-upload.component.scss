@@ -162,7 +162,7 @@
 }
 
 ::ng-deep .input-wrapper {
-  max-height: 150px !important;
+  max-height: 100px !important;
   border-bottom-left-radius: 0px !important;
   border-bottom-right-radius: 0px !important;
   border-bottom: 1px solid #82f18d !important;
@@ -193,4 +193,26 @@ input[type="number"] {
 }
 
 .price {
+}
+
+.sticky-button {
+  position: fixed;
+  bottom: 3.3em;
+  left: 0;
+  border: 0;
+  text-transform: uppercase;
+  font-family: SfProLight;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  background-color: #E9E9E9;
+  color: #272727;
+  cursor: pointer;
+  justify-content: center;
+  transition: all 0.2s;
+  &.active {
+    background-color: #6FCF97;
+  }
 }

@@ -49,6 +49,7 @@ export class ArticleUploadComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentMediaSlide = 0;
+    this.swiperConfig.allowSlideNext = false;
     // this.initialValue = this.getNumericValue(this.initialValue);
     // if (this.initialValue) this.formatNumber(this.initialValue);
   }
@@ -82,7 +83,7 @@ export class ArticleUploadComponent implements OnInit {
 
   async onNameInput(event: Event | string, input: HTMLInputElement) {
     this.kioskoName = input.value;
-    console.log(this.kioskoName);
+    if (this.kioskoName.length === 0) this.swiperConfig.allowSlideNext = false;
     this.checkMerchant(this.kioskoName);
   }
 
@@ -136,9 +137,11 @@ export class ArticleUploadComponent implements OnInit {
   }
 
   sendMessage() {
-    const message = `Hola, soy ${this.kioskoName}, te envío este mensaje`;
-    window.location.href = `https://wa.me/19295263397?text=${message}`;
-    //window.open(`https://wa.me/19295263397?text=${message}`, '_blank');
+    if (this.pricing > 0) {
+      const message = `Hola, soy ${this.kioskoName}, te envío este mensaje`;
+      window.location.href = `https://wa.me/19295263397?text=${message}`;
+      //window.open(`https://wa.me/19295263397?text=${message}`, '_blank');
+    }
   }
 
   // formatNumber(

@@ -70,12 +70,30 @@
     <div class="content">
       <p class="title">Monto que pagará el comprador:</p>
 
-      <div class="inputWrapper">
+      <!-- <div class="inputWrapper">
         <p class="input-title">Precio en pesos Dominicanos</p>
-      </div>
+      </div> -->
+
+      <br><br>
 
       <app-currency-input
-        innerLabel="Pesos Dominicanos"
+        innerLabel="Precio en pesos Dominicanos"
+        [fieldStyles]="{
+          boxShadow: 'none',
+          backgroundColor: 'transparent',
+          padding: '0'
+        }"
+        [innerLabelStyles]="{
+          fontSize: '15px',
+          color: '#7B7B7B',
+          fontFamily: 'SfProMedium'
+        }"
+        [cursorStyles]="{
+          height: '3rem'
+        }"
+        [placeholderColor]="'#7B7B7B'"
+        [inputContentColor]="'#7B7B7B'"
+        [inputContentSize]="'44px'"
         (onInputEvent)="onCurrencyInput($event)"
       ></app-currency-input>
       <!-- 
@@ -90,7 +108,7 @@
         (input)="formatNumber($event, true, price)"
       /> -->
 
-      <button *ngIf="pricing > 0" (click)="sendMessage()">
+      <button class="sticky-button" [ngClass]="{ active: pricing > 0 }" (click)="sendMessage()">
         Confirmar por WhatsApp
       </button>
     </div>
