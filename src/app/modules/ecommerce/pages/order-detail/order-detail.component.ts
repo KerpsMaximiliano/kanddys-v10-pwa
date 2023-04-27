@@ -57,6 +57,7 @@ interface Image {
 interface ExtendedSlide extends Slide {
   isVideo?: boolean;
 }
+
 interface ExtendedWebformAnswer extends WebformAnswer {
   questionLabel: string;
 }
@@ -281,8 +282,15 @@ export class OrderDetailComponent implements OnInit {
 
         if (results.length > 0) {
           this.entityTemplate = results[0];
+
+
           this.entityTemplateLink =
-            this.URI + '/qr/article-template/' + this.entityTemplate._id;
+            this.entityTemplate.access === 'public' ||
+            this.entityTemplate.recipients === 0
+              ? this.URI + '/qr/article-template/' + this.entityTemplate._id
+              : this.URI +
+                '/ecommerce/article-access/' +
+                this.entityTemplate._id;
         }
       }
     }
@@ -771,7 +779,7 @@ export class OrderDetailComponent implements OnInit {
   };
 
   copyEntityId(id: string) {
-    const entityId = this.formatId(id);
+    const entityId = id;
 
     this.clipboard.copy(entityId);
 
