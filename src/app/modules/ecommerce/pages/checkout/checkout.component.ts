@@ -865,9 +865,7 @@ export class CheckoutComponent implements OnInit {
         }
       );
 
-      const recipientUser = await this.authService.checkUser(
-        this.postsService.postReceiverNumber
-      );
+      const recipientUser = this.postsService.postReceiverNumber;
 
       if (recipientUser) {
         const recipient = await this.entityTemplateService.createRecipient({
