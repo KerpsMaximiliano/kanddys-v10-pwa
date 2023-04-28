@@ -457,6 +457,7 @@
   display: flex;
   width: 100%;
   overflow-x: scroll;
+  gap: 8px;
 }
 .chip {
   font-family: SfProSemiBold;
@@ -464,6 +465,8 @@
   background-color: #3b5d44;
   padding: 8px 16px;
   border-radius: 20px;
+  white-space: nowrap;
+  user-select: none;
 }
 .benefits {
   font-family: SfProLight;

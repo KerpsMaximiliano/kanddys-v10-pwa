@@ -2,11 +2,18 @@ import gql from 'graphql-tag';
 
 const notificationData = `
 _id
+name
 message
 entity
 trigger {
   key
   value
+}
+merchant {
+  _id
+}
+owner {
+  _id
 }
 offsetTime {
   quantity
