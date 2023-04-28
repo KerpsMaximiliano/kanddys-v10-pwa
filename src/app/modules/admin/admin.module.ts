@@ -265,6 +265,10 @@ const routes: Routes = [
     component: FormCreatorComponent,
   },
   {
+    path: 'form-creator/:formId',
+    component: FormCreatorComponent,
+  },
+  {
     path: 'media-upload/:entity/:entityId',
     component: MediaUploadDndComponentComponent,
   },

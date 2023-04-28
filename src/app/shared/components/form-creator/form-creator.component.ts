@@ -8,6 +8,7 @@ import {
 } from 'src/app/core/services/webforms.service';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { Question, Webform } from 'src/app/core/models/webform';
 
 interface OptionInList {
   name: string;
@@ -116,6 +117,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit {
     'video/mxf',
   ];
   audioFiles: string[] = [];
+  webform: Webform;
 
   constructor(
     private route: ActivatedRoute,
@@ -124,29 +126,53 @@ export class FormCreatorComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    if (!this.webformsService.formCreationData) {
-      this.webformsService.formCreationData = {
-        currentStep: this.currentStepName,
-        steps: this.steps,
-        currentStepIndex: this.currentStepIndex,
-      };
+    this.route.params.subscribe(async ({ formId }) => {
+      if (!this.webformsService.formCreationData && !formId) {
+        this.webformsService.formCreationData = {
+          currentStep: this.currentStepName,
+          steps: this.steps,
+          currentStepIndex: this.currentStepIndex,
+        };
 
-      this.steps.push({
-        name: 'ADMIN_NOTE',
-        fields: new FormGroup({
-          note: new FormControl('', Validators.required),
-        }),
-      });
+        this.steps.push({
+          name: 'ADMIN_NOTE',
+          fields: new FormGroup({
+            note: new FormControl('', Validators.required),
+          }),
+        });
 
-      this.addAQuestionToTheForm();
-    } else {
-      this.steps = this.webformsService.formCreationData.steps;
+        this.addAQuestionToTheForm();
+      } else if (!formId) {
+        this.steps = this.webformsService.formCreationData.steps;
 
-      /*
-      this.stepsSwiper.directiveRef.setIndex(
-        this.webformsService.formCreationData.currentStepIndex
-      );*/
-    }
+        /*
+        this.stepsSwiper.directiveRef.setIndex(
+          this.webformsService.formCreationData.currentStepIndex
+        );*/
+      } else if (!this.webformsService.formCreationData && formId) {
+        this.webform = await this.webformsService.webform(formId);
+
+        this.steps.push({
+          name: 'ADMIN_NOTE',
+          fields: new FormGroup({
+            note: new FormControl(
+              this.webform.description,
+              Validators.required
+            ),
+          }),
+        });
+
+        for await (const question of this.webform.questions) {
+          this.addExistingQuestionToTheForm(question);
+        }
+
+        this.webformsService.formCreationData = {
+          currentStep: this.currentStepName,
+          currentStepIndex: this.currentStepIndex,
+          steps: this.steps,
+        };
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -157,6 +183,47 @@ export class FormCreatorComponent implements OnInit, AfterViewInit {
         );
       }, 200);
     }
+  }
+
+  addExistingQuestionToTheForm(question: Question) {
+    let type = 'text';
+    let responseOptions = null;
+
+    if (question.type === 'multiple' || question.type === 'multiple-text') {
+      type = 'multiple';
+
+      responseOptions = new FormArray(
+        question.answerDefault.map(
+          (option) =>
+            new FormGroup({
+              text: new FormControl(
+                option.isMedia ? option.label : option.value,
+                Validators.required
+              ),
+              fileInput: new FormControl(option.isMedia ? option.value : null), // the file input value will be a File object
+            })
+        )
+      );
+    }
+
+    if (question.type === 'text' && question.answerTextType === 'default') {
+      type = 'text';
+    }
+
+    console.log(responseOptions);
+
+    const baseFields: any = {
+      question: new FormControl(question.value, Validators.required),
+      selectedResponseType: new FormControl(type, Validators.required),
+      selectedResponseValidation: new FormControl('', Validators.required),
+    };
+
+    if (responseOptions) baseFields.responseOptions = responseOptions;
+
+    this.steps.push({
+      name: 'QUESTION_EDITION',
+      fields: new FormGroup(baseFields),
+    });
   }
 
   addAQuestionToTheForm(navigateToNextQuestion = false) {
@@ -392,7 +459,6 @@ export class FormCreatorComponent implements OnInit, AfterViewInit {
       itemId
     );*/
   }
-
 
   getBackgroundImage(src: string, elementId: string) {
     const image = new Image();

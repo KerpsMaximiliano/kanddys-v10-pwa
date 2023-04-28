@@ -57,7 +57,11 @@
     #stepsSwiper
     (slideChange)="updateCurrentStepData($event)"
   >
-    <div class="step" *ngFor="let step of steps" [formGroup]="step.fields">
+    <div
+      class="step"
+      *ngFor="let step of steps; index as stepIndex"
+      [formGroup]="step.fields"
+    >
       <ng-container [ngSwitch]="step.name">
         <section *ngSwitchCase="'ADMIN_NOTE'" class="note-step">
           <h3>
@@ -170,15 +174,15 @@
             >
               <ng-container
                 *ngIf="
-                  step.fields.controls['responseOptions'].value[0].fileInput ===
-                  null
+                  step.fields.controls['responseOptions']?.value[0]
+                    .fileInput === null
                 "
               >
                 <ng-container
                   *ngFor="
                     let control of getFormArray(
                       step.fields.controls['responseOptions']
-                    ).controls;
+                    )?.controls;
                     let i = index
                   "
                 >
@@ -249,8 +253,8 @@
                 class="grid-for-media-files"
                 cdkDropListGroup
                 *ngIf="
-                  step.fields.controls['responseOptions'].value[0].fileInput !==
-                  null
+                  step.fields.controls['responseOptions']?.value[0]
+                    .fileInput !== null
                 "
               >
                 <div
@@ -325,7 +329,7 @@
                   [ngClass]="{
                     selected:
                       step.fields.controls['selectedResponseValidation']
-                        .value === validationOption.name
+                        ?.value === validationOption.name
                   }"
                   *ngFor="
                     let validationOption of validationsForResponseType[
@@ -346,7 +350,7 @@
             </ng-template>
           </div>
 
-          <footer *ngIf="step.fields.valid">
+          <footer *ngIf="step.fields.valid && stepIndex === steps.length - 1">
             <button (click)="addAQuestionToTheForm(true)">
               Adiciona otra pregunta
             </button>
