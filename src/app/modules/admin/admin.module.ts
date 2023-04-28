@@ -16,7 +16,6 @@ import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/a
 import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 import { ImageBannerComponent } from './pages/image-banner/image-banner.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
-import { PostEditionComponent } from '../ecommerce/pages/post-edition/post-edition.component';
 import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';

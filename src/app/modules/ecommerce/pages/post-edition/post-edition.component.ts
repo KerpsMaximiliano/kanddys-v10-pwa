@@ -26,6 +26,7 @@ export class PostEditionComponent implements OnInit {
   swiperConfig: SwiperOptions = null;
   env: string = environment.assetsUrl;
   openedDialogFlow: boolean = false;
+  openedNotificationsDialog: boolean = false;
   postInput: PostInput = {
     title: 'test',
     message: 'test2',
@@ -38,6 +39,17 @@ export class PostEditionComponent implements OnInit {
   };
   dialogFlowFunctions: Record<string, any> = {};
   bannerId: string;
+
+  notificationTypes: Record<string, string> = {
+    'Acceden al contenido del QR': 'ACCESS',
+    'Escanean el QR': 'SCAN',
+    'Ni al Escanear, ni cuando accedan': 'NONE',
+  };
+  notificationTypesReversed: Record<string, string> = {
+    ACCESS: 'Acceden al contenido del QR',
+    SCAN: 'Escanean el QR',
+  };
+  choosedNotificationTypesMessage: string = 'NONE';
 
   recipientPhoneDialog: EmbeddedComponentWithId = {
     component: GeneralDialogComponent,
@@ -57,7 +69,7 @@ export class PostEditionComponent implements OnInit {
           marginBottom: '12.5px',
           marginTop: '0',
         },
-        text: 'Cual es el Whatsapp de quien Recibirá',
+        text: 'Cual es el Whatsapp del receptor?',
       },
       fields: {
         styles: {},
@@ -122,6 +134,92 @@ export class PostEditionComponent implements OnInit {
               fields
             );
           }
+        },
+      },
+    ],
+  };
+
+  notificationsDialog: EmbeddedComponentWithId = {
+    component: GeneralDialogComponent,
+    componentId: 'whatsappNumberDialog',
+    inputs: {
+      containerStyles: {
+        background: 'rgb(255, 255, 255)',
+        borderRadius: '12px',
+        opacity: '1',
+        padding: '37px 36.6px 18.9px 31px',
+      },
+      header: {
+        styles: {
+          fontSize: '21px',
+          fontFamily: 'SfProBold',
+          marginBottom: '21.2px',
+          marginTop: '0',
+          color: '#4F4F4F',
+        },
+        text: 'Recibes una notificación cuando:',
+      },
+      title: {
+        styles: {
+          fontSize: '15px',
+          color: '#7B7B7B',
+          fontStyle: 'italic',
+          margin: '0',
+        },
+        text: '',
+      },
+      fields: {
+        list: [
+          {
+            name: 'notificationsTrigger',
+            value: '',
+            validators: [Validators.required],
+            type: 'selection',
+            selection: {
+              styles: {
+                display: 'block',
+                fontFamily: '"SfProBold"',
+                fontSize: '17px',
+                color: '#272727',
+                marginLeft: '19.5px',
+              },
+              list: [
+                {
+                  text: 'Escanean el QR',
+                },
+                {
+                  text: 'Acceden al contenido del QR',
+                },
+              ],
+            },
+            prop: 'text',
+          },
+        ],
+      },
+      isMultiple: true,
+    },
+    outputs: [
+      {
+        name: 'data',
+        callback: (params) => {
+          const { value, valid } = params;
+          const { notificationsTrigger } = value;
+
+          this.postsService.entityTemplateNotificationsToAdd = (
+            notificationsTrigger as Array<string>
+          ).map(
+            (notificationString) => this.notificationTypes[notificationString]
+          );
+
+          this.choosedNotificationTypesMessage =
+            this.postsService.entityTemplateNotificationsToAdd.length > 0
+              ? this.postsService.entityTemplateNotificationsToAdd
+                  .map(
+                    (notificationKeyword) =>
+                      this.notificationTypesReversed[notificationKeyword]
+                  )
+                  .join(' y ')
+              : '';
         },
       },
     ],
@@ -377,7 +475,7 @@ export class PostEditionComponent implements OnInit {
   ];*/
   banner: Banner;
   constructor(
-    private postsService: PostsService,
+    public postsService: PostsService,
     private router: Router,
     public headerService: HeaderService,
     private _Router: Router,
@@ -413,6 +511,16 @@ export class PostEditionComponent implements OnInit {
         ];
       }
     }
+
+    this.choosedNotificationTypesMessage =
+      this.postsService.entityTemplateNotificationsToAdd.length > 0
+        ? this.postsService.entityTemplateNotificationsToAdd
+            .map(
+              (notificationKeyword) =>
+                this.notificationTypesReversed[notificationKeyword]
+            )
+            .join(', ')
+        : '';
 
     /*
     (async () => {
@@ -469,6 +577,10 @@ export class PostEditionComponent implements OnInit {
     this.openedDialogFlow = false;
   }
 
+  openNotificationsDialog() {
+    this.openedNotificationsDialog = true;
+  }
+
   openQrContentDialog() {
     if (this.dialogs2.length === 1 && !this.postsService.postReceiverNumber) {
       this.dialogs2.unshift(this.recipientPhoneDialog);
@@ -480,11 +592,11 @@ export class PostEditionComponent implements OnInit {
       this.dialogFlowService.dialogsFlows['flow2']['whatsappNumberDialog'] = {
         dialogId: 'whatsappNumberDialog',
         fields: {},
-        swiperConfig: this.dialogFlowService.swiperConfig,
+        swiperConfig: this.swiperConfig,
       };
     }
 
-    // this.openedDialogFlow = true;
+    this.openedDialogFlow = !(this.data.slides && this.data.slides.length > 0);
     localStorage.setItem(
       'post',
       JSON.stringify({
@@ -495,8 +607,9 @@ export class PostEditionComponent implements OnInit {
       })
     );
 
-    this.router.navigate([
-      'ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit',
-    ]);
+    if (this.data.slides && this.data.slides.length > 0)
+      this.router.navigate([
+        'ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit',
+      ]);
   }
 }

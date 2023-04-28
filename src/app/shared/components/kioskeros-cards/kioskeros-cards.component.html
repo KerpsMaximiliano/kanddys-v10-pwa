@@ -1,0 +1,6 @@
+<div class="container" *ngFor="let card of cards; index as i">
+  <p class="top">{{ card.top }}</p>
+  <p class="mid">{{ card.mid }}</p>
+  <p class="bottom">{{ card.bottom }}</p>
+  <button class="cta" (click)="card.callback()">{{ card.cta }}</button>
+</div>

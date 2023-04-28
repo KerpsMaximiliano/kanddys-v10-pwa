@@ -20,6 +20,7 @@ import {
   entityTemplateRemoveRecipient,
   entityTemplateUpdateRecipient,
   entityTemplates,
+  entityTemplateAddNotification,
 } from '../graphql/entity-template.gql';
 import { PaginationEvents } from 'swiper/types/components/pagination';
 import { PaginationInput } from '../models/saleflow';
@@ -30,9 +31,16 @@ import { PaginationInput } from '../models/saleflow';
 export class EntityTemplateService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async entityTemplate(id: string, password?: string): Promise<EntityTemplate> {
+  async entityTemplate(
+    id: string,
+    password?: string,
+    notificationsToTrigger?: Array<string>
+  ): Promise<EntityTemplate> {
     let variables: any = { id };
     if (password) variables.password = password;
+    if (notificationsToTrigger)
+      variables.notificationsToTrigger = notificationsToTrigger;
+
     const result = await this.graphql.query({
       query: entityTemplate,
       variables,
@@ -125,10 +133,11 @@ export class EntityTemplateService {
 
   async entityTemplateRecipient(
     id: string,
-    password?: string
+    notificationsToTrigger?: Array<string>
   ): Promise<EntityTemplate> {
     let variables: any = { id };
-    if (password) variables.password = password;
+    if (notificationsToTrigger)
+      variables.notificationsToTrigger = notificationsToTrigger;
     const result = await this.graphql.query({
       query: entityTemplateRecipient,
       variables,
@@ -218,6 +227,25 @@ export class EntityTemplateService {
       });
 
       return result?.preCreateEntityTemplate;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async entityTemplateAddNotification(
+    notificationId: string,
+    merchantId: string,
+    id: string
+  ): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateAddNotification,
+        variables: { notificationId, merchantId, id },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.entityTemplateAddNotification;
     } catch (error) {
       console.log(error);
       return null;

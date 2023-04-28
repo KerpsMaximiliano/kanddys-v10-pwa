@@ -414,7 +414,6 @@ export class PaymentsComponent implements OnInit {
               },
             });
           if (!templateMatches.length) {
-            console.log(templateMatches);
             const entityTemplate =
               await this.entityTemplateService.createEntityTemplate();
             await this.entityTemplateService.entityTemplateAuthSetData(
@@ -422,6 +421,17 @@ export class PaymentsComponent implements OnInit {
               {
                 reference: this.order.items[0].post._id,
                 entity: 'post',
+                access: privatePost === 'true' ? 'private' : 'public',
+                templateNotifications:
+                  this.postsService.entityTemplateNotificationsToAdd.map(
+                    (keyword) => ({
+                      key: keyword,
+                      message:
+                        keyword === 'SCAN'
+                          ? 'Han escaneado el QR de tu mensaje de regalo!!!'
+                          : 'Han accedido a tu mensaje de regalo!!!, Recipiente: ',
+                    })
+                  ),
               }
             );
             if (!this.postsService.postReceiverNumber) {
@@ -820,9 +830,13 @@ export class PaymentsComponent implements OnInit {
   }
 
   remindRefundPolicies() {
-    this.snackBar.open('Debes aceptar las políticas de reembolso antes de continuar con tu orden', 'OK', {
-      duration: 3000,
-      panelClass: ['mat-accent']
-    });
+    this.snackBar.open(
+      'Debes aceptar las políticas de reembolso antes de continuar con tu orden',
+      'OK',
+      {
+        duration: 3000,
+        panelClass: ['mat-accent'],
+      }
+    );
   }
 }

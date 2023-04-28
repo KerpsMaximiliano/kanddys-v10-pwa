@@ -140,11 +140,12 @@ export class GeneralDialogComponent implements OnInit, OnDestroy {
     }
     this.sub = this.controller.valueChanges.subscribe((value) => {
       if (this.dialogFlowService.activeDialogId === this.dialogId) {
+        /*
         if (this.controller.valid) {
           this.dialogFlowService.swiperConfig.allowSlideNext = true;
         } else {
           this.dialogFlowService.swiperConfig.allowSlideNext = false;
-        }
+        }*/
       }
 
       this.data.emit({

@@ -10,7 +10,6 @@ import { ErrorScreenComponent } from './pages/error-screen/error-screen.componen
 import { PostAuthComponent } from './pages/post-auth/post-auth.component';
 import { PostCreatorComponent } from './pages/post-creator/post-creator.component';
 import { PostEditComponent } from './pages/post-edit/post-edit.component';
-import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
@@ -70,10 +69,6 @@ const routes: Routes = [
   {
     path: 'post-edit',
     component: PostEditComponent,
-  },
-  {
-    path: 'post-preview',
-    component: PostPreviewComponent,
   },
   {
     path: 'privacy-policy',
@@ -185,7 +180,6 @@ const routes: Routes = [
     PostAuthComponent,
     PostCreatorComponent,
     PostEditComponent,
-    PostPreviewComponent,
     PrivacyPolicyComponent,
     UserContactLandingComponent,
     // FROM ADMIN 21/9/2022
