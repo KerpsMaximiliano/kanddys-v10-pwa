@@ -142,13 +142,7 @@
       </h2>
 
       <ng-container *ngFor="let item of order?.items; index as i">
-        <div
-          class="items-container"
-          style="margin-bottom: 4px"
-          [ngStyle]="{
-            marginTop: i !== 0 ? '10px' : '0px'
-          }"
-        >
+        <div class="items-container" style="margin-bottom: 4px">
           <div class="image-container">
             <button class="btn">
               <div

@@ -18,6 +18,11 @@ export class EntityTemplateInput {
   dateId?: string;
   user?: string;
   recipients?: any;
+  access?: string;
+  templateNotifications?: Array<{
+    key: string;
+    message: string;
+  }>;
 }
 
 export class RecipientsInput {
