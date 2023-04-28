@@ -1,0 +1,34 @@
+.flex {
+  display: flex;
+  align-items: center;
+}
+.space-between {
+  justify-content: space-between;
+}
+img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.title {
+  font-family: SfProHeavy;
+  font-size: 17px;
+  color: #171d16;
+}
+.subtitle {
+  font-family: SfProLight;
+  font-size: 17px;
+  color: #171d16;
+  margin-left: 12px;
+}
+.info {
+  font-family: SfProRegular;
+  font-size: 15px;
+  color: #7b7b7b;
+}
+@media (max-width: 480px) {
+  .subtitle {
+    display: none;
+  }
+}

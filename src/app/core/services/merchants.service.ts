@@ -6,7 +6,7 @@ import { Item } from '../models/item';
 import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import { Tag } from '../models/tags';
-import { User } from '../models/user';
+import { RecurrentUserData, User } from '../models/user';
 import { ViewsMerchant } from '../models/views-merchant';
 import { ListParams } from '../types/general.types';
 import {
@@ -39,6 +39,9 @@ import {
   merchantBySlug,
   viewsMerchants,
   viewsMerchant,
+  buyersByMerchant,
+  recurringBuyersByMerchant,
+  hotBuyersByMerchant,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -134,7 +137,7 @@ export class MerchantsService {
     const response = await this.graphql.query({
       query: ordersByMerchant,
       variables: { pagination, merchant },
-      fetchPolicy: 'no-cache',
+      fetchPolicy: 'cache-first',
     });
     return response;
   }
@@ -146,7 +149,7 @@ export class MerchantsService {
     const response = await this.graphql.query({
       query: ordersByMerchantHot,
       variables: { pagination, merchant },
-      fetchPolicy: 'no-cache',
+      fetchPolicy: 'cache-first',
     });
     return response;
   }
@@ -408,6 +411,39 @@ export class MerchantsService {
       });
       if (!result) return;
       return result.viewsMerchant;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async buyersByMerchant(
+    paginate: PaginationInput,
+    hot?: boolean
+  ): Promise<User[]> {
+    try {
+      const result = await this.graphql.query({
+        query: !hot ? buyersByMerchant : hotBuyersByMerchant,
+        variables: { paginate },
+        fetchPolicy: 'cache-first',
+      });
+      if (!result) return;
+      return result.buyersByMerchant;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async recurringBuyersByMerchant(
+    paginate: PaginationInput
+  ): Promise<RecurrentUserData[]> {
+    try {
+      const result = await this.graphql.query({
+        query: recurringBuyersByMerchant,
+        variables: { paginate },
+        fetchPolicy: 'cache-first',
+      });
+      if (!result) return;
+      return result.recurringBuyersByMerchant;
     } catch (error) {
       return error;
     }
