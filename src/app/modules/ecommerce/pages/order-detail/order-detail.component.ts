@@ -41,6 +41,7 @@ import {
 } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { answerByOrder } from 'src/app/core/graphql/webforms.gql';
+import { DomSanitizer } from '@angular/platform-browser';
 
 interface Image {
   src: string;
@@ -135,6 +136,8 @@ export class OrderDetailComponent implements OnInit {
   webformsByItem: Record<string, Webform> = {};
   answersByItem: Record<string, WebformAnswer> = {};
   from: string;
+  link: string;
+  panelOpenState = false;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -156,7 +159,8 @@ export class OrderDetailComponent implements OnInit {
     private toastr: ToastrService,
     private tagsService: TagsService,
     public dialog: MatDialog,
-    private webformsService: WebformsService
+    private webformsService: WebformsService,
+    public _DomSanitizer: DomSanitizer
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -221,6 +225,7 @@ export class OrderDetailComponent implements OnInit {
             }
           });
       }
+      this.link = `${this.URI}/ecommerce/${this.order.items[0].saleflow.merchant.slug}/store`;
     }
 
     this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
@@ -252,6 +257,11 @@ export class OrderDetailComponent implements OnInit {
       .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
     await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+    if (!this.headerService.merchantContact) {
+      this.headerService.getMerchantContact(
+        this.order.items[0].saleflow.merchant.owner._id
+      );
+    }
 
     if (this.order.items[0].post) {
       this.post = (

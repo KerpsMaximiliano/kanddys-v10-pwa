@@ -194,6 +194,7 @@ import { NotificationDialogComponent } from './dialogs/notification-dialog/notif
 import { InfoContainerComponent } from './components/info-container/info-container.component';
 import { CardInfoComponent } from './components/card-info/card-info.component';
 import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-cards.component';
+import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
 
 const imports = [
   CommonModule,
@@ -397,6 +398,7 @@ const declarations = [
   InfoContainerComponent,
   CardInfoComponent,
   KioskerosCardsComponent,
+  ContactHeaderComponent,
 ];
 
 @NgModule({

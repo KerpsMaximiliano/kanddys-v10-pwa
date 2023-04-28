@@ -43,6 +43,8 @@ const orderData = `
       merchant {
         _id
         name
+        image
+        bio
         slug
         owner {
           _id
