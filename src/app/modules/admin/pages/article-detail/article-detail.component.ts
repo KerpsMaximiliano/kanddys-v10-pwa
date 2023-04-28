@@ -21,6 +21,8 @@ export class ArticleDetailComponent implements OnInit {
   loadingSlides = true;
   option = 'facturas';
   id = "ID"
+  totalItems = 0;
+  totalPrice = 0;
 
   menuOptions = [
 
@@ -32,8 +34,9 @@ export class ArticleDetailComponent implements OnInit {
 
   async ngOnInit() {
     this.itemId = this._Route.snapshot.paramMap.get('articleId');
-    this.getItem();
-    this.getOrdersByItem();
+    await this.getItem();
+    // this.getOrdersByItem();
+    await this.getTotalByItem();
   }
 
   async getItem(){
@@ -51,7 +54,6 @@ export class ArticleDetailComponent implements OnInit {
     };
   });
   this.loadingSlides = false;
-    // console.log(this.slides);
   }
 
   async getOrdersByItem(){
@@ -72,5 +74,11 @@ export class ArticleDetailComponent implements OnInit {
     };
     let orders = await this._OrderService.ordersByItem(pagination);
     console.log(orders);
+  }
+
+  async getTotalByItem(){
+    var result =  await this._ItemsService.totalByItem(this.item.merchant._id);
+  this.totalItems = result.reduce((acc, curr) => acc + curr.itemUnits, 0);
+  this.totalPrice = result.reduce((acc, curr) => acc + curr.total, 0);
   }
 }

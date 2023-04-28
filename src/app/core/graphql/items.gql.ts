@@ -64,6 +64,8 @@ const fullItem = `
   pricePerUnit
   description
   createdAt
+  amountMerchantCoin
+  stock
   images {
     _id
     active

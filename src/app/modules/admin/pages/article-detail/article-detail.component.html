@@ -1,4 +1,3 @@
-<!-- <app-article-editor></app-article-editor> -->
 <div class="main-container">
   <div class="header">
     <div class="flex">
@@ -23,8 +22,8 @@
       [showButton]="false"
     ></app-qr-content>
     <div class="sales-block">
-      <p>7,785 ventas</p>
-      <p>$0.00</p>
+      <p>{{totalItems}} ventas</p>
+      <p>{{totalPrice | currency}}</p>
     </div>
     <div class="row-item-price row-item-price-first-row">
       <p>Precio Normal</p>
@@ -37,7 +36,7 @@
 
         <div class="row-item-price-block row-item-price-second-block">
           <p>
-            40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
+            {{item.amountMerchantCoin}} <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
             = $3500
           </p>
         </div>
@@ -50,11 +49,11 @@
       <p>Precio VIP</p>
       <div class="row-item-price-block-container">
         <div class="row-item-price-block row-item-price-first-block">
-          <p>$1,500</p>
+          <p>   {{ item.pricing | currency }}</p>
         </div>
         <div class="row-item-price-block row-item-price-second-block">
           <p>
-            40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
+            {{item.amountMerchantCoin}} <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
             = $3500
           </p>
         </div>
@@ -67,11 +66,11 @@
       <p>RECOMPENSA A COMPRADORES Y PREMIO A VENDEDORES</p>
       <div class="row-item-price-block-container">
         <div class="row-item-price-block row-item-price-first-block">
-          <p>$1,500</p>
+          <p>   {{ item.pricing | currency }}</p>
         </div>
         <div class="row-item-price-block row-item-price-second-block">
           <p>
-            40 <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
+            {{item.amountMerchantCoin}} <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
             = $3500
           </p>
         </div>
@@ -101,7 +100,7 @@
     </div>
     <div class="row-item-price">
       <p>DISPONIBILIDAD (STOCK)</p>
-      <textarea disabled placeholder="ID">{{ id }} </textarea>
+      <textarea disabled placeholder="ID">{{ item.stock }} </textarea>
     </div>
     <app-menu-button
       [position]="{ bottom: '50px' }"
