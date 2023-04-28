@@ -39,6 +39,7 @@ export class OrderStatusViewComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     lockUI();
     Promise.all([
+      // Esto va a dar error porque el GQL solo pide _id
       this.merchanstService.hotOrdersByMerchant(
         this.merchanstService.merchantData._id,
         {
@@ -56,6 +57,7 @@ export class OrderStatusViewComponent implements OnInit {
         },
       }),
     ]).then((result) => {
+      // Esto va a dar error porque el GQL solo pide _id
       const [{ ordersByMerchant }, tags] = result;
       this.orders = ordersByMerchant.filter(
         (itemOrder) => itemOrder.orderStatus !== 'draft'
@@ -78,13 +80,14 @@ export class OrderStatusViewComponent implements OnInit {
       this.orderStatusDelivery.delivered = this.orders.filter(
         (itemOrder) => itemOrder.orderStatusDelivery === 'delivered'
       );
+      // Esto va a dar error porque el GQL solo pide _id
 
-      this.tags = tags.map((tag: ExtendedTag) => {
-        tag.orderAmount = this.orders.filter((itemOrder) =>
-          itemOrder.tags.includes(tag._id)
-        ).length;
-        return tag;
-      });
+      // this.tags = tags.map((tag: ExtendedTag) => {
+      //   tag.orderAmount = this.orders.filter((itemOrder) =>
+      //     itemOrder.tags.includes(tag._id)
+      //   ).length;
+      //   return tag;
+      // });
       unlockUI();
     });
   }

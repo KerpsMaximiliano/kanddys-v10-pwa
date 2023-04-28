@@ -1,46 +1,54 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { environment } from 'src/environments/environment';
-import { ViewEncapsulation } from '@angular/core';
-import { NotificationsService } from 'src/app/core/services/notifications.service';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { Merchant } from 'src/app/core/models/merchant';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { OrderService } from 'src/app/core/services/order.service';
-import { Notification } from 'src/app/core/models/notification';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
+import { ActivatedRoute, Router } from '@angular/router';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Notification } from 'src/app/core/models/notification';
+import { OrderStatusDeliveryType } from 'src/app/core/models/order';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
+import { OrderService } from 'src/app/core/services/order.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-notification-creator',
   templateUrl: './notification-creator.component.html',
   styleUrls: ['./notification-creator.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class NotificationCreatorComponent implements OnInit {
-
   env: string = environment.assetsUrl;
 
   redirectTo: string = null;
   orderId: string = null;
-  status: string = null;
-  // orderHasNotification: boolean = false;
-
-  notificationText: string = "";
+  status: OrderStatusDeliveryType = null;
   notification: Notification;
+  notifications: Notification[] = [];
 
-  order: ItemOrder;
+  notificationForm = this.formBuilder.group({
+    name: [null, [Validators.required, Validators.pattern(/[\S]/)]],
+    message: [null, [Validators.required, Validators.pattern(/[\S]/)]],
+  });
 
-  merchant: Merchant;
+  // order: ItemOrder;
+  orderDeliveryStatus = this.orderService.orderDeliveryStatus;
+  statusList: OrderStatusDeliveryType[] = [
+    'in progress',
+    'pending',
+    'pickup',
+    'shipped',
+    'delivered',
+  ];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private notificationsService: NotificationsService,
     private merchantsService: MerchantsService,
-    private ordersService: OrderService,
+    private orderService: OrderService,
     private snackBar: MatSnackBar,
-  ) { }
+    private formBuilder: FormBuilder
+  ) {}
 
   async ngOnInit() {
     this.route.queryParams.subscribe(async (queryParams) => {
@@ -54,11 +62,11 @@ export class NotificationCreatorComponent implements OnInit {
       if (typeof orderId === 'undefined') this.orderId = null;
       if (typeof status === 'undefined') this.status = null;
 
-      
-      await this.getMerchant();
+      // await this.getMerchant();
       const notificationId = this.route.snapshot.paramMap.get('notificationId');
-      if (notificationId) await this.getNotification(this.merchant._id, notificationId);
-      if (status) await this.getDeliveryNotifications(this.merchant._id, status);
+      if (notificationId) await this.getNotification(notificationId);
+      await this.getDeliveryNotifications();
+      if (status) this.setStatus(status);
 
       // if (orderId) await this.getOrder(orderId);
       // if (this.notification) this.checkIfOrderHasNotification(this.order, this.notification._id);
@@ -66,26 +74,25 @@ export class NotificationCreatorComponent implements OnInit {
   }
 
   async save() {
-    console.log("Saving...");
-    console.log(this.status);
-
-    const message = this.replaceWord(this.notificationText, "comprador", "[name]");
+    const { name, message } = this.notificationForm.value;
+    const replaced_message = this.replaceWord(message, 'comprador', '[name]');
     try {
       lockUI();
       if (!this.notification) {
         const notification = await this.notificationsService.createNotification(
           {
-            message,
-            entity: "order",
-            merchant: this.merchant._id,
+            name,
+            message: replaced_message,
+            entity: 'order',
+            merchant: this.merchantsService.merchantData._id,
             phoneNumbers: [],
             trigger: [
               {
-                key: "orderStatusDelivery",
-                value: this.status as OrderStatusDeliveryType
-              }
+                key: 'orderStatusDelivery',
+                value: this.status as OrderStatusDeliveryType,
+              },
             ],
-            offsetTime: []
+            offsetTime: [],
           }
         );
 
@@ -94,12 +101,13 @@ export class NotificationCreatorComponent implements OnInit {
         //   this.orderId
         // );
         this.notification = notification;
-        this.snackBar.open('El mensaje ha sido guardado', '', {
-          duration: 2000,
+        unlockUI();
+        this.snackBar.open('El mensaje ha sido guardado', 'Ok', {
+          duration: 4000,
         });
       } else {
         await this.notificationsService.updateNotification(
-          { message },
+          { name, message: replaced_message },
           this.notification._id
         );
 
@@ -110,24 +118,23 @@ export class NotificationCreatorComponent implements OnInit {
         //   );
         //   this.orderHasNotification = true;
         // }
-        this.snackBar.open('El mensaje ha sido actualizado', '', {
-          duration: 2000,
+        unlockUI();
+        this.snackBar.open('El mensaje ha sido actualizado', 'Ok', {
+          duration: 4000,
         });
       }
-      unlockUI();
     } catch (error) {
       console.log(error);
       unlockUI();
-    }
-  }
-
-  async getMerchant() {
-    try {
-      const result = await this.merchantsService.merchantDefault();
-      this.merchant = result;
-    } catch (error) {
-      console.log(error);
-      // this.returnEvent();
+      this.snackBar.open(
+        `Hubo un error al ${
+          this.notification ? 'actualizar' : 'crear'
+        } la notificación`,
+        '',
+        {
+          duration: 3000,
+        }
+      );
     }
   }
 
@@ -143,16 +150,48 @@ export class NotificationCreatorComponent implements OnInit {
 
   // private checkIfOrderHasNotification(order: ItemOrder, notificationId: string) {
   //   if (
-  //     order.notifications.length > 0 && 
+  //     order.notifications.length > 0 &&
   //     order.notifications.find((notification) => notification === notificationId)
   //   ) this.orderHasNotification = true;
   // }
 
-  async getNotification(merchantId: string, notificationId: string) {
+  setStatus(status: OrderStatusDeliveryType) {
+    if (this.status === status) return;
+    this.status = status;
+    this.notification = this.checkNotificationDeliveryStatus(status);
+    if (!this.notification) {
+      this.notificationForm.reset();
+      return;
+    }
+    this.notificationForm.patchValue({
+      name: this.notification.name,
+      message: this.replaceWord(
+        this.notification.message,
+        this.escapeRegExp('[name]'),
+        'comprador'
+      ),
+    });
+  }
+
+  async getNotification(notificationId: string) {
     try {
-      const result = await this.notificationsService.notification(merchantId, notificationId);
+      const result = await this.notificationsService.notification(
+        this.merchantsService.merchantData._id,
+        notificationId
+      );
       this.notification = result;
-      this.notificationText = this.replaceWord(result.message, this.escapeRegExp("[name]"), "comprador");
+      const index = this.statusList.findIndex(
+        (value) => value === result.trigger[0].value
+      );
+      this.statusList.unshift(this.statusList.splice(index, 1)[0]);
+      this.notificationForm.patchValue({
+        name: result.name,
+        message: this.replaceWord(
+          result.message,
+          this.escapeRegExp('[name]'),
+          'comprador'
+        ),
+      });
       // TODO validar si la notificación está contenida en el array de notificaciones de la orden
     } catch (error) {
       console.log(error);
@@ -160,45 +199,55 @@ export class NotificationCreatorComponent implements OnInit {
     }
   }
 
-  async getDeliveryNotifications(merchantId: string, status: string) {
+  async getDeliveryNotifications() {
     try {
-
-      if (!this.notification) {
-        const result = await this.notificationsService.notifications(
-          {
-            options: {
-              limit: -1,
-              sortBy: 'createdAt:desc',
-            },
-            findBy: {
-              entity: "order",
-              type: "standard",
-              mode: "default",
-              active: true
-            }
+      const result = await this.notificationsService.notifications(
+        {
+          options: {
+            limit: -1,
+            sortBy: 'createdAt:desc',
           },
-          merchantId
-        );
-  
-        const notification = result.find((notification) => {
-          return notification.trigger[0].key === 'orderStatusDelivery' && notification.trigger[0].value === status;
-        });
-  
-        if (notification) {
-          this.notification = notification;
-          this.notificationText = this.replaceWord(notification.message, this.escapeRegExp("[name]"), "comprador");
-        }
-      } else {
-        const notification = (this.notification.trigger[0].key === 'orderStatusDelivery' && this.notification.trigger[0].value === status) ? this.notification : null;
-        if (!notification) this.returnEvent();
-      }
-      
+          findBy: {
+            entity: 'order',
+            type: 'standard',
+            mode: 'default',
+            active: true,
+          },
+        },
+        this.merchantsService.merchantData._id
+      );
+
+      this.notifications = result.filter(
+        (notification) => notification.trigger[0].key === 'orderStatusDelivery'
+      );
     } catch (error) {
       console.log(error);
     }
   }
 
-  returnEvent() {
+  checkNotificationDeliveryStatus(status: OrderStatusDeliveryType) {
+    return this.notifications.find(
+      (option) => option.trigger[0].value === status
+    );
+  }
+
+  getNameError() {
+    if (this.notificationForm.get('name').hasError('required')) {
+      return 'Este campo es obligatorio';
+    }
+  }
+
+  getMessageError() {
+    if (this.notificationForm.get('message').hasError('required')) {
+      return 'Este campo es obligatorio';
+    }
+  }
+
+  async returnEvent() {
+    if (this.notificationForm.touched) {
+      if (this.notificationForm.invalid) return;
+      await this.save();
+    }
     let queryParams = {};
     if (this.redirectTo && this.redirectTo.includes('?')) {
       const url = this.redirectTo.split('?');
@@ -214,13 +263,36 @@ export class NotificationCreatorComponent implements OnInit {
     });
   }
 
-  private replaceWord(original, formerWord, newWord) {
-    const regex = new RegExp(formerWord, "g");
+  private replaceWord(original: string, formerWord: string, newWord: string) {
+    const regex = new RegExp(formerWord, 'g');
     return original.replace(regex, newWord);
   }
 
-  private escapeRegExp(cadena) {
+  private escapeRegExp(cadena: string) {
     return cadena.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
+  mouseDown: boolean;
+  startX: number;
+  scrollLeft: number;
+
+  stopDragging() {
+    this.mouseDown = false;
+  }
+
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
+    this.mouseDown = true;
+    this.startX = e.pageX - el.offsetLeft;
+    this.scrollLeft = el.scrollLeft;
+  }
+
+  moveEvent(e: MouseEvent, el: HTMLDivElement) {
+    e.preventDefault();
+    if (!this.mouseDown) {
+      return;
+    }
+    const x = e.pageX - el.offsetLeft;
+    const scroll = x - this.startX;
+    el.scrollLeft = this.scrollLeft - scroll;
+  }
 }

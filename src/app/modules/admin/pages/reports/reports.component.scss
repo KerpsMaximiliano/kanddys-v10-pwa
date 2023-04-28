@@ -1,0 +1,63 @@
+.container {
+  min-height: 100vh;
+}
+header {
+  display: flex;
+  align-items: center;
+  background-color: #c1c4c1;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 20px;
+
+  div {
+    display: flex;
+    align-items: center;
+  }
+
+  p {
+    color: #272727;
+    font-size: 16px;
+    font-family: SFProHeavy;
+    margin-left: 8px;
+  }
+
+  img {
+    filter: brightness(0) saturate(100) invert(13%) sepia(23%) saturate(0%) hue-rotate(238deg) brightness(91%)
+      contrast(93%);
+  }
+
+  .add {
+    font-size: 28px;
+    font-family: SfProBold;
+    color: #272727;
+  }
+}
+main {
+  padding: 20px;
+}
+.chip-list {
+  display: flex;
+  width: 100%;
+  overflow-x: scroll;
+  gap: 8px;
+}
+.chip {
+  background-color: transparent;
+  border: solid 1px #d4d4d4;
+  font-family: SfProLight;
+  font-size: 1rem;
+  border-radius: 24px;
+  padding: 4px 18px;
+  transition: 0.2s;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+
+  &.chip-selected {
+    border-color: #bdbfbd;
+    background-color: #bdbfbd;
+    font-family: SfProSemiBold;
+    color: #171d16;
+    transition: 0.2s;
+  }
+}
