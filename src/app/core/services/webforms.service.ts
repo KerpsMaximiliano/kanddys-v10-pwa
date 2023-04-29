@@ -177,10 +177,10 @@ export class WebformsService {
     }
   }
 
-  async createAnswer(input: WebformAnswerInput): Promise<WebformAnswer> {
+  async createAnswer(input: WebformAnswerInput, userId: string): Promise<WebformAnswer> {
     const result = await this.graphql.mutate({
       mutation: createAnswer,
-      variables: { input },
+      variables: { input, userId },
     });
     return result?.createAnswer;
   }

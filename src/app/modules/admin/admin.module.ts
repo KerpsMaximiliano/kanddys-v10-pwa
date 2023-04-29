@@ -261,11 +261,7 @@ const routes: Routes = [
     component: OrderProcessComponent,
   },
   {
-    path: 'form-creator',
-    component: FormCreatorComponent,
-  },
-  {
-    path: 'form-creator/:formId',
+    path: 'form-creator/:itemId',
     component: FormCreatorComponent,
   },
   {

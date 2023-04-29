@@ -1,6 +1,11 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import {
+  FormControl,
+  Validators,
+  ValidatorFn,
+  AbstractControl,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -561,6 +566,34 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrder = async () => {
+    if (!this.logged) {
+      const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+        data: {
+          loginType: 'full',
+          magicLinkData: {
+            redirectionRoute:
+              'ecommerce/' +
+              this.headerService.saleflow.merchant.slug +
+              '/checkout',
+            entity: 'CREATE WEBFORM',
+          },
+        },
+      });
+      matDialogRef.afterClosed().subscribe(async (value) => {
+        if (!value) return;
+        if (value.user?._id || value.session.user._id) {
+          this.logged = true;
+
+          lockUI();
+
+          await this.createOrderFromCheckout();
+          return;
+        }
+      });
+
+      return;
+    }
+
     if (this.missingOrderData) {
       if (
         this.headerService.saleflow?.module?.appointment?.isActive &&
@@ -594,6 +627,17 @@ export class CheckoutComponent implements OnInit {
 
     if (!this.areWebformsValid || this.webformPreview) return;
 
+    try {
+      await this.createOrderFromCheckout();
+      unlockUI();
+    } catch (error) {
+      console.log(error);
+      unlockUI();
+      this.disableButton = false;
+    }
+  };
+
+  createOrderFromCheckout = async () => {
     this.disableButton = true;
     lockUI();
     const userInput = JSON.parse(
@@ -646,107 +690,109 @@ export class CheckoutComponent implements OnInit {
       }
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
-    try {
-      let createdOrder: string;
-      const anonymous = this.headerService.getOrderAnonymous();
-      if (this.headerService.order.itemPackage)
-        delete this.headerService.order.itemPackage;
-      if (this.headerService.user && !anonymous) {
-        createdOrder = (
-          await this.orderService.createOrder(this.headerService.order)
-        ).createOrder._id;
 
-        if (
-          this.hasDeliveryZone &&
-          this.deliveryZone &&
-          this.deliveryLocation.street
-        ) {
-          await this.orderService.orderSetDeliveryZone(
-            this.deliveryZone.id,
-            createdOrder,
-            this.headerService.user._id
-          );
-        }
-      } else {
-        createdOrder = (
-          await this.orderService.createPreOrder(this.headerService.order)
-        )?.createPreOrder._id;
+    let createdOrder: string;
+    const anonymous = this.headerService.getOrderAnonymous();
+    if (this.headerService.order.itemPackage)
+      delete this.headerService.order.itemPackage;
+    if (this.headerService.user && !anonymous) {
+      createdOrder = (
+        await this.orderService.createOrder(this.headerService.order)
+      ).createOrder._id;
 
-        if (
-          this.hasDeliveryZone &&
-          this.deliveryZone &&
-          this.deliveryLocation.street
-        ) {
-          await this.orderService.orderSetDeliveryZone(
-            this.deliveryZone.id,
-            createdOrder
-          );
-        }
+      if (
+        this.hasDeliveryZone &&
+        this.deliveryZone &&
+        this.deliveryLocation.street
+      ) {
+        await this.orderService.orderSetDeliveryZone(
+          this.deliveryZone.id,
+          createdOrder,
+          this.headerService.user._id
+        );
       }
-      this.headerService.deleteSaleflowOrder();
-      this.headerService.resetOrderProgress();
-      this.headerService.orderId = createdOrder;
-      this.headerService.currentMessageOption = undefined;
-      this.headerService.post = undefined;
+    } else {
+      createdOrder = (
+        await this.orderService.createPreOrder(this.headerService.order)
+      )?.createPreOrder._id;
 
-      //Answer the webforms of each item and adds it to the order
-      for await (const item of this.items) {
-        if (
-          item.webForms &&
-          item.webForms.length &&
-          this.webformsByItem[item._id]
-        ) {
-          const answer = this.getWebformAnswer(item._id);
-
-          const response = await this._WebformsService.createAnswer(answer);
-
-          if (response) {
-            await this._WebformsService.orderAddAnswer(
-              response._id,
-              createdOrder
-            );
-
-            this.dialogFlowService.resetDialogFlow('webform-item-' + item._id);
-          }
-        }
+      if (
+        this.hasDeliveryZone &&
+        this.deliveryZone &&
+        this.deliveryLocation.street
+      ) {
+        await this.orderService.orderSetDeliveryZone(
+          this.deliveryZone.id,
+          createdOrder
+        );
       }
+    }
+    this.headerService.deleteSaleflowOrder();
+    this.headerService.resetOrderProgress();
+    this.headerService.orderId = createdOrder;
+    this.headerService.currentMessageOption = undefined;
+    this.headerService.post = undefined;
 
-      this.appService.events.emit({ type: 'order-done', data: true });
-      if (this.hasPaymentModule) {
-        this.router.navigate([`../payments/${this.headerService.orderId}`], {
-          relativeTo: this.route,
-          replaceUrl: true,
+    //Answer the webforms of each item and adds it to the order
+    await this.createAnswerForEveryWebformItem(createdOrder);
+
+    this.appService.events.emit({ type: 'order-done', data: true });
+    if (this.hasPaymentModule) {
+      this.router.navigate([`../payments/${this.headerService.orderId}`], {
+        relativeTo: this.route,
+        replaceUrl: true,
+      });
+    } else {
+      if (!this.headerService.user || anonymous) {
+        const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'phone',
+          },
         });
-      } else {
-        if (!this.headerService.user || anonymous) {
-          const matDialogRef = this.matDialog.open(LoginDialogComponent, {
-            data: {
-              loginType: 'phone',
-            },
-          });
-          matDialogRef.afterClosed().subscribe(async (value) => {
-            if (!value) return;
-            if (value.user?._id || value.session.user._id) {
-              await this.orderService.authOrder(createdOrder, value._id);
-              this.router.navigate([`../../order-detail/${createdOrder}`], {
-                relativeTo: this.route,
-                replaceUrl: true,
-              });
-            }
-          });
-          return;
-        }
-        this.router.navigate([`../../order-detail/${createdOrder}`], {
-          relativeTo: this.route,
-          replaceUrl: true,
+        matDialogRef.afterClosed().subscribe(async (value) => {
+          if (!value) return;
+          if (value.user?._id || value.session.user._id) {
+            await this.orderService.authOrder(createdOrder, value._id);
+            this.router.navigate([`../../order-detail/${createdOrder}`], {
+              relativeTo: this.route,
+              replaceUrl: true,
+            });
+          }
         });
         return;
       }
-      unlockUI();
-    } catch (error) {
-      console.log(error);
-      unlockUI();
-      this.disableButton = false;
+      this.router.navigate([`../../order-detail/${createdOrder}`], {
+        relativeTo: this.route,
+        replaceUrl: true,
+      });
+      return;
+    }
+  };
+
+  createAnswerForEveryWebformItem = async (createdOrderId: string) => {
+    //Answer the webforms of each item and adds it to the order
+    for await (const item of this.items) {
+      if (
+        item.webForms &&
+        item.webForms.length &&
+        this.webformsByItem[item._id]
+      ) {
+        const answer = this.getWebformAnswer(item._id);
+
+        const response = await this._WebformsService.createAnswer(
+          answer,
+          this.headerService.user._id
+        );
+
+        if (response) {
+          await this._WebformsService.orderAddAnswer(
+            response._id,
+            createdOrderId
+          );
+
+          this.dialogFlowService.resetDialogFlow('webform-item-' + item._id);
+        }
+      }
     }
   };
 
@@ -1201,11 +1247,53 @@ export class CheckoutComponent implements OnInit {
           const lastDialogIndex =
             this.webformsByItem[item._id].dialogs.length - 1;
 
+          function maxWordsValidator(maxWords: number): ValidatorFn {
+            return (
+              control: AbstractControl
+            ): { [key: string]: any } | null => {
+              const value = control.value as string;
+              if (value) {
+                const words = value.trim().split(/\s+/).length;
+                if (words > maxWords) {
+                  return {
+                    maxWords: { requiredWords: maxWords, actualWords: words },
+                  };
+                }
+              }
+              return null;
+            };
+          }
+
+          function minWordsValidator(minWords: number): ValidatorFn {
+            return (
+              control: AbstractControl
+            ): { [key: string]: any } | null => {
+              const value = control.value as string;
+              if (value) {
+                const words = value.trim().split(/\s+/).length;
+                if (words < minWords) {
+                  return {
+                    minWords: { requiredWords: minWords, actualWords: words },
+                  };
+                }
+              }
+              return null;
+            };
+          }
+
           if (
             question.type === 'text' &&
             question.answerTextType.toUpperCase() !== 'NAME'
           ) {
             const validators = [Validators.required];
+
+            if (question.answerTextType.toUpperCase() === 'MAX12') {
+              validators.push(maxWordsValidator(12));
+            }
+
+            if (question.answerTextType.toUpperCase() === 'MIN12') {
+              validators.push(minWordsValidator(12));
+            }
 
             if (question.answerTextType.toUpperCase() === 'EMAIL')
               validators.push(Validators.email);
@@ -1338,7 +1426,9 @@ export class CheckoutComponent implements OnInit {
                 },
                 startWithDialogFlow:
                   this.answersByQuestion[question._id]?.response ||
-                  this.answersByQuestion[question._id]?.responseLabel || this.answersByQuestion[question._id]?.multipleResponses?.length > 0 ,
+                  this.answersByQuestion[question._id]?.responseLabel ||
+                  this.answersByQuestion[question._id]?.multipleResponses
+                    ?.length > 0,
                 multiple: question.answerLimit === 0,
                 completeAnswers: activeOptions,
                 required: question.required,

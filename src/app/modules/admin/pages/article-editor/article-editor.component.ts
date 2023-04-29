@@ -805,7 +805,7 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   openWebformCreator() {
-    this.openedDialogFlow = !this.openedDialogFlow;
+    return this._Router.navigate(['/admin/form-creator/' + this.item._id]);
   }
 
   goToWebformMetrics() {

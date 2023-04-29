@@ -78,7 +78,7 @@ header {
 
 .note-step {
   position: relative;
-  min-height: calc(100vh - 33px) !important;
+  min-height: calc(100vh - 30px) !important;
   padding-left: clamp(10px, 5.37vw, 23px);
   padding-right: clamp(10px, 5.37vw, 23px);
   padding-top: 40px;
@@ -343,13 +343,45 @@ input {
   height: 120px;
   width: 100%;
   max-width: 102px;
-  border-radius: 15px;
+  border-radius: 17px;
   background-color: #174b72;
   border: 1.5px solid #fed230;
   display: inline-block;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  position: relative;
+
+  .x-delete-btn {
+    position: absolute;
+    background-color: #ffffff;
+    color: #7b7b7b;
+    border: 2px solid #f6f6f6;
+    justify-content: center;
+    align-items: center;
+    left: 0;
+    top: 0px;
+    padding: 5px;
+    border-radius: 50%;
+    padding: 13px;
+
+    .x-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .x-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 
   &.add {
     color: #171d16;
@@ -364,4 +396,41 @@ input {
   &:hover {
     cursor: pointer;
   }
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-inner-container {
+  height: 20px;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-frame {
+  border-color: #707070;
+  border-radius: 4px;
+  height: 18px;
+  width: 18px;
+  border-width: thin;
+  background-color: white;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-label {
+  padding-top: 5px;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-background {
+  height: 18px;
+  width: 18px;
+}
+
+.checkbox-wrapper {
+  margin-top: 20.3px;
+  font-family: SfProLight;
+  font-style: italic;
+  color: #7b7b7b;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-layout {
+  white-space: normal !important;
+}
+
+.checkbox-options-wrapper {
+  margin-top: 40px;
 }

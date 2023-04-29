@@ -5,9 +5,10 @@
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-black.svg"
         class="back-btn"
         alt="back"
+        (click)="back()"
       />
       <div class="title">Creando un formulario de preguntas</div>
-      <div class="x-btn">X</div>
+      <div class="x-btn" (click)="back()">X</div>
     </div>
   </ng-container>
 
@@ -17,9 +18,10 @@
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-black.svg"
         class="back-btn"
         alt="back"
+        (click)="saveOrUpdate()"
       />
       <div class="right-area">
-        <div class="title">Slide #{{ steps.length - 1 }}</div>
+        <div class="title">Slide #{{ currentStepIndex }}</div>
 
         <div class="arrows">
           <img
@@ -39,7 +41,11 @@
   </ng-container>
 </header>
 
-<div class="current-media-shown-indicators" [style]="templateStyles()">
+<div
+  class="current-media-shown-indicators"
+  [style]="templateStyles()"
+  *ngIf="currentStepIndex !== 0"
+>
   <ng-container>
     <div
       class="indicator"
@@ -51,7 +57,7 @@
   </ng-container>
 </div>
 
-<main>
+<main (mousemove)="pointerMove($event)">
   <swiper
     [config]="swiperConfig"
     #stepsSwiper
@@ -83,7 +89,7 @@
             [ngClass]="{
               invalid: !step.fields.valid
             }"
-            (click)="stepsSwiper.directiveRef.setIndex(1)"
+            (click)="start()"
           >
             Empieza
           </button>
@@ -219,7 +225,15 @@
                       placeholder="Escribe..."
                     />
 
-                    <div class="input-options-icons">
+                    <div
+                      class="input-options-icons"
+                      *ngIf="
+                        step.fields.controls['responseOptions']?.value[0]
+                          .text === '' &&
+                        step.fields.controls['responseOptions']?.value[i]
+                          .text === ''
+                      "
+                    >
                       <img
                         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/camera-minimalistic.svg"
                         class="swipe-icon"
@@ -235,7 +249,8 @@
                         [routerLink]="['/admin/media-upload/webform-question']"
                         [queryParams]="{
                           webformQuestionIndex: this.currentStepIndex - 1,
-                          webformSelectedOption: i
+                          webformSelectedOption: i,
+                          itemId: item?._id
                         }"
                       >
                         <img
@@ -264,23 +279,78 @@
                       .value;
                     let i = index
                   "
+                  class="drag-item-wrapper"
                   style="width: 100%"
+                  [cdkDropListData]="{ gridItem: valueObject, index: i }"
+                  (cdkDropListDropped)="dropTagDraggable($event)"
                 >
-                  <div
-                    cdkDrag
-                    class="media-item"
-                    [ngStyle]="{
-                      backgroundImage:
-                        'url(' +
-                        valueObject.fileData +
-                        '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
-                    }"
-                  >
+                  <ng-container *ngIf="valueObject.fileData">
                     <div
-                      class="example-custom-placeholder"
-                      *cdkDragPlaceholder
-                    ></div>
-                  </div>
+                      cdkDrag
+                      class="media-item"
+                      [ngStyle]="{
+                        backgroundImage:
+                          'url(' +
+                          valueObject.fileData +
+                          '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                      }"
+                    >
+                      <div
+                        class="x-delete-btn"
+                        (click)="
+                          removeInputToCurrentFormArray(
+                            getFormArray(
+                              step.fields.controls['responseOptions']
+                            ),
+                            'fileInput',
+                            i
+                          )
+                        "
+                      >
+                        <div class="x-wrapper">
+                          <div class="x-btn">X</div>
+                        </div>
+                      </div>
+                      <div
+                        class="example-custom-placeholder"
+                        *cdkDragPlaceholder
+                      ></div>
+                    </div>
+                  </ng-container>
+
+                  <ng-container *ngIf="!valueObject.fileData">
+                    <div
+                      cdkDrag
+                      class="media-item"
+                      [ngStyle]="{
+                        backgroundImage:
+                          'url(' +
+                          valueObject.fileInput +
+                          '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                      }"
+                    >
+                      <div
+                        class="x-delete-btn"
+                        (click)="
+                          removeInputToCurrentFormArray(
+                            getFormArray(
+                              step.fields.controls['responseOptions']
+                            ),
+                            'fileInput',
+                            i
+                          )
+                        "
+                      >
+                        <div class="x-wrapper">
+                          <div class="x-btn">X</div>
+                        </div>
+                      </div>
+                      <div
+                        class="example-custom-placeholder"
+                        *cdkDragPlaceholder
+                      ></div>
+                    </div>
+                  </ng-container>
                 </div>
 
                 <input
@@ -316,6 +386,36 @@
                   <p>+</p>
                 </label>
               </div>
+
+              <div class="checkbox-options-wrapper">
+                <div class="checkbox-wrapper">
+                  <mat-checkbox
+                    class="required-question-checkbox"
+                    [formControl]="
+                      getFormControl(
+                        step.fields.controls['freeResponseAllowed']
+                      )
+                    "
+                    (change)="(null)"
+                  >
+                    Tienen la opción “escribe tu respuesta” para escribir
+                    libremente.
+                  </mat-checkbox>
+                </div>
+                <div class="checkbox-wrapper">
+                  <mat-checkbox
+                    class="required-question-checkbox"
+                    [formControl]="
+                      getFormControl(
+                        step.fields.controls['limitedToOneSelection']
+                      )
+                    "
+                    (change)="(null)"
+                  >
+                    Limitado a una sola respuesta.
+                  </mat-checkbox>
+                </div>
+              </div>
             </ng-container>
 
             <!--
@@ -350,12 +450,15 @@
             </ng-template>
           </div>
 
-          <footer *ngIf="step.fields.valid && stepIndex === steps.length - 1">
-            <button (click)="addAQuestionToTheForm(true)">
+          <footer>
+            <button
+              *ngIf="step.fields.valid && stepIndex === steps.length - 1"
+              (click)="addAQuestionToTheForm(true)"
+            >
               Adiciona otra pregunta
             </button>
 
-            <button>Preview</button>
+            <button (click)="deleteQuestion()">Eliminar</button>
           </footer>
         </section>
       </ng-container>

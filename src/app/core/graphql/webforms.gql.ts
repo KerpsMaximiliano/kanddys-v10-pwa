@@ -138,8 +138,8 @@ export const webformRemoveQuestion = gql`
 `;
 
 export const createAnswer = gql`
-  mutation createAnswer($input: AnswerInput!) {
-    createAnswer(input: $input) {
+  mutation createAnswer($input: AnswerInput!, $userId: ObjectID!) {
+    createAnswer(input: $input, userId: $userId) {
       _id
       response {
         value

@@ -57,6 +57,7 @@ export class MediaUploadDndComponentComponent implements OnInit {
   playVideoOnFullscreen = playVideoOnFullscreen;
   webformQuestionIndex: number = null;
   webformSelectedOption: number = null;
+  itemId: string = null;
 
   constructor(
     private itemsService: ItemsService,
@@ -78,6 +79,7 @@ export class MediaUploadDndComponentComponent implements OnInit {
           webformQuestionIndex,
           webformSelectedOption,
           webformQuestionID,
+          itemId
         }) => {
           this.entity = entity;
           this.webformQuestionIndex = Number(webformQuestionIndex);
@@ -86,6 +88,8 @@ export class MediaUploadDndComponentComponent implements OnInit {
             this.entity.toUpperCase() === 'WEBFORM-QUESTION' &&
             this.webformQuestionIndex >= 0
           ) {
+            this.itemId = itemId;
+
             if (
               this.webformsService.formCreationData.steps[
                 1 + this.webformQuestionIndex
@@ -234,7 +238,7 @@ export class MediaUploadDndComponentComponent implements OnInit {
         );
       });
 
-      this.router.navigate(['/admin/form-creator']);
+      this.router.navigate(['/admin/form-creator/' + this.itemId]);
     }
   }
 
