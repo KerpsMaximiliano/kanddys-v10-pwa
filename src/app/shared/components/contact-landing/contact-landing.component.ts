@@ -31,12 +31,14 @@ export class ContactLandingComponent implements OnInit {
   @Input() whatsapp: string;
   @Input() telegram: string;
   @Input() idUser: string = '';
-  @Input() links: Link[] = [];
+  @Input() links = [];
   @Input() contactDirection: string;
   @Input() locationString: string;
   isOwner: boolean;
   src: string;
   isEmail = isEmail;
+
+  contactIndex;
 
   constructor(
     private _Router: Router,
@@ -51,11 +53,11 @@ export class ContactLandingComponent implements OnInit {
     try {
       const pageUser = await this.usersService.user(this.idUser);
 
-      if(!pageUser) throw Error("Non existant user")
+      if (!pageUser) throw Error('Non existant user');
 
       this.isOwner = this.idUser === this.headerService.user?._id;
     } catch (error) {
-      this._Router.navigate(['others/error-screen'])      
+      this._Router.navigate(['others/error-screen']);
     }
   }
 
@@ -103,5 +105,10 @@ export class ContactLandingComponent implements OnInit {
 
   goBack() {
     this.location.back();
+  }
+
+  getIndex(index) {
+    this.contactIndex = index;
+    console.log(index);
   }
 }

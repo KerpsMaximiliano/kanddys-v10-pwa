@@ -29,6 +29,8 @@ export class ContactLandingContainerComponent implements OnInit {
   links: any[];
   contactDirection: string;
   location: string;
+  contactIndex;
+  contactCards: object[] = [];
 
   constructor(
     private _UsersService: UsersService,
@@ -56,23 +58,28 @@ export class ContactLandingContainerComponent implements OnInit {
           },
           options: {
             sortBy: 'updatedAt:desc',
-            limit: -1,
+            limit: 10,
           },
         };
-        const [contact] = await this._ContactService.contacts(paginate);
-        if (contact) {
-          const { _id, name, description, link, image } = contact || {};
-          this.contactID = name;
-          this.img = image;
-          this.bio = description;
-          this.links = link.filter(({ name, value }) => name !== 'location');
-          this.idUser = _id;
-          const direction = link.find(({ name, value }) => name === 'location');
+        // const [contact] = await this._ContactService.contacts(paginate);
+        // if (contact) {
+        //   const { _id, name, description, link, image } = contact || {};
+        //   this.contactID = name;
+        //   this.img = image;
+        //   this.bio = description;
 
-          this.contactDirection = this.address || '';
-          this.location = direction?.value || '';
-        } else {
-          let { name, phone, email, bio, social, image, ...test }: any =
+        //   this.links = link.filter(({ name, value }) => name !== 'location');
+        //   this.idUser = _id;
+        //   const direction = link.find(({ name, value }) => name === 'location');
+
+        //   console.log(this.links);
+
+        //   this.contactDirection = this.address || '';
+        //   this.location = direction?.value || '';
+        // }
+
+        const contacts = await this._ContactService.contacts(paginate);
+        let { name, phone, email, bio, social, image: userImage, ...test }: any =
             (await this._UsersService.user(idUser)) || {
               social: [],
             };
@@ -87,7 +94,7 @@ export class ContactLandingContainerComponent implements OnInit {
           });
 
           this.contactID = name || phone || email;
-          this.img = image;
+          this.img = userImage;
 
           if (merchantDefault && merchantDefault.length) {
             if (merchantDefault[0].image) {
@@ -100,6 +107,25 @@ export class ContactLandingContainerComponent implements OnInit {
           }
 
           this.bio = bio;
+          
+        if (contacts.length) {
+          console.log(contacts);
+
+          this.links = contacts;
+
+          for (let i = 0; i < this.links.length; i++) {
+            let card = {
+              bg: '#fff',
+              img: this.links[i]?.image ? this.links[i]?.image : './assets/images/noimage.png',
+              title: this.links[i]?.description,
+              // subtitle: this.links[i]?.description,
+              callback: async () => {
+                console.log('Click');
+              },
+            };
+            this.contactCards.push(card);
+          }
+          console.log(this.contactCards);
           this.links = social.map(({ name, url: value }) => ({ name, value }));
         }
       })();
