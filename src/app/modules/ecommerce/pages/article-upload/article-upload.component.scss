@@ -3,7 +3,7 @@
 }
 
 .container {
-  background-color: #293628;
+  background-color: #171d16;
   height: 100vh;
 
   header {
@@ -153,7 +153,9 @@
   padding: 10px;
   display: flex;
   align-items: center;
-  background-color: #fed230;
+  background-color: #6fcf97;
+  font-size: 13px;
+  font-family: SFProLight;
   color: #272727;
   cursor: pointer;
   justify-content: center;
@@ -161,23 +163,23 @@
   bottom: 0;
 }
 
-::ng-deep .input-wrapper {
+::ng-deep .currency-wrapper {
   max-height: 150px !important;
   border-bottom-left-radius: 0px !important;
   border-bottom-right-radius: 0px !important;
   border-bottom: 1px solid #82f18d !important;
   font-size: 44px !important;
   font-family: SFProSemiBold !important;
+  box-shadow: none !important;
+  padding-bottom: 14px !important;
 }
 
-::ng-deep #pricing.formatted-input {
-  font-size: 44px !important;
-  font-family: SFProSemiBold !important;
+::ng-deep .formatted-input {
+  max-height: 150px !important;
 }
 
-:ng-deep .currency-wrapper {
-  font-size: 44px !important;
-  font-family: SFProSemiBold !important;
+::ng-deep .input-wrapper {
+  max-height: 150px !important;
 }
 
 input::-webkit-outer-spin-button,
@@ -192,5 +194,14 @@ input[type="number"] {
   appearance: textfield;
 }
 
-.price {
+::ng-deep .formatted-price {
+  font-size: 44px !important;
+  font-family: SFProSemiBold !important;
+  color: #7b7b7b !important;
+}
+
+::ng-deep .inner-label {
+  color: #7b7b7b !important;
+  font-size: 15px !important;
+  font-family: SFProMedium !important;
 }
