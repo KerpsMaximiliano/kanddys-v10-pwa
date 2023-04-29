@@ -689,7 +689,7 @@ export class CheckoutComponent implements OnInit {
 
         await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
-      } else {
+      } else if (this.postsService.privatePost) {
         unlockUI();
 
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
@@ -720,6 +720,15 @@ export class CheckoutComponent implements OnInit {
         });
 
         return;
+      } else {
+        unlockUI();
+        const postResult = (await this.postsService.createPost(this.post))
+              ?.createPost?._id;
+
+        this.headerService.order.products[0].post = postResult;
+
+        await this.createEntityTemplateForOrderPost(postResult);
+        await this.finishOrderCreation();
       }
     }
   };
