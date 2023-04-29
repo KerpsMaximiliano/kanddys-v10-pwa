@@ -40,6 +40,7 @@ interface ExtendedItemOrder extends ItemOrder {
     percentageLess: number;
   };
   tagsData?: Tag[];
+  paymentType?: string;
 }
 
 @Component({
@@ -652,6 +653,7 @@ export class OrderSlidesComponent implements OnInit {
               );
               this.deliveryImages[i].reservation = reservation;
             }
+            console.log(order.ocr);
             if (!order.ocr) {
               const result = await this.paymentLogService.paymentLogsByOrder({
                 findBy: {
@@ -666,6 +668,12 @@ export class OrderSlidesComponent implements OnInit {
               ) {
                 order.payedWithAzul = true;
               }
+            } else {
+              order.paymentType =
+                {
+                  'bank-transfer': 'transferencia bancaria',
+                  azul: 'tarjeta: xx.6547',
+                }[order.ocr.platform] || 'Desconocido';
             }
             order.tagsData = this.userTags.filter((tag) =>
               order.tags.includes(tag._id)
@@ -730,6 +738,10 @@ export class OrderSlidesComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  openDialog() {
+    // Dialogo de los procesos
   }
 
   downloadEntityTemplateQr(qrElment: ElementRef) {

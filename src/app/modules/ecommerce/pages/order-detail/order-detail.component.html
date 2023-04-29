@@ -32,7 +32,7 @@
       />
     </p>
   </a>
-  <ng-container *ngIf="isMerchant && order.orderStatus !== 'draft'">
+  <!-- <ng-container *ngIf="isMerchant && order.orderStatus !== 'draft'">
     <a
       class="benefits-btn"
       [routerLink]="['../../../admin/order-expenses', order._id]"
@@ -75,40 +75,47 @@
         Crear un nuevo listado
       </button>
     </div>
-  </ng-container>
+  </ng-container> -->
 
   <main class="information">
     <section class="top">
-      <div style="display: flex; align-items: center">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+        "
+      >
         <h2 class="top-h" *ngIf="order">
           FACTURA {{ formatId(order.dateId) }} <br />
-          <button class="top-name btn" *ngIf="isMerchant">
+          <!-- <button class="top-name btn" *ngIf="isMerchant">
             {{ order?.items[0].saleflow.headline }}
-          </button>
+          </button> -->
         </h2>
-        <img
+        <div class="info-display">
+          <span class="info" style="margin-left: 0">
+            {{ orderDate }}
+            <ng-container *ngIf="order?.user">
+              para
+              <a style="color: #2874ad">
+                {{ order.user.name || order.user.phone || order.user.email }}
+              </a>
+            </ng-container>
+          </span>
+        </div>
+        <!-- <img
           [src]="env + '/qr-code.svg'"
           alt=""
           style="margin-left: auto; cursor: pointer"
-        />
+        /> -->
       </div>
-      <div class="info-display">
+      <!-- <div class="info-display">
         <span class="info" style="margin-left: 0px">{{
           "Dirección: " +
             order?.items[0].saleflow.module.delivery.pickUpLocations[0].nickName
         }}</span>
-      </div>
-      <div class="info-display">
-        <span class="info" style="margin-left: 0">
-          {{ orderDate }}
-          <ng-container *ngIf="order?.user">
-            para
-            <a style="color: #2874ad">
-              {{ order.user.name || order.user.phone || order.user.email }}
-            </a>
-          </ng-container>
-        </span>
-      </div>
+      </div> -->
     </section>
     <section class="section">
       <h2
@@ -236,7 +243,7 @@
         <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
       </div>
 
-      <div
+      <!-- <div
         class="items-container space-between"
         style="padding: 11px 30px 12px 33px; margin-top: 5px"
       >
@@ -244,8 +251,53 @@
         <p class="amount" [style]="{ fontSize: '21px' }">
           $ {{ payment | number : "1.2-2" }}
         </p>
-      </div>
+      </div> -->
     </section>
+
+    <div
+      class="section"
+      *ngIf="
+        deliveryImages?.deliveryZone ||
+        order?.items[0]?.deliveryLocation?.street
+      "
+    >
+      <p class="section-label">ENTREGA</p>
+      <div class="questions" *ngIf="deliveryImages?.deliveryZone">
+        <p class="label">Zona de entrega</p>
+        <p class="label gray-out capitalize">
+          {{ deliveryImages?.deliveryZone.zona }}
+        </p>
+      </div>
+      <div class="questions" *ngIf="order.items[0].deliveryLocation">
+        <p class="label">Donde entregaremos?</p>
+        <p class="label gray-out capitalize">
+          {{
+            order?.items[0]?.deliveryLocation?.houseNumber
+              ? "#" + order?.items[0]?.deliveryLocation?.houseNumber + ", "
+              : ""
+          }}
+          {{ order?.items[0]?.deliveryLocation?.street }},
+          {{
+            order?.items[0]?.deliveryLocation?.referencePoint
+              ? order?.items[0]?.deliveryLocation?.referencePoint + ", "
+              : ""
+          }}
+          {{ order?.items[0]?.deliveryLocation?.city }}, República Dominicana
+        </p>
+      </div>
+      <div class="questions">
+        <p class="label">A quien entregaremos?</p>
+        <p class="label gray-out capitalize">
+          {{ order?.user?.name ? order?.user?.name : order?.user?.phone }}
+        </p>
+      </div>
+      <div class="questions" *ngIf="deliveryImages?.reservation">
+        <p class="label">Cuando entregaremos?</p>
+        <p class="label gray-out capitalize">
+          {{ displayReservation(deliveryImages?.reservation) }}
+        </p>
+      </div>
+    </div>
 
     <section
       class="section"
@@ -260,47 +312,6 @@
       >
         Pagos:
       </h2>
-      <div class="items-container" style="margin-top: 5px">
-        <div
-          class="image-container"
-          #elemt
-          (mousedown)="startDragging($event, elemt)"
-          (mouseup)="stopDragging()"
-          (mouseleave)="stopDragging()"
-          (mousemove)="moveEvent($event, elemt)"
-        >
-          <button
-            mat-button
-            (click)="order.ocr ? openImageModal(order.ocr.image) : null"
-            style="padding: 0"
-          >
-            <div
-              class="image"
-              [ngStyle]="{
-                'background-image':
-                  order.ocr && order.ocr.image
-                    ? 'url(' + order.ocr.image + ') '
-                    : payedWithAzul
-                    ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
-                    : 'url(/assets/images/noimage.png)',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundSize: 'cover'
-              }"
-            >
-              <!-- <img
-                *ngIf="order.ocr"
-                [src]="
-                  order.ocr ? order.ocr.image : '/assets/images/noimage.png'
-                "
-                alt="item image"
-                class="item-image"
-              /> -->
-            </div>
-          </button>
-        </div>
-      </div>
-
       <ng-container *ngIf="payedWithAzul">
         <div class="items-container space-between" style="margin-top: 4px">
           <p class="total">Subtotal a pagar:</p>
@@ -326,10 +337,47 @@
         <p class="amount">$ {{ payment | number : "1.2-2" }}</p>
       </div> -->
       <div class="items-container space-between" style="margin-top: 4px">
-        <p class="total">Total pagado:</p>
+        <p class="total">Total:</p>
         <p class="amount" [style]="{ fontSize: '21px' }">
           $ {{ payment | number : "1.2-2" }}
         </p>
+      </div>
+      <div class="items-container" style="margin-top: 5px">
+        <div class="image-container" style="align-items: center">
+          <button
+            (click)="order.ocr ? openImageModal(order.ocr.image) : null"
+            class="btn"
+          >
+            <div
+              class="image"
+              [ngStyle]="{
+                'background-image':
+                  order.ocr && order.ocr.image
+                    ? 'url(' + order.ocr.image + ') '
+                    : payedWithAzul
+                    ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
+                    : 'url(/assets/images/noimage.png)'
+              }"
+            ></div>
+          </button>
+          <div class="payment-info">
+            <span>Pago por {{ paymentType }}</span>
+            <div>
+              <div
+                *ngIf="order.orderStatus === 'to confirm'"
+                class="status pending"
+              >
+                Pago por confirmar
+              </div>
+              <div
+                *ngIf="order.orderStatus === 'completed'"
+                class="status confirmed"
+              >
+                Pago confirmado
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -343,7 +391,7 @@
       </div>
     </div> -->
 
-    <section class="section" *ngIf="order?.items[0].deliveryLocation">
+    <!-- <section class="section" *ngIf="order?.items[0].deliveryLocation">
       <h2
         class="section-title"
         style="margin-top: 50px"
@@ -414,7 +462,7 @@
           {{ date.time }}
         </p>
       </div>
-    </section>
+    </section> -->
     <!-- <section
       class="section"
       [style]="{ marginTop: '78.5px' }"
@@ -440,7 +488,64 @@
       </button>
     </section> -->
 
-    <section
+    <div
+      class="section"
+      *ngIf="
+        post &&
+        (post?.message ||
+          post?.from ||
+          (post?.targets?.length && post.targets[0].name))
+      "
+    >
+      <p class="section-label">MENSAJE DE REGALO (OPCIONAL)</p>
+
+      <div class="questions">
+        <p class="label">Escrito en tarjetita física</p>
+        <p class="label gray-out">{{ post?.message }}</p>
+      </div>
+
+      <div class="questions">
+        <p class="label">Nombre del sobre</p>
+        <p class="label gray-out">
+          {{ post?.targets[0]?.name || post?.title }}
+        </p>
+      </div>
+    </div>
+
+    <!-- VIRTUAL POST SECTION -->
+    <!-- <div class="section" *ngIf="entityTemplate && entityTemplateLink">
+      <p class="section-label">CONTENIDO VIRTUAL PRIVADO</p>
+
+      <br /><br /><br />
+
+      <div class="flex">
+        <div
+          class="item-image"
+          [ngStyle]="{
+            backgroundImage: 'url(' + env + '/qr-code.svg' + ')',
+            filter:
+              'brightness(0) invert(13%) sepia(9%) saturate(1833%) hue-rotate(68deg) brightness(99%) contrast(83%)'
+          }"
+        ></div>
+        <div class="caption">
+          <button class="link-button" (click)="goToPost()">
+            Accesa al contenido
+          </button>
+          <br /><br />
+          <button
+            class="link-button"
+            (click)="copyEntityId(entityTemplate.dateId)"
+          >
+            Copy el ID
+          </button>
+          <br /><br />
+          <button class="link-button" (click)="downloadQr(qrcodeTemplate)">
+            Imprime o descarga el QR
+          </button>
+        </div>
+      </div>
+    </div> -->
+    <!-- <section
       class="section"
       style="margin-top: 32px"
       *ngIf="
@@ -540,16 +645,7 @@
           {{ formatId(entityTemplate.dateId) }}
         </button>
       </ng-container>
-      <!-- <div class="question">
-        <p class="top-text">Contenido privado del QR (fotos, audio y ...)</p>
-      </div> -->
-      <!-- <button class="blue" style="width: 70%">
-        Imprime o descarga el QR que enlaza el contenido
-      </button>
-      <button class="blue" (click)="moveDropdown()">
-        Añadir factura al TAG de entregada
-      </button> -->
-    </section>
+    </section> -->
 
     <!-- <section
       class="section"

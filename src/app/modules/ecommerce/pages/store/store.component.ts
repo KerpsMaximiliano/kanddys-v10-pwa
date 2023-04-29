@@ -28,6 +28,7 @@ import {
   LoginDialogComponent,
   LoginDialogData,
 } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 
 SwiperCore.use([Virtual]);
 
@@ -110,7 +111,8 @@ export class StoreComponent implements OnInit {
     private integrationService: IntegrationsService,
     private dialogService: DialogService,
     private appService: AppService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    private ngNavigatorShareService: NgNavigatorShareService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -287,59 +289,6 @@ export class StoreComponent implements OnInit {
     });
   }
 
-  //Same dialog as openDialog() but with StoreShare
-  openUserManagementDialog = () => {
-    const list: StoreShareList[] = [
-      {
-        title: 'Menu de opciones',
-        options: [
-          {
-            text: 'Ir a mi perfil',
-            mode: 'func',
-            func: async () => {
-              await this.router.navigate([
-                `/others/user-contact-landing/${this.headerService.user._id}`,
-              ]);
-            },
-          },
-          {
-            text: 'Cerrar sesión',
-            mode: 'func',
-            func: async () => {
-              await this.authService.signoutThree();
-            },
-          },
-        ],
-      },
-    ];
-
-    if (!this.headerService.user) {
-      list[0].options = [];
-      list[0].options.push({
-        text: 'Iniciar sesión',
-        mode: 'func',
-        func: async () => {
-          this.router.navigate(['auth/login'], {
-            queryParams: {
-              redirect: `ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
-            },
-          });
-        },
-      });
-    }
-
-    this.dialogService.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        list,
-        alternate: true,
-        hideCancelButtton: true,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
-
   async getTags() {
     const { tags: tagsList } = await this.tagsService.tags({
       findBy: {
@@ -502,5 +451,19 @@ export class StoreComponent implements OnInit {
     });
 
     this.items[index].isSelected = !this.items[index].isSelected;
+  }
+
+  shareStore() {
+    this.ngNavigatorShareService
+      .share({
+        title: '',
+        url: this.link,
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }

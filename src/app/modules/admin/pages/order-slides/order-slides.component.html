@@ -182,10 +182,7 @@
                 </p>
               </div>
               <div class="items-container" style="margin-top: 5px">
-                <div
-                  class="image-container"
-                  style="justify-content: space-between; align-items: center"
-                >
+                <div class="image-container" style="align-items: center">
                   <button
                     (click)="
                       deliveryOrder.ocr
@@ -206,18 +203,23 @@
                       }"
                     ></div>
                   </button>
-                  <button
-                    *ngIf="deliveryOrder.orderStatus === 'to confirm'"
-                    (click)="confirmPayment(deliveryOrder)"
-                    class="status btn"
-                  >
-                    Pago por confirmar
-                  </button>
-                  <span
-                    *ngIf="deliveryOrder.orderStatus === 'completed'"
-                    class="status confirmed"
-                    >Pago confirmado</span
-                  >
+                  <div class="payment-info">
+                    <span>Pago por {{ deliveryOrder.paymentType }}</span>
+                    <div>
+                      <button
+                        *ngIf="deliveryOrder.orderStatus === 'to confirm'"
+                        (click)="confirmPayment(deliveryOrder)"
+                        class="status btn"
+                      >
+                        Pago por confirmar
+                      </button>
+                      <span
+                        *ngIf="deliveryOrder.orderStatus === 'completed'"
+                        class="status confirmed"
+                        >Pago confirmado</span
+                      >
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -366,18 +368,6 @@
                   </button>
                 </div>
               </div>
-
-              <!-- <div class="flex" style="margin-top: 30px">
-                            <div
-                                class="item-image"
-                                [ngStyle]="{
-                                    backgroundColor: '#E9E371'
-                                }"
-                            ></div>
-                            <div class="caption">
-                                <button class="link-button">Imprime o descarga la imagen sugerida por IA (Inteligencia Artificial)</button>
-                            </div>
-                        </div> -->
             </div>
           </div>
           <div class="footer">
@@ -392,7 +382,7 @@
                   </div>
                 </ng-container>
               </div>
-              <span class="benefits">
+              <!-- <span class="benefits">
                 Beneficios ${{
                   (deliveryOrder.benefits
                     ? deliveryOrder.benefits.benefits -
@@ -400,7 +390,14 @@
                     : 0
                   ) | number
                 }}
-              </span>
+              </span> -->
+              <button
+                mat-icon-button
+                (click)="openDialog()"
+                style="color: #6fcf97"
+              >
+                <mat-icon>menu</mat-icon>
+              </button>
             </div>
             <div class="inner-wrapper-top">
               <div
@@ -424,8 +421,11 @@
                 </ng-container>
               </div>
             </div>
-            <div class="bottom-footer">
-              <a
+            <a
+              class="bottom-footer"
+              [routerLink]="['../order-expenses', deliveryOrder._id]"
+            >
+              <!-- <a
                 [routerLink]="[
                   '../../ecommerce/order-detail',
                   ordersToConfirm[activeIndex]?._id
@@ -448,8 +448,24 @@
                   [src]="env + '/upload.svg'"
                   alt="Contenedor con flecha saliendo"
                 />
+              </button> -->
+              <span>
+                {{
+                  deliveryOrder.benefits
+                    ? "$" +
+                      (deliveryOrder.benefits.benefits | number) +
+                      " - ($" +
+                      (deliveryOrder.benefits.less | number) +
+                      ") = " +
+                      (deliveryOrder.benefits.benefits -
+                        deliveryOrder.benefits.less | number)
+                    : ""
+                }}
+              </span>
+              <button mat-icon-button>
+                <mat-icon>more_horiz</mat-icon>
               </button>
-            </div>
+            </a>
           </div>
         </ng-container>
       </div>
