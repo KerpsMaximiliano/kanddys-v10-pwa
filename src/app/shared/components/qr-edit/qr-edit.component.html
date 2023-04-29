@@ -92,7 +92,7 @@
             }"
           ></div>
 
-          <ng-container *ngIf="videoFiles.includes(gridItem._type)">
+          <ng-container *ngIf="videoFiles.includes(gridItem._type) || gridItem._type === 'video'">
             <img
               src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
               alt="play"
@@ -107,14 +107,13 @@
             ></video>
           </ng-container>
 
-          <div
-            class="labelBox"
-            (click)="
-              item && !isSlideVideo(i)
-                ? editSlide(i)
-                : playVideoOnFullscreen('media' + i)
-            "
-          ></div>
+          <ng-container *ngIf="gridItem.type === 'text'">
+            <div class="description">{{ gridItem.text }}</div>
+
+            <div class="title">{{ gridItem.title }}</div>
+          </ng-container>
+
+          <div class="labelBox" (click)="item && !isSlideVideo(i) ? editSlide(i) : playVideoOnFullscreen('media' + i)"></div>
           <button class="circleButton" (click)="deleteSlide(i)">
             <i class="fa fa-times" aria-hidden="true"></i>
           </button>

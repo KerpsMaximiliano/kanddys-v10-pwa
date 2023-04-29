@@ -24,12 +24,13 @@
         ></i
       ></a>
       <p class="title">
-        {{
+        Prefactura
+        <!-- {{
           headerService.saleflow?.merchant?.name.length < 26
             ? headerService.saleflow?.merchant?.name
             : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
                 "Tienda" | titlecase)
-        }}
+        }} -->
       </p>
     </div>
     <div class="right-area" *ngIf="logged || headerService.user">
@@ -53,6 +54,16 @@
     >
       Confirmar y pagar
     </button>
+    <a
+      class="bannerLink"
+      *ngIf="headerService.saleflow.module?.post?.isActive"
+      (click)="createOrEditMessage()"
+      >{{
+        !postsService.post
+          ? "Incluir mensaje de regalo"
+          : "Editar mensaje de regalo"
+      }}</a
+    >
   </section>
 
   <main class="information">
@@ -296,7 +307,7 @@
         <h2 class="section-title">
           Lugar de
           {{
-            saleflowId === "62ed55eecd8fc9d59c8d7b6b"
+            headerService.saleflow.merchant._id === "62ed55eecd8fc9d59c8d7b6b"
               ? " la sesión:"
               : " Entrega:"
           }}
@@ -387,7 +398,7 @@
       </button>
     </section>
 
-    <section
+    <!-- <section
       class="section"
       *ngIf="headerService.saleflow?.module?.post?.isActive"
       style="margin-top: 32px"
@@ -511,7 +522,7 @@
           }"
         ></app-answer-selector>
       </ng-container>
-    </section>
+    </section> -->
   </main>
 
   <ng-container *ngFor="let item of items">
@@ -540,12 +551,24 @@
     mode="fixed"
     color="#FFFFFF"
     fontSize="17px"
-    bgColor="#272727"
+    [bgColor]="headerService.colorTheme"
     text="VER MAS ARTICULOS"
     size="small"
     (click)="editOrder('item')"
   ></app-sticky-button> -->
 </div>
+
+<app-dialog-flow
+  [dialogFlowId]="'flow1'"
+  [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
+  [dialogs]="dialogs"
+  [allowSlideNext]="false"
+  [signalBeforeClosing]="true"
+  (saveConfigRef)="swiperConfig = $event"
+  (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
+  (beforeClosingSignal)="deletePost()"
+  (openingDialogSignal)="executeProcessesBeforeOpening()"
+></app-dialog-flow>
 
 <ng-template #itemInfoTemplate let-item="item" let-i="i">
   <div class="productData">

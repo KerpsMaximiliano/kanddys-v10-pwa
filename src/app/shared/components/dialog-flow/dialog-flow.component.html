@@ -1,7 +1,7 @@
 <div
   class="wrapper"
   [ngStyle]="{
-    zIndex: status === 'OPEN' ? 1100 : -999
+    zIndex: status === 'OPEN' ? 999 : -999
   }"
 >
   <div class="wrapper-relative">
@@ -57,7 +57,9 @@
                 *ngFor="let dialog of dialogs; index as dialogIndex2"
                 class="current-dialog-indicator"
                 [ngClass]="{
-                  active: dialogIndex2 <= dialogIndex && dialogIndex2 <= currentDialogIndex
+                  active:
+                    dialogIndex2 <= dialogIndex &&
+                    dialogIndex2 <= currentDialogIndex
                 }"
               ></div>
             </div>

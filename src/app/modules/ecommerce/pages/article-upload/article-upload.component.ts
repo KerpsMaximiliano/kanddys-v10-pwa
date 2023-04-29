@@ -67,6 +67,7 @@ export class ArticleUploadComponent implements OnInit {
 
   async ngOnInit() {
     this.currentMediaSlide = 0;
+    this.swiperConfig.allowSlideNext = false;
     // this.initialValue = this.getNumericValue(this.initialValue);
     // if (this.initialValue) this.formatNumber(this.initialValue);
     if (this.currentMediaSlide === 0 && !this.itemForm.valid) {
@@ -164,6 +165,7 @@ export class ArticleUploadComponent implements OnInit {
     console.log(this.kioskoName);
     this.itemForm.get('name').patchValue(this.kioskoName);
     console.log(this.kioskoName.length);
+    if (this.kioskoName.length === 0) this.swiperConfig.allowSlideNext = false;
     this.checkMerchant(this.kioskoName);
   }
 

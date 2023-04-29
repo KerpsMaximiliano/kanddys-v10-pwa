@@ -1,6 +1,7 @@
 import { LocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Integration } from 'src/app/core/models/integration';
@@ -10,6 +11,8 @@ import { Post } from 'src/app/core/models/post';
 import { User } from 'src/app/core/models/user';
 import { ViewsMerchant } from 'src/app/core/models/views-merchant';
 import { Bank } from 'src/app/core/models/wallet';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { IntegrationsService } from 'src/app/core/services/integrations.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -24,8 +27,6 @@ import {
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ConfirmActionDialogComponent } from 'src/app/shared/dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { environment } from 'src/environments/environment';
-import { ToastrService } from 'ngx-toastr';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions } from 'swiper';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
@@ -270,8 +271,9 @@ export class PaymentsComponent implements OnInit {
     private location: LocationStrategy,
     private integrationService: IntegrationsService,
     private dialogService: DialogService,
-    private authService: AuthService,
     private toastrService: ToastrService,
+    private entityTemplateService: EntityTemplateService,
+    private authService: AuthService,
     private matDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -285,7 +287,7 @@ export class PaymentsComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.route.queryParams.subscribe(async (queryParams) => {
         const orderId = params['orderId'];
-        const { redirectToAzul } = queryParams;
+        const { redirectToAzul, privatePost } = queryParams;
 
         this.status = 'loading';
         const redirectToAzulPaymentsPage = Boolean(redirectToAzul);
@@ -369,11 +371,18 @@ export class PaymentsComponent implements OnInit {
             this.headerService.saleflow.merchant._id
           );
 
+        if (redirectToAzulPaymentsPage) {
+          this.redirectToAzulPaymentPage();
+        }
+
         if (!this.azulPaymentsSupported) {
           this.onlinePaymentsOptions.pop();
         }
 
-        if (redirectToAzulPaymentsPage && !this.order.user) {
+        if (
+          (redirectToAzulPaymentsPage && !this.order.user) ||
+          (privatePost === 'true' && this.currentUser && !this.order.user)
+        ) {
           this.order = (
             await this.orderService.authOrder(
               this.order._id,
@@ -388,7 +397,58 @@ export class PaymentsComponent implements OnInit {
           this.openedDialogFlow = true;
         }
 
-        // if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+        if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+
+        if (this.post && !this.post.author && this.currentUser)
+          await this.postsService.postAddUser(
+            this.post._id,
+            this.currentUser._id
+          );
+
+        if (privatePost === 'true' && this.currentUser) {
+          const templateMatches =
+            await this.entityTemplateService.entityTemplates({
+              findBy: {
+                reference: this.post._id,
+                entity: 'post',
+              },
+            });
+          if (!templateMatches.length) {
+            console.log(templateMatches);
+            const entityTemplate =
+              await this.entityTemplateService.createEntityTemplate();
+            await this.entityTemplateService.entityTemplateAuthSetData(
+              entityTemplate._id,
+              {
+                reference: this.order.items[0].post._id,
+                entity: 'post',
+              }
+            );
+            if (!this.postsService.postReceiverNumber) {
+              this.postsService.postReceiverNumber = JSON.parse(
+                localStorage.getItem('postReceiverNumber')
+              );
+            }
+            const recipientUser = await this.authService.checkUser(
+              this.postsService.postReceiverNumber
+            );
+            if (recipientUser) {
+              const recipient =
+                await this.entityTemplateService.createRecipient({
+                  phone: this.postsService.postReceiverNumber,
+                });
+              if (this.postsService.privatePost) {
+                await this.entityTemplateService.entityTemplateAddRecipient(
+                  entityTemplate._id,
+                  {
+                    edit: false,
+                    recipient: recipient._id,
+                  }
+                );
+              }
+            }
+          }
+        }
       });
     });
   }
@@ -443,12 +503,12 @@ export class PaymentsComponent implements OnInit {
     lockUI();
     if (this.order) {
       if (this.order.orderStatus === 'draft') {
-        const user = JSON.parse(
-          localStorage.getItem('registered-user')
-        ) as User;
-        if (user) {
+        if (this.currentUser) {
           this.order = (
-            await this.orderService.authOrder(this.order._id, user._id)
+            await this.orderService.authOrder(
+              this.order._id,
+              this.currentUser._id
+            )
           ).authOrder;
           localStorage.removeItem('registered-user');
         } else {
@@ -695,6 +755,15 @@ export class PaymentsComponent implements OnInit {
         topBtnCallback: () => {},
         bottomButtonText: 'Cancelar mi factura',
         bottomBtnCallback: () => {
+          this.postsService.post = null;
+          this.postsService.privatePost = null;
+          this.postsService.dialogs = null;
+          this.postsService.temporalDialogs = null;
+          this.postsService.temporalDialogs2 = null;
+          localStorage.removeItem('postReceiverNumber');
+          localStorage.removeItem('privatePost');
+          localStorage.removeItem('post');
+
           this.router.navigate([`../../store`], {
             relativeTo: this.route,
           });
