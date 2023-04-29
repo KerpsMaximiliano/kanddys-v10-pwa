@@ -53,6 +53,7 @@ export const body = `
     name
     slug
     image
+    bio
     owner {
       _id
       phone

@@ -1,8 +1,11 @@
 import { Location } from '@angular/common';
-import { Injectable, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
+import { Contact } from '../models/contact';
 import { CustomizerValueInput } from '../models/customizer-value';
+import { DeliveryZoneInput } from '../models/deliveryzone';
+import { Item } from '../models/item';
 import { Merchant } from '../models/merchant';
 import {
   ItemOrderInput,
@@ -16,14 +19,10 @@ import { Session } from '../models/session';
 import { User } from '../models/user';
 import { AuthService } from './auth.service';
 import { BookmarksService } from './bookmarks.service';
-import { CustomizerValueService } from './customizer-value.service';
-import { Item, ItemParamValue } from '../models/item';
+import { ContactService } from './contact.service';
 import { MerchantsService } from './merchants.service';
-import { OrderService } from './order.service';
-import { PostsService } from './posts.service';
 import { SaleFlowService } from './saleflow.service';
 import { WalletService } from './wallet.service';
-import { DeliveryZoneInput } from '../models/deliveryzone';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -61,6 +60,7 @@ export class HeaderService {
   order: ItemOrderInput;
   post: PostInput;
   saleflow: SaleFlow;
+  merchantContact: Contact;
   categoryId: string;
   customizer: CustomizerValueInput;
   customizerData: {
@@ -112,10 +112,10 @@ export class HeaderService {
     public wallet: WalletService,
     private bookmark: BookmarksService,
     private merchantService: MerchantsService,
-    private customizerValueService: CustomizerValueService,
-    private orderService: OrderService,
+    // private customizerValueService: CustomizerValueService,
+    // private orderService: OrderService,
     private saleflowService: SaleFlowService,
-    private postsService: PostsService
+    private contactService: ContactService // private postsService: PostsService
   ) {
     this.auth.me().then((data) => {
       if (data != undefined) {
@@ -206,6 +206,20 @@ export class HeaderService {
     }
     //console.log('Completo');
     return true;
+  }
+
+  async getMerchantContact(_id?: string) {
+    this.merchantContact = (
+      await this.contactService.contacts({
+        findBy: {
+          user: _id || this.saleflow.merchant.owner._id,
+        },
+        options: {
+          limit: 1,
+          sortBy: 'createdAt:desc',
+        },
+      })
+    )[0];
   }
 
   isDataComplete(): boolean {
