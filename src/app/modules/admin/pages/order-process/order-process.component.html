@@ -216,25 +216,6 @@
         </div>
 
         <div class="footer">
-            <div class="inner-wrapper-top">
-                <div
-                    class="current-media-shown-indicators"
-                    [style]="{
-                    'grid-template-columns': 'repeat(' + ordersReadyToDeliver.length + ', 1fr)'
-                    }"
-                    
-                >
-                    <ng-container *ngIf="ordersReadyToDeliver.length > 0">
-                        <div
-                            class="indicator"
-                            [ngClass]="{
-                                active: indicatorIndex === activeIndex
-                            }"
-                            *ngFor="let indicator of ordersReadyToDeliver; let indicatorIndex = index"
-                        ></div>
-                    </ng-container>
-                </div>
-            </div>
             <div class="top-footer">
 
                 <ng-container *ngIf="isMerchant">
@@ -322,6 +303,27 @@
                     </mat-checkbox>
                 </ng-container>
             </div>
+
+            <div class="inner-wrapper-top">
+                <div
+                    class="current-media-shown-indicators"
+                    [style]="{
+                    'grid-template-columns': 'repeat(' + ordersReadyToDeliver.length + ', 1fr)'
+                    }"
+                    
+                >
+                    <ng-container *ngIf="ordersReadyToDeliver.length > 0">
+                        <div
+                            class="indicator"
+                            [ngClass]="{
+                                active: indicatorIndex === activeIndex
+                            }"
+                            *ngFor="let indicator of ordersReadyToDeliver; let indicatorIndex = index"
+                        ></div>
+                    </ng-container>
+                </div>
+            </div>
+            
             <div class="bottom-footer" *ngIf="isMerchant">
                 <a
                     [routerLink]="['../../../ecommerce/order-detail', ordersReadyToDeliver[activeIndex]?._id]"

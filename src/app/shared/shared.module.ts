@@ -192,6 +192,7 @@ import { FullMenuButtonComponent } from './components/full-menu-button/full-menu
 import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
 import { InfoContainerComponent } from './components/info-container/info-container.component';
 import { CardInfoComponent } from './components/card-info/card-info.component';
+import { SmallInfoCardComponent } from './components/small-info-card/small-info-card.component';
 import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-cards.component';
 import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
 
@@ -400,6 +401,7 @@ const declarations = [
   NotificationDialogComponent,
   InfoContainerComponent,
   CardInfoComponent,
+  SmallInfoCardComponent,
   KioskerosCardsComponent,
   ContactHeaderComponent,
 ];
