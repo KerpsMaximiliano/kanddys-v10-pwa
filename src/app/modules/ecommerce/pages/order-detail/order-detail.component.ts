@@ -41,6 +41,7 @@ import {
 } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { answerByOrder } from 'src/app/core/graphql/webforms.gql';
+import { DomSanitizer } from '@angular/platform-browser';
 
 interface Image {
   src: string;
@@ -57,6 +58,7 @@ interface Image {
 interface ExtendedSlide extends Slide {
   isVideo?: boolean;
 }
+
 interface ExtendedWebformAnswer extends WebformAnswer {
   questionLabel: string;
 }
@@ -135,6 +137,9 @@ export class OrderDetailComponent implements OnInit {
   webformsByItem: Record<string, Webform> = {};
   answersByItem: Record<string, WebformAnswer> = {};
   from: string;
+  link: string;
+  chatLink: string;
+  panelOpenState = false;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -156,7 +161,8 @@ export class OrderDetailComponent implements OnInit {
     private toastr: ToastrService,
     private tagsService: TagsService,
     public dialog: MatDialog,
-    private webformsService: WebformsService
+    private webformsService: WebformsService,
+    public _DomSanitizer: DomSanitizer
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -221,6 +227,17 @@ export class OrderDetailComponent implements OnInit {
             }
           });
       }
+
+      const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+
+      const message = `*🐝 FACTURA ${formatID(
+        this.order.dateId
+      )}* \n\nLink de lo facturado por: ${fullLink}`;
+
+      this.link = `${this.URI}/ecommerce/contact-landing/${this.order?.items[0].saleflow.merchant.owner._id}`;
+      this.chatLink = `https://api.whatsapp.com/send?phone=${
+        this.order.items[0].saleflow.merchant.owner.phone
+      }&text=${encodeURIComponent(message)}`;
     }
 
     this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
@@ -252,6 +269,11 @@ export class OrderDetailComponent implements OnInit {
       .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
     await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+    if (!this.headerService.merchantContact) {
+      this.headerService.getMerchantContact(
+        this.order.items[0].saleflow.merchant.owner._id
+      );
+    }
 
     if (this.order.items[0].post) {
       this.post = (
@@ -281,8 +303,15 @@ export class OrderDetailComponent implements OnInit {
 
         if (results.length > 0) {
           this.entityTemplate = results[0];
+
+
           this.entityTemplateLink =
-            this.URI + '/qr/article-template/' + this.entityTemplate._id;
+            this.entityTemplate.access === 'public' ||
+            this.entityTemplate.recipients === 0
+              ? this.URI + '/qr/article-template/' + this.entityTemplate._id
+              : this.URI +
+                '/ecommerce/article-access/' +
+                this.entityTemplate._id;
         }
       }
     }
@@ -771,7 +800,7 @@ export class OrderDetailComponent implements OnInit {
   };
 
   copyEntityId(id: string) {
-    const entityId = this.formatId(id);
+    const entityId = id;
 
     this.clipboard.copy(entityId);
 

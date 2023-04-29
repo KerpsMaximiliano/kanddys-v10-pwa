@@ -564,7 +564,7 @@
   [dialogs]="dialogs"
   [allowSlideNext]="false"
   [signalBeforeClosing]="true"
-  (saveConfigRef)="swiperConfig = $event"
+  (saveConfigRef)="postsService.swiperConfig = $event"
   (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
   (beforeClosingSignal)="deletePost()"
   (openingDialogSignal)="executeProcessesBeforeOpening()"

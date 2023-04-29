@@ -5,7 +5,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { environment } from 'src/environments/environment';
 import { FormBuilder } from '@angular/forms';
-import { SwiperOptions, Swiper } from 'swiper';
+import { SwiperOptions } from 'swiper';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 
 @Component({
@@ -123,7 +123,7 @@ export class TextEditionAndPreviewComponent implements OnInit {
     */
   }
 
-  changeSlide(eventData: Swiper) {
+  changeSlide(eventData: any) {
     const currentDialogIndex = eventData.activeIndex;
     this.currentMessageIndex = currentDialogIndex;
 

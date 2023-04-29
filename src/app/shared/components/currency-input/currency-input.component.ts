@@ -22,10 +22,15 @@ export class CurrencyInputComponent implements OnInit {
   @Input() initialValue: number;
   @Input() currencyLabel: string;
   @Input() fieldStyles: Record<string, any> = null;
+  @Input() cursorStyles: Record<string, any> = null;
   @Input() placeholderColor: string;
+  @Input() inputContentColor: string;
+  @Input() inputContentSize: string;
+  @Input() inputTextStyles: Record<string, any> = null;
   @Input() inputId: string = 'pricing';
   @Input() inputName: string = 'pricing';
   @Input() innerLabel: string;
+  @Input() innerLabelStyles: Record<string, any> = null;
   @Input() required: boolean = true;
   @Input() blockKeyboardNavigation: boolean = false;
   @Input() dialogId: string;

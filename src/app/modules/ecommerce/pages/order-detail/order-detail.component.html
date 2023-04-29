@@ -1,21 +1,43 @@
 <div class="container">
-  <header
-    class="header"
-    [ngStyle]="{ backgroundColor: isMerchant ? '#000000' : '#293628' }"
-  >
-    <button mat-button (click)="!redirectTo ? returnToStore() : returnEvent()">
-      <img
-        [src]="env + '/arrow-double-up-black.svg'"
-        alt=""
-        style="
-          filter: invert(87%) sepia(6%) saturate(3262%) hue-rotate(67deg)
-            brightness(104%) contrast(89%);
-        "
-      />
-    </button>
-    <p>WeDoWeLike</p>
-    <span>Revistas Virtuales para Monetizar</span>
-  </header>
+  <mat-accordion>
+    <mat-expansion-panel
+      (opened)="panelOpenState = true"
+      (closed)="panelOpenState = false"
+      class="panel"
+      [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div class="merchant-info">
+            <div
+              class="icon"
+              [style.background]="
+                _DomSanitizer.bypassSecurityTrustStyle(
+                  'url(' +
+                    order?.items[0].saleflow.merchant?.image +
+                    ') no-repeat center center / cover #e9e371'
+                )
+              "
+            ></div>
+            <p class="title">
+              {{
+                order?.items[0].saleflow.merchant?.name.length < 26
+                  ? order?.items[0].saleflow.merchant?.name
+                  : (order?.items[0].saleflow.merchant?.name.slice(0, 26) +
+                      ".." || "Tienda" | titlecase)
+              }}
+            </p>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-contact-header
+        [link]="link"
+        [chatLink]="chatLink"
+        [bio]="order?.items[0].saleflow.merchant.bio"
+        [contact]="headerService.merchantContact"
+      ></app-contact-header>
+    </mat-expansion-panel>
+  </mat-accordion>
 
   <a
     class="bar btn notify"
@@ -121,13 +143,7 @@
       </h2>
 
       <ng-container *ngFor="let item of order?.items; index as i">
-        <div
-          class="items-container"
-          style="margin-bottom: 4px"
-          [ngStyle]="{
-            marginTop: i !== 0 ? '10px' : '0px'
-          }"
-        >
+        <div class="items-container" style="margin-bottom: 4px">
           <div class="image-container">
             <button class="btn">
               <div

@@ -49,6 +49,13 @@
       <div class="category-item active">
         TODOS
       </div>
+      <div class="category-item" *ngFor="let filter of filters; let i = index">
+        {{ 
+          filter.type === 'queryParameter' ? 
+          formatDate(filter.queryParameter.from.date, true) + ' - ' + formatDate(filter.queryParameter.until.date, true) :
+          'Otro'
+        }}
+      </div>
       <div class="category-item" *ngFor="let tag of tags; let i = index" [ngClass]="{ active: isTagActive(tag) }" (click)="filterTag(i)">
         {{ tag.name }}
       </div>
@@ -64,6 +71,16 @@
     >
     </app-options-bar>
   </div> -->
+
+  <mat-form-field appearance="fill" style="display: none;">
+    <mat-label>Enter a date range</mat-label>
+    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+      <input matStartDate formControlName="start" placeholder="Start date">
+      <input matEndDate formControlName="end" (dateChange)="onDateChange()" placeholder="End date">
+    </mat-date-range-input>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field>
 
   <div class="section">
     <div class="section-header">
@@ -228,12 +245,13 @@
     </button>
   </div>
 
-  <div class="sticky-bar">
-    <p>PREVIEW</p>
-    <div>
+  <div class="sticky-bar" (click)="openDatePicker()">
+    <img [src]="environment + '/dots-black.svg'" alt="">
+    <p>{{ dateString }}</p>
+    <!-- <div>
       <p>VISIBLE EN: URL.COM</p>
       <img [src]="environment + '/upload.svg'" alt="">
-    </div>
+    </div> -->
   </div>
 
   <!-- <div
