@@ -194,6 +194,7 @@ import { InfoContainerComponent } from './components/info-container/info-contain
 import { CardInfoComponent } from './components/card-info/card-info.component';
 import { SmallInfoCardComponent } from './components/small-info-card/small-info-card.component';
 import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-cards.component';
+import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
 
 const imports = [
   CommonModule,
@@ -402,6 +403,7 @@ const declarations = [
   CardInfoComponent,
   SmallInfoCardComponent,
   KioskerosCardsComponent,
+  ContactHeaderComponent,
 ];
 
 @NgModule({
