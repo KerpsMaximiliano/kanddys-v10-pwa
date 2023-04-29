@@ -51,7 +51,10 @@
     </ul>
   </div>
 </div>
-<div class="action-bar">
+<div class="action-bar" (click)="goToChat()">
+  <button mat-button>
+    CHAT CONMIGO POR WHATSAPP
+  </button>
   <button mat-button (click)="shareStore()">
     COMPARTE MI CONTACTO
     <i class="fa fa-share-alt" aria-hidden="true"></i>

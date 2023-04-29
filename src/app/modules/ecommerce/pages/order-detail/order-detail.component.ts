@@ -138,6 +138,7 @@ export class OrderDetailComponent implements OnInit {
   answersByItem: Record<string, WebformAnswer> = {};
   from: string;
   link: string;
+  chatLink: string;
   panelOpenState = false;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
@@ -226,7 +227,17 @@ export class OrderDetailComponent implements OnInit {
             }
           });
       }
-      this.link = `${this.URI}/ecommerce/${this.order.items[0].saleflow.merchant.slug}/store`;
+
+      const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+
+      const message = `*🐝 FACTURA ${formatID(
+        this.order.dateId
+      )}* \n\nLink de lo facturado por: ${fullLink}`;
+
+      this.link = `${this.URI}/ecommerce/contact-landing/${this.order?.items[0].saleflow.merchant.owner._id}`;
+      this.chatLink = `https://api.whatsapp.com/send?phone=${
+        this.order.items[0].saleflow.merchant.owner.phone
+      }&text=${encodeURIComponent(message)}`;
     }
 
     this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);

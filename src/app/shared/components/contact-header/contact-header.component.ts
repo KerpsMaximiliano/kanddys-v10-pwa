@@ -11,6 +11,7 @@ export class ContactHeaderComponent implements OnInit {
   @Input() contact: Contact;
   @Input() bio: string;
   @Input() link: string;
+  @Input() chatLink: string;
 
   constructor(private ngNavigatorShareService: NgNavigatorShareService) {}
 
@@ -28,5 +29,9 @@ export class ContactHeaderComponent implements OnInit {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  goToChat() {
+    window.open(this.chatLink, '_blank');
   }
 }
