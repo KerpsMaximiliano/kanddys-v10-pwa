@@ -17,6 +17,7 @@ import {
   playVideoOnFullscreen,
   unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
 import {
   DeliveryZone,
   DeliveryZoneInput,
@@ -28,16 +29,16 @@ import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
 import {
-  ItemWebform,
   Question,
   Webform,
-  AnswerInput,
   WebformAnswerInput,
   WebformResponseInput,
-  AnswerDefault,
 } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -49,10 +50,7 @@ import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { ClosedQuestionCardComponent } from 'src/app/shared/components/closed-question-card/closed-question-card.component';
-import {
-  ExtendedAnswerDefault,
-  WebformMultipleSelectionQuestionComponent,
-} from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
+import { ExtendedAnswerDefault } from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
 import { WebformNameQuestionComponent } from 'src/app/shared/components/webform-name-question/webform-name-question.component';
 import { WebformTextareaQuestionComponent } from 'src/app/shared/components/webform-textarea-question/webform-textarea-question.component';
 import { GeneralDialogComponent } from 'src/app/shared/components/general-dialog/general-dialog.component';
@@ -61,80 +59,13 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { MediaDialogComponent } from 'src/app/shared/dialogs/media-dialog/media-dialog.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { Dialogs } from './dialogs';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { filter } from 'rxjs/operators';
 
-const options = [
-  {
-    status: true,
-    click: true,
-    value: 'No tendrá mensaje de regalo',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-  },
-  // {
-  //   status: true,
-  //   click: true,
-  //   value: 'Con mensaje virtual e impreso',
-  //   valueStyles: {
-  //     'font-family': 'SfProBold',
-  //     'font-size': '13px',
-  //     color: '#202020',
-  //   },
-  //   subtexts: [
-  //     {
-  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
-  //       styles: {
-  //         fontFamily: 'SfProRegular',
-  //         fontSize: '1rem',
-  //         color: '#7B7B7B',
-  //       },
-  //     },
-  //   ],
-  // },
-  // {
-  //   status: true,
-  //   click: true,
-  //   value: 'Mensaje virtual',
-  //   valueStyles: {
-  //     'font-family': 'SfProBold',
-  //     'font-size': '13px',
-  //     color: '#202020',
-  //   },
-  //   subtexts: [
-  //     {
-  //       text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
-  //       styles: {
-  //         fontFamily: 'SfProRegular',
-  //         fontSize: '1rem',
-  //         color: '#7B7B7B',
-  //       },
-  //     },
-  //   ],
-  // },
-  {
-    status: true,
-    click: true,
-    value: 'Mensaje impreso',
-    valueStyles: {
-      'font-family': 'SfProBold',
-      'font-size': '13px',
-      color: '#202020',
-    },
-    subtexts: [
-      {
-        text: `Agregue texto a la tarjeta.`,
-        styles: {
-          fontFamily: 'SfProRegular',
-          fontSize: '1rem',
-          color: '#7B7B7B',
-        },
-      },
-    ],
-  },
-];
+interface ExtendedItem extends Item {
+  ready?: boolean;
+}
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -165,7 +96,7 @@ export class CheckoutComponent implements OnInit {
   disableButton: boolean;
   currentUser: User;
   date: {
-    year: string;
+    year?: string;
     month: string;
     day: number;
     weekday: string;
@@ -173,18 +104,23 @@ export class CheckoutComponent implements OnInit {
   };
   logged: boolean;
   env: string = environment.assetsUrl;
-  options: OptionAnswerSelector[] = options;
   selectedPostOption: number;
   missingOrderData: boolean;
   postSlideImages: (string | ArrayBuffer)[] = [];
   postSlideVideos: (string | ArrayBuffer)[] = [];
   postSlideAudio: SafeUrl[] = [];
-  saleflowId: string;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  openedDialogFlow: boolean = false;
+  swiperConfig: SwiperOptions = null;
+  status: 'OPEN' | 'CLOSE' = 'CLOSE';
+  dialogFlowFunctions: Record<string, any> = {};
+  addedPhotosToTheQr: boolean = false;
+  addedJokesToTheQr: boolean = false;
+  temporalDialogs: Array<EmbeddedComponentWithId> = [];
+  temporalDialogs2: Array<EmbeddedComponentWithId> = [];
+  dialogs: Array<EmbeddedComponentWithId> = [];
   itemObjects: Record<string, ItemSubOrderInput> = {};
   showAnswers: boolean = false;
-  swiperConfig: SwiperOptions = null;
-  dialogFlowFunctions: Record<string, any> = {};
   webformsByItem: Record<
     string,
     {
@@ -221,23 +157,27 @@ export class CheckoutComponent implements OnInit {
   > = {};
   areWebformsValid: boolean = false;
   webformPreview: boolean = false;
+  URI: string = environment.uri;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
     private dialogService: DialogService,
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
-    private postsService: PostsService,
+    public postsService: PostsService,
     public orderService: OrderService,
     private appService: AppService,
     public location: Location,
     private router: Router,
     private route: ActivatedRoute,
-    private toastr: ToastrService,
     private authService: AuthService,
-    public matDialog: MatDialog,
-    public dialog: MatDialog,
     private dialogFlowService: DialogFlowService,
+    private entityTemplateService: EntityTemplateService,
+    private gpt3Service: Gpt3Service,
+    public dialog: MatDialog,
+    private notificationsService: NotificationsService,
+    public matDialog: MatDialog,
+    private toastr: ToastrService,
     private _WebformsService: WebformsService,
     private deliveryzonesService: DeliveryZonesService
   ) {}
@@ -246,159 +186,183 @@ export class CheckoutComponent implements OnInit {
     this.webformPreview = Boolean(
       this.route.snapshot.queryParamMap.get('webformPreview')
     );
-    this.saleflowId = this.headerService.saleflow.merchant._id;
-    let items = this.headerService.order.products.map(
-      (subOrder) => subOrder.item
-    );
-    if (!items.every((value) => typeof value === 'string')) {
-      items = items.map((item: any) => item?._id || item);
-    }
-    this.items = (
-      await this.saleflowService.listItems({
-        findBy: {
-          _id: {
-            __in: ([] = [...items]),
-          },
-        },
-      })
-    )?.listItems;
-    this.getQuestions();
-
-    for (const item of this.items as Array<ExtendedItem>) {
-      item.ready = false;
-      item.images = item.images.sort(({ index: a }, { index: b }) =>
-        a > b ? 1 : -1
-      );
-      for (const image of item.images) {
-        if (
-          image.value &&
-          !image.value.includes('http') &&
-          !image.value.includes('https')
-        ) {
-          image.value = 'https://' + image.value;
-        }
-      }
-    }
-
-    if (!this.items?.length) this.editOrder('item');
-    this.post = this.headerService.getPost();
-    if (this.post?.slides?.length) {
-      this.post.slides.forEach((slide) => {
-        if (slide.media?.type.includes('image')) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.postSlideImages.push(reader.result);
-          };
-          reader.readAsDataURL(slide.media);
-        }
-        if (slide.media?.type.includes('video')) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.postSlideVideos.push(reader.result);
-          };
-          reader.readAsDataURL(slide.media);
-        }
-        if (slide.media?.type.includes('audio')) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.postSlideAudio.push(
-              this._DomSanitizer.bypassSecurityTrustUrl(
-                URL.createObjectURL(slide.media)
-              )
-            );
-          };
-          reader.readAsDataURL(slide.media);
-        }
-      });
-    }
-
-    await this.getDeliveryZones(this.headerService.saleflow.merchant._id);
-
-    this.deliveryZone = this.headerService.getZone();
-    this.deliveryLocation = this.headerService.getLocation();
-    // Validation for stores with only one address of pickup and no delivery for customers
-    if (!this.deliveryLocation) {
+    this.route.queryParams.subscribe(async (queryParams) => {
+      const { startOnDialogFlow, addedQr, addedPhotos, addedAIJoke } =
+        queryParams;
       if (
-        this.headerService.saleflow.module.delivery?.pickUpLocations.length ==
-          1 &&
-        !this.headerService.saleflow.module.delivery.deliveryLocation
+        this.postsService.dialogs?.length ||
+        this.postsService.temporalDialogs?.length ||
+        this.postsService.temporalDialogs2?.length
       ) {
-        this.deliveryLocation =
-          this.headerService.saleflow.module.delivery.pickUpLocations[0];
-        this.headerService.storeLocation(this.deliveryLocation);
-        this.headerService.orderProgress.delivery = true;
-        this.headerService.storeOrderProgress();
+        this.openedDialogFlow = Boolean(startOnDialogFlow);
       }
-    }
-    this.reservation = this.headerService.getReservation().reservation;
-    if (this.reservation) {
-      const fromDate = new Date(this.reservation.date.from);
-      if (fromDate < new Date()) {
-        this.headerService.emptyReservation();
-        this.editOrder('reservation');
+
+      this.createDialogs();
+
+      let storedPrivatePost: string = localStorage.getItem('privatePost');
+      this.postsService.privatePost = storedPrivatePost === 'true';
+
+      if (!this.postsService.post) {
+        const storedPost = localStorage.getItem('post');
+
+        if (storedPost) this.postsService.post = JSON.parse(storedPost);
       }
-      const untilDate = new Date(this.reservation.date.until);
-      this.date = {
-        day: fromDate.getDate(),
-        weekday: fromDate.toLocaleString('es-MX', {
-          weekday: 'short',
-        }),
-        month: fromDate.toLocaleString('es-MX', {
-          month: 'short',
-        }),
-        year: fromDate.toLocaleString('es-MX', {
-          year: 'numeric',
-        }),
-        time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
-          untilDate,
-          this.reservation.breakTime
-        )}`,
-      };
-      this.headerService.orderProgress.reservation = true;
-    }
-    this.headerService.checkoutRoute = null;
-    this.headerService.order.products.forEach((product) => {
-      if (product.amount) this.itemObjects[product.item] = product;
-      else {
-        this.headerService.removeOrderProduct(product.item);
-        this.headerService.removeItem(product.item);
+
+      if (this.openedDialogFlow) {
+        this.addedJokesToTheQr = Boolean(this.postsService.post.joke);
+        this.addedPhotosToTheQr = Boolean(
+          this.postsService.post.slides && this.postsService.post.slides.length
+        );
+
+        this.createDialogs();
+
+        if (this.postsService.dialogs.length !== 0 && startOnDialogFlow) {
+          this.dialogs = this.postsService.dialogs;
+          this.temporalDialogs = this.postsService.temporalDialogs;
+          this.temporalDialogs2 = this.postsService.temporalDialogs2;
+        }
+
+        setTimeout(() => {
+          let generatedMessage = false;
+
+          let lastActiveDialogIndex = this.dialogs.findIndex((dialog) => {
+            const doesTheDialogsIdsMatch =
+              dialog.componentId ===
+              this.dialogFlowService.previouslyActiveDialogId;
+
+            if (
+              doesTheDialogsIdsMatch &&
+              dialog.componentId === 'receiverRelationshipDialog' &&
+              this.postsService.post.message &&
+              this.postsService.post.title &&
+              this.postsService.post.to
+            ) {
+              generatedMessage = true;
+            }
+
+            return doesTheDialogsIdsMatch;
+          });
+
+          if (generatedMessage) lastActiveDialogIndex += 1;
+
+          // if (addedQr) {
+          //   if (addedPhotos || addedAIJoke) {
+          //     this.dialogs[this.dialogs.length - 1].inputs.header.text =
+          //       '¿Deseas incluir alguna otra cosa?';
+
+          //     this.dialogs[
+          //       this.dialogs.length - 1
+          //     ].inputs.fields.list[0].selection.list[0].text = 'No';
+
+          //     this.dialogs[
+          //       this.dialogs.length - 1
+          //     ].inputs.fields.list[0].selection.list[1].text = addedPhotos
+          //       ? 'Un chiste de la IA'
+          //       : 'Fotos, videos de mi device';
+          //   }
+
+          //   return this.dialogFlowFunctions.moveToDialogByIndex(
+          //     this.dialogs.length - 1
+          //   );
+          // }
+
+          this.dialogFlowFunctions.moveToDialogByIndex(lastActiveDialogIndex);
+        }, 500);
       }
-    });
 
-    this.updatePayment();
-    if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
-      this.hasPaymentModule = true;
-    this.checkLogged();
-    if (
-      !this.headerService.orderInputComplete() ||
-      (this.hasDeliveryZone &&
-        this.deliveryLocation.street &&
-        !this.deliveryZone)
-    ) {
-      this.missingOrderData = true;
-    }
+      let items = this.headerService.order.products.map(
+        (subOrder) => subOrder.item
+      );
+      if (!this.headerService.order?.products) this.editOrder('item');
+      if (!items.every((value) => typeof value === 'string')) {
+        items = items.map((item: any) => item?._id || item);
+      }
+      if (!items?.length) this.editOrder('item');
+      this.items = (
+        await this.saleflowService.listItems({
+          findBy: {
+            _id: {
+              __in: ([] = [...items]),
+            },
+          },
+        })
+      )?.listItems;
+      this.getQuestions();
 
-    if (this.webformPreview) {
-      this.post = {
-        message: 'Dummy post',
-        from: 'Emisor',
-        to: 'Receptor',
-      };
+      for (const item of this.items as Array<ExtendedItem>) {
+        item.ready = false;
+        item.images = item.images.sort(({ index: a }, { index: b }) =>
+          a > b ? 1 : -1
+        );
+        for (const image of item.images) {
+          if (
+            image.value &&
+            !image.value.includes('http') &&
+            !image.value.includes('https')
+          ) {
+            image.value = 'https://' + image.value;
+          }
+        }
+      }
 
-      this.reservation = {
-        breakTime: 15,
-        calendar: 'dummyid',
-        date: {
-          dateType: 'RANGE',
-          from: new Date('2023-04-07T16:00:00.000Z').toISOString(),
-          until: new Date('2023-04-07T17:00:00.000Z').toISOString(),
-          fromHour: '16:00',
-          toHour: '16:45',
-        },
-        merchant: this.headerService.saleflow.merchant._id,
-        type: 'ORDER',
-      };
+      this.post = this.headerService.getPost();
 
+      const storedPost = localStorage.getItem('post');
+
+      if (storedPost && !this.post) {
+        this.headerService.post = JSON.parse(storedPost);
+        this.post = this.headerService.post;
+      }
+
+      if (this.post?.slides?.length) {
+        this.post.slides.forEach((slide) => {
+          if (slide.media?.type.includes('image')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this.postSlideImages.push(reader.result);
+            };
+            reader.readAsDataURL(slide.media);
+          }
+          if (slide.media?.type.includes('video')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this.postSlideVideos.push(reader.result);
+            };
+            reader.readAsDataURL(slide.media);
+          }
+          if (slide.media?.type.includes('audio')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              this.postSlideAudio.push(
+                this._DomSanitizer.bypassSecurityTrustUrl(
+                  URL.createObjectURL(slide.media)
+                )
+              );
+            };
+            reader.readAsDataURL(slide.media);
+          }
+        });
+      }
+
+      await this.getDeliveryZones(this.headerService.saleflow.merchant._id);
+
+      this.deliveryZone = this.headerService.getZone();
+      this.deliveryLocation = this.headerService.getLocation();
+      // Validation for stores with only one address of pickup and no delivery for customers
+      if (!this.deliveryLocation) {
+        if (
+          this.headerService.saleflow.module.delivery?.pickUpLocations.length ==
+            1 &&
+          !this.headerService.saleflow.module.delivery.deliveryLocation
+        ) {
+          this.deliveryLocation =
+            this.headerService.saleflow.module.delivery.pickUpLocations[0];
+          this.headerService.storeLocation(this.deliveryLocation);
+          this.headerService.orderProgress.delivery = true;
+          this.headerService.storeOrderProgress();
+        }
+      }
+      this.reservation = this.headerService.getReservation().reservation;
       if (this.reservation) {
         const fromDate = new Date(this.reservation.date.from);
         if (fromDate < new Date()) {
@@ -424,7 +388,97 @@ export class CheckoutComponent implements OnInit {
         };
         this.headerService.orderProgress.reservation = true;
       }
-    }
+      this.headerService.checkoutRoute = null;
+      this.headerService.order.products.forEach((product) => {
+        if (product.amount) this.itemObjects[product.item] = product;
+        else this.headerService.removeOrderProduct(product.item);
+      });
+      this.updatePayment();
+      if (
+        this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+      )
+        this.hasPaymentModule = true;
+      this.checkLogged();
+      if (
+        !this.headerService.orderInputComplete() ||
+        (this.hasDeliveryZone &&
+          this.deliveryLocation.street &&
+          !this.deliveryZone)
+      ) {
+        this.missingOrderData = true;
+      }
+
+      if (this.webformPreview) {
+        this.post = {
+          message: 'Dummy post',
+          from: 'Emisor',
+          to: 'Receptor',
+        };
+
+        this.reservation = {
+          breakTime: 15,
+          calendar: 'dummyid',
+          date: {
+            dateType: 'RANGE',
+            from: new Date('2023-04-07T16:00:00.000Z').toISOString(),
+            until: new Date('2023-04-07T17:00:00.000Z').toISOString(),
+            fromHour: '16:00',
+            toHour: '16:45',
+          },
+          merchant: this.headerService.saleflow.merchant._id,
+          type: 'ORDER',
+        };
+
+        if (this.reservation) {
+          const fromDate = new Date(this.reservation.date.from);
+          if (fromDate < new Date()) {
+            this.headerService.emptyReservation();
+            this.editOrder('reservation');
+          }
+          const untilDate = new Date(this.reservation.date.until);
+          this.date = {
+            day: fromDate.getDate(),
+            weekday: fromDate.toLocaleString('es-MX', {
+              weekday: 'short',
+            }),
+            month: fromDate.toLocaleString('es-MX', {
+              month: 'short',
+            }),
+            year: fromDate.toLocaleString('es-MX', {
+              year: 'numeric',
+            }),
+            time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
+              untilDate,
+              this.reservation.breakTime
+            )}`,
+          };
+          this.headerService.orderProgress.reservation = true;
+        }
+      }
+    });
+  }
+
+  createDialogs() {
+    this.dialogs = new Dialogs(
+      this.dialogService,
+      this.headerService,
+      this.postsService,
+      this.orderService,
+      this.appService,
+      this.location,
+      this.router,
+      this.route,
+      this.authService,
+      this.dialogFlowService,
+      this.entityTemplateService,
+      this.gpt3Service,
+      this.toastr,
+      this.dialogFlowFunctions,
+      this.temporalDialogs,
+      this.temporalDialogs2,
+      this.addedPhotosToTheQr,
+      this.addedJokesToTheQr
+    ).inject();
   }
 
   editOrder(
@@ -475,18 +529,13 @@ export class CheckoutComponent implements OnInit {
         );
         break;
       }
-      case 'customizer': {
-        this.router.navigate(
-          [`../provider-store/${this.items[0]._id}/quantity-and-quality`],
-          {
-            relativeTo: this.route,
-            replaceUrl: true,
-          }
-        );
-        break;
-      }
     }
   }
+
+  back = () => {
+    localStorage.removeItem('privatePost');
+    this.editOrder('item');
+  };
 
   openImageModal(imageSourceURL: string | ArrayBuffer) {
     this.dialogService.open(ImageViewComponent, {
@@ -532,7 +581,6 @@ export class CheckoutComponent implements OnInit {
 
         if (index >= 0) this.items.splice(index, 1);
         this.headerService.removeOrderProduct(deletedID);
-        this.headerService.removeItem(deletedID);
         this.updatePayment();
         if (!this.items.length) this.editOrder('item');
 
@@ -557,10 +605,7 @@ export class CheckoutComponent implements OnInit {
     this.headerService.changeItemAmount(product.item, type);
     this.headerService.order.products.forEach((product) => {
       if (product.amount) this.itemObjects[product.item] = product;
-      else {
-        this.headerService.removeOrderProduct(product.item);
-        this.headerService.removeItem(product.item);
-      }
+      else this.headerService.removeOrderProduct(product.item);
     });
     this.updatePayment();
   }
@@ -606,9 +651,6 @@ export class CheckoutComponent implements OnInit {
           ],
           {
             relativeTo: this.route,
-            queryParams: {
-              saleflowId: this.headerService.saleflow._id,
-            },
           }
         );
         return;
@@ -662,34 +704,92 @@ export class CheckoutComponent implements OnInit {
     if (this.reservation)
       this.headerService.order.products[0].reservation = this.reservation;
     // ---------------------- Managing Post ----------------------------
-    if (this.headerService.saleflow.module?.post) {
-      try {
+    if (this.headerService.saleflow.module?.post?.isActive) {
+      if (!this.post)
+        this.post = {
+          message: '',
+          targets: [
+            {
+              name: '',
+              emailOrPhone: '',
+            },
+          ],
+          from: '',
+          socialNetworks: [
+            {
+              url: '',
+            },
+          ],
+        };
+      this.headerService.storePost(this.post);
+      localStorage.removeItem('post');
+      localStorage.removeItem('postReceiverNumber');
+      delete this.post.joke;
+
+      if (this.logged) {
         const postResult = (await this.postsService.createPost(this.post))
           ?.createPost?._id;
         this.headerService.order.products[0].post = postResult;
-      } catch (error) {
-        const post: PostInput = this.headerService.getPost();
 
-        try {
-          this.post = post;
+        await this.createEntityTemplateForOrderPost(postResult);
+        await this.finishOrderCreation();
+      } else if (this.postsService.privatePost) {
+        unlockUI();
 
-          const postResult = (await this.postsService.createPost(this.post))
-            ?.createPost?._id;
-          this.headerService.order.products[0].post = postResult;
-        } catch (error) {
-          this.toastr.error('Ocurrió un error, intente más tarde', null, {
-            timeOut: 5000,
-          });
+        const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'full',
+            magicLinkData: {
+              redirectionRoute:
+                'ecommerce/' +
+                this.headerService.saleflow.merchant.slug +
+                '/checkout',
+              entity: 'EntityTemplatePostCreation',
+            },
+          },
+        });
+        matDialogRef.afterClosed().subscribe(async (value) => {
+          if (!value) return;
+          if (value.user?._id || value.session.user._id) {
+            this.logged = true;
 
-          unlockUI();
+            lockUI();
+            const postResult = (await this.postsService.createPost(this.post))
+              ?.createPost?._id;
+            this.headerService.order.products[0].post = postResult;
 
-          this.disableButton = false;
+            await this.createEntityTemplateForOrderPost(postResult);
+            await this.finishOrderCreation();
+          }
+        });
 
-          return;
-        }
+        return;
+      } else {
+        unlockUI();
+        const postResult = (await this.postsService.createPost(this.post))
+              ?.createPost?._id;
+
+        this.headerService.order.products[0].post = postResult;
+
+        await this.createEntityTemplateForOrderPost(postResult);
+        await this.finishOrderCreation();
       }
     }
+<<<<<<< HEAD
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
+=======
+  };
+
+  finishOrderCreation = async () => {
+    try {
+      let createdOrder: string;
+      const anonymous = this.headerService.getOrderAnonymous();
+      this.headerService.order.orderStatusDelivery = 'in progress';
+      if (this.headerService.user && !anonymous) {
+        createdOrder = (
+          await this.orderService.createOrder(this.headerService.order)
+        ).createOrder._id;
+>>>>>>> staging-v3
 
     let createdOrder: string;
     const anonymous = this.headerService.getOrderAnonymous();
@@ -711,10 +811,19 @@ export class CheckoutComponent implements OnInit {
           this.headerService.user._id
         );
       }
+<<<<<<< HEAD
     } else {
       createdOrder = (
         await this.orderService.createPreOrder(this.headerService.order)
       )?.createPreOrder._id;
+=======
+
+      this.headerService.deleteSaleflowOrder();
+      this.headerService.resetOrderProgress();
+      this.headerService.orderId = createdOrder;
+      this.headerService.currentMessageOption = undefined;
+      this.headerService.post = undefined;
+>>>>>>> staging-v3
 
       if (
         this.hasDeliveryZone &&
@@ -733,6 +842,7 @@ export class CheckoutComponent implements OnInit {
     this.headerService.currentMessageOption = undefined;
     this.headerService.post = undefined;
 
+<<<<<<< HEAD
     //Answer the webforms of each item and adds it to the order
     await this.createAnswerForEveryWebformItem(createdOrder);
 
@@ -748,6 +858,18 @@ export class CheckoutComponent implements OnInit {
           data: {
             loginType: 'phone',
           },
+=======
+      this.appService.events.emit({ type: 'order-done', data: true });
+      if (this.hasPaymentModule) {
+        if (this.postsService.privatePost && !this.logged) {
+          //REEMPLAZAR AQUI
+        }
+        localStorage.removeItem('privatePost');
+        this.postsService.privatePost = false;
+        this.router.navigate([`../payments/${this.headerService.orderId}`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+>>>>>>> staging-v3
         });
         matDialogRef.afterClosed().subscribe(async (value) => {
           if (!value) return;
@@ -795,6 +917,70 @@ export class CheckoutComponent implements OnInit {
       }
     }
   };
+
+  createEntityTemplateForOrderPost = async (postId: string) => {
+    try {
+      const entityTemplate =
+        await this.entityTemplateService.createEntityTemplate();
+
+      await this.entityTemplateService.entityTemplateAuthSetData(
+        entityTemplate._id,
+        {
+          reference: postId,
+          entity: 'post',
+          access: Boolean(this.postsService.privatePost) ? 'private' : 'public',
+          templateNotifications:
+            this.postsService.entityTemplateNotificationsToAdd.map(
+              (keyword) => ({
+                key: keyword,
+                message:
+                  keyword === 'SCAN'
+                    ? 'Han escaneado el QR de tu mensaje de regalo!!!\nRecuerda que puedes acceder a el usando este link: ' +
+                      this.URI +
+                      '/qr/article-template/' +
+                      entityTemplate._id
+                    : 'Han accedido a tu mensaje de regalo!!!\nRecuerda que puedes acceder a el usando este link: ' +
+                      this.URI +
+                      '/qr/article-template/' +
+                      entityTemplate._id +
+                      '\nAccedió el receptor: ',
+              })
+            ),
+        }
+      );
+
+      const recipientUser = this.postsService.postReceiverNumber;
+
+      if (recipientUser) {
+        const recipient = await this.entityTemplateService.createRecipient({
+          phone: this.postsService.postReceiverNumber,
+        });
+
+        if (this.postsService.privatePost) {
+          await this.entityTemplateService.entityTemplateAddRecipient(
+            entityTemplate._id,
+            {
+              edit: false,
+              recipient: recipient._id,
+            }
+          );
+        }
+
+        this.postsService.entityTemplateNotificationsToAdd = [];
+      }
+    } catch (error) {
+      console.error('ocurrio un error al crear el simbolo', error);
+    }
+  };
+
+  login() {
+    localStorage.removeItem('privatePost');
+    this.router.navigate(['auth/login'], {
+      queryParams: {
+        redirect: `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+      },
+    });
+  }
 
   async getDeliveryZones(merchanId: string) {
     try {
@@ -1009,6 +1195,19 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  createOrEditMessage() {
+    if (this.postsService.post) {
+      this.router.navigate([
+        'ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/post-edition',
+      ]);
+    } else {
+      this.executeProcessesBeforeOpening();
+      this.openedDialogFlow = !this.openedDialogFlow;
+    }
+  }
+
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;
@@ -1031,6 +1230,36 @@ export class CheckoutComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  deletePost() {
+    let dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Borrar mensaje`,
+        description: `No se guardarán los datos ingresados. Deseas borrar tu mensaje?`,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        this.postsService.post = null;
+        localStorage.removeItem('post');
+        localStorage.removeItem('postReceiverNumber');
+        this.openedDialogFlow = false;
+        this.dialogFlowService.resetDialogFlow('flow1');
+        this.createDialogs();
+        this.dialogFlowFunctions.moveToDialogByIndex(0);
+      }
+    });
+  }
+
+  executeProcessesBeforeOpening() {
+    this.postsService.post = {
+      from: null,
+      to: null,
+      message: null,
+      title: null,
+      joke: null,
+    };
   }
 
   urlIsVideo(url: string) {

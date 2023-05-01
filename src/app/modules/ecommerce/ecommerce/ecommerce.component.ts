@@ -69,7 +69,13 @@ export class EcommerceComponent implements OnInit {
       this.headerService.getOrder();
       this.headerService.getItems();
       this.headerService.getOrderProgress();
+      this.headerService.emptyPost();
+      this.headerService.getMerchantContact();
       this.activePath = this.route.firstChild.routeConfig.path;
+
+      if (this.router.url.includes('/store'))
+        this.headerService.emptyMediaPost();
+
       this.router.events
         .pipe(filter((evt) => evt instanceof NavigationEnd))
         .subscribe(() => {

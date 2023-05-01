@@ -39,9 +39,13 @@
       [matMenuTriggerFor]="menu"
       aria-label="Menu button"
       class="btn"
+      *ngIf="options.length"
     >
       <img [src]="env + '/dots-black.svg'" alt="" />
     </button>
+
+    <div *ngIf="!options.length" style="height: 35px"></div>
+
     <mat-menu #menu="matMenu" yPosition="above" xPosition="before" class="menu">
       <ng-container *ngIf="options.length">
         <button

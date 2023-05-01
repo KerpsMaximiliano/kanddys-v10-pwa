@@ -1,0 +1,13 @@
+<mat-card class="mat-elevation-z0">
+  <div class="flex space-between">
+    <div class="flex">
+      <img *ngIf="image" [src]="image" [alt]="title" />
+      <div class="title">{{ title }}</div>
+      <span class="subtitle" *ngIf="subtitle">{{ subtitle }}</span>
+    </div>
+    <div class="info" *ngIf="topInfo">{{ topInfo }}</div>
+  </div>
+  <div class="info" style="margin-top: 12px" *ngIf="bottomInfo">
+    {{ bottomInfo }}
+  </div>
+</mat-card>

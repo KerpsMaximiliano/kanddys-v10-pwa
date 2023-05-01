@@ -3,7 +3,10 @@ import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { environment } from 'src/environments/environment';
 import { FormStep } from 'src/app/core/types/multistep-form';
+import { FormBuilder } from '@angular/forms';
+import { PostsService } from 'src/app/core/services/posts.service';
 
 const lightLabelStyles = {
   fontFamily: 'RobotoRegular',
@@ -17,11 +20,20 @@ const lightLabelStyles = {
   templateUrl: './create-giftcard.component.html',
   styleUrls: ['./create-giftcard.component.scss'],
 })
-export class CreateGiftcardComponent implements OnInit, OnDestroy {
+export class CreateGiftcardComponent implements OnInit {
+  env = environment.assetsUrl;
+  giftMessageForm = this.fb.group({
+    message: '',
+    from: '',
+    title: '',
+  });
+
   constructor(
     private header: HeaderService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private postsService: PostsService,
+    private fb: FormBuilder
   ) {}
 
   virtual: boolean = false;
@@ -359,22 +371,50 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     // );
     const post = this.header.getPost();
     if (post?.targets?.[0]?.name) {
-      this.formSteps[1].fieldsList[0].fieldControl.control = new FormControl(
+      this.formSteps[0].fieldsList[0].fieldControl.control = new FormControl(
         post.targets[0].name,
         Validators.pattern(/[\S]/)
       );
     }
     if (post?.message) {
-      this.formSteps[1].fieldsList[2].fieldControl.control = new FormControl(
+      this.formSteps[0].fieldsList[1].fieldControl.control = new FormControl(
         post.message,
         Validators.pattern(/[\S]/)
       );
     }
+
+    if (this.postsService.post) {
+      this.giftMessageForm.patchValue({
+        message: this.postsService.post.message,
+        title: this.postsService.post.title,
+        from: this.postsService.post.from,
+      });
+    }
   }
 
-  ngOnDestroy(): void {
-    if (this.addedScrollBlockerBefore && this.scrollableForm) {
-      this.removeScrollBlockerBefore();
-    }
+  submit() {
+    const { message, title, from } = this.giftMessageForm.value;
+
+    this.postsService.post = {
+      ...this.postsService.post,
+      message,
+      title,
+      from,
+    };
+
+    localStorage.setItem(
+      'post',
+      JSON.stringify({
+        message: this.postsService.post.message,
+        title: this.postsService.post.title,
+        to: this.postsService.post.to,
+        from: this.postsService.post.from,
+        joke: this.postsService.post.joke,
+      })
+    );
+
+    this.router.navigate([
+      'ecommerce/' + this.header.saleflow.merchant.slug + '/post-edition',
+    ]);
   }
 }

@@ -79,6 +79,7 @@ export class StoreComponent implements OnInit {
   windowWidth: number = 0;
 
   link: string;
+  panelOpenState = false;
 
   async infinitePagination() {
     const page = document.querySelector('.store-page');
@@ -261,7 +262,6 @@ export class StoreComponent implements OnInit {
         if (!allItems.some((product) => product._id === item.item)) {
           itemIDs.push(item.item);
           this.headerService.removeOrderProduct(item.item);
-          this.headerService.removeItem(item.item);
         }
       });
       this.headerService.order.products =
@@ -488,10 +488,8 @@ export class StoreComponent implements OnInit {
     const item = this.items[index];
 
     /* Validaciones para saleflows donde solo se puede comprar un item a la vez */
-    if (!item.isSelected && !this.headerService.saleflow.canBuyMultipleItems) {
+    if (!item.isSelected && !this.headerService.saleflow.canBuyMultipleItems)
       this.headerService.emptyOrderProducts();
-      this.headerService.emptyItems();
-    }
     /* ... */
 
     const product: ItemSubOrderInput = {
@@ -503,7 +501,6 @@ export class StoreComponent implements OnInit {
       type: 'added-item',
       data: item._id,
     });
-    // this.headerService.storeItem(item);
 
     this.items[index].isSelected = !this.items[index].isSelected;
   }

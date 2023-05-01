@@ -37,8 +37,8 @@
           [ngClass]="{'pointer': itemListContent.statusCallback}"
           (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
           [ngClass]="{
-            'verificado': itemListContent.status === 'verificado',
-            'pending': itemListContent.status !== 'verificado'
+            'verificado': itemListContent.status === 'completado',
+            'pending': itemListContent.status !== 'completado'
           }"
           >
           {{itemListContent.status}}
@@ -60,8 +60,8 @@
     [ngClass]="{'pointer': itemListContent.statusCallback}"
     (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
     [ngClass]="{
-      'verificado': itemListContent.status === 'verificado',
-      'pending': itemListContent.status !== 'verificado'
+      'verificado': itemListContent.status === 'completado',
+      'pending': itemListContent.status !== 'completado'
     }"
     >
     {{itemListContent.status}}

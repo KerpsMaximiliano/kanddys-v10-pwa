@@ -66,6 +66,30 @@ a {
   }
 }
 
+
+.icons-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  .round-button {
+    width: fit-content;
+    height: fit-content;
+    padding: 3px;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+
+    img {
+      width: 28px;
+      height: 27px;
+      filter: brightness(10);
+    }
+  }
+}
+
 .icons-flex {
   display: flex;
   justify-content: space-between;
@@ -203,7 +227,6 @@ audio {
 /* ACTIONS*/
 .bottom-user-actions-panel {
   z-index: 1;
-  bottom: -117px;
   left: 0;
   right: 0;
   position: absolute;
@@ -234,6 +257,10 @@ audio {
       &.active {
         background-color: #82f18d;
       }
+    }
+
+    &.post {
+      height: 100%;
     }
   }
 
@@ -303,5 +330,76 @@ audio {
 @media (max-width: 320px) {
   .cart-btn {
     width: 65%;
+  }
+}
+
+.post-content-minimized {
+  position: absolute;
+  bottom: 0px;
+  height: 101px;
+  background-image: linear-gradient(rgba(72, 72, 72, 0), rgb(0, 0, 0));
+  color: white;
+  width: 100%;
+  padding-left: 15px;
+
+  .title2 {
+    margin-top: 30px;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProBold;
+    font-size: 21px;
+  }
+
+  .subtitle2 {
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProRegular;
+    font-size: 15px;
+    margin: 5px 5px 0px 0px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 20px;
+  }
+}
+
+.post-content-maximized {
+  position: absolute;
+  bottom: 0px;
+  height: 100%;
+  background-image: linear-gradient(rgba(72, 72, 72, 0), rgb(0, 0, 0));
+  color: white;
+  width: 100%;
+  padding-left: 17px;
+  display: flex;
+  flex-direction: column;
+
+  .title2 {
+    margin-top: auto;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProBold;
+    font-size: 21px;
+  }
+
+  .subtitle2 {
+    color: #ffffff;
+    cursor: pointer;
+    font-family: SFProRegular;
+    font-size: 15px;
+    margin: 5px 5px 0px 0px;
+    margin-bottom: 20px;
+    word-break: break-word;
+  }
+}
+
+.icons-flex-2 {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+
+  .round-button {
+    margin-right: 23px;
   }
 }

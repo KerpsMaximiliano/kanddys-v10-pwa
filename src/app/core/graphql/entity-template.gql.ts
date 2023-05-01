@@ -1,18 +1,46 @@
 import gql from 'graphql-tag';
 
 export const entityTemplate = gql`
-  query entityTemplate($id: ObjectID!, $password: String) {
-    entityTemplate(id: $id, password: $password) {
+  query entityTemplate(
+    $id: ObjectID!
+    $password: String
+    $notificationsToTrigger: [String!]
+  ) {
+    entityTemplate(
+      id: $id
+      password: $password
+      notificationsToTrigger: $notificationsToTrigger
+    ) {
       _id
       reference
       entity
       dateId
       status
       user
-      recipients{
+      recipients {
         _id
         recipient
-        edit 
+        edit
+      }
+      hasPassword
+      access
+    }
+  }
+`;
+
+export const entityTemplates = gql`
+  query entityTemplates($paginate: PaginationInput) {
+    entityTemplates(paginate: $paginate) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+      recipients {
+        _id
+        recipient
+        edit
       }
       hasPassword
       access
@@ -21,12 +49,19 @@ export const entityTemplate = gql`
 `;
 
 export const entityTemplateRecipient = gql`
-  query entityTemplateRecipient($id: ObjectID!) {
-    entityTemplateRecipient(id: $id) {
+  query entityTemplateRecipient(
+    $id: ObjectID!
+    $notificationsToTrigger: [String!]
+  ) {
+    entityTemplateRecipient(
+      id: $id
+      notificationsToTrigger: $notificationsToTrigger
+    ) {
       _id
       entity
       reference
-      recipients{
+      user
+      recipients {
         _id
         edit
         recipient
@@ -46,10 +81,32 @@ export const entityTemplateByDateId = gql`
       dateId
       status
       user
+      recipients {
+        _id
+        edit
+        recipient
+      }
     }
   }
 `;
 
+export const entityTemplateByReference = gql`
+  mutation entityTemplateByReference($reference: ObjectID!, $entity: String!) {
+    entityTemplateByReference(reference: $reference, entity: $entity) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+      recipients {
+        _id
+        edit
+        recipient
+      }
+    }
+  }
+`;
 
 export const entityTemplateSetData = gql`
   mutation entityTemplateSetData($id: ObjectID!, $input: EntityTemplateInput!) {
@@ -60,12 +117,20 @@ export const entityTemplateSetData = gql`
       dateId
       status
       user
+      recipients {
+        _id
+        edit
+        recipient
+      }
     }
   }
 `;
 
 export const entityTemplateAuthSetData = gql`
-  mutation entityTemplateAuthSetData($id: ObjectID!, $input: EntityTemplateInput!) {
+  mutation entityTemplateAuthSetData(
+    $id: ObjectID!
+    $input: EntityTemplateInput!
+  ) {
     entityTemplateAuthSetData(id: $id, input: $input) {
       _id
       reference
@@ -73,14 +138,25 @@ export const entityTemplateAuthSetData = gql`
       dateId
       status
       user
+      recipients {
+        _id
+        edit
+        recipient
+      }
       access
     }
   }
 `;
 
 export const entityTemplateRemoveRecipient = gql`
-  mutation entityTemplateRemoveRecipient($idRecipients: ObjectID!, $entityTemplateId: ObjectID!) {
-    entityTemplateRemoveRecipient(idRecipients: $idRecipients, entityTemplateId: $entityTemplateId) {
+  mutation entityTemplateRemoveRecipient(
+    $idRecipients: ObjectID!
+    $entityTemplateId: ObjectID!
+  ) {
+    entityTemplateRemoveRecipient(
+      idRecipients: $idRecipients
+      entityTemplateId: $entityTemplateId
+    ) {
       _id
       reference
       entity
@@ -97,8 +173,16 @@ export const entityTemplateRemoveRecipient = gql`
 `;
 
 export const entityTemplateUpdateRecipient = gql`
-  mutation entityTemplateUpdateRecipient($entityTemplateId: ObjectID!, $idRecipients: ObjectID!, $input: RecipientsInput!) {
-    entityTemplateUpdateRecipient(entityTemplateId: $entityTemplateId, idRecipients: $idRecipients, input: $input) {
+  mutation entityTemplateUpdateRecipient(
+    $entityTemplateId: ObjectID!
+    $idRecipients: ObjectID!
+    $input: RecipientsInput!
+  ) {
+    entityTemplateUpdateRecipient(
+      entityTemplateId: $entityTemplateId
+      idRecipients: $idRecipients
+      input: $input
+    ) {
       _id
       reference
       entity
@@ -115,21 +199,26 @@ export const entityTemplateUpdateRecipient = gql`
   }
 `;
 
-export const entityTemplateByReference = gql`
-  mutation entityTemplateByReference($reference: ObjectID!, $entity: String!) {
-    entityTemplateByReference(reference: $reference, entity: $entity) {
+export const entityTemplateAddRecipient = gql`
+  mutation entityTemplateAddRecipient(
+    $entityTemplateId: ObjectID!
+    $input: RecipientsInput!
+  ) {
+    entityTemplateAddRecipient(
+      entityTemplateId: $entityTemplateId
+      input: $input
+    ) {
       _id
       reference
       entity
       dateId
       status
       user
-      recipients{
-         recipient
-        edit 
+      recipients {
+        _id
+        edit
+        recipient
       }
-      hasPassword
-      access
     }
   }
 `;
@@ -144,12 +233,50 @@ export const createEntityTemplate = gql`
   }
 `;
 
+export const createRecipient = gql`
+  mutation createRecipient($input: RecipientInput!) {
+    createRecipient(input: $input) {
+      _id
+      email
+      phone
+      lastName
+      user
+    }
+  }
+`;
+
 export const preCreateEntityTemplate = gql`
   mutation preCreateEntityTemplate {
     preCreateEntityTemplate {
       _id
       reference
       status
+    }
+  }
+`;
+
+export const entityTemplateAddNotification = gql`
+  mutation entityTemplateAddNotification(
+    $notificationId: ObjectID!
+    $merchantId: ObjectID!
+    $id: ObjectID!
+  ) {
+    entityTemplateAddNotification(
+      notificationId: $notificationId
+      merchantId: $merchantId
+      id: $id
+    ) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+      recipients {
+        _id
+        edit
+        recipient
+      }
     }
   }
 `;
