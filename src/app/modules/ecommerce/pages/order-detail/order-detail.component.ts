@@ -44,6 +44,7 @@ import { answerByOrder } from 'src/app/core/graphql/webforms.gql';
 import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { Reservation } from 'src/app/core/models/reservation';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 interface Image {
   src: string;
@@ -145,6 +146,9 @@ export class OrderDetailComponent implements OnInit {
     deliveryZone?: DeliveryZone;
     reservation?: Reservation;
   };
+  link: string;
+  chatLink: string;
+  panelOpenState = false;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -167,7 +171,8 @@ export class OrderDetailComponent implements OnInit {
     private tagsService: TagsService,
     public dialog: MatDialog,
     private webformsService: WebformsService,
-    private deliveryzoneService: DeliveryZonesService
+    private deliveryzoneService: DeliveryZonesService,
+    public _DomSanitizer: DomSanitizer
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -232,6 +237,17 @@ export class OrderDetailComponent implements OnInit {
             }
           });
       }
+
+      const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+
+      const message = `*🐝 FACTURA ${formatID(
+        this.order.dateId
+      )}* \n\nLink de lo facturado por: ${fullLink}`;
+
+      this.link = `${this.URI}/ecommerce/contact-landing/${this.order?.items[0].saleflow.merchant.owner._id}`;
+      this.chatLink = `https://api.whatsapp.com/send?phone=${
+        this.order.items[0].saleflow.merchant.owner.phone
+      }&text=${encodeURIComponent(message)}`;
     }
 
     this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
@@ -269,6 +285,11 @@ export class OrderDetailComponent implements OnInit {
       .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
     await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+    if (!this.headerService.merchantContact) {
+      this.headerService.getMerchantContact(
+        this.order.items[0].saleflow.merchant.owner._id
+      );
+    }
 
     if (this.order.items[0].post) {
       this.post = (

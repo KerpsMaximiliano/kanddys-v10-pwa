@@ -690,7 +690,8 @@ export class PaymentsComponent implements OnInit {
       // OrderNumber: this.order._id,
       OrderNumber: formatID(this.order.dateId),
       Amount: this.paymentAmount.toFixed(2).toString().replace('.', ''),
-      ITBIS: (this.paymentAmount * 0.18).toFixed(2).toString().replace('.', ''),
+      //ITBIS: (this.paymentAmount * 0.18).toFixed(2).toString().replace('.', ''),
+      ITBIS: '000',
       ApprovedUrl:
         clientURI +
         '/ecommerce/' +

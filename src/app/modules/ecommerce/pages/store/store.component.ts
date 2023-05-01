@@ -80,6 +80,7 @@ export class StoreComponent implements OnInit {
   windowWidth: number = 0;
 
   link: string;
+  panelOpenState = false;
 
   async infinitePagination() {
     const page = document.querySelector('.store-page');
