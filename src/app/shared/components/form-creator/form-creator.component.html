@@ -5,7 +5,7 @@
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-black.svg"
         class="back-btn"
         alt="back"
-        (click)="back()"
+        (click)="saveOrUpdate()"
       />
       <div class="title">Creando un formulario de preguntas</div>
       <div class="x-btn" (click)="back()">X</div>
@@ -100,24 +100,26 @@
             <div class="question-input-and-input-options">
               <label for="question-input"> Pregunta </label>
 
-              <div class="input-options-icons">
-                <img
-                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/camera-minimalistic.svg"
-                  class="swipe-icon"
-                  alt="enter your question though photo scan"
-                />
-
-                <img
-                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/microphone.svg"
-                  class="swipe-icon"
-                  alt="enter your question though voice recognizition"
-                />
-                <img
-                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/AI.svg"
-                  class="swipe-icon"
-                  alt="let ai generate a question for you"
-                />
-              </div>
+              <!--
+                <div class="input-options-icons">
+                  <img
+                    src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/camera-minimalistic.svg"
+                    class="swipe-icon"
+                    alt="enter your question though photo scan"
+                  />
+  
+                  <img
+                    src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/microphone.svg"
+                    class="swipe-icon"
+                    alt="enter your question though voice recognizition"
+                  />
+                  <img
+                    src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/AI.svg"
+                    class="swipe-icon"
+                    alt="let ai generate a question for you"
+                  />
+                </div>
+              -->
             </div>
 
             <input
@@ -234,31 +236,14 @@
                           .text === ''
                       "
                     >
+                      <div></div>
+                      <div></div>
                       <img
-                        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/camera-minimalistic.svg"
+                        (click)="redirectToMediaUploadPage(i)"
+                        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery.svg"
                         class="swipe-icon"
-                        alt="enter your question though photo scan"
+                        alt="uploadFiles"
                       />
-
-                      <img
-                        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/microphone.svg"
-                        class="swipe-icon"
-                        alt="enter your question though voice recognizition"
-                      />
-                      <a
-                        [routerLink]="['/admin/media-upload/webform-question']"
-                        [queryParams]="{
-                          webformQuestionIndex: this.currentStepIndex - 1,
-                          webformSelectedOption: i,
-                          itemId: item?._id
-                        }"
-                      >
-                        <img
-                          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery.svg"
-                          class="swipe-icon"
-                          alt="uploadFiles"
-                        />
-                      </a>
                     </div>
                   </div>
                 </ng-container>

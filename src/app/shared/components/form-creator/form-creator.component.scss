@@ -36,6 +36,8 @@ header {
     color: #7b7b7b;
     height: 30px;
   }
+  
+  
 
   .question-header {
     display: flex;
@@ -71,14 +73,23 @@ header {
   }
 }
 
+::ng-deep .swiper-container {
+  background-color: #e9e9e9;
+}
+
+:host ::ng-deep .swiper-button-next,
+:host ::ng-deep .swiper-button-prev {
+  display: none;
+}
+
 .step {
-  min-height: calc(100vh - 33px) !important;
+  height: auto !important;
   background-color: #e9e9e9;
 }
 
 .note-step {
   position: relative;
-  min-height: calc(100vh - 30px) !important;
+  min-height: calc(100vh - 33px) !important;
   padding-left: clamp(10px, 5.37vw, 23px);
   padding-right: clamp(10px, 5.37vw, 23px);
   padding-top: 40px;

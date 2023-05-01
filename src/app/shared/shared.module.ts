@@ -185,6 +185,7 @@ import { FullMenuButtonComponent } from './components/full-menu-button/full-menu
 import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
 import { FormCreatorComponent } from './components/form-creator/form-creator.component';
 import { MediaUploadDndComponentComponent } from './components/media-upload-dnd-component/media-upload-dnd-component.component';
+import { FormResponsesComponent } from './components/form-responses/form-responses.component';
 
 const imports = [
   CommonModule,
@@ -375,7 +376,8 @@ const declarations = [
   FullMenuButtonComponent,
   NotificationDialogComponent,
   FormCreatorComponent,
-  MediaUploadDndComponentComponent
+  MediaUploadDndComponentComponent,
+  FormResponsesComponent
 ];
 
 @NgModule({

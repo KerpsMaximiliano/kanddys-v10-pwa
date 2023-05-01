@@ -6,12 +6,14 @@
       (click)="submit()"
     ></i>
 
-    <img
-      src="
-    https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/directory.svg
-    "
-      alt="upload folder"
-    />
+    <label [for]="'directory-option'" *ngIf="!isUserOnAMobileDevice">
+      <img
+        src="
+      https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/directory.svg
+      "
+        alt="upload folder"
+      />
+    </label>
   </div>
 
   <div class="tags-grid-drag-and-drop" cdkDropListGroup>
@@ -23,13 +25,19 @@
           [style.display]="'none'"
           (change)="loadFile($event)"
           multiple
-          [accept]="[
-            '.png',
-            '.jpg',
-            '.jpeg',
-            '.webp'
-          ]"
+          [accept]="['.png', '.jpg', '.jpeg', '.webp']"
         />
+
+        <input
+          type="file"
+          [id]="'directory-option'"
+          [style.display]="'none'"
+          (change)="loadFile($event)"
+          webkitdirectory
+          multiple
+          [accept]="['.png', '.jpg', '.jpeg', '.webp']"
+        />
+
         <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
           <div class="labelBox"></div>
           <div class="imgBox">

@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+  OnDestroy,
+} from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swiper, { SwiperOptions } from 'swiper';
@@ -23,7 +29,9 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Subscription } from 'rxjs'
+import { Subscription } from 'rxjs';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 interface OptionInList {
   name: string;
@@ -137,6 +145,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   item: Item;
   existingQuestions: Record<string, Question> = null;
   routeParamsSubscription: Subscription;
+  questionsToDelete: Array<string> = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -146,76 +155,81 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     private headerService: HeaderService,
     private authService: AuthService,
     private merchantService: MerchantsService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    this.routeParamsSubscription = this.route.params.subscribe(async ({ itemId, formId }) => {
-      const user = await this.authService.me();
-      const myMerchant = await this.merchantService.merchantDefault(user?._id);
-
-      lockUI();
-
-      this.item = await this.itemsService.item(itemId);
-
-      const isUserTheOwner = this.item
-        ? myMerchant?._id === this.item.merchant._id
-        : null;
-
-      if (!isUserTheOwner) this.router.navigate(['/auth/login']);
-
-      if (itemId && !formId && this.item.webForms?.length > 0)
-        formId = this.item.webForms[0].reference;
-
-      if (this.webformsService.formCreationData === null && !formId) {
-        this.webformsService.formCreationData = {
-          currentStep: this.currentStepName,
-          steps: this.steps,
-          currentStepIndex: this.currentStepIndex,
-        };
-
-        this.steps.push({
-          name: 'ADMIN_NOTE',
-          fields: new FormGroup({
-            note: new FormControl(''),
-          }),
-        });
-      } else if (this.webformsService.formCreationData !== null) {
-        this.steps = this.webformsService.formCreationData.steps;
-      } else if (this.webformsService.formCreationData === null && formId) {
-        const isFormPartOfTheRoutesItem = this.item.webForms.find(
-          (form) => form.reference === formId
+    this.routeParamsSubscription = this.route.params.subscribe(
+      async ({ itemId, formId }) => {
+        const user = await this.authService.me();
+        const myMerchant = await this.merchantService.merchantDefault(
+          user?._id
         );
 
-        if (!isFormPartOfTheRoutesItem)
-          this.router.navigate(['/others/error-screen']);
+        lockUI();
 
-        this.webform = await this.webformsService.webform(formId);
+        this.item = await this.itemsService.item(itemId);
 
-        this.steps.push({
-          name: 'ADMIN_NOTE',
-          fields: new FormGroup({
-            note: new FormControl(this.webform.description),
-          }),
-        });
+        const isUserTheOwner = this.item
+          ? myMerchant?._id === this.item.merchant._id
+          : null;
 
-        for await (const question of this.webform.questions) {
-          await this.addExistingQuestionToTheForm(question);
+        if (!isUserTheOwner) this.router.navigate(['/auth/login']);
 
-          this.existingQuestions = {
-            [question._id]: question,
+        if (itemId && !formId && this.item.webForms?.length > 0)
+          formId = this.item.webForms[0].reference;
+
+        if (this.webformsService.formCreationData === null && !formId) {
+          this.webformsService.formCreationData = {
+            currentStep: this.currentStepName,
+            steps: this.steps,
+            currentStepIndex: this.currentStepIndex,
+          };
+
+          this.steps.push({
+            name: 'ADMIN_NOTE',
+            fields: new FormGroup({
+              note: new FormControl(''),
+            }),
+          });
+        } else if (this.webformsService.formCreationData !== null) {
+          this.steps = this.webformsService.formCreationData.steps;
+        } else if (this.webformsService.formCreationData === null && formId) {
+          const isFormPartOfTheRoutesItem = this.item.webForms.find(
+            (form) => form.reference === formId
+          );
+
+          if (!isFormPartOfTheRoutesItem)
+            this.router.navigate(['/others/error-screen']);
+
+          this.webform = await this.webformsService.webform(formId);
+
+          this.steps.push({
+            name: 'ADMIN_NOTE',
+            fields: new FormGroup({
+              note: new FormControl(this.webform.description),
+            }),
+          });
+
+          for await (const question of this.webform.questions) {
+            await this.addExistingQuestionToTheForm(question);
+
+            this.existingQuestions = {
+              [question._id]: question,
+            };
+          }
+
+          this.webformsService.formCreationData = {
+            currentStep: this.currentStepName,
+            currentStepIndex: this.currentStepIndex,
+            steps: this.steps,
           };
         }
 
-        this.webformsService.formCreationData = {
-          currentStep: this.currentStepName,
-          currentStepIndex: this.currentStepIndex,
-          steps: this.steps,
-        };
+        unlockUI();
       }
-
-      unlockUI();
-    });
+    );
   }
 
   start() {
@@ -298,7 +312,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
             (option, index) =>
               new FormGroup({
                 text: new FormControl(option.label),
-                fileInput: new FormControl(URL.createObjectURL(files[index])), // the file input value will be a File object,
+                fileInput: new FormControl(option.value), // the file input value will be a File object,
                 originalFile: new FormControl(files[index]),
               })
           )
@@ -382,7 +396,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   selectOptionInList(listName: string, value: string) {
     const selectedOption =
       this.steps[this.currentStepIndex].fields.controls[listName].value;
-    const validationsOptionsFieldControl = this.steps[
+    let validationsOptionsFieldControl = this.steps[
       this.currentStepIndex
     ].fields.get('selectedResponseValidation');
 
@@ -404,6 +418,17 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       );
     }
 
+    console.log(
+      'responseOptions',
+      this.steps[this.currentStepIndex].fields.controls['responseOptions']
+    );
+    console.log('value', value);
+    console.log('listName', listName);
+    console.log(
+      'validationsOptionsFieldControl',
+      validationsOptionsFieldControl
+    );
+
     //If the admin select a response with multiple options for the user to choose,
     //then the formArray is saved on the steps.fields.controls['responseOptions'] variable.
     if (
@@ -411,6 +436,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       value === 'multiple' &&
       !this.steps[this.currentStepIndex].fields.controls['responseOptions']
     ) {
+      console.log('A');
       this.steps[this.currentStepIndex].fields.addControl(
         'responseOptions',
         new FormArray([
@@ -440,17 +466,41 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       value === 'multiple' &&
       this.steps[this.currentStepIndex].fields.controls['responseOptions']
     ) {
-      this.steps[this.currentStepIndex].fields.removeControl('responseOptions');
-      this.steps[this.currentStepIndex].fields.removeControl(
-        'freeResponseAllowed'
+      this.removeOptionSelectionValidators();
+    } else if (
+      value !== 'multiple' &&
+      listName === 'selectedResponseType' &&
+      !validationsOptionsFieldControl
+    ) {
+      this.steps[this.currentStepIndex].fields.addControl(
+        'selectedResponseValidation',
+        new FormControl('', Validators.required)
       );
-      this.steps[this.currentStepIndex].fields.removeControl(
-        'limitedToOneSelection'
-      );
-    } else if (value !== 'multiple' && listName === 'selectedResponseType') {
-      validationsOptionsFieldControl.setValidators([Validators.required]);
-      validationsOptionsFieldControl.updateValueAndValidity();
+      validationsOptionsFieldControl = this.steps[
+        this.currentStepIndex
+      ].fields.get('selectedResponseValidation');
+      validationsOptionsFieldControl?.setValidators([Validators.required]);
+      validationsOptionsFieldControl?.updateValueAndValidity();
+      this.removeOptionSelectionValidators();
+    } else if (
+      value !== 'multiple' &&
+      listName === 'selectedResponseType' &&
+      validationsOptionsFieldControl
+    ) {
+      validationsOptionsFieldControl?.setValidators([Validators.required]);
+      validationsOptionsFieldControl?.updateValueAndValidity();
+      this.removeOptionSelectionValidators();
     }
+  }
+
+  removeOptionSelectionValidators() {
+    this.steps[this.currentStepIndex].fields.removeControl('responseOptions');
+    this.steps[this.currentStepIndex].fields.removeControl(
+      'freeResponseAllowed'
+    );
+    this.steps[this.currentStepIndex].fields.removeControl(
+      'limitedToOneSelection'
+    );
   }
 
   updateCurrentStepData(swiper: Swiper) {
@@ -529,6 +579,26 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         : String(fieldIndex);
 
     fieldformArray.removeAt(fieldIndex);
+
+    if (
+      this.steps[this.currentStepIndex].fields.controls['responseOptions']
+        ?.value?.length === 0
+    ) {
+      this.steps[this.currentStepIndex].fields.removeControl('responseOptions');
+      this.steps[this.currentStepIndex].fields.addControl(
+        'responseOptions',
+        new FormArray([
+          new FormGroup({
+            text: new FormControl(''),
+            fileInput: new FormControl(null), // the file input value will be a File object
+          }),
+          new FormGroup({
+            text: new FormControl(''),
+            fileInput: new FormControl(null), // the file input value will be a File object
+          }),
+        ])
+      );
+    }
 
     setTimeout(() => {
       if (textOrImage === 'text') {
@@ -648,12 +718,14 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (dragginFiles) {
+      //console.log("DESACTIVANDO");
       this.swiperConfig.allowSlidePrev = false;
       this.swiperConfig.allowSlideNext = false;
       this.swiperConfig.allowTouchMove = false;
     }
 
     if (!dragginFiles) {
+      //console.log("ACTIVANDO");
       this.swiperConfig.allowSlidePrev = true;
       this.swiperConfig.allowSlideNext = true;
       this.swiperConfig.allowTouchMove = true;
@@ -787,14 +859,15 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    if (!this.webform && questionsToAdd.length === 0)
-      return this.router.navigate(['/admin/article-editor/' + this.item._id]);
+    if (!this.webform && questionsToAdd.length === 0) return this.back();
+
     if (this.webform && questionsToAdd.length === 0) {
       return this.snackbar.open('Formulario vacio', 'Cerrar', {
         duration: 3000,
       });
     }
 
+    let createdWebform = null;
     if (!this.webform) {
       lockUI();
       const webformToCreate: WebformInput = {
@@ -803,16 +876,11 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       try {
-        const createdWebform = await this.webformsService.createWebform(
+        createdWebform = await this.webformsService.createWebform(
           webformToCreate
         );
 
         if (createdWebform) {
-          await this.webformsService.itemAddWebForm(
-            this.item._id,
-            createdWebform._id
-          );
-
           questionsToAdd.forEach((question) => {
             if (!question.answerDefault) {
               question.answerDefault = [];
@@ -878,12 +946,17 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
 
+          await this.webformsService.itemAddWebForm(
+            this.item._id,
+            createdWebform._id
+          );
+
           unlockUI();
 
           this.webformsService.formCreationData = null;
           this.router.navigate(['/admin/article-editor/' + this.item._id]);
         } else {
-          console.log('NO SE CREO');
+          //console.log('NO SE CREO');
           throw new Error('Ocurrió un error al crear el formulario');
         }
       } catch (error) {
@@ -896,8 +969,6 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     } else {
       try {
-        /** */
-
         for await (const question of questionsToAdd) {
           if (!question.answerDefault) {
             question.answerDefault = [];
@@ -973,6 +1044,17 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
         }
+
+        if (this.questionsToDelete.length > 0)
+          await this.webformsService.webformRemoveQuestion(
+            this.questionsToDelete,
+            this.webform._id
+          );
+
+        await this.webformsService.updateWebform(this.webform._id, {
+          description: this.steps[0].fields.controls['note'].value,
+        });
+
         this.webformsService.formCreationData = null;
         this.router.navigate(['/admin/article-editor/' + this.item._id]);
       } catch (error) {
@@ -987,17 +1069,44 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   deleteQuestion() {
-    this.steps.splice(this.currentStepIndex, 1);
+    let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Borrar pregunta`,
+        description: `¿Estás seguro de que deseas borrar esta pregunta?`,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        if (this.webform && this.steps[this.currentStepIndex].fields.controls['id'])
+          this.questionsToDelete.push(
+            this.steps[this.currentStepIndex].fields.controls['id'].value
+          );
 
-    this.stepsSwiper.directiveRef.update();
+        this.steps.splice(this.currentStepIndex, 1);
 
-    if (this.currentStepIndex === this.steps.length - 1) {
-      this.stepsSwiper.directiveRef.setIndex(this.currentStepIndex - 1);
-    }
+        this.stepsSwiper.directiveRef.update();
+
+        if (this.currentStepIndex === this.steps.length - 1) {
+          this.stepsSwiper.directiveRef.setIndex(this.currentStepIndex - 1);
+        }
+      }
+    });
   }
 
   back() {
     this.router.navigate(['/admin/article-editor/' + this.item?._id]);
+  }
+
+  redirectToMediaUploadPage(optionIndex: number) {
+    //console.log('REDIRGIENDO AL MEDIA UPLOAD');
+
+    this.router.navigate(['/admin/media-upload/webform-question'], {
+      queryParams: {
+        webformQuestionIndex: this.currentStepIndex - 1,
+        webformSelectedOption: optionIndex,
+        itemId: this.item?._id,
+      },
+    });
   }
 
   ngOnDestroy(): void {

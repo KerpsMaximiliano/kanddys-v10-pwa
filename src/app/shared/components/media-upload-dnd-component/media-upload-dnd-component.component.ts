@@ -4,25 +4,12 @@ import { environment } from 'src/environments/environment';
 import { SlideInput } from 'src/app/core/models/post';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  SettingsComponent,
-  SettingsDialogButton,
-} from '../../dialogs/settings/settings.component';
 import { SingleActionDialogComponent } from '../../dialogs/single-action-dialog/single-action-dialog.component';
-import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
-import {
-  lockUI,
-  playVideoOnFullscreen,
-  unlockUI,
-} from 'src/app/core/helpers/ui.helpers';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 
@@ -58,19 +45,18 @@ export class MediaUploadDndComponentComponent implements OnInit {
   webformQuestionIndex: number = null;
   webformSelectedOption: number = null;
   itemId: string = null;
+  isUserOnAMobileDevice: boolean;
 
   constructor(
     private itemsService: ItemsService,
     private webformsService: WebformsService,
-    private merchantsService: MerchantsService,
-    private saleflowService: SaleFlowService,
     private postsService: PostsService,
     private router: Router,
     private route: ActivatedRoute,
-    private headerService: HeaderService,
-    private dialog: DialogService,
-    private domSanitizer: DomSanitizer
-  ) {}
+    private dialog: DialogService
+  ) {
+    this.isUserOnAMobileDevice = this.isMobileDevice();
+  }
 
   async ngOnInit() {
     this.route.params.subscribe(({ entity, entityId }) => {
@@ -79,7 +65,7 @@ export class MediaUploadDndComponentComponent implements OnInit {
           webformQuestionIndex,
           webformSelectedOption,
           webformQuestionID,
-          itemId
+          itemId,
         }) => {
           this.entity = entity;
           this.webformQuestionIndex = Number(webformQuestionIndex);
@@ -91,37 +77,19 @@ export class MediaUploadDndComponentComponent implements OnInit {
             this.itemId = itemId;
 
             if (
-              this.webformsService.formCreationData.steps[
+              this.webformsService.formCreationData?.steps[
                 1 + this.webformQuestionIndex
               ].fields.controls['responseOptions']?.value?.fileInput?.length
             ) {
-              console.log('Con archivos');
-              /*
-              for await (const slide of this.postsService.post.slides) {
-                if (slide.media && slide.media.type.includes('image')) {
-                  await fileToBase64(slide.media).then((result) => {
-                    this.gridArray.push({
-                      ...slide,
-                      background: result,
-                      _type: slide.media.type,
-                    });
-                  });
-                } else if (slide.media && slide.media.type.includes('video')) {
-                  const fileUrl = this.domSanitizer.bypassSecurityTrustUrl(
-                    URL.createObjectURL(slide.media)
-                  );
-                  this.gridArray.push({
-                    ...slide,
-                    background: fileUrl,
-                    _type: slide.media.type,
-                  });
-                } else if (!slide.media && slide.type === 'text') {
-                  this.gridArray.push({
-                    ...slide,
-                  });
-                }
-              }*/
             }
+
+            if (
+              !this.webformsService.formCreationData?.steps[
+                1 + this.webformQuestionIndex
+              ].fields.controls['responseOptions'] &&
+              !this.webformsService.formCreationData
+            )
+              this.router.navigate(['/admin/form-creator/' + this.itemId]);
           }
 
           this.availableFiles = [
@@ -167,6 +135,7 @@ export class MediaUploadDndComponentComponent implements OnInit {
     const fileList = (event.target as HTMLInputElement).files;
     if (!fileList.length) return;
     let index = this.gridArray.length - 1;
+
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList.item(i);
 
@@ -202,7 +171,8 @@ export class MediaUploadDndComponentComponent implements OnInit {
   async submit() {
     if (
       this.entity.toUpperCase() === 'WEBFORM-QUESTION' &&
-      this.webformQuestionIndex >= 0
+      this.webformQuestionIndex >= 0 &&
+      this.gridArray.length > 0
     ) {
       (
         this.webformsService.formCreationData.steps[
@@ -238,6 +208,14 @@ export class MediaUploadDndComponentComponent implements OnInit {
         );
       });
 
+      this.router.navigate(['/admin/form-creator/' + this.itemId]);
+    }
+
+    if (
+      this.entity.toUpperCase() === 'WEBFORM-QUESTION' &&
+      this.webformQuestionIndex >= 0 &&
+      this.gridArray.length === 0
+    ) {
       this.router.navigate(['/admin/form-creator/' + this.itemId]);
     }
   }
@@ -292,5 +270,12 @@ export class MediaUploadDndComponentComponent implements OnInit {
 
   isSlideVideo(index: number) {
     return isVideo(this.gridArray[index].background);
+  }
+
+  isMobileDevice() {
+    return (
+      typeof window.orientation !== 'undefined' ||
+      navigator.userAgent.indexOf('IEMobile') !== -1
+    );
   }
 }
