@@ -1,24 +1,43 @@
 <div class="container">
-  <header
-    class="header"
-    [ngStyle]="{ backgroundColor: isMerchant ? '#000000' : '#293628' }"
-  >
-    <button
-      (click)="returnEvent()"
-      style="all: unset; cursor: pointer"
+  <mat-accordion>
+    <mat-expansion-panel
+      (opened)="panelOpenState = true"
+      (closed)="panelOpenState = false"
+      class="panel"
+      [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
     >
-      <img
-        [src]="env + '/arrow-double-up-black.svg'"
-        alt=""
-        style="
-          filter: invert(87%) sepia(6%) saturate(3262%) hue-rotate(67deg)
-            brightness(104%) contrast(89%);
-        "
-      />
-    </button>
-    <p>WeDoWeLike</p>
-    <span>Revistas Virtuales para Monetizar</span>
-  </header>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div class="merchant-info">
+            <div
+              class="icon"
+              [style.background]="
+                _DomSanitizer.bypassSecurityTrustStyle(
+                  'url(' +
+                    order?.items[0].saleflow.merchant?.image +
+                    ') no-repeat center center / cover #e9e371'
+                )
+              "
+            ></div>
+            <p class="title">
+              {{
+                order?.items[0].saleflow.merchant?.name.length < 26
+                  ? order?.items[0].saleflow.merchant?.name
+                  : (order?.items[0].saleflow.merchant?.name.slice(0, 26) +
+                      ".." || "Tienda" | titlecase)
+              }}
+            </p>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-contact-header
+        [link]="link"
+        [chatLink]="chatLink"
+        [bio]="order?.items[0].saleflow.merchant.bio"
+        [contact]="headerService.merchantContact"
+      ></app-contact-header>
+    </mat-expansion-panel>
+  </mat-accordion>
 
   <a
     class="bar btn notify"
@@ -33,9 +52,6 @@
         alt=""
         style="margin: 0px 5px; margin-bottom: -4px"
       />
-
-      a
-      <span>{{ order.items[0].saleflow.merchant.name }}</span>
     </p>
   </a>
   <ng-container *ngIf="isMerchant && order.orderStatus !== 'draft'">
@@ -127,13 +143,7 @@
       </h2>
 
       <ng-container *ngFor="let item of order?.items; index as i">
-        <div
-          class="items-container"
-          style="margin-bottom: 4px"
-          [ngStyle]="{
-            marginTop: i !== 0 ? '10px' : '0px'
-          }"
-        >
+        <div class="items-container" style="margin-bottom: 4px">
           <div class="image-container">
             <button class="btn">
               <div
@@ -155,6 +165,7 @@
               <div
                 class="video-wrapper videoThumbnail"
                 *ngIf="urlIsVideo(item.item.images[0].value)"
+                (click)="playVideoOnFullscreen('media' + item._id)"
               >
                 <img
                   src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
@@ -281,8 +292,9 @@
           (mousemove)="moveEvent($event, elemt)"
         >
           <button
-            class="btn"
+            mat-button
             (click)="order.ocr ? openImageModal(order.ocr.image) : null"
+            style="padding: 0"
           >
             <div
               class="image"
@@ -478,6 +490,78 @@
         <p class="top-text">Nombre del sobre</p>
         <p class="bottom-text">{{ post.targets[0].name }}</p>
       </div>
+
+      <div class="question" *ngIf="post.title">
+        <p class="top-text">Nombre del sobre</p>
+        <p class="bottom-text">{{ post.title }}</p>
+      </div>
+
+      <div class="question" *ngIf="post.from">
+        <p class="top-text">De:</p>
+        <p class="bottom-text">{{ post.from }}</p>
+      </div>
+
+      <div class="question" *ngIf="post.to">
+        <p class="top-text">Para:</p>
+        <p class="bottom-text">{{ post.to }}</p>
+      </div>
+
+      <div class="question" *ngIf="slides && slides.length">
+        <p class="top-text">Contenido del QR:</p>
+
+        <div class="qr-content">
+          <div
+            class="slide-container"
+            *ngFor="let slide of slides; let i; as: index"
+          >
+            <ng-container *ngIf="slide.type === 'poster' && !slide.isVideo">
+              <div
+                (click)="openImageModal(slide.media)"
+                class="entity-image"
+                [ngStyle]="{
+                  'background-image': 'url(' + slide.media + ')'
+                }"
+              ></div>
+            </ng-container>
+
+            <ng-container *ngIf="slide.type === 'text'">
+              <div class="text-content">
+                <div class="content">
+                  <p class="subtitle2" *ngIf="slide.text">{{ slide.text }}</p>
+                  <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="slide.type === 'poster' && slide.isVideo">
+              <div
+                class="video-wrapper2 videoThumbnail"
+                (click)="playVideoOnFullscreen('video' + i)"
+              >
+                <img
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                  alt="play"
+                  class="playVideoIcon"
+                  style="padding: 1rem !important; z-index: 99"
+                />
+
+                <video [src]="slide.media" [id]="'video' + i"></video>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="entityTemplate && entityTemplateLink">
+        <button class="blue" (click)="downloadQr(qrcodeTemplate)">
+          Imprime o descarga el QR que enlaza el contenido
+        </button>
+
+        <button class="blue" (click)="copyEntityId(entityTemplate.dateId)">
+          Copy en Clipboard el ID del simbolo
+          {{ formatId(entityTemplate.dateId) }}
+        </button>
+      </ng-container>
       <!-- <div class="question">
         <p class="top-text">Contenido privado del QR (fotos, audio y ...)</p>
       </div> -->
@@ -600,4 +684,18 @@
   [text]="'VOLVER A LA TIENDA'"
   (click)="goToStore()"
   ></app-sticky-button> -->
+
+  <div style="visibility: hidden; position: absolute; z-index: -99">
+    <qrcode
+      *ngIf="entityTemplate"
+      #qrcodeTemplate
+      [qrdata]="entityTemplateLink"
+      [elementType]="'img'"
+      [width]="500"
+      [style.margin-top.px]="-25"
+      [errorCorrectionLevel]="'M'"
+      [allowEmptyString]="true"
+      colorDark="#000000"
+    ></qrcode>
+  </div>
 </div>

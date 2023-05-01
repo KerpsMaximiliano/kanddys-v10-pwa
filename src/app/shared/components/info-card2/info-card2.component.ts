@@ -12,6 +12,7 @@ export class InfoCard2Component implements OnInit {
   @Input() kioskoView: boolean = false;
   @Input() cards = [];
   @Input() options = [];
+  @Input() isOptions: boolean = true;
   @Output() emitIndex = new EventEmitter<any>();
 
   clickedIndex: number;

@@ -224,13 +224,13 @@ export class ItemsService {
   }
 
   async bestSellersByMerchant(
-    limit: number,
-    merchantID: string
-  ): Promise<string[]> {
+    isObjectID: boolean,
+    paginate: PaginationInput
+  ): Promise<string[] | Item[]> {
     try {
       const response = await this.graphql.query({
         query: bestSellersByMerchant,
-        variables: { limit, merchantID },
+        variables: { isObjectID, paginate },
         fetchPolicy: 'no-cache',
       });
       return response.bestSellersByMerchant;

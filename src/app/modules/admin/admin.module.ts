@@ -13,15 +13,16 @@ import { ArticleCreatorComponent } from './pages/article-creator/article-creator
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/anexo-choices.component';
+import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
+import { ImageBannerComponent } from './pages/image-banner/image-banner.component';
+import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
+import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
 import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
-import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { ArticleEditorComponent } from './pages/article-editor/article-editor.component';
-import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { TagsViewComponent } from './pages/tags-view/tags-view.component';
-import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 import { ViewConfigurationComponent } from './pages/view-configuration/view-configuration.component';
 import { WebformMetricsComponent } from './pages/webform-metrics/webform-metrics.component';
 import { OrderStatusViewComponent } from './pages/order-status-view/order-status-view.component';
@@ -44,6 +45,16 @@ import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { ReportingsComponent } from './pages/reportings/reportings.component';
+import { OrderSlidesComponent } from './pages/order-slides/order-slides.component';
+import { RewardsDisplayComponent } from './pages/rewards-display/rewards-display.component';
+import { DashboardLibraryComponent } from './pages/dashboard-library/dashboard-library.component';
+import { OrderDataComponent } from './pages/order-data/order-data.component';
+import { BuyerDataComponent } from './pages/buyer-data/buyer-data.component';
+import { ReportsComponent } from './pages/reports/reports.component';
+import { FilterPipeSearchPipe } from 'src/app/core/pipes/filter-pipe-search.pipe';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -130,6 +141,18 @@ const routes: Routes = [
         component: AnexoChoicesComponent,
       },
       {
+        path: 'bios-edit',
+        component: BiosEditComponent,
+      },
+      {
+        path: 'image-banner',
+        component: ImageBannerComponent,
+      },
+      {
+        path: 'qr-edit',
+        component: QrEditComponent,
+      },
+      {
         path: 'manage-tag',
         component: ManageTagComponent,
       },
@@ -175,7 +198,7 @@ const routes: Routes = [
       },
       {
         path: 'options-selector',
-        component: WebformOptionsSelectorComponent
+        component: WebformOptionsSelectorComponent,
       },
       {
         path: 'webform-preview/:itemId',
@@ -183,40 +206,42 @@ const routes: Routes = [
       },
       {
         path: 'webform-responses/:formId/:itemId',
-        component: FormResponsesComponent
+        component: FormResponsesComponent,
       },
       {
         path: 'webform-open-responses/:formId',
-        component: OpenFormResponsesComponent
+        component: OpenFormResponsesComponent,
       },
-      {
-        path: 'order-status-view',
-        component: OrderStatusViewComponent,
-      },
-      {
-        path: 'order-list',
-        children: [
-          {
-            path: 'tags/:tagId',
-            component: OrderListComponent,
-          },
-          {
-            path: 'status/:status',
-            component: OrderListComponent,
-          },
-          {
-            path: 'process/:deliveryStatus',
-            component: OrderListComponent,
-          },
-        ],
-      },
+      // {
+      //   // Asegurar que no se usa y borrar
+      //   path: 'order-status-view',
+      //   component: OrderStatusViewComponent,
+      // },
+      // {
+      //   // Asegurar que no se usa y borrar
+      //   path: 'order-list',
+      //   children: [
+      //     {
+      //       path: 'tags/:tagId',
+      //       component: OrderListComponent,
+      //     },
+      //     {
+      //       path: 'status/:status',
+      //       component: OrderListComponent,
+      //     },
+      //     {
+      //       path: 'process/:deliveryStatus',
+      //       component: OrderListComponent,
+      //     },
+      //   ],
+      // },
       {
         path: 'webform-multiple-selection/:itemId',
         component: TextOrImageComponent,
       },
       {
         path: 'webforms-editor/:formId/:itemId',
-        component: WebformsEditorComponent
+        component: WebformsEditorComponent,
       },
       {
         path: 'benefits',
@@ -244,18 +269,55 @@ const routes: Routes = [
       },
       {
         path: 'create-notification',
-        component: NotificationCreatorComponent
+        component: NotificationCreatorComponent,
       },
       {
         path: 'create-notification/:notificationId',
-        component: NotificationCreatorComponent
+        component: NotificationCreatorComponent,
       },
       {
-        path: 'create-notification/:notificationId',
-        component: NotificationCreatorComponent
+        path: 'order-slides',
+        component: OrderSlidesComponent,
       },
-      
+      {
+        path: 'reports',
+        redirectTo: 'reports/orders',
+      },
+      {
+        path: 'reports',
+        component: ReportsComponent,
+        children: [
+          {
+            path: 'orders',
+            component: OrderDataComponent,
+          },
+          {
+            path: 'buyers',
+            component: BuyerDataComponent,
+          },
+        ],
+      },
+      {
+        path: 'reports/orders/list/:deliveryStatus',
+        component: OrderListComponent,
+      },
+      {
+        path: 'reports/buyers/list/:filter',
+        component: OrderListComponent,
+      },
+      {
+        path: 'reports/buyers/list',
+        component: OrderListComponent,
+      },
+      {
+        path: 'notifications-menu',
+        component: RewardsDisplayComponent,
+      },
     ],
+  },
+  {
+    path: 'contact-landing/:idUser',
+    component: ContactLandingContainerComponent,
   },
   {
     path: 'tags',
@@ -273,6 +335,10 @@ const routes: Routes = [
     path: 'reportings',
     component: ReportingsComponent
   },
+  {
+    path: 'dashboard-library',
+    component: DashboardLibraryComponent,
+  }
 ];
 
 @NgModule({
@@ -285,6 +351,8 @@ const routes: Routes = [
     ArticleCreatorComponent,
     ItemsDashboardComponent,
     CreateTagComponent,
+    BiosEditComponent,
+    ImageBannerComponent,
     TagsComponent,
     ManageTagComponent,
     ArticleEditorComponent,
@@ -310,8 +378,23 @@ const routes: Routes = [
     NotificationCreatorComponent,
     ArticleDetailComponent,
     ReportingsComponent,
+    OrderSlidesComponent,
+    DashboardLibraryComponent,
+    ReportsComponent,
+    OrderDataComponent,
+    BuyerDataComponent,
+    FilterPipeSearchPipe,
+    AutofocusDirective,
   ],
   exports: [ArticleCreatorComponent],
-  imports: [CommonModule, SharedModule, MatCheckboxModule, RouterModule.forChild(routes)],
+  imports: [
+    CommonModule,
+    SharedModule,
+    MatCheckboxModule,
+    // MatDaterangepickerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    RouterModule.forChild(routes),
+  ],
 })
 export class AdminModule {}
