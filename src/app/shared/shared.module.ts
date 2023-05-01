@@ -190,17 +190,14 @@ import { ArticleStepperFormComponent } from './components/article-stepper-form/a
 import { FacturasDisplay2Component } from './components/facturas-display2/facturas-display2.component';
 import { FullMenuButtonComponent } from './components/full-menu-button/full-menu-button.component';
 import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
-<<<<<<< HEAD
 import { FormCreatorComponent } from './components/form-creator/form-creator.component';
 import { MediaUploadDndComponentComponent } from './components/media-upload-dnd-component/media-upload-dnd-component.component';
 import { FormResponsesComponent } from './components/form-responses/form-responses.component';
-=======
 import { InfoContainerComponent } from './components/info-container/info-container.component';
 import { CardInfoComponent } from './components/card-info/card-info.component';
 import { SmallInfoCardComponent } from './components/small-info-card/small-info-card.component';
 import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-cards.component';
 import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
->>>>>>> staging-v3
 
 const imports = [
   CommonModule,
@@ -405,17 +402,14 @@ const declarations = [
   FacturasDisplay2Component,
   FullMenuButtonComponent,
   NotificationDialogComponent,
-<<<<<<< HEAD
   FormCreatorComponent,
   MediaUploadDndComponentComponent,
-  FormResponsesComponent
-=======
+  FormResponsesComponent,
   InfoContainerComponent,
   CardInfoComponent,
   SmallInfoCardComponent,
   KioskerosCardsComponent,
   ContactHeaderComponent,
->>>>>>> staging-v3
 ];
 
 @NgModule({

@@ -195,6 +195,8 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           });
         } else if (this.webformsService.formCreationData !== null) {
           this.steps = this.webformsService.formCreationData.steps;
+
+          if (formId) this.webform = await this.webformsService.webform(formId);
         } else if (this.webformsService.formCreationData === null && formId) {
           const isFormPartOfTheRoutesItem = this.item.webForms.find(
             (form) => form.reference === formId
@@ -418,6 +420,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       );
     }
 
+    /*
     console.log(
       'responseOptions',
       this.steps[this.currentStepIndex].fields.controls['responseOptions']
@@ -427,7 +430,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(
       'validationsOptionsFieldControl',
       validationsOptionsFieldControl
-    );
+    );*/
 
     //If the admin select a response with multiple options for the user to choose,
     //then the formArray is saved on the steps.fields.controls['responseOptions'] variable.
@@ -436,7 +439,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       value === 'multiple' &&
       !this.steps[this.currentStepIndex].fields.controls['responseOptions']
     ) {
-      console.log('A');
+      //console.log('A');
       this.steps[this.currentStepIndex].fields.addControl(
         'responseOptions',
         new FormArray([
@@ -744,7 +747,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         required: false,
       };
 
-      if (this.webform) {
+      if (this.webform && step.fields.controls['id']) {
         question.id = step.fields.controls['id'].value;
       }
 
@@ -871,7 +874,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.webform) {
       lockUI();
       const webformToCreate: WebformInput = {
-        name: 'Formario para el item ' + this.item.name,
+        name: 'Formulario para el producto ' + this.item.name,
         description: this.steps[0].fields.controls['note'].value,
       };
 
@@ -969,7 +972,10 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     } else {
       try {
-        for await (const question of questionsToAdd) {
+        const toUpdate = questionsToAdd.filter((question) => question.id);
+        const toAdd = questionsToAdd.filter((question) => !question.id);
+
+        for await (const question of toUpdate) {
           if (!question.answerDefault) {
             question.answerDefault = [];
           }
@@ -1045,6 +1051,67 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
 
+        if (toAdd.length > 0) {
+          const largeInputQuestions: QuestionInput[] = toAdd.filter(
+            (question) => question.answerDefault?.length > 20
+          );
+          const smallInputQuestions: QuestionInput[] = toAdd.filter(
+            (question) =>
+              question.answerDefault?.length <= 20 || !question.answerDefault
+          );
+
+          if (smallInputQuestions.length > 0) {
+            await this.webformsService.webformAddQuestion(
+              smallInputQuestions,
+              this.webform._id
+            );
+          }
+
+          if (largeInputQuestions.length > 0) {
+            for await (const question of largeInputQuestions) {
+              const answerDefault = question.answerDefault;
+
+              const partsInAnswerDefault = [];
+
+              for (let i = 0; i < Math.ceil(answerDefault.length / 20); i++) {
+                const topLimit = i * 20 + 20;
+                const lowerLimit = i * 20;
+                partsInAnswerDefault.push(
+                  answerDefault.slice(lowerLimit, topLimit)
+                );
+              }
+
+              question.answerDefault = partsInAnswerDefault[0];
+
+              try {
+                const results = await this.webformsService.webformAddQuestion(
+                  [question],
+                  this.webform._id
+                );
+
+                if (results && partsInAnswerDefault.length > 1) {
+                  for (let i = 1; i < partsInAnswerDefault.length; i++) {
+                    const questionId =
+                      results.questions[results.questions.length - 1]._id;
+                    const answerDefault = partsInAnswerDefault[i];
+                    const result =
+                      await this.webformsService.questionAddAnswerDefault(
+                        answerDefault,
+                        questionId,
+                        results._id
+                      );
+                  }
+                }
+              } catch (error) {
+                this.snackbar.open('Error al crear el formulario', 'Cerrar', {
+                  duration: 3000,
+                });
+                console.error(error);
+              }
+            }
+          }
+        }
+
         if (this.questionsToDelete.length > 0)
           await this.webformsService.webformRemoveQuestion(
             this.questionsToDelete,
@@ -1077,7 +1144,10 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'confirm') {
-        if (this.webform && this.steps[this.currentStepIndex].fields.controls['id'])
+        if (
+          this.webform &&
+          this.steps[this.currentStepIndex].fields.controls['id']
+        )
           this.questionsToDelete.push(
             this.steps[this.currentStepIndex].fields.controls['id'].value
           );

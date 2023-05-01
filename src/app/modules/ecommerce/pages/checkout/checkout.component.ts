@@ -767,7 +767,7 @@ export class CheckoutComponent implements OnInit {
       } else {
         unlockUI();
         const postResult = (await this.postsService.createPost(this.post))
-              ?.createPost?._id;
+          ?.createPost?._id;
 
         this.headerService.order.products[0].post = postResult;
 
@@ -775,9 +775,6 @@ export class CheckoutComponent implements OnInit {
         await this.finishOrderCreation();
       }
     }
-<<<<<<< HEAD
-    // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
-=======
   };
 
   finishOrderCreation = async () => {
@@ -785,80 +782,54 @@ export class CheckoutComponent implements OnInit {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
       this.headerService.order.orderStatusDelivery = 'in progress';
+
       if (this.headerService.user && !anonymous) {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)
         ).createOrder._id;
->>>>>>> staging-v3
 
-    let createdOrder: string;
-    const anonymous = this.headerService.getOrderAnonymous();
-    if (this.headerService.order.itemPackage)
-      delete this.headerService.order.itemPackage;
-    if (this.headerService.user && !anonymous) {
-      createdOrder = (
-        await this.orderService.createOrder(this.headerService.order)
-      ).createOrder._id;
+        if (
+          this.hasDeliveryZone &&
+          this.deliveryZone &&
+          this.deliveryLocation.street
+        ) {
+          await this.orderService.orderSetDeliveryZone(
+            this.deliveryZone.id,
+            createdOrder,
+            this.headerService.user._id
+          );
+        }
+      } else {
+        createdOrder = (
+          await this.orderService.createPreOrder(this.headerService.order)
+        )?.createPreOrder._id;
 
-      if (
-        this.hasDeliveryZone &&
-        this.deliveryZone &&
-        this.deliveryLocation.street
-      ) {
-        await this.orderService.orderSetDeliveryZone(
-          this.deliveryZone.id,
-          createdOrder,
-          this.headerService.user._id
-        );
+        this.headerService.deleteSaleflowOrder();
+        this.headerService.resetOrderProgress();
+        this.headerService.orderId = createdOrder;
+        this.headerService.currentMessageOption = undefined;
+        this.headerService.post = undefined;
+
+        if (
+          this.hasDeliveryZone &&
+          this.deliveryZone &&
+          this.deliveryLocation.street
+        ) {
+          await this.orderService.orderSetDeliveryZone(
+            this.deliveryZone.id,
+            createdOrder
+          );
+        }
       }
-<<<<<<< HEAD
-    } else {
-      createdOrder = (
-        await this.orderService.createPreOrder(this.headerService.order)
-      )?.createPreOrder._id;
-=======
-
       this.headerService.deleteSaleflowOrder();
       this.headerService.resetOrderProgress();
       this.headerService.orderId = createdOrder;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
->>>>>>> staging-v3
 
-      if (
-        this.hasDeliveryZone &&
-        this.deliveryZone &&
-        this.deliveryLocation.street
-      ) {
-        await this.orderService.orderSetDeliveryZone(
-          this.deliveryZone.id,
-          createdOrder
-        );
-      }
-    }
-    this.headerService.deleteSaleflowOrder();
-    this.headerService.resetOrderProgress();
-    this.headerService.orderId = createdOrder;
-    this.headerService.currentMessageOption = undefined;
-    this.headerService.post = undefined;
+      //Answer the webforms of each item and adds it to the order
+      await this.createAnswerForEveryWebformItem(createdOrder);
 
-<<<<<<< HEAD
-    //Answer the webforms of each item and adds it to the order
-    await this.createAnswerForEveryWebformItem(createdOrder);
-
-    this.appService.events.emit({ type: 'order-done', data: true });
-    if (this.hasPaymentModule) {
-      this.router.navigate([`../payments/${this.headerService.orderId}`], {
-        relativeTo: this.route,
-        replaceUrl: true,
-      });
-    } else {
-      if (!this.headerService.user || anonymous) {
-        const matDialogRef = this.matDialog.open(LoginDialogComponent, {
-          data: {
-            loginType: 'phone',
-          },
-=======
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
         if (this.postsService.privatePost && !this.logged) {
@@ -869,25 +840,37 @@ export class CheckoutComponent implements OnInit {
         this.router.navigate([`../payments/${this.headerService.orderId}`], {
           relativeTo: this.route,
           replaceUrl: true,
->>>>>>> staging-v3
         });
-        matDialogRef.afterClosed().subscribe(async (value) => {
-          if (!value) return;
-          if (value.user?._id || value.session.user._id) {
-            await this.orderService.authOrder(createdOrder, value._id);
-            this.router.navigate([`../../order-detail/${createdOrder}`], {
-              relativeTo: this.route,
-              replaceUrl: true,
-            });
-          }
+      } else {
+        if (!this.headerService.user || anonymous) {
+          const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+            data: {
+              loginType: 'phone',
+            },
+          });
+          matDialogRef.afterClosed().subscribe(async (value) => {
+            if (!value) return;
+            if (value.user?._id || value.session.user._id) {
+              await this.orderService.authOrder(createdOrder, value._id);
+              this.router.navigate([`../../order-detail/${createdOrder}`], {
+                relativeTo: this.route,
+                replaceUrl: true,
+              });
+            }
+          });
+          return;
+        }
+        this.router.navigate([`../../order-detail/${createdOrder}`], {
+          relativeTo: this.route,
+          replaceUrl: true,
         });
         return;
       }
-      this.router.navigate([`../../order-detail/${createdOrder}`], {
-        relativeTo: this.route,
-        replaceUrl: true,
-      });
-      return;
+      unlockUI();
+    } catch (error) {
+      console.log(error);
+      unlockUI();
+      this.disableButton = false;
     }
   };
 
