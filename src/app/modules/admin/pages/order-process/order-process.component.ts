@@ -5,7 +5,11 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Merchant } from 'src/app/core/models/merchant';
-import { ItemOrder, OrderStatusDeliveryType, OrderStatusNameType } from 'src/app/core/models/order';
+import {
+  ItemOrder,
+  OrderStatusDeliveryType,
+  OrderStatusNameType,
+} from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -34,18 +38,21 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { Notification } from 'src/app/core/models/notification';
 
+interface ExtendedOrder extends ItemOrder {
+  loadedDeliveryStatus?: OrderStatusDeliveryType;
+}
+
 @Component({
   selector: 'app-order-process',
   templateUrl: './order-process.component.html',
-  styleUrls: ['./order-process.component.scss']
+  styleUrls: ['./order-process.component.scss'],
 })
 export class OrderProcessComponent implements OnInit {
-
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
 
   order: ItemOrder;
-  ordersReadyToDeliver: ItemOrder[] = [];
+  ordersReadyToDeliver: ExtendedOrder[] = [];
 
   deliveryZone: DeliveryZone;
 
@@ -104,8 +111,8 @@ export class OrderProcessComponent implements OnInit {
 
   deliveryImages: Array<{
     image?: string;
-    deliveryZone?: DeliveryZone,
-    reservation?: Reservation,
+    deliveryZone?: DeliveryZone;
+    reservation?: Reservation;
     order: string;
   }> = [];
 
@@ -165,29 +172,38 @@ export class OrderProcessComponent implements OnInit {
       this.route.params.subscribe(async (params) => {
         const { merchantId } = params;
 
-        await this.executeProcessesAfterLoading(merchantId, orderId, deliveryZone);
+        await this.executeProcessesAfterLoading(
+          merchantId,
+          orderId,
+          deliveryZone
+        );
         if (orderId) await this.getOrders(this.merchant._id, deliveryZone);
 
-        if (this.ordersReadyToDeliver.length > 0) this.orderReadyToDeliver = 
-          (
-            this.order.orderStatusDelivery === 'pending' || 
-            this.order.orderStatusDelivery === 'delivered'
-          );
+        if (this.ordersReadyToDeliver.length > 0)
+          this.orderReadyToDeliver =
+            this.order.orderStatusDelivery === 'pending' ||
+            this.order.orderStatusDelivery === 'delivered';
       });
     });
   }
 
-  async executeProcessesAfterLoading(merchantId: string, orderId?: string, deliveryZone?: string) {
+  async executeProcessesAfterLoading(
+    merchantId: string,
+    orderId?: string,
+    deliveryZone?: string
+  ) {
     lockUI();
-
-    
 
     this.merchant = await this.merchantsService.merchant(merchantId);
     await this.isMerchantOwner(merchantId);
 
     if (!orderId) {
       await this.getOrders(this.merchant._id, deliveryZone);
-      this.order = this.ordersReadyToDeliver.length > 0 ? (await this.orderService.order(this.ordersReadyToDeliver[0]._id))?.order : null;
+      this.order =
+        this.ordersReadyToDeliver.length > 0
+          ? (await this.orderService.order(this.ordersReadyToDeliver[0]._id))
+              ?.order
+          : null;
     } else this.order = (await this.orderService.order(orderId))?.order;
 
     if (!this.order) {
@@ -201,16 +217,28 @@ export class OrderProcessComponent implements OnInit {
     this.ordersReadyToDeliver.forEach(async (order) => {
       let deliveryZone: DeliveryZone;
       let reservation: Reservation;
-      if ((this.isMerchant || this.view === 'delivery') && this.isPopulated(order) && order.deliveryZone) {
-        deliveryZone = await this.deliveryzoneService.deliveryZone(order.deliveryZone);
-        reservation = await this.reservationsService.getReservation(order.items[0].reservation._id)
+      if (
+        (this.isMerchant || this.view === 'delivery') &&
+        this.isPopulated(order) &&
+        order.deliveryZone
+      ) {
+        deliveryZone = await this.deliveryzoneService.deliveryZone(
+          order.deliveryZone
+        );
+        reservation = await this.reservationsService.getReservation(
+          order.items[0].reservation._id
+        );
       }
       this.deliveryImages.push({
-        image: this.isPopulated(order) ? (order.deliveryData.image ? order.deliveryData.image : null) : null,
+        image: this.isPopulated(order)
+          ? order.deliveryData.image
+            ? order.deliveryData.image
+            : null
+          : null,
         deliveryZone: deliveryZone ? deliveryZone : null,
         reservation: reservation ? reservation : null,
-        order: order._id
-      })
+        order: order._id,
+      });
     });
 
     console.log(this.deliveryImages);
@@ -273,10 +301,11 @@ export class OrderProcessComponent implements OnInit {
     }
 
     if (this.post && this.slides.length > 0) {
-      const results = await this.entityTemplateService.entityTemplateByReference(
-        this.post._id,
-        'post'
-      );
+      const results =
+        await this.entityTemplateService.entityTemplateByReference(
+          this.post._id,
+          'post'
+        );
 
       if (results) {
         this.entityTemplate = results;
@@ -388,8 +417,10 @@ export class OrderProcessComponent implements OnInit {
       this.orderDelivered = true;
       if (this.order.orderStatusDelivery !== 'delivered') {
         if (this.isMerchant) await this.changeOrderStatus('delivered');
-        else if (this.view === 'assistant') await this.changeOrderStatusAuthless('delivered');
-        else if (this.view === 'delivery') await this.changeOrderStatusAuthless('delivered');
+        else if (this.view === 'assistant')
+          await this.changeOrderStatusAuthless('delivered');
+        else if (this.view === 'delivery')
+          await this.changeOrderStatusAuthless('delivered');
       }
     }
     unlockUI();
@@ -400,20 +431,25 @@ export class OrderProcessComponent implements OnInit {
     const findBy = {
       merchant: merchantId,
       deliveryZone: deliveryZone,
-      orderStatus: ["to confirm", "paid", "completed"],
-      orderStatusDelivery: this.view === 'delivery' ? 'pending' : this.view === 'assistant' ? 'in progress' : this.isMerchant ? null : null,
-    }
+      orderStatus: ['to confirm', 'paid', 'completed'],
+      orderStatusDelivery:
+        this.view === 'delivery'
+          ? 'pending'
+          : this.view === 'assistant'
+          ? 'in progress'
+          : this.isMerchant
+          ? null
+          : null,
+    };
     if (this.isMerchant) delete findBy.orderStatusDelivery;
     try {
-      const result = await this.orderService.orderByMerchantDelivery(
-        {
-          options: {
-            limit: 20,
-            sortBy: "createdAt:desc"
-          },
-          findBy
-        }
-      );
+      const result = await this.orderService.orderByMerchantDelivery({
+        options: {
+          limit: 20,
+          sortBy: 'createdAt:desc',
+        },
+        findBy,
+      });
 
       console.log(result);
 
@@ -421,11 +457,10 @@ export class OrderProcessComponent implements OnInit {
 
       // const index = this.ordersReadyToDeliver.map(order => order._id).indexOf(this.order._id);
       // console.log(index);
-      
+
       // if (index !== -1) this.ordersReadyToDeliver.splice(index, 1, this.order);
       // this.initialSlide = index;
       // this.swiperConfig.initialSlide = index;
-
     } catch (error) {
       console.log(error);
     }
@@ -463,30 +498,31 @@ export class OrderProcessComponent implements OnInit {
             sortBy: 'createdAt:desc',
           },
           findBy: {
-            entity: "order",
-            type: "standard",
-            mode: "default",
-            active: true
-          }
+            entity: 'order',
+            type: 'standard',
+            mode: 'default',
+            active: true,
+          },
         },
         merchantId
       );
 
       const notifications = result.filter((notification) => {
-        return notification.trigger[0].key === 'orderStatusDelivery'
+        return notification.trigger[0].key === 'orderStatusDelivery';
       });
 
       console.log(notifications);
 
       this.notifications = notifications;
-      
     } catch (error) {
       console.log(error);
     }
   }
 
   checkNotificationDeliveryStatus(status: string) {
-    return this.notifications.find((option) => option.trigger[0].value === status);
+    return this.notifications.find(
+      (option) => option.trigger[0].value === status
+    );
   }
 
   async isMerchantOwner(merchant: string) {
@@ -498,10 +534,13 @@ export class OrderProcessComponent implements OnInit {
   async changeOrderStatus(value: OrderStatusDeliveryType) {
     this.order.orderStatusDelivery = value;
     this.handleStatusOptions(value);
-    
+
     try {
-      await this.orderService.orderSetStatusDelivery(value, this.ordersReadyToDeliver[this.activeIndex]._id);
-      if (value === 'pending')  this.orderReadyToDeliver = true;
+      await this.orderService.orderSetStatusDelivery(
+        value,
+        this.ordersReadyToDeliver[this.activeIndex]._id
+      );
+      if (value === 'pending') this.orderReadyToDeliver = true;
       if (value === 'delivered') this.orderDelivered = true;
 
       this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = value;
@@ -513,10 +552,13 @@ export class OrderProcessComponent implements OnInit {
   async changeOrderStatusAuthless(value: OrderStatusDeliveryType) {
     this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = value;
     this.handleStatusOptions(value);
-    
+
     try {
-      await this.orderService.orderSetStatusDeliveryWithoutAuth(value, this.ordersReadyToDeliver[this.activeIndex]._id);
-      if (value === 'pending')  this.orderReadyToDeliver = true;
+      await this.orderService.orderSetStatusDeliveryWithoutAuth(
+        value,
+        this.ordersReadyToDeliver[this.activeIndex]._id
+      );
+      if (value === 'pending') this.orderReadyToDeliver = true;
       if (value === 'delivered') this.orderDelivered = true;
     } catch (error) {
       console.log(error);
@@ -531,9 +573,7 @@ export class OrderProcessComponent implements OnInit {
 
   goToPost() {
     this.router.navigate([
-      '/qr/' +
-      '/article-template/' +
-      this.entityTemplate._id
+      '/qr/' + '/article-template/' + this.entityTemplate._id,
     ]);
   }
 
@@ -548,44 +588,47 @@ export class OrderProcessComponent implements OnInit {
 
   share(order: ItemOrder) {
     const link = `${this.URI}/ecommerce/order-detail/${order._id}`;
-    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
-      data: [
-        {
-          title: `Vista e interfaz con ${this.isMerchant ? 'toda la info' : 'la info limitada'} `,
-          options: [
-            {
-              title: 'Ver como lo verá el visitante',
-              callback: () => {
-                this.router.navigate([
-                  `/ecommerce/order-detail/${order._id}`,
-                ],
-                { queryParams: { redirectTo: this.router.url } });
-              },
+    const data = [
+      {
+        title: `Vista e interfaz con ${
+          this.isMerchant ? 'toda la info' : 'la info limitada'
+        } `,
+        options: [
+          {
+            title: 'Ver como lo verá el visitante',
+            callback: () => {
+              this.router.navigate([`/ecommerce/order-detail/${order._id}`], {
+                queryParams: { redirectTo: this.router.url },
+              });
             },
-            {
-              title: 'Compartir el Link de esta sola factura',
-              callback: () => {
-                this.ngNavigatorShareService.share({
-                  title: '',
-                  url: link,
-                });
-              },
+          },
+          {
+            title: 'Compartir el Link de esta sola factura',
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: '',
+                url: link,
+              });
             },
-            {
-              title: 'Copiar el Link de esta sola factura',
-              callback: () => {
-                this.clipboard.copy(link);
-                this.snackBar.open('Enlace copiado en el portapapeles', '', {
-                  duration: 2000,
-                });
-              },
+          },
+          {
+            title: 'Copiar el Link de esta sola factura',
+            callback: () => {
+              this.clipboard.copy(link);
+              this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                duration: 2000,
+              });
             },
-            {
-              title: 'Descargar el qrCode de esta sola factura',
-              callback: () => this.downloadQr(order)
-            },
-          ],
-        },
+          },
+          {
+            title: 'Descargar el qrCode de esta sola factura',
+            callback: () => this.downloadQr(order),
+          },
+        ],
+      },
+    ];
+    if (this.isMerchant) {
+      data.push(
         {
           title: `Opciones para el mensajero`,
           options: [
@@ -601,12 +644,14 @@ export class OrderProcessComponent implements OnInit {
             {
               title: 'Copiar el Link',
               callback: () => {
-                this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`);
+                this.clipboard.copy(
+                  `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`
+                );
                 this.snackBar.open('Enlace copiado en el portapapeles', '', {
                   duration: 2000,
                 });
               },
-            }
+            },
           ],
         },
         {
@@ -624,15 +669,20 @@ export class OrderProcessComponent implements OnInit {
             {
               title: 'Copiar el Link',
               callback: () => {
-                this.clipboard.copy(`${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`);
+                this.clipboard.copy(
+                  `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`
+                );
                 this.snackBar.open('Enlace copiado en el portapapeles', '', {
                   duration: 2000,
                 });
               },
-            }
+            },
           ],
         }
-      ],
+      );
+    }
+    this._bottomSheet.open(LinksDialogComponent, {
+      data,
     });
   }
 
@@ -646,13 +696,18 @@ export class OrderProcessComponent implements OnInit {
           this.ordersReadyToDeliver[this.activeIndex]._id
         );
 
-        this.deliveryImages.forEach(deliveryImage => {
-          if (deliveryImage.order === result._id) deliveryImage.image = result.deliveryData.image;
+        this.deliveryImages.forEach((deliveryImage) => {
+          if (deliveryImage.order === result._id)
+            deliveryImage.image = result.deliveryData.image;
         });
 
-        await this.orderService.orderSetStatusDeliveryWithoutAuth('delivered', this.ordersReadyToDeliver[this.activeIndex]._id);
+        await this.orderService.orderSetStatusDeliveryWithoutAuth(
+          'delivered',
+          this.ordersReadyToDeliver[this.activeIndex]._id
+        );
 
-        this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = 'delivered';
+        this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery =
+          'delivered';
         this.orderReadyToDeliver = false;
         this.orderDelivered = true;
         unlockUI();
@@ -664,10 +719,10 @@ export class OrderProcessComponent implements OnInit {
   }
 
   async updateCurrentSlideData(event: any) {
-    console.log("Cambiando de slide", event);
+    console.log('Cambiando de slide', event);
     console.log(event.activeIndex);
 
-    this.activeIndex = event.activeIndex;   
+    this.activeIndex = event.activeIndex;
 
     // TODO validar si el slide fue hacia adelante o atrás
 
@@ -676,15 +731,26 @@ export class OrderProcessComponent implements OnInit {
 
     if (
       this.ordersReadyToDeliver[this.activeIndex].deliveryData?.image ||
-      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'delivered'
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery ===
+        'delivered'
     ) {
       this.orderReadyToDeliver = false;
       this.orderDelivered = true;
-      if (this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'pending') {
-        await this.orderService.orderSetStatusDeliveryWithoutAuth('delivered', this.ordersReadyToDeliver[this.activeIndex]._id);
-        this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = 'delivered';
+      if (
+        this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery ===
+        'pending'
+      ) {
+        await this.orderService.orderSetStatusDeliveryWithoutAuth(
+          'delivered',
+          this.ordersReadyToDeliver[this.activeIndex]._id
+        );
+        this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery =
+          'delivered';
       }
-    } else if (this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === 'pending') {
+    } else if (
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery ===
+      'pending'
+    ) {
       this.orderReadyToDeliver = true;
       this.orderDelivered = false;
     } else {
@@ -695,7 +761,7 @@ export class OrderProcessComponent implements OnInit {
 
   isPopulated(order: ItemOrder): boolean {
     if (order.createdAt) return true;
-    else return false
+    else return false;
   }
 
   /**
@@ -707,26 +773,35 @@ export class OrderProcessComponent implements OnInit {
   async populateOrder(index: number, n: number = 1, w: boolean = true) {
     console.log(this.ordersReadyToDeliver);
     if (w) {
-      console.log("adelante")
+      console.log('adelante');
       for (let i = index; i < index + n; i++) {
         console.log(i);
         if (i < this.ordersReadyToDeliver.length) {
           if (!this.isPopulated(this.ordersReadyToDeliver[i])) {
-            const order = (await this.orderService.order(this.ordersReadyToDeliver[i]._id))?.order;
+            const order: ExtendedOrder = (
+              await this.orderService.order(this.ordersReadyToDeliver[i]._id)
+            )?.order;
+            order.loadedDeliveryStatus = order.orderStatusDelivery;
             this.ordersReadyToDeliver.splice(i, 1, order);
             console.log(this.deliveryImages[i]);
-            this.deliveryImages[i].image = order.deliveryData?.image ? order.deliveryData?.image : null;
+            this.deliveryImages[i].image = order.deliveryData?.image
+              ? order.deliveryData?.image
+              : null;
 
             if (this.isMerchant || this.view === 'delivery') {
               let deliveryZone: DeliveryZone;
               let reservation: Reservation;
               if (order.deliveryZone) {
-                deliveryZone = await this.deliveryzoneService.deliveryZone(order.deliveryZone);
+                deliveryZone = await this.deliveryzoneService.deliveryZone(
+                  order.deliveryZone
+                );
                 this.deliveryImages[i].deliveryZone = deliveryZone;
               }
 
               if (order.items[0].reservation) {
-                reservation = await this.reservationsService.getReservation(order.items[0].reservation._id)
+                reservation = await this.reservationsService.getReservation(
+                  order.items[0].reservation._id
+                );
                 this.deliveryImages[i].reservation = reservation;
               }
             }
@@ -734,22 +809,24 @@ export class OrderProcessComponent implements OnInit {
           } else {
             console.log(`Posición ${i} ya está populada`);
             continue;
-          };
+          }
         } else {
-          console.log("Array fuera de límite superior");
+          console.log('Array fuera de límite superior');
         }
       }
     } else {
-      console.log("atrás");
+      console.log('atrás');
       for (let i = index; i > index + n; i--) {
         if (i > 0) {
           if (!this.isPopulated(this.ordersReadyToDeliver[i])) {
-            const order = (await this.orderService.order(this.ordersReadyToDeliver[i]._id))?.order;
+            const order = (
+              await this.orderService.order(this.ordersReadyToDeliver[i]._id)
+            )?.order;
             this.ordersReadyToDeliver.splice(i, 1, order);
             console.log(`Posición ${i} reemplazada`);
           } else continue;
         } else {
-          console.log("Array fuera de límite inferior");
+          console.log('Array fuera de límite inferior');
         }
       }
     }
@@ -758,7 +835,6 @@ export class OrderProcessComponent implements OnInit {
   }
 
   convertDate(dateString: string) {
-
     const date = new Date(dateString);
 
     return date
@@ -806,7 +882,8 @@ export class OrderProcessComponent implements OnInit {
   }
 
   downloadQr(order: ItemOrder) {
-    const parentElement = this.orderQrCode.nativeElement.querySelector('img').src;
+    const parentElement =
+      this.orderQrCode.nativeElement.querySelector('img').src;
     let blobData = base64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
       //IE
@@ -826,10 +903,7 @@ export class OrderProcessComponent implements OnInit {
     }
   }
 
-  orderHasDelivery(
-    deliveryZone: DeliveryZone,
-    order: ItemOrder
-  ) {
+  orderHasDelivery(deliveryZone: DeliveryZone, order: ItemOrder) {
     if (deliveryZone) return true;
     if (order.items[0]?.deliveryLocation?.street) return true;
 
@@ -839,7 +913,7 @@ export class OrderProcessComponent implements OnInit {
   displayReservation(reservation: Reservation) {
     const fromDate = new Date(reservation.date.from);
     const untilDate = new Date(reservation.date.until);
-    
+
     const day = fromDate.getDate();
     const weekday = fromDate.toLocaleString('es-MX', {
       weekday: 'short',
@@ -850,10 +924,9 @@ export class OrderProcessComponent implements OnInit {
     const time = `De ${this.formatHour(fromDate)} a ${this.formatHour(
       untilDate,
       reservation.breakTime
-    )}`
+    )}`;
 
     return `${weekday}, ${day} de ${month}. ${time}`;
-        
   }
 
   private formatHour(date: Date, breakTime?: number) {
@@ -887,5 +960,4 @@ export class OrderProcessComponent implements OnInit {
       queryParams,
     });
   }
-
 }

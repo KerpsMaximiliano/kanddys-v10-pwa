@@ -34,7 +34,7 @@
           <div class="order-content">
             <header class="header">
               <div class="flex" style="align-items: center">
-                <a mat-icon-button [routerLink]="">
+                <a mat-icon-button [routerLink]="['../dashboard']">
                   <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
                 </a>
                 <p>Factura {{ formatId(deliveryOrder?.dateId) }}</p>
@@ -382,18 +382,9 @@
                   </div>
                 </ng-container>
               </div>
-              <!-- <span class="benefits">
-                Beneficios ${{
-                  (deliveryOrder.benefits
-                    ? deliveryOrder.benefits.benefits -
-                      deliveryOrder.benefits.less
-                    : 0
-                  ) | number
-                }}
-              </span> -->
               <button
                 mat-icon-button
-                (click)="openDialog()"
+                (click)="openDialog(deliveryOrder)"
                 style="color: #6fcf97"
               >
                 <mat-icon>menu</mat-icon>
@@ -425,30 +416,6 @@
               class="bottom-footer"
               [routerLink]="['../order-expenses', deliveryOrder._id]"
             >
-              <!-- <a
-                [routerLink]="[
-                  '../../ecommerce/order-detail',
-                  ordersToConfirm[activeIndex]?._id
-                ]"
-                [queryParams]="{ redirectTo: router.url }"
-              >
-                preview
-              </a>
-              <a
-                [routerLink]="['../delivery-orders']"
-                [queryParams]="{
-                  redirectTo: router.url,
-                  deliveryZone: deliveryZone
-                }"
-              >
-                Ver todas ({{ ordersToConfirm.length }})
-              </a>
-              <button (click)="share(ordersToConfirm[activeIndex])">
-                <img
-                  [src]="env + '/upload.svg'"
-                  alt="Contenedor con flecha saliendo"
-                />
-              </button> -->
               <span>
                 {{
                   deliveryOrder.benefits

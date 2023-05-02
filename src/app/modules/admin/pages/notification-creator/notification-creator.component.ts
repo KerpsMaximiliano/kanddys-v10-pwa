@@ -56,7 +56,7 @@ export class NotificationCreatorComponent implements OnInit {
 
       this.redirectTo = redirectTo;
       this.orderId = orderId;
-      this.status = status;
+      // this.status = status;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
       if (typeof orderId === 'undefined') this.orderId = null;

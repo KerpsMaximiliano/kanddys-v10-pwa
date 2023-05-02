@@ -124,6 +124,7 @@ const orderData = `
     }
   }
   orderStatus
+  orderStatusDelivery
   statusDelivery
   deliveryZone
   expenditures

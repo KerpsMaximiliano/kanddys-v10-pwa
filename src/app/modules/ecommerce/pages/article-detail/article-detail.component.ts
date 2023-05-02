@@ -1,49 +1,37 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
-import {
-  Item,
-  ItemImage,
-  ItemImageInput,
-  ItemInput,
-  ItemParamValue,
-} from 'src/app/core/models/item';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
+import { Item, ItemImage } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
-import { Post, Slide } from 'src/app/core/models/post';
+import { Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
+import { User } from 'src/app/core/models/user';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { PostsService } from 'src/app/core/services/posts.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
-import { environment } from 'src/environments/environment';
-import { SwiperOptions } from 'swiper';
-import SwiperCore, { Virtual } from 'swiper/core';
-import { EntityTemplate } from 'src/app/core/models/entity-template';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { User } from 'src/app/core/models/user';
-import { InfoDialogComponent } from 'src/app/shared/dialogs/info-dialog/info-dialog.component';
-import { StepperFormComponent } from 'src/app/shared/components/stepper-form/stepper-form.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ItemInfoComponent } from 'src/app/shared/dialogs/item-info/item-info.component';
 import {
   SettingsComponent,
   SettingsDialogButton,
 } from 'src/app/shared/dialogs/settings/settings.component';
-import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
-import { ToastrService } from 'ngx-toastr';
-import { Clipboard } from '@angular/cdk/clipboard';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { MerchantStepperFormComponent } from 'src/app/shared/components/merchant-stepper-form/merchant-stepper-form.component';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ArticleStepperFormComponent } from 'src/app/shared/components/article-stepper-form/article-stepper-form.component';
-import {
-  playVideoOnFullscreen,
-  unlockUI,
-} from 'src/app/core/helpers/ui.helpers';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
+import SwiperCore, { Virtual } from 'swiper/core';
 
 SwiperCore.use([Virtual]);
 
@@ -88,7 +76,7 @@ export class ArticleDetailComponent implements OnInit {
   itemData: ExtendedItem = null;
   tagData: Tag;
   itemTags: Array<ExtendedTag> = [];
-  postData: Post = null;
+  // postData: Post = null;
   postSlides: Array<ExtendedSlide> = [];
   // selectedParam: {
   //   param: number;
@@ -97,12 +85,12 @@ export class ArticleDetailComponent implements OnInit {
   isItemInCart: boolean = false;
   itemsAmount: string;
   mode: 'preview' | 'image-preview' | 'saleflow';
-  signup: 'true' | 'false';
-  createArticle: 'true' | 'false';
-  isCreateArticle: boolean;
-  isSignup: boolean;
-  merchantId: string = '';
-  isMerchant: boolean;
+  // signup: 'true' | 'false';
+  // createArticle: 'true' | 'false';
+  // isCreateArticle: boolean;
+  // isSignup: boolean;
+  // merchantId: string = '';
+  // isMerchant: boolean;
 
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
@@ -131,14 +119,14 @@ export class ArticleDetailComponent implements OnInit {
     'audio/mpeg',
     'audio/wav',
   ];
-  doesModuleDependOnSaleflow: boolean = false;
+  // doesModuleDependOnSaleflow: boolean = false;
   timer: NodeJS.Timeout;
   entityTemplate: EntityTemplate = null;
   user: User;
   logged: boolean = false;
-  isProductMine: boolean = false;
+  // isProductMine: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
-  postContentMinimized: boolean = true;
+  // postContentMinimized: boolean = true;
   articleId: string = '';
   fromQR: boolean = false;
 
@@ -165,28 +153,28 @@ export class ArticleDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.signup = this.route.snapshot.queryParamMap.get('signup') as
-      | 'true'
-      | 'false';
-    if (this.signup === 'true') {
-      this.isSignup = true;
-    }
-    this.createArticle = this.route.snapshot.queryParamMap.get(
-      'createArticle'
-    ) as 'true' | 'false';
+    // this.signup = this.route.snapshot.queryParamMap.get('signup') as
+    //   | 'true'
+    //   | 'false';
+    // if (this.signup === 'true') {
+    //   this.isSignup = true;
+    // }
+    // this.createArticle = this.route.snapshot.queryParamMap.get(
+    //   'createArticle'
+    // ) as 'true' | 'false';
 
     this.fromQR = Boolean(this.route.snapshot.queryParamMap.get('fromQR'));
 
-    this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
-    if (this.merchantId !== '') {
-      this.isMerchant = true;
-      this.setMerchantDefault();
-    }
+    // this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
+    // if (this.merchantId !== '') {
+    //   this.isMerchant = true;
+    //   this.setMerchantDefault();
+    // }
 
-    if (this.createArticle === 'true') {
-      this.isCreateArticle = true;
-      this.articleDialog();
-    }
+    // if (this.createArticle === 'true') {
+    //   this.isCreateArticle = true;
+    //   this.articleDialog();
+    // }
 
     this.mode = this.route.snapshot.queryParamMap.get('mode') as
       | 'preview'
@@ -200,8 +188,8 @@ export class ArticleDetailComponent implements OnInit {
 
       this.articleId = entityId;
 
-      if (this.headerService.saleflow?._id)
-        this.doesModuleDependOnSaleflow = true;
+      // if (this.headerService.saleflow?._id)
+      //   this.doesModuleDependOnSaleflow = true;
 
       if (validEntities.includes(entity)) {
         if (entity !== 'template') {
@@ -211,8 +199,8 @@ export class ArticleDetailComponent implements OnInit {
           if (entity === 'item') {
             await this.getItemData();
             this.itemInCart();
-          } else if (entity === 'post') {
-            await this.getPostData();
+            // } else if (entity === 'post') {
+            //   await this.getPostData();
           } else if (entity === 'collection') {
             await this.getCollection();
           }
@@ -255,9 +243,10 @@ export class ArticleDetailComponent implements OnInit {
 
             if (this.entity === 'item') {
               await this.getItemData();
-            } else if (this.entity === 'post') {
-              await this.getPostData();
             }
+            // else if (this.entity === 'post') {
+            //   await this.getPostData();
+            // }
           } else {
             const redirectionRoute = this.headerService.saleflow._id
               ? 'ecommerce/' +
@@ -278,16 +267,16 @@ export class ArticleDetailComponent implements OnInit {
     });
   }
 
-  async setMerchantDefault() {
-    const authorize = await this.merchantsService.merchantAuthorize(
-      this.merchantId
-    );
-    console.log(authorize);
-    const merchantDefault = await this.merchantsService.setDefaultMerchant(
-      this.merchantId
-    );
-    console.log(merchantDefault);
-  }
+  // async setMerchantDefault() {
+  //   const authorize = await this.merchantsService.merchantAuthorize(
+  //     this.merchantId
+  //   );
+  //   console.log(authorize);
+  //   const merchantDefault = await this.merchantsService.setDefaultMerchant(
+  //     this.merchantId
+  //   );
+  //   console.log(merchantDefault);
+  // }
 
   async getCollection() {
     this.tagData = (await this.tagsService.tag(this.entityId)).tag;
@@ -346,39 +335,39 @@ export class ArticleDetailComponent implements OnInit {
     }
   }
 
-  async getPostData() {
-    try {
-      const { post } = await this.postsService.getPost(this.entityId);
-      const { author } = post;
-      const { _id } = author;
-      this.isProductMine = _id === this.user?._id;
-      if (post) {
-        this.postData = post;
+  // async getPostData() {
+  //   try {
+  //     const { post } = await this.postsService.getPost(this.entityId);
+  //     const { author } = post;
+  //     const { _id } = author;
+  //     this.isProductMine = _id === this.user?._id;
+  //     if (post) {
+  //       this.postData = post;
 
-        const slides = await this.postsService.slidesByPost(post._id);
-        this.postSlides = slides;
+  //       const slides = await this.postsService.slidesByPost(post._id);
+  //       this.postSlides = slides;
 
-        for (const slide of this.postSlides) {
-          if (slide.type === 'poster' && isVideo(slide.media)) {
-            slide.isVideo = true;
+  //       for (const slide of this.postSlides) {
+  //         if (slide.type === 'poster' && isVideo(slide.media)) {
+  //           slide.isVideo = true;
 
-            if (
-              !slide.media.includes('https://') &&
-              !slide.media.includes('http://')
-            ) {
-              slide.media = 'https://' + slide.media;
-            }
-          }
-        }
+  //           if (
+  //             !slide.media.includes('https://') &&
+  //             !slide.media.includes('http://')
+  //           ) {
+  //             slide.media = 'https://' + slide.media;
+  //           }
+  //         }
+  //       }
 
-        this.updateFrantions();
+  //       this.updateFrantions();
 
-        this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+  //       this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
 
-        //if (this.postSlides.length < 2) this.startTimeout();
-      }
-    } catch (error) {}
-  }
+  //       //if (this.postSlides.length < 2) this.startTimeout();
+  //     }
+  //   } catch (error) {}
+  // }
 
   async onTagClick(tag: ExtendedTag) {
     try {
@@ -634,18 +623,19 @@ export class ArticleDetailComponent implements OnInit {
 
         if (itemSaleflow)
           this.router.navigate(['ecommerce/store/' + itemSaleflow._id]);
-      } else if (this.postData && this.postData.author) {
-        const authorMerchant = await this.merchantsService.merchantDefault(
-          this.postData.author._id
-        );
-
-        const saleflowDefault = await this.saleflowService.saleflowDefault(
-          authorMerchant._id
-        );
-
-        if (saleflowDefault)
-          this.router.navigate(['ecommerce/store/' + saleflowDefault._id]);
       }
+      // else if (this.postData && this.postData.author) {
+      //   const authorMerchant = await this.merchantsService.merchantDefault(
+      //     this.postData.author._id
+      //   );
+
+      //   const saleflowDefault = await this.saleflowService.saleflowDefault(
+      //     authorMerchant._id
+      //   );
+
+      //   if (saleflowDefault)
+      //     this.router.navigate(['ecommerce/store/' + saleflowDefault._id]);
+      // }
     }
   }
 
@@ -692,7 +682,7 @@ export class ArticleDetailComponent implements OnInit {
             let result = null;
 
             result = await this.entityTemplateService.entityTemplateByReference(
-              this.entity === 'item' ? this.itemData._id : this.postData._id,
+              this.itemData._id, // this.entity === 'item' ? this.itemData._id : this.postData._id,
               this.entity
             );
 
@@ -768,45 +758,56 @@ export class ArticleDetailComponent implements OnInit {
     })();
   }
 
-  showDialog() {
-    this.merchantDialog();
-  }
+  // showDialog() {
+  //   this.merchantDialog();
+  // }
 
-  merchantDialog() {
-    let dialogRef = this.dialog.open(MerchantStepperFormComponent, {
-      data: {
-        articleId: this.articleId,
+  // merchantDialog() {
+  //   let dialogRef = this.dialog.open(MerchantStepperFormComponent, {
+  //     data: {
+  //       articleId: this.articleId,
+  //     },
+  //   });
+  //   dialogRef
+  //     .afterClosed()
+  //     .subscribe(
+  //       async (result: {
+  //         name: string;
+  //         lastname: string;
+  //         email: string;
+  //         phone: number;
+  //       }) => {
+  //         if (!result) return;
+  //         const { name, lastname, email, phone } = result;
+
+  //         const newMerchantData = {
+  //           name: name,
+  //           lastname: lastname,
+  //           email: email,
+  //           phone: phone,
+  //         };
+  //         console.log(newMerchantData);
+
+  //         this.snackBar.open('Done!', '', {
+  //           duration: 5000,
+  //         });
+  //         unlockUI();
+  //       }
+  //     );
+  // }
+
+  // articleDialog() {
+  //   this.dialog.open(ArticleStepperFormComponent);
+  // }
+
+  itemInformationDialog() {
+    this.dialogService.open(ItemInfoComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        item: this.itemData,
       },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
     });
-    dialogRef
-      .afterClosed()
-      .subscribe(
-        async (result: {
-          name: string;
-          lastname: string;
-          email: string;
-          phone: number;
-        }) => {
-          if (!result) return;
-          const { name, lastname, email, phone } = result;
-
-          const newMerchantData = {
-            name: name,
-            lastname: lastname,
-            email: email,
-            phone: phone,
-          };
-          console.log(newMerchantData);
-
-          this.snackBar.open('Done!', '', {
-            duration: 5000,
-          });
-          unlockUI();
-        }
-      );
-  }
-
-  articleDialog() {
-    this.dialog.open(ArticleStepperFormComponent);
   }
 }
