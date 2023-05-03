@@ -11,26 +11,31 @@
     [ngTemplateOutlet]="cardContent"
   ></ng-container>
   <div class="bottom" *ngIf="leftAmount">
-    <p
+    <div
       [ngClass]="{ center: !title && !description }"
       class="amount"
       [ngClass]="{
         hasCartButton: cta
       }"
     >
-      <span>RD$ {{ leftAmount | number }} </span
-      ><span *ngIf="rightAmount">- ${{ rightAmount | number }}</span>
-      <span *ngIf="viewsCounter" class="views">{{ views }} vistas</span>
+      <div>
+        <span class="normal-price">PRECIO NORMAL</span>
+        <p>
+          <span>RD$ {{ leftAmount | number }} </span>
+          <span *ngIf="rightAmount">- ${{ rightAmount | number }}</span>
+          <span *ngIf="viewsCounter" class="views">{{ views }} vistas</span>
+        </p>
+      </div>
       <button
         class="cart-button"
         [ngClass]="{ active: ctaActive }"
         (click)="emitClick()"
         *ngIf="cta"
       >
-        {{ ctaActive ? "Está dentro de mi" : "Adiciónalo a mi" }}
-        <span><img [src]="env + '/carrito_blanco.svg'" alt="" /></span>
+        {{ ctaActive ? "En el carrito" : "Comprar" }}
+        <!-- <span><img [src]="env + '/carrito_blanco.svg'" alt="" /></span> -->
       </button>
-    </p>
+    </div>
   </div>
 </div>
 
@@ -42,11 +47,14 @@
       <br />
       <span *ngIf="description" class="description">{{ description }}</span>
     </p>
-    <img
-      class="img"
-      #imgContainer
-      [src]="img"
-      (error)="img = '/assets/images/noimage.png'"
-    />
+    <div class="image-container">
+      <img
+        class="img"
+        #imgContainer
+        [src]="img"
+        (error)="img = '/assets/images/noimage.png'"
+      />
+      <span class="see-more">Mira mas</span>
+    </div>
   </div>
 </ng-template>

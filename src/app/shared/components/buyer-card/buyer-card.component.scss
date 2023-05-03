@@ -85,6 +85,14 @@ a {
       display: flex;
       align-items: center;
       width: 100%;
+      font-size: 17px;
+      font-family: SFProMedium;
+
+      .normal-price {
+        font-family: SfProLight;
+        font-size: 11px;
+        color: #272727;
+      }
 
       &.hasCartButton {
         justify-content: space-between;
@@ -100,13 +108,13 @@ a {
       cursor: pointer;
       background-color: #fed230;
       padding: 7px 14px;
-      font-family: SFProRegular;
-      font-size: 14px;
+      font-family: SFProBold;
+      font-size: 15px;
       color: #293628 !important;
       border-radius: 20px;
       border: 0;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       width: 155px;
 
@@ -116,8 +124,7 @@ a {
 
       img {
         width: 18px;
-        filter: brightness(0) invert(16%) sepia(13%) saturate(973%)
-          hue-rotate(68deg) brightness(102%) contrast(90%);
+        filter: brightness(0) invert(16%) sepia(13%) saturate(973%) hue-rotate(68deg) brightness(102%) contrast(90%);
       }
     }
 
@@ -135,4 +142,23 @@ a {
       }
     }
   }
+}
+.image-container {
+  position: relative;
+}
+.see-more {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  text-align: center;
+  background-color: #6fcf97;
+  padding: 8px 16px;
+  font-family: SfProLight;
+  font-size: 15px;
+  color: #272727;
+  width: 100px;
+  border-radius: 20px;
 }
