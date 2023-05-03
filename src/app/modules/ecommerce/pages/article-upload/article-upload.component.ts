@@ -118,9 +118,11 @@ export class ArticleUploadComponent implements OnInit {
   async updateCurrentSlideData() {
     this.currentMediaSlide = await this.mediaSwiper.directiveRef.getIndex();
 
-    if (this.currentMediaSlide === 1 && !this.images) {
-      this.swiperConfig.allowSlideNext = false;
-    } else if (this.currentMediaSlide === 1 && this.images) {
+    // if (this.currentMediaSlide === 1 && !this.images) {
+    //   this.swiperConfig.allowSlideNext = false;
+    // }
+    // else
+    if (this.currentMediaSlide === 1 && this.images) {
       this.swiperConfig.allowSlideNext = true;
     }
     console.log(this.currentMediaSlide);
@@ -180,7 +182,7 @@ export class ArticleUploadComponent implements OnInit {
     reader.onload = (e) => {
       this._ItemsService.editingImageId = this.images[0]._id;
     };
-    this.updateCurrentSlideData();
+    //this.updateCurrentSlideData();
   }
 
   async nextSlide() {
@@ -219,7 +221,7 @@ export class ArticleUploadComponent implements OnInit {
   async sendMessage() {
     const itemInput: ItemInput = {
       pricing: this.pricing,
-      images: this.images,
+      //images: this.images,
     };
     this.item = await this._ItemsService.createPreItem(itemInput);
     console.log(this.item);
