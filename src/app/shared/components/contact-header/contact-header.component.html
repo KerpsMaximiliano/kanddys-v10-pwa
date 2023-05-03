@@ -52,10 +52,10 @@
   </div>
 </div>
 <div class="action-bar">
-  <button mat-button (click)="goToChat()">
+  <button mat-button (click)="goToChat()" *ngIf="chatLink">
     CHAT CONMIGO POR WHATSAPP
   </button>
-  <button mat-button (click)="shareStore()">
+  <button mat-button (click)="shareStore()" class="share">
     COMPARTE MI CONTACTO
     <i class="fa fa-share-alt" aria-hidden="true"></i>
   </button>
