@@ -5,7 +5,13 @@ import {
   AfterViewInit,
   OnDestroy,
 } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swiper, { SwiperOptions } from 'swiper';
 import {
@@ -42,6 +48,9 @@ interface ExtendedQuestionInput extends QuestionInput {
   id?: string;
 }
 
+// Define a type for the swipe direction
+type SwipeDirection = 'LEFT' | 'RIGHT' | null;
+
 @Component({
   selector: 'app-form-creator',
   templateUrl: './form-creator.component.html',
@@ -61,6 +70,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   steps: Array<{
     name: string;
     fields: FormGroup;
+    statusChangeSubscription?: Subscription;
   }> = [];
   responseTypesList: Array<OptionInList> = [
     {
@@ -103,7 +113,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
     },
     multiple: {
-      title: 'OPCIONES DE RESPUESTAS',
+      title: 'OPCIONES DE RESPUESTAS (*)',
     },
     'contact-info': {
       title: 'OPCIONES DE CONTACTOS',
@@ -146,6 +156,9 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   existingQuestions: Record<string, Question> = null;
   routeParamsSubscription: Subscription;
   questionsToDelete: Array<string> = [];
+  currentStepStatus: 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED' = 'INVALID';
+  dragStartX: number = null;
+  MIN_SWIPE_DISTANCE = 15; // adjust this value as needed
 
   constructor(
     private route: ActivatedRoute,
@@ -282,7 +295,8 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
                   option.isMedia ? option.value : null
                 ), // the file input value will be a File object
               })
-          )
+          ),
+          Validators.compose([this.validateResponseOptions])
         );
         (responseOptions as FormArray).push(
           new FormGroup({
@@ -309,6 +323,9 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const files = await fetchAndConvertRoutes(imageRoutes);
 
+        //console.log('question.answerDefault', question.answerDefault);
+        //console.log('responseOptions', responseOptions);
+
         responseOptions = new FormArray(
           question.answerDefault.map(
             (option, index) =>
@@ -317,7 +334,8 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 fileInput: new FormControl(option.value), // the file input value will be a File object,
                 originalFile: new FormControl(files[index]),
               })
-          )
+          ),
+          [this.validateResponseOptions]
         );
       }
 
@@ -373,6 +391,26 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       fields: new FormGroup(baseFields),
     });
   };
+
+  validateResponseOptions(formArray: FormArray): ValidationErrors | null {
+    let isValid = false;
+
+    formArray.controls.forEach((control) => {
+      const group = control as FormGroup;
+      const text = group.controls.text.value;
+      const fileInput = group.controls.fileInput.value;
+
+      if (text !== '' || fileInput) {
+        isValid = true;
+      }
+    });
+
+    if (isValid) {
+      return null;
+    }
+
+    return { required: true };
+  }
 
   addAQuestionToTheForm(navigateToNextQuestion = false) {
     this.steps.push({
@@ -442,16 +480,19 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       //console.log('A');
       this.steps[this.currentStepIndex].fields.addControl(
         'responseOptions',
-        new FormArray([
-          new FormGroup({
-            text: new FormControl(''),
-            fileInput: new FormControl(null), // the file input value will be a File object
-          }),
-          new FormGroup({
-            text: new FormControl(''),
-            fileInput: new FormControl(null), // the file input value will be a File object
-          }),
-        ])
+        new FormArray(
+          [
+            new FormGroup({
+              text: new FormControl(''),
+              fileInput: new FormControl(null), // the file input value will be a File object
+            }),
+            new FormGroup({
+              text: new FormControl(''),
+              fileInput: new FormControl(null), // the file input value will be a File object
+            }),
+          ],
+          Validators.compose([this.validateResponseOptions])
+        )
       );
       this.steps[this.currentStepIndex].fields.addControl(
         'freeResponseAllowed',
@@ -513,7 +554,47 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         this.currentStepIndex;
       this.currentStepName = this.steps[this.currentStepIndex]
         .name as WebformCreatorStepsNames;
+
+      this.currentStepStatus = this.steps[this.currentStepIndex].fields
+        .status as any;
+
+      if (!this.steps[this.currentStepIndex].statusChangeSubscription) {
+        this.steps[this.currentStepIndex].statusChangeSubscription = this.steps[
+          this.currentStepIndex
+        ].fields.statusChanges.subscribe((change) => {
+          this.currentStepStatus = change;
+
+          if (this.currentStepStatus === 'INVALID') {
+            this.swiperConfig.allowSlidePrev = false;
+            this.swiperConfig.allowSlideNext = false;
+            this.swiperConfig.allowTouchMove = false;
+          } else {
+            this.swiperConfig.allowSlidePrev = true;
+            this.swiperConfig.allowSlideNext = true;
+            this.swiperConfig.allowTouchMove = true;
+          }
+        });
+      }
+
+      //console.log('EMPEZO LA TRANSICION', this.currentStepStatus);
     }
+  }
+
+  stepsTransitionEnd() {
+    if (this.currentStepStatus === 'INVALID' && this.currentStepIndex > 0) {
+      this.swiperConfig.allowSlidePrev = false;
+      this.swiperConfig.allowSlideNext = false;
+      this.swiperConfig.allowTouchMove = false;
+    } else if (
+      this.currentStepStatus === 'VALID' &&
+      this.currentStepIndex > 0
+    ) {
+      this.swiperConfig.allowSlidePrev = true;
+      this.swiperConfig.allowSlideNext = true;
+      this.swiperConfig.allowTouchMove = true;
+    }
+
+    //console.log('TERMINO LA TRANSICION', this.currentStepStatus);
   }
 
   getFormArray(data: any): FormArray {
@@ -590,17 +671,24 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       this.steps[this.currentStepIndex].fields.removeControl('responseOptions');
       this.steps[this.currentStepIndex].fields.addControl(
         'responseOptions',
-        new FormArray([
-          new FormGroup({
-            text: new FormControl(''),
-            fileInput: new FormControl(null), // the file input value will be a File object
-          }),
-          new FormGroup({
-            text: new FormControl(''),
-            fileInput: new FormControl(null), // the file input value will be a File object
-          }),
-        ])
+        new FormArray(
+          [
+            new FormGroup({
+              text: new FormControl(''),
+              fileInput: new FormControl(null), // the file input value will be a File object
+            }),
+            new FormGroup({
+              text: new FormControl(''),
+              fileInput: new FormControl(null), // the file input value will be a File object
+            }),
+          ],
+          [this.validateResponseOptions]
+        )
       );
+      this.steps[this.currentStepIndex].fields.updateValueAndValidity();
+
+      this.currentStepStatus = this.steps[this.currentStepIndex].fields
+        .status as any;
     }
 
     setTimeout(() => {
@@ -720,14 +808,14 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    if (dragginFiles) {
+    if (dragginFiles && this.currentStepStatus === 'VALID') {
       //console.log("DESACTIVANDO");
       this.swiperConfig.allowSlidePrev = false;
       this.swiperConfig.allowSlideNext = false;
       this.swiperConfig.allowTouchMove = false;
     }
 
-    if (!dragginFiles) {
+    if (!dragginFiles && this.currentStepStatus === 'VALID') {
       //console.log("ACTIVANDO");
       this.swiperConfig.allowSlidePrev = true;
       this.swiperConfig.allowSlideNext = true;
@@ -736,131 +824,13 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async saveOrUpdate() {
-    const questionSteps = this.steps.slice(1);
-
-    const questionsToAdd = questionSteps.map((step, index) => {
-      const question: ExtendedQuestionInput = {
-        type: null,
-        value: step.fields.controls['question'].value,
-        index,
-        subIndex: 0,
-        required: false,
-      };
-
-      if (this.webform && step.fields.controls['id']) {
-        question.id = step.fields.controls['id'].value;
-      }
-
-      const responseTypeFromFormControls =
-        step.fields.controls['selectedResponseType'].value;
-      const responseTypeValidationFromFormControls =
-        step.fields.controls['selectedResponseValidation']?.value;
-
-      let responseTypeForQuestion = null;
-
-      switch (responseTypeFromFormControls) {
-        case 'text':
-          responseTypeForQuestion = 'text';
-
-          question.answerTextType = responseTypeValidationFromFormControls;
-
-          break;
-        case 'multiple':
-          responseTypeForQuestion = 'multiple';
-
-          let options = step.fields.controls['responseOptions']
-            ?.value as Array<{
-            text: string;
-            fileInput: any;
-            originalFile?: any;
-          }>;
-
-          const areOptionsFiles =
-            step.fields.controls['responseOptions']?.value[0].fileInput !==
-            null;
-
-          if (!areOptionsFiles) {
-            options = options.slice(0, -1);
-          }
-
-          if (!areOptionsFiles) {
-            question.answerDefault = options.map((option) => {
-              const returnValue: AnswerDefaultInput = {
-                active: true,
-                isMedia: false,
-                value: option.text,
-              };
-
-              return returnValue;
-            });
-          } else {
-            question.answerDefault = options.map((option) => {
-              const returnValue: AnswerDefaultInput = {
-                active: true,
-                isMedia: true,
-                media:
-                  typeof option.fileInput === 'string' &&
-                  option.fileInput.slice(0, 5) === 'blob:'
-                    ? option.originalFile
-                    : option.fileInput,
-              };
-
-              return returnValue;
-            });
-          }
-
-          const shouldAcceptUsersResponse =
-            step.fields.controls['freeResponseAllowed']?.value;
-
-          if (shouldAcceptUsersResponse)
-            responseTypeForQuestion = 'multiple-text';
-
-          const limitedToJustOneAnswer =
-            step.fields.controls['limitedToOneSelection']?.value;
-
-          if (limitedToJustOneAnswer) question.answerLimit = 1;
-
-          question.answerTextType = 'DEFAULT';
-
-          break;
-        case 'contact-info':
-          responseTypeForQuestion = 'text';
-
-          question.answerTextType = responseTypeValidationFromFormControls;
-
-          break;
-      }
-
-      question.type = responseTypeForQuestion;
-
-      return question;
-    });
-
-    let areTheQuestionInvalid = false;
-
-    let invalidSteps = [];
-
-    for (let i = 1; i < this.steps.length - 1; i++) {
-      const step = this.steps[i];
-
-      if (!step.fields.valid) {
-        areTheQuestionInvalid = true;
-        invalidSteps.push(i + 1);
-      }
-    }
-
-    if (areTheQuestionInvalid) {
-      this.snackbar.open(
-        'Te faltan llenar datos requeridos en las preguntas:' +
-          invalidSteps.join(', '),
-        'Cerrar',
-        {
-          duration: 3000,
-        }
-      );
+    if (this.currentStepStatus === 'INVALID') {
+      await this.saveFormWithoutCurrentQuestion();
 
       return;
     }
+
+    const questionsToAdd = this.getQuestionsToAdd();
 
     if (!this.webform && questionsToAdd.length === 0) return this.back();
 
@@ -870,6 +840,10 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
+    await this.finishFormSubmission(questionsToAdd);
+  }
+
+  async finishFormSubmission(questionsToAdd: ExtendedQuestionInput[]) {
     let createdWebform = null;
     if (!this.webform) {
       lockUI();
@@ -1052,6 +1026,14 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         if (toAdd.length > 0) {
+          lockUI();
+
+          for await (const question of toAdd) {
+            if (!question.answerDefault) {
+              question.answerDefault = [];
+            }
+          }
+
           const largeInputQuestions: QuestionInput[] = toAdd.filter(
             (question) => question.answerDefault?.length > 20
           );
@@ -1122,6 +1104,8 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           description: this.steps[0].fields.controls['note'].value,
         });
 
+        unlockUI();
+
         this.webformsService.formCreationData = null;
         this.router.navigate(['/admin/article-editor/' + this.item._id]);
       } catch (error) {
@@ -1135,11 +1119,232 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  deleteQuestion() {
+  async saveFormWithoutCurrentQuestion() {
+    let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Guardar cambios`,
+        description: `¿Quieres guardar el formulario sin esta pregunta que está incompleta?`,
+      },
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result === 'confirm') {
+        this.deleteCurrentQuestion();
+        const questionsToAdd = this.getQuestionsToAdd();
+        await this.finishFormSubmission(questionsToAdd);
+      }
+    });
+  }
+
+  getQuestionsToAdd(): Array<ExtendedQuestionInput> {
+    const questionSteps = this.steps.slice(1);
+
+    const questionsToAdd = questionSteps.map((step, index) => {
+      const question: ExtendedQuestionInput = {
+        type: null,
+        value: step.fields.controls['question'].value,
+        index,
+        subIndex: 0,
+        required: false,
+      };
+
+      if (this.webform && step.fields.controls['id']) {
+        question.id = step.fields.controls['id'].value;
+      }
+
+      const responseTypeFromFormControls =
+        step.fields.controls['selectedResponseType'].value;
+      const responseTypeValidationFromFormControls =
+        step.fields.controls['selectedResponseValidation']?.value;
+
+      let responseTypeForQuestion = null;
+
+      switch (responseTypeFromFormControls) {
+        case 'text':
+          responseTypeForQuestion = 'text';
+
+          question.answerTextType = responseTypeValidationFromFormControls;
+
+          break;
+        case 'multiple':
+          responseTypeForQuestion = 'multiple';
+
+          let options = step.fields.controls['responseOptions']
+            ?.value as Array<{
+            text: string;
+            fileInput: any;
+            originalFile?: any;
+          }>;
+
+          const areOptionsFiles =
+            step.fields.controls['responseOptions']?.value[0].fileInput !==
+            null;
+
+          if (!areOptionsFiles) {
+            options = options.slice(0, -1);
+          }
+
+          if (!areOptionsFiles) {
+            question.answerDefault = options.map((option) => {
+              const returnValue: AnswerDefaultInput = {
+                active: true,
+                isMedia: false,
+                value: option.text,
+              };
+
+              return returnValue;
+            });
+          } else {
+            question.answerDefault = options.map((option) => {
+              const returnValue: AnswerDefaultInput = {
+                active: true,
+                isMedia: true,
+                media:
+                  (typeof option.fileInput === 'string' &&
+                    option.fileInput.slice(0, 5) === 'blob:') ||
+                  (typeof option.fileInput === 'string' &&
+                    option.fileInput.includes('https'))
+                    ? option.originalFile
+                    : option.fileInput,
+              };
+
+              return returnValue;
+            });
+          }
+
+          const shouldAcceptUsersResponse =
+            step.fields.controls['freeResponseAllowed']?.value;
+
+          if (shouldAcceptUsersResponse)
+            responseTypeForQuestion = 'multiple-text';
+
+          const limitedToJustOneAnswer =
+            step.fields.controls['limitedToOneSelection']?.value;
+
+          if (limitedToJustOneAnswer) question.answerLimit = 1;
+
+          question.answerTextType = 'DEFAULT';
+
+          break;
+        case 'contact-info':
+          responseTypeForQuestion = 'text';
+
+          question.answerTextType = responseTypeValidationFromFormControls;
+
+          break;
+      }
+
+      question.type = responseTypeForQuestion;
+
+      return question;
+    });
+
+    return questionsToAdd;
+  }
+
+  showDeleteQuestionDialog() {
     let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: `Borrar pregunta`,
         description: `¿Estás seguro de que deseas borrar esta pregunta?`,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        this.deleteCurrentQuestion();
+      }
+    });
+  }
+
+  deleteCurrentQuestion() {
+    if (this.webform && this.steps[this.currentStepIndex].fields.controls['id'])
+      this.questionsToDelete.push(
+        this.steps[this.currentStepIndex].fields.controls['id'].value
+      );
+
+    this.steps.splice(this.currentStepIndex, 1);
+
+    this.stepsSwiper.directiveRef.update();
+
+    if (this.currentStepIndex === this.steps.length - 1) {
+      this.stepsSwiper.directiveRef.setIndex(this.currentStepIndex - 1);
+    }
+  }
+
+  back() {
+    this.router.navigate(['/admin/article-editor/' + this.item?._id]);
+  }
+
+  redirectToMediaUploadPage(optionIndex: number) {
+    //console.log('REDIRGIENDO AL MEDIA UPLOAD');
+
+    this.router.navigate(['/admin/media-upload/webform-question'], {
+      queryParams: {
+        webformQuestionIndex: this.currentStepIndex - 1,
+        webformSelectedOption: optionIndex,
+        itemId: this.item?._id,
+      },
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.routeParamsSubscription.unsubscribe();
+  }
+
+  // Define a constant for the minimum distance to consider a swipe
+
+  startDragging(eventData: [Swiper, PointerEvent]) {
+    const [swiper, event] = eventData;
+    this.dragStartX = swiper.touches.startX;
+  }
+
+  endDragging(eventData: [Swiper, PointerEvent]) {
+    const [swiper, event] = eventData;
+    let swipeDirection: SwipeDirection = null;
+
+    const endX = swiper.touches.currentX;
+    const dragDistance = Math.abs(swiper.touches.currentX - this.dragStartX);
+
+    if (this.dragStartX !== null && dragDistance >= this.MIN_SWIPE_DISTANCE) {
+      if (this.dragStartX < endX) {
+        swipeDirection = 'LEFT';
+      } else {
+        swipeDirection = 'RIGHT';
+      }
+    }
+
+    /*
+    console.log(
+      swipeDirection === 'LEFT',
+      this.currentStepStatus === 'INVALID'
+    );*/
+
+    if (
+      swipeDirection === 'LEFT' &&
+      this.currentStepStatus === 'INVALID' &&
+      this.currentStepIndex > 0
+    ) {
+      this.executeActionsToTakeWhenCurrentQuestionIsInvalidWhileSwiping('LEFT');
+    } else if (
+      swipeDirection === 'RIGHT' &&
+      this.currentStepStatus === 'INVALID' &&
+      this.currentStepIndex > 0 &&
+      this.currentStepIndex !== this.steps.length - 1
+    ) {
+      this.executeActionsToTakeWhenCurrentQuestionIsInvalidWhileSwiping(
+        'RIGHT'
+      );
+    }
+
+    this.dragStartX = null;
+  }
+
+  executeActionsToTakeWhenCurrentQuestionIsInvalidWhileSwiping(
+    swipingDirection: 'LEFT' | 'RIGHT'
+  ) {
+    let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Pregunta incompleta`,
+        description: `¿Quieres borrar el progreso de esta pregunta?`,
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -1161,25 +1366,5 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     });
-  }
-
-  back() {
-    this.router.navigate(['/admin/article-editor/' + this.item?._id]);
-  }
-
-  redirectToMediaUploadPage(optionIndex: number) {
-    //console.log('REDIRGIENDO AL MEDIA UPLOAD');
-
-    this.router.navigate(['/admin/media-upload/webform-question'], {
-      queryParams: {
-        webformQuestionIndex: this.currentStepIndex - 1,
-        webformSelectedOption: optionIndex,
-        itemId: this.item?._id,
-      },
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.routeParamsSubscription.unsubscribe();
   }
 }

@@ -11,7 +11,7 @@
   background-color: #7b7b7b;
 
   &.active {
-    background-color: #82f18d;
+    background-color: #FED230;
   }
 }
 
@@ -22,6 +22,10 @@ header {
   .back-btn {
     filter: invert(51%) sepia(0%) saturate(13%) hue-rotate(276deg)
       brightness(94%) contrast(92%);
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   .note-header {

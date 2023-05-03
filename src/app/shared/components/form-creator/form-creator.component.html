@@ -62,6 +62,9 @@
     [config]="swiperConfig"
     #stepsSwiper
     (slideChange)="updateCurrentStepData($event)"
+    (swiperTransitionEnd)="stepsTransitionEnd()"
+    (swiperTouchStart)="startDragging($event)"
+    (swiperTouchEnd)="endDragging($event)"
   >
     <div
       class="step"
@@ -98,7 +101,7 @@
         <section *ngSwitchCase="'QUESTION_EDITION'" class="question-edition">
           <div class="question-wrapper">
             <div class="question-input-and-input-options">
-              <label for="question-input"> Pregunta </label>
+              <label for="question-input"> Pregunta (*) </label>
 
               <!--
                 <div class="input-options-icons">
@@ -134,7 +137,7 @@
             ALLOWS THE ADMIN TO SELECT HOW THE USER RESPONDS THE QUESTION
           -->
           <div class="list-wrapper">
-            <h4>Tipo de respuesta</h4>
+            <h4>Tipo de respuesta (*)</h4>
 
             <ul>
               <li
@@ -443,7 +446,9 @@
               Adiciona otra pregunta
             </button>
 
-            <button (click)="deleteQuestion()">Eliminar</button>
+            <button (click)="showDeleteQuestionDialog()">
+              Borrar pregunta
+            </button>
           </footer>
         </section>
       </ng-container>
