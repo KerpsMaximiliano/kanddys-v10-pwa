@@ -27,6 +27,7 @@ import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
+import { OrderInfoComponent } from 'src/app/shared/dialogs/order-info/order-info.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 
@@ -40,6 +41,7 @@ interface ExtendedItemOrder extends ItemOrder {
     percentageLess: number;
   };
   tagsData?: Tag[];
+  paymentType?: string;
 }
 
 @Component({
@@ -442,98 +444,98 @@ export class OrderSlidesComponent implements OnInit {
     });
   }
 
-  share(order: ItemOrder) {
-    const link = `${this.URI}/ecommerce/order-detail/${order._id}`;
-    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
-      data: [
-        {
-          title: `Vista e interfaz con toda la info`,
-          options: [
-            {
-              title: 'Ver como lo verá el visitante',
-              callback: () => {
-                this.router.navigate([`/ecommerce/order-detail/${order._id}`], {
-                  queryParams: { redirectTo: this.router.url },
-                });
-              },
-            },
-            {
-              title: 'Compartir el Link de esta sola factura',
-              callback: () => {
-                this.ngNavigatorShareService.share({
-                  title: '',
-                  url: link,
-                });
-              },
-            },
-            {
-              title: 'Copiar el Link de esta sola factura',
-              callback: () => {
-                this.clipboard.copy(link);
-                this.snackBar.open('Enlace copiado en el portapapeles', '', {
-                  duration: 2000,
-                });
-              },
-            },
-            {
-              title: 'Descargar el qrCode de esta sola factura',
-              callback: () => this.downloadQr(order),
-            },
-          ],
-        },
-        // {
-        //   title: `Opciones para el mensajero`,
-        //   options: [
-        //     {
-        //       title: 'Compartir el Link',
-        //       callback: () => {
-        //         this.ngNavigatorShareService.share({
-        //           title: '',
-        //           url: `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=delivery`,
-        //         });
-        //       },
-        //     },
-        //     {
-        //       title: 'Copiar el Link',
-        //       callback: () => {
-        //         this.clipboard.copy(
-        //           `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=delivery`
-        //         );
-        //         this.snackBar.open('Enlace copiado en el portapapeles', '', {
-        //           duration: 2000,
-        //         });
-        //       },
-        //     },
-        //   ],
-        // },
-        // {
-        //   title: `Opciones para quien prepara la orden`,
-        //   options: [
-        //     {
-        //       title: 'Compartir el Link',
-        //       callback: () => {
-        //         this.ngNavigatorShareService.share({
-        //           title: '',
-        //           url: `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=assistant`,
-        //         });
-        //       },
-        //     },
-        //     {
-        //       title: 'Copiar el Link',
-        //       callback: () => {
-        //         this.clipboard.copy(
-        //           `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=assistant`
-        //         );
-        //         this.snackBar.open('Enlace copiado en el portapapeles', '', {
-        //           duration: 2000,
-        //         });
-        //       },
-        //     },
-        //   ],
-        // },
-      ],
-    });
-  }
+  // share(order: ItemOrder) {
+  //   const link = `${this.URI}/ecommerce/order-detail/${order._id}`;
+  //   const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+  //     data: [
+  //       {
+  //         title: `Vista e interfaz con toda la info`,
+  //         options: [
+  //           {
+  //             title: 'Ver como lo verá el visitante',
+  //             callback: () => {
+  //               this.router.navigate([`/ecommerce/order-detail/${order._id}`], {
+  //                 queryParams: { redirectTo: this.router.url },
+  //               });
+  //             },
+  //           },
+  //           {
+  //             title: 'Compartir el Link de esta sola factura',
+  //             callback: () => {
+  //               this.ngNavigatorShareService.share({
+  //                 title: '',
+  //                 url: link,
+  //               });
+  //             },
+  //           },
+  //           {
+  //             title: 'Copiar el Link de esta sola factura',
+  //             callback: () => {
+  //               this.clipboard.copy(link);
+  //               this.snackBar.open('Enlace copiado en el portapapeles', '', {
+  //                 duration: 2000,
+  //               });
+  //             },
+  //           },
+  //           {
+  //             title: 'Descargar el qrCode de esta sola factura',
+  //             callback: () => this.downloadQr(order),
+  //           },
+  //         ],
+  //       },
+  //       // {
+  //       //   title: `Opciones para el mensajero`,
+  //       //   options: [
+  //       //     {
+  //       //       title: 'Compartir el Link',
+  //       //       callback: () => {
+  //       //         this.ngNavigatorShareService.share({
+  //       //           title: '',
+  //       //           url: `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=delivery`,
+  //       //         });
+  //       //       },
+  //       //     },
+  //       //     {
+  //       //       title: 'Copiar el Link',
+  //       //       callback: () => {
+  //       //         this.clipboard.copy(
+  //       //           `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=delivery`
+  //       //         );
+  //       //         this.snackBar.open('Enlace copiado en el portapapeles', '', {
+  //       //           duration: 2000,
+  //       //         });
+  //       //       },
+  //       //     },
+  //       //   ],
+  //       // },
+  //       // {
+  //       //   title: `Opciones para quien prepara la orden`,
+  //       //   options: [
+  //       //     {
+  //       //       title: 'Compartir el Link',
+  //       //       callback: () => {
+  //       //         this.ngNavigatorShareService.share({
+  //       //           title: '',
+  //       //           url: `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=assistant`,
+  //       //         });
+  //       //       },
+  //       //     },
+  //       //     {
+  //       //       title: 'Copiar el Link',
+  //       //       callback: () => {
+  //       //         this.clipboard.copy(
+  //       //           `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=assistant`
+  //       //         );
+  //       //         this.snackBar.open('Enlace copiado en el portapapeles', '', {
+  //       //           duration: 2000,
+  //       //         });
+  //       //       },
+  //       //     },
+  //       //   ],
+  //       // },
+  //     ],
+  //   });
+  // }
 
   // async onImageInput(input: File) {
   //   if (this.view === 'delivery') {
@@ -652,6 +654,7 @@ export class OrderSlidesComponent implements OnInit {
               );
               this.deliveryImages[i].reservation = reservation;
             }
+            console.log(order.ocr);
             if (!order.ocr) {
               const result = await this.paymentLogService.paymentLogsByOrder({
                 findBy: {
@@ -666,6 +669,12 @@ export class OrderSlidesComponent implements OnInit {
               ) {
                 order.payedWithAzul = true;
               }
+            } else {
+              order.paymentType =
+                {
+                  'bank-transfer': 'transferencia bancaria',
+                  azul: 'tarjeta: xx.6547',
+                }[order.ocr.platform] || 'Desconocido';
             }
             order.tagsData = this.userTags.filter((tag) =>
               order.tags.includes(tag._id)
@@ -726,6 +735,17 @@ export class OrderSlidesComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  openDialog(order: ExtendedItemOrder) {
+    this.dialogService.open(OrderInfoComponent, {
+      type: 'flat-action-sheet',
+      props: {
+        order,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
