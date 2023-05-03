@@ -568,6 +568,18 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
             this.swiperConfig.allowSlidePrev = false;
             this.swiperConfig.allowSlideNext = false;
             this.swiperConfig.allowTouchMove = false;
+
+            setTimeout(() => {
+              if (this.currentStepStatus === 'INVALID') {
+                this.snackbar.open(
+                  'Parece que faltan algunos campos requeridos en esta pregunta, están indicados por (*)',
+                  'Cerrar',
+                  {
+                    duration: 3000,
+                  }
+                );
+              }
+            }, 5000);
           } else {
             this.swiperConfig.allowSlidePrev = true;
             this.swiperConfig.allowSlideNext = true;
