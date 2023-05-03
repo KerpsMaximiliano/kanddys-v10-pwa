@@ -159,6 +159,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   currentStepStatus: 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED' = 'INVALID';
   dragStartX: number = null;
   MIN_SWIPE_DISTANCE = 15; // adjust this value as needed
+  requiredFieldsReminderOpened: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -241,6 +242,21 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
             steps: this.steps,
           };
         }
+
+        setInterval(() => {
+          if (
+            this.currentStepStatus === 'INVALID' &&
+            this.currentStepIndex > 0
+          ) {
+            this.snackbar.open(
+              'Parece que faltan algunos campos requeridos en esta pregunta, están indicados por (*)',
+              'Cerrar',
+              {
+                duration: 3000,
+              }
+            );
+          }
+        }, 30000);
 
         unlockUI();
       }
@@ -568,18 +584,6 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
             this.swiperConfig.allowSlidePrev = false;
             this.swiperConfig.allowSlideNext = false;
             this.swiperConfig.allowTouchMove = false;
-
-            setTimeout(() => {
-              if (this.currentStepStatus === 'INVALID') {
-                this.snackbar.open(
-                  'Parece que faltan algunos campos requeridos en esta pregunta, están indicados por (*)',
-                  'Cerrar',
-                  {
-                    duration: 3000,
-                  }
-                );
-              }
-            }, 5000);
           } else {
             this.swiperConfig.allowSlidePrev = true;
             this.swiperConfig.allowSlideNext = true;
