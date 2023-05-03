@@ -79,13 +79,13 @@ a {
 
   .information {
     width: 100%;
-    margin: 50px 0 40px 0;
+    margin: 20px 0 40px 0;
     padding: 0 27px 32px;
     padding-bottom: 70px; //para la barra inferior
     flex: 1;
 
     .top {
-      margin: 0 0 50px;
+      margin: 0 0 24px;
       display: flex;
       // justify-content: center;
       // align-items: center;
@@ -96,6 +96,7 @@ a {
         font-size: 0.875rem;
         color: #7b7b7b;
         font-weight: 500;
+        white-space: nowrap;
         // text-align: center;
 
         .blue {
@@ -119,7 +120,6 @@ a {
       }
 
       .info-display {
-        width: 100%;
         display: flex;
         align-items: center;
         // justify-content: center;
@@ -822,5 +822,82 @@ table {
 @media (max-width: 400px) {
   .notify {
     font-size: 0.75rem;
+  }
+}
+
+.section-label {
+  font-family: SfProLight;
+  font-size: 14px;
+  margin: 0;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+.questions {
+  margin: 4px 0;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 8px;
+
+  p {
+    margin: 0;
+  }
+  .gray-out {
+    margin-top: 10px;
+  }
+  .label {
+    font-family: SfProMedium;
+    font-size: 17px;
+  }
+}
+.flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.item-image {
+  cursor: pointer;
+  width: 90px;
+  height: 90px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.caption {
+  margin-left: 20px;
+  width: 50%;
+}
+.link-button {
+  cursor: pointer;
+  text-align: left;
+  color: #2874ad;
+  border: 0;
+  background: none;
+}
+.payment-info {
+  width: 100%;
+  text-align: center;
+
+  span {
+    font-family: SfProBold;
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: block;
+  }
+}
+.status {
+  color: #fff;
+  font-family: SfProSemiBold;
+  font-size: 1.063rem;
+  padding: 4px 12px;
+  border-radius: 8px;
+  display: inline-block;
+
+  &.pending {
+    background-color: #936105;
+  }
+
+  &.confirmed {
+    background-color: #6fcf97;
+    color: #293628;
   }
 }

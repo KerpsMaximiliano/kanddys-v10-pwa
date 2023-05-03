@@ -138,7 +138,7 @@ export class ArticleUploadComponent implements OnInit {
 
   sendMessage() {
     if (this.pricing > 0) {
-      const message = `Hola, soy ${this.kioskoName}, te envío este mensaje`;
+      const message = `Nombre comercial: ${this.kioskoName}`;
       window.location.href = `https://wa.me/19295263397?text=${message}`;
       //window.open(`https://wa.me/19295263397?text=${message}`, '_blank');
     }

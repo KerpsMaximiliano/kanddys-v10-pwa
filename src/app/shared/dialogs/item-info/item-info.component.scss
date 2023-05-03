@@ -1,0 +1,43 @@
+.dialog_container {
+  height: 100vh;
+  color: #fff;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  padding: 16px 16px 32px;
+
+  .name {
+    font-family: SfProBold;
+    font-size: 21px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-family: SfProLight;
+    font-size: 17px;
+  }
+}
+.fixed-top-button {
+  padding: 8px 9px;
+  position: absolute;
+  top: 38px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+  background-color: #272727;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &.left {
+    left: 16px;
+  }
+
+  img {
+    width: 28px;
+    height: 28px;
+    filter: brightness(0) saturate(100%) invert(91%) sepia(10%) saturate(2022%) hue-rotate(62deg) brightness(99%)
+      contrast(91%);
+  }
+}

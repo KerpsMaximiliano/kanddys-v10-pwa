@@ -198,6 +198,8 @@ import { CardInfoComponent } from './components/card-info/card-info.component';
 import { SmallInfoCardComponent } from './components/small-info-card/small-info-card.component';
 import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-cards.component';
 import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
+import { ItemInfoComponent } from './dialogs/item-info/item-info.component';
+import { OrderInfoComponent } from './dialogs/order-info/order-info.component';
 
 const imports = [
   CommonModule,
@@ -410,6 +412,8 @@ const declarations = [
   SmallInfoCardComponent,
   KioskerosCardsComponent,
   ContactHeaderComponent,
+  ItemInfoComponent,
+  OrderInfoComponent,
 ];
 
 @NgModule({
