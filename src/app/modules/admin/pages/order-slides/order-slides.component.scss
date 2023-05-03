@@ -61,6 +61,7 @@
       font-family: SfProLight;
       font-size: 14px;
       margin: 0;
+      margin-bottom: 12px;
     }
 
     .item-image {
@@ -88,7 +89,7 @@
       width: 50%;
     }
     .questions {
-      margin: 8px 0;
+      margin: 4px 0;
       padding: 24px;
       background-color: #fff;
       border-radius: 8px;
@@ -282,7 +283,7 @@
 
     .top-footer {
       background-color: #293628;
-      padding: 16px;
+      padding: 10px;
       text-align: center;
       color: #fff;
       display: flex;
@@ -290,29 +291,12 @@
     }
     .bottom-footer {
       background-color: #6fcf97;
+      color: #171d16;
       padding: 0 25px;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-
-      a {
-        color: #293628;
-        font-family: SfProDisplayBold;
-        font-size: 17px;
-      }
-
-      button {
-        cursor: pointer;
-        border: 0;
-        background: none;
-
-        img {
-          width: 18px;
-          height: 22px;
-          filter: brightness(0) invert(13%) sepia(9%) saturate(1833%) hue-rotate(68deg) brightness(99%) contrast(83%);
-        }
-      }
     }
   }
   .input-image-container {
@@ -457,6 +441,7 @@
   display: flex;
   width: 100%;
   overflow-x: scroll;
+  gap: 8px;
 }
 .chip {
   font-family: SfProSemiBold;
@@ -464,9 +449,22 @@
   background-color: #3b5d44;
   padding: 8px 16px;
   border-radius: 20px;
+  white-space: nowrap;
+  user-select: none;
 }
 .benefits {
   font-family: SfProLight;
   white-space: nowrap;
   font-size: 1rem;
+}
+.payment-info {
+  width: 100%;
+  text-align: center;
+
+  span {
+    font-family: SfProBold;
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: block;
+  }
 }

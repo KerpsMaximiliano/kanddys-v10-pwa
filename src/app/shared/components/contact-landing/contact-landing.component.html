@@ -65,14 +65,21 @@
       <p *ngIf="contactDirection" class="contactID">{{ contactDirection }}</p>
       <p *ngIf="contactBio" class="bio">{{ contactBio }}</p>
     </div>
-    <div class="dataSect">
+    <div *ngIf="links.length" style="padding: 20px 15px">
+      <app-info-card2
+        [kioskoView]="true"
+        [cards]="links"
+        (emitIndex)="getIndex($event)"
+      ></app-info-card2>
+    </div>
+    <!-- <div class="dataSect">
       <div *ngFor="let link of links" [ngSwitch]="link.name">
         <a
           [style.textDecoration]="'none'"
           [style.color]="'inherit'"
-          [href]="'https://wa.me/' + link.value"
+          [href]="'https://wa.me/' + link.description"
           target="_blank"
-          *ngSwitchCase="'whatsapp'"
+          *ngSwitchCase="'WhatsApp'"
           class="dataBox"
         >
           <img
@@ -152,7 +159,7 @@
           <p>{{ link.name }}</p>
         </a>
       </div>
-    </div>
+    </div> -->
     <button
       mat-raised-button
       color="warn"

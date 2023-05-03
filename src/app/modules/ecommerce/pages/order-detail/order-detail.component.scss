@@ -18,32 +18,6 @@ a {
 .container {
   min-height: 100vh;
 
-  // .header {
-  //   width: 100%;
-  //   background-color: #ffffff;
-  //   display: flex;
-  //   align-items: center;
-  //   padding: 12.5px 19px 12.5px 34px;
-
-  //   .arrows {
-  //     margin-right: 10px;
-  //   }
-
-  //   .header-title {
-  //     font-size: 21px;
-  //     color: #272727;
-  //     font-family: SFProBold;
-  //   }
-
-  //   .bookmark {
-  //     margin-left: auto;
-  //     margin-right: 14.5px;
-  //     filter: brightness(0) saturate(100%);
-  //     height: 20.04px;
-  //     width: 18.05px;
-  //   }
-  // }
-
   .top-area {
     width: 90%;
     display: flex;
@@ -105,13 +79,13 @@ a {
 
   .information {
     width: 100%;
-    margin: 50px 0 40px 0;
+    margin: 20px 0 40px 0;
     padding: 0 27px 32px;
     padding-bottom: 70px; //para la barra inferior
     flex: 1;
 
     .top {
-      margin: 0 0 50px;
+      margin: 0 0 24px;
       display: flex;
       // justify-content: center;
       // align-items: center;
@@ -122,6 +96,7 @@ a {
         font-size: 0.875rem;
         color: #7b7b7b;
         font-weight: 500;
+        white-space: nowrap;
         // text-align: center;
 
         .blue {
@@ -145,7 +120,6 @@ a {
       }
 
       .info-display {
-        width: 100%;
         display: flex;
         align-items: center;
         // justify-content: center;
@@ -431,7 +405,44 @@ a {
     }
   }
 }
+.merchant-info {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  height: 100%;
 
+  .icon {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+  }
+  .title {
+    &:nth-child(2) {
+      padding-left: 7px;
+    }
+    color: #ffffff;
+    font-size: 16px;
+    font-family: "SfProMedium";
+  }
+}
+.panel {
+  border-radius: 0 !important;
+  background-color: rgb(39, 39, 39);
+}
+::ng-deep .mat-content {
+  flex: inherit !important;
+}
+::ng-deep .mat-expansion-indicator::after {
+  color: #fff;
+}
+.mat-expansion-panel-header.mat-expanded {
+  height: 48px;
+}
+::ng-deep .mat-expansion-panel-body {
+  background-color: #f5f5f5;
+  padding: 0 !important;
+}
 .sub {
   font-family: "RobotoLight";
   font-size: 19px;
@@ -757,48 +768,6 @@ table {
   width: 100%;
   height: 100%;
 }
-.header {
-  display: flex;
-  align-items: center;
-  color: #fff;
-  p {
-    margin-left: 17px;
-    font-size: 1.313rem;
-    font-family: SFProBold;
-  }
-  span {
-    font-family: SfProRegular;
-    font-size: 0.875rem;
-    margin-left: 12px;
-  }
-}
-
-.bar {
-  all: unset;
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  width: 100%;
-  padding: 10px 0px;
-  background-color: #82f18d;
-  cursor: pointer;
-
-  p {
-    color: #293628;
-    font-size: 17px;
-    font-family: SFProBold;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
-    -webkit-box-orient: vertical;
-  }
-
-  span {
-    text-transform: capitalize;
-  }
-}
 
 .question-img-wrapper {
   display: flex;
@@ -823,19 +792,89 @@ table {
   }
 }
 
-@media (max-width: 400px) {
-  .header {
-    padding: 15px 15px 10px;
+.section-label {
+  font-family: SfProLight;
+  font-size: 14px;
+  margin: 0;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+.questions {
+  margin: 4px 0;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 8px;
 
-    p {
-      font-size: 1rem;
-    }
-    span {
-      font-size: 0.75rem;
-    }
+  p {
+    margin: 0;
+  }
+  .gray-out {
+    margin-top: 10px;
+  }
+  .label {
+    font-family: SfProMedium;
+    font-size: 17px;
+  }
+}
+.flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.item-image {
+  cursor: pointer;
+  width: 90px;
+  height: 90px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.caption {
+  margin-left: 20px;
+  width: 50%;
+}
+.link-button {
+  cursor: pointer;
+  text-align: left;
+  color: #2874ad;
+  border: 0;
+  background: none;
+}
+.payment-info {
+  width: 100%;
+  text-align: center;
+
+  span {
+    font-family: SfProBold;
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: block;
+  }
+}
+.status {
+  color: #fff;
+  font-family: SfProSemiBold;
+  font-size: 1.063rem;
+  padding: 4px 12px;
+  border-radius: 8px;
+  display: inline-block;
+
+  &.pending {
+    background-color: #936105;
   }
 
-  .notify {
-    font-size: 0.75rem;
+  &.confirmed {
+    background-color: #6fcf97;
+    color: #293628;
+  }
+}
+.fixed-bottom-button {
+  position: absolute;
+  z-index: 2;
+  right: 20px;
+  background-color: #272727;
+
+  &.right {
+    right: 12px;
   }
 }

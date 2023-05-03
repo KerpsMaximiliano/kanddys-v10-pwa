@@ -43,6 +43,8 @@ const orderData = `
       merchant {
         _id
         name
+        image
+        bio
         slug
         owner {
           _id
@@ -122,6 +124,7 @@ const orderData = `
     }
   }
   orderStatus
+  orderStatusDelivery
   statusDelivery
   deliveryZone
   expenditures

@@ -1,24 +1,3 @@
-<ng-template #merchantInfo>
-  <div
-    class="icon"
-    [style.background]="
-      _DomSanitizer.bypassSecurityTrustStyle(
-        'url(' +
-          headerService.saleflow?.merchant?.image +
-          ') no-repeat center center / cover #e9e371'
-      )
-    "
-  ></div>
-  <p class="title">
-    {{
-      headerService.saleflow?.merchant?.name.length < 26
-        ? headerService.saleflow?.merchant?.name
-        : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
-            "Tienda" | titlecase)
-    }}
-  </p>
-</ng-template>
-
 <div class="store-page" (scroll)="infinitePagination()">
   <div class="component">
     <nav
@@ -30,7 +9,7 @@
             : '#272727'
       }"
     >
-      <a
+      <!-- <a
         style="cursor: pointer"
         class="merchant-info"
         [routerLink]="[
@@ -44,36 +23,77 @@
         "
       >
         <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
-      </a>
-      <div
-        class="merchant-info"
-        *ngIf="
-          headerService.user?._id !== headerService.saleflow?.merchant.owner._id
-        "
-      >
-        <ng-template [ngTemplateOutlet]="merchantInfo"></ng-template>
+      </a> -->
+
+      <div style="width: 100%; grid-column: span 11 / span 11">
+        <mat-accordion>
+          <mat-expansion-panel
+            (opened)="panelOpenState = true"
+            (closed)="panelOpenState = false"
+            class="panel"
+            [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
+            [ngStyle]="{
+              backgroundColor:
+                headerService.user?._id ===
+                headerService.saleflow?.merchant.owner._id
+                  ? '#2874AD'
+                  : '#272727'
+            }"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <div class="merchant-info">
+                  <div
+                    class="icon"
+                    [style.background]="
+                      _DomSanitizer.bypassSecurityTrustStyle(
+                        'url(' +
+                          headerService.saleflow?.merchant?.image +
+                          ') no-repeat center center / cover #e9e371'
+                      )
+                    "
+                  ></div>
+                  <p class="title">
+                    {{
+                      headerService.saleflow?.merchant?.name.length < 26
+                        ? headerService.saleflow?.merchant?.name
+                        : (headerService.saleflow?.merchant?.name.slice(0, 26) +
+                            ".." || "Tienda" | titlecase)
+                    }}
+                  </p>
+                </div>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-contact-header
+              [link]="link"
+              [bio]="headerService.saleflow?.merchant.bio"
+              [contact]="headerService.merchantContact"
+            ></app-contact-header>
+          </mat-expansion-panel>
+        </mat-accordion>
       </div>
-      <div style="flex: 1 1 auto"></div>
-      <button
-        mat-icon-button
-        [matMenuTriggerFor]="menu"
-        style="width: 30px; height: 30px; line-height: 0"
-      >
-        <div
-          *ngIf="headerService.user"
-          class="icon"
-          [style.background]="
-            _DomSanitizer.bypassSecurityTrustStyle(
-              'url(' +
-                headerService.user?.image +
-                ') no-repeat center center / cover #e9e371'
-            )
-          "
-        ></div>
-        <mat-icon *ngIf="!headerService.user" style="color: #fff"
-          >account_circle</mat-icon
+      <div class="nav-account">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          style="width: 30px; height: 30px; line-height: 0"
         >
-      </button>
+          <div
+            *ngIf="headerService.user"
+            class="icon"
+            [style.background]="
+              _DomSanitizer.bypassSecurityTrustStyle(
+                'url(' +
+                  headerService.user?.image +
+                  ') no-repeat center center / cover #e9e371'
+              )
+            "
+          ></div>
+          <mat-icon *ngIf="!headerService.user" style="color: #fff">
+            account_circle
+          </mat-icon>
+        </button>
+      </div>
       <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="login()" *ngIf="!headerService.user">
           <mat-icon>input</mat-icon>
@@ -92,18 +112,18 @@
       </mat-menu>
     </nav>
     <main>
-      <div class="top-input-area" *ngIf="hasCollections">
+      <!-- <div class="top-input-area" *ngIf="hasCollections">
         <app-options-bar
           [options]="[{ title: 'articulos' }, { title: 'colecciones' }]"
           type="3"
           (selectedIndex)="onTabClick($event)"
         >
         </app-options-bar>
-      </div>
+      </div> -->
       <br *ngIf="!hasCollections" />
 
       <!-- ******************************************* TAG SWIPER ***************************************-->
-      <div style="width: 100%; padding: 0px 21px 0px 21px">
+      <div style="width: 100%; padding: 20px 20px 0px 20px">
         <swiper [config]="swiperConfigTag">
           <a
             *ngFor="let tag of tags"
@@ -238,14 +258,10 @@
       </div>
     </main>
   </div>
-  <app-menu-button
-    [phone]="headerService.saleflow?.merchant.owner.phone"
-    [link]="link"
-    mode="basic"
-    [merchantName]="headerService.saleflow?.merchant.name"
-    [size]="headerService.order?.products?.length ? 'mini' : 'normal'"
-    [position]="{
-      bottom: headerService.order?.products?.length ? '100px' : '50px'
-    }"
-  ></app-menu-button>
+</div>
+<div class="action-bar">
+  <button mat-button (click)="shareStore()">
+    COMPARTIR TIENDA
+    <i class="fa fa-share-alt" aria-hidden="true"></i>
+  </button>
 </div>

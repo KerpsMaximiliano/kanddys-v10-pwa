@@ -1,0 +1,62 @@
+<div class="container">
+  <p *ngIf="bio">
+    {{ bio }}
+  </p>
+  <div>
+    <ul *ngIf="contact?.link?.length">
+      <li *ngFor="let link of contact.link">
+        <a
+          [href]="
+            link.name === 'Phone'
+              ? 'tel:+' + link.value
+              : link.name === 'Email'
+              ? 'mailto:' + link.value
+              : link.name === 'WhatsApp'
+              ? 'https://wa.me/' + link.value.replace('+', '')
+              : link.value
+          "
+          target="_blank"
+        >
+          <div class="contact">
+            <div class="logo whatsapp" *ngIf="link.name == 'WhatsApp'">
+              <i class="fa fa-whatsapp" aria-hidden="true"></i>
+            </div>
+            <div class="logo phone" *ngIf="link.name == 'Phone'">
+              <i class="fa fa-phone" aria-hidden="true"></i>
+            </div>
+            <div class="logo instagram" *ngIf="link.name == 'Instagram'">
+              <i class="fa fa-instagram" aria-hidden="true"></i>
+            </div>
+            <i
+              class="fa fa-facebook-square facebook"
+              aria-hidden="true"
+              *ngIf="link.name == 'Facebook'"
+            ></i>
+            <i
+              class="fa fa-twitter-square twitter"
+              aria-hidden="true"
+              *ngIf="link.name == 'Twitter'"
+            ></i>
+            <div class="logo email" *ngIf="link.name == 'Email'">
+              <i class="fa fa-envelope" aria-hidden="true"></i>
+            </div>
+
+            <div class="content">
+              <span class="name">{{ link.name }}</span>
+              <span class="url">{{ link.value }}</span>
+            </div>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="action-bar">
+  <button mat-button (click)="goToChat()" *ngIf="chatLink">
+    CHAT CONMIGO POR WHATSAPP
+  </button>
+  <button mat-button (click)="shareStore()" class="share">
+    COMPARTE MI CONTACTO
+    <i class="fa fa-share-alt" aria-hidden="true"></i>
+  </button>
+</div>

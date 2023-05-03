@@ -16,7 +16,6 @@ import { AnexoChoicesComponent } from 'src/app/shared/components/anexo-choices/a
 import { BiosEditComponent } from './pages/bios-edit/bios-edit.component';
 import { ImageBannerComponent } from './pages/image-banner/image-banner.component';
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
-import { PostEditionComponent } from '../ecommerce/pages/post-edition/post-edition.component';
 import { ContactLandingContainerComponent } from 'src/app/shared/components/contact-landing-container/contact-landing-container.component';
 import { TagsComponent } from './pages/tags/tags.component';
 import { ManageTagComponent } from './pages/manage-tag/manage-tag.component';
@@ -47,8 +46,13 @@ import { NotificationCreatorComponent } from './pages/notification-creator/notif
 import { OrderSlidesComponent } from './pages/order-slides/order-slides.component';
 import { RewardsDisplayComponent } from './pages/rewards-display/rewards-display.component';
 import { DashboardLibraryComponent } from './pages/dashboard-library/dashboard-library.component';
+import { OrderDataComponent } from './pages/order-data/order-data.component';
+import { BuyerDataComponent } from './pages/buyer-data/buyer-data.component';
+import { ReportsComponent } from './pages/reports/reports.component';
+import { FilterPipeSearchPipe } from 'src/app/core/pipes/filter-pipe-search.pipe';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -140,7 +144,7 @@ const routes: Routes = [
       },
       {
         path: 'image-banner',
-        component: ImageBannerComponent
+        component: ImageBannerComponent,
       },
       {
         path: 'qr-edit',
@@ -206,27 +210,29 @@ const routes: Routes = [
         path: 'webform-open-responses/:formId',
         component: OpenFormResponsesComponent,
       },
-      {
-        path: 'order-status-view',
-        component: OrderStatusViewComponent,
-      },
-      {
-        path: 'order-list',
-        children: [
-          {
-            path: 'tags/:tagId',
-            component: OrderListComponent,
-          },
-          {
-            path: 'status/:status',
-            component: OrderListComponent,
-          },
-          {
-            path: 'process/:deliveryStatus',
-            component: OrderListComponent,
-          },
-        ],
-      },
+      // {
+      //   // Asegurar que no se usa y borrar
+      //   path: 'order-status-view',
+      //   component: OrderStatusViewComponent,
+      // },
+      // {
+      //   // Asegurar que no se usa y borrar
+      //   path: 'order-list',
+      //   children: [
+      //     {
+      //       path: 'tags/:tagId',
+      //       component: OrderListComponent,
+      //     },
+      //     {
+      //       path: 'status/:status',
+      //       component: OrderListComponent,
+      //     },
+      //     {
+      //       path: 'process/:deliveryStatus',
+      //       component: OrderListComponent,
+      //     },
+      //   ],
+      // },
       {
         path: 'webform-multiple-selection/:itemId',
         component: TextOrImageComponent,
@@ -272,9 +278,39 @@ const routes: Routes = [
         component: OrderSlidesComponent,
       },
       {
+        path: 'reports',
+        redirectTo: 'reports/orders',
+      },
+      {
+        path: 'reports',
+        component: ReportsComponent,
+        children: [
+          {
+            path: 'orders',
+            component: OrderDataComponent,
+          },
+          {
+            path: 'buyers',
+            component: BuyerDataComponent,
+          },
+        ],
+      },
+      {
+        path: 'reports/orders/list/:deliveryStatus',
+        component: OrderListComponent,
+      },
+      {
+        path: 'reports/buyers/list/:filter',
+        component: OrderListComponent,
+      },
+      {
+        path: 'reports/buyers/list',
+        component: OrderListComponent,
+      },
+      {
         path: 'notifications-menu',
-        component: RewardsDisplayComponent
-      }
+        component: RewardsDisplayComponent,
+      },
     ],
   },
   {
@@ -332,6 +368,11 @@ const routes: Routes = [
     NotificationCreatorComponent,
     OrderSlidesComponent,
     DashboardLibraryComponent,
+    ReportsComponent,
+    OrderDataComponent,
+    BuyerDataComponent,
+    FilterPipeSearchPipe,
+    AutofocusDirective,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
