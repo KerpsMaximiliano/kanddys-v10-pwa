@@ -7,10 +7,12 @@ import {
   createAnswer,
   createWebform,
   itemAddWebForm,
+  itemRemoveWebForm,
   itemUpdateWebForm,
   orderAddAnswer,
   questionAddAnswerDefault,
   questionPaginate,
+  updateWebform,
   webform,
   webformAddQuestion,
   webformByMerchant,
@@ -31,6 +33,13 @@ import {
   WebformInput,
 } from '../models/webform';
 import { EmbeddedComponentWithId } from '../types/multistep-form';
+import { FormGroup } from '@angular/forms';
+
+export type WebformCreatorStepsNames =
+  | 'ADMIN_NOTE'
+  | 'INTRODUCTION'
+  | 'QUESTION_EDITION'
+  | 'FILES_UPLOAD';
 
 @Injectable({
   providedIn: 'root',
@@ -42,12 +51,18 @@ export class WebformsService {
   currentEditingQuestion: Question = null;
   currentEditingQuestionChoices: AnswerDefaultInput[] = null;
   webformQuestionsRoute: string;
+  formCreationData: {
+    currentStep: WebformCreatorStepsNames;
+    steps: Array<{
+      name: string;
+      fields: FormGroup;
+    }>;
+    currentStepIndex: number;
+  } = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 
-  async createWebform(
-    input: WebformInput,
-  ): Promise<Webform> {
+  async createWebform(input: WebformInput): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: createWebform,
       variables: { input },
@@ -55,16 +70,35 @@ export class WebformsService {
     return result?.createWebform;
   }
 
-  async itemAddWebForm(
-    idItem: string,
-    idWebform: string 
-  ): Promise<Webform> {
+  async updateWebform(id: string, input: WebformInput): Promise<Webform> {
+    const result = await this.graphql.mutate({
+      mutation: updateWebform,
+      variables: { id, input },
+    });
+    return result?.updateWebform;
+  }
+
+  async itemAddWebForm(idItem: string, idWebform: string): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: itemAddWebForm,
-      variables: { id: idItem, input: {
-        active: true,
-        reference: idWebform
-      } },
+      variables: {
+        id: idItem,
+        input: {
+          active: true,
+          reference: idWebform,
+        },
+      },
+    });
+    return result?.itemAddWebForm;
+  }
+
+  async itemRemoveWebForm(id: string, webformId: string): Promise<Webform> {
+    const result = await this.graphql.mutate({
+      mutation: itemRemoveWebForm,
+      variables: {
+        id,
+        webformId
+      },
     });
     return result?.itemAddWebForm;
   }
@@ -95,7 +129,7 @@ export class WebformsService {
   async questionAddAnswerDefault(
     input: AnswerDefaultInput[],
     questionId: string,
-    webformId: string,
+    webformId: string
   ): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: questionAddAnswerDefault,
@@ -166,10 +200,13 @@ export class WebformsService {
     }
   }
 
-  async createAnswer(input: WebformAnswerInput): Promise<WebformAnswer> {
+  async createAnswer(
+    input: WebformAnswerInput,
+    userId: string
+  ): Promise<WebformAnswer> {
     const result = await this.graphql.mutate({
       mutation: createAnswer,
-      variables: { input },
+      variables: { input, userId },
     });
     return result?.createAnswer;
   }
@@ -198,7 +235,11 @@ export class WebformsService {
     return result?.orderAddAnswer;
   }
 
-  async webformUpdateQuestion(input: QuestionInput, questionId: string, id: string): Promise<Question> {
+  async webformUpdateQuestion(
+    input: QuestionInput,
+    questionId: string,
+    id: string
+  ): Promise<Question> {
     const result = await this.graphql.mutate({
       mutation: webformUpdateQuestion,
       variables: { input, questionId, id },
@@ -207,7 +248,11 @@ export class WebformsService {
     return result?.webformUpdateQuestion;
   }
 
-  async itemUpdateWebForm(input: any, webformId: string, id: string): Promise<any> {
+  async itemUpdateWebForm(
+    input: any,
+    webformId: string,
+    id: string
+  ): Promise<any> {
     const result = await this.graphql.mutate({
       mutation: itemUpdateWebForm,
       variables: { input, webformId, id },
@@ -217,7 +262,7 @@ export class WebformsService {
 
   async webforms(input: PaginationInput): Promise<Array<Webform>> {
     try {
-      const response  = await this.graphql.query({
+      const response = await this.graphql.query({
         query: webforms,
         variables: { input },
         fetchPolicy: 'no-cache',
@@ -233,7 +278,7 @@ export class WebformsService {
 
   async questionPaginate(paginate: PaginationInput): Promise<Array<Question>> {
     try {
-      const response  = await this.graphql.query({
+      const response = await this.graphql.query({
         query: questionPaginate,
         variables: { paginate },
         fetchPolicy: 'no-cache',

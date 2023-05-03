@@ -2,7 +2,11 @@
   <form class="wrapper">
     <label for="question">{{ label }}</label>
     <textarea
-      *ngIf="inputType === 'DEFAULT'"
+      *ngIf="
+        inputType === 'DEFAULT' ||
+        inputType === 'MAX12' ||
+        inputType === 'MIN12'
+      "
       tabindex="-1"
       [formControl]="textarea"
       placeholder="Escribe aqui"

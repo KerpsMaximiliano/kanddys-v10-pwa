@@ -101,9 +101,29 @@ export const createWebform = gql`
   }
 `;
 
+export const updateWebform = gql`
+  mutation updateWebform($input: WebformInput!, $id: ObjectID!) {
+    updateWebform(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
+
 export const itemAddWebForm = gql`
   mutation itemAddWebForm($input: ItemWebFormInput!, $id: ObjectID!) {
     itemAddWebForm(input: $input, id: $id) {
+      _id
+      webForms {
+        reference
+        active
+      }
+    }
+  }
+`;
+
+export const itemRemoveWebForm = gql`
+  mutation itemRemoveWebForm($webformId: ObjectID!, $id: ObjectID!) {
+    itemRemoveWebForm(webformId: $webformId, id: $id) {
       _id
       webForms {
         reference
@@ -138,8 +158,8 @@ export const webformRemoveQuestion = gql`
 `;
 
 export const createAnswer = gql`
-  mutation createAnswer($input: AnswerInput!) {
-    createAnswer(input: $input) {
+  mutation createAnswer($input: AnswerInput!, $userId: ObjectID!) {
+    createAnswer(input: $input, userId: $userId) {
       _id
       response {
         value
