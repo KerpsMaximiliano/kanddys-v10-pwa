@@ -1,13 +1,31 @@
 <div class="container">
   <header class="header">
-    <button (click)="returnEvent()"><img [src]="env + '/arrow-double-up-black.svg'" alt="" /></button>
+    <button (click)="returnEvent()">
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
+    </button>
     <p class="header-title">Cosas importantes</p>
-    <button><img [src]="env + '/star.svg'" alt="" class="star" /></button>
-    <button><img [src]="env + '/QR.svg'" alt="" class="qr" /></button>
+    <!-- <button><img [src]="env + '/star.svg'" alt="" class="star" /></button>
+    <button><img [src]="env + '/QR.svg'" alt="" class="qr" /></button> -->
   </header>
-  <div class="content">
 
-    <div class="card-container" *ngFor="let card of cards; index as i">
+  <div class="content">
+    <swiper [config]="swiperConfig">
+      <button
+        class="swiper-btn"
+        [ngClass]="isFacturas === true ? 'active' : ''"
+        (click)="selectFacturas()"
+      >
+        Facturas
+      </button>
+      <button
+        class="swiper-btn"
+        [ngClass]="isIngresos === true ? 'active' : ''"
+        (click)="selectIngresos()"
+      >
+        Ingresos & Egresos
+      </button>
+    </swiper>
+    <!-- <div class="card-container" *ngFor="let card of cards; index as i">
       <div *ngIf="card.notification === true" class="notification"></div>
       <div class="top">
         <img [src]="card.img" alt="" />
@@ -16,16 +34,24 @@
         <p class="amount">{{ card.amount }}</p>
       </div>
       <p *ngIf="card.bottomText" class="bottomText">{{ card.bottomText }}</p>
-    </div>    
+    </div> -->
 
-    <!-- <app-info-container [cards]="cards"></app-info-container> -->
-    <p class="title">Progreso y listados de las Facturas</p>
-    <!-- <app-info-container [cards]="cards2"></app-info-container> -->
+    <div *ngIf="isFacturas === true" style="margin-top: 25px">
+      <app-info-container [cards]="facturas"></app-info-container>
+      <p class="title">Progresos</p>
+      <app-info-container [cards]="facturas2"></app-info-container>
+      <div style="display: flex"><button class="edit">Edit</button></div>
+    </div>
 
-    <p class="title">Del estratega</p>
+    <div *ngIf="isIngresos === true" style="margin-top: 25px">
+      <app-info-container [cards]="ingresos"></app-info-container>
+      <p class="title">Configuración</p>
+      <app-info-container [cards]="ingresos2"></app-info-container>
+    </div>
+
+    <!-- <p class="title">Del estratega</p>
 
     <div class="wrapper">
-      <!-- <img [src]="env + '/play.svg'" alt="" /> -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="12.003"
@@ -51,7 +77,6 @@
       <p>Recompensa a compradores</p>
     </div>
     <div class="wrapper">
-      <!-- <img [src]="env + '/play.svg'" alt="" /> -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="12.003"
@@ -78,7 +103,6 @@
     </div>
 
     <div class="wrapper">
-      <!-- <img [src]="env + '/play.svg'" alt="" /> -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="12.003"
@@ -105,7 +129,6 @@
     </div>
 
     <div class="wrapper">
-      <!-- <img [src]="env + '/play.svg'" alt="" /> -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="12.003"
@@ -132,7 +155,6 @@
     </div>
 
     <div class="wrapper">
-      <!-- <img [src]="env + '/play.svg'" alt="" /> -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="12.003"
@@ -156,6 +178,6 @@
         </g>
       </svg>
       <p>Formulario por factura y según el artículo</p>
-    </div>
+    </div> -->
   </div>
 </div>

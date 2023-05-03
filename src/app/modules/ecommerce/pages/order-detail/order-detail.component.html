@@ -39,21 +39,25 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <a
-    class="bar btn notify"
-    *ngIf="isMerchant === false"
-    [href]="messageLink"
-    target="_blank"
-  >
-    <p>
-      Factura creada, envíala por
+  <div style="position: fixed; max-width: 500px; width: 100%; bottom: 100px">
+    <a
+      mat-mini-fab
+      class="fixed-bottom-button right"
+      *ngIf="isMerchant === false"
+      [href]="messageLink"
+      target="_blank"
+    >
       <img
         [src]="env + '/whatsapp_black.svg'"
         alt=""
-        style="margin: 0px 5px; margin-bottom: -4px"
+        style="
+          filter: brightness(0) saturate(100) invert(76%) sepia(57%)
+            saturate(301%) hue-rotate(90deg) brightness(87%) contrast(90%);
+          margin-top: -2px;
+        "
       />
-    </p>
-  </a>
+    </a>
+  </div>
   <!-- <ng-container *ngIf="isMerchant && order.orderStatus !== 'draft'">
     <a
       class="benefits-btn"
@@ -781,7 +785,7 @@
   (click)="goToStore()"
   ></app-sticky-button> -->
 
-  <div style="visibility: hidden; position: absolute; z-index: -99">
+  <div style="visibility: hidden; position: absolute; z-index: -99; bottom: 0">
     <qrcode
       *ngIf="entityTemplate"
       #qrcodeTemplate

@@ -120,5 +120,9 @@ a {
     font-family: SfProLight;
     font-size: 13px;
     color: #272727;
+
+    &.share {
+      margin-left: auto;
+    }
   }
 }
