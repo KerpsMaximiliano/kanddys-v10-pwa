@@ -268,12 +268,13 @@ export class MerchantsService {
   }
 
   async createMerchantWhatsapp(
+    itemId: string,
     nameMerchant: String
   ): Promise<{ createMerchantWhatsapp: String }> {
     console.log(nameMerchant);
     const result = await this.graphql.mutate({
       mutation: createMerchantWhatsapp,
-      variables: { nameMerchant },
+      variables: { itemId, nameMerchant },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });

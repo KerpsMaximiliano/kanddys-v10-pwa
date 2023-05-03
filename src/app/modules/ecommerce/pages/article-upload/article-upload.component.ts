@@ -100,18 +100,9 @@ export class ArticleUploadComponent implements OnInit {
 
         console.log(isNewMerchant);
 
-        if (isNewMerchant) {
-          console.log(isNewMerchant._id);
-          const itemInput: ItemInput = {
-            pricing: this.pricing,
-            images: this.images,
-            merchant: isNewMerchant._id,
-          };
-          this.item = await this._ItemsService.createPreItem(itemInput);
-          console.log(this.item);
-          console.log(this.item.createPreItem);
-          clearInterval(this.interval);
-        }
+        // if (isNewMerchant) {
+        //   console.log(isNewMerchant._id);
+        // }
       }
     }, 15000);
 
@@ -189,6 +180,7 @@ export class ArticleUploadComponent implements OnInit {
     reader.onload = (e) => {
       this._ItemsService.editingImageId = this.images[0]._id;
     };
+    this.updateCurrentSlideData();
   }
 
   async nextSlide() {
@@ -225,11 +217,17 @@ export class ArticleUploadComponent implements OnInit {
   }
 
   async sendMessage() {
-    // const message = `Hola, soy ${this.kioskoName}, te envío este mensaje`;
-    // window.location.href = `https://wa.me/19295263397?text=${message}`;
-    // const url = `https://wa.me/19295263397?text=${message}`;
-    // window.open(url, '_blank');
+    const itemInput: ItemInput = {
+      pricing: this.pricing,
+      images: this.images,
+    };
+    this.item = await this._ItemsService.createPreItem(itemInput);
+    console.log(this.item);
+    console.log(this.item.createPreItem);
+    console.log(this.item.createPreItem._id);
+    clearInterval(this.interval);
     const whatsapp = await this.merchantService.createMerchantWhatsapp(
+      this.item.createPreItem._id,
       this.kioskoName
     );
     console.log(whatsapp);
