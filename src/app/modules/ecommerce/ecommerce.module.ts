@@ -120,6 +120,10 @@ const routes: Routes = [
     component: ArticleUploadComponent,
   },
   {
+    path: 'contact-landing/:idUser',
+    component: ContactLandingContainerComponent,
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -194,10 +198,6 @@ const routes: Routes = [
       {
         path: 'categories/:tagId',
         component: TagItemsComponent,
-      },
-      {
-        path: 'contact-landing/:idUser',
-        component: ContactLandingContainerComponent,
       },
       {
         path: 'store-assistant',

@@ -40,6 +40,7 @@ export class ContactLandingContainerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log("VERGACIÓNNNNNNNNNNNNN AAAAAAAAAAAAAAAAAAAAAAAAAAA");
     this._ActivatedRoute.params.subscribe(({ idUser }) => {
       (async () => {
         this.idUser = idUser;
