@@ -96,7 +96,7 @@ export class Webform extends Model<Webform> {
   bookmark: BookMark;
   exchangeData: ExchangeData;
   active: Boolean;
-  user: User
+  user: User;
 }
 
 export interface WebformAnswer extends Model<Answer> {
@@ -111,15 +111,13 @@ export interface WebformAnswer extends Model<Answer> {
   reference: string;
 }
 
-
-
 export interface WebformResponseInput {
   question: string;
   value?: string;
   label?: string;
   media?: File;
   isMedia?: boolean;
-};
+}
 
 export interface WebformAnswerInput {
   webform: string;
@@ -131,4 +129,11 @@ export interface WebformAnswerInput {
 export class ItemWebform extends Model<ItemWebform> {
   reference: string;
   active: boolean;
+}
+
+export interface AnswersGroupedByUser {
+  _id: string;
+  answers: Array<Answer>;
+  user?: User;
+  merchant?: Merchant;
 }

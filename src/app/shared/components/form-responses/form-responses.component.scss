@@ -1,0 +1,130 @@
+.container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+
+  header {
+    background-color: #c1c4c1;
+    height: 47px;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 21px;
+    padding-right: 17px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+
+    .back-btn,
+    .settings-btn {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  nav {
+    margin: 17px auto 30px 17px;
+    display: flex;
+
+    button {
+      background-color: #f5f5f5;
+      padding: 9px 21px 4px 21px;
+      border: 1px solid #d3d3d3;
+      font-family: SfProLight;
+      font-size: 16px;
+      color: #272727;
+      margin-right: 9px;
+      border-radius: 20px;
+
+      &.active {
+        background-color: #171d16;
+        color: white;
+        border: none;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  main {
+    margin-top: 30px;
+
+    .users-list {
+      list-style: none;
+      margin: 0px;
+      padding: 0px;
+      margin: 0px 17px;
+
+      .user {
+        padding: 6px 15px 10px 8px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+
+        .left-column {
+          .user-presentation {
+            font-family: SfProLight;
+            font-size: 17px;
+            color: #171d16;
+            display: flex;
+            align-items: center;
+            height: 22px;
+            margin-bottom: 25px;
+
+            .kioskoId {
+              font-family: SfProBold;
+              margin-right: 14px;
+              font-weight: normal;
+            }
+
+            .avatar-wrapper {
+              border-radius: 50%;
+              height: 22px;
+              width: 22px;
+              margin-right: 6px;
+              background-position: center;
+              background-size: cover;
+              background-repeat: no-repeat;
+            }
+          }
+
+          .date-relative-info {
+            color: #7b7b7b;
+            font-size: 16px;
+            font-family: SfProRegular;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+
+    .right-column {
+      width: 22.64%;
+
+      .responses-link {
+        display: flex;
+        align-items: center;
+        color: #2874ad;
+        font-family: SfProBold;
+        font-size: 13px;
+        height: 22px;
+        margin-bottom: 25px;
+      }
+
+      .three-dots {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        height: 12px;
+
+        img {
+          margin-left: auto;
+          filter: invert(67%) sepia(4%) saturate(16%) hue-rotate(336deg)
+            brightness(95%) contrast(91%);
+        }
+      }
+    }
+  }
+}

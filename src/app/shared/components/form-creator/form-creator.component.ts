@@ -1304,6 +1304,12 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
+
+    for (const step of this.steps) {
+      if (step.statusChangeSubscription) {
+        step.statusChangeSubscription.unsubscribe();
+      }
+    }
   }
 
   // Define a constant for the minimum distance to consider a swipe

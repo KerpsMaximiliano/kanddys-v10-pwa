@@ -1,1 +1,103 @@
-<p>form-responses works!</p>
+<div class="container">
+  <header>
+    <div class="back-btn">
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="go back" />
+    </div>
+
+    <div class="settings-btn">
+      <img [src]="env + '/settings.svg'" alt="settings" />
+    </div>
+  </header>
+
+  <nav>
+    <button class="active">
+      {{ answersGroupedByUser.length }} Participantes
+    </button>
+    <button>4 Preguntas</button>
+  </nav>
+
+  <main>
+    <ng-container [ngSwitch]="currentTab">
+      <ng-container *ngSwitchCase="'USERS'">
+        <ul class="users-list">
+          <li
+            class="user"
+            *ngFor="let answersGroupForASingleUser of answersGroupedByUser"
+          >
+            <div class="left-column">
+              <div
+                class="user-presentation"
+                *ngIf="
+                  answersGroupForASingleUser.merchant &&
+                  answersGroupForASingleUser.user
+                "
+              >
+                <div
+                  class="avatar-wrapper"
+                  [ngStyle]="{
+                    backgroundImage: answersGroupForASingleUser.merchant.image
+                      ? 'url(' +
+                        answersGroupForASingleUser.merchant.image +
+                        '), url(' +
+                        env +
+                        '/spinner2.gif)'
+                      : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+                  }"
+                ></div>
+                <span class="kioskoId">{{
+                  answersGroupForASingleUser.merchant.name
+                }}</span>
+                por {{ answersGroupForASingleUser.user.name }}
+              </div>
+
+              <div
+                class="user-presentation"
+                *ngIf="
+                  !answersGroupForASingleUser.merchant &&
+                  answersGroupForASingleUser.user
+                "
+              >
+                <div
+                  class="avatar-wrapper"
+                  [ngStyle]="{
+                    backgroundImage: answersGroupForASingleUser.user.image
+                      ? 'url(' +
+                        answersGroupForASingleUser.user.image +
+                        '), url(' +
+                        env +
+                        '/spinner2.gif)'
+                      : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+                  }"
+                ></div>
+                <span class="kioskoId">{{
+                  answersGroupForASingleUser.user.name
+                }}</span>
+              </div>
+
+              <div class="date-relative-info">
+                Respondió por última vez
+                {{
+                  getCreationDateDifferenceAsItsSaid(
+                    answersGroupedByUser[0].answers[0].updatedAt
+                  )
+                }}
+              </div>
+            </div>
+            <div class="right-column">
+              <div class="responses-link">
+                {{ answersGroupForASingleUser.answers.length }} Respuestas
+              </div>
+              <div class="three-dots">
+                <img
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
+                  alt="more options"
+                />
+              </div>
+            </div>
+          </li>
+        </ul>
+      </ng-container>
+      <ng-container *ngSwitchCase="'QUESTIONS'"></ng-container>
+    </ng-container>
+  </main>
+</div>

@@ -254,3 +254,9 @@ export const questionPaginate = gql`
     }
   }
 `;
+
+export const answersInWebformGroupedByUser = gql`
+  query answersInWebformGroupedByUser($webformId: ObjectID!) {
+    answersInWebformGroupedByUser(webformId: $webformId)
+  }
+`;

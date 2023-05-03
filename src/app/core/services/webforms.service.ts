@@ -4,6 +4,7 @@ import {
   answerByOrder,
   answerFrequent,
   answerPaginate,
+  answersInWebformGroupedByUser,
   createAnswer,
   createWebform,
   itemAddWebForm,
@@ -23,8 +24,10 @@ import {
 import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import {
+  Answer,
   AnswerDefaultInput,
   AnswerInput,
+  AnswersGroupedByUser,
   Question,
   QuestionInput,
   Webform,
@@ -34,6 +37,7 @@ import {
 } from '../models/webform';
 import { EmbeddedComponentWithId } from '../types/multistep-form';
 import { FormGroup } from '@angular/forms';
+import { User } from '../models/user';
 
 export type WebformCreatorStepsNames =
   | 'ADMIN_NOTE'
@@ -97,7 +101,7 @@ export class WebformsService {
       mutation: itemRemoveWebForm,
       variables: {
         id,
-        webformId
+        webformId,
       },
     });
     return result?.itemAddWebForm;
@@ -287,6 +291,24 @@ export class WebformsService {
       if (!response || response?.errors) return undefined;
 
       return response?.questionPaginate;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async answersInWebformGroupedByUser(
+    webformId: string
+  ): Promise<Array<AnswersGroupedByUser>> {
+    try {
+      const response = await this.graphql.query({
+        query: answersInWebformGroupedByUser,
+        variables: { webformId },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!response || response?.errors) return undefined;
+
+      return response?.answersInWebformGroupedByUser;
     } catch (error) {
       console.log(error);
     }
