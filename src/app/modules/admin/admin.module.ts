@@ -43,6 +43,8 @@ import { OrderProcessComponent } from './pages/order-process/order-process.compo
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
+import { FormCreatorComponent } from 'src/app/shared/components/form-creator/form-creator.component';
+import { MediaUploadDndComponentComponent } from 'src/app/shared/components/media-upload-dnd-component/media-upload-dnd-component.component';
 import { OrderSlidesComponent } from './pages/order-slides/order-slides.component';
 import { RewardsDisplayComponent } from './pages/rewards-display/rewards-display.component';
 import { DashboardLibraryComponent } from './pages/dashboard-library/dashboard-library.component';
@@ -210,6 +212,27 @@ const routes: Routes = [
         path: 'webform-open-responses/:formId',
         component: OpenFormResponsesComponent,
       },
+      {
+        path: 'order-status-view',
+        component: OrderStatusViewComponent,
+      },
+      {
+        path: 'order-list',
+        children: [
+          {
+            path: 'tags/:tagId',
+            component: OrderListComponent,
+          },
+          {
+            path: 'status/:status',
+            component: OrderListComponent,
+          },
+          {
+            path: 'process/:deliveryStatus',
+            component: OrderListComponent,
+          },
+        ],
+      },
       // {
       //   // Asegurar que no se usa y borrar
       //   path: 'order-status-view',
@@ -326,6 +349,17 @@ const routes: Routes = [
     component: OrderProcessComponent,
   },
   {
+    path: 'form-creator/:itemId',
+    component: FormCreatorComponent,
+  },
+  {
+    path: 'media-upload/:entity/:entityId',
+    component: MediaUploadDndComponentComponent,
+  },
+  {
+    path: 'media-upload/:entity',
+    component: MediaUploadDndComponentComponent,
+  },{
     path: 'dashboard-library',
     component: DashboardLibraryComponent,
   },

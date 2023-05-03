@@ -1,0 +1,107 @@
+<div class="container">
+  <div class="header">
+    <i
+      class="fas fa-chevron-up icon"
+      [style.cursor]="'pointer'"
+      (click)="submit()"
+    ></i>
+
+    <label [for]="'directory-option'" *ngIf="!isUserOnAMobileDevice">
+      <img
+        src="
+      https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/directory.svg
+      "
+        alt="upload folder"
+      />
+    </label>
+  </div>
+
+  <div class="tags-grid-drag-and-drop" cdkDropListGroup>
+    <div class="tag-wrapper" style="width: 100%; margin: 0px; padding: 0px">
+      <div class="inner-drag-wrapper">
+        <input
+          type="file"
+          id="file"
+          [style.display]="'none'"
+          (change)="loadFile($event)"
+          multiple
+          [accept]="['.png', '.jpg', '.jpeg', '.webp']"
+        />
+
+        <input
+          type="file"
+          [id]="'directory-option'"
+          [style.display]="'none'"
+          (change)="loadFile($event)"
+          webkitdirectory
+          multiple
+          [accept]="['.png', '.jpg', '.jpeg', '.webp']"
+        />
+
+        <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
+          <div class="labelBox"></div>
+          <div class="imgBox">
+            <p>+</p>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div
+      class="tag-wrapper"
+      cdkDropList
+      *ngFor="let gridItem of gridArray; let i = index"
+      [cdkDropListData]="{ gridItem: gridItem, index: i }"
+      (cdkDropListDropped)="dropTagDraggable($event)"
+      tyle="width: 100%; margin: 0px; padding: 0px"
+    >
+      <div class="inner-drag-wrapper" cdkDrag>
+        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+        <div class="itemContainer">
+          <div
+            *ngIf="imageFiles.includes(gridItem._type)"
+            class="imgBox"
+            [ngStyle]="{
+              backgroundImage:
+                'url(' +
+                gridItem.background +
+                '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)',
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: '#272727'
+            }"
+          ></div>
+
+          <ng-container *ngIf="videoFiles.includes(gridItem._type)">
+            <img
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+              alt="play"
+              class="playVideoIcon"
+              style="padding: 1.5rem !important; z-index: 99"
+              (click)="playVideoOnFullscreen('media' + i)"
+            />
+            <video
+              [id]="'media' + i"
+              [muted]="true"
+              [src]="gridItem.background"
+            ></video>
+          </ng-container>
+
+          <div
+            class="labelBox"
+            (click)="
+              isSlideVideo(i) ? playVideoOnFullscreen('media' + i) : null
+            "
+          ></div>
+          <button class="circleButton" (click)="deleteSlide(i)">
+            <i
+              class="fa fa-times"
+              aria-hidden="true"
+              style="color: #7b7b7b"
+            ></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

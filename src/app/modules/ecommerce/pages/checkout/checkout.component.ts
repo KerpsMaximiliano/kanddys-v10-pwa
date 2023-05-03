@@ -1,6 +1,11 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import {
+  FormControl,
+  Validators,
+  ValidatorFn,
+  AbstractControl,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -606,6 +611,34 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrder = async () => {
+    if (!this.logged) {
+      const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+        data: {
+          loginType: 'full',
+          magicLinkData: {
+            redirectionRoute:
+              'ecommerce/' +
+              this.headerService.saleflow.merchant.slug +
+              '/checkout',
+            entity: 'CREATE WEBFORM',
+          },
+        },
+      });
+      matDialogRef.afterClosed().subscribe(async (value) => {
+        if (!value) return;
+        if (value.user?._id || value.session.user._id) {
+          this.logged = true;
+
+          lockUI();
+
+          await this.createOrderFromCheckout();
+          return;
+        }
+      });
+
+      return;
+    }
+
     if (this.missingOrderData) {
       if (
         this.headerService.saleflow?.module?.appointment?.isActive &&
@@ -636,6 +669,17 @@ export class CheckoutComponent implements OnInit {
 
     if (!this.areWebformsValid || this.webformPreview) return;
 
+    try {
+      await this.createOrderFromCheckout();
+      unlockUI();
+    } catch (error) {
+      console.log(error);
+      unlockUI();
+      this.disableButton = false;
+    }
+  };
+
+  createOrderFromCheckout = async () => {
     this.disableButton = true;
     lockUI();
     const userInput = JSON.parse(
@@ -723,7 +767,7 @@ export class CheckoutComponent implements OnInit {
       } else {
         unlockUI();
         const postResult = (await this.postsService.createPost(this.post))
-              ?.createPost?._id;
+          ?.createPost?._id;
 
         this.headerService.order.products[0].post = postResult;
 
@@ -738,6 +782,7 @@ export class CheckoutComponent implements OnInit {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
       this.headerService.order.orderStatusDelivery = 'in progress';
+
       if (this.headerService.user && !anonymous) {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)
@@ -759,6 +804,12 @@ export class CheckoutComponent implements OnInit {
           await this.orderService.createPreOrder(this.headerService.order)
         )?.createPreOrder._id;
 
+        this.headerService.deleteSaleflowOrder();
+        this.headerService.resetOrderProgress();
+        this.headerService.orderId = createdOrder;
+        this.headerService.currentMessageOption = undefined;
+        this.headerService.post = undefined;
+
         if (
           this.hasDeliveryZone &&
           this.deliveryZone &&
@@ -770,7 +821,6 @@ export class CheckoutComponent implements OnInit {
           );
         }
       }
-
       this.headerService.deleteSaleflowOrder();
       this.headerService.resetOrderProgress();
       this.headerService.orderId = createdOrder;
@@ -778,26 +828,7 @@ export class CheckoutComponent implements OnInit {
       this.headerService.post = undefined;
 
       //Answer the webforms of each item and adds it to the order
-      for await (const item of this.items) {
-        if (
-          item.webForms &&
-          item.webForms.length &&
-          this.webformsByItem[item._id]
-        ) {
-          const answer = this.getWebformAnswer(item._id);
-
-          const response = await this._WebformsService.createAnswer(answer);
-
-          if (response) {
-            await this._WebformsService.orderAddAnswer(
-              response._id,
-              createdOrder
-            );
-
-            this.dialogFlowService.resetDialogFlow('webform-item-' + item._id);
-          }
-        }
-      }
+      await this.createAnswerForEveryWebformItem(createdOrder);
 
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
@@ -840,6 +871,33 @@ export class CheckoutComponent implements OnInit {
       console.log(error);
       unlockUI();
       this.disableButton = false;
+    }
+  };
+
+  createAnswerForEveryWebformItem = async (createdOrderId: string) => {
+    //Answer the webforms of each item and adds it to the order
+    for await (const item of this.items) {
+      if (
+        item.webForms &&
+        item.webForms.length &&
+        this.webformsByItem[item._id]
+      ) {
+        const answer = this.getWebformAnswer(item._id);
+
+        const response = await this._WebformsService.createAnswer(
+          answer,
+          this.headerService.user._id
+        );
+
+        if (response) {
+          await this._WebformsService.orderAddAnswer(
+            response._id,
+            createdOrderId
+          );
+
+          this.dialogFlowService.resetDialogFlow('webform-item-' + item._id);
+        }
+      }
     }
   };
 
@@ -1401,11 +1459,53 @@ export class CheckoutComponent implements OnInit {
           const lastDialogIndex =
             this.webformsByItem[item._id].dialogs.length - 1;
 
+          function maxWordsValidator(maxWords: number): ValidatorFn {
+            return (
+              control: AbstractControl
+            ): { [key: string]: any } | null => {
+              const value = control.value as string;
+              if (value) {
+                const words = value.trim().split(/\s+/).length;
+                if (words > maxWords) {
+                  return {
+                    maxWords: { requiredWords: maxWords, actualWords: words },
+                  };
+                }
+              }
+              return null;
+            };
+          }
+
+          function minWordsValidator(minWords: number): ValidatorFn {
+            return (
+              control: AbstractControl
+            ): { [key: string]: any } | null => {
+              const value = control.value as string;
+              if (value) {
+                const words = value.trim().split(/\s+/).length;
+                if (words < minWords) {
+                  return {
+                    minWords: { requiredWords: minWords, actualWords: words },
+                  };
+                }
+              }
+              return null;
+            };
+          }
+
           if (
             question.type === 'text' &&
             question.answerTextType.toUpperCase() !== 'NAME'
           ) {
             const validators = [Validators.required];
+
+            if (question.answerTextType.toUpperCase() === 'MAX12') {
+              validators.push(maxWordsValidator(12));
+            }
+
+            if (question.answerTextType.toUpperCase() === 'MIN12') {
+              validators.push(minWordsValidator(12));
+            }
 
             if (question.answerTextType.toUpperCase() === 'EMAIL')
               validators.push(Validators.email);
