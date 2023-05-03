@@ -180,3 +180,20 @@ main {
   width: 100%;
   padding: 2rem;
 }
+
+.action-bar {
+  background-color: #6fcf97;
+  display: flex;
+  justify-content: flex-end;
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  z-index: 999;
+  bottom: 0;
+
+  button {
+    font-family: SfProLight;
+    font-size: 13px;
+    color: #272727;
+  }
+}

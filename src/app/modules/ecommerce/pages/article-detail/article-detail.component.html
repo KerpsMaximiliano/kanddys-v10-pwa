@@ -1,7 +1,56 @@
 <div class="container" *ngIf="itemData || tagData">
-  <button class="fixed-top-button left" (click)="back()">
+  <!-- <button class="fixed-top-button left" (click)="back()">
     <img [src]="env + '/arrow-double-up.svg'" alt="Volver" />
+  </button> -->
+  <header>
+    <div class="title">
+      <a mat-icon-button [routerLink]="['../../../store']">
+        <i class="fas fa-chevron-left"></i>
+      </a>
+      {{ headerService.saleflow.merchant.name }}
+    </div>
+    <div></div>
+    <!-- <button mat-icon-button>
+      <mat-icon>more_horiz</mat-icon>
+    </button> -->
+  </header>
+  <button
+    *ngIf="itemsAmount && mode != 'image-preview'"
+    class="fixed-top-button right"
+    mat-mini-fab
+    (click)="goToCheckout()"
+    [matBadge]="itemsAmount"
+    matBadgePosition="after"
+    matBadgeSize="small"
+  >
+    <mat-icon style="color: #6fcf97">shopping_cart</mat-icon>
   </button>
+  <div
+    class="current-media-shown-indicators"
+    [style]="{
+      'grid-template-columns': '' + fractions + ''
+    }"
+  >
+    <ng-container *ngIf="entity === 'item' && itemData.images?.length > 0">
+      <div
+        class="indicator"
+        [ngClass]="{
+          active: imageIndex === currentMediaSlide
+        }"
+        *ngFor="let image of itemData.images; let imageIndex = index"
+      ></div>
+    </ng-container>
+
+    <ng-container *ngIf="entity === 'post' && postSlides.length > 0">
+      <div
+        class="indicator"
+        [ngClass]="{
+          active: slideIndex === currentMediaSlide
+        }"
+        *ngFor="let slide of postSlides; let slideIndex = index"
+      ></div>
+    </ng-container>
+  </div>
 
   <div class="media-swiper-wrapper">
     <div
@@ -65,112 +114,43 @@
         </ng-container>
       </swiper>
     </div>
-    <div class="bottom-user-actions-panel">
-      <button class="text-container">
-        <p class="top-text" *ngIf="itemData?.name || tagData?.name">
-          {{
-            itemData &&
-              (itemData.name?.length > 30
-                ? (itemData.name.trim() | slice : 0 : 30) + "..."
-                : itemData.name)
-          }}
-          {{
-            tagData &&
-              (tagData.name?.length > 30
-                ? (tagData.name.trim() | slice : 0 : 30) + "..."
-                : tagData.name)
-          }}
+    <div class="information">
+      <button mat-button (click)="itemInformationDialog()">
+        <p>
+          <span>{{ itemData.name }}.</span>
+          {{ itemData.description }} Lorem ipsum dolor sit amet consectetur
+          adipisicing elit. Aut animi deserunt veniam ut quia saepe minus
+          maiores magni perferendis quo. Nobis recusandae vitae animi sunt
+          soluta ullam? Quis, vero commodi.
         </p>
-
-        <p class="bottom-text" *ngIf="itemData?.description || tagData?.notes">
-          {{
-            itemData &&
-              (itemData.description.length > 100
-                ? (itemData.description.trim() | slice : 0 : 100) + "..."
-                : itemData.description)
-          }}
-          {{
-            tagData &&
-              (tagData.notes.length > 100
-                ? (tagData.notes.trim() | slice : 0 : 100) + "..."
-                : tagData.notes)
-          }}
-        </p>
+        <!-- mira más -->
       </button>
-      <div class="inner-wrapper-top">
-        <div
-          class="current-media-shown-indicators"
-          [style]="{
-            'grid-template-columns': '' + fractions + ''
-          }"
-        >
-          <ng-container *ngIf="itemData?.images?.length">
-            <div
-              class="indicator"
-              [ngClass]="{
-                active: imageIndex === currentMediaSlide
-              }"
-              *ngFor="let image of itemData?.images; let imageIndex = index"
-            ></div>
-          </ng-container>
-          <ng-container *ngIf="tagData?.images?.length">
-            <div
-              class="indicator"
-              [ngClass]="{
-                active: imageIndex === currentMediaSlide
-              }"
-              *ngFor="let image of tagData.images; let imageIndex = index"
-            ></div>
-          </ng-container>
+    </div>
+    <div class="actions">
+      <div class="pricing">
+        <div class="currency">
+          RD$ {{ itemData.pricing | number : "1.2-2" }}
         </div>
-        <div class="pricing-actions">
-          <h3 class="item-price" *ngIf="itemData">
-            RD $ {{ itemData.pricing | number : "1.2-2" }}
-          </h3>
-          <span *ngIf="!itemData"></span>
-          <div class="icons-flex">
-            <button class="round-button" (click)="share()">
-              <img
-                [src]="env + '/upload.svg'"
-                alt="Contenedor con flecha saliendo"
-              />
-            </button>
-            <!-- <button class="round-button">
-              <img [src]="env + '/heart.svg'" alt="corazon" />
-            </button> -->
-          </div>
-        </div>
-
+      </div>
+      <div class="buttons">
         <button
-          class="cart-btn"
+          mat-raised-button
+          class="add"
           (click)="saveProduct()"
-          *ngIf="
-            doesModuleDependOnSaleflow &&
-            itemData &&
-            isSignup !== true &&
-            isCreateArticle !== true
-          "
+          *ngIf="itemData"
           [ngClass]="{
             inCart: isItemInCart
           }"
-          [ngStyle]="{
-            width: itemsAmount ? '75%' : '100%',
-            borderTopRightRadius: itemsAmount ? '11px' : '0'
-          }"
         >
+          <mat-icon>
+            {{ isItemInCart ? "remove_shopping_cart" : "add_shopping_cart" }}
+          </mat-icon>
           <span>
-            {{
-              isItemInCart
-                ? "Este artículo está en tu pre-factura"
-                : "Adiciónalo a la factura"
-            }}
+            {{ isItemInCart ? "Eliminar" : "Adicionar" }}
           </span>
-          <mat-icon>{{
-            isItemInCart ? "remove_shopping_cart" : "add_shopping_cart"
-          }}</mat-icon>
         </button>
 
-        <button
+        <!-- <button
           *ngIf="isSignup === true"
           style="
             width: 100%;
@@ -184,8 +164,8 @@
           (click)="showDialog()"
         >
           Crea tu primer artículo (ganas 3,000 DoCoins)
-        </button>
-        <button
+        </button> -->
+        <!-- <button
           *ngIf="isCreateArticle === true"
           style="
             width: 100%;
@@ -199,21 +179,8 @@
           (click)="articleDialog()"
         >
           Abrir diálogo
-        </button>
-
-        <button
-          *ngIf="itemsAmount && mode != 'image-preview' && isSignup !== true"
-          class="bottom-button right"
-          mat-raised-button
-          (click)="goToCheckout()"
-          [matBadge]="itemsAmount"
-          matBadgePosition="after"
-          matBadgeSize="small"
-        >
-          <img [src]="env + '/carrito_blanco.svg'" alt="Volver" />
-        </button>
-
-        <a
+        </button> -->
+        <!-- <a
           class="cart-btn"
           [routerLink]="['../../../collections', tagData._id]"
           *ngIf="tagData"
@@ -223,13 +190,13 @@
           }"
         >
           Mira la colección
-        </a>
+        </a> -->
       </div>
     </div>
   </div>
 </div>
 
-<div class="container post-data" *ngIf="postData">
+<!-- <div class="container post-data" *ngIf="postData">
   <button
     class="fixed-top-button"
     [ngStyle]="{
@@ -352,33 +319,6 @@
     }"
   >
     <div class="inner-wrapper-top post">
-      <div
-        class="current-media-shown-indicators"
-        [style]="{
-          'grid-template-columns': '' + fractions + ''
-        }"
-      >
-        <ng-container *ngIf="entity === 'item' && itemData.images?.length > 0">
-          <div
-            class="indicator"
-            [ngClass]="{
-              active: imageIndex === currentMediaSlide
-            }"
-            *ngFor="let image of itemData.images; let imageIndex = index"
-          ></div>
-        </ng-container>
-
-        <ng-container *ngIf="entity === 'post' && postSlides.length > 0">
-          <div
-            class="indicator"
-            [ngClass]="{
-              active: slideIndex === currentMediaSlide
-            }"
-            *ngFor="let slide of postSlides; let slideIndex = index"
-          ></div>
-        </ng-container>
-      </div>
-
       <div class="icons-flex-2">
         <button class="round-button" (click)="share()">
           <img
@@ -387,10 +327,7 @@
             alt="Contenedor con flecha saliendo"
           />
         </button>
-        <!-- <button class="round-button">
-          <img [src]="env + '/heart.svg'" alt="corazon" />
-        </button> -->
       </div>
     </div>
   </div>
-</div>
+</div> -->

@@ -34,7 +34,7 @@
           <div class="order-content">
             <header class="header">
               <div class="flex" style="align-items: center">
-                <a mat-icon-button [routerLink]="">
+                <a mat-icon-button [routerLink]="['../dashboard']">
                   <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
                 </a>
                 <p>Factura {{ formatId(deliveryOrder?.dateId) }}</p>
@@ -182,10 +182,7 @@
                 </p>
               </div>
               <div class="items-container" style="margin-top: 5px">
-                <div
-                  class="image-container"
-                  style="justify-content: space-between; align-items: center"
-                >
+                <div class="image-container" style="align-items: center">
                   <button
                     (click)="
                       deliveryOrder.ocr
@@ -206,18 +203,23 @@
                       }"
                     ></div>
                   </button>
-                  <button
-                    *ngIf="deliveryOrder.orderStatus === 'to confirm'"
-                    (click)="confirmPayment(deliveryOrder)"
-                    class="status btn"
-                  >
-                    Pago por confirmar
-                  </button>
-                  <span
-                    *ngIf="deliveryOrder.orderStatus === 'completed'"
-                    class="status confirmed"
-                    >Pago confirmado</span
-                  >
+                  <div class="payment-info">
+                    <span>Pago por {{ deliveryOrder.paymentType }}</span>
+                    <div>
+                      <button
+                        *ngIf="deliveryOrder.orderStatus === 'to confirm'"
+                        (click)="confirmPayment(deliveryOrder)"
+                        class="status btn"
+                      >
+                        Pago por confirmar
+                      </button>
+                      <span
+                        *ngIf="deliveryOrder.orderStatus === 'completed'"
+                        class="status confirmed"
+                        >Pago confirmado</span
+                      >
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -366,18 +368,6 @@
                   </button>
                 </div>
               </div>
-
-              <!-- <div class="flex" style="margin-top: 30px">
-                            <div
-                                class="item-image"
-                                [ngStyle]="{
-                                    backgroundColor: '#E9E371'
-                                }"
-                            ></div>
-                            <div class="caption">
-                                <button class="link-button">Imprime o descarga la imagen sugerida por IA (Inteligencia Artificial)</button>
-                            </div>
-                        </div> -->
             </div>
           </div>
           <div class="footer">
@@ -392,15 +382,13 @@
                   </div>
                 </ng-container>
               </div>
-              <span class="benefits">
-                Beneficios ${{
-                  (deliveryOrder.benefits
-                    ? deliveryOrder.benefits.benefits -
-                      deliveryOrder.benefits.less
-                    : 0
-                  ) | number
-                }}
-              </span>
+              <button
+                mat-icon-button
+                (click)="openDialog(deliveryOrder)"
+                style="color: #6fcf97"
+              >
+                <mat-icon>menu</mat-icon>
+              </button>
             </div>
             <div class="inner-wrapper-top">
               <div
@@ -424,32 +412,27 @@
                 </ng-container>
               </div>
             </div>
-            <div class="bottom-footer">
-              <a
-                [routerLink]="[
-                  '../../ecommerce/order-detail',
-                  ordersToConfirm[activeIndex]?._id
-                ]"
-                [queryParams]="{ redirectTo: router.url }"
-              >
-                preview
-              </a>
-              <a
-                [routerLink]="['../delivery-orders']"
-                [queryParams]="{
-                  redirectTo: router.url,
-                  deliveryZone: deliveryZone
-                }"
-              >
-                Ver todas ({{ ordersToConfirm.length }})
-              </a>
-              <button (click)="share(ordersToConfirm[activeIndex])">
-                <img
-                  [src]="env + '/upload.svg'"
-                  alt="Contenedor con flecha saliendo"
-                />
+            <a
+              class="bottom-footer"
+              [routerLink]="['../order-expenses', deliveryOrder._id]"
+            >
+              <span>
+                {{
+                  deliveryOrder.benefits
+                    ? "$" +
+                      (deliveryOrder.benefits.benefits | number) +
+                      " - ($" +
+                      (deliveryOrder.benefits.less | number) +
+                      ") = " +
+                      (deliveryOrder.benefits.benefits -
+                        deliveryOrder.benefits.less | number)
+                    : ""
+                }}
+              </span>
+              <button mat-icon-button>
+                <mat-icon>more_horiz</mat-icon>
               </button>
-            </div>
+            </a>
           </div>
         </ng-container>
       </div>

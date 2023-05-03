@@ -1,89 +1,143 @@
 <div class="container">
+  <div
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    "
+    *ngIf="ordersReadyToDeliver.length === 0"
+  >
+    <h2>No hay facturas que mostrar</h2>
+    <button
+      mat-button
+      style="background-color: #fed230; color: #293628"
+      *ngIf="isMerchant && redirectTo"
+      (click)="returnEvent()"
+    >
+      Volver
+    </button>
+  </div>
 
-    <div
-        style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-        " 
-        *ngIf="ordersReadyToDeliver.length === 0">
-        <h2 >No hay facturas que mostrar</h2>
-        <button
-            mat-button
-            style="background-color: #FED230; color: #293628;"
-            *ngIf="isMerchant && redirectTo"
-            (click)="returnEvent()"
-        >
-            Volver
-        </button>
-    </div>
+  <ng-container *ngIf="ordersReadyToDeliver.length > 0">
+    <swiper
+      #ordersSwiper
+      [config]="swiperConfig"
+      (slideChange)="updateCurrentSlideData($event)"
+    >
+      <div
+        class="slide"
+        *ngFor="let deliveryOrder of ordersReadyToDeliver; let i = index"
+      >
+        <ng-container *ngIf="isPopulated(deliveryOrder)">
+          <header class="header">
+            <div class="flex" style="align-items: center">
+              <!-- <a mat-icon-button [routerLink]="">
+                <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+              </a> -->
+              <p>Factura {{ formatId(deliveryOrder?.dateId) }}</p>
+            </div>
+            <div>
+              <button mat-button>
+                {{
+                  deliveryOrder.user.name ||
+                    deliveryOrder.user.phone ||
+                    deliveryOrder.user.email
+                }}
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </header>
+          <ng-container *ngIf="isMerchant">
+            <!-- DROPDOWNS -->
+            <div>
+              <!-- DROPDOWN FOR DELIVERY STATUS -->
+              <app-dropdown-menu
+                [optionsList]="deliveryStatusOptions"
+                [multiple]="false"
+                title="STATUS DE LA FACTURA"
+                [listTitle]="
+                  orderDeliveryStatus(deliveryOrder?.orderStatusDelivery)
+                "
+                (listValue)="changeOrderStatus($event)"
+              ></app-dropdown-menu>
+            </div>
+            <div style="margin-top: 3px">
+              <!-- DROPDOWN FOR TAGS -->
+              <app-dropdown-menu
+                logo="/assets/images/noimage.png"
+                title="MIS LISTAS DE FACTURAS"
+                [listTitle]="
+                  selectedTagsLength
+                    ? 'En ' + selectedTagsLength + ' lista(s)'
+                    : 'Añadela a una lista'
+                "
+                [optionsList]="tagOptions"
+                (listValue)="addTag($event)"
+                (panelState)="tagPanelState = $event"
+              ></app-dropdown-menu>
+            </div>
+          </ng-container>
 
-    <ng-container *ngIf="ordersReadyToDeliver.length > 0">
-        <swiper
-            #ordersSwiper
-            [config]="swiperConfig"
-            (slideChange)="updateCurrentSlideData($event)"
-        >
-            <div class="slide" *ngFor="let deliveryOrder of ordersReadyToDeliver; let i = index">
+          <!-- ITEMS SECTION -->
+          <div class="section">
+            <h5 class="subtitle">
+              FACTURA {{ formatId(deliveryOrder?.dateId) }}
+            </h5>
+            <h3 class="title">
+              {{
+                deliveryOrder?.items[0].saleflow.merchant?.name
+                  ? deliveryOrder?.items[0].saleflow.merchant?.name
+                  : ""
+              }}
+            </h3>
+            <p class="meta-description" *ngIf="orderMerchant?.address">
+              {{ orderMerchant.address }}
+            </p>
+            <p class="meta-description">
+              {{ convertDate(deliveryOrder?.createdAt) }}
+            </p>
+          </div>
 
-                <ng-container *ngIf="isPopulated(deliveryOrder)">
-                    <!-- DROPDOWNS -->
-                    <div>
-                        <!-- DROPDOWN FOR DELIVERY STATUS -->
-                        <app-dropdown-menu
-                            [optionsList]="deliveryStatusOptions"
-                            [multiple]="false"
-                            title="STATUS DE LA FACTURA"
-                            [listTitle]="orderDeliveryStatus(deliveryOrder?.orderStatusDelivery)"
-                            (listValue)="changeOrderStatus($event)"
-                        ></app-dropdown-menu>
-                    </div>
-                    <div style="margin-top: 3px">
-                        <!-- DROPDOWN FOR TAGS -->
-                        <app-dropdown-menu
-                            logo="/assets/images/noimage.png"
-                            title="MIS LISTAS DE FACTURAS"
-                            [listTitle]="
-                            selectedTagsLength
-                                ? 'En ' + selectedTagsLength + ' lista(s)'
-                                : 'Añadela a una lista'
-                            "
-                            [optionsList]="tagOptions"
-                            (listValue)="addTag($event)"
-                            (panelState)="tagPanelState = $event"
-                        ></app-dropdown-menu>
-                    </div>
+          <div class="section">
+            <p class="section-label">ARTÍCULOS FACTURADOS</p>
+            <div
+              style="margin-top: 20px"
+              *ngFor="let item of deliveryOrder?.items; index as i"
+            >
+              <div class="flex">
+                <div
+                  class="item-image"
+                  [ngStyle]="{
+                    backgroundImage: item.item.images?.length
+                      ? 'url(' +
+                        item.item.images[0].value +
+                        '), url(' +
+                        env +
+                        '/noimage.png' +
+                        ')'
+                      : '/assets/images/noimage.png'
+                  }"
+                  (click)="
+                    openImageModal(
+                      item.item?.images[0]?.value ||
+                        '/assets/images/noimage.png'
+                    )
+                  "
+                ></div>
+                <div class="caption">
+                  <p class="item-bold-caption">
+                    {{ item.amount }}x
+                    {{ item.item?.name ? item.item.name : "" }}
+                  </p>
+                  <p class="item-caption" *ngIf="item.item?.description">
+                    {{ item.item.description }}
+                  </p>
+                </div>
+              </div>
 
-                    <!-- ITEMS SECTION -->
-                    <div class="section">
-                        <h5 class="subtitle">FACTURA {{ formatId(deliveryOrder?.dateId) }}</h5>
-                        <h3 class="title">{{ deliveryOrder?.items[0].saleflow.merchant?.name ? deliveryOrder?.items[0].saleflow.merchant?.name : '' }}</h3>
-                        <p class="meta-description" *ngIf="orderMerchant?.address">{{ orderMerchant?.address ? orderMerchant.address : '' }}</p>
-                        <p class="meta-description">{{ convertDate(deliveryOrder?.createdAt) }}</p>
-                    </div>
-
-                    <div class="section">
-                        <p class="section-label">ARTÍCULOS FACTURADOS</p>
-                        <div style="margin-top: 20px" *ngFor="let item of deliveryOrder?.items; index as i">
-                            <div class="flex">
-                                <div
-                                    class="item-image"
-                                    [ngStyle]="{
-                                        backgroundImage: item.item.images?.length
-                                        ? 'url(' + item.item.images[0].value + '), url(' + env + '/noimage.png' + ')'
-                                        : '/assets/images/noimage.png'
-                                    }"
-                                    (click)="openImageModal(item.item?.images[0]?.value || '/assets/images/noimage.png')"
-                                ></div>
-                                <div class="caption">
-                                    <p class="item-bold-caption">{{ item.amount }}x {{ item.item?.name ? item.item.name : '' }}</p>
-                                    <p class="item-caption" *ngIf="item.item?.description">{{ item.item.description }}</p>
-                                </div>
-                            </div>
-
-                            <!-- <div class="questions">
+              <!-- <div class="questions">
                                 <p class="label">Que irá escrito en el globo?</p>
                                 <p class="label gray-out">RespuestaID</p>
                             </div>
@@ -92,54 +146,79 @@
                                 <p class="label">Que irá escrito en el globo?</p>
                                 <p class="label gray-out">RespuestaID</p>
                             </div> -->
-                        </div>
-                    </div>
+            </div>
+          </div>
 
-                    <!-- POST SECTION -->
-                    <div class="section" *ngIf="
-                        (isMerchant || view === 'assistant') &&
-                        post &&
-                        (post?.message ||
-                        post?.from ||
-                        (post?.targets?.length && post.targets[0].name))
-                    ">
-                        <p class="section-label">CONTENIDO VISIBLE</p>
+          <!-- POST SECTION -->
+          <div
+            class="section"
+            *ngIf="
+              (isMerchant || view === 'assistant') &&
+              post &&
+              (post?.message ||
+                post?.from ||
+                (post?.targets?.length && post.targets[0].name))
+            "
+          >
+            <p class="section-label">CONTENIDO VISIBLE</p>
 
-                        <div class="questions">
-                            <p class="label">Escrito en tarjetita física</p>
-                            <p class="label gray-out">{{ post?.message }}</p>
-                        </div>
+            <div class="questions">
+              <p class="label">Escrito en tarjetita física</p>
+              <p class="label gray-out">{{ post?.message }}</p>
+            </div>
 
-                        <div class="questions">
-                            <p class="label">Nombre del sobre</p>
-                            <p class="label gray-out">{{ post?.targets[0]?.name || post?.title }}</p>
-                        </div>
-                    </div>
+            <div class="questions">
+              <p class="label">Nombre del sobre</p>
+              <p class="label gray-out">
+                {{ post?.targets[0]?.name || post?.title }}
+              </p>
+            </div>
+          </div>
 
-                    <!-- VIRTUAL POST SECTION -->
-                    <div class="section" *ngIf="(isMerchant || view === 'assistant') && entityTemplate && entityTemplateLink">
-                        <p class="section-label">CONTENIDO VIRTUAL PRIVADO</p>
+          <!-- VIRTUAL POST SECTION -->
+          <div
+            class="section"
+            *ngIf="
+              (isMerchant || view === 'assistant') &&
+              entityTemplate &&
+              entityTemplateLink
+            "
+          >
+            <p class="section-label">CONTENIDO VIRTUAL PRIVADO</p>
 
-                        <br><br><br>
+            <br /><br /><br />
 
-                        <div class="flex">
-                            <div
-                                class="item-image"
-                                [ngStyle]="{
-                                    backgroundImage: 'url(' + env + '/qr-code.svg' + ')',
-                                    filter: 'brightness(0) invert(13%) sepia(9%) saturate(1833%) hue-rotate(68deg) brightness(99%) contrast(83%)'
-                                }"
-                            ></div>
-                            <div class="caption">
-                                <button class="link-button" (click)="goToPost()">Accesa al contenido</button>
-                                <br><br>
-                                <button class="link-button" (click)="copyEntityTemplateID(entityTemplate.dateId)">Copy el ID</button>
-                                <br><br>
-                                <button class="link-button" (click)="downloadEntityTemplateQr(qrcodeTemplate)">Imprime o descarga el QR</button>
-                            </div>
-                        </div>
+            <div class="flex">
+              <div
+                class="item-image"
+                [ngStyle]="{
+                  backgroundImage: 'url(' + env + '/qr-code.svg' + ')',
+                  filter:
+                    'brightness(0) invert(13%) sepia(9%) saturate(1833%) hue-rotate(68deg) brightness(99%) contrast(83%)'
+                }"
+              ></div>
+              <div class="caption">
+                <button class="link-button" (click)="goToPost()">
+                  Accesa al contenido
+                </button>
+                <br /><br />
+                <button
+                  class="link-button"
+                  (click)="copyEntityTemplateID(entityTemplate.dateId)"
+                >
+                  Copy el ID
+                </button>
+                <br /><br />
+                <button
+                  class="link-button"
+                  (click)="downloadEntityTemplateQr(qrcodeTemplate)"
+                >
+                  Imprime o descarga el QR
+                </button>
+              </div>
+            </div>
 
-                        <!-- <div class="flex" style="margin-top: 30px">
+            <!-- <div class="flex" style="margin-top: 30px">
                             <div
                                 class="item-image"
                                 [ngStyle]="{
@@ -150,228 +229,336 @@
                                 <button class="link-button">Imprime o descarga la imagen sugerida por IA (Inteligencia Artificial)</button>
                             </div>
                         </div> -->
-                    </div>
+          </div>
 
-                    <div class="section" *ngIf="(isMerchant || view === 'delivery') && orderHasDelivery(deliveryImages[i]?.deliveryZone, deliveryOrder)">
-                        <p class="section-label">ENTREGA</p>
-                        <div class="questions" *ngIf="deliveryImages[i]?.deliveryZone">
-                            <p class="label">Zona de entrega</p>
-                            <p class="label gray-out capitalize">{{ deliveryImages[i]?.deliveryZone.zona }}</p>
-                        </div>
-                        <div class="questions" *ngIf="deliveryOrder.items[0].deliveryLocation">
-                            <p class="label">Donde entregaremos?</p>
-                            <p class="label gray-out capitalize">
-                                {{
-                                    deliveryOrder?.items[0]?.deliveryLocation?.houseNumber
-                                    ? "#" + deliveryOrder?.items[0]?.deliveryLocation?.houseNumber + ", "
-                                    : ""
-                                }}
-                                {{ deliveryOrder?.items[0]?.deliveryLocation?.street }},
-                                {{
-                                deliveryOrder?.items[0]?.deliveryLocation?.referencePoint
-                                    ? deliveryOrder?.items[0]?.deliveryLocation?.referencePoint + ", "
-                                    : ""
-                                }}
-                                {{ deliveryOrder?.items[0]?.deliveryLocation?.city }}, República Dominicana
-                            </p>
-                        </div>
-                        <div class="questions">
-                            <p class="label">A quien entregaremos?</p>
-                            <p class="label gray-out capitalize">{{ deliveryOrder?.user?.name ? deliveryOrder?.user?.name : deliveryOrder?.user?.phone }}</p>
-                        </div>
-                        <div class="questions" *ngIf="deliveryImages[i]?.reservation">
-                            <p class="label">Cuando entregaremos?</p>
-                            <p class="label gray-out capitalize">{{ displayReservation(deliveryImages[i]?.reservation) }}</p>
-                        </div>
-                    </div>
-
-                    <!-- DELIVERY EVIDENCE SECTION -->
-                    <div class="section" *ngIf="deliveryImages.length && ((isMerchant && deliveryImages[i]?.image) || view === 'delivery')">
-                        <p class="section-label">FLUJO DE LA ENTREGA</p>
-                        <div class="input-image-container">
-                            <app-item-images 
-                                (enteredImages)="onImageInput($event)"
-                                [containerStyles]="{ padding: '0' }"
-                                [inputPosition]="'left'"
-                                *ngIf="!deliveryImages[i]?.image">
-                            </app-item-images>
-                            <div class="image" [ngStyle]="{ backgroundImage: 'url(' + deliveryImages[i]?.image + ')' }" (click)="openImageModal(deliveryImages[i]?.image)" *ngIf="deliveryImages[i]?.image"></div>
-                            <p class="delivery-image-caption">Imagen de la entrega</p>
-                        </div>
-                    </div>
-                </ng-container>
+          <div
+            class="section"
+            *ngIf="
+              (isMerchant || view === 'delivery') &&
+              orderHasDelivery(deliveryImages[i]?.deliveryZone, deliveryOrder)
+            "
+          >
+            <p class="section-label">ENTREGA</p>
+            <div class="questions" *ngIf="deliveryImages[i]?.deliveryZone">
+              <p class="label">Zona de entrega</p>
+              <p class="label gray-out capitalize">
+                {{ deliveryImages[i]?.deliveryZone.zona }}
+              </p>
             </div>
-        </swiper>
-
-        <div class="float-paginator">
-            <div class="button swiper-slide-duplicate-prev left">
-                <img [src]="env + '/arrow-left.svg'" alt="">
+            <div
+              class="questions"
+              *ngIf="deliveryOrder.items[0].deliveryLocation"
+            >
+              <p class="label">Donde entregaremos?</p>
+              <p class="label gray-out capitalize">
+                {{
+                  deliveryOrder?.items[0]?.deliveryLocation?.houseNumber
+                    ? "#" +
+                      deliveryOrder?.items[0]?.deliveryLocation?.houseNumber +
+                      ", "
+                    : ""
+                }}
+                {{ deliveryOrder?.items[0]?.deliveryLocation?.street }},
+                {{
+                  deliveryOrder?.items[0]?.deliveryLocation?.referencePoint
+                    ? deliveryOrder?.items[0]?.deliveryLocation
+                        ?.referencePoint + ", "
+                    : ""
+                }}
+                {{ deliveryOrder?.items[0]?.deliveryLocation?.city }}, República
+                Dominicana
+              </p>
             </div>
+            <div class="questions">
+              <p class="label">A quien entregaremos?</p>
+              <p class="label gray-out capitalize">
+                {{
+                  deliveryOrder?.user?.name
+                    ? deliveryOrder?.user?.name
+                    : deliveryOrder?.user?.phone
+                }}
+              </p>
+            </div>
+            <div class="questions" *ngIf="deliveryImages[i]?.reservation">
+              <p class="label">Cuando entregaremos?</p>
+              <p class="label gray-out capitalize">
+                {{ displayReservation(deliveryImages[i]?.reservation) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- DELIVERY EVIDENCE SECTION -->
+          <div
+            class="section"
+            *ngIf="
+              deliveryImages.length &&
+              ((isMerchant && deliveryImages[i]?.image) || view === 'delivery')
+            "
+          >
+            <p class="section-label">FLUJO DE LA ENTREGA</p>
+            <div class="input-image-container">
+              <app-item-images
+                (enteredImages)="onImageInput($event)"
+                [containerStyles]="{ padding: '0' }"
+                [inputPosition]="'left'"
+                *ngIf="!deliveryImages[i]?.image"
+              >
+              </app-item-images>
+              <div
+                class="image"
+                [ngStyle]="{
+                  backgroundImage: 'url(' + deliveryImages[i]?.image + ')'
+                }"
+                (click)="openImageModal(deliveryImages[i]?.image)"
+                *ngIf="deliveryImages[i]?.image"
+              ></div>
+              <p class="delivery-image-caption">Imagen de la entrega</p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </swiper>
+
+    <div class="float-paginator">
+      <div class="button swiper-slide-duplicate-prev left">
+        <img [src]="env + '/arrow-left.svg'" alt="" />
+      </div>
+    </div>
+
+    <div class="float-paginator">
+      <div class="button swiper-slide-duplicate-next right">
+        <img [src]="env + '/arrow-left.svg'" alt="" />
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="top-footer">
+        <ng-container *ngIf="isMerchant">
+          <ng-container
+            *ngIf="
+              ordersReadyToDeliver[activeIndex]?.orderStatusDelivery ===
+                'pending' ||
+                ordersReadyToDeliver[activeIndex]?.orderStatusDelivery ===
+                  'delivered';
+              ordersReadyToDeliver: [activeIndex]?.orderStatusDelivery ===
+                'in progress'
+            "
+          >
+            <mat-checkbox
+              [(ngModel)]="orderReadyToDeliver"
+              (change)="changeOrderStatusAuthless('pending')"
+              [disabled]="orderReadyToDeliver"
+              *ngIf="
+                ordersReadyToDeliver[activeIndex]?.orderStatusDelivery ===
+                'pending'
+              "
+            >
+              <p class="checkbox-label">Lista para entregarse</p>
+            </mat-checkbox>
+
+            <mat-checkbox
+              [(ngModel)]="orderDelivered"
+              (change)="changeOrderStatusAuthless('delivered')"
+              [disabled]="orderDelivered"
+              *ngIf="
+                ordersReadyToDeliver[activeIndex]?.orderStatusDelivery ===
+                'delivered'
+              "
+            >
+              <p class="checkbox-label">Entregada</p>
+            </mat-checkbox>
+
+            <mat-checkbox
+              [(ngModel)]="orderReadyToDeliver"
+              [disabled]="true"
+              *ngIf="
+                ordersReadyToDeliver[activeIndex]?.orderStatusDelivery ===
+                'in progress'
+              "
+            >
+              <p class="checkbox-label">En preparación</p>
+            </mat-checkbox>
+            <br />
+          </ng-container>
+
+          <a
+            class="featured-cta"
+            [routerLink]="['../../create-notification']"
+            [queryParams]="{
+              redirectTo: router.url,
+              orderId: ordersReadyToDeliver[activeIndex]?._id,
+              status: ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
+            }"
+            *ngIf="
+              ordersReadyToDeliver[activeIndex]?.orderStatusDelivery &&
+              !checkNotificationDeliveryStatus(
+                ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
+              )
+            "
+          >
+            Automatiza una notificación por WhatsApp para el comprador al marcar
+            este progreso
+          </a>
+          <a
+            class="featured-cta"
+            [routerLink]="[
+              '../../create-notification',
+              checkNotificationDeliveryStatus(
+                ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
+              )._id
+            ]"
+            [queryParams]="{
+              redirectTo: router.url,
+              orderId: ordersReadyToDeliver[activeIndex]?._id,
+              status: ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
+            }"
+            *ngIf="
+              ordersReadyToDeliver[activeIndex]?.orderStatusDelivery &&
+              checkNotificationDeliveryStatus(
+                ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
+              )
+            "
+          >
+            Ver o editar la notificación al comprador al marcar este progreso
+          </a>
+        </ng-container>
+
+        <ng-container *ngIf="!isMerchant">
+          <div class="chip-list">
+            <div
+              class="chip"
+              [ngClass]="{
+                selected:
+                  (view === 'assistant' && !orderReadyToDeliver) ||
+                  (view === 'delivery' && !orderDelivered)
+              }"
+            >
+              {{
+                orderDeliveryStatus(
+                  ordersReadyToDeliver[activeIndex]?.loadedDeliveryStatus
+                )
+              }}
+            </div>
+            <button
+              class="chip"
+              [ngClass]="{ selected: orderReadyToDeliver }"
+              *ngIf="view === 'assistant'"
+              [disabled]="orderReadyToDeliver"
+              (click)="changeOrderStatusAuthless('pending')"
+            >
+              Listo para enviarse
+            </button>
+            <button
+              class="chip"
+              [ngClass]="{ selected: orderDelivered }"
+              *ngIf="view === 'delivery'"
+              [disabled]="orderDelivered"
+              (click)="changeOrderStatusAuthless('delivered')"
+            >
+              Entregado
+            </button>
+          </div>
+
+          <!-- <mat-checkbox
+            [(ngModel)]="orderReadyToDeliver"
+            (change)="changeOrderStatusAuthless('pending')"
+            [disabled]="orderReadyToDeliver"
+            *ngIf="view === 'assistant'"
+          >
+            <p class="checkbox-label">Marcar como lista para entregarse</p>
+          </mat-checkbox>
+          <mat-checkbox
+            [(ngModel)]="orderDelivered"
+            (change)="changeOrderStatusAuthless('delivered')"
+            [disabled]="orderDelivered"
+            *ngIf="view === 'delivery'"
+          >
+            <p class="checkbox-label">Marcar como entregado</p>
+          </mat-checkbox> -->
+        </ng-container>
+      </div>
+
+      <div class="inner-wrapper-top">
+        <div
+          class="current-media-shown-indicators"
+          [style]="{
+            'grid-template-columns':
+              'repeat(' + ordersReadyToDeliver.length + ', 1fr)'
+          }"
+        >
+          <ng-container *ngIf="ordersReadyToDeliver.length > 0">
+            <div
+              class="indicator"
+              [ngClass]="{
+                active: indicatorIndex === activeIndex
+              }"
+              *ngFor="
+                let indicator of ordersReadyToDeliver;
+                let indicatorIndex = index
+              "
+            ></div>
+          </ng-container>
         </div>
+      </div>
 
-        <div class="float-paginator">
-            <div class="button swiper-slide-duplicate-next right">
-                <img [src]="env + '/arrow-left.svg'" alt="">
-            </div>
-        </div>
+      <div class="bottom-footer">
+        <ng-container *ngIf="isMerchant">
+          <a
+            [routerLink]="[
+              '../../../ecommerce/order-detail',
+              ordersReadyToDeliver[activeIndex]?._id
+            ]"
+            [queryParams]="{ redirectTo: router.url }"
+          >
+            Ir a la factura
+          </a>
+          <a
+            [routerLink]="['../../delivery-orders']"
+            [queryParams]="{
+              redirectTo: router.url,
+              deliveryZone: deliveryZone
+            }"
+          >
+            Ver todas ({{ ordersReadyToDeliver.length }})
+          </a>
+        </ng-container>
+        <ng-container *ngIf="!isMerchant">
+          <div></div>
+          <div></div>
+        </ng-container>
+        <button (click)="share(ordersReadyToDeliver[activeIndex])">
+          <img
+            [src]="env + '/upload.svg'"
+            alt="Contenedor con flecha saliendo"
+          />
+        </button>
+      </div>
+    </div>
 
-        <div class="footer">
-            <div class="top-footer">
+    <div style="visibility: hidden; position: absolute; z-index: -99">
+      <qrcode
+        *ngIf="entityTemplate"
+        #qrcodeTemplate
+        [qrdata]="entityTemplateLink"
+        [elementType]="'img'"
+        [width]="500"
+        [style.margin-top.px]="-25"
+        [errorCorrectionLevel]="'M'"
+        [allowEmptyString]="true"
+        colorDark="#000000"
+      ></qrcode>
 
-                <ng-container *ngIf="isMerchant">
-                    <ng-container *ngIf="
-                        ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'pending' ||
-                        ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'delivered'
-                        ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'in progress'
-                    ">
-                        <mat-checkbox
-                            [(ngModel)]="orderReadyToDeliver"
-                            (change)="changeOrderStatusAuthless('pending')"
-                            [disabled]="orderReadyToDeliver"
-                            *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'pending'"
-                        >
-                            <p class="checkbox-label">Lista para entregarse</p>
-                        </mat-checkbox>
-
-                        <mat-checkbox
-                            [(ngModel)]="orderDelivered"
-                            (change)="changeOrderStatusAuthless('delivered')"
-                            [disabled]="orderDelivered"
-                            *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'delivered'"
-                        >
-                            <p class="checkbox-label">Entregada</p>
-                        </mat-checkbox>
-
-                        <mat-checkbox
-                            [(ngModel)]="orderReadyToDeliver"
-                            [disabled]="true"
-                            *ngIf="ordersReadyToDeliver[activeIndex]?.orderStatusDelivery === 'in progress'"
-                        >
-                            <p class="checkbox-label">En preparación</p>
-                        </mat-checkbox>
-                        <br>
-                    </ng-container>
-
-                    <a
-                        class="featured-cta"
-                        [routerLink]="['../../create-notification']"
-                        [queryParams]="{ 
-                            redirectTo: router.url,
-                            orderId: ordersReadyToDeliver[activeIndex]?._id,
-                            status: ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
-                        }"
-                        *ngIf="
-                            ordersReadyToDeliver[activeIndex]?.orderStatusDelivery &&
-                            !checkNotificationDeliveryStatus(ordersReadyToDeliver[activeIndex]?.orderStatusDelivery)
-                        "
-                    >
-                        Automatiza una notificación por WhatsApp para el comprador al marcar este progreso
-                    </a>
-                    <a
-                        class="featured-cta"
-                        [routerLink]="['../../create-notification', checkNotificationDeliveryStatus(ordersReadyToDeliver[activeIndex]?.orderStatusDelivery)._id]"
-                        [queryParams]="{
-                            redirectTo: router.url,
-                            orderId: ordersReadyToDeliver[activeIndex]?._id,
-                            status: ordersReadyToDeliver[activeIndex]?.orderStatusDelivery
-                        }"
-                        *ngIf="
-                            ordersReadyToDeliver[activeIndex]?.orderStatusDelivery &&
-                            checkNotificationDeliveryStatus(ordersReadyToDeliver[activeIndex]?.orderStatusDelivery)
-                        "
-                    >
-                        Ver o editar la notificación al comprador al marcar este progreso
-                    </a>
-                </ng-container>
-
-                <ng-container *ngIf="!isMerchant">
-                    <mat-checkbox
-                        [(ngModel)]="orderReadyToDeliver"
-                        (change)="changeOrderStatusAuthless('pending')"
-                        [disabled]="orderReadyToDeliver"
-                        *ngIf="view === 'assistant'"
-                    >
-                        <p class="checkbox-label">Marcar como lista para entregarse</p>
-                    </mat-checkbox>
-                    <mat-checkbox
-                        [(ngModel)]="orderDelivered"
-                        (change)="changeOrderStatusAuthless('delivered')"
-                        [disabled]="orderDelivered"
-                        *ngIf="view === 'delivery'"
-                    >
-                        <p class="checkbox-label">Marcar como entregado</p>
-                    </mat-checkbox>
-                </ng-container>
-            </div>
-
-            <div class="inner-wrapper-top">
-                <div
-                    class="current-media-shown-indicators"
-                    [style]="{
-                    'grid-template-columns': 'repeat(' + ordersReadyToDeliver.length + ', 1fr)'
-                    }"
-                    
-                >
-                    <ng-container *ngIf="ordersReadyToDeliver.length > 0">
-                        <div
-                            class="indicator"
-                            [ngClass]="{
-                                active: indicatorIndex === activeIndex
-                            }"
-                            *ngFor="let indicator of ordersReadyToDeliver; let indicatorIndex = index"
-                        ></div>
-                    </ng-container>
-                </div>
-            </div>
-            
-            <div class="bottom-footer" *ngIf="isMerchant">
-                <a
-                    [routerLink]="['../../../ecommerce/order-detail', ordersReadyToDeliver[activeIndex]?._id]"
-                    [queryParams]="{ redirectTo: router.url }"
-                >
-                    Ir a la factura
-                </a>
-                <a 
-                    [routerLink]="['../../delivery-orders']"
-                    [queryParams]="{ redirectTo: router.url, deliveryZone: deliveryZone }"
-                >
-                    Ver todas ({{ ordersReadyToDeliver.length }})
-                </a>
-                <button (click)="share(ordersReadyToDeliver[activeIndex])">
-                    <img
-                        [src]="env + '/upload.svg'"
-                        alt="Contenedor con flecha saliendo"
-                    />
-                </button>
-            </div>
-        </div>
-
-        <div style="visibility: hidden; position: absolute; z-index: -99">
-            <qrcode
-            *ngIf="entityTemplate"
-            #qrcodeTemplate
-            [qrdata]="entityTemplateLink"
-            [elementType]="'img'"
-            [width]="500"
-            [style.margin-top.px]="-25"
-            [errorCorrectionLevel]="'M'"
-            [allowEmptyString]="true"
-            colorDark="#000000"
-            ></qrcode>
-
-            <qrcode
-                style="display: none"
-                *ngIf="order"
-                #orderQrCode
-                [qrdata]="URI + '/ecommerce/order-detail/' + order._id"
-                [elementType]="'img'"
-                [width]="40"
-                [errorCorrectionLevel]="'M'"
-                [allowEmptyString]="true"
-                colorDark="#000"
-            ></qrcode>
-        </div>
-
-    </ng-container>
-        
+      <qrcode
+        style="display: none"
+        *ngIf="order"
+        #orderQrCode
+        [qrdata]="URI + '/ecommerce/order-detail/' + order._id"
+        [elementType]="'img'"
+        [width]="40"
+        [errorCorrectionLevel]="'M'"
+        [allowEmptyString]="true"
+        colorDark="#000"
+      ></qrcode>
+    </div>
+  </ng-container>
 </div>
