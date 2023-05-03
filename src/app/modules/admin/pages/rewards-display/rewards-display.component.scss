@@ -3,7 +3,6 @@
 }
 
 .container {
-
   min-height: 100vh;
 
   .header {
@@ -40,7 +39,7 @@
   }
 
   .content {
-    padding: 67px 20px;
+    padding: 20px;
     .title {
       color: #272727;
       font-size: 13px;
@@ -65,8 +64,34 @@
   }
 }
 
-* {
-  margin: 0;
+.swiper-btn,
+.active {
+  padding: 7.5px 15px;
+  border: 1px solid #707070;
+  border-radius: 16px;
+  background-color: transparent;
+  font-size: 16px;
+  font-family: SFProLight;
+  color: #272727;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.active {
+  background-color: rgba(#707070, 0.26);
+  border: none;
+  color: #171d16;
+  font-family: SFProSemiBold;
+  font-size: 16px;
+}
+
+.edit {
+  all: unset;
+  margin-left: auto;
+  cursor: pointer;
+  color: #2874ad;
+  font-size: 15px;
+  font-family: SFProRegular;
 }
 
 .card-container {
@@ -125,4 +150,3 @@
     font-family: SFProRegular;
   }
 }
-
