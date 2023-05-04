@@ -39,6 +39,7 @@ import {
   merchantBySlug,
   viewsMerchants,
   viewsMerchant,
+  createMerchantWhatsapp,
   buyersByMerchant,
   recurringBuyersByMerchant,
   hotBuyersByMerchant,
@@ -257,6 +258,23 @@ export class MerchantsService {
     const result = await this.graphql.mutate({
       mutation: createMerchant,
       variables: { input, files },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    console.log(result);
+    return result;
+  }
+
+  async createMerchantWhatsapp(
+    itemId: string,
+    nameMerchant: String
+  ): Promise<{ createMerchantWhatsapp: String }> {
+    console.log(nameMerchant);
+    const result = await this.graphql.mutate({
+      mutation: createMerchantWhatsapp,
+      variables: { itemId, nameMerchant },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });
