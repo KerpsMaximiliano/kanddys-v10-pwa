@@ -413,6 +413,7 @@ const routes: Routes = [
     BuyerDataComponent,
     FilterPipeSearchPipe,
     AutofocusDirective,
+    RewardsDisplayComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

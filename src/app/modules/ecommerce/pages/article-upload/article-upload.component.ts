@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
-import { ItemImageInput } from 'src/app/core/models/item';
+import { ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { SwiperOptions } from 'swiper';
 import { DecimalPipe } from '@angular/common';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-article-upload',
@@ -18,12 +19,13 @@ export class ArticleUploadComponent implements OnInit {
     private _ItemsService: ItemsService,
     private decimalPipe: DecimalPipe,
     private merchantService: MerchantsService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private _formBuilder: FormBuilder
   ) {}
 
   currentMediaSlide: number;
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
-  kioskoName;
+  kioskoName: string;
   file;
   base64;
   images;
@@ -31,6 +33,10 @@ export class ArticleUploadComponent implements OnInit {
   formattedPricing = '$0.00';
   initialValue: number;
   nameMessage: string = 'Este nombre no está disponible';
+  isMerchantCreated;
+  url: string;
+  interval;
+  item;
 
   slides = [{ number: 0 }, { number: 1 }, { number: 2 }];
 
@@ -47,16 +53,82 @@ export class ArticleUploadComponent implements OnInit {
     allowSlideNext: true,
   };
 
-  ngOnInit(): void {
+  itemForm = this._formBuilder.group({
+    name: [null, [Validators.required, Validators.minLength(4)]],
+  });
+
+  itemFormImg = this._formBuilder.group({
+    img: [null, Validators.required],
+  });
+
+  itemFormPrice = this._formBuilder.group({
+    price: [null, Validators.required],
+  });
+
+  async ngOnInit() {
     this.currentMediaSlide = 0;
     this.swiperConfig.allowSlideNext = false;
     // this.initialValue = this.getNumericValue(this.initialValue);
     // if (this.initialValue) this.formatNumber(this.initialValue);
+    if (this.currentMediaSlide === 0 && !this.itemForm.valid) {
+      this.swiperConfig.allowSlideNext = false;
+    }
+
+    // else if (this.currentMediaSlide === 1 && !this.images) {
+    //   this.swiperConfig.allowSlideNext = false;
+    // } else {
+    //   this.swiperConfig.allowSlideNext = true;
+    // }
+
+    if (this.currentMediaSlide === 0 && !this.itemForm.valid) {
+      this.swiperConfig.allowSlideNext = false;
+    } else {
+      this.swiperConfig.allowSlideNext = true;
+    }
+
+    await this.runInterval();
   }
+
+  async runInterval() {
+    this.interval = setInterval(async () => {
+      console.log('Chequeando');
+      if (this.currentMediaSlide !== 0 && this.itemForm.valid) {
+        console.log('Dentro del if');
+        const isNewMerchant = await this.merchantService.merchantByName(
+          this.kioskoName
+        );
+
+        console.log(isNewMerchant);
+
+        // if (isNewMerchant) {
+        //   console.log(isNewMerchant._id);
+        // }
+      }
+    }, 15000);
+
+    // if (this.item.createPreItem) {
+    //   clearInterval(this.interval);
+    // }
+  }
+
+  // stopInterval() {
+  //   clearInterval(this.interval);
+  // }
 
   async updateCurrentSlideData() {
     this.currentMediaSlide = await this.mediaSwiper.directiveRef.getIndex();
+
+    // if (this.currentMediaSlide === 1 && !this.images) {
+    //   this.swiperConfig.allowSlideNext = false;
+    // }
+    // else
+    if (this.currentMediaSlide === 1 && this.images) {
+      this.swiperConfig.allowSlideNext = true;
+    }
     console.log(this.currentMediaSlide);
+    console.log(this.images);
+
+    console.log(this.itemForm.valid);
 
     // if (this.currentMediaSlide === 5 && !this.itemFormMail.valid) {
     //   this.swiperConfig.allowSlideNext = false;
@@ -83,6 +155,9 @@ export class ArticleUploadComponent implements OnInit {
 
   async onNameInput(event: Event | string, input: HTMLInputElement) {
     this.kioskoName = input.value;
+    console.log(this.kioskoName);
+    this.itemForm.get('name').patchValue(this.kioskoName);
+    console.log(this.kioskoName.length);
     if (this.kioskoName.length === 0) this.swiperConfig.allowSlideNext = false;
     this.checkMerchant(this.kioskoName);
   }
@@ -101,11 +176,13 @@ export class ArticleUploadComponent implements OnInit {
     });
 
     this.images = images;
+    this.itemFormImg.get('img').patchValue(this.base64);
 
     const reader = new FileReader();
     reader.onload = (e) => {
       this._ItemsService.editingImageId = this.images[0]._id;
     };
+    //this.updateCurrentSlideData();
   }
 
   async nextSlide() {
@@ -115,7 +192,7 @@ export class ArticleUploadComponent implements OnInit {
 
   onCurrencyInput(value: number) {
     this.pricing = value;
-    // this.itemForm.get('pricing').patchValue(this.pricing);
+    this.itemFormPrice.get('price').patchValue(this.pricing);
   }
 
   public templateStyles() {
@@ -125,8 +202,13 @@ export class ArticleUploadComponent implements OnInit {
   async checkMerchant(name: string) {
     const checkedMerchant = await this.merchantService.merchantByName(name);
     console.log(checkedMerchant);
-
     if (checkedMerchant) {
+      console.log(checkedMerchant._id);
+    }
+
+    console.log(this.isMerchantCreated);
+
+    if (checkedMerchant && this.currentMediaSlide === 0) {
       this.swiperConfig.allowSlideNext = false;
       this.snackBar.open('Este nombre no se encuentra disponible', '', {
         duration: 2000,
@@ -136,83 +218,30 @@ export class ArticleUploadComponent implements OnInit {
     }
   }
 
-  sendMessage() {
-    if (this.pricing > 0) {
-      const message = `Nombre comercial: ${this.kioskoName}`;
-      window.location.href = `https://wa.me/19295263397?text=${message}`;
-      //window.open(`https://wa.me/19295263397?text=${message}`, '_blank');
+  async sendMessage() {
+    const itemInput: ItemInput = {
+      pricing: this.pricing,
+      //images: this.images,
+    };
+    this.item = await this._ItemsService.createPreItem(itemInput);
+    console.log(this.item);
+    console.log(this.item.createPreItem);
+    console.log(this.item.createPreItem._id);
+    clearInterval(this.interval);
+    const whatsapp = await this.merchantService.createMerchantWhatsapp(
+      this.item.createPreItem._id,
+      this.kioskoName
+    );
+    console.log(whatsapp);
+
+    if (whatsapp) {
+      const url = whatsapp.createMerchantWhatsapp;
+      console.log(url);
+
+      const stringUrl = String(url);
+
+      console.log(this.url);
+      window.open(stringUrl, '_blank');
     }
   }
-
-  // formatNumber(
-  //   event: Event | number,
-  //   emit?: boolean,
-  //   input?: HTMLInputElement
-  // ) {
-  //   let value: string;
-  //   if (typeof event === 'number') value = `${event}`;
-  //   else value = (<HTMLInputElement>event.target).value;
-  //   if (value.includes('.')) {
-  //     value = value
-  //       .split('')
-  //       .filter((char) => char !== '.')
-  //       .join('');
-  //   }
-  //   const plainNumber = value.split(',').join('');
-  //   if (plainNumber[0] === '0') {
-  //     const formatted =
-  //       plainNumber.length > 3
-  //         ? this.decimalPipe.transform(
-  //             Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-  //             '1.2'
-  //           )
-  //         : this.decimalPipe.transform(
-  //             Number(
-  //               '0.' +
-  //                 (plainNumber.length <= 2
-  //                   ? '0' + plainNumber.slice(1)
-  //                   : plainNumber.slice(1))
-  //             ),
-  //             '1.2'
-  //           );
-  //     if (parseFloat(formatted.replace(/,/g, '')) > 9999999999999.99) {
-  //       input.value = this.formattedPricing.replace(/\$|,/g, '');
-  //       return;
-  //     }
-  //     this.formattedPricing = '$' + formatted;
-  //   } else {
-  //     const formatted =
-  //       plainNumber.length > 2
-  //         ? this.decimalPipe.transform(
-  //             Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-  //             '1.2'
-  //           )
-  //         : this.decimalPipe.transform(
-  //             Number(
-  //               '0.' +
-  //                 (plainNumber.length === 1 ? '0' + plainNumber : plainNumber)
-  //             ),
-  //             '1.2'
-  //           );
-  //     if (parseFloat(formatted.replace(/,/g, '')) > 9999999999999.99) {
-  //       input.value = this.formattedPricing.replace(/\$|,/g, '');
-  //       return;
-  //     }
-  //     this.formattedPricing = '$' + formatted;
-  //   }
-  //   if (!emit) return;
-  //   const num = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));
-  //   // this.onInputEvent.emit(num);
-  // }
-
-  // getNumericValue(value: number) {
-  //   if (!value) return;
-  //   return this.countDecimals(value) < 2 ? Math.floor(value * 100) : value;
-  // }
-
-  // countDecimals(value: number) {
-  //   if (!value) return;
-  //   if (Math.floor(value) === value) return 0;
-  //   return value.toString().split('.')[1]?.length || 0;
-  // }
 }
