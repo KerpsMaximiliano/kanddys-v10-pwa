@@ -10,12 +10,27 @@ import { environment } from 'src/environments/environment';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
+  Answer,
   AnswersGroupedByUser,
   Question,
   Webform,
   answer,
 } from 'src/app/core/models/webform';
 import * as moment from 'moment';
+import { ImageViewComponent } from '../../dialogs/image-view/image-view.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { Merchant } from 'src/app/core/models/merchant';
+
+interface ExtendedAnswer extends Answer {
+  responsesGroupedByQuestion: Array<{
+    question: Question;
+    value?: string;
+    multipleValues?: Array<string>;
+    label?: string;
+    isMedia?: boolean;
+  }>;
+  merchant?: Merchant;
+}
 
 @Component({
   selector: 'app-form-responses',
@@ -23,13 +38,22 @@ import * as moment from 'moment';
   styleUrls: ['./form-responses.component.scss'],
 })
 export class FormResponsesComponent implements OnInit {
-  currentTab: 'USERS' | 'QUESTIONS' = 'USERS';
+  currentView: 'FORM_SUBMISSIONS' | 'QUESTIONS' | 'FORM_SUBMISSION_RESPONSES' =
+    'FORM_SUBMISSIONS';
   env: string = environment.assetsUrl;
   item: Item;
   webform: Webform;
   routeParamsSubscription: Subscription;
-  answersGroupedByUser: Array<AnswersGroupedByUser> = [];
-  questions: Array<Question> = [];
+  answersForWebform: Array<ExtendedAnswer> = [];
+  selectedFormSubmission: ExtendedAnswer = null;
+  questionsByIdObject: Record<string, Question> = {};
+  questionMetadata: Record<
+    string,
+    {
+      numberOfAnswers: number;
+      latestDate?: Date;
+    }
+  > = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -38,7 +62,8 @@ export class FormResponsesComponent implements OnInit {
     private itemsService: ItemsService,
     private headerService: HeaderService,
     private authService: AuthService,
-    private merchantService: MerchantsService
+    private merchantService: MerchantsService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -65,18 +90,87 @@ export class FormResponsesComponent implements OnInit {
         if (formId) this.webform = await this.webformsService.webform(formId);
         else this.router.navigate(['/admin/article-editor/' + this.item._id]);
 
-        const answersGroupedByUser =
-          await this.webformsService.answersInWebformGroupedByUser(formId);
+        this.answersForWebform = await this.webformsService.answerPaginate({
+          findBy: {
+            webform: formId,
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: -1,
+          },
+        });
 
-        this.answersGroupedByUser = answersGroupedByUser;
+        for (const question of this.webform.questions) {
+          this.questionsByIdObject[question._id] = question;
+          this.questionMetadata[question._id] = {
+            numberOfAnswers: 0,
+          };
+          /*
+          answersByQuestionPromises.push(
+            this.webformsService.ans
+          );*/
+        }
+
+        for (const formSubmission of this.answersForWebform) {
+          const questionsIdPassed = {};
+          const questionIndexes = {};
+
+          for (const response of formSubmission.response) {
+            if (!questionsIdPassed[response.question]) {
+              questionsIdPassed[response.question] = true;
+
+              if (!formSubmission.responsesGroupedByQuestion)
+                formSubmission.responsesGroupedByQuestion = [];
+
+              formSubmission.responsesGroupedByQuestion.push({
+                question: this.questionsByIdObject[response.question],
+                isMedia: response.isMedia,
+                label: response.label,
+                value: response.value,
+                multipleValues: [response.value],
+              });
+
+              questionIndexes[response.question] =
+                formSubmission.responsesGroupedByQuestion.length - 1;
+            } else {
+              formSubmission.responsesGroupedByQuestion[
+                questionIndexes[response.question]
+              ].multipleValues.push(response.value);
+            }
+          }
+        }
+
+        //load the number of answers by each question
+        for (const answer of this.answersForWebform) {
+          for (const response of answer.response) {
+            const responseDate = new Date(response.createdAt);
+
+            if (this.questionMetadata[response.question]) {
+              this.questionMetadata[response.question].numberOfAnswers++;
+
+              if (!this.questionMetadata[response.question].latestDate)
+                this.questionMetadata[response.question].latestDate =
+                  responseDate;
+              else if (
+                this.questionMetadata[response.question].latestDate &&
+                responseDate >
+                  this.questionMetadata[response.question].latestDate
+              ) {
+                this.questionMetadata[response.question].latestDate =
+                  responseDate;
+              }
+            }
+          }
+        }
+        
 
         unlockUI();
       }
     );
   }
 
-  getCreationDateDifferenceAsItsSaid(dateISOString) {
-    const dateObj = new Date(dateISOString);
+  getCreationDateDifferenceAsItsSaid(dateISOString, isAlreadyADateObject = false) {
+    const dateObj = !isAlreadyADateObject ? new Date(dateISOString) : dateISOString;
     const year = dateObj.getFullYear();
     const day = dateObj.getDate();
     const month = dateObj.getMonth();
@@ -84,5 +178,59 @@ export class FormResponsesComponent implements OnInit {
 
     moment.locale('es');
     return moment([year, month, day, hour]).fromNow();
+  }
+
+  changeView(
+    view: 'FORM_SUBMISSIONS' | 'QUESTIONS' | 'FORM_SUBMISSION_RESPONSES',
+    data?: any
+  ) {
+    this.currentView = view;
+
+    if (view === 'FORM_SUBMISSION_RESPONSES') {
+      this.selectedFormSubmission = data;
+    } else {
+      this.selectedFormSubmission = null;
+    }
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialogService.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  goBack() {
+    if (this.currentView === 'FORM_SUBMISSION_RESPONSES') {
+      this.currentView = 'FORM_SUBMISSIONS' as any;
+      this.selectedFormSubmission = null;
+    }
+  }
+
+  getAnswerType(question: Question) {
+    if (question.type === 'text' && question.answerTextType === 'default')
+      return 'Respuesta de texto abierta';
+
+    if (question.type === 'text' && question.answerTextType === 'email')
+      return 'Correo electrónico';
+
+    if (question.type === 'text' && question.answerTextType === 'phone')
+      return 'Teléfono';
+
+    if (question.type === 'text' && question.answerTextType === 'name')
+      return 'Nombre y Apellido';
+
+    if (question.type === 'text' && question.answerTextType === 'max12')
+      return 'Menos de 12 palabras';
+
+    if (question.type === 'text' && question.answerTextType === 'min12')
+      return 'Más de 12 palabras';
+
+    if (question.type === 'multiple' || question.type === 'multiple-text')
+      return 'Selección entre opciones';
   }
 }

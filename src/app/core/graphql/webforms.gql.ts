@@ -82,10 +82,17 @@ export const answerPaginate = gql`
           value
           label
           isMedia
+          createdAt
         }
         createdAt
         user {
           _id
+          image
+          name
+        }
+        merchant {
+          _id
+          image
           name
         }
       }

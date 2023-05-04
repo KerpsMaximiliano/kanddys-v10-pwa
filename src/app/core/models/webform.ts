@@ -60,7 +60,7 @@ export class QuestionInput {
   subIndex?: number;
   value?: string;
   answerDefault?: AnswerDefaultInput[];
-  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME';
+  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME' | 'MAX12' | 'MIN12';
   answerLimit?: number;
   show?: Boolean;
   required?: Boolean;
@@ -76,7 +76,7 @@ export class Question extends Model<Question> {
   show: boolean;
   required: boolean;
   active: boolean;
-  answerTextType?: 'default' | 'phone' | 'email' | 'phone' | 'name';
+  answerTextType?: 'default' | 'phone' | 'email' | 'phone' | 'name' | 'max12' | 'min12';
   answerMedia: boolean;
   answerLimit?: number;
 }

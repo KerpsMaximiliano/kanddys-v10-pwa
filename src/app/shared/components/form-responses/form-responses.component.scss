@@ -2,7 +2,7 @@
   min-height: 100vh;
   background-color: #f5f5f5;
 
-  header {
+  .users-by-webform-header {
     background-color: #c1c4c1;
     height: 47px;
     display: flex;
@@ -21,6 +21,57 @@
     }
   }
 
+  .submission-responses-header {
+    background-color: #c1c4c1;
+    height: 47px;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 21px;
+    padding-right: 17px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+
+    .left-column {
+      display: flex;
+      align-items: center;
+
+      .user-presentation {
+        font-family: SfProLight;
+        font-size: clamp(13px, 4vw, 17px);
+        color: #171d16;
+        display: flex;
+        align-items: center;
+        height: 22px;
+        margin-left: 14px;
+
+        .kioskoId {
+          font-family: SfProBold;
+          margin-right: 14px;
+          font-weight: normal;
+        }
+      }
+    }
+
+    .back-btn,
+    .settings-btn {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .three-dots {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 12px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
   nav {
     margin: 17px auto 30px 17px;
     display: flex;
@@ -30,7 +81,7 @@
       padding: 9px 21px 4px 21px;
       border: 1px solid #d3d3d3;
       font-family: SfProLight;
-      font-size: 16px;
+      font-size: clamp(12px, 4vw, 16px);
       color: #272727;
       margin-right: 9px;
       border-radius: 20px;
@@ -50,23 +101,27 @@
   main {
     margin-top: 30px;
 
-    .users-list {
+    .question-list,
+    .form-submission-list {
       list-style: none;
       margin: 0px;
       padding: 0px;
       margin: 0px 17px;
+    }
 
-      .user {
+    .form-submission-list {
+      .form-submission {
         padding: 6px 15px 10px 8px;
         background-color: #ffffff;
         border-radius: 10px;
         display: flex;
         justify-content: space-between;
+        margin-bottom: 6px;
 
         .left-column {
           .user-presentation {
             font-family: SfProLight;
-            font-size: 17px;
+            font-size: clamp(13px, 4vw, 17px);
             color: #171d16;
             display: flex;
             align-items: center;
@@ -78,39 +133,90 @@
               margin-right: 14px;
               font-weight: normal;
             }
-
-            .avatar-wrapper {
-              border-radius: 50%;
-              height: 22px;
-              width: 22px;
-              margin-right: 6px;
-              background-position: center;
-              background-size: cover;
-              background-repeat: no-repeat;
-            }
           }
 
           .date-relative-info {
             color: #7b7b7b;
             font-size: 16px;
             font-family: SfProRegular;
-            font-size: 16px;
+            font-size: clamp(12px, 4vw, 16px);
+          }
+        }
+      }
+    }
+
+    .question-list {
+      .question-response-card {
+        padding: 20px 17px 20px 17px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        margin-bottom: 6px;
+
+        .title {
+          font-family: SfProSemiBold;
+          font-size: 16px;
+          margin: 0px;
+          font-weight: normal;
+          margin-bottom: 16px;
+          color: #171d16;
+        }
+
+        .text-responses {
+          font-family: SfProLight;
+          margin: 0px;
+          font-size: 15px;
+          color: #171d16;
+        }
+
+        .media-responses-wrapper {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+          justify-items: center;
+          gap: 10px;
+        }
+
+        .media-response {
+          border: 1px solid #8aeb89;
+          width: 50px;
+          height: 60px;
+          background-repeat: no-repeat;
+          background-size: cover;
+          background-position: center;
+          border-radius: 10px;
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+
+        .text-option-list {
+          list-style: none;
+          list-style: circle;
+          padding: 0px;
+          margin: 0px;
+          padding-left: 17px;
+
+          li {
+            font-family: SfProLight;
+            font-size: 15px;
+            margin-bottom: 10px;
           }
         }
       }
     }
 
     .right-column {
-      width: 22.64%;
+      width: 27.64%;
 
       .responses-link {
         display: flex;
         align-items: center;
         color: #2874ad;
         font-family: SfProBold;
-        font-size: 13px;
+        font-size: clamp(9px, 4vw, 13px);
         height: 22px;
         margin-bottom: 25px;
+        justify-content: flex-end;
       }
 
       .three-dots {
@@ -124,6 +230,99 @@
           filter: invert(67%) sepia(4%) saturate(16%) hue-rotate(336deg)
             brightness(95%) contrast(91%);
         }
+      }
+    }
+  }
+}
+
+.webform-description {
+  margin: auto;
+  margin-top: 30px;
+  margin-bottom: 17px;
+  text-align: center;
+  width: 100%;
+  font-family: SfProSemiBold;
+  font-size: clamp(12px, 4vw, 16px);
+  max-width: 74.766%;
+}
+
+.avatar-wrapper {
+  border-radius: 50%;
+  height: 22px;
+  width: 22px;
+  margin-right: 6px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  &.from-header {
+    margin-left: 14px;
+  }
+}
+
+.question-list {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+  padding: 0px 30px;
+}
+
+.question-wrapper {
+  width: 100%;
+  padding: 14px 15px 7px 15px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  margin-bottom: 6px;
+
+  .top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .response-type {
+      color: #7b7b7b;
+      font-family: SfProRegular;
+      font-size: clamp(11px, 4vw, 15px);
+    }
+
+    .number-of-responses {
+      font-family: SfProBold;
+      font-size: clamp(9px, 4vw, 13px);
+      color: #2874ad;
+    }
+  }
+
+  .title {
+    margin: auto;
+    margin-top: 36px;
+    color: #171d16;
+    font-size: clamp(12px, 4vw, 16px);
+    font-family: SfProSemiBold;
+    max-width: 86.98%;
+    text-align: center;
+  }
+
+  .bottom-section {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .relative-date {
+      font-family: SfProRegular;
+      font-size: clamp(11px, 4vw, 15px);
+      color: #7b7b7b;
+    }
+
+    .three-dots {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+
+      img {
+        margin-left: auto;
+        filter: invert(67%) sepia(4%) saturate(16%) hue-rotate(336deg)
+          brightness(95%) contrast(91%);
       }
     }
   }
