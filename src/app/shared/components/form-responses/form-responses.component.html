@@ -103,69 +103,80 @@
   <main>
     <ng-container [ngSwitch]="currentView">
       <ng-container *ngSwitchCase="'FORM_SUBMISSIONS'">
-        <ul class="form-submission-list">
-          <li class="form-submission" *ngFor="let answer of answersForWebform">
-            <div class="left-column">
-              <div
-                class="user-presentation"
-                *ngIf="answer.user && !answer.merchant"
-              >
-                <div
-                  class="avatar-wrapper"
-                  [ngStyle]="{
-                    backgroundImage: answer.user.image
-                      ? 'url(' +
-                        answer.user.image +
-                        '), url(' +
-                        env +
-                        '/spinner2.gif)'
-                      : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
-                  }"
-                ></div>
-                <span class="kioskoId">{{ answer.user.name }}</span>
-              </div>
+        <ng-container *ngIf="answersForWebform.length === 0">
+          <p class="no-form-responses">
+            No han respondido al formulario todavia...
+          </p>
+        </ng-container>
 
-              <div
-                class="user-presentation"
-                *ngIf="answer.user && answer.merchant"
-              >
+        <ng-container *ngIf="answersForWebform.length > 0">
+          <ul class="form-submission-list">
+            <li
+              class="form-submission"
+              *ngFor="let answer of answersForWebform"
+            >
+              <div class="left-column">
                 <div
-                  class="avatar-wrapper"
-                  [ngStyle]="{
-                    backgroundImage: answer.merchant.image
-                      ? 'url(' +
-                        (answer.merchant.image || answer.user.image) +
-                        '), url(' +
-                        env +
-                        '/spinner2.gif)'
-                      : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
-                  }"
-                ></div>
-                <span class="kioskoId">{{ answer.merchant.name }}</span> by
-                {{ answer.user.name }}
-              </div>
+                  class="user-presentation"
+                  *ngIf="answer.user && !answer.merchant"
+                >
+                  <div
+                    class="avatar-wrapper"
+                    [ngStyle]="{
+                      backgroundImage: answer.user.image
+                        ? 'url(' +
+                          answer.user.image +
+                          '), url(' +
+                          env +
+                          '/spinner2.gif)'
+                        : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+                    }"
+                  ></div>
+                  <span class="kioskoId">{{ answer.user.name }}</span>
+                </div>
 
-              <div class="date-relative-info">
-                Respondió por última vez
-                {{ getCreationDateDifferenceAsItsSaid(answer.createdAt) }}
+                <div
+                  class="user-presentation"
+                  *ngIf="answer.user && answer.merchant"
+                >
+                  <div
+                    class="avatar-wrapper"
+                    [ngStyle]="{
+                      backgroundImage: answer.merchant.image
+                        ? 'url(' +
+                          (answer.merchant.image || answer.user.image) +
+                          '), url(' +
+                          env +
+                          '/spinner2.gif)'
+                        : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+                    }"
+                  ></div>
+                  <span class="kioskoId">{{ answer.merchant.name }}</span> by
+                  {{ answer.user.name }}
+                </div>
+
+                <div class="date-relative-info">
+                  Respondió por última vez
+                  {{ getCreationDateDifferenceAsItsSaid(answer.createdAt) }}
+                </div>
               </div>
-            </div>
-            <div class="right-column">
-              <div
-                class="responses-link"
-                (click)="changeView('FORM_SUBMISSION_RESPONSES', answer)"
-              >
-                {{ answer.response.length }} Respuestas
+              <div class="right-column">
+                <div
+                  class="responses-link"
+                  (click)="changeView('FORM_SUBMISSION_RESPONSES', answer)"
+                >
+                  {{ answer.response.length }} Respuestas
+                </div>
+                <div class="three-dots">
+                  <img
+                    src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
+                    alt="more options"
+                  />
+                </div>
               </div>
-              <div class="three-dots">
-                <img
-                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
-                  alt="more options"
-                />
-              </div>
-            </div>
-          </li>
-        </ul>
+            </li>
+          </ul>
+        </ng-container>
       </ng-container>
       <ng-container *ngSwitchCase="'FORM_SUBMISSION_RESPONSES'">
         <ng-container *ngIf="selectedFormSubmission">
@@ -270,45 +281,63 @@
         </ng-container>
       </ng-container>
       <ng-container *ngSwitchCase="'QUESTIONS'">
-        <ul class="question-list">
-          <li
-            class="question-wrapper"
-            *ngFor="let question of webform.questions"
-          >
-            <div class="top-section">
-              <div class="response-type">
-                {{ getAnswerType(question) }}
-              </div>
-              <div class="number-of-responses">
-                {{ questionMetadata[question._id].numberOfAnswers }} Respuestas
-              </div>
-            </div>
-            <div class="title">
-              {{ question.value }}
-            </div>
+        <ng-container *ngIf="webform?.questions?.length === 0">
+          <p class="no-form-responses">
+            Sin preguntas para el formulario todavia...
+          </p>
+        </ng-container>
 
-            <div class="bottom-section">
-              <div class="relative-date">
-                Respondieron
-                {{
-                  getCreationDateDifferenceAsItsSaid(
-                    questionMetadata[question._id].latestDate,
-                    true
-                  )
-                }}
+        <ng-container *ngIf="webform?.questions?.length > 0">
+          <ul class="question-list">
+            <li
+              class="question-wrapper"
+              *ngFor="let question of webform.questions"
+            >
+              <div class="top-section">
+                <div class="response-type">
+                  {{ getAnswerType(question) }}
+                </div>
+                <div class="number-of-responses">
+                  {{ questionMetadata[question._id].numberOfAnswers }}
+                  Respuestas
+                </div>
               </div>
-              <div class="three-dots">
-                <img
-                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
-                  alt="more options"
-                />
+              <div class="title">
+                {{ question.value }}
               </div>
-            </div>
-          </li>
-        </ul>
+
+              <div class="bottom-section">
+                <div class="relative-date">
+                  Respondieron
+                  {{
+                    getCreationDateDifferenceAsItsSaid(
+                      questionMetadata[question._id].latestDate,
+                      true
+                    )
+                  }}
+                </div>
+                <div class="three-dots">
+                  <img
+                    src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
+                    alt="more options"
+                  />
+                </div>
+              </div>
+            </li>
+          </ul>
+        </ng-container>
       </ng-container>
     </ng-container>
   </main>
+
+  <footer>
+    <div class="preview-btn" (click)="goToPreview()">PREVIEW</div>
+    <div class="share-btn">
+      VISIBLE EN URL.COM
+
+      <img [src]="env + '/share-icon.svg'" style="margin-left: 11.8px;" alt="share" />
+    </div>
+  </footer>
 </div>
 
 <ng-template #usersAndQuestionHeader>

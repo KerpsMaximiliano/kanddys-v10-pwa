@@ -20,6 +20,9 @@ import * as moment from 'moment';
 import { ImageViewComponent } from '../../dialogs/image-view/image-view.component';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { Merchant } from 'src/app/core/models/merchant';
+import { ItemSubOrderInput } from 'src/app/core/models/order';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { AppService } from 'src/app/app.service';
 
 interface ExtendedAnswer extends Answer {
   responsesGroupedByQuestion: Array<{
@@ -63,6 +66,8 @@ export class FormResponsesComponent implements OnInit {
     private headerService: HeaderService,
     private authService: AuthService,
     private merchantService: MerchantsService,
+    private saleflowService: SaleFlowService,
+    private appService: AppService,
     private dialogService: DialogService
   ) {}
 
@@ -162,15 +167,19 @@ export class FormResponsesComponent implements OnInit {
             }
           }
         }
-        
 
         unlockUI();
       }
     );
   }
 
-  getCreationDateDifferenceAsItsSaid(dateISOString, isAlreadyADateObject = false) {
-    const dateObj = !isAlreadyADateObject ? new Date(dateISOString) : dateISOString;
+  getCreationDateDifferenceAsItsSaid(
+    dateISOString,
+    isAlreadyADateObject = false
+  ) {
+    const dateObj = !isAlreadyADateObject
+      ? new Date(dateISOString)
+      : dateISOString;
     const year = dateObj.getFullYear();
     const day = dateObj.getDate();
     const month = dateObj.getMonth();
@@ -233,4 +242,35 @@ export class FormResponsesComponent implements OnInit {
     if (question.type === 'multiple' || question.type === 'multiple-text')
       return 'Selección entre opciones';
   }
+
+  goToPreview = async () => {
+    const product: ItemSubOrderInput = {
+      item: this.item._id,
+      amount: 1,
+    };
+
+    const saleflowDefault = await this.saleflowService.saleflowDefault(
+      this.merchantService.merchantData._id
+    );
+
+    this.headerService.saleflow = saleflowDefault;
+
+    this.headerService.emptyOrderProducts();
+
+    this.headerService.storeOrderProduct(product);
+
+    this.appService.events.emit({
+      type: 'added-item',
+      data: this.item._id,
+    });
+
+    this.router.navigate(
+      ['/ecommerce/' + this.merchantService.merchantData.slug + '/checkout'],
+      {
+        queryParams: {
+          webformPreview: true,
+        },
+      }
+    );
+  };
 }

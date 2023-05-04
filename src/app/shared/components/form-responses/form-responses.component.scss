@@ -41,7 +41,6 @@
         font-size: clamp(13px, 4vw, 17px);
         color: #171d16;
         display: flex;
-        align-items: center;
         height: 22px;
         margin-left: 14px;
 
@@ -124,7 +123,7 @@
             font-size: clamp(13px, 4vw, 17px);
             color: #171d16;
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             height: 22px;
             margin-bottom: 25px;
 
@@ -216,6 +215,7 @@
         font-size: clamp(9px, 4vw, 13px);
         height: 22px;
         margin-bottom: 25px;
+        margin-top: 6px;
         justify-content: flex-end;
       }
 
@@ -325,5 +325,36 @@
           brightness(95%) contrast(91%);
       }
     }
+  }
+}
+
+.no-form-responses {
+  font-family: SfProLight;
+  font-size: 17px;
+  margin: auto;
+  text-align: center;
+}
+
+footer {
+  background-color: #6fcf97;
+  padding: 6px 17px;
+  display: flex;
+  justify-content: space-between;
+  font-family: SfProLight;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 500px;
+  margin: auto;
+
+  .share-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  .preview-btn:hover,
+  .share-btn:hover {
+    cursor: pointer;
   }
 }
