@@ -35,6 +35,10 @@ import {
   updateOrderDeliveryData,
   orderSetStatusDeliveryWithoutAuth,
   orderSetDeliveryZone,
+  incomes,
+  expendituresTotal,
+  expenditureTypesCustom,
+  itemRemoveExpenditure,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -469,4 +473,46 @@ export class OrderService {
       }[status] || 'Desconocido'
     );
   }
+
+
+  async incomes(paginate: PaginationInput): Promise<Expenditure[]> {
+    console.log(paginate);
+    const result = await this.graphql.query({
+      query: incomes,
+      fetchPolicy: 'no-cache',
+      variables: { paginate },
+    });
+    return result?.incomes;
+  }
+
+  async expendituresTotal(type,merchantId){
+    const result = await this.graphql.query({
+      query: expendituresTotal,
+      fetchPolicy: 'no-cache',
+      variables: { type,merchantId },
+    });
+    return result;
+  }
+
+  
+  async expenditureTypesCustom(merchantId){
+    const result = await this.graphql.query({
+      query: expenditureTypesCustom,
+      fetchPolicy: 'no-cache',
+      variables: {merchantId },
+    });
+    return result;
+  }
+
+  async itemRemoveExpenditure(id: string, webformId: string) {
+    const result = await this.graphql.mutate({
+      mutation: itemRemoveExpenditure,
+      variables: { id,webformId },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
 }
+

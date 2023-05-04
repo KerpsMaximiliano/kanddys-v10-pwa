@@ -309,6 +309,27 @@ const expenditureData = `
   description
   amount
   useDate
+  typeCustom{
+    _id
+    value
+  }
+`;
+
+const incomeData = `
+  _id
+  createdAt
+  type{
+    _id
+    createdAt
+    value
+    table
+    field
+  }
+  name
+  description
+  amount
+  useDate
+  subType
 `;
 
 export const toggleUserNotifications = gql`
@@ -631,4 +652,36 @@ export const orderSetDeliveryZone = gql`
       _id
     }
   }
+`;
+
+export const incomes = gql`
+  query incomes($pagination: PaginationInput) {
+    incomes(paginate: $pagination) {
+      ${incomeData}
+    }
+  }
+`;
+
+export const expendituresTotal = gql`
+query expendituresTotal($type: String!,$merchantId:ObjectID!) {
+  expendituresTotal(type: $type,merchantId:$merchantId) {
+    total
+  }
+}
+`;
+
+export const expenditureTypesCustom = gql`
+query expenditureTypesCustom($merchantId:ObjectID!) {
+  expenditureTypesCustom(merchantId:$merchantId) {
+      _id 
+  }
+}
+`;
+
+export const itemRemoveExpenditure = gql`
+mutation itemRemoveExpenditure($id:ObjectID!,webformId:ObjectID!) {
+  itemRemoveExpenditure(merchantId:$merchantId,webformId:$webformId) {
+      _id 
+  }
+}
 `;

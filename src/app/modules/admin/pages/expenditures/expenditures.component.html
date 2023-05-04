@@ -1,0 +1,30 @@
+<div class="main-container">
+    <div class="header">
+      <div class="flex">
+        <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
+        <p>Egresos específicos del día</p>
+      </div>
+      <div>
+        <img [src]="env + '/plus-black.svg'" class="plus-icon" />
+      </div>
+    </div>
+    <div class="container">
+        <div class="content-item" *ngFor="let i of expenditures">
+            <div class="content-item-button-container">
+              <div class="content-item-button" (click)="removeItem(i)"><img src="../../../../../assets/icons/trash.svg"/></div>
+            </div>
+            <div class="content-item-texts">
+              <div class="content-item-title-container">
+                <p class="content-item-title">{{i.name}}</p>
+                <p class="content-item-title">{{i.amount | currency}}</p>
+              </div>
+              <p class="content-item-times-selected">{{i.useDate | date:'MM/dd/yyyy'}}</p>
+            </div>
+          </div>
+    </div>
+    <div class="footer">
+        <img src="../../../../../assets/icons/dots.svg" />
+        <p>Desde fechaId hasta hoy</p>
+        <p class="ml">{{total}}</p>
+    </div>
+    </div>

@@ -44,6 +44,8 @@ import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { ReportingsComponent } from './pages/reportings/reportings.component';
+import { ExpendituresComponent } from './pages/expenditures/expenditures.component';
+import { IncomesComponent } from './pages/incomes/incomes.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -273,6 +275,10 @@ const routes: Routes = [
     path: 'reportings',
     component: ReportingsComponent
   },
+  {
+    path: 'expenditures',
+    component: ExpendituresComponent
+  },
 ];
 
 @NgModule({
@@ -310,6 +316,8 @@ const routes: Routes = [
     NotificationCreatorComponent,
     ArticleDetailComponent,
     ReportingsComponent,
+    ExpendituresComponent,
+    IncomesComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, MatCheckboxModule, RouterModule.forChild(routes)],
