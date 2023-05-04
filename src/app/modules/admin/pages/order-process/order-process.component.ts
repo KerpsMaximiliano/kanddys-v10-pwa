@@ -435,13 +435,14 @@ export class OrderProcessComponent implements OnInit {
       deliveryZone: deliveryZone,
       orderStatus: ['to confirm', 'paid', 'completed'],
       orderStatusDelivery: this.isMerchant
-        ? this.progress || null
+        ? this.progress
         : this.view === 'delivery'
         ? 'pending'
         : this.view === 'assistant'
         ? 'in progress'
         : null,
     };
+    if (this.isMerchant && !this.progress) delete findBy.orderStatusDelivery;
     try {
       const result = await this.orderService.orderByMerchantDelivery({
         options: {
