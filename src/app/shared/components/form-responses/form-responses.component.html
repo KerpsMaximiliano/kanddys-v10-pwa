@@ -1,11 +1,5 @@
 <div class="container">
   <ng-container [ngSwitch]="currentView">
-    <ng-container *ngSwitchCase="'FORM_SUBMISSIONS'">
-      <ng-container *ngTemplateOutlet="usersAndQuestionHeader"></ng-container>
-    </ng-container>
-    <ng-container *ngSwitchCase="'QUESTIONS'">
-      <ng-container *ngTemplateOutlet="usersAndQuestionHeader"></ng-container>
-    </ng-container>
     <ng-container *ngSwitchCase="'FORM_SUBMISSION_RESPONSES'">
       <header class="submission-responses-header">
         <div class="left-column">
@@ -76,6 +70,9 @@
           />
         </div>
       </header>
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+      <ng-container *ngTemplateOutlet="usersAndQuestionHeader"></ng-container>
     </ng-container>
   </ng-container>
 
@@ -165,7 +162,7 @@
                   class="responses-link"
                   (click)="changeView('FORM_SUBMISSION_RESPONSES', answer)"
                 >
-                  {{ answer.response.length }} Respuestas
+                  {{ answer.responsesGroupedByQuestion.length }} Respuestas
                 </div>
                 <div class="three-dots">
                   <img
@@ -297,7 +294,10 @@
                 <div class="response-type">
                   {{ getAnswerType(question) }}
                 </div>
-                <div class="number-of-responses">
+                <div
+                  class="number-of-responses"
+                  (click)="loadResponsesForASpecificQuestion(question)"
+                >
                   {{ questionMetadata[question._id].numberOfAnswers }}
                   Respuestas
                 </div>
@@ -335,7 +335,11 @@
     <div class="share-btn">
       VISIBLE EN URL.COM
 
-      <img [src]="env + '/share-icon.svg'" style="margin-left: 11.8px;" alt="share" />
+      <img
+        [src]="env + '/share-icon.svg'"
+        style="margin-left: 11.8px"
+        alt="share"
+      />
     </div>
   </footer>
 </div>

@@ -56,6 +56,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
+import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -215,6 +216,10 @@ const routes: Routes = [
         component: FormResponsesComponent,
       },
       {
+        path: 'webform-responses-filters/:itemId/:questionId',
+        component: FormResponsesByQuestionComponent,
+      },
+      {
         path: 'webform-open-responses/:formId',
         component: OpenFormResponsesComponent,
       },
@@ -365,7 +370,8 @@ const routes: Routes = [
   {
     path: 'media-upload/:entity',
     component: MediaUploadDndComponentComponent,
-  },{
+  },
+  {
     path: 'dashboard-library',
     component: DashboardLibraryComponent,
   },
@@ -395,7 +401,6 @@ const routes: Routes = [
     OrderListComponent,
     ItemWebformPreviewComponent,
     WebformOptionsSelectorComponent,
-    //FormResponsesComponent,
     OpenFormResponsesComponent,
     WebformsEditorComponent,
     BenefitsComponent,

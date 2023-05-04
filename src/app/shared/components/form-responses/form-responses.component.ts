@@ -41,7 +41,7 @@ interface ExtendedAnswer extends Answer {
   styleUrls: ['./form-responses.component.scss'],
 })
 export class FormResponsesComponent implements OnInit {
-  currentView: 'FORM_SUBMISSIONS' | 'QUESTIONS' | 'FORM_SUBMISSION_RESPONSES' =
+  currentView: 'FORM_SUBMISSIONS' | 'QUESTIONS' | 'FORM_SUBMISSION_RESPONSES' | 'QUESTION_RESPONSES' =
     'FORM_SUBMISSIONS';
   env: string = environment.assetsUrl;
   item: Item;
@@ -57,6 +57,7 @@ export class FormResponsesComponent implements OnInit {
       latestDate?: Date;
     }
   > = {};
+  selectedQuestion: Question = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -110,10 +111,6 @@ export class FormResponsesComponent implements OnInit {
           this.questionMetadata[question._id] = {
             numberOfAnswers: 0,
           };
-          /*
-          answersByQuestionPromises.push(
-            this.webformsService.ans
-          );*/
         }
 
         for (const formSubmission of this.answersForWebform) {
@@ -168,6 +165,9 @@ export class FormResponsesComponent implements OnInit {
           }
         }
 
+        console.log("WEBFORM", this.webform);
+        console.log("QUESTIONS", this.questionsByIdObject);
+
         unlockUI();
       }
     );
@@ -190,7 +190,7 @@ export class FormResponsesComponent implements OnInit {
   }
 
   changeView(
-    view: 'FORM_SUBMISSIONS' | 'QUESTIONS' | 'FORM_SUBMISSION_RESPONSES',
+    view: 'FORM_SUBMISSIONS' | 'QUESTIONS' | 'FORM_SUBMISSION_RESPONSES' | 'QUESTION_RESPONSES',
     data?: any
   ) {
     this.currentView = view;
@@ -273,4 +273,14 @@ export class FormResponsesComponent implements OnInit {
       }
     );
   };
+
+  async loadResponsesForASpecificQuestion(question: Question) {
+    this.selectedQuestion = question;
+
+    this.changeView('QUESTION_RESPONSES');
+
+    unlockUI();
+
+    
+  }
 }
