@@ -25,6 +25,7 @@
       #ordersSwiper
       [config]="swiperConfig"
       (slideChange)="updateCurrentSlideData($event)"
+      style="height: calc(100vh - 90px); display: block"
     >
       <div
         class="slide"
@@ -370,73 +371,93 @@
               </div>
             </div>
           </div>
-          <div class="footer">
-            <div class="top-footer">
-              <div class="chip-list">
-                <div class="chip">
-                  {{ orderDeliveryStatus(deliveryOrder.orderStatusDelivery) }}
-                </div>
-                <ng-container *ngIf="deliveryOrder.tagsData?.length">
-                  <div class="chip" *ngFor="let tag of deliveryOrder.tagsData">
-                    {{ tag.name }}
-                  </div>
-                </ng-container>
-              </div>
-              <button
-                mat-icon-button
-                (click)="openDialog(deliveryOrder)"
-                style="color: #6fcf97"
-              >
-                <mat-icon>menu</mat-icon>
-              </button>
-            </div>
-            <div class="inner-wrapper-top">
-              <div
-                class="current-media-shown-indicators"
-                [style]="{
-                  'grid-template-columns':
-                    'repeat(' + ordersToConfirm.length + ', 1fr)'
-                }"
-              >
-                <ng-container *ngIf="ordersToConfirm.length > 0">
-                  <div
-                    class="indicator"
-                    [ngClass]="{
-                      active: indicatorIndex === activeIndex
-                    }"
-                    *ngFor="
-                      let indicator of ordersToConfirm;
-                      let indicatorIndex = index
-                    "
-                  ></div>
-                </ng-container>
-              </div>
-            </div>
-            <a
-              class="bottom-footer"
-              [routerLink]="['../order-expenses', deliveryOrder._id]"
-            >
-              <span>
-                {{
-                  deliveryOrder.benefits
-                    ? "$" +
-                      (deliveryOrder.benefits.benefits | number) +
-                      " - ($" +
-                      (deliveryOrder.benefits.less | number) +
-                      ") = " +
-                      (deliveryOrder.benefits.benefits -
-                        deliveryOrder.benefits.less | number)
-                    : ""
-                }}
-              </span>
-              <button mat-icon-button>
-                <mat-icon>more_horiz</mat-icon>
-              </button>
-            </a>
-          </div>
         </ng-container>
       </div>
     </swiper>
+
+    <div class="footer">
+      <button
+        mat-mini-fab
+        class="footer-menu"
+        (click)="openDialog(ordersToConfirm[activeIndex])"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="top-footer">
+        <a
+          mat-icon-button
+          [routerLink]="['/admin/create-notification']"
+          [queryParams]="{
+            redirectTo: router.url,
+            status: ordersToConfirm[activeIndex].orderStatusDelivery
+          }"
+          style="color: #6fcf97"
+        >
+          <mat-icon>more_horiz</mat-icon>
+        </a>
+        <div
+          class="chip-list"
+          #elemt
+          (mousedown)="startDragging($event, elemt)"
+          (mouseup)="stopDragging()"
+          (mouseleave)="stopDragging()"
+          (mousemove)="moveEvent($event, elemt)"
+        >
+          <button
+            class="chip"
+            *ngFor="let status of statusList"
+            [ngClass]="{
+              selected:
+                ordersToConfirm[activeIndex].orderStatusDelivery === status
+            }"
+            (click)="changeOrderStatus(status)"
+          >
+            {{ orderDeliveryStatus(status) }}
+          </button>
+        </div>
+      </div>
+      <div class="inner-wrapper-top">
+        <div
+          class="current-media-shown-indicators"
+          [style]="{
+            'grid-template-columns':
+              'repeat(' + ordersToConfirm.length + ', 1fr)'
+          }"
+        >
+          <ng-container *ngIf="ordersToConfirm.length > 0">
+            <div
+              class="indicator"
+              [ngClass]="{
+                active: indicatorIndex === activeIndex
+              }"
+              *ngFor="
+                let indicator of ordersToConfirm;
+                let indicatorIndex = index
+              "
+            ></div>
+          </ng-container>
+        </div>
+      </div>
+      <a
+        class="bottom-footer"
+        [routerLink]="['../order-expenses', ordersToConfirm[activeIndex]._id]"
+      >
+        <mat-icon>more_horiz</mat-icon>
+        <span>
+          {{
+            ordersToConfirm[activeIndex].benefits
+              ? "$" +
+                (ordersToConfirm[activeIndex].benefits.benefits | number) +
+                " - ($" +
+                (ordersToConfirm[activeIndex].benefits.less | number) +
+                ") = " +
+                (ordersToConfirm[activeIndex].benefits.benefits -
+                  ordersToConfirm[activeIndex].benefits.less | number)
+              : ""
+          }}
+        </span>
+      </a>
+    </div>
 
     <div class="float-paginator">
       <div class="button swiper-slide-duplicate-prev left">

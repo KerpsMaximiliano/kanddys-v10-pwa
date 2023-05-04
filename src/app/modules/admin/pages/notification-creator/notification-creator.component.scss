@@ -110,29 +110,29 @@
 	font-family: SfProLight;
 }
 
-.chip-list {
-	display: flex;
-	width: 100%;
-	overflow-x: scroll;
-	gap: 8px;
-}
-.chip {
-	background-color: transparent;
-	border: solid 1px #d4d4d4;
-	font-family: SfProLight;
-	font-size: 1rem;
-	border-radius: 24px;
-	padding: 4px 18px;
-	transition: 0.2s;
-	white-space: nowrap;
-	cursor: pointer;
-	user-select: none;
+// .chip-list {
+// 	display: flex;
+// 	width: 100%;
+// 	overflow-x: scroll;
+// 	gap: 8px;
+// }
+// .chip {
+// 	background-color: transparent;
+// 	border: solid 1px #d4d4d4;
+// 	font-family: SfProLight;
+// 	font-size: 1rem;
+// 	border-radius: 24px;
+// 	padding: 4px 18px;
+// 	transition: 0.2s;
+// 	white-space: nowrap;
+// 	cursor: pointer;
+// 	user-select: none;
 
-	&.chip-selected {
-		border-color: #bdbfbd;
-		background-color: #bdbfbd;
-		font-family: SfProSemiBold;
-		color: #171d16;
-		transition: 0.2s;
-	}
-}
+// 	&.chip-selected {
+// 		border-color: #bdbfbd;
+// 		background-color: #bdbfbd;
+// 		font-family: SfProSemiBold;
+// 		color: #171d16;
+// 		transition: 0.2s;
+// 	}
+// }

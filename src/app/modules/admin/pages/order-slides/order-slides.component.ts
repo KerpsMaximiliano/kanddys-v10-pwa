@@ -12,7 +12,7 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Merchant } from 'src/app/core/models/merchant';
-import { ItemOrder } from 'src/app/core/models/order';
+import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
 import { Reservation } from 'src/app/core/models/reservation';
 import { Tag } from 'src/app/core/models/tags';
@@ -118,6 +118,14 @@ export class OrderSlidesComponent implements OnInit {
   deliveryForm = new FormGroup({
     image: new FormControl(),
   });
+
+  statusList: OrderStatusDeliveryType[] = [
+    'in progress',
+    'pending',
+    'pickup',
+    'shipped',
+    'delivered',
+  ];
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
@@ -569,6 +577,19 @@ export class OrderSlidesComponent implements OnInit {
   //   }
   // }
 
+  async changeOrderStatus(value: OrderStatusDeliveryType) {
+    this.ordersToConfirm[this.activeIndex].orderStatusDelivery = value;
+
+    try {
+      await this.orderService.orderSetStatusDelivery(
+        value,
+        this.ordersToConfirm[this.activeIndex]._id
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async updateCurrentSlideData(event: any) {
     console.log('Cambiando de slide', event);
     console.log(event.activeIndex);
@@ -851,5 +872,29 @@ export class OrderSlidesComponent implements OnInit {
     this.router.navigate([this.redirectTo], {
       queryParams,
     });
+  }
+
+  mouseDown: boolean;
+  startX: number;
+  scrollLeft: number;
+
+  stopDragging() {
+    this.mouseDown = false;
+  }
+
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
+    this.mouseDown = true;
+    this.startX = e.pageX - el.offsetLeft;
+    this.scrollLeft = el.scrollLeft;
+  }
+
+  moveEvent(e: MouseEvent, el: HTMLDivElement) {
+    e.preventDefault();
+    if (!this.mouseDown) {
+      return;
+    }
+    const x = e.pageX - el.offsetLeft;
+    const scroll = x - this.startX;
+    el.scrollLeft = this.scrollLeft - scroll;
   }
 }

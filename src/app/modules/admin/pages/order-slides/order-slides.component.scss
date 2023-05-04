@@ -255,6 +255,15 @@
     }
   }
   .footer {
+    position: relative;
+    .footer-menu {
+      position: absolute;
+      z-index: 2;
+      top: -52px;
+      right: 20px;
+      background-color: #272727;
+    }
+
     .inner-wrapper-top {
       padding-top: 3px;
       background: #293628;
@@ -282,7 +291,7 @@
     }
 
     .top-footer {
-      background-color: #293628;
+      background-color: #171d16;
       padding: 10px;
       text-align: center;
       color: #fff;
@@ -294,8 +303,6 @@
       color: #171d16;
       padding: 0 25px;
       display: flex;
-      flex-direction: row;
-      justify-content: space-between;
       align-items: center;
     }
   }
@@ -446,11 +453,21 @@
 .chip {
   font-family: SfProSemiBold;
   font-size: 1rem;
-  background-color: #3b5d44;
+  background-color: #171d16;
+  border: solid 1px #2d4b36;
+  color: #fff;
   padding: 8px 16px;
   border-radius: 20px;
   white-space: nowrap;
   user-select: none;
+
+  &.selected {
+    background-color: #2d4b36;
+  }
+}
+button.chip {
+  cursor: pointer;
+  user-select: auto;
 }
 .benefits {
   font-family: SfProLight;
