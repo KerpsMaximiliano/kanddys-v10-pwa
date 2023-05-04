@@ -18,4 +18,23 @@ export class EntityTemplateInput {
   dateId?: string;
   user?: string;
   recipients?: any;
+  access?: string;
+  templateNotifications?: Array<{
+    key: string;
+    message: string;
+  }>;
+}
+
+export class RecipientsInput {
+  edit: boolean;
+  recipient: string;
+}
+
+export class RecipientInput {
+  phone?: string;
+  email?: string;
+  nickname?: string;
+  name?: string;
+  lastName?: string;
+  image?: File;
 }

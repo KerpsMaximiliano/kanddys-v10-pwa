@@ -1,7 +1,11 @@
-<div class="banner-container" [ngStyle]="biosBannerStyles">
-  <div class="circle-container">
-    <div class="circle"></div>
-  </div>
+<div class="banner-container" [style.background]="type==='image'?image:''">
+  <ng-container *ngIf="type==='standard'">
+    <div class="circle-container">
+      <div class="circle" [style.background]="image"></div>
+    </div>
+    <div class="infouser-container">
+      <div class="title-container">
+        <p class="title"> {{ username || 'Mi Nombre' }} </p>
 
   <div class="infouser-container">
     <div class="title-container">

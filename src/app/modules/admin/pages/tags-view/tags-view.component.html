@@ -1,83 +1,146 @@
+<ng-template #tagItem let-tag="tag" let-i="i">
+  <button
+    class="select"
+    [ngClass]="{ selected: selectedTags.includes(tag) }"
+    (click)="addTag(tag)"
+  ></button>
+  <button [matMenuTriggerFor]="menu" style="all: unset">
+    <app-gradient-card [tag]="tag"></app-gradient-card>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button
+      mat-menu-item
+      *ngIf="tag.status === 'disabled'"
+      (click)="changeTagStatus(tag, 'active')"
+    >
+      <mat-icon>visibility</mat-icon>
+      <span>Mostrar</span>
+    </button>
+    <button
+      mat-menu-item
+      *ngIf="tag.status === 'disabled' || tag.status === 'active'"
+      (click)="changeTagStatus(tag, 'featured')"
+    >
+      <mat-icon>star_border</mat-icon>
+      <span>Destacar</span>
+    </button>
+    <button
+      mat-menu-item
+      *ngIf="tag.status === 'featured'"
+      (click)="changeTagStatus(tag, 'active')"
+    >
+      <mat-icon>star</mat-icon>
+      <span>Destacado</span>
+    </button>
+    <button
+      mat-menu-item
+      *ngIf="tag.status === 'active' || tag.status === 'featured'"
+      (click)="changeTagStatus(tag, 'disabled')"
+    >
+      <mat-icon>visibility_off</mat-icon>
+      <span>Ocultar</span>
+    </button>
+    <button mat-menu-item (click)="deleteTag(tag)">
+      <mat-icon>delete_outline</mat-icon>
+      <span>Eliminar</span>
+    </button>
+  </mat-menu>
+</ng-template>
+
 <div style="min-height: 100vh">
-  <!-- <mat-expansion-panel hideToggle>
-    <mat-expansion-panel-header (click)="changeState()">
-      <a mat-icon-button [routerLink]="['../dashboard']">
-        <img [src]="env + '/arrow-double-up-black.svg'" alt="arrows" />
-      </a>
-      <p>Categorias</p>
-      <p class="right">$14,789</p>
-      <mat-icon *ngIf="panelOpenState === false">expand_more</mat-icon>
-      <mat-icon *ngIf="panelOpenState === true">expand_less</mat-icon>
-    </mat-expansion-panel-header>
-    <div class="flex">
-      <p>20% categorias más usadas</p>
-      <p class="right">$14,789</p>
-    </div>
-    <div class="flex" style="margin-top: 16px; margin-bottom: 48px">
-      <p>La categoria más usada</p>
-      <p class="right">$14,789</p>
-    </div>
-    <div class="flex">
-      <p>Pantalla Inicial</p>
-      <mat-icon style="margin-left: 8px; margin-right: auto">check</mat-icon>
-    </div>
-  </mat-expansion-panel>
-  <mat-expansion-panel
-    (opened)="panelOpenState = true"
-    (closed)="panelOpenState = false"
-  ></mat-expansion-panel> -->
   <header class="header">
-    <a mat-icon-button [routerLink]="['../dashboard']">
-      <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
-    </a>
-    <p>Categorías</p>
+    <a mat-button class="left" [routerLink]="['../dashboard']"> Cancelar </a>
+    <p>{{ selectedTags.length }} Seleccionado</p>
   </header>
 
-  <div class="content">
-    <div *ngFor="let tag of tags">
-      <button [matMenuTriggerFor]="menu" style="all: unset">
-        <app-gradient-card [tag]="tag"></app-gradient-card>
+  <main class="content">
+    <div class="filter-container">
+      <button
+        class="filter"
+        [ngClass]="{ selected: view === 'all' }"
+        (click)="changeView('all')"
+      >
+        Todos
       </button>
-      <mat-menu #menu="matMenu">
-        <button
-          mat-menu-item
-          *ngIf="tag.status === 'disabled'"
-          (click)="changeTagStatus(tag, 'active')"
-        >
-          <mat-icon>visibility</mat-icon>
-          <span>Mostrar</span>
-        </button>
-        <button
-          mat-menu-item
-          *ngIf="tag.status === 'disabled' || tag.status === 'active'"
-          (click)="changeTagStatus(tag, 'featured')"
-        >
-          <mat-icon>star_border</mat-icon>
-          <span>Destacar</span>
-        </button>
-        <button
-          mat-menu-item
-          *ngIf="tag.status === 'featured'"
-          (click)="changeTagStatus(tag, 'active')"
-        >
-          <mat-icon>star</mat-icon>
-          <span>Destacado</span>
-        </button>
-        <button
-          mat-menu-item
-          *ngIf="tag.status === 'active' || tag.status === 'featured'"
-          (click)="changeTagStatus(tag, 'disabled')"
-        >
-          <mat-icon>visibility_off</mat-icon>
-          <span>Ocultar</span>
-        </button>
-        <button mat-menu-item (click)="deleteTag(tag)">
-          <mat-icon>delete_outline</mat-icon>
-          <span>Eliminar</span>
-        </button>
-      </mat-menu>
+      <button
+        class="filter"
+        [ngClass]="{ selected: view === 'visible' }"
+        (click)="changeView('visible')"
+      >
+        Visibles
+      </button>
+      <button
+        class="filter"
+        [ngClass]="{ selected: view === 'hidden' }"
+        (click)="changeView('hidden')"
+      >
+        Ocultos
+      </button>
+      <button
+        class="filter"
+        [ngClass]="{ selected: view === 'featured' }"
+        (click)="changeView('featured')"
+      >
+        Destacados
+      </button>
     </div>
-  </div>
+    <div class="tags-container">
+      <ng-container *ngIf="view === 'all'">
+        <div *ngFor="let tag of tags; index as i" class="selectable">
+          <ng-container
+            *ngTemplateOutlet="tagItem; context: { tag: tag, i: i }"
+          ></ng-container>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="view === 'visible'">
+        <div *ngFor="let tag of visibleTags; index as i" class="selectable">
+          <ng-container
+            *ngTemplateOutlet="tagItem; context: { tag: tag, i: i }"
+          ></ng-container>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="view === 'hidden'">
+        <div *ngFor="let tag of hiddenTags; index as i" class="selectable">
+          <ng-container
+            *ngTemplateOutlet="tagItem; context: { tag: tag, i: i }"
+          ></ng-container>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="view === 'featured'">
+        <div *ngFor="let tag of featuredTags; index as i" class="selectable">
+          <ng-container
+            *ngTemplateOutlet="tagItem; context: { tag: tag, i: i }"
+          ></ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </main>
 
-  <app-menu-button [position]="{ bottom: '50px' }" [options]="options"></app-menu-button>
+  <app-menu-button
+    [position]="{ bottom: '50px' }"
+    [options]="options"
+  ></app-menu-button>
+
+  <footer *ngIf="selectedTags.length">
+    <div>
+      <button mat-icon-button (click)="deleteSelected()">
+        <i class="fa fa-trash" aria-hidden="true"></i>
+      </button>
+      <button
+        mat-icon-button
+        (click)="chnageStatusSelected()"
+        *ngIf="view !== 'all'"
+      >
+        <i
+          class="fa fa-eye-slash"
+          aria-hidden="true"
+          *ngIf="view !== 'hidden'"
+        ></i>
+        <i class="fa fa-eye" aria-hidden="true" *ngIf="view === 'hidden'"></i>
+      </button>
+      <!-- <button mat-icon-button (click)="share()">
+        <img class="icon" class="share" [src]="env + '/upload.svg'" />
+      </button> -->
+    </div>
+  </footer>
 </div>

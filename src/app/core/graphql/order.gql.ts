@@ -43,6 +43,8 @@ const orderData = `
       merchant {
         _id
         name
+        image
+        bio
         slug
         owner {
           _id
@@ -619,10 +621,7 @@ export const hotOrderByMerchantDelivery = gql`
 `;
 
 export const updateOrderDeliveryData = gql`
-  mutation updateOrderDeliveryData(
-    $input: DeliveryDataInput!
-    $id: ObjectID!
-  ) {
+  mutation updateOrderDeliveryData($input: DeliveryDataInput!, $id: ObjectID!) {
     updateOrderDeliveryData(input: $input, id: $id) {
       _id
       orderStatusDelivery
@@ -638,7 +637,10 @@ export const orderSetStatusDeliveryWithoutAuth = gql`
     $orderStatusDelivery: String!
     $id: ObjectID!
   ) {
-    orderSetStatusDeliveryWithoutAuth(orderStatusDelivery: $orderStatusDelivery, id: $id)
+    orderSetStatusDeliveryWithoutAuth(
+      orderStatusDelivery: $orderStatusDelivery
+      id: $id
+    )
   }
 `;
 
@@ -648,7 +650,19 @@ export const orderSetDeliveryZone = gql`
     $id: ObjectID!
     $userId: ObjectID
   ) {
-    orderSetDeliveryZone(userId: $userId, deliveryZoneId: $deliveryZoneId, id: $id) {
+    orderSetDeliveryZone(
+      userId: $userId
+      deliveryZoneId: $deliveryZoneId
+      id: $id
+    ) {
+      _id
+    }
+  }
+`;
+
+export const orderConfirm = gql`
+  mutation orderConfirm($merchantId: ObjectID!, $orderId: ObjectID!) {
+    orderConfirm(merchantId: $merchantId, orderId: $orderId) {
       _id
     }
   }

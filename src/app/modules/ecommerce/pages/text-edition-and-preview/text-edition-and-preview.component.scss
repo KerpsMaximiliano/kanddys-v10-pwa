@@ -1,0 +1,137 @@
+.page {
+  min-height: 100vh;
+  position: relative;
+  background-color: #000;
+
+  .top-wrapper {
+    background-color: #272727;
+  }
+
+  .top {
+    background-color: #272727;
+    // height: calc(100vh - 100px) !important;
+    overflow-y: scroll;
+    color: white;
+
+    .header {
+      display: flex;
+      padding: 28px 7px 0px 17px;
+      justify-content: space-between;
+      align-items: center;
+
+      .cancel {
+        background-color: #ffffff;
+        color: #4a4a4a;
+        font-size: 15px;
+        font-family: SfProBold;
+        padding: 4px 20px;
+        border: none;
+        border-radius: 40px;
+      }
+
+      .options {
+        margin-right: 7px;
+        font-family: SfProBold;
+        font-size: 15px;
+        color: white;
+      }
+    }
+
+    .content {
+      padding: 39px 31px 0px 17px;
+      color: white;
+
+      .title {
+        font-family: SfProBold;
+        font-size: 21px;
+      }
+
+      .title-edit {
+        font-family: SfProBold;
+        font-size: 21px;
+        border: none;
+        background-color: #272727;
+        color: white;
+        resize: none;
+        max-height: 28px;
+        width: 100%;
+      }
+
+      .paragraphs {
+        margin-top: 17px;
+        font-family: SfProRegular;
+        font-size: 17px;
+      }
+
+      .paragraphs-edit {
+        margin-top: 17px;
+        font-family: SfProRegular;
+        font-size: 17px;
+        border: none;
+        background-color: #272727;
+        color: white;
+        resize: none;
+        max-height: 148px;
+        min-height: 148px;
+        width: 100%;
+      }
+    }
+  }
+
+  .bottom {
+    max-width: 500px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100px;
+    background-color: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 5em 0px 0px 0px;
+
+    .edit-btn {
+      font-family: SfProBold;
+      color: white;
+      font-size: 22px;
+
+      &.selected {
+        color: gray;
+      }
+    }
+
+    .bars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 3px;
+      display: flex;
+      justify-content: space-between;
+
+      .bar {
+        background-color: white;
+        width: 24%;
+
+        &.active {
+          background-color: #82f18d;
+        }
+      }
+    }
+
+    .save-btn {
+      background-color: #82f18d;
+      border-radius: 40px;
+      margin-left: 51px;
+      // margin-right: 12px;
+      font-family: SfProBold;
+      color: #272727;
+      font-size: 19px;
+      text-transform: uppercase;
+      padding: 22px 40px;
+    }
+  }
+}

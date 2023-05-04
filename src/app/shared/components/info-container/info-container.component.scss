@@ -1,0 +1,60 @@
+* {
+  margin: 0;
+}
+
+.container {
+  padding: 8px 10px 12.5px 8px;
+  width: 100%;
+  background-color: #fff;
+  border: none;
+  border-radius: 7px;
+  margin-bottom: 5px;
+  .notification {
+    width: 7px;
+    height: 7px;
+    margin-left: 100%;
+    margin-top: -5px;
+    background-color: #2874ad;
+    border-radius: 50%;
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 22px;
+      width: 22px;
+      border-radius: 50%;
+    }
+
+    .title {
+      font-size: 17px;
+      color: #293628;
+      font-family: SFProRegular;
+      margin-left: 5px;
+      margin-right: 20px;
+    }
+
+    .subtitle {
+      margin-right: auto;
+      color: #293628;
+      font-size: 17px;
+      font-family: SFProLight;
+    }
+
+    .amount {
+      color: #7b7b7b;
+      font-size: 15px;
+      font-family: SFProRegular;
+      margin-right: 4px;
+    }
+  }
+
+  .bottomText {
+    margin-top: 12px;
+    color: #7b7b7b;
+    font-size: 15px;
+    font-family: SFProRegular;
+  }
+}

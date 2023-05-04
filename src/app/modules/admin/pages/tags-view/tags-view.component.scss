@@ -1,13 +1,16 @@
 * {
   margin: 0;
 }
+
 .header {
   display: flex;
   align-items: center;
   background-color: #a1a1a1;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 20px;
 
   p {
-    margin: 0 auto;
     color: #272727;
     font-size: 16px;
     font-family: SFProRegular;
@@ -16,56 +19,84 @@
 
 .content {
   padding: 8px;
+  padding-bottom: 48px;
+}
+
+.tags-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   justify-items: center;
+  row-gap: 24px;
 }
-// .mat-expansion-panel {
-//   border-radius: 0 !important;
-// }
-// ::ng-deep .mat-expansion-panel-header {
-//   padding: 14px 17px 14px 21px !important;
-//   background-color: #a1a1a1 !important;
-//   border-radius: 0 !important;
-//   .mat-content {
-//     display: flex;
-//     align-items: center;
-//     .arrows {
-//       all: unset;
-//     }
 
-//     p {
-//       font-family: SFProRegular;
-//       color: #272727;
-//       font-size: 16px;
-//       margin-left: auto;
-//     }
+.selectable {
+  position: relative;
+}
 
-//     .right {
-//       font-family: SFProLight;
-//       margin-left: 17px;
-//       margin-right: auto;
-//     }
-//   }
-// }
+.select {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border: solid 2px #6fcf97;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1;
 
-// ::ng-deep .mat-expansion-panel-body {
-//   background-color: #a1a1a1 !important;
-//   padding: 15px 15px 30px !important;
-//   .flex {
-//     display: flex;
-//     align-items: center;
-//     p {
-//       font-family: SFProRegular;
-//       color: #272727;
-//       font-size: 16px;
-//       margin-left: auto;
-//     }
+  &.selected {
+    background-color: #6fcf97;
+  }
+}
 
-//     .right {
-//       font-family: SFProLight;
-//       margin-left: 17px;
-//       margin-right: auto;
-//     }
-//   }
-// }
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 500px;
+  height: 40px;
+  background-color: #fed230;
+
+  div {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    i {
+      font-size: 20px;
+    }
+
+    .share {
+      width: 20px;
+      height: 20px;
+      filter: brightness(0%) contrast(100%);
+    }
+  }
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  overflow-x: scroll;
+  width: 100%;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  .filter {
+    background-color: transparent;
+    border: solid 1px #d4d4d4;
+    font-family: SfProLight;
+    font-size: 1rem;
+    border-radius: 24px;
+    padding: 4px 18px;
+    transition: 0.2s;
+
+    &.selected {
+      border-color: #171d16;
+      background-color: #171d16;
+      font-family: SfProSemiBold;
+      color: #fff;
+      transition: 0.2s;
+    }
+  }
+}

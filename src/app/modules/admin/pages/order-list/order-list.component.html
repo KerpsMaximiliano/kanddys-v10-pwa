@@ -1,24 +1,74 @@
 <div class="container">
   <header class="header">
-    <a mat-icon-button [routerLink]="['../../../order-status-view']">
-      <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
-    </a>
-    <p class="title">{{ tag?.name || orderDeliveryStatus || orderStatus }}</p>
+    <div>
+      <a mat-icon-button [routerLink]="[redirectTo]">
+        <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
+      </a>
+      <p class="title">{{ title }}</p>
+    </div>
+    <!-- <p class="title">{{ tag?.name || orderDeliveryStatus || orderStatus }}</p> -->
+    <button mat-icon-button (click)="showSearchBar = !showSearchBar">
+      <i class="fa fa-search" aria-hidden="true"></i>
+    </button>
   </header>
 
   <section style="padding: 0 16px">
-    <a
-      *ngFor="let order of orders"
-      [routerLink]="['../../../../ecommerce/order-detail', order._id]"
-      [queryParams]="{ redirectTo: router.url }"
-    >
-      <app-compact-card
-        [title]="order.user?.name || order.user?.phone || 'No autenticada'"
-        [price]="order.total"
-        [image]="order.user?.image"
-        [subtitle]="order.transaction"
-        [description]="order.date"
-      ></app-compact-card>
-    </a>
+    <div *ngIf="status === 'loading'" class="notice">Cargando...</div>
+    <ng-container *ngIf="status === 'complete'">
+      <div *ngIf="showSearchBar">
+        <mat-form-field class="field-container">
+          <mat-label>Buscar</mat-label>
+          <textarea
+            [autofocus]
+            matInput
+            name="message"
+            id="input-form"
+            placeholder="Escribe.."
+            [(ngModel)]="searchText"
+          ></textarea>
+          <!-- <mat-error *ngIf="notificationForm.get('message').invalid">
+            {{ getMessageError() }}
+          </mat-error> -->
+        </mat-form-field>
+      </div>
+      <ng-container *ngIf="orders.length">
+        <a
+          *ngFor="let order of orders | filterPipeSearch : searchText"
+          [routerLink]="['../../../../../ecommerce/order-detail', order._id]"
+          [queryParams]="{ redirectTo: router.url }"
+          class="order-item"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.formatId"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="'$' + order.total?.toLocaleString('es-MX')"
+            [bottomInfo]="order.date"
+          ></app-small-info-card>
+        </a>
+      </ng-container>
+      <ng-container *ngIf="buyers.length">
+        <div
+          *ngFor="let buyer of buyers | filterPipeSearch : searchText"
+          class="order-item"
+        >
+          <app-small-info-card
+            [image]="buyer.image"
+            [title]="buyer.name || buyer.phone || buyer.email"
+            [bottomInfo]="
+              buyer.income >= 0
+                ? '$' +
+                  buyer.income.toLocaleString('es-MX') +
+                  ' en compras ' +
+                  (buyer.amount ? '(' + buyer.amount + ')' : '')
+                : 'Cargando...'
+            "
+          ></app-small-info-card>
+        </div>
+      </ng-container>
+    </ng-container>
   </section>
 </div>

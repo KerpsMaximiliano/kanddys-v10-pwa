@@ -180,8 +180,8 @@ export const itemsByCategory = gql`
 `;
 
 export const bestSellersByMerchant = gql`
-  query bestSellersByMerchant($limit: Int, $merchantID: ObjectID!) {
-    bestSellersByMerchant(limit: $limit, merchantID: $merchantID)
+  query bestSellersByMerchant($isObjectID: Boolean, $paginate: PaginationInput!) {
+    bestSellersByMerchant(isObjectID: $isObjectID, paginate: $paginate)
   }
 `;
 
@@ -247,6 +247,7 @@ export const listItems = gql`
       createdAt
       name
       images {
+        _id
         value
         index
         active
@@ -266,6 +267,10 @@ export const listItems = gql`
         updatedAt
         reference
         active
+      }
+      status
+      visitorCounter {
+        counter
       }
     }
   }

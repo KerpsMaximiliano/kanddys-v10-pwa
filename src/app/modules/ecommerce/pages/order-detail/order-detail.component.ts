@@ -24,11 +24,12 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
-import {
-  lockUI,
-  playVideoOnFullscreen,
-  unlockUI,
-} from 'src/app/core/helpers/ui.helpers';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
+import { EntityTemplate } from 'src/app/core/models/entity-template';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ToastrService } from 'ngx-toastr';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateTagComponent } from 'src/app/shared/dialogs/create-tag/create-tag.component';
 import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
@@ -40,6 +41,7 @@ import {
 } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { answerByOrder } from 'src/app/core/graphql/webforms.gql';
+import { DomSanitizer } from '@angular/platform-browser';
 
 interface Image {
   src: string;
@@ -51,6 +53,10 @@ interface Image {
   src: string;
   filter?: string;
   callback?(...param): any;
+}
+
+interface ExtendedSlide extends Slide {
+  isVideo?: boolean;
 }
 
 interface ExtendedWebformAnswer extends WebformAnswer {
@@ -67,7 +73,7 @@ export class OrderDetailComponent implements OnInit {
   URI: string = environment.uri;
   order: ItemOrder;
   post: Post;
-  slides: Slide[];
+  slides: ExtendedSlide[];
   payment: number;
   isMerchant: boolean;
   benefits: {
@@ -112,6 +118,8 @@ export class OrderDetailComponent implements OnInit {
     'video/m2ts',
   ];
   playVideoOnFullscreen = playVideoOnFullscreen;
+  entityTemplate: EntityTemplate;
+  entityTemplateLink: string;
   notify: boolean = false;
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
   questionsForAnswers: Record<string, Question> = {};
@@ -129,8 +137,12 @@ export class OrderDetailComponent implements OnInit {
   webformsByItem: Record<string, Webform> = {};
   answersByItem: Record<string, WebformAnswer> = {};
   from: string;
+  link: string;
+  chatLink: string;
+  panelOpenState = false;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
+  @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -144,9 +156,13 @@ export class OrderDetailComponent implements OnInit {
     public headerService: HeaderService,
     private merchantsService: MerchantsService,
     private paymentLogService: PaymentLogsService,
+    private entityTemplateService: EntityTemplateService,
+    private clipboard: Clipboard,
+    private toastr: ToastrService,
     private tagsService: TagsService,
     public dialog: MatDialog,
-    private webformsService: WebformsService
+    private webformsService: WebformsService,
+    public _DomSanitizer: DomSanitizer
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -211,6 +227,17 @@ export class OrderDetailComponent implements OnInit {
             }
           });
       }
+
+      const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+
+      const message = `*🐝 FACTURA ${formatID(
+        this.order.dateId
+      )}* \n\nLink de lo facturado por: ${fullLink}`;
+
+      this.link = `${this.URI}/ecommerce/contact-landing/${this.order?.items[0].saleflow.merchant.owner._id}`;
+      this.chatLink = `https://api.whatsapp.com/send?phone=${
+        this.order.items[0].saleflow.merchant.owner.phone
+      }&text=${encodeURIComponent(message)}`;
     }
 
     this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
@@ -242,12 +269,51 @@ export class OrderDetailComponent implements OnInit {
       .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
     await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+    if (!this.headerService.merchantContact) {
+      this.headerService.getMerchantContact(
+        this.order.items[0].saleflow.merchant.owner._id
+      );
+    }
 
     if (this.order.items[0].post) {
       this.post = (
         await this.postsService.getPost(this.order.items[0].post._id)
       ).post;
       this.slides = await this.postsService.slidesByPost(this.post._id);
+
+      for (const slide of this.slides) {
+        if (slide.type === 'poster' && isVideo(slide.media)) {
+          slide.isVideo = true;
+
+          if (
+            !slide.media.includes('https://') &&
+            !slide.media.includes('http://')
+          ) {
+            slide.media = 'https://' + slide.media;
+          }
+        }
+      }
+
+      if (this.post) {
+        const results = await this.entityTemplateService.entityTemplates({
+          findBy: {
+            reference: this.post._id,
+          },
+        });
+
+        if (results.length > 0) {
+          this.entityTemplate = results[0];
+
+
+          this.entityTemplateLink =
+            this.entityTemplate.access === 'public' ||
+            this.entityTemplate.recipients === 0
+              ? this.URI + '/qr/article-template/' + this.entityTemplate._id
+              : this.URI +
+                '/ecommerce/article-access/' +
+                this.entityTemplate._id;
+        }
+      }
     }
     if (this.order.items[0].reservation) {
       const reservation = await this.reservationService.getReservation(
@@ -502,43 +568,43 @@ export class OrderDetailComponent implements OnInit {
     ).length;
   }
 
-  // downloadQr() {
-  //   const parentElement = this.qr.nativeElement.querySelector('img').src;
-  //   let blobData = this.convertBase64ToBlob(parentElement);
-  //   if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
-  //     //IE
-  //     (window.navigator as any).msSaveOrOpenBlob(
-  //       blobData,
-  //       this.formatId(this.order.dateId)
-  //     );
-  //   } else {
-  //     // chrome
-  //     const blob = new Blob([blobData], { type: 'image/png' });
-  //     const url = window.URL.createObjectURL(blob);
-  //     // window.open(url);
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.download = this.formatId(this.order.dateId);
-  //     link.click();
-  //   }
-  // }
+  downloadQr(qrElment: ElementRef) {
+    const parentElement = qrElment.nativeElement.querySelector('img').src;
+    let blobData = this.convertBase64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData,
+        this.formatId(this.order.dateId)
+      );
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.formatId(this.order.dateId);
+      link.click();
+    }
+  }
 
-  // private convertBase64ToBlob(Base64Image: string) {
-  //   // SPLIT INTO TWO PARTS
-  //   const parts = Base64Image.split(';base64,');
-  //   // HOLD THE CONTENT TYPE
-  //   const imageType = parts[0].split(':')[1];
-  //   // DECODE BASE64 STRING
-  //   const decodedData = window.atob(parts[1]);
-  //   // CREATE UNIT8ARRAY OF SIZE SAME AS ROW DATA LENGTH
-  //   const uInt8Array = new Uint8Array(decodedData.length);
-  //   // INSERT ALL CHARACTER CODE INTO UINT8ARRAY
-  //   for (let i = 0; i < decodedData.length; ++i) {
-  //     uInt8Array[i] = decodedData.charCodeAt(i);
-  //   }
-  //   // RETURN BLOB IMAGE AFTER CONVERSION
-  //   return new Blob([uInt8Array], { type: imageType });
-  // }
+  private convertBase64ToBlob(Base64Image: string) {
+    // SPLIT INTO TWO PARTS
+    const parts = Base64Image.split(';base64,');
+    // HOLD THE CONTENT TYPE
+    const imageType = parts[0].split(':')[1];
+    // DECODE BASE64 STRING
+    const decodedData = window.atob(parts[1]);
+    // CREATE UNIT8ARRAY OF SIZE SAME AS ROW DATA LENGTH
+    const uInt8Array = new Uint8Array(decodedData.length);
+    // INSERT ALL CHARACTER CODE INTO UINT8ARRAY
+    for (let i = 0; i < decodedData.length; ++i) {
+      uInt8Array[i] = decodedData.charCodeAt(i);
+    }
+    // RETURN BLOB IMAGE AFTER CONVERSION
+    return new Blob([uInt8Array], { type: imageType });
+  }
 
   sendMessage() {
     const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
@@ -702,6 +768,8 @@ export class OrderDetailComponent implements OnInit {
   }
 
   goToPostDetail() {
+    this.downloadQr(this.qrcodeTemplate);
+    /*
     this.headerService.flowRoute = window.location.href
       .split('/')
       .slice(3)
@@ -714,7 +782,7 @@ export class OrderDetailComponent implements OnInit {
         this.order.items[0].saleflow.merchant.slug +
         '/article-detail/post/' +
         this.post._id,
-    ]);
+    ]);*/
   }
 
   moveDropdown() {
@@ -731,12 +799,22 @@ export class OrderDetailComponent implements OnInit {
     ]);
   };
 
+  copyEntityId(id: string) {
+    const entityId = id;
+
+    this.clipboard.copy(entityId);
+
+    this.toastr.info('Id copiado al portapapeles', null, {
+      timeOut: 3000,
+    });
+  }
+
   async getAnswersForEachItem() {
     this.answersByItem = {};
     const answers: Array<WebformAnswer> =
       await this.webformsService.answerByOrder(this.order._id);
 
-    console.log("AnswersByOrder", answers);
+    console.log('AnswersByOrder', answers);
 
     if (answers.length) {
       const webformsIds = [];
@@ -777,7 +855,8 @@ export class OrderDetailComponent implements OnInit {
               const questionsToQuery = [];
 
               answersForWebform.response.forEach((answerInList) => {
-                if (answerInList.question) questionsToQuery.push(answerInList.question);
+                if (answerInList.question)
+                  questionsToQuery.push(answerInList.question);
               });
 
               const questions = await this.webformsService.questionPaginate({
@@ -785,7 +864,7 @@ export class OrderDetailComponent implements OnInit {
                   _id: {
                     __in: questionsToQuery,
                   },
-                }
+                },
               });
 
               answersForWebform.response.forEach((answerInList) => {

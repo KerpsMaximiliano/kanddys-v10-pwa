@@ -170,7 +170,7 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
                       _answerFrequent?.response.length > 1
                         ? _answerFrequent.response.reduce(
                             (total, currentAnswer) => {
-                             //console.log('currentAnswer: ', currentAnswer);
+                              //console.log('currentAnswer: ', currentAnswer);
 
                               return total + currentAnswer.count;
                             },
@@ -191,9 +191,9 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
             ) {
               this.openedDialogFlow = true;
               this.resumingWebformCreation = true;
-            } 
+            }
 
-            if(!resumeWebform) {
+            if (!resumeWebform) {
               this.openedDialogFlow = false;
               this.resumingWebformCreation = null;
             }
@@ -220,7 +220,6 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
     this.headerService.saleflow = saleflowDefault;
 
     this.headerService.emptyOrderProducts();
-    this.headerService.emptyItems();
 
     this.headerService.storeOrderProduct(product);
 

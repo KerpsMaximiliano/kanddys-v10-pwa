@@ -53,6 +53,7 @@ export const body = `
     name
     slug
     image
+    bio
     owner {
       _id
       phone
@@ -212,6 +213,7 @@ export const listItems = gql`
       description
       createdAt
       images {
+        _id
         value
         index
         active

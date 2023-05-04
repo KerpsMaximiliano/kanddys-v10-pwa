@@ -70,6 +70,15 @@ export class QrContentComponent implements OnInit {
       }
     }
 
+    if (!this.slides && this.joke) {
+      this.slidesPath = [];
+      this.slidesPath.push({
+        text: this.joke,
+        title: 'Chiste de IA',
+        type: 'TEXT',
+      });
+    }
+
     if (this.slides && this.slides.length > 0) {
       this.shadows = false;
     } else {

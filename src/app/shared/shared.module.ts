@@ -11,6 +11,7 @@ import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxPrintModule } from 'ngx-print';
 import { SwiperModule } from 'ngx-swiper-wrapper';
+import { environment } from './../../environments/environment';
 import { DialogModule } from './../libs/dialog/dialog.module';
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
 import { AnexoChoicesComponent } from './components/anexo-choices/anexo-choices.component';
@@ -119,12 +120,18 @@ import { StoreShareComponent } from './dialogs/store-share/store-share.component
 import { TagAsignationComponent } from './dialogs/tag-asignation/tag-asignation.component';
 import { TagManagementComponent } from './dialogs/tag-management/tag-management.component';
 import { TagTypeDialogComponent } from './dialogs/tag-type-dialog/tag-type-dialog.component';
+import { OptionsGridComponent } from './dialogs/options-grid/options-grid.component';
+import { DataDisplayComponent } from './components/data-display/data-display.component';
+import { PostHeaderComponent } from './components/post-header/post-header.component';
+import { EnvelopeContentComponent } from './components/envelope-content/envelope-content.component';
+import { EnvelopeDataComponent } from './components/envelope-data/envelope-data.component';
+import { PostPreviewComponent } from '../modules/ecommerce/pages/post-preview/post-preview.component';
+import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
+import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';
 import { TagsDialogComponent } from './dialogs/tags-dialog/tags-dialog.component';
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
 import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
-import { ContactLandingContainerComponent } from './components/contact-landing-container/contact-landing-container.component';
-import { ContactLandingComponent } from './components/contact-landing/contact-landing.component';
 import { LinkDialogComponent } from './dialogs/link-dialog/link-dialog.component';
 import { BuyerCardComponent } from './components/buyer-card/buyer-card.component';
 import { GradientFooterComponent } from './components/gradient-footer/gradient-footer.component';
@@ -183,6 +190,11 @@ import { ArticleStepperFormComponent } from './components/article-stepper-form/a
 import { FacturasDisplay2Component } from './components/facturas-display2/facturas-display2.component';
 import { FullMenuButtonComponent } from './components/full-menu-button/full-menu-button.component';
 import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
+import { InfoContainerComponent } from './components/info-container/info-container.component';
+import { CardInfoComponent } from './components/card-info/card-info.component';
+import { SmallInfoCardComponent } from './components/small-info-card/small-info-card.component';
+import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-cards.component';
+import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
 
 const imports = [
   CommonModule,
@@ -321,11 +333,25 @@ const declarations = [
   BlankComponent,
   ArticleDialogComponent,
   AnexoLandingComponent,
+  GeneralDialogComponent,
+  OptionsGridComponent,
+  GeneralItemComponent,
+  MerchantContactComponent,
+  QrEditComponent,
+  DataDisplayComponent,
+  PostHeaderComponent,
+  PostPreviewComponent,
+  QrContentComponent,
+  EnvelopeContentComponent,
+  EnvelopeDataComponent,
+  CardComponent,
+  TitleIconHeaderComponent,
+  ContactLandingComponent,
+  ContactLandingContainerComponent,
   ItemImagesComponent,
   InfoDialogComponent,
   TagTypeDialogComponent,
   TagsDialogComponent,
-  ContactLandingComponent,
   LinkDialogComponent,
   BuyerCardComponent,
   GradientFooterComponent,
@@ -344,6 +370,7 @@ const declarations = [
   LinksDialogComponent,
   GradientCardComponent,
   CalendarSwiperComponent,
+  ConfirmationDialogComponent,
   DotLoaderComponent,
   DropdownMenuComponent,
   ConfirmationDialogComponent,
@@ -371,7 +398,12 @@ const declarations = [
   ArticleStepperFormComponent,
   FacturasDisplay2Component,
   FullMenuButtonComponent,
-  NotificationDialogComponent
+  NotificationDialogComponent,
+  InfoContainerComponent,
+  CardInfoComponent,
+  SmallInfoCardComponent,
+  KioskerosCardsComponent,
+  ContactHeaderComponent,
 ];
 
 @NgModule({
@@ -379,6 +411,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: []
+  providers: [],
 })
 export class SharedModule {}
