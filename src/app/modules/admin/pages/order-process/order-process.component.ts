@@ -69,6 +69,7 @@ export class OrderProcessComponent implements OnInit {
 
   redirectTo: string = null;
   view: 'delivery' | 'assistant' | 'admin';
+  progress: OrderStatusDeliveryType;
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = [
@@ -160,11 +161,12 @@ export class OrderProcessComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { redirectTo, view, orderId, deliveryZone } = queryParams;
+      const { redirectTo, view, progress, orderId, deliveryZone } = queryParams;
 
       this.redirectTo = redirectTo;
       this.deliveryZone = deliveryZone;
       if (view) this.view = view;
+      if (progress) this.progress = progress;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
       if (typeof deliveryZone === 'undefined') this.deliveryZone = null;
@@ -231,7 +233,7 @@ export class OrderProcessComponent implements OnInit {
       }
       this.deliveryImages.push({
         image: this.isPopulated(order)
-          ? order.deliveryData.image
+          ? order.deliveryData?.image
             ? order.deliveryData.image
             : null
           : null,
@@ -432,16 +434,14 @@ export class OrderProcessComponent implements OnInit {
       merchant: merchantId,
       deliveryZone: deliveryZone,
       orderStatus: ['to confirm', 'paid', 'completed'],
-      orderStatusDelivery:
-        this.view === 'delivery'
-          ? 'pending'
-          : this.view === 'assistant'
-          ? 'in progress'
-          : this.isMerchant
-          ? null
-          : null,
+      orderStatusDelivery: this.isMerchant
+        ? this.progress || null
+        : this.view === 'delivery'
+        ? 'pending'
+        : this.view === 'assistant'
+        ? 'in progress'
+        : null,
     };
-    if (this.isMerchant) delete findBy.orderStatusDelivery;
     try {
       const result = await this.orderService.orderByMerchantDelivery({
         options: {
