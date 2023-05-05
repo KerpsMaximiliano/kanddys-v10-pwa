@@ -75,8 +75,16 @@ export class FormResponsesComponent implements OnInit {
     }
   > = {};
   selectedQuestion: Question = null;
+  indexesOfSelectedOptionsFromSelectedQuestion: Array<number> = [];
   responsesForSelectedQuestion: Array<SingleResponseForQuestion> = [];
   responsesFiltersSwiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 0,
+    watchSlidesProgress: true,
+    watchSlidesVisibility: true,
+  };
+  questionMediaOptionsSwiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 0,
@@ -190,7 +198,6 @@ export class FormResponsesComponent implements OnInit {
           }
         }
 
-
         unlockUI();
       }
     );
@@ -244,6 +251,12 @@ export class FormResponsesComponent implements OnInit {
     if (this.currentView === 'FORM_SUBMISSION_RESPONSES') {
       this.currentView = 'FORM_SUBMISSIONS' as any;
       this.selectedFormSubmission = null;
+    }
+
+    if (this.currentView === 'QUESTION_RESPONSES') {
+      this.currentView = 'QUESTIONS' as any;
+      this.responsesForSelectedQuestion = [];
+      this.selectedQuestion = null;
     }
   }
 
@@ -304,6 +317,8 @@ export class FormResponsesComponent implements OnInit {
   async loadResponsesForASpecificQuestion(question: Question) {
     this.selectedQuestion = question;
 
+    lockUI();
+
     this.changeView('QUESTION_RESPONSES');
 
     const responsesForSelectedQuestion =
@@ -330,5 +345,27 @@ export class FormResponsesComponent implements OnInit {
     }
 
     unlockUI();
+  }
+
+  selectAnOptionFromQuestionOptionsList(index: number) {
+    const indexFoundInList =
+      this.indexesOfSelectedOptionsFromSelectedQuestion.findIndex(
+        (indexFromList) => indexFromList === index
+      );
+
+    if (indexFoundInList >= 0) {
+      this.indexesOfSelectedOptionsFromSelectedQuestion.splice(
+        indexFoundInList,
+        1
+      );
+    } else {
+      if (
+        this.selectedQuestion.answerLimit === 1 &&
+        this.indexesOfSelectedOptionsFromSelectedQuestion.length === 0
+      )
+        this.indexesOfSelectedOptionsFromSelectedQuestion = [index];
+      else if (this.selectedQuestion.answerLimit !== 1)
+        this.indexesOfSelectedOptionsFromSelectedQuestion.push(index);
+    }
   }
 }

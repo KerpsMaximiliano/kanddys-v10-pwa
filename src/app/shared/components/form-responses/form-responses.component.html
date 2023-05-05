@@ -302,18 +302,65 @@
         <div
           class="response-options-media"
           *ngIf="
-            selectedQuestion.type === 'multiple' &&
+            ['multiple', 'multiple-text'].includes(selectedQuestion.type) &&
             selectedQuestion.answerDefault[0].isMedia
           "
         >
-          <div
-            class="media-option"
-            *ngFor="let option of selectedQuestion.answerDefault"
-            [ngStyle]="{
-              backgroundImage:
-                'url(' + option.value + '), url(' + env + '/spinner2.gif)'
-            }"
-          ></div>
+          <swiper [config]="responsesFiltersSwiperConfig" #monthsSwiper>
+            <div
+              class="media-option-wrapper"
+              (click)="selectAnOptionFromQuestionOptionsList(i)"
+              *ngFor="let option of selectedQuestion.answerDefault; index as i"
+            >
+              <div
+                class="image"
+                [ngStyle]="{
+                  backgroundImage:
+                    'url(' + option.value + '), url(' + env + '/spinner2.gif)'
+                }"
+              >
+              </div>
+
+              <div
+                class="users-percentage"
+                [ngClass]="{
+                  selected:
+                    this.indexesOfSelectedOptionsFromSelectedQuestion.includes(
+                      i
+                    )
+                }"
+              >
+                <div class="percentage">10%</div>
+                <div class="border"></div>
+              </div>
+            </div>
+          </swiper>
+        </div>
+
+        <div
+          class="text-options"
+          *ngIf="
+            ['multiple', 'multiple-text'].includes(selectedQuestion.type) &&
+            !selectedQuestion.answerDefault[0].isMedia
+          "
+        >
+          <swiper
+            [config]="responsesFiltersSwiperConfig"
+            #monthsSwiper
+            (sliderMove)="(null)"
+          >
+            <div
+              *ngFor="let option of selectedQuestion.answerDefault; index as i"
+              class="text-option"
+              (click)="selectAnOptionFromQuestionOptionsList(i)"
+              [ngClass]="{
+                selected:
+                  this.indexesOfSelectedOptionsFromSelectedQuestion.includes(i)
+              }"
+            >
+              20% (870) {{ option.value }}
+            </div>
+          </swiper>
         </div>
 
         <ul class="question-responses-list">
@@ -322,8 +369,17 @@
               listItem;
               context: {
                 arrayOfItems: responsesForSelectedQuestion,
-                showTextBody: true,
+                showTextBody:
+                  !['multiple', 'multiple-text'].includes(
+                    selectedQuestion.type
+                  ) || selectedQuestion.type === 'text',
                 textBody: 'value',
+                addBlankSpace:
+                  ['multiple', 'multiple-text'].includes(
+                    selectedQuestion.type
+                  ) ||
+                  (selectedQuestion.answerDefault.length > 0 &&
+                    !selectedQuestion.answerDefault[0].isMedia),
                 showResponsesLink: false,
                 responsesLinkView: 'FORM_SUBMISSION_RESPONSES'
               }
