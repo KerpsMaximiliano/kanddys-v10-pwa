@@ -13,6 +13,29 @@
     position: sticky;
     top: 0;
 
+    .back-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .form-name {
+        margin-left: 11.3px;
+        font-family: SfProSemiBold;
+        font-weight: normal;
+        font-size: clamp(13px, 4vw, 17px);
+      }
+
+      img {
+        width: clamp(15.38px, 4vw, 19.38px);
+      }
+    }
+
+    .settings-btn {
+      img {
+        width: clamp(22px, 6vw, 26px);
+      }
+    }
+
     .back-btn,
     .settings-btn {
       &:hover {
@@ -101,21 +124,81 @@
     margin-top: 30px;
 
     .question-list,
-    .form-submission-list {
+    .form-submission-list,
+    .question-responses-list {
       list-style: none;
       margin: 0px;
       padding: 0px;
       margin: 0px 17px;
     }
 
-    .form-submission-list {
-      .form-submission {
+    .form-submission-list,
+    .question-responses-list {
+      .list-card {
         padding: 6px 15px 10px 8px;
         background-color: #ffffff;
         border-radius: 10px;
-        display: flex;
-        justify-content: space-between;
         margin-bottom: 6px;
+
+        .top-row {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          align-items: flex-end;
+
+          .user-presentation {
+            font-family: SfProLight;
+            font-size: clamp(13px, 4vw, 17px);
+            color: #171d16;
+            display: flex;
+            align-items: flex-end;
+            height: 22px;
+
+            .kioskoId {
+              font-family: SfProBold;
+              margin-right: 14px;
+              font-weight: normal;
+            }
+          }
+
+          .responses-link {
+            color: #2874ad;
+            font-family: SfProBold;
+            font-size: clamp(9px, 4vw, 13px);
+          }
+        }
+
+        .text-body {
+          width: 100%;
+          font-size: clamp(11px, 4vw, 15px);
+          font-family: SfProLight;
+          color: #171d16;
+          margin-top: 14px;
+          margin-bottom: 14px;
+        }
+
+        .blank-space {
+          height: 24px;
+        }
+
+        .bottom-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .date-relative-info {
+            color: #7b7b7b;
+            font-size: 16px;
+            font-family: SfProRegular;
+            font-size: clamp(12px, 4vw, 16px);
+          }
+
+          img {
+            margin-left: auto;
+            filter: invert(67%) sepia(4%) saturate(16%) hue-rotate(336deg)
+              brightness(95%) contrast(91%);
+          }
+        }
 
         .left-column {
           .user-presentation {
@@ -356,5 +439,25 @@ footer {
   .preview-btn:hover,
   .share-btn:hover {
     cursor: pointer;
+  }
+}
+
+.filters {
+  overflow-x: scroll;
+  margin-bottom: 18px;
+
+  .filter {
+    margin-left: 20px;
+    font-family: SfProLight;
+    font-size: clamp(13px, 4vw, 17px);
+    padding: 5px 0px;
+    display: inline-block;
+    width: auto !important;
+
+    &.selected {
+      padding: 5px 7px;
+      border-bottom: 3px solid #6fcf97;
+      border-radius: 2px;
+    }
   }
 }

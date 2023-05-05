@@ -267,3 +267,12 @@ export const answersInWebformGroupedByUser = gql`
     answersInWebformGroupedByUser(webformId: $webformId)
   }
 `;
+
+export const answerByQuestion = gql`
+  query answerByQuestion(
+    $questionId: ObjectID!,
+    $webformId: ObjectID!
+  ) {
+    answerByQuestion(questionId: $questionId, webformId: $webformId)
+  }
+`;

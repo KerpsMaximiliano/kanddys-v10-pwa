@@ -12,6 +12,7 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   Answer,
   AnswersGroupedByUser,
+  AnswersQuestion,
   Question,
   Webform,
   answer,
@@ -23,6 +24,8 @@ import { Merchant } from 'src/app/core/models/merchant';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { AppService } from 'src/app/app.service';
+import Swiper, { SwiperOptions } from 'swiper';
+import { User } from 'src/app/core/models/user';
 
 interface ExtendedAnswer extends Answer {
   responsesGroupedByQuestion: Array<{
@@ -35,14 +38,28 @@ interface ExtendedAnswer extends Answer {
   merchant?: Merchant;
 }
 
+interface SingleResponseForQuestion {
+  user: User;
+  merchant: Merchant;
+  isMedia?: boolean;
+  updatedAt: string;
+  createdAt: string;
+  value?: string;
+  responseId: string;
+  answerId: string;
+}
+
 @Component({
   selector: 'app-form-responses',
   templateUrl: './form-responses.component.html',
   styleUrls: ['./form-responses.component.scss'],
 })
 export class FormResponsesComponent implements OnInit {
-  currentView: 'FORM_SUBMISSIONS' | 'QUESTIONS' | 'FORM_SUBMISSION_RESPONSES' | 'QUESTION_RESPONSES' =
-    'FORM_SUBMISSIONS';
+  currentView:
+    | 'FORM_SUBMISSIONS'
+    | 'QUESTIONS'
+    | 'FORM_SUBMISSION_RESPONSES'
+    | 'QUESTION_RESPONSES' = 'FORM_SUBMISSIONS';
   env: string = environment.assetsUrl;
   item: Item;
   webform: Webform;
@@ -58,6 +75,14 @@ export class FormResponsesComponent implements OnInit {
     }
   > = {};
   selectedQuestion: Question = null;
+  responsesForSelectedQuestion: Array<SingleResponseForQuestion> = [];
+  responsesFiltersSwiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 0,
+    watchSlidesProgress: true,
+    watchSlidesVisibility: true,
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -165,8 +190,6 @@ export class FormResponsesComponent implements OnInit {
           }
         }
 
-        console.log("WEBFORM", this.webform);
-        console.log("QUESTIONS", this.questionsByIdObject);
 
         unlockUI();
       }
@@ -190,7 +213,11 @@ export class FormResponsesComponent implements OnInit {
   }
 
   changeView(
-    view: 'FORM_SUBMISSIONS' | 'QUESTIONS' | 'FORM_SUBMISSION_RESPONSES' | 'QUESTION_RESPONSES',
+    view:
+      | 'FORM_SUBMISSIONS'
+      | 'QUESTIONS'
+      | 'FORM_SUBMISSION_RESPONSES'
+      | 'QUESTION_RESPONSES',
     data?: any
   ) {
     this.currentView = view;
@@ -279,8 +306,29 @@ export class FormResponsesComponent implements OnInit {
 
     this.changeView('QUESTION_RESPONSES');
 
-    unlockUI();
+    const responsesForSelectedQuestion =
+      await this.webformsService.answerByQuestion(
+        this.selectedQuestion._id,
+        this.webform._id
+      );
 
-    
+    this.responsesForSelectedQuestion = [];
+
+    for (const answer of responsesForSelectedQuestion) {
+      const response: SingleResponseForQuestion = {
+        answerId: answer._id,
+        responseId: answer.response[0]._id,
+        user: answer.user,
+        merchant: answer.merchant,
+        createdAt: answer.response[0].createdAt,
+        updatedAt: answer.response[0].updatedAt,
+        isMedia: answer.response[0].isMedia,
+        value: answer.response[0].value,
+      };
+
+      this.responsesForSelectedQuestion.push(response);
+    }
+
+    unlockUI();
   }
 }

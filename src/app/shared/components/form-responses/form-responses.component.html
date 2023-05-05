@@ -89,7 +89,7 @@
     </button>
     <button
       [ngClass]="{
-        active: currentView === 'QUESTIONS'
+        active: ['QUESTIONS', 'QUESTION_RESPONSES'].includes(currentView)
       }"
       (click)="changeView('QUESTIONS')"
     >
@@ -108,70 +108,19 @@
 
         <ng-container *ngIf="answersForWebform.length > 0">
           <ul class="form-submission-list">
-            <li
-              class="form-submission"
-              *ngFor="let answer of answersForWebform"
+            <ng-container
+              *ngTemplateOutlet="
+                listItem;
+                context: {
+                  arrayOfItems: answersForWebform,
+                  showTextBody: false,
+                  addBlankSpace: true,
+                  showResponsesLink: true,
+                  responsesLinkView: 'FORM_SUBMISSION_RESPONSES'
+                }
+              "
             >
-              <div class="left-column">
-                <div
-                  class="user-presentation"
-                  *ngIf="answer.user && !answer.merchant"
-                >
-                  <div
-                    class="avatar-wrapper"
-                    [ngStyle]="{
-                      backgroundImage: answer.user.image
-                        ? 'url(' +
-                          answer.user.image +
-                          '), url(' +
-                          env +
-                          '/spinner2.gif)'
-                        : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
-                    }"
-                  ></div>
-                  <span class="kioskoId">{{ answer.user.name }}</span>
-                </div>
-
-                <div
-                  class="user-presentation"
-                  *ngIf="answer.user && answer.merchant"
-                >
-                  <div
-                    class="avatar-wrapper"
-                    [ngStyle]="{
-                      backgroundImage: answer.merchant.image
-                        ? 'url(' +
-                          (answer.merchant.image || answer.user.image) +
-                          '), url(' +
-                          env +
-                          '/spinner2.gif)'
-                        : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
-                    }"
-                  ></div>
-                  <span class="kioskoId">{{ answer.merchant.name }}</span> by
-                  {{ answer.user.name }}
-                </div>
-
-                <div class="date-relative-info">
-                  Respondió por última vez
-                  {{ getCreationDateDifferenceAsItsSaid(answer.createdAt) }}
-                </div>
-              </div>
-              <div class="right-column">
-                <div
-                  class="responses-link"
-                  (click)="changeView('FORM_SUBMISSION_RESPONSES', answer)"
-                >
-                  {{ answer.responsesGroupedByQuestion.length }} Respuestas
-                </div>
-                <div class="three-dots">
-                  <img
-                    src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
-                    alt="more options"
-                  />
-                </div>
-              </div>
-            </li>
+            </ng-container>
           </ul>
         </ng-container>
       </ng-container>
@@ -327,6 +276,62 @@
           </ul>
         </ng-container>
       </ng-container>
+      <ng-container *ngSwitchCase="'QUESTION_RESPONSES'">
+        <div class="webform-description">
+          {{ webform.description }}
+        </div>
+
+        <div class="filters">
+          <swiper
+            [config]="responsesFiltersSwiperConfig"
+            #monthsSwiper
+            (sliderMove)="(null)"
+          >
+            <div class="filter selected">Todas</div>
+
+            <div class="filter">2023</div>
+
+            <div class="filter">90 dias</div>
+
+            <div class="filter">MesID</div>
+
+            <div class="filter">SemanaID</div>
+          </swiper>
+        </div>
+
+        <div
+          class="response-options-media"
+          *ngIf="
+            selectedQuestion.type === 'multiple' &&
+            selectedQuestion.answerDefault[0].isMedia
+          "
+        >
+          <div
+            class="media-option"
+            *ngFor="let option of selectedQuestion.answerDefault"
+            [ngStyle]="{
+              backgroundImage:
+                'url(' + option.value + '), url(' + env + '/spinner2.gif)'
+            }"
+          ></div>
+        </div>
+
+        <ul class="question-responses-list">
+          <ng-container
+            *ngTemplateOutlet="
+              listItem;
+              context: {
+                arrayOfItems: responsesForSelectedQuestion,
+                showTextBody: true,
+                textBody: 'value',
+                showResponsesLink: false,
+                responsesLinkView: 'FORM_SUBMISSION_RESPONSES'
+              }
+            "
+          >
+          </ng-container>
+        </ul>
+      </ng-container>
     </ng-container>
   </main>
 
@@ -352,10 +357,109 @@
         [src]="env + '/arrow-double-up-black.svg'"
         alt="go back"
       />
+
+      <div class="form-name">
+        {{ webform?.name }}
+      </div>
     </div>
 
     <div class="settings-btn">
       <img [src]="env + '/settings.svg'" alt="settings" />
     </div>
   </header>
+</ng-template>
+
+<ng-template
+  #userPresentation
+  let-data="dataObject"
+  let-showUserByMerchantLabel="showMerchantAndUser"
+>
+  <div class="user-presentation" *ngIf="data.user && !data.merchant">
+    <div
+      class="avatar-wrapper"
+      [ngStyle]="{
+        backgroundImage: data.user.image
+          ? 'url(' + data.user.image + '), url(' + env + '/spinner2.gif)'
+          : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+      }"
+    ></div>
+    <span class="kioskoId">{{ data.user.name }}</span>
+  </div>
+
+  <div class="user-presentation" *ngIf="data.user && data.merchant">
+    <div
+      class="avatar-wrapper"
+      [ngStyle]="{
+        backgroundImage: data.merchant.image
+          ? 'url(' +
+            (data.merchant.image || data.user.image) +
+            '), url(' +
+            env +
+            '/spinner2.gif)'
+          : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+      }"
+    ></div>
+    <span class="kioskoId">{{ data.merchant.name }}</span>
+
+    <ng-container *ngIf="showUserByMerchantLabel; else lastAnswered">
+      by {{ data.user.name }}
+    </ng-container>
+
+    <ng-template #lastAnswered>
+      {{ getCreationDateDifferenceAsItsSaid(data.createdAt) }}
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template
+  #listItem
+  let-list="arrayOfItems"
+  let-showTextBody="showTextBody"
+  let-textBody="textBody"
+  let-addBlankSpace="addBlankSpace"
+  let-showResponsesLink="showResponsesLink"
+  let-responsesLinkView="responsesLinkView"
+>
+  <li class="list-card" *ngFor="let item of list">
+    <div class="top-row">
+      <ng-container
+        *ngTemplateOutlet="
+          userPresentation;
+          context: { dataObject: item, showMerchantAndUser: true }
+        "
+      ></ng-container>
+
+      <div
+        class="responses-link"
+        *ngIf="showResponsesLink && responsesLinkView"
+        (click)="changeView(responsesLinkView, item)"
+      >
+        {{
+          item.responsesGroupedByQuestion
+            ? item.responsesGroupedByQuestion.length
+            : 0
+        }}
+        Respuestas
+      </div>
+    </div>
+
+    <div class="text-body" *ngIf="showTextBody && textBody">
+      {{ item[textBody] }}
+    </div>
+
+    <div class="blank-space" *ngIf="addBlankSpace"></div>
+
+    <div class="bottom-row">
+      <div class="date-relative-info">
+        Respondió
+        {{ getCreationDateDifferenceAsItsSaid(item.createdAt) }}
+      </div>
+
+      <img
+        class="three-dots"
+        [src]="env + '/dots-black.svg'"
+        alt="more options"
+      />
+    </div>
+  </li>
 </ng-template>

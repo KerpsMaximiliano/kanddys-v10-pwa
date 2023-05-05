@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   answerByOrder,
+  answerByQuestion,
   answerFrequent,
   answerPaginate,
   answersInWebformGroupedByUser,
@@ -309,6 +310,22 @@ export class WebformsService {
       if (!response || response?.errors) return undefined;
 
       return response?.answersInWebformGroupedByUser;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async answerByQuestion(questionId: string, webformId: string): Promise<any> {
+    try {
+      const response = await this.graphql.query({
+        query: answerByQuestion,
+        variables: { questionId, webformId },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!response || response?.errors) return undefined;
+
+      return response?.answerByQuestion;
     } catch (error) {
       console.log(error);
     }
