@@ -77,6 +77,7 @@ export class FormResponsesComponent implements OnInit {
   selectedQuestion: Question = null;
   indexesOfSelectedOptionsFromSelectedQuestion: Array<number> = [];
   responsesForSelectedQuestion: Array<SingleResponseForQuestion> = [];
+  filteredResponsesForSelectedQuestion: Array<SingleResponseForQuestion> = null;
   responsesFiltersSwiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
@@ -234,6 +235,11 @@ export class FormResponsesComponent implements OnInit {
     } else {
       this.selectedFormSubmission = null;
     }
+
+    if (view !== 'QUESTION_RESPONSES') {
+      this.indexesOfSelectedOptionsFromSelectedQuestion = [];
+      this.filteredResponsesForSelectedQuestion = null;
+    }
   }
 
   openImageModal(imageSourceURL: string) {
@@ -317,6 +323,7 @@ export class FormResponsesComponent implements OnInit {
   async loadResponsesForASpecificQuestion(question: Question) {
     this.selectedQuestion = question;
 
+
     lockUI();
 
     this.changeView('QUESTION_RESPONSES');
@@ -347,6 +354,20 @@ export class FormResponsesComponent implements OnInit {
     unlockUI();
   }
 
+  containsYear(inputStr, year) {
+    // Extract the year from the input string
+    const inputYear = parseInt(inputStr.slice(0, 4));
+    // Compare the extracted year with the given year
+    return inputYear === year;
+  }
+  
+  containsMonth(inputStr, month) {
+    // Extract the month from the input string
+    const inputMonth = parseInt(inputStr.slice(5, 7));
+    // Compare the extracted month with the given month
+    return inputMonth === month;
+  }
+
   selectAnOptionFromQuestionOptionsList(index: number) {
     const indexFoundInList =
       this.indexesOfSelectedOptionsFromSelectedQuestion.findIndex(
@@ -367,5 +388,20 @@ export class FormResponsesComponent implements OnInit {
       else if (this.selectedQuestion.answerLimit !== 1)
         this.indexesOfSelectedOptionsFromSelectedQuestion.push(index);
     }
+
+    const valuesFromOptionsToFind = {};
+
+    for (const index of this.indexesOfSelectedOptionsFromSelectedQuestion) {
+      valuesFromOptionsToFind[
+        this.selectedQuestion.answerDefault[index].value
+      ] = true;
+    }
+
+    if (this.indexesOfSelectedOptionsFromSelectedQuestion.length > 0) {
+      this.filteredResponsesForSelectedQuestion =
+        this.responsesForSelectedQuestion.filter((response) => {
+          return valuesFromOptionsToFind[response.value];
+        });
+    } else this.filteredResponsesForSelectedQuestion = null;
   }
 }

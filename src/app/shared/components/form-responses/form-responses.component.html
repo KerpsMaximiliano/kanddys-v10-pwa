@@ -265,12 +265,15 @@
                     )
                   }}
                 </div>
-                <div class="three-dots">
-                  <img
-                    src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
-                    alt="more options"
-                  />
-                </div>
+
+                <!--
+                  <div class="three-dots">
+                    <img
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
+                      alt="more options"
+                    />
+                  </div>
+                -->
               </div>
             </li>
           </ul>
@@ -281,23 +284,25 @@
           {{ webform.description }}
         </div>
 
-        <div class="filters">
-          <swiper
-            [config]="responsesFiltersSwiperConfig"
-            #monthsSwiper
-            (sliderMove)="(null)"
-          >
-            <div class="filter selected">Todas</div>
-
-            <div class="filter">2023</div>
-
-            <div class="filter">90 dias</div>
-
-            <div class="filter">MesID</div>
-
-            <div class="filter">SemanaID</div>
-          </swiper>
-        </div>
+        <!--
+          <div class="filters">
+            <swiper
+              [config]="responsesFiltersSwiperConfig"
+              #monthsSwiper
+              (sliderMove)="(null)"
+            >
+              <div class="filter selected">Todas</div>
+  
+              <div class="filter">2023</div>
+  
+              <div class="filter">90 dias</div>
+  
+              <div class="filter">MesID</div>
+  
+              <div class="filter">SemanaID</div>
+            </swiper>
+          </div>
+        -->
 
         <div
           class="response-options-media"
@@ -318,8 +323,7 @@
                   backgroundImage:
                     'url(' + option.value + '), url(' + env + '/spinner2.gif)'
                 }"
-              >
-              </div>
+              ></div>
 
               <div
                 class="users-percentage"
@@ -368,7 +372,9 @@
             *ngTemplateOutlet="
               listItem;
               context: {
-                arrayOfItems: responsesForSelectedQuestion,
+                arrayOfItems: !filteredResponsesForSelectedQuestion
+                  ? responsesForSelectedQuestion
+                  : filteredResponsesForSelectedQuestion,
                 showTextBody:
                   !['multiple', 'multiple-text'].includes(
                     selectedQuestion.type
@@ -511,11 +517,13 @@
         {{ getCreationDateDifferenceAsItsSaid(item.createdAt) }}
       </div>
 
-      <img
-        class="three-dots"
-        [src]="env + '/dots-black.svg'"
-        alt="more options"
-      />
+      <!--
+        <img
+          class="three-dots"
+          [src]="env + '/dots-black.svg'"
+          alt="more options"
+        />
+      -->
     </div>
   </li>
 </ng-template>
