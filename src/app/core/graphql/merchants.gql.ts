@@ -180,7 +180,13 @@ export const createMerchant = gql`
 
 export const createMerchant2 = gql`
   mutation createMerchant($input: MerchantInput!) {
-    createMerchant(input: $input) { ${bodyWithoutShowItems} }
+    createMerchant(input: $input) { ${body} }
+  }
+`;
+
+export const createMerchantWhatsapp = gql`
+  mutation createMerchantWhatsapp($itemId: ObjectID!, $nameMerchant: String!) {
+    createMerchantWhatsapp(itemId: $itemId, nameMerchant: $nameMerchant)
   }
 `;
 

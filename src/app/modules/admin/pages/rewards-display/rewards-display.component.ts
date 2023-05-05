@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ItemOrder } from 'src/app/core/models/order';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { environment } from 'src/environments/environment';
+import Swiper, { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-rewards-display',
@@ -12,95 +13,63 @@ import { environment } from 'src/environments/environment';
 export class RewardsDisplayComponent implements OnInit {
   env: string = environment.assetsUrl;
 
-  cards = [
+  facturas = [
     {
       img: './assets/images/noimage.png',
-      title: 'Válida',
-      subtitle: 'propuesta de exhibiciones',
+      title: 'Mira',
+      subtitle: 'lo facturado',
       amount: 168,
       notification: true,
-      bottomText: '70 KiosKeros te han mandado propuestas',
-    },
-    {
-      img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
-      amount: 168,
-      notification: true,
-      bottomText: '70 de transferencias. 80 por tarjetas de crédito. 50 fotos.',
-    },
-    {
-      img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
-      amount: 168,
-      notification: true,
-      bottomText: '70 de transferencias. 80 por tarjetas de crédito. 50 fotos.',
-    },
-    {
-      img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
-      amount: 168,
-      notification: false,
-      bottomText: '70 de transferencias. 80 por tarjetas de crédito. 50 fotos.',
-    },
-    {
-      img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
-      amount: 168,
-      notification: false,
-      bottomText: '70 de transferencias. 80 por tarjetas de crédito. 50 fotos.',
-    },
-    {
-      img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
-      amount: 168,
-      notification: false,
-      bottomText: '70 de transferencias. 80 por tarjetas de crédito. 50 fotos.',
-    },
-    {
-      img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
-      amount: 168,
-      notification: false,
       bottomText: '70 de transferencias. 80 por tarjetas de crédito. 50 fotos.',
     },
   ];
 
-  cards2 = [
+  facturas2 = [
     {
       img: './assets/images/noimage.png',
-      title: 'Válida',
-      subtitle: 'propuesta de exhibiciones',
+      title: 'ProgresoID',
+      subtitle: 'de facturas',
       amount: 168,
     },
     {
       img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
+      title: 'ProgresoID',
+      subtitle: 'de facturas',
       amount: 168,
     },
     {
       img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
+      title: 'ProgresoID',
+      subtitle: 'de facturas',
       amount: 168,
     },
     {
       img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
+      title: 'ProgresoID',
+      subtitle: 'de facturas',
       amount: 168,
     },
+  ];
+
+  ingresos = [
     {
       img: './assets/images/noimage.png',
-      title: 'Confirma',
-      subtitle: 'pagos de facturas',
+      title: 'Control',
+      subtitle: 'y reporte de tus beneficios',
       amount: 168,
+      notification: false,
+      bottomText: 'Maneja las zonas de las entregas. Salarios. Costos.',
+    },
+  ];
+
+  ingresos2 = [
+    {
+      img: './assets/images/noimage.png',
+      title: 'Coordina',
+      subtitle: 'por las zonas de las entregas',
+      amount: 168,
+      notification: false,
+      bottomText: '7 para zonaID. 8 para zonaID',
     },
   ];
 
@@ -111,8 +80,17 @@ export class RewardsDisplayComponent implements OnInit {
   ordersToBeDelivered: ItemOrder[] = [];
   ordersDelivered: ItemOrder[] = [];
 
-
   redirectTo: string = null;
+
+  swiperConfig: SwiperOptions = {
+    slidesPerView: 1,
+    resistance: false,
+    freeMode: false,
+    spaceBetween: 5,
+  };
+
+  isFacturas: boolean = true;
+  isIngresos: boolean = false;
 
   constructor(
     private _MerchantsService: MerchantsService,
@@ -130,30 +108,40 @@ export class RewardsDisplayComponent implements OnInit {
 
       await Promise.all([
         this.getOrdersToConfirm(),
-        this.getOrdersByDeliveryStatus()
+        this.getOrdersByDeliveryStatus(),
       ]);
     });
+  }
 
+  selectFacturas() {
+    this.isFacturas = true;
+    this.isIngresos = false;
+    console.log('Facturas');
+  }
+
+  selectIngresos() {
+    this.isFacturas = false;
+    this.isIngresos = true;
+    console.log('Ingresos');
   }
 
   async getOrdersToConfirm() {
     try {
-      const { ordersByMerchant } = await this._MerchantsService.ordersByMerchant(
-        this._MerchantsService.merchantData._id,
-        {
-          options: {
-            limit: -1,
-            sortBy: 'createdAt:desc'
-          },
-          findBy: {
-            orderStatus: 'to confirm'
+      const { ordersByMerchant } =
+        await this._MerchantsService.ordersByMerchant(
+          this._MerchantsService.merchantData._id,
+          {
+            options: {
+              limit: -1,
+              sortBy: 'createdAt:desc',
+            },
+            findBy: {
+              orderStatus: 'to confirm',
+            },
           }
-        }
-      );
+        );
 
       this.ordersToConfirm = ordersByMerchant;
-
-
     } catch (error) {
       console.log(error);
     }
@@ -161,24 +149,31 @@ export class RewardsDisplayComponent implements OnInit {
 
   async getOrdersByDeliveryStatus() {
     try {
-      const { ordersByMerchant } = await this._MerchantsService.ordersByMerchant(
-        this._MerchantsService.merchantData._id,
-        {
-          options: {
-            limit: -1,
-            sortBy: 'createdAt:desc'
-          },
-          findBy: {
-            orderStatusDelivery: ['delivered', 'pending', 'in progress']
+      const { ordersByMerchant } =
+        await this._MerchantsService.ordersByMerchant(
+          this._MerchantsService.merchantData._id,
+          {
+            options: {
+              limit: -1,
+              sortBy: 'createdAt:desc',
+            },
+            findBy: {
+              orderStatusDelivery: ['delivered', 'pending', 'in progress'],
+            },
           }
-        }
-      );
+        );
 
       this.ordersByDeliveryStatus = ordersByMerchant;
 
-      this.ordersInPreparation = ordersByMerchant.filter(order => order.orderStatusDelivery === 'in progress');
-      this.ordersToBeDelivered = ordersByMerchant.filter(order => order.orderStatusDelivery === 'pending');
-      this.ordersDelivered = ordersByMerchant.filter(order => order.orderStatusDelivery === 'delivered');
+      this.ordersInPreparation = ordersByMerchant.filter(
+        (order) => order.orderStatusDelivery === 'in progress'
+      );
+      this.ordersToBeDelivered = ordersByMerchant.filter(
+        (order) => order.orderStatusDelivery === 'pending'
+      );
+      this.ordersDelivered = ordersByMerchant.filter(
+        (order) => order.orderStatusDelivery === 'delivered'
+      );
     } catch (error) {
       console.log(error);
     }

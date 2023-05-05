@@ -116,18 +116,18 @@
       </mat-menu>
     </nav>
     <main>
-      <div class="top-input-area" *ngIf="hasCollections">
+      <!-- <div class="top-input-area" *ngIf="hasCollections">
         <app-options-bar
           [options]="[{ title: 'articulos' }, { title: 'colecciones' }]"
           type="3"
           (selectedIndex)="onTabClick($event)"
         >
         </app-options-bar>
-      </div>
+      </div> -->
       <br *ngIf="!hasCollections" />
 
       <!-- ******************************************* TAG SWIPER ***************************************-->
-      <div style="width: 100%; padding: 0px 21px 0px 21px">
+      <div style="width: 100%; padding: 20px 20px 0px 20px">
         <swiper [config]="swiperConfigTag">
           <a
             *ngFor="let tag of tags"
