@@ -290,10 +290,6 @@
 
     <div
       class="section"
-      *ngIf="
-        deliveryImages?.deliveryZone ||
-        order?.items[0]?.deliveryLocation?.street
-      "
     >
       <p class="section-label">ENTREGA</p>
       <div class="questions" *ngIf="deliveryImages?.deliveryZone">
@@ -305,18 +301,24 @@
       <div class="questions" *ngIf="order.items[0].deliveryLocation">
         <p class="label">Donde entregaremos?</p>
         <p class="label gray-out capitalize">
-          {{
-            order?.items[0]?.deliveryLocation?.houseNumber
-              ? "#" + order?.items[0]?.deliveryLocation?.houseNumber + ", "
-              : ""
-          }}
-          {{ order?.items[0]?.deliveryLocation?.street }},
-          {{
-            order?.items[0]?.deliveryLocation?.referencePoint
-              ? order?.items[0]?.deliveryLocation?.referencePoint + ", "
-              : ""
-          }}
-          {{ order?.items[0]?.deliveryLocation?.city }}, República Dominicana
+
+          <ng-container *ngIf="!order?.items[0]?.deliveryLocation?.street">
+            {{ order?.items[0]?.deliveryLocation?.nickName }}, República Dominicana
+          </ng-container>
+          <ng-container *ngIf="order?.items[0]?.deliveryLocation?.street">
+            {{
+              order?.items[0]?.deliveryLocation?.houseNumber
+                ? "#" + order?.items[0]?.deliveryLocation?.houseNumber + ", "
+                : ""
+            }}
+            {{ order?.items[0]?.deliveryLocation?.street }},
+            {{
+              order?.items[0]?.deliveryLocation?.referencePoint
+                ? order?.items[0]?.deliveryLocation?.referencePoint + ", "
+                : ""
+            }}
+            {{ order?.items[0]?.deliveryLocation?.city }}, República Dominicana
+          </ng-container>
         </p>
       </div>
       <div class="questions">
