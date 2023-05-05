@@ -93,6 +93,8 @@ export class ContactLandingContainerComponent implements OnInit {
             },
           });
 
+          this.phone = phone || email;
+
           this.contactID = name || phone || email;
           this.img = userImage;
 

@@ -375,10 +375,14 @@ export class OrderDetailComponent implements OnInit {
       deliveryZone = await this.deliveryzoneService.deliveryZone(
         this.order.deliveryZone
       );
+    }
+
+    if (this.order.items[0].reservation) {
       reservation = await this.reservationService.getReservation(
         this.order.items[0].reservation._id
       );
     }
+
     this.deliveryImages = {
       image: this.order.deliveryData?.image
         ? this.order.deliveryData.image
@@ -386,6 +390,10 @@ export class OrderDetailComponent implements OnInit {
       deliveryZone: deliveryZone ? deliveryZone : null,
       reservation: reservation ? reservation : null,
     };
+
+    console.log(reservation);
+    console.log(this.deliveryImages);
+
     let address = '';
     const location = this.order.items[0].deliveryLocation;
     if (location) {
