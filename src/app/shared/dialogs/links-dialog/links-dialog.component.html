@@ -7,8 +7,14 @@
       <button
         [ngClass]="last ? 'subtitle-last' : 'subtitle'"
         (click)="onClick(i, j)"
+        style="display: flex"
       >
         {{ option.title }}
+        <img
+          [src]="env + option.icon"
+          alt=""
+          style="margin-left: auto; filter: brightness(0)"
+        />
       </button>
       <mat-divider *ngIf="!last" class="divider"></mat-divider>
       <qrcode

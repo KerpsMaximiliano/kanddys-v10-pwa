@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
@@ -14,14 +14,14 @@ import * as moment from 'moment';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
+import { MatDatepicker } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-dashboard-library',
   templateUrl: './dashboard-library.component.html',
-  styleUrls: ['./dashboard-library.component.scss']
+  styleUrls: ['./dashboard-library.component.scss'],
 })
 export class DashboardLibraryComponent implements OnInit {
-
   environment: string = environment.assetsUrl;
 
   swiperConfig: SwiperOptions = {
@@ -38,17 +38,22 @@ export class DashboardLibraryComponent implements OnInit {
   filters: FilterCriteria[] = [];
 
   queryParameters: QueryParameter[] = [];
-  dateString: string = "Aún no hay filtros aplicados";
+  dateString: string = 'Aún no hay filtros aplicados';
+  pagination;
+  itemsPagination;
 
   range = new FormGroup({
     start: new FormControl(''),
     end: new FormControl(''),
-  })
+  });
 
   redirectTo: string = null;
   dataToRequest: 'recent' | 'mostSold' | 'lessSold' = 'recent';
 
   items: Item[] = [];
+  orderedItems: Item[] = [];
+
+  @ViewChild('picker') datePicker: MatDatepicker<Date>;
 
   constructor(
     private _MerchantsService: MerchantsService,
@@ -56,8 +61,8 @@ export class DashboardLibraryComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private queryParameterService: QueryparametersService,
-    private _bottomSheet: MatBottomSheet,
-  ) { }
+    private _bottomSheet: MatBottomSheet
+  ) {}
 
   async ngOnInit() {
     this.route.queryParams.subscribe(async (queryParams) => {
@@ -70,23 +75,61 @@ export class DashboardLibraryComponent implements OnInit {
       if (typeof data === 'undefined') this.returnEvent();
 
       await this.getMerchant();
+      console.log(this.merchant);
+      console.log(this.merchant._id);
       await this.getQueryParameters();
       await this.getTags();
       await this.getData();
+
+      if (this.dataToRequest === 'mostSold') {
+        this.pagination = {
+          options: { sortBy: 'count:desc', percentageResult: 0.2 },
+          findBy: {
+            merchant: this.merchant._id,
+          },
+        };
+      } else if (this.dataToRequest === 'lessSold') {
+        this.pagination = {
+          options: { sortBy: 'count:asc', percentageResult: 0.2 },
+          findBy: {
+            merchant: this.merchant._id,
+          },
+        };
+      } else if (this.dataToRequest === 'recent') {
+        this.pagination = {
+          options: { sortBy: 'createdAt:desc', limit: 10, page: 1, range: {} },
+          findBy: {
+            merchant: this.merchant._id,
+          },
+        };
+      }
+      this.itemsPagination = await this._ItemsService.itemTotalPagination(
+        this.pagination
+      );
+      // console.log(this.itemsPagination);
+
+      for (
+        let i = 0;
+        i < this.itemsPagination.itemTotalPagination.length;
+        i++
+      ) {
+        const currentItem = await this._ItemsService.item(
+          this.itemsPagination.itemTotalPagination[i]._id
+        );
+        this.orderedItems.push(currentItem);
+        // console.log(this.orderedItems);
+      }
     });
-    
   }
 
   async getMerchant() {
-    const result = await this._MerchantsService.merchantDefault()
+    const result = await this._MerchantsService.merchantDefault();
     this.merchant = result;
   }
 
   async getTags() {
     const tagsByMerchant = (
-      await this._MerchantsService.tagsByMerchant(
-        this.merchant._id
-      )
+      await this._MerchantsService.tagsByMerchant(this.merchant._id)
     )?.tagsByMerchant;
     this.tags = tagsByMerchant.map((value) => value.tags);
   }
@@ -107,15 +150,13 @@ export class DashboardLibraryComponent implements OnInit {
 
   async getOrders() {
     try {
-      const { ordersByMerchant } = await this._MerchantsService.ordersByMerchant(
-        this.merchant._id,
-        {
+      const { ordersByMerchant } =
+        await this._MerchantsService.ordersByMerchant(this.merchant._id, {
           options: {
             limit: 50,
-            sortBy: 'createdAt:desc'
-          }
-        }
-      );
+            sortBy: 'createdAt:desc',
+          },
+        });
 
       const itemIds = new Set<string>();
 
@@ -127,18 +168,15 @@ export class DashboardLibraryComponent implements OnInit {
 
       const filteredItems = Array.from(itemIds);
 
-      const { listItems } = await this._ItemsService.listItems(
-        {
-          findBy: {
-            _id: {
-              __in: filteredItems,
-            },
-          }
-        }
-      );
+      const { listItems } = await this._ItemsService.listItems({
+        findBy: {
+          _id: {
+            __in: filteredItems,
+          },
+        },
+      });
 
       this.items = listItems;
-
     } catch (error) {
       console.log(error);
     }
@@ -146,16 +184,15 @@ export class DashboardLibraryComponent implements OnInit {
 
   async getMostSoldItems() {
     try {
-      const result = await this._ItemsService.bestSellersByMerchant(
-        false,
-        {
-          findBy: {
-            merchant: this.merchant._id,
-          }
-        }
-      ) as any[];
+      const result = (await this._ItemsService.bestSellersByMerchant(false, {
+        findBy: {
+          merchant: this.merchant._id,
+        },
+      })) as any[];
 
-      this.items = result.map((item) => item.item).filter((item) => item !== undefined);
+      this.items = result
+        .map((item) => item.item)
+        .filter((item) => item !== undefined);
       console.log(this.items);
     } catch (error) {
       console.log(error);
@@ -164,17 +201,14 @@ export class DashboardLibraryComponent implements OnInit {
 
   async getLessSoldItems() {
     try {
-      const result = await this._ItemsService.bestSellersByMerchant(
-        false,
-        {
-          options: {
-            page: 2
-          },
-          findBy: {
-            merchant: this.merchant._id,
-          }
-        }
-      ) as any[];
+      const result = (await this._ItemsService.bestSellersByMerchant(false, {
+        options: {
+          page: 2,
+        },
+        findBy: {
+          merchant: this.merchant._id,
+        },
+      })) as any[];
 
       this.items = result.map((item) => item.item);
     } catch (error) {
@@ -187,26 +221,30 @@ export class DashboardLibraryComponent implements OnInit {
       const result = await this.queryParameterService.queryParameters({
         options: {
           limit: 10,
-          sortBy: 'createdAt:desc'
+          sortBy: 'createdAt:desc',
         },
         findBy: {
-          merchant: this.merchant._id
-        }
+          merchant: this.merchant._id,
+        },
       });
       this.queryParameters = result;
 
       if (this.queryParameters.length > 0) {
         const startDate = new Date(this.queryParameters[0].from.date);
         const endDate = new Date(this.queryParameters[0].until.date);
-        this.dateString = `Desde ${this.formatDate(startDate)} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+        this.dateString = `Desde ${this.formatDate(
+          startDate
+        )} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
 
-        const filters: FilterCriteria[] = this.queryParameters.map((queryParameter) => {
-          return {
-            type: "queryParameter",
-            queryParameter: queryParameter,
-            _id: queryParameter._id
+        const filters: FilterCriteria[] = this.queryParameters.map(
+          (queryParameter) => {
+            return {
+              type: 'queryParameter',
+              queryParameter: queryParameter,
+              _id: queryParameter._id,
+            };
           }
-        });
+        );
 
         this.filters.push(...filters);
       }
@@ -218,7 +256,12 @@ export class DashboardLibraryComponent implements OnInit {
   async deleteQueryParameter(id: string) {
     try {
       await this.queryParameterService.deleteQueryParameter(id);
-      this.queryParameters = this.queryParameters.splice(this.queryParameters.findIndex((queryParameter) => queryParameter._id === id), 1);
+      this.queryParameters = this.queryParameters.splice(
+        this.queryParameters.findIndex(
+          (queryParameter) => queryParameter._id === id
+        ),
+        1
+      );
     } catch (error) {
       console.log(error);
     }
@@ -235,7 +278,7 @@ export class DashboardLibraryComponent implements OnInit {
               callback: async () => {
                 await this.deleteQueryParameter(id);
               },
-            }
+            },
           ],
         },
       ],
@@ -243,7 +286,7 @@ export class DashboardLibraryComponent implements OnInit {
   }
 
   shortenText(text, limit) {
-    if (text.length > limit) return text.substring(0, limit) + "..."; 
+    if (text.length > limit) return text.substring(0, limit) + '...';
     else return text;
   }
 
@@ -262,7 +305,10 @@ export class DashboardLibraryComponent implements OnInit {
 
   formatDate(date: Date, short?: boolean) {
     if (!short) return moment(date).format('DD/MM/YYYY');
-    else return `${moment(date).locale('es-es').format('MMM')} ${moment(date).locale('es-es').format('DD')}`;
+    else
+      return `${moment(date).locale('es-es').format('MMM')} ${moment(date)
+        .locale('es-es')
+        .format('DD')}`;
   }
 
   returnEvent() {
@@ -281,4 +327,11 @@ export class DashboardLibraryComponent implements OnInit {
     });
   }
 
+  openDatePicker() {
+    this.datePicker.open();
+  }
+
+  goBack() {
+    this.router.navigate([`admin/dashboard`]);
+  }
 }

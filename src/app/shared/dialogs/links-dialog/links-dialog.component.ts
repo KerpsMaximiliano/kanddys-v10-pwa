@@ -15,6 +15,7 @@ import { environment } from 'src/environments/environment';
 export interface DialogOptions {
   title: string;
   link?: string;
+  icon?: string;
   callback: () => void;
 }
 
@@ -34,6 +35,7 @@ export class LinksDialogComponent implements OnInit {
     private _bottomSheetRef: MatBottomSheetRef
   ) {}
 
+  env: string = environment.assetsUrl;
   URI: string = environment.uri;
   @ViewChildren('qrcode', { read: ElementRef })
   private qr: QueryList<ElementRef>;

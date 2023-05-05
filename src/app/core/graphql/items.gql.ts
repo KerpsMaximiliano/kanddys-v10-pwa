@@ -178,7 +178,10 @@ export const itemsByCategory = gql`
 `;
 
 export const bestSellersByMerchant = gql`
-  query bestSellersByMerchant($isObjectID: Boolean, $paginate: PaginationInput!) {
+  query bestSellersByMerchant(
+    $isObjectID: Boolean
+    $paginate: PaginationInput!
+  ) {
     bestSellersByMerchant(isObjectID: $isObjectID, paginate: $paginate)
   }
 `;
@@ -632,5 +635,11 @@ export const itemsArchived = gql`
     itemsArchived(params: $params) {
       _id
     }
+  }
+`;
+
+export const itemTotalPagination = gql`
+  query itemTotalPagination($paginate: PaginationInput) {
+    itemTotalPagination(paginate: $paginate)
   }
 `;

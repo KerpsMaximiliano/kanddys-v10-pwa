@@ -1,5 +1,11 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -29,6 +35,11 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { QueryparametersService } from 'src/app/core/services/queryparameters.service';
 import { QueryParameter } from 'src/app/core/models/query-parameters';
 import * as moment from 'moment';
+import { base64ToBlob, fileToBase64 } from 'src/app/core/helpers/files.helpers';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ToastrService } from 'ngx-toastr';
 
 export class FilterCriteria {
   _id?: string;
@@ -43,8 +54,10 @@ export class FilterCriteria {
   styleUrls: ['./admin-dashboard.component.scss'],
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
+  @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
   URI: string = environment.uri;
   environment: string = environment.assetsUrl;
+  formatId = formatID;
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 4,
@@ -65,6 +78,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   mostSoldItems: Item[] = [];
   lessSoldItems: Item[] = [];
   hiddenItems: Item[] = [];
+
+  articleId: string;
 
   ordersToConfirm: ItemOrder[] = [];
 
@@ -219,7 +234,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     end: new FormControl(''),
   });
 
-  dateString: string = "Aún no hay filtros aplicados";
+  dateString: string = 'Aún no hay filtros aplicados';
 
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
 
@@ -235,7 +250,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
-    private queryParameterService: QueryparametersService
+    private queryParameterService: QueryparametersService,
+    private dialogService: DialogService,
+    private _ToastrService: ToastrService
   ) {}
 
   async ngOnInit() {
@@ -408,15 +425,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getOrders() {
     try {
-      const { ordersByMerchant } = await this._MerchantsService.ordersByMerchant(
-        this._MerchantsService.merchantData._id,
-        {
-          options: {
-            limit: 50,
-            sortBy: 'createdAt:desc'
+      const { ordersByMerchant } =
+        await this._MerchantsService.ordersByMerchant(
+          this._MerchantsService.merchantData._id,
+          {
+            options: {
+              limit: 50,
+              sortBy: 'createdAt:desc',
+            },
           }
-        }
-      );
+        );
 
       const itemIds = new Set<string>();
 
@@ -428,18 +446,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
       const filteredItems = Array.from(itemIds);
 
-      const { listItems } = await this._ItemsService.listItems(
-        {
-          findBy: {
-            _id: {
-              __in: filteredItems,
-            },
-          }
-        }
-      );
+      const { listItems } = await this._ItemsService.listItems({
+        findBy: {
+          _id: {
+            __in: filteredItems,
+          },
+        },
+      });
 
       this.recentlySoldItems = listItems;
-
     } catch (error) {
       console.log(error);
     }
@@ -447,22 +462,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getOrdersToConfirm() {
     try {
-      const { ordersByMerchant } = await this._MerchantsService.ordersByMerchant(
-        this._MerchantsService.merchantData._id,
-        {
-          options: {
-            limit: -1,
-            sortBy: 'createdAt:desc'
-          },
-          findBy: {
-            orderStatus: 'to confirm'
+      const { ordersByMerchant } =
+        await this._MerchantsService.ordersByMerchant(
+          this._MerchantsService.merchantData._id,
+          {
+            options: {
+              limit: -1,
+              sortBy: 'createdAt:desc',
+            },
+            findBy: {
+              orderStatus: 'to confirm',
+            },
           }
-        }
-      );
+        );
 
       this.ordersToConfirm = ordersByMerchant;
-
-
     } catch (error) {
       console.log(error);
     }
@@ -470,14 +484,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getMostSoldItems() {
     try {
-      const result = await this._ItemsService.bestSellersByMerchant(
-        false,
-        {
-          findBy: {
-            merchant: this._MerchantsService.merchantData._id,
-          }
-        }
-      ) as any[];
+      const result = (await this._ItemsService.bestSellersByMerchant(false, {
+        findBy: {
+          merchant: this._MerchantsService.merchantData._id,
+        },
+      })) as any[];
 
       this.mostSoldItems = result.map((item) => item.item);
     } catch (error) {
@@ -487,17 +498,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getLessSoldItems() {
     try {
-      const result = await this._ItemsService.bestSellersByMerchant(
-        false,
-        {
-          options: {
-            page: 2
-          },
-          findBy: {
-            merchant: this._MerchantsService.merchantData._id,
-          }
-        }
-      ) as any[];
+      const result = (await this._ItemsService.bestSellersByMerchant(false, {
+        options: {
+          page: 2,
+        },
+        findBy: {
+          merchant: this._MerchantsService.merchantData._id,
+        },
+      })) as any[];
 
       this.lessSoldItems = result.map((item) => item.item);
     } catch (error) {
@@ -522,13 +530,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                     async (result: { pricing: number; images: File[] }) => {
                       if (!result) return;
                       const { pricing, images: imagesResult } = result;
-                      let images: ItemImageInput[] = imagesResult.map((file) => {
-                        return {
-                          file: file,
-                          index: 0,
-                          active: true,
-                        };
-                      });
+                      let images: ItemImageInput[] = imagesResult.map(
+                        (file) => {
+                          return {
+                            file: file,
+                            index: 0,
+                            active: true,
+                          };
+                        }
+                      );
                       console.log(images);
                       if (!pricing) return;
                       lockUI();
@@ -546,9 +556,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                       };
                       this._ItemsService.itemPrice = null;
 
-                      const { createItem } = await this._ItemsService.createItem(
-                        itemInput
-                      );
+                      const { createItem } =
+                        await this._ItemsService.createItem(itemInput);
                       await this._SaleflowService.addItemToSaleFlow(
                         {
                           item: createItem._id,
@@ -581,7 +590,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               callback: () => {
                 // TODO
               },
-            }
+            },
           ],
         },
         {
@@ -613,7 +622,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         },
         findBy: {
           merchant: this._MerchantsService.merchantData._id,
-          status: 'disabled'
+          status: 'disabled',
         },
       });
       this.hiddenItems = listItems;
@@ -656,27 +665,29 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async onDateChange() {
     if (this.range.get('start').value && this.range.get('end').value) {
-      console.log("AZUCARRRRRRRRRR");
+      console.log('AZUCARRRRRRRRRR');
       lockUI();
       try {
         const result = await this.queryParameterService.createQueryParameter(
           this._MerchantsService.merchantData._id,
           {
             from: {
-              date: this.range.get('start').value
+              date: this.range.get('start').value,
             },
             until: {
-              date: this.range.get('end').value
-            }
+              date: this.range.get('end').value,
+            },
           }
-        )
+        );
 
         if (result) this.queryParamaters.unshift(result);
 
         const startDate = new Date(result.from.date);
         const endDate = new Date(result.until.date);
 
-        this.dateString = `Desde ${this.formatDate(startDate)} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+        this.dateString = `Desde ${this.formatDate(
+          startDate
+        )} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
         unlockUI();
       } catch (error) {
         unlockUI();
@@ -691,26 +702,30 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       const result = await this.queryParameterService.queryParameters({
         options: {
           limit: 10,
-          sortBy: 'createdAt:desc'
+          sortBy: 'createdAt:desc',
         },
         findBy: {
-          merchant: this._MerchantsService.merchantData._id
-        }
+          merchant: this._MerchantsService.merchantData._id,
+        },
       });
       this.queryParamaters = result;
 
       if (this.queryParamaters.length > 0) {
         const startDate = new Date(this.queryParamaters[0].from.date);
         const endDate = new Date(this.queryParamaters[0].until.date);
-        this.dateString = `Desde ${this.formatDate(startDate)} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+        this.dateString = `Desde ${this.formatDate(
+          startDate
+        )} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
 
-        const filters: FilterCriteria[] = this.queryParamaters.map((queryParameter) => {
-          return {
-            type: "queryParameter",
-            queryParameter: queryParameter,
-            _id: queryParameter._id
+        const filters: FilterCriteria[] = this.queryParamaters.map(
+          (queryParameter) => {
+            return {
+              type: 'queryParameter',
+              queryParameter: queryParameter,
+              _id: queryParameter._id,
+            };
           }
-        });
+        );
 
         this.filters.push(...filters);
       }
@@ -721,7 +736,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   formatDate(date: Date, short?: boolean) {
     if (!short) return moment(date).format('DD/MM/YYYY');
-    else return `${moment(date).locale('es-es').format('MMM')} ${moment(date).locale('es-es').format('DD')}`;
+    else
+      return `${moment(date).locale('es-es').format('MMM')} ${moment(date)
+        .locale('es-es')
+        .format('DD')}`;
   }
 
   goToDetail(dataToRequest: string) {
@@ -730,5 +748,153 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         data: dataToRequest,
       },
     });
+  }
+
+  openDotsDialog(id: string, index: number, type: string) {
+    this._bottomSheet.open(LinksDialogComponent, {
+      data: [
+        {
+          // title: 'Del exhibidor',
+          options: [
+            {
+              title: 'Compartir',
+              callback: () => {
+                const link = `${this.URI}/admin/dashboard`;
+                //this.router.navigate(['/admin/view-configuration-cards']);
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: `${link}`,
+                });
+                console.log('Compartir');
+              },
+              icon: '/upload.svg',
+            },
+            {
+              title: 'Editar',
+              callback: () => {
+                this.router.navigate([`admin/article-editor/${id}`]);
+              },
+              icon: '/settings.svg',
+            },
+            {
+              title: 'Ocultar',
+              callback: () => {
+                console.log('Ocultar');
+                if (type === 'recent') {
+                  console.log(this.recentlySoldItems[index].status);
+                  this.recentlySoldItems[index].status = 'disabled';
+                } else if (type === 'lessSold') {
+                  console.log(this.lessSoldItems[index].status);
+                  this.lessSoldItems[index].status = 'disabled';
+                } else if (type === 'mostSold') {
+                  console.log(this.mostSoldItems[index].status);
+                  this.mostSoldItems[index].status = 'disabled';
+                }
+              },
+            },
+            {
+              title: 'Preview de visitantes y compradores',
+              callback: () => {
+                console.log('Preview');
+                this.router.navigate(
+                  [
+                    `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${id}`,
+                  ],
+                  {
+                    queryParams: {
+                      mode: 'image-preview',
+                    },
+                  }
+                );
+              },
+            },
+            {
+              title: 'Respuestas del Formulario',
+              callback: async () => {
+                const item = await this._ItemsService.item(id);
+                console.log(item);
+                if (item.webForms.length > 0) {
+                  this.router.navigate([
+                    `admin/webform-metrics/${item.webForms[0]._id}/${id}`,
+                  ]);
+                }
+              },
+            },
+            {
+              title: 'Descarga el QR para tus ads impresos',
+              callback: () => {
+                console.log('QR');
+                this.articleId = id;
+                this.downloadQr(id);
+              },
+            },
+            {
+              title: 'Eliminar',
+              callback: () => {
+                console.log('Eliminar');
+                // console.log(this.recentlySoldItems[index].webForms);
+                this.dialogService.open(SingleActionDialogComponent, {
+                  type: 'fullscreen-translucent',
+                  props: {
+                    title: '¿Quieres eliminar este artículo?',
+                    buttonText: 'Sí, borrar',
+                    mainButton: async () => {
+                      const removeItemFromSaleFlow =
+                        await this._SaleflowService.removeItemFromSaleFlow(
+                          id,
+                          this._SaleflowService.saleflowData._id
+                        );
+
+                      if (!removeItemFromSaleFlow) return;
+                      const deleteItem = await this._ItemsService.deleteItem(
+                        id
+                      );
+                      if (!deleteItem) return;
+                      else {
+                        this._ToastrService.info(
+                          '¡Item eliminado exitosamente!'
+                        );
+
+                        this._SaleflowService.saleflowData =
+                          await this._SaleflowService.saleflowDefault(
+                            this._MerchantsService.merchantData._id
+                          );
+
+                        //this.router.navigate(['/admin/dashboard']);
+                      }
+                    },
+                    btnBackgroundColor: '#272727',
+                    btnMaxWidth: '133px',
+                    btnPadding: '7px 2px',
+                  },
+                  customClass: 'app-dialog',
+                  flags: ['no-header'],
+                });
+                //this._ItemsService.deleteItem(this.recentlySoldItems[index]._id)
+              },
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  downloadQr(id: string) {
+    const parentElement =
+      this.orderQrCode.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(blobData, this.formatId(id));
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.formatId(id);
+      link.click();
+    }
   }
 }

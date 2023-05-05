@@ -1,6 +1,6 @@
 <div class="container">
-    <header>
-        <div mat-button class="header-button active">
+  <header class="header">
+    <!-- <div mat-button class="header-button active">
             {{ merchant?.name ? merchant?.name : 'Tienda' }}
         </div>
         <div mat-button class="header-button">
@@ -11,79 +11,133 @@
         </div>
         <div mat-button class="header-button">
             Editorial
-        </div>
-    </header>
+        </div> -->
+    <button (click)="goBack()">
+      <img [src]="environment + '/arrow-double-up-black.svg'" alt="" />
+    </button>
+    <p class="text">
+      {{
+        dataToRequest === "recent"
+          ? "Ventas recientes"
+          : dataToRequest === "mostSold"
+          ? "20% más vendido"
+          : dataToRequest === "lessSold"
+          ? "20% menos vendido"
+          : ""
+      }}
+    </p>
+  </header>
 
-    <div class="categories">
-        <swiper [config]="swiperConfig">
-          <div class="category-item active">
-            TODOS
-          </div>
-          <div class="category-item flex" *ngFor="let filter of filters; let i = index">
-            <img [src]="environment + '/dots-black.svg'" alt="" (click)="openDeleteQueryParameterDialog(filter._id)">
-            {{ 
-              filter.type === 'queryParameter' ? 
-              formatDate(filter.queryParameter.from.date, true) + ' - ' + formatDate(filter.queryParameter.until.date, true) :
-              'Otro'
-            }}
-          </div>
-          <div class="category-item" *ngFor="let tag of tags; let i = index" [ngClass]="{ active: isTagActive(tag) }" (click)="filterTag(i)">
-            {{ tag.name }}
-          </div>
-        </swiper>
-    </div>
+  <div class="categories">
+    <swiper [config]="swiperConfig">
+      <div class="category-item active">TODOS</div>
+      <div
+        class="category-item flex"
+        *ngFor="let filter of filters; let i = index"
+      >
+        <img
+          [src]="environment + '/dots-black.svg'"
+          alt=""
+          (click)="openDeleteQueryParameterDialog(filter._id)"
+        />
+        {{
+          filter.type === "queryParameter"
+            ? formatDate(filter.queryParameter.from.date, true) +
+              " - " +
+              formatDate(filter.queryParameter.until.date, true)
+            : "Otro"
+        }}
+      </div>
+      <div
+        class="category-item"
+        *ngFor="let tag of tags; let i = index"
+        [ngClass]="{ active: isTagActive(tag) }"
+        (click)="filterTag(i)"
+      >
+        {{ tag.name }}
+      </div>
+    </swiper>
+  </div>
 
-    <div class="section">
-        <div class="section-header">
-          <h3 class="section-title">
-            {{ 
-                dataToRequest === 'recent' ? 'Ventas recientes' :
-                dataToRequest === 'mostSold' ? '20% más vendido' :
-                dataToRequest === 'lessSold' ? '20% menos vendido' : ''
-            }}
-          </h3>
-    
-          <!-- <div class="section-description">
+  <div class="section">
+    <div class="section-header">
+      <!-- <h3 class="section-title">
+        {{
+          dataToRequest === "recent"
+            ? "Ventas recientes"
+            : dataToRequest === "mostSold"
+            ? "20% más vendido"
+            : dataToRequest === "lessSold"
+            ? "20% menos vendido"
+            : ""
+        }}
+      </h3> -->
+
+      <!-- <div class="section-description">
             <p>
               4 de los últimos 7 días
             </p>
             <img [src]="environment + '/arrow-left.svg'" alt="">
           </div> -->
-        </div>
-    
-        <div class="section-content">
-            <mat-card class="card" *ngFor="let item of items">
-              <a [routerLink]="['../article-editor', item._id]">
-                <div class="card-body">
-                  <div class="card-l-side">
-                    <h2 class="card-title">{{ item.name ? item.name : 'Sin nombre...' }}</h2>
-                    <p class="card-description"> {{ item.description ? shortenText(item.description, 60) : '' }}</p>
-                  </div>
-                  <div class="card-r-side">
-                    <div class="featured-image" [ngStyle]="{ backgroundImage: 'url(' + item?.images[0]?.value + ')' }">
-                      <div class="caption" *ngIf="item.status === 'disabled'">
-                        <img [src]="environment + '/closed-eye-black.svg'" alt="">
-                        Oculto al visitante
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-              <div class="card-footer">
-                <div class="bottom-title">
-                  <h3>RD $ {{ item.pricing | number }}</h3>
-                </div>
-                <div class="bottom-icons">
-                  <div class="text-icon">
-                    <p>{{ item?.visitorCounter?.counter ? item?.visitorCounter?.counter : '0' }}</p>
-                    <img [src]="environment + '/open-eye.svg'" alt="">
-                  </div>
-                  <div class="text-icon">
-                    <img [src]="environment + '/dots-black.svg'" alt="">
-                  </div>
+    </div>
+
+    <div class="section-content">
+      <mat-card class="card" *ngFor="let item of orderedItems">
+        <a [routerLink]="['../article-editor', item._id]">
+          <div class="card-body">
+            <div class="card-l-side">
+              <h2 class="card-title">
+                {{ item.name ? item.name : "Sin nombre..." }}
+              </h2>
+              <p class="card-description">
+                {{ item.description ? shortenText(item.description, 60) : "" }}
+              </p>
+            </div>
+            <div class="card-r-side">
+              <div
+                class="featured-image"
+                [ngStyle]="{
+                  backgroundImage: 'url(' + item?.images[0]?.value + ')'
+                }"
+              >
+                <div class="caption" *ngIf="item.status === 'disabled'">
+                  <img [src]="environment + '/closed-eye-black.svg'" alt="" />
+                  Oculto al visitante
                 </div>
               </div>
-            </mat-card>
+            </div>
+          </div>
+        </a>
+        <div class="card-footer">
+          <div class="bottom-title">
+            <h3>RD $ {{ item.pricing | number }}</h3>
+          </div>
+          <div class="bottom-icons">
+            <div class="text-icon">
+              <p>
+                {{
+                  item?.visitorCounter?.counter
+                    ? item?.visitorCounter?.counter
+                    : "0"
+                }}
+              </p>
+              <img [src]="environment + '/open-eye.svg'" alt="" />
+            </div>
+            <div class="text-icon">
+              <img [src]="environment + '/dots-black.svg'" alt="" />
+            </div>
+          </div>
         </div>
-      </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="sticky-bar" (click)="openDatePicker()">
+    <img [src]="environment + '/dots-black.svg'" alt="" />
+    <p>{{ dateString }}</p>
+    <!-- <div>
+      <p>VISIBLE EN: URL.COM</p>
+      <img [src]="environment + '/upload.svg'" alt="">
+    </div> -->
+  </div>
 </div>
