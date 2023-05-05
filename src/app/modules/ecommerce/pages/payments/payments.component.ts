@@ -397,7 +397,7 @@ export class PaymentsComponent implements OnInit {
           this.openedDialogFlow = true;
         }
 
-        if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+        // if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
 
         if (this.post && !this.post.author && this.currentUser)
           await this.postsService.postAddUser(
