@@ -70,6 +70,10 @@ const routes: Routes = [
     component: OrderDetailComponent,
   },
   {
+    path: 'contact-landing/:idUser',
+    component: ContactLandingContainerComponent,
+  },
+  {
     path: 'megaphone-v3/:merchantSlug',
     redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
@@ -194,10 +198,6 @@ const routes: Routes = [
       {
         path: 'categories/:tagId',
         component: TagItemsComponent,
-      },
-      {
-        path: 'contact-landing/:idUser',
-        component: ContactLandingContainerComponent,
       },
       {
         path: 'store-assistant',
