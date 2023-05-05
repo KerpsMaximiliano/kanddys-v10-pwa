@@ -104,6 +104,10 @@
             <mat-icon>settings</mat-icon>
             <span>Configuración</span>
           </a>
+          <a mat-menu-item [routerLink]="['../../contact-landing/' + headerService.user._id]">
+            <mat-icon>contacts</mat-icon>
+            <span>Página de contacto</span>
+          </a>
           <button mat-menu-item (click)="logout()">
             <mat-icon>exit_to_app</mat-icon>
             <span>Cerrar Sesión</span>

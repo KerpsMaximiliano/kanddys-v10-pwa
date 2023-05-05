@@ -124,17 +124,25 @@
             {{ orderDate }}
             <ng-container *ngIf="order?.user">
               para
-              <a style="color: #2874ad">
+              <a 
+                style="color: #2874ad"
+                [routerLink]="['../../contact-landing', order.user._id]"
+              >
                 {{ order.user.name || order.user.phone || order.user.email }}
               </a>
             </ng-container>
           </span>
+          <!-- <p>Dirección {{ order?.items[0].saleflow.merchant?.address }}</p> -->
         </div>
         <!-- <img
           [src]="env + '/qr-code.svg'"
           alt=""
           style="margin-left: auto; cursor: pointer"
         /> -->
+      </div>
+      <br>
+      <div class="info-display" *ngIf="order?.items[0].saleflow.merchant?.address">
+        <p class="info" style="margin: 0;">Dirección: {{ order?.items[0].saleflow.merchant?.address }}</p>
       </div>
       <!-- <div class="info-display">
         <span class="info" style="margin-left: 0px">{{
@@ -282,10 +290,6 @@
 
     <div
       class="section"
-      *ngIf="
-        deliveryImages?.deliveryZone ||
-        order?.items[0]?.deliveryLocation?.street
-      "
     >
       <p class="section-label">ENTREGA</p>
       <div class="questions" *ngIf="deliveryImages?.deliveryZone">
@@ -297,18 +301,24 @@
       <div class="questions" *ngIf="order.items[0].deliveryLocation">
         <p class="label">Donde entregaremos?</p>
         <p class="label gray-out capitalize">
-          {{
-            order?.items[0]?.deliveryLocation?.houseNumber
-              ? "#" + order?.items[0]?.deliveryLocation?.houseNumber + ", "
-              : ""
-          }}
-          {{ order?.items[0]?.deliveryLocation?.street }},
-          {{
-            order?.items[0]?.deliveryLocation?.referencePoint
-              ? order?.items[0]?.deliveryLocation?.referencePoint + ", "
-              : ""
-          }}
-          {{ order?.items[0]?.deliveryLocation?.city }}, República Dominicana
+
+          <ng-container *ngIf="!order?.items[0]?.deliveryLocation?.street">
+            {{ order?.items[0]?.deliveryLocation?.nickName }}, República Dominicana
+          </ng-container>
+          <ng-container *ngIf="order?.items[0]?.deliveryLocation?.street">
+            {{
+              order?.items[0]?.deliveryLocation?.houseNumber
+                ? "#" + order?.items[0]?.deliveryLocation?.houseNumber + ", "
+                : ""
+            }}
+            {{ order?.items[0]?.deliveryLocation?.street }},
+            {{
+              order?.items[0]?.deliveryLocation?.referencePoint
+                ? order?.items[0]?.deliveryLocation?.referencePoint + ", "
+                : ""
+            }}
+            {{ order?.items[0]?.deliveryLocation?.city }}, República Dominicana
+          </ng-container>
         </p>
       </div>
       <div class="questions">
