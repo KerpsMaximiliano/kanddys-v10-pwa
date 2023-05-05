@@ -40,6 +40,7 @@ import {
   expendituresTotal,
   expenditureTypesCustom,
   itemRemoveExpenditure,
+  deleteExpenditure,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -533,6 +534,16 @@ export class OrderService {
     const result = await this.graphql.mutate({
       mutation: itemRemoveExpenditure,
       variables: { id,webformId },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async deleteExpenditure(id:string){
+    const result = await this.graphql.mutate({
+      mutation: deleteExpenditure,
+      variables: { id },
       fetchPolicy: 'no-cache',
     });
     if (!result || result?.errors) return undefined;

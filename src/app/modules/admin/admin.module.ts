@@ -57,6 +57,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
 import { ExpendituresComponent } from './pages/expenditures/expenditures.component';
 import { IncomesComponent } from './pages/incomes/incomes.component';
+import { CreateExpenditureComponent } from './pages/create-expenditure/create-expenditure.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -338,12 +339,20 @@ const routes: Routes = [
     component: ReportingsComponent
   },
   {
-    path: 'expenditures',
+    path: 'expenditures/:type',
     component: ExpendituresComponent
+  },
+  {
+    path: 'incomes',
+    component: IncomesComponent
   },
   {
     path: 'dashboard-library',
     component: DashboardLibraryComponent,
+  },
+  {
+    path: 'create-expenditure/:type',
+    component: CreateExpenditureComponent,
   }
 ];
 
@@ -393,6 +402,7 @@ const routes: Routes = [
     AutofocusDirective,
     ExpendituresComponent,
     IncomesComponent,
+    CreateExpenditureComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

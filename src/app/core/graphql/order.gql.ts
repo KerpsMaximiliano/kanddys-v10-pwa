@@ -315,6 +315,10 @@ const expenditureData = `
     _id
     value
   }
+  activeDate{
+    from
+    month
+  }
 `;
 
 const incomeData = `
@@ -510,6 +514,15 @@ export const createExpenditure = gql`
   ) {
     createExpenditure(merchantId: $merchantId, input: $input) {
       _id
+      type
+      useDate
+      name
+      amount
+      description
+      activeDate{
+        from
+        month
+      }
     }
   }
 `;
@@ -678,9 +691,7 @@ export const incomes = gql`
 
 export const expendituresTotal = gql`
 query expendituresTotal($type: String!,$merchantId:ObjectID!) {
-  expendituresTotal(type: $type,merchantId:$merchantId) {
-    total
-  }
+  expendituresTotal(type: $type,merchantId:$merchantId)
 }
 `;
 
@@ -693,9 +704,17 @@ query expenditureTypesCustom($merchantId:ObjectID!) {
 `;
 
 export const itemRemoveExpenditure = gql`
-mutation itemRemoveExpenditure($id:ObjectID!,webformId:ObjectID!) {
+mutation itemRemoveExpenditure($id:ObjectID!,$webformId:ObjectID!) {
   itemRemoveExpenditure(merchantId:$merchantId,webformId:$webformId) {
       _id 
   }
 }
 `;
+
+export const deleteExpenditure = gql`
+mutation deleteExpenditure($id:ObjectID!) {
+  deleteExpenditure(id:$id)
+}
+`;
+
+

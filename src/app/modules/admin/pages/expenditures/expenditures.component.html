@@ -2,16 +2,16 @@
     <div class="header">
       <div class="flex">
         <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
-        <p>Egresos específicos del día</p>
+        <p>{{title}}</p>
       </div>
-      <div>
+      <div [routerLink]="['../../create-expenditure', type]" >
         <img [src]="env + '/plus-black.svg'" class="plus-icon" />
       </div>
     </div>
     <div class="container">
         <div class="content-item" *ngFor="let i of expenditures">
             <div class="content-item-button-container">
-              <div class="content-item-button" (click)="removeItem(i)"><img src="../../../../../assets/icons/trash.svg"/></div>
+              <div class="content-item-button" (click)="removeItem(i._id)"><img src="../../../../../assets/icons/trash.svg"/></div>
             </div>
             <div class="content-item-texts">
               <div class="content-item-title-container">

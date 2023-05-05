@@ -1,1 +1,62 @@
-<p>incomes works!</p>
+<div class="main-container">
+  <div class="header">
+    <div class="flex">
+      <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
+      <p>Ingresos opciones según productos</p>
+    </div>
+    <div>
+      <img [src]="env + '/plus-black.svg'" class="plus-icon" />
+    </div>
+  </div>
+  <div class="container">
+    <div class="item">
+      <div class="item-container">
+        <div>
+          <p class="item-title">Paquete de 24 lavados</p>
+          <p class="item-desc">
+            Lavado por fuera, aspiradora por dentro y brillo en las gomas
+          </p>
+        </div>
+        <div class="item-image-container">
+            <div class="item-image-visibility">
+                <img src="../../../../../assets/icons/white-closed-eye.svg" />
+                Oculto al visitante
+            </div>
+        </div>
+      </div>
+      <div class="item-footer">
+        <hr />
+        <div class="flex space-between">
+          <div class="flex">
+            <p class="item-footer-price">RD $3800</p>
+            <p class="item-footer-price item-footer-stars">
+              45 <img src="../../../../../assets/icons/star-filled.svg" />
+            </p>
+          </div>
+          <div class="flex">
+            <p class="item-footer-stats-text">
+              14 <img src="../../../../../assets/icons/gray-heart.svg" />
+            </p>
+            <p class="item-footer-stats-text">
+              14 <img src="../../../../../assets/icons/gray-cube.svg" />
+            </p>
+            <p class="item-footer-stats-text">
+              14 <img src="../../../../../assets/icons/gray-fingers.svg" />
+            </p>
+            <p class="item-footer-stats-text">
+              14 <img src="../../../../../assets/icons/gray-stats.svg" />
+            </p>
+            <p class="item-footer-stats-text">
+              <img src="../../../../../assets/icons/gray-dots.svg" />
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <img src="../../../../../assets/icons/dots.svg" />
+    <p>Desde fechaId hasta hoy</p>
+    <p class="ml">{{ total }}</p>
+  </div>
+</div>

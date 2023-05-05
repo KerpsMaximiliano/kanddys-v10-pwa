@@ -12,13 +12,15 @@ import { environment } from 'src/environments/environment';
 export class ReportingsComponent implements OnInit {
   env: string = environment.assetsUrl;
   expenditures:any = []
+  merchant:any = []
   constructor(
     private deliveryZoneService: DeliveryZonesService,
     private orderService: OrderService,
     private merchantsService: MerchantsService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
+     await this.getMerchant();
     this.getDeliveryZones();
     this.getExpenditures();
     this.getExpendituresTotal();
@@ -32,11 +34,9 @@ export class ReportingsComponent implements OnInit {
   }
 
   async getExpenditures() {
-    console.log(this.merchantsService.merchantData)
-    const merchantId = JSON.parse(localStorage.getItem('saleflow-data'))?._id;
     let result = await this.orderService.expenditures({
       findBy: {
-        merchant: "63209c58d09b8976076bf209"
+        merchant: this.merchant._id
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -47,14 +47,14 @@ export class ReportingsComponent implements OnInit {
   }
 
   async getExpendituresTotal(){
- const result = await this.orderService.expendituresTotal("delivery-zone","63209c58d09b8976076bf209");
+ const result = await this.orderService.expendituresTotal("delivery-zone",this.merchant._id);
 console.log(result);  
 }
 
 async getIncomes(){
   let result = await this.orderService.incomes({
     findBy: {
-      merchant: "622662a1b510731e1329a1ad"
+      merchant: this.merchant._id
     },
     options: {
       sortBy: 'createdAt:desc',
@@ -67,4 +67,8 @@ async expenditureTypesCustom(){
   let result = await this.orderService.expenditureTypesCustom("63209c58d09b8976076bf209");
   console.log(result);
 }
+
+async getMerchant(){
+  this.merchant = await this.merchantsService.merchantDefault();
+ }
 }

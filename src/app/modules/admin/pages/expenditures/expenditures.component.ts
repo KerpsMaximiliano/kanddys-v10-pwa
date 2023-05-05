@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
@@ -14,39 +15,64 @@ export class ExpendituresComponent implements OnInit {
   expenditures: any = [];
   merchant:any = {}
   total = 0;
+  type;
+  typeRequest;
+  title: string;
 
-  constructor(private orderService: OrderService, private merchantService:MerchantsService,private webformService:WebformsService) {}
+  constructor(private orderService: OrderService, private merchantService:MerchantsService,private activatedRoute:ActivatedRoute) {}
 
   async ngOnInit() {
     await this.getMerchant();
+    this.activatedRoute.params.subscribe(params => {
+      this.type = params['type'];
+      this.setValues();
+    });
     this.getExpenditures();
-    this.getWebForm();
+  
   }
 
   async getExpenditures() {
     let result = await this.orderService.expenditures({
       findBy: {
         merchant: this.merchant._id,
+        type:this.typeRequest
       },
       options: {
         sortBy: 'createdAt:desc',
       },
     });
     this.expenditures = result;
-    this.total = this.expenditures.reduce((sum, obj) => sum + obj.amount, 0);
+    this.calculateTotal();
   }
 
   async getMerchant(){
    this.merchant = await this.merchantService.merchantDefault();
   }
 
-async getWebForm(){
-  const result = await this.webformService.webformsByMerchant(this.merchant._id);
-  console.log(result);
+async removeItem(id){
+  const result = await this.orderService.deleteExpenditure(id);
+  if(result?.deleteExpenditure){
+    this.expenditures = this.expenditures.filter(e=>e._id!=id);
+    this.calculateTotal();
+  }
 }
 
-async removeItem(id){
-  const result = await this.orderService.itemRemoveExpenditure(id,'');
-  console.log(result);
+calculateTotal(){
+  this.total = this.expenditures.reduce((sum, obj) => sum + obj.amount, 0);
 }
+
+setValues(){
+  if(this.type=='day'){
+    this.title = "Egresos especificos en día"; 
+    this.typeRequest = 'only-day';
+  }else if(this.type=='month'){
+    this.title = "Egreso especifico de un mes";
+    this.typeRequest = 'only-month';
+  }else{
+    this.title ="Egresos mensuales y recurrentes";
+    this.typeRequest = 'recurrent';
+  }
+}
+
+
 }
