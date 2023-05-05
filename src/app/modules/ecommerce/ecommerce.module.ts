@@ -70,6 +70,10 @@ const routes: Routes = [
     component: OrderDetailComponent,
   },
   {
+    path: 'contact-landing/:idUser',
+    component: ContactLandingContainerComponent,
+  },
+  {
     path: 'megaphone-v3/:merchantSlug',
     redirectTo: ':merchantSlug/store',
     pathMatch: 'full',
@@ -118,10 +122,6 @@ const routes: Routes = [
   {
     path: 'article-upload',
     component: ArticleUploadComponent,
-  },
-  {
-    path: 'contact-landing/:idUser',
-    component: ContactLandingContainerComponent,
   },
   {
     path: ':merchantSlug',
