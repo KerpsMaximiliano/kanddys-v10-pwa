@@ -49,13 +49,19 @@
         </a>
       </li>
     </ul>
+    <div
+      *ngIf="!contact?.link?.length"
+      style="text-align: center; font-family: 'SfProBold'"
+    >
+      El usuario no tiene formas de contacto.
+    </div>
   </div>
 </div>
-<div class="action-bar">
+<div class="action-bar" *ngIf="chatLink || link">
   <button mat-button (click)="goToChat()" *ngIf="chatLink">
     CHAT CONMIGO POR WHATSAPP
   </button>
-  <button mat-button (click)="shareStore()" class="share">
+  <button mat-button (click)="shareStore()" class="share" *ngIf="link">
     COMPARTE MI CONTACTO
     <i class="fa fa-share-alt" aria-hidden="true"></i>
   </button>

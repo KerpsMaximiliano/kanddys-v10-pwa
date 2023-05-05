@@ -136,3 +136,9 @@
 // 		transition: 0.2s;
 // 	}
 // }
+
+textarea.mat-input-element {
+	padding: 0 !important;
+	height: 96px;
+	resize: none !important;
+}

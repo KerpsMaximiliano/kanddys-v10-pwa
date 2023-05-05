@@ -430,16 +430,16 @@ a {
   border-radius: 0 !important;
   background-color: rgb(39, 39, 39);
 }
-::ng-deep .mat-content {
+:host ::ng-deep .mat-content {
   flex: inherit !important;
 }
-::ng-deep .mat-expansion-indicator::after {
+:host ::ng-deep .mat-expansion-indicator::after {
   color: #fff;
 }
 .mat-expansion-panel-header.mat-expanded {
   height: 48px;
 }
-::ng-deep .mat-expansion-panel-body {
+:host ::ng-deep .mat-expansion-panel-body {
   background-color: #f5f5f5;
   padding: 0 !important;
 }

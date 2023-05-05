@@ -43,7 +43,10 @@
   <div>
     <a
       [routerLink]="['/ecommerce/order-detail', order._id]"
-      [queryParams]="{ redirectTo: router.url }"
+      [queryParams]="{
+        redirectTo: router.url,
+        navigationWithMessage: 'Vista del visitante'
+      }"
       (click)="dialogRef.close()"
       mat-button
     >

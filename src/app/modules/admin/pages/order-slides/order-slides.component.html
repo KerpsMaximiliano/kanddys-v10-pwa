@@ -34,21 +34,56 @@
         <ng-container *ngIf="isPopulated(deliveryOrder)">
           <div class="order-content">
             <header class="header">
-              <div class="flex" style="align-items: center">
-                <a mat-icon-button [routerLink]="['../dashboard']">
-                  <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
-                </a>
-                <p>Factura {{ formatId(deliveryOrder?.dateId) }}</p>
-              </div>
-              <div>
-                <button mat-button>
-                  {{
-                    deliveryOrder.user.name ||
-                      deliveryOrder.user.phone ||
-                      deliveryOrder.user.email
-                  }}
-                  <i class="fas fa-chevron-right"></i>
-                </button>
+              <a
+                mat-icon-button
+                [routerLink]="['../dashboard']"
+                style="grid-column: span 1 / span 1"
+              >
+                <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+              </a>
+              <div style="width: 100%; grid-column: span 11 / span 11">
+                <mat-accordion>
+                  <mat-expansion-panel
+                    (opened)="panelOpenState = true"
+                    (closed)="panelOpenState = false"
+                    class="panel"
+                    [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
+                    style="background-color: #c1c4c1"
+                  >
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        <div
+                          style="
+                            display: flex;
+                            justify-content: space-between;
+                            width: 100%;
+                          "
+                        >
+                          <p style="margin: 0">
+                            Factura {{ formatId(deliveryOrder?.dateId) }}
+                          </p>
+                          <div
+                            style="
+                              font-family: SfProBold;
+                              font-size: 15px;
+                              color: #171d16;
+                            "
+                          >
+                            {{
+                              deliveryOrder.user.name ||
+                                deliveryOrder.user.phone ||
+                                deliveryOrder.user.email
+                            }}
+                          </div>
+                        </div>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-contact-header
+                      [bio]="deliveryOrder.user.bio"
+                      [contact]="getUserContact(deliveryOrder.user._id)"
+                    ></app-contact-header>
+                  </mat-expansion-panel>
+                </mat-accordion>
               </div>
             </header>
             <!-- ITEMS SECTION -->
@@ -130,6 +165,67 @@
                     <p class="bottom-text">RespuestaID</p>
                   </div> -->
                 </div>
+                <ng-container
+                  *ngIf="
+                    deliveryOrder.answersByItem &&
+                    deliveryOrder.answersByItem[item._id]
+                  "
+                >
+                  <ng-container
+                    *ngFor="
+                      let question of deliveryOrder.answersByItem[item._id]
+                        .response;
+                      index as i
+                    "
+                  >
+                    <div
+                      *ngIf="question.question"
+                      class="webform-question-wrapper"
+                      [ngStyle]="{ marginTop: i === 0 ? '8px' : '0' }"
+                    >
+                      <div class="question">
+                        <p class="top-text">{{ question.question }}</p>
+                        <p
+                          class="bottom-text"
+                          *ngIf="!question.isMedia && !question.label"
+                        >
+                          {{ question.value }}
+                        </p>
+                        <p
+                          class="bottom-text"
+                          *ngIf="!question.isMedia && question.label"
+                        >
+                          {{ question.value + " " + question.label }}
+                        </p>
+                        <p
+                          class="bottom-text"
+                          *ngIf="question.isMedia && question.label"
+                        >
+                          {{ question.label }}
+                        </p>
+
+                        <div
+                          class="question-img-wrapper"
+                          *ngIf="question.isMedia"
+                        >
+                          <div
+                            class="image"
+                            (click)="openImageModal(question.value)"
+                            [ngStyle]="{
+                              backgroundRepeat: 'no-repeat',
+                              backgroundPosition: 'center',
+                              backgroundSize: 'cover',
+                              backgroundImage:
+                                'url(' +
+                                question.value +
+                                '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                            }"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-container>
               </div>
             </section>
 
@@ -281,33 +377,23 @@
             </div>
 
             <!-- DELIVERY EVIDENCE SECTION -->
-            <!-- <div
-                class="section"
-                *ngIf="
-                  deliveryImages.length &&
-                  ((isMerchant && deliveryImages[i]?.image) || view === 'delivery')
-                "
-              >
-                <p class="section-label">FLUJO DE LA ENTREGA</p>
-                <div class="input-image-container">
-                  <app-item-images
-                    (enteredImages)="onImageInput($event)"
-                    [containerStyles]="{ padding: '0' }"
-                    [inputPosition]="'left'"
-                    *ngIf="!deliveryImages[i]?.image"
-                  >
-                  </app-item-images>
-                  <div
-                    class="image"
-                    [ngStyle]="{
-                      backgroundImage: 'url(' + deliveryImages[i]?.image + ')'
-                    }"
-                    (click)="openImageModal(deliveryImages[i]?.image)"
-                    *ngIf="deliveryImages[i]?.image"
-                  ></div>
-                  <p class="delivery-image-caption">Imagen de la entrega</p>
-                </div>
-              </div> -->
+            <div
+              class="section"
+              *ngIf="deliveryImages.length && deliveryImages[i]?.image"
+            >
+              <p class="section-label">FLUJO DE LA ENTREGA</p>
+              <div class="input-image-container">
+                <div
+                  class="image"
+                  [ngStyle]="{
+                    backgroundImage: 'url(' + deliveryImages[i]?.image + ')'
+                  }"
+                  (click)="openImageModal(deliveryImages[i]?.image)"
+                  *ngIf="deliveryImages[i]?.image"
+                ></div>
+                <p class="delivery-image-caption">Imagen de la entrega</p>
+              </div>
+            </div>
 
             <!-- POST SECTION -->
             <div
@@ -381,7 +467,7 @@
         class="footer-menu"
         (click)="openDialog(ordersToConfirm[activeIndex])"
       >
-        <mat-icon>menu</mat-icon>
+        <mat-icon style="color: #6fcf97">menu</mat-icon>
       </button>
       <div class="top-footer">
         <a
@@ -405,15 +491,38 @@
         >
           <button
             class="chip"
-            *ngFor="let status of statusList"
             [ngClass]="{
               selected:
-                ordersToConfirm[activeIndex].orderStatusDelivery === status
+                ordersToConfirm[activeIndex].orderStatusDelivery ===
+                ordersToConfirm[activeIndex].loadedDeliveryStatus
             }"
-            (click)="changeOrderStatus(status)"
+            (click)="
+              changeOrderStatus(
+                ordersToConfirm[activeIndex].loadedDeliveryStatus
+              )
+            "
           >
-            {{ orderDeliveryStatus(status) }}
+            {{
+              orderDeliveryStatus(
+                ordersToConfirm[activeIndex].loadedDeliveryStatus
+              )
+            }}
           </button>
+          <ng-container *ngFor="let status of statusList">
+            <button
+              *ngIf="
+                status !== ordersToConfirm[activeIndex].loadedDeliveryStatus
+              "
+              class="chip"
+              [ngClass]="{
+                selected:
+                  ordersToConfirm[activeIndex].orderStatusDelivery === status
+              }"
+              (click)="changeOrderStatus(status)"
+            >
+              {{ orderDeliveryStatus(status) }}
+            </button>
+          </ng-container>
         </div>
       </div>
       <div class="inner-wrapper-top">
@@ -459,16 +568,19 @@
       </a>
     </div>
 
-    <div class="float-paginator">
-      <div class="button swiper-slide-duplicate-prev left">
+    <div class="float-paginator" *ngIf="activeIndex !== 0">
+      <button class="button swiper-slide-duplicate-prev left">
         <img [src]="env + '/arrow-left.svg'" alt="" />
-      </div>
+      </button>
     </div>
 
-    <div class="float-paginator">
-      <div class="button swiper-slide-duplicate-next right">
+    <div
+      class="float-paginator"
+      *ngIf="activeIndex !== ordersToConfirm.length - 1"
+    >
+      <button class="button swiper-slide-duplicate-next right">
         <img [src]="env + '/arrow-left.svg'" alt="" />
-      </div>
+      </button>
     </div>
 
     <div style="visibility: hidden; position: absolute; z-index: -99">

@@ -359,7 +359,8 @@ const routes: Routes = [
   {
     path: 'media-upload/:entity',
     component: MediaUploadDndComponentComponent,
-  },{
+  },
+  {
     path: 'dashboard-library',
     component: DashboardLibraryComponent,
   },

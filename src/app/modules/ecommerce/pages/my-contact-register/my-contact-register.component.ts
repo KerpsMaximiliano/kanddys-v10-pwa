@@ -7,6 +7,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { ContactInput } from 'src/app/core/models/contact';
 
 @Component({
   selector: 'app-my-contact-register',
@@ -123,7 +124,7 @@ export class MyContactRegisterComponent implements OnInit {
     ) {
       const fullName = this.name + ' ' + this.lastname;
 
-      const contactInput = {
+      const contactInput: ContactInput = {
         name: fullName,
         description: this.title,
         image: this.contactImage,
@@ -141,7 +142,7 @@ export class MyContactRegisterComponent implements OnInit {
       this.itemFormBio.valid &&
       this.itemFormTitle.valid
     ) {
-      const contactInput = {
+      const contactInput: ContactInput = {
         name: this.bio,
         description: this.title,
         image: this.contactImage,

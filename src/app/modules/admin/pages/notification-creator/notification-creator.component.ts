@@ -244,7 +244,7 @@ export class NotificationCreatorComponent implements OnInit {
   }
 
   async returnEvent() {
-    if (this.notificationForm.touched) {
+    if (this.notificationForm.dirty) {
       if (this.notificationForm.invalid) return;
       await this.save();
     }
