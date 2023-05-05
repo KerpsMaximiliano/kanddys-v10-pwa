@@ -374,7 +374,7 @@ export class OrderSlidesComponent implements OnInit {
 
   async getOrders() {
     const findBy = {
-      orderStatus: ['in progress', 'to confirm', 'paid', 'completed'],
+      orderStatus: ['to confirm', 'paid', 'completed'],
     };
     if (this.progress) findBy['orderStatusDelivery'] = this.progress;
     try {
