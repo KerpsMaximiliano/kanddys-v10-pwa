@@ -632,6 +632,7 @@ export class CheckoutComponent implements OnInit {
           lockUI();
 
           await this.createOrderFromCheckout();
+          unlockUI();
           return;
         }
       });
@@ -837,6 +838,7 @@ export class CheckoutComponent implements OnInit {
         }
         localStorage.removeItem('privatePost');
         this.postsService.privatePost = false;
+        unlockUI();
         this.router.navigate([`../payments/${this.headerService.orderId}`], {
           relativeTo: this.route,
           replaceUrl: true,
@@ -852,6 +854,7 @@ export class CheckoutComponent implements OnInit {
             if (!value) return;
             if (value.user?._id || value.session.user._id) {
               await this.orderService.authOrder(createdOrder, value._id);
+              unlockUI();
               this.router.navigate([`../../order-detail/${createdOrder}`], {
                 relativeTo: this.route,
                 replaceUrl: true,
@@ -860,6 +863,7 @@ export class CheckoutComponent implements OnInit {
           });
           return;
         }
+        unlockUI();
         this.router.navigate([`../../order-detail/${createdOrder}`], {
           relativeTo: this.route,
           replaceUrl: true,
