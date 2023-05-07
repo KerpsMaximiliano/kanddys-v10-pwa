@@ -133,10 +133,11 @@ export class MerchantsService {
 
   async ordersByMerchant(
     merchant: string,
-    pagination?: PaginationInput
+    pagination?: PaginationInput,
+    hotQuery?: boolean
   ): Promise<{ ordersByMerchant: ItemOrder[] }> {
     const response = await this.graphql.query({
-      query: ordersByMerchant,
+      query: !hotQuery ? ordersByMerchant : ordersByMerchantHot,
       variables: { pagination, merchant },
       fetchPolicy: 'cache-first',
     });
