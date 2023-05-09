@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
@@ -15,6 +15,15 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { MatDatepicker } from '@angular/material/datepicker';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { ToastrService } from 'ngx-toastr';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { ExtendedItem } from '../items-dashboard/items-dashboard.component';
 
 @Component({
   selector: 'app-dashboard-library',
@@ -23,13 +32,21 @@ import { MatDatepicker } from '@angular/material/datepicker';
 })
 export class DashboardLibraryComponent implements OnInit {
   environment: string = environment.assetsUrl;
+  URI: string = environment.uri;
 
   swiperConfig: SwiperOptions = {
-    slidesPerView: 4,
+    slidesPerView: 1,
     freeMode: true,
     spaceBetween: 1,
   };
 
+  cardSwiperConfig: SwiperOptions = {
+    slidesPerView: 1,
+    freeMode: false,
+    spaceBetween: 2,
+  };
+
+  formatId = formatID;
   merchant: Merchant;
 
   tags: Tag[] = [];
@@ -41,6 +58,7 @@ export class DashboardLibraryComponent implements OnInit {
   dateString: string = 'Aún no hay filtros aplicados';
   pagination;
   itemsPagination;
+  hiddenItems: Item[] = [];
 
   range = new FormGroup({
     start: new FormControl(''),
@@ -48,12 +66,20 @@ export class DashboardLibraryComponent implements OnInit {
   });
 
   redirectTo: string = null;
-  dataToRequest: 'recent' | 'mostSold' | 'lessSold' = 'recent';
+  dataToRequest: 'recent' | 'mostSold' | 'lessSold' | 'hidden' | 'sold' =
+    'recent';
 
   items: Item[] = [];
   orderedItems: Item[] = [];
+  articleId: string = '';
+  mostSoldItems: Item[] = [];
+  lessSoldItems: Item[] = [];
+  allItems: Item[] = [];
+  income: number;
+  orders: number;
 
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
+  @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
 
   constructor(
     private _MerchantsService: MerchantsService,
@@ -61,7 +87,11 @@ export class DashboardLibraryComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private queryParameterService: QueryparametersService,
-    private _bottomSheet: MatBottomSheet
+    private _bottomSheet: MatBottomSheet,
+    private saleflowService: SaleFlowService,
+    private _ToastrService: ToastrService,
+    private dialogService: DialogService,
+    private ngNavigatorShareService: NgNavigatorShareService
   ) {}
 
   async ngOnInit() {
@@ -77,48 +107,130 @@ export class DashboardLibraryComponent implements OnInit {
       await this.getMerchant();
       console.log(this.merchant);
       console.log(this.merchant._id);
+      await this.getOrders();
+      const income = await this._MerchantsService.incomeMerchant({
+        findBy: {
+          merchant: this.merchant._id,
+        },
+      });
+
+      console.log(income);
+      this.income = income;
       await this.getQueryParameters();
       await this.getTags();
-      await this.getData();
+      // await this.getData();
 
-      if (this.dataToRequest === 'mostSold') {
-        this.pagination = {
-          options: { sortBy: 'count:desc', percentageResult: 0.2 },
-          findBy: {
-            merchant: this.merchant._id,
-          },
-        };
-      } else if (this.dataToRequest === 'lessSold') {
-        this.pagination = {
-          options: { sortBy: 'count:asc', percentageResult: 0.2 },
-          findBy: {
-            merchant: this.merchant._id,
-          },
-        };
-      } else if (this.dataToRequest === 'recent') {
-        this.pagination = {
-          options: { sortBy: 'createdAt:desc', limit: 10, page: 1, range: {} },
-          findBy: {
-            merchant: this.merchant._id,
-          },
-        };
-      }
-      this.itemsPagination = await this._ItemsService.itemTotalPagination(
-        this.pagination
-      );
+      // if (this.dataToRequest === 'mostSold') {
+      //   this.pagination = {
+      //     options: { sortBy: 'count:desc', percentageResult: 0.2 },
+      //     findBy: {
+      //       merchant: this.merchant._id,
+      //     },
+      //   };
+      // } else if (this.dataToRequest === 'lessSold') {
+      //   this.pagination = {
+      //     options: { sortBy: 'count:asc', percentageResult: 0.2 },
+      //     findBy: {
+      //       merchant: this.merchant._id,
+      //     },
+      //   };
+      // } else if (this.dataToRequest === 'recent') {
+      //   this.pagination = {
+      //     options: { sortBy: 'createdAt:desc', limit: 10, page: 1, range: {} },
+      //     findBy: {
+      //       merchant: this.merchant._id,
+      //     },
+      //   };
+      // } else if (this.dataToRequest === 'hidden') {
+      //   this.pagination = {
+      //     options: { sortBy: 'createdAt:desc' },
+      //     findBy: {
+      //       merchant: this.merchant._id,
+      //     },
+      //   };
+      //   console.log('Ando en hidden');
+      //   this.getHiddenItems();
+      //   this.orderedItems = this.hiddenItems;
+      // }
       // console.log(this.itemsPagination);
 
-      for (
-        let i = 0;
-        i < this.itemsPagination.itemTotalPagination.length;
-        i++
-      ) {
-        const currentItem = await this._ItemsService.item(
-          this.itemsPagination.itemTotalPagination[i]._id
+      // if (this.dataToRequest !== 'hidden') {
+      //   this.itemsPagination = await this._ItemsService.itemTotalPagination(
+      //     this.pagination
+      //   );
+      // }
+
+      const mostSoldPagination = {
+        options: { sortBy: 'count:desc', percentageResult: 0.2 },
+        findBy: {
+          merchant: this.merchant._id,
+        },
+      };
+
+      const lessSoldPagination = {
+        options: { sortBy: 'count:asc', percentageResult: 0.2 },
+        findBy: {
+          merchant: this.merchant._id,
+        },
+      };
+
+      const mostSoldItems = await this._ItemsService.itemTotalPagination(
+        mostSoldPagination
+      );
+      // this.mostSoldItems = mostSoldItems.itemTotalPagination;
+      console.log(mostSoldItems);
+
+      for (let i = 0; i < mostSoldItems.itemTotalPagination.length; i++) {
+        const item = await this._ItemsService.item(
+          mostSoldItems.itemTotalPagination[i]._id
         );
-        this.orderedItems.push(currentItem);
-        // console.log(this.orderedItems);
+        this.mostSoldItems.push(item);
+        //console.log(this.mostSoldItems);
       }
+      console.log(this.mostSoldItems);
+      const lessSoldItems = await this._ItemsService.itemTotalPagination(
+        lessSoldPagination
+      );
+
+      for (let i = 0; i < lessSoldItems.itemTotalPagination.length; i++) {
+        const item = await this._ItemsService.item(
+          lessSoldItems.itemTotalPagination[i]._id
+        );
+        this.lessSoldItems.push(item);
+      }
+      console.log(this.lessSoldItems);
+
+      // for (
+      //   let i = 0;
+      //   i < this.itemsPagination.itemTotalPagination.length;
+      //   i++
+      // ) {
+      //   const currentItem = await this._ItemsService.item(
+      //     this.itemsPagination.itemTotalPagination[i]._id
+      //   );
+      //   this.orderedItems.push(currentItem);
+      //   console.log(this.orderedItems);
+      // }
+
+      const allItemsPagination = {
+        options: { sortBy: 'count:desc', percentageResult: 1 },
+        findBy: {
+          merchant: this.merchant._id,
+        },
+      };
+
+      const allItems = await this._ItemsService.itemTotalPagination(
+        allItemsPagination
+      );
+      console.log(allItems);
+
+      for (let i = 0; i < allItems.itemTotalPagination.length; i++) {
+        const item = await this._ItemsService.item(
+          allItems.itemTotalPagination[i]._id
+        );
+        this.allItems.push(item);
+      }
+      console.log(this.allItems);
     });
   }
 
@@ -134,19 +246,58 @@ export class DashboardLibraryComponent implements OnInit {
     this.tags = tagsByMerchant.map((value) => value.tags);
   }
 
-  async getData() {
-    switch (this.dataToRequest) {
-      case 'recent':
-        await this.getOrders();
-        break;
-      case 'mostSold':
-        await this.getMostSoldItems();
-        break;
-      case 'lessSold':
-        await this.getLessSoldItems();
-        break;
+  async onDateChange() {
+    if (this.range.get('start').value && this.range.get('end').value) {
+      //console.log('AZUCARRRRRRRRRR');
+      lockUI();
+      try {
+        const result = await this.queryParameterService.createQueryParameter(
+          this._MerchantsService.merchantData._id,
+          {
+            from: {
+              date: this.range.get('start').value,
+            },
+            until: {
+              date: this.range.get('end').value,
+            },
+          }
+        );
+
+        if (result) this.queryParameters.unshift(result);
+
+        const startDate = new Date(result.from.date);
+        const endDate = new Date(result.until.date);
+
+        this.dateString = `${this.orders} facturas, $${
+          this.income
+        } desde ${this.formatDate(startDate)} hasta ${this.formatDate(
+          endDate
+        )}`;
+        unlockUI();
+      } catch (error) {
+        unlockUI();
+        console.log(error);
+      }
     }
+    // this.dateString = `Desde ${this.startDate} hasta ${this.endDate} N artículos vendidos. $XXX`
   }
+
+  // async getData() {
+  //   switch (this.dataToRequest) {
+  //     case 'recent':
+  //       await this.getOrders();
+  //       break;
+  //     case 'mostSold':
+  //       await this.getMostSoldItems();
+  //       break;
+  //     case 'lessSold':
+  //       await this.getLessSoldItems();
+  //       break;
+  //     case 'hidden':
+  //       await this.getHiddenItems();
+  //       break;
+  //   }
+  // }
 
   async getOrders() {
     try {
@@ -166,6 +317,10 @@ export class DashboardLibraryComponent implements OnInit {
         });
       });
 
+      //console.log(ordersByMerchant);
+
+      this.orders = ordersByMerchant.length;
+
       const filteredItems = Array.from(itemIds);
 
       const { listItems } = await this._ItemsService.listItems({
@@ -173,6 +328,7 @@ export class DashboardLibraryComponent implements OnInit {
           _id: {
             __in: filteredItems,
           },
+          merchant: this.merchant._id,
         },
       });
 
@@ -232,9 +388,11 @@ export class DashboardLibraryComponent implements OnInit {
       if (this.queryParameters.length > 0) {
         const startDate = new Date(this.queryParameters[0].from.date);
         const endDate = new Date(this.queryParameters[0].until.date);
-        this.dateString = `Desde ${this.formatDate(
-          startDate
-        )} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+        this.dateString = `${this.orders} facturas, $${
+          this.income
+        } desde ${this.formatDate(startDate)} hasta ${this.formatDate(
+          endDate
+        )}`;
 
         const filters: FilterCriteria[] = this.queryParameters.map(
           (queryParameter) => {
@@ -334,4 +492,189 @@ export class DashboardLibraryComponent implements OnInit {
   goBack() {
     this.router.navigate([`admin/dashboard`]);
   }
+
+  async getHiddenItems() {
+    try {
+      const { listItems } = await this._ItemsService.listItems({
+        options: {
+          limit: 10,
+        },
+        findBy: {
+          merchant: this.merchant._id,
+          status: 'disabled',
+        },
+      });
+      this.hiddenItems = listItems;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async openDotsDialog(id: string, index: number) {
+    const item = await this._ItemsService.item(id);
+    console.log(item);
+    this.articleId = item._id;
+    this._ItemsService.itemPrice = item.pricing;
+    this._bottomSheet.open(LinksDialogComponent, {
+      data: [
+        {
+          // title: 'Del exhibidor',
+          options: [
+            {
+              title: 'Compartir',
+              callback: () => {
+                const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/article-detail/item/${id}?mode=image-preview`;
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: `${link}`,
+                });
+                console.log('Compartir');
+              },
+              icon: '/upload.svg',
+            },
+            {
+              title: 'Editar',
+              callback: () => {
+                this.router.navigate([`admin/article-editor/${id}`]);
+              },
+              icon: '/settings.svg',
+            },
+            {
+              title: 'Ocultar',
+              callback: () => {
+                this.hideItem(item);
+              },
+            },
+            {
+              title: 'Preview de visitantes y compradores',
+              callback: () => {
+                console.log('Preview');
+                this.router.navigate(
+                  [
+                    `ecommerce/${this.saleflowService.saleflowData.merchant.slug}/article-detail/item/${id}`,
+                  ],
+                  {
+                    queryParams: {
+                      mode: 'image-preview',
+                    },
+                  }
+                );
+              },
+            },
+            {
+              title: 'Respuestas del Formulario',
+              callback: async () => {
+                if (item.webForms.length > 0) {
+                  this.router.navigate([
+                    `admin/webform-metrics/${item.webForms[0]._id}/${id}`,
+                  ]);
+                }
+              },
+            },
+            {
+              title: 'Descarga el QR para tus ads impresos',
+              callback: () => {
+                console.log('QR');
+                this.articleId = id;
+                console.log(this.articleId);
+                this.downloadQr(id);
+              },
+            },
+            {
+              title: 'Eliminar',
+              callback: () => {
+                console.log('Eliminar');
+                this.dialogService.open(SingleActionDialogComponent, {
+                  type: 'fullscreen-translucent',
+                  props: {
+                    title: '¿Quieres eliminar este artículo?',
+                    buttonText: 'Sí, borrar',
+                    mainButton: async () => {
+                      const removeItemFromSaleFlow =
+                        await this.saleflowService.removeItemFromSaleFlow(
+                          id,
+                          this.saleflowService.saleflowData._id
+                        );
+
+                      if (!removeItemFromSaleFlow) return;
+                      const deleteItem = await this._ItemsService.deleteItem(
+                        id
+                      );
+                      if (!deleteItem) return;
+                      else {
+                        this._ToastrService.info(
+                          '¡Item eliminado exitosamente!'
+                        );
+
+                        this.saleflowService.saleflowData =
+                          await this.saleflowService.saleflowDefault(
+                            this._MerchantsService.merchantData._id
+                          );
+
+                        //this.router.navigate(['/admin/dashboard']);
+                      }
+                    },
+                    btnBackgroundColor: '#272727',
+                    btnMaxWidth: '133px',
+                    btnPadding: '7px 2px',
+                  },
+                  customClass: 'app-dialog',
+                  flags: ['no-header'],
+                });
+                //this._ItemsService.deleteItem(this.recentlySoldItems[index]._id)
+              },
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  downloadQr(id: string) {
+    const parentElement =
+      this.orderQrCode.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(blobData, this.formatId(id));
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.formatId(id);
+      link.click();
+    }
+  }
+
+  hideItem = (item: ExtendedItem): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const updatedItem = await this._ItemsService.updateItem(
+          {
+            status:
+              item.status === 'active' || item.status === 'featured'
+                ? 'disabled'
+                : item.status === 'disabled'
+                ? 'active'
+                : 'draft',
+          },
+          item._id
+        );
+
+        if (updatedItem)
+          resolve({
+            success: true,
+            id: item._id,
+          });
+      } catch (error) {
+        reject({
+          success: false,
+          id: null,
+        });
+      }
+    });
+  };
 }

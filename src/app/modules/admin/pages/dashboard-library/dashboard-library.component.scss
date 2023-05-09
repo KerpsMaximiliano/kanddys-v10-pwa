@@ -1,3 +1,7 @@
+* {
+  margin: 0;
+}
+
 .container {
   min-height: 100vh;
 
@@ -25,8 +29,8 @@
     display: flex;
     align-items: center;
     padding: 14px 21px;
-    background-color: #c1c4c1;
-    box-shadow: 0px 3px 6px rgba(#000000, 0.16) inset;
+    background-color: #ffffff;
+    box-shadow: 0px 3px 6px rgba(#000000, 0.16);
 
     button {
       all: unset;
@@ -36,8 +40,8 @@
     .text {
       color: #272727;
       font-size: 16px;
-      font-family: SFProRegular;
-      margin: 0 auto;
+      font-family: SFProBold;
+      margin-left: auto;
     }
   }
 
@@ -47,10 +51,10 @@
       cursor: pointer;
       text-align: center;
       text-transform: capitalize;
-      max-width: 200px;
+      max-width: 160px !important;
       border: 1px solid #707070;
       border-radius: 20px;
-      padding: 10px 20px;
+      padding: 10px 12px;
       margin-left: 1em;
       color: #272727;
       font-size: 16px;
@@ -67,8 +71,9 @@
 }
 
 .section {
-  margin: 1.5em;
+  margin-bottom: 2em;
   .section-header {
+    margin: 1em 1.5em;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -79,6 +84,7 @@
     }
 
     .section-description {
+      cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -97,12 +103,15 @@
       }
     }
   }
+
+  .section-content {
+    margin-left: 1em;
+  }
 }
 
 .card {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   padding-bottom: 7px;
-  margin-bottom: 1em;
 
   a {
     all: unset;
@@ -243,4 +252,15 @@
         hue-rotate(68deg) brightness(93%) contrast(91%);
     }
   }
+}
+
+::ng-deep .cdk-overlay-pane {
+  bottom: 0 !important;
+  top: unset !important;
+  margin: 0 auto;
+}
+
+::ng-deep .mat-datepicker-content {
+  margin: 0 auto;
+  max-height: 354px !important;
 }

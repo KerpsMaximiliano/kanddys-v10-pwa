@@ -40,6 +40,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ToastrService } from 'ngx-toastr';
+import { ExtendedItem } from '../items-dashboard/items-dashboard.component';
 
 export class FilterCriteria {
   _id?: string;
@@ -60,7 +61,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   formatId = formatID;
 
   swiperConfig: SwiperOptions = {
-    slidesPerView: 4,
+    slidesPerView: 1,
     freeMode: true,
     spaceBetween: 1,
   };
@@ -78,8 +79,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   mostSoldItems: Item[] = [];
   lessSoldItems: Item[] = [];
   hiddenItems: Item[] = [];
+  orders: number;
+  income: number;
 
-  articleId: string;
+  articleId: string = '';
 
   ordersToConfirm: ItemOrder[] = [];
 
@@ -238,9 +241,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
 
+  qrLink: string = '';
+
   constructor(
     public _MerchantsService: MerchantsService,
-    private _SaleflowService: SaleFlowService,
+    public _SaleflowService: SaleFlowService,
     public router: Router,
     private authService: AuthService,
     // private itemsService: ItemsService,
@@ -256,11 +261,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    const income = await this._MerchantsService.incomeMerchant({
+      findBy: {
+        merchant: this._MerchantsService.merchantData._id,
+      },
+    });
+
+    console.log(income);
+    this.income = income;
+    await this.getOrders();
     if (this._SaleflowService.saleflowData) {
       this.inicializeItems(true, false, true);
-      this.getQueryParameters();
       this.getTags();
-      this.getOrders();
+      this.getQueryParameters();
       this.getMostSoldItems();
       this.getLessSoldItems();
       this.getHiddenItems();
@@ -274,9 +287,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       next: (value) => {
         if (value) {
           this.inicializeItems(true, false, true);
-          this.getQueryParameters();
           this.getTags();
-          this.getOrders();
+          //this.getOrders();
+          this.getQueryParameters();
           this.getMostSoldItems();
           this.getLessSoldItems();
           this.getHiddenItems();
@@ -443,6 +456,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           itemIds.add(item.item._id);
         });
       });
+
+      this.orders = ordersByMerchant.length;
+      console.log(this.orders);
 
       const filteredItems = Array.from(itemIds);
 
@@ -685,9 +701,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         const startDate = new Date(result.from.date);
         const endDate = new Date(result.until.date);
 
-        this.dateString = `Desde ${this.formatDate(
-          startDate
-        )} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+        this.dateString = `${this.orders} facturas, $${
+          this.income
+        } desde ${this.formatDate(startDate)} hasta ${this.formatDate(
+          endDate
+        )}`;
         unlockUI();
       } catch (error) {
         unlockUI();
@@ -713,9 +731,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       if (this.queryParamaters.length > 0) {
         const startDate = new Date(this.queryParamaters[0].from.date);
         const endDate = new Date(this.queryParamaters[0].until.date);
-        this.dateString = `Desde ${this.formatDate(
-          startDate
-        )} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+        this.dateString = `${this.orders} facturas, $${
+          this.income
+        } desde ${this.formatDate(startDate)} hasta ${this.formatDate(
+          endDate
+        )}`;
 
         const filters: FilterCriteria[] = this.queryParamaters.map(
           (queryParameter) => {
@@ -750,7 +770,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  openDotsDialog(id: string, index: number, type: string) {
+  async openDotsDialog(id: string, index: number, type: string) {
+    const item = await this._ItemsService.item(id);
+    console.log(item);
+    this.articleId = item._id;
+    this._ItemsService.itemPrice = item.pricing;
     this._bottomSheet.open(LinksDialogComponent, {
       data: [
         {
@@ -759,7 +783,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             {
               title: 'Compartir',
               callback: () => {
-                const link = `${this.URI}/admin/dashboard`;
+                const link = `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${id}?mode=image-preview`;
                 //this.router.navigate(['/admin/view-configuration-cards']);
                 this.ngNavigatorShareService.share({
                   title: '',
@@ -779,23 +803,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             {
               title: 'Ocultar',
               callback: () => {
-                console.log('Ocultar');
-                if (type === 'recent') {
-                  console.log(this.recentlySoldItems[index].status);
-                  this.recentlySoldItems[index].status = 'disabled';
-                } else if (type === 'lessSold') {
-                  console.log(this.lessSoldItems[index].status);
-                  this.lessSoldItems[index].status = 'disabled';
-                } else if (type === 'mostSold') {
-                  console.log(this.mostSoldItems[index].status);
-                  this.mostSoldItems[index].status = 'disabled';
-                }
+                this.hideItem(item);
               },
             },
             {
               title: 'Preview de visitantes y compradores',
               callback: () => {
-                console.log('Preview');
                 this.router.navigate(
                   [
                     `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${id}`,
@@ -811,8 +824,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             {
               title: 'Respuestas del Formulario',
               callback: async () => {
-                const item = await this._ItemsService.item(id);
-                console.log(item);
+                // const item = await this._ItemsService.item(id);
+                // console.log(item);
                 if (item.webForms.length > 0) {
                   this.router.navigate([
                     `admin/webform-metrics/${item.webForms[0]._id}/${id}`,
@@ -825,6 +838,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               callback: () => {
                 console.log('QR');
                 this.articleId = id;
+                console.log(this.articleId);
+                //this.qrLink = `${this.URI}/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${id}`;
                 this.downloadQr(id);
               },
             },
@@ -897,4 +912,33 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       link.click();
     }
   }
+
+  hideItem = (item: ExtendedItem): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const updatedItem = await this._ItemsService.updateItem(
+          {
+            status:
+              item.status === 'active' || item.status === 'featured'
+                ? 'disabled'
+                : item.status === 'disabled'
+                ? 'active'
+                : 'draft',
+          },
+          item._id
+        );
+
+        if (updatedItem)
+          resolve({
+            success: true,
+            id: item._id,
+          });
+      } catch (error) {
+        reject({
+          success: false,
+          id: null,
+        });
+      }
+    });
+  };
 }
