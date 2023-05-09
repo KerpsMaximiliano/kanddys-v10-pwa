@@ -1,36 +1,19 @@
 .container {
 	min-height: 100vh;
 
+	h4 {
+		color: #ffffff;
+		margin: 0;
+		font-weight: normal;
+		font-size: 16px;
+	}
+
 	header {
 		display: flex;
 		align-items: center;
-		background-color: #a1a1a1;
 		justify-content: space-between;
 		height: 40px;
-		padding: 0 20px;
-
-		div {
-			display: flex;
-			align-items: center;
-		}
-
-		p {
-			color: #272727;
-			font-size: 16px;
-			font-family: SFProRegular;
-			margin-left: 8px;
-		}
-
-		img {
-			filter: brightness(0) saturate(100) invert(13%) sepia(23%) saturate(0%) hue-rotate(238deg) brightness(91%)
-				contrast(93%);
-		}
-
-		.add {
-			font-size: 28px;
-			font-family: SfProBold;
-			color: #272727;
-		}
+		padding: 0px 8px;
 	}
 
 	.content {
@@ -44,7 +27,8 @@
 				.mat-input-element {
 					// font-family: SfProSemiBold;
 					// font-size: 18px;
-					color: #7b7b7b;
+					color: #c4c5c3;
+					font-size: 16px;
 				}
 				.mat-form-field-label {
 					color: #7b7b7b;
@@ -80,7 +64,7 @@
 
 		.description {
 			margin-top: 3em;
-			color: #171d16;
+			color: #c4c5c3;
 			font-size: 17px;
 
 			.description-title {
@@ -104,7 +88,7 @@
 
 .post-label {
 	margin-top: 0;
-	color: #171d16;
+	color: #7b7b7b;
 	font-style: italic;
 	font-size: 14px;
 	font-family: SfProLight;

@@ -134,8 +134,8 @@ export class OrderSlidesComponent implements OnInit {
     freeMode: false,
     spaceBetween: 0,
     loop: true,
-    slideDuplicateNextClass: 'swiper-slide-duplicate-next',
-    slideDuplicatePrevClass: 'swiper-slide-duplicate-prev',
+    // slideDuplicateNextClass: 'swiper-slide-duplicate-next',
+    // slideDuplicatePrevClass: 'swiper-slide-duplicate-prev',
   };
 
   initialSlide: number;
@@ -722,6 +722,7 @@ export class OrderSlidesComponent implements OnInit {
                 result[0].paymentMethod === 'azul'
               ) {
                 order.payedWithAzul = true;
+                order.paymentType = 'azul';
               }
             } else {
               order.paymentType =

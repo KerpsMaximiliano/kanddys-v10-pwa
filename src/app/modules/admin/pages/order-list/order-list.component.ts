@@ -1,17 +1,25 @@
 import { Component, OnInit } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
-import { formatID, getDaysAgo } from 'src/app/core/helpers/strings.helpers';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import {
+  formatID,
+  formatPhoneNumber,
+  getDaysAgo,
+} from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Notification } from 'src/app/core/models/notification';
 import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
 import { User } from 'src/app/core/models/user';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { environment } from 'src/environments/environment';
 
 interface ExtendedOrder extends ItemOrder {
   total?: number;
   date?: string;
-  formatId: string;
 }
 
 interface ExtendedUser extends User {
@@ -25,6 +33,7 @@ interface ExtendedUser extends User {
   styleUrls: ['./order-list.component.scss'],
 })
 export class OrderListComponent implements OnInit {
+  URI: string = environment.uri;
   env: string = environment.assetsUrl;
   // tag: Tag;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
@@ -34,20 +43,28 @@ export class OrderListComponent implements OnInit {
   redirectTo: string = '../../';
   showSearchBar = false;
   searchText = '';
+  deliveryStatus: OrderStatusDeliveryType;
+  merchantNumber: string;
+  notification: Notification;
   // orderStatus: string;
 
   constructor(
     private route: ActivatedRoute,
     public router: Router,
     private orderService: OrderService,
-    private merchantsService: MerchantsService // private tagsService: TagsService
+    private merchantsService: MerchantsService,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private _bottomSheet: MatBottomSheet,
+    private notificationsService: NotificationsService
   ) {}
 
   async ngOnInit(): Promise<void> {
     lockUI();
     // const tagId = this.route.snapshot.paramMap.get('tagId');
     // let status = this.route.snapshot.paramMap.get('status');
-    let deliveryStatus = this.route.snapshot.paramMap.get('deliveryStatus');
+    this.deliveryStatus = this.route.snapshot.paramMap.get(
+      'deliveryStatus'
+    ) as OrderStatusDeliveryType;
     let filter = this.route.snapshot.paramMap.get('filter') as 'recurrent';
     // if (tagId) {
     //   this.tag = (await this.tagsService.tag(tagId))?.tag;
@@ -57,14 +74,20 @@ export class OrderListComponent implements OnInit {
     //   });
     // }
     this.status = 'loading';
-    if (deliveryStatus) {
-      deliveryStatus = deliveryStatus.replace('-', ' ');
+    this.merchantNumber = formatPhoneNumber(
+      this.merchantsService.merchantData.owner.phone
+    );
+    if (this.deliveryStatus) {
+      this.deliveryStatus = this.deliveryStatus.replace(
+        '-',
+        ' '
+      ) as OrderStatusDeliveryType;
       const orders = (
         await this.merchantsService.ordersByMerchant(
           this.merchantsService.merchantData._id,
           {
             findBy: {
-              orderStatusDelivery: deliveryStatus,
+              orderStatusDelivery: this.deliveryStatus,
               orderStatus: [
                 'started',
                 'verifying',
@@ -84,10 +107,30 @@ export class OrderListComponent implements OnInit {
       this.orders = orders.map((itemOrder: ExtendedOrder) => {
         return this.addInfoToOrder(itemOrder);
       });
-      this.title = this.orderService.orderDeliveryStatus(
-        deliveryStatus as OrderStatusDeliveryType
-      );
+      this.title = this.orderService.orderDeliveryStatus(this.deliveryStatus);
       this.status = 'complete';
+      unlockUI();
+
+      const result = await this.notificationsService.notifications(
+        {
+          options: {
+            limit: -1,
+            sortBy: 'createdAt:desc',
+          },
+          findBy: {
+            entity: 'order',
+            type: 'standard',
+            mode: 'default',
+            active: true,
+          },
+        },
+        this.merchantsService.merchantData._id
+      );
+      this.notification = result.find(
+        (notification) =>
+          notification.trigger[0].key === 'orderStatusDelivery' &&
+          notification.trigger[0].value === this.deliveryStatus
+      );
     } else if (filter) {
       if (filter === 'recurrent') {
         // Usuarios recurrentes
@@ -111,6 +154,7 @@ export class OrderListComponent implements OnInit {
               return value.user;
             });
             this.status = 'complete';
+            unlockUI();
             this.getBuyersIncome();
           });
         // Usuarios recurrentes
@@ -131,6 +175,7 @@ export class OrderListComponent implements OnInit {
         .then((result) => {
           this.buyers = result;
           this.status = 'complete';
+          unlockUI();
           this.getBuyersIncome();
         });
       // Todos los compradores
@@ -158,7 +203,6 @@ export class OrderListComponent implements OnInit {
     //     status as OrderStatusType
     //   );
     // }
-    unlockUI();
   }
 
   getBuyersIncome() {
@@ -181,7 +225,50 @@ export class OrderListComponent implements OnInit {
     itemOrder.total =
       itemOrder.subtotals?.reduce((prev, curr) => prev + curr.amount, 0) || 0;
     itemOrder.date = getDaysAgo(itemOrder.createdAt);
-    itemOrder.formatId = formatID(itemOrder.dateId);
     return itemOrder;
+  }
+
+  formatId(id: string) {
+    return formatID(id).split(/(?=N)/g)[1];
+  }
+
+  share() {
+    const data = [
+      {
+        title: `Posibles acciones con las facturas que están en el progreso “${this.title}”`,
+        options: [
+          {
+            title: 'Compartir el link con acceso a “la dirección de entrega” ',
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: '',
+                url: `${this.URI}/ecommerce/order-process/${this.merchantsService.merchantData._id}?view=delivery`,
+              });
+            },
+          },
+          {
+            title: 'Compartir el link con acceso a “los artículos” ',
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: '',
+                url: `${this.URI}/ecommerce/order-process/${this.merchantsService.merchantData._id}?view=assistant`,
+              });
+            },
+          },
+          {
+            title: 'Compartir el link con acceso a toda la data',
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: '',
+                url: `${this.URI}${this.router.url}`,
+              });
+            },
+          },
+        ],
+      },
+    ];
+    this._bottomSheet.open(LinksDialogComponent, {
+      data,
+    });
   }
 }

@@ -7,12 +7,12 @@
 }
 
 .header {
-  // padding: 14px 38px 14px 21px;
-  background-color: #a1a1a1;
+  background-color: #fff;
   display: flex;
   align-items: center;
   margin-bottom: 12px;
   justify-content: space-between;
+  box-shadow: 0 1px 5px #0000001f;
 
   div {
     display: flex;
@@ -30,7 +30,7 @@
   display: block;
 
   &:not(:first-of-type) {
-    margin-top: 4px;
+    margin-top: 8px;
   }
 }
 .notice {
@@ -63,4 +63,11 @@
   .mat-form-field-ripple {
     background-color: #82f18d;
   }
+}
+.notif-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  color: #000;
 }

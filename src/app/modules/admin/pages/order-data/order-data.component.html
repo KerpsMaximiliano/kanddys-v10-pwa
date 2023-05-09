@@ -23,12 +23,14 @@
         <app-small-info-card
           *ngFor="let order of orderStatusDelivery.inProgress.orders"
           [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
+          [title]="order.user?.username || 'KiosKo sin nombre'"
           [subtitle]="
             'by ' + (order.user?.name || order.user?.phone || order.user?.email)
           "
           [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
+          [bottomInfo]="
+            getDaysAgo(order.createdAt) + ', factura ' + formatId(order.dateId)
+          "
         ></app-small-info-card>
       </swiper>
     </div>
@@ -57,12 +59,14 @@
         <app-small-info-card
           *ngFor="let order of orderStatusDelivery.pending.orders"
           [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
+          [title]="order.user?.username || 'KiosKo sin nombre'"
           [subtitle]="
             'by ' + (order.user?.name || order.user?.phone || order.user?.email)
           "
           [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
+          [bottomInfo]="
+            getDaysAgo(order.createdAt) + ', factura ' + formatId(order.dateId)
+          "
         ></app-small-info-card>
       </swiper>
     </div>
@@ -91,12 +95,14 @@
         <app-small-info-card
           *ngFor="let order of orderStatusDelivery.pickup.orders"
           [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
+          [title]="order.user?.username || 'KiosKo sin nombre'"
           [subtitle]="
             'by ' + (order.user?.name || order.user?.phone || order.user?.email)
           "
           [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
+          [bottomInfo]="
+            getDaysAgo(order.createdAt) + ', factura ' + formatId(order.dateId)
+          "
         ></app-small-info-card>
       </swiper>
     </div>
@@ -125,12 +131,14 @@
         <app-small-info-card
           *ngFor="let order of orderStatusDelivery.shipped.orders"
           [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
+          [title]="order.user?.username || 'KiosKo sin nombre'"
           [subtitle]="
             'by ' + (order.user?.name || order.user?.phone || order.user?.email)
           "
           [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
+          [bottomInfo]="
+            getDaysAgo(order.createdAt) + ', factura ' + formatId(order.dateId)
+          "
         ></app-small-info-card>
       </swiper>
     </div>
@@ -159,12 +167,14 @@
         <app-small-info-card
           *ngFor="let order of orderStatusDelivery.delivered.orders"
           [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
+          [title]="order.user?.username || 'KiosKo sin nombre'"
           [subtitle]="
             'by ' + (order.user?.name || order.user?.phone || order.user?.email)
           "
           [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
+          [bottomInfo]="
+            getDaysAgo(order.createdAt) + ', factura ' + formatId(order.dateId)
+          "
         ></app-small-info-card>
       </swiper>
     </div>

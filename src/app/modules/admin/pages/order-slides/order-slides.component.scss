@@ -2,64 +2,35 @@
   all: unset;
   cursor: pointer;
 }
-.header {
-  // display: flex;
-  // align-items: center;
-  // background-color: #c1c4c1;
-  // justify-content: space-between;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  background-color: #c1c4c1;
-  height: 48px;
+// .header {
+//   display: grid;
+//   grid-template-columns: repeat(12, minmax(0, 1fr));
+//   background-color: #c1c4c1;
+//   height: 48px;
 
-  p {
-    text-transform: capitalize;
-    margin: 0;
-    color: #293628;
-    font-size: 1rem;
-    font-family: SfProMedium;
-  }
+//   p {
+//     text-transform: capitalize;
+//     margin: 0;
+//     color: #293628;
+//     font-size: 1rem;
+//     font-family: SfProMedium;
+//   }
 
-  button {
-    cursor: pointer;
-    background: none;
-    border: none;
-    img {
-      width: 20px;
-    }
-  }
-}
+//   button {
+//     cursor: pointer;
+//     background: none;
+//     border: none;
+//     img {
+//       width: 20px;
+//     }
+//   }
+// }
 .container {
   min-height: 100vh;
 
   .section {
     margin-top: 5px;
     padding: 25px;
-
-    .title,
-    .subtitle,
-    .meta-description {
-      color: #7b7b7b;
-      margin: 5px 0px;
-    }
-
-    .title {
-      font-family: SfProDisplayBold;
-      font-size: 21px;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .subtitle {
-      font-family: RobotoMedium;
-      font-size: 14px;
-      margin: 5px 0px;
-    }
-
-    .meta-description {
-      font-family: RobotoRegular;
-      font-size: 13px;
-    }
 
     .section-label {
       font-family: SfProLight;
@@ -92,21 +63,31 @@
       margin-left: 20px;
       width: 50%;
     }
+    .section-content > :first-child {
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    .section-content > :last-child {
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
     .questions {
-      margin: 4px 0;
-      padding: 24px;
+      margin: 2px 0;
+      padding: 20px;
       background-color: #fff;
-      border-radius: 8px;
+      color: #7b7b7b;
 
       p {
         margin: 0;
       }
-      .gray-out {
-        margin-top: 10px;
-      }
       .label {
         font-family: SfProMedium;
         font-size: 17px;
+      }
+      .answer {
+        font-family: SfProLight;
+        font-size: 16px;
+        margin-top: 10px;
       }
     }
 
@@ -129,7 +110,6 @@
     .items-container {
       background-color: #ffffff;
       padding: 10px 12px;
-      border-radius: 6px;
       align-items: center;
 
       .image-container {
@@ -216,16 +196,16 @@
       }
 
       .total {
-        font-family: "SfProBold";
-        font-size: 13px;
-        color: #000000;
+        font-family: SfProMedium;
+        font-size: 17px;
+        color: #7b7b7b;
         margin: 0;
       }
 
       .amount {
-        font-family: "SfProBold";
-        font-size: 17px;
-        color: #272727;
+        font-family: SfProRegular;
+        font-size: 15px;
+        color: #7b7b7b;
         text-transform: capitalize;
         margin: 0;
       }
@@ -296,6 +276,7 @@
       padding: 0 25px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
     }
   }
   .input-image-container {
@@ -321,46 +302,46 @@
   }
 }
 
-.float-paginator {
-  width: 100%;
-  max-width: 500px;
-  position: fixed;
-  top: auto;
-  bottom: 60%;
-  z-index: 100;
+// .float-paginator {
+//   width: 100%;
+//   max-width: 500px;
+//   position: fixed;
+//   top: auto;
+//   bottom: 60%;
+//   z-index: 100;
 
-  .button {
-    cursor: pointer;
-    width: 30px;
-    height: 50px;
-    background-color: #293628;
-    position: absolute;
-    display: flex;
-    align-items: center;
-    img {
-      width: 10px;
-      filter: brightness(0) invert(81%) sepia(41%) saturate(529%) hue-rotate(66deg) brightness(104%) contrast(89%);
-    }
-  }
-}
+//   .button {
+//     cursor: pointer;
+//     width: 30px;
+//     height: 50px;
+//     background-color: #293628;
+//     position: absolute;
+//     display: flex;
+//     align-items: center;
+//     img {
+//       width: 10px;
+//       filter: brightness(0) invert(81%) sepia(41%) saturate(529%) hue-rotate(66deg) brightness(104%) contrast(89%);
+//     }
+//   }
+// }
 
-.left {
-  border-radius: 0 100% 100% 0px;
-  left: 0px;
-  justify-content: end;
-  padding-right: 10px;
-}
+// .left {
+//   border-radius: 0 100% 100% 0px;
+//   left: 0px;
+//   justify-content: end;
+//   padding-right: 10px;
+// }
 
-.right {
-  border-radius: 100% 0 0 100%;
-  right: 0px;
-  justify-content: start;
-  padding-left: 10px;
+// .right {
+//   border-radius: 100% 0 0 100%;
+//   right: 0px;
+//   justify-content: start;
+//   padding-left: 10px;
 
-  img {
-    transform: rotate(180deg);
-  }
-}
+//   img {
+//     transform: rotate(180deg);
+//   }
+// }
 
 .flex {
   display: flex;
@@ -401,8 +382,9 @@
   color: #fff;
   font-family: SfProSemiBold;
   font-size: 1.063rem;
-  padding: 4px 12px;
+  padding: 7px 12px;
   border-radius: 8px;
+  text-align: center;
 
   &.btn {
     cursor: pointer;
@@ -420,8 +402,8 @@
     align-items: center;
     .left-text,
     .right-text {
-      color: #000000;
-      font-size: 13px;
+      margin: 0;
+      color: #7b7b7b;
       font-family: SFProBold;
     }
     .right-text {
@@ -467,14 +449,14 @@ button.chip {
   font-size: 1rem;
 }
 .payment-info {
-  width: 100%;
   text-align: center;
 
-  span {
+  > span {
     font-family: SfProBold;
     font-size: 13px;
     margin-bottom: 8px;
     display: block;
+    color: #7b7b7b;
   }
 }
 .panel {
@@ -488,7 +470,7 @@ button.chip {
   padding: 0 !important;
 }
 :host ::ng-deep .mat-content {
-  flex: 1 !important;
+  flex: none;
 }
 :host ::ng-deep .mat-expansion-indicator::after {
   color: inherit !important;
@@ -497,9 +479,8 @@ button.chip {
   border-radius: 7px;
   padding: 8px;
 
-  .top-text,
-  .bottom-text {
-    color: #000000;
+  .top-text {
+    color: #7b7b7b;
     font-family: SFProMedium;
     font-size: 17px;
     white-space: nowrap;
@@ -508,6 +489,7 @@ button.chip {
     margin: 0;
   }
   .bottom-text {
+    margin: 0;
     margin-top: 12.5px;
     color: #7b7b7b;
     white-space: nowrap;
@@ -539,4 +521,22 @@ button.chip {
 }
 .webform-question-wrapper {
   border-top: solid 2px #f6f6f6;
+}
+.user-pfp {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.order-info {
+  background-color: #fff;
+  border-top: solid 2px #e8e8e8;
+  padding: 10px 20px;
+  color: #7b7b7b;
+  font-size: 15px;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+  }
 }

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { AdminNavigationComponent } from 'src/app/shared/dialogs/admin-navigation/admin-navigation.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -9,7 +11,7 @@ import { environment } from 'src/environments/environment';
 export class ReportsComponent implements OnInit {
   env: string = environment.assetsUrl;
 
-  constructor() {}
+  constructor(private _bottomSheet: MatBottomSheet) {}
 
   ngOnInit(): void {}
 
@@ -35,5 +37,9 @@ export class ReportsComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  openAdminNavigation() {
+    this._bottomSheet.open(AdminNavigationComponent);
   }
 }

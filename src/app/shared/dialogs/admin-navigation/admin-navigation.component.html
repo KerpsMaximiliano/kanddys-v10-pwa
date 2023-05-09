@@ -1,0 +1,30 @@
+<div class="nav-container">
+  <nav>
+    <ul>
+      <li routerLinkActive="active">
+        <a
+          mat-button
+          [routerLink]="['/admin/dashboard']"
+          style="padding: 0px 8px"
+        >
+          Artículos
+        </a>
+        <mat-icon class="icon"> menu </mat-icon>
+      </li>
+      <li routerLinkActive="active">
+        <a
+          mat-button
+          [routerLink]="['/admin/reports']"
+          style="padding: 0px 8px"
+        >
+          Ventas
+        </a>
+        <mat-icon class="icon"> menu </mat-icon>
+      </li>
+    </ul>
+  </nav>
+  <div class="actions">
+    <!-- <button mat-button>Ver videos de posibilidades</button> -->
+    <button mat-button (click)="signout()">Sign out</button>
+  </div>
+</div>

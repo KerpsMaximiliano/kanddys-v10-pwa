@@ -245,6 +245,7 @@ export const ordersByMerchant = gql`
         email
         name
         image
+        username
       }
       ocr {
         _id

@@ -1,10 +1,14 @@
 <div class="container">
   <header>
     <div>
-      <a mat-icon-button [routerLink]="['../order-slides']">
-        <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
-      </a>
-      <p>Facturas</p>
+      <button
+        mat-button
+        style="border-radius: 0"
+        (click)="openAdminNavigation()"
+      >
+        <span>Ventas</span>
+        <mat-icon>menu</mat-icon>
+      </button>
     </div>
   </header>
   <main>
@@ -33,4 +37,5 @@
     </div>
     <router-outlet></router-outlet>
   </main>
+  <app-income-filter></app-income-filter>
 </div>

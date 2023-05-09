@@ -200,6 +200,8 @@ import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-
 import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
 import { ItemInfoComponent } from './dialogs/item-info/item-info.component';
 import { OrderInfoComponent } from './dialogs/order-info/order-info.component';
+import { IncomeFilterComponent } from './components/income-filter/income-filter.component';
+import { AdminNavigationComponent } from './dialogs/admin-navigation/admin-navigation.component';
 
 const imports = [
   CommonModule,
@@ -414,6 +416,8 @@ const declarations = [
   ContactHeaderComponent,
   ItemInfoComponent,
   OrderInfoComponent,
+  IncomeFilterComponent,
+  AdminNavigationComponent,
 ];
 
 @NgModule({

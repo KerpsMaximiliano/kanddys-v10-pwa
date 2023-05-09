@@ -4,32 +4,21 @@
 header {
   display: flex;
   align-items: center;
-  background-color: #c1c4c1;
-  justify-content: space-between;
+  background-color: #181d17;
+  justify-content: flex-end;
   height: 40px;
-  padding: 0 20px;
+  padding-left: 20px;
+  color: #87cd9b;
 
   div {
     display: flex;
     align-items: center;
   }
 
-  p {
-    color: #272727;
+  span {
     font-size: 16px;
     font-family: SFProHeavy;
-    margin-left: 8px;
-  }
-
-  img {
-    filter: brightness(0) saturate(100) invert(13%) sepia(23%) saturate(0%) hue-rotate(238deg) brightness(91%)
-      contrast(93%);
-  }
-
-  .add {
-    font-size: 28px;
-    font-family: SfProBold;
-    color: #272727;
+    margin-right: 4px;
   }
 }
 main {
@@ -52,6 +41,7 @@ main {
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  color: #272727;
 
   &.chip-selected {
     border-color: #bdbfbd;
@@ -59,5 +49,7 @@ main {
     font-family: SfProSemiBold;
     color: #171d16;
     transition: 0.2s;
+    color: #171d16;
   }
 }
+

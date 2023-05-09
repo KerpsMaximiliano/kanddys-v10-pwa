@@ -1,20 +1,43 @@
 <div class="container">
   <header class="header">
     <div>
-      <a mat-icon-button [routerLink]="[redirectTo]">
-        <img [src]="env + '/arrow-double-up-black.svg'" alt="" />
+      <button mat-icon-button (click)="showSearchBar = !showSearchBar">
+        <mat-icon>search</mat-icon>
+      </button>
+      <button mat-icon-button (click)="share()">
+        <mat-icon>share</mat-icon>
+      </button>
+    </div>
+    <div>
+      <a mat-button [routerLink]="[redirectTo]">
+        <span class="title">{{ title }}</span>
+        <mat-icon>keyboard_arrow_down</mat-icon>
       </a>
-      <p class="title">{{ title }}</p>
     </div>
     <!-- <p class="title">{{ tag?.name || orderDeliveryStatus || orderStatus }}</p> -->
-    <button mat-icon-button (click)="showSearchBar = !showSearchBar">
-      <i class="fa fa-search" aria-hidden="true"></i>
-    </button>
   </header>
 
   <section style="padding: 0 16px">
     <div *ngIf="status === 'loading'" class="notice">Cargando...</div>
     <ng-container *ngIf="status === 'complete'">
+      <mat-card class="mat-elevation-z0" style="margin-bottom: 32px">
+        <a
+          class="notif-link"
+          [routerLink]="['/admin/create-notification']"
+          [queryParams]="{
+            redirectTo: router.url,
+            status: deliveryStatus
+          }"
+        >
+          <span style="font-family: SfProBold"
+            >Mensaje al comprador desde {{ merchantNumber }}</span
+          >
+          <mat-icon>more_horiz</mat-icon>
+        </a>
+        <p style="font-family: SfProLight" *ngIf="notification">
+          {{ notification.message }}
+        </p>
+      </mat-card>
       <div *ngIf="showSearchBar">
         <mat-form-field class="field-container">
           <mat-label>Buscar</mat-label>
@@ -40,13 +63,13 @@
         >
           <app-small-info-card
             [image]="order.user?.image"
-            [title]="order.formatId"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
             [subtitle]="
               'by ' +
               (order.user?.name || order.user?.phone || order.user?.email)
             "
             [topInfo]="'$' + order.total?.toLocaleString('es-MX')"
-            [bottomInfo]="order.date"
+            [bottomInfo]="order.date + ', factura ' + formatId(order.dateId)"
           ></app-small-info-card>
         </a>
       </ng-container>
@@ -71,4 +94,5 @@
       </ng-container>
     </ng-container>
   </section>
+  <app-income-filter></app-income-filter>
 </div>
