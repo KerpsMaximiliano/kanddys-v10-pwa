@@ -122,15 +122,17 @@ export class OrderListComponent implements OnInit {
             type: 'standard',
             mode: 'default',
             active: true,
+            trigger: [
+              {
+                key: 'orderStatusDelivery',
+                value: this.deliveryStatus,
+              },
+            ],
           },
         },
         this.merchantsService.merchantData._id
       );
-      this.notification = result.find(
-        (notification) =>
-          notification.trigger[0].key === 'orderStatusDelivery' &&
-          notification.trigger[0].value === this.deliveryStatus
-      );
+      this.notification = result[0];
     } else if (filter) {
       if (filter === 'recurrent') {
         // Usuarios recurrentes
