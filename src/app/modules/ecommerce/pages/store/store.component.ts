@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -9,26 +12,20 @@ import { Merchant } from 'src/app/core/models/merchant';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { IntegrationsService } from 'src/app/core/services/integrations.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { environment } from 'src/environments/environment';
-import { SwiperOptions } from 'swiper';
-import SwiperCore, { Virtual } from 'swiper/core';
-import { IntegrationsService } from 'src/app/core/services/integrations.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { AuthService } from 'src/app/core/services/auth.service';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
-import { MatDialog } from '@angular/material/dialog';
 import {
   LoginDialogComponent,
   LoginDialogData,
 } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
-import { NgNavigatorShareService } from 'ng-navigator-share';
+import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
+import SwiperCore, { Virtual } from 'swiper/core';
 
 SwiperCore.use([Virtual]);
 
@@ -80,7 +77,7 @@ export class StoreComponent implements OnInit {
   windowWidth: number = 0;
 
   link: string;
-  panelOpenState = false;
+  openNavigation = false;
 
   async infinitePagination() {
     const page = document.querySelector('.store-page');
@@ -110,10 +107,11 @@ export class StoreComponent implements OnInit {
     public _DomSanitizer: DomSanitizer,
     private authService: AuthService,
     private integrationService: IntegrationsService,
-    private dialogService: DialogService,
+    // private dialogService: DialogService,
     private appService: AppService,
     private matDialog: MatDialog,
-    private ngNavigatorShareService: NgNavigatorShareService
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private _bottomSheet: MatBottomSheet
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -466,5 +464,39 @@ export class StoreComponent implements OnInit {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  openContactInfo() {
+    this._bottomSheet.open(ContactHeaderComponent, {
+      data: {
+        link: this.link,
+        bio: this.headerService.saleflow?.merchant.bio,
+        contact: this.headerService.merchantContact,
+      },
+    });
+  }
+
+  mouseDown: boolean;
+  startX: number;
+  scrollLeft: number;
+
+  stopDragging() {
+    this.mouseDown = false;
+  }
+
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
+    this.mouseDown = true;
+    this.startX = e.pageX - el.offsetLeft;
+    this.scrollLeft = el.scrollLeft;
+  }
+
+  moveEvent(e: MouseEvent, el: HTMLDivElement) {
+    e.preventDefault();
+    if (!this.mouseDown) {
+      return;
+    }
+    const x = e.pageX - el.offsetLeft;
+    const scroll = x - this.startX;
+    el.scrollLeft = this.scrollLeft - scroll;
   }
 }

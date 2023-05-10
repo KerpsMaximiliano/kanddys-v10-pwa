@@ -1,14 +1,9 @@
-// button {
-//   all: unset;
-//   cursor: pointer;
-// }
 a {
   text-decoration: none;
 }
 .store-page {
   height: 100vh;
   overflow-y: scroll;
-  margin-top: 47px;
 }
 .component {
   min-height: 100vh;
@@ -48,63 +43,22 @@ main {
     height: auto;
   }
 }
-.panel {
-  border-radius: 0 !important;
-}
-::ng-deep .mat-content {
-  flex: inherit !important;
-}
-::ng-deep .mat-expansion-indicator::after {
-  color: #fff;
-}
-.mat-expansion-panel-header.mat-expanded {
-  height: 48px;
-}
-::ng-deep .mat-expansion-panel-body {
-  background-color: #f5f5f5;
-  padding: 0 !important;
-}
 .header {
-  position: fixed;
-  width: 100%;
-  max-width: 500px;
-  height: 48px;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  box-sizing: border-box;
+  background-color: #181d17;
+  position: sticky;
   top: 0;
   z-index: 5;
-  text-transform: capitalize;
+  color: #87cd9b;
+  height: 46px;
 
-  .merchant-info {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    align-items: center;
-    height: 100%;
+  .spacer {
+    flex: 1 1 auto;
   }
-  .icon {
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
-  }
-  .title {
-    &:nth-child(2) {
-      padding-left: 7px;
-    }
-    color: #ffffff;
+
+  span {
     font-size: 16px;
-    font-family: "SfProMedium";
-  }
-
-  .nav-account {
-    grid-column: span 1 / span 1;
-    height: 100%;
-    width: 100%;
-    max-height: 48px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family: SFProHeavy;
+    margin-right: 4px;
   }
 }
 .footer-content {
@@ -195,5 +149,63 @@ main {
     font-family: SfProLight;
     font-size: 13px;
     color: #272727;
+  }
+}
+.chip-list {
+  margin-top: 8px;
+  display: flex;
+  width: 100%;
+  overflow-x: scroll;
+  gap: 8px;
+
+  .chip {
+    background-color: transparent;
+    border: solid 1px #d4d4d4;
+    font-family: SfProLight;
+    font-size: 1rem;
+    border-radius: 24px;
+    padding: 4px 18px;
+    transition: 0.2s;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    color: #272727;
+
+    &.selected {
+      border-color: #bdbfbd;
+      background-color: #bdbfbd;
+      font-family: SfProSemiBold;
+      color: #171d16;
+      transition: 0.2s;
+      color: #171d16;
+    }
+  }
+}
+
+.top-bar {
+  background-color: #fff;
+  padding: 20px;
+
+  .contact-button {
+    padding: 0 8px;
+    width: 100%;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .icon {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+      }
+      .title {
+        margin-left: 4px;
+        color: #181d17;
+        font-size: 16px;
+        font-family: "SfProMedium";
+      }
+    }
   }
 }

@@ -1,41 +1,42 @@
-<div class="container">
-  <header>
-    <div>
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+  <div class="container">
+    <mat-toolbar class="header">
+      <div class="spacer"></div>
       <button
         mat-button
         style="border-radius: 0"
-        (click)="openAdminNavigation()"
+        (click)="openNavigation = true"
       >
-        <span>Ventas</span>
+        <span>Lo vendido</span>
         <mat-icon>menu</mat-icon>
       </button>
-    </div>
-  </header>
-  <main>
-    <div
-      class="chip-list"
-      #elemt
-      (mousedown)="startDragging($event, elemt)"
-      (mouseup)="stopDragging()"
-      (mouseleave)="stopDragging()"
-      (mousemove)="moveEvent($event, elemt)"
-    >
-      <a
-        class="chip"
-        [routerLink]="['orders']"
-        routerLinkActive="chip-selected"
+    </mat-toolbar>
+    <main>
+      <div
+        class="chip-list"
+        #elemt
+        (mousedown)="startDragging($event, elemt)"
+        (mouseup)="stopDragging()"
+        (mouseleave)="stopDragging()"
+        (mousemove)="moveEvent($event, elemt)"
       >
-        Facturas
-      </a>
-      <a
-        class="chip"
-        [routerLink]="['buyers']"
-        routerLinkActive="chip-selected"
-      >
-        Compradores
-      </a>
-    </div>
-    <router-outlet></router-outlet>
-  </main>
-  <app-income-filter></app-income-filter>
-</div>
+        <a
+          class="chip"
+          [routerLink]="['orders']"
+          routerLinkActive="chip-selected"
+        >
+          Facturas
+        </a>
+        <a
+          class="chip"
+          [routerLink]="['buyers']"
+          routerLinkActive="chip-selected"
+        >
+          Compradores
+        </a>
+      </div>
+      <router-outlet></router-outlet>
+    </main>
+    <app-income-filter></app-income-filter>
+  </div>
+</app-navigation>

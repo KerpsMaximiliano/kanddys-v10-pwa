@@ -28,6 +28,7 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { environment } from 'src/environments/environment';
@@ -120,8 +121,6 @@ export class OrderProcessComponent implements OnInit {
 
   initialSlide: number;
   activeIndex: number = 0;
-
-  panelOpenState = false;
 
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
   @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
@@ -823,6 +822,15 @@ export class OrderProcessComponent implements OnInit {
     }
     this.router.navigate([this.redirectTo], {
       queryParams,
+    });
+  }
+
+  openContactInfo(order: ExtendedOrder) {
+    this._bottomSheet.open(ContactHeaderComponent, {
+      data: {
+        bio: order.user.bio,
+        contact: this.getUserContact(order.user._id),
+      },
     });
   }
 

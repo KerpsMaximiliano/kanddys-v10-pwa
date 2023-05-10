@@ -1,18 +1,16 @@
 .container {
   min-height: 100vh;
 }
-header {
-  display: flex;
-  align-items: center;
+.header {
   background-color: #181d17;
-  justify-content: flex-end;
-  height: 40px;
-  padding-left: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
   color: #87cd9b;
+  height: 46px;
 
-  div {
-    display: flex;
-    align-items: center;
+  .spacer {
+    flex: 1 1 auto;
   }
 
   span {
@@ -52,4 +50,3 @@ main {
     color: #171d16;
   }
 }
-

@@ -171,6 +171,7 @@ import { CollectionCardComponent } from './components/collection-card/collection
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
 import { WebformsCreatorComponent } from './components/webforms-creator/webforms-creator.component';
 import { WebformQuestionDialogComponent } from './components/webform-question-dialog/webform-question-dialog.component';
@@ -201,7 +202,8 @@ import { ContactHeaderComponent } from './components/contact-header/contact-head
 import { ItemInfoComponent } from './dialogs/item-info/item-info.component';
 import { OrderInfoComponent } from './dialogs/order-info/order-info.component';
 import { IncomeFilterComponent } from './components/income-filter/income-filter.component';
-import { AdminNavigationComponent } from './dialogs/admin-navigation/admin-navigation.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 const imports = [
   CommonModule,
@@ -235,6 +237,8 @@ const imports = [
   MatCheckboxModule,
   MatGridListModule,
   MatTabsModule,
+  MatToolbarModule,
+  MatSidenavModule,
 ];
 const declarations = [
   // Pages
@@ -417,7 +421,7 @@ const declarations = [
   ItemInfoComponent,
   OrderInfoComponent,
   IncomeFilterComponent,
-  AdminNavigationComponent,
+  NavigationComponent,
 ];
 
 @NgModule({

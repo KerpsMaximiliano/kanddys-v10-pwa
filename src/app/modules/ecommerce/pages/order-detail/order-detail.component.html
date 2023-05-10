@@ -8,45 +8,29 @@
     </button>
     {{ navigationWithMessage }}
   </div>
-  <mat-accordion>
-    <mat-expansion-panel
-      (opened)="panelOpenState = true"
-      (closed)="panelOpenState = false"
-      class="panel"
-      [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
-    >
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <div class="merchant-info">
-            <div
-              class="icon"
-              [style.background]="
-                _DomSanitizer.bypassSecurityTrustStyle(
-                  'url(' +
-                    order?.items[0].saleflow.merchant?.image +
-                    ') no-repeat center center / cover #e9e371'
-                )
-              "
-            ></div>
-            <p class="title">
-              {{
-                order?.items[0].saleflow.merchant?.name.length < 26
-                  ? order?.items[0].saleflow.merchant?.name
-                  : (order?.items[0].saleflow.merchant?.name.slice(0, 26) +
-                      ".." || "Tienda" | titlecase)
-              }}
-            </p>
-          </div>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <app-contact-header
-        [link]="link"
-        [chatLink]="chatLink"
-        [bio]="order?.items[0].saleflow.merchant.bio"
-        [contact]="headerService.merchantContact"
-      ></app-contact-header>
-    </mat-expansion-panel>
-  </mat-accordion>
+  <button mat-button class="contact-button" (click)="openContactInfo()">
+    <div class="merchant-info">
+      <div
+        class="icon"
+        [style.background]="
+          _DomSanitizer.bypassSecurityTrustStyle(
+            'url(' +
+              order?.items[0].saleflow.merchant?.image +
+              ') no-repeat center center / cover #e9e371'
+          )
+        "
+      ></div>
+      <p class="title">
+        {{
+          order?.items[0].saleflow.merchant?.name.length < 26
+            ? order?.items[0].saleflow.merchant?.name
+            : (order?.items[0].saleflow.merchant?.name.slice(0, 26) + ".." ||
+                "Tienda" | titlecase)
+        }}
+      </p>
+      <mat-icon>keyboard_arrow_right</mat-icon>
+    </div>
+  </button>
 
   <div style="position: fixed; max-width: 500px; width: 100%; bottom: 100px">
     <a
@@ -133,7 +117,7 @@
             {{ orderDate }}
             <ng-container *ngIf="order?.user">
               para
-              <a 
+              <a
                 style="color: #2874ad"
                 [routerLink]="['../../contact-landing', order.user._id]"
               >
@@ -149,9 +133,14 @@
           style="margin-left: auto; cursor: pointer"
         /> -->
       </div>
-      <br>
-      <div class="info-display" *ngIf="order?.items[0].saleflow.merchant?.address">
-        <p class="info" style="margin: 0;">Dirección: {{ order?.items[0].saleflow.merchant?.address }}</p>
+      <br />
+      <div
+        class="info-display"
+        *ngIf="order?.items[0].saleflow.merchant?.address"
+      >
+        <p class="info" style="margin: 0">
+          Dirección: {{ order?.items[0].saleflow.merchant?.address }}
+        </p>
       </div>
       <!-- <div class="info-display">
         <span class="info" style="margin-left: 0px">{{
@@ -297,9 +286,7 @@
       </div> -->
     </section>
 
-    <div
-      class="section"
-    >
+    <div class="section" *ngIf="order">
       <p class="section-label">ENTREGA</p>
       <div class="questions" *ngIf="deliveryImages?.deliveryZone">
         <p class="label">Zona de entrega</p>
@@ -310,9 +297,9 @@
       <div class="questions" *ngIf="order.items[0].deliveryLocation">
         <p class="label">Donde entregaremos?</p>
         <p class="label gray-out capitalize">
-
           <ng-container *ngIf="!order?.items[0]?.deliveryLocation?.street">
-            {{ order?.items[0]?.deliveryLocation?.nickName }}, República Dominicana
+            {{ order?.items[0]?.deliveryLocation?.nickName }}, República
+            Dominicana
           </ng-container>
           <ng-container *ngIf="order?.items[0]?.deliveryLocation?.street">
             {{

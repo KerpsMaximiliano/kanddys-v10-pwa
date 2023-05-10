@@ -46,6 +46,8 @@ import { Reservation } from 'src/app/core/models/reservation';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ContactService } from 'src/app/core/services/contact.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
 
 interface Image {
   src: string;
@@ -175,7 +177,8 @@ export class OrderDetailComponent implements OnInit {
     private webformsService: WebformsService,
     private deliveryzoneService: DeliveryZonesService,
     public _DomSanitizer: DomSanitizer,
-    private contactService: ContactService
+    private contactService: ContactService,
+    private _bottomSheet: MatBottomSheet
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -978,5 +981,14 @@ export class OrderDetailComponent implements OnInit {
         }
       }
     }
+  }
+
+  openContactInfo() {
+    this._bottomSheet.open(ContactHeaderComponent, {
+      data: {
+        bio: this.order?.items[0].saleflow.merchant.bio,
+        contact: this.headerService.merchantContact,
+      },
+    });
   }
 }

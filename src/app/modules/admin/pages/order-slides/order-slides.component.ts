@@ -5,7 +5,6 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
@@ -30,8 +29,8 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
-import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { OrderInfoComponent } from 'src/app/shared/dialogs/order-info/order-info.component';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
@@ -141,8 +140,6 @@ export class OrderSlidesComponent implements OnInit {
   initialSlide: number;
   activeIndex: number = 0;
 
-  panelOpenState = false;
-
   // notifications: Notification[] = [];
 
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -160,7 +157,6 @@ export class OrderSlidesComponent implements OnInit {
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
     private _bottomSheet: MatBottomSheet,
-    private ngNavigatorShareService: NgNavigatorShareService,
     private deliveryzoneService: DeliveryZonesService,
     private reservationsService: ReservationService,
     private dialogService: DialogService,
@@ -1017,6 +1013,15 @@ export class OrderSlidesComponent implements OnInit {
     }
     this.router.navigate([this.redirectTo], {
       queryParams,
+    });
+  }
+
+  openContactInfo(order: ExtendedItemOrder) {
+    this._bottomSheet.open(ContactHeaderComponent, {
+      data: {
+        bio: order.user.bio,
+        contact: this.getUserContact(order.user._id),
+      },
     });
   }
 
