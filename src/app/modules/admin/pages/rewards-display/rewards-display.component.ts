@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemOrder } from 'src/app/core/models/order';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
@@ -13,43 +14,9 @@ import Swiper, { SwiperOptions } from 'swiper';
 export class RewardsDisplayComponent implements OnInit {
   env: string = environment.assetsUrl;
 
-  facturas = [
-    {
-      img: './assets/images/noimage.png',
-      title: 'Mira',
-      subtitle: 'lo facturado',
-      amount: 168,
-      notification: true,
-      bottomText: '70 de transferencias. 80 por tarjetas de crédito. 50 fotos.',
-    },
-  ];
+  generalOrders = [];
 
-  facturas2 = [
-    {
-      img: './assets/images/noimage.png',
-      title: 'ProgresoID',
-      subtitle: 'de facturas',
-      amount: 168,
-    },
-    {
-      img: './assets/images/noimage.png',
-      title: 'ProgresoID',
-      subtitle: 'de facturas',
-      amount: 168,
-    },
-    {
-      img: './assets/images/noimage.png',
-      title: 'ProgresoID',
-      subtitle: 'de facturas',
-      amount: 168,
-    },
-    {
-      img: './assets/images/noimage.png',
-      title: 'ProgresoID',
-      subtitle: 'de facturas',
-      amount: 168,
-    },
-  ];
+  progressOrders = [];
 
   ingresos = [
     {
@@ -62,23 +29,10 @@ export class RewardsDisplayComponent implements OnInit {
     },
   ];
 
-  ingresos2 = [
-    {
-      img: './assets/images/noimage.png',
-      title: 'Coordina',
-      subtitle: 'por las zonas de las entregas',
-      amount: 168,
-      notification: false,
-      bottomText: '7 para zonaID. 8 para zonaID',
-    },
-  ];
+  deliveryzones = [];
 
   ordersToConfirm: ItemOrder[] = [];
   ordersByDeliveryStatus: ItemOrder[] = [];
-
-  ordersInPreparation: ItemOrder[] = [];
-  ordersToBeDelivered: ItemOrder[] = [];
-  ordersDelivered: ItemOrder[] = [];
 
   redirectTo: string = null;
 
@@ -94,6 +48,7 @@ export class RewardsDisplayComponent implements OnInit {
 
   constructor(
     private _MerchantsService: MerchantsService,
+    private _DeliveryZonesService: DeliveryZonesService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -109,6 +64,7 @@ export class RewardsDisplayComponent implements OnInit {
       await Promise.all([
         this.getOrdersToConfirm(),
         this.getOrdersByDeliveryStatus(),
+        this.getDeliveryZones()
       ]);
     });
   }
@@ -138,10 +94,23 @@ export class RewardsDisplayComponent implements OnInit {
             findBy: {
               orderStatus: 'to confirm',
             },
-          }
+          },
+          true
         );
 
       this.ordersToConfirm = ordersByMerchant;
+
+      this.generalOrders.push({
+        img: './assets/images/noimage.png',
+        title: 'Confirma',
+        subtitle: 'pagos de facturas',
+        amount: this.ordersToConfirm.length,
+        notification: this.ordersToConfirm.length > 0 ? true : false,
+        bottomText: `${this.ordersToConfirm.length} de transferencias.`,
+        callback: () => {
+          this.router.navigate([`/admin/order-slides`]);
+        }
+      });
     } catch (error) {
       console.log(error);
     }
@@ -160,23 +129,82 @@ export class RewardsDisplayComponent implements OnInit {
             findBy: {
               orderStatusDelivery: ['delivered', 'pending', 'in progress'],
             },
-          }
+          },
+          true
         );
 
       this.ordersByDeliveryStatus = ordersByMerchant;
 
-      this.ordersInPreparation = ordersByMerchant.filter(
+      const ordersInPreparation = ordersByMerchant.filter(
         (order) => order.orderStatusDelivery === 'in progress'
       );
-      this.ordersToBeDelivered = ordersByMerchant.filter(
+      const ordersToBeDelivered = ordersByMerchant.filter(
         (order) => order.orderStatusDelivery === 'pending'
       );
-      this.ordersDelivered = ordersByMerchant.filter(
+      const ordersDelivered = ordersByMerchant.filter(
         (order) => order.orderStatusDelivery === 'delivered'
+      );
+
+      this.progressOrders.push(
+        {
+          img: './assets/images/noimage.png',
+          title: 'En preparación',
+          subtitle: '',
+          amount: ordersInPreparation.length,
+          callback: () => {
+            // Aquí va la navegación a ver las facturas de este status
+          }
+        },
+        {
+          img: './assets/images/noimage.png',
+          title: 'Listo para enviarse',
+          subtitle: '',
+          amount: ordersToBeDelivered.length,
+          callback: () => {
+            // Aquí va la navegación a ver las facturas de este status
+          }
+        },
+        {
+          img: './assets/images/noimage.png',
+          title: 'Entregado',
+          subtitle: '',
+          amount: ordersDelivered.length,
+          callback: () => {
+            // Aquí va la navegación a ver las facturas de este status
+          }
+        },
       );
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async getDeliveryZones() {
+    const result = await this._DeliveryZonesService.deliveryZones(
+      {
+        options: {
+          limit: -1
+        },
+        findBy: {
+          merchant: this._MerchantsService.merchantData._id
+        }
+      }
+    )
+
+    this.deliveryzones.push(
+      {
+        img: './assets/images/noimage.png',
+        title: 'Coordina',
+        subtitle: 'por las zonas de las entregas',
+        amount: result.length,
+        notification: false,
+        callback: () => {
+          this.router.navigate([`/admin/delivery-zones`]);
+        }
+      }
+    )
+
+    
   }
 
   returnEvent() {

@@ -298,6 +298,8 @@ export const ordersByMerchantHot = gql`
   query ordersByMerchant($pagination: PaginationInput, $merchant: ObjectID!) {
     ordersByMerchant(pagination: $pagination, merchant: $merchant) {
       _id
+      orderStatus
+      orderStatusDelivery
     }
   }
 `;

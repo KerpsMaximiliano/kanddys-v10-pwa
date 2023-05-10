@@ -37,16 +37,16 @@
     </div> -->
 
     <div *ngIf="isFacturas === true" style="margin-top: 25px">
-      <app-info-container [cards]="facturas"></app-info-container>
+      <app-info-container [cards]="generalOrders"></app-info-container>
       <p class="title">Progresos</p>
-      <app-info-container [cards]="facturas2"></app-info-container>
-      <div style="display: flex"><button class="edit">Edit</button></div>
+      <app-info-container [cards]="progressOrders"></app-info-container>
+      <!-- <div style="display: flex"><button class="edit">Edit</button></div> -->
     </div>
 
     <div *ngIf="isIngresos === true" style="margin-top: 25px">
       <app-info-container [cards]="ingresos"></app-info-container>
       <p class="title">Configuración</p>
-      <app-info-container [cards]="ingresos2"></app-info-container>
+      <app-info-container [cards]="deliveryzones"></app-info-container>
     </div>
 
     <!-- <p class="title">Del estratega</p>
