@@ -458,7 +458,7 @@ export class WebformClientViewComponent implements OnInit {
     }
   }
 
-  async saveWebform() {
+  async saveWebform(preventRedirection?: boolean) {
     for (const step of this.steps) {
       if (!['multiple', 'multiple-text'].includes(step.question.type)) {
         const name = step.fields.controls['name']?.value;
@@ -503,12 +503,15 @@ export class WebformClientViewComponent implements OnInit {
       }
     }
 
-    return this.router.navigate([
-      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
-    ]);
+    if (!preventRedirection)
+      return this.router.navigate([
+        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+      ]);
   }
 
   goToDetail(index: number) {
+    this.saveWebform(true);
+
     this.webformsService.selectedQuestion = {
       questionId: this.steps[this.currentStepIndex].question._id,
       required: this.steps[this.currentStepIndex].question.required,

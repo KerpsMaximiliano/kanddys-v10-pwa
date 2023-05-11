@@ -595,7 +595,7 @@ export class CheckoutComponent implements OnInit {
               'ecommerce/' +
               this.headerService.saleflow.merchant.slug +
               '/checkout',
-            entity: 'CREATE WEBFORM',
+            entity: 'UserAccess',
           },
         },
       });
@@ -603,8 +603,6 @@ export class CheckoutComponent implements OnInit {
         if (!value) return;
         if (value.user?._id || value.session.user._id) {
           this.logged = true;
-
-          lockUI();
 
           await this.createOrderFromCheckout();
           return;

@@ -133,15 +133,8 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
           option.selected = selectedImageIndexes.includes(index);
         });
 
-        if (this.isMediaSelection) {
-          if (this.question.type === 'multiple-text')
-            this.userProvidedAnswerSelected = true;
-        } else {
-          this.selectedListOptionIndexes =
-            this.webformsService.clientResponsesByItem[
-              this.question._id
-            ].selectedIndexes;
-        }
+        if (this.question.type === 'multiple-text')
+          this.userProvidedAnswerSelected = true;
       } else {
         const selectedListIndexes = [];
 
@@ -162,6 +155,13 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
     }
 
     if (this.question.type === 'multiple-text') {
+      this.optionsInAnswerSelector.push({
+        value: 'Otra respuesta',
+        click: true,
+        status: true,
+        selected: false,
+      });
+
       if (this.multiple) {
         const responses =
           this.webformsService.clientResponsesByItem[this.question._id]
@@ -175,6 +175,15 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
           this.userProvidedAnswer = new FormControl(
             answerProvidedByUser.response
           );
+
+        if (
+          !this.isMediaSelection &&
+          this.selectedListOptionIndexes.includes(
+            this.optionsInAnswerSelector.length - 1
+          )
+        ) {
+          this.userProvidedAnswerSelected = true;
+        }
 
         this.userProvidedAnswer.valueChanges.subscribe((change) => {
           if (this.isMediaSelection) {
@@ -222,10 +231,20 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
         if (isTheAnswerProvidedByUser)
           this.userProvidedAnswer = new FormControl(response);
 
+        if (
+          !this.isMediaSelection &&
+          this.selectedListOptionIndex ===
+            this.optionsInAnswerSelector.length - 1
+        ) {
+          this.userProvidedAnswerSelected = true;
+        }
+
         this.userProvidedAnswer.valueChanges.subscribe((change) => {
           this.selectedImageIndex = null;
           this.selectedListOptionIndex = null;
-          this.webformsService.clientResponsesByItem[this.question._id].selectedIndex = null;
+          this.webformsService.clientResponsesByItem[
+            this.question._id
+          ].selectedIndex = null;
 
           if (this.isMediaSelection) {
             const selectedOptions = this.optionsInImageGrid;
@@ -260,6 +279,7 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
   selectOption(index: any) {
     if (!this.multiple) {
       this.userProvidedAnswer.setValue('');
+
 
       if (this.isMediaSelection) {
         this.selectedImageIndex = index;
@@ -315,6 +335,20 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
         ].selectedIndex = index;
       }
     } else {
+      if (
+        this.userProvidedAnswerSelected &&
+        !index.includes(this.optionsInAnswerSelector.length - 1)
+      ) {
+        this.userProvidedAnswerSelected = false;
+        this.userProvidedAnswer.setValue('');
+      } else if (
+        !this.userProvidedAnswerSelected &&
+        index.includes(this.optionsInAnswerSelector.length - 1)
+      ) {
+        this.userProvidedAnswerSelected = true;
+        this.userProvidedAnswer.setValue('');
+      }
+
       if (this.isMediaSelection) {
         const selectedOptions = this.optionsInImageGrid.map(
           (option, indexInList) => {

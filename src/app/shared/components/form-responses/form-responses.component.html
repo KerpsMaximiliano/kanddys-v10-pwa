@@ -256,7 +256,10 @@
               </div>
 
               <div class="bottom-section">
-                <div class="relative-date">
+                <div
+                  class="relative-date"
+                  *ngIf="questionMetadata[question._id].latestDate"
+                >
                   Respondieron
                   {{
                     getCreationDateDifferenceAsItsSaid(
@@ -264,6 +267,13 @@
                       true
                     )
                   }}
+                </div>
+
+                <div
+                  class="relative-date"
+                  *ngIf="!questionMetadata[question._id].latestDate"
+                >
+                  No han respondido
                 </div>
 
                 <!--
@@ -334,7 +344,17 @@
                     )
                 }"
               >
-                <div class="percentage">10%</div>
+                <div class="percentage">
+                  {{
+                    ((answersMetricsByQuestionResponses[selectedQuestion._id]
+                      .options[option.value]
+                      ? answersMetricsByQuestionResponses[selectedQuestion._id]
+                          .options[option.value].totalResponses /
+                        answersMetricsByQuestionResponses[selectedQuestion._id]
+                          .totalResponses
+                      : 0) * 100 | number : "1.0-2") + "%"
+                  }}
+                </div>
                 <div class="border"></div>
               </div>
             </div>
@@ -362,7 +382,24 @@
                   this.indexesOfSelectedOptionsFromSelectedQuestion.includes(i)
               }"
             >
-              20% (870) {{ option.value }}
+              {{
+                ((answersMetricsByQuestionResponses[selectedQuestion._id]
+                  .options[option.value]
+                  ? answersMetricsByQuestionResponses[selectedQuestion._id]
+                      .options[option.value].totalResponses /
+                    answersMetricsByQuestionResponses[selectedQuestion._id]
+                      .totalResponses
+                  : 0) * 100 | number : "1.0-2") + "%"
+              }}(
+              {{
+                answersMetricsByQuestionResponses[selectedQuestion._id].options[
+                  option.value
+                ]
+                  ? answersMetricsByQuestionResponses[selectedQuestion._id]
+                      .options[option.value].totalResponses
+                  : 0
+              }}
+              ) {{ option.value }}
             </div>
           </swiper>
         </div>
@@ -399,7 +436,7 @@
 
   <footer>
     <div class="preview-btn" (click)="goToPreview()">PREVIEW</div>
-    <div class="share-btn">
+    <div class="share-btn" (click)="goToPreview()">
       VISIBLE EN URL.COM
 
       <img

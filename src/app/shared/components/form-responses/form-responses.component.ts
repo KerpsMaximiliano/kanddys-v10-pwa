@@ -92,6 +92,18 @@ export class FormResponsesComponent implements OnInit {
     watchSlidesProgress: true,
     watchSlidesVisibility: true,
   };
+  answersMetricsByQuestionResponses: Record<
+    string,
+    {
+      totalResponses: number;
+      options: Record<
+        string,
+        {
+          totalResponses: number;
+        }
+      >;
+    }
+  > = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -180,7 +192,6 @@ export class FormResponsesComponent implements OnInit {
         for (const answer of this.answersForWebform) {
           for (const response of answer.response) {
             const responseDate = new Date(response.createdAt);
-
             if (this.questionMetadata[response.question]) {
               this.questionMetadata[response.question].numberOfAnswers++;
 
@@ -208,6 +219,9 @@ export class FormResponsesComponent implements OnInit {
     dateISOString,
     isAlreadyADateObject = false
   ) {
+    //console.log('dateISOString', dateISOString);
+    //console.log('isAlreadyADateObject', isAlreadyADateObject);
+
     const dateObj = !isAlreadyADateObject
       ? new Date(dateISOString)
       : dateISOString;
@@ -323,6 +337,12 @@ export class FormResponsesComponent implements OnInit {
   async loadResponsesForASpecificQuestion(question: Question) {
     this.selectedQuestion = question;
 
+    this.answersMetricsByQuestionResponses = {};
+
+    this.answersMetricsByQuestionResponses[question._id] = {
+      totalResponses: this.questionMetadata[question._id].numberOfAnswers,
+      options: {},
+    };
 
     lockUI();
 
@@ -337,18 +357,30 @@ export class FormResponsesComponent implements OnInit {
     this.responsesForSelectedQuestion = [];
 
     for (const answer of responsesForSelectedQuestion) {
-      const response: SingleResponseForQuestion = {
-        answerId: answer._id,
-        responseId: answer.response[0]._id,
-        user: answer.user,
-        merchant: answer.merchant,
-        createdAt: answer.response[0].createdAt,
-        updatedAt: answer.response[0].updatedAt,
-        isMedia: answer.response[0].isMedia,
-        value: answer.response[0].value,
-      };
+      for (const response of answer.response) {
+        const singleResponse: SingleResponseForQuestion = {
+          answerId: answer._id,
+          responseId: response._id,
+          user: answer.user,
+          merchant: answer.merchant,
+          createdAt: response.createdAt,
+          updatedAt: response.updatedAt,
+          isMedia: response.isMedia,
+          value: response.value,
+        };
+  
+        this.responsesForSelectedQuestion.push(singleResponse);
+      }
+    }
 
-      this.responsesForSelectedQuestion.push(response);
+    for(const response of this.responsesForSelectedQuestion) {
+      if(!this.answersMetricsByQuestionResponses[question._id].options[response.value]) {
+        this.answersMetricsByQuestionResponses[question._id].options[response.value] = {
+          totalResponses: 1,
+        };
+      } else {
+        this.answersMetricsByQuestionResponses[question._id].options[response.value].totalResponses++;
+      }
     }
 
     unlockUI();
@@ -360,7 +392,7 @@ export class FormResponsesComponent implements OnInit {
     // Compare the extracted year with the given year
     return inputYear === year;
   }
-  
+
   containsMonth(inputStr, month) {
     // Extract the month from the input string
     const inputMonth = parseInt(inputStr.slice(5, 7));
