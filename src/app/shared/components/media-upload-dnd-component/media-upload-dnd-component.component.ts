@@ -21,7 +21,7 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
 export class MediaUploadDndComponentComponent implements OnInit {
   environment: string = environment.assetsUrl;
   spinnerGif: string = `${environment.assetsUrl}/spinner2.gif`;
-  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
   videoFiles: string[] = [
     'video/mp4',
     'video/webm',

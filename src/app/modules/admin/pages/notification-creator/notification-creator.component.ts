@@ -26,7 +26,7 @@ export class NotificationCreatorComponent implements OnInit {
   notifications: Notification[] = [];
 
   notificationForm = this.formBuilder.group({
-    name: [null, [Validators.required, Validators.pattern(/[\S]/)]],
+    name: [null, [Validators.nullValidator, Validators.pattern(/[\S]/)]],
     message: [null, [Validators.required, Validators.pattern(/[\S]/)]],
   });
 
@@ -81,7 +81,7 @@ export class NotificationCreatorComponent implements OnInit {
       if (!this.notification) {
         const notification = await this.notificationsService.createNotification(
           {
-            name,
+            // name,
             message: replaced_message,
             entity: 'order',
             merchant: this.merchantsService.merchantData._id,
@@ -107,7 +107,7 @@ export class NotificationCreatorComponent implements OnInit {
         });
       } else {
         await this.notificationsService.updateNotification(
-          { name, message: replaced_message },
+          { message: replaced_message },
           this.notification._id
         );
 

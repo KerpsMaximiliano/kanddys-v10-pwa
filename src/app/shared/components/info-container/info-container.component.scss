@@ -3,6 +3,7 @@
 }
 
 .container {
+  cursor: pointer;
   padding: 8px 10px 12.5px 8px;
   width: 100%;
   background-color: #fff;
@@ -22,10 +23,11 @@
     display: flex;
     align-items: center;
 
-    img {
+    .rounded {
       height: 22px;
       width: 22px;
       border-radius: 50%;
+      background-color: #E9E371;
     }
 
     .title {

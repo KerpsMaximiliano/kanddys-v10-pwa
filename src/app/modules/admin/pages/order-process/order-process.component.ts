@@ -435,12 +435,12 @@ export class OrderProcessComponent implements OnInit {
       deliveryZone: deliveryZone,
       orderStatus: ['to confirm', 'paid', 'completed'],
       orderStatusDelivery: this.isMerchant
-        ? this.progress || null
+        ? this.progress || ["in progress", "pending", "delivered", "pickup"]
         : this.view === 'delivery'
         ? 'pending'
         : this.view === 'assistant'
         ? 'in progress'
-        : null,
+        : ["in progress", "pending", "delivered", "pickup"],
     };
     try {
       const result = await this.orderService.orderByMerchantDelivery({

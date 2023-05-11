@@ -60,7 +60,7 @@ export class DeliveryZonesComponent implements OnInit {
     private deliveryzonesService: DeliveryZonesService,
     private merchantsService: MerchantsService,
     private ordersService: OrderService,
-    private dialogflowService: DialogFlowService,
+    public dialogflowService: DialogFlowService,
     private _bottomSheet: MatBottomSheet,
     private router: Router,
     private snackBar: MatSnackBar,
