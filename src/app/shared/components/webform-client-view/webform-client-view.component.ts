@@ -445,15 +445,25 @@ export class WebformClientViewComponent implements OnInit {
               optionSelected.fileInput &&
               optionSelected.fileInput.includes('https'),
           });
+
+          this.webformsService.clientResponsesByItem[
+            currentStep.question._id
+          ].valid = !currentStep.question.required
+            ? true
+            : this.webformsService.clientResponsesByItem[
+                currentStep.question._id
+              ].multipleResponses.length > 0;
         }
       } else {
         this.webformsService.clientResponsesByItem[
           currentStep.question._id
-        ].multipleResponses = [];
-
+        ] = null;
+        
         this.webformsService.clientResponsesByItem[
           currentStep.question._id
-        ].allOptions = options;
+        ].valid = !currentStep.question.required
+          ? true
+          : false;
       }
     }
   }

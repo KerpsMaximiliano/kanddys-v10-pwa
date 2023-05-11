@@ -112,10 +112,26 @@ export class WebformOptionsSelectorComponent implements OnInit {
       this.webformsService.clientResponsesByItem[
         this.webformsService.selectedQuestion.questionId
       ].response = this.completeAnswers[index].fileInput;
+
+      this.webformsService.clientResponsesByItem[
+        this.webformsService.selectedQuestion.questionId
+      ].valid = !this.webformsService.selectedQuestion.required
+        ? true
+        : this.webformsService.selectedQuestion.required &&
+          this.completeAnswers[index].fileInput?.length > 0 &&
+          this.completeAnswers[index].selected;
     } else {
       this.webformsService.clientResponsesByItem[
         this.webformsService.selectedQuestion.questionId
       ].response = null;
+
+      this.webformsService.clientResponsesByItem[
+        this.webformsService.selectedQuestion.questionId
+      ].valid = !this.webformsService.selectedQuestion.required
+        ? true
+        : this.webformsService.selectedQuestion.required &&
+          this.completeAnswers[index].fileInput?.length > 0 &&
+          this.completeAnswers[index].selected;
     }
   }
 
@@ -162,11 +178,24 @@ export class WebformOptionsSelectorComponent implements OnInit {
             optionSelected.fileInput &&
             optionSelected.fileInput.includes('https'),
         });
+
+        this.webformsService.clientResponsesByItem[
+          this.webformsService.selectedQuestion.questionId
+        ].valid = !this.webformsService.selectedQuestion.required
+          ? true
+          : this.webformsService.selectedQuestion.required &&
+            this.webformsService.clientResponsesByItem[
+              this.webformsService.selectedQuestion.questionId
+            ].multipleResponses?.length > 0;
       }
     } else {
       this.webformsService.clientResponsesByItem[
         this.webformsService.selectedQuestion.questionId
       ].multipleResponses = [];
+
+      this.webformsService.clientResponsesByItem[
+        this.webformsService.selectedQuestion.questionId
+      ].valid = !this.webformsService.selectedQuestion.required ? true : false;
     }
   }
 

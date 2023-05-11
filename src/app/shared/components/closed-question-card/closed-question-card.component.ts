@@ -280,7 +280,6 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
     if (!this.multiple) {
       this.userProvidedAnswer.setValue('');
 
-
       if (this.isMediaSelection) {
         this.selectedImageIndex = index;
 
@@ -336,14 +335,22 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
       }
     } else {
       if (
-        this.userProvidedAnswerSelected &&
-        !index.includes(this.optionsInAnswerSelector.length - 1)
+        (this.userProvidedAnswerSelected &&
+          Array.isArray(index) &&
+          !index.includes(this.optionsInAnswerSelector.length - 1)) ||
+        (this.userProvidedAnswerSelected &&
+          !Array.isArray(index) &&
+          index === this.optionsInAnswerSelector.length - 1)
       ) {
         this.userProvidedAnswerSelected = false;
         this.userProvidedAnswer.setValue('');
       } else if (
-        !this.userProvidedAnswerSelected &&
-        index.includes(this.optionsInAnswerSelector.length - 1)
+        (!this.userProvidedAnswerSelected &&
+          Array.isArray(index) &&
+          index.includes(this.optionsInAnswerSelector.length - 1)) ||
+        (!this.userProvidedAnswerSelected &&
+          !Array.isArray(index) &&
+          index === this.optionsInAnswerSelector.length - 1)
       ) {
         this.userProvidedAnswerSelected = true;
         this.userProvidedAnswer.setValue('');

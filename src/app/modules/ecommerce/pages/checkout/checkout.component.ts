@@ -1367,25 +1367,10 @@ export class CheckoutComponent implements OnInit {
       }
     }
 
-    this.createDialogFlowForEachQuestion();
-
     if (Object.keys(this.webformsByItem).length === 0)
       this.areWebformsValid = true;
     else {
       this.areItemsQuestionsAnswered();
-    }
-  }
-
-  //Creates a dialog flow that allows the user to answer each item questions
-  createDialogFlowForEachQuestion() {
-    for (const item of this.items) {
-      if (this.webformsByItem[item._id]?.webform && item.webForms[0]?.active) {
-        for (const question of this.webformsByItem[item._id].webform
-          .questions) {
-          const lastDialogIndex =
-            this.webformsByItem[item._id].dialogs.length - 1;
-        }
-      }
     }
   }
 
@@ -1449,7 +1434,7 @@ export class CheckoutComponent implements OnInit {
           if (responseInList.responseLabel)
             response.label = responseInList.responseLabel;
 
-            console.log(response);
+          console.log(response);
 
           response.isMedia = response.value && response.value.includes('http');
 
@@ -1520,6 +1505,8 @@ export class CheckoutComponent implements OnInit {
         ? areWebformsValid && this.webformsByItem[itemId].valid
         : true;
     });
+
+    console.log('VALIDANDO WEBFORMS');
 
     this.areWebformsValid = areWebformsValid;
   }
@@ -1631,7 +1618,7 @@ export class CheckoutComponent implements OnInit {
       } else {
         const options = updatedOptions.selectedOptions;
 
-        options.forEach((option) => option.selected = false);
+        options.forEach((option) => (option.selected = false));
 
         this.answersByQuestion[question._id].response =
           updatedOptions.userProvidedAnswer;
@@ -1684,6 +1671,10 @@ export class CheckoutComponent implements OnInit {
               isMedia: false,
             });
           }
+
+          this._WebformsService.clientResponsesByItem[
+            this._WebformsService.selectedQuestion.questionId
+          ].valid = true;
         });
 
         this._WebformsService.clientResponsesByItem[question._id] =
@@ -1701,10 +1692,21 @@ export class CheckoutComponent implements OnInit {
             isMedia: false,
           });
 
+          this._WebformsService.clientResponsesByItem[
+            this._WebformsService.selectedQuestion.questionId
+          ].valid = question.required
+            ? this.answersByQuestion[question._id].multipleResponses.length > 0
+            : true;
+
           this._WebformsService.clientResponsesByItem[question._id] =
             this.answersByQuestion[question._id];
         } else {
           this.answersByQuestion[question._id].multipleResponses = [];
+          this._WebformsService.clientResponsesByItem[
+            this._WebformsService.selectedQuestion.questionId
+          ].valid = question.required
+            ? this.answersByQuestion[question._id].multipleResponses.length > 0
+            : true;
         }
       }
     }
