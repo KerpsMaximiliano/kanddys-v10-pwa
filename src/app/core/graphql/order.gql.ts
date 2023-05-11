@@ -46,6 +46,7 @@ const orderData = `
         image
         bio
         slug
+        address
         owner {
           _id
           phone
