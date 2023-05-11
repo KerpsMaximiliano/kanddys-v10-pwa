@@ -3,7 +3,7 @@
     <img [src]="env + '/arrow-double-up.svg'" alt="Volver" />
   </button>
 
-  <div class="media-swiper-wrapper" *ngIf="optionsInImageGrid.length">
+  <div class="media-swiper-wrapper" *ngIf="completeAnswers.length">
     <div
       #swiperContainer
       [ngStyle]="{
@@ -16,12 +16,12 @@
         #mediaSwiper
         (slideChange)="updateCurrentSlideData($event)"
       >
-        <ng-container *ngIf="optionsInImageGrid?.length">
-          <ng-container *ngFor="let option of optionsInImageGrid; index as i">
+        <ng-container *ngIf="completeAnswers?.length">
+          <ng-container *ngFor="let option of completeAnswers; index as i">
             <div
               class="entity-image"
               [ngStyle]="{
-                backgroundImage: 'url(' + option.img + ')'
+                backgroundImage: 'url(' + option.fileInput + ')'
               }"
             ></div>
           </ng-container>
@@ -35,16 +35,16 @@
           class="current-media-shown-indicators"
           [style]="{
             'grid-template-columns':
-              'repeat(' + optionsInImageGrid?.length + ', 1fr)'
+              'repeat(' + completeAnswers?.length + ', 1fr)'
           }"
         >
-          <ng-container *ngIf="optionsInImageGrid?.length">
+          <ng-container *ngIf="completeAnswers?.length">
             <div
               class="indicator"
               [ngClass]="{
                 active: optionIndex === currentMediaSlide
               }"
-              *ngFor="let option of optionsInImageGrid; let optionIndex = index"
+              *ngFor="let option of completeAnswers; let optionIndex = index"
             ></div>
           </ng-container>
         </div>
@@ -53,7 +53,7 @@
           class="select-button"
           (click)="(null)"
           [ngClass]="{
-            selected: optionsInImageGrid[currentMediaSlide].selected
+            selected: completeAnswers[currentMediaSlide].selected
           }"
           (click)="
             !multiple
@@ -62,7 +62,7 @@
           "
         >
           {{
-            optionsInImageGrid[currentMediaSlide].selected
+            completeAnswers[currentMediaSlide].selected
               ? "SELECCIONADA"
               : "SIN SELECCIONAR"
           }}

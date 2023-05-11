@@ -44,7 +44,10 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { WebformsService } from 'src/app/core/services/webforms.service';
+import {
+  ResponsesByQuestion,
+  WebformsService,
+} from 'src/app/core/services/webforms.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -69,12 +72,6 @@ interface ExtendedItem extends Item {
 
 interface ExtendedItem extends Item {
   ready?: boolean;
-}
-
-enum WebformMultipleChoicesType {
-  'JUST-TEXT' = 1,
-  'JUST-IMAGES',
-  'IMAGES-AND-TEXT',
 }
 
 @Component({
@@ -132,29 +129,7 @@ export class CheckoutComponent implements OnInit {
       valid?: boolean;
     }
   > = {};
-  answersByQuestion: Record<
-    string,
-    {
-      question: Question;
-      response: any;
-      responseLabel?: string;
-      multipleResponses?: Array<{
-        response: any;
-        responseLabel?: string;
-        isMedia?: boolean;
-        isProvidedByUser?: boolean;
-      }>;
-      isMedia?: boolean;
-      isMultipleResponse?: boolean;
-      multipleSelection?: boolean;
-      selectedIndex?: number;
-      selectedImageIndex?: number;
-      selectedIndexes?: Array<number>;
-      selectedImageIndexes?: Array<number>;
-      multipleChoicesType?: WebformMultipleChoicesType;
-      valid?: boolean;
-    }
-  > = {};
+  answersByQuestion: Record<string, ResponsesByQuestion> = {};
   areWebformsValid: boolean = false;
   webformPreview: boolean = false;
   URI: string = environment.uri;
@@ -584,7 +559,7 @@ export class CheckoutComponent implements OnInit {
         this.updatePayment();
         if (!this.items.length) this.editOrder('item');
 
-        this.dialogFlowService.resetDialogFlow('webform-item-' + deletedID);
+        //this.dialogFlowService.resetDialogFlow('webform-item-' + deletedID);
 
         this.areItemsQuestionsAnswered();
       }
@@ -731,7 +706,7 @@ export class CheckoutComponent implements OnInit {
           ?.createPost?._id;
         this.headerService.order.products[0].post = postResult;
 
-        await this.createEntityTemplateForOrderPost(postResult);
+        //await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       } else if (this.postsService.privatePost) {
         unlockUI();
@@ -758,7 +733,7 @@ export class CheckoutComponent implements OnInit {
               ?.createPost?._id;
             this.headerService.order.products[0].post = postResult;
 
-            await this.createEntityTemplateForOrderPost(postResult);
+            //await this.createEntityTemplateForOrderPost(postResult);
             await this.finishOrderCreation();
           }
         });
@@ -771,7 +746,7 @@ export class CheckoutComponent implements OnInit {
 
         this.headerService.order.products[0].post = postResult;
 
-        await this.createEntityTemplateForOrderPost(postResult);
+        //await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       }
     }
@@ -895,7 +870,7 @@ export class CheckoutComponent implements OnInit {
             createdOrderId
           );
 
-          this.dialogFlowService.resetDialogFlow('webform-item-' + item._id);
+          //this.dialogFlowService.resetDialogFlow('webform-item-' + item._id);
         }
       }
     }
@@ -1314,105 +1289,54 @@ export class CheckoutComponent implements OnInit {
             let responseLabel = '';
             let selectedIndex = null;
 
-            this.answersByQuestion[question._id] = {
-              question,
-              response,
-              isMedia,
-              isMultipleResponse: multipleResponse,
-            };
+            if (!this._WebformsService.clientResponsesByItem[question._id]) {
+              this.answersByQuestion[question._id] = {
+                question,
+                response,
+                isMedia,
+                isMultipleResponse: multipleResponse,
+              };
+              this._WebformsService.clientResponsesByItem[question._id] =
+                this.answersByQuestion[question._id];
+            } else {
+              this.answersByQuestion[question._id] =
+                this._WebformsService.clientResponsesByItem[question._id];
 
-            if (
-              this.dialogFlowService.dialogsFlows['webform-item-' + item._id] &&
-              this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
-                question._id
-              ]
-            ) {
               if (
-                question.type === 'text' &&
-                question.answerTextType !== 'name'
-              ) {
-                const { textarea, valid } =
-                  this.dialogFlowService.dialogsFlows[
-                    'webform-item-' + item._id
-                  ][question._id].fields;
-
-                this.answersByQuestion[question._id].valid = valid;
-
-                if (valid) {
-                  this.answersByQuestion[question._id].response = textarea;
-                } else {
-                  this.answersByQuestion[question._id].response = null;
-                }
-              } else if (
                 question.type === 'text' &&
                 question.answerTextType === 'name'
               ) {
-                const { name, lastname, valid } =
-                  this.dialogFlowService.dialogsFlows[
-                    'webform-item-' + item._id
-                  ][question._id].fields;
+                this.answersByQuestion[question._id].response =
+                  this._WebformsService.clientResponsesByItem[
+                    question._id
+                  ].response;
+                this.answersByQuestion[question._id].responseLabel =
+                  this._WebformsService.clientResponsesByItem[
+                    question._id
+                  ].responseLabel;
 
-                if (valid) {
-                  this.answersByQuestion[question._id].response = name;
-                  this.answersByQuestion[question._id].responseLabel = lastname;
-                } else {
-                  this.answersByQuestion[question._id].response = null;
-                  this.answersByQuestion[question._id].responseLabel = null;
-                }
-
-                this.answersByQuestion[question._id].valid = valid;
+                //this.answersByQuestion[question._id].valid = valid;
               } else if (
-                ['multiple', 'multiple-text'].includes(question.type) &&
-                this.dialogFlowService.dialogsFlows['webform-item-' + item._id][
-                  question._id
-                ]?.fields?.options
+                ['multiple', 'multiple-text'].includes(question.type)
               ) {
-                const selectedOption = (
-                  this.dialogFlowService.dialogsFlows[
-                    'webform-item-' + item._id
-                  ][question._id].fields.options as Array<ExtendedAnswerDefault>
-                ).find((option) => option.selected);
-
-                if (!multipleResponse) {
+                if (
+                  !multipleResponse &&
+                  this.answersByQuestion[question._id].allOptions
+                ) {
                   const selectedIndex = (
-                    this.dialogFlowService.dialogsFlows[
-                      'webform-item-' + item._id
-                    ][question._id].fields.options as Array<any>
+                    this.answersByQuestion[question._id]
+                      .allOptions as Array<any>
                   ).findIndex((option) => option.selected);
 
-                  if (selectedOption && !selectedOption.isMedia) {
-                    response = selectedOption.value;
-                  }
-
-                  if (
-                    selectedOption &&
-                    selectedOption.isMedia &&
-                    selectedOption.label
-                  ) {
-                    response = selectedOption.value;
-                    responseLabel = selectedOption.label;
-                  }
-
-                  if (
-                    selectedOption &&
-                    selectedOption.isMedia &&
-                    !selectedOption.label
-                  ) {
-                    response = selectedOption.value;
-                  }
-
+                  response = this.answersByQuestion[question._id].response;
                   if (response && response !== '')
                     this.answersByQuestion[question._id]['response'] = response;
-
-                  if (responseLabel && responseLabel !== '')
-                    this.answersByQuestion[question._id]['responseLabel'] =
-                      responseLabel;
 
                   if (selectedIndex >= 0) {
                     this.answersByQuestion[question._id]['selectedIndex'] =
                       selectedIndex;
                   }
-                } else {
+                } /*else {
                   const selectedOptions = (
                     this.dialogFlowService.dialogsFlows[
                       'webform-item-' + item._id
@@ -1433,7 +1357,7 @@ export class CheckoutComponent implements OnInit {
                         isMedia: option.isMedia,
                       }));
                   }
-                }
+                }*/
               }
             }
           }
@@ -1458,204 +1382,6 @@ export class CheckoutComponent implements OnInit {
           .questions) {
           const lastDialogIndex =
             this.webformsByItem[item._id].dialogs.length - 1;
-
-          function maxWordsValidator(maxWords: number): ValidatorFn {
-            return (
-              control: AbstractControl
-            ): { [key: string]: any } | null => {
-              const value = control.value as string;
-              if (value) {
-                const words = value.trim().split(/\s+/).length;
-                if (words > maxWords) {
-                  return {
-                    maxWords: { requiredWords: maxWords, actualWords: words },
-                  };
-                }
-              }
-              return null;
-            };
-          }
-
-          function minWordsValidator(minWords: number): ValidatorFn {
-            return (
-              control: AbstractControl
-            ): { [key: string]: any } | null => {
-              const value = control.value as string;
-              if (value) {
-                const words = value.trim().split(/\s+/).length;
-                if (words < minWords) {
-                  return {
-                    minWords: { requiredWords: minWords, actualWords: words },
-                  };
-                }
-              }
-              return null;
-            };
-          }
-
-          if (
-            question.type === 'text' &&
-            question.answerTextType.toUpperCase() !== 'NAME'
-          ) {
-            const validators = [Validators.required];
-
-            if (question.answerTextType.toUpperCase() === 'MAX12') {
-              validators.push(maxWordsValidator(12));
-            }
-
-            if (question.answerTextType.toUpperCase() === 'MIN12') {
-              validators.push(minWordsValidator(12));
-            }
-
-            if (question.answerTextType.toUpperCase() === 'EMAIL')
-              validators.push(Validators.email);
-
-            this.webformsByItem[item._id].dialogs.push({
-              component: WebformTextareaQuestionComponent,
-              componentId: question._id,
-              inputs: {
-                label: question.value,
-                containerStyles: {
-                  opacity: '1',
-                },
-                dialogFlowConfig: {
-                  dialogId: question._id,
-                  flowId: 'webform-item-' + item._id,
-                },
-                inputType: question.answerTextType.toUpperCase(),
-                textarea: new FormControl('', validators),
-              },
-              outputs: [
-                {
-                  name: 'inputDetected',
-                  callback: (inputDetected) => {
-                    const flowId = 'webform-item-' + item._id;
-                    const dialogId = question._id;
-                    const { textarea, valid } =
-                      this.dialogFlowService.dialogsFlows[flowId][dialogId]
-                        .fields;
-
-                    if (valid)
-                      this.answersByQuestion[question._id].response = textarea;
-                    else this.answersByQuestion[question._id].response = null;
-
-                    this.answersByQuestion[question._id].valid = valid;
-
-                    this.areItemsQuestionsAnswered();
-                  },
-                },
-              ],
-            });
-          } else if (
-            question.type === 'text' &&
-            question.answerTextType.toUpperCase() === 'NAME'
-          ) {
-            this.webformsByItem[item._id].dialogs.push({
-              component: WebformNameQuestionComponent,
-              componentId: question._id,
-              inputs: {
-                label: question.value,
-                containerStyles: {
-                  opacity: '1',
-                },
-                dialogFlowConfig: {
-                  dialogId: question._id,
-                  flowId: 'webform-item-' + item._id,
-                },
-                inputType: question.answerTextType.toUpperCase(),
-                name: new FormControl('', [
-                  Validators.required,
-                  Validators.pattern(/[\S]/),
-                ]),
-                lastname: new FormControl('', [
-                  Validators.required,
-                  Validators.pattern(/[\S]/),
-                ]),
-              },
-              outputs: [
-                {
-                  name: 'inputDetected',
-                  callback: (inputDetected) => {
-                    const flowId = 'webform-item-' + item._id;
-                    const dialogId = question._id;
-                    const { name, lastname, valid } =
-                      this.dialogFlowService.dialogsFlows[flowId][dialogId]
-                        .fields;
-
-                    if (valid) {
-                      this.answersByQuestion[question._id].response =
-                        name + ' ' + lastname;
-                      this.answersByQuestion[question._id].response =
-                        name?.trim();
-                      this.answersByQuestion[question._id].responseLabel =
-                        lastname?.trim();
-                    } else {
-                      this.answersByQuestion[question._id].response = null;
-                      this.answersByQuestion[question._id].responseLabel = null;
-                    }
-
-                    this.answersByQuestion[question._id].valid = valid;
-
-                    this.areItemsQuestionsAnswered();
-                  },
-                },
-              ],
-            });
-          } else if (
-            question.type === 'multiple' ||
-            question.type === 'multiple-text'
-          ) {
-            const activeOptions = question.answerDefault
-              .filter((option) => option.active)
-              .map((option) => ({
-                ...option,
-                selected: false,
-              }));
-
-            if (question.type === 'multiple-text')
-              activeOptions.push({
-                value: 'Otra respuesta',
-                isMedia: false,
-                selected: false,
-                active: true,
-                defaultValue: null,
-                label: null,
-                createdAt: null,
-                updatedAt: null,
-                _id: null,
-              });
-
-            this.webformsByItem[item._id].dialogs.push({
-              component: ClosedQuestionCardComponent,
-              componentId: question._id,
-              inputs: {
-                question: question.value,
-                shadows: false,
-                questionType: question.type,
-                dialogFlowConfig: {
-                  dialogId: question._id,
-                  flowId: 'webform-item-' + item._id,
-                },
-                startWithDialogFlow:
-                  this.answersByQuestion[question._id]?.response ||
-                  this.answersByQuestion[question._id]?.responseLabel ||
-                  this.answersByQuestion[question._id]?.multipleResponses
-                    ?.length > 0,
-                multiple: question.answerLimit === 0,
-                completeAnswers: activeOptions,
-                required: question.required,
-                restartFromEvent: true,
-              },
-              outputs: [
-                {
-                  name: 'onSelector',
-                  callback: () => {
-                    this.selectOption(question, item);
-                  },
-                },
-              ],
-            });
-          }
         }
       }
     }
@@ -1663,8 +1389,19 @@ export class CheckoutComponent implements OnInit {
 
   //Opens each item webform
   openWebform(itemId: string, index: number) {
-    this.webformsByItem[itemId].dialogFlowFunctions.moveToDialogByIndex(index);
-    this.webformsByItem[itemId].opened = !this.webformsByItem[itemId].opened;
+    this.router.navigate(
+      [
+        '/ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/webform/' +
+          itemId,
+      ],
+      {
+        queryParams: {
+          startAtQuestion: index,
+        },
+      }
+    );
   }
 
   //Get Webform Answer
@@ -1749,16 +1486,12 @@ export class CheckoutComponent implements OnInit {
     for (const item of this.items) {
       if (this.webformsByItem[item._id]) {
         let requiredQuestionsAnsweredCounter = 0;
-        const flowId = 'webform-item-' + item._id;
 
         for (const question of this.webformsByItem[item._id].webform
           .questions) {
-          const dialogId = question._id;
-
           if (
             question.required &&
-            this.dialogFlowService.dialogsFlows[flowId]?.[dialogId]?.fields
-              .valid
+            this._WebformsService.clientResponsesByItem[question._id]?.valid
           ) {
             requiredQuestionsAnsweredCounter++;
           }
@@ -1834,98 +1567,142 @@ export class CheckoutComponent implements OnInit {
   selectOption = (
     question: Question,
     item: Item,
-    restartDialogInDialogFlow: boolean = false
+    restartDialogInDialogFlow: boolean = false,
+    updatedOptions: {
+      selectedOptions: Array<ExtendedAnswerDefault>;
+      userProvidedAnswer?: string;
+      valid: boolean;
+    }
   ) => {
-    const flowId = 'webform-item-' + item._id;
-    const dialogId = question._id;
-    const options =
-      this.dialogFlowService.dialogsFlows[flowId][dialogId].fields.options;
+    const options = updatedOptions.selectedOptions;
 
     const isMultipleSelection = question.answerLimit === 0;
 
     if (!isMultipleSelection) {
-      const selected = options.find((option) => option.selected);
+      if (!updatedOptions.userProvidedAnswer) {
+        const selected = options.find((option) => option.selected);
 
-      const selectedIndex = options.findIndex((option) => option.selected);
+        const doesOptionsHaveMedia = question.answerDefault.some(
+          (option) => option.isMedia
+        );
 
-      const doesOptionsHaveMedia = question.answerDefault.some(
-        (option) => option.isMedia
-      );
+        if (!doesOptionsHaveMedia) {
+          if (selected) {
+            this.answersByQuestion[question._id].response =
+              !updatedOptions.userProvidedAnswer
+                ? selected.value
+                : updatedOptions.userProvidedAnswer;
 
-      if (!doesOptionsHaveMedia) {
-        if (selected) {
-          /* PORSIACASO
-          this.answersByQuestion[question._id].response =
-            question.type === 'multiple'
-              ? selected.value
-              : selected.userProvidedAnswer;
-              */
-
-          this.answersByQuestion[question._id].response =
-            question.type === 'multiple'
-              ? selected.value
-              : question.type === 'multiple-text' &&
-                selected.userProvidedAnswer === undefined
-              ? selected.value
-              : selected.userProvidedAnswer;
-
-          this.answersByQuestion[question._id].valid = Boolean(
-            question.type === 'multiple'
-              ? selected.value.length
-              : selectedIndex === options.length - 1
-              ? selected.userProvidedAnswer &&
-                selected.userProvidedAnswer.length
-              : selected.value.length
-          );
-        }
-      } else {
-        if (selected) {
-          this.answersByQuestion[question._id].response =
-            question.type === 'multiple'
-              ? selected.value
-              : selectedIndex === options.length - 1
-              ? selected.userProvidedAnswer || null
-              : selected.value;
-
-          if (selected.label)
-            this.answersByQuestion[question._id].responseLabel = selected.label;
-          else {
-            this.answersByQuestion[question._id].responseLabel = null;
+            this.answersByQuestion[question._id].valid = Boolean(
+              selected.value.length
+            );
           }
+        } else {
+          if (selected) {
+            this.answersByQuestion[question._id].response = selected.value;
 
-          this.answersByQuestion[question._id].valid = Boolean(
-            question.type === 'multiple'
-              ? selected.value.length
-              : selectedIndex === options.length - 1
-              ? selected.userProvidedAnswer &&
-                selected.userProvidedAnswer.length
-              : selected.value.length
-          );
+            if (selected.label)
+              this.answersByQuestion[question._id].responseLabel =
+                selected.label;
+            else {
+              this.answersByQuestion[question._id].responseLabel = null;
+            }
+
+            this.answersByQuestion[question._id].valid = Boolean(
+              selected.value.length
+            );
+          }
         }
+
+        this.answersByQuestion[question._id].allOptions = options.map(
+          (option) => ({
+            fileInput: option.img,
+            selected: option.selected,
+            text: !option.value.includes('https') ? option.value : null,
+          })
+        );
+
+        this._WebformsService.clientResponsesByItem[question._id] =
+          this.answersByQuestion[question._id];
+      } else {
+        const options = updatedOptions.selectedOptions;
+
+        options.forEach((option) => option.selected = false);
+
+        this.answersByQuestion[question._id].response =
+          updatedOptions.userProvidedAnswer;
+
+        this.answersByQuestion[question._id].valid = Boolean(
+          updatedOptions.userProvidedAnswer.length
+        );
+
+        this.answersByQuestion[question._id].allOptions = options.map(
+          (option) => ({
+            fileInput: option.img,
+            selected: option.selected,
+            text: !option.value.includes('https') ? option.value : null,
+          })
+        );
+
+        this._WebformsService.clientResponsesByItem[question._id] =
+          this.answersByQuestion[question._id];
       }
     } else {
       const selectedOptions = options.filter((option) => option.selected);
 
+      this.answersByQuestion[question._id].allOptions = options.map(
+        (option) => ({
+          fileInput: option.img,
+          selected: option.selected,
+          text: !option.value.includes('https') ? option.value : null,
+        })
+      );
+
       if (selectedOptions.length) {
         this.answersByQuestion[question._id].multipleResponses = [];
-        for (const optionSelected of selectedOptions) {
+
+        selectedOptions.forEach((optionSelected, index) => {
           this.answersByQuestion[question._id].multipleResponses.push({
-            response: optionSelected.userProvidedAnswer
-              ? optionSelected.userProvidedAnswer
-              : optionSelected.value,
+            response: optionSelected.value,
             responseLabel: optionSelected.label ? optionSelected.label : null,
             isProvidedByUser: optionSelected.userProvidedAnswer ? true : false,
             isMedia: optionSelected.isMedia,
           });
+
+          if (
+            index === selectedOptions.length - 1 &&
+            updatedOptions.userProvidedAnswer &&
+            updatedOptions.userProvidedAnswer !== ''
+          ) {
+            this.answersByQuestion[question._id].multipleResponses.push({
+              response: updatedOptions.userProvidedAnswer,
+              isProvidedByUser: true,
+              isMedia: false,
+            });
+          }
+        });
+
+        this._WebformsService.clientResponsesByItem[question._id] =
+          this.answersByQuestion[question._id];
+      } else {
+        if (
+          selectedOptions.length === 0 &&
+          updatedOptions.userProvidedAnswer !== ''
+        ) {
+          this.answersByQuestion[question._id].multipleResponses = [];
+
+          this.answersByQuestion[question._id].multipleResponses.push({
+            response: updatedOptions.userProvidedAnswer,
+            isProvidedByUser: true,
+            isMedia: false,
+          });
+
+          this._WebformsService.clientResponsesByItem[question._id] =
+            this.answersByQuestion[question._id];
+        } else {
+          this.answersByQuestion[question._id].multipleResponses = [];
         }
       }
-    }
-
-    if (restartDialogInDialogFlow) {
-      this.dialogFlowService.updateMultipleSelectionDialog.emit({
-        flowId,
-        dialogId,
-      });
     }
 
     this.areItemsQuestionsAnswered();

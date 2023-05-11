@@ -46,6 +46,35 @@ export type WebformCreatorStepsNames =
   | 'QUESTION_EDITION'
   | 'FILES_UPLOAD';
 
+enum WebformMultipleChoicesType {
+  'JUST-TEXT' = 1,
+  'JUST-IMAGES',
+  'IMAGES-AND-TEXT',
+}
+
+export interface ResponsesByQuestion {
+  question: Question;
+  response: any;
+  responseLabel?: string;
+  phoneTemporalData?: any;
+  allOptions?: Array<{ text: string; fileInput: string; selected: boolean }>;
+  multipleResponses?: Array<{
+    response: any;
+    responseLabel?: string;
+    isMedia?: boolean;
+    isProvidedByUser?: boolean;
+  }>;
+  isMedia?: boolean;
+  isMultipleResponse?: boolean;
+  multipleSelection?: boolean;
+  selectedIndex?: number;
+  selectedImageIndex?: number;
+  selectedIndexes?: Array<number>;
+  selectedImageIndexes?: Array<number>;
+  multipleChoicesType?: WebformMultipleChoicesType;
+  valid?: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -64,6 +93,8 @@ export class WebformsService {
     }>;
     currentStepIndex: number;
   } = null;
+  clientResponsesByItem: Record<string, ResponsesByQuestion> = {};
+  selectedQuestion: { questionId: string; required: boolean; multiple: boolean } = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 

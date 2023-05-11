@@ -203,19 +203,13 @@
                         fontSize: '15px'
                       }"
                       [containerStyles]="{ padding: '15px 18px' }"
-                      [question]="question.value"
-                      [questionType]="question.type"
-                      [startWithDialogFlow]="true"
-                      [restartFromEvent]="false"
+                      [question]="question"
                       [multiple]="
                         !question.answerLimit || question.answerLimit > 1
                       "
-                      [dialogFlowConfig]="{
-                        dialogId: question._id,
-                        flowId: 'webform-item-' + item._id
-                      }"
+                      [isMediaSelection]="question.answerDefault[0].isMedia"
                       [required]="question?.required"
-                      (onSelector)="selectOption(question, item, true)"
+                      (onSelector)="selectOption(question, item, true, $event)"
                     >
                     </app-closed-question-card>
                   </div>
@@ -265,19 +259,13 @@
                           fontSize: '15px'
                         }"
                         [containerStyles]="{ padding: '15px 18px' }"
-                        [question]="question.value"
-                        [questionType]="question.type"
                         [multiple]="
                           !question.answerLimit || question.answerLimit > 1
                         "
-                        [dialogFlowConfig]="{
-                          dialogId: question._id,
-                          flowId: 'webform-item-' + item._id
-                        }"
+                        [isMediaSelection]="question.answerDefault[0].isMedia"
+                        [question]="question"
                         [required]="question?.required"
-                        [startWithDialogFlow]="true"
-                        [restartFromEvent]="false"
-                        (onSelector)="selectOption(question, item, true)"
+                        (onSelector)="selectOption(question, item, true, $event)"
                       >
                       </app-closed-question-card>
                     </div>
@@ -524,28 +512,6 @@
       </ng-container>
     </section> -->
   </main>
-
-  <ng-container *ngFor="let item of items">
-    <app-dialog-flow
-      *ngIf="
-        this.webformsByItem[item._id]?.dialogs &&
-        this.webformsByItem[item._id]?.dialogs.length
-      "
-      [dialogFlowId]="'webform-item-' + item._id"
-      [status]="this.webformsByItem[item._id].opened ? 'OPEN' : 'CLOSE'"
-      [dialogs]="this.webformsByItem[item._id].dialogs"
-      [allowSlideNext]="true"
-      (saveConfigRef)="this.webformsByItem[item._id].swiperConfig = $event"
-      (moveToDialogRef)="
-        this.webformsByItem[item._id].dialogFlowFunctions.moveToDialogByIndex =
-          $event
-      "
-      (closingDialogSignal)="
-        webformsByItem[item._id].opened = !webformsByItem[item._id].opened
-      "
-      (openingDialogSignal)="(null)"
-    ></app-dialog-flow>
-  </ng-container>
 
   <!-- <app-sticky-button
     mode="fixed"
