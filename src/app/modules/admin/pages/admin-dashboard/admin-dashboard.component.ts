@@ -269,7 +269,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
 
     console.log(income);
-    this.income = income;
+    this.income = income.toFixed(2);
 
     const notSoldPagination = {
       options: {
@@ -651,6 +651,88 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  async headerSettings() {
+    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+      data: [
+        {
+          options: [
+            {
+              title: 'Nuevo artículo',
+              callback: () => {
+                let dialogRef = this.dialog.open(StepperFormComponent);
+                dialogRef
+                  .afterClosed()
+                  .subscribe(
+                    async (result: { pricing: number; images: File[] }) => {
+                      if (!result) return;
+                      const { pricing, images: imagesResult } = result;
+                      let images: ItemImageInput[] = imagesResult.map(
+                        (file) => {
+                          return {
+                            file: file,
+                            index: 0,
+                            active: true,
+                          };
+                        }
+                      );
+                      console.log(images);
+                      if (!pricing) return;
+                      lockUI();
+                      const itemInput: ItemInput = {
+                        name: null,
+                        description: null,
+                        pricing: pricing,
+                        images,
+                        merchant: this._MerchantsService.merchantData?._id,
+                        content: [],
+                        currencies: [],
+                        hasExtraPrice: false,
+                        purchaseLocations: [],
+                        showImages: images.length > 0,
+                      };
+                      this._ItemsService.itemPrice = null;
+
+                      const { createItem } =
+                        await this._ItemsService.createItem(itemInput);
+                      await this._SaleflowService.addItemToSaleFlow(
+                        {
+                          item: createItem._id,
+                        },
+                        this._SaleflowService.saleflowData._id
+                      );
+                      this.snackBar.open(
+                        'Producto creado satisfactoriamente!',
+                        '',
+                        {
+                          duration: 5000,
+                        }
+                      );
+                      unlockUI();
+                      const reader = new FileReader();
+                      reader.onload = (e) => {
+                        this._ItemsService.editingImageId =
+                          createItem.images[0]._id;
+                        this.router.navigate([
+                          `admin/article-editor/${createItem._id}`,
+                        ]);
+                      };
+                      reader.readAsDataURL(images[0].file as File);
+                    }
+                  );
+              },
+            },
+            {
+              title: 'Cambia el contenedor de los artículos',
+              callback: () => {
+                this.router.navigate(['/admin/view-configuration-cards']);
+              },
+            },
+          ],
+        },
+      ],
+    });
+  }
+
   async getHiddenItems() {
     try {
       const { listItems } = await this._ItemsService.listItems({
@@ -825,6 +907,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               title: 'Ocultar',
               callback: () => {
                 this.hideItem(item);
+                if (type === 'recent') {
+                  console.log(this.recentlySoldItems[index].status);
+                  this.recentlySoldItems[index].status = 'disabled';
+                } else if (type === 'lessSold') {
+                  console.log(this.lessSoldItems[index].status);
+                  this.lessSoldItems[index].status = 'disabled';
+                } else if (type === 'mostSold') {
+                  console.log(this.mostSoldItems[index].status);
+                  this.mostSoldItems[index].status = 'disabled';
+                }
               },
             },
             {
@@ -837,6 +929,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                   {
                     queryParams: {
                       mode: 'image-preview',
+                      redirectTo: 'dashboard',
                     },
                   }
                 );
@@ -860,7 +953,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 console.log('QR');
                 this.articleId = id;
                 console.log(this.articleId);
-                //this.qrLink = `${this.URI}/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${id}`;
+                this.qrLink = `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${id}`;
+                console.log(this.qrLink);
                 this.downloadQr(id);
               },
             },

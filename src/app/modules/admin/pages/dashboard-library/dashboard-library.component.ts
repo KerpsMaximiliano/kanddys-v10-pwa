@@ -84,6 +84,7 @@ export class DashboardLibraryComponent implements OnInit {
   notSoldItems;
   income: number;
   orders: number;
+  qrLink: string;
 
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
   @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
@@ -95,7 +96,7 @@ export class DashboardLibraryComponent implements OnInit {
     private router: Router,
     private queryParameterService: QueryparametersService,
     private _bottomSheet: MatBottomSheet,
-    private saleflowService: SaleFlowService,
+    public saleflowService: SaleFlowService,
     private _ToastrService: ToastrService,
     private dialogService: DialogService,
     private ngNavigatorShareService: NgNavigatorShareService
@@ -122,7 +123,7 @@ export class DashboardLibraryComponent implements OnInit {
       });
 
       console.log(income);
-      this.income = income;
+      this.income = income.toFixed(2);
       await this.getQueryParameters();
       await this.getTags();
       // await this.getData();
@@ -544,7 +545,7 @@ export class DashboardLibraryComponent implements OnInit {
     }
   }
 
-  async openDotsDialog(id: string, index: number) {
+  async openDotsDialog(id: string, index: number, type: string) {
     const item = await this._ItemsService.item(id);
     console.log(item);
     this.articleId = item._id;
@@ -557,7 +558,7 @@ export class DashboardLibraryComponent implements OnInit {
             {
               title: 'Compartir',
               callback: () => {
-                const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/article-detail/item/${id}?mode=image-preview`;
+                const link = `${this.URI}/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/article-detail/item/${id}?mode=image-preview&redirectTo=dashboard`;
                 this.ngNavigatorShareService.share({
                   title: '',
                   url: `${link}`,
@@ -577,6 +578,18 @@ export class DashboardLibraryComponent implements OnInit {
               title: 'Ocultar',
               callback: () => {
                 this.hideItem(item);
+                if (type === 'allItems') {
+                  console.log(this.allItems[index].status);
+                  this.allItems[index].status = 'disabled';
+                } else if (type === 'lessSold') {
+                  console.log(this.lessSoldItems[index].status);
+                  this.lessSoldItems[index].status = 'disabled';
+                } else if (type === 'mostSold') {
+                  console.log(this.mostSoldItems[index].status);
+                  this.mostSoldItems[index].status = 'disabled';
+                } else if (type === 'notSold') {
+                  this.notSoldItems[index].status = 'disabled';
+                }
               },
             },
             {
@@ -590,6 +603,7 @@ export class DashboardLibraryComponent implements OnInit {
                   {
                     queryParams: {
                       mode: 'image-preview',
+                      redirectTo: 'dashboard',
                     },
                   }
                 );
@@ -611,6 +625,8 @@ export class DashboardLibraryComponent implements OnInit {
                 console.log('QR');
                 this.articleId = id;
                 console.log(this.articleId);
+                this.qrLink = `${this.URI}/ecommerce/${this.saleflowService.saleflowData.merchant.slug}/article-detail/item/${id}`;
+                console.log(this.qrLink);
                 this.downloadQr(id);
               },
             },
@@ -634,6 +650,7 @@ export class DashboardLibraryComponent implements OnInit {
                       const deleteItem = await this._ItemsService.deleteItem(
                         id
                       );
+
                       if (!deleteItem) return;
                       else {
                         this._ToastrService.info(
@@ -646,6 +663,19 @@ export class DashboardLibraryComponent implements OnInit {
                           );
 
                         //this.router.navigate(['/admin/dashboard']);
+                      }
+
+                      if (type === 'allItems') {
+                        console.log(this.allItems[index].status);
+                        this.allItems.splice(index, 1);
+                      } else if (type === 'lessSold') {
+                        console.log(this.lessSoldItems[index].status);
+                        this.lessSoldItems.splice(index, 1);
+                      } else if (type === 'mostSold') {
+                        console.log(this.mostSoldItems[index].status);
+                        this.mostSoldItems.splice(index, 1);
+                      } else if (type === 'notSold') {
+                        this.notSoldItems.splice(index, 1);
                       }
                     },
                     btnBackgroundColor: '#272727',

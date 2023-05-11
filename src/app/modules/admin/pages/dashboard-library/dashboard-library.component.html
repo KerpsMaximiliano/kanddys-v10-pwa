@@ -103,6 +103,24 @@
       </div>
     </div>
 
+    <qrcode
+      *ngIf="articleId"
+      style="display: none"
+      #orderQrCode
+      [qrdata]="
+        URI +
+        '/ecommerce/' +
+        saleflowService.saleflowData.merchant.slug +
+        '/article-detail/item/' +
+        articleId
+      "
+      [elementType]="'img'"
+      [width]="40"
+      [errorCorrectionLevel]="'M'"
+      [allowEmptyString]="true"
+      colorDark="#000"
+    ></qrcode>
+
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
         <mat-card class="card" *ngFor="let item of mostSoldItems; index as i">
@@ -141,7 +159,7 @@
               <div
                 class="text-icon"
                 style="cursor: pointer"
-                (click)="openDotsDialog(item._id, i)"
+                (click)="openDotsDialog(item._id, i, 'mostSold')"
               >
                 <img [src]="environment + '/dots-black.svg'" alt="" />
               </div>
@@ -200,7 +218,7 @@
               <div
                 class="text-icon"
                 style="cursor: pointer"
-                (click)="openDotsDialog(item._id, i)"
+                (click)="openDotsDialog(item._id, i, 'lessSold')"
               >
                 <img [src]="environment + '/dots-black.svg'" alt="" />
               </div>
@@ -211,7 +229,11 @@
     </div>
   </div>
 
-  <div class="section" *ngIf="dataToRequest !== 'notSold'">
+  <div
+    class="section"
+    *ngIf="dataToRequest !== 'notSold'"
+    style="margin-bottom: 30px"
+  >
     <div class="section-header">
       <h3 class="section-title">Todos</h3>
 
@@ -259,7 +281,7 @@
               <div
                 class="text-icon"
                 style="cursor: pointer"
-                (click)="openDotsDialog(item._id, i)"
+                (click)="openDotsDialog(item._id, i, 'allItems')"
               >
                 <img [src]="environment + '/dots-black.svg'" alt="" />
               </div>
@@ -270,7 +292,11 @@
     </div>
   </div>
 
-  <div class="section" *ngIf="dataToRequest === 'notSold'">
+  <div
+    class="section"
+    *ngIf="dataToRequest === 'notSold'"
+    style="margin-bottom: 30px"
+  >
     <div class="section-content">
       <mat-card class="card" *ngFor="let item of notSoldItems">
         <a [routerLink]="['../article-editor', item._id]">

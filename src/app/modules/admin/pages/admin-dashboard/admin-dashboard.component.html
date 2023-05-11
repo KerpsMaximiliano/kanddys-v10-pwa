@@ -43,15 +43,15 @@
   </header> -->
 
   <header class="header">
-    <!-- <button mat-icon-button>
+    <button mat-icon-button>
       <mat-icon [ngStyle]="{ color: 'white' }">search</mat-icon>
     </button>
-     <button mat-icon-button>
+    <button mat-icon-button>
       <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
     </button>
-    <button class="header-btn">
+    <button class="header-btn" (click)="headerSettings()">
       <img [src]="environment + '/dots-black.svg'" alt="" />
-    </button> -->
+    </button>
 
     <button
       style="
@@ -131,7 +131,7 @@
       #orderQrCode
       [qrdata]="
         URI +
-        '/' +
+        '/ecommerce/' +
         _SaleflowService.saleflowData.merchant.slug +
         '/article-detail/item/' +
         articleId
@@ -325,7 +325,7 @@
     </div>
   </div>
 
-  <div class="section">
+  <div class="section" style="margin-bottom: 105px">
     <div class="section-header">
       <p class="section-title">Todos</p>
 
