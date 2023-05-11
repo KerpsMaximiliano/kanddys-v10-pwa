@@ -65,6 +65,15 @@ export class WebformOptionsSelectorComponent implements OnInit {
         ]);
       }
 
+      if (
+        !this.webformsService.clientResponsesByItem[
+          this.webformsService.selectedQuestion.questionId
+        ]
+      )
+        this.router.navigate([
+          '/ecommerce/' + this.merchantsService.merchantData.slug + '/checkout',
+        ]);
+
       this.completeAnswers =
         this.webformsService.clientResponsesByItem[
           this.webformsService.selectedQuestion.questionId
