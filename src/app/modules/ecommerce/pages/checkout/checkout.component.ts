@@ -973,7 +973,7 @@ export class CheckoutComponent implements OnInit {
     try {
       const result = await this.deliveryzonesService.deliveryZones({
         options: {
-          // limit: -1,
+          limit: -1,
           // sortBy: 'createdAt:desc',
         },
         findBy: {
@@ -1016,6 +1016,8 @@ export class CheckoutComponent implements OnInit {
           borderRadius: '12px',
           opacity: '1',
           padding: '37px 36.6px 18.9px 31px',
+          maxHeight: '90vh',
+          overflowY: 'scroll'
         },
         header: {
           styles: {
