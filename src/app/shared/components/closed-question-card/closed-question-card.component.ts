@@ -529,7 +529,7 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
       this.dialogFlowConfig.dialogId
     ].fields.options = this.completeAnswers;
 
-    this.router.navigate(['/admin/options-selector'], {
+    this.router.navigate(['/ecommerce/webform-options-selector'], {
       queryParams: {
         startAt: index,
       },
