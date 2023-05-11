@@ -250,6 +250,7 @@ export class ZoneDialogs {
                 const zone = this.deliveryData.find((item) => item.id === 'yes-depend-deliveryzone-1');
                 if (zone.amount === 0 || zone.zona === '') {
                   console.log("Step inválido");
+                  console.log(this.dialogFlowService.swiperConfig);
                   this.dialogFlowService.swiperConfig.allowSlideNext = false;
                 } else {
                   this.dialogFlowService.swiperConfig.allowSlideNext = true;

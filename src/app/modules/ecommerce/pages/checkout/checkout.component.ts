@@ -973,8 +973,8 @@ export class CheckoutComponent implements OnInit {
     try {
       const result = await this.deliveryzonesService.deliveryZones({
         options: {
-          limit: -1,
-          sortBy: 'createdAt:desc',
+          // limit: -1,
+          // sortBy: 'createdAt:desc',
         },
         findBy: {
           merchant: merchanId,
@@ -1714,7 +1714,9 @@ export class CheckoutComponent implements OnInit {
           if (responseInList.responseLabel)
             response.label = responseInList.responseLabel;
 
-          response.isMedia = response.value.includes('http');
+            console.log(response);
+
+          response.isMedia = response.value && response.value.includes('http');
 
           answerInput.response.push(response);
         }
