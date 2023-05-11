@@ -73,7 +73,7 @@
 .section {
   margin-bottom: 2em;
   .section-header {
-    margin: 1em 1.5em;
+    margin: 12px 21px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -106,12 +106,14 @@
 
   .section-content {
     margin-left: 1em;
+    margin-right: 1em;
   }
 }
 
 .card {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   padding-bottom: 7px;
+  margin-bottom: 15px;
 
   a {
     all: unset;

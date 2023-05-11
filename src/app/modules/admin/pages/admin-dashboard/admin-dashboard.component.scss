@@ -111,8 +111,10 @@
     margin-left: 1em;
 
     &.active {
-      background-color: #293628;
-      color: #fff;
+      background-color: #c4c5c3;
+      color: #272727;
+      border: none;
+      font-family: SFProBold;
     }
   }
 }
@@ -120,14 +122,15 @@
 .section {
   margin-bottom: 2em;
   .section-header {
-    margin: 1em 1.5em;
+    margin: 12px 21px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     .section-title {
-      font-family: SfProDisplayBold;
-      font-size: 17px;
+      font-family: SfProRegular;
+      font-size: 13px;
+      text-transform: uppercase;
     }
 
     .section-description {

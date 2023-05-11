@@ -238,6 +238,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   });
 
   dateString: string = 'Aún no hay filtros aplicados';
+  notSoldItems;
 
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
 
@@ -269,6 +270,26 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
     console.log(income);
     this.income = income;
+
+    const notSoldPagination = {
+      options: {
+        sortBy: 'createdAt:asc',
+        limit: 10,
+        page: 1,
+        range: {},
+      },
+      findBy: {
+        merchant: this._MerchantsService.merchantData._id,
+      },
+    };
+
+    const notSoldItems = await this._ItemsService.itemsByMerchantNosale(
+      notSoldPagination
+    );
+    this.notSoldItems = Object.values(notSoldItems)[0];
+    console.log(this.notSoldItems);
+    console.log(this.notSoldItems.length);
+
     await this.getOrders();
     if (this._SaleflowService.saleflowData) {
       this.inicializeItems(true, false, true);

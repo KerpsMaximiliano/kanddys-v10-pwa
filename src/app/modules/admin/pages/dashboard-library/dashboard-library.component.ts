@@ -66,8 +66,14 @@ export class DashboardLibraryComponent implements OnInit {
   });
 
   redirectTo: string = null;
-  dataToRequest: 'recent' | 'mostSold' | 'lessSold' | 'hidden' | 'sold' =
-    'recent';
+  dataToRequest:
+    | 'recent'
+    | 'mostSold'
+    | 'lessSold'
+    | 'hidden'
+    | 'sold'
+    | 'notSold'
+    | 'allItems' = 'recent';
 
   items: Item[] = [];
   orderedItems: Item[] = [];
@@ -75,6 +81,7 @@ export class DashboardLibraryComponent implements OnInit {
   mostSoldItems: Item[] = [];
   lessSoldItems: Item[] = [];
   allItems: Item[] = [];
+  notSoldItems;
   income: number;
   orders: number;
 
@@ -184,7 +191,9 @@ export class DashboardLibraryComponent implements OnInit {
         const item = await this._ItemsService.item(
           mostSoldItems.itemTotalPagination[i]._id
         );
-        this.mostSoldItems.push(item);
+        if (item?._id) {
+          this.mostSoldItems.push(item);
+        }
         //console.log(this.mostSoldItems);
       }
       console.log(this.mostSoldItems);
@@ -196,7 +205,9 @@ export class DashboardLibraryComponent implements OnInit {
         const item = await this._ItemsService.item(
           lessSoldItems.itemTotalPagination[i]._id
         );
-        this.lessSoldItems.push(item);
+        if (item?._id) {
+          this.lessSoldItems.push(item);
+        }
       }
       console.log(this.lessSoldItems);
 
@@ -228,9 +239,32 @@ export class DashboardLibraryComponent implements OnInit {
         const item = await this._ItemsService.item(
           allItems.itemTotalPagination[i]._id
         );
-        this.allItems.push(item);
+        if (item?._id) {
+          this.allItems.push(item);
+        }
       }
       console.log(this.allItems);
+
+      const notSoldPagination = {
+        options: {
+          sortBy: 'createdAt:asc',
+          limit: 10,
+          page: 1,
+          range: {},
+        },
+        findBy: {
+          merchant: this.merchant._id,
+        },
+      };
+
+      const notSoldItems = await this._ItemsService.itemsByMerchantNosale(
+        notSoldPagination
+      );
+
+      // console.log('NO VENDIDOS: ' + JSON.stringify(notSoldItems));
+      // console.log(Object.values(notSoldItems)[0]);
+      this.notSoldItems = Object.values(notSoldItems)[0];
+      console.log(this.notSoldItems);
     });
   }
 
