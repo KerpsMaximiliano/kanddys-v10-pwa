@@ -297,6 +297,10 @@ const routes: Routes = [
         component: NotificationCreatorComponent,
       },
       {
+        path: 'order-slides/:orderId',
+        component: OrderSlidesComponent,
+      },
+      {
         path: 'order-slides',
         component: OrderSlidesComponent,
       },
@@ -359,7 +363,8 @@ const routes: Routes = [
   {
     path: 'media-upload/:entity',
     component: MediaUploadDndComponentComponent,
-  },{
+  },
+  {
     path: 'dashboard-library',
     component: DashboardLibraryComponent,
   },

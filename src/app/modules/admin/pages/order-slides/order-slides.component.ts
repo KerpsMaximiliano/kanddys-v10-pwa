@@ -1,10 +1,8 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { NgNavigatorShareService } from 'ng-navigator-share';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
@@ -26,7 +24,6 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
-import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { OrderInfoComponent } from 'src/app/shared/dialogs/order-info/order-info.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
@@ -139,6 +136,7 @@ export class OrderSlidesComponent implements OnInit {
 
   constructor(
     private orderService: OrderService,
+    private route: ActivatedRoute,
     public router: Router,
     public merchantsService: MerchantsService,
     private postsService: PostsService,
@@ -146,8 +144,8 @@ export class OrderSlidesComponent implements OnInit {
     private entityTemplateService: EntityTemplateService,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
-    private _bottomSheet: MatBottomSheet,
-    private ngNavigatorShareService: NgNavigatorShareService,
+    // private _bottomSheet: MatBottomSheet,
+    // private ngNavigatorShareService: NgNavigatorShareService,
     private deliveryzoneService: DeliveryZonesService,
     private reservationsService: ReservationService,
     private dialogService: DialogService,
@@ -172,13 +170,27 @@ export class OrderSlidesComponent implements OnInit {
   async executeProcessesAfterLoading() {
     lockUI();
     this.orderMerchant = this.merchantsService.merchantData;
-    // if (!orderId) {
-    await this.getOrders();
+    const orderId = this.route.snapshot.paramMap.get('orderId');
+    if (orderId) {
+      const result = (
+        await this.merchantsService.hotOrdersByMerchant(
+          this.orderMerchant._id,
+          {
+            options: {
+              limit: 1,
+            },
+            findBy: {
+              _id: orderId,
+            },
+          }
+        )
+      )?.ordersByMerchant;
+      this.ordersToConfirm = result;
+    } else await this.getOrders();
     this.order =
       this.ordersToConfirm.length > 0
         ? (await this.orderService.order(this.ordersToConfirm[0]._id))?.order
         : null;
-    // } else this.order = (await this.orderService.order(orderId))?.order;
 
     if (!this.order) return this.throwErrorScreen();
     if (this.order.merchants[0]._id !== this.merchantsService.merchantData._id)
