@@ -77,63 +77,68 @@ a {
     }
   }
 
+  .top {
+    margin: 0 0 24px;
+    display: flex;
+    // justify-content: center;
+    // align-items: center;
+    flex-direction: column;
+    padding: 20px 15px;
+    background-color: #fff;
+    font-size: 17px;
+    color: #7b7b7b;
+    font-family: SFProRegular;
+
+    .top-h {
+      font-family: "RobotoMedium";
+      font-size: 0.875rem;
+      color: #7b7b7b;
+      font-weight: 500;
+      white-space: nowrap;
+      // text-align: center;
+
+      .blue {
+        text-decoration: none;
+        color: #2874ad;
+        font-size: 17px;
+        font-family: SFProMedium;
+        cursor: pointer;
+        margin: 0;
+        margin-bottom: 32px;
+        display: block;
+      }
+
+      .top-name {
+        all: unset;
+        font-family: "SfProBold";
+        font-size: 1.25rem;
+        color: #2874ad;
+        cursor: pointer;
+      }
+    }
+
+    .info-display {
+      display: flex;
+      align-items: center;
+      // justify-content: center;
+      // margin-top: 8px;
+
+      .info {
+        font-family: "RobotoRegular";
+        font-size: 0.813rem;
+        color: #7b7b7b;
+        margin-left: 5%;
+        //text-align: center;
+      }
+    }
+  }
+
   .information {
     width: 100%;
     margin: 20px 0 40px 0;
     padding: 0 27px 32px;
     padding-bottom: 70px; //para la barra inferior
     flex: 1;
-
-    .top {
-      margin: 0 0 24px;
-      display: flex;
-      // justify-content: center;
-      // align-items: center;
-      flex-direction: column;
-
-      .top-h {
-        font-family: "RobotoMedium";
-        font-size: 0.875rem;
-        color: #7b7b7b;
-        font-weight: 500;
-        white-space: nowrap;
-        // text-align: center;
-
-        .blue {
-          text-decoration: none;
-          color: #2874ad;
-          font-size: 17px;
-          font-family: SFProMedium;
-          cursor: pointer;
-          margin: 0;
-          margin-bottom: 32px;
-          display: block;
-        }
-
-        .top-name {
-          all: unset;
-          font-family: "SfProBold";
-          font-size: 1.25rem;
-          color: #2874ad;
-          cursor: pointer;
-        }
-      }
-
-      .info-display {
-        display: flex;
-        align-items: center;
-        // justify-content: center;
-        // margin-top: 8px;
-
-        .info {
-          font-family: "RobotoRegular";
-          font-size: 0.813rem;
-          color: #7b7b7b;
-          margin-left: 5%;
-          //text-align: center;
-        }
-      }
-    }
 
     .section {
       width: 100%;
@@ -159,7 +164,6 @@ a {
           column-gap: 8px;
 
           .image {
-            cursor: pointer;
             position: relative;
             background-size: cover;
             background-position: center;
@@ -168,14 +172,14 @@ a {
             height: 86px;
             border-radius: 6px;
 
-            .item-image {
-              height: 100%;
-              width: 100%;
-              background-color: #e9e371;
-              border-radius: 6px;
-              -webkit-user-drag: none;
-              object-fit: cover;
-            }
+            // .item-image {
+            //   width: 86px;
+            //   width: 86px;
+            //   background-color: #e9e371;
+            //   border-radius: 6px;
+            //   -webkit-user-drag: none;
+            //   object-fit: contain;
+            // }
 
             &:after {
               content: "\A";
@@ -252,8 +256,9 @@ a {
 
         .total {
           font-family: "SfProBold";
-          font-size: 13px;
+          font-size: 17px;
           color: #000000;
+          margin: 0;
         }
 
         .amount {
@@ -261,6 +266,7 @@ a {
           font-size: 17px;
           color: #272727;
           text-transform: capitalize;
+          margin: 0;
         }
 
         .address-name {
@@ -388,9 +394,9 @@ a {
       }
 
       .section-title {
-        font-family: "RobotoMedium";
-        font-size: 19px;
-        color: #7b7b7b;
+        font-family: "SFProRegular";
+        font-size: 13px;
+        color: #272727;
         margin: 0;
         margin-bottom: 10px;
         font-weight: normal;
@@ -855,8 +861,8 @@ table {
   color: #fff;
   font-family: SfProSemiBold;
   font-size: 1.063rem;
-  padding: 4px 12px;
-  border-radius: 8px;
+  padding: 10px 40px;
+  border-radius: 11px;
   display: inline-block;
 
   &.pending {
@@ -876,5 +882,108 @@ table {
 
   &.right {
     right: 12px;
+  }
+}
+
+.top-whatsapp {
+  cursor: pointer;
+  border: none;
+  background-color: #3b654a;
+  padding: 10px 25px;
+  width: 100%;
+  border-radius: 23px;
+  font-size: 17px;
+  color: #ffffff;
+  font-family: SFProBold;
+}
+
+.top-footer {
+  background-color: #293628;
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.chip-list {
+  display: flex;
+  width: 100%;
+  overflow-x: scroll;
+  gap: 8px;
+}
+.chip {
+  font-family: SfProSemiBold;
+  font-size: 1rem;
+  background-color: #3b5d44;
+  padding: 8px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.sticky-bar {
+  cursor: pointer;
+  position: fixed;
+  max-width: 500px;
+  width: 100%;
+  background-color: #6fcf97;
+  padding: 5px 20px;
+  display: flex;
+  // justify-content: space-around;
+  align-items: center;
+  z-index: 999;
+  bottom: 0;
+
+  p {
+    max-width: 80%;
+    color: #272727;
+    font-family: SfProLight;
+    font-size: 15px;
+  }
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+
+    p {
+      margin-right: 10px;
+    }
+
+    img {
+      width: 15px;
+      filter: brightness(0) invert(18%) sepia(11%) saturate(1049%)
+        hue-rotate(68deg) brightness(93%) contrast(91%);
+    }
+  }
+}
+
+.uploadButton {
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  bottom: 0;
+  z-index: 999;
+
+  .button {
+    position: absolute;
+    background-color: #272727;
+    right: 16px;
+    bottom: 50px;
+  }
+  .top {
+    bottom: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      filter: invert(77%) sepia(58%) saturate(342%) hue-rotate(69deg)
+        brightness(98%) contrast(97%);
+
+      height: 26.68px;
+      width: 26.56px;
+    }
   }
 }

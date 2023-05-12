@@ -201,7 +201,9 @@ export class OrderDetailComponent implements OnInit {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
 
-    await this.getAnswersForEachItem();
+    console.log(this.order);
+
+    // await this.getAnswersForEachItem();
 
     if (!this.order) {
       this.router.navigate([`others/error-screen/`], {
@@ -471,6 +473,10 @@ export class OrderDetailComponent implements OnInit {
     });
     this.benefits = await this.orderService.orderBenefits(this.order._id);
     unlockUI();
+  }
+
+  goToWhatsapp() {
+    window.open(this.messageLink, '_blank');
   }
 
   async notificationClicked() {
@@ -874,90 +880,90 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 
-  async getAnswersForEachItem() {
-    this.answersByItem = {};
-    const answers: Array<WebformAnswer> =
-      await this.webformsService.answerByOrder(this.order._id);
+  // async getAnswersForEachItem() {
+  //   this.answersByItem = {};
+  //   const answers: Array<WebformAnswer> =
+  //     await this.webformsService.answerByOrder(this.order._id);
 
-    console.log('AnswersByOrder', answers);
+  //   console.log('AnswersByOrder', answers);
 
-    if (answers.length) {
-      const webformsIds = [];
-      for (const item of this.order.items) {
-        if (item.item.webForms && item.item.webForms.length) {
-          const webform = item.item.webForms[0];
-          webformsIds.push(webform.reference);
-        }
-      }
+  //   if (answers.length) {
+  //     const webformsIds = [];
+  //     for (const item of this.order.items) {
+  //       if (item.item.webForms && item.item.webForms.length) {
+  //         const webform = item.item.webForms[0];
+  //         webformsIds.push(webform.reference);
+  //       }
+  //     }
 
-      const webforms = await this.webformsService.webforms({
-        findBy: {
-          _id: {
-            __in: webformsIds,
-          },
-        },
-        options: {
-          limit: -1,
-        },
-      });
+  //     const webforms = await this.webformsService.webforms({
+  //       findBy: {
+  //         _id: {
+  //           __in: webformsIds,
+  //         },
+  //       },
+  //       options: {
+  //         limit: -1,
+  //       },
+  //     });
 
-      for (const item of this.order.items) {
-        if (item.item.webForms && item.item.webForms.length) {
-          const webform = item.item.webForms[0];
+  //     for (const item of this.order.items) {
+  //       if (item.item.webForms && item.item.webForms.length) {
+  //         const webform = item.item.webForms[0];
 
-          const answersForWebform = answers.find(
-            (answerInList) => answerInList.webform === webform.reference
-          );
+  //         const answersForWebform = answers.find(
+  //           (answerInList) => answerInList.webform === webform.reference
+  //         );
 
-          if (answersForWebform) {
-            const webformObject = webforms.find(
-              (webformInList) => webformInList._id === webform.reference
-            );
+  //         if (answersForWebform) {
+  //           const webformObject = webforms.find(
+  //             (webformInList) => webformInList._id === webform.reference
+  //           );
 
-            if (webformObject) {
-              this.webformsByItem[item._id] = webformObject;
+  //           if (webformObject) {
+  //             this.webformsByItem[item._id] = webformObject;
 
-              const questionsToQuery = [];
+  //             const questionsToQuery = [];
 
-              answersForWebform.response.forEach((answerInList) => {
-                if (answerInList.question)
-                  questionsToQuery.push(answerInList.question);
-              });
+  //             answersForWebform.response.forEach((answerInList) => {
+  //               if (answerInList.question)
+  //                 questionsToQuery.push(answerInList.question);
+  //             });
 
-              const questions = await this.webformsService.questionPaginate({
-                findBy: {
-                  _id: {
-                    __in: questionsToQuery,
-                  },
-                },
-              });
+  //             const questions = await this.webformsService.questionPaginate({
+  //               findBy: {
+  //                 _id: {
+  //                   __in: questionsToQuery,
+  //                 },
+  //               },
+  //             });
 
-              answersForWebform.response.forEach((answerInList) => {
-                const question = questions.find(
-                  (questionInList) =>
-                    questionInList._id === answerInList.question
-                );
+  //             answersForWebform.response.forEach((answerInList) => {
+  //               const question = questions.find(
+  //                 (questionInList) =>
+  //                   questionInList._id === answerInList.question
+  //               );
 
-                if (answerInList.question && question) {
-                  answerInList.question = question.value;
+  //               if (answerInList.question && question) {
+  //                 answerInList.question = question.value;
 
-                  if (
-                    answerInList.value &&
-                    ((!answerInList.isMedia &&
-                      answerInList.value.startsWith('https')) ||
-                      answerInList.value.startsWith('http'))
-                  )
-                    answerInList.isMedia = true;
-                } else {
-                  answerInList.question = null;
-                }
-              });
-            }
+  //                 if (
+  //                   answerInList.value &&
+  //                   ((!answerInList.isMedia &&
+  //                     answerInList.value.startsWith('https')) ||
+  //                     answerInList.value.startsWith('http'))
+  //                 )
+  //                   answerInList.isMedia = true;
+  //               } else {
+  //                 answerInList.question = null;
+  //               }
+  //             });
+  //           }
 
-            this.answersByItem[item._id] = answersForWebform;
-          }
-        }
-      }
-    }
-  }
+  //           this.answersByItem[item._id] = answersForWebform;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 }

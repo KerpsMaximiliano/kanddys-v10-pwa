@@ -30,12 +30,17 @@
           </div>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <app-contact-header
+      <!-- <app-contact-header
         [link]="link"
         [chatLink]="chatLink"
         [bio]="order?.items[0].saleflow.merchant.bio"
         [contact]="headerService.merchantContact"
-      ></app-contact-header>
+      ></app-contact-header> -->
+      <div style="padding: 20px; background-color: #272727">
+        <button class="top-whatsapp" (click)="goToWhatsapp()">
+          Confirmar por WhatsApp
+        </button>
+      </div>
     </mat-expansion-panel>
   </mat-accordion>
 
@@ -103,54 +108,61 @@
     </div>
   </ng-container> -->
 
-  <main class="information">
-    <section class="top">
-      <div
-        style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-wrap: wrap;
-        "
-      >
-        <h2 class="top-h" *ngIf="order">
-          FACTURA {{ formatId(order.dateId) }} <br />
+  <section class="top">
+    <div style="display: grid">
+      <div style="display: flex; align-items: center; margin-bottom: 10px">
+        <p *ngIf="order" style="margin-right: auto; text-transform: uppercase">
+          Factura <br />
           <!-- <button class="top-name btn" *ngIf="isMerchant">
             {{ order?.items[0].saleflow.headline }}
           </button> -->
-        </h2>
-        <div class="info-display">
-          <span class="info" style="margin-left: 0">
-            {{ orderDate }}
-            <ng-container *ngIf="order?.user">
+        </p>
+
+        <span>
+          {{ formatId(order.dateId) }}
+        </span>
+      </div>
+      <div style="display: flex; align-items: center">
+        <p *ngIf="order" style="margin-right: auto; text-transform: uppercase">
+          Fecha de Factura <br />
+        </p>
+        <span>
+          {{ orderDate }}
+          <!-- <ng-container *ngIf="order?.user">
               para
-              <a 
+              <a
                 style="color: #2874ad"
                 [routerLink]="['../../contact-landing', order.user._id]"
               >
                 {{ order.user.name || order.user.phone || order.user.email }}
               </a>
-            </ng-container>
-          </span>
-          <!-- <p>Dirección {{ order?.items[0].saleflow.merchant?.address }}</p> -->
-        </div>
-        <!-- <img
+            </ng-container> -->
+        </span>
+        <!-- <p>Dirección {{ order?.items[0].saleflow.merchant?.address }}</p> -->
+      </div>
+      <!-- <img
           [src]="env + '/qr-code.svg'"
           alt=""
           style="margin-left: auto; cursor: pointer"
         /> -->
-      </div>
-      <br>
-      <div class="info-display" *ngIf="order?.items[0].saleflow.merchant?.address">
-        <p class="info" style="margin: 0;">Dirección: {{ order?.items[0].saleflow.merchant?.address }}</p>
-      </div>
-      <!-- <div class="info-display">
+    </div>
+    <!-- <div
+      class="info-display"
+      *ngIf="order?.items[0].saleflow.merchant?.address"
+    >
+      <p class="info" style="margin: 0">
+        Dirección: {{ order?.items[0].saleflow.merchant?.address }}
+      </p>
+    </div> -->
+    <!-- <div class="info-display">
         <span class="info" style="margin-left: 0px">{{
           "Dirección: " +
             order?.items[0].saleflow.module.delivery.pickUpLocations[0].nickName
         }}</span>
       </div> -->
-    </section>
+  </section>
+
+  <main class="information">
     <section class="section">
       <h2
         class="section-title"
@@ -288,9 +300,7 @@
       </div> -->
     </section>
 
-    <div
-      class="section"
-    >
+    <div class="section">
       <p class="section-label">ENTREGA</p>
       <div class="questions" *ngIf="deliveryImages?.deliveryZone">
         <p class="label">Zona de entrega</p>
@@ -301,9 +311,9 @@
       <div class="questions" *ngIf="order.items[0].deliveryLocation">
         <p class="label">Donde entregaremos?</p>
         <p class="label gray-out capitalize">
-
           <ng-container *ngIf="!order?.items[0]?.deliveryLocation?.street">
-            {{ order?.items[0]?.deliveryLocation?.nickName }}, República Dominicana
+            {{ order?.items[0]?.deliveryLocation?.nickName }}, República
+            Dominicana
           </ng-container>
           <ng-container *ngIf="order?.items[0]?.deliveryLocation?.street">
             {{
@@ -373,7 +383,7 @@
         <p class="amount">$ {{ payment | number : "1.2-2" }}</p>
       </div> -->
       <div class="items-container space-between" style="margin-top: 4px">
-        <p class="total">Total:</p>
+        <p class="total">Total a Pagar:</p>
         <p class="amount" [style]="{ fontSize: '21px' }">
           $ {{ payment | number : "1.2-2" }}
         </p>
@@ -794,6 +804,48 @@
   [text]="'VOLVER A LA TIENDA'"
   (click)="goToStore()"
   ></app-sticky-button> -->
+
+  <div class="top-footer" style="margin-bottom: 27.25px">
+    <div class="chip-list">
+      <div class="chip">
+        {{ orderStatus }}
+      </div>
+      <!-- <ng-container *ngIf="deliveryOrder.tagsData?.length">
+        <div class="chip" *ngFor="let tag of deliveryOrder.tagsData">
+          {{ tag.name }}
+        </div>
+      </ng-container> -->
+    </div>
+    <!-- <button
+      mat-icon-button
+      (click)="openDialog(deliveryOrder)"
+      style="color: #6fcf97"
+    >
+      <mat-icon>menu</mat-icon>
+    </button> -->
+  </div>
+  <div class="sticky-bar">
+    <p>WeDoWeLike, para colaborar, monetizar y vender</p>
+    <img [src]="env + '/dots-black.svg'" alt="" style="margin-left: auto" />
+  </div>
+
+  <div class="uploadButton">
+    <button mat-fab class="button">
+      <mat-icon style="color: #82f18d">menu</mat-icon>
+      <!-- <img class="icon" [src]="environment + '/upload.svg'" /> -->
+    </button>
+  </div>
+
+  <div class="uploadButton">
+    <button
+      class="button top"
+      style="border: none; border-radius: 50%; height: 56px; width: 56px"
+      (click)="goToWhatsapp()"
+    >
+      <img [src]="env + '/whatsapp_black.svg'" alt="" />
+      <!-- <img class="icon" [src]="environment + '/upload.svg'" /> -->
+    </button>
+  </div>
 
   <div style="visibility: hidden; position: absolute; z-index: -99; bottom: 0">
     <qrcode
