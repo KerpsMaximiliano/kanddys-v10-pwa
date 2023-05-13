@@ -200,6 +200,7 @@ import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-
 import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
 import { ItemInfoComponent } from './dialogs/item-info/item-info.component';
 import { OrderInfoComponent } from './dialogs/order-info/order-info.component';
+import { AutofocusDirective } from '../core/directives/autofocus.directive';
 
 const imports = [
   CommonModule,
@@ -414,6 +415,7 @@ const declarations = [
   ContactHeaderComponent,
   ItemInfoComponent,
   OrderInfoComponent,
+  AutofocusDirective
 ];
 
 @NgModule({

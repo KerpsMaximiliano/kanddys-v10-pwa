@@ -1185,16 +1185,23 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrEditMessage() {
-    if (this.postsService.post) {
-      this.router.navigate([
-        'ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
-          '/post-edition',
-      ]);
-    } else {
-      this.executeProcessesBeforeOpening();
-      this.openedDialogFlow = !this.openedDialogFlow;
-    }
+
+    this.router.navigate([
+      'ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/post-edition',
+    ]);
+
+    // if (this.postsService.post) {
+    //   this.router.navigate([
+    //     'ecommerce/' +
+    //       this.headerService.saleflow.merchant.slug +
+    //       '/post-edition',
+    //   ]);
+    // } else {
+    //   this.executeProcessesBeforeOpening();
+    //   this.openedDialogFlow = !this.openedDialogFlow;
+    // }
   }
 
   mouseDown: boolean;
