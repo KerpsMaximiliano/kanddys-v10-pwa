@@ -227,7 +227,7 @@ const routes: Routes = [
       {
         path: 'qr-edit',
         component: QrEditComponent,
-      }
+      },
     ],
   },
 ];
@@ -265,7 +265,7 @@ const routes: Routes = [
     PostEditionComponent,
     Fase1LandingComponent,
     ArticleUploadComponent,
-    TextEditionAndPreviewComponent
+    TextEditionAndPreviewComponent,
   ],
   imports: [
     CommonModule,
