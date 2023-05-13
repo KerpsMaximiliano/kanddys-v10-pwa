@@ -41,6 +41,27 @@ a {
   box-shadow: unset !important;
 }
 
+.fixed-button {
+  position: absolute;
+  top: 42px;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  z-index: 2;
+  background-color: #272727;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #82f18d;
+  gap: 4px;
+  font-family: SfProBold;
+  padding: 10px;
+
+  &.right {
+    right: 16px;
+  }
+}
+
 .media-swiper-wrapper {
   position: relative;
 }
