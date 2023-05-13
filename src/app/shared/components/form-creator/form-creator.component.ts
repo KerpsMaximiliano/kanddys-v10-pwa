@@ -103,6 +103,10 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'Menos de 12 Palabras',
         },
         {
+          name: 'number',
+          label: 'Número',
+        },
+        {
           name: 'min12',
           label: 'Mas de 12 palabras',
         } /*

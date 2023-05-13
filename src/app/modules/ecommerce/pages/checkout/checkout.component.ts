@@ -1408,13 +1408,13 @@ export class CheckoutComponent implements OnInit {
         const response: WebformResponseInput = {
           question: question._id,
           isMedia: this.answersByQuestion[question._id].isMedia,
-          value: this.answersByQuestion[question._id].response,
+          value: typeof  this.answersByQuestion[question._id].response === 'number' ? this.answersByQuestion[question._id].response.toString() : this.answersByQuestion[question._id].response,
         };
 
         if (this.answersByQuestion[question._id].responseLabel)
           response.label = this.answersByQuestion[question._id].responseLabel;
 
-        response.isMedia = response.value.includes('http');
+        response.isMedia = typeof response.value !== 'number' && response.value && response.value.includes('http');
 
         answerInput.response.push(response);
       }
@@ -1434,7 +1434,7 @@ export class CheckoutComponent implements OnInit {
           if (responseInList.responseLabel)
             response.label = responseInList.responseLabel;
 
-          response.isMedia = response.value && response.value.includes('http');
+          response.isMedia = typeof response.value !== 'number' && response.value && response.value.includes('http');
 
           answerInput.response.push(response);
         }

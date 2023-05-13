@@ -105,9 +105,14 @@ export class WebformClientViewComponent implements OnInit {
 
               if (
                 question.type === 'text' &&
-                ['default', 'email', 'phone', 'max12', 'min12'].includes(
-                  question.answerTextType
-                )
+                [
+                  'default',
+                  'email',
+                  'phone',
+                  'max12',
+                  'min12',
+                  'number',
+                ].includes(question.answerTextType)
               ) {
                 fields =
                   question.answerTextType !== 'phone'
@@ -125,6 +130,10 @@ export class WebformClientViewComponent implements OnInit {
                             : responseForThisQuestion.phoneTemporalData
                         ),
                       });
+
+                if (question.answerTextType.toUpperCase() === 'NUMBER') {
+                  validators.push(Validators.pattern('^[0-9]*$'));
+                }
 
                 if (question.answerTextType.toUpperCase() === 'MAX12') {
                   validators.push(maxWordsValidator(12));
@@ -590,5 +599,13 @@ export class WebformClientViewComponent implements OnInit {
 
   getFormControl(data: any): FormControl {
     return data;
+  }
+
+  onNumberInputPress(event: KeyboardEvent) {
+    const keyCode = event.keyCode || event.which;
+    // Prevent input of non-numeric characters, except for backspace and delete keys
+    if (keyCode !== 8 && keyCode !== 46 && (keyCode < 48 || keyCode > 57)) {
+      event.preventDefault();
+    }
   }
 }

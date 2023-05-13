@@ -185,6 +185,24 @@
             />
           </ng-container>
 
+          <ng-container *ngIf="step.question.answerTextType === 'number'">
+            <label
+              class="text-response-label"
+              [for]="stepIndex + '-text-response'"
+            >
+              {{ textResponseLabels["text"] }}
+            </label>
+
+            <input
+              type="number"
+              [id]="stepIndex + '-text-response'"
+              class="text-response-input"
+              placeholder="Escribe un número aquí"
+              (keypress)="onNumberInputPress($event)"
+              [formControlName]="'textResponse'"
+            />
+          </ng-container>
+
           <ng-container *ngIf="step.question.answerTextType === 'phone'">
             <div class="phone-input-wrapper">
               <label

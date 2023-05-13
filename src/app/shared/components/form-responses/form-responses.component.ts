@@ -287,6 +287,9 @@ export class FormResponsesComponent implements OnInit {
     if (question.type === 'text' && question.answerTextType === 'email')
       return 'Correo electrónico';
 
+    if (question.type === 'text' && question.answerTextType === 'number')
+      return 'Número';
+
     if (question.type === 'text' && question.answerTextType === 'phone')
       return 'Teléfono';
 
@@ -368,18 +371,26 @@ export class FormResponsesComponent implements OnInit {
           isMedia: response.isMedia,
           value: response.value,
         };
-  
+
         this.responsesForSelectedQuestion.push(singleResponse);
       }
     }
 
-    for(const response of this.responsesForSelectedQuestion) {
-      if(!this.answersMetricsByQuestionResponses[question._id].options[response.value]) {
-        this.answersMetricsByQuestionResponses[question._id].options[response.value] = {
+    for (const response of this.responsesForSelectedQuestion) {
+      if (
+        !this.answersMetricsByQuestionResponses[question._id].options[
+          response.value
+        ]
+      ) {
+        this.answersMetricsByQuestionResponses[question._id].options[
+          response.value
+        ] = {
           totalResponses: 1,
         };
       } else {
-        this.answersMetricsByQuestionResponses[question._id].options[response.value].totalResponses++;
+        this.answersMetricsByQuestionResponses[question._id].options[
+          response.value
+        ].totalResponses++;
       }
     }
 
