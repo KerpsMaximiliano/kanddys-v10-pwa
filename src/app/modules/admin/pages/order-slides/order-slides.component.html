@@ -31,7 +31,7 @@
         *ngFor="let deliveryOrder of ordersToConfirm; let i = index"
       >
         <ng-container *ngIf="isPopulated(deliveryOrder)">
-          <div class="order-content">
+          <div class="order-content" style="padding-bottom: 96px">
             <header class="header">
               <div class="flex" style="align-items: center">
                 <a mat-icon-button [routerLink]="['../dashboard']">

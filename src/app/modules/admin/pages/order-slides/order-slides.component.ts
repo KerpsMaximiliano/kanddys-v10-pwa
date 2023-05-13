@@ -50,7 +50,7 @@ export class OrderSlidesComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
 
-  order: ItemOrder;
+  order: ExtendedItemOrder;
   ordersToConfirm: ExtendedItemOrder[] = [];
 
   deliveryZone: DeliveryZone;
@@ -172,25 +172,42 @@ export class OrderSlidesComponent implements OnInit {
     this.orderMerchant = this.merchantsService.merchantData;
     const orderId = this.route.snapshot.paramMap.get('orderId');
     if (orderId) {
-      const result = (
-        await this.merchantsService.hotOrdersByMerchant(
-          this.orderMerchant._id,
+      this.order = await this.orderService.orderByDateId(orderId);
+      this.order.payment = this.order.subtotals.reduce(
+        (prev, curr) => prev + curr.amount,
+        0
+      );
+      if (!this.order.ocr) {
+        const result = await this.paymentLogService.paymentLogsByOrder({
+          findBy: {
+            order: this.order._id,
+          },
+        });
+
+        if (result && result.length > 0 && result[0].paymentMethod === 'azul') {
+          this.order.payedWithAzul = true;
+        }
+      } else {
+        this.order.paymentType =
           {
-            options: {
-              limit: 1,
-            },
-            findBy: {
-              _id: orderId,
-            },
-          }
-        )
-      )?.ordersByMerchant;
-      this.ordersToConfirm = result;
-    } else await this.getOrders();
-    this.order =
-      this.ordersToConfirm.length > 0
-        ? (await this.orderService.order(this.ordersToConfirm[0]._id))?.order
-        : null;
+            'bank-transfer': 'transferencia bancaria',
+            azul: 'tarjeta: xx.6547',
+          }[this.order.ocr.platform] || 'Desconocido';
+      }
+      this.order.tagsData = this.userTags.filter((tag) =>
+        this.order.tags.includes(tag._id)
+      );
+      this.order.benefits = await this.orderService.orderBenefits(
+        this.order._id
+      );
+      this.ordersToConfirm = [this.order];
+    } else {
+      await this.getOrders();
+      this.order =
+        this.ordersToConfirm.length > 0
+          ? (await this.orderService.order(this.ordersToConfirm[0]._id))?.order
+          : null;
+    }
 
     if (!this.order) return this.throwErrorScreen();
     if (this.order.merchants[0]._id !== this.merchantsService.merchantData._id)
@@ -209,7 +226,7 @@ export class OrderSlidesComponent implements OnInit {
       }
       this.deliveryImages.push({
         image: this.isPopulated(order)
-          ? order.deliveryData.image
+          ? order.deliveryData?.image
             ? order.deliveryData.image
             : null
           : null,
