@@ -131,7 +131,7 @@
                       }"
                       (click)="openWebform(item._id, i)"
                     >
-                      <p style="text-transform: capitalize;">
+                      <p style="text-transform: capitalize">
                         {{ question.value }}
                       </p>
                       <div
@@ -219,7 +219,7 @@
                 <ng-container
                   *ngIf="
                     answersByQuestion[question._id] &&
-                    question.answerLimit === 0 &&
+                    (question.answerLimit === 0 || question.answerLimit > 1) &&
                     ['multiple-text', 'multiple'].includes(question.type)
                   "
                 >
@@ -265,7 +265,9 @@
                         [isMediaSelection]="question.answerDefault[0].isMedia"
                         [question]="question"
                         [required]="question?.required"
-                        (onSelector)="selectOption(question, item, true, $event)"
+                        (onSelector)="
+                          selectOption(question, item, true, $event)
+                        "
                       >
                       </app-closed-question-card>
                     </div>

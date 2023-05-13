@@ -27,6 +27,7 @@ import {
 } from 'ngx-intl-tel-input';
 import { Country, State, City } from 'country-state-city';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-webform-client-view',
@@ -75,9 +76,7 @@ export class WebformClientViewComponent implements OnInit {
     private webformsService: WebformsService,
     private itemsService: ItemsService,
     private headerService: HeaderService,
-    private authService: AuthService,
-    private merchantService: MerchantsService,
-    private saleflowService: SaleFlowService
+    private snackbar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -135,7 +134,7 @@ export class WebformClientViewComponent implements OnInit {
                   validators.push(minWordsValidator(12));
                 }
 
-                console.log(question.answerTextType);
+                //console.log(question.answerTextType);
                 if (question.answerTextType.toUpperCase() === 'EMAIL')
                   validators.push(Validators.email);
               } else if (
@@ -296,6 +295,35 @@ export class WebformClientViewComponent implements OnInit {
     ].fields.controls.options.value.filter((option, index) => {
       return option.selected;
     });
+    const isMultipleSelection =
+      currentStep.question.answerLimit === 0 ||
+      currentStep.question.answerLimit > 1;
+    const alreadySelectedOptionsIndexes: Array<number> = this.steps[
+      stepIndex
+    ].fields.controls.options.value
+      .map((option, index) => {
+        return option.selected ? index : null;
+      })
+      .filter((index) => index !== null);
+
+    if (
+      isMultipleSelection &&
+      alreadySelectedOptionsIndexes.length >=
+        currentStep.question.answerLimit &&
+      !alreadySelectedOptionsIndexes.includes(optionIndex)
+    ) {
+      this.snackbar.open(
+        'Recuerda que solo puedes seleccionar máximo ' +
+          currentStep.question.answerLimit +
+          ' opciones',
+        'Cerrar',
+        {
+          duration: 3000,
+        }
+      );
+
+      return;
+    }
 
     const optionsFormArray = this.steps[stepIndex].fields.controls
       .options as FormArray;
@@ -353,8 +381,6 @@ export class WebformClientViewComponent implements OnInit {
     });
 
     const options = this.steps[stepIndex].fields.controls.options.value;
-
-    const isMultipleSelection = currentStep.question.answerLimit === 0;
 
     if (!isMultipleSelection) {
       const selected = options.find((option) => option.selected);
@@ -455,15 +481,12 @@ export class WebformClientViewComponent implements OnInit {
               ].multipleResponses.length > 0;
         }
       } else {
+        this.webformsService.clientResponsesByItem[currentStep.question._id] =
+          null;
+
         this.webformsService.clientResponsesByItem[
           currentStep.question._id
-        ] = null;
-        
-        this.webformsService.clientResponsesByItem[
-          currentStep.question._id
-        ].valid = !currentStep.question.required
-          ? true
-          : false;
+        ].valid = !currentStep.question.required ? true : false;
       }
     }
   }
@@ -524,8 +547,11 @@ export class WebformClientViewComponent implements OnInit {
 
     this.webformsService.selectedQuestion = {
       questionId: this.steps[this.currentStepIndex].question._id,
+      question: this.steps[this.currentStepIndex].question,
       required: this.steps[this.currentStepIndex].question.required,
-      multiple: this.steps[this.currentStepIndex].question.answerLimit === 0,
+      multiple:
+        this.steps[this.currentStepIndex].question.answerLimit === 0 ||
+        this.steps[this.currentStepIndex].question.answerLimit > 1,
     };
 
     const options =

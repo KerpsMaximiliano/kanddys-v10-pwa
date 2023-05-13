@@ -74,6 +74,7 @@
             margin: '0px',
             marginTop: '17px'
           }"
+          [multipleOptionsLimit]="!question.answerLimit ? 0 : question.answerLimit"
           [itemStyles]="{
             fontSize: '17px',
             padding: '7px 0px'

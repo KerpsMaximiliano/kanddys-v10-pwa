@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { Question } from 'src/app/core/models/webform';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-closed-question-card',
@@ -46,9 +47,8 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
   selectedListOptionIndexes: Array<number> = [];
 
   constructor(
-    private dialogFlowService: DialogFlowService,
     private webformsService: WebformsService,
-    private router: Router
+    private snackbar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -357,6 +357,31 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
       }
 
       if (this.isMediaSelection) {
+        const alreadySelectedOptionIndexes = this.optionsInImageGrid.map((option, index) => option.selected ? index : null).filter(index => index !== null);
+        const numberOfAlreadySelectedOptions = this.optionsInImageGrid.filter(
+          (option, indexInList) => option.selected
+        ).length;
+
+
+        if (
+          this.question.answerLimit !== 0 &&
+          this.question.answerLimit > 1 &&
+          numberOfAlreadySelectedOptions >= this.question.answerLimit &&
+          !alreadySelectedOptionIndexes.includes(index)
+        ) {
+          this.snackbar.open(
+            'Recuerda que solo puedes seleccionar máximo ' +
+              this.question.answerLimit +
+              ' opciones',
+            'Cerrar',
+            {
+              duration: 3000,
+            }
+          );
+
+          return;
+        }
+
         const selectedOptions = this.optionsInImageGrid.map(
           (option, indexInList) => {
             if (indexInList === index) {

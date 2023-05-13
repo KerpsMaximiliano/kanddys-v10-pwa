@@ -1272,7 +1272,7 @@ export class CheckoutComponent implements OnInit {
           for (const question of webform.questions) {
             let multipleResponse =
               ['multiple', 'multiple-text'].includes(question.type) &&
-              question.answerLimit === 0;
+              question.answerLimit === 0 || question.answerLimit > 1;
             const isMedia = Boolean(
               question.answerDefault &&
                 question.answerDefault.length &&
@@ -1434,8 +1434,6 @@ export class CheckoutComponent implements OnInit {
           if (responseInList.responseLabel)
             response.label = responseInList.responseLabel;
 
-          console.log(response);
-
           response.isMedia = response.value && response.value.includes('http');
 
           answerInput.response.push(response);
@@ -1506,7 +1504,7 @@ export class CheckoutComponent implements OnInit {
         : true;
     });
 
-    console.log('VALIDANDO WEBFORMS');
+    //console.log('VALIDANDO WEBFORMS');
 
     this.areWebformsValid = areWebformsValid;
   }
@@ -1567,7 +1565,8 @@ export class CheckoutComponent implements OnInit {
   ) => {
     const options = updatedOptions.selectedOptions;
 
-    const isMultipleSelection = question.answerLimit === 0;
+    const isMultipleSelection =
+      question.answerLimit === 0 || question.answerLimit > 1;
 
     if (!isMultipleSelection) {
       if (!updatedOptions.userProvidedAnswer) {
@@ -1673,7 +1672,7 @@ export class CheckoutComponent implements OnInit {
           }
 
           this._WebformsService.clientResponsesByItem[
-            this._WebformsService.selectedQuestion.questionId
+            question._id
           ].valid = true;
         });
 
@@ -1693,7 +1692,7 @@ export class CheckoutComponent implements OnInit {
           });
 
           this._WebformsService.clientResponsesByItem[
-            this._WebformsService.selectedQuestion.questionId
+            question._id
           ].valid = question.required
             ? this.answersByQuestion[question._id].multipleResponses.length > 0
             : true;
@@ -1703,7 +1702,7 @@ export class CheckoutComponent implements OnInit {
         } else {
           this.answersByQuestion[question._id].multipleResponses = [];
           this._WebformsService.clientResponsesByItem[
-            this._WebformsService.selectedQuestion.questionId
+            question._id
           ].valid = question.required
             ? this.answersByQuestion[question._id].multipleResponses.length > 0
             : true;

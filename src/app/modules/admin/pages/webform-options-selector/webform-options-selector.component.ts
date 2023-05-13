@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit, Input, Output, ViewChild } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
@@ -54,7 +55,8 @@ export class WebformOptionsSelectorComponent implements OnInit {
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackbar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -140,6 +142,34 @@ export class WebformOptionsSelectorComponent implements OnInit {
   }
 
   selectOptMultipleFromGrid(indexClicked: number) {
+    const alreadySelectedOptionsIndexes: Array<number> = this.completeAnswers
+      .map((option, index) => {
+        return option.selected ? index : null;
+      })
+      .filter((index) => index !== null);
+
+    if (
+      this.multiple &&
+      alreadySelectedOptionsIndexes.length >=
+        this.webformsService.clientResponsesByItem[
+          this.webformsService.selectedQuestion.questionId
+        ].question.answerLimit &&
+      !alreadySelectedOptionsIndexes.includes(indexClicked)
+    ) {
+      this.snackbar.open(
+        'Recuerda que solo puedes seleccionar máximo ' +
+          this.webformsService.clientResponsesByItem[
+            this.webformsService.selectedQuestion.questionId
+          ].question.answerLimit +
+          ' opciones',
+        'Cerrar',
+        {
+          duration: 3000,
+        }
+      );
+      return;
+    }
+
     if (this.selectedImagesIndexes.includes(indexClicked)) {
       this.selectedImagesIndexes = this.selectedImagesIndexes.filter(
         (index) => index !== indexClicked
