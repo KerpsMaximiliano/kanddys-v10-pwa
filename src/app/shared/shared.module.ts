@@ -200,6 +200,8 @@ import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-
 import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
 import { ItemInfoComponent } from './dialogs/item-info/item-info.component';
 import { OrderInfoComponent } from './dialogs/order-info/order-info.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 const imports = [
   CommonModule,
@@ -233,6 +235,7 @@ const imports = [
   MatCheckboxModule,
   MatGridListModule,
   MatTabsModule,
+  MatSidenavModule,
 ];
 const declarations = [
   // Pages
@@ -414,6 +417,7 @@ const declarations = [
   ContactHeaderComponent,
   ItemInfoComponent,
   OrderInfoComponent,
+  NavigationComponent,
 ];
 
 @NgModule({

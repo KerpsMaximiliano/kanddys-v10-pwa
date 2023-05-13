@@ -149,6 +149,7 @@ export class OrderDetailComponent implements OnInit {
   link: string;
   chatLink: string;
   panelOpenState = false;
+  openNavigation = false;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
