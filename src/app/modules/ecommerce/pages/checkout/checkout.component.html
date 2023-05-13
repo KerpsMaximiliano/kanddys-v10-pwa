@@ -54,7 +54,7 @@
     >
       Confirmar y pagar
     </button>
-    <a
+    <!-- <a
       class="bannerLink"
       *ngIf="headerService.saleflow.module?.post?.isActive"
       (click)="createOrEditMessage()"
@@ -63,7 +63,7 @@
           ? "Incluir mensaje de regalo"
           : "Editar mensaje de regalo"
       }}</a
-    >
+    > -->
   </section>
 
   <main class="information">
@@ -368,6 +368,36 @@
 
     <section
       class="section"
+    >
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Mensaje de regalo</h2>
+      </div>
+
+      <ng-container *ngIf="postsService.post">
+        <button class="items-container ready" (click)="createOrEditMessage()">
+          <p class="address-name">
+            {{ 
+              postsService.post?.message ? postsService.post?.message :
+              postsService.post?.title ? postsService.post?.title :
+              postsService.post?.to ? 'Para: ' + postsService.post?.to :
+              postsService.post?.from ? 'De parte de: ' + postsService.post?.from :
+              '...'
+            }}
+          </p>
+        </button>
+      </ng-container>
+
+      <button
+        class="items-container column pointer green"
+        *ngIf="!postsService.post"
+        (click)="createOrEditMessage()"
+      >
+        <p class="address-name">Agrega un mensaje de regalo (opcional)</p>
+      </button>
+    </section>
+
+    <section
+      class="section"
       *ngIf="
         headerService.saleflow?.module?.appointment?.isActive &&
         headerService.saleflow?.module?.appointment?.calendar?._id
@@ -397,6 +427,8 @@
         <p class="address-name">Haz una reservación...</p>
       </button>
     </section>
+
+    <br><br><br><br><br><br>
 
     <!-- <section
       class="section"
