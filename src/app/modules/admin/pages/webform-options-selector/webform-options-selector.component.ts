@@ -154,6 +154,9 @@ export class WebformOptionsSelectorComponent implements OnInit {
         this.webformsService.clientResponsesByItem[
           this.webformsService.selectedQuestion.questionId
         ].question.answerLimit &&
+      this.webformsService.clientResponsesByItem[
+        this.webformsService.selectedQuestion.questionId
+      ].question.answerLimit !== 0 &&
       !alreadySelectedOptionsIndexes.includes(indexClicked)
     ) {
       this.snackbar.open(
