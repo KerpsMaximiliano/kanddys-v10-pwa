@@ -82,10 +82,17 @@ export const answerPaginate = gql`
           value
           label
           isMedia
+          createdAt
         }
         createdAt
         user {
           _id
+          image
+          name
+        }
+        merchant {
+          _id
+          image
           name
         }
       }
@@ -252,5 +259,20 @@ export const questionPaginate = gql`
       active
       answerMedia
     }
+  }
+`;
+
+export const answersInWebformGroupedByUser = gql`
+  query answersInWebformGroupedByUser($webformId: ObjectID!) {
+    answersInWebformGroupedByUser(webformId: $webformId)
+  }
+`;
+
+export const answerByQuestion = gql`
+  query answerByQuestion(
+    $questionId: ObjectID!,
+    $webformId: ObjectID!
+  ) {
+    answerByQuestion(questionId: $questionId, webformId: $webformId)
   }
 `;
