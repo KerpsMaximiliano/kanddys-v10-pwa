@@ -287,8 +287,6 @@ export class OrderDetailComponent implements OnInit {
         minute: '2-digit',
       })
       .toLocaleUpperCase();
-    this.headerService.user = await this.authService.me();
-    await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
     if (!this.headerService.merchantContact) {
       this.headerService.getMerchantContact(
         this.order.items[0].saleflow.merchant.owner._id
@@ -481,52 +479,35 @@ export class OrderDetailComponent implements OnInit {
     window.open(this.messageLink, '_blank');
   }
 
-  async notificationClicked() {
-    this.notify = false;
-    this.router.navigate([], {
-      relativeTo: this.route,
-    });
-    const tags =
-      (await this.tagsService.tagsByUser({
-        findBy: {
-          entity: 'order',
-        },
-        options: {
-          limit: -1,
-        },
-      })) || [];
-    for (const tag of tags) {
-      this.selectedTags[tag._id] = false;
-      if (this.order.tags.includes(tag._id)) {
-        this.selectedTags[tag._id] = true;
-      }
-    }
-    this.tags = tags;
-    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
-  }
+  // async notificationClicked() {
+  //   this.notify = false;
+  //   this.router.navigate([], {
+  //     relativeTo: this.route,
+  //   });
+  //   const tags =
+  //     (await this.tagsService.tagsByUser({
+  //       findBy: {
+  //         entity: 'order',
+  //       },
+  //       options: {
+  //         limit: -1,
+  //       },
+  //     })) || [];
+  //   for (const tag of tags) {
+  //     this.selectedTags[tag._id] = false;
+  //     if (this.order.tags.includes(tag._id)) {
+  //       this.selectedTags[tag._id] = true;
+  //     }
+  //   }
+  //   this.tags = tags;
+  //   this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+  // }
 
   openImageModal(imageSourceURL: string) {
     this.dialogService.open(ImageViewComponent, {
       type: 'fullscreen-translucent',
       props: {
         imageSourceURL,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
-  openLogoutDialog() {
-    this.dialogService.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        alternate: true,
-        buttonText: 'Cerrar Sesión',
-        buttonCallback: async () => {
-          await this.authService.signoutThree();
-          // this.changeColor = null;
-          this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
-        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -746,11 +727,11 @@ export class OrderDetailComponent implements OnInit {
     );
   }
 
-  async isMerchantOwner(merchant: string) {
-    this.orderMerchant = await this.merchantsService.merchantDefault();
-    this.isMerchant = merchant === this.orderMerchant?._id;
-    this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
-  }
+  // async isMerchantOwner(merchant: string) {
+  //   this.orderMerchant = await this.merchantsService.merchantDefault();
+  //   this.isMerchant = merchant === this.orderMerchant?._id;
+  //   this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
+  // }
 
   createTag() {
     let dialogRef = this.dialog.open(CreateTagComponent, {
