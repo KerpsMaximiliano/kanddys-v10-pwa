@@ -11,7 +11,7 @@
   background-color: #7b7b7b;
 
   &.active {
-    background-color: #FED230;
+    background-color: #fed230;
   }
 }
 
@@ -40,8 +40,6 @@ header {
     color: #7b7b7b;
     height: 30px;
   }
-  
-  
 
   .question-header {
     display: flex;
@@ -448,4 +446,63 @@ input {
 
 .checkbox-options-wrapper {
   margin-top: 40px;
+}
+
+.number-option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+}
+
+.number-circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+
+/* Customize the background color and text color of the mat-select */
+::ng-deep .mat-select-panel {
+  background-color: #e9e9e9;
+  font-family: SfProMedium;
+  font-weight: normal;
+  font-size: 17px;
+  color: black;
+}
+
+/* Customize the border and box-shadow of the mat-select */
+::ng-deep .mat-select-panel .mat-option {
+  border-bottom: 1.5px solid #fed230;
+  box-shadow: none;
+}
+
+/* Customize the hover state of the mat-option */
+::ng-deep .mat-select-panel .mat-option:hover {
+  background-color: #e0e0e0;
+}
+
+:host ::ng-deep .mat-form-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: #e9e9e9;
+  width: 100%;
+  padding-top: 20.3px;
+  padding-left: 0px;
+}
+
+:host ::ng-deep .mat-form-field-underline {
+  border-bottom: 1.5px solid #fed230;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-underline::before {
+  background-color: #fed230;
 }
