@@ -58,7 +58,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     spaceBetween: 2,
   };
 
-  layout: 'simple-card' | 'description-card';
+  layout: 'simple-card' | 'description-card' | 'image-full-width';
   items: Item[] = [];
   allItems: Item[] = [];
   recentlySoldItems: Item[] = [];
@@ -219,7 +219,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     end: new FormControl(''),
   });
 
-  dateString: string = "Aún no hay filtros aplicados";
+  dateString: string = 'Aún no hay filtros aplicados';
 
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
 
@@ -408,15 +408,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getOrders() {
     try {
-      const { ordersByMerchant } = await this._MerchantsService.ordersByMerchant(
-        this._MerchantsService.merchantData._id,
-        {
-          options: {
-            limit: 50,
-            sortBy: 'createdAt:desc'
+      const { ordersByMerchant } =
+        await this._MerchantsService.ordersByMerchant(
+          this._MerchantsService.merchantData._id,
+          {
+            options: {
+              limit: 50,
+              sortBy: 'createdAt:desc',
+            },
           }
-        }
-      );
+        );
 
       const itemIds = new Set<string>();
 
@@ -428,18 +429,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
       const filteredItems = Array.from(itemIds);
 
-      const { listItems } = await this._ItemsService.listItems(
-        {
-          findBy: {
-            _id: {
-              __in: filteredItems,
-            },
-          }
-        }
-      );
+      const { listItems } = await this._ItemsService.listItems({
+        findBy: {
+          _id: {
+            __in: filteredItems,
+          },
+        },
+      });
 
       this.recentlySoldItems = listItems;
-
     } catch (error) {
       console.log(error);
     }
@@ -447,22 +445,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getOrdersToConfirm() {
     try {
-      const { ordersByMerchant } = await this._MerchantsService.ordersByMerchant(
-        this._MerchantsService.merchantData._id,
-        {
-          options: {
-            limit: -1,
-            sortBy: 'createdAt:desc'
-          },
-          findBy: {
-            orderStatus: 'to confirm'
+      const { ordersByMerchant } =
+        await this._MerchantsService.ordersByMerchant(
+          this._MerchantsService.merchantData._id,
+          {
+            options: {
+              limit: -1,
+              sortBy: 'createdAt:desc',
+            },
+            findBy: {
+              orderStatus: 'to confirm',
+            },
           }
-        }
-      );
+        );
 
       this.ordersToConfirm = ordersByMerchant;
-
-
     } catch (error) {
       console.log(error);
     }
@@ -470,14 +467,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getMostSoldItems() {
     try {
-      const result = await this._ItemsService.bestSellersByMerchant(
-        false,
-        {
-          findBy: {
-            merchant: this._MerchantsService.merchantData._id,
-          }
-        }
-      ) as any[];
+      const result = (await this._ItemsService.bestSellersByMerchant(false, {
+        findBy: {
+          merchant: this._MerchantsService.merchantData._id,
+        },
+      })) as any[];
 
       this.mostSoldItems = result.map((item) => item.item);
     } catch (error) {
@@ -487,17 +481,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getLessSoldItems() {
     try {
-      const result = await this._ItemsService.bestSellersByMerchant(
-        false,
-        {
-          options: {
-            page: 2
-          },
-          findBy: {
-            merchant: this._MerchantsService.merchantData._id,
-          }
-        }
-      ) as any[];
+      const result = (await this._ItemsService.bestSellersByMerchant(false, {
+        options: {
+          page: 2,
+        },
+        findBy: {
+          merchant: this._MerchantsService.merchantData._id,
+        },
+      })) as any[];
 
       this.lessSoldItems = result.map((item) => item.item);
     } catch (error) {
@@ -522,13 +513,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                     async (result: { pricing: number; images: File[] }) => {
                       if (!result) return;
                       const { pricing, images: imagesResult } = result;
-                      let images: ItemImageInput[] = imagesResult.map((file) => {
-                        return {
-                          file: file,
-                          index: 0,
-                          active: true,
-                        };
-                      });
+                      let images: ItemImageInput[] = imagesResult.map(
+                        (file) => {
+                          return {
+                            file: file,
+                            index: 0,
+                            active: true,
+                          };
+                        }
+                      );
                       console.log(images);
                       if (!pricing) return;
                       lockUI();
@@ -546,9 +539,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                       };
                       this._ItemsService.itemPrice = null;
 
-                      const { createItem } = await this._ItemsService.createItem(
-                        itemInput
-                      );
+                      const { createItem } =
+                        await this._ItemsService.createItem(itemInput);
                       await this._SaleflowService.addItemToSaleFlow(
                         {
                           item: createItem._id,
@@ -581,7 +573,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               callback: () => {
                 // TODO
               },
-            }
+            },
           ],
         },
         {
@@ -613,7 +605,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         },
         findBy: {
           merchant: this._MerchantsService.merchantData._id,
-          status: 'disabled'
+          status: 'disabled',
         },
       });
       this.hiddenItems = listItems;
@@ -656,27 +648,29 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async onDateChange() {
     if (this.range.get('start').value && this.range.get('end').value) {
-      console.log("AZUCARRRRRRRRRR");
+      console.log('AZUCARRRRRRRRRR');
       lockUI();
       try {
         const result = await this.queryParameterService.createQueryParameter(
           this._MerchantsService.merchantData._id,
           {
             from: {
-              date: this.range.get('start').value
+              date: this.range.get('start').value,
             },
             until: {
-              date: this.range.get('end').value
-            }
+              date: this.range.get('end').value,
+            },
           }
-        )
+        );
 
         if (result) this.queryParamaters.unshift(result);
 
         const startDate = new Date(result.from.date);
         const endDate = new Date(result.until.date);
 
-        this.dateString = `Desde ${this.formatDate(startDate)} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+        this.dateString = `Desde ${this.formatDate(
+          startDate
+        )} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
         unlockUI();
       } catch (error) {
         unlockUI();
@@ -691,26 +685,30 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       const result = await this.queryParameterService.queryParameters({
         options: {
           limit: 10,
-          sortBy: 'createdAt:desc'
+          sortBy: 'createdAt:desc',
         },
         findBy: {
-          merchant: this._MerchantsService.merchantData._id
-        }
+          merchant: this._MerchantsService.merchantData._id,
+        },
       });
       this.queryParamaters = result;
 
       if (this.queryParamaters.length > 0) {
         const startDate = new Date(this.queryParamaters[0].from.date);
         const endDate = new Date(this.queryParamaters[0].until.date);
-        this.dateString = `Desde ${this.formatDate(startDate)} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
+        this.dateString = `Desde ${this.formatDate(
+          startDate
+        )} hasta ${this.formatDate(endDate)} N artículos vendidos. $XXX`;
 
-        const filters: FilterCriteria[] = this.queryParamaters.map((queryParameter) => {
-          return {
-            type: "queryParameter",
-            queryParameter: queryParameter,
-            _id: queryParameter._id
+        const filters: FilterCriteria[] = this.queryParamaters.map(
+          (queryParameter) => {
+            return {
+              type: 'queryParameter',
+              queryParameter: queryParameter,
+              _id: queryParameter._id,
+            };
           }
-        });
+        );
 
         this.filters.push(...filters);
       }
@@ -721,7 +719,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   formatDate(date: Date, short?: boolean) {
     if (!short) return moment(date).format('DD/MM/YYYY');
-    else return `${moment(date).locale('es-es').format('MMM')} ${moment(date).locale('es-es').format('DD')}`;
+    else
+      return `${moment(date).locale('es-es').format('MMM')} ${moment(date)
+        .locale('es-es')
+        .format('DD')}`;
   }
 
   goToDetail(dataToRequest: string) {

@@ -41,15 +41,29 @@
 
 <ng-template #cardContent>
   <div class="top">
-    <p *ngIf="title || description" class="text">
+    <p *ngIf="(title || description) && mode === 'normal'" class="text">
       <span *ngIf="title" class="title">{{ title }}</span
       ><br />
       <br />
       <span *ngIf="description" class="description">{{ description }}</span>
     </p>
-    <div class="image-container">
+    <div class="image-container" *ngIf="mode === 'normal'">
       <img
         class="img"
+        #imgContainer
+        [src]="img"
+        (error)="img = '/assets/images/noimage.png'"
+      />
+      <span class="see-more">Mira mas</span>
+    </div>
+
+    <div
+      *ngIf="mode === 'fullWidth'"
+      class="image-container"
+      style="width: 100%"
+    >
+      <img
+        class="img full"
         #imgContainer
         [src]="img"
         (error)="img = '/assets/images/noimage.png'"
