@@ -540,7 +540,14 @@ export class WebformClientViewComponent implements OnInit {
                 : null,
           };
         } else {
-          this.webformsService.clientResponsesByItem[step.question._id] = null;
+          this.webformsService.clientResponsesByItem[step.question._id] = {
+            question: step.question,
+            response,
+            responseLabel,
+            isMedia: false,
+            isMultipleResponse: false,
+            valid: step.fields.valid,
+          };
         }
       }
     }
