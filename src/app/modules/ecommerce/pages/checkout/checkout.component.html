@@ -54,7 +54,7 @@
     >
       Confirmar y pagar
     </button>
-    <a
+    <!-- <a
       class="bannerLink"
       *ngIf="headerService.saleflow.module?.post?.isActive"
       (click)="createOrEditMessage()"
@@ -63,7 +63,7 @@
           ? "Incluir mensaje de regalo"
           : "Editar mensaje de regalo"
       }}</a
-    >
+    > -->
   </section>
 
   <main class="information">
@@ -131,7 +131,7 @@
                       }"
                       (click)="openWebform(item._id, i)"
                     >
-                      <p style="text-transform: capitalize;">
+                      <p style="text-transform: capitalize">
                         {{ question.value }}
                       </p>
                       <div
@@ -203,19 +203,13 @@
                         fontSize: '15px'
                       }"
                       [containerStyles]="{ padding: '15px 18px' }"
-                      [question]="question.value"
-                      [questionType]="question.type"
-                      [startWithDialogFlow]="true"
-                      [restartFromEvent]="false"
+                      [question]="question"
                       [multiple]="
                         !question.answerLimit || question.answerLimit > 1
                       "
-                      [dialogFlowConfig]="{
-                        dialogId: question._id,
-                        flowId: 'webform-item-' + item._id
-                      }"
+                      [isMediaSelection]="question.answerDefault[0].isMedia"
                       [required]="question?.required"
-                      (onSelector)="selectOption(question, item, true)"
+                      (onSelector)="selectOption(question, item, true, $event)"
                     >
                     </app-closed-question-card>
                   </div>
@@ -225,7 +219,7 @@
                 <ng-container
                   *ngIf="
                     answersByQuestion[question._id] &&
-                    question.answerLimit === 0 &&
+                    (question.answerLimit === 0 || question.answerLimit > 1) &&
                     ['multiple-text', 'multiple'].includes(question.type)
                   "
                 >
@@ -265,19 +259,15 @@
                           fontSize: '15px'
                         }"
                         [containerStyles]="{ padding: '15px 18px' }"
-                        [question]="question.value"
-                        [questionType]="question.type"
                         [multiple]="
                           !question.answerLimit || question.answerLimit > 1
                         "
-                        [dialogFlowConfig]="{
-                          dialogId: question._id,
-                          flowId: 'webform-item-' + item._id
-                        }"
+                        [isMediaSelection]="question.answerDefault[0].isMedia"
+                        [question]="question"
                         [required]="question?.required"
-                        [startWithDialogFlow]="true"
-                        [restartFromEvent]="false"
-                        (onSelector)="selectOption(question, item, true)"
+                        (onSelector)="
+                          selectOption(question, item, true, $event)
+                        "
                       >
                       </app-closed-question-card>
                     </div>
@@ -368,6 +358,36 @@
 
     <section
       class="section"
+    >
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Mensaje de regalo</h2>
+      </div>
+
+      <ng-container *ngIf="postsService.post">
+        <button class="items-container ready" (click)="createOrEditMessage()">
+          <p class="address-name">
+            {{ 
+              postsService.post?.message ? postsService.post?.message :
+              postsService.post?.title ? postsService.post?.title :
+              postsService.post?.to ? 'Para: ' + postsService.post?.to :
+              postsService.post?.from ? 'De parte de: ' + postsService.post?.from :
+              '...'
+            }}
+          </p>
+        </button>
+      </ng-container>
+
+      <button
+        class="items-container column pointer green"
+        *ngIf="!postsService.post"
+        (click)="createOrEditMessage()"
+      >
+        <p class="address-name">Agrega un mensaje de regalo (opcional)</p>
+      </button>
+    </section>
+
+    <section
+      class="section"
       *ngIf="
         headerService.saleflow?.module?.appointment?.isActive &&
         headerService.saleflow?.module?.appointment?.calendar?._id
@@ -397,6 +417,8 @@
         <p class="address-name">Haz una reservación...</p>
       </button>
     </section>
+
+    <br><br><br><br><br><br>
 
     <!-- <section
       class="section"
@@ -524,28 +546,6 @@
       </ng-container>
     </section> -->
   </main>
-
-  <ng-container *ngFor="let item of items">
-    <app-dialog-flow
-      *ngIf="
-        this.webformsByItem[item._id]?.dialogs &&
-        this.webformsByItem[item._id]?.dialogs.length
-      "
-      [dialogFlowId]="'webform-item-' + item._id"
-      [status]="this.webformsByItem[item._id].opened ? 'OPEN' : 'CLOSE'"
-      [dialogs]="this.webformsByItem[item._id].dialogs"
-      [allowSlideNext]="true"
-      (saveConfigRef)="this.webformsByItem[item._id].swiperConfig = $event"
-      (moveToDialogRef)="
-        this.webformsByItem[item._id].dialogFlowFunctions.moveToDialogByIndex =
-          $event
-      "
-      (closingDialogSignal)="
-        webformsByItem[item._id].opened = !webformsByItem[item._id].opened
-      "
-      (openingDialogSignal)="(null)"
-    ></app-dialog-flow>
-  </ng-container>
 
   <!-- <app-sticky-button
     mode="fixed"
