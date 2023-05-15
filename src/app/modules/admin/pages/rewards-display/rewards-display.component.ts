@@ -90,27 +90,37 @@ export class RewardsDisplayComponent implements OnInit {
             options: {
               limit: -1,
               sortBy: 'createdAt:desc',
-            },
-            findBy: {
-              orderStatus: 'to confirm',
-            },
+            }
           },
           true
         );
 
-      this.ordersToConfirm = ordersByMerchant;
+      this.ordersToConfirm = ordersByMerchant.filter(order => order.orderStatus === 'to confirm');
 
-      this.generalOrders.push({
-        img: './assets/images/noimage.png',
-        title: 'Confirma',
-        subtitle: 'pagos de facturas',
-        amount: this.ordersToConfirm.length,
-        notification: this.ordersToConfirm.length > 0 ? true : false,
-        bottomText: `${this.ordersToConfirm.length} de transferencias.`,
-        callback: () => {
-          this.router.navigate([`/admin/order-slides`]);
-        }
-      });
+      this.generalOrders.push(
+        {
+          img: './assets/images/noimage.png',
+          title: 'Confirma',
+          subtitle: 'pagos de facturas',
+          amount: this.ordersToConfirm.length,
+          notification: this.ordersToConfirm.length > 0 ? true : false,
+          bottomText: `${this.ordersToConfirm.length} de transferencias.`,
+          callback: () => {
+            this.router.navigate([`/admin/order-slides`]);
+          }
+        },
+        {
+          img: './assets/images/noimage.png',
+          title: 'Mira',
+          subtitle: 'lo facturado',
+          amount: ordersByMerchant.length,
+          notification: false,
+          bottomText: `${ordersByMerchant.length} facturas.`,
+          callback: () => {
+            this.router.navigate([`/admin/reports/orders`]);
+          }
+        },
+      );
     } catch (error) {
       console.log(error);
     }
@@ -141,6 +151,9 @@ export class RewardsDisplayComponent implements OnInit {
       const ordersToBeDelivered = ordersByMerchant.filter(
         (order) => order.orderStatusDelivery === 'pending'
       );
+      const ordersToBePickedUp = ordersByMerchant.filter(
+        (order) => order.orderStatusDelivery === 'pickup'
+      );
       const ordersDelivered = ordersByMerchant.filter(
         (order) => order.orderStatusDelivery === 'delivered'
       );
@@ -152,7 +165,11 @@ export class RewardsDisplayComponent implements OnInit {
           subtitle: '',
           amount: ordersInPreparation.length,
           callback: () => {
-            // Aquí va la navegación a ver las facturas de este status
+            this.router.navigate([`/admin/order-process/${this._MerchantsService.merchantData._id}`], {
+              queryParams: {
+                progress: "in progress"
+              }
+            });
           }
         },
         {
@@ -161,7 +178,24 @@ export class RewardsDisplayComponent implements OnInit {
           subtitle: '',
           amount: ordersToBeDelivered.length,
           callback: () => {
-            // Aquí va la navegación a ver las facturas de este status
+            this.router.navigate([`/admin/order-process/${this._MerchantsService.merchantData._id}`], {
+              queryParams: {
+                progress: "pending"
+              }
+            });
+          }
+        },
+        {
+          img: './assets/images/noimage.png',
+          title: 'Listo para pickup',
+          subtitle: '',
+          amount: ordersToBePickedUp.length,
+          callback: () => {
+            this.router.navigate([`/admin/order-process/${this._MerchantsService.merchantData._id}`], {
+              queryParams: {
+                progress: "pickup"
+              }
+            });
           }
         },
         {
@@ -170,7 +204,11 @@ export class RewardsDisplayComponent implements OnInit {
           subtitle: '',
           amount: ordersDelivered.length,
           callback: () => {
-            // Aquí va la navegación a ver las facturas de este status
+            this.router.navigate([`/admin/order-process/${this._MerchantsService.merchantData._id}`], {
+              queryParams: {
+                progress: "delivered"
+              }
+            });
           }
         },
       );

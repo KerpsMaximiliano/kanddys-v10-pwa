@@ -344,6 +344,14 @@ export const order = gql`
   }
 `;
 
+export const orderByDateId = gql`
+  query orderByDateId($dateId: String!) {
+    orderByDateId(dateId: $dateId) {
+      ${orderData}
+    }
+  }
+`;
+
 export const orders = gql`
   query orders($pagination: PaginationInput!) {
     orders(pagination: $pagination) {
