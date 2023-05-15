@@ -586,33 +586,6 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrder = async () => {
-    if (!this.logged) {
-      const matDialogRef = this.matDialog.open(LoginDialogComponent, {
-        data: {
-          loginType: 'full',
-          magicLinkData: {
-            redirectionRoute:
-              'ecommerce/' +
-              this.headerService.saleflow.merchant.slug +
-              '/checkout',
-            entity: 'UserAccess',
-          },
-        },
-      });
-      matDialogRef.afterClosed().subscribe(async (value) => {
-        if (!value) return;
-        if (value.user?._id || value.session.user._id) {
-          this.logged = true;
-
-          await this.createOrderFromCheckout();
-          unlockUI();
-          return;
-        }
-      });
-
-      return;
-    }
-
     if (this.missingOrderData) {
       if (
         this.headerService.saleflow?.module?.appointment?.isActive &&
@@ -700,6 +673,20 @@ export class CheckoutComponent implements OnInit {
       localStorage.removeItem('postReceiverNumber');
       delete this.post.joke;
 
+      let hasTheUserAnsweredAnyWebform = false;
+
+      for await (const item of this.items) {
+        if (
+          item.webForms &&
+          item.webForms.length &&
+          this.webformsByItem[item._id]
+        ) {
+          const answer = this.getWebformAnswer(item._id);
+
+          if (answer.response.length > 0) hasTheUserAnsweredAnyWebform = true;
+        }
+      }
+
       if (this.logged) {
         const postResult = (await this.postsService.createPost(this.post))
           ?.createPost?._id;
@@ -738,6 +725,32 @@ export class CheckoutComponent implements OnInit {
         });
 
         return;
+      } else if (
+        !this.logged &&
+        this.areWebformsValid &&
+        hasTheUserAnsweredAnyWebform
+      ) {
+        const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+          data: {
+            loginType: 'full',
+            magicLinkData: {
+              redirectionRoute:
+                'ecommerce/' +
+                this.headerService.saleflow.merchant.slug +
+                '/checkout',
+              entity: 'UserAccess',
+            },
+          },
+        });
+        matDialogRef.afterClosed().subscribe(async (value) => {
+          if (!value) return;
+          if (value.user?._id || value.session.user._id) {
+            this.logged = true;
+
+            await this.finishOrderCreation();
+            unlockUI();
+          }
+        });
       } else {
         unlockUI();
         const postResult = (await this.postsService.createPost(this.post))
@@ -1271,8 +1284,9 @@ export class CheckoutComponent implements OnInit {
           //loads the questions in an object that associates each answer with each question
           for (const question of webform.questions) {
             let multipleResponse =
-              ['multiple', 'multiple-text'].includes(question.type) &&
-              question.answerLimit === 0 || question.answerLimit > 1;
+              (['multiple', 'multiple-text'].includes(question.type) &&
+                question.answerLimit === 0) ||
+              question.answerLimit > 1;
             const isMedia = Boolean(
               question.answerDefault &&
                 question.answerDefault.length &&
@@ -1408,13 +1422,19 @@ export class CheckoutComponent implements OnInit {
         const response: WebformResponseInput = {
           question: question._id,
           isMedia: this.answersByQuestion[question._id].isMedia,
-          value: typeof  this.answersByQuestion[question._id].response === 'number' ? this.answersByQuestion[question._id].response.toString() : this.answersByQuestion[question._id].response,
+          value:
+            typeof this.answersByQuestion[question._id].response === 'number'
+              ? this.answersByQuestion[question._id].response.toString()
+              : this.answersByQuestion[question._id].response,
         };
 
         if (this.answersByQuestion[question._id].responseLabel)
           response.label = this.answersByQuestion[question._id].responseLabel;
 
-        response.isMedia = typeof response.value !== 'number' && response.value && response.value.includes('http');
+        response.isMedia =
+          typeof response.value !== 'number' &&
+          response.value &&
+          response.value.includes('http');
 
         answerInput.response.push(response);
       }
@@ -1434,7 +1454,10 @@ export class CheckoutComponent implements OnInit {
           if (responseInList.responseLabel)
             response.label = responseInList.responseLabel;
 
-          response.isMedia = typeof response.value !== 'number' && response.value && response.value.includes('http');
+          response.isMedia =
+            typeof response.value !== 'number' &&
+            response.value &&
+            response.value.includes('http');
 
           answerInput.response.push(response);
         }
@@ -1671,9 +1694,8 @@ export class CheckoutComponent implements OnInit {
             });
           }
 
-          this._WebformsService.clientResponsesByItem[
-            question._id
-          ].valid = true;
+          this._WebformsService.clientResponsesByItem[question._id].valid =
+            true;
         });
 
         this._WebformsService.clientResponsesByItem[question._id] =
@@ -1691,21 +1713,21 @@ export class CheckoutComponent implements OnInit {
             isMedia: false,
           });
 
-          this._WebformsService.clientResponsesByItem[
-            question._id
-          ].valid = question.required
-            ? this.answersByQuestion[question._id].multipleResponses.length > 0
-            : true;
+          this._WebformsService.clientResponsesByItem[question._id].valid =
+            question.required
+              ? this.answersByQuestion[question._id].multipleResponses.length >
+                0
+              : true;
 
           this._WebformsService.clientResponsesByItem[question._id] =
             this.answersByQuestion[question._id];
         } else {
           this.answersByQuestion[question._id].multipleResponses = [];
-          this._WebformsService.clientResponsesByItem[
-            question._id
-          ].valid = question.required
-            ? this.answersByQuestion[question._id].multipleResponses.length > 0
-            : true;
+          this._WebformsService.clientResponsesByItem[question._id].valid =
+            question.required
+              ? this.answersByQuestion[question._id].multipleResponses.length >
+                0
+              : true;
         }
       }
     }
