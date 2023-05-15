@@ -213,6 +213,7 @@ export class OrderDetailComponent implements OnInit {
       });
       return;
     }
+    this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
     if (this.order.items) {
       for (const itemSubOrder of this.order.items) {
         itemSubOrder.item.media = itemSubOrder.item.images
@@ -672,8 +673,6 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async buyAgain() {
-    if (!this.headerService.saleflow)
-      await this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
     this.headerService.deleteSaleflowOrder();
     this.headerService.order = {
       products: this.order.items.map((item) => {
