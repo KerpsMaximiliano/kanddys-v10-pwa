@@ -29,6 +29,8 @@ import { ReservationInput } from 'src/app/core/models/reservation';
 import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
 import {
+  Answer,
+  AnswerInput,
   Question,
   Webform,
   WebformAnswerInput,
@@ -133,6 +135,8 @@ export class CheckoutComponent implements OnInit {
   areWebformsValid: boolean = false;
   webformPreview: boolean = false;
   URI: string = environment.uri;
+  atStart: 'auth-order-and-create-answers-for-every-item' =
+    'auth-order-and-create-answers-for-every-item';
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -162,8 +166,60 @@ export class CheckoutComponent implements OnInit {
       this.route.snapshot.queryParamMap.get('webformPreview')
     );
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { startOnDialogFlow, addedQr, addedPhotos, addedAIJoke } =
+      const { startOnDialogFlow, addedQr, addedPhotos, addedAIJoke, atStart, orderId, answers } =
         queryParams;
+
+      //Handles magic link cases
+      this.atStart = atStart;
+
+      if(this.atStart === 'auth-order-and-create-answers-for-every-item') {
+        const answersDecoded: Array<{
+          item: string;
+          answer: WebformAnswerInput;
+        }> = JSON.parse(decodeURIComponent(answers));
+        const orderIdDecoded = decodeURIComponent(orderId);
+
+        await this.orderService.authOrder(orderIdDecoded, this.headerService.user._id);
+
+        //Adds the webform answers to the order
+        for(const listIndex of answersDecoded) {
+          const response = await this._WebformsService.createAnswer(
+            listIndex.answer,
+            this.headerService.user._id
+          );
+  
+          if (response) {
+            await this._WebformsService.orderAddAnswer(
+              response._id,
+              orderIdDecoded
+            );
+          }
+        }
+
+        this.appService.events.emit({ type: 'order-done', data: true });
+        if (this.hasPaymentModule) {
+          if (this.postsService.privatePost && !this.logged) {
+            //REEMPLAZAR AQUI
+          }
+          localStorage.removeItem('privatePost');
+          this.postsService.privatePost = false;
+          unlockUI();
+          this.router.navigate([`../payments/${orderIdDecoded}`], {
+            relativeTo: this.route,
+            replaceUrl: true,
+          });
+          return;
+        } else {
+          this.router.navigate([`../../order-detail/${orderIdDecoded}`], {
+            relativeTo: this.route,
+            replaceUrl: true,
+          });
+          return;
+        }
+
+        return;
+      }
+
       if (
         this.postsService.dialogs?.length ||
         this.postsService.temporalDialogs?.length ||
@@ -692,7 +748,7 @@ export class CheckoutComponent implements OnInit {
           ?.createPost?._id;
         this.headerService.order.products[0].post = postResult;
 
-        //await this.createEntityTemplateForOrderPost(postResult);
+        await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       } else if (this.postsService.privatePost) {
         unlockUI();
@@ -719,7 +775,7 @@ export class CheckoutComponent implements OnInit {
               ?.createPost?._id;
             this.headerService.order.products[0].post = postResult;
 
-            //await this.createEntityTemplateForOrderPost(postResult);
+            await this.createEntityTemplateForOrderPost(postResult);
             await this.finishOrderCreation();
           }
         });
@@ -730,6 +786,23 @@ export class CheckoutComponent implements OnInit {
         this.areWebformsValid &&
         hasTheUserAnsweredAnyWebform
       ) {
+        const createdOrder = (
+          await this.orderService.createPreOrder(this.headerService.order)
+        )?.createPreOrder._id;
+
+        if (
+          this.hasDeliveryZone &&
+          this.deliveryZone &&
+          this.deliveryLocation.street
+        ) {
+          await this.orderService.orderSetDeliveryZone(
+            this.deliveryZone.id,
+            createdOrder
+          );
+        }
+
+        const itemAnswers = this.getItemAnswers();
+
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
           data: {
             loginType: 'full',
@@ -739,6 +812,11 @@ export class CheckoutComponent implements OnInit {
                 this.headerService.saleflow.merchant.slug +
                 '/checkout',
               entity: 'UserAccess',
+              redirectionRouteQueryParams: {
+                orderId: createdOrder,
+                answers: JSON.stringify(itemAnswers),
+                atStart: 'auth-order-and-create-answers-for-every-item',
+              },
             },
           },
         });
@@ -758,7 +836,7 @@ export class CheckoutComponent implements OnInit {
 
         this.headerService.order.products[0].post = postResult;
 
-        //await this.createEntityTemplateForOrderPost(postResult);
+        await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       }
     }
@@ -890,6 +968,31 @@ export class CheckoutComponent implements OnInit {
       }
     }
   };
+
+  getItemAnswers(): Array<{
+    item: string;
+    answer: WebformAnswerInput;
+  }> {
+    const answers: Array<{
+      item: string;
+      answer: WebformAnswerInput;
+    }> = [];
+    for (const item of this.items) {
+      if (
+        item.webForms &&
+        item.webForms.length &&
+        this.webformsByItem[item._id]
+      ) {
+        const answer = this.getWebformAnswer(item._id);
+        answers.push({
+          item: item._id,
+          answer: answer,
+        });
+      }
+    }
+
+    return answers;
+  }
 
   createEntityTemplateForOrderPost = async (postId: string) => {
     try {
