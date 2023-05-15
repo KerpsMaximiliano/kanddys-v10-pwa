@@ -1,10 +1,8 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { NgNavigatorShareService } from 'ng-navigator-share';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
@@ -26,7 +24,6 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
-import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
 import { OrderInfoComponent } from 'src/app/shared/dialogs/order-info/order-info.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
@@ -53,7 +50,7 @@ export class OrderSlidesComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
 
-  order: ItemOrder;
+  order: ExtendedItemOrder;
   ordersToConfirm: ExtendedItemOrder[] = [];
 
   deliveryZone: DeliveryZone;
@@ -139,6 +136,7 @@ export class OrderSlidesComponent implements OnInit {
 
   constructor(
     private orderService: OrderService,
+    private route: ActivatedRoute,
     public router: Router,
     public merchantsService: MerchantsService,
     private postsService: PostsService,
@@ -146,8 +144,8 @@ export class OrderSlidesComponent implements OnInit {
     private entityTemplateService: EntityTemplateService,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
-    private _bottomSheet: MatBottomSheet,
-    private ngNavigatorShareService: NgNavigatorShareService,
+    // private _bottomSheet: MatBottomSheet,
+    // private ngNavigatorShareService: NgNavigatorShareService,
     private deliveryzoneService: DeliveryZonesService,
     private reservationsService: ReservationService,
     private dialogService: DialogService,
@@ -172,13 +170,44 @@ export class OrderSlidesComponent implements OnInit {
   async executeProcessesAfterLoading() {
     lockUI();
     this.orderMerchant = this.merchantsService.merchantData;
-    // if (!orderId) {
-    await this.getOrders();
-    this.order =
-      this.ordersToConfirm.length > 0
-        ? (await this.orderService.order(this.ordersToConfirm[0]._id))?.order
-        : null;
-    // } else this.order = (await this.orderService.order(orderId))?.order;
+    const orderId = this.route.snapshot.paramMap.get('orderId');
+    if (orderId) {
+      this.order = await this.orderService.orderByDateId(orderId);
+      this.order.payment = this.order.subtotals.reduce(
+        (prev, curr) => prev + curr.amount,
+        0
+      );
+      if (!this.order.ocr) {
+        const result = await this.paymentLogService.paymentLogsByOrder({
+          findBy: {
+            order: this.order._id,
+          },
+        });
+
+        if (result && result.length > 0 && result[0].paymentMethod === 'azul') {
+          this.order.payedWithAzul = true;
+        }
+      } else {
+        this.order.paymentType =
+          {
+            'bank-transfer': 'transferencia bancaria',
+            azul: 'tarjeta: xx.6547',
+          }[this.order.ocr.platform] || 'Desconocido';
+      }
+      this.order.tagsData = this.userTags.filter((tag) =>
+        this.order.tags.includes(tag._id)
+      );
+      this.order.benefits = await this.orderService.orderBenefits(
+        this.order._id
+      );
+      this.ordersToConfirm = [this.order];
+    } else {
+      await this.getOrders();
+      this.order =
+        this.ordersToConfirm.length > 0
+          ? (await this.orderService.order(this.ordersToConfirm[0]._id))?.order
+          : null;
+    }
 
     if (!this.order) return this.throwErrorScreen();
     if (this.order.merchants[0]._id !== this.merchantsService.merchantData._id)
@@ -197,7 +226,7 @@ export class OrderSlidesComponent implements OnInit {
       }
       this.deliveryImages.push({
         image: this.isPopulated(order)
-          ? order.deliveryData.image
+          ? order.deliveryData?.image
             ? order.deliveryData.image
             : null
           : null,

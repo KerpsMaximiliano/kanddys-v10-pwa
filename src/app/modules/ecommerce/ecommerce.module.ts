@@ -43,6 +43,7 @@ import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.compo
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { WebformClientViewComponent } from 'src/app/shared/components/webform-client-view/webform-client-view.component';
+import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-selector/webform-options-selector.component';
 
 const routes: Routes = [
   {
@@ -123,6 +124,10 @@ const routes: Routes = [
   {
     path: 'article-upload',
     component: ArticleUploadComponent,
+  },
+  {
+    path: 'webform-options-selector',
+    component: WebformOptionsSelectorComponent,
   },
   {
     path: ':merchantSlug',
