@@ -255,6 +255,12 @@
     }
   }
   .footer {
+    position: fixed;
+    width: 100%;
+    max-width: 500px;
+    z-index: 999;
+    bottom: 0;
+
     .inner-wrapper-top {
       padding-top: 3px;
       background: #293628;

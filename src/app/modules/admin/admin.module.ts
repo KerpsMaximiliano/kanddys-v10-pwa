@@ -308,6 +308,10 @@ const routes: Routes = [
         component: NotificationCreatorComponent,
       },
       {
+        path: 'order-slides/:orderId',
+        component: OrderSlidesComponent,
+      },
+      {
         path: 'order-slides',
         component: OrderSlidesComponent,
       },
@@ -417,7 +421,6 @@ const routes: Routes = [
     OrderDataComponent,
     BuyerDataComponent,
     FilterPipeSearchPipe,
-    AutofocusDirective,
     RewardsDisplayComponent,
   ],
   exports: [ArticleCreatorComponent],
