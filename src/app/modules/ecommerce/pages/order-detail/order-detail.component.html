@@ -31,7 +31,7 @@
             </div>
           </mat-panel-title>
           <p class="userId">
-            {{ order.user._id }}
+            {{ order.user.name || order.user.phone || order.user.email }}
           </p>
         </mat-expansion-panel-header>
         <!-- <app-contact-header
