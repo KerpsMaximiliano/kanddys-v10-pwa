@@ -30,6 +30,9 @@
               </p>
             </div>
           </mat-panel-title>
+          <p class="userId">
+            {{ order.user._id }}
+          </p>
         </mat-expansion-panel-header>
         <!-- <app-contact-header
         [link]="link"
@@ -109,13 +112,10 @@
     </div>
   </ng-container> -->
 
-    <section class="top">
+    <section class="top" style="margin-top: 7px">
       <div style="display: grid">
         <div style="display: flex; align-items: center; margin-bottom: 10px">
-          <p
-            *ngIf="order"
-            style="margin-right: auto; text-transform: uppercase"
-          >
+          <p *ngIf="order" style="margin-right: auto">
             Factura <br />
             <!-- <button class="top-name btn" *ngIf="isMerchant">
             {{ order?.items[0].saleflow.headline }}
@@ -127,10 +127,7 @@
           </span>
         </div>
         <div style="display: flex; align-items: center">
-          <p
-            *ngIf="order"
-            style="margin-right: auto; text-transform: uppercase"
-          >
+          <p *ngIf="order" style="margin-right: auto">
             Fecha de Factura <br />
           </p>
           <span>
@@ -171,14 +168,14 @@
 
     <main class="information">
       <section class="section">
-        <h2
-          class="section-title"
+        <p
+          class="section-label"
           [ngClass]="{
             adminView: isMerchant
           }"
         >
           Artículos facturados:
-        </h2>
+        </p>
 
         <ng-container *ngFor="let item of order?.items; index as i">
           <div class="items-container" style="margin-bottom: 4px">
@@ -307,65 +304,19 @@
       </div> -->
       </section>
 
-      <div class="section">
-        <p class="section-label">ENTREGA</p>
-        <div class="questions" *ngIf="deliveryImages?.deliveryZone">
-          <p class="label">Zona de entrega</p>
-          <p class="label gray-out capitalize">
-            {{ deliveryImages?.deliveryZone.zona }}
-          </p>
-        </div>
-        <div class="questions" *ngIf="order.items[0].deliveryLocation">
-          <p class="label">Donde entregaremos?</p>
-          <p class="label gray-out capitalize">
-            <ng-container *ngIf="!order?.items[0]?.deliveryLocation?.street">
-              {{ order?.items[0]?.deliveryLocation?.nickName }}, República
-              Dominicana
-            </ng-container>
-            <ng-container *ngIf="order?.items[0]?.deliveryLocation?.street">
-              {{
-                order?.items[0]?.deliveryLocation?.houseNumber
-                  ? "#" + order?.items[0]?.deliveryLocation?.houseNumber + ", "
-                  : ""
-              }}
-              {{ order?.items[0]?.deliveryLocation?.street }},
-              {{
-                order?.items[0]?.deliveryLocation?.referencePoint
-                  ? order?.items[0]?.deliveryLocation?.referencePoint + ", "
-                  : ""
-              }}
-              {{ order?.items[0]?.deliveryLocation?.city }}, República
-              Dominicana
-            </ng-container>
-          </p>
-        </div>
-        <div class="questions">
-          <p class="label">A quien entregaremos?</p>
-          <p class="label gray-out capitalize">
-            {{ order?.user?.name ? order?.user?.name : order?.user?.phone }}
-          </p>
-        </div>
-        <div class="questions" *ngIf="deliveryImages?.reservation">
-          <p class="label">Cuando entregaremos?</p>
-          <p class="label gray-out capitalize">
-            {{ displayReservation(deliveryImages?.reservation) }}
-          </p>
-        </div>
-      </div>
-
       <section
         class="section"
         style="margin-top: 50px"
         *ngIf="order?.ocr || payedWithAzul"
       >
-        <h2
-          class="section-title"
+        <p
+          class="section-label"
           [ngClass]="{
             adminView: isMerchant
           }"
         >
           Pagos:
-        </h2>
+        </p>
         <ng-container *ngIf="payedWithAzul">
           <div class="items-container space-between" style="margin-top: 4px">
             <p class="total">Subtotal a pagar:</p>
@@ -434,6 +385,52 @@
           </div>
         </div>
       </section>
+
+      <div class="section">
+        <p class="section-label">ENTREGA</p>
+        <div class="questions" *ngIf="deliveryImages?.deliveryZone">
+          <p class="label">Zona de entrega</p>
+          <p class="label gray-out capitalize">
+            {{ deliveryImages?.deliveryZone.zona }}
+          </p>
+        </div>
+        <div class="questions" *ngIf="order.items[0].deliveryLocation">
+          <p class="label">Donde entregaremos?</p>
+          <p class="label gray-out capitalize">
+            <ng-container *ngIf="!order?.items[0]?.deliveryLocation?.street">
+              {{ order?.items[0]?.deliveryLocation?.nickName }}, República
+              Dominicana
+            </ng-container>
+            <ng-container *ngIf="order?.items[0]?.deliveryLocation?.street">
+              {{
+                order?.items[0]?.deliveryLocation?.houseNumber
+                  ? "#" + order?.items[0]?.deliveryLocation?.houseNumber + ", "
+                  : ""
+              }}
+              {{ order?.items[0]?.deliveryLocation?.street }},
+              {{
+                order?.items[0]?.deliveryLocation?.referencePoint
+                  ? order?.items[0]?.deliveryLocation?.referencePoint + ", "
+                  : ""
+              }}
+              {{ order?.items[0]?.deliveryLocation?.city }}, República
+              Dominicana
+            </ng-container>
+          </p>
+        </div>
+        <div class="questions">
+          <p class="label">A quien entregaremos?</p>
+          <p class="label gray-out capitalize">
+            {{ order?.user?.name ? order?.user?.name : order?.user?.phone }}
+          </p>
+        </div>
+        <div class="questions" *ngIf="deliveryImages?.reservation">
+          <p class="label">Cuando entregaremos?</p>
+          <p class="label gray-out capitalize">
+            {{ displayReservation(deliveryImages?.reservation) }}
+          </p>
+        </div>
+      </div>
 
       <!-- <div *ngIf="isMerchant" class="info-card">
       <div class="square" [style]="{ background: infoCardBg }"></div>
@@ -813,7 +810,7 @@
   (click)="goToStore()"
   ></app-sticky-button> -->
 
-    <div class="top-footer" style="margin-bottom: 27.25px">
+    <div class="top-footer">
       <div class="chip-list">
         <div class="chip">
           {{ orderStatus }}
@@ -849,6 +846,7 @@
         class="button top"
         style="border: none; border-radius: 50%; height: 56px; width: 56px"
         (click)="goToWhatsapp()"
+        mat-fab
       >
         <img [src]="env + '/whatsapp_black.svg'" alt="" />
         <!-- <img class="icon" [src]="environment + '/upload.svg'" /> -->

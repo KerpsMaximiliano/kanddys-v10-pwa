@@ -194,6 +194,7 @@ export class OrderDetailComponent implements OnInit {
         const { orderId } = params;
 
         await this.executeProcessesAfterLoading(orderId, notification);
+        //console.log(this.order.user._id);
       });
     });
   }

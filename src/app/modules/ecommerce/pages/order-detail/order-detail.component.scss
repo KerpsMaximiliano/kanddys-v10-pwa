@@ -799,11 +799,14 @@ table {
 }
 
 .section-label {
-  font-family: SfProLight;
-  font-size: 14px;
+  font-family: Inter;
+  font-size: 13px;
   margin: 0;
   margin-top: 32px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  color: #272727;
+  font-weight: 400;
+  text-transform: uppercase;
 }
 .questions {
   margin: 4px 0;
@@ -813,13 +816,16 @@ table {
 
   p {
     margin: 0;
+    font-family: Inter;
+    font-size: 17px;
+    color: #7b7b7b;
+  }
+  .label {
+    font-weight: 700;
   }
   .gray-out {
     margin-top: 10px;
-  }
-  .label {
-    font-family: SfProMedium;
-    font-size: 17px;
+    font-weight: 400;
   }
 }
 .flex {
@@ -870,8 +876,8 @@ table {
   }
 
   &.confirmed {
-    background-color: #6fcf97;
-    color: #293628;
+    background-color: #3b654a;
+    color: #ffffff;
   }
 }
 .fixed-bottom-button {
@@ -898,12 +904,16 @@ table {
 }
 
 .top-footer {
-  background-color: #293628;
+  background-color: #171d16;
   padding: 10px;
   text-align: center;
   color: #fff;
   display: flex;
   align-items: center;
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  bottom: 27.25px;
 }
 
 .chip-list {
@@ -913,13 +923,15 @@ table {
   gap: 8px;
 }
 .chip {
-  font-family: SfProSemiBold;
+  font-family: Inter;
   font-size: 1rem;
-  background-color: #3b5d44;
+  background-color: #3b654a;
   padding: 8px 16px;
   border-radius: 20px;
   white-space: nowrap;
   user-select: none;
+  color: #f6f6f6;
+  font-weight: 700;
 }
 
 .sticky-bar {
@@ -940,6 +952,11 @@ table {
     color: #272727;
     font-family: SfProLight;
     font-size: 15px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
   }
 
   div {
@@ -986,4 +1003,11 @@ table {
       width: 26.56px;
     }
   }
+}
+
+.userId {
+  color: #fff;
+  position: absolute;
+  top: 15px;
+  right: 24px;
 }
