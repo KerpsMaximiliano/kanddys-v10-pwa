@@ -122,29 +122,40 @@ export class LoginDialogComponent implements OnInit {
       return;
     }
     this.userStep = 'code';
+
     if (this.inputType === 'phone' && !this.user) {
       this.newUser = true; // Valor asignado para verificar si hace refresh
       // El número de teléfono ingresado no existe, creando usuario
-      if (this.data?.loginType === 'phone') {
-        // Signup rápido, sin ingresar datos
-        const newUser = await this.authService.signup(
+      if (this.data?.loginType === 'phone' || this.data?.loginType === 'full') {
+        if (this.data?.magicLinkData) {
+          // console.log('si hay magic link data');
+          // Si hay magicLinkData, enviar el magic link con los datos
+          await this.authService.generateMagicLink(
+            emailOrPhone,
+            this.data.magicLinkData.redirectionRoute,
+            this.data.magicLinkData.redirectionRouteId,
+            "NewUser2",
+            this.data.magicLinkData.redirectionRouteQueryParams,
+            this.data.magicLinkData.attachments
+          );
+        }  
+
+        this.matSnackBar.open(
+          `Se ha enviado un link de acceso a tu ${
+            this.inputType === 'phone' ? 'teléfono' : 'correo electrónico'
+          }, chequealo para terminar tu registro`,
+          '',
           {
-            phone: emailOrPhone,
-            ...this.data.extraUserInput,
-          },
-          'none',
-          null,
-          false
+            duration: 5000,
+          }
         );
-        this.matSnackBar.open('Usuario registrado exitosamente', '', {
-          duration: 2000,
-        });
-        this.dialogRef.close({ user: newUser, new: true });
-        return;
+
+        this.myStepper.next();
+        //this.dialogRef.close();
       }
       // console.log('el usuario no existe, ir a ingresar password');
       // SignUp con todos código
-      this.signUp();
+      //this.signUp();
       unlockUI();
       return;
     }
@@ -154,7 +165,7 @@ export class LoginDialogComponent implements OnInit {
         this.myStepper.next();
       }, 50);
       // console.log('El usuario existe pero no está validado');
-      await this.generateOTP(emailOrPhone);
+      //await this.generateOTP(emailOrPhone);
       unlockUI();
 
       return;
@@ -204,30 +215,6 @@ export class LoginDialogComponent implements OnInit {
     const code = this.codeStep.get('code').value;
     let session: Session;
 
-    // El usuario existe
-    if (!this.user.validatedAt) {
-      // console.log('no validado');
-      // El usuario existe pero no está validado
-      session = await this.authService.verify(code, this.user._id);
-      if (!session) {
-        // Código de verificación inválido
-        this.matSnackBar.open('Código inválido', '', {
-          duration: 3000,
-        });
-        this.codeStep.get('code').reset();
-        return;
-      }
-      // Código de verificación válido
-      // Asignando valor a validatedAt para indicar que ya se validó
-      this.user.validatedAt = 'something';
-      if (session) {
-        this.matSnackBar.open('Inicio de sesión exitoso', '', {
-          duration: 3000,
-        });
-        this.dialogRef.close({ session, new: true });
-      }
-      return;
-    }
     if (code.length === 4 || code.length === 6) {
       // Verificando el código de magic link (código de 4 o 6 dígitos)
       // console.log('analizando magic link');
