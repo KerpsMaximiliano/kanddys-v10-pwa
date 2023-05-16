@@ -37,6 +37,7 @@
       <mat-expansion-panel
         (opened)="panelOpenState = true"
         (closed)="panelOpenState = false"
+        disabled
         class="panel"
         [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
       >
@@ -73,13 +74,14 @@
         [bio]="order?.items[0].saleflow.merchant.bio"
         [contact]="headerService.merchantContact"
       ></app-contact-header> -->
-        <div style="padding: 20px; background-color: #272727">
-          <button class="top-whatsapp" (click)="goToWhatsapp()">
-            Confirmar por WhatsApp
-          </button>
-        </div>
       </mat-expansion-panel>
     </mat-accordion>
+
+    <div style="padding: 20px; background-color: #272727">
+      <button class="top-whatsapp" (click)="goToWhatsapp()">
+        Confirmar por WhatsApp
+      </button>
+    </div>
 
     <div style="position: fixed; max-width: 500px; width: 100%; bottom: 100px">
       <a
@@ -214,7 +216,7 @@
           <div
             class="items-container"
             [ngClass]="{
-              withResponses: answersByItem[item._id].response
+              withResponses: answersByItem[item._id]?.response
             }"
           >
             <div class="image-container">
