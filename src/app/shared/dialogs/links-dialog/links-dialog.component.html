@@ -11,6 +11,11 @@
     >
       <button class="subtitle" mat-stroked-button (click)="onClick(i, j)">
         {{ option.title }}
+        <img
+          [src]="env + option.icon"
+          alt=""
+          style="margin-left: auto; filter: brightness(0)"
+        />
       </button>
       <qrcode
         style="visibility: hidden; position: absolute"

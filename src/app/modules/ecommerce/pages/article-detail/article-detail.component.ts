@@ -85,6 +85,7 @@ export class ArticleDetailComponent implements OnInit {
   isItemInCart: boolean = false;
   itemsAmount: string;
   mode: 'preview' | 'image-preview' | 'saleflow';
+  redirectTo: string;
   // signup: 'true' | 'false';
   // createArticle: 'true' | 'false';
   // isCreateArticle: boolean;
@@ -180,6 +181,8 @@ export class ArticleDetailComponent implements OnInit {
       | 'preview'
       | 'image-preview'
       | 'saleflow';
+    this.redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
+    console.log(this.redirectTo);
 
     this.route.params.subscribe(async (routeParams) => {
       await this.verifyIfUserIsLogged();
@@ -280,6 +283,15 @@ export class ArticleDetailComponent implements OnInit {
 
   async getCollection() {
     this.tagData = (await this.tagsService.tag(this.entityId)).tag;
+  }
+
+  goBack() {
+    if (this.redirectTo === 'dashboard') {
+      this.router.navigate([`admin/dashboard`]);
+    }
+    // else {
+    //   this.router.navigate([`../../../store`]);
+    // }
   }
 
   async getItemData() {
