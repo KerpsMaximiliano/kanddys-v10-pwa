@@ -1,0 +1,295 @@
+<header>
+  <div class="steps-header">
+    <img
+      [src]="env + '/arrow-up.svg'"
+      class="back-btn"
+      alt="back"
+      (click)="saveWebform()"
+    />
+    <div class="three-dots">
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
+        alt="more options"
+      />
+    </div>
+  </div>
+</header>
+
+<div class="current-media-shown-indicators" [style]="templateStyles()">
+  <ng-container>
+    <div
+      class="indicator"
+      [ngClass]="{
+        active: i === currentStepIndex
+      }"
+      *ngFor="let step of steps; let i = index"
+    ></div>
+  </ng-container>
+</div>
+
+<main>
+  <swiper
+    [config]="swiperConfig"
+    #questionsSwiper
+    (slideChange)="updateCurrentStepData($event)"
+  >
+    <div
+      class="step"
+      *ngFor="let step of steps; index as stepIndex"
+      [formGroup]="step.fields"
+    >
+      <div class="step-inner-container">
+        <div class="question-title">
+          {{ step.question.value }}
+        </div>
+
+        <ng-container
+          *ngIf="
+            step.question.type === 'multiple' ||
+            step.question.type === 'multiple-text'
+          "
+          [formArrayName]="'options'"
+        >
+          <ng-container *ngIf="!step.fields.controls['areOptionsMedia'].value">
+            <div class="list-introduction">
+              Selecciona una opción para continuar
+            </div>
+
+            <ng-container *ngIf="step.question.type === 'multiple'">
+              <ul class="text-options-list" formArrayName="options">
+                >
+                <li
+                  *ngFor="let option of options?.controls; let i = index"
+                  [ngClass]="{
+                    selected: option.value.selected
+                  }"
+                  (click)="selectOptionFromList(stepIndex, i)"
+                >
+                  {{ option.value.text }}
+                </li>
+              </ul>
+            </ng-container>
+
+            <ng-container *ngIf="step.question.type === 'multiple-text'">
+              <ul class="text-options-list" formArrayName="options">
+                >
+                <ng-container
+                  *ngFor="let option of options?.controls; let i = index"
+                >
+                  <li
+                    *ngIf="i !== options.controls.length - 1"
+                    [ngClass]="{
+                      selected: option.value.selected
+                    }"
+                    (click)="selectOptionFromList(stepIndex, i)"
+                  >
+                    {{ option.value.text }}
+                  </li>
+                </ng-container>
+              </ul>
+
+              <ng-container
+                *ngIf="options"
+                [formGroup]="
+                  getFormGroup(options.controls[options.controls.length - 1])
+                "
+              >
+                <label
+                  class="text-response-label"
+                  [for]="stepIndex + '-another-response'"
+                >
+                  {{ textResponseLabels["freeResponse"] }}
+                </label>
+
+                <input
+                  type="text"
+                  [id]="stepIndex + '-another-response'"
+                  class="text-response-input"
+                  placeholder="Escribe tu respuesta aquí"
+                  formControlName="text"
+                />
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="step.fields.controls['areOptionsMedia'].value">
+            <div class="media-options-grid">
+              <ng-container
+                *ngFor="let option of options?.controls; let i = index"
+              >
+                <div
+                  class="media-option"
+                  *ngIf="option.value.fileInput"
+                  [ngStyle]="{
+                    backgroundImage: 'url(' + option.value.fileInput + ')'
+                  }"
+                  (click)="goToDetail(i)"
+                >
+                  <div
+                    *ngIf="option.value.selected"
+                    class="select-mode-radio-button"
+                    [ngClass]="{ radioButtonClicked: option.value.selected }"
+                  >
+                    <div class="icon">
+                      <img [src]="env + '/checkmark.svg'" alt="" />
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+
+            <ng-container
+              *ngIf="step.question.type === 'multiple-text' && options"
+              [formGroup]="
+                getFormGroup(options?.controls[options.controls.length - 1])
+              "
+            >
+              <label
+                class="text-response-label"
+                [for]="stepIndex + '-another-response'"
+              >
+                {{ textResponseLabels["freeResponse"] }}
+              </label>
+
+              <input
+                type="text"
+                [id]="stepIndex + '-another-response'"
+                class="text-response-input"
+                placeholder="Escribe tu respuesta aquí"
+                formControlName="text"
+              />
+            </ng-container>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="step.question.type === 'text'">
+          <ng-container
+            *ngIf="
+              ['default', 'max12', 'min12'].includes(
+                step.question.answerTextType
+              )
+            "
+          >
+            <label
+              class="text-response-label"
+              [for]="stepIndex + '-text-response'"
+            >
+              {{ textResponseLabels["text"] }}
+            </label>
+
+            <input
+              type="text"
+              [id]="stepIndex + '-text-response'"
+              class="text-response-input"
+              placeholder="Escribe tu respuesta aquí"
+              [formControlName]="'textResponse'"
+            />
+          </ng-container>
+
+          <ng-container *ngIf="step.question.answerTextType === 'number'">
+            <label
+              class="text-response-label"
+              [for]="stepIndex + '-text-response'"
+            >
+              {{ textResponseLabels["text"] }}
+            </label>
+
+            <input
+              type="number"
+              [id]="stepIndex + '-text-response'"
+              class="text-response-input"
+              placeholder="Escribe un número aquí"
+              (keypress)="onNumberInputPress($event)"
+              [formControlName]="'textResponse'"
+            />
+          </ng-container>
+
+          <ng-container *ngIf="step.question.answerTextType === 'phone'">
+            <div class="phone-input-wrapper">
+              <label
+                class="text-response-label no-margin"
+                [for]="stepIndex + '-text-response'"
+              >
+                {{ textResponseLabels["phone"] }}
+              </label>
+
+              <ngx-intl-tel-input
+                [cssClass]="'customPhone'"
+                [enableAutoCountrySelect]="true"
+                [enablePlaceholder]="true"
+                [searchCountryFlag]="true"
+                [selectFirstCountry]="false"
+                [preferredCountries]="preferredCountries"
+                [selectedCountryISO]="CountryISO"
+                maxLength="13"
+                minlength="10"
+                [phoneValidation]="true"
+                [separateDialCode]="true"
+                [customPlaceholder]="'(000) 000-0000'"
+                [numberFormat]="PhoneNumberFormat.International"
+                tabindex="1"
+                formControlName="textResponse"
+                tabindex="-1"
+              ></ngx-intl-tel-input>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="step.question.answerTextType === 'email'">
+            <label
+              class="text-response-label"
+              [for]="stepIndex + '-text-response'"
+            >
+              {{ textResponseLabels["email"] }}
+            </label>
+
+            <input
+              type="email"
+              [id]="stepIndex + '-text-response'"
+              class="text-response-input"
+              placeholder="Escribe tu respuesta aquí"
+              [formControlName]="'textResponse'"
+            />
+          </ng-container>
+
+          <ng-container *ngIf="step.question.answerTextType === 'name'">
+            <div class="fullname-wrapper">
+              <div class="column">
+                <label
+                  class="text-response-label no-margin"
+                  [for]="stepIndex + '-text-response'"
+                >
+                  {{ textResponseLabels["name"] }}
+                </label>
+
+                <input
+                  type="text"
+                  [id]="stepIndex + '-text-response-name'"
+                  class="name-lastname-input"
+                  placeholder="Escribe tu nombre.."
+                  [formControlName]="'name'"
+                />
+              </div>
+              <div class="column">
+                <label
+                  class="text-response-label no-margin"
+                  [for]="stepIndex + '-text-response'"
+                >
+                  {{ textResponseLabels["lastname"] }}
+                </label>
+
+                <input
+                  type="text"
+                  [id]="stepIndex + '-text-response-lastname'"
+                  class="name-lastname-input"
+                  placeholder="Escribe tu apellido.."
+                  [formControlName]="'lastname'"
+                />
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </swiper>
+
+  <button class="save-button" (click)="saveWebform()">Salvar</button>
+</main>

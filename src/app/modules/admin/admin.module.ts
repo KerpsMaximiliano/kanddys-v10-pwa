@@ -30,7 +30,7 @@ import { OrderListComponent } from './pages/order-list/order-list.component';
 import { TextOrImageComponent } from 'src/app/shared/components/text-or-image/text-or-image.component';
 import { ItemWebformPreviewComponent } from './pages/item-webform-preview/item-webform-preview.component';
 import { WebformOptionsSelectorComponent } from './pages/webform-options-selector/webform-options-selector.component';
-import { FormResponsesComponent } from './pages/form-responses/form-responses.component';
+//import { FormResponsesComponent } from './pages/form-responses/form-responses.component';
 import { OpenFormResponsesComponent } from './pages/open-form-responses/open-form-responses.component';
 import { WebformsEditorComponent } from './pages/webforms-editor/webforms-editor.component';
 import { BenefitsComponent } from './pages/benefits/benefits.component';
@@ -54,6 +54,9 @@ import { ReportsComponent } from './pages/reports/reports.component';
 import { FilterPipeSearchPipe } from 'src/app/core/pipes/filter-pipe-search.pipe';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
+import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
+import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -203,9 +206,18 @@ const routes: Routes = [
         path: 'webform-preview/:itemId',
         component: ItemWebformPreviewComponent,
       },
+      /*
       {
         path: 'webform-responses/:formId/:itemId',
         component: FormResponsesComponent,
+      },*/
+      {
+        path: 'webform-responses/:itemId',
+        component: FormResponsesComponent,
+      },
+      {
+        path: 'webform-responses-filters/:itemId/:questionId',
+        component: FormResponsesByQuestionComponent,
       },
       {
         path: 'webform-open-responses/:formId',
@@ -393,7 +405,6 @@ const routes: Routes = [
     OrderListComponent,
     ItemWebformPreviewComponent,
     WebformOptionsSelectorComponent,
-    FormResponsesComponent,
     OpenFormResponsesComponent,
     WebformsEditorComponent,
     BenefitsComponent,
