@@ -72,7 +72,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     spaceBetween: 2,
   };
 
-  layout: 'simple-card' | 'description-card';
+  layout: 'simple-card' | 'description-card' | 'image-full-width';
   items: Item[] = [];
   allItems: Item[] = [];
   recentlySoldItems: Item[] = [];

@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ReportsComponent implements OnInit {
   env: string = environment.assetsUrl;
+  openNavigation = false;
 
   constructor() {}
 

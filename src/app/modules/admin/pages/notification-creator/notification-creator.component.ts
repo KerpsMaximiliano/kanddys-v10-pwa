@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { formatPhoneNumber } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Notification } from 'src/app/core/models/notification';
 import { OrderStatusDeliveryType } from 'src/app/core/models/order';
@@ -26,9 +27,10 @@ export class NotificationCreatorComponent implements OnInit {
   notifications: Notification[] = [];
 
   notificationForm = this.formBuilder.group({
-    name: [null, [Validators.required, Validators.pattern(/[\S]/)]],
+    // name: [null, [Validators.required, Validators.pattern(/[\S]/)]],
     message: [null, [Validators.required, Validators.pattern(/[\S]/)]],
   });
+  merchantNumber: string;
 
   // order: ItemOrder;
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
@@ -62,6 +64,9 @@ export class NotificationCreatorComponent implements OnInit {
       if (typeof orderId === 'undefined') this.orderId = null;
       if (typeof status === 'undefined') this.status = null;
 
+      this.merchantNumber = formatPhoneNumber(
+        this.merchantsService.merchantData.owner.phone
+      );
       // await this.getMerchant();
       const notificationId = this.route.snapshot.paramMap.get('notificationId');
       if (notificationId) await this.getNotification(notificationId);
@@ -74,14 +79,14 @@ export class NotificationCreatorComponent implements OnInit {
   }
 
   async save() {
-    const { name, message } = this.notificationForm.value;
+    const { message } = this.notificationForm.value;
     const replaced_message = this.replaceWord(message, 'comprador', '[name]');
     try {
       lockUI();
       if (!this.notification) {
         const notification = await this.notificationsService.createNotification(
           {
-            name,
+            // name,
             message: replaced_message,
             entity: 'order',
             merchant: this.merchantsService.merchantData._id,
@@ -107,7 +112,7 @@ export class NotificationCreatorComponent implements OnInit {
         });
       } else {
         await this.notificationsService.updateNotification(
-          { name, message: replaced_message },
+          { message: replaced_message },
           this.notification._id
         );
 
@@ -244,7 +249,7 @@ export class NotificationCreatorComponent implements OnInit {
   }
 
   async returnEvent() {
-    if (this.notificationForm.touched) {
+    if (this.notificationForm.dirty) {
       if (this.notificationForm.invalid) return;
       await this.save();
     }
@@ -272,27 +277,27 @@ export class NotificationCreatorComponent implements OnInit {
     return cadena.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  mouseDown: boolean;
-  startX: number;
-  scrollLeft: number;
+  // mouseDown: boolean;
+  // startX: number;
+  // scrollLeft: number;
 
-  stopDragging() {
-    this.mouseDown = false;
-  }
+  // stopDragging() {
+  //   this.mouseDown = false;
+  // }
 
-  startDragging(e: MouseEvent, el: HTMLDivElement) {
-    this.mouseDown = true;
-    this.startX = e.pageX - el.offsetLeft;
-    this.scrollLeft = el.scrollLeft;
-  }
+  // startDragging(e: MouseEvent, el: HTMLDivElement) {
+  //   this.mouseDown = true;
+  //   this.startX = e.pageX - el.offsetLeft;
+  //   this.scrollLeft = el.scrollLeft;
+  // }
 
-  moveEvent(e: MouseEvent, el: HTMLDivElement) {
-    e.preventDefault();
-    if (!this.mouseDown) {
-      return;
-    }
-    const x = e.pageX - el.offsetLeft;
-    const scroll = x - this.startX;
-    el.scrollLeft = this.scrollLeft - scroll;
-  }
+  // moveEvent(e: MouseEvent, el: HTMLDivElement) {
+  //   e.preventDefault();
+  //   if (!this.mouseDown) {
+  //     return;
+  //   }
+  //   const x = e.pageX - el.offsetLeft;
+  //   const scroll = x - this.startX;
+  //   el.scrollLeft = this.scrollLeft - scroll;
+  // }
 }

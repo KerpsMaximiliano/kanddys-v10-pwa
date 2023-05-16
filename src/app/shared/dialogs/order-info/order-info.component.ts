@@ -17,6 +17,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
   templateUrl: './order-info.component.html',
   styleUrls: ['./order-info.component.scss'],
 })
+// No se está usando
 export class OrderInfoComponent implements OnInit {
   @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
 

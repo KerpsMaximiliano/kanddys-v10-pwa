@@ -1,0 +1,68 @@
+.nav-container {
+  padding: 20px 10px;
+}
+nav {
+  margin-bottom: 24px;
+  ul {
+    margin: 0;
+    padding: 0;
+
+    li {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      &:not(:first-child) {
+        margin-top: 8px;
+      }
+
+      a {
+        color: #c4c5c3;
+        font-family: SfProLight;
+        font-size: 18px;
+      }
+
+      .icon {
+        visibility: hidden;
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+      }
+
+      &.active {
+        color: #87cd9b;
+
+        a {
+          color: #87cd9b;
+        }
+
+        .icon {
+          visibility: visible;
+          // color: #87cd9b;
+        }
+      }
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: #c4c5c3;
+  padding: 0 12px;
+
+  button {
+    font-family: SfProLight;
+  }
+}
+.sidenav {
+  background-color: #181d17;
+  width: 80%;
+}
+.close {
+  margin: 0;
+  text-align: right;
+  color: #c4c5c3;
+}

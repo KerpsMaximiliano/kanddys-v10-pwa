@@ -82,10 +82,17 @@ export const answerPaginate = gql`
           value
           label
           isMedia
+          createdAt
         }
         createdAt
         user {
           _id
+          image
+          name
+        }
+        merchant {
+          _id
+          image
           name
         }
       }
@@ -101,9 +108,29 @@ export const createWebform = gql`
   }
 `;
 
+export const updateWebform = gql`
+  mutation updateWebform($input: WebformInput!, $id: ObjectID!) {
+    updateWebform(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
+
 export const itemAddWebForm = gql`
   mutation itemAddWebForm($input: ItemWebFormInput!, $id: ObjectID!) {
     itemAddWebForm(input: $input, id: $id) {
+      _id
+      webForms {
+        reference
+        active
+      }
+    }
+  }
+`;
+
+export const itemRemoveWebForm = gql`
+  mutation itemRemoveWebForm($webformId: ObjectID!, $id: ObjectID!) {
+    itemRemoveWebForm(webformId: $webformId, id: $id) {
       _id
       webForms {
         reference
@@ -138,8 +165,8 @@ export const webformRemoveQuestion = gql`
 `;
 
 export const createAnswer = gql`
-  mutation createAnswer($input: AnswerInput!) {
-    createAnswer(input: $input) {
+  mutation createAnswer($input: AnswerInput!, $userId: ObjectID!) {
+    createAnswer(input: $input, userId: $userId) {
       _id
       response {
         value
@@ -232,5 +259,20 @@ export const questionPaginate = gql`
       active
       answerMedia
     }
+  }
+`;
+
+export const answersInWebformGroupedByUser = gql`
+  query answersInWebformGroupedByUser($webformId: ObjectID!) {
+    answersInWebformGroupedByUser(webformId: $webformId)
+  }
+`;
+
+export const answerByQuestion = gql`
+  query answerByQuestion(
+    $questionId: ObjectID!,
+    $webformId: ObjectID!
+  ) {
+    answerByQuestion(questionId: $questionId, webformId: $webformId)
   }
 `;

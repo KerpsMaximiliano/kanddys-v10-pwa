@@ -45,6 +45,9 @@ import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { Reservation } from 'src/app/core/models/reservation';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ContactService } from 'src/app/core/services/contact.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
 
 interface Image {
   src: string;
@@ -141,6 +144,7 @@ export class OrderDetailComponent implements OnInit {
   webformsByItem: Record<string, Webform> = {};
   answersByItem: Record<string, WebformAnswer> = {};
   from: string;
+  navigationWithMessage: string;
   deliveryImages: {
     image?: string;
     deliveryZone?: DeliveryZone;
@@ -149,6 +153,7 @@ export class OrderDetailComponent implements OnInit {
   link: string;
   chatLink: string;
   panelOpenState = false;
+  openNavigation = false;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -172,7 +177,9 @@ export class OrderDetailComponent implements OnInit {
     public dialog: MatDialog,
     private webformsService: WebformsService,
     private deliveryzoneService: DeliveryZonesService,
-    public _DomSanitizer: DomSanitizer
+    public _DomSanitizer: DomSanitizer,
+    private contactService: ContactService,
+    private _bottomSheet: MatBottomSheet
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -182,10 +189,16 @@ export class OrderDetailComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { notify: notification, redirectTo, from } = queryParams;
+      const {
+        notify: notification,
+        redirectTo,
+        from,
+        navigationWithMessage,
+      } = queryParams;
       this.notify = Boolean(notification);
       this.redirectTo = redirectTo;
       this.from = from;
+      this.navigationWithMessage = navigationWithMessage;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
 
@@ -193,6 +206,7 @@ export class OrderDetailComponent implements OnInit {
         const { orderId } = params;
 
         await this.executeProcessesAfterLoading(orderId, notification);
+        //console.log(this.order.user._id);
       });
     });
   }
@@ -200,6 +214,8 @@ export class OrderDetailComponent implements OnInit {
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
+
+    console.log(this.order);
 
     await this.getAnswersForEachItem();
 
@@ -209,6 +225,7 @@ export class OrderDetailComponent implements OnInit {
       });
       return;
     }
+    this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
     if (this.order.items) {
       for (const itemSubOrder of this.order.items) {
         itemSubOrder.item.media = itemSubOrder.item.images
@@ -283,12 +300,18 @@ export class OrderDetailComponent implements OnInit {
         minute: '2-digit',
       })
       .toLocaleUpperCase();
-    this.headerService.user = await this.authService.me();
-    await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
     if (!this.headerService.merchantContact) {
-      this.headerService.getMerchantContact(
-        this.order.items[0].saleflow.merchant.owner._id
-      );
+      this.headerService.merchantContact = (
+        await this.contactService.contacts({
+          findBy: {
+            user: this.order.items[0].saleflow.merchant.owner._id,
+          },
+          options: {
+            limit: 1,
+            sortBy: 'createdAt:desc',
+          },
+        })
+      )[0];
     }
 
     if (this.order.items[0].post) {
@@ -358,10 +381,14 @@ export class OrderDetailComponent implements OnInit {
       deliveryZone = await this.deliveryzoneService.deliveryZone(
         this.order.deliveryZone
       );
+    }
+
+    if (this.order.items[0].reservation) {
       reservation = await this.reservationService.getReservation(
         this.order.items[0].reservation._id
       );
     }
+
     this.deliveryImages = {
       image: this.order.deliveryData?.image
         ? this.order.deliveryData.image
@@ -369,6 +396,10 @@ export class OrderDetailComponent implements OnInit {
       deliveryZone: deliveryZone ? deliveryZone : null,
       reservation: reservation ? reservation : null,
     };
+
+    console.log(reservation);
+    console.log(this.deliveryImages);
+
     let address = '';
     const location = this.order.items[0].deliveryLocation;
     if (location) {
@@ -465,52 +496,39 @@ export class OrderDetailComponent implements OnInit {
     unlockUI();
   }
 
-  async notificationClicked() {
-    this.notify = false;
-    this.router.navigate([], {
-      relativeTo: this.route,
-    });
-    const tags =
-      (await this.tagsService.tagsByUser({
-        findBy: {
-          entity: 'order',
-        },
-        options: {
-          limit: -1,
-        },
-      })) || [];
-    for (const tag of tags) {
-      this.selectedTags[tag._id] = false;
-      if (this.order.tags.includes(tag._id)) {
-        this.selectedTags[tag._id] = true;
-      }
-    }
-    this.tags = tags;
-    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+  goToWhatsapp() {
+    window.open(this.messageLink, '_blank');
   }
+
+  // async notificationClicked() {
+  //   this.notify = false;
+  //   this.router.navigate([], {
+  //     relativeTo: this.route,
+  //   });
+  //   const tags =
+  //     (await this.tagsService.tagsByUser({
+  //       findBy: {
+  //         entity: 'order',
+  //       },
+  //       options: {
+  //         limit: -1,
+  //       },
+  //     })) || [];
+  //   for (const tag of tags) {
+  //     this.selectedTags[tag._id] = false;
+  //     if (this.order.tags.includes(tag._id)) {
+  //       this.selectedTags[tag._id] = true;
+  //     }
+  //   }
+  //   this.tags = tags;
+  //   this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+  // }
 
   openImageModal(imageSourceURL: string) {
     this.dialogService.open(ImageViewComponent, {
       type: 'fullscreen-translucent',
       props: {
         imageSourceURL,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
-  openLogoutDialog() {
-    this.dialogService.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        alternate: true,
-        buttonText: 'Cerrar Sesión',
-        buttonCallback: async () => {
-          await this.authService.signoutThree();
-          // this.changeColor = null;
-          this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
-        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -536,7 +554,9 @@ export class OrderDetailComponent implements OnInit {
       const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
         const queryStringElements = queryString.split('=');
 
-        return { [queryStringElements[0]]: queryStringElements[1] };
+        return {
+          [queryStringElements[0]]: queryStringElements[1].replace('%20', ' '),
+        };
       });
 
       redirectURL.url = redirectionURL;
@@ -675,8 +695,6 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async buyAgain() {
-    if (!this.headerService.saleflow)
-      await this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
     this.headerService.deleteSaleflowOrder();
     this.headerService.order = {
       products: this.order.items.map((item) => {
@@ -730,11 +748,11 @@ export class OrderDetailComponent implements OnInit {
     );
   }
 
-  async isMerchantOwner(merchant: string) {
-    this.orderMerchant = await this.merchantsService.merchantDefault();
-    this.isMerchant = merchant === this.orderMerchant?._id;
-    this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
-  }
+  // async isMerchantOwner(merchant: string) {
+  //   this.orderMerchant = await this.merchantsService.merchantDefault();
+  //   this.isMerchant = merchant === this.orderMerchant?._id;
+  //   this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
+  // }
 
   createTag() {
     let dialogRef = this.dialog.open(CreateTagComponent, {
@@ -797,7 +815,7 @@ export class OrderDetailComponent implements OnInit {
       const queryParamList = url[1].split('&');
       for (const param in queryParamList) {
         const keyValue = queryParamList[param].split('=');
-        queryParams[keyValue[0]] = keyValue[1];
+        queryParams[keyValue[0]] = keyValue[1].replace('%20', ' ');
       }
     }
     this.router.navigate([this.redirectTo], {
@@ -872,7 +890,6 @@ export class OrderDetailComponent implements OnInit {
       await this.webformsService.answerByOrder(this.order._id);
 
     console.log('AnswersByOrder', answers);
-
     if (answers.length) {
       const webformsIds = [];
       for (const item of this.order.items) {
@@ -951,5 +968,14 @@ export class OrderDetailComponent implements OnInit {
         }
       }
     }
+  }
+
+  openContactInfo() {
+    this._bottomSheet.open(ContactHeaderComponent, {
+      data: {
+        bio: this.order?.items[0].saleflow.merchant.bio,
+        contact: this.headerService.merchantContact,
+      },
+    });
   }
 }

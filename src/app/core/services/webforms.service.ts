@@ -2,15 +2,19 @@ import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   answerByOrder,
+  answerByQuestion,
   answerFrequent,
   answerPaginate,
+  answersInWebformGroupedByUser,
   createAnswer,
   createWebform,
   itemAddWebForm,
+  itemRemoveWebForm,
   itemUpdateWebForm,
   orderAddAnswer,
   questionAddAnswerDefault,
   questionPaginate,
+  updateWebform,
   webform,
   webformAddQuestion,
   webformByMerchant,
@@ -21,8 +25,10 @@ import {
 import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import {
+  Answer,
   AnswerDefaultInput,
   AnswerInput,
+  AnswersGroupedByUser,
   Question,
   QuestionInput,
   Webform,
@@ -31,6 +37,43 @@ import {
   WebformInput,
 } from '../models/webform';
 import { EmbeddedComponentWithId } from '../types/multistep-form';
+import { FormGroup } from '@angular/forms';
+import { User } from '../models/user';
+
+export type WebformCreatorStepsNames =
+  | 'ADMIN_NOTE'
+  | 'INTRODUCTION'
+  | 'QUESTION_EDITION'
+  | 'FILES_UPLOAD';
+
+enum WebformMultipleChoicesType {
+  'JUST-TEXT' = 1,
+  'JUST-IMAGES',
+  'IMAGES-AND-TEXT',
+}
+
+export interface ResponsesByQuestion {
+  question: Question;
+  response: any;
+  responseLabel?: string;
+  phoneTemporalData?: any;
+  allOptions?: Array<{ text: string; fileInput: string; selected: boolean }>;
+  multipleResponses?: Array<{
+    response: any;
+    responseLabel?: string;
+    isMedia?: boolean;
+    isProvidedByUser?: boolean;
+  }>;
+  isMedia?: boolean;
+  isMultipleResponse?: boolean;
+  multipleSelection?: boolean;
+  selectedIndex?: number;
+  selectedImageIndex?: number;
+  selectedIndexes?: Array<number>;
+  selectedImageIndexes?: Array<number>;
+  multipleChoicesType?: WebformMultipleChoicesType;
+  valid?: boolean;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -42,12 +85,20 @@ export class WebformsService {
   currentEditingQuestion: Question = null;
   currentEditingQuestionChoices: AnswerDefaultInput[] = null;
   webformQuestionsRoute: string;
+  formCreationData: {
+    currentStep: WebformCreatorStepsNames;
+    steps: Array<{
+      name: string;
+      fields: FormGroup;
+    }>;
+    currentStepIndex: number;
+  } = null;
+  clientResponsesByItem: Record<string, ResponsesByQuestion> = {};
+  selectedQuestion: { questionId: string; question: Question; required: boolean; multiple: boolean } = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 
-  async createWebform(
-    input: WebformInput,
-  ): Promise<Webform> {
+  async createWebform(input: WebformInput): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: createWebform,
       variables: { input },
@@ -55,16 +106,35 @@ export class WebformsService {
     return result?.createWebform;
   }
 
-  async itemAddWebForm(
-    idItem: string,
-    idWebform: string 
-  ): Promise<Webform> {
+  async updateWebform(id: string, input: WebformInput): Promise<Webform> {
+    const result = await this.graphql.mutate({
+      mutation: updateWebform,
+      variables: { id, input },
+    });
+    return result?.updateWebform;
+  }
+
+  async itemAddWebForm(idItem: string, idWebform: string): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: itemAddWebForm,
-      variables: { id: idItem, input: {
-        active: true,
-        reference: idWebform
-      } },
+      variables: {
+        id: idItem,
+        input: {
+          active: true,
+          reference: idWebform,
+        },
+      },
+    });
+    return result?.itemAddWebForm;
+  }
+
+  async itemRemoveWebForm(id: string, webformId: string): Promise<Webform> {
+    const result = await this.graphql.mutate({
+      mutation: itemRemoveWebForm,
+      variables: {
+        id,
+        webformId,
+      },
     });
     return result?.itemAddWebForm;
   }
@@ -95,7 +165,7 @@ export class WebformsService {
   async questionAddAnswerDefault(
     input: AnswerDefaultInput[],
     questionId: string,
-    webformId: string,
+    webformId: string
   ): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: questionAddAnswerDefault,
@@ -166,10 +236,13 @@ export class WebformsService {
     }
   }
 
-  async createAnswer(input: WebformAnswerInput): Promise<WebformAnswer> {
+  async createAnswer(
+    input: WebformAnswerInput,
+    userId: string
+  ): Promise<WebformAnswer> {
     const result = await this.graphql.mutate({
       mutation: createAnswer,
-      variables: { input },
+      variables: { input, userId },
     });
     return result?.createAnswer;
   }
@@ -198,7 +271,11 @@ export class WebformsService {
     return result?.orderAddAnswer;
   }
 
-  async webformUpdateQuestion(input: QuestionInput, questionId: string, id: string): Promise<Question> {
+  async webformUpdateQuestion(
+    input: QuestionInput,
+    questionId: string,
+    id: string
+  ): Promise<Question> {
     const result = await this.graphql.mutate({
       mutation: webformUpdateQuestion,
       variables: { input, questionId, id },
@@ -207,7 +284,11 @@ export class WebformsService {
     return result?.webformUpdateQuestion;
   }
 
-  async itemUpdateWebForm(input: any, webformId: string, id: string): Promise<any> {
+  async itemUpdateWebForm(
+    input: any,
+    webformId: string,
+    id: string
+  ): Promise<any> {
     const result = await this.graphql.mutate({
       mutation: itemUpdateWebForm,
       variables: { input, webformId, id },
@@ -217,7 +298,7 @@ export class WebformsService {
 
   async webforms(input: PaginationInput): Promise<Array<Webform>> {
     try {
-      const response  = await this.graphql.query({
+      const response = await this.graphql.query({
         query: webforms,
         variables: { input },
         fetchPolicy: 'no-cache',
@@ -233,7 +314,7 @@ export class WebformsService {
 
   async questionPaginate(paginate: PaginationInput): Promise<Array<Question>> {
     try {
-      const response  = await this.graphql.query({
+      const response = await this.graphql.query({
         query: questionPaginate,
         variables: { paginate },
         fetchPolicy: 'no-cache',
@@ -242,6 +323,40 @@ export class WebformsService {
       if (!response || response?.errors) return undefined;
 
       return response?.questionPaginate;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async answersInWebformGroupedByUser(
+    webformId: string
+  ): Promise<Array<AnswersGroupedByUser>> {
+    try {
+      const response = await this.graphql.query({
+        query: answersInWebformGroupedByUser,
+        variables: { webformId },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!response || response?.errors) return undefined;
+
+      return response?.answersInWebformGroupedByUser;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async answerByQuestion(questionId: string, webformId: string): Promise<any> {
+    try {
+      const response = await this.graphql.query({
+        query: answerByQuestion,
+        variables: { questionId, webformId },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!response || response?.errors) return undefined;
+
+      return response?.answerByQuestion;
     } catch (error) {
       console.log(error);
     }

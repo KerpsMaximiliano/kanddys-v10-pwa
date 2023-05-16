@@ -1,21 +1,16 @@
-<div class="container">
+<div class="container" style="background-color: #181d17">
   <header>
     <div>
-      <button mat-icon-button>
-        <img
-          [src]="env + '/arrow-double-up-black.svg'"
-          alt="back"
-          (click)="returnEvent()"
-        />
+      <button mat-icon-button (click)="returnEvent()">
+        <mat-icon style="color: #fff">keyboard_arrow_left</mat-icon>
       </button>
-      <p>Progresos</p>
     </div>
     <!-- <button class="add" mat-icon-button>+</button> -->
     <!-- Comentado porque no hace nada -->
   </header>
 
   <div class="content">
-    <div
+    <!-- <div
       class="chip-list"
       #elemt
       (mousedown)="startDragging($event, elemt)"
@@ -31,23 +26,25 @@
       >
         {{ orderDeliveryStatus(stts) }}
       </button>
-    </div>
+    </div> -->
+    <h4>Mensaje al comprador desde {{ merchantNumber }}</h4>
     <form [formGroup]="notificationForm">
       <!-- <p class="label"></p> -->
-      <mat-form-field class="field-container" style="margin-bottom: 32px">
+      <!-- <mat-form-field class="field-container" style="margin-bottom: 32px">
         <mat-label>Nombre del Tag</mat-label>
         <textarea
           matInput
           name="message"
           id="input-form"
-          placeholder="Escribe el mensaje.."
+          style="height: 32px"
+          placeholder="Escribe el nombre.."
           formControlName="name"
         ></textarea>
         <mat-error *ngIf="notificationForm.get('name').invalid">
           {{ getNameError() }}
         </mat-error>
-      </mat-form-field>
-      <mat-form-field class="field-container">
+      </mat-form-field> -->
+      <mat-form-field class="field-container" appearance="outline">
         <mat-label>Plantilla del Mensaje</mat-label>
         <textarea
           matInput
@@ -67,7 +64,7 @@
     </form>
 
     <div class="description">
-      <p class="description-title">Como funciona?</p>
+      <!-- <p class="description-title">Como funciona?</p> -->
       <p class="description-text">
         Cuando marques este progreso en una factura, recibirás un enlace por
         WhatsApp.

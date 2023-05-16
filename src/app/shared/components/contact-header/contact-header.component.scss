@@ -1,3 +1,13 @@
+::ng-deep .mat-bottom-sheet-container {
+  min-width: 90%;
+  margin: auto;
+  box-shadow: 0 8px 10px -5px #0003, 0 16px 24px 2px #00000024, 0 6px 30px 5px #0000001f;
+  background: #171d16;
+}
+::ng-deep .cdk-overlay-pane {
+  width: 100%;
+  max-width: 500px !important;
+}
 .container {
   padding: 20px;
 }
@@ -8,10 +18,16 @@ p {
   margin: 0;
   margin-bottom: 16px;
 }
+.title {
+  font-family: SfProBold;
+  font-size: 17px;
+  color: #fff;
+  margin-bottom: 8px;
+}
 ul {
   padding: 0;
   margin: 0;
-  max-height: 268px;
+  max-height: 280px;
   overflow-y: scroll;
 
   li {
@@ -28,11 +44,9 @@ a {
 }
 .contact {
   display: flex;
-  background-color: #ffffff;
   padding: 12px;
-  border-radius: 6px;
   gap: 12px;
-  border: 2px solid #fff;
+  border-bottom: 2px solid #fff;
 
   &:hover,
   &:active {
@@ -40,7 +54,7 @@ a {
   }
 }
 .logo {
-  border-radius: 8px;
+  border-radius: 26px;
   padding: 6px 8px;
 
   i {
@@ -52,16 +66,16 @@ a {
   background-color: #35c42c;
 }
 .facebook {
-  background-color: #fff;
-  color: #1877f2;
-  font-size: 59px;
-  line-height: 0.9;
+  background-color: #1877f2;
+  padding: 6px 13px;
 }
 .twitter {
-  background-color: #fff;
-  color: #1da1f2;
-  font-size: 59px;
-  line-height: 0.9;
+  background-color: #1da1f2;
+  padding: 8px;
+
+  i {
+    font-size: 36px;
+  }
 }
 .instagram {
   font-size: 40px;
@@ -102,27 +116,27 @@ a {
 
   .name {
     font-size: 17px;
-    color: #272727;
+    color: #ffffff;
   }
 
   .url {
     font-size: 14px;
-    color: #a1a1a1;
+    color: #87cd9b;
     text-transform: none;
   }
 }
-.action-bar {
-  background-color: #6fcf97;
-  display: flex;
-  justify-content: space-between;
+// .action-bar {
+//   background-color: #6fcf97;
+//   display: flex;
+//   justify-content: space-between;
 
-  button {
-    font-family: SfProLight;
-    font-size: 13px;
-    color: #272727;
+//   button {
+//     font-family: SfProLight;
+//     font-size: 13px;
+//     color: #272727;
 
-    &.share {
-      margin-left: auto;
-    }
-  }
-}
+//     &.share {
+//       margin-left: auto;
+//     }
+//   }
+// }

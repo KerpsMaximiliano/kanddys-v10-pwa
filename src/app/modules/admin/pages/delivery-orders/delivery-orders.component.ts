@@ -12,14 +12,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 
-
 @Component({
   selector: 'app-delivery-orders',
   templateUrl: './delivery-orders.component.html',
-  styleUrls: ['./delivery-orders.component.scss']
+  styleUrls: ['./delivery-orders.component.scss'],
 })
 export class DeliveryOrdersComponent implements OnInit {
-
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
 
@@ -30,10 +28,10 @@ export class DeliveryOrdersComponent implements OnInit {
   merchant: Merchant;
   orders: ItemOrder[] = [];
   facturasDisplayArray: Array<{
-    image: string,
-    username: string,
-    total: number,
-    date: Date
+    image: string;
+    username: string;
+    total: number;
+    date: Date;
   }>;
 
   totalIncome: number;
@@ -46,8 +44,8 @@ export class DeliveryOrdersComponent implements OnInit {
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
-    private deliveryzoneService: DeliveryZonesService,
-  ) { }
+    private deliveryzoneService: DeliveryZonesService
+  ) {}
 
   async ngOnInit() {
     this.route.queryParams.subscribe(async (queryParams) => {
@@ -75,7 +73,9 @@ export class DeliveryOrdersComponent implements OnInit {
 
   async getDeliveryZone(deliveryZoneId: string) {
     try {
-      const result = await this.deliveryzoneService.deliveryZone(deliveryZoneId);
+      const result = await this.deliveryzoneService.deliveryZone(
+        deliveryZoneId
+      );
       this.deliveryZone = result;
     } catch (error) {
       console.log(error);
@@ -84,31 +84,30 @@ export class DeliveryOrdersComponent implements OnInit {
 
   async getOrders(merchantId: string, deliveryzone?: string) {
     try {
-      const result = await this.merchantsService.ordersByMerchant(
-        merchantId,
-        {
-          options: {
-            limit: -1,
-            sortBy: 'createdAt:desc',
-          },
-          findBy: {
-            orderStatusDelivery: [ 'in progress', 'pending'],
-            deliveryZone: deliveryzone ? deliveryzone : undefined,
-          }
-        }
-      );
+      const result = await this.merchantsService.ordersByMerchant(merchantId, {
+        options: {
+          limit: -1,
+          sortBy: 'createdAt:desc',
+        },
+        findBy: {
+          orderStatusDelivery: ['in progress', 'pending'],
+          deliveryZone: deliveryzone ? deliveryzone : undefined,
+        },
+      });
 
       this.orders = result.ordersByMerchant;
 
-      this.facturasDisplayArray = this.orders.map(order => {
+      this.facturasDisplayArray = this.orders.map((order) => {
         return {
-          image: order?.user?.image ? order.user?.image : 'https://www.gravatar.com/avatar/0?s=250&d=mp',
+          image: order?.user?.image
+            ? order.user?.image
+            : 'https://www.gravatar.com/avatar/0?s=250&d=mp',
           username: order?.user ? order?.user?.name : 'Usuario eliminado',
           total: order.subtotals.reduce((subtotalAccumulator, subtotal) => {
             return subtotalAccumulator + subtotal.amount;
           }, 0),
-          date: new Date(order.createdAt)
-        }
+          date: new Date(order.createdAt),
+        };
       });
     } catch (error) {
       console.log(error);
@@ -117,16 +116,19 @@ export class DeliveryOrdersComponent implements OnInit {
 
   getTotalIncome(orders: ItemOrder[]) {
     this.totalIncome = orders.reduce((accumulator, order) => {
-      return accumulator + order.subtotals.reduce((subtotalAccumulator, subtotal) => {
-        return subtotalAccumulator + subtotal.amount;
-      }, 0);
+      return (
+        accumulator +
+        order.subtotals.reduce((subtotalAccumulator, subtotal) => {
+          return subtotalAccumulator + subtotal.amount;
+        }, 0)
+      );
     }, 0);
   }
 
   settings() {
     console.log('settings');
   }
-  
+
   share() {
     const link = `${this.URI}/ecommerce/order-process/${this.merchant._id}`;
     const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
@@ -169,9 +171,9 @@ export class DeliveryOrdersComponent implements OnInit {
                   duration: 2000,
                 });
               },
-            }
+            },
           ],
-        }
+        },
       ],
     });
   }
@@ -184,7 +186,7 @@ export class DeliveryOrdersComponent implements OnInit {
       const queryParamList = url[1].split('&');
       for (const param in queryParamList) {
         const keyValue = queryParamList[param].split('=');
-        queryParams[keyValue[0]] = keyValue[1];
+        queryParams[keyValue[0]] = keyValue[1].replace('%20', ' ');
       }
     }
     this.router.navigate([this.redirectTo], {
@@ -195,5 +197,4 @@ export class DeliveryOrdersComponent implements OnInit {
   returnToAdmin() {
     this.router.navigate([`admin/order-process/${this.merchant._id}`]);
   }
-
 }

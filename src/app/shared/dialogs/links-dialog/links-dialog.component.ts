@@ -19,9 +19,16 @@ export interface DialogOptions {
   callback: () => void;
 }
 
+export interface DialogSecondaryOptions {
+  title: string;
+  link?: string;
+  callback: () => void;
+}
+
 export interface DialogTemplate {
   title: string;
   options: DialogOptions[];
+  secondaryOptions: DialogSecondaryOptions[];
 }
 
 @Component({
@@ -40,27 +47,45 @@ export class LinksDialogComponent implements OnInit {
   @ViewChildren('qrcode', { read: ElementRef })
   private qr: QueryList<ElementRef>;
 
+  @ViewChildren('secondaryQrcode', { read: ElementRef })
+  private secondaryQr: QueryList<ElementRef>;
+
   ngOnInit(): void {}
 
-  openLink(event: MouseEvent): void {
+  openLink(event?: MouseEvent): void {
     this._bottomSheetRef.dismiss();
-    event.preventDefault();
+    if (event) event.preventDefault();
   }
 
-  onClick(index: number, optionIndex: number) {
-    if (this.data[index].options[optionIndex].link) {
-      this.downloadQr('qrcode' + index + optionIndex);
+  onClick(index: number, optionIndex: number, second?: boolean) {
+    if (!second) {
+      if (this.data[index].options[optionIndex].link) {
+        this.downloadQr('qrcode' + index + optionIndex);
+      }
+      if (this.data[index].options[optionIndex].callback) {
+        this.data[index].options[optionIndex].callback();
+      }
     }
-    if (this.data[index].options[optionIndex].callback) {
-      this.data[index].options[optionIndex].callback();
+    if (second) {
+      if (this.data[index].secondaryOptions[optionIndex].link) {
+        this.downloadQr('qrcode' + index + optionIndex, second);
+      }
+      if (this.data[index].secondaryOptions[optionIndex].callback) {
+        this.data[index].secondaryOptions[optionIndex].callback();
+      }
     }
     this._bottomSheetRef.dismiss();
   }
 
-  downloadQr(id: string) {
-    const qr = this.qr
-      .toArray()
-      .find((element) => element.nativeElement.id === id);
+  downloadQr(id: string, second?: boolean) {
+    let qr: ElementRef<any>;
+    if (!second) {
+      qr = this.qr.toArray().find((element) => element.nativeElement.id === id);
+    } else {
+      qr = this.secondaryQr
+        .toArray()
+        .find((element) => element.nativeElement.id === id);
+    }
     const parentElement = qr.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
