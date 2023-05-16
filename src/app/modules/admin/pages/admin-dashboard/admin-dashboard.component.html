@@ -46,7 +46,7 @@
     <button mat-icon-button>
       <mat-icon [ngStyle]="{ color: 'white' }">search</mat-icon>
     </button>
-    <button mat-icon-button>
+    <button mat-icon-button (click)="newArticle()">
       <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
     </button>
     <button class="header-btn" (click)="headerSettings()">

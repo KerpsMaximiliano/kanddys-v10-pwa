@@ -657,71 +657,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         {
           options: [
             {
-              title: 'Nuevo artículo',
-              callback: () => {
-                let dialogRef = this.dialog.open(StepperFormComponent);
-                dialogRef
-                  .afterClosed()
-                  .subscribe(
-                    async (result: { pricing: number; images: File[] }) => {
-                      if (!result) return;
-                      const { pricing, images: imagesResult } = result;
-                      let images: ItemImageInput[] = imagesResult.map(
-                        (file) => {
-                          return {
-                            file: file,
-                            index: 0,
-                            active: true,
-                          };
-                        }
-                      );
-                      console.log(images);
-                      if (!pricing) return;
-                      lockUI();
-                      const itemInput: ItemInput = {
-                        name: null,
-                        description: null,
-                        pricing: pricing,
-                        images,
-                        merchant: this._MerchantsService.merchantData?._id,
-                        content: [],
-                        currencies: [],
-                        hasExtraPrice: false,
-                        purchaseLocations: [],
-                        showImages: images.length > 0,
-                      };
-                      this._ItemsService.itemPrice = null;
-
-                      const { createItem } =
-                        await this._ItemsService.createItem(itemInput);
-                      await this._SaleflowService.addItemToSaleFlow(
-                        {
-                          item: createItem._id,
-                        },
-                        this._SaleflowService.saleflowData._id
-                      );
-                      this.snackBar.open(
-                        'Producto creado satisfactoriamente!',
-                        '',
-                        {
-                          duration: 5000,
-                        }
-                      );
-                      unlockUI();
-                      const reader = new FileReader();
-                      reader.onload = (e) => {
-                        this._ItemsService.editingImageId =
-                          createItem.images[0]._id;
-                        this.router.navigate([
-                          `admin/article-editor/${createItem._id}`,
-                        ]);
-                      };
-                      reader.readAsDataURL(images[0].file as File);
-                    }
-                  );
-              },
-            },
-            {
               title: 'Cambia el contenedor de los artículos',
               callback: () => {
                 this.router.navigate(['/admin/view-configuration-cards']);
@@ -731,6 +666,57 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         },
       ],
     });
+  }
+
+  async newArticle() {
+    let dialogRef = this.dialog.open(StepperFormComponent);
+    dialogRef
+      .afterClosed()
+      .subscribe(async (result: { pricing: number; images: File[] }) => {
+        if (!result) return;
+        const { pricing, images: imagesResult } = result;
+        let images: ItemImageInput[] = imagesResult.map((file) => {
+          return {
+            file: file,
+            index: 0,
+            active: true,
+          };
+        });
+        console.log(images);
+        if (!pricing) return;
+        lockUI();
+        const itemInput: ItemInput = {
+          name: null,
+          description: null,
+          pricing: pricing,
+          images,
+          merchant: this._MerchantsService.merchantData?._id,
+          content: [],
+          currencies: [],
+          hasExtraPrice: false,
+          purchaseLocations: [],
+          showImages: images.length > 0,
+        };
+        this._ItemsService.itemPrice = null;
+
+        const { createItem } = await this._ItemsService.createItem(itemInput);
+        await this._SaleflowService.addItemToSaleFlow(
+          {
+            item: createItem._id,
+          },
+          this._SaleflowService.saleflowData._id
+        );
+        this.snackBar.open('Producto creado satisfactoriamente!', '', {
+          duration: 5000,
+        });
+        unlockUI();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this._ItemsService.editingImageId = createItem.images[0]._id;
+          this.router.navigate([`admin/article-editor/${createItem._id}`]);
+        };
+        reader.readAsDataURL(images[0].file as File);
+      });
   }
 
   async getHiddenItems() {
