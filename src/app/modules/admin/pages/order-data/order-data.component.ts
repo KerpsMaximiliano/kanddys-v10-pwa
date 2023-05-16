@@ -53,7 +53,6 @@ export class OrderDataComponent implements OnInit {
       length: 0,
     },
   };
-  formatId = formatID;
   getDaysAgo = getDaysAgo;
 
   constructor(private merchantsService: MerchantsService) {}
@@ -323,5 +322,9 @@ export class OrderDataComponent implements OnInit {
 
   orderTotal(subtotals: OrderSubtotal[]) {
     return subtotals?.reduce((prev, curr) => prev + curr.amount, 0) || 0;
+  }
+
+  formatId(id: string) {
+    return formatID(id).split(/(?=N)/g)[1];
   }
 }

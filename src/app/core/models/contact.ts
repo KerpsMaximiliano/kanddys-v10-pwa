@@ -4,23 +4,30 @@ export class ContactInput {
   description?: string;
   image?: any;
   merchant?: string;
+  type?: 'user';
   name?: String;
   decription?: String;
   banner?: string;
 }
 
+export class LinkInput {
+  image?: File;
+  name?: string;
+  value?: string;
+}
+
 export class Link extends Model<Link> {
-  _id: string;
   image: string;
   name: string;
   value: string;
 }
 
 export class Contact extends Model<Contact> {
-  _id: string;
   description: string;
   image: string;
   merchant: string;
+  user: string;
+  type: 'user';
   name: string;
   decription: string;
   link: Link[];

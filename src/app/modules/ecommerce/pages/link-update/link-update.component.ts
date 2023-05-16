@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ContactInput } from 'src/app/core/models/contact';
 
 @Component({
   selector: 'app-link-update',
@@ -127,7 +128,7 @@ export class LinkUpdateComponent implements OnInit {
 
     this.linkName = contact.name;
 
-    const linkInput = {
+    const linkInput: ContactInput = {
       image: contact.image,
       name: this.linkName,
       description: this.link,
@@ -136,6 +137,8 @@ export class LinkUpdateComponent implements OnInit {
 
     const linkId = contact._id;
 
+    // Aqui se esta utilizando updateContact para actualizar un link?
+    // El EP para actualizar el link de un contacto es "contactUpdateLink"
     const updatedContact = await this.contactService.updateContact(
       linkId,
       linkInput

@@ -1,45 +1,43 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { base64ToBlob, fileToBase64 } from 'src/app/core/helpers/files.helpers';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Contact } from 'src/app/core/models/contact';
+import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Merchant } from 'src/app/core/models/merchant';
-import {
-  ItemOrder,
-  OrderStatusDeliveryType,
-  OrderStatusNameType,
-} from 'src/app/core/models/order';
+import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
-import { Tag } from 'src/app/core/models/tags';
+import { Reservation } from 'src/app/core/models/reservation';
+import { Webform, WebformAnswer } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { ContactService } from 'src/app/core/services/contact.service';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
-import { TagsService } from 'src/app/core/services/tags.service';
-import { DropdownOptionItem } from 'src/app/shared/components/dropdown-menu/dropdown-menu.component';
-import { environment } from 'src/environments/environment';
-import { Clipboard } from '@angular/cdk/clipboard';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormControl, FormGroup } from '@angular/forms';
-import Swiper, { SwiperOptions } from 'swiper';
-import { SwiperComponent } from 'ngx-swiper-wrapper';
-import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { NgNavigatorShareService } from 'ng-navigator-share';
-import { DeliveryZone } from 'src/app/core/models/deliveryzone';
-import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
-import { Reservation } from 'src/app/core/models/reservation';
 import { ReservationService } from 'src/app/core/services/reservations.service';
-import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { NotificationsService } from 'src/app/core/services/notifications.service';
-import { Notification } from 'src/app/core/models/notification';
+import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 
 interface ExtendedOrder extends ItemOrder {
   loadedDeliveryStatus?: OrderStatusDeliveryType;
+  answersByItem?: Record<string, WebformAnswer>;
+  webformsByItem?: Record<string, Webform>;
 }
 
 @Component({
@@ -53,23 +51,24 @@ export class OrderProcessComponent implements OnInit {
 
   order: ItemOrder;
   ordersReadyToDeliver: ExtendedOrder[] = [];
+  usersContact: Contact[] = [];
+  usersWithoutContact: string[] = [];
 
   deliveryZone: DeliveryZone;
 
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
   formatId = formatID;
-  deliveryStatusOptions: DropdownOptionItem[] = [
-    {
-      text: 'En preparación',
-      value: 'in progress',
-      selected: false,
-      hide: false,
-    },
-  ];
+  // deliveryStatusOptions: DropdownOptionItem[] = [
+  //   {
+  //     text: 'En preparación',
+  //     value: 'in progress',
+  //     selected: false,
+  //     hide: false,
+  //   },
+  // ];
 
   redirectTo: string = null;
-  view: 'delivery' | 'assistant' | 'admin';
-  progress: OrderStatusDeliveryType;
+  view: 'delivery' | 'assistant';
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = [
@@ -87,11 +86,8 @@ export class OrderProcessComponent implements OnInit {
     'video/m2ts',
   ];
 
-  orderStatus: OrderStatusNameType;
-  orderDate: string;
+  // orderStatus: OrderStatusNameType;
   merchant: Merchant;
-  orderMerchant: Merchant;
-  isMerchant: boolean;
 
   post: Post;
   slides: Slide[] = [];
@@ -99,15 +95,8 @@ export class OrderProcessComponent implements OnInit {
   entityTemplate: EntityTemplate;
   entityTemplateLink: string;
 
-  selectedTags: {
-    [key: string]: boolean;
-  } = {};
-  selectedTagsLength: number;
-  tags: Tag[];
-  tagOptions: DropdownOptionItem[];
-  tagPanelState: boolean;
-
   orderReadyToDeliver: boolean = false;
+  // orderShipped: boolean = false;
   orderDelivered: boolean = false;
 
   deliveryImages: Array<{
@@ -133,8 +122,6 @@ export class OrderProcessComponent implements OnInit {
   initialSlide: number;
   activeIndex: number = 0;
 
-  notifications: Notification[] = [];
-
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
   @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
   @ViewChild('ordersSwiper') ordersSwiper: SwiperComponent;
@@ -147,7 +134,7 @@ export class OrderProcessComponent implements OnInit {
     private authService: AuthService,
     private merchantsService: MerchantsService,
     private postsService: PostsService,
-    private tagsService: TagsService,
+    // private tagsService: TagsService,
     private entityTemplateService: EntityTemplateService,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
@@ -156,17 +143,18 @@ export class OrderProcessComponent implements OnInit {
     private deliveryzoneService: DeliveryZonesService,
     private reservationsService: ReservationService,
     private dialogService: DialogService,
-    private notificationsService: NotificationsService
+    // private notificationsService: NotificationsService,
+    private contactService: ContactService,
+    private webformsService: WebformsService
   ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { redirectTo, view, progress, orderId, deliveryZone } = queryParams;
+      const { redirectTo, view, orderId, deliveryZone } = queryParams;
 
       this.redirectTo = redirectTo;
       this.deliveryZone = deliveryZone;
       if (view) this.view = view;
-      if (progress) this.progress = progress;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
       if (typeof deliveryZone === 'undefined') this.deliveryZone = null;
@@ -184,6 +172,7 @@ export class OrderProcessComponent implements OnInit {
         if (this.ordersReadyToDeliver.length > 0)
           this.orderReadyToDeliver =
             this.order.orderStatusDelivery === 'pending' ||
+            this.order.orderStatusDelivery === 'shipped' ||
             this.order.orderStatusDelivery === 'delivered';
       });
     });
@@ -197,7 +186,6 @@ export class OrderProcessComponent implements OnInit {
     lockUI();
 
     this.merchant = await this.merchantsService.merchant(merchantId);
-    await this.isMerchantOwner(merchantId);
 
     if (!orderId) {
       await this.getOrders(this.merchant._id, deliveryZone);
@@ -220,7 +208,7 @@ export class OrderProcessComponent implements OnInit {
       let deliveryZone: DeliveryZone;
       let reservation: Reservation;
       if (
-        (this.isMerchant || this.view === 'delivery') &&
+        this.view === 'delivery' &&
         this.isPopulated(order) &&
         order.deliveryZone
       ) {
@@ -277,23 +265,7 @@ export class OrderProcessComponent implements OnInit {
       }
     }
 
-    this.orderStatus = this.orderService.getOrderStatusName(
-      this.order.orderStatus
-    );
-    const temporalDate = new Date(this.order.createdAt);
-    this.orderDate = temporalDate
-      .toLocaleString('es-MX', {
-        hour12: true,
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-      .toLocaleUpperCase();
     this.headerService.user = await this.authService.me();
-
-    await this.getDeliveryNotifications(this.merchant._id);
 
     if (this.order.items[0].post) {
       this.post = (
@@ -316,110 +288,14 @@ export class OrderProcessComponent implements OnInit {
       }
     }
 
-    // if (this.order.items[0].reservation) {
-    //   const reservation = await this.reservationService.getReservation(
-    //     this.order.items[0].reservation._id
-    //   );
-    //   if (reservation) {
-    //     const fromDate = new Date(reservation.date.from);
-    //     const untilDate = new Date(reservation.date.until);
-    //     this.date = {
-    //       day: fromDate.getDate(),
-    //       weekday: fromDate.toLocaleString('es-MX', {
-    //         weekday: 'short',
-    //       }),
-    //       month: fromDate.toLocaleString('es-MX', {
-    //         month: 'short',
-    //       }),
-    //       time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
-    //         untilDate,
-    //         reservation.breakTime
-    //       )}`,
-    //     };
-    //   }
+    // if (this.order.orderStatusDelivery === 'shipped') {
+    //   this.orderShipped = true;
     // }
-    let address = '';
-    const location = this.order.items[0].deliveryLocation;
-    if (location) {
-      address = '\n\nDirección: ';
-      if (location.street) {
-        this.deliveryStatusOptions.push(
-          {
-            text: 'Listo para enviarse',
-            value: 'pending',
-            selected: false,
-            hide: false,
-          },
-          {
-            text: 'De camino a ser entregado',
-            value: 'shipped',
-            selected: false,
-            hide: false,
-          }
-        );
-        if (location.houseNumber) address += '#' + location.houseNumber + ', ';
-        address += location.street + ', ';
-        if (location.referencePoint) address += location.referencePoint + ', ';
-        address += location.city + ', República Dominicana';
-        if (location.note) address += ` (${location.note})`;
-      } else {
-        address += location.nickName;
-        this.deliveryStatusOptions.push({
-          text: 'Listo para pick-up',
-          value: 'pickup',
-          selected: false,
-          hide: false,
-        });
-      }
-    }
-    this.deliveryStatusOptions.push({
-      text: 'Entregado',
-      value: 'delivered',
-      selected: false,
-      hide: false,
-    });
-    if (this.isMerchant) {
-      this.handleStatusOptions(this.order.orderStatusDelivery);
-    }
-
-    if (!this.isMerchant) this.deliveryStatusOptions = [];
-
-    let giftMessage = '';
-    if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
-    if (this.post?.targets?.[0]?.name)
-      giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
-    if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
-
-    const tags =
-      (await this.tagsService.tagsByUser({
-        findBy: {
-          entity: 'order',
-        },
-        options: {
-          limit: -1,
-        },
-      })) || [];
-    for (const tag of tags) {
-      this.selectedTags[tag._id] = this.order.tags.includes(tag._id);
-    }
-    this.selectedTagsLength = Object.entries(this.selectedTags).filter(
-      (value) => value[1]
-    ).length;
-    this.tags = tags;
-    this.tagOptions = this.tags.map((tag) => {
-      return {
-        text: tag.name,
-        value: tag._id,
-        selected: this.order.tags.includes(tag._id),
-      };
-    });
-
     if (this.order.deliveryData) {
       this.orderReadyToDeliver = true;
       this.orderDelivered = true;
       if (this.order.orderStatusDelivery !== 'delivered') {
-        if (this.isMerchant) await this.changeOrderStatus('delivered');
-        else if (this.view === 'assistant')
+        if (this.view === 'assistant')
           await this.changeOrderStatusAuthless('delivered');
         else if (this.view === 'delivery')
           await this.changeOrderStatusAuthless('delivered');
@@ -429,18 +305,17 @@ export class OrderProcessComponent implements OnInit {
   }
 
   async getOrders(merchantId: string, deliveryZone?: string) {
-    console.log(this.isMerchant);
     const findBy = {
       merchant: merchantId,
       deliveryZone: deliveryZone,
       orderStatus: ['to confirm', 'paid', 'completed'],
-      orderStatusDelivery: this.isMerchant
-        ? this.progress || ["in progress", "pending", "delivered", "pickup"]
-        : this.view === 'delivery'
-        ? 'pending'
-        : this.view === 'assistant'
-        ? 'in progress'
-        : ["in progress", "pending", "delivered", "pickup"],
+      orderStatusDelivery:
+        this.view === 'delivery'
+          ? 'pending'
+          : // ? ['pending', 'shipped']
+          this.view === 'assistant'
+          ? 'in progress'
+          : null,
     };
     try {
       const result = await this.orderService.orderByMerchantDelivery({
@@ -466,92 +341,12 @@ export class OrderProcessComponent implements OnInit {
     }
   }
 
-  async addTag(tagId: string) {
-    if (!this.selectedTags[tagId]) {
-      await this.tagsService.addTagsInOrder(
-        this.order.items[0].saleflow.merchant._id,
-        tagId,
-        this.order._id
-      );
-      this.selectedTags[tagId] = true;
-      this.order.tags.push(tagId);
-    } else {
-      await this.tagsService.removeTagsInOrder(
-        this.order.items[0].saleflow.merchant._id,
-        tagId,
-        this.order._id
-      );
-      this.selectedTags[tagId] = false;
-      this.order.tags = this.order.tags.filter((tag) => tag !== tagId);
-    }
-    this.selectedTagsLength = Object.entries(this.selectedTags).filter(
-      (value) => value[1]
-    ).length;
-  }
-
-  async getDeliveryNotifications(merchantId: string) {
-    try {
-      const result = await this.notificationsService.notifications(
-        {
-          options: {
-            limit: -1,
-            sortBy: 'createdAt:desc',
-          },
-          findBy: {
-            entity: 'order',
-            type: 'standard',
-            mode: 'default',
-            active: true,
-          },
-        },
-        merchantId
-      );
-
-      const notifications = result.filter((notification) => {
-        return notification.trigger[0].key === 'orderStatusDelivery';
-      });
-
-      console.log(notifications);
-
-      this.notifications = notifications;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  checkNotificationDeliveryStatus(status: string) {
-    return this.notifications.find(
-      (option) => option.trigger[0].value === status
-    );
-  }
-
-  async isMerchantOwner(merchant: string) {
-    this.orderMerchant = await this.merchantsService.merchantDefault();
-    console.log(this.orderMerchant);
-    this.isMerchant = merchant === this.orderMerchant?._id;
-  }
-
-  async changeOrderStatus(value: OrderStatusDeliveryType) {
-    this.order.orderStatusDelivery = value;
-    this.handleStatusOptions(value);
-
-    try {
-      await this.orderService.orderSetStatusDelivery(
-        value,
-        this.ordersReadyToDeliver[this.activeIndex]._id
-      );
-      if (value === 'pending') this.orderReadyToDeliver = true;
-      if (value === 'delivered') this.orderDelivered = true;
-
-      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = value;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   async changeOrderStatusAuthless(value: OrderStatusDeliveryType) {
+    if (
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery === value
+    )
+      return;
     this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery = value;
-    this.handleStatusOptions(value);
 
     try {
       await this.orderService.orderSetStatusDeliveryWithoutAuth(
@@ -559,16 +354,14 @@ export class OrderProcessComponent implements OnInit {
         this.ordersReadyToDeliver[this.activeIndex]._id
       );
       if (value === 'pending') this.orderReadyToDeliver = true;
+      else if (value === 'in progress') this.orderReadyToDeliver = false;
+      // if (value === 'shipped') this.orderShipped = true;
+      // else if (value === 'pending') this.orderShipped = false;
       if (value === 'delivered') this.orderDelivered = true;
+      else if (value === 'shipped') this.orderDelivered = false;
     } catch (error) {
       console.log(error);
     }
-  }
-
-  handleStatusOptions(value: OrderStatusDeliveryType) {
-    this.deliveryStatusOptions.forEach((option) => {
-      option.hide = option.value === value;
-    });
   }
 
   goToPost() {
@@ -590,15 +383,16 @@ export class OrderProcessComponent implements OnInit {
     const link = `${this.URI}/ecommerce/order-detail/${order._id}`;
     const data = [
       {
-        title: `Vista e interfaz con ${
-          this.isMerchant ? 'toda la info' : 'la info limitada'
-        } `,
+        title: `Vista e interfaz con la info limitada`,
         options: [
           {
             title: 'Ver como lo verá el visitante',
             callback: () => {
               this.router.navigate([`/ecommerce/order-detail/${order._id}`], {
-                queryParams: { redirectTo: this.router.url },
+                queryParams: {
+                  redirectTo: this.router.url,
+                  navigationWithMessage: 'Vista del visitante',
+                },
               });
             },
           },
@@ -627,94 +421,39 @@ export class OrderProcessComponent implements OnInit {
         ],
       },
     ];
-    if (this.isMerchant) {
-      data.push(
-        {
-          title: `Opciones para el mensajero`,
-          options: [
-            {
-              title: 'Compartir el Link',
-              callback: () => {
-                this.ngNavigatorShareService.share({
-                  title: '',
-                  url: `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`,
-                });
-              },
-            },
-            {
-              title: 'Copiar el Link',
-              callback: () => {
-                this.clipboard.copy(
-                  `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=delivery`
-                );
-                this.snackBar.open('Enlace copiado en el portapapeles', '', {
-                  duration: 2000,
-                });
-              },
-            },
-          ],
-        },
-        {
-          title: `Opciones para quien prepara la orden`,
-          options: [
-            {
-              title: 'Compartir el Link',
-              callback: () => {
-                this.ngNavigatorShareService.share({
-                  title: '',
-                  url: `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`,
-                });
-              },
-            },
-            {
-              title: 'Copiar el Link',
-              callback: () => {
-                this.clipboard.copy(
-                  `${this.URI}/ecommerce/order-process/${this.merchant._id}?view=assistant`
-                );
-                this.snackBar.open('Enlace copiado en el portapapeles', '', {
-                  duration: 2000,
-                });
-              },
-            },
-          ],
-        }
-      );
-    }
     this._bottomSheet.open(LinksDialogComponent, {
       data,
     });
   }
 
   async onImageInput(input: File) {
-    if (this.view === 'delivery') {
-      lockUI();
-      this.deliveryForm.get('image').patchValue(input);
-      try {
-        const result = await this.orderService.updateOrderDeliveryData(
-          { image: this.deliveryForm.get('image').value[0] },
-          this.ordersReadyToDeliver[this.activeIndex]._id
-        );
+    if (this.view !== 'delivery') return;
+    lockUI();
+    this.deliveryForm.get('image').patchValue(input);
+    try {
+      const result = await this.orderService.updateOrderDeliveryData(
+        { image: this.deliveryForm.get('image').value[0] },
+        this.ordersReadyToDeliver[this.activeIndex]._id
+      );
 
-        this.deliveryImages.forEach((deliveryImage) => {
-          if (deliveryImage.order === result._id)
-            deliveryImage.image = result.deliveryData.image;
-        });
+      this.deliveryImages.forEach((deliveryImage) => {
+        if (deliveryImage.order === result._id)
+          deliveryImage.image = result.deliveryData.image;
+      });
 
-        await this.orderService.orderSetStatusDeliveryWithoutAuth(
-          'delivered',
-          this.ordersReadyToDeliver[this.activeIndex]._id
-        );
+      await this.orderService.orderSetStatusDeliveryWithoutAuth(
+        'delivered',
+        this.ordersReadyToDeliver[this.activeIndex]._id
+      );
 
-        this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery =
-          'delivered';
-        this.orderReadyToDeliver = false;
-        this.orderDelivered = true;
-        unlockUI();
-      } catch (error) {
-        console.log(error);
-        unlockUI();
-      }
+      this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery =
+        'delivered';
+      this.orderReadyToDeliver = false;
+      this.orderDelivered = true;
+      unlockUI();
+    } catch (error) {
+      console.log(error);
+      unlockUI();
     }
   }
 
@@ -735,10 +474,13 @@ export class OrderProcessComponent implements OnInit {
         'delivered'
     ) {
       this.orderReadyToDeliver = false;
+      // this.orderShipped = false;
       this.orderDelivered = true;
       if (
         this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery ===
-        'pending'
+          'pending' ||
+        this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery ===
+          'shipped'
       ) {
         await this.orderService.orderSetStatusDeliveryWithoutAuth(
           'delivered',
@@ -752,10 +494,19 @@ export class OrderProcessComponent implements OnInit {
       'pending'
     ) {
       this.orderReadyToDeliver = true;
+      // this.orderShipped = false;
       this.orderDelivered = false;
+      // } else if (
+      //   this.ordersReadyToDeliver[this.activeIndex].orderStatusDelivery ===
+      //   'shipped'
+      // ) {
+      //   this.orderReadyToDeliver = false;
+      //   this.orderShipped = true;
+      //   this.orderDelivered = false;
     } else {
       this.orderReadyToDeliver = false;
       this.orderDelivered = false;
+      // this.orderShipped = false;
     }
   }
 
@@ -788,7 +539,7 @@ export class OrderProcessComponent implements OnInit {
               ? order.deliveryData?.image
               : null;
 
-            if (this.isMerchant || this.view === 'delivery') {
+            if (this.view === 'delivery') {
               let deliveryZone: DeliveryZone;
               let reservation: Reservation;
               if (order.deliveryZone) {
@@ -805,6 +556,27 @@ export class OrderProcessComponent implements OnInit {
                 this.deliveryImages[i].reservation = reservation;
               }
             }
+            const userContact = this.getUserContact(order.user._id);
+            if (
+              !userContact &&
+              !this.usersWithoutContact.includes(order.user._id)
+            ) {
+              const contact = (
+                await this.contactService.contacts({
+                  findBy: {
+                    user: order.user._id,
+                  },
+                  options: {
+                    limit: 1,
+                    sortBy: 'createdAt:desc',
+                  },
+                })
+              )[0];
+              if (contact) {
+                this.usersContact.push(contact);
+              } else this.usersWithoutContact.push(order.user._id);
+            }
+            if (this.view === 'assistant') this.getAnswersForEachItem(order);
             console.log(`Posición ${i} reemplazada`);
           } else {
             console.log(`Posición ${i} ya está populada`);
@@ -832,6 +604,98 @@ export class OrderProcessComponent implements OnInit {
     }
 
     console.log(this.ordersReadyToDeliver);
+  }
+
+  async getAnswersForEachItem(order: ExtendedOrder) {
+    order.answersByItem = {};
+    order.webformsByItem = {};
+    const answers: Array<WebformAnswer> =
+      await this.webformsService.answerByOrder(order._id);
+
+    console.log('AnswersByOrder', answers);
+
+    if (answers?.length) {
+      const webformsIds = [];
+      for (const item of order.items) {
+        if (item.item.webForms && item.item.webForms.length) {
+          const webform = item.item.webForms[0];
+          webformsIds.push(webform.reference);
+        }
+      }
+
+      const webforms = await this.webformsService.webforms({
+        findBy: {
+          _id: {
+            __in: webformsIds,
+          },
+        },
+        options: {
+          limit: -1,
+        },
+      });
+
+      for (const item of order.items) {
+        if (item.item.webForms && item.item.webForms.length) {
+          const webform = item.item.webForms[0];
+
+          const answersForWebform = answers.find(
+            (answerInList) => answerInList.webform === webform.reference
+          );
+
+          if (answersForWebform) {
+            const webformObject = webforms.find(
+              (webformInList) => webformInList._id === webform.reference
+            );
+
+            if (webformObject) {
+              order.webformsByItem[item._id] = webformObject;
+
+              const questionsToQuery = [];
+
+              answersForWebform.response.forEach((answerInList) => {
+                if (answerInList.question)
+                  questionsToQuery.push(answerInList.question);
+              });
+
+              const questions = await this.webformsService.questionPaginate({
+                findBy: {
+                  _id: {
+                    __in: questionsToQuery,
+                  },
+                },
+              });
+
+              answersForWebform.response.forEach((answerInList) => {
+                const question = questions.find(
+                  (questionInList) =>
+                    questionInList._id === answerInList.question
+                );
+
+                if (answerInList.question && question) {
+                  answerInList.question = question.value;
+
+                  if (
+                    answerInList.value &&
+                    ((!answerInList.isMedia &&
+                      answerInList.value.startsWith('https')) ||
+                      answerInList.value.startsWith('http'))
+                  )
+                    answerInList.isMedia = true;
+                } else {
+                  answerInList.question = null;
+                }
+              });
+            }
+
+            order.answersByItem[item._id] = answersForWebform;
+          }
+        }
+      }
+    }
+  }
+
+  getUserContact(id: string) {
+    return this.usersContact.find((value) => value.user === id);
   }
 
   convertDate(dateString: string) {
@@ -959,5 +823,38 @@ export class OrderProcessComponent implements OnInit {
     this.router.navigate([this.redirectTo], {
       queryParams,
     });
+  }
+
+  openContactInfo(order: ExtendedOrder) {
+    this._bottomSheet.open(ContactHeaderComponent, {
+      data: {
+        bio: order.user.bio,
+        contact: this.getUserContact(order.user._id),
+      },
+    });
+  }
+
+  mouseDown: boolean;
+  startX: number;
+  scrollLeft: number;
+
+  stopDragging() {
+    this.mouseDown = false;
+  }
+
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
+    this.mouseDown = true;
+    this.startX = e.pageX - el.offsetLeft;
+    this.scrollLeft = el.scrollLeft;
+  }
+
+  moveEvent(e: MouseEvent, el: HTMLDivElement) {
+    e.preventDefault();
+    if (!this.mouseDown) {
+      return;
+    }
+    const x = e.pageX - el.offsetLeft;
+    const scroll = x - this.startX;
+    el.scrollLeft = this.scrollLeft - scroll;
   }
 }

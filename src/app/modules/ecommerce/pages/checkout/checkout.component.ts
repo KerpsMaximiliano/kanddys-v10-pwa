@@ -166,28 +166,38 @@ export class CheckoutComponent implements OnInit {
       this.route.snapshot.queryParamMap.get('webformPreview')
     );
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { startOnDialogFlow, addedQr, addedPhotos, addedAIJoke, atStart, orderId, answers } =
-        queryParams;
+      const {
+        startOnDialogFlow,
+        addedQr,
+        addedPhotos,
+        addedAIJoke,
+        atStart,
+        orderId,
+        answers,
+      } = queryParams;
 
       //Handles magic link cases
       this.atStart = atStart;
 
-      if(this.atStart === 'auth-order-and-create-answers-for-every-item') {
+      if (this.atStart === 'auth-order-and-create-answers-for-every-item') {
         const answersDecoded: Array<{
           item: string;
           answer: WebformAnswerInput;
         }> = JSON.parse(decodeURIComponent(answers));
         const orderIdDecoded = decodeURIComponent(orderId);
 
-        await this.orderService.authOrder(orderIdDecoded, this.headerService.user._id);
+        await this.orderService.authOrder(
+          orderIdDecoded,
+          this.headerService.user._id
+        );
 
         //Adds the webform answers to the order
-        for(const listIndex of answersDecoded) {
+        for (const listIndex of answersDecoded) {
           const response = await this._WebformsService.createAnswer(
             listIndex.answer,
             this.headerService.user._id
           );
-  
+
           if (response) {
             await this._WebformsService.orderAddAnswer(
               response._id,
@@ -839,7 +849,7 @@ export class CheckoutComponent implements OnInit {
         await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       }
-    }
+    } else await this.finishOrderCreation();
   };
 
   finishOrderCreation = async () => {
@@ -1106,7 +1116,7 @@ export class CheckoutComponent implements OnInit {
           opacity: '1',
           padding: '37px 36.6px 18.9px 31px',
           maxHeight: '90vh',
-          overflowY: 'scroll'
+          overflowY: 'scroll',
         },
         header: {
           styles: {
@@ -1274,7 +1284,6 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrEditMessage() {
-
     this.router.navigate([
       'ecommerce/' +
         this.headerService.saleflow.merchant.slug +

@@ -1,3 +1,36 @@
+<!-- <div class="container">
+  <div
+    *ngIf="navigationWithMessage"
+    style="background-color: #6fcf97; font-family: SfProBold"
+  >
+    <button mat-icon-button (click)="returnEvent()">
+      <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+    </button>
+    {{ navigationWithMessage }}
+  </div>
+  <button mat-button class="contact-button" (click)="openContactInfo()">
+    <div class="merchant-info">
+      <div
+        class="icon"
+        [style.background]="
+          _DomSanitizer.bypassSecurityTrustStyle(
+            'url(' +
+              order?.items[0].saleflow.merchant?.image +
+              ') no-repeat center center / cover #e9e371'
+          )
+        "
+      ></div>
+      <p class="title">
+        {{
+          order?.items[0].saleflow.merchant?.name.length < 26
+            ? order?.items[0].saleflow.merchant?.name
+            : (order?.items[0].saleflow.merchant?.name.slice(0, 26) + ".." ||
+                "Tienda" | titlecase)
+        }}
+      </p>
+      <mat-icon>keyboard_arrow_right</mat-icon>
+    </div>
+  </button> -->
 <app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
   <div class="container">
     <mat-accordion>
@@ -840,7 +873,6 @@
       </ng-container> -->
       </div>
 
-      
       <!-- <button
       mat-icon-button
       (click)="openDialog(deliveryOrder)"
@@ -849,7 +881,7 @@
       <mat-icon>menu</mat-icon>
     </button> -->
     </div>
-    
+
     <div class="status-bars">
       <div class="status-section"></div>
       <div class="status-section"></div>

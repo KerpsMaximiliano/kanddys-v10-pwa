@@ -1,0 +1,17 @@
+<footer>
+  <button matRipple>
+    <div>
+      <ng-container *ngIf="merchantsService.merchantIncome">
+        {{ merchantsService.merchantIncome.orderAmount | number }} facturas, ${{
+          merchantsService.merchantIncome.income | number
+        }}
+        ganancias
+        <!-- desde fecha id hasta hoy -->
+      </ng-container>
+      <ng-container *ngIf="!merchantsService.merchantIncome">
+        Cargando...
+      </ng-container>
+    </div>
+    <mat-icon>more_horiz</mat-icon>
+  </button>
+</footer>
