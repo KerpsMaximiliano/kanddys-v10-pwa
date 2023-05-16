@@ -1,0 +1,107 @@
+.main-container {
+  background: #293628;
+  height: 100vh;
+  overflow-y: scroll;
+  position: relative;
+  width: 100%;
+}
+
+.header {
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  i {
+    color: #7b7b7b;
+    width: 14px;
+  }
+}
+
+.content {
+  padding-left: 22px;
+  padding-right: 22px;
+  padding-top: 30px;
+}
+.title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.icons-container{
+    display: flex;
+    align-items: center;
+    img{
+        margin-left: 20px;
+    }
+}
+
+p {
+  font-family: SFProRegular;
+  font-size: 13px;
+  font-weight: 300;
+  color: #ffffff;
+  margin: 0;
+}
+
+.slider {
+  width: 100%;
+  display: flex;
+  margin-top: 10px;
+}
+
+.slide-item {
+  height: 3px;
+  background: #7b7b7b;
+  width: 20%;
+}
+
+.slide-item-selected {
+  background: #6fcf97;
+}
+
+.slide-item-mid {
+  width: 30%;
+}
+
+.ml {
+  margin-left: 3px;
+}
+
+.expenditure-amount-field {
+  width: 100%;
+  margin-bottom: 57px;
+
+  input {
+    width: 100%;
+  }
+}
+
+.description {
+  font-family: SFProRegular;
+  font-size: 17px;
+  font-weight: 300;
+  font-style: italic;
+  color: #f6f6f6;
+  margin-top: 0;
+  margin-bottom: 13px;
+}
+
+::ng-deep .mat-form-field-placeholder,
+.mat-focused,
+.mat-form-field-placeholder,
+.mat-input-element::placeholder,
+.mat-input-element,
+.mat-form-field-hide-placeholder,
+.placeholder {
+  color: #a1a1a1 !important;
+}
+
+::ng-deep .mat-form-field-underline .mat-form-field-ripple {
+  background-color: #a1a1a1 !important;
+  color: #a1a1a1;
+}

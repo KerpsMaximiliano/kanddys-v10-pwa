@@ -58,6 +58,10 @@ import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive'
 import { ExpendituresComponent } from './pages/expenditures/expenditures.component';
 import { IncomesComponent } from './pages/incomes/incomes.component';
 import { CreateExpenditureComponent } from './pages/create-expenditure/create-expenditure.component';
+import { CreateDeliveryZoneComponent } from './pages/create-delivery-zone/create-delivery-zone.component';
+import { TransactionTypesComponent } from './pages/transaction-types/transaction-types.component';
+import { QuestionToAdminComponent } from './pages/question-to-admin/question-to-admin.component';
+import { RenameQuestionComponent } from './pages/rename-question/rename-question.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -353,6 +357,22 @@ const routes: Routes = [
   {
     path: 'create-expenditure/:type',
     component: CreateExpenditureComponent,
+  },
+  {
+    path: 'create-delivery-zone/:questionid',
+    component: CreateDeliveryZoneComponent,
+  },
+  {
+    path: 'transaction-types/:webformid',
+    component: TransactionTypesComponent,
+  },
+  {
+    path: 'question-to-admin/:webformid',
+    component: QuestionToAdminComponent,
+  },
+  {
+    path: 'rename-question/:param',
+    component: RenameQuestionComponent,
   }
 ];
 
@@ -403,6 +423,10 @@ const routes: Routes = [
     ExpendituresComponent,
     IncomesComponent,
     CreateExpenditureComponent,
+    CreateDeliveryZoneComponent,
+    TransactionTypesComponent,
+    QuestionToAdminComponent,
+    RenameQuestionComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

@@ -1,0 +1,40 @@
+<div class="main-container">
+  <div class="header">
+    <div [routerLink]="['../../transaction-types',webformId]">
+      <i class="fas fa-chevron-left"></i>
+    </div>
+    <div (click)="addQuestion()">
+      <i class="fas fa-times"></i>
+    </div>
+  </div>
+  <div class="slider">
+    <div class="slide-item"></div>
+    <div class="slide-item ml slide-item-mid"></div>
+    <div class="slide-item ml slide-item-mid slide-item-selected"></div>
+    <div class="slide-item ml"></div>
+  </div>
+  <div class="content">
+    <div class="title-container">
+      <p>PREGUNTA AL COMPRADOR</p>
+      <div class="icons-container">
+
+          <img src="../../../../../assets/icons/camera.svg" />
+          <img src="../../../../../assets/icons/microphone.svg" />
+          <img src="../../../../../assets/icons/ia.svg" />
+        </div>
+    </div>
+    <mat-form-field class="expenditure-amount-field">
+      <input matInput [(ngModel)]="question" />
+      <mat-placeholder class="placeholder">Escribe..</mat-placeholder>
+    </mat-form-field>
+    <p class="description">Como funciona?</p>
+    <p class="description">
+      Al activar esta función, los compradores deben seleccionar entre opciones
+      personalizables que tú configures antes de realizar el pago.
+    </p>
+    <p class="description">
+      Esto puede generar ingresos adicionales al incluir costos adicionales
+      según las preferencias del cliente.
+    </p>
+  </div>
+</div>

@@ -42,6 +42,8 @@ export class WebformsService {
   currentEditingQuestion: Question = null;
   currentEditingQuestionChoices: AnswerDefaultInput[] = null;
   webformQuestionsRoute: string;
+  webformId:string;
+  editingQuestion;
 
   constructor(private graphql: GraphQLWrapper) {}
 
@@ -73,6 +75,7 @@ export class WebformsService {
     input: QuestionInput[],
     id: string
   ): Promise<Webform> {
+    this.webformId = id;
     const result = await this.graphql.mutate({
       mutation: webformAddQuestion,
       variables: { input, id },
@@ -97,6 +100,7 @@ export class WebformsService {
     questionId: string,
     webformId: string,
   ): Promise<Webform> {
+
     const result = await this.graphql.mutate({
       mutation: questionAddAnswerDefault,
       variables: { input, questionId, webformId },

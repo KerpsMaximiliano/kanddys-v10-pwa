@@ -41,6 +41,8 @@ import {
   expenditureTypesCustom,
   itemRemoveExpenditure,
   deleteExpenditure,
+  expendituresTotalById,
+  answerIncomeTotal,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -550,5 +552,27 @@ export class OrderService {
     return result;
   }
 
+  async expendituresTotalById(type:string,merchantId:string){
+    const result = await this.graphql.query({
+      query: expendituresTotalById,
+      fetchPolicy: 'no-cache',
+      variables: { merchantId,type },
+    });
+    return result;
+  }
+  
+  async answerIncomeTotal(webformId){
+    const result = await this.graphql.query({
+      query: answerIncomeTotal,
+      fetchPolicy: 'no-cache',
+      variables: { webformId },
+    });
+    return result;
+  }
+
+
+
 }
+
+
 

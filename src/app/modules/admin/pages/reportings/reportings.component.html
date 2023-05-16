@@ -4,7 +4,7 @@
       <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
       <p>Reporte y control de beneficios</p>
     </div>
-    <div>
+    <div [routerLink]="['../transaction-types',webformOrder._id]">
       <img [src]="env + '/plus-black.svg'" class="plus-icon" />
     </div>
   </div>
@@ -21,25 +21,15 @@
   <div class="content">
     <p class="content-title">INGRESO EXTRA EN FACTURAS</p>
     <div class="content-items-container">
-      <div class="content-item">
+      <div class="content-item" *ngFor="let i of questions">
         <div class="content-item-button-container">
-          <div class="content-item-button"></div>
-        </div>
-        <div class="content-item-texts">
-          <div class="content-item-title-container">
-            <p class="content-item-title">GroupID</p>
-            <p class="content-item-title">$0.00</p>
+          <div class="content-item-button" (click)="openDialog('income',i)">
+            <img src="../../../../../assets/icons/dots.svg" />
           </div>
-          <p class="content-item-times-selected">87 veces seleccionado</p>
-        </div>
-      </div>
-      <div class="content-item">
-        <div class="content-item-button-container">
-          <div class="content-item-button"></div>
         </div>
         <div class="content-item-texts">
           <div class="content-item-title-container">
-            <p class="content-item-title">GroupID</p>
+            <p class="content-item-title">{{i.value}}</p>
             <p class="content-item-title">$0.00</p>
           </div>
           <p class="content-item-times-selected">87 veces seleccionado</p>
@@ -77,38 +67,56 @@
     <div class="content-items-container">
       <div class="content-item">
         <div class="content-item-button-container">
-          <div class="content-item-button"></div>
+          <div class="content-item-button" (click)="openDialog('day')">
+            <img src="../../../../../assets/icons/dots.svg" />
+          </div>
         </div>
         <div class="content-item-texts">
           <div class="content-item-title-container">
             <p class="content-item-title">Adicionados a días especificos</p>
-            <p class="content-item-title"></p>
+            <p class="content-item-title">
+              {{ onlyDayTotal.total | currency }}
+            </p>
           </div>
-          <p class="content-item-times-selected"></p>
+          <p class="content-item-times-selected">
+            {{ onlyDayTotal.count }} adiciones
+          </p>
         </div>
       </div>
       <div class="content-item">
         <div class="content-item-button-container">
-          <div class="content-item-button"></div>
+          <div class="content-item-button" (click)="openDialog('month')">
+            <img src="../../../../../assets/icons/dots.svg" />
+          </div>
         </div>
         <div class="content-item-texts">
           <div class="content-item-title-container">
             <p class="content-item-title">Adicionados a meses especificos</p>
-            <p class="content-item-title"></p>
+            <p class="content-item-title">
+              {{ onlyMonthTotal.total | currency }}
+            </p>
           </div>
-          <p class="content-item-times-selected"></p>
+          <p class="content-item-times-selected">
+            {{ onlyMonthTotal.count }} adiciones
+          </p>
         </div>
       </div>
       <div class="content-item">
         <div class="content-item-button-container">
-          <div class="content-item-button"></div>
+          <div class="content-item-button" (click)="openDialog('recurrent')">
+            <img src="../../../../../assets/icons/dots.svg" />
+          </div>
         </div>
         <div class="content-item-texts">
           <div class="content-item-title-container">
             <p class="content-item-title">Recurrentes y fijos (Rentas)</p>
-            <p class="content-item-title"></p>
+            <p class="content-item-title">
+              {{ recurrentTotal.total | currency }}
+            </p>
           </div>
-          <p class="content-item-times-selected"></p>
+          <p class="content-item-times-selected">
+            {{ recurrentTotal.count }} adiciones
+          </p>
         </div>
       </div>
       <div class="content-item">
@@ -173,8 +181,23 @@
       </div>
     </div>
   </div>
+  <div class="footer" (click)="openDatePicker()">
+    <p class="footer-dates" >
+      <!-- <div (click)="openDatePicker()"> -->
+      <img src="../../../../../assets/icons/dots.svg" />
+      <!-- </div> -->
+      Desde fechaID hasta hoy
+    </p>
+    <p class="footer-prices">$155,458.12 - $15,000 = 140,459.32 ~17%</p>
+  </div>
 </div>
-<div class="footer">
-  <p class="footer-dates">Desde fechaID hasta hoy</p>
-  <p class="footer-prices">$155,458.12 - $15,000 = 140,459.32 ~17%</p>
-</div>
+
+<mat-form-field appearance="fill"  style="display: none;">
+  <mat-label>Enter a date range</mat-label>
+  <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+    <input matStartDate formControlName="start" placeholder="Start date">
+    <input matEndDate formControlName="end" (dateChange)="onDateChange()" placeholder="End date">
+  </mat-date-range-input>
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-date-range-picker #picker></mat-date-range-picker>
+</mat-form-field>

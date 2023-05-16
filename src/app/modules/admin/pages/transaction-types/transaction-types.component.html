@@ -1,0 +1,33 @@
+<div class="main-container">
+  <div class="header">
+    <div [routerLink]="['../../reportings']">
+      <i class="fas fa-chevron-left"></i>
+    </div>
+    <div>
+      <i class="fas fa-times"></i>
+    </div>
+  </div>
+  <div class="slider">
+    <div class="slide-item"></div>
+    <div class="slide-item slide-item-selected ml slide-item-mid"></div>
+    <div class="slide-item ml slide-item-mid"></div>
+    <div class="slide-item ml"></div>
+  </div>
+  <div class="content">
+    <p>¿Qué clase de transacción?</p>
+
+    <button [routerLink]="['../../question-to-admin',webformId]">
+      Obligatoria de cada factura (ej: pagan $20 extra cuando la entrega es
+      en..)
+    </button>
+    <button [routerLink]="['../create-expenditure/day']">
+      Egreso único en un dia especifico
+    </button>
+    <button [routerLink]="['../create-expenditure/month']">
+      Egreso especifico de un mes (energía, internet)
+    </button>
+    <button [routerLink]="['../create-expenditure/recurrent']">
+      Egresos mensuales y recurrente (salarios, renta)
+    </button>
+  </div>
+</div>

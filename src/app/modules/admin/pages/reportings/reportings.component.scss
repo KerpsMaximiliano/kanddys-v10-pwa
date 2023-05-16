@@ -1,6 +1,6 @@
 .main-container {
   height: 100vh;
-  overflow-y: scroll;
+  // overflow-y: scroll;
   position: relative;
   background-color: #f6f6f6;
 }
@@ -26,9 +26,9 @@
   }
 }
 
-.plus-icon{
-    width: 25px;
-    height: 22px;
+.plus-icon {
+  width: 25px;
+  height: 22px;
 }
 
 .flex {
@@ -36,35 +36,33 @@
   align-items: center;
 }
 
-.slider-container{
-    margin-top:18px;
-    padding-left: 18px;
-    display:flex;
-    overflow-x: scroll;
-    padding-right: 14px;
-
+.slider-container {
+  margin-top: 18px;
+  padding-left: 18px;
+  display: flex;
+  overflow-x: scroll;
+  padding-right: 14px;
 }
 
-.slider-item{
-border-color: #707070;
-border-color:rgb(232, 232, 232);
-border-width: 1px;
-border-style: solid;
-border-radius: 16px;
-padding-left: 19px;
-padding-right: 11px;
-height: 32px;
-margin-right: 4px;
-display: flex;
-align-items: center;
-font-family: SFProRegular;
-font-size: 16px;
-color: #171d16;
-
+.slider-item {
+  border-color: #707070;
+  border-color: rgb(232, 232, 232);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 16px;
+  padding-left: 19px;
+  padding-right: 11px;
+  height: 32px;
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+  font-family: SFProRegular;
+  font-size: 16px;
+  color: #171d16;
 }
 
-.slider-item-selected{
-    background-color: rgb(232, 232, 232);
+.slider-item-selected {
+  background-color: rgb(232, 232, 232);
 }
 
 .content {
@@ -142,6 +140,9 @@ color: #171d16;
   border-width: 2px;
   border-style: solid;
   background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .footer {
@@ -159,6 +160,9 @@ color: #171d16;
   font-weight: 500;
   color: #171d16;
   margin: 0;
+  img {
+    margin-right: 3px;
+  }
 }
 
 .footer-prices {
@@ -168,3 +172,18 @@ color: #171d16;
   color: #171d16;
   margin: 0;
 }
+
+// ::ng-deep .cdk-overlay-pane,
+// .mat-datepicker-popup {
+//   top: none !important;
+// }
+// ::ng-deep .cdk-overlay-pane,
+// .mat-datepicker-popup {
+//   bottom: 1px;
+//   width: 100%;
+//   top: none !important;
+// }
+
+// .picker {
+//   bottom: 1px;
+// }

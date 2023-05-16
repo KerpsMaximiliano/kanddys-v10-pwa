@@ -718,3 +718,16 @@ mutation deleteExpenditure($id:ObjectID!) {
 `;
 
 
+
+export const expendituresTotalById = gql`
+query expendituresTotalById($range: PaginationRangeInput,$id:ObjectID,$type:String!,$merchantId:ObjectID) {
+  expendituresTotalById(range: $range,id:$id,type:$type,merchantId:$merchantId)
+}
+`;
+
+export const answerIncomeTotal = gql`
+  query answerIncomeTotal($webformId: ObjectID!) {
+    answerIncomeTotal(webformId: $webformId) 
+    
+  }
+`;

@@ -1,0 +1,89 @@
+.main-container {
+  height: 100vh;
+  overflow-y: scroll;
+  position: relative;
+  background-color: #f6f6f6;
+}
+
+.header {
+  box-shadow: inset 0px 3px 3px rgba(0, 0, 0, 0.16);
+  background: #c1c4c1;
+  height: 46px;
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  align-items: center;
+
+  p {
+    font-family: SFProRegular;
+    font-size: 16px;
+    font-weight: bold;
+    color: #272727;
+    margin: 0;
+    margin-left: 18px;
+  }
+}
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.slider-container {
+  margin-top: 18px;
+  padding-left: 18px;
+  display: flex;
+  overflow-x: scroll;
+  padding-right: 14px;
+}
+.slider-item {
+  border: 2px solid #dbdbdb;
+  border-radius: 16px;
+  padding-left: 19px;
+  padding-right: 11px;
+  height: 32px;
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+  font-family: SFProRegular;
+  font-size: 16px;
+  color: #171d16;
+  min-width: 80px;
+  img{
+    margin-right: 10px;
+  }
+}
+
+.slider-item-selected {
+  background-color: #bdbebd;
+  font-weight: bold;
+  min-width: 120px;
+}
+
+.content {
+  padding-left: 18px;
+  padding-right: 18px;
+  padding-top: 20px;
+}
+
+.expenditure-amount-title {
+  font-family: SFProRegular;
+  font-size: 17px;
+  font-weight: 500;
+  color: #7b7b7b;
+  margin-top: 28px;
+  margin-bottom: 0;
+}
+
+.expenditure-amount-field {
+  width: 100%;
+
+  input {
+    width: 100%;
+  }
+}
+
+
+.dots-icon{
+  margin-left: 10px;
+}

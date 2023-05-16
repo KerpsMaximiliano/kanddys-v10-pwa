@@ -4,6 +4,7 @@ const webformBody = `
     _id
     name
     description
+    type
     user {
       _id
       name
@@ -234,3 +235,5 @@ export const questionPaginate = gql`
     }
   }
 `;
+
+
