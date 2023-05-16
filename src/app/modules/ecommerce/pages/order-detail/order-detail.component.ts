@@ -153,6 +153,7 @@ export class OrderDetailComponent implements OnInit {
   link: string;
   chatLink: string;
   panelOpenState = false;
+  openNavigation = false;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -205,6 +206,7 @@ export class OrderDetailComponent implements OnInit {
         const { orderId } = params;
 
         await this.executeProcessesAfterLoading(orderId, notification);
+        //console.log(this.order.user._id);
       });
     });
   }
@@ -212,6 +214,8 @@ export class OrderDetailComponent implements OnInit {
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
+
+    console.log(this.order);
 
     await this.getAnswersForEachItem();
 
@@ -221,6 +225,7 @@ export class OrderDetailComponent implements OnInit {
       });
       return;
     }
+    this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
     if (this.order.items) {
       for (const itemSubOrder of this.order.items) {
         itemSubOrder.item.media = itemSubOrder.item.images
@@ -295,8 +300,6 @@ export class OrderDetailComponent implements OnInit {
         minute: '2-digit',
       })
       .toLocaleUpperCase();
-    this.headerService.user = await this.authService.me();
-    await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
     if (!this.headerService.merchantContact) {
       this.headerService.merchantContact = (
         await this.contactService.contacts({
@@ -493,52 +496,39 @@ export class OrderDetailComponent implements OnInit {
     unlockUI();
   }
 
-  async notificationClicked() {
-    this.notify = false;
-    this.router.navigate([], {
-      relativeTo: this.route,
-    });
-    const tags =
-      (await this.tagsService.tagsByUser({
-        findBy: {
-          entity: 'order',
-        },
-        options: {
-          limit: -1,
-        },
-      })) || [];
-    for (const tag of tags) {
-      this.selectedTags[tag._id] = false;
-      if (this.order.tags.includes(tag._id)) {
-        this.selectedTags[tag._id] = true;
-      }
-    }
-    this.tags = tags;
-    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+  goToWhatsapp() {
+    window.open(this.messageLink, '_blank');
   }
+
+  // async notificationClicked() {
+  //   this.notify = false;
+  //   this.router.navigate([], {
+  //     relativeTo: this.route,
+  //   });
+  //   const tags =
+  //     (await this.tagsService.tagsByUser({
+  //       findBy: {
+  //         entity: 'order',
+  //       },
+  //       options: {
+  //         limit: -1,
+  //       },
+  //     })) || [];
+  //   for (const tag of tags) {
+  //     this.selectedTags[tag._id] = false;
+  //     if (this.order.tags.includes(tag._id)) {
+  //       this.selectedTags[tag._id] = true;
+  //     }
+  //   }
+  //   this.tags = tags;
+  //   this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+  // }
 
   openImageModal(imageSourceURL: string) {
     this.dialogService.open(ImageViewComponent, {
       type: 'fullscreen-translucent',
       props: {
         imageSourceURL,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
-  openLogoutDialog() {
-    this.dialogService.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        alternate: true,
-        buttonText: 'Cerrar Sesión',
-        buttonCallback: async () => {
-          await this.authService.signoutThree();
-          // this.changeColor = null;
-          this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
-        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -705,8 +695,6 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async buyAgain() {
-    if (!this.headerService.saleflow)
-      await this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
     this.headerService.deleteSaleflowOrder();
     this.headerService.order = {
       products: this.order.items.map((item) => {
@@ -760,11 +748,11 @@ export class OrderDetailComponent implements OnInit {
     );
   }
 
-  async isMerchantOwner(merchant: string) {
-    this.orderMerchant = await this.merchantsService.merchantDefault();
-    this.isMerchant = merchant === this.orderMerchant?._id;
-    this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
-  }
+  // async isMerchantOwner(merchant: string) {
+  //   this.orderMerchant = await this.merchantsService.merchantDefault();
+  //   this.isMerchant = merchant === this.orderMerchant?._id;
+  //   this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
+  // }
 
   createTag() {
     let dialogRef = this.dialog.open(CreateTagComponent, {
@@ -902,8 +890,7 @@ export class OrderDetailComponent implements OnInit {
       await this.webformsService.answerByOrder(this.order._id);
 
     console.log('AnswersByOrder', answers);
-
-    if (answers?.length) {
+    if (answers.length) {
       const webformsIds = [];
       for (const item of this.order.items) {
         if (item.item.webForms && item.item.webForms.length) {

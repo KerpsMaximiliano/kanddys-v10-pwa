@@ -204,6 +204,8 @@ import { OrderInfoComponent } from './dialogs/order-info/order-info.component';
 import { IncomeFilterComponent } from './components/income-filter/income-filter.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { FormResponsesByQuestionComponent } from './components/form-responses-by-question/form-responses-by-question.component';
+import { WebformClientViewComponent } from './components/webform-client-view/webform-client-view.component';
 import { AutofocusDirective } from '../core/directives/autofocus.directive';
 
 const imports = [
@@ -423,6 +425,8 @@ const declarations = [
   OrderInfoComponent,
   IncomeFilterComponent,
   NavigationComponent,
+  FormResponsesByQuestionComponent,
+  WebformClientViewComponent,
   AutofocusDirective,
 ];
 

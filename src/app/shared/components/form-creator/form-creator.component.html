@@ -403,6 +403,39 @@
                     Limitado a una sola respuesta.
                   </mat-checkbox>
                 </div>
+                <div class="checkbox-wrapper">
+                  <mat-checkbox
+                    class="required-question-checkbox"
+                    [formControl]="
+                      getFormControl(step.fields.controls['required'])
+                    "
+                    (change)="(null)"
+                  >
+                    Pregunta obligatoria
+                  </mat-checkbox>
+                </div>
+
+                <mat-form-field
+                  appearance="fill"
+                  *ngIf="!step.fields.controls['limitedToOneSelection'].value"
+                >
+                  <mat-label>Establece el número máximo de opciones seleccionables</mat-label>
+
+                  <mat-select
+                    [formControl]="
+                      getFormControl(step.fields.controls['answerLimit'])
+                    "
+                  >
+                    <mat-option
+                      *ngFor="
+                        let number of answerLimitOptionsForMultipleSelection
+                      "
+                      [value]="number"
+                    >
+                      {{ number === 0 ? 'Sin límites' : number }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </ng-container>
 
@@ -435,6 +468,20 @@
                   {{ validationOption.label }}
                 </li>
               </ul>
+
+              <div class="checkbox-options-wrapper">
+                <div class="checkbox-wrapper">
+                  <mat-checkbox
+                    class="required-question-checkbox"
+                    [formControl]="
+                      getFormControl(step.fields.controls['required'])
+                    "
+                    (change)="(null)"
+                  >
+                    Pregunta obligatoria
+                  </mat-checkbox>
+                </div>
+              </div>
             </ng-template>
           </div>
 
@@ -455,3 +502,9 @@
     </div>
   </swiper>
 </main>
+
+<ng-template #numberTemplate let-number="number">
+  <div class="number-option">
+    <div class="number-circle">{{ number }}</div>
+  </div>
+</ng-template>
