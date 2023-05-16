@@ -890,7 +890,7 @@ export class OrderDetailComponent implements OnInit {
       await this.webformsService.answerByOrder(this.order._id);
 
     console.log('AnswersByOrder', answers);
-    if (answers.length) {
+    if (answers?.length) {
       const webformsIds = [];
       for (const item of this.order.items) {
         if (item.item.webForms && item.item.webForms.length) {

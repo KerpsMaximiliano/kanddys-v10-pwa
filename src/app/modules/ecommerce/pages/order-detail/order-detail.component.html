@@ -64,7 +64,7 @@
               </p>
             </div>
           </mat-panel-title>
-          <p class="userId">
+          <p class="userId" *ngIf="order">
             {{ order.user.name || order.user.phone || order.user.email }}
           </p>
         </mat-expansion-panel-header>
@@ -147,10 +147,10 @@
     </div>
   </ng-container> -->
 
-    <section class="top" style="margin-top: 7px">
+    <section class="top" style="margin-top: 7px" *ngIf="order">
       <div style="display: grid">
         <div style="display: flex; align-items: center; margin-bottom: 10px">
-          <p *ngIf="order" style="margin-right: auto">
+          <p style="margin-right: auto">
             Factura <br />
             <!-- <button class="top-name btn" *ngIf="isMerchant">
             {{ order?.items[0].saleflow.headline }}
@@ -162,9 +162,7 @@
           </span>
         </div>
         <div style="display: flex; align-items: center">
-          <p *ngIf="order" style="margin-right: auto">
-            Fecha de Factura <br />
-          </p>
+          <p style="margin-right: auto">Fecha de Factura <br /></p>
           <span>
             {{ orderDate }}
             <!-- <ng-container *ngIf="order?.user">
@@ -443,7 +441,7 @@
             {{ deliveryImages?.deliveryZone.zona }}
           </p>
         </div>
-        <div class="questions" *ngIf="order.items[0].deliveryLocation">
+        <div class="questions" *ngIf="order?.items[0].deliveryLocation">
           <p class="label">Donde entregaremos?</p>
           <p class="label gray-out capitalize">
             <ng-container *ngIf="!order?.items[0]?.deliveryLocation?.street">
