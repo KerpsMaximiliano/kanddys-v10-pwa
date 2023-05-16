@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   uri: 'http://localhost:4200',
   whatsAppAPI: 'https://api.whatsapp.com',
   api: {

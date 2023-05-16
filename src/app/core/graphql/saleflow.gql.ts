@@ -54,6 +54,7 @@ export const body = `
     slug
     image
     bio
+    contactFooter
     owner {
       _id
       phone

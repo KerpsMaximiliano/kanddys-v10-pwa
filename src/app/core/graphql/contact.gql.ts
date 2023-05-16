@@ -71,6 +71,7 @@ export const contacts = gql`
       _id
       name
       description
+      user
       link {
         _id
         name
