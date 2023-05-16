@@ -4,9 +4,20 @@
   </button> -->
   <header>
     <div class="title">
-      <a mat-icon-button [routerLink]="['../../../store']">
+      <a
+        mat-icon-button
+        *ngIf="redirectTo !== 'dashboard'"
+        [routerLink]="['../../../store']"
+      >
         <i class="fas fa-chevron-left"></i>
       </a>
+      <button
+        mat-icon-button
+        *ngIf="redirectTo === 'dashboard'"
+        (click)="goBack()"
+      >
+        <i class="fas fa-chevron-left"></i>
+      </button>
       {{ headerService.saleflow.merchant.name }}
     </div>
     <div></div>
