@@ -18,6 +18,11 @@ export class ViewConfigurationComponent implements OnInit {
   optionsArray: Array<any> = [];
   isSimpleCard: boolean;
 
+  isDescription: boolean = false;
+  isSimple: boolean = false;
+  isFull: boolean = false;
+  newView;
+
   constructor(
     // public merchantsService: MerchantsService,
     public saleflowService: SaleFlowService,
@@ -35,6 +40,7 @@ export class ViewConfigurationComponent implements OnInit {
       this.typeView = 'cards';
       this.title = 'Carta de artículos';
     }
+
     // await this.addItem(this.itemsArray, '63d429d7849f894c1895c659');
     // await this.addItem(this.itemsArray, '63d420a8849f894c189544d4');
     // await this.addItem(this.itemsArray, '63c93768a6ce9322ca278888');
@@ -55,17 +61,28 @@ export class ViewConfigurationComponent implements OnInit {
   //   array.push(item);
   // }
 
-  async changeView() {
-    const newView =
-      this.saleflowService.saleflowData.layout === 'description-card'
-        ? 'simple-card'
-        : 'description-card';
-    this.saleflowService.updateSaleflow(
+  async changeView(type: string) {
+    switch (type) {
+      case 'full':
+        this.newView = 'image-full-width';
+        break;
+      case 'description':
+        this.newView = 'description-card';
+        break;
+      case 'simple':
+        this.newView = 'simple-card';
+        break;
+    }
+    // const newView =
+    //   this.saleflowService.saleflowData.layout === 'description-card'
+    //     ? 'simple-card'
+    //     : 'description-card';
+    const update = await this.saleflowService.updateSaleflow(
       {
-        layout: newView,
+        layout: this.newView,
       },
       this.saleflowService.saleflowData._id
     );
-    this.saleflowService.saleflowData.layout = newView;
+    this.saleflowService.saleflowData.layout = this.newView;
   }
 }
