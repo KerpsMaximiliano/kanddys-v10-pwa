@@ -19,6 +19,11 @@ a {
   min-height: 100vh;
   background-color: #F6F6F6;
 
+  .panel {
+    background-color: #272727;
+    border-radius: 0;
+  }
+
   .top-area {
     width: 90%;
     display: flex;
@@ -423,6 +428,7 @@ a {
   display: flex;
   align-items: center;
   height: 100%;
+  color: #FFF;
 
   .icon {
     height: 30px;
@@ -1036,4 +1042,9 @@ table {
   position: absolute;
   top: 15px;
   right: 24px;
+  text-transform: capitalize;
+}
+
+.mat-expansion-panel:not(.mat-expanded):not([aria-disabled=true]) .mat-expansion-panel-header:hover {
+  background-color: #272727;
 }
