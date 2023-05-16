@@ -178,7 +178,12 @@
         </p>
 
         <ng-container *ngFor="let item of order?.items; index as i">
-          <div class="items-container" style="margin-bottom: 4px">
+          <div
+            class="items-container"
+            [ngClass]="{
+              withResponses: answersByItem[item._id].response
+            }"
+          >
             <div class="image-container">
               <button class="btn">
                 <div
@@ -239,10 +244,19 @@
 
           <ng-container *ngIf="answersByItem[item._id]">
             <ng-container
-              *ngFor="let question of answersByItem[item._id].response"
+              *ngFor="
+                let question of answersByItem[item._id].response;
+                index as i
+              "
             >
               <div *ngIf="question.question" class="webform-question-wrapper">
-                <div class="question">
+                <div
+                  class="question"
+                  [ngClass]="{
+                    lastQuestion:
+                      i === answersByItem[item._id].response.length - 1
+                  }"
+                >
                   <p class="top-text">{{ question.question }}</p>
                   <p
                     class="bottom-text"
@@ -419,14 +433,14 @@
           </p>
         </div>
         <div class="questions">
-          <p class="label">A quien entregaremos?</p>
-          <p class="label gray-out capitalize">
+          <p class="label title">A quien entregaremos?</p>
+          <p class="label body gray-out capitalize">
             {{ order?.user?.name ? order?.user?.name : order?.user?.phone }}
           </p>
         </div>
         <div class="questions" *ngIf="deliveryImages?.reservation">
-          <p class="label">Cuando entregaremos?</p>
-          <p class="label gray-out capitalize">
+          <p class="label title">Cuando entregaremos?</p>
+          <p class="label body gray-out capitalize">
             {{ displayReservation(deliveryImages?.reservation) }}
           </p>
         </div>
@@ -550,16 +564,20 @@
       >
         <p class="section-label">MENSAJE DE REGALO (OPCIONAL)</p>
 
-        <div class="questions">
-          <p class="label">Escrito en tarjetita física</p>
-          <p class="label gray-out">{{ post?.message }}</p>
-        </div>
+        <div class="webform-question-wrapper">
+          <div class="question firstQuestion">
+            <p class="top-text">Escrito en tarjetita física</p>
+            <p class="bottom-text">
+              {{ post?.message }}
+            </p>
+          </div>
 
-        <div class="questions">
-          <p class="label">Nombre del sobre</p>
-          <p class="label gray-out">
-            {{ post?.targets[0]?.name || post?.title }}
-          </p>
+          <div class="question lastQuestion">
+            <p class="top-text">Nombre del sobre</p>
+            <p class="bottom-text">
+              {{ post?.targets[0]?.name || post?.title }}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -821,6 +839,8 @@
         </div>
       </ng-container> -->
       </div>
+
+      
       <!-- <button
       mat-icon-button
       (click)="openDialog(deliveryOrder)"
@@ -829,6 +849,13 @@
       <mat-icon>menu</mat-icon>
     </button> -->
     </div>
+    
+    <div class="status-bars">
+      <div class="status-section"></div>
+      <div class="status-section"></div>
+      <div class="status-section"></div>
+    </div>
+
     <div class="sticky-bar">
       <p>WeDoWeLike, para colaborar, monetizar y vender</p>
       <img [src]="env + '/dots-black.svg'" alt="" style="margin-left: auto" />

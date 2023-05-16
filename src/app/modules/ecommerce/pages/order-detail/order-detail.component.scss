@@ -17,6 +17,7 @@ a {
 }
 .container {
   min-height: 100vh;
+  background-color: #F6F6F6;
 
   .top-area {
     width: 90%;
@@ -87,7 +88,7 @@ a {
     background-color: #fff;
     font-size: 17px;
     color: #7b7b7b;
-    font-family: SFProRegular;
+    font-family: InterRegular;
 
     .top-h {
       font-family: "RobotoMedium";
@@ -136,9 +137,10 @@ a {
   .information {
     width: 100%;
     margin: 20px 0 40px 0;
-    padding: 0 27px 32px;
+    padding: 0px 15.5px;
     padding-bottom: 70px; //para la barra inferior
     flex: 1;
+    background-color: #F6F6F6;
 
     .section {
       width: 100%;
@@ -155,9 +157,13 @@ a {
 
       .items-container {
         background-color: #ffffff;
-        padding: 10px 12px;
+        padding: 14px 16px 15px 16px;
         border-radius: 6px;
         align-items: center;
+
+        &.withResponses {
+          border-radius: 7px 7px 0px 0px;
+        }
 
         .image-container {
           display: flex;
@@ -168,8 +174,8 @@ a {
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            width: 86px;
-            height: 86px;
+            width: 82px;
+            height: 82px;
             border-radius: 6px;
 
             // .item-image {
@@ -255,7 +261,7 @@ a {
         }
 
         .total {
-          font-family: "SfProBold";
+          font-family: InterBold;
           font-size: 17px;
           color: #000000;
           margin: 0;
@@ -637,9 +643,9 @@ table {
     align-items: center;
     .left-text,
     .right-text {
-      color: #000000;
-      font-size: 13px;
-      font-family: SFProBold;
+      color: #7b7b7b;
+      font-size: 16px;
+      font-family: InterBold;
     }
     .right-text {
       margin-left: auto;
@@ -650,27 +656,37 @@ table {
     width: 80%;
     color: #7b7b7b;
     font-size: 13px;
-    font-family: SFProMedium;
+    font-family: InterRegular;
   }
 }
 
 .question {
   background-color: #fff;
-  border-radius: 7px;
-  padding: 17.5px 13.5px 15.5px;
-  margin-top: 5px;
+  border-radius: 0px;
+  padding: 18px 15px 17px 15px;
+  border: 1px solid #f6f6f6;
 
-  .top-text,
-  .bottom-text {
-    color: #000000;
-    font-family: SFProMedium;
+  &.firstQuestion {
+    border-radius: 7px 7px 0px 0px;
+  }
+
+  &.lastQuestion {
+    border-radius: 0px 0px 7px 7px;
+  }
+
+  .top-text {
+    color: #7b7b7b;
+    font-family: InterBold;
     font-size: 17px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
   .bottom-text {
-    margin-top: 12.5px;
+    font-size: 17px;
+    margin-top: 6px;
+    font-family: InterRegular;
     color: #7b7b7b;
     white-space: nowrap;
     overflow: hidden;
@@ -781,8 +797,8 @@ table {
 
   .image {
     margin-top: 12.5px;
-    width: 86px;
-    height: 86px;
+    width: 82px;
+    height: 82px;
     border-radius: 6px;
 
     &:hover {
@@ -799,10 +815,10 @@ table {
 }
 
 .section-label {
-  font-family: Inter;
+  font-family: InterRegular;
   font-size: 13px;
   margin: 0;
-  margin-top: 32px;
+  margin-top: 54px;
   margin-bottom: 10px;
   color: #272727;
   font-weight: 400;
@@ -816,15 +832,22 @@ table {
 
   p {
     margin: 0;
-    font-family: Inter;
     font-size: 17px;
     color: #7b7b7b;
+
+    &.title {
+      font-family: InterBold;
+    }
+
+    &.body {
+      font-family: InterRegular;
+    }
   }
   .label {
     font-weight: 700;
   }
   .gray-out {
-    margin-top: 10px;
+    margin-top: 6px;
     font-weight: 400;
   }
 }
@@ -854,7 +877,6 @@ table {
 }
 .payment-info {
   width: 100%;
-  text-align: center;
 
   span {
     font-family: SfProBold;
@@ -913,7 +935,7 @@ table {
   position: fixed;
   width: 100%;
   max-width: 500px;
-  bottom: 27.25px;
+  bottom: 36px;
 }
 
 .chip-list {
@@ -923,7 +945,7 @@ table {
   gap: 8px;
 }
 .chip {
-  font-family: Inter;
+  font-family: InterBold;
   font-size: 1rem;
   background-color: #3b654a;
   padding: 8px 16px;
@@ -932,6 +954,23 @@ table {
   user-select: none;
   color: #f6f6f6;
   font-weight: 700;
+}
+
+.status-bars {
+  height: 9px;
+  background-color: #171D16;
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  bottom: 27px;
+  display: flex;
+
+  .status-section {
+    width: 168px;
+    background-color: #C4C5C3;
+    margin-right: 8px;
+    height: 3px;
+  }
 }
 
 .sticky-bar {
