@@ -2,14 +2,17 @@
   margin: 0;
 }
 
-button {
+.btn {
   all: unset;
   cursor: pointer;
+  width: 100%;
 }
 
 .icon {
+  margin-left: 4px;
   &.black {
-    filter: brightness(0) saturate(100) invert(8%) sepia(0%) saturate(814%) hue-rotate(154deg) brightness(98%) contrast(83%);
+    filter: brightness(0) saturate(100) invert(8%) sepia(0%) saturate(814%) hue-rotate(154deg) brightness(98%)
+      contrast(83%);
   }
 }
 
@@ -63,4 +66,18 @@ button {
       }
     }
   }
+}
+.form-group {
+  margin-bottom: 24px;
+
+  .card {
+    padding: 20px;
+  }
+}
+
+input,
+textarea {
+  border: none;
+  outline: none;
+  width: 100%;
 }

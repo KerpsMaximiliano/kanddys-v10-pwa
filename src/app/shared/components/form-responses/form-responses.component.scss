@@ -1,0 +1,551 @@
+.container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+
+  .users-by-webform-header {
+    background-color: #c1c4c1;
+    height: 47px;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 21px;
+    padding-right: 17px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+
+    .back-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .form-name {
+        margin-left: 11.3px;
+        font-family: SfProSemiBold;
+        font-weight: normal;
+        font-size: clamp(13px, 4vw, 17px);
+      }
+
+      img {
+        width: clamp(15.38px, 4vw, 19.38px);
+      }
+    }
+
+    .settings-btn {
+      img {
+        width: clamp(22px, 6vw, 26px);
+      }
+    }
+
+    .back-btn,
+    .settings-btn {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .submission-responses-header {
+    background-color: #c1c4c1;
+    height: 47px;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 21px;
+    padding-right: 17px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+
+    .left-column {
+      display: flex;
+      align-items: center;
+
+      .user-presentation {
+        font-family: SfProLight;
+        font-size: clamp(13px, 4vw, 17px);
+        color: #171d16;
+        display: flex;
+        height: 22px;
+        margin-left: 14px;
+
+        .kioskoId {
+          font-family: SfProBold;
+          margin-right: 14px;
+          font-weight: normal;
+        }
+      }
+    }
+
+    .back-btn,
+    .settings-btn {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .three-dots {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 12px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  nav {
+    margin: 17px auto 30px 17px;
+    display: flex;
+
+    button {
+      background-color: #f5f5f5;
+      padding: 9px 21px 4px 21px;
+      border: 1px solid #d3d3d3;
+      font-family: SfProLight;
+      font-size: clamp(12px, 4vw, 16px);
+      color: #272727;
+      margin-right: 9px;
+      border-radius: 20px;
+
+      &.active {
+        background-color: #171d16;
+        color: white;
+        border: none;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  main {
+    margin-top: 30px;
+
+    .question-list,
+    .form-submission-list,
+    .question-responses-list {
+      list-style: none;
+      margin: 0px;
+      padding: 0px;
+      margin: 0px 17px;
+    }
+
+    .form-submission-list,
+    .question-responses-list {
+      .list-card {
+        padding: 6px 15px 10px 8px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        margin-bottom: 6px;
+
+        .top-row {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          align-items: flex-end;
+
+          .user-presentation {
+            font-family: SfProLight;
+            font-size: clamp(13px, 4vw, 17px);
+            color: #171d16;
+            display: flex;
+            align-items: flex-end;
+            height: 22px;
+
+            .kioskoId {
+              font-family: SfProBold;
+              margin-right: 14px;
+              font-weight: normal;
+            }
+          }
+
+          .responses-link {
+            color: #2874ad;
+            font-family: SfProBold;
+            font-size: clamp(9px, 4vw, 13px);
+          }
+        }
+
+        .text-body {
+          width: 100%;
+          font-size: clamp(11px, 4vw, 15px);
+          font-family: SfProLight;
+          color: #171d16;
+          margin-top: 14px;
+          margin-bottom: 14px;
+        }
+
+        .blank-space {
+          height: 24px;
+        }
+
+        .bottom-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .date-relative-info {
+            color: #7b7b7b;
+            font-size: 16px;
+            font-family: SfProRegular;
+            font-size: clamp(12px, 4vw, 16px);
+          }
+
+          img {
+            margin-left: auto;
+            filter: invert(67%) sepia(4%) saturate(16%) hue-rotate(336deg)
+              brightness(95%) contrast(91%);
+          }
+        }
+
+        .left-column {
+          .user-presentation {
+            font-family: SfProLight;
+            font-size: clamp(13px, 4vw, 17px);
+            color: #171d16;
+            display: flex;
+            align-items: flex-end;
+            height: 22px;
+            margin-bottom: 25px;
+
+            .kioskoId {
+              font-family: SfProBold;
+              margin-right: 14px;
+              font-weight: normal;
+            }
+          }
+
+          .date-relative-info {
+            color: #7b7b7b;
+            font-size: 16px;
+            font-family: SfProRegular;
+            font-size: clamp(12px, 4vw, 16px);
+          }
+        }
+      }
+    }
+
+    .question-list {
+      .question-response-card {
+        padding: 20px 17px 20px 17px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        margin-bottom: 6px;
+
+        .title {
+          font-family: SfProSemiBold;
+          font-size: 16px;
+          margin: 0px;
+          font-weight: normal;
+          margin-bottom: 16px;
+          color: #171d16;
+        }
+
+        .text-responses {
+          font-family: SfProLight;
+          margin: 0px;
+          font-size: 15px;
+          color: #171d16;
+        }
+
+        .media-responses-wrapper {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+          justify-items: center;
+          gap: 10px;
+        }
+
+        .media-response {
+          border: 1px solid #8aeb89;
+          width: 50px;
+          height: 60px;
+          background-repeat: no-repeat;
+          background-size: cover;
+          background-position: center;
+          border-radius: 10px;
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+
+        .text-option-list {
+          list-style: none;
+          list-style: circle;
+          padding: 0px;
+          margin: 0px;
+          padding-left: 17px;
+
+          li {
+            font-family: SfProLight;
+            font-size: 15px;
+            margin-bottom: 10px;
+          }
+        }
+      }
+    }
+
+    .right-column {
+      width: 27.64%;
+
+      .responses-link {
+        display: flex;
+        align-items: center;
+        color: #2874ad;
+        font-family: SfProBold;
+        font-size: clamp(9px, 4vw, 13px);
+        height: 22px;
+        margin-bottom: 25px;
+        margin-top: 6px;
+        justify-content: flex-end;
+      }
+
+      .three-dots {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        height: 12px;
+
+        img {
+          margin-left: auto;
+          filter: invert(67%) sepia(4%) saturate(16%) hue-rotate(336deg)
+            brightness(95%) contrast(91%);
+        }
+      }
+    }
+  }
+}
+
+.webform-description {
+  margin: auto;
+  margin-top: 30px;
+  margin-bottom: 17px;
+  text-align: center;
+  width: 100%;
+  font-family: SfProSemiBold;
+  font-size: clamp(12px, 4vw, 16px);
+  max-width: 74.766%;
+}
+
+.avatar-wrapper {
+  border-radius: 50%;
+  height: 22px;
+  width: 22px;
+  margin-right: 6px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  &.from-header {
+    margin-left: 14px;
+  }
+}
+
+.question-list {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+  padding: 0px 30px;
+}
+
+.question-wrapper {
+  width: 100%;
+  padding: 14px 15px 7px 15px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  margin-bottom: 6px;
+
+  .top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .response-type {
+      color: #7b7b7b;
+      font-family: SfProRegular;
+      font-size: clamp(11px, 4vw, 15px);
+    }
+
+    .number-of-responses {
+      font-family: SfProBold;
+      font-size: clamp(9px, 4vw, 13px);
+      color: #2874ad;
+    }
+  }
+
+  .title {
+    margin: auto;
+    margin-top: 36px;
+    color: #171d16;
+    font-size: clamp(12px, 4vw, 16px);
+    font-family: SfProSemiBold;
+    max-width: 86.98%;
+    text-align: center;
+  }
+
+  .bottom-section {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .relative-date {
+      font-family: SfProRegular;
+      font-size: clamp(11px, 4vw, 15px);
+      color: #7b7b7b;
+    }
+
+    .three-dots {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+
+      img {
+        margin-left: auto;
+        filter: invert(67%) sepia(4%) saturate(16%) hue-rotate(336deg)
+          brightness(95%) contrast(91%);
+      }
+    }
+  }
+}
+
+.no-form-responses {
+  font-family: SfProLight;
+  font-size: 17px;
+  margin: auto;
+  text-align: center;
+}
+
+footer {
+  background-color: #6fcf97;
+  padding: 6px 17px;
+  display: flex;
+  justify-content: space-between;
+  font-family: SfProLight;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 500px;
+  margin: auto;
+
+  .share-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  .preview-btn:hover,
+  .share-btn:hover {
+    cursor: pointer;
+  }
+}
+
+.filters {
+  overflow-x: scroll;
+  margin-bottom: 18px;
+
+  .filter {
+    margin-left: 20px;
+    font-family: SfProLight;
+    font-size: clamp(13px, 4vw, 17px);
+    padding: 5px 0px;
+    display: inline-block;
+    width: auto !important;
+
+    &.selected {
+      padding: 5px 7px;
+      border-bottom: 3px solid #6fcf97;
+      border-radius: 2px;
+    }
+  }
+}
+
+.response-options-media,
+.text-options {
+  margin-bottom: 13px;
+}
+
+.media-option-wrapper {
+  margin-left: 12px;
+  width: auto !important;
+  height: auto !important;
+
+  .image {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    width: 102px;
+    height: 120px;
+    border-radius: 10px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .users-percentage {
+    width: 87.25%;
+    margin: auto;
+    border-radius: 1px;
+    font-family: SfProBold;
+    font-size: 17px;
+    display: flex;
+    flex-direction: column;
+
+    .percentage {
+      padding: 8px 10px 6px 10px;
+      margin: auto;
+    }
+
+    .border {
+      transition: 0.5s width ease-out;
+      height: 3px;
+      width: 0%;
+      margin: auto;
+      background-color: #171d16;
+      border-radius: 10px;
+    }
+
+    &.selected {
+      .border {
+        width: 100%;
+      }
+    }
+  }
+
+  &:nth-of-type(1) {
+    margin-left: 22px;
+  }
+}
+
+.text-option {
+  margin-left: 25px;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 25px;
+  font-size: 16px;
+  padding: 9px 23px 5px 23px;
+
+  background-color: #f5f5f5;
+  color: #272727;
+  font-family: SfProLight;
+  border: 1px solid #d3d3d3;
+  transition: 0.5s background-color ease-out, 0.5s color ease-out;
+
+  &.selected {
+    font-family: SfProSemiBold;
+    background-color: #171d16;
+    color: white;
+    border: none;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:nth-of-type(1) {
+    margin-left: 22px;
+  }
+}

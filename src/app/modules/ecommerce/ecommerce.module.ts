@@ -42,6 +42,7 @@ import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.c
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
+import { WebformClientViewComponent } from 'src/app/shared/components/webform-client-view/webform-client-view.component';
 import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-selector/webform-options-selector.component';
 
 const routes: Routes = [
@@ -227,7 +228,11 @@ const routes: Routes = [
       {
         path: 'qr-edit',
         component: QrEditComponent,
-      }
+      },
+      {
+        path: 'webform/:itemId',
+        component: WebformClientViewComponent,
+      },
     ],
   },
 ];
@@ -265,7 +270,7 @@ const routes: Routes = [
     PostEditionComponent,
     Fase1LandingComponent,
     ArticleUploadComponent,
-    TextEditionAndPreviewComponent
+    TextEditionAndPreviewComponent,
   ],
   imports: [
     CommonModule,

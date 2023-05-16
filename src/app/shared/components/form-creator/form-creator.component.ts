@@ -103,6 +103,10 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'Menos de 12 Palabras',
         },
         {
+          name: 'number',
+          label: 'Número',
+        },
+        {
           name: 'min12',
           label: 'Mas de 12 palabras',
         } /*
@@ -160,6 +164,9 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   dragStartX: number = null;
   MIN_SWIPE_DISTANCE = 15; // adjust this value as needed
   requiredFieldsReminderOpened: boolean = false;
+  answerLimitOptionsForMultipleSelection = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -387,6 +394,8 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       );
     }
 
+    baseFields.required = new FormControl(Boolean(question.required));
+
     baseFields.selectedResponseType = new FormControl(
       type,
       Validators.required
@@ -400,6 +409,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
       baseFields.limitedToOneSelection = new FormControl(
         limitedToJustOneAnswer
       );
+      baseFields.answerLimit = new FormControl(question.answerLimit);
     }
 
     this.steps.push({
@@ -435,6 +445,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         question: new FormControl('', Validators.required),
         selectedResponseType: new FormControl('', Validators.required),
         selectedResponseValidation: new FormControl('', Validators.required),
+        required: new FormControl(false),
       }),
     });
 
@@ -518,6 +529,10 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         'limitedToOneSelection',
         new FormControl(false)
       );
+      this.steps[this.currentStepIndex].fields.addControl(
+        'answerLimit',
+        new FormControl(0)
+      );
 
       validationsOptionsFieldControl.setValidators([]);
       validationsOptionsFieldControl.updateValueAndValidity();
@@ -561,6 +576,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     this.steps[this.currentStepIndex].fields.removeControl(
       'limitedToOneSelection'
     );
+    this.steps[this.currentStepIndex].fields.removeControl('answerLimit');
   }
 
   updateCurrentStepData(swiper: Swiper) {
@@ -1160,7 +1176,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         value: step.fields.controls['question'].value,
         index,
         subIndex: 0,
-        required: false,
+        required: step.fields.controls['required'].value,
       };
 
       if (this.webform && step.fields.controls['id']) {
@@ -1236,7 +1252,14 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           const limitedToJustOneAnswer =
             step.fields.controls['limitedToOneSelection']?.value;
 
+          const customLimit = Number(
+            step.fields.controls['answerLimit']?.value
+          );
+
+          console.log('LIMITE CUSTOM', customLimit);
+
           if (limitedToJustOneAnswer) question.answerLimit = 1;
+          else if (customLimit) question.answerLimit = customLimit;
 
           question.answerTextType = 'DEFAULT';
 
@@ -1304,6 +1327,12 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
+
+    for (const step of this.steps) {
+      if (step.statusChangeSubscription) {
+        step.statusChangeSubscription.unsubscribe();
+      }
+    }
   }
 
   // Define a constant for the minimum distance to consider a swipe
