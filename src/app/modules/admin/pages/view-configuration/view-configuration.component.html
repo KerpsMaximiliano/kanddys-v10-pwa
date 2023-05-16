@@ -71,21 +71,51 @@
           [ngTemplateOutlet]="
             saleflowService.saleflowData?.layout === 'description-card'
               ? buyerCardView
-              : saleflowItemView
+              : saleflowService.saleflowData?.layout === 'simple-card'
+              ? saleflowItemView
+              : buyerCardFullView
           "
         ></ng-container>
       </div>
       <div>
         <p class="label">Opciones:</p>
         <div class="cardContainer">
-          <button style="width: 100%" (click)="changeView()">
-            <ng-container
+          <button
+            style="width: 100%; margin-bottom: 10px"
+            (click)="changeView('description')"
+            *ngIf="saleflowService.saleflowData?.layout !== 'description-card'"
+          >
+            <ng-container [ngTemplateOutlet]="buyerCardView"></ng-container>
+
+            <!-- <ng-container
               [ngTemplateOutlet]="
                 saleflowService.saleflowData?.layout === 'description-card'
                   ? saleflowItemView
                   : buyerCardView
               "
             ></ng-container>
+            <ng-container
+              [ngTemplateOutlet]="
+                saleflowService.saleflowData?.layout === 'description-card'
+                  ? saleflowItemView
+                  : buyerCardView
+              "
+            ></ng-container> -->
+          </button>
+
+          <button
+            style="width: 100%; margin-bottom: 10px"
+            (click)="changeView('simple')"
+            *ngIf="saleflowService.saleflowData?.layout !== 'simple-card'"
+          >
+            <ng-container [ngTemplateOutlet]="saleflowItemView"></ng-container>
+          </button>
+          <button
+            style="width: 100%; margin-bottom: 10px"
+            (click)="changeView('full')"
+            *ngIf="saleflowService.saleflowData?.layout !== 'image-full-width'"
+          >
+            <ng-container [ngTemplateOutlet]="buyerCardFullView"></ng-container>
           </button>
         </div>
       </div>
@@ -123,5 +153,21 @@
         </app-saleflow-item>
       </div>
     </div>
+  </div>
+</ng-template>
+
+<ng-template #buyerCardFullView>
+  <div class="border">
+    <app-buyer-card
+      [shadow]="false"
+      [img]="
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1674848727416877cf86c0aaad6ceff21195f5a89ca98136e816cfb8c6d6820d2d9b320f546d5.png'
+      "
+      title="Nombre del Articulo"
+      description="Descripción del artículo"
+      [leftAmount]="3000"
+      mode="fullWidth"
+    >
+    </app-buyer-card>
   </div>
 </ng-template>

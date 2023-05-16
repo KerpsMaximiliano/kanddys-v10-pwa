@@ -72,6 +72,30 @@
     </div>
 
     <div
+      class="description-view"
+      *ngIf="headerService.saleflow.layout === 'image-full-width'"
+    >
+      <!-- [routerLink]="['../article-detail/item', item._id]"
+          [queryParams]="{ mode: 'saleflow' }" -->
+      <app-buyer-card
+        *ngFor="let item of items; let itemIndex = index"
+        [index]="itemIndex"
+        [title]="item.name"
+        [description]="item.description"
+        [img]="item.images?.length ? item.images[0].value : ''"
+        [leftAmount]="item.pricing"
+        [cta]="true"
+        [ctaActive]="item.isSelected"
+        [redirectionParams]="{
+          link: ['../../article-detail/item', item._id],
+          param: { mode: 'saleflow' }
+        }"
+        mode="fullWidth"
+        (ctaClicked)="toggleItemInCart($event)"
+      ></app-buyer-card>
+    </div>
+
+    <div
       [ngStyle]="{
         width: '100%',
         display: 'flex',

@@ -43,6 +43,10 @@ a {
       max-height: 221px;
     }
 
+    .full {
+      width: 100%;
+    }
+
     @media (max-width: 385px) {
       .img {
         width: 135px;
@@ -124,7 +128,8 @@ a {
 
       img {
         width: 18px;
-        filter: brightness(0) invert(16%) sepia(13%) saturate(973%) hue-rotate(68deg) brightness(102%) contrast(90%);
+        filter: brightness(0) invert(16%) sepia(13%) saturate(973%)
+          hue-rotate(68deg) brightness(102%) contrast(90%);
       }
     }
 

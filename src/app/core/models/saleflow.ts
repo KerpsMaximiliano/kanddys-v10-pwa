@@ -5,7 +5,7 @@ import { Item, ItemCategory, ItemPackage } from './item';
 import { Merchant } from './merchant';
 import { ExchangeData } from './wallet';
 
-type SaleflowLayout = 'simple-card' | 'description-card';
+type SaleflowLayout = 'simple-card' | 'description-card' | 'image-full-width';
 
 export class DeliveryLocation {
   _id?: string;
