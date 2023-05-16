@@ -44,6 +44,7 @@ import { PostPreviewComponent } from './pages/post-preview/post-preview.componen
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { WebformClientViewComponent } from 'src/app/shared/components/webform-client-view/webform-client-view.component';
 import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-selector/webform-options-selector.component';
+import { AllItemsComponent } from './pages/all-items/all-items.component';
 
 const routes: Routes = [
   {
@@ -140,6 +141,16 @@ const routes: Routes = [
       {
         path: 'store',
         component: StoreComponent,
+        children: [
+          {
+            path: '',
+            component: AllItemsComponent,
+          },
+          {
+            path: 'categories/:tagId',
+            component: TagItemsComponent,
+          },
+        ],
       },
       {
         path: 'create-article',
@@ -201,10 +212,10 @@ const routes: Routes = [
       //   path: 'categories',
       //   component: CollectionsComponent,
       // },
-      {
-        path: 'categories/:tagId',
-        component: TagItemsComponent,
-      },
+      // {
+      //   path: 'categories/:tagId',
+      //   component: TagItemsComponent,
+      // },
       {
         path: 'store-assistant',
         component: StoreAssistantComponent,
@@ -271,6 +282,7 @@ const routes: Routes = [
     Fase1LandingComponent,
     ArticleUploadComponent,
     TextEditionAndPreviewComponent,
+    AllItemsComponent,
   ],
   imports: [
     CommonModule,

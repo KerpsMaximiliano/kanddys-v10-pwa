@@ -21,6 +21,7 @@ export class BuyerCardComponent implements OnInit {
   @Input() viewsCounter: boolean = false;
   @Input() views: number;
   @Output() ctaClicked = new EventEmitter();
+  @Input() mode: 'normal' | 'fullWidth' = 'normal';
 
   env: string = environment.assetsUrl;
 

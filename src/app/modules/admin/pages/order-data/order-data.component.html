@@ -20,16 +20,30 @@
         [config]="cardSwiperConfig"
         *ngIf="orderStatusDelivery.inProgress.orders.length"
       >
-        <app-small-info-card
+        <a
           *ngFor="let order of orderStatusDelivery.inProgress.orders"
-          [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
-          [subtitle]="
-            'by ' + (order.user?.name || order.user?.phone || order.user?.email)
-          "
-          [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
-        ></app-small-info-card>
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'in progress'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
       </swiper>
     </div>
   </section>
@@ -54,16 +68,30 @@
         [config]="cardSwiperConfig"
         *ngIf="orderStatusDelivery.pending.orders.length"
       >
-        <app-small-info-card
+        <a
           *ngFor="let order of orderStatusDelivery.pending.orders"
-          [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
-          [subtitle]="
-            'by ' + (order.user?.name || order.user?.phone || order.user?.email)
-          "
-          [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
-        ></app-small-info-card>
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'pending'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
       </swiper>
     </div>
   </section>
@@ -88,16 +116,30 @@
         [config]="cardSwiperConfig"
         *ngIf="orderStatusDelivery.pickup.orders.length"
       >
-        <app-small-info-card
+        <a
           *ngFor="let order of orderStatusDelivery.pickup.orders"
-          [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
-          [subtitle]="
-            'by ' + (order.user?.name || order.user?.phone || order.user?.email)
-          "
-          [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
-        ></app-small-info-card>
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'pickup'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
       </swiper>
     </div>
   </section>
@@ -122,16 +164,30 @@
         [config]="cardSwiperConfig"
         *ngIf="orderStatusDelivery.shipped.orders.length"
       >
-        <app-small-info-card
+        <a
           *ngFor="let order of orderStatusDelivery.shipped.orders"
-          [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
-          [subtitle]="
-            'by ' + (order.user?.name || order.user?.phone || order.user?.email)
-          "
-          [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
-        ></app-small-info-card>
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'shipped'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
       </swiper>
     </div>
   </section>
@@ -156,16 +212,30 @@
         [config]="cardSwiperConfig"
         *ngIf="orderStatusDelivery.delivered.orders.length"
       >
-        <app-small-info-card
+        <a
           *ngFor="let order of orderStatusDelivery.delivered.orders"
-          [image]="order.user?.image"
-          [title]="formatId(order.dateId)"
-          [subtitle]="
-            'by ' + (order.user?.name || order.user?.phone || order.user?.email)
-          "
-          [topInfo]="'$' + orderTotal(order.subtotals).toLocaleString('es-MX')"
-          [bottomInfo]="getDaysAgo(order.createdAt)"
-        ></app-small-info-card>
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'delivered'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
       </swiper>
     </div>
   </section>

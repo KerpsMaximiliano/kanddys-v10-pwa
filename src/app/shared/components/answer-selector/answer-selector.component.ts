@@ -53,7 +53,7 @@ export class AnswerSelectorComponent implements OnInit {
   activateMultipleOption(option: number) {
     if (
       this.multipleOptionsLimit !== null &&
-      this.activeMultipleOption.length >= this.multipleOptionsLimit &&
+      this.activeMultipleOption.length >= this.multipleOptionsLimit && this.multipleOptionsLimit !== 0 &&
       !this.activeMultipleOption.includes(option)
     ) {
       this.snackbar.open(

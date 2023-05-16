@@ -318,7 +318,7 @@ export class WebformClientViewComponent implements OnInit {
     if (
       isMultipleSelection &&
       alreadySelectedOptionsIndexes.length >=
-        currentStep.question.answerLimit &&
+        currentStep.question.answerLimit && currentStep.question.answerLimit !== 0 &&
       !alreadySelectedOptionsIndexes.includes(optionIndex)
     ) {
       this.snackbar.open(

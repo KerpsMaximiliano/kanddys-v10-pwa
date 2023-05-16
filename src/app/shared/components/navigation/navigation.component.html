@@ -1,0 +1,91 @@
+<mat-sidenav-container (backdropClick)="close()">
+  <mat-sidenav
+    #sidenav
+    class="sidenav"
+    [(opened)]="opened"
+    (closed)="closed.emit()"
+    (keydown.escape)="close()"
+    disableClose
+  >
+    <p class="close">
+      <button mat-icon-button (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </p>
+    <div class="nav-container">
+      <nav>
+        <ul>
+          <li routerLinkActive="active" *ngIf="headerService.user">
+            <a
+              mat-button
+              [routerLink]="['/admin/dashboard']"
+              style="padding: 0px 8px"
+            >
+              Artículos que vendo
+            </a>
+            <mat-icon class="icon"> menu </mat-icon>
+          </li>
+          <li routerLinkActive="active" *ngIf="headerService.user">
+            <a
+              mat-button
+              [routerLink]="['/admin/reports']"
+              style="padding: 0px 8px"
+            >
+              Lo vendido
+            </a>
+            <mat-icon class="icon"> menu </mat-icon>
+          </li>
+          <li
+            routerLinkActive="active"
+            *ngIf="
+              merchantsService.merchantData ||
+              headerService.user?._id ===
+                headerService.saleflow?.merchant.owner._id
+            "
+          >
+            <a
+              mat-button
+              [routerLink]="[
+                '/ecommerce',
+                merchantsService.merchantData?.slug ||
+                  headerService.saleflow?.merchant.slug,
+                'store'
+              ]"
+              style="padding: 0px 8px"
+            >
+              Vista de compradores
+            </a>
+            <mat-icon class="icon"> menu </mat-icon>
+          </li>
+          <li routerLinkActive="active" *ngIf="!headerService.user?._id">
+            <a
+              mat-button
+              [routerLink]="[
+                '/ecommerce',
+                headerService.saleflow?.merchant.slug,
+                'store'
+              ]"
+              style="padding: 0px 8px"
+            >
+              Stars for Causes
+            </a>
+            <mat-icon class="icon"> menu </mat-icon>
+          </li>
+        </ul>
+      </nav>
+      <div class="actions">
+        <button mat-button (click)="signout()" *ngIf="headerService.user">
+          <mat-icon>exit_to_app</mat-icon>
+          Cerrar sesión
+        </button>
+        <button mat-button (click)="login()" *ngIf="!headerService.user">
+          <mat-icon>input</mat-icon>
+          Iniciar sesión
+        </button>
+      </div>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <ng-content></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>

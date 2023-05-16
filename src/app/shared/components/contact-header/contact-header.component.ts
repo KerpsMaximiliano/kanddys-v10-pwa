@@ -1,6 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { NgNavigatorShareService } from 'ng-navigator-share';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Contact } from 'src/app/core/models/contact';
+import {
+  MatBottomSheetRef,
+  MAT_BOTTOM_SHEET_DATA,
+} from '@angular/material/bottom-sheet';
+
+export interface DialogTemplate {
+  contact: Contact;
+  bio: string;
+  phone: string;
+  email: string;
+  // link: string;
+  // chatLink: string;
+}
 
 @Component({
   selector: 'app-contact-header',
@@ -8,30 +20,33 @@ import { Contact } from 'src/app/core/models/contact';
   styleUrls: ['./contact-header.component.scss'],
 })
 export class ContactHeaderComponent implements OnInit {
-  @Input() contact: Contact;
-  @Input() bio: string;
-  @Input() link: string;
-  @Input() chatLink: string;
-
-  constructor(private ngNavigatorShareService: NgNavigatorShareService) {}
+  constructor(
+    // private ngNavigatorShareService: NgNavigatorShareService,
+    @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate,
+    private _bottomSheetRef: MatBottomSheetRef
+  ) {}
 
   ngOnInit(): void {}
 
-  shareStore() {
-    this.ngNavigatorShareService
-      .share({
-        title: '',
-        url: this.link,
-      })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+  // shareStore() {
+  //   this.ngNavigatorShareService
+  //     .share({
+  //       title: '',
+  //       url: this.data.link,
+  //     })
+  //     .then((response) => {
+  //       console.log(response);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }
 
-  goToChat() {
-    window.open(this.chatLink, '_blank');
+  // goToChat() {
+  //   window.open(this.data.chatLink, '_blank');
+  // }
+
+  close() {
+    this._bottomSheetRef.dismiss();
   }
 }

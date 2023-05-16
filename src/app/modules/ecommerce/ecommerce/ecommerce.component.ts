@@ -4,6 +4,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
+import { ContactService } from 'src/app/core/services/contact.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -25,6 +26,7 @@ export class EcommerceComponent implements OnInit {
     public headerService: HeaderService,
     private appService: AppService,
     private _MerchantsService: MerchantsService,
+    private contactService: ContactService,
     private _SaleflowService: SaleFlowService,
     private _Location: Location
   ) {}
@@ -70,7 +72,17 @@ export class EcommerceComponent implements OnInit {
       this.headerService.getItems();
       this.headerService.getOrderProgress();
       this.headerService.emptyPost();
-      this.headerService.getMerchantContact();
+      this.headerService.merchantContact = (
+        await this.contactService.contacts({
+          findBy: {
+            user: this.headerService.saleflow.merchant.owner._id,
+          },
+          options: {
+            limit: 1,
+            sortBy: 'createdAt:desc',
+          },
+        })
+      )[0];
       this.activePath = this.route.firstChild.routeConfig.path;
 
       if (this.router.url.includes('/store'))
