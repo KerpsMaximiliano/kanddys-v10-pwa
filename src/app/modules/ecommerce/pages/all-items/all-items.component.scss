@@ -1,0 +1,45 @@
+a {
+  text-decoration: none;
+}
+.store-page {
+  height: 100vh;
+  overflow-y: scroll;
+  flex-grow: 1;
+}
+.description-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 24px 32px;
+}
+.saleflows-item-grid {
+  width: auto;
+  padding: 12px 24px 32px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  -moz-column-gap: 14px;
+  column-gap: 13px;
+  row-gap: 22px;
+  overflow-x: hidden;
+  justify-items: center;
+  .capsize {
+    width: 100%;
+    height: auto;
+  }
+}
+.action-bar {
+  background-color: #6fcf97;
+  display: flex;
+  justify-content: flex-end;
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  z-index: 999;
+  bottom: 0;
+
+  button {
+    font-family: SfProLight;
+    font-size: 13px;
+    color: #272727;
+  }
+}

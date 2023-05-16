@@ -54,7 +54,6 @@ import { ReportsComponent } from './pages/reports/reports.component';
 import { FilterPipeSearchPipe } from 'src/app/core/pipes/filter-pipe-search.pipe';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
 import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 

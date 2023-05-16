@@ -1,301 +1,388 @@
-<div class="container">
-  <div
-    style="
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-    "
-    *ngIf="ordersToConfirm.length === 0"
-  >
-    <h2>No hay facturas que mostrar</h2>
-    <button
-      mat-button
-      style="background-color: #fed230; color: #293628"
-      *ngIf="redirectTo"
-      (click)="returnEvent()"
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+  <div class="container">
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+      "
+      *ngIf="ordersToConfirm.length === 0"
     >
-      Volver
-    </button>
-  </div>
-
-  <ng-container *ngIf="ordersToConfirm.length > 0">
-    <swiper
-      #ordersSwiper
-      [config]="swiperConfig"
-      (slideChange)="updateCurrentSlideData($event)"
-    >
-      <div
-        class="slide"
-        *ngFor="let deliveryOrder of ordersToConfirm; let i = index"
+      <h2>No hay facturas que mostrar</h2>
+      <button
+        mat-button
+        style="background-color: #fed230; color: #293628"
+        *ngIf="redirectTo"
+        (click)="returnEvent()"
       >
-        <ng-container *ngIf="isPopulated(deliveryOrder)">
-          <div class="order-content" style="padding-bottom: 96px">
-            <header class="header">
-              <div class="flex" style="align-items: center">
-                <a mat-icon-button [routerLink]="['../dashboard']">
-                  <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
-                </a>
-                <p>Factura {{ formatId(deliveryOrder?.dateId) }}</p>
-              </div>
-              <div>
-                <button mat-button>
-                  {{
-                    deliveryOrder.user.name ||
-                      deliveryOrder.user.phone ||
-                      deliveryOrder.user.email
-                  }}
-                  <i class="fas fa-chevron-right"></i>
-                </button>
-              </div>
-            </header>
-            <!-- ITEMS SECTION -->
-            <!-- <div class="section">
-              <h5 class="subtitle">
-                FACTURA {{ formatId(deliveryOrder?.dateId) }}
-              </h5>
-              <h3 class="title">
-                {{ deliveryOrder?.items[0].saleflow.merchant?.name || "" }}
-              </h3>
-              <p class="meta-description" *ngIf="orderMerchant?.address">
-                {{ orderMerchant?.address || "" }}
-              </p>
-              <p class="meta-description">
-                {{ convertDate(deliveryOrder?.createdAt) }}
-              </p>
-            </div> -->
+        Volver
+      </button>
+    </div>
 
-            <section class="section">
-              <h2 class="section-title adminView">Artículos facturados:</h2>
-
-              <div
-                class="items-container"
-                *ngFor="let item of deliveryOrder?.items; index as i"
-                style="margin-bottom: 4px"
+    <ng-container *ngIf="ordersToConfirm.length > 0">
+      <swiper
+        #ordersSwiper
+        [config]="swiperConfig"
+        (slideChange)="updateCurrentSlideData($event)"
+        style="height: calc(100vh - 90px); display: block"
+      >
+        <div
+          class="slide"
+          *ngFor="let deliveryOrder of ordersToConfirm; let i = index"
+        >
+          <ng-container *ngIf="isPopulated(deliveryOrder)">
+            <div class="order-content">
+              <button
+                mat-button
+                class="contact-button"
+                (click)="openContactInfo(deliveryOrder)"
               >
-                <div class="image-container">
-                  <button class="btn">
-                    <div
-                      class="image"
-                      *ngIf="!urlIsVideo(item.item.images[0].value)"
-                      (click)="
-                        item.item.images?.length &&
-                          openImageModal(item.item.images[0].value)
-                      "
-                      [ngStyle]="{
-                        backgroundImage: item.item.images?.length
-                          ? 'url(' + item.item.images[0].value + ')'
-                          : '/assets/images/noimage.png',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover'
-                      }"
-                    ></div>
-                    <div
-                      class="video-wrapper videoThumbnail"
-                      *ngIf="urlIsVideo(item.item.images[0].value)"
-                    >
-                      <img
-                        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
-                        alt="play"
-                        class="playVideoIcon"
-                        style="padding: 1rem !important; z-index: 99"
-                      />
-
-                      <video
-                        [src]="item.item.images[0].value"
-                        [id]="'media' + item._id"
-                        class="video"
-                        [muted]="true"
-                      ></video>
-                    </div>
-                  </button>
-                  <div class="right" style="width: 100%">
-                    <div class="top-flex">
-                      <p class="left-text">
-                        {{ item.amount }}x {{ item.item.name || "artículo(s)" }}
-                      </p>
-                      <p class="right-text">
-                        ${{ deliveryOrder.subtotals[i].amount | number }}
-                      </p>
-                    </div>
-                    <p class="grey">
-                      {{ item.item.description }}
-                    </p>
+                <div style="display: flex; align-items: center">
+                  <img
+                    class="user-pfp"
+                    *ngIf="deliveryOrder.user.image"
+                    [src]="deliveryOrder.user.image"
+                    alt="Imagen del usuario"
+                  />
+                  <div
+                    style="
+                      font-family: SfProBold;
+                      font-size: 16px;
+                      color: #171d16;
+                    "
+                  >
+                    {{
+                      deliveryOrder.user.name ||
+                        deliveryOrder.user.phone ||
+                        deliveryOrder.user.email
+                    }}
                   </div>
-                  <!-- <div class="question">
+                  <mat-icon>keyboard_arrow_right</mat-icon>
+                </div>
+              </button>
+
+              <!-- ITEMS SECTION -->
+              <div class="order-info">
+                <div>
+                  <span> Factura </span>
+                  <span>{{ formatId(deliveryOrder?.dateId) }}</span>
+                </div>
+                <div>
+                  <span>Fecha de la factura</span>
+                  <span>{{ convertDate(deliveryOrder?.createdAt) }}</span>
+                </div>
+              </div>
+
+              <section class="section">
+                <h2 class="section-title adminView">Artículos facturados:</h2>
+
+                <div
+                  class="items-container"
+                  *ngFor="let item of deliveryOrder?.items; index as i"
+                  style="margin-bottom: 4px; border-radius: 10px"
+                >
+                  <div class="image-container">
+                    <button class="btn">
+                      <div
+                        class="image"
+                        *ngIf="!urlIsVideo(item.item.images[0].value)"
+                        (click)="
+                          item.item.images?.length &&
+                            openImageModal(item.item.images[0].value)
+                        "
+                        [ngStyle]="{
+                          backgroundImage: item.item.images?.length
+                            ? 'url(' + item.item.images[0].value + ')'
+                            : '/assets/images/noimage.png',
+                          backgroundRepeat: 'no-repeat',
+                          backgroundPosition: 'center',
+                          backgroundSize: 'cover'
+                        }"
+                      ></div>
+                      <div
+                        class="video-wrapper videoThumbnail"
+                        *ngIf="urlIsVideo(item.item.images[0].value)"
+                      >
+                        <img
+                          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                          alt="play"
+                          class="playVideoIcon"
+                          style="padding: 1rem !important; z-index: 99"
+                        />
+
+                        <video
+                          [src]="item.item.images[0].value"
+                          [id]="'media' + item._id"
+                          class="video"
+                          [muted]="true"
+                        ></video>
+                      </div>
+                    </button>
+                    <div class="right" style="width: 100%">
+                      <div class="top-flex">
+                        <p class="left-text">
+                          {{ item.amount }}X
+                          {{ item.item.name || "artículo(s)" }}
+                        </p>
+                        <p class="right-text">
+                          ${{ deliveryOrder.subtotals[i].amount | number }}
+                        </p>
+                      </div>
+                      <p class="grey">
+                        {{ item.item.description }}
+                      </p>
+                    </div>
+                    <!-- <div class="question">
                     <p class="top-text">Que irá escrito en el globo?</p>
                     <p class="bottom-text">RespuestaID</p>
                   </div> -->
-                </div>
-              </div>
-            </section>
-
-            <section
-              class="section"
-              *ngIf="deliveryOrder?.ocr || deliveryOrder.payedWithAzul"
-            >
-              <h2 class="section-title adminView">Pagos:</h2>
-              <ng-container *ngIf="deliveryOrder.payedWithAzul">
-                <div
-                  class="items-container space-between"
-                  style="margin-top: 4px"
-                >
-                  <p class="total">Subtotal a pagar:</p>
-                  <p class="amount">
-                    RD $ {{ deliveryOrder.payment | number : "1.2-2" }}
-                  </p>
-                </div>
-                <!--       <div class="items-container space-between" style="margin-top: 4px">
-            <p class="total">Coins:</p>
-            <p class="amount">- {{ payment | number: "1.2-2" }}</p>
-          </div> -->
-                <div
-                  class="items-container space-between"
-                  style="margin-top: 4px"
-                >
-                  <p class="total">Descuentos:</p>
-                  <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
-                </div>
-
-                <div
-                  class="items-container space-between"
-                  style="margin-top: 4px"
-                >
-                  <p class="total">Impuestos:</p>
-                  <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
-                </div>
-              </ng-container>
-
-              <!-- <div class="items-container space-between" style="margin-top: 4px">
-          <p class="total">MerchantID GiftCard</p>
-          <p class="amount">$ {{ payment | number : "1.2-2" }}</p>
-        </div> -->
-              <div
-                class="items-container space-between"
-                style="margin-top: 4px"
-              >
-                <p class="total">Total a pagar:</p>
-                <p class="amount" [style]="{ fontSize: '21px' }">
-                  $ {{ deliveryOrder.payment | number : "1.2-2" }}
-                </p>
-              </div>
-              <div class="items-container" style="margin-top: 5px">
-                <div class="image-container" style="align-items: center">
-                  <button
-                    (click)="
-                      deliveryOrder.ocr
-                        ? openImageModal(deliveryOrder.ocr.image)
-                        : null
+                  </div>
+                  <ng-container
+                    *ngIf="
+                      deliveryOrder.answersByItem &&
+                      deliveryOrder.answersByItem[item._id]
                     "
-                    class="btn"
                   >
+                    <ng-container
+                      *ngFor="
+                        let question of deliveryOrder.answersByItem[item._id]
+                          .response;
+                        index as i
+                      "
+                    >
+                      <div
+                        *ngIf="question.question"
+                        class="webform-question-wrapper"
+                        [ngStyle]="{ marginTop: i === 0 ? '8px' : '0' }"
+                      >
+                        <div class="question">
+                          <p class="top-text">{{ question.question }}</p>
+                          <p
+                            class="bottom-text"
+                            *ngIf="!question.isMedia && !question.label"
+                          >
+                            {{ question.value }}
+                          </p>
+                          <p
+                            class="bottom-text"
+                            *ngIf="!question.isMedia && question.label"
+                          >
+                            {{ question.value + " " + question.label }}
+                          </p>
+                          <p
+                            class="bottom-text"
+                            *ngIf="question.isMedia && question.label"
+                          >
+                            {{ question.label }}
+                          </p>
+
+                          <div
+                            class="question-img-wrapper"
+                            *ngIf="question.isMedia"
+                          >
+                            <div
+                              class="image"
+                              (click)="openImageModal(question.value)"
+                              [ngStyle]="{
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'center',
+                                backgroundSize: 'cover',
+                                backgroundImage:
+                                  'url(' +
+                                  question.value +
+                                  '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                              }"
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </section>
+
+              <section
+                class="section"
+                *ngIf="deliveryOrder?.ocr || deliveryOrder.payedWithAzul"
+              >
+                <h2 class="section-title adminView">Pagos:</h2>
+                <div class="section-content">
+                  <ng-container *ngIf="deliveryOrder.payedWithAzul">
                     <div
-                      class="image"
-                      [ngStyle]="{
-                        'background-image':
-                          deliveryOrder.ocr && deliveryOrder.ocr.image
-                            ? 'url(' + deliveryOrder.ocr.image + ') '
-                            : deliveryOrder.payedWithAzul
-                            ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
-                            : 'url(/assets/images/noimage.png)'
+                      class="items-container space-between"
+                      style="margin-top: 2px"
+                    >
+                      <p class="total">Subtotal a pagar:</p>
+                      <p class="amount">
+                        RD $ {{ deliveryOrder.payment | number : "1.2-2" }}
+                      </p>
+                    </div>
+                    <!--       <div class="items-container space-between" style="margin-top: 2px">
+              <p class="total">Coins:</p>
+              <p class="amount">- {{ payment | number: "1.2-2" }}</p>
+            </div> -->
+                    <div
+                      class="items-container space-between"
+                      style="margin-top: 2px"
+                    >
+                      <p class="total">Descuentos:</p>
+                      <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
+                    </div>
+
+                    <div
+                      class="items-container space-between"
+                      style="margin-top: 2px"
+                    >
+                      <p class="total">Impuestos:</p>
+                      <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
+                    </div>
+                  </ng-container>
+                  <!-- <div class="items-container space-between" style="margin-top: 2px">
+                <p class="total">MerchantID GiftCard</p>
+                <p class="amount">$ {{ payment | number : "1.2-2" }}</p>
+                </div> -->
+                  <div
+                    class="items-container space-between"
+                    style="margin-top: 2px"
+                  >
+                    <p
+                      class="total"
+                      style="color: #181d17; font-family: SfProBold"
+                    >
+                      Total a Pagar
+                    </p>
+                    <p
+                      class="amount"
+                      [style]="{
+                        fontSize: '17px',
+                        fontFamily: 'SfProBold',
+                        color: '#181d17'
                       }"
-                    ></div>
-                  </button>
-                  <div class="payment-info">
-                    <span>Pago por {{ deliveryOrder.paymentType }}</span>
-                    <div>
-                      <button
-                        *ngIf="deliveryOrder.orderStatus === 'to confirm'"
-                        (click)="confirmPayment(deliveryOrder)"
-                        class="status btn"
-                      >
-                        Pago por confirmar
-                      </button>
-                      <span
-                        *ngIf="deliveryOrder.orderStatus === 'completed'"
-                        class="status confirmed"
-                        >Pago confirmado</span
-                      >
+                    >
+                      RD $ {{ deliveryOrder.payment | number : "1.2-2" }}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="items-container"
+                  style="margin-top: 4px; border-radius: 10px"
+                >
+                  <div class="image-container" style="align-items: center">
+                    <button
+                      (click)="
+                        deliveryOrder.ocr
+                          ? openImageModal(deliveryOrder.ocr.image)
+                          : null
+                      "
+                      class="btn"
+                    >
+                      <div
+                        class="image"
+                        [ngStyle]="{
+                          'background-image':
+                            deliveryOrder.ocr && deliveryOrder.ocr.image
+                              ? 'url(' + deliveryOrder.ocr.image + ') '
+                              : deliveryOrder.payedWithAzul
+                              ? 'url(https://www.azul.com.do/SiteAssets/v2theme/images/header/AZULLogo.png)'
+                              : 'url(/assets/images/noimage.png)'
+                        }"
+                      ></div>
+                    </button>
+                    <div class="payment-info">
+                      <span>Pago por {{ deliveryOrder.paymentType }}</span>
+                      <div>
+                        <button
+                          *ngIf="deliveryOrder.orderStatus === 'to confirm'"
+                          (click)="confirmPayment(deliveryOrder)"
+                          class="status btn"
+                        >
+                          Pago por confirmar
+                        </button>
+                        <span
+                          *ngIf="deliveryOrder.orderStatus === 'completed'"
+                          class="status confirmed"
+                          >Pago confirmado</span
+                        >
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
 
-            <div
-              class="section"
-              *ngIf="
-                orderHasDelivery(deliveryImages[i]?.deliveryZone, deliveryOrder)
-              "
-            >
-              <p class="section-label">ENTREGA</p>
-              <div class="questions" *ngIf="deliveryImages[i]?.deliveryZone">
-                <p class="label">Zona de entrega</p>
-                <p class="label gray-out capitalize">
-                  {{ deliveryImages[i]?.deliveryZone.zona }}
-                </p>
-              </div>
               <div
-                class="questions"
-                *ngIf="deliveryOrder.items[0].deliveryLocation"
-              >
-                <p class="label">Donde entregaremos?</p>
-                <p class="label gray-out capitalize">
-                  {{
-                    deliveryOrder?.items[0]?.deliveryLocation?.houseNumber
-                      ? "#" +
-                        deliveryOrder?.items[0]?.deliveryLocation?.houseNumber +
-                        ", "
-                      : ""
-                  }}
-                  {{ deliveryOrder?.items[0]?.deliveryLocation?.street }},
-                  {{
-                    deliveryOrder?.items[0]?.deliveryLocation?.referencePoint
-                      ? deliveryOrder?.items[0]?.deliveryLocation
-                          ?.referencePoint + ", "
-                      : ""
-                  }}
-                  {{ deliveryOrder?.items[0]?.deliveryLocation?.city }},
-                  República Dominicana
-                </p>
-              </div>
-              <div class="questions">
-                <p class="label">A quien entregaremos?</p>
-                <p class="label gray-out capitalize">
-                  {{
-                    deliveryOrder?.user?.name
-                      ? deliveryOrder?.user?.name
-                      : deliveryOrder?.user?.phone
-                  }}
-                </p>
-              </div>
-              <div class="questions" *ngIf="deliveryImages[i]?.reservation">
-                <p class="label">Cuando entregaremos?</p>
-                <p class="label gray-out capitalize">
-                  {{ displayReservation(deliveryImages[i]?.reservation) }}
-                </p>
-              </div>
-            </div>
-
-            <!-- DELIVERY EVIDENCE SECTION -->
-            <!-- <div
                 class="section"
                 *ngIf="
-                  deliveryImages.length &&
-                  ((isMerchant && deliveryImages[i]?.image) || view === 'delivery')
+                  orderHasDelivery(
+                    deliveryImages[i]?.deliveryZone,
+                    deliveryOrder
+                  )
                 "
+              >
+                <p class="section-label">ENTREGA</p>
+                <div class="section-content">
+                  <div
+                    class="questions"
+                    *ngIf="deliveryImages[i]?.deliveryZone"
+                  >
+                    <p class="label">Zona de entrega</p>
+                    <p class="answer capitalize">
+                      {{ deliveryImages[i]?.deliveryZone.zona }}
+                    </p>
+                  </div>
+                  <div
+                    class="questions"
+                    *ngIf="deliveryOrder.items[0].deliveryLocation"
+                  >
+                    <p class="label">¿Donde entregaremos?</p>
+                    <p class="answer capitalize">
+                      {{
+                        deliveryOrder?.items[0]?.deliveryLocation?.houseNumber
+                          ? "#" +
+                            deliveryOrder?.items[0]?.deliveryLocation
+                              ?.houseNumber +
+                            ", "
+                          : ""
+                      }}
+                      {{ deliveryOrder?.items[0]?.deliveryLocation?.street }},
+                      {{
+                        deliveryOrder?.items[0]?.deliveryLocation
+                          ?.referencePoint
+                          ? deliveryOrder?.items[0]?.deliveryLocation
+                              ?.referencePoint + ", "
+                          : ""
+                      }}
+                      {{ deliveryOrder?.items[0]?.deliveryLocation?.city }},
+                      República Dominicana
+                    </p>
+                  </div>
+                  <div class="questions">
+                    <p class="label">¿A quien entregaremos?</p>
+                    <p class="answer capitalize">
+                      {{
+                        deliveryOrder?.user?.name
+                          ? deliveryOrder?.user?.name
+                          : deliveryOrder?.user?.phone
+                      }}
+                    </p>
+                  </div>
+                  <div class="questions" *ngIf="deliveryImages[i]?.reservation">
+                    <p class="label">¿Cuando entregaremos?</p>
+                    <p class="answer capitalize">
+                      {{ displayReservation(deliveryImages[i]?.reservation) }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DELIVERY EVIDENCE SECTION -->
+              <div
+                class="section"
+                *ngIf="deliveryImages.length && deliveryImages[i]?.image"
               >
                 <p class="section-label">FLUJO DE LA ENTREGA</p>
                 <div class="input-image-container">
-                  <app-item-images
-                    (enteredImages)="onImageInput($event)"
-                    [containerStyles]="{ padding: '0' }"
-                    [inputPosition]="'left'"
-                    *ngIf="!deliveryImages[i]?.image"
-                  >
-                  </app-item-images>
                   <div
                     class="image"
                     [ngStyle]="{
@@ -306,181 +393,221 @@
                   ></div>
                   <p class="delivery-image-caption">Imagen de la entrega</p>
                 </div>
-              </div> -->
-
-            <!-- POST SECTION -->
-            <div
-              class="section"
-              *ngIf="
-                post &&
-                (post?.message ||
-                  post?.from ||
-                  (post?.targets?.length && post.targets[0].name))
-              "
-            >
-              <p class="section-label">MENSAJE DE REGALO (OPCIONAL)</p>
-
-              <div class="questions">
-                <p class="label">Escrito en tarjetita física</p>
-                <p class="label gray-out">{{ post?.message }}</p>
               </div>
 
-              <div class="questions">
-                <p class="label">Nombre del sobre</p>
-                <p class="label gray-out">
-                  {{ post?.targets[0]?.name || post?.title }}
-                </p>
+              <!-- POST SECTION -->
+              <div
+                class="section"
+                *ngIf="
+                  post &&
+                  (post?.message ||
+                    post?.from ||
+                    (post?.targets?.length && post.targets[0].name))
+                "
+              >
+                <p class="section-label">MENSAJE DE REGALO (OPCIONAL)</p>
+
+                <div class="questions">
+                  <p class="label">Escrito en tarjetita física</p>
+                  <p class="answer">{{ post?.message }}</p>
+                </div>
+
+                <div class="questions">
+                  <p class="label">Nombre del sobre</p>
+                  <p class="answer">
+                    {{ post?.targets[0]?.name || post?.title }}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <!-- VIRTUAL POST SECTION -->
-            <div class="section" *ngIf="entityTemplate && entityTemplateLink">
-              <p class="section-label">CONTENIDO VIRTUAL PRIVADO</p>
+              <!-- VIRTUAL POST SECTION -->
+              <div class="section" *ngIf="entityTemplate && entityTemplateLink">
+                <p class="section-label">CONTENIDO VIRTUAL PRIVADO</p>
 
-              <br /><br /><br />
+                <br /><br /><br />
 
-              <div class="flex">
-                <div
-                  class="item-image"
-                  [ngStyle]="{
-                    backgroundImage: 'url(' + env + '/qr-code.svg' + ')',
-                    filter:
-                      'brightness(0) invert(13%) sepia(9%) saturate(1833%) hue-rotate(68deg) brightness(99%) contrast(83%)'
-                  }"
-                ></div>
-                <div class="caption">
-                  <button class="link-button" (click)="goToPost()">
-                    Accesa al contenido
-                  </button>
-                  <br /><br />
-                  <button
-                    class="link-button"
-                    (click)="copyEntityTemplateID(entityTemplate.dateId)"
-                  >
-                    Copy el ID
-                  </button>
-                  <br /><br />
-                  <button
-                    class="link-button"
-                    (click)="downloadEntityTemplateQr(qrcodeTemplate)"
-                  >
-                    Imprime o descarga el QR
-                  </button>
+                <div class="flex">
+                  <div
+                    class="item-image"
+                    [ngStyle]="{
+                      backgroundImage: 'url(' + env + '/qr-code.svg' + ')',
+                      filter:
+                        'brightness(0) invert(13%) sepia(9%) saturate(1833%) hue-rotate(68deg) brightness(99%) contrast(83%)'
+                    }"
+                  ></div>
+                  <div class="caption">
+                    <button class="link-button" (click)="goToPost()">
+                      Accesa al contenido
+                    </button>
+                    <br /><br />
+                    <button
+                      class="link-button"
+                      (click)="copyEntityTemplateID(entityTemplate.dateId)"
+                    >
+                      Copy el ID
+                    </button>
+                    <br /><br />
+                    <button
+                      class="link-button"
+                      (click)="downloadEntityTemplateQr(qrcodeTemplate)"
+                    >
+                      Imprime o descarga el QR
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </ng-container>
-      </div>
-    </swiper>
-    <div class="footer">
-      <div class="top-footer">
-        <div class="chip-list">
-          <div class="chip">
-            {{
-              orderDeliveryStatus(
-                ordersToConfirm[activeIndex].orderStatusDelivery
-              )
-            }}
-          </div>
-          <ng-container *ngIf="ordersToConfirm[activeIndex].tagsData?.length">
-            <div
-              class="chip"
-              *ngFor="let tag of ordersToConfirm[activeIndex].tagsData"
-            >
-              {{ tag.name }}
-            </div>
           </ng-container>
         </div>
+      </swiper>
+
+      <div class="footer">
         <button
+          mat-mini-fab
+          class="footer-menu"
+          (click)="openNavigation = true"
+        >
+          <mat-icon style="color: #6fcf97">menu</mat-icon>
+        </button>
+        <div class="top-footer">
+          <!-- <a
           mat-icon-button
-          (click)="openDialog(ordersToConfirm[activeIndex])"
+          [routerLink]="['/admin/create-notification']"
+          [queryParams]="{
+            redirectTo: router.url,
+            status: ordersToConfirm[activeIndex].orderStatusDelivery
+          }"
           style="color: #6fcf97"
         >
-          <mat-icon>menu</mat-icon>
-        </button>
-      </div>
-      <div class="inner-wrapper-top">
-        <div
-          class="current-media-shown-indicators"
-          [style]="{
-            'grid-template-columns':
-              'repeat(' + ordersToConfirm.length + ', 1fr)'
-          }"
-        >
-          <ng-container *ngIf="ordersToConfirm.length > 0">
-            <div
-              class="indicator"
-              [ngClass]="{
-                active: indicatorIndex === activeIndex
-              }"
-              *ngFor="
-                let indicator of ordersToConfirm;
-                let indicatorIndex = index
-              "
-            ></div>
-          </ng-container>
-        </div>
-      </div>
-      <a
-        class="bottom-footer"
-        [routerLink]="['../order-expenses', ordersToConfirm[activeIndex]._id]"
-      >
-        <span>
-          {{
-            ordersToConfirm[activeIndex].benefits
-              ? "$" +
-                (ordersToConfirm[activeIndex].benefits.benefits | number) +
-                " - ($" +
-                (ordersToConfirm[activeIndex].benefits.less | number) +
-                ") = " +
-                (ordersToConfirm[activeIndex].benefits.benefits -
-                  ordersToConfirm[activeIndex].benefits.less | number)
-              : ""
-          }}
-        </span>
-        <button mat-icon-button>
           <mat-icon>more_horiz</mat-icon>
-        </button>
-      </a>
+        </a> -->
+          <div
+            class="chip-list"
+            #elemt
+            (mousedown)="startDragging($event, elemt)"
+            (mouseup)="stopDragging()"
+            (mouseleave)="stopDragging()"
+            (mousemove)="moveEvent($event, elemt)"
+          >
+            <button
+              class="chip"
+              [ngClass]="{
+                selected:
+                  ordersToConfirm[activeIndex].orderStatusDelivery ===
+                  ordersToConfirm[activeIndex].loadedDeliveryStatus
+              }"
+              (click)="
+                changeOrderStatus(
+                  ordersToConfirm[activeIndex].loadedDeliveryStatus
+                )
+              "
+            >
+              {{
+                orderDeliveryStatus(
+                  ordersToConfirm[activeIndex].loadedDeliveryStatus
+                )
+              }}
+            </button>
+            <ng-container *ngFor="let status of statusList">
+              <button
+                *ngIf="
+                  status !== ordersToConfirm[activeIndex].loadedDeliveryStatus
+                "
+                class="chip"
+                [ngClass]="{
+                  selected:
+                    ordersToConfirm[activeIndex].orderStatusDelivery === status
+                }"
+                (click)="changeOrderStatus(status)"
+              >
+                {{ orderDeliveryStatus(status) }}
+              </button>
+            </ng-container>
+          </div>
+        </div>
+        <div class="inner-wrapper-top">
+          <div
+            class="current-media-shown-indicators"
+            [style]="{
+              'grid-template-columns':
+                'repeat(' + ordersToConfirm.length + ', 1fr)'
+            }"
+          >
+            <ng-container *ngIf="ordersToConfirm.length > 0">
+              <div
+                class="indicator"
+                [ngClass]="{
+                  active: indicatorIndex === activeIndex
+                }"
+                *ngFor="
+                  let indicator of ordersToConfirm;
+                  let indicatorIndex = index
+                "
+              ></div>
+            </ng-container>
+          </div>
+        </div>
+        <a
+          class="bottom-footer"
+          [routerLink]="['../order-expenses', ordersToConfirm[activeIndex]._id]"
+        >
+          <span>
+            {{
+              ordersToConfirm[activeIndex].benefits
+                ? "$" +
+                  (ordersToConfirm[activeIndex].benefits.benefits | number) +
+                  " - ($" +
+                  (ordersToConfirm[activeIndex].benefits.less | number) +
+                  ") = " +
+                  (ordersToConfirm[activeIndex].benefits.benefits -
+                    ordersToConfirm[activeIndex].benefits.less | number)
+                : ""
+            }}
+          </span>
+          <mat-icon>more_horiz</mat-icon>
+        </a>
+      </div>
+
+      <!-- <div class="float-paginator" *ngIf="activeIndex !== 0">
+      <button class="button swiper-slide-duplicate-prev left">
+        <img [src]="env + '/arrow-left.svg'" alt="" />
+      </button>
     </div>
 
-    <!-- <div class="float-paginator">
-      <div class="button swiper-slide-duplicate-prev left">
+    <div
+      class="float-paginator"
+      *ngIf="activeIndex !== ordersToConfirm.length - 1"
+    >
+      <button class="button swiper-slide-duplicate-next right">
         <img [src]="env + '/arrow-left.svg'" alt="" />
-      </div>
-    </div>
-
-    <div class="float-paginator">
-      <div class="button swiper-slide-duplicate-next right">
-        <img [src]="env + '/arrow-left.svg'" alt="" />
-      </div>
+      </button>
     </div> -->
 
-    <div style="visibility: hidden; position: absolute; z-index: -99">
-      <qrcode
-        *ngIf="entityTemplate"
-        #qrcodeTemplate
-        [qrdata]="entityTemplateLink"
-        [elementType]="'img'"
-        [width]="500"
-        [style.margin-top.px]="-25"
-        [errorCorrectionLevel]="'M'"
-        [allowEmptyString]="true"
-        colorDark="#000000"
-      ></qrcode>
+      <div style="visibility: hidden; position: absolute; z-index: -99">
+        <qrcode
+          *ngIf="entityTemplate"
+          #qrcodeTemplate
+          [qrdata]="entityTemplateLink"
+          [elementType]="'img'"
+          [width]="500"
+          [style.margin-top.px]="-25"
+          [errorCorrectionLevel]="'M'"
+          [allowEmptyString]="true"
+          colorDark="#000000"
+        ></qrcode>
 
-      <qrcode
-        style="display: none"
-        *ngIf="order"
-        #orderQrCode
-        [qrdata]="URI + '/ecommerce/order-detail/' + order._id"
-        [elementType]="'img'"
-        [width]="40"
-        [errorCorrectionLevel]="'M'"
-        [allowEmptyString]="true"
-        colorDark="#000"
-      ></qrcode>
-    </div>
-  </ng-container>
-</div>
+        <qrcode
+          style="display: none"
+          *ngIf="order"
+          #orderQrCode
+          [qrdata]="URI + '/ecommerce/order-detail/' + order._id"
+          [elementType]="'img'"
+          [width]="40"
+          [errorCorrectionLevel]="'M'"
+          [allowEmptyString]="true"
+          colorDark="#000"
+        ></qrcode>
+      </div>
+    </ng-container>
+  </div>
+</app-navigation>

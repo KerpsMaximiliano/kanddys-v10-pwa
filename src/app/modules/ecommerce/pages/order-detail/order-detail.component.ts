@@ -45,6 +45,9 @@ import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { Reservation } from 'src/app/core/models/reservation';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ContactService } from 'src/app/core/services/contact.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
 
 interface Image {
   src: string;
@@ -141,6 +144,7 @@ export class OrderDetailComponent implements OnInit {
   webformsByItem: Record<string, Webform> = {};
   answersByItem: Record<string, WebformAnswer> = {};
   from: string;
+  navigationWithMessage: string;
   deliveryImages: {
     image?: string;
     deliveryZone?: DeliveryZone;
@@ -173,7 +177,9 @@ export class OrderDetailComponent implements OnInit {
     public dialog: MatDialog,
     private webformsService: WebformsService,
     private deliveryzoneService: DeliveryZonesService,
-    public _DomSanitizer: DomSanitizer
+    public _DomSanitizer: DomSanitizer,
+    private contactService: ContactService,
+    private _bottomSheet: MatBottomSheet
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -183,10 +189,16 @@ export class OrderDetailComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { notify: notification, redirectTo, from } = queryParams;
+      const {
+        notify: notification,
+        redirectTo,
+        from,
+        navigationWithMessage,
+      } = queryParams;
       this.notify = Boolean(notification);
       this.redirectTo = redirectTo;
       this.from = from;
+      this.navigationWithMessage = navigationWithMessage;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
 
@@ -289,9 +301,17 @@ export class OrderDetailComponent implements OnInit {
       })
       .toLocaleUpperCase();
     if (!this.headerService.merchantContact) {
-      this.headerService.getMerchantContact(
-        this.order.items[0].saleflow.merchant.owner._id
-      );
+      this.headerService.merchantContact = (
+        await this.contactService.contacts({
+          findBy: {
+            user: this.order.items[0].saleflow.merchant.owner._id,
+          },
+          options: {
+            limit: 1,
+            sortBy: 'createdAt:desc',
+          },
+        })
+      )[0];
     }
 
     if (this.order.items[0].post) {
@@ -534,7 +554,9 @@ export class OrderDetailComponent implements OnInit {
       const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
         const queryStringElements = queryString.split('=');
 
-        return { [queryStringElements[0]]: queryStringElements[1] };
+        return {
+          [queryStringElements[0]]: queryStringElements[1].replace('%20', ' '),
+        };
       });
 
       redirectURL.url = redirectionURL;
@@ -793,7 +815,7 @@ export class OrderDetailComponent implements OnInit {
       const queryParamList = url[1].split('&');
       for (const param in queryParamList) {
         const keyValue = queryParamList[param].split('=');
-        queryParams[keyValue[0]] = keyValue[1];
+        queryParams[keyValue[0]] = keyValue[1].replace('%20', ' ');
       }
     }
     this.router.navigate([this.redirectTo], {
@@ -946,5 +968,14 @@ export class OrderDetailComponent implements OnInit {
         }
       }
     }
+  }
+
+  openContactInfo() {
+    this._bottomSheet.open(ContactHeaderComponent, {
+      data: {
+        bio: this.order?.items[0].saleflow.merchant.bio,
+        contact: this.headerService.merchantContact,
+      },
+    });
   }
 }

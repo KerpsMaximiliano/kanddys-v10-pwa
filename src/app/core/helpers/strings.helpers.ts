@@ -1,3 +1,5 @@
+import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber';
+
 export function camelize(str: string, includeFirst = false): string {
   const regx = `${includeFirst ? '(?:^[a-z])|' : ''}(?:W+(.))`;
   const replacer = (match: string) => match.trim().toUpperCase();
@@ -66,6 +68,14 @@ export function completeImageURL(url: string) {
     return (url = 'https://' + url);
   }
   return url;
+}
+
+export function formatPhoneNumber(phone: string) {
+  const phoneUtil = PhoneNumberUtil.getInstance();
+  let number = phone;
+  if (!number.startsWith('+')) number = '+' + number;
+  const phoneNumber = phoneUtil.parse(number);
+  return phoneUtil.format(phoneNumber, PhoneNumberFormat.INTERNATIONAL);
 }
 
 // String formatter for the dateId field of the ItemOrder model

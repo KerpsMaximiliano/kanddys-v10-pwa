@@ -55,6 +55,10 @@ export class MerchantsService {
   loadedMerchantData = new Subject();
   constructor(private graphql: GraphQLWrapper) {}
   merchantData: Merchant;
+  merchantIncome: {
+    orderAmount: number;
+    income: number;
+  };
 
   async merchant(id: string, isHot?: boolean): Promise<Merchant> {
     try {

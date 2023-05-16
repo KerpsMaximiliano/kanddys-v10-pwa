@@ -25,16 +25,16 @@ export class Role {
 }
 
 export class User extends Model<User> {
-  email: string;
   phone?: string;
+  email?: string;
   name?: string;
-  lastname: string;
+  lastname?: string;
   title?: string;
   birthdate?: Date;
   image?: string;
-  roles?: Role[];
-  social: SocialMediaModel[];
   defaultCommunity?: Community;
+  social: SocialMediaModel[];
+  roles?: Role[];
   validatedAt?: string;
   facebook: string;
   instagram: string;
@@ -43,6 +43,8 @@ export class User extends Model<User> {
   deliveryLocations: DeliveryLocation[];
   tags?: string[];
   clientOfMerchants?: string[];
+  username: string;
+  address: string;
 
   hasRoles(...roles: string[]): boolean {
     return (this.roles || []).some((r) => roles.includes(r.code));

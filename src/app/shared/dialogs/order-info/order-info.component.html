@@ -16,12 +16,18 @@
     </div>
     <ul>
       <li *ngFor="let status of statusList">
-        <button
+        <a
           mat-stroked-button
           [ngClass]="{ selected: order.orderStatusDelivery === status }"
+          [routerLink]="['/admin/create-notification']"
+          [queryParams]="{
+            redirectTo: router.url,
+            status: status
+          }"
+          (click)="dialogRef.close()"
         >
           <div>{{ orderDeliveryStatus(status) }}</div>
-        </button>
+        </a>
       </li>
     </ul>
   </div>
@@ -37,7 +43,10 @@
   <div>
     <a
       [routerLink]="['/ecommerce/order-detail', order._id]"
-      [queryParams]="{ redirectTo: router.url }"
+      [queryParams]="{
+        redirectTo: router.url,
+        navigationWithMessage: 'Vista del visitante'
+      }"
       (click)="dialogRef.close()"
       mat-button
     >
