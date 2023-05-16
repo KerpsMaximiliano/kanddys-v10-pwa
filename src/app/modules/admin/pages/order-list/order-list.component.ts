@@ -267,6 +267,21 @@ export class OrderListComponent implements OnInit {
             },
           },
         ],
+        secondaryOptions: [
+          {
+            title: 'Compartir el link con acceso a toda la data',
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: '',
+                url: `${this.URI}${this.router.url}`,
+              });
+            },
+          },
+          {
+            title: 'Cdeeee qr',
+            link: `${this.URI}${this.router.url}`,
+          },
+        ],
       },
     ];
     this._bottomSheet.open(LinksDialogComponent, {

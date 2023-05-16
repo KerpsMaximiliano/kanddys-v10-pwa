@@ -8,6 +8,8 @@ import {
 export interface DialogTemplate {
   contact: Contact;
   bio: string;
+  phone: string;
+  email: string;
   // link: string;
   // chatLink: string;
 }
@@ -43,4 +45,8 @@ export class ContactHeaderComponent implements OnInit {
   // goToChat() {
   //   window.open(this.data.chatLink, '_blank');
   // }
+
+  close() {
+    this._bottomSheetRef.dismiss();
+  }
 }

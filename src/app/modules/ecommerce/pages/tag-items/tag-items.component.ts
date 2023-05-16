@@ -51,16 +51,13 @@ export class TagItemsComponent implements OnInit {
         const { merchant } = this.headerService.saleflow;
         this.slug = merchant.slug;
         this.merchantName = merchant.name;
-        this.items = await this._TagsService.itemsByTag(
-          name,
-          {
-            options: { limit: -1 },
-            findBy: {
-              status: ["active", "featured"],
-              merchant: `${merchant._id}`
-            }
-          }
-        );
+        this.items = await this._TagsService.itemsByTag(name, {
+          options: { limit: -1 },
+          findBy: {
+            status: ['active', 'featured'],
+            merchant: `${merchant._id}`,
+          },
+        });
         this.image = this._DomSanitizer.bypassSecurityTrustStyle(
           `url(${merchant.image}) no-repeat center center / cover #e9e371`
         );

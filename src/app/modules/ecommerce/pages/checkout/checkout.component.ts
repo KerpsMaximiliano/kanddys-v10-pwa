@@ -775,7 +775,7 @@ export class CheckoutComponent implements OnInit {
         await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       }
-    }
+    } else await this.finishOrderCreation();
   };
 
   finishOrderCreation = async () => {
@@ -1017,7 +1017,7 @@ export class CheckoutComponent implements OnInit {
           opacity: '1',
           padding: '37px 36.6px 18.9px 31px',
           maxHeight: '90vh',
-          overflowY: 'scroll'
+          overflowY: 'scroll',
         },
         header: {
           styles: {
@@ -1185,7 +1185,6 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrEditMessage() {
-
     this.router.navigate([
       'ecommerce/' +
         this.headerService.saleflow.merchant.slug +
@@ -1723,7 +1722,7 @@ export class CheckoutComponent implements OnInit {
           if (responseInList.responseLabel)
             response.label = responseInList.responseLabel;
 
-            console.log(response);
+          console.log(response);
 
           response.isMedia = response.value && response.value.includes('http');
 

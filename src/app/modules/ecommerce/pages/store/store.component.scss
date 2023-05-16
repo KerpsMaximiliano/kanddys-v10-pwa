@@ -1,47 +1,11 @@
 a {
   text-decoration: none;
 }
-.store-page {
-  height: 100vh;
-  overflow-y: scroll;
-}
 .component {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
-}
-main {
-  flex-grow: 1;
-  background-color: #f6f6f6;
-}
-.top-input-area {
-  margin: 16px;
-}
-:host ::ng-deep .swiper-button-next,
-:host ::ng-deep .swiper-button-prev {
-  display: none;
-}
-.description-view {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px 24px 32px;
-}
-.saleflows-item-grid {
-  width: auto;
-  padding: 12px 24px 32px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  -moz-column-gap: 14px;
-  column-gap: 13px;
-  row-gap: 22px;
-  overflow-x: hidden;
-  justify-items: center;
-  .capsize {
-    width: 100%;
-    height: auto;
-  }
 }
 .header {
   background-color: #181d17;
@@ -138,7 +102,6 @@ main {
 .action-bar {
   background-color: #6fcf97;
   display: flex;
-  justify-content: flex-end;
   position: fixed;
   width: 100%;
   max-width: 500px;
@@ -149,6 +112,38 @@ main {
     font-family: SfProLight;
     font-size: 13px;
     color: #272727;
+    width: 100%;
+    text-align: left;
+  }
+}
+.contact-bar {
+  background-color: #171d16;
+  display: flex;
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  z-index: 999;
+  bottom: 0;
+
+  ul {
+    padding: 4px 0;
+    display: flex;
+    gap: 10px;
+    margin: 0 auto;
+
+    li {
+      list-style: none;
+
+      .logo {
+        border-radius: 26px;
+        padding: 6px 8px;
+
+        i {
+          color: #fff;
+          font-size: 30px;
+        }
+      }
+    }
   }
 }
 .chip-list {

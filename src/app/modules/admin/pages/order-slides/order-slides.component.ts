@@ -140,6 +140,8 @@ export class OrderSlidesComponent implements OnInit {
   initialSlide: number;
   activeIndex: number = 0;
 
+  openNavigation = false;
+
   // notifications: Notification[] = [];
 
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -935,16 +937,16 @@ export class OrderSlidesComponent implements OnInit {
     });
   }
 
-  openDialog(order: ExtendedItemOrder) {
-    this.dialogService.open(OrderInfoComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        order,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
+  // openDialog(order: ExtendedItemOrder) {
+  //   this.dialogService.open(OrderInfoComponent, {
+  //     type: 'flat-action-sheet',
+  //     props: {
+  //       order,
+  //     },
+  //     customClass: 'app-dialog',
+  //     flags: ['no-header'],
+  //   });
+  // }
 
   downloadEntityTemplateQr(qrElment: ElementRef) {
     const parentElement = qrElment.nativeElement.querySelector('img').src;

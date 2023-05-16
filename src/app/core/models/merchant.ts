@@ -28,6 +28,7 @@ export class Merchant extends Model<Merchant> {
   social: SocialMediaModel[];
   showItems: boolean;
   airtableConfiguration: AirtableConfiguration;
+  contactFooter: boolean;
   tags?: string[];
   reference?: String;
   minPaymentQantity?: number;

@@ -6,26 +6,52 @@
     <div *ngIf="data.contact?.link?.length">
       <span class="title">Contactos</span>
       <ul>
-        <li *ngFor="let link of data.contact.link">
-          <a
-            [href]="
-              link.name === 'Phone'
-                ? 'tel:+' + link.value
-                : link.name === 'Email'
-                ? 'mailto:' + link.value
-                : link.name === 'WhatsApp'
-                ? 'https://wa.me/' + link.value.replace('+', '')
-                : link.value
-            "
-            target="_blank"
-          >
+        <li *ngIf="data.phone">
+          <a [href]="'tel:+' + data.phone" target="_blank" (click)="close()">
             <div class="contact">
-              <div class="logo whatsapp" *ngIf="link.name == 'WhatsApp'">
-                <i class="fa fa-whatsapp" aria-hidden="true"></i>
-              </div>
-              <div class="logo phone" *ngIf="link.name == 'Phone'">
+              <div class="logo phone">
                 <i class="fa fa-phone" aria-hidden="true"></i>
               </div>
+              <div class="content">
+                <span class="name">Teléfono</span>
+                <span class="url">{{ data.phone }}</span>
+              </div>
+            </div>
+          </a>
+        </li>
+        <li *ngIf="data.phone">
+          <a
+            [href]="'https://wa.me/' + data.phone.replace('+', '')"
+            target="_blank"
+            (click)="close()"
+          >
+            <div class="contact">
+              <div class="logo whatsapp">
+                <i class="fa fa-whatsapp" aria-hidden="true"></i>
+              </div>
+              <div class="content">
+                <span class="name">WhatsApp</span>
+                <span class="url">{{ data.phone }}</span>
+              </div>
+            </div>
+          </a>
+        </li>
+        <li *ngIf="data.email">
+          <a [href]="'mailto:' + data.email" target="_blank" (click)="close()">
+            <div class="contact">
+              <div class="logo email">
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+              </div>
+              <div class="content">
+                <span class="name">Email</span>
+                <span class="url">{{ data.email }}</span>
+              </div>
+            </div>
+          </a>
+        </li>
+        <li *ngFor="let link of data.contact.link">
+          <a [href]="link.value" target="_blank" (click)="close()">
+            <div class="contact">
               <div class="logo instagram" *ngIf="link.name == 'Instagram'">
                 <i class="fa fa-instagram" aria-hidden="true"></i>
               </div>
@@ -34,9 +60,6 @@
               </div>
               <div class="logo twitter" *ngIf="link.name == 'Twitter'">
                 <i class="fa fa-twitter" aria-hidden="true"></i>
-              </div>
-              <div class="logo email" *ngIf="link.name == 'Email'">
-                <i class="fa fa-envelope" aria-hidden="true"></i>
               </div>
 
               <div class="content">

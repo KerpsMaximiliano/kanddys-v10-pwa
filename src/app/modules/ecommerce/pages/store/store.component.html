@@ -1,304 +1,180 @@
 <app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
-  <div class="store-page" (scroll)="infinitePagination()">
-    <div class="component">
-      <mat-toolbar class="header">
-        <div class="spacer"></div>
-        <button
-          mat-button
-          style="border-radius: 0"
-          (click)="openNavigation = true"
-        >
-          <span>{{
-            headerService.user?._id ===
-            headerService.saleflow?.merchant.owner._id
-              ? "Vista de compradores"
-              : "Stars for Causes"
-          }}</span>
-          <mat-icon>menu</mat-icon>
-        </button>
-      </mat-toolbar>
-      <div class="top-bar">
-        <button class="contact-button" mat-button (click)="openContactInfo()">
+  <div class="component">
+    <mat-toolbar class="header">
+      <div class="spacer"></div>
+      <button
+        mat-button
+        style="border-radius: 0"
+        (click)="openNavigation = true"
+      >
+        <span>{{
+          headerService.user?._id === headerService.saleflow?.merchant.owner._id
+            ? "Vista de compradores"
+            : "Stars for Causes"
+        }}</span>
+        <mat-icon>menu</mat-icon>
+      </button>
+    </mat-toolbar>
+    <div class="top-bar">
+      <button class="contact-button" mat-button (click)="openContactInfo()">
+        <div>
           <div>
-            <div>
-              <div
-                class="icon"
-                [style.background]="
-                  _DomSanitizer.bypassSecurityTrustStyle(
-                    'url(' +
-                      headerService.saleflow?.merchant?.image +
-                      ') no-repeat center center / cover #e9e371'
-                  )
-                "
-              ></div>
-              <span class="title">
-                {{
-                  headerService.saleflow?.merchant?.name.length < 26
-                    ? headerService.saleflow?.merchant?.name
-                    : (headerService.saleflow?.merchant?.name.slice(0, 26) +
-                        ".." || "Tienda" | titlecase)
-                }}
-              </span>
-              <mat-icon>keyboard_arrow_right</mat-icon>
-            </div>
-            <span>Simbolos & Contactos</span>
-          </div>
-        </button>
-        <div
-          class="chip-list"
-          #elemt
-          (mousedown)="startDragging($event, elemt)"
-          (mouseup)="stopDragging()"
-          (mouseleave)="stopDragging()"
-          (mousemove)="moveEvent($event, elemt)"
-        >
-          <a class="chip selected"> Todos </a>
-          <a
-            *ngFor="let tag of tags"
-            class="chip"
-            [routerLink]="['../categories', tag._id]"
-          >
-            <!-- <app-gradient-card [tag]="tag"></app-gradient-card> -->
-            {{ tag.name }}
-          </a>
-        </div>
-      </div>
-      <!-- <nav class="header">
-        <div style="width: 100%; grid-column: span 11 / span 11">
-          <mat-accordion>
-            <mat-expansion-panel
-              (opened)="panelOpenState = true"
-              (closed)="panelOpenState = false"
-              class="panel"
-              [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
-              [ngStyle]="{
-                backgroundColor:
-                  headerService.user?._id ===
-                  headerService.saleflow?.merchant.owner._id
-                    ? '#2874AD'
-                    : '#272727'
-              }"
-            >
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <div class="merchant-info">
-                    <div
-                      class="icon"
-                      [style.background]="
-                        _DomSanitizer.bypassSecurityTrustStyle(
-                          'url(' +
-                            headerService.saleflow?.merchant?.image +
-                            ') no-repeat center center / cover #e9e371'
-                        )
-                      "
-                    ></div>
-                    <p class="title">
-                      {{
-                        headerService.saleflow?.merchant?.name.length < 26
-                          ? headerService.saleflow?.merchant?.name
-                          : (headerService.saleflow?.merchant?.name.slice(0, 26) +
-                              ".." || "Tienda" | titlecase)
-                      }}
-                    </p>
-                  </div>
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <app-contact-header
-                [link]="link"
-                [bio]="headerService.saleflow?.merchant.bio"
-                [contact]="headerService.merchantContact"
-              ></app-contact-header>
-            </mat-expansion-panel>
-          </mat-accordion>
-        </div>
-        <div class="nav-account">
-          <button
-            mat-icon-button
-            [matMenuTriggerFor]="menu"
-            style="width: 30px; height: 30px; line-height: 0"
-          >
             <div
-              *ngIf="headerService.user"
               class="icon"
               [style.background]="
                 _DomSanitizer.bypassSecurityTrustStyle(
                   'url(' +
-                    headerService.user?.image +
+                    headerService.saleflow?.merchant?.image +
                     ') no-repeat center center / cover #e9e371'
                 )
               "
             ></div>
-            <mat-icon *ngIf="!headerService.user" style="color: #fff">
-              account_circle
-            </mat-icon>
-          </button>
-        </div>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="login()" *ngIf="!headerService.user">
-            <mat-icon>input</mat-icon>
-            <span>Iniciar Sesión</span>
-          </button>
-          <ng-container *ngIf="headerService.user">
-            <a mat-menu-item [routerLink]="['']">
-              <mat-icon>settings</mat-icon>
-              <span>Configuración</span>
-            </a>
-            <a
-              mat-menu-item
-              [routerLink]="['../../contact-landing/' + headerService.user._id]"
-            >
-              <mat-icon>contacts</mat-icon>
-              <span>Página de contacto</span>
-            </a>
-            <button mat-menu-item (click)="logout()">
-              <mat-icon>exit_to_app</mat-icon>
-              <span>Cerrar Sesión</span>
-            </button>
-          </ng-container>
-        </mat-menu>
-      </nav> -->
-      <main>
-        <!-- ******************************************* TAG SWIPER ***************************************-->
-        <div style="width: 100%; padding: 20px 20px 0px 20px">
-          <!-- <swiper [config]="swiperConfigTag">
-            <a
-              *ngFor="let tag of tags"
-              [ngStyle]="{
-                maxWidth: '115px',
-                textDecoration: 'none',
-                paddingBottom: '15px'
-              }"
-              style="height: auto !important; overflow: hidden"
-              [routerLink]="['../categories', tag._id]"
-            >
-              <app-gradient-card [tag]="tag"></app-gradient-card>
-            </a>
-          </swiper> -->
-        </div>
-        <!-- **************************************** END TAG SWIPER ***************************************-->
-
-        <!--REGULAR MERCHANT-->
-        <div class="content">
-          <div
-            class="saleflows-item-grid"
-            *ngIf="
-              !headerService.saleflow.layout ||
-              headerService.saleflow.layout === 'simple-card'
-            "
-          >
-            <div
-              class="capsize"
-              *ngFor="let item of items; let itemIndex = index"
-            >
-              <a
-                [routerLink]="['../article-detail/item', item._id]"
-                [queryParams]="{ mode: 'saleflow' }"
-              >
-                <app-saleflow-item
-                  [itemIndex]="itemIndex"
-                  [itemId]="item._id"
-                  [type]="4"
-                  [inactive]="
-                    item.status != 'active' && item.status != 'featured'
-                      ? true
-                      : false
-                  "
-                  [imgURL]="item.images?.length ? item.images[0].value : ''"
-                  [price]="item.pricing"
-                  [showPrice]="true"
-                  [dynamicStyles]="{
-                    itemContainer: {
-                      width: '100%',
-                      height: '315px',
-                      margin: '0px'
-                    },
-                    simpleCard: {
-                      height: '100%'
-                    },
-                    itemImg: {
-                      height: '82.8571%'
-                    },
-                    video: {
-                      height: '82.8571%'
-                    },
-                    infoArea: {
-                      height: '17.1429%'
-                    }
-                  }"
-                ></app-saleflow-item>
-              </a>
-            </div>
+            <span class="title">
+              {{
+                headerService.saleflow?.merchant?.name.length < 26
+                  ? headerService.saleflow?.merchant?.name
+                  : (headerService.saleflow?.merchant?.name.slice(0, 26) +
+                      ".." || "Tienda" | titlecase)
+              }}
+            </span>
+            <mat-icon>keyboard_arrow_right</mat-icon>
           </div>
-          <div
-            class="description-view"
-            *ngIf="headerService.saleflow.layout === 'description-card'"
-          >
-            <!-- [routerLink]="['../article-detail/item', item._id]"
-              [queryParams]="{ mode: 'saleflow' }" -->
-            <app-buyer-card
-              *ngFor="let item of items; let itemIndex = index"
-              [index]="itemIndex"
-              [title]="item.name"
-              [description]="item.description"
-              [img]="item.images?.length ? item.images[0].value : ''"
-              [leftAmount]="item.pricing"
-              [cta]="true"
-              [ctaActive]="item.isSelected"
-              [redirectionParams]="{
-                link: ['../article-detail/item', item._id],
-                param: { mode: 'saleflow' }
-              }"
-              (ctaClicked)="toggleItemInCart($event)"
-            ></app-buyer-card>
-          </div>
-
-          <div
-            [ngStyle]="{
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              height: '80px',
-              justifyContent: 'center'
-            }"
-            *ngIf="paginationState.status === 'loading'"
-          >
-            <app-dot-loader></app-dot-loader>
-          </div>
+          <span>Simbolos & Contactos</span>
         </div>
+      </button>
+      <div
+        class="chip-list"
+        #elemt
+        (mousedown)="startDragging($event, elemt)"
+        (mouseup)="stopDragging()"
+        (mouseleave)="stopDragging()"
+        (mousemove)="moveEvent($event, elemt)"
+      >
+        <a
+          class="chip"
+          [routerLink]="[
+            '/ecommerce',
+            headerService.saleflow.merchant.slug,
+            'store'
+          ]"
+          routerLinkActive="selected"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Todos
+        </a>
+        <a
+          *ngFor="let tag of tags"
+          class="chip"
+          [routerLink]="[
+            '/ecommerce',
+            headerService.saleflow.merchant.slug,
+            'store',
+            'categories',
+            tag._id
+          ]"
+          routerLinkActive="selected"
+        >
+          <!-- <app-gradient-card [tag]="tag"></app-gradient-card> -->
+          {{ tag.name }}
+        </a>
+      </div>
+    </div>
+    <router-outlet></router-outlet>
+  </div>
+  <div id="footer" class="display-footer hide">
+    <button class="close" (click)="closeFooter()">X</button>
+    <div class="footer-content">
+      <ul class="footer-links">
+        <li
+          *ngFor="let term of terms"
+          class="link"
+          (click)="redirectToTermsOfUse(term)"
+        >
+          {{ term.text }}
+        </li>
+      </ul>
 
-        <div id="footer" class="display-footer hide">
-          <button class="close" (click)="closeFooter()">X</button>
-          <div class="footer-content">
-            <ul class="footer-links">
-              <li
-                *ngFor="let term of terms"
-                class="link"
-                (click)="redirectToTermsOfUse(term)"
-              >
-                {{ term.text }}
-              </li>
-            </ul>
-
-            <div class="logos">
-              <img
-                class="payment-methods-logos"
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpayment_methods_logos.svg"
-              />
-            </div>
-          </div>
-        </div>
-        <div id="footerbtn" class="display-footer">
-          <button mat-mini-fab class="info-button" (click)="displayFooter()">
-            i
-          </button>
-        </div>
-      </main>
+      <div class="logos">
+        <img
+          class="payment-methods-logos"
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpayment_methods_logos.svg"
+        />
+      </div>
     </div>
   </div>
+  <div id="footerbtn" class="display-footer">
+    <button mat-mini-fab class="info-button" (click)="displayFooter()">
+      i
+    </button>
+  </div>
 </app-navigation>
-<div class="action-bar">
+<div class="action-bar" *ngIf="!headerService.saleflow?.merchant.contactFooter">
   <button mat-button (click)="shareStore()">
-    COMPARTIR TIENDA
+    Compartir KiosKo
     <i class="fa fa-share-alt" aria-hidden="true"></i>
   </button>
+</div>
+<div
+  class="contact-bar"
+  *ngIf="
+    headerService.saleflow?.merchant.contactFooter &&
+    headerService.merchantContact
+  "
+>
+  <ul>
+    <li *ngIf="headerService.saleflow?.merchant.owner.phone">
+      <a
+        [href]="'tel:+' + headerService.saleflow?.merchant.owner.phone"
+        target="_blank"
+      >
+        <div class="contact">
+          <div class="logo phone" style="transform: rotate(90deg)">
+            <i class="fa fa-phone" aria-hidden="true"></i>
+          </div>
+        </div>
+      </a>
+    </li>
+    <li *ngIf="headerService.saleflow?.merchant.owner.phone">
+      <a
+        [href]="
+          'https://wa.me/' +
+          headerService.saleflow?.merchant.owner.phone.replace('+', '')
+        "
+        target="_blank"
+      >
+        <div class="contact">
+          <div class="logo whatsapp">
+            <i class="fa fa-whatsapp" aria-hidden="true"></i>
+          </div>
+        </div>
+      </a>
+    </li>
+    <li *ngIf="headerService.saleflow?.merchant.owner.email">
+      <a
+        [href]="'mailto:' + headerService.saleflow?.merchant.owner.email"
+        target="_blank"
+      >
+        <div class="contact">
+          <div class="logo email">
+            <i class="fa fa-envelope" aria-hidden="true"></i>
+          </div>
+        </div>
+      </a>
+    </li>
+    <li *ngFor="let link of headerService.merchantContact.link">
+      <a [href]="link.value" target="_blank">
+        <div class="contact">
+          <div class="logo instagram" *ngIf="link.name == 'Instagram'">
+            <i class="fa fa-instagram" aria-hidden="true"></i>
+          </div>
+          <div class="logo facebook" *ngIf="link.name == 'Facebook'">
+            <i class="fa fa-facebook-square" aria-hidden="true"></i>
+          </div>
+          <div class="logo twitter" *ngIf="link.name == 'Twitter'">
+            <i class="fa fa-twitter-square" aria-hidden="true"></i>
+          </div>
+        </div>
+      </a>
+    </li>
+  </ul>
 </div>

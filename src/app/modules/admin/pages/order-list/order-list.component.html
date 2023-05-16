@@ -34,7 +34,7 @@
           >
           <mat-icon>more_horiz</mat-icon>
         </a>
-        <p style="font-family: SfProLight" *ngIf="notification">
+        <p class="notif-message" *ngIf="notification">
           {{ notification.message }}
         </p>
       </mat-card>
@@ -57,8 +57,8 @@
       <ng-container *ngIf="orders.length">
         <a
           *ngFor="let order of orders | filterPipeSearch : searchText"
-          [routerLink]="['../../../../../ecommerce/order-detail', order._id]"
-          [queryParams]="{ redirectTo: router.url }"
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{ progress: deliveryStatus }"
           class="order-item"
         >
           <app-small-info-card
