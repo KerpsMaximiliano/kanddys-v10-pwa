@@ -33,7 +33,6 @@ export class CreateDeliveryZoneComponent implements OnInit {
   ngOnInit(): void {
     this.questionId = this.activatedRoute.snapshot.paramMap.get('questionid');
     this.getQuestion();
-    this.openDialog();
   }
 
   getAsString(val) {
@@ -82,26 +81,29 @@ export class CreateDeliveryZoneComponent implements OnInit {
     this.question = result;
   }
 
-  openDialog() {
+  openDialog(numb) {
     this._bottomSheet.open(LinksDialogComponent, {
       data: [
         {
           options: [
             {
               title: `Renombrar ${this.question.value}`,
+              callback: () =>       this.router.navigate(['../../admin/rename-question/name']),
+            },
+            {
+              title: `Editar el orden de las opciones`,
               // callback: () => this.navigate(type),
             },
             {
-              title: `Eliminar toda la data de ${this.question.value}`,
-              callback: () => this.removeQuestion(),
+              title: `Renombrar ZonaId`,
+              callback: () => this.router.navigate(['../../admin/rename-question/',numb]),
             },
             {
-              title: `Eliminar todo lo relacionado a  'Seleccionar la...'`,
-              // callback: () => {
-              //   this.router.navigate([`/ecommerce/order-detail/${order._id}`], {
-              //     queryParams: { redirectTo: this.router.url },
-              //   });
+              title: `Eliminar la opcion ZonaId`,
+              // callback: () => this.navigate(type),
             },
+
+           
           ],
         },
       ],
@@ -128,7 +130,7 @@ export class CreateDeliveryZoneComponent implements OnInit {
   select(numb){
     if(numb==this.numb){
       this.webformService.editingQuestion = this.question;
-      this.router.navigate(['../../admin/rename-question/',numb]);
+      this.openDialog(numb)
     }
 
     this.numb = numb;
