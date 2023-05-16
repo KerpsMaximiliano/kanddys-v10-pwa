@@ -69,7 +69,12 @@
   <div class="categories">
     <swiper [config]="swiperConfig">
       <div class="category-item active">TODOS</div>
-      <div class="category-item" *ngFor="let filter of filters; let i = index">
+      <div
+        class="category-item"
+        *ngFor="let filter of filters; let i = index"
+        [ngClass]="{ active: selectedFilter && selectedFilter._id === filter._id }"
+        (click)="isFilterActive(filter)"
+      >
         {{
           filter.type === "queryParameter"
             ? formatDate(filter.queryParameter.from.date, true) +

@@ -108,6 +108,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   filters: FilterCriteria[] = [];
 
+  selectedFilter: FilterCriteria;
+
   options: BarOptions[] = [
     {
       title: 'articulos',
@@ -754,6 +756,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     } else {
       this.selectedTags.push(selectedTag);
     }
+  }
+
+  isFilterActive(filter: FilterCriteria) {
+    if (this.selectedFilter && (filter._id === this.selectedFilter._id)) {
+      this.selectedFilter = null;
+      return;
+    }
+
+    this.selectedFilter = filter;
   }
 
   isTagActive(tag: Tag) {
