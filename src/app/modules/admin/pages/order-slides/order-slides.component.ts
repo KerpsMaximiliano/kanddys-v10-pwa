@@ -7,12 +7,17 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
-import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  formatID,
+  formatPhoneNumber,
+  isVideo,
+} from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Contact } from 'src/app/core/models/contact';
 import { DeliveryZone } from 'src/app/core/models/deliveryzone';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { Merchant } from 'src/app/core/models/merchant';
+import { Notification } from 'src/app/core/models/notification';
 import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
 import { Post, Slide } from 'src/app/core/models/post';
 import { Reservation } from 'src/app/core/models/reservation';
@@ -22,6 +27,7 @@ import { ContactService } from 'src/app/core/services/contact.service';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PaymentLogsService } from 'src/app/core/services/paymentLogs.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -30,8 +36,8 @@ import { TagsService } from 'src/app/core/services/tags.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
+import { BuyerNotificationDialogComponent } from 'src/app/shared/dialogs/buyer-notification-dialog/buyer-notification-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
-import { OrderInfoComponent } from 'src/app/shared/dialogs/order-info/order-info.component';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
 
@@ -88,24 +94,14 @@ export class OrderSlidesComponent implements OnInit {
     'video/m2ts',
   ];
 
-  // orderStatus: OrderStatusNameType;
   orderDate: string;
   orderMerchant: Merchant;
-  // isMerchant: boolean;
 
   post: Post;
   slides: Slide[] = [];
 
   entityTemplate: EntityTemplate;
   entityTemplateLink: string;
-
-  // selectedTags: {
-  //   [key: string]: boolean;
-  // } = {};
-  // selectedTagsLength: number;
-  // tagOptions: DropdownOptionItem[];
-  // tagPanelState: boolean;
-  // orderDelivered: boolean = false;
   userTags: Tag[] = [];
 
   deliveryImages: Array<{
@@ -142,7 +138,7 @@ export class OrderSlidesComponent implements OnInit {
 
   openNavigation = false;
 
-  // notifications: Notification[] = [];
+  notifications: Notification[] = [];
 
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
   @ViewChild('orderQrCode', { read: ElementRef }) orderQrCode: ElementRef;
@@ -165,7 +161,8 @@ export class OrderSlidesComponent implements OnInit {
     private paymentLogService: PaymentLogsService,
     public _DomSanitizer: DomSanitizer,
     private contactService: ContactService,
-    private webformsService: WebformsService
+    private webformsService: WebformsService,
+    private notificationsService: NotificationsService
   ) {}
 
   async ngOnInit() {
@@ -301,7 +298,7 @@ export class OrderSlidesComponent implements OnInit {
       }
     }
 
-    // await this.getDeliveryNotifications();
+    await this.getNotifications();
 
     if (this.order.items[0].post) {
       this.post = (
@@ -399,6 +396,32 @@ export class OrderSlidesComponent implements OnInit {
       order._id
     );
     order.orderStatus = 'completed';
+    const { name, phone, email } = order.user;
+    const link = `${this.URI}/ecommerce/order-detail/${order._id}`;
+    const notification = this.notifications.find(
+      (notif) =>
+        notif.trigger[0].key === 'orderStatus' &&
+        notif.trigger[0].value === 'completed'
+    );
+    let message: string;
+    if (notification) {
+      message = notification.message.replace('[name]', name || phone || email);
+    } else {
+      message = `El pago de tu factura ${this.formatShortId(
+        order.dateId
+      )} fue confirmado, aquí más info: ${link}`;
+    }
+    this._bottomSheet.open(BuyerNotificationDialogComponent, {
+      data: {
+        username: name || formatPhoneNumber(phone) || email,
+        message,
+        link: `https://wa.me/${phone}?text=${encodeURI(message)}`,
+      },
+    });
+  }
+
+  formatShortId(id: string) {
+    return formatID(id).split(/(?=N)/g)[1];
   }
 
   async getOrders() {
@@ -435,64 +458,36 @@ export class OrderSlidesComponent implements OnInit {
     }
   }
 
-  // async addTag(tagId: string) {
-  //   if (!this.selectedTags[tagId]) {
-  //     await this.tagsService.addTagsInOrder(
-  //       this.order.items[0].saleflow.merchant._id,
-  //       tagId,
-  //       this.order._id
-  //     );
-  //     this.selectedTags[tagId] = true;
-  //     this.order.tags.push(tagId);
-  //   } else {
-  //     await this.tagsService.removeTagsInOrder(
-  //       this.order.items[0].saleflow.merchant._id,
-  //       tagId,
-  //       this.order._id
-  //     );
-  //     this.selectedTags[tagId] = false;
-  //     this.order.tags = this.order.tags.filter((tag) => tag !== tagId);
-  //   }
-  //   this.selectedTagsLength = Object.entries(this.selectedTags).filter(
-  //     (value) => value[1]
-  //   ).length;
-  // }
+  async getNotifications() {
+    try {
+      const result = await this.notificationsService.notifications(
+        {
+          options: {
+            limit: -1,
+            sortBy: 'createdAt:desc',
+          },
+          findBy: {
+            entity: 'order',
+            type: 'standard',
+            mode: 'default',
+            active: true,
+          },
+        },
+        this.merchantsService.merchantData._id
+      );
 
-  // async getDeliveryNotifications(merchantId: string) {
-  //   try {
-  //     const result = await this.notificationsService.notifications(
-  //       {
-  //         options: {
-  //           limit: -1,
-  //           sortBy: 'createdAt:desc',
-  //         },
-  //         findBy: {
-  //           entity: 'order',
-  //           type: 'standard',
-  //           mode: 'default',
-  //           active: true,
-  //         },
-  //       },
-  //       merchantId
-  //     );
+      this.notifications = result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  //     const notifications = result.filter((notification) => {
-  //       return notification.trigger[0].key === 'orderStatusDelivery';
-  //     });
-
-  //     console.log(notifications);
-
-  //     this.notifications = notifications;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
-  // checkNotificationDeliveryStatus(status: string) {
-  //   return this.notifications.find(
-  //     (option) => option.trigger[0].value === status
-  //   );
-  // }
+  checkNotificationDeliveryStatus(status: OrderStatusDeliveryType) {
+    const notifications = this.notifications.filter((notification) => {
+      return notification.trigger[0].key === 'orderStatusDelivery';
+    });
+    return notifications.find((option) => option.trigger[0].value === status);
+  }
 
   goToPost() {
     this.router.navigate([
@@ -509,135 +504,11 @@ export class OrderSlidesComponent implements OnInit {
     });
   }
 
-  // share(order: ItemOrder) {
-  //   const link = `${this.URI}/ecommerce/order-detail/${order._id}`;
-  //   const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
-  //     data: [
-  //       {
-  //         title: `Vista e interfaz con toda la info`,
-  //         options: [
-  //           {
-  //             title: 'Ver como lo verá el visitante',
-  //             callback: () => {
-  //               this.router.navigate([`/ecommerce/order-detail/${order._id}`], {
-  //                 queryParams: { redirectTo: this.router.url },
-  //               });
-  //             },
-  //           },
-  //           {
-  //             title: 'Compartir el Link de esta sola factura',
-  //             callback: () => {
-  //               this.ngNavigatorShareService.share({
-  //                 title: '',
-  //                 url: link,
-  //               });
-  //             },
-  //           },
-  //           {
-  //             title: 'Copiar el Link de esta sola factura',
-  //             callback: () => {
-  //               this.clipboard.copy(link);
-  //               this.snackBar.open('Enlace copiado en el portapapeles', '', {
-  //                 duration: 2000,
-  //               });
-  //             },
-  //           },
-  //           {
-  //             title: 'Descargar el qrCode de esta sola factura',
-  //             callback: () => this.downloadQr(order),
-  //           },
-  //         ],
-  //       },
-  //       // {
-  //       //   title: `Opciones para el mensajero`,
-  //       //   options: [
-  //       //     {
-  //       //       title: 'Compartir el Link',
-  //       //       callback: () => {
-  //       //         this.ngNavigatorShareService.share({
-  //       //           title: '',
-  //       //           url: `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=delivery`,
-  //       //         });
-  //       //       },
-  //       //     },
-  //       //     {
-  //       //       title: 'Copiar el Link',
-  //       //       callback: () => {
-  //       //         this.clipboard.copy(
-  //       //           `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=delivery`
-  //       //         );
-  //       //         this.snackBar.open('Enlace copiado en el portapapeles', '', {
-  //       //           duration: 2000,
-  //       //         });
-  //       //       },
-  //       //     },
-  //       //   ],
-  //       // },
-  //       // {
-  //       //   title: `Opciones para quien prepara la orden`,
-  //       //   options: [
-  //       //     {
-  //       //       title: 'Compartir el Link',
-  //       //       callback: () => {
-  //       //         this.ngNavigatorShareService.share({
-  //       //           title: '',
-  //       //           url: `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=assistant`,
-  //       //         });
-  //       //       },
-  //       //     },
-  //       //     {
-  //       //       title: 'Copiar el Link',
-  //       //       callback: () => {
-  //       //         this.clipboard.copy(
-  //       //           `${this.URI}/ecommerce/order-process/${this.orderMerchant._id}?view=assistant`
-  //       //         );
-  //       //         this.snackBar.open('Enlace copiado en el portapapeles', '', {
-  //       //           duration: 2000,
-  //       //         });
-  //       //       },
-  //       //     },
-  //       //   ],
-  //       // },
-  //     ],
-  //   });
-  // }
-
-  // async onImageInput(input: File) {
-  //   if (this.view === 'delivery') {
-  //     lockUI();
-  //     this.deliveryForm.get('image').patchValue(input);
-  //     try {
-  //       const result = await this.orderService.updateOrderDeliveryData(
-  //         { image: this.deliveryForm.get('image').value[0] },
-  //         this.ordersToConfirm[this.activeIndex]._id
-  //       );
-
-  //       this.deliveryImages.forEach((deliveryImage) => {
-  //         if (deliveryImage.order === result._id)
-  //           deliveryImage.image = result.deliveryData.image;
-  //       });
-
-  //       await this.orderService.orderSetStatusDeliveryWithoutAuth(
-  //         'delivered',
-  //         this.ordersToConfirm[this.activeIndex]._id
-  //       );
-
-  //       this.ordersToConfirm[this.activeIndex].orderStatusDelivery =
-  //         'delivered';
-  //       this.orderReadyToDeliver = false;
-  //       this.orderDelivered = true;
-  //       unlockUI();
-  //     } catch (error) {
-  //       console.log(error);
-  //       unlockUI();
-  //     }
-  //   }
-  // }
-
   async changeOrderStatus(value: OrderStatusDeliveryType) {
     if (this.ordersToConfirm[this.activeIndex].orderStatusDelivery === value)
       return;
     this.ordersToConfirm[this.activeIndex].orderStatusDelivery = value;
+    this.openNotificationDialog(value);
 
     try {
       await this.orderService.orderSetStatusDelivery(
@@ -647,6 +518,32 @@ export class OrderSlidesComponent implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  openNotificationDialog(value: OrderStatusDeliveryType) {
+    const { name, phone, email } = this.ordersToConfirm[this.activeIndex].user;
+    const notification = this.checkNotificationDeliveryStatus(value);
+
+    const link = `${this.URI}/ecommerce/order-detail/${
+      this.ordersToConfirm[this.activeIndex]._id
+    }`;
+    let message: string;
+    if (notification) {
+      message = notification.message.replace('[name]', name || phone || email);
+    } else {
+      message = `tu factura ${this.formatShortId(
+        this.ordersToConfirm[this.activeIndex].dateId
+      )} progresó a ${this.orderDeliveryStatus(value)}, aquí más info: ${link}`;
+    }
+
+    this._bottomSheet.open(BuyerNotificationDialogComponent, {
+      data: {
+        username: name || phone || email,
+        message,
+        link: `https://wa.me/${phone}?text=${encodeURI(message)}`,
+        deliveryStatus: value,
+      },
+    });
   }
 
   async updateCurrentSlideData(event: any) {

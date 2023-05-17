@@ -71,6 +71,7 @@ export function completeImageURL(url: string) {
 }
 
 export function formatPhoneNumber(phone: string) {
+  if (!phone) return;
   const phoneUtil = PhoneNumberUtil.getInstance();
   let number = phone;
   if (!number.startsWith('+')) number = '+' + number;
