@@ -16,15 +16,18 @@ import {
   isVideo,
 } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item, ItemInput } from 'src/app/core/models/item';
+import { Item, ItemInput, ItemStatus } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
-import { Webform } from 'src/app/core/models/webform';
+import { Answer, Question, Webform } from 'src/app/core/models/webform';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { WebformsService } from 'src/app/core/services/webforms.service';
+import {
+  ResponsesByQuestion,
+  WebformsService,
+} from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { CurrencyInputComponent } from 'src/app/shared/components/currency-input/currency-input.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
@@ -42,6 +45,19 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
+import { SwiperOptions } from 'swiper';
+
+interface ExtendedAnswer extends Answer {
+  responsesGroupedByQuestion: Array<{
+    question: Question;
+    value?: string;
+    multipleValues?: Array<string>;
+    label?: string;
+    isMedia?: boolean;
+  }>;
+  merchant?: Merchant;
+}
 
 @Component({
   selector: 'app-article-editor',
@@ -107,8 +123,29 @@ export class ArticleEditorComponent implements OnInit {
   params;
   productName: string = '';
   productDescription: string = '';
+  initialName: string;
+  initialDescription: string;
+  initialIncluded;
+  showDescription: boolean = false;
+  showName: boolean = false;
+  showIncluded: boolean = false;
+  showArticleText: string;
 
   content: string[] = [];
+  webformsByItem: Record<
+    string,
+    {
+      webform: Webform;
+      dialogs: Array<EmbeddedComponentWithId>;
+      swiperConfig: SwiperOptions;
+      dialogFlowFunctions: Record<string, any>;
+      opened: boolean;
+      valid?: boolean;
+    }
+  > = {};
+  answersByQuestion: Record<string, ResponsesByQuestion> = {};
+  areWebformsValid: boolean = false;
+  answersForWebform: Array<ExtendedAnswer> = [];
 
   menuOptions = [
     {
@@ -186,6 +223,12 @@ export class ArticleEditorComponent implements OnInit {
 
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
+  newStatus: ItemStatus;
+  totalAnswers: number = 0;
+  totalQuestions: number = 0;
+  totalSells: number = 0;
+  totalIncome: number = 0;
+
   constructor(
     private _ItemsService: ItemsService,
     private _MerchantsService: MerchantsService,
@@ -210,6 +253,15 @@ export class ArticleEditorComponent implements OnInit {
 
   async ngOnInit() {
     await this.executeInitProcesses();
+    this.initialName = this.name.value;
+    this.initialDescription = this.description.value;
+    await this.getQuestions();
+    await this.getAnswersForWebform();
+    await this.getSells();
+    // console.log(this.initialDescription);
+    // console.log(this.initialName);
+    // console.log(this.content);
+    // console.log(this.item);
   }
 
   async executeInitProcesses() {
@@ -828,5 +880,418 @@ export class ArticleEditorComponent implements OnInit {
     this.openedDialogFlow = false;
 
     await this.executeInitProcesses();
+  }
+
+  async plusOptions() {
+    const link = `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`;
+    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+      data: [
+        {
+          title: `Posibles adiciones al ${this.item.name}`,
+          options: [
+            {
+              title: 'Adiciona un Nombre',
+              callback: async () => {
+                this.showName = true;
+                console.log(this.showName);
+              },
+            },
+            {
+              title: 'Adiciona una descripción',
+              callback: async () => {
+                this.showDescription = true;
+                console.log(this.showDescription);
+              },
+            },
+            {
+              title: 'Adicionalo a una de tus categorías',
+              callback: async () => {
+                this.showIncluded = true;
+              },
+            },
+            {
+              title: 'Incluye preguntas a los posibles compradores',
+              callback: async () => {
+                await this.openWebformCreator();
+              },
+            },
+          ],
+          secondaryOptions: [
+            {
+              title: 'Ver como lo ven otros',
+              callback: () => {
+                this._Router.navigate([
+                  `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
+                ]);
+              },
+            },
+            {
+              title: 'Comparte el Link',
+              callback: () => {
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: link,
+                });
+              },
+            },
+            {
+              title: 'Descargar el qrCode',
+              link,
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  async dotsOptions() {
+    if (this.item.status === 'disabled') {
+      this.showArticleText = 'Mostrar';
+      this.newStatus = 'active';
+    } else if (this.item.status === 'active') {
+      this.showArticleText = 'Ocultar';
+      this.newStatus = 'disabled';
+    }
+    const link = `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`;
+    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+      data: [
+        {
+          title: `Posibles acciones de ${this.item.name || 'el artículo'}`,
+          options: [
+            {
+              title: 'Incluyelo en una categoría de tu Kiosko',
+              callback: async () => this.openTagDialog(),
+            },
+            {
+              title: `${this.showArticleText} el artículo de la Tienda`,
+              callback: async () => {
+                this._ItemsService.updateItem(
+                  {
+                    status: this.newStatus,
+                  },
+                  this.item._id
+                );
+              },
+            },
+            {
+              title: 'Eliminar el artículo',
+              callback: async () => {
+                console.log('Delete');
+                this.dialog.open(SingleActionDialogComponent, {
+                  type: 'fullscreen-translucent',
+                  props: {
+                    title: 'Elimina este artículo',
+                    buttonText: 'Sí, borrar',
+                    mainButton: async () => {
+                      const removeItemFromSaleFlow =
+                        await this._SaleflowService.removeItemFromSaleFlow(
+                          this.item._id,
+                          this._SaleflowService.saleflowData._id
+                        );
+
+                      if (!removeItemFromSaleFlow) return;
+                      const deleteItem = await this._ItemsService.deleteItem(
+                        this.item._id
+                      );
+                      if (!deleteItem) return;
+                      else {
+                        this._ToastrService.info(
+                          '¡Item eliminado exitosamente!'
+                        );
+
+                        this._SaleflowService.saleflowData =
+                          await this._SaleflowService.saleflowDefault(
+                            this._MerchantsService.merchantData._id
+                          );
+
+                        this._Router.navigate(['/admin/dashboard']);
+                      }
+                    },
+                    btnBackgroundColor: '#272727',
+                    btnMaxWidth: '133px',
+                    btnPadding: '7px 2px',
+                  },
+                  customClass: 'app-dialog',
+                  flags: ['no-header'],
+                });
+              },
+            },
+          ],
+          secondaryOptions: [
+            {
+              title: 'Ver como lo ven otros',
+              callback: () => {
+                this._Router.navigate([
+                  `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
+                ]);
+              },
+            },
+            {
+              title: 'Comparte el Link',
+              callback: () => {
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: link,
+                });
+              },
+            },
+            {
+              title: 'Descargar el qrCode',
+              link,
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  async getQuestions(): Promise<void> {
+    const { webForms } = this.item;
+
+    const firstActiveWebformIndex = webForms.findIndex(
+      (webform) => webform.active
+    );
+
+    //If there's at least 1 webform associated with the item, then, it loads the questions
+    if (
+      webForms &&
+      webForms.length > 0 &&
+      firstActiveWebformIndex >= 0 &&
+      webForms[firstActiveWebformIndex].active
+    ) {
+      const itemWebform = webForms[firstActiveWebformIndex];
+
+      const webformId = itemWebform.reference;
+      const webform = await this.webformsService.webform(webformId);
+
+      console.log(webform);
+
+      //Sorts the question by subIndez
+      webform.questions = webform.questions.sort(
+        (a, b) => a.subIndex - b.subIndex
+      );
+
+      if (webform) {
+        this.webformsByItem[this.item._id] = {
+          webform,
+          dialogs: [],
+          swiperConfig: null,
+          dialogFlowFunctions: {},
+          opened: false,
+        };
+
+        //loads the questions in an object that associates each answer with each question
+        for (const question of webform.questions) {
+          let multipleResponse =
+            (['multiple', 'multiple-text'].includes(question.type) &&
+              question.answerLimit === 0) ||
+            question.answerLimit > 1;
+          const isMedia = Boolean(
+            question.answerDefault &&
+              question.answerDefault.length &&
+              question.answerDefault.some((option) => option.isMedia)
+          );
+
+          if (isMedia) {
+            question.answerDefault = question.answerDefault.map((option) => ({
+              ...option,
+              img: option.isMedia ? option.value : null,
+              isMedia: option.isMedia,
+            }));
+          }
+
+          let response = '';
+          let responseLabel = '';
+          let selectedIndex = null;
+
+          if (!this.webformsService.clientResponsesByItem[question._id]) {
+            this.answersByQuestion[question._id] = {
+              question,
+              response,
+              isMedia,
+              isMultipleResponse: multipleResponse,
+            };
+            this.webformsService.clientResponsesByItem[question._id] =
+              this.answersByQuestion[question._id];
+          } else {
+            this.answersByQuestion[question._id] =
+              this.webformsService.clientResponsesByItem[question._id];
+
+            if (
+              question.type === 'text' &&
+              question.answerTextType === 'name'
+            ) {
+              this.answersByQuestion[question._id].response =
+                this.webformsService.clientResponsesByItem[
+                  question._id
+                ].response;
+              this.answersByQuestion[question._id].responseLabel =
+                this.webformsService.clientResponsesByItem[
+                  question._id
+                ].responseLabel;
+
+              //this.answersByQuestion[question._id].valid = valid;
+            } else if (['multiple', 'multiple-text'].includes(question.type)) {
+              if (
+                !multipleResponse &&
+                this.answersByQuestion[question._id].allOptions
+              ) {
+                const selectedIndex = (
+                  this.answersByQuestion[question._id].allOptions as Array<any>
+                ).findIndex((option) => option.selected);
+
+                response = this.answersByQuestion[question._id].response;
+                if (response && response !== '')
+                  this.answersByQuestion[question._id]['response'] = response;
+
+                if (selectedIndex >= 0) {
+                  this.answersByQuestion[question._id]['selectedIndex'] =
+                    selectedIndex;
+                }
+              } /*else {
+                  const selectedOptions = (
+                    this.dialogFlowService.dialogsFlows[
+                      'webform-item-' + item._id
+                    ][question._id].fields
+                      .options as Array<ExtendedAnswerDefault>
+                  ).filter((option) => option.selected);
+
+                  if (selectedOptions.length > 0) {
+                    this.answersByQuestion[question._id]['multipleResponses'] =
+                      selectedOptions.map((option) => ({
+                        response: option.userProvidedAnswer
+                          ? option.userProvidedAnswer
+                          : option.value,
+                        responseLabel: option.label ? option.label : null,
+                        isProvidedByUser: option.userProvidedAnswer
+                          ? true
+                          : false,
+                        isMedia: option.isMedia,
+                      }));
+                  }
+                }*/
+              console.log(webform.questions);
+              console.log(this.answersByQuestion[question._id]);
+            }
+          }
+        }
+      }
+    }
+
+    if (Object.keys(this.webformsByItem).length === 0)
+      this.areWebformsValid = true;
+    else {
+      this.areItemsQuestionsAnswered();
+    }
+  }
+
+  areItemsQuestionsAnswered() {
+    const itemRequiredQuestions: Record<
+      string,
+      {
+        requiredQuestions: number;
+        valid: boolean;
+      }
+    > = {}; // {itemId: {requiredQuestions: number; valid: boolean}}
+
+    if (this.webformsByItem[this.item._id]) {
+      itemRequiredQuestions[this.item._id] = {
+        requiredQuestions: 0,
+        valid: false,
+      };
+
+      for (const question of this.webformsByItem[this.item._id].webform
+        .questions) {
+        if (question.required) {
+          itemRequiredQuestions[this.item._id].requiredQuestions++;
+        }
+      }
+    }
+    this.totalQuestions =
+      this.webformsByItem[this.item._id].webform.questions.length;
+    console.log(this.totalQuestions);
+
+    if (this.webformsByItem[this.item._id]) {
+      let requiredQuestionsAnsweredCounter = 0;
+
+      for (const question of this.webformsByItem[this.item._id].webform
+        .questions) {
+        if (
+          question.required &&
+          this.webformsService.clientResponsesByItem[question._id]?.valid
+        ) {
+          requiredQuestionsAnsweredCounter++;
+        }
+      }
+
+      if (
+        itemRequiredQuestions[this.item._id].requiredQuestions ===
+          requiredQuestionsAnsweredCounter ||
+        itemRequiredQuestions[this.item._id].requiredQuestions === 0
+      ) {
+        this.webformsByItem[this.item._id].valid = true;
+      } else {
+        this.webformsByItem[this.item._id].valid = false;
+      }
+    }
+
+    let areWebformsValid = true;
+
+    Object.keys(this.webformsByItem).forEach((itemId) => {
+      areWebformsValid = this.webformsByItem[itemId]
+        ? areWebformsValid && this.webformsByItem[itemId].valid
+        : true;
+    });
+
+    //console.log('VALIDANDO WEBFORMS');
+
+    this.areWebformsValid = areWebformsValid;
+  }
+
+  async getAnswersForWebform() {
+    this.answersForWebform = await this.webformsService.answerPaginate({
+      findBy: {
+        webform: this.item.webForms[0].reference,
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+      },
+    });
+    console.log(this.answersForWebform);
+
+    for (let i = 0; i < this.answersForWebform.length; i++) {
+      if (this.answersForWebform[i].response.length > 0) {
+        this.totalAnswers =
+          this.totalAnswers + this.answersForWebform[i].response.length;
+      }
+    }
+    console.log(this.totalAnswers);
+  }
+
+  async getSells() {
+    const sellsPagination = {
+      options: { sortBy: 'count:asc', limit: 10, page: 1, range: {} },
+      findBy: {
+        merchant: this.merchant._id,
+        _id: this.item._id,
+      },
+    };
+
+    const revenue = await this._ItemsService.itemTotalPagination(
+      sellsPagination
+    );
+    console.log(revenue);
+    this.totalSells = revenue.itemTotalPagination[0].count;
+    this.totalIncome = revenue.itemTotalPagination[0].total;
+  }
+
+  goToWebformResponses() {
+    this._Router.navigate([`admin/webform-responses/${this.item._id}`]);
+  }
+  goToReports() {
+    this._Router.navigate([`admin/reports/orders`], {
+      queryParams: { articleId: this.item._id },
+    });
   }
 }

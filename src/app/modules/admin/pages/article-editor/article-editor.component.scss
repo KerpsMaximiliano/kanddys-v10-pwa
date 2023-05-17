@@ -5,12 +5,18 @@
 .container {
   min-height: 100vh;
   margin-bottom: 35px;
+  background-color: #f6f6f6;
 
   .header {
-    background-color: #a1a1a1;
+    background-color: #ffffff;
     display: flex;
     align-items: center;
-    padding: 14px 27px 14px 21px;
+    padding: 14px 21px;
+
+    button {
+      all: unset;
+      cursor: pointer;
+    }
 
     img,
     p {
@@ -19,8 +25,8 @@
     p {
       margin-left: auto;
       color: #272727;
-      font-size: 13px;
-      font-family: SFProRegular;
+      font-size: 16px;
+      font-family: InterBold;
     }
   }
 
@@ -276,7 +282,7 @@
 
 .header {
   width: 100%;
-  background-color: #A1A1A1;
+  background-color: #a1a1a1;
   padding: 13.8px 16px;
   display: flex;
   justify-content: space-between;
@@ -291,6 +297,33 @@
 
     &:hover {
       cursor: pointer;
+    }
+  }
+}
+
+.info {
+  background-color: #ffffff;
+  padding: 20px;
+  margin-top: 1px;
+
+  .cta {
+    border: none;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 17px;
+
+    .left {
+      font-family: InterRegular;
+      color: #7b7b7b;
+    }
+
+    .bold {
+      font-family: InterBold;
+      color: #181d17;
+      position: absolute;
+      right: 20px;
     }
   }
 }

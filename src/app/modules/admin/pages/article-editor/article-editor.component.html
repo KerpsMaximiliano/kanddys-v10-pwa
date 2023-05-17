@@ -1,6 +1,6 @@
 <div class="container">
   <div class="header">
-    <img
+    <!-- <img
       [src]="env + '/arrow-double-up-black.svg'"
       alt="go back"
       class="back-icon"
@@ -18,7 +18,32 @@
       alt="go back"
       class="dots"
       (click)="openOptionsForThisArticle()"
-    />
+    /> -->
+
+    <button style="margin-right: 20px" mat-icon-button>
+      <mat-icon>search</mat-icon>
+    </button>
+    <button style="margin-right: 20px" mat-icon-button (click)="plusOptions()">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button style="margin-top: -2px" mat-icon-button (click)="dotsOptions()">
+      <img [src]="env + '/dots-black.svg'" alt="" />
+    </button>
+
+    <button
+      style="
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        margin-left: auto;
+      "
+      (click)="iconCallback()"
+    >
+      <p class="text">
+        {{ item?.name ? item.name : "Artículo sin Nombre" }}
+      </p>
+      <mat-icon style="margin-left: 8px">keyboard_arrow_down</mat-icon>
+    </button>
   </div>
 
   <!--
@@ -63,10 +88,25 @@
     <p>Este artículo solo lo ves tú.</p>
   </div>
 
-  <button class="config">
+  <div class="info">
+    <button class="cta" (click)="goToReports()">
+      <span class="left">{{ totalSells }} Ventas</span>
+      <span class="bold">${{ totalIncome }}</span>
+    </button>
+    <button
+      *ngIf="item.webForms.length > 0"
+      class="cta"
+      (click)="goToWebformResponses()"
+    >
+      <span class="left">{{ totalQuestions }} Preguntas</span>
+      <span class="bold">{{ totalAnswers }} Respuestas</span>
+    </button>
+  </div>
+
+  <!-- <button class="config">
     <img [src]="env + '/settings.svg'" alt="" />
     <span>Configuraciones</span>
-  </button>
+  </button> -->
 
   <div class="section">
     <!-- <app-title-icon-header
@@ -127,7 +167,7 @@
     </app-card>
   </div>
 
-  <div class="section">
+  <div class="section" *ngIf="initialName || showName">
     <app-title-icon-header
       title="Nombre"
       [editing]="!editingName"
@@ -149,7 +189,11 @@
     </app-card>
   </div>
 
-  <div class="section" style="padding-bottom: 0px">
+  <div
+    class="section"
+    style="padding-bottom: 0px"
+    *ngIf="initialDescription || showDescription"
+  >
     <app-title-icon-header
       title="Descripción"
       [editing]="!editingDescription"
@@ -172,7 +216,7 @@
     </app-card>
   </div>
 
-  <div class="section">
+  <div class="section" *ngIf="showIncluded">
     <form [formGroup]="itemParamsForm" (ngSubmit)="send()">
       <p
         style="
@@ -223,10 +267,10 @@
     </form>
   </div>
 
-  <app-menu-button
+  <!-- <app-menu-button
     [position]="{ bottom: '50px' }"
     [options]="menuOptions"
-  ></app-menu-button>
+  ></app-menu-button> -->
 </div>
 
 <app-webforms-creator

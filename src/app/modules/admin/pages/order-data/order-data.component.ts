@@ -4,6 +4,9 @@ import { formatID, getDaysAgo } from 'src/app/core/helpers/strings.helpers';
 import { ItemOrder, OrderSubtotal } from 'src/app/core/models/order';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SwiperOptions } from 'swiper';
+import { ActivatedRoute } from '@angular/router';
+import { OrderService } from 'src/app/core/services/order.service';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 
 interface OrderStatusDeliveryData {
   [key: string]: {
@@ -54,11 +57,25 @@ export class OrderDataComponent implements OnInit {
     },
   };
   getDaysAgo = getDaysAgo;
+  articleId: string = '';
+  itemPendingOrders;
+  itemDeliveredOrders;
+  itemInProgressOrders;
+  itemShippedOrders;
+  itemPickupOrders;
 
-  constructor(private merchantsService: MerchantsService) {}
+  constructor(
+    private merchantsService: MerchantsService,
+    private route: ActivatedRoute,
+    private ordersService: OrderService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     // En preparación
+    this.route.queryParams.subscribe((params) => {
+      this.articleId = params.articleId;
+      console.log(this.articleId);
+    });
     this.orderStatusDelivery.inProgress = {
       ...this.orderStatusDelivery.inProgress,
       status: 'loading',
@@ -318,6 +335,34 @@ export class OrderDataComponent implements OnInit {
         };
       });
     // Entregadas
+
+    console.log(this.orderStatusDelivery);
+
+    if (this.articleId !== '') {
+      const pickupPagination: PaginationInput = {
+        options: {
+          sortBy: 'createdAt:asc',
+          limit: 10,
+          page: 1,
+        },
+        findBy: {
+          // orderStatusDelivery: 'pickup',
+          item: this.articleId,
+        },
+      };
+
+      const pickupOrders = await this.ordersService.ordersByItem({
+        options: {
+          limit: 10,
+          page: 1,
+          sortBy: 'createdAt:asc',
+        },
+        findBy: {
+          item: '614111a9ee18992e52b5b85e',
+        },
+      });
+      console.log(pickupOrders);
+    }
   }
 
   orderTotal(subtotals: OrderSubtotal[]) {

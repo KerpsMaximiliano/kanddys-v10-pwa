@@ -36,6 +36,7 @@ import {
   itemsArchived,
   duplicateItem,
   itemUpdateImage,
+  itemTotalPagination,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -503,5 +504,15 @@ export class ItemsService {
     });
     if (!result) return;
     return result.itemsArchived;
+  }
+
+  async itemTotalPagination(paginate: PaginationInput) {
+    const result = await this.graphql.query({
+      query: itemTotalPagination,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result;
   }
 }
