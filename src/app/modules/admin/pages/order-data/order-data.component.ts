@@ -63,6 +63,7 @@ export class OrderDataComponent implements OnInit {
   itemInProgressOrders;
   itemShippedOrders;
   itemPickupOrders;
+  isArticle: boolean = false;
 
   constructor(
     private merchantsService: MerchantsService,
@@ -76,6 +77,13 @@ export class OrderDataComponent implements OnInit {
       this.articleId = params.articleId;
       console.log(this.articleId);
     });
+    if (this.articleId !== '') {
+      this.isArticle = true;
+    } else {
+      this.isArticle = false;
+    }
+    console.log(this.isArticle);
+
     this.orderStatusDelivery.inProgress = {
       ...this.orderStatusDelivery.inProgress,
       status: 'loading',
@@ -339,29 +347,60 @@ export class OrderDataComponent implements OnInit {
     console.log(this.orderStatusDelivery);
 
     if (this.articleId !== '') {
-      const pickupPagination: PaginationInput = {
-        options: {
-          sortBy: 'createdAt:asc',
-          limit: 10,
-          page: 1,
-        },
+      const inProgressPagination = {
         findBy: {
-          // orderStatusDelivery: 'pickup',
           item: this.articleId,
+          orderStatusDelivery: 'inProgress',
         },
       };
+      this.itemInProgressOrders = await this.ordersService.ordersByItem(
+        inProgressPagination
+      );
+      // console.log(this.itemInProgressOrders);
 
-      const pickupOrders = await this.ordersService.ordersByItem({
-        options: {
-          limit: 10,
-          page: 1,
-          sortBy: 'createdAt:asc',
-        },
+      const pendingPagination = {
         findBy: {
-          item: '614111a9ee18992e52b5b85e',
+          item: this.articleId,
+          orderStatusDelivery: 'pending',
         },
-      });
-      console.log(pickupOrders);
+      };
+      this.itemPendingOrders = await this.ordersService.ordersByItem(
+        pendingPagination
+      );
+      // console.log(this.itemPendingOrders);
+
+      const pickupPagination = {
+        findBy: {
+          item: this.articleId,
+          orderStatusDelivery: 'pickup',
+        },
+      };
+      this.itemPickupOrders = await this.ordersService.ordersByItem(
+        pickupPagination
+      );
+      // console.log(this.itemPickupOrders);
+
+      const shippedPagination = {
+        findBy: {
+          item: this.articleId,
+          orderStatusDelivery: 'shipped',
+        },
+      };
+      this.itemShippedOrders = await this.ordersService.ordersByItem(
+        shippedPagination
+      );
+      // console.log(this.itemShippedOrders);
+
+      const deliveredPagination = {
+        findBy: {
+          item: this.articleId,
+          orderStatusDelivery: 'delivered',
+        },
+      };
+      this.itemDeliveredOrders = await this.ordersService.ordersByItem(
+        deliveredPagination
+      );
+      //  console.log(this.itemDeliveredOrders);
     }
   }
 
