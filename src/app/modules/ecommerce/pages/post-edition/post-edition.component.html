@@ -134,6 +134,8 @@
     <app-qr-content
       [slides]="data?.slides"
       [joke]="data?.joke"
+      [title]="'Contenido del QR'"
+      [editing]="false"
       [defaultText]="'Incluyes fotos, memes, videos o música.'"
       (buttonClicked)="openQrContentDialog()"
     ></app-qr-content>
