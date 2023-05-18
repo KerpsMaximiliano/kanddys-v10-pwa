@@ -494,6 +494,7 @@ export class ArticleDetailComponent implements OnInit {
       data: this.itemData._id,
     });
     this.itemInCart();
+    if (this.isItemInCart) this.goToCheckout();
   }
 
   // paramFromSameItem(id: string) {
