@@ -583,7 +583,7 @@ export class WebformClientViewComponent implements OnInit {
       ].allOptions = options;
     }
 
-    this.router.navigate(['/admin/options-selector'], {
+    this.router.navigate(['/ecommerce/webform-options-selector'], {
       queryParams: {
         startAt: index,
       },

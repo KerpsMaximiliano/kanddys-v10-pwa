@@ -166,3 +166,7 @@
 :host ::ng-deep .swiper-button-prev {
   display: none;
 }
+
+::ng-deep .swiper-container {
+  background-color: inherit !important;
+}
