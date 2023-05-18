@@ -49,12 +49,14 @@ import {
   Merchant,
   MerchantInput,
 } from './../models/merchant';
+import { Contact } from '../models/contact';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
   loadedMerchantData = new Subject();
   constructor(private graphql: GraphQLWrapper) {}
   merchantData: Merchant;
+  merchantContact: Contact;
   merchantIncome: {
     orderAmount: number;
     income: number;

@@ -81,7 +81,7 @@
     </div>
     <router-outlet></router-outlet>
   </div>
-  <br><br><br><br>
+  <br /><br /><br /><br />
   <div id="footer" class="display-footer hide">
     <button class="close" (click)="closeFooter()">X</button>
     <div class="footer-content">
@@ -115,13 +115,7 @@
     <i class="fa fa-share-alt" aria-hidden="true"></i>
   </button>
 </div>
-<div
-  class="contact-bar"
-  *ngIf="
-    headerService.saleflow?.merchant.contactFooter &&
-    headerService.merchantContact
-  "
->
+<div class="contact-bar" *ngIf="headerService.saleflow?.merchant.contactFooter">
   <ul>
     <li *ngIf="headerService.saleflow?.merchant.owner.phone">
       <a
@@ -162,20 +156,22 @@
         </div>
       </a>
     </li>
-    <li *ngFor="let link of headerService.merchantContact.link">
-      <a [href]="link.value" target="_blank">
-        <div class="contact">
-          <div class="logo instagram" *ngIf="link.name == 'Instagram'">
-            <i class="fa fa-instagram" aria-hidden="true"></i>
+    <ng-container *ngIf="headerService.merchantContact">
+      <li *ngFor="let link of headerService.merchantContact.link">
+        <a [href]="link.value" target="_blank">
+          <div class="contact">
+            <div class="logo instagram" *ngIf="link.name == 'Instagram'">
+              <i class="fa fa-instagram" aria-hidden="true"></i>
+            </div>
+            <div class="logo facebook" *ngIf="link.name == 'Facebook'">
+              <i class="fa fa-facebook-square" aria-hidden="true"></i>
+            </div>
+            <div class="logo twitter" *ngIf="link.name == 'Twitter'">
+              <i class="fa fa-twitter-square" aria-hidden="true"></i>
+            </div>
           </div>
-          <div class="logo facebook" *ngIf="link.name == 'Facebook'">
-            <i class="fa fa-facebook-square" aria-hidden="true"></i>
-          </div>
-          <div class="logo twitter" *ngIf="link.name == 'Twitter'">
-            <i class="fa fa-twitter-square" aria-hidden="true"></i>
-          </div>
-        </div>
-      </a>
-    </li>
+        </a>
+      </li>
+    </ng-container>
   </ul>
 </div>
