@@ -654,12 +654,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async headerSettings() {
+    const link = `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`;
     const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
       data: [
         {
           options: [
             {
-              title: 'Cambia el contenedor de los artículos',
+              title: 'Adiciona un nuevo artículo',
+              callback: async () => {
+                this.newArticle();
+              },
+            },
+            {
+              title: 'Edita la carta de los artículos',
               callback: () => {
                 this.router.navigate(['/admin/view-configuration-cards']);
               },
@@ -679,6 +686,29 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 this._MerchantsService.merchantData.contactFooter =
                   !this._MerchantsService.merchantData.contactFooter;
               },
+            },
+          ],
+          secondaryOptions: [
+            {
+              title: 'Mira como lo ven otros',
+              callback: () => {
+                this.router.navigate([
+                  `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
+                ]);
+              },
+            },
+            {
+              title: 'Comparte el Link',
+              callback: () => {
+                this.ngNavigatorShareService.share({
+                  title: '',
+                  url: link,
+                });
+              },
+            },
+            {
+              title: 'Descargar el QR',
+              link,
             },
           ],
         },

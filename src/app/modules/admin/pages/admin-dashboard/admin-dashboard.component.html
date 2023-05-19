@@ -72,7 +72,9 @@
       <div
         class="category-item"
         *ngFor="let filter of filters; let i = index"
-        [ngClass]="{ active: selectedFilter && selectedFilter._id === filter._id }"
+        [ngClass]="{
+          active: selectedFilter && selectedFilter._id === filter._id
+        }"
         (click)="isFilterActive(filter)"
       >
         {{
@@ -389,12 +391,12 @@
     </div>
   </div>
 
-  <div class="uploadButton">
+  <!-- <div class="uploadButton">
     <button mat-fab class="button" (click)="settings()">
       <mat-icon style="color: #82f18d">menu</mat-icon>
-      <!-- <img class="icon" [src]="environment + '/upload.svg'" /> -->
+      
     </button>
-  </div>
+  </div> -->
 
   <div class="sticky-bar" (click)="openDatePicker()">
     <p>{{ dateString }}</p>
