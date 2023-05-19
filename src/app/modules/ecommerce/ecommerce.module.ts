@@ -46,6 +46,7 @@ import { WebformClientViewComponent } from 'src/app/shared/components/webform-cl
 import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-selector/webform-options-selector.component';
 import { AllItemsComponent } from './pages/all-items/all-items.component';
 import { CartComponent } from './pages/cart/cart.component';
+import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
 
 const routes: Routes = [
   {
@@ -190,6 +191,10 @@ const routes: Routes = [
         component: CartComponent,
       },
       {
+        path: 'receiver-form',
+        component: ReceiverFormComponent,
+      },
+      {
         path: 'payments/:orderId',
         component: PaymentsComponent,
       },
@@ -289,6 +294,7 @@ const routes: Routes = [
     TextEditionAndPreviewComponent,
     AllItemsComponent,
     CartComponent,
+    ReceiverFormComponent,
   ],
   imports: [
     CommonModule,
