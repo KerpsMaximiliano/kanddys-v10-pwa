@@ -4,6 +4,8 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { Merchant } from 'src/app/core/models/merchant';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -21,12 +23,27 @@ import { environment } from 'src/environments/environment';
 })
 export class ReportingsComponent implements OnInit {
   env: string = environment.assetsUrl;
-  merchant: any = [];
+  merchant: Merchant = null;
   deliveryZonesTotal: any = { total: 0, count: 0 };
   onlyDayTotal: any = { total: 0, count: 0 };
   onlyMonthTotal: any = { total: 0, count: 0 };
   recurrentTotal: any = { total: 0, count: 0 };
-  questions:any = []
+  incomeByDeliveryZones: any = { total: 0, count: 0 };
+  questions: any = [];
+  extraIncomesInProducts: Array<{
+    _id: string;
+    value: string;
+    merchant: string;
+    field: string;
+  }> = [];
+  expenditureTypesCreatedByMerchant: Array<{
+    _id: string;
+    value: string;
+    merchant: string;
+    field: string;
+  }> = [];
+  extraIncomeTotalForTypeCreatedByMerchantById: Record<string, any> = {};
+  expenditureTypesCreatedByMerchantById: Record<string, any> = {};
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
   range = new FormGroup({
     start: new FormControl(''),
@@ -39,6 +56,7 @@ export class ReportingsComponent implements OnInit {
     private deliveryZoneService: DeliveryZonesService,
     private orderService: OrderService,
     private merchantsService: MerchantsService,
+    private authService: AuthService,
     private dialog: MatDialog,
     private dialogService: DialogService,
     private _bottomSheet: MatBottomSheet,
@@ -47,15 +65,62 @@ export class ReportingsComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.getMerchant();
+    await this.checkIfUserIsAMerchant();
+
     await this.getWebforms();
     this.getExpenditures();
     this.getIncomes();
+    await this.getExtraIncomesInProducts();
+    await this.getIncomeByDeliveryZone();
+    await this.getExpenditureTypesCustom();
+  }
+
+  async checkIfUserIsAMerchant() {
+    const user = await this.authService.me();
+
+    if (user) {
+      const merchantDefault = await this.merchantsService.merchantDefault();
+
+      if (!merchantDefault) this.router.navigate(['others/error-screen']);
+
+      this.merchant = merchantDefault;
+    } else {
+      this.router.navigate(['auth/login']);
+    }
   }
 
   async getDeliveryZones() {
     let result = await this.deliveryZoneService.deliveryZones();
     console.log(result);
+  }
+
+  async getIncomeByDeliveryZone() {
+    const result =
+      await this.deliveryZoneService.incomeTotalDeliveryZoneByMerchant(
+        this.merchant._id
+      );
+
+    if (result) this.incomeByDeliveryZones = result;
+  }
+
+  async getExpenditureTypesCustom() {
+    const result = await this.orderService.expenditureTypesCustom(
+      this.merchant._id
+    );
+    if (result) {
+      this.expenditureTypesCreatedByMerchant = result;
+
+      for await (const expenditure of this.expenditureTypesCreatedByMerchant) {
+        const result = await this.orderService.expendituresTotal(
+          'delivery-zone',
+          this.merchant._id,
+          expenditure._id
+        );
+
+        if (result)
+          this.expenditureTypesCreatedByMerchantById[result._id] = result;
+      }
+    }
   }
 
   async getExpenditures() {
@@ -88,6 +153,22 @@ export class ReportingsComponent implements OnInit {
     console.log(result);
   }
 
+  async getExtraIncomesInProducts() {
+    this.extraIncomesInProducts = await this.orderService.incomeTypes(
+      this.merchant?._id
+    );
+
+    for await (const income of this.extraIncomesInProducts) {
+      const result = await this.orderService.incomeTotalByType(
+        income._id,
+        this.merchant._id,
+        'item'
+      );
+
+      if (result)
+        this.extraIncomeTotalForTypeCreatedByMerchantById[income._id] = result;
+    }
+  }
 
   async getMerchant() {
     this.merchant = await this.merchantsService.merchantDefault();
@@ -97,12 +178,11 @@ export class ReportingsComponent implements OnInit {
     const result = await this.webformsService.webforms({
       findBy: {
         type: 'order',
+        user: this.merchant.owner._id,
       },
     });
     this.webformOrder = result[0];
     this.questions = result[0].questions;
-    console.log(this.questions);
-    
   }
 
   openDialog(type, question = null) {
@@ -121,7 +201,7 @@ export class ReportingsComponent implements OnInit {
             {
               title: `Eliminar todo lo relacionado a  '${question?.value}'`,
               callback: () => this.removeQuestion(question?._id),
-            }
+            },
           ],
         },
       ],
@@ -129,21 +209,18 @@ export class ReportingsComponent implements OnInit {
   }
 
   navigate(type, question) {
-    if (type == 'income' && question != null){
+    if (type == 'income' && question != null) {
       this.webformsService.webformId = this.webformOrder._id;
       this.webformsService.editingQuestion = question;
       this.router.navigate([`/admin/rename-question/name`]);
-    }
-    else this.router.navigate([`/admin/expenditures/${type}`]);
+    } else this.router.navigate([`/admin/expenditures/${type}`]);
   }
 
   openDatePicker() {
     this.datePicker.open();
   }
 
-  async onDateChange() {
-
-  }
+  async onDateChange() {}
 
   removeQuestion(questionId) {
     if (questionId != null && questionId != undefined) {
@@ -157,7 +234,7 @@ export class ReportingsComponent implements OnInit {
               [questionId],
               this.webformOrder._id
             );
-            this.questions = this.questions.filter(e=>e._id!=questionId);
+            this.questions = this.questions.filter((e) => e._id != questionId);
           },
         },
       });

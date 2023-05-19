@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { createDeliveryZone, createExpenditure, deleteDeliveryZone, deliveryZone, deliveryZoneAddExpenditure, deliveryZones, updateDeliveryZone, updateExpenditure } from '../graphql/deliveryzones.gql';
+import { createDeliveryZone, createExpenditure, deleteDeliveryZone, deliveryZone, deliveryZoneAddExpenditure, deliveryZones, incomeTotalDeliveryZoneByMerchant, updateDeliveryZone, updateExpenditure } from '../graphql/deliveryzones.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { DeliveryZone, DeliveryZoneInput } from '../models/deliveryzone';
-import { PaginationInput } from '../models/saleflow';
+import { PaginationInput, PaginationRangeInput } from '../models/saleflow';
 import { Expenditure } from '../models/order';
 
 @Injectable({
@@ -144,6 +144,23 @@ export class DeliveryZonesService {
       });
       if (!result) return undefined;
       return result.deliveryZoneAddExpenditure;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async incomeTotalDeliveryZoneByMerchant(
+    merchantId: string,
+    range?: PaginationRangeInput
+  ) {
+    try {
+      const result = await this.graphql.query({
+        query: incomeTotalDeliveryZoneByMerchant,
+        variables: { merchantId, range },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return undefined;
+      return result?.incomeTotalDeliveryZoneByMerchant;
     } catch (e) {
       console.log(e);
     }

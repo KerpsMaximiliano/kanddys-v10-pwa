@@ -1,10 +1,10 @@
 export const environment = {
-  production: true,
+  production: false,
   uri: 'http://localhost:4200',
   whatsAppAPI: 'https://api.whatsapp.com',
   api: {
-    // url: 'http://localhost:3500',
-    url: 'https://api.kanddys.com',
+    url: 'http://localhost:3500',
+    // url: 'https://api.kanddys.com',
     key: 'a6c6d9880190ad2c4d477b89b44107b82b3e4902f293fe710d9a904de283f8f7',
   },
   APIREST: 'https://appointments.kanddys.com/v1',

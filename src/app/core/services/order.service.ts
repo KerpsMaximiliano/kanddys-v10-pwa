@@ -43,6 +43,8 @@ import {
   deleteExpenditure,
   expendituresTotalById,
   answerIncomeTotal,
+  incomeTypes,
+  incomeTotalByType,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -60,7 +62,7 @@ import {
   DeliveryDataInput,
 } from '../models/order';
 
-import { PaginationInput } from '../models/saleflow';
+import { PaginationInput, PaginationRangeInput } from '../models/saleflow';
 
 @Injectable({
   providedIn: 'root',
@@ -502,7 +504,6 @@ export class OrderService {
     );
   }
 
-
   async incomes(paginate: PaginationInput): Promise<Expenditure[]> {
     console.log(paginate);
     const result = await this.graphql.query({
@@ -513,36 +514,35 @@ export class OrderService {
     return result?.incomes;
   }
 
-  async expendituresTotal(type,merchantId){
+  async expendituresTotal(type, merchantId, typeCustomId: string, range?: PaginationRangeInput) {
     const result = await this.graphql.query({
       query: expendituresTotal,
       fetchPolicy: 'no-cache',
-      variables: { type,merchantId },
+      variables: { type, merchantId, typeCustomId, range },
     });
     return result;
   }
 
-  
-  async expenditureTypesCustom(merchantId){
+  async expenditureTypesCustom(merchantId) {
     const result = await this.graphql.query({
       query: expenditureTypesCustom,
       fetchPolicy: 'no-cache',
-      variables: {merchantId },
+      variables: { merchantId },
     });
-    return result;
+    return result?.expenditureTypesCustom;
   }
 
   async itemRemoveExpenditure(id: string, webformId: string) {
     const result = await this.graphql.mutate({
       mutation: itemRemoveExpenditure,
-      variables: { id,webformId },
+      variables: { id, webformId },
       fetchPolicy: 'no-cache',
     });
     if (!result || result?.errors) return undefined;
     return result;
   }
 
-  async deleteExpenditure(id:string){
+  async deleteExpenditure(id: string) {
     const result = await this.graphql.mutate({
       mutation: deleteExpenditure,
       variables: { id },
@@ -552,16 +552,16 @@ export class OrderService {
     return result;
   }
 
-  async expendituresTotalById(type:string,merchantId:string){
+  async expendituresTotalById(type: string, merchantId: string) {
     const result = await this.graphql.query({
       query: expendituresTotalById,
       fetchPolicy: 'no-cache',
-      variables: { merchantId,type },
+      variables: { merchantId, type },
     });
     return result;
   }
-  
-  async answerIncomeTotal(webformId){
+
+  async answerIncomeTotal(webformId) {
     const result = await this.graphql.query({
       query: answerIncomeTotal,
       fetchPolicy: 'no-cache',
@@ -570,9 +570,26 @@ export class OrderService {
     return result;
   }
 
+  async incomeTypes(merchantId: string) {
+    const result = await this.graphql.query({
+      query: incomeTypes,
+      fetchPolicy: 'no-cache',
+      variables: { merchantId },
+    });
+    return result?.incomeTypes;
+  }
 
-
+  async incomeTotalByType(
+    typeId: string,
+    merchantId: string,
+    subType: string,
+    range?: PaginationRangeInput
+  ) {
+    const result = await this.graphql.query({
+      query: incomeTotalByType,
+      fetchPolicy: 'no-cache',
+      variables: { typeId, merchantId, subType, range },
+    });
+    return result?.incomeTotalByType;
+  }
 }
-
-
-

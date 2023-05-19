@@ -519,7 +519,7 @@ export const createExpenditure = gql`
       name
       amount
       description
-      activeDate{
+      activeDate {
         from
         month
       }
@@ -690,44 +690,91 @@ export const incomes = gql`
 `;
 
 export const expendituresTotal = gql`
-query expendituresTotal($type: String!,$merchantId:ObjectID!) {
-  expendituresTotal(type: $type,merchantId:$merchantId)
-}
+  query expendituresTotal(
+    $type: String!
+    $merchantId: ObjectID!
+    $typeCustomId: ObjectID!
+    $range: PaginationRangeInput
+  ) {
+    expendituresTotal(
+      type: $type
+      merchantId: $merchantId
+      typeCustomId: $typeCustomId
+      range: $range
+    )
+  }
 `;
 
 export const expenditureTypesCustom = gql`
-query expenditureTypesCustom($merchantId:ObjectID!) {
-  expenditureTypesCustom(merchantId:$merchantId) {
-      _id 
+  query expenditureTypesCustom($merchantId: ObjectID!) {
+    expenditureTypesCustom(merchantId: $merchantId) {
+      _id
+      value
+      merchant
+      field
+    }
   }
-}
 `;
 
 export const itemRemoveExpenditure = gql`
-mutation itemRemoveExpenditure($id:ObjectID!,$webformId:ObjectID!) {
-  itemRemoveExpenditure(merchantId:$merchantId,webformId:$webformId) {
-      _id 
+  mutation itemRemoveExpenditure($id: ObjectID!, $webformId: ObjectID!) {
+    itemRemoveExpenditure(merchantId: $merchantId, webformId: $webformId) {
+      _id
+    }
   }
-}
 `;
 
 export const deleteExpenditure = gql`
-mutation deleteExpenditure($id:ObjectID!) {
-  deleteExpenditure(id:$id)
-}
+  mutation deleteExpenditure($id: ObjectID!) {
+    deleteExpenditure(id: $id)
+  }
 `;
 
-
-
 export const expendituresTotalById = gql`
-query expendituresTotalById($range: PaginationRangeInput,$id:ObjectID,$type:String!,$merchantId:ObjectID) {
-  expendituresTotalById(range: $range,id:$id,type:$type,merchantId:$merchantId)
-}
+  query expendituresTotalById(
+    $range: PaginationRangeInput
+    $id: ObjectID
+    $type: String!
+    $merchantId: ObjectID
+  ) {
+    expendituresTotalById(
+      range: $range
+      id: $id
+      type: $type
+      merchantId: $merchantId
+    )
+  }
 `;
 
 export const answerIncomeTotal = gql`
   query answerIncomeTotal($webformId: ObjectID!) {
-    answerIncomeTotal(webformId: $webformId) 
-    
+    answerIncomeTotal(webformId: $webformId)
+  }
+`;
+
+export const incomeTypes = gql`
+  query incomeTypes($merchantId: ObjectID!) {
+    incomeTypes(merchantId: $merchantId) {
+      _id
+      value
+      table
+      merchant
+    }
+  }
+`;
+
+export const incomeTotalByType = gql`
+  query incomeTotalByType(
+    $range: PaginationRangeInput
+    $subType: String!
+    $merchantId: ObjectID!
+    $typeId: ObjectID!
+  ) {
+    incomeTotalByType(
+      range: $range
+      subType: $subType
+      merchantId: $merchantId
+      typeId: $typeId
+    )
   }
 `;
