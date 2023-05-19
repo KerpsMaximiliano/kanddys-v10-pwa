@@ -47,7 +47,7 @@ const actionList: {
     value: 'Al pagarse la compra',
     status: true,
     trigger: {
-      key: 'status',
+      key: 'orderStatus',
       value: 'to confirm',
     },
   },
@@ -55,7 +55,7 @@ const actionList: {
     value: 'Al completarse la compra',
     status: true,
     trigger: {
-      key: 'status',
+      key: 'orderStatus',
       value: 'completed',
     },
   },
