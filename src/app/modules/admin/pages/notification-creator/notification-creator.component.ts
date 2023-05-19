@@ -22,6 +22,7 @@ export class NotificationCreatorComponent implements OnInit {
 
   redirectTo: string = null;
   orderId: string = null;
+  type: 'status' | 'payment';
   status: OrderStatusDeliveryType = null;
   notification: Notification;
   notifications: Notification[] = [];
@@ -54,10 +55,11 @@ export class NotificationCreatorComponent implements OnInit {
 
   async ngOnInit() {
     this.route.queryParams.subscribe(async (queryParams) => {
-      const { redirectTo, orderId, status } = queryParams;
+      const { redirectTo, orderId, type, status } = queryParams;
 
       this.redirectTo = redirectTo;
       this.orderId = orderId;
+      this.type = type;
       // this.status = status;
 
       if (typeof redirectTo === 'undefined') this.redirectTo = null;
@@ -70,8 +72,21 @@ export class NotificationCreatorComponent implements OnInit {
       // await this.getMerchant();
       const notificationId = this.route.snapshot.paramMap.get('notificationId');
       if (notificationId) await this.getNotification(notificationId);
-      await this.getDeliveryNotifications();
-      if (status) this.setStatus(status);
+      const result = await this.getNotifications();
+      if (this.type !== 'payment' && status) {
+        this.notifications = result.filter(
+          (notification) =>
+            notification.trigger[0].key === 'orderStatusDelivery'
+        );
+        this.status = status;
+        this.setStatus(status);
+      }
+      if (this.type === 'payment' && !status) {
+        this.notifications = result.filter(
+          (notification) => notification.trigger[0].key === 'orderStatus'
+        );
+        this.setStatus('completed');
+      }
 
       // if (orderId) await this.getOrder(orderId);
       // if (this.notification) this.checkIfOrderHasNotification(this.order, this.notification._id);
@@ -92,10 +107,15 @@ export class NotificationCreatorComponent implements OnInit {
             merchant: this.merchantsService.merchantData._id,
             phoneNumbers: [],
             trigger: [
-              {
-                key: 'orderStatusDelivery',
-                value: this.status as OrderStatusDeliveryType,
-              },
+              this.type !== 'payment'
+                ? {
+                    key: 'orderStatusDelivery',
+                    value: this.status as OrderStatusDeliveryType,
+                  }
+                : {
+                    key: 'orderStatus',
+                    value: 'completed',
+                  },
             ],
             offsetTime: [],
           }
@@ -160,9 +180,7 @@ export class NotificationCreatorComponent implements OnInit {
   //   ) this.orderHasNotification = true;
   // }
 
-  setStatus(status: OrderStatusDeliveryType) {
-    if (this.status === status) return;
-    this.status = status;
+  setStatus(status: OrderStatusDeliveryType | 'completed') {
     this.notification = this.checkNotificationDeliveryStatus(status);
     if (!this.notification) {
       this.notificationForm.reset();
@@ -204,7 +222,7 @@ export class NotificationCreatorComponent implements OnInit {
     }
   }
 
-  async getDeliveryNotifications() {
+  async getNotifications() {
     try {
       const result = await this.notificationsService.notifications(
         {
@@ -221,16 +239,15 @@ export class NotificationCreatorComponent implements OnInit {
         },
         this.merchantsService.merchantData._id
       );
-
-      this.notifications = result.filter(
-        (notification) => notification.trigger[0].key === 'orderStatusDelivery'
-      );
+      return result;
     } catch (error) {
       console.log(error);
     }
   }
 
-  checkNotificationDeliveryStatus(status: OrderStatusDeliveryType) {
+  checkNotificationDeliveryStatus(
+    status: OrderStatusDeliveryType | 'completed'
+  ) {
     return this.notifications.find(
       (option) => option.trigger[0].value === status
     );
