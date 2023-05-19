@@ -49,7 +49,11 @@
     <button mat-icon-button (click)="newArticle()">
       <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
     </button>
-    <button class="header-btn" (click)="headerSettings()">
+    <button
+      class="header-btn"
+      style="margin-bottom: -5px"
+      (click)="headerSettings()"
+    >
       <img [src]="environment + '/dots-black.svg'" alt="" />
     </button>
 
