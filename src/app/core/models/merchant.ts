@@ -64,6 +64,7 @@ export class MerchantInput {
   social?: SocialMediaModelInput[];
   showItems?: Boolean;
   airtableConfiguration?: AirtableConfigurationInput;
+  contactFooter?: boolean;
   tags?: string[];
   reference?: string;
   minPaymentQantity?: number;

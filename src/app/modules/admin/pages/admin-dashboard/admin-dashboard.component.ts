@@ -666,6 +666,22 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 this.router.navigate(['/admin/view-configuration-cards']);
               },
             },
+            {
+              title: this._MerchantsService.merchantData.contactFooter
+                ? 'Remueve cuentas sociales del footer'
+                : 'Adiciona cuentas sociales al footer',
+              callback: () => {
+                this._MerchantsService.updateMerchant(
+                  {
+                    contactFooter:
+                      !this._MerchantsService.merchantData.contactFooter,
+                  },
+                  this._MerchantsService.merchantData._id
+                );
+                this._MerchantsService.merchantData.contactFooter =
+                  !this._MerchantsService.merchantData.contactFooter;
+              },
+            },
           ],
         },
       ],
@@ -761,7 +777,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   isFilterActive(filter: FilterCriteria) {
-    if (this.selectedFilter && (filter._id === this.selectedFilter._id)) {
+    if (this.selectedFilter && filter._id === this.selectedFilter._id) {
       this.selectedFilter = null;
       return;
     }
