@@ -1,0 +1,103 @@
+<div class="container">
+    <header
+    class="header"
+  >
+    <div class="left-area">
+      <a>
+        <i
+          class="fas fa-chevron-left"
+          (click)="goToStore()"
+        ></i
+      ></a>
+      <p class="title">
+        Artículos a facturarse
+        <!-- {{
+          headerService.saleflow?.merchant?.name.length < 26
+            ? headerService.saleflow?.merchant?.name
+            : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+                "Tienda" | titlecase)
+        }} -->
+      </p>
+    </div>
+    <div class="right-area">
+      <span class="header-text">UserID</span>
+      <!-- <img [src]="env + '/person.svg'" alt="Icono de una persona" /> -->
+    </div>
+  </header>
+
+  <main>
+    <mat-card class="card">
+        <div class="card-header flex">
+          <div class="left-side flex">
+            <div class="featured-image"></div>
+            <div class="item-quantity">
+              <p class="grayout-label">Cantidad</p>
+              <div class="quantity">
+                <span>-</span>
+                <span>1</span>
+                <span>+</span>
+              </div>
+            </div>
+          </div>
+          <div class="right-side">
+            <p class="grayout-label">$12,542.03</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="section">
+            <p class="section-title grayout-label">PreguntaID</p>
+            <p class="section-description">RespuestaID</p>
+          </div>
+          <div class="section">
+            <p class="section-title grayout-label">PreguntaID</p>
+            <p class="section-description">RespuestaID</p>
+          </div>
+        </div>
+    </mat-card>
+
+    <mat-card class="card">
+      <div class="card-header flex">
+        <div class="left-side flex">
+          <div class="featured-image"></div>
+          <div class="item-quantity">
+            <p class="grayout-label">Cantidad</p>
+            <div class="quantity">
+              <span>-</span>
+              <span>1</span>
+              <span>+</span>
+            </div>
+          </div>
+        </div>
+        <div class="right-side">
+          <p class="grayout-label">$12,542.03</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <p class="section-title grayout-label">PreguntaID</p>
+          <p class="section-description">RespuestaID</p>
+        </div>
+        <div class="section">
+          <p class="section-title grayout-label">PreguntaID</p>
+          <p class="section-description">RespuestaID</p>
+        </div>
+      </div>
+  </mat-card>
+
+  <!-- TODO: acomodar esto por estilos de verdad -->
+  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+  </main>
+
+  <footer>
+    <div class="form">
+      <mat-checkbox class="checkbox">Factura sin comprobante <i class="fas fa-chevron-right"></i></mat-checkbox>
+      <br><br>
+      <mat-checkbox class="checkbox" >Sin mensaje de regalo <i class="fas fa-chevron-right"></i></mat-checkbox>
+    </div>
+
+    <div style="text-align: center;">
+      <button mat-button class="cta">Continuar con el pago</button>
+    </div>
+  </footer>
+</div>
