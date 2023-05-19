@@ -2,7 +2,7 @@
   <h4>{{ title }}</h4>
 
   <svg
-    (click)="emitClick()"
+    *ngIf="editing"
     class="edit"
     xmlns="http://www.w3.org/2000/svg"
     width="14.789"
@@ -24,6 +24,7 @@
     noGrid: slidesPath.length === 0,
     boxShadow: shadows && slidesPath.length === 0
   }"
+  (click)="emitClick()"
 >
   <div class="card" *ngFor="let slide of slidesPath; index as i">
     <div

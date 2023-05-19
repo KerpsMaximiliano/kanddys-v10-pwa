@@ -159,7 +159,9 @@ export class CheckoutComponent implements OnInit {
     private toastr: ToastrService,
     private _WebformsService: WebformsService,
     private deliveryzonesService: DeliveryZonesService
-  ) {}
+  ) {
+    window.scroll(0, 0);
+  }
 
   async ngOnInit(): Promise<void> {
     this.webformPreview = Boolean(
