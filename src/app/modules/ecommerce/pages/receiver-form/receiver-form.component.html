@@ -1,1 +1,40 @@
-<p>receiver-form works!</p>
+<div class="container">
+
+    <header>
+        <i class="fas fa-chevron-left"></i>
+    </header>
+
+    <main>
+        <div class="options-section">
+            <h3>¿Quien recibirá lo que compraste?</h3>
+            <button mat-button class="option-cta">
+                Yo lo recibiré
+            </button>
+            <button mat-button class="option-cta">
+                Lo recibirá la persona del arreglo
+            </button>
+            <button mat-button class="option-cta">
+                Lo recibirá una persona que no conozco (ej: en el lobby de un edificio o comercio)
+            </button>
+            <button mat-button class="option-cta">
+                Lo recibirá una persona conocida (ej: un cómplice porque es una sorpresa)
+            </button>
+        </div>
+
+        <mat-checkbox class="checkbox">Factura sin comprobante <i class="fas fa-chevron-right"></i></mat-checkbox>
+
+        <div class="options-section">
+            <button mat-button class="option-cta">
+                No es un regalo anónimo
+            </button>
+            <button mat-button class="option-cta">
+                Es anónimo (no mostraremos ningún dato tuyo en la entrega)
+            </button>
+        </div>
+
+        <div style="position: fixed; bottom: 0; max-width: 500px;">
+            <button mat-button class="cta">Continuar con el pago</button>
+        </div>
+    </main>
+
+</div>

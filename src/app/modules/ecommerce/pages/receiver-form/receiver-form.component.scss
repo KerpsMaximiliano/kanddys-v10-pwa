@@ -1,0 +1,55 @@
+.container {
+    height: 100vh;
+    background-color: #181D17;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    i {
+        cursor: pointer;
+        font-size: 22px;
+        color: #C4C5C3;
+    }
+}
+
+main {
+    margin: 10px 15px;
+    .options-section {
+        margin: 2em 0;
+        h3 {
+            color: #FFF;
+            font-size: 17px;
+            font-family: "InterLight";
+            margin-bottom: 1.5em;
+        }
+        .option-cta {
+            background-color: transparent;
+            border-radius: 26px;
+            border: solid 1px #aaa6a6;
+            color: #FFF;
+            width: 100%;
+            margin-bottom: 10px;
+            white-space: normal;
+            line-height: 22px;
+            padding: 10px;
+        }
+    }
+
+    .checkbox {
+        color: #FFF;
+        font-family: InterRegular;
+    }
+
+    .cta {
+        width: 90%;
+        background-color: #87CD9B;
+        color: #181D17;
+        padding: 10px;
+        width: 95%;
+        border-radius: 30px;
+        text-align: center;
+    }
+}
