@@ -89,6 +89,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   itemStatus: 'active' | 'disabled' | '' | null = 'active';
   renderItemsPromise: Promise<{ listItems: Item[] }>;
   subscription: Subscription;
+  allItemsIds: Array<string> = [];
 
   // Pagination
   paginationState: {
@@ -270,7 +271,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       },
     });
 
-    console.log(income);
     this.income = income.toFixed(2);
 
     const notSoldPagination = {
@@ -289,10 +289,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       notSoldPagination
     );
     this.notSoldItems = Object.values(notSoldItems)[0];
-    console.log(this.notSoldItems);
-    console.log(this.notSoldItems.length);
 
     await this.getOrders();
+
     if (this._SaleflowService.saleflowData) {
       this.inicializeItems(true, false, true);
       this.getTags();
@@ -300,7 +299,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.getMostSoldItems();
       this.getLessSoldItems();
       this.getHiddenItems();
-      this.getOrdersToConfirm();
+      //this.getOrdersToConfirm();
 
       console.log(this.filters);
 
@@ -481,22 +480,26 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       });
 
       this.orders = ordersByMerchant.length;
-      console.log(this.orders);
 
       const filteredItems = Array.from(itemIds);
+      this.allItemsIds = filteredItems;
 
-      const { listItems } = await this._ItemsService.listItems({
-        findBy: {
-          _id: {
-            __in: filteredItems,
-          },
-        },
-      });
-
-      this.recentlySoldItems = listItems;
+      await this.getRecentlySoldItems();
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async getRecentlySoldItems() {
+    const { listItems } = await this._ItemsService.listItems({
+      findBy: {
+        _id: {
+          __in: this.allItemsIds,
+        },
+      },
+    });
+
+    this.recentlySoldItems = listItems;
   }
 
   async getOrdersToConfirm() {
@@ -523,11 +526,24 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getMostSoldItems() {
     try {
-      const result = (await this._ItemsService.bestSellersByMerchant(false, {
+      const pagination: PaginationInput = {
         findBy: {
           merchant: this._MerchantsService.merchantData._id,
         },
-      })) as any[];
+        options: {
+          limit: -1,
+        },
+      };
+
+      if (this.selectedTags.length)
+        pagination.findBy.tags = {
+          $in: this.selectedTags.map((tag) => tag._id),
+        };
+
+      const result = (await this._ItemsService.bestSellersByMerchant(
+        false,
+        pagination
+      )) as any[];
 
       this.mostSoldItems = result.map((item) => item.item);
     } catch (error) {
@@ -537,14 +553,24 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getLessSoldItems() {
     try {
-      const result = (await this._ItemsService.bestSellersByMerchant(false, {
+      const pagination: PaginationInput = {
         options: {
           page: 2,
         },
         findBy: {
           merchant: this._MerchantsService.merchantData._id,
         },
-      })) as any[];
+      };
+
+      if (this.selectedTags.length)
+        pagination.findBy.tags = {
+          $in: this.selectedTags.map((tag) => tag._id),
+        };
+
+      const result = (await this._ItemsService.bestSellersByMerchant(
+        false,
+        pagination
+      )) as any[];
 
       this.lessSoldItems = result.map((item) => item.item);
     } catch (error) {
@@ -655,9 +681,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async headerSettings() {
     const link = `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`;
-    const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
+    this._bottomSheet.open(LinksDialogComponent, {
       data: [
         {
+          title: 'Posibles acciones con los Artículos de tu KiosKo:',
           options: [
             {
               title: 'Adiciona un nuevo artículo',
@@ -711,6 +738,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               link,
             },
           ],
+          styles: {
+            fullScreen: true,
+          },
         },
       ],
     });
@@ -769,7 +799,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getHiddenItems() {
     try {
-      const { listItems } = await this._ItemsService.listItems({
+      const pagination: PaginationInput = {
         options: {
           limit: -1,
         },
@@ -777,7 +807,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           merchant: this._MerchantsService.merchantData._id,
           status: 'disabled',
         },
-      });
+      };
+
+      if (this.selectedTags.length) {
+        pagination.findBy.tags = {
+          $in: this.selectedTags.map((tag) => tag._id),
+        };
+      }
+
+      const { listItems } = await this._ItemsService.listItems(pagination);
       this.hiddenItems = listItems;
     } catch (error) {
       console.log(error);
@@ -795,13 +833,26 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (index === 1) this.router.navigate([`admin/tags-view`]);
   }
 
-  filterTag(index: number) {
+  async filterTag(index: number) {
     const selectedTag = this.tags[index];
-    if (this.selectedTags.find((tag) => tag._id === selectedTag._id)) {
-      this.selectedTags.splice(index, 1);
+    const tagFound = this.selectedTags.find(
+      (tag) => tag._id === selectedTag._id
+    );
+
+    if (tagFound) {
+      const tagIndex = this.selectedTags.findIndex(
+        (tag) => tag._id === selectedTag._id
+      );
+
+      this.selectedTags.splice(tagIndex, 1);
     } else {
       this.selectedTags.push(selectedTag);
     }
+
+    await this.getRecentlySoldItems();
+    await this.getMostSoldItems();
+    await this.getLessSoldItems();
+    await this.getHiddenItems();
   }
 
   isFilterActive(filter: FilterCriteria) {

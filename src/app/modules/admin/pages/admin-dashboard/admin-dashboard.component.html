@@ -49,26 +49,26 @@
     <button mat-icon-button (click)="newArticle()">
       <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
     </button>
-    <button class="header-btn" (click)="headerSettings()">
+    <button mat-icon-button (click)="headerSettings()">
       <img [src]="environment + '/dots-black.svg'" alt="" />
     </button>
 
     <button
       style="
-        color: #82f18d;
+        color: #87CD9B;
         font-size: 16px;
-        font-family: SFProRegular;
+        font-family: InterBold;
         margin-left: auto;
       "
     >
-      Artículos
-      <mat-icon style="color: #82f18d; margin-left: 8px">menu</mat-icon>
+      Artículos que vendo
+      <mat-icon style="color: #6FCF97; margin-left: 8px">menu</mat-icon>
     </button>
   </header>
 
   <div class="categories">
-    <swiper [config]="swiperConfig">
-      <div class="category-item active">TODOS</div>
+    <swiper [config]="swiperConfig" class="category-swiper">
+      <div class="category-item">TODOS</div>
       <div
         class="category-item"
         *ngFor="let filter of filters; let i = index"
@@ -153,7 +153,7 @@
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
         <mat-card
-          class="card"
+          class="card mat-elevation-z0"
           *ngFor="let item of recentlySoldItems; index as i"
         >
           <a [routerLink]="['../article-editor/', item._id]">
@@ -220,7 +220,7 @@
 
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
-        <mat-card class="card" *ngFor="let item of hiddenItems; index as i">
+        <mat-card class="card mat-elevation-z0" *ngFor="let item of hiddenItems; index as i">
           <a [routerLink]="['../article-editor/', item._id]">
             <div class="card-body">
               <div class="card-l-side">
@@ -279,7 +279,7 @@
 
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
-        <mat-card class="card" *ngFor="let item of notSoldItems; index as i">
+        <mat-card class="card mat-elevation-z0" *ngFor="let item of notSoldItems; index as i">
           <a [routerLink]="['../article-editor/', item._id]">
             <div class="card-body">
               <div class="card-l-side">
@@ -344,7 +344,7 @@
 
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
-        <mat-card class="card" *ngFor="let item of allItems; index as i">
+        <mat-card class="card mat-elevation-z0" *ngFor="let item of allItems; index as i">
           <a [routerLink]="['../article-editor/', item._id]">
             <div class="card-body">
               <div class="card-l-side">

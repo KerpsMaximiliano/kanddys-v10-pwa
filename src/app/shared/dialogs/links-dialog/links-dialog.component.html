@@ -1,7 +1,15 @@
-<mat-action-list class="list">
+<mat-action-list
+  class="list"
+  [ngClass]="{
+    'full-screen': data[0]?.styles['fullScreen']
+  }"
+>
   <p class="close">
     <button mat-icon-button (click)="openLink()">
-      <mat-icon>close</mat-icon>
+      <mat-icon *ngIf="!data[0]?.styles['fullScreen']">close</mat-icon>
+      <mat-icon *ngIf="data[0]?.styles['fullScreen']" style="color: #fff; transform: scale(0.8); margin-left: -18px;">
+        arrow_back_ios
+      </mat-icon>
     </button>
   </p>
   <section *ngFor="let section of data; index as i" style="margin-bottom: 16px">

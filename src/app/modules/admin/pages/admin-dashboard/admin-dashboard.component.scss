@@ -99,37 +99,50 @@
 }
 
 .categories {
-  margin: 1em 0;
+  margin: 23px 16px;
+
   .category-item {
     cursor: pointer;
     text-align: center;
     text-transform: capitalize;
-    max-width: 130px !important;
+    max-width: fit-content !important;
     border: 1px solid #707070;
     border-radius: 20px;
-    padding: 10px;
-    margin-left: 1em;
+    padding: 3px 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    font-family: InterRegular;
+
+    &:nth-of-type(1) {
+      margin-left: 0px;
+    }
+
+    margin-left: 1rem;
 
     &.active {
       background-color: #c4c5c3;
       color: #272727;
       border: none;
-      font-family: SFProBold;
+      font-family: InterBold;
+      font-size: 16px;
     }
   }
 }
 
 .section {
-  margin-bottom: 2em;
   .section-header {
     margin: 12px 21px;
+    margin-bottom: 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     .section-title {
-      font-family: SfProRegular;
+      font-family: InterRegular;
       font-size: 13px;
+      color: #272727;
       text-transform: uppercase;
     }
 
@@ -153,15 +166,16 @@
       }
     }
   }
-
-  .section-content {
-    margin-left: 1em;
-  }
 }
 
 .card {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
   padding-bottom: 7px;
+  border-radius: 10px;
+
+  &:nth-of-type(1) {
+    width: calc(100% - 19px) !important;
+  }
 
   a {
     all: unset;
@@ -198,6 +212,7 @@
         background-color: #293628;
         object-fit: cover;
         border-radius: 10px;
+        overflow: hidden;
 
         .caption {
           background-color: #936105;
@@ -206,7 +221,7 @@
           bottom: 56px;
           width: 150px;
           padding: 7px 10px;
-          border-radius: 10px 0px 10px 0px;
+          border-radius: 0px 0px 10px 10px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -267,18 +282,18 @@
   max-width: 500px;
   width: 100%;
   background-color: #6fcf97;
-  padding: 5px 20px;
+  padding: 5px 13px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   z-index: 999;
   bottom: 0;
 
   p {
-    max-width: 80%;
-    color: #272727;
-    font-family: SfProLight;
-    font-size: 13px;
+    max-width: 90%;
+    color: #171d16;
+    font-family: InterRegular;
+    font-size: 15px;
   }
 
   div {
@@ -361,4 +376,16 @@
 
 ::ng-deep .mat-datepicker-content {
   max-height: 354px !important;
+}
+
+::ng-deep .swiper-container {
+  padding-bottom: 34px !important;
+  padding-top: 14px !important;
+  padding-left: 1rem !important;
+}
+
+.category-swiper {
+  ::ng-deep .swiper-container {
+    padding: 0px !important;
+  }
 }
