@@ -107,7 +107,7 @@
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
         <mat-card class="card" *ngFor="let item of recentlySoldItems">
-          <a [routerLink]="['../article-editor', item._id]">
+          <a [routerLink]="['../article-editor', item?._id]">
             <div class="card-body">
               <div class="card-l-side">
                 <h2 class="card-title">
@@ -168,13 +168,13 @@
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
         <mat-card class="card" *ngFor="let item of lessSoldItems">
-          <a [routerLink]="['../article-editor', item._id]">
+          <a [routerLink]="['../article-editor', item?._id]">
             <div class="card-body">
               <div class="card-l-side">
                 <h2 class="card-title">
-                  {{ item.name ? item.name : "Sin nombre..." }}
+                  {{ item?.name ? item.name : "Sin nombre..." }}
                 </h2>
-                <p class="card-description">{{ item.description }}</p>
+                <p class="card-description">{{ item?.description }}</p>
               </div>
               <div class="card-r-side">
                 <div
@@ -183,7 +183,7 @@
                     backgroundImage: 'url(' + item?.images[0]?.value + ')'
                   }"
                 >
-                  <div class="caption" *ngIf="item.status === 'disabled'">
+                  <div class="caption" *ngIf="item?.status === 'disabled'">
                     <img [src]="environment + '/closed-eye-black.svg'" alt="" />
                     Oculto al visitante
                   </div>
@@ -193,14 +193,14 @@
           </a>
           <div class="card-footer">
             <div class="bottom-title">
-              <h3>RD $ {{ item.pricing | number }}</h3>
+              <h3>RD $ {{ item?.pricing | number }}</h3>
             </div>
             <div class="bottom-icons">
               <div class="text-icon">
                 <p>
                   {{
                     item?.visitorCounter?.counter
-                      ? item.visitorCounter.counter
+                      ? item?.visitorCounter.counter
                       : "0"
                   }}
                 </p>
@@ -229,13 +229,13 @@
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
         <mat-card class="card" *ngFor="let item of mostSoldItems">
-          <a [routerLink]="['../article-editor', item._id]">
+          <a [routerLink]="['../article-editor', item?._id]">
             <div class="card-body">
               <div class="card-l-side">
                 <h2 class="card-title">
-                  {{ item.name ? item.name : "Sin nombre..." }}
+                  {{ item?.name ? item?.name : "Sin nombre..." }}
                 </h2>
-                <p class="card-description">{{ item.description }}</p>
+                <p class="card-description">{{ item?.description }}</p>
               </div>
               <div class="card-r-side">
                 <div
@@ -244,7 +244,7 @@
                     backgroundImage: 'url(' + item?.images[0]?.value + ')'
                   }"
                 >
-                  <div class="caption" *ngIf="item.status === 'disabled'">
+                  <div class="caption" *ngIf="item?.status === 'disabled'">
                     <img [src]="environment + '/closed-eye-black.svg'" alt="" />
                     Oculto al visitante
                   </div>
@@ -254,14 +254,14 @@
           </a>
           <div class="card-footer">
             <div class="bottom-title">
-              <h3>RD $ {{ item.pricing | number }}</h3>
+              <h3>RD $ {{ item?.pricing | number }}</h3>
             </div>
             <div class="bottom-icons">
               <div class="text-icon">
                 <p>
                   {{
                     item?.visitorCounter?.counter
-                      ? item.visitorCounter.counter
+                      ? item?.visitorCounter.counter
                       : "0"
                   }}
                 </p>

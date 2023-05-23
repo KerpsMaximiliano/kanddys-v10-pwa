@@ -40,7 +40,7 @@
       (click)="iconCallback()"
     >
       <p class="text">
-        {{ item?.name ? item.name : "Artículo sin Nombre" }}
+        {{ item?.name ? item?.name : "Artículo sin Nombre" }}
       </p>
       <mat-icon style="margin-left: 8px">keyboard_arrow_down</mat-icon>
     </button>
@@ -94,7 +94,7 @@
       <span class="bold">${{ totalIncome }}</span>
     </button>
     <button
-      *ngIf="item.webForms.length > 0"
+      *ngIf="item?.webForms.length > 0"
       class="cta"
       (click)="goToWebformResponses()"
     >

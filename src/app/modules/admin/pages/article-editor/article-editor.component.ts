@@ -484,10 +484,11 @@ export class ArticleEditorComponent implements OnInit {
 
     //console.log(this.content);
 
-    const itemInput = {
+    const itemInput: ItemInput = {
       name: this.name.value || null,
       description: this.description.value || null,
       content: this.content.length > 0 ? this.content : null,
+      pricing: this.price.value
     };
     this._ItemsService.itemPrice = null;
     this._ItemsService.itemName = null;
@@ -497,6 +498,7 @@ export class ArticleEditorComponent implements OnInit {
       if (!ignore) lockUI();
       if (this.name.invalid) delete itemInput.name;
       if (this.description.invalid) delete itemInput.description;
+      if (this.price.invalid) delete itemInput.pricing;
       //console.log(itemInput);
       await this._ItemsService.updateItem(itemInput, this.item._id);
     }
@@ -1249,24 +1251,25 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   async getAnswersForWebform() {
-    this.answersForWebform = await this.webformsService.answerPaginate({
-      findBy: {
-        webform: this.item.webForms[0].reference,
-      },
-      options: {
-        sortBy: 'createdAt:desc',
-        limit: -1,
-      },
-    });
-    console.log(this.answersForWebform);
-
-    for (let i = 0; i < this.answersForWebform.length; i++) {
-      if (this.answersForWebform[i].response.length > 0) {
-        this.totalAnswers =
-          this.totalAnswers + this.answersForWebform[i].response.length;
+    if(this.item.webForms.length) {
+      this.answersForWebform = await this.webformsService.answerPaginate({
+        findBy: {
+          webform: this.item.webForms[0].reference,
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: -1,
+        },
+      });
+      console.log(this.answersForWebform);
+  
+      for (let i = 0; i < this.answersForWebform.length; i++) {
+        if (this.answersForWebform[i].response.length > 0) {
+          this.totalAnswers =
+            this.totalAnswers + this.answersForWebform[i].response.length;
+        }
       }
     }
-    console.log(this.totalAnswers);
   }
 
   async getSells() {
@@ -1284,6 +1287,9 @@ export class ArticleEditorComponent implements OnInit {
     console.log(revenue);
     this.totalSells = revenue.itemTotalPagination[0].count;
     this.totalIncome = revenue.itemTotalPagination[0].total;
+
+    console.log("this.totalSells", this.totalSells);
+    console.log("this.totalIncome", this.totalIncome);
   }
 
   goToWebformResponses() {
