@@ -19,9 +19,9 @@ a {
   width: 100%;
   background-color: #fff;
   padding: 16px;
-  border-radius: 7px;
+  border-radius: 8px;
   color: #272727;
-  gap: 15px;
+  gap: 13.55px;
 
   &.shadow {
     filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.16));
@@ -37,9 +37,9 @@ a {
 
     .img {
       object-fit: cover;
-      border-radius: 15px;
+      border-radius: 8px;
       width: 155px;
-      height: auto;
+      height: 198.33px;
       max-height: 221px;
     }
 
@@ -64,11 +64,11 @@ a {
       line-height: 21px;
 
       .title {
-        font-family: SFProBold;
+        font-family: InterBold;
         font-size: 21px;
       }
       .description {
-        font-family: "SfProLight";
+        font-family: InterRegular;
         font-size: 17px;
       }
     }
@@ -93,8 +93,8 @@ a {
       font-family: SFProMedium;
 
       .normal-price {
-        font-family: SfProLight;
-        font-size: 11px;
+        font-family: InterRegular;
+        font-size: 17px;
         color: #272727;
       }
 
