@@ -1,7 +1,5 @@
 <div class="container" id="{{ id }}">
   <app-card [shadows]="shadows" [containerStyles]="containerStyles">
-    <p class="title" [ngStyle]="labelStyles">{{ question.value }}</p>
-
     <ng-container *ngIf="!multiple">
       <div class="imgGrid" *ngIf="isMediaSelection">
         <ng-container *ngFor="let answer of optionsInImageGrid; let i = index">

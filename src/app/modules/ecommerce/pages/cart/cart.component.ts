@@ -3,12 +3,21 @@ import { Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { User } from 'src/app/core/models/user';
-import { Webform, WebformAnswerInput, WebformResponseInput } from 'src/app/core/models/webform';
+import {
+  Question,
+  Webform,
+  WebformAnswerInput,
+  WebformResponseInput,
+} from 'src/app/core/models/webform';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { ResponsesByQuestion, WebformsService } from 'src/app/core/services/webforms.service';
+import {
+  ResponsesByQuestion,
+  WebformsService,
+} from 'src/app/core/services/webforms.service';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ExtendedAnswerDefault } from 'src/app/shared/components/webform-multiple-selection-question/webform-multiple-selection-question.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
@@ -20,10 +29,9 @@ interface ExtendedItem extends Item {
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
-  styleUrls: ['./cart.component.scss']
+  styleUrls: ['./cart.component.scss'],
 })
 export class CartComponent implements OnInit {
-
   env: string = environment.assetsUrl;
 
   currentUser: User;
@@ -36,14 +44,12 @@ export class CartComponent implements OnInit {
     string,
     {
       webform: Webform;
-      dialogs: Array<EmbeddedComponentWithId>;
       swiperConfig: SwiperOptions;
-      dialogFlowFunctions: Record<string, any>;
-      opened: boolean;
+      opened?: boolean;
       valid?: boolean;
     }
   > = {};
-
+  areWebformsValid: boolean = false;
   answersByQuestion: Record<string, ResponsesByQuestion> = {};
 
   constructor(
@@ -52,7 +58,7 @@ export class CartComponent implements OnInit {
     private dialogService: DialogService,
     private _WebformsService: WebformsService,
     private router: Router
-  ) { }
+  ) {}
 
   async ngOnInit() {
     await this.executeProcessesAfterLoading();
@@ -68,11 +74,11 @@ export class CartComponent implements OnInit {
     let items = this.headerService.order.products.map(
       (subOrder) => subOrder.item
     );
-    if (!this.headerService.order?.products) console.log("No hay productos");
+    if (!this.headerService.order?.products) console.log('No hay productos');
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
     }
-    if (!items?.length) console.log("No hay productos x2");
+    if (!items?.length) console.log('No hay productos x2');
     this.items = (
       await this.saleflowService.listItems({
         findBy: {
@@ -155,9 +161,7 @@ export class CartComponent implements OnInit {
         if (webform) {
           this.webformsByItem[item._id] = {
             webform,
-            dialogs: [],
             swiperConfig: null,
-            dialogFlowFunctions: {},
             opened: false,
           };
 
@@ -182,8 +186,6 @@ export class CartComponent implements OnInit {
             }
 
             let response = '';
-            let responseLabel = '';
-            let selectedIndex = null;
 
             if (!this._WebformsService.clientResponsesByItem[question._id]) {
               this.answersByQuestion[question._id] = {
@@ -261,11 +263,11 @@ export class CartComponent implements OnInit {
       }
     }
 
-    // if (Object.keys(this.webformsByItem).length === 0)
-    //   this.areWebformsValid = true;
-    // else {
-    //   this.areItemsQuestionsAnswered();
-    // }
+    if (Object.keys(this.webformsByItem).length === 0)
+      this.areWebformsValid = true;
+    else {
+      this.areItemsQuestionsAnswered();
+    }
   }
 
   getItemAnswers(): Array<{
@@ -354,6 +356,23 @@ export class CartComponent implements OnInit {
     return answerInput;
   }
 
+  //Opens each item webform
+  openWebform(itemId: string, index: number) {
+    this.router.navigate(
+      [
+        '/ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/webform/' +
+          itemId,
+      ],
+      {
+        queryParams: {
+          startAtQuestion: index,
+        },
+      }
+    );
+  }
+
   changeAmount(itemId: string, type: 'add' | 'subtract') {
     const product = this.headerService.order.products.find(
       (product) => product.item === itemId
@@ -381,4 +400,234 @@ export class CartComponent implements OnInit {
     // this.router.navigate([``])
   }
 
+  selectOption = (
+    question: Question,
+    item: Item,
+    restartDialogInDialogFlow: boolean = false,
+    updatedOptions: {
+      selectedOptions: Array<ExtendedAnswerDefault>;
+      userProvidedAnswer?: string;
+      valid: boolean;
+    }
+  ) => {
+    const options = updatedOptions.selectedOptions;
+
+    const isMultipleSelection =
+      question.answerLimit === 0 || question.answerLimit > 1;
+
+    if (!isMultipleSelection) {
+      if (!updatedOptions.userProvidedAnswer) {
+        const selected = options.find((option) => option.selected);
+
+        const doesOptionsHaveMedia = question.answerDefault.some(
+          (option) => option.isMedia
+        );
+
+        if (!doesOptionsHaveMedia) {
+          if (selected) {
+            this.answersByQuestion[question._id].response =
+              !updatedOptions.userProvidedAnswer
+                ? selected.value
+                : updatedOptions.userProvidedAnswer;
+
+            this.answersByQuestion[question._id].valid = Boolean(
+              selected.value.length
+            );
+          }
+        } else {
+          if (selected) {
+            this.answersByQuestion[question._id].response = selected.value;
+
+            if (selected.label)
+              this.answersByQuestion[question._id].responseLabel =
+                selected.label;
+            else {
+              this.answersByQuestion[question._id].responseLabel = null;
+            }
+
+            this.answersByQuestion[question._id].valid = Boolean(
+              selected.value.length
+            );
+          }
+        }
+
+        this.answersByQuestion[question._id].allOptions = options.map(
+          (option) => ({
+            fileInput: option.img,
+            selected: option.selected,
+            text: !option.value.includes('https') ? option.value : null,
+          })
+        );
+
+        this._WebformsService.clientResponsesByItem[question._id] =
+          this.answersByQuestion[question._id];
+      } else {
+        const options = updatedOptions.selectedOptions;
+
+        options.forEach((option) => (option.selected = false));
+
+        this.answersByQuestion[question._id].response =
+          updatedOptions.userProvidedAnswer;
+
+        this.answersByQuestion[question._id].valid = Boolean(
+          updatedOptions.userProvidedAnswer.length
+        );
+
+        this.answersByQuestion[question._id].allOptions = options.map(
+          (option) => ({
+            fileInput: option.img,
+            selected: option.selected,
+            text: !option.value.includes('https') ? option.value : null,
+          })
+        );
+
+        this._WebformsService.clientResponsesByItem[question._id] =
+          this.answersByQuestion[question._id];
+      }
+    } else {
+      const selectedOptions = options.filter((option) => option.selected);
+
+      this.answersByQuestion[question._id].allOptions = options.map(
+        (option) => ({
+          fileInput: option.img,
+          selected: option.selected,
+          text: !option.value.includes('https') ? option.value : null,
+        })
+      );
+
+      if (selectedOptions.length) {
+        this.answersByQuestion[question._id].multipleResponses = [];
+
+        selectedOptions.forEach((optionSelected, index) => {
+          this.answersByQuestion[question._id].multipleResponses.push({
+            response: optionSelected.value,
+            responseLabel: optionSelected.label ? optionSelected.label : null,
+            isProvidedByUser: optionSelected.userProvidedAnswer ? true : false,
+            isMedia: optionSelected.isMedia,
+          });
+
+          if (
+            index === selectedOptions.length - 1 &&
+            updatedOptions.userProvidedAnswer &&
+            updatedOptions.userProvidedAnswer !== ''
+          ) {
+            this.answersByQuestion[question._id].multipleResponses.push({
+              response: updatedOptions.userProvidedAnswer,
+              isProvidedByUser: true,
+              isMedia: false,
+            });
+          }
+
+          this._WebformsService.clientResponsesByItem[question._id].valid =
+            true;
+        });
+
+        this._WebformsService.clientResponsesByItem[question._id] =
+          this.answersByQuestion[question._id];
+      } else {
+        if (
+          selectedOptions.length === 0 &&
+          updatedOptions.userProvidedAnswer !== ''
+        ) {
+          this.answersByQuestion[question._id].multipleResponses = [];
+
+          this.answersByQuestion[question._id].multipleResponses.push({
+            response: updatedOptions.userProvidedAnswer,
+            isProvidedByUser: true,
+            isMedia: false,
+          });
+
+          this._WebformsService.clientResponsesByItem[question._id].valid =
+            question.required
+              ? this.answersByQuestion[question._id].multipleResponses.length >
+                0
+              : true;
+
+          this._WebformsService.clientResponsesByItem[question._id] =
+            this.answersByQuestion[question._id];
+        } else {
+          this.answersByQuestion[question._id].multipleResponses = [];
+          this._WebformsService.clientResponsesByItem[question._id].valid =
+            question.required
+              ? this.answersByQuestion[question._id].multipleResponses.length >
+                0
+              : true;
+        }
+      }
+    }
+
+    this.areItemsQuestionsAnswered();
+  };
+
+  areItemsQuestionsAnswered() {
+    const itemRequiredQuestions: Record<
+      string,
+      {
+        requiredQuestions: number;
+        valid: boolean;
+      }
+    > = {}; // {itemId: {requiredQuestions: number; valid: boolean}}
+
+    for (const item of this.items) {
+      if (this.webformsByItem[item._id]) {
+        itemRequiredQuestions[item._id] = {
+          requiredQuestions: 0,
+          valid: false,
+        };
+
+        for (const question of this.webformsByItem[item._id].webform
+          .questions) {
+          if (question.required) {
+            itemRequiredQuestions[item._id].requiredQuestions++;
+          }
+        }
+      }
+    }
+
+    for (const item of this.items) {
+      if (this.webformsByItem[item._id]) {
+        let requiredQuestionsAnsweredCounter = 0;
+
+        for (const question of this.webformsByItem[item._id].webform
+          .questions) {
+          if (
+            question.required &&
+            this._WebformsService.clientResponsesByItem[question._id]?.valid
+          ) {
+            requiredQuestionsAnsweredCounter++;
+          }
+        }
+
+        if (
+          itemRequiredQuestions[item._id].requiredQuestions ===
+            requiredQuestionsAnsweredCounter ||
+          itemRequiredQuestions[item._id].requiredQuestions === 0
+        ) {
+          this.webformsByItem[item._id].valid = true;
+        } else {
+          this.webformsByItem[item._id].valid = false;
+        }
+      }
+    }
+
+    let areWebformsValid = true;
+
+    Object.keys(this.webformsByItem).forEach((itemId) => {
+      areWebformsValid = this.webformsByItem[itemId]
+        ? areWebformsValid && this.webformsByItem[itemId].valid
+        : true;
+    });
+
+    //console.log('VALIDANDO WEBFORMS');
+
+    this.areWebformsValid = areWebformsValid;
+  }
+
+  async submit() {
+    this.router.navigate([
+      '/ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/new-address',
+    ]);
+  }
 }

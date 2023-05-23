@@ -554,7 +554,7 @@ export class WebformClientViewComponent implements OnInit {
 
     if (!preventRedirection)
       return this.router.navigate([
-        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',
       ]);
   }
 
