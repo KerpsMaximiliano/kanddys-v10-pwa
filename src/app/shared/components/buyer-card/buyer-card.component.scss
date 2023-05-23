@@ -18,7 +18,7 @@ a {
   justify-content: space-between;
   width: 100%;
   background-color: #fff;
-  padding: 16px;
+  padding: 11.45px 8.75px 16px 14.25px;
   border-radius: 8px;
   color: #272727;
   gap: 13.55px;
@@ -66,6 +66,8 @@ a {
       .title {
         font-family: InterBold;
         font-size: 21px;
+        position: relative;
+        top: 6px;
       }
       .description {
         font-family: InterRegular;
@@ -90,7 +92,7 @@ a {
       align-items: center;
       width: 100%;
       font-size: 17px;
-      font-family: SFProMedium;
+      font-family: InterRegular;
 
       .normal-price {
         font-family: InterRegular;
