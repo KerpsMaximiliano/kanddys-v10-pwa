@@ -7,12 +7,13 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from 'src/app/app.service';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 import { EntityTemplate } from 'src/app/core/models/entity-template';
+import { ItemInput } from 'src/app/core/models/item';
 import { Item, ItemImage } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
-import { Slide } from 'src/app/core/models/post';
+import { Post, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -76,7 +77,7 @@ export class ArticleDetailComponent implements OnInit {
   itemData: ExtendedItem = null;
   tagData: Tag;
   itemTags: Array<ExtendedTag> = [];
-  // postData: Post = null;
+  postData: Post = null;
   postSlides: Array<ExtendedSlide> = [];
   // selectedParam: {
   //   param: number;
@@ -127,7 +128,7 @@ export class ArticleDetailComponent implements OnInit {
   logged: boolean = false;
   // isProductMine: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
-  // postContentMinimized: boolean = true;
+  postContentMinimized: boolean = true;
   articleId: string = '';
   fromQR: boolean = false;
 
@@ -202,8 +203,8 @@ export class ArticleDetailComponent implements OnInit {
           if (entity === 'item') {
             await this.getItemData();
             this.itemInCart();
-            // } else if (entity === 'post') {
-            //   await this.getPostData();
+          } else if (entity === 'post') {
+            await this.getPostData();
           } else if (entity === 'collection') {
             await this.getCollection();
           }
@@ -246,10 +247,9 @@ export class ArticleDetailComponent implements OnInit {
 
             if (this.entity === 'item') {
               await this.getItemData();
+            } else if (this.entity === 'post') {
+              await this.getPostData();
             }
-            // else if (this.entity === 'post') {
-            //   await this.getPostData();
-            // }
           } else {
             const redirectionRoute = this.headerService.saleflow._id
               ? 'ecommerce/' +
@@ -347,39 +347,38 @@ export class ArticleDetailComponent implements OnInit {
     }
   }
 
-  // async getPostData() {
-  //   try {
-  //     const { post } = await this.postsService.getPost(this.entityId);
-  //     const { author } = post;
-  //     const { _id } = author;
-  //     this.isProductMine = _id === this.user?._id;
-  //     if (post) {
-  //       this.postData = post;
+  async getPostData() {
+    try {
+      const { post } = await this.postsService.getPost(this.entityId);
+      const { author } = post;
+      const { _id } = author;
+      if (post) {
+        this.postData = post;
 
-  //       const slides = await this.postsService.slidesByPost(post._id);
-  //       this.postSlides = slides;
+        const slides = await this.postsService.slidesByPost(post._id);
+        this.postSlides = slides;
 
-  //       for (const slide of this.postSlides) {
-  //         if (slide.type === 'poster' && isVideo(slide.media)) {
-  //           slide.isVideo = true;
+        for (const slide of this.postSlides) {
+          if (slide.type === 'poster' && isVideo(slide.media)) {
+            slide.isVideo = true;
 
-  //           if (
-  //             !slide.media.includes('https://') &&
-  //             !slide.media.includes('http://')
-  //           ) {
-  //             slide.media = 'https://' + slide.media;
-  //           }
-  //         }
-  //       }
+            if (
+              !slide.media.includes('https://') &&
+              !slide.media.includes('http://')
+            ) {
+              slide.media = 'https://' + slide.media;
+            }
+          }
+        }
 
-  //       this.updateFrantions();
+        this.updateFrantions();
 
-  //       this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+        this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
 
-  //       //if (this.postSlides.length < 2) this.startTimeout();
-  //     }
-  //   } catch (error) {}
-  // }
+        //if (this.postSlides.length < 2) this.startTimeout();
+      }
+    } catch (error) {}
+  }
 
   async onTagClick(tag: ExtendedTag) {
     try {
@@ -813,11 +812,16 @@ export class ArticleDetailComponent implements OnInit {
   //   this.dialog.open(ArticleStepperFormComponent);
   // }
 
-  itemInformationDialog() {
+  itemInformationDialog(post = false) {
+    let fakeItem: ItemInput = {
+      name: this.postData.title,
+      description: this.postData.message,
+    };
+
     this.dialogService.open(ItemInfoComponent, {
       type: 'fullscreen-translucent',
       props: {
-        item: this.itemData,
+        item: !post ? this.itemData : fakeItem,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

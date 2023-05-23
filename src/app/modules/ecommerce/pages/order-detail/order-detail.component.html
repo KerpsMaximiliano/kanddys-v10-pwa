@@ -605,12 +605,66 @@
             </p>
           </div>
 
+          <div class="question" *ngIf="slides && slides.length">
+            <p class="top-text">Contenido del QR:</p>
+
+            <div class="qr-content">
+              <div
+                class="slide-container"
+                *ngFor="let slide of slides; let i; as: index"
+              >
+                <ng-container *ngIf="slide.type === 'poster' && !slide.isVideo">
+                  <div
+                    (click)="openImageModal(slide.media)"
+                    class="entity-image"
+                    [ngStyle]="{
+                      'background-image': 'url(' + slide.media + ')'
+                    }"
+                  ></div>
+                </ng-container>
+
+                <ng-container *ngIf="slide.type === 'text'">
+                  <div class="text-content">
+                    <div class="content">
+                      <p class="subtitle2" *ngIf="slide.text">
+                        {{ slide.text }}
+                      </p>
+                      <p class="title2" *ngIf="slide.title">
+                        {{ slide.title }}
+                      </p>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="slide.type === 'poster' && slide.isVideo">
+                  <div
+                    class="video-wrapper2 videoThumbnail"
+                    (click)="playVideoOnFullscreen('video' + i)"
+                  >
+                    <img
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                      alt="play"
+                      class="playVideoIcon"
+                      style="padding: 1rem !important; z-index: 99"
+                    />
+
+                    <video [src]="slide.media" [id]="'video' + i"></video>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+
           <div class="question lastQuestion">
             <p class="top-text">Nombre del sobre</p>
             <p class="bottom-text">
               {{ post?.targets[0]?.name || post?.title }}
             </p>
           </div>
+
+          <button class="blue" (click)="downloadQr(qrcodeTemplate)">
+            Imprime o descarga el QR que enlaza el contenido
+          </button>
         </div>
       </div>
 
@@ -916,6 +970,19 @@
       style="visibility: hidden; position: absolute; z-index: -99; bottom: 0"
     >
       <qrcode
+        *ngIf="post"
+        #qrcodeTemplate
+        [qrdata]="entityTemplateLink"
+        [elementType]="'img'"
+        [width]="500"
+        [style.margin-top.px]="-25"
+        [errorCorrectionLevel]="'M'"
+        [allowEmptyString]="true"
+        colorDark="#000000"
+      ></qrcode>
+
+      <!--
+      <qrcode
         *ngIf="entityTemplate"
         #qrcodeTemplate
         [qrdata]="entityTemplateLink"
@@ -926,6 +993,8 @@
         [allowEmptyString]="true"
         colorDark="#000000"
       ></qrcode>
+
+      -->
     </div>
   </div>
 </app-navigation>
