@@ -110,6 +110,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   selectedFilter: FilterCriteria;
 
+  openNavigation: boolean = false;
+
   options: BarOptions[] = [
     {
       title: 'articulos',

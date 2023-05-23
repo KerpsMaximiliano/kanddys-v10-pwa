@@ -24,7 +24,7 @@ import { ItemOrder } from '../models/order';
   providedIn: 'root',
 })
 export class NotificationsService {
-   temporalNotification: NotificationInput;
+  temporalNotification: NotificationInput;
   constructor(private graphql: GraphQLWrapper) {}
 
   async notification(merchantId: string, id: string): Promise<Notification> {
@@ -88,7 +88,7 @@ export class NotificationsService {
   ): Promise<ItemOrder> {
     const result = await this.graphql.mutate({
       mutation: orderAddNotification,
-      variables: { notificationId, id }
+      variables: { notificationId, id },
     });
     return result?.orderAddNotification;
   }
@@ -152,7 +152,7 @@ export class NotificationsService {
           }
         }
       }
-    } else if (trigger.key === 'status') {
+    } else if (trigger.key === 'orderStatus') {
       action = 'status id para comprador';
       index = 2;
     }
@@ -163,17 +163,16 @@ export class NotificationsService {
   }
 
   async addNotificationInTag(
-   merchantId: string,
-   notificationId: string,
-   tagId: string
- ): Promise<Tag> {
-   const result = await this.graphql.mutate({
-     mutation: addNotificationInTag,
-     variables: { merchantId, notificationId, tagId },
-   });
-   return result?.addNotificationInTag;
- }
-
+    merchantId: string,
+    notificationId: string,
+    tagId: string
+  ): Promise<Tag> {
+    const result = await this.graphql.mutate({
+      mutation: addNotificationInTag,
+      variables: { merchantId, notificationId, tagId },
+    });
+    return result?.addNotificationInTag;
+  }
 
   // This is the correct one, stil in progress
   // getNotificationAction(notification: Notification | NotificationChecker) {

@@ -23,7 +23,7 @@ export class GenericTriggerInput {
 }
 
 export class StatusTriggerInput {
-  key: 'status';
+  key: 'orderStatus';
   value: OrderStatusType;
 }
 
@@ -60,7 +60,7 @@ export class GenericTrigger {
 }
 
 export class StatusTrigger {
-  key: 'status';
+  key: 'orderStatus';
   value: OrderStatusType;
 }
 
