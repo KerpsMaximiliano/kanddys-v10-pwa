@@ -20,69 +20,56 @@
       </p>
     </div>
     <div class="right-area">
-      <span class="header-text">UserID</span>
+      <span class="header-text" *ngIf="logged || headerService.user">
+        {{ currentUser?.name || currentUser?.phone || currentUser?.email }}
+      </span>
       <!-- <img [src]="env + '/person.svg'" alt="Icono de una persona" /> -->
     </div>
   </header>
 
   <main>
-    <mat-card class="card">
+    <mat-card class="card" *ngFor="let item of items; index as i">
         <div class="card-header flex">
           <div class="left-side flex">
-            <div class="featured-image"></div>
+            <div class="featured-image"
+            [ngStyle]="{
+              backgroundImage: item?.images?.length
+                ? 'url(' +
+                  item.images[0].value +
+                  '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                : 'url(/assets/images/noimage.png)'
+            }"
+            (click)="
+              item?.images?.length &&
+                openImageModal(item.images[0].value)
+            "
+            ></div>
             <div class="item-quantity">
               <p class="grayout-label">Cantidad</p>
               <div class="quantity">
-                <span>-</span>
-                <span>1</span>
-                <span>+</span>
+                <span mat-button class="button" (click)="changeAmount(item._id, 'subtract')">-</span>
+                <span>{{ itemObjects[item._id].amount }}</span>
+                <span mat-button class="button" (click)="changeAmount(item._id, 'add')">+</span>
               </div>
             </div>
           </div>
           <div class="right-side">
-            <p class="grayout-label">$12,542.03</p>
+            <p class="grayout-label">${{ item.pricing * itemObjects[item._id].amount | number : "1.2-2" }}</p>
           </div>
         </div>
-        <div class="card-body">
-          <div class="section">
-            <p class="section-title grayout-label">PreguntaID</p>
-            <p class="section-description">RespuestaID</p>
-          </div>
-          <div class="section">
-            <p class="section-title grayout-label">PreguntaID</p>
-            <p class="section-description">RespuestaID</p>
+        <div class="card-body" *ngIf="webformsByItem[item._id]?.webform">
+          <div 
+            class="section" 
+            *ngFor="
+              let question of webformsByItem[item._id].webform.questions;
+              let i = index
+            "
+          >
+            <p class="section-title grayout-label">{{ question.value }}</p>
+            <!-- <p class="section-description">RespuestaID</p> -->
           </div>
         </div>
     </mat-card>
-
-    <mat-card class="card">
-      <div class="card-header flex">
-        <div class="left-side flex">
-          <div class="featured-image"></div>
-          <div class="item-quantity">
-            <p class="grayout-label">Cantidad</p>
-            <div class="quantity">
-              <span>-</span>
-              <span>1</span>
-              <span>+</span>
-            </div>
-          </div>
-        </div>
-        <div class="right-side">
-          <p class="grayout-label">$12,542.03</p>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="section">
-          <p class="section-title grayout-label">PreguntaID</p>
-          <p class="section-description">RespuestaID</p>
-        </div>
-        <div class="section">
-          <p class="section-title grayout-label">PreguntaID</p>
-          <p class="section-description">RespuestaID</p>
-        </div>
-      </div>
-  </mat-card>
 
   <!-- TODO: acomodar esto por estilos de verdad -->
   <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>

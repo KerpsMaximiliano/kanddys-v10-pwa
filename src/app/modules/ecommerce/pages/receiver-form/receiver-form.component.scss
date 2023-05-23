@@ -35,6 +35,12 @@ main {
             white-space: normal;
             line-height: 22px;
             padding: 10px;
+            transition: 0.2s all;
+
+            &.active {
+                background-color: #3B654A;
+                border: 0;
+            }
         }
     }
 

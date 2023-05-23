@@ -76,13 +76,14 @@ main {
       justify-content: space-between;
       .left-side {
         .featured-image {
+          cursor: pointer;
           width: 82px;
           height: 81px;
-          background-color: #7B7B7B;
           background-position: center center;
           background-size: contain;
           background-repeat: no-repeat;
           border-radius: 10px;
+          border: 0.001px solid lightgray;
         }
 
         .item-quantity {
@@ -94,12 +95,18 @@ main {
               font-size: 40px;
               color: #000;
               font-family: "InterSemiBold";
+
+              &.button {
+                cursor: pointer;
+              }
             }
           }
         }
       }
       .right-side {
-
+        .header-text {
+          text-transform: capitalize;
+        }
       }
     }
 
