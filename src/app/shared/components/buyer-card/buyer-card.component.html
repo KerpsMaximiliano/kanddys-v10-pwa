@@ -46,9 +46,18 @@
       <br />
       <span *ngIf="description" class="description">{{ description }}</span>
     </p>
-    <div class="image-container" *ngIf="mode === 'normal'">
+    <div
+      class="image-container"
+      *ngIf="mode === 'normal'"
+      [ngClass]="{
+        fullWidth: !description && !title
+      }"
+    >
       <img
         class="img"
+        [ngClass]="{
+          full: !description && !title
+        }"
         #imgContainer
         [src]="img"
         (error)="img = '/assets/images/noimage.png'"
@@ -69,7 +78,10 @@
         [src]="img"
         (error)="img = '/assets/images/noimage.png'"
       />
-      <span class="see-more">Ver detalle</span>
+
+      <!--
+        <span class="see-more">Ver detalle</span>
+      -->
     </div>
   </div>
 </ng-template>

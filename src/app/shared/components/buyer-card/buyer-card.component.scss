@@ -150,6 +150,10 @@ a {
 }
 .image-container {
   position: relative;
+
+  &.fullWidth {
+    width: 100%;
+  }
 }
 .see-more {
   position: absolute;
