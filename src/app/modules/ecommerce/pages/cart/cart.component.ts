@@ -368,6 +368,7 @@ export class CartComponent implements OnInit {
       {
         queryParams: {
           startAtQuestion: index,
+          redirectTo: 'cart'
         },
       }
     );

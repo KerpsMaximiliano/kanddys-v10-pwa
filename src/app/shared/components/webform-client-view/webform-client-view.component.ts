@@ -68,6 +68,7 @@ export class WebformClientViewComponent implements OnInit {
     CountryISO.UnitedStates,
   ];
   PhoneNumberFormat = PhoneNumberFormat;
+  redirectTo: string = 'checkout';
   @ViewChild('questionsSwiper') questionsSwiper: SwiperComponent;
 
   constructor(
@@ -83,8 +84,11 @@ export class WebformClientViewComponent implements OnInit {
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ itemId, formId }) => {
         this.routeQueryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ startAtQuestion }) => {
+          async ({ startAtQuestion, redirectTo }) => {
             lockUI();
+
+            if (redirectTo && redirectTo.length > 0)
+              this.redirectTo = redirectTo;
 
             this.item = await this.itemsService.item(itemId);
 
@@ -318,7 +322,8 @@ export class WebformClientViewComponent implements OnInit {
     if (
       isMultipleSelection &&
       alreadySelectedOptionsIndexes.length >=
-        currentStep.question.answerLimit && currentStep.question.answerLimit !== 0 &&
+        currentStep.question.answerLimit &&
+      currentStep.question.answerLimit !== 0 &&
       !alreadySelectedOptionsIndexes.includes(optionIndex)
     ) {
       this.snackbar.open(
@@ -554,7 +559,10 @@ export class WebformClientViewComponent implements OnInit {
 
     if (!preventRedirection)
       return this.router.navigate([
-        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',
+        '/ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/' +
+          this.redirectTo,
       ]);
   }
 

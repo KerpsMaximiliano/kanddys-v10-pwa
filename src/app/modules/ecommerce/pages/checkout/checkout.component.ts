@@ -135,6 +135,7 @@ export class CheckoutComponent implements OnInit {
   areWebformsValid: boolean = false;
   webformPreview: boolean = false;
   URI: string = environment.uri;
+  userReturnedFromLogin: User = null;
   atStart: 'auth-order-and-create-answers-for-every-item' =
     'auth-order-and-create-answers-for-every-item';
 
@@ -782,6 +783,8 @@ export class CheckoutComponent implements OnInit {
           if (value.user?._id || value.session.user._id) {
             this.logged = true;
 
+            this.userReturnedFromLogin = value.user || value.session.user;
+
             lockUI();
             const postResult = (await this.postsService.createPost(this.post))
               ?.createPost?._id;
@@ -813,29 +816,17 @@ export class CheckoutComponent implements OnInit {
           );
         }
 
-        const itemAnswers = this.getItemAnswers();
-
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
           data: {
-            loginType: 'full',
-            magicLinkData: {
-              redirectionRoute:
-                'ecommerce/' +
-                this.headerService.saleflow.merchant.slug +
-                '/checkout',
-              entity: 'UserAccess',
-              redirectionRouteQueryParams: {
-                orderId: createdOrder,
-                answers: JSON.stringify(itemAnswers),
-                atStart: 'auth-order-and-create-answers-for-every-item',
-              },
-            },
+            loginType: 'phone',
           },
         });
         matDialogRef.afterClosed().subscribe(async (value) => {
           if (!value) return;
+
           if (value.user?._id || value.session.user._id) {
             this.logged = true;
+            this.userReturnedFromLogin = value.user || value.session.user;
 
             await this.finishOrderCreation();
             unlockUI();
@@ -966,7 +957,9 @@ export class CheckoutComponent implements OnInit {
 
         const response = await this._WebformsService.createAnswer(
           answer,
-          this.headerService.user._id
+          this.headerService.user
+            ? this.headerService.user._id
+            : this.userReturnedFromLogin._id
         );
 
         if (response) {
@@ -1523,6 +1516,7 @@ export class CheckoutComponent implements OnInit {
       {
         queryParams: {
           startAtQuestion: index,
+          redirectTo: 'checkout',
         },
       }
     );
