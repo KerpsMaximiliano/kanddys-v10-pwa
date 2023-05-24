@@ -41,6 +41,7 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
   @Input() labelStyles: Record<string, any> = null;
   @Input() optionsInAnswerSelector: Array<OptionAnswerSelector> = []; //Array of answer selector options
   @Input() optionsInImageGrid: Array<ExtendedAnswerDefault> = []; //Array of images by options
+  @Input() showTitle: boolean = false; //Array of images by options
   selectedImageIndex: number = null;
   selectedImageIndexes: Array<number> = [];
   selectedListOptionIndex: number = null;

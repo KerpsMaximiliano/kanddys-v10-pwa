@@ -239,6 +239,7 @@
                           [multiple]="
                             !question.answerLimit || question.answerLimit > 1
                           "
+                          [showTitle]="true"
                           [isMediaSelection]="question.answerDefault[0].isMedia"
                           [required]="question?.required"
                           (onSelector)="
@@ -302,6 +303,7 @@
                             [isMediaSelection]="
                               question.answerDefault[0].isMedia
                             "
+                            [showTitle]="true"
                             [question]="question"
                             [required]="question?.required"
                             (onSelector)="

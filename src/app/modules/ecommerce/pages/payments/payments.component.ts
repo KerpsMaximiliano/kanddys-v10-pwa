@@ -349,7 +349,10 @@ export class PaymentsComponent implements OnInit {
           localStorage.getItem('registered-user')
         ) as User;
         this.currentUser =
-          this.order?.user || this.headerService.user || registeredUser;
+          this.order?.user ||
+          this.headerService.user ||
+          this.headerService.alreadyInputtedloginDialogUser ||
+          registeredUser;
         this.logged = Boolean(await this.authService.me());
 
         this.status = 'complete';
