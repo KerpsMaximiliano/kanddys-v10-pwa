@@ -775,7 +775,7 @@ export class CheckoutComponent implements OnInit {
           ?.createPost?._id;
         this.headerService.order.products[0].post = postResult;
 
-        await this.createEntityTemplateForOrderPost(postResult);
+        //await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       } else if (this.postsService.privatePost) {
         unlockUI();
@@ -804,7 +804,7 @@ export class CheckoutComponent implements OnInit {
               ?.createPost?._id;
             this.headerService.order.products[0].post = postResult;
 
-            await this.createEntityTemplateForOrderPost(postResult);
+            //await this.createEntityTemplateForOrderPost(postResult);
             await this.finishOrderCreation();
           }
         });
@@ -853,7 +853,7 @@ export class CheckoutComponent implements OnInit {
 
         this.headerService.order.products[0].post = postResult;
 
-        await this.createEntityTemplateForOrderPost(postResult);
+        //await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       }
     } else await this.finishOrderCreation();
@@ -1013,6 +1013,7 @@ export class CheckoutComponent implements OnInit {
     return answers;
   }
 
+  /*
   createEntityTemplateForOrderPost = async (postId: string) => {
     try {
       const entityTemplate =
@@ -1066,7 +1067,7 @@ export class CheckoutComponent implements OnInit {
     } catch (error) {
       console.error('ocurrio un error al crear el simbolo', error);
     }
-  };
+  };*/
 
   login() {
     localStorage.removeItem('privatePost');

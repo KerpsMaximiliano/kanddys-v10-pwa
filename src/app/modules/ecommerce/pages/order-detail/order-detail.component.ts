@@ -347,9 +347,17 @@ export class OrderDetailComponent implements OnInit {
           },
         });
 
+        this.entityTemplateLink =
+          this.URI +
+          '/ecommerce/' +
+          this.order.items[0].saleflow.merchant.slug +
+          '/article-detail/post/' +
+          this.post._id;
+
         if (results.length > 0) {
           this.entityTemplate = results[0];
 
+          /*
           this.entityTemplateLink =
             this.entityTemplate.access === 'public' ||
             this.entityTemplate.recipients === 0
@@ -357,6 +365,7 @@ export class OrderDetailComponent implements OnInit {
               : this.URI +
                 '/ecommerce/article-access/' +
                 this.entityTemplate._id;
+                */
         }
       }
     }

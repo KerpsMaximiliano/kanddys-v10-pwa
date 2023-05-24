@@ -28,6 +28,16 @@
           <li routerLinkActive="active" *ngIf="headerService.user">
             <a
               mat-button
+              [routerLink]="['/admin/notifications-menu']"
+              style="padding: 0px 8px"
+            >
+              Notificaciones
+            </a>
+            <mat-icon class="icon"> menu </mat-icon>
+          </li>
+          <li routerLinkActive="active" *ngIf="headerService.user">
+            <a
+              mat-button
               [routerLink]="['/admin/reports']"
               style="padding: 0px 8px"
             >
