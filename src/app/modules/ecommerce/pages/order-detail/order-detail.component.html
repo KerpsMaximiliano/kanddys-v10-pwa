@@ -162,8 +162,8 @@
           </span>
         </div>
         <div style="display: flex; align-items: center">
-          <p style="margin-right: auto">Fecha de Factura <br /></p>
-          <span>
+          <p style="margin-right: auto">Fecha <br /></p>
+          <span style="text-transform: capitalize">
             {{ orderDate }}
             <!-- <ng-container *ngIf="order?.user">
               para
@@ -862,15 +862,27 @@
   ></app-sticky-button> -->
 
     <div class="top-footer">
-      <div class="chip-list">
-        <div class="chip">
+      <div
+        class="chip-list"
+        #elemt
+        (mousedown)="startDragging($event, elemt)"
+        (mouseup)="stopDragging()"
+        (mouseleave)="stopDragging()"
+        (mousemove)="moveEvent($event, elemt)"
+      >
+        <div class="chip selected">
           {{ orderStatus }}
         </div>
         <!-- <ng-container *ngIf="deliveryOrder.tagsData?.length">
-        <div class="chip" *ngFor="let tag of deliveryOrder.tagsData">
-          {{ tag.name }}
-        </div>
-      </ng-container> -->
+          <div class="chip" *ngFor="let tag of deliveryOrder.tagsData">
+            {{ tag.name }}
+          </div>
+        </ng-container> -->
+        <ng-container *ngFor="let status of statusList">
+          <button *ngIf="status !== orderStatus" class="chip">
+            {{ orderDeliveryStatus(status) }}
+          </button>
+        </ng-container>
       </div>
 
       <!-- <button

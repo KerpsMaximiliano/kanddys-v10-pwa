@@ -17,7 +17,7 @@ a {
 }
 .container {
   min-height: 100vh;
-  background-color: #F6F6F6;
+  background-color: #f6f6f6;
 
   .panel {
     background-color: #272727;
@@ -145,7 +145,7 @@ a {
     padding: 0px 15.5px;
     padding-bottom: 70px; //para la barra inferior
     flex: 1;
-    background-color: #F6F6F6;
+    background-color: #f6f6f6;
 
     .section {
       width: 100%;
@@ -428,7 +428,7 @@ a {
   display: flex;
   align-items: center;
   height: 100%;
-  color: #FFF;
+  color: #fff;
 
   .icon {
     height: 30px;
@@ -938,20 +938,25 @@ table {
   gap: 8px;
 }
 .chip {
-  font-family: InterBold;
+  font-family: SfProSemiBold;
   font-size: 1rem;
-  background-color: #3b654a;
+  background-color: #171d16;
+  border: solid 1px #2d4b36;
+  color: #fff;
   padding: 8px 16px;
   border-radius: 20px;
   white-space: nowrap;
   user-select: none;
-  color: #f6f6f6;
-  font-weight: 700;
+  text-transform: capitalize;
+
+  &.selected {
+    background-color: #2d4b36;
+  }
 }
 
 .status-bars {
   height: 9px;
-  background-color: #171D16;
+  background-color: #171d16;
   position: fixed;
   width: 100%;
   max-width: 500px;
@@ -960,7 +965,7 @@ table {
 
   .status-section {
     width: 168px;
-    background-color: #C4C5C3;
+    background-color: #c4c5c3;
     margin-right: 8px;
     height: 3px;
   }
@@ -1045,6 +1050,7 @@ table {
   text-transform: capitalize;
 }
 
-.mat-expansion-panel:not(.mat-expanded):not([aria-disabled=true]) .mat-expansion-panel-header:hover {
+.mat-expansion-panel:not(.mat-expanded):not([aria-disabled="true"])
+  .mat-expansion-panel-header:hover {
   background-color: #272727;
 }

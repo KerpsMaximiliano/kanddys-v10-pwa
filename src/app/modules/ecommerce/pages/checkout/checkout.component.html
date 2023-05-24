@@ -68,217 +68,259 @@
 
   <main class="information">
     <section class="section">
-      <div class="between">
-        <h2 class="section-title">Articulos facturados:</h2>
-      </div>
-      <div class="flexBox">
-        <ng-container *ngFor="let item of items; index as i">
-          <div
-            class="items-container flexBox ready"
-            *ngIf="!item.ready && itemObjects[item._id]"
-          >
-            <ng-container
-              *ngTemplateOutlet="
-                itemInfoTemplate;
-                context: { item: item, i: i }
-              "
-            ></ng-container>
-          </div>
-          <button
-            class="items-container flexBox"
-            *ngIf="item.ready && itemObjects[item._id]"
-            (click)="item.ready = !item.ready"
-          >
-            <ng-container
-              *ngTemplateOutlet="
-                itemInfoTemplate;
-                context: { item: item, i: i }
-              "
-            ></ng-container>
-          </button>
-          <ng-container
-            *ngIf="webformsByItem[item._id] && webformsByItem[item._id].webform"
-          >
-            <ul class="list-of-webform-questions">
+      <mat-accordion>
+        <mat-expansion-panel
+          (opened)="panelOpenState = true"
+          (closed)="panelOpenState = false"
+          hideToggle
+        >
+          <mat-expansion-panel-header>
+            <div class="between" style="display: flex; align-items: center">
+              <h2 class="section-title">
+                {{ totalItems }} Articulos facturados
+              </h2>
+              <mat-icon
+                [ngStyle]="{
+                  color: '#7B7B7B',
+                  marginLeft: '10px',
+                  marginTop: '-8px'
+                }"
+                >{{
+                  panelOpenState ? "keyboard_arrow_down" : "keyboard_arrow_up"
+                }}
+              </mat-icon>
+              <h2 class="section-title" style="position: absolute; right: 18px">
+                RD $ {{ payment | number : "1.2-2" }}
+              </h2>
+            </div>
+          </mat-expansion-panel-header>
+          <div class="flexBox">
+            <ng-container *ngFor="let item of items; index as i">
+              <div
+                class="items-container flexBox ready"
+                *ngIf="!item.ready && itemObjects[item._id]"
+              >
+                <ng-container
+                  *ngTemplateOutlet="
+                    itemInfoTemplate;
+                    context: { item: item, i: i }
+                  "
+                ></ng-container>
+              </div>
+              <button
+                class="items-container flexBox"
+                *ngIf="item.ready && itemObjects[item._id]"
+                (click)="item.ready = !item.ready"
+              >
+                <ng-container
+                  *ngTemplateOutlet="
+                    itemInfoTemplate;
+                    context: { item: item, i: i }
+                  "
+                ></ng-container>
+              </button>
               <ng-container
-                *ngFor="
-                  let question of webformsByItem[item._id].webform.questions;
-                  let i = index
+                *ngIf="
+                  webformsByItem[item._id] && webformsByItem[item._id].webform
                 "
               >
-                <!--RESPUESTA UNICA-->
-                <ng-container
-                  *ngIf="
-                    answersByQuestion[question._id] &&
-                    ((question.answerLimit === 1 &&
-                      ['multiple-text', 'multiple'].includes(question.type)) ||
-                      (!['multiple-text', 'multiple'].includes(question.type) &&
-                        question.answerLimit === 0) ||
-                      (!['multiple-text', 'multiple'].includes(question.type) &&
-                        question.answerLimit === 1))
-                  "
-                >
-                  <!-- RESPONSE HAS NO IMAGES-->
+                <ul class="list-of-webform-questions">
                   <ng-container
-                    *ngIf="!answersByQuestion[question._id].isMedia"
-                  >
-                    <li
-                      class="webform-question-container"
-                      [ngClass]="{
-                        required:
-                          question.required &&
-                          !answersByQuestion[question._id]?.response
-                      }"
-                      (click)="openWebform(item._id, i)"
-                    >
-                      <p style="text-transform: capitalize">
-                        {{ question.value }}
-                      </p>
-                      <div
-                        class="question-text-response"
-                        *ngIf="
-                          answersByQuestion[question._id]?.response &&
-                          !answersByQuestion[question._id]?.responseLabel &&
-                          !answersByQuestion[question._id].isMedia
-                        "
-                      >
-                        {{ answersByQuestion[question._id]?.response }}
-                      </div>
-
-                      <div
-                        class="question-text-response"
-                        *ngIf="
-                          answersByQuestion[question._id]?.response &&
-                          answersByQuestion[question._id]?.responseLabel &&
-                          !answersByQuestion[question._id].isMedia
-                        "
-                      >
-                        {{
-                          question.type === "text" &&
-                          question.answerTextType === "name"
-                            ? answersByQuestion[question._id]?.response +
-                              " " +
-                              answersByQuestion[question._id]?.responseLabel
-                            : answersByQuestion[question._id]?.responseLabel
-                        }}
-                      </div>
-                    </li>
-                  </ng-container>
-
-                  <!-- RESPONSE HAS IMAGES AND USER HASNT ANSWERED-->
-                  <li
-                    class="webform-question-container"
-                    [ngClass]="{
-                      required:
-                        question.required &&
-                        !answersByQuestion[question._id]?.response
-                    }"
-                    (click)="openWebform(item._id, i)"
-                    *ngIf="
-                      !answersByQuestion[question._id]?.response &&
-                      answersByQuestion[question._id].isMedia
+                    *ngFor="
+                      let question of webformsByItem[item._id].webform
+                        .questions;
+                      let i = index
                     "
                   >
-                    <p>
-                      {{ question.value }}
-                    </p>
-                  </li>
-
-                  <!-- RESPONSE HAS IMAGES AND USER HAS ALREADY ANSWERED-->
-                  <div
-                    class="question-media-response"
-                    *ngIf="
-                      (answersByQuestion[question._id]?.response ||
-                        answersByQuestion[question._id]?.responseLabel) &&
-                      answersByQuestion[question._id].isMedia &&
-                      !this.webformsByItem[item._id].opened
-                    "
-                  >
-                    <app-closed-question-card
-                      [id]="'multiple-choices-single-selection'"
-                      [shadows]="false"
-                      [labelStyles]="{
-                        fontFamily: 'SfProRegular',
-                        color: '#000',
-                        fontSize: '15px'
-                      }"
-                      [containerStyles]="{ padding: '15px 18px' }"
-                      [question]="question"
-                      [multiple]="
-                        !question.answerLimit || question.answerLimit > 1
-                      "
-                      [isMediaSelection]="question.answerDefault[0].isMedia"
-                      [required]="question?.required"
-                      (onSelector)="selectOption(question, item, true, $event)"
-                    >
-                    </app-closed-question-card>
-                  </div>
-                </ng-container>
-
-                <!--RESPUESTA MULTIPLE-->
-                <ng-container
-                  *ngIf="
-                    answersByQuestion[question._id] &&
-                    (question.answerLimit === 0 || question.answerLimit > 1) &&
-                    ['multiple-text', 'multiple'].includes(question.type)
-                  "
-                >
-                  <!-- RESPONSE HAS NO IMAGES-->
-                  <ng-container *ngIf="answersByQuestion[question._id]">
-                    <li
+                    <!--RESPUESTA UNICA-->
+                    <ng-container
                       *ngIf="
-                        !answersByQuestion[question._id]?.multipleResponses &&
-                        !this.webformsByItem[item._id].opened
+                        answersByQuestion[question._id] &&
+                        ((question.answerLimit === 1 &&
+                          ['multiple-text', 'multiple'].includes(
+                            question.type
+                          )) ||
+                          (!['multiple-text', 'multiple'].includes(
+                            question.type
+                          ) &&
+                            question.answerLimit === 0) ||
+                          (!['multiple-text', 'multiple'].includes(
+                            question.type
+                          ) &&
+                            question.answerLimit === 1))
                       "
-                      class="webform-question-container"
-                      [ngClass]="{
-                        required:
-                          question.required &&
-                          !answersByQuestion[question._id]?.response
-                      }"
-                      (click)="openWebform(item._id, i)"
                     >
-                      <p>
-                        {{ question.value }}
-                      </p>
-                    </li>
+                      <!-- RESPONSE HAS NO IMAGES-->
+                      <ng-container
+                        *ngIf="!answersByQuestion[question._id].isMedia"
+                      >
+                        <li
+                          class="webform-question-container"
+                          [ngClass]="{
+                            required:
+                              question.required &&
+                              !answersByQuestion[question._id]?.response
+                          }"
+                          (click)="openWebform(item._id, i)"
+                        >
+                          <p style="text-transform: capitalize">
+                            {{ question.value }}
+                          </p>
+                          <div
+                            class="question-text-response"
+                            *ngIf="
+                              answersByQuestion[question._id]?.response &&
+                              !answersByQuestion[question._id]?.responseLabel &&
+                              !answersByQuestion[question._id].isMedia
+                            "
+                          >
+                            {{ answersByQuestion[question._id]?.response }}
+                          </div>
 
-                    <div
-                      class="question-media-response"
-                      *ngIf="
-                        answersByQuestion[question._id]?.multipleResponses &&
-                        !this.webformsByItem[item._id].opened
-                      "
-                    >
-                      <app-closed-question-card
-                        [id]="'multiple-choices-multiple-selection'"
-                        [shadows]="false"
-                        [labelStyles]="{
-                          fontFamily: 'SfProRegular',
-                          color: '#000',
-                          fontSize: '15px'
+                          <div
+                            class="question-text-response"
+                            *ngIf="
+                              answersByQuestion[question._id]?.response &&
+                              answersByQuestion[question._id]?.responseLabel &&
+                              !answersByQuestion[question._id].isMedia
+                            "
+                          >
+                            {{
+                              question.type === "text" &&
+                              question.answerTextType === "name"
+                                ? answersByQuestion[question._id]?.response +
+                                  " " +
+                                  answersByQuestion[question._id]?.responseLabel
+                                : answersByQuestion[question._id]?.responseLabel
+                            }}
+                          </div>
+                        </li>
+                      </ng-container>
+
+                      <!-- RESPONSE HAS IMAGES AND USER HASNT ANSWERED-->
+                      <li
+                        class="webform-question-container"
+                        [ngClass]="{
+                          required:
+                            question.required &&
+                            !answersByQuestion[question._id]?.response
                         }"
-                        [containerStyles]="{ padding: '15px 18px' }"
-                        [multiple]="
-                          !question.answerLimit || question.answerLimit > 1
-                        "
-                        [isMediaSelection]="question.answerDefault[0].isMedia"
-                        [question]="question"
-                        [required]="question?.required"
-                        (onSelector)="
-                          selectOption(question, item, true, $event)
+                        (click)="openWebform(item._id, i)"
+                        *ngIf="
+                          !answersByQuestion[question._id]?.response &&
+                          answersByQuestion[question._id].isMedia
                         "
                       >
-                      </app-closed-question-card>
-                    </div>
+                        <p>
+                          {{ question.value }}
+                        </p>
+                      </li>
+
+                      <!-- RESPONSE HAS IMAGES AND USER HAS ALREADY ANSWERED-->
+                      <div
+                        class="question-media-response"
+                        *ngIf="
+                          (answersByQuestion[question._id]?.response ||
+                            answersByQuestion[question._id]?.responseLabel) &&
+                          answersByQuestion[question._id].isMedia &&
+                          !this.webformsByItem[item._id].opened
+                        "
+                      >
+                        <app-closed-question-card
+                          [id]="'multiple-choices-single-selection'"
+                          [shadows]="false"
+                          [labelStyles]="{
+                            fontFamily: 'SfProRegular',
+                            color: '#000',
+                            fontSize: '15px'
+                          }"
+                          [containerStyles]="{ padding: '15px 18px' }"
+                          [question]="question"
+                          [multiple]="
+                            !question.answerLimit || question.answerLimit > 1
+                          "
+                          [isMediaSelection]="question.answerDefault[0].isMedia"
+                          [required]="question?.required"
+                          (onSelector)="
+                            selectOption(question, item, true, $event)
+                          "
+                        >
+                        </app-closed-question-card>
+                      </div>
+                    </ng-container>
+
+                    <!--RESPUESTA MULTIPLE-->
+                    <ng-container
+                      *ngIf="
+                        answersByQuestion[question._id] &&
+                        (question.answerLimit === 0 ||
+                          question.answerLimit > 1) &&
+                        ['multiple-text', 'multiple'].includes(question.type)
+                      "
+                    >
+                      <!-- RESPONSE HAS NO IMAGES-->
+                      <ng-container *ngIf="answersByQuestion[question._id]">
+                        <li
+                          *ngIf="
+                            !answersByQuestion[question._id]
+                              ?.multipleResponses &&
+                            !this.webformsByItem[item._id].opened
+                          "
+                          class="webform-question-container"
+                          [ngClass]="{
+                            required:
+                              question.required &&
+                              !answersByQuestion[question._id]?.response
+                          }"
+                          (click)="openWebform(item._id, i)"
+                        >
+                          <p>
+                            {{ question.value }}
+                          </p>
+                        </li>
+
+                        <div
+                          class="question-media-response"
+                          *ngIf="
+                            answersByQuestion[question._id]
+                              ?.multipleResponses &&
+                            !this.webformsByItem[item._id].opened
+                          "
+                        >
+                          <app-closed-question-card
+                            [id]="'multiple-choices-multiple-selection'"
+                            [shadows]="false"
+                            [labelStyles]="{
+                              fontFamily: 'SfProRegular',
+                              color: '#000',
+                              fontSize: '15px'
+                            }"
+                            [containerStyles]="{ padding: '15px 18px' }"
+                            [multiple]="
+                              !question.answerLimit || question.answerLimit > 1
+                            "
+                            [isMediaSelection]="
+                              question.answerDefault[0].isMedia
+                            "
+                            [question]="question"
+                            [required]="question?.required"
+                            (onSelector)="
+                              selectOption(question, item, true, $event)
+                            "
+                          >
+                          </app-closed-question-card>
+                        </div>
+                      </ng-container>
+                    </ng-container>
                   </ng-container>
-                </ng-container>
+                </ul>
               </ng-container>
-            </ul>
-          </ng-container>
-        </ng-container>
-      </div>
-      <div class="items-container ready" style="margin-top: 8px">
+            </ng-container>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <!-- <div class="items-container ready" style="margin-top: 8px">
         <div
           class="items-container space-between"
           style="padding: 0 32px; align-items: center"
@@ -286,7 +328,7 @@
           <p class="total">Total</p>
           <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
         </div>
-      </div>
+      </div> -->
     </section>
 
     <section
@@ -356,9 +398,7 @@
       </button>
     </section>
 
-    <section
-      class="section"
-    >
+    <section class="section">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Tarjeta dedicatoria</h2>
       </div>
@@ -366,12 +406,16 @@
       <ng-container *ngIf="postsService.post">
         <button class="items-container ready" (click)="createOrEditMessage()">
           <p class="address-name">
-            {{ 
-              postsService.post?.message ? postsService.post?.message :
-              postsService.post?.title ? postsService.post?.title :
-              postsService.post?.to ? 'Para: ' + postsService.post?.to :
-              postsService.post?.from ? 'De parte de: ' + postsService.post?.from :
-              '...'
+            {{
+              postsService.post?.message
+                ? postsService.post?.message
+                : postsService.post?.title
+                ? postsService.post?.title
+                : postsService.post?.to
+                ? "Para: " + postsService.post?.to
+                : postsService.post?.from
+                ? "De parte de: " + postsService.post?.from
+                : "..."
             }}
           </p>
         </button>
@@ -418,7 +462,19 @@
       </button>
     </section>
 
-    <br><br><br><br><br><br>
+    <section class="section">
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Lo recibirá:</h2>
+      </div>
+      <button
+        class="items-container column pointer green"
+        (click)="goToReceiver()"
+      >
+        <p class="address-name">¿Quien lo recibirá?</p>
+      </button>
+    </section>
+
+    <br /><br /><br /><br /><br /><br />
 
     <!-- <section
       class="section"
