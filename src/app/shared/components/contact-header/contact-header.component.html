@@ -4,7 +4,15 @@
   </p>
   <div>
     <div *ngIf="data.contact?.link?.length">
-      <span class="title">Contactos</span>
+      <div style="display: flex; align-items: center">
+        <span class="title">Contactos</span>
+        <mat-icon
+          style="margin-left: auto; margin-bottom: 8px; cursor: pointer"
+          (click)="close()"
+          [ngStyle]="{ color: 'white' }"
+          >close</mat-icon
+        >
+      </div>
       <ul>
         <li *ngIf="data.phone">
           <a [href]="'tel:+' + data.phone" target="_blank" (click)="close()">
