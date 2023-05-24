@@ -13,6 +13,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 export interface LoginDialogData {
   magicLinkData?: {
@@ -53,7 +54,8 @@ export class LoginDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<LoginDialogComponent>,
     private _formBuilder: FormBuilder,
     private authService: AuthService,
-    private matSnackBar: MatSnackBar
+    private matSnackBar: MatSnackBar,
+    private headerService: HeaderService
   ) {}
 
   ngOnInit() {
@@ -134,11 +136,22 @@ export class LoginDialogComponent implements OnInit {
             emailOrPhone,
             this.data.magicLinkData.redirectionRoute,
             this.data.magicLinkData.redirectionRouteId,
-            "NewUser2",
+            'NewUser2',
             this.data.magicLinkData.redirectionRouteQueryParams,
             this.data.magicLinkData.attachments
           );
-        }  
+        } else {
+          await this.authService.generateMagicLink(
+            emailOrPhone,
+            'ecommerce/' +
+              this.headerService.saleflow.merchant.slug +
+              '/checkout',
+            null,
+            'NewUser2',
+            null,
+            null
+          );
+        }
 
         this.matSnackBar.open(
           `Se ha enviado un link de acceso a tu ${

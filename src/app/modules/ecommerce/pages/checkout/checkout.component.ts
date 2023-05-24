@@ -832,7 +832,7 @@ export class CheckoutComponent implements OnInit {
 
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
           data: {
-            loginType: 'phone',
+            loginType: 'phone'
           },
         });
         matDialogRef.afterClosed().subscribe(async (value) => {
