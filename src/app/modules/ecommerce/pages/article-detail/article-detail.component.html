@@ -125,9 +125,12 @@
         </ng-container>
       </swiper>
     </div>
+    
+  </div>
+  <div style="position: absolute; max-width: 500px; width: 100%; bottom: 0;">
     <div class="information">
       <button mat-button (click)="itemInformationDialog()">
-        <p *ngIf="itemData.name && itemData.description">
+        <p *ngIf="itemData.name || itemData.description">
           <span>{{ itemData.name }}.</span>
           {{ itemData.description }}
         </p>
@@ -476,10 +479,7 @@
       <button mat-button (click)="itemInformationDialog(true)">
         <p>
           <span>{{ postData.title }}.</span>
-          {{ postData.message }} Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Aut animi deserunt veniam ut quia saepe minus
-          maiores magni perferendis quo. Nobis recusandae vitae animi sunt
-          soluta ullam? Quis, vero commodi.
+          {{ postData.message }}
         </p>
         <!-- mira más -->
       </button>

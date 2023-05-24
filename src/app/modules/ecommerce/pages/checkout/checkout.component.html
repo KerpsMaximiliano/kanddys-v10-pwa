@@ -76,20 +76,19 @@
         >
           <mat-expansion-panel-header>
             <div class="between" style="display: flex; align-items: center">
-              <h2 class="section-title">
-                {{ totalItems }} Articulos facturados
+              <h2 class="section-title" style="margin: 0;">
+                {{ this.headerService?.order?.products.length }} Artículos facturados
               </h2>
               <mat-icon
                 [ngStyle]="{
                   color: '#7B7B7B',
-                  marginLeft: '10px',
-                  marginTop: '-8px'
+                  marginLeft: '10px'
                 }"
                 >{{
-                  panelOpenState ? "keyboard_arrow_down" : "keyboard_arrow_up"
+                  panelOpenState ? "keyboard_arrow_down" : "keyboard_arrow_right"
                 }}
               </mat-icon>
-              <h2 class="section-title" style="position: absolute; right: 18px">
+              <h2 class="section-title" style="position: absolute; right: 18px; margin: 0;">
                 RD $ {{ payment | number : "1.2-2" }}
               </h2>
             </div>

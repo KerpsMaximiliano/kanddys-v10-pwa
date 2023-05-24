@@ -813,9 +813,10 @@ export class ArticleDetailComponent implements OnInit {
   // }
 
   itemInformationDialog(post = false) {
+
     let fakeItem: ItemInput = {
-      name: this.postData.title,
-      description: this.postData.message,
+      name: post ? this.postData.title : '',
+      description: post ? this.postData.message : '',
     };
 
     this.dialogService.open(ItemInfoComponent, {

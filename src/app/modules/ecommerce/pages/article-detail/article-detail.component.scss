@@ -351,7 +351,7 @@ header {
 }
 .information {
   background-color: #171d16;
-  padding: 16px;
+  padding: 14px;
 
   button {
     padding: 0;
@@ -401,6 +401,7 @@ header {
     background-color: #6fcf97;
     width: 100%;
     border-radius: 0;
+    height: 37px;
     &.inCart {
       background-color: #c1c4c1;
     }
