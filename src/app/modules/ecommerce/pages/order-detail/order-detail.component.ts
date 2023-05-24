@@ -88,7 +88,7 @@ export class OrderDetailComponent implements OnInit {
     percentageBenefits: number;
     percentageLess: number;
   };
-  orderStatus: OrderStatusNameType;
+  orderStatus;
   orderDate: string;
   paymentType: string;
   date: {
@@ -157,6 +157,14 @@ export class OrderDetailComponent implements OnInit {
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
+
+  statusList: OrderStatusDeliveryType[] = [
+    'in progress',
+    'pending',
+    'pickup',
+    'shipped',
+    'delivered',
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -290,16 +298,15 @@ export class OrderDetailComponent implements OnInit {
       this.order.orderStatus
     );
     const temporalDate = new Date(this.order.createdAt);
-    this.orderDate = temporalDate
-      .toLocaleString('es-MX', {
-        hour12: true,
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-      .toLocaleUpperCase();
+    this.orderDate = temporalDate.toLocaleString('es-MX', {
+      hour12: true,
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
     if (!this.headerService.merchantContact) {
       this.headerService.merchantContact = (
         await this.contactService.contacts({

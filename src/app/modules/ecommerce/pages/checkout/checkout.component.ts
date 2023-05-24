@@ -139,6 +139,9 @@ export class CheckoutComponent implements OnInit {
   atStart: 'auth-order-and-create-answers-for-every-item' =
     'auth-order-and-create-answers-for-every-item';
 
+  totalItems: number = 0;
+  panelOpenState = false;
+
   constructor(
     private _DomSanitizer: DomSanitizer,
     private dialogService: DialogService,
@@ -165,6 +168,9 @@ export class CheckoutComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    for (let i = 0; i < this.headerService.order.products.length; i++) {
+      this.totalItems += this.headerService.order.products[i].amount;
+    }
     this.webformPreview = Boolean(
       this.route.snapshot.queryParamMap.get('webformPreview')
     );
@@ -642,6 +648,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   changeAmount(itemId: string, type: 'add' | 'subtract') {
+    this.totalItems = 0;
     const product = this.headerService.order.products.find(
       (product) => product.item === itemId
     );
@@ -651,6 +658,13 @@ export class CheckoutComponent implements OnInit {
       if (product.amount) this.itemObjects[product.item] = product;
       else this.headerService.removeOrderProduct(product.item);
     });
+
+    for (let i = 0; i < this.headerService.order.products.length; i++) {
+      this.totalItems += this.headerService.order.products[i].amount;
+    }
+
+    // console.log(this.totalItems);
+
     this.updatePayment();
   }
 
@@ -1871,4 +1885,8 @@ export class CheckoutComponent implements OnInit {
 
     this.areItemsQuestionsAnswered();
   };
+
+  goToReceiver() {
+    this.router.navigate([`ecommerce/receiver-form`]);
+  }
 }
