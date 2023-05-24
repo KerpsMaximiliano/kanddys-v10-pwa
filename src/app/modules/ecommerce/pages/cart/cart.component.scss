@@ -190,3 +190,24 @@ footer {
   font-size: 16px;
   font-family: "InterSemiBold";
 }
+
+.required-question-pointer {
+  position: absolute;
+  right: -32px;
+  top: -18px;
+}
+
+.small-arrow-green {
+  position: absolute;
+  right: -16px;
+  top: 0px;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-frame {
+  background-color: white;
+  border-color: #707070;
+  border-radius: 4px;
+  height: 18px;
+  width: 18px;
+  border-width: thin;
+}

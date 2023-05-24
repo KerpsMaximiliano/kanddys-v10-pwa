@@ -207,9 +207,20 @@
       <!-- <mat-checkbox class="checkbox"
         >Factura sin comprobante <i class="fas fa-chevron-right"></i
       ></mat-checkbox> -->
-      <div style="display: flex; justify-content: flex-start; align-items: center;">
+      <div
+        style="display: flex; justify-content: flex-start; align-items: center; position: relative;"
+      >
         <mat-checkbox class="checkbox">Sin mensaje de regalo</mat-checkbox>
-        <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-right" (click)="goToReceiverForm()"></i>
+        <i
+          style="color: #fff; margin-left: 20px"
+          class="fas fa-chevron-right"
+          (click)="goToReceiverForm()"
+        ></i>
+
+        <img
+          [src]="env + '/green-arrow-small.svg'"
+          class="small-arrow-green"
+        />
       </div>
     </div>
 
@@ -222,9 +233,7 @@
         }"
         (click)="submit()"
       >
-        {{
-          !areWebformsValid ? "Llena las preguntas" : "Continuar"
-        }}
+        {{ !areWebformsValid ? "Llena las preguntas" : "Continuar" }}
       </button>
     </div>
   </footer>

@@ -755,6 +755,7 @@ export class CheckoutComponent implements OnInit {
       localStorage.removeItem('postReceiverNumber');
       delete this.post.joke;
 
+      /*
       let hasTheUserAnsweredAnyWebform = false;
 
       for await (const item of this.items) {
@@ -767,7 +768,7 @@ export class CheckoutComponent implements OnInit {
 
           if (answer.response.length > 0) hasTheUserAnsweredAnyWebform = true;
         }
-      }
+      }*/
 
       if (this.logged) {
         const postResult = (await this.postsService.createPost(this.post))
@@ -812,8 +813,7 @@ export class CheckoutComponent implements OnInit {
         return;
       } else if (
         !this.logged &&
-        this.areWebformsValid &&
-        hasTheUserAnsweredAnyWebform
+        this.areWebformsValid
       ) {
         const createdOrder = (
           await this.orderService.createPreOrder(this.headerService.order)
