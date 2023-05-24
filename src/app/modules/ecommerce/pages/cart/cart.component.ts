@@ -368,7 +368,7 @@ export class CartComponent implements OnInit {
       {
         queryParams: {
           startAtQuestion: index,
-          redirectTo: 'cart'
+          redirectTo: 'cart',
         },
       }
     );
@@ -398,7 +398,9 @@ export class CartComponent implements OnInit {
   }
 
   goToStore() {
-    // this.router.navigate([``])
+    this.router.navigate([
+      `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
+    ]);
   }
 
   selectOption = (
@@ -626,17 +628,22 @@ export class CartComponent implements OnInit {
 
   async submit() {
     this.router.navigate([
-      '/ecommerce/' +
-        this.headerService.saleflow.merchant.slug +
-        '/checkout',
+      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
     ]);
   }
 
   goToReceiverForm() {
-    this.router.navigate([
-      '/ecommerce/' +
-        this.headerService.saleflow.merchant.slug +
-        '/receiver-form',
-    ]);
+    this.router.navigate(
+      [
+        '/ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/receiver-form',
+      ],
+      {
+        queryParams: {
+          redirectTo: 'checkout',
+        },
+      }
+    );
   }
 }

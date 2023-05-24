@@ -238,6 +238,7 @@
                           [multiple]="
                             !question.answerLimit || question.answerLimit > 1
                           "
+                          [showTitle]="true"
                           [isMediaSelection]="question.answerDefault[0].isMedia"
                           [required]="question?.required"
                           (onSelector)="
@@ -301,6 +302,7 @@
                             [isMediaSelection]="
                               question.answerDefault[0].isMedia
                             "
+                            [showTitle]="true"
                             [question]="question"
                             [required]="question?.required"
                             (onSelector)="
@@ -491,17 +493,19 @@
       </button>
     </section>
 
-    <section class="section">
-      <div class="between" style="margin-top: 32px">
-        <h2 class="section-title">Lo recibirá:</h2>
-      </div>
-      <button
-        class="items-container column pointer green"
-        (click)="goToReceiver()"
-      >
-        <p class="address-name">¿Quien lo recibirá?</p>
-      </button>
-    </section>
+    <!--
+      <section class="section">
+        <div class="between" style="margin-top: 32px">
+          <h2 class="section-title">Lo recibirá:</h2>
+        </div>
+        <button
+          class="items-container column pointer green"
+          (click)="goToReceiver()"
+        >
+          <p class="address-name">¿Quien lo recibirá?</p>
+        </button>
+      </section>
+    -->
 
     <br /><br /><br /><br /><br /><br />
 

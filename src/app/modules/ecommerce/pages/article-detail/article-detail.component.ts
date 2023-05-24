@@ -655,7 +655,7 @@ export class ArticleDetailComponent implements OnInit {
     if (this.mode === 'preview') return;
 
     this.router.navigate([
-      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',
     ]);
   }
 

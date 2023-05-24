@@ -135,7 +135,6 @@ export class CheckoutComponent implements OnInit {
   areWebformsValid: boolean = false;
   webformPreview: boolean = false;
   URI: string = environment.uri;
-  userReturnedFromLogin: User = null;
   atStart: 'auth-order-and-create-answers-for-every-item' =
     'auth-order-and-create-answers-for-every-item';
 
@@ -756,6 +755,7 @@ export class CheckoutComponent implements OnInit {
       localStorage.removeItem('postReceiverNumber');
       delete this.post.joke;
 
+      /*
       let hasTheUserAnsweredAnyWebform = false;
 
       for await (const item of this.items) {
@@ -768,7 +768,7 @@ export class CheckoutComponent implements OnInit {
 
           if (answer.response.length > 0) hasTheUserAnsweredAnyWebform = true;
         }
-      }
+      }*/
 
       if (this.logged) {
         const postResult = (await this.postsService.createPost(this.post))
@@ -797,7 +797,8 @@ export class CheckoutComponent implements OnInit {
           if (value.user?._id || value.session.user._id) {
             this.logged = true;
 
-            this.userReturnedFromLogin = value.user || value.session.user;
+            this.headerService.alreadyInputtedloginDialogUser =
+              value.user || value.session.user;
 
             lockUI();
             const postResult = (await this.postsService.createPost(this.post))
@@ -812,8 +813,7 @@ export class CheckoutComponent implements OnInit {
         return;
       } else if (
         !this.logged &&
-        this.areWebformsValid &&
-        hasTheUserAnsweredAnyWebform
+        this.areWebformsValid
       ) {
         const createdOrder = (
           await this.orderService.createPreOrder(this.headerService.order)
@@ -832,7 +832,7 @@ export class CheckoutComponent implements OnInit {
 
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
           data: {
-            loginType: 'phone',
+            loginType: 'phone'
           },
         });
         matDialogRef.afterClosed().subscribe(async (value) => {
@@ -840,7 +840,8 @@ export class CheckoutComponent implements OnInit {
 
           if (value.user?._id || value.session.user._id) {
             this.logged = true;
-            this.userReturnedFromLogin = value.user || value.session.user;
+            this.headerService.alreadyInputtedloginDialogUser =
+              value.user || value.session.user;
 
             await this.finishOrderCreation();
             unlockUI();
@@ -973,7 +974,7 @@ export class CheckoutComponent implements OnInit {
           answer,
           this.headerService.user
             ? this.headerService.user._id
-            : this.userReturnedFromLogin._id
+            : this.headerService.alreadyInputtedloginDialogUser._id
         );
 
         if (response) {
@@ -1313,11 +1314,18 @@ export class CheckoutComponent implements OnInit {
   }
 
   editReceiver() {
-    this.router.navigate([
-      'ecommerce/' +
-        this.headerService.saleflow.merchant.slug +
-        '/receiver-form',
-    ]);
+    this.router.navigate(
+      [
+        'ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/receiver-form',
+      ],
+      {
+        queryParams: {
+          redirectTo: 'checkout',
+        },
+      }
+    );
 
     // if (this.postsService.post) {
     //   this.router.navigate([
@@ -1887,6 +1895,10 @@ export class CheckoutComponent implements OnInit {
   };
 
   goToReceiver() {
-    this.router.navigate([`ecommerce/receiver-form`]);
+    this.router.navigate([`ecommerce/receiver-form`], {
+      queryParams: {
+        redirectTo: 'checkout',
+      },
+    });
   }
 }
