@@ -141,16 +141,16 @@ export class LoginDialogComponent implements OnInit {
             this.data.magicLinkData.attachments
           );
         } else {
-          await this.authService.generateMagicLink(
-            emailOrPhone,
-            'ecommerce/' +
-              this.headerService.saleflow.merchant.slug +
-              '/checkout',
+          this.user = await this.authService.signup(
+            {
+              phone: emailOrPhone,
+            },
+            'none',
             null,
-            'NewUser2',
-            null,
-            null
+            false
           );
+
+          return this.dialogRef.close({ user: this.user, new: true });
         }
 
         this.matSnackBar.open(
