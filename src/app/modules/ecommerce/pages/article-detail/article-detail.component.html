@@ -127,12 +127,9 @@
     </div>
     <div class="information">
       <button mat-button (click)="itemInformationDialog()">
-        <p>
+        <p *ngIf="itemData.name && itemData.description">
           <span>{{ itemData.name }}.</span>
-          {{ itemData.description }} Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Aut animi deserunt veniam ut quia saepe minus
-          maiores magni perferendis quo. Nobis recusandae vitae animi sunt
-          soluta ullam? Quis, vero commodi.
+          {{ itemData.description }}
         </p>
         <!-- mira más -->
       </button>
