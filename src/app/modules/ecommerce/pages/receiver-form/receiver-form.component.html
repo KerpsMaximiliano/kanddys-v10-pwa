@@ -1,51 +1,58 @@
 <div class="container">
 
     <header>
-        <i class="fas fa-chevron-left"></i>
+        <i class="fas fa-chevron-left" (click)="goBack()"></i>
     </header>
 
     <main>
         <div class="options-section">
             <h3>¿Quien recibirá lo que compraste?</h3>
-            <button mat-button class="option-cta">
+            <button mat-button [ngClass]="{ active: receiver === 'me' }" class="option-cta" (click)="receiver = 'me'">
                 Yo lo recibiré
             </button>
-            <button mat-button class="option-cta">
+            <button mat-button [ngClass]="{ active: receiver === 'gifted' }" class="option-cta" (click)="receiver = 'gifted'">
                 Lo recibirá la persona del arreglo
             </button>
-            <button mat-button class="option-cta">
+            <button mat-button [ngClass]="{ active: receiver === 'unkwown' }" class="option-cta" (click)="receiver = 'unkwown'">
                 Lo recibirá una persona que no conozco (ej: en el lobby de un edificio o comercio)
             </button>
-            <button mat-button class="option-cta active">
+                
+            <button mat-button [ngClass]="{ active: receiver === 'known' }" class="option-cta" (click)="receiver = 'known'">
                 Lo recibirá una persona conocida (ej: un cómplice porque es una sorpresa)
             </button>
-
-            <form>
+                
+            <form *ngIf="receiver === 'known'">
+                <p class="label">¿Cómo se llama la persona que lo recibirá?</p>
                 <mat-form-field class="field-container">
-                    <mat-label>¿Cómo se llama la persona que lo recibirá?</mat-label>
-                    <input matInput name="message" id="input-form">
+                    <mat-label>Escribe..</mat-label>
+                    <input matInput name="name" [(ngModel)]="receiverName">
                 </mat-form-field>
 
+                <p class="label">¿Cuál es su celular? (se contactará en caso de que el mensajero tenga algún tipo de inconveniente).</p>
                 <mat-form-field class="field-container">
-                    <mat-label>¿Cuál es su celular? (se contactará en caso de que el mensajero tenga algún tipo de inconveniente).</mat-label>
-                    <input matInput name="message" id="input-form">
+                    <mat-label>Escribe..</mat-label>
+                    <input matInput name="contact" [(ngModel)]="receiverContact">
                 </mat-form-field>
             </form>
         </div>
 
-        <mat-checkbox class="checkbox">Factura sin comprobante <i class="fas fa-chevron-right"></i></mat-checkbox>
+        <div style="display: flex; justify-content: flex-start; align-items: center;">
+            <mat-checkbox class="checkbox" [checked]="checkboxChecked" (check)="checkboxChecked = !checkboxChecked">{{ isAnonymous ? 'Es un regalo anónimo' : 'No es un regalo anónimo' }}</mat-checkbox>
+            <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-right" (click)="showHiddenOption = !showHiddenOption" *ngIf="!showHiddenOption"></i>
+            <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-down" (click)="showHiddenOption = !showHiddenOption" *ngIf="showHiddenOption"></i>
+        </div>
 
-        <div class="options-section">
-            <button mat-button class="option-cta">
+        <div class="options-section" *ngIf="showHiddenOption">
+            <button mat-button [ngClass]="{ active: anonymous === 'no' }" class="option-cta" (click)="toggleAnonymous(false)">
                 No es un regalo anónimo
             </button>
-            <button mat-button class="option-cta">
+            <button mat-button [ngClass]="{ active: anonymous === 'yes' }" class="option-cta" (click)="toggleAnonymous(true)">
                 Es anónimo (no mostraremos ningún dato tuyo en la entrega)
             </button>
         </div>
 
-        <div style="position: fixed; bottom: 0; max-width: 500px; width: 100%;">
-            <button mat-button class="cta">Continuar con el pago</button>
+        <div style="text-align: center;">
+            <button mat-button [ngClass]="{ active: isValid() }" class="cta" (click)="submit()">Continuar</button>
         </div>
     </main>
 

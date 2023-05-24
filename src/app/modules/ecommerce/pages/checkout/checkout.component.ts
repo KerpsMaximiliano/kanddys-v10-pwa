@@ -1298,6 +1298,25 @@ export class CheckoutComponent implements OnInit {
     // }
   }
 
+  editReceiver() {
+    this.router.navigate([
+      'ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/receiver-form',
+    ]);
+
+    // if (this.postsService.post) {
+    //   this.router.navigate([
+    //     'ecommerce/' +
+    //       this.headerService.saleflow.merchant.slug +
+    //       '/post-edition',
+    //   ]);
+    // } else {
+    //   this.executeProcessesBeforeOpening();
+    //   this.openedDialogFlow = !this.openedDialogFlow;
+    // }
+  }
+
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;

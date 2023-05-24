@@ -204,13 +204,13 @@
 
   <footer>
     <div class="form">
-      <mat-checkbox class="checkbox"
+      <!-- <mat-checkbox class="checkbox"
         >Factura sin comprobante <i class="fas fa-chevron-right"></i
-      ></mat-checkbox>
-      <br /><br />
-      <mat-checkbox class="checkbox"
-        >Sin mensaje de regalo <i class="fas fa-chevron-right"></i
-      ></mat-checkbox>
+      ></mat-checkbox> -->
+      <div style="display: flex; justify-content: flex-start; align-items: center;">
+        <mat-checkbox class="checkbox">Sin mensaje de regalo</mat-checkbox>
+        <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-right" (click)="goToReceiverForm()"></i>
+      </div>
     </div>
 
     <div style="text-align: center">
@@ -223,7 +223,7 @@
         (click)="submit()"
       >
         {{
-          !areWebformsValid ? "Llena las preguntas" : "Continuar con el pago"
+          !areWebformsValid ? "Llena las preguntas" : "Continuar"
         }}
       </button>
     </div>

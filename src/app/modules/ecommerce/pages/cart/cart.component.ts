@@ -628,7 +628,15 @@ export class CartComponent implements OnInit {
     this.router.navigate([
       '/ecommerce/' +
         this.headerService.saleflow.merchant.slug +
-        '/new-address',
+        '/checkout',
+    ]);
+  }
+
+  goToReceiverForm() {
+    this.router.navigate([
+      '/ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/receiver-form',
     ]);
   }
 }

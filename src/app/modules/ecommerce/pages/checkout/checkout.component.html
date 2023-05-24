@@ -388,6 +388,36 @@
 
     <section
       class="section"
+    >
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Lo recibirá</h2>
+      </div>
+
+      <ng-container *ngIf="postsService.post && postsService.post?.receiver">
+        <button class="items-container ready" (click)="editReceiver()">
+          <p class="address-name">
+            {{ 
+              postsService.post?.receiver === 'me' ? 'Yo' :
+              postsService.post?.receiver === 'gifted' ? 'La persona del arreglo' :
+              postsService.post?.receiver === 'unkwown' ? 'Un desconocido' :
+              postsService.post?.receiver === 'known' ? 'Un conocido' :
+              '...'
+            }}
+          </p>
+        </button>
+      </ng-container>
+
+      <button
+        class="items-container column pointer green"
+        *ngIf="!postsService.post?.receiver"
+        (click)="editReceiver()"
+      >
+        <p class="address-name">¿Quién lo recibirá?</p>
+      </button>
+    </section>
+
+    <section
+      class="section"
       *ngIf="
         headerService.saleflow?.module?.appointment?.isActive &&
         headerService.saleflow?.module?.appointment?.calendar?._id
