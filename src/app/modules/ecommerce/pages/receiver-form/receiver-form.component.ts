@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PostInput } from 'src/app/core/models/post';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-receiver-form',
   templateUrl: './receiver-form.component.html',
-  styleUrls: ['./receiver-form.component.scss']
+  styleUrls: ['./receiver-form.component.scss'],
 })
-export class ReceiverFormComponent implements OnInit {
-
+export class ReceiverFormComponent implements OnInit, OnDestroy {
   receiver: 'me' | 'gifted' | 'unkwown' | 'known';
   anonymous: 'yes' | 'no';
   isAnonymous: boolean = false;
@@ -18,8 +18,8 @@ export class ReceiverFormComponent implements OnInit {
   checkboxChecked: boolean = false;
   showHiddenOption: boolean = false;
 
-  receiverName: string = "";
-  receiverContact: string = "";
+  receiverName: string = '';
+  receiverContact: string = '';
 
   data: PostInput = {
     to: '',
@@ -27,31 +27,40 @@ export class ReceiverFormComponent implements OnInit {
     title: '',
     message: '',
   };
+  queryParamsSubscription: Subscription = null;
+  redirectTo = 'checkout';
 
   constructor(
     private postsService: PostsService,
     private headerService: HeaderService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    const storedPost = localStorage.getItem('post');
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
+      ({ redirectTo }) => {
+        const storedPost = localStorage.getItem('post');
 
-    this.data = this.postsService.post;
+        this.data = this.postsService.post;
 
-    if (storedPost && !this.postsService.post) {
-      this.postsService.post = JSON.parse(storedPost);
-      this.data = this.postsService.post;
-    }
+        if (redirectTo && redirectTo.length) this.redirectTo = redirectTo;
 
-    if (this.data) {
-      this.receiverName = this.data.provisionalReceiver;
-      this.receiverContact = this.data.provisionalReceiverContact;
-      this.receiver = this.data.receiver;
-      this.isAnonymous = this.data.isAnonymous;
-      this.anonymous = this.isAnonymous ? 'yes' : 'no';
-      this.checkboxChecked = this.data.isAnonymous ? true : false;
-    }
+        if (storedPost && !this.postsService.post) {
+          this.postsService.post = JSON.parse(storedPost);
+          this.data = this.postsService.post;
+        }
+
+        if (this.data) {
+          this.receiverName = this.data.provisionalReceiver;
+          this.receiverContact = this.data.provisionalReceiverContact;
+          this.receiver = this.data.receiver;
+          this.isAnonymous = this.data.isAnonymous;
+          this.anonymous = this.isAnonymous ? 'yes' : 'no';
+          this.checkboxChecked = this.data.isAnonymous ? true : false;
+        }
+      }
+    );
   }
 
   save() {
@@ -60,14 +69,14 @@ export class ReceiverFormComponent implements OnInit {
       provisionalReceiver: this.receiverName,
       provisionalReceiverContact: this.receiverContact,
       receiver: this.receiver,
-      isAnonymous: this.isAnonymous
+      isAnonymous: this.isAnonymous,
     };
     this.headerService.post = {
       ...this.data,
       provisionalReceiver: this.receiverName,
       provisionalReceiverContact: this.receiverContact,
       receiver: this.receiver,
-      isAnonymous: this.isAnonymous
+      isAnonymous: this.isAnonymous,
     };
     localStorage.setItem(
       'post',
@@ -79,7 +88,7 @@ export class ReceiverFormComponent implements OnInit {
         provisionalReceiver: this.receiverName,
         provisionalReceiverContact: this.receiverContact,
         receiver: this.receiver,
-        isAnonymous: this.isAnonymous
+        isAnonymous: this.isAnonymous,
       })
     );
   }
@@ -87,7 +96,8 @@ export class ReceiverFormComponent implements OnInit {
   goBack() {
     this.save();
     return this.router.navigate([
-      `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`
+      `ecommerce/${this.headerService.saleflow.merchant.slug}/` +
+        this.redirectTo,
     ]);
   }
 
@@ -95,7 +105,8 @@ export class ReceiverFormComponent implements OnInit {
     if (this.isValid()) {
       this.save();
       return this.router.navigate([
-        `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`
+        `ecommerce/${this.headerService.saleflow.merchant.slug}/` +
+          this.redirectTo,
       ]);
     }
   }
@@ -104,8 +115,7 @@ export class ReceiverFormComponent implements OnInit {
     if (this.receiver === 'known') {
       if (this.receiverName !== '' && this.receiverContact !== '') return true;
       else return false;
-    }
-    else if (this.receiver) return true;
+    } else if (this.receiver) return true;
     else false;
   }
 
@@ -115,4 +125,7 @@ export class ReceiverFormComponent implements OnInit {
     this.checkboxChecked = true;
   }
 
+  ngOnDestroy(): void {
+    this.queryParamsSubscription.unsubscribe();
+  }
 }

@@ -1313,11 +1313,18 @@ export class CheckoutComponent implements OnInit {
   }
 
   editReceiver() {
-    this.router.navigate([
-      'ecommerce/' +
-        this.headerService.saleflow.merchant.slug +
-        '/receiver-form',
-    ]);
+    this.router.navigate(
+      [
+        'ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/receiver-form',
+      ],
+      {
+        queryParams: {
+          redirectTo: 'checkout',
+        },
+      }
+    );
 
     // if (this.postsService.post) {
     //   this.router.navigate([
@@ -1887,6 +1894,10 @@ export class CheckoutComponent implements OnInit {
   };
 
   goToReceiver() {
-    this.router.navigate([`ecommerce/receiver-form`]);
+    this.router.navigate([`ecommerce/receiver-form`], {
+      queryParams: {
+        redirectTo: 'checkout',
+      },
+    });
   }
 }
