@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AppService } from 'src/app/app.service';
 import { Item } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { User } from 'src/app/core/models/user';
@@ -10,6 +11,7 @@ import {
   WebformResponseInput,
 } from 'src/app/core/models/webform';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import {
   ResponsesByQuestion,
@@ -21,6 +23,7 @@ import { ExtendedAnswerDefault } from 'src/app/shared/components/webform-multipl
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { Subscription } from 'rxjs';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -40,6 +43,8 @@ export class CartComponent implements OnInit {
   items: ExtendedItem[] = [];
   itemObjects: Record<string, ItemSubOrderInput> = {};
 
+  isItemInCart: boolean = false;
+
   webformsByItem: Record<
     string,
     {
@@ -54,19 +59,28 @@ export class CartComponent implements OnInit {
 
   isCheckboxChecked: boolean = false;
 
+  queryParamsSubscription: Subscription = null;
+
   constructor(
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
+    private itemsService: ItemsService,
     private dialogService: DialogService,
     private _WebformsService: WebformsService,
-    private router: Router
+    private appService: AppService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   async ngOnInit() {
-    await this.executeProcessesAfterLoading();
+    this.queryParamsSubscription = this.route.queryParams.subscribe(async ({ item }) => {
+      if (item) await this.executeProcessesAfterLoading(item);
+      else await this.executeProcessesAfterLoading();
+    });
   }
 
-  async executeProcessesAfterLoading() {
+  async executeProcessesAfterLoading(itemId?: string) {
+    if (itemId) await this.addItemToCart(itemId);
     await this.getItems();
     this.checkLogged();
     await this.getQuestions();
@@ -634,6 +648,60 @@ export class CartComponent implements OnInit {
     ]);
   }
 
+  async addItemToCart(itemId: string) {
+
+    if (!(await this.checkIfItemisAvailable(itemId))) return;
+
+    if (!this.isItemInCart) {
+      if (!this.isItemInCart && !this.headerService.saleflow.canBuyMultipleItems)
+       this.headerService.emptyOrderProducts();
+
+      const product: ItemSubOrderInput = {
+        item: itemId,
+        amount: 1,
+      };
+
+      this.headerService.storeOrderProduct(product);
+
+      this.appService.events.emit({
+        type: 'added-item',
+        data: itemId,
+      });
+
+      this.itemInCart(itemId);
+    }
+  }
+
+  async checkIfItemisAvailable(itemId: string) {
+    const result = await this.itemsService.item(itemId);
+    if (!result || (!result.active || result.status === 'disabled' || result.status === 'archived' || result.status === 'draft')) return false;
+
+    this.itemInCart(itemId);
+
+    const exists = this.headerService.saleflow.items.find((item) => item.item._id === result._id);
+    return exists ? true : false;
+  }
+
+  itemInCart(itemId: string) {
+    const productData = this.headerService.order?.products.map(
+      (subOrder) => subOrder.item
+    );
+    if (productData?.length) {
+      this.isItemInCart = productData.some(
+        (item) => item === itemId
+      );
+    } else this.isItemInCart = false;
+
+    // Validation to avoid getting deleted or unavailable items in the count of the cart
+    const itemsInCart = this.headerService.saleflow.items.filter((item) =>
+      productData?.some((product) => product === item.item._id)
+    );
+
+    console.log(this.isItemInCart);
+
+    // this.itemsAmount = itemsInCart.length > 0 ? itemsInCart.length + '' : null;
+  }
+
   goToReceiverForm() {
     this.router.navigate(
       [
@@ -651,5 +719,9 @@ export class CartComponent implements OnInit {
 
   toggleCheckbox(event: any) {
     this.isCheckboxChecked = event;
+  }
+
+  ngOnDestroy(): void {
+    this.queryParamsSubscription.unsubscribe();
   }
 }

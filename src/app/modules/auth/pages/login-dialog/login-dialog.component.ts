@@ -157,14 +157,14 @@ export class LoginDialogComponent implements OnInit {
         this.matSnackBar.open(
           `Se ha enviado un link de acceso a tu ${
             this.inputType === 'phone' ? 'teléfono' : 'correo electrónico'
-          }, chequealo para terminar tu registro`,
+          }, para terminar de administrar tus direcciones.`,
           '',
           {
             duration: 5000,
           }
         );
 
-        this.myStepper.next();
+        // this.myStepper.next();
         //this.dialogRef.close();
       }
       // console.log('el usuario no existe, ir a ingresar password');
@@ -249,7 +249,7 @@ export class LoginDialogComponent implements OnInit {
         }
       );
     }
-    this.myStepper.next();
+    // this.myStepper.next();
     unlockUI();
   }
 
@@ -297,22 +297,26 @@ export class LoginDialogComponent implements OnInit {
         null,
         false
       );
-      await this.generateOTP(phone);
-      this.matSnackBar.open(
-        '¡Usuario registrado con exito! Se ha enviado un código para verificar',
-        '',
-        {
-          duration: 5000,
-        }
-      );
+      // await this.generateOTP(phone);
+      // this.matSnackBar.open(
+      //   '¡Usuario registrado con exito! Se ha enviado un código para verificar',
+      //   '',
+      //   {
+      //     duration: 5000,
+      //   }
+      // );
       setTimeout(() => {
         this.myStepper.next();
       }, 50);
       return;
     }
     if (!this.user.validatedAt) {
-      await this.generateOTP(phone);
+      // await this.generateOTP(phone);
     }
+  }
+
+  goToWhatsapp() {
+    window.open(`https://api.whatsapp.com/send?phone=19295263397`, '_blank');
   }
 
   async generateOTP(emailOrPhone: string) {

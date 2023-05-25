@@ -1,4 +1,4 @@
-<mat-vertical-stepper [linear]="true" #stepper style="min-width: 252px">
+<mat-vertical-stepper [linear]="true" #stepper style="min-width: 252px" *ngIf="userStep !== 'code'">
   <mat-step
     [label]="
       inputType === 'phone' ? 'Número de teléfono' : 'Correo electrónico'
@@ -72,32 +72,22 @@
       </button>
     </form>
   </mat-step>
-  <mat-step *ngIf="(data?.loginType === 'full') && (userStep === 'code')">
-    <form [formGroup]="codeStep">
-      <ng-template matStepLabel>Notificación de acceso</ng-template>
-      <p 
-        style="
-        width: 80%;
-        margin: 0 auto;
-        font-size: 12px;
-        color: #1D1D1D;
-        "
-      >
-        Un link de acceso ha sido enviado a las coordenadas que indicaste
-      </p>
-      <!-- <mat-form-field appearance="outline">
-        <mat-label>Código</mat-label>
-        <input matInput type="password" formControlName="code" required />
-        <mat-hint
-          >Ingresa el código que llegó a tu
-          {{
-            inputType === "phone" ? "WhatsApp" : "correo electrónico"
-          }}</mat-hint
-        >
-      </mat-form-field>
-      <div style="margin-top: 12px">
-        <button mat-button (click)="submitCode()">Ingresar</button>
-      </div> -->
-    </form>
-  </mat-step>
+  
 </mat-vertical-stepper>
+
+<div style="max-width: 400px;" *ngIf="(data?.loginType === 'full') && (userStep === 'code')">
+  <p 
+    style="
+    width: 80%;
+    margin: 0 auto;
+    font-size: 0.9rem;
+    color: #1D1D1D;
+    "
+  >
+    Para administrar tus direcciones te hemos enviado a tu {{ inputType === 'phone' ? 'WhatsApp' : 'correo electrónico' }} un link mágico que valida tu identidad
+  </p>
+  <br>
+  <div style="text-align: center;" *ngIf="inputType === 'phone'">
+    <button class="button-cta" mat-button (click)="goToWhatsapp()">Abrir WhatsApp</button>
+  </div>
+</div>
