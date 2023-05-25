@@ -128,6 +128,7 @@ const fullItem = `
     reference
     active
   }
+  active
 `;
 
 export const items = gql`

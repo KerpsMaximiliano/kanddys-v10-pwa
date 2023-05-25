@@ -41,6 +41,7 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
   @Input() labelStyles: Record<string, any> = null;
   @Input() optionsInAnswerSelector: Array<OptionAnswerSelector> = []; //Array of answer selector options
   @Input() optionsInImageGrid: Array<ExtendedAnswerDefault> = []; //Array of images by options
+  @Input() showTitle: boolean = false; //Array of images by options
   selectedImageIndex: number = null;
   selectedImageIndexes: Array<number> = [];
   selectedListOptionIndex: number = null;
@@ -48,7 +49,8 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
 
   constructor(
     private webformsService: WebformsService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -357,11 +359,12 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
       }
 
       if (this.isMediaSelection) {
-        const alreadySelectedOptionIndexes = this.optionsInImageGrid.map((option, index) => option.selected ? index : null).filter(index => index !== null);
+        const alreadySelectedOptionIndexes = this.optionsInImageGrid
+          .map((option, index) => (option.selected ? index : null))
+          .filter((index) => index !== null);
         const numberOfAlreadySelectedOptions = this.optionsInImageGrid.filter(
           (option, indexInList) => option.selected
         ).length;
-
 
         if (
           this.question.answerLimit !== 0 &&
@@ -445,23 +448,32 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
   }
 
   goToDetail(index: number) {
-    /*
-    this.dialogFlowService.selectedQuestion = {
-      dialogId: this.dialogFlowConfig.dialogId,
-      flowId: this.dialogFlowConfig.flowId,
-      multiple: this.multiple,
-      required: this.required,
+    this.webformsService.selectedQuestion = {
+      questionId: this.question._id,
+      question: this.question,
+      required: this.question.required,
+      multiple:
+        this.question.answerLimit === 0 || this.question.answerLimit > 1,
     };
 
-    this.dialogFlowService.dialogsFlows[this.dialogFlowConfig.flowId][
-      this.dialogFlowConfig.dialogId
-    ].fields.options = this.completeAnswers;
+    const options = this.optionsInImageGrid.map((option) => ({
+      selected: option.selected,
+      fileInput: option.img,
+      text: !option.value.includes('https') ? option.value : null,
+    }));
+
+    if (
+      !this.webformsService.clientResponsesByItem[this.question._id].allOptions
+    ) {
+      this.webformsService.clientResponsesByItem[this.question._id].allOptions =
+        options;
+    }
 
     this.router.navigate(['/ecommerce/webform-options-selector'], {
       queryParams: {
         startAt: index,
       },
-    });*/
+    });
   }
 
   ngOnDestroy() {

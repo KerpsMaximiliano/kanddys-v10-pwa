@@ -29,7 +29,11 @@
                   : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
               }"
             ></div>
-            <span class="kioskoId">{{ selectedFormSubmission.user.name }}</span>
+            <span class="kioskoId">{{
+              selectedFormSubmission.user.name ||
+                selectedFormSubmission.user.phone ||
+                selectedFormSubmission.user.email
+            }}</span>
           </div>
 
           <div
@@ -482,7 +486,9 @@
           : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
       }"
     ></div>
-    <span class="kioskoId">{{ data.user.name }}</span>
+    <span class="kioskoId">{{
+      data.user.name || data.user.phone || data.user.email
+    }}</span>
   </div>
 
   <div class="user-presentation" *ngIf="data.user && data.merchant">
@@ -501,7 +507,7 @@
     <span class="kioskoId">{{ data.merchant.name }}</span>
 
     <ng-container *ngIf="showUserByMerchantLabel; else lastAnswered">
-      by {{ data.user.name }}
+      by {{ data.user.name || data.user.phone || data.user.email }}
     </ng-container>
 
     <ng-template #lastAnswered>

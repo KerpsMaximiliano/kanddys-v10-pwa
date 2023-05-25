@@ -13,6 +13,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 export interface LoginDialogData {
   magicLinkData?: {
@@ -23,6 +24,8 @@ export interface LoginDialogData {
     attachments?: any;
   };
   loginType?: 'full' | 'phone';
+  route?: string;
+  justReturnUser?: boolean;
   extraUserInput?: UserInput;
 }
 
@@ -53,7 +56,8 @@ export class LoginDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<LoginDialogComponent>,
     private _formBuilder: FormBuilder,
     private authService: AuthService,
-    private matSnackBar: MatSnackBar
+    private matSnackBar: MatSnackBar,
+    private headerService: HeaderService
   ) {}
 
   ngOnInit() {
@@ -122,7 +126,6 @@ export class LoginDialogComponent implements OnInit {
       return;
     }
     this.userStep = 'code';
-
     if (this.inputType === 'phone' && !this.user) {
       this.newUser = true; // Valor asignado para verificar si hace refresh
       // El número de teléfono ingresado no existe, creando usuario
@@ -134,23 +137,34 @@ export class LoginDialogComponent implements OnInit {
             emailOrPhone,
             this.data.magicLinkData.redirectionRoute,
             this.data.magicLinkData.redirectionRouteId,
-            "NewUser2",
+            'NewUser2',
             this.data.magicLinkData.redirectionRouteQueryParams,
             this.data.magicLinkData.attachments
           );
-        }  
+        } else {
+          this.user = await this.authService.signup(
+            {
+              phone: emailOrPhone,
+            },
+            'none',
+            null,
+            false
+          );
+
+          return this.dialogRef.close({ user: this.user, new: true });
+        }
 
         this.matSnackBar.open(
           `Se ha enviado un link de acceso a tu ${
             this.inputType === 'phone' ? 'teléfono' : 'correo electrónico'
-          }, chequealo para terminar tu registro`,
+          }, para terminar de administrar tus direcciones.`,
           '',
           {
             duration: 5000,
           }
         );
 
-        this.myStepper.next();
+        // this.myStepper.next();
         //this.dialogRef.close();
       }
       // console.log('el usuario no existe, ir a ingresar password');
@@ -160,7 +174,41 @@ export class LoginDialogComponent implements OnInit {
       return;
     }
     // El usuario existe pero no está validado
+
+    if (this.data.justReturnUser)
+      return this.dialogRef.close({ user: this.user, new: false });
+
     if (!this.user.validatedAt) {
+      if (this.data?.magicLinkData) {
+        await this.authService.generateMagicLink(
+          emailOrPhone,
+          this.data.magicLinkData.redirectionRoute,
+          this.data.magicLinkData.redirectionRouteId,
+          'UserAccess',
+          this.data.magicLinkData.redirectionRouteQueryParams,
+          this.data.magicLinkData.attachments
+        );
+      } else {
+        await this.authService.generateMagicLink(
+          emailOrPhone,
+          this.data.route,
+          null,
+          'UserAccess',
+          null,
+          null
+        );
+
+        this.matSnackBar.open(
+          `Se ha enviado un link de acceso a tu ${
+            this.inputType === 'phone' ? 'teléfono' : 'correo electrónico'
+          }`,
+          '',
+          {
+            duration: 5000,
+          }
+        );
+      }
+
       setTimeout(() => {
         this.myStepper.next();
       }, 50);
@@ -201,7 +249,7 @@ export class LoginDialogComponent implements OnInit {
         }
       );
     }
-    this.myStepper.next();
+    // this.myStepper.next();
     unlockUI();
   }
 
@@ -249,22 +297,26 @@ export class LoginDialogComponent implements OnInit {
         null,
         false
       );
-      await this.generateOTP(phone);
-      this.matSnackBar.open(
-        '¡Usuario registrado con exito! Se ha enviado un código para verificar',
-        '',
-        {
-          duration: 5000,
-        }
-      );
+      // await this.generateOTP(phone);
+      // this.matSnackBar.open(
+      //   '¡Usuario registrado con exito! Se ha enviado un código para verificar',
+      //   '',
+      //   {
+      //     duration: 5000,
+      //   }
+      // );
       setTimeout(() => {
         this.myStepper.next();
       }, 50);
       return;
     }
     if (!this.user.validatedAt) {
-      await this.generateOTP(phone);
+      // await this.generateOTP(phone);
     }
+  }
+
+  goToWhatsapp() {
+    window.open(`https://api.whatsapp.com/send?phone=19295263397`, '_blank');
   }
 
   async generateOTP(emailOrPhone: string) {

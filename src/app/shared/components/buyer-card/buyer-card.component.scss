@@ -18,10 +18,10 @@ a {
   justify-content: space-between;
   width: 100%;
   background-color: #fff;
-  padding: 16px;
-  border-radius: 7px;
+  padding: 11.45px 8.75px 16px 14.25px;
+  border-radius: 8px;
   color: #272727;
-  gap: 15px;
+  gap: 13.55px;
 
   &.shadow {
     filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.16));
@@ -37,9 +37,9 @@ a {
 
     .img {
       object-fit: cover;
-      border-radius: 15px;
-      width: 155px;
-      height: auto;
+      border-radius: 8px;
+      width: 157.36px;
+      height: 198.33px;
       max-height: 221px;
     }
 
@@ -64,11 +64,13 @@ a {
       line-height: 21px;
 
       .title {
-        font-family: SFProBold;
+        font-family: InterBold;
         font-size: 21px;
+        position: relative;
+        top: 6px;
       }
       .description {
-        font-family: "SfProLight";
+        font-family: InterRegular;
         font-size: 17px;
       }
     }
@@ -90,11 +92,11 @@ a {
       align-items: center;
       width: 100%;
       font-size: 17px;
-      font-family: SFProMedium;
+      font-family: InterRegular;
 
       .normal-price {
-        font-family: SfProLight;
-        font-size: 11px;
+        font-family: InterRegular;
+        font-size: 17px;
         color: #272727;
       }
 
@@ -150,6 +152,10 @@ a {
 }
 .image-container {
   position: relative;
+
+  &.fullWidth {
+    width: 100%;
+  }
 }
 .see-more {
   position: absolute;

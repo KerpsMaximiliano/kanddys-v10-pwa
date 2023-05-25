@@ -102,6 +102,7 @@ export class HeaderService {
   entityTemplateTemporalData: Record<string, any> = null;
   aiJokes: Array<string> = [];
   selectedJoke: string = null;
+  alreadyInputtedloginDialogUser: User = null;
 
   public session: Session;
   constructor(
