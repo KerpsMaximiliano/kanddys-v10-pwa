@@ -88,7 +88,7 @@ export class ArticleEditorComponent implements OnInit {
   ]);
   loadingSlides: boolean;
 
-  editingPrice: boolean = false;
+  editingPrice: boolean = true;
   editingName: boolean = false;
   editingDescription: boolean = false;
   editingSlides: boolean = false;

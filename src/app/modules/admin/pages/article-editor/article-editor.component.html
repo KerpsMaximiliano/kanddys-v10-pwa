@@ -1,24 +1,20 @@
 <div class="container">
   <div class="header">
-    <!-- <img
-      [src]="env + '/arrow-double-up-black.svg'"
-      alt="go back"
-      class="back-icon"
+    <button
+      style="
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        margin-right: auto;
+      "
       (click)="iconCallback()"
-    />
+    >
+      <mat-icon style="margin-right: 7.82px">keyboard_arrow_left</mat-icon>
 
-    <div class="links">
-      <div class="link" (click)="openWebformCreator()">Formulario</div>
-      <div class="link">Facturas</div>
-      <div class="link" (click)="previewItem()">Preview</div>
-    </div>
-
-    <img
-      [src]="env + '/dots-black.svg'"
-      alt="go back"
-      class="dots"
-      (click)="openOptionsForThisArticle()"
-    /> -->
+      <p class="text">
+        {{ item?.name ? item?.name : "Artículo sin Nombre" }}
+      </p>
+    </button>
 
     <button style="margin-right: 20px" mat-icon-button>
       <mat-icon>search</mat-icon>
@@ -28,21 +24,6 @@
     </button>
     <button style="margin-top: -2px" mat-icon-button (click)="dotsOptions()">
       <img [src]="env + '/dots-black.svg'" alt="" />
-    </button>
-
-    <button
-      style="
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        margin-left: auto;
-      "
-      (click)="iconCallback()"
-    >
-      <p class="text">
-        {{ item?.name ? item?.name : "Artículo sin Nombre" }}
-      </p>
-      <mat-icon style="margin-left: 8px">keyboard_arrow_down</mat-icon>
     </button>
   </div>
 
