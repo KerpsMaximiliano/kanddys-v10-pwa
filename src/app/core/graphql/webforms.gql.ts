@@ -89,6 +89,8 @@ export const answerPaginate = gql`
           _id
           image
           name
+          phone
+          email
         }
         merchant {
           _id

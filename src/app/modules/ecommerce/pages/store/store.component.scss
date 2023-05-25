@@ -5,26 +5,55 @@ a {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
+  background-color: linear-gradient(
+    180deg,
+    white 50%,
+    rgba(213, 213, 213, 0.25) 100%
+  );
 }
 .header {
-  background-color: #181d17;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  color: #87cd9b;
-  height: 46px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
 
-  .spacer {
-    flex: 1 1 auto;
+  .title {
+    margin-left: 11px;
+    color: #181d17;
+    font-size: 16px;
+    font-family: "InterBold";
+    text-transform: capitalize;
   }
 
   span {
-    font-size: 16px;
-    font-family: SFProHeavy;
-    margin-right: 4px;
+    font-family: "InterLight";
+    font-size: 14px;
+    color: #7b7b7b;
+  }
+
+  .contact-button {
+    padding: 7px 21px;
+    width: 100%;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .icon {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+      }
+    }
+
+    .btn {
+      all: unset;
+      cursor: pointer;
+      margin-left: auto;
+    }
   }
 }
+
 .footer-content {
   background-color: #272727;
   padding-bottom: 20px;
@@ -147,7 +176,6 @@ a {
   }
 }
 .chip-list {
-  margin-top: 8px;
   display: flex;
   width: 100%;
   overflow-x: scroll;
@@ -178,8 +206,8 @@ a {
 }
 
 .top-bar {
-  background-color: #fff;
-  padding: 20px;
+  padding-top: 16px;
+  padding-left: 12px;
 
   .contact-button {
     padding: 0 8px;
@@ -196,11 +224,17 @@ a {
         border-radius: 50%;
       }
       .title {
-        margin-left: 4px;
+        margin-left: 11px;
         color: #181d17;
-        font-size: 16px;
-        font-family: "SfProMedium";
+        font-size: 18.84px;
+        font-family: "InterBold";
       }
     }
   }
+}
+
+::ng-deep.mat-bottom-sheet-container {
+  max-width: 500px !important;
+  width: 100% !important;
+  margin: 0 !important;
 }
