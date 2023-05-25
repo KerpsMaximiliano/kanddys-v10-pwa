@@ -811,10 +811,7 @@ export class CheckoutComponent implements OnInit {
         });
 
         return;
-      } else if (
-        !this.logged &&
-        this.areWebformsValid
-      ) {
+      } else if (!this.logged && this.areWebformsValid) {
         const createdOrder = (
           await this.orderService.createPreOrder(this.headerService.order)
         )?.createPreOrder._id;
@@ -832,7 +829,12 @@ export class CheckoutComponent implements OnInit {
 
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
           data: {
-            loginType: 'phone'
+            loginType: 'phone',
+            route:
+              'ecommerce/' +
+              this.headerService.saleflow.merchant.slug +
+              '/checkout',
+            justReturnUser: true,
           },
         });
         matDialogRef.afterClosed().subscribe(async (value) => {
@@ -930,6 +932,11 @@ export class CheckoutComponent implements OnInit {
           const matDialogRef = this.matDialog.open(LoginDialogComponent, {
             data: {
               loginType: 'phone',
+              route:
+                'ecommerce/' +
+                this.headerService.saleflow.merchant.slug +
+                '/checkout',
+              justReturnUser: true,
             },
           });
           matDialogRef.afterClosed().subscribe(async (value) => {

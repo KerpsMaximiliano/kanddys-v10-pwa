@@ -24,6 +24,8 @@ export interface LoginDialogData {
     attachments?: any;
   };
   loginType?: 'full' | 'phone';
+  route?: string;
+  justReturnUser?: boolean;
   extraUserInput?: UserInput;
 }
 
@@ -124,7 +126,6 @@ export class LoginDialogComponent implements OnInit {
       return;
     }
     this.userStep = 'code';
-
     if (this.inputType === 'phone' && !this.user) {
       this.newUser = true; // Valor asignado para verificar si hace refresh
       // El número de teléfono ingresado no existe, creando usuario
@@ -173,7 +174,41 @@ export class LoginDialogComponent implements OnInit {
       return;
     }
     // El usuario existe pero no está validado
+
+    if (this.data.justReturnUser)
+      return this.dialogRef.close({ user: this.user, new: false });
+
     if (!this.user.validatedAt) {
+      if (this.data?.magicLinkData) {
+        await this.authService.generateMagicLink(
+          emailOrPhone,
+          this.data.magicLinkData.redirectionRoute,
+          this.data.magicLinkData.redirectionRouteId,
+          'UserAccess',
+          this.data.magicLinkData.redirectionRouteQueryParams,
+          this.data.magicLinkData.attachments
+        );
+      } else {
+        await this.authService.generateMagicLink(
+          emailOrPhone,
+          this.data.route,
+          null,
+          'UserAccess',
+          null,
+          null
+        );
+
+        this.matSnackBar.open(
+          `Se ha enviado un link de acceso a tu ${
+            this.inputType === 'phone' ? 'teléfono' : 'correo electrónico'
+          }`,
+          '',
+          {
+            duration: 5000,
+          }
+        );
+      }
+
       setTimeout(() => {
         this.myStepper.next();
       }, 50);

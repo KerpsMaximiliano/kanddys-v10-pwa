@@ -1054,3 +1054,12 @@ table {
   .mat-expansion-panel-header:hover {
   background-color: #272727;
 }
+
+::ng-deep.mat-expansion-panel {
+  box-shadow: unset !important;
+  background-color: #272727 !important;
+}
+
+::ng-deep.mat-expansion-panel-header:hover {
+  background-color: #272727 !important;
+}
