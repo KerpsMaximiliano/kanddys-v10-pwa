@@ -58,6 +58,14 @@ export class AllItemsComponent implements OnInit {
         _id: {
           __in: ([] = saleflowItems.map((items) => items.item)),
         },
+        $or: [
+          {
+            status: 'active',
+          },
+          {
+            status: 'featured',
+          },
+        ],
       },
       options: {
         sortBy: 'createdAt:desc',

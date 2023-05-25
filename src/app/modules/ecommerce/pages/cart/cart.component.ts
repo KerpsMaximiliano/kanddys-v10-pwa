@@ -52,6 +52,8 @@ export class CartComponent implements OnInit {
   areWebformsValid: boolean = false;
   answersByQuestion: Record<string, ResponsesByQuestion> = {};
 
+  isCheckboxChecked: boolean = false;
+
   constructor(
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
@@ -639,11 +641,15 @@ export class CartComponent implements OnInit {
           this.headerService.saleflow.merchant.slug +
           '/receiver-form',
       ],
-      {
-        queryParams: {
-          redirectTo: 'checkout',
-        },
-      }
+      // {
+      //   queryParams: {
+      //     redirectTo: 'checkout',
+      //   },
+      // }
     );
+  }
+
+  toggleCheckbox(event: any) {
+    this.isCheckboxChecked = event;
   }
 }

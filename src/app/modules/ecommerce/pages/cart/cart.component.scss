@@ -118,10 +118,12 @@ main {
       position: relative;
       margin-top: 58px;
       .section-title {
+        cursor: pointer;
         font-size: 17px;
         margin-bottom: 0.7em;
       }
       .section-description {
+        cursor: pointer;
         font-size: 17px;
         font-family: InterRegular;
       }
@@ -210,4 +212,12 @@ footer {
   height: 18px;
   width: 18px;
   border-width: thin;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-layout .mat-checkbox-label {
+  color: #FFF;
+}
+
+::ng-deep .mat-checkbox.mat-checkbox-checked .mat-checkbox-background {
+  background-color: #87CD9B;
 }

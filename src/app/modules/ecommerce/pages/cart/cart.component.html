@@ -75,7 +75,7 @@
           <img
             [src]="env + '/arrow-green.svg'"
             alt="required question"
-            *ngIf="question.required"
+            *ngIf="question.required && !answersByQuestion[question._id]?.response"
             class="required-question-pointer"
           />
 
@@ -210,9 +210,9 @@
       <div
         style="display: flex; justify-content: flex-start; align-items: center; position: relative;"
       >
-        <mat-checkbox class="checkbox">Sin mensaje de regalo</mat-checkbox>
+        <mat-checkbox (change)="toggleCheckbox($event.checked)">Sin mensaje de regalo</mat-checkbox>
         <i
-          style="color: #fff; margin-left: 20px"
+          style="color: #fff; margin-left: 20px; cursor: pointer"
           class="fas fa-chevron-right"
           (click)="goToReceiverForm()"
         ></i>
@@ -220,6 +220,7 @@
         <img
           [src]="env + '/green-arrow-small.svg'"
           class="small-arrow-green"
+          *ngIf="!isCheckboxChecked"
         />
       </div>
     </div>
@@ -229,11 +230,11 @@
         mat-button
         class="cta"
         [ngClass]="{
-          valid: areWebformsValid
+          valid: areWebformsValid && isCheckboxChecked
         }"
         (click)="submit()"
       >
-        {{ !areWebformsValid ? "Llena las preguntas" : "Continuar" }}
+        {{ (!areWebformsValid || !isCheckboxChecked) ? "Llena las preguntas" : "Continuar" }}
       </button>
     </div>
   </footer>
