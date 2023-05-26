@@ -452,6 +452,9 @@ export class WebformClientViewComponent implements OnInit {
           ].valid = false;
         }
       }
+
+      if (this.currentStepIndex < this.steps.length - 1)
+        this.questionsSwiper.directiveRef.setIndex(this.currentStepIndex + 1);
     } else {
       const selectedOptions = options.filter((option) => option.selected);
 
@@ -505,7 +508,11 @@ export class WebformClientViewComponent implements OnInit {
     }
   }
 
-  async saveWebform(preventRedirection?: boolean) {
+  async saveWebform(preventRedirection?: boolean, goToNextStep?: boolean) {
+    if (this.currentStepIndex < this.steps.length - 1 && goToNextStep) {
+      return this.questionsSwiper.directiveRef.setIndex(this.currentStepIndex + 1);
+    }
+
     for (const step of this.steps) {
       if (!['multiple', 'multiple-text'].includes(step.question.type)) {
         const name = step.fields.controls['name']?.value;

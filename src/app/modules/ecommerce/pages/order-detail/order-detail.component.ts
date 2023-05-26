@@ -143,6 +143,7 @@ export class OrderDetailComponent implements OnInit {
   tagPanelState: boolean;
   webformsByItem: Record<string, Webform> = {};
   answersByItem: Record<string, WebformAnswer> = {};
+  answersByItemDropdownOpened: Record<string, boolean> = {};
   from: string;
   navigationWithMessage: string;
   deliveryImages: {
@@ -980,6 +981,7 @@ export class OrderDetailComponent implements OnInit {
             }
 
             this.answersByItem[item._id] = answersForWebform;
+            this.answersByItemDropdownOpened[item._id] = false;
           }
         }
       }

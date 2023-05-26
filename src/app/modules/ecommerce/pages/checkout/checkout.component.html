@@ -76,8 +76,9 @@
         >
           <mat-expansion-panel-header>
             <div class="between" style="display: flex; align-items: center">
-              <h2 class="section-title" style="margin: 0;">
-                {{ this.headerService?.order?.products.length }} Artículos facturados
+              <h2 class="section-title" style="margin: 0">
+                {{ this.headerService?.order?.products.length }} Artículos
+                facturados
               </h2>
               <mat-icon
                 [ngStyle]="{
@@ -85,10 +86,15 @@
                   marginLeft: '10px'
                 }"
                 >{{
-                  panelOpenState ? "keyboard_arrow_down" : "keyboard_arrow_right"
+                  panelOpenState
+                    ? "keyboard_arrow_down"
+                    : "keyboard_arrow_right"
                 }}
               </mat-icon>
-              <h2 class="section-title" style="position: absolute; right: 18px; margin: 0;">
+              <h2
+                class="section-title"
+                style="position: absolute; right: 18px; margin: 0"
+              >
                 RD $ {{ payment | number : "1.2-2" }}
               </h2>
             </div>
@@ -366,11 +372,12 @@
         </ng-template>
       </ng-container>
       <button
-        class="items-container column pointer green"
+        class="items-container column pointer to-fill"
         *ngIf="!deliveryLocation"
         (click)="editOrder('address')"
       >
         <p class="address-name">Selecciona una dirección...</p>
+        <img [src]="env + '/green-arrow-small.svg'" class="small-arrow-green" />
       </button>
     </section>
 
@@ -391,11 +398,12 @@
       </ng-container>
 
       <button
-        class="items-container column pointer green"
+        class="items-container column pointer to-fill"
         *ngIf="!deliveryZone"
         (click)="openDeliveryZones()"
       >
         <p class="address-name">Selecciona una zona de entrega</p>
+        <img [src]="env + '/green-arrow-small.svg'" class="small-arrow-green" />
       </button>
     </section>
 
@@ -423,17 +431,16 @@
       </ng-container>
 
       <button
-        class="items-container column pointer green"
+        class="items-container column pointer to-fill"
         *ngIf="!postsService.post"
         (click)="createOrEditMessage()"
       >
         <p class="address-name">Agrega una tarjeta dedicatoria (opcional)</p>
+        <img [src]="env + '/green-arrow-small.svg'" class="small-arrow-green" />
       </button>
     </section>
 
-    <section
-      class="section"
-    >
+    <section class="section">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Lo recibirá</h2>
       </div>
@@ -441,23 +448,28 @@
       <ng-container *ngIf="postsService.post && postsService.post?.receiver">
         <button class="items-container ready" (click)="editReceiver()">
           <p class="address-name">
-            {{ 
-              postsService.post?.receiver === 'me' ? 'Yo' :
-              postsService.post?.receiver === 'gifted' ? 'La persona del arreglo' :
-              postsService.post?.receiver === 'unkwown' ? 'Un desconocido' :
-              postsService.post?.receiver === 'known' ? 'Un conocido' :
-              '...'
+            {{
+              postsService.post?.receiver === "me"
+                ? "Yo"
+                : postsService.post?.receiver === "gifted"
+                ? "La persona del arreglo"
+                : postsService.post?.receiver === "unkwown"
+                ? "Un desconocido"
+                : postsService.post?.receiver === "known"
+                ? "Un conocido"
+                : "..."
             }}
           </p>
         </button>
       </ng-container>
 
       <button
-        class="items-container column pointer green"
+        class="items-container column pointer to-fill"
         *ngIf="!postsService.post?.receiver"
         (click)="editReceiver()"
       >
         <p class="address-name">¿Quién lo recibirá? (opcional)</p>
+        <img [src]="env + '/green-arrow-small.svg'" class="small-arrow-green" />
       </button>
     </section>
 
@@ -485,11 +497,12 @@
       </button>
 
       <button
-        class="items-container column pointer green"
+        class="items-container column pointer to-fill"
         *ngIf="!reservation && !date"
         (click)="editOrder('reservation')"
       >
         <p class="address-name">Haz una reservación...</p>
+        <img [src]="env + '/green-arrow-small.svg'" class="small-arrow-green" />
       </button>
     </section>
 

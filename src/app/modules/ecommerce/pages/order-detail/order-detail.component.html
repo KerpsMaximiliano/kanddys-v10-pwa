@@ -33,49 +33,51 @@
   </button> -->
 <app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
   <div class="container">
-    <mat-accordion>
-      <mat-expansion-panel
-        (opened)="panelOpenState = true"
-        (closed)="panelOpenState = false"
-        disabled
-        class="panel"
-        [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
-      >
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <div class="merchant-info">
-              <div
-                class="icon"
-                [style.background]="
-                  _DomSanitizer.bypassSecurityTrustStyle(
-                    'url(' +
-                      order?.items[0].saleflow.merchant?.image +
-                      ') no-repeat center center / cover #e9e371'
-                  )
-                "
-              ></div>
-              <p class="title">
-                {{
-                  order?.items[0].saleflow.merchant?.name.length < 26
-                    ? order?.items[0].saleflow.merchant?.name
-                    : (order?.items[0].saleflow.merchant?.name.slice(0, 26) +
-                        ".." || "Tienda" | titlecase)
-                }}
-              </p>
-            </div>
-          </mat-panel-title>
-          <p class="userId" *ngIf="order">
-            {{ order.user.name || order.user.phone || order.user.email }}
-          </p>
-        </mat-expansion-panel-header>
-        <!-- <app-contact-header
-        [link]="link"
-        [chatLink]="chatLink"
-        [bio]="order?.items[0].saleflow.merchant.bio"
-        [contact]="headerService.merchantContact"
-      ></app-contact-header> -->
-      </mat-expansion-panel>
-    </mat-accordion>
+    <div class="header-navigation">
+      <mat-accordion>
+        <mat-expansion-panel
+          (opened)="panelOpenState = true"
+          (closed)="panelOpenState = false"
+          disabled
+          class="panel"
+          [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <div class="merchant-info">
+                <div
+                  class="icon"
+                  [style.background]="
+                    _DomSanitizer.bypassSecurityTrustStyle(
+                      'url(' +
+                        order?.items[0].saleflow.merchant?.image +
+                        ') no-repeat center center / cover #e9e371'
+                    )
+                  "
+                ></div>
+                <p class="title">
+                  {{
+                    order?.items[0].saleflow.merchant?.name.length < 26
+                      ? order?.items[0].saleflow.merchant?.name
+                      : (order?.items[0].saleflow.merchant?.name.slice(0, 26) +
+                          ".." || "Tienda" | titlecase)
+                  }}
+                </p>
+              </div>
+            </mat-panel-title>
+            <p class="userId" *ngIf="order">
+              {{ order.user.name || order.user.phone || order.user.email }}
+            </p>
+          </mat-expansion-panel-header>
+          <!-- <app-contact-header
+          [link]="link"
+          [chatLink]="chatLink"
+          [bio]="order?.items[0].saleflow.merchant.bio"
+          [contact]="headerService.merchantContact"
+        ></app-contact-header> -->
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
 
     <div style="padding: 20px; background-color: #272727">
       <button class="top-whatsapp" (click)="goToWhatsapp()">
@@ -275,60 +277,92 @@
             </div>
           </div>
 
-          <ng-container *ngIf="answersByItem[item._id]">
-            <ng-container
-              *ngFor="
-                let question of answersByItem[item._id].response;
-                index as i
-              "
-            >
-              <div *ngIf="question.question" class="webform-question-wrapper">
-                <div
-                  class="question"
-                  [ngClass]="{
-                    lastQuestion:
-                      i === answersByItem[item._id].response.length - 1
-                  }"
-                >
-                  <p class="top-text">{{ question.question }}</p>
-                  <p
-                    class="bottom-text"
-                    *ngIf="!question.isMedia && !question.label"
-                  >
-                    {{ question.value }}
-                  </p>
-                  <p
-                    class="bottom-text"
-                    *ngIf="!question.isMedia && question.label"
-                  >
-                    {{ question.value + " " + question.label }}
-                  </p>
-                  <p
-                    class="bottom-text"
-                    *ngIf="question.isMedia && question.label"
-                  >
-                    {{ question.label }}
-                  </p>
+          <div class="answers-by-item" *ngIf="answersByItem[item._id]">
+            <mat-accordion>
+              <mat-expansion-panel
+                (opened)="answersByItemDropdownOpened[item._id] = true"
+                (closed)="answersByItemDropdownOpened[item._id] = false"
+                hideToggle
+              >
+                <mat-expansion-panel-header>
+                  {{ answersByItem[item._id].response.length }} respuestas
+                  relacionadas a este producto
 
-                  <div class="question-img-wrapper" *ngIf="question.isMedia">
+                  <mat-icon
+                    [ngStyle]="{
+                      color: '#7B7B7B',
+                      margin: '0px',
+                      marginLeft: '10px'
+                    }"
+                    >{{
+                      answersByItemDropdownOpened[item._id]
+                        ? "keyboard_arrow_down"
+                        : "keyboard_arrow_right"
+                    }}
+                  </mat-icon>
+                </mat-expansion-panel-header>
+
+                <ng-container
+                  *ngFor="
+                    let question of answersByItem[item._id].response;
+                    index as i
+                  "
+                >
+                  <div
+                    *ngIf="question.question"
+                    class="webform-question-wrapper"
+                  >
                     <div
-                      class="image"
-                      (click)="openImageModal(question.value)"
-                      [ngStyle]="{
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover',
-                        backgroundImage:
-                          'url(' +
-                          question.value +
-                          '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                      class="question"
+                      [ngClass]="{
+                        lastQuestion:
+                          i === answersByItem[item._id].response.length - 1
                       }"
-                    ></div>
+                    >
+                      <p class="top-text">{{ question.question }}</p>
+                      <p
+                        class="bottom-text"
+                        *ngIf="!question.isMedia && !question.label"
+                      >
+                        {{ question.value }}
+                      </p>
+                      <p
+                        class="bottom-text"
+                        *ngIf="!question.isMedia && question.label"
+                      >
+                        {{ question.value + " " + question.label }}
+                      </p>
+                      <p
+                        class="bottom-text"
+                        *ngIf="question.isMedia && question.label"
+                      >
+                        {{ question.label }}
+                      </p>
+
+                      <div
+                        class="question-img-wrapper"
+                        *ngIf="question.isMedia"
+                      >
+                        <div
+                          class="image"
+                          (click)="openImageModal(question.value)"
+                          [ngStyle]="{
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'center',
+                            backgroundSize: 'cover',
+                            backgroundImage:
+                              'url(' +
+                              question.value +
+                              '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                          }"
+                        ></div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </ng-container>
-          </ng-container>
+                </ng-container>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
         </ng-container>
 
         <div
