@@ -361,12 +361,20 @@
             else deliveryInfo
           "
           class="items-container ready"
+          [ngClass]="{
+            'to-fill': missingOrderData || !areWebformsValid
+          }"
           (click)="editOrder('address')"
         >
           <ng-container *ngTemplateOutlet="deliveryTemplate"></ng-container>
         </button>
         <ng-template #deliveryInfo>
-          <div class="items-container ready">
+          <div
+            class="items-container ready"
+            [ngClass]="{
+              'to-fill': missingOrderData || !areWebformsValid
+            }"
+          >
             <ng-container *ngTemplateOutlet="deliveryTemplate"></ng-container>
           </div>
         </ng-template>
@@ -431,12 +439,14 @@
       </ng-container>
 
       <button
-        class="items-container column pointer to-fill"
+        class="items-container column pointer"
+        [ngClass]="{
+          'to-fill': missingOrderData || !areWebformsValid
+        }"
         *ngIf="!postsService.post"
         (click)="createOrEditMessage()"
       >
         <p class="address-name">Agrega una tarjeta dedicatoria (opcional)</p>
-        <img [src]="env + '/green-arrow-small.svg'" class="small-arrow-green" />
       </button>
     </section>
 
@@ -464,12 +474,14 @@
       </ng-container>
 
       <button
-        class="items-container column pointer to-fill"
+        class="items-container column pointer"
+        [ngClass]="{
+          'to-fill': missingOrderData || !areWebformsValid
+        }"
         *ngIf="!postsService.post?.receiver"
         (click)="editReceiver()"
       >
         <p class="address-name">¿Quién lo recibirá? (opcional)</p>
-        <img [src]="env + '/green-arrow-small.svg'" class="small-arrow-green" />
       </button>
     </section>
 
@@ -492,7 +504,13 @@
         </h2>
       </div>
 
-      <button class="items-container ready" *ngIf="reservation && date">
+      <button
+        class="items-container ready"
+        [ngClass]="{
+          'to-fill': missingOrderData || !areWebformsValid
+        }"
+        *ngIf="reservation && date"
+      >
         <ng-container *ngTemplateOutlet="reservationTemplate"></ng-container>
       </button>
 

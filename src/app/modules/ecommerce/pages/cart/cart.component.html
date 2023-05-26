@@ -108,7 +108,7 @@
                   !answersByQuestion[question._id].isMedia
                 "
               >
-                {{ capitalize(answersByQuestion[question._id]?.response) }}
+                {{ question.answerTextType !== 'number' ? capitalize(answersByQuestion[question._id]?.response) : answersByQuestion[question._id]?.response }}
               </div>
 
               <div
