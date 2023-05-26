@@ -437,6 +437,7 @@ a {
     border-radius: 50%;
   }
   .title {
+    text-transform: capitalize;
     &:nth-child(2) {
       padding-left: 7px;
     }

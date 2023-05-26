@@ -319,7 +319,7 @@
                           i === answersByItem[item._id].response.length - 1
                       }"
                     >
-                      <p class="top-text">{{ question.question }}</p>
+                      <p class="top-text">{{ capitalize(question.question) }}</p>
                       <p
                         class="bottom-text"
                         *ngIf="!question.isMedia && !question.label"

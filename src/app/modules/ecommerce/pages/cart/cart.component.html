@@ -212,18 +212,20 @@
       <div
         style="display: flex; justify-content: flex-start; align-items: center; position: relative;"
       >
-        <mat-checkbox (change)="toggleCheckbox($event.checked)">Sin mensaje de regalo</mat-checkbox>
-        <i
-          style="color: #fff; margin-left: 20px; cursor: pointer"
-          class="fas fa-chevron-right"
-          (click)="goToReceiverForm()"
-        ></i>
+        <mat-checkbox (change)="toggleCheckbox($event.checked)"></mat-checkbox>
+        <div (click)="goToReceiverForm()" style="margin-top: 5px;">
+          <span>Sin mensaje de regalo</span>
+          <i
+            style="color: #fff; margin-left: 20px; cursor: pointer"
+            class="fas fa-chevron-right"
+          ></i>
 
-        <img
-          [src]="env + '/green-arrow-small.svg'"
-          class="small-arrow-green"
-          *ngIf="!isCheckboxChecked"
-        />
+          <img
+            [src]="env + '/green-arrow-small.svg'"
+            class="small-arrow-green"
+            *ngIf="!isCheckboxChecked"
+          />
+        </div>
       </div>
     </div>
 
