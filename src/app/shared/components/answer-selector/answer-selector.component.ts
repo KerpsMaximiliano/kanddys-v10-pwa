@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BankAnswers,
   ComplexOptionAnswerSelector,
@@ -18,6 +19,7 @@ export class AnswerSelectorComponent implements OnInit {
   @Input() indicator: boolean;
   @Input() showSelectedFeedback: boolean = true;
   @Input() showDescription: boolean = true;
+  @Input() multipleOptionsLimit: number = null;
   @Input() containerStyles: Record<string, any> | null = null;
   @Input() optionContainerStyles: Record<string, any> | null = null;
   @Input() itemStyles: Record<string, any> | null = null;
@@ -38,10 +40,9 @@ export class AnswerSelectorComponent implements OnInit {
 
   @Output() onSelector = new EventEmitter<number>();
 
-  constructor() {}
+  constructor(private snackbar: MatSnackBar) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   activateOption(option: number) {
     if (option === this.activeOption) return;
@@ -50,8 +51,28 @@ export class AnswerSelectorComponent implements OnInit {
   }
 
   activateMultipleOption(option: number) {
+    if (
+      this.multipleOptionsLimit !== null &&
+      this.activeMultipleOption.length >= this.multipleOptionsLimit && this.multipleOptionsLimit !== 0 &&
+      !this.activeMultipleOption.includes(option)
+    ) {
+      this.snackbar.open(
+        'Recuerda que solo puedes seleccionar máximo ' +
+          this.multipleOptionsLimit +
+          ' opciones',
+        'Cerrar',
+        {
+          duration: 3000,
+        }
+      );
+
+      return;
+    }
+
     this.options[option].click = !this.options[option].click;
-    this.activeMultipleOption = this.activeMultipleOption.filter(optionIndex => optionIndex !== null);
+    this.activeMultipleOption = this.activeMultipleOption.filter(
+      (optionIndex) => optionIndex !== null
+    );
 
     if (!this.activeMultipleOption.includes(option)) {
       this.activeMultipleOption.push(option);
@@ -91,6 +112,10 @@ export class AnswerSelectorComponent implements OnInit {
   }
 
   showDescription2(option: any) {
-    console.log(option.description !== '' && 'description' in option && this.showDescription);
+    console.log(
+      option.description !== '' &&
+        'description' in option &&
+        this.showDescription
+    );
   }
 }

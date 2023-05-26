@@ -1,0 +1,248 @@
+.current-media-shown-indicators {
+  height: 3px;
+  max-width: 500px;
+  display: grid;
+
+  .indicator {
+    flex: 1;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    background-color: #7b7b7b;
+
+    &.active {
+      background-color: #fed230;
+    }
+  }
+}
+
+::ng-deep .swiper-container {
+  background-color: #171d16;
+}
+
+.step {
+  height: auto !important;
+  background-color: #171d16;
+
+  .step-inner-container {
+    background-color: #171d16;
+    min-height: calc(100vh - 33px);
+  }
+
+  .question-title {
+    margin-top: 37px;
+    margin-left: 22px;
+    margin-right: 22px;
+    color: #ffffff;
+    font-family: SfProMedium;
+    font-size: 17px;
+  }
+
+  .media-options-grid {
+    margin: auto;
+    width: 76.63%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 11px;
+    row-gap: 14px;
+    margin-top: 41px;
+
+    .media-option {
+      width: 100%;
+      height: 120px;
+      background-color: #94af1e;
+      border-radius: 15px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      position: relative;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .list-introduction {
+    margin-top: 41px;
+    margin-bottom: 40px;
+    font-family: SfProMedium;
+    font-size: 11px;
+    color: #7b7b7b;
+    margin-left: 22px;
+  }
+
+  .text-options-list {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+
+    li {
+      padding-top: 23px;
+      padding-bottom: 17px;
+      width: 89.01%;
+      margin: auto;
+      text-align: center;
+      font-family: SfProLight;
+      font-size: 17px;
+      color: #ffffff;
+      border: 1px solid #3b3e3a;
+      border-radius: 40px;
+      margin-bottom: 7px;
+
+      &.selected {
+        border: 1px solid #fed230;
+        background-color: lighten($color: #171d16, $amount: 5);
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.steps-header {
+  padding-left: 8px;
+  padding-right: 16px;
+  height: 30px;
+  background-color: #171d16;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  img {
+    filter: invert(75%) sepia(2%) saturate(9%) hue-rotate(315deg)
+      brightness(88%) contrast(80%);
+  }
+}
+
+.text-response-label {
+  font-family: SfProMedium;
+  font-size: 11px;
+  color: #7b7b7b;
+  margin-left: 22px;
+  margin-top: 61px;
+  margin-right: 22px;
+  display: block;
+
+  &.no-margin {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+}
+
+.text-response-input {
+  padding-top: 17px;
+  padding-bottom: 17px;
+  font-family: SfProSemiBold;
+  font-size: 17px;
+  color: #7b7b7b;
+  background-color: #171d16;
+  border: none;
+  border-bottom: 1px solid #6fcf97;
+  width: 89.71%;
+  margin: auto;
+  margin-left: 22px;
+}
+
+.fullname-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 90.16%;
+  margin: auto;
+
+  .column {
+    width: 47.04%;
+  }
+
+  .name-lastname-input {
+    padding-top: 17px;
+    padding-bottom: 17px;
+    font-family: SfProSemiBold;
+    font-size: 17px;
+    color: #7b7b7b;
+    background-color: #171d16;
+    border: none;
+    border-bottom: 1px solid #6fcf97;
+    width: 100%;
+    margin: auto;
+  }
+}
+
+.phone-input-wrapper {
+  width: 89.71%;
+  margin: auto;
+}
+
+::ng-deep .customPhone {
+  background-color: transparent;
+  color: #ffffff;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  margin: auto;
+  width: 100%;
+  border-bottom: 1px solid #82f18d;
+}
+
+.save-button {
+  cursor: pointer;
+  background-color: #fed230;
+  color: #272727;
+  text-align: center;
+  padding: 15px;
+  padding-bottom: 11px;
+  width: 100%;
+  border: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  max-width: 500px;
+  z-index: 99;
+  font-family: SfProBold;
+  font-size: 17px;
+  color: #272727;
+}
+
+.select-mode-radio-button {
+  border-radius: 50%;
+  height: 27px;
+  width: 27px;
+  border: 2px solid #82f18d;
+  background-color: #fff;
+  transition: 0.5s background-color ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:active {
+    background-color: #82f18d;
+  }
+
+  &.radioButtonClicked {
+    background-color: #82f18d;
+  }
+}
+
+input:-internal-autofill-selected {
+  background-color: transparent !important;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}

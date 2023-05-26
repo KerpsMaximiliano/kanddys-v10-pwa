@@ -45,6 +45,7 @@ import {
   answerIncomeTotal,
   incomeTypes,
   incomeTotalByType,
+  orderByDateId,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -169,6 +170,18 @@ export class OrderService {
         variables: { orderId },
       });
       return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async orderByDateId(dateId: string): Promise<ItemOrder> {
+    try {
+      const response = await this.graphql.query({
+        query: orderByDateId,
+        variables: { dateId },
+      });
+      return response?.orderByDateId;
     } catch (e) {
       console.log(e);
     }

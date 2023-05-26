@@ -18,10 +18,10 @@ a {
   justify-content: space-between;
   width: 100%;
   background-color: #fff;
-  padding: 16px;
-  border-radius: 7px;
+  padding: 11.45px 8.75px 16px 14.25px;
+  border-radius: 8px;
   color: #272727;
-  gap: 15px;
+  gap: 13.55px;
 
   &.shadow {
     filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.16));
@@ -37,10 +37,14 @@ a {
 
     .img {
       object-fit: cover;
-      border-radius: 15px;
-      width: 155px;
-      height: auto;
+      border-radius: 8px;
+      width: 157.36px;
+      height: 198.33px;
       max-height: 221px;
+    }
+
+    .full {
+      width: 100%;
     }
 
     @media (max-width: 385px) {
@@ -60,11 +64,13 @@ a {
       line-height: 21px;
 
       .title {
-        font-family: SFProBold;
+        font-family: InterBold;
         font-size: 21px;
+        position: relative;
+        top: 6px;
       }
       .description {
-        font-family: "SfProLight";
+        font-family: InterRegular;
         font-size: 17px;
       }
     }
@@ -85,6 +91,14 @@ a {
       display: flex;
       align-items: center;
       width: 100%;
+      font-size: 17px;
+      font-family: InterRegular;
+
+      .normal-price {
+        font-family: InterRegular;
+        font-size: 17px;
+        color: #272727;
+      }
 
       &.hasCartButton {
         justify-content: space-between;
@@ -100,13 +114,13 @@ a {
       cursor: pointer;
       background-color: #fed230;
       padding: 7px 14px;
-      font-family: SFProRegular;
-      font-size: 14px;
+      font-family: SFProBold;
+      font-size: 15px;
       color: #293628 !important;
       border-radius: 20px;
       border: 0;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       width: 155px;
 
@@ -135,4 +149,27 @@ a {
       }
     }
   }
+}
+.image-container {
+  position: relative;
+
+  &.fullWidth {
+    width: 100%;
+  }
+}
+.see-more {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  text-align: center;
+  background-color: #6fcf97;
+  padding: 8px 16px;
+  font-family: SfProLight;
+  font-size: 15px;
+  color: #272727;
+  width: 100px;
+  border-radius: 20px;
 }

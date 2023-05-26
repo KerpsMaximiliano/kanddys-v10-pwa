@@ -1,6 +1,6 @@
 {
   "name": "rewardcharly",
-  "version": "2.26.0",
+  "version": "2.38.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -24,6 +24,8 @@
     "@angular/platform-browser-dynamic": "~10.2.5",
     "@angular/router": "~10.2.5",
     "@angular/service-worker": "~10.2.5",
+    "@babel/compat-data": "^7.21.7",
+    "@babel/core": "^7.21.8",
     "@mukuve/ngx-forms": "0.0.1",
     "@types/css-font-loading-module": "^0.0.7",
     "@types/gapi": "^0.0.41",
@@ -73,7 +75,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1002.4",
     "@angular/cli": "~10.2.4",
-    "@angular/compiler-cli": "~10.2.5",
+    "@angular/compiler-cli": "^10.2.5",
     "@types/google-libphonenumber": "^7.4.23",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",

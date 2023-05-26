@@ -42,6 +42,11 @@ import { ImageBannerComponent } from '../admin/pages/image-banner/image-banner.c
 import { QrEditComponent } from 'src/app/shared/components/qr-edit/qr-edit.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
+import { WebformClientViewComponent } from 'src/app/shared/components/webform-client-view/webform-client-view.component';
+import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-selector/webform-options-selector.component';
+import { AllItemsComponent } from './pages/all-items/all-items.component';
+import { CartComponent } from './pages/cart/cart.component';
+import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
 
 const routes: Routes = [
   {
@@ -68,6 +73,10 @@ const routes: Routes = [
   {
     path: 'order-detail/:orderId',
     component: OrderDetailComponent,
+  },
+  {
+    path: 'contact-landing/:idUser',
+    component: ContactLandingContainerComponent,
   },
   {
     path: 'megaphone-v3/:merchantSlug',
@@ -120,6 +129,10 @@ const routes: Routes = [
     component: ArticleUploadComponent,
   },
   {
+    path: 'webform-options-selector',
+    component: WebformOptionsSelectorComponent,
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -130,6 +143,16 @@ const routes: Routes = [
       {
         path: 'store',
         component: StoreComponent,
+        children: [
+          {
+            path: '',
+            component: AllItemsComponent,
+          },
+          {
+            path: 'categories/:tagId',
+            component: TagItemsComponent,
+          },
+        ],
       },
       {
         path: 'create-article',
@@ -164,6 +187,14 @@ const routes: Routes = [
         component: CheckoutComponent,
       },
       {
+        path: 'cart',
+        component: CartComponent,
+      },
+      {
+        path: 'receiver-form',
+        component: ReceiverFormComponent,
+      },
+      {
         path: 'payments/:orderId',
         component: PaymentsComponent,
       },
@@ -191,14 +222,10 @@ const routes: Routes = [
       //   path: 'categories',
       //   component: CollectionsComponent,
       // },
-      {
-        path: 'categories/:tagId',
-        component: TagItemsComponent,
-      },
-      {
-        path: 'contact-landing/:idUser',
-        component: ContactLandingContainerComponent,
-      },
+      // {
+      //   path: 'categories/:tagId',
+      //   component: TagItemsComponent,
+      // },
       {
         path: 'store-assistant',
         component: StoreAssistantComponent,
@@ -222,7 +249,11 @@ const routes: Routes = [
       {
         path: 'qr-edit',
         component: QrEditComponent,
-      }
+      },
+      {
+        path: 'webform/:itemId',
+        component: WebformClientViewComponent,
+      },
     ],
   },
 ];
@@ -260,7 +291,10 @@ const routes: Routes = [
     PostEditionComponent,
     Fase1LandingComponent,
     ArticleUploadComponent,
-    TextEditionAndPreviewComponent
+    TextEditionAndPreviewComponent,
+    AllItemsComponent,
+    CartComponent,
+    ReceiverFormComponent,
   ],
   imports: [
     CommonModule,

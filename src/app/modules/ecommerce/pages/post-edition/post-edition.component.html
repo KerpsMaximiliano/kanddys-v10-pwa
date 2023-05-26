@@ -1,46 +1,21 @@
 <div class="container">
   <div class="header">
-    <button class="arrows">
+    <button mat-button class="arrows" (click)="goBack()">
+      Guardar
       <img
-        (click)="goBack()"
         class="icon black"
         [src]="env + '/arrow-double-up.svg'"
         alt="Volver"
       />
     </button>
     <div class="flex-right">
-      <button class="preview" (click)="goToPostPreview()">
+      <button mat-button class="preview" (click)="goToPostPreview()">
         <p>PREVIEW</p>
       </button>
-
-      <!--
-        <button class="save">
-          <img
-            class="icon black"
-            [src]="env + '/bookmark-plus.svg'"
-            width="18"
-            height="20"
-            alt="Volver"
-          />
-        </button>
-        <button class="dots">
-          <img
-            [src]="env + '/dots-black.svg'"
-            width="22"
-            height="6"
-            alt="Volver"
-          />
-        </button>
-      -->
     </div>
   </div>
   <div class="content">
-    <!--
-      <app-invites-notifications title="Acceso & Notificaciones" text="Acceso de Invitados: (000) 000 - 0000"></app-invites-notifications>
-      <app-invites-notifications title="Notificaciones" text="Notificación de cuando accesan: (000) 000 - 0000 ó sin Notificación"></app-invites-notifications>
-       -->
-
-    <div
+    <!-- <div
       style="margin-bottom: 32px"
       *ngIf="this.postsService.postReceiverNumber"
     >
@@ -58,22 +33,120 @@
               choosedNotificationTypesMessage
         }}
       </app-card>
-    </div>
+    </div> -->
+    <form [formGroup]="messageForm">
+      <div class="form-group">
+        <app-title-icon-header
+          title="Quien recibe?"
+          [editing]="false"
+        ></app-title-icon-header>
+        <button
+          *ngIf="data?.to && !editingTo"
+          (click)="editingTo = !editingTo"
+          class="btn"
+        >
+          <mat-card class="card">
+            <span>{{ messageForm.get("to").value }}</span>
+          </mat-card>
+        </button>
+        <mat-card *ngIf="!data?.to || editingTo" class="card">
+          <input
+            [autofocus]
+            type="text"
+            placeholder="Nombre de la persona quien recibe"
+            formControlName="to"
+          />
+        </mat-card>
+      </div>
+      <div class="form-group">
+        <app-title-icon-header
+          title="De parte de"
+          [editing]="false"
+        ></app-title-icon-header>
+        <button
+          *ngIf="data?.from && !editingFrom"
+          class="btn"
+          (click)="editingFrom = !editingFrom"
+        >
+          <mat-card class="card">
+            <span>{{ messageForm.get("from").value }}</span>
+          </mat-card>
+        </button>
+        <mat-card class="card" *ngIf="!data?.from || editingFrom">
+          <input
+            [autofocus]
+            type="text"
+            placeholder="Nombre de quien envía"
+            formControlName="from"
+          />
+        </mat-card>
+      </div>
+      <div class="form-group">
+        <app-title-icon-header
+          title="Título"
+          [editing]="false"
+        ></app-title-icon-header>
+        <button
+          *ngIf="data?.title && !editingTitle"
+          class="btn"
+          (click)="editingTitle = !editingTitle"
+        >
+          <mat-card class="card">
+            <span>{{ messageForm.get("title").value }}</span>
+          </mat-card>
+        </button>
+        <mat-card *ngIf="!data?.title || editingTitle" class="card">
+          <input
+            [autofocus]
+            type="text"
+            placeholder="Título del sobre"
+            formControlName="title"
+          />
+        </mat-card>
+      </div>
+      <div class="form-group">
+        <app-title-icon-header
+          title="Mensaje"
+          [editing]="false"
+        ></app-title-icon-header>
+        <button
+          *ngIf="data?.message && !editingMessage"
+          class="btn"
+          (click)="editingMessage = !editingMessage"
+        >
+          <mat-card class="card">
+            <span>{{ messageForm.get("message").value }}</span>
+          </mat-card>
+        </button>
+        <mat-card *ngIf="!data?.message || editingMessage" class="card">
+          <textarea
+            [autofocus]
+            cols="30"
+            rows="4"
+            placeholder="Mensaje del sobre"
+            formControlName="message"
+            style="resize: none"
+          ></textarea>
+        </mat-card>
+      </div>
+    </form>
 
     <app-qr-content
-      [slides]="data.slides"
-      [joke]="data.joke"
+      [slides]="data?.slides"
+      [joke]="data?.joke"
+      [title]="'Contenido del QR'"
+      [editing]="false"
       [defaultText]="'Incluyes fotos, memes, videos o música.'"
       (buttonClicked)="openQrContentDialog()"
     ></app-qr-content>
-    <app-envelope-content
+    <!-- <app-envelope-content
       [nombreSobre]="data.title"
       [to]="data.to"
       [mensaje]="data.message"
       [from]="data.from"
-    ></app-envelope-content>
+    ></app-envelope-content> -->
 
-    <app-dialog-flow
+    <!-- <app-dialog-flow
       [dialogFlowId]="'flow2'"
       [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
       [dialogs]="dialogs2"
@@ -90,66 +163,6 @@
       [allowSlideNext]="false"
       (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
       (closingDialogSignal)="openedNotificationsDialog = false"
-    ></app-dialog-flow>
-
-    <!--
-       <div style="margin-bottom: 32px">
-      <app-title-icon-header
-        title="Acceso & Notificaciones"
-        (iconClicked)="doSomething()"
-      ></app-title-icon-header>
-      <app-card> Acceso de Invitados: (000) 000 - 0000 </app-card>
-    </div>
-    <div style="margin-bottom: 32px">
-      <app-title-icon-header
-        title="Notificaciones"
-        (iconClicked)="doSomething()"
-      ></app-title-icon-header>
-      <app-card>
-        Notificación de cuando accesan: (000) 000 - 0000 ó sin Notificación
-      </app-card>
-    </div>
-    <div style="margin-bottom: 32px">
-      <app-title-icon-header
-        title="Contenido del QR"
-        (iconClicked)="doSomething()"
-      ></app-title-icon-header>
-      <app-qr-content></app-qr-content>
-    </div>
-    <div style="margin-bottom: 32px">
-      <app-title-icon-header
-        title="Contenido del sobre"
-        (iconClicked)="doSomething()"
-      ></app-title-icon-header>
-      <app-dialog-flow
-        [dialogFlowId]="'flow1'"
-        [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"
-        [dialogs]="dialogs"
-        [allowSlideNext]="false"
-        (saveConfigRef)="swiperConfig = $event"
-        (moveToDialogRef)="dialogFlowFunctions.moveToDialogByIndex = $event"
-      ></app-dialog-flow>
-      <app-card>
-        <app-envelope-content [post]="postInput"></app-envelope-content>
-      </app-card>
-    </div>
-    <div>
-      <app-title-icon-header
-        title="Banner"
-        (iconClicked)="doSomething()"
-      ></app-title-icon-header>
-      <ng-container *ngIf="banner">
-        <app-envelope-data
-          [biosBannerStyles]="{ borderRadius: '8px' }"
-          [banner]="banner"
-        ></app-envelope-data>
-      </ng-container>
-    </div>
-
-    -->
-
-    <!--
-      <app-envelope-data></app-envelope-data>
-    -->
+    ></app-dialog-flow> -->
   </div>
 </div>

@@ -1,16 +1,22 @@
-<mat-action-list>
+<mat-action-list class="list">
+  <p class="close">
+    <button mat-icon-button (click)="openLink()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </p>
   <section *ngFor="let section of data; index as i" style="margin-bottom: 16px">
-    <span class="title">{{ section.title }}</span>
+    <div class="title">{{ section.title }}</div>
     <ng-container
       *ngFor="let option of section.options; last as last; index as j"
     >
-      <button
-        [ngClass]="last ? 'subtitle-last' : 'subtitle'"
-        (click)="onClick(i, j)"
-      >
+      <button class="subtitle" mat-stroked-button (click)="onClick(i, j)">
         {{ option.title }}
+        <img
+          [src]="env + option.icon"
+          alt=""
+          style="margin-left: auto; filter: brightness(0)"
+        />
       </button>
-      <mat-divider *ngIf="!last" class="divider"></mat-divider>
       <qrcode
         style="visibility: hidden; position: absolute"
         #qrcode
@@ -24,5 +30,24 @@
         colorDark="#2874AD"
       ></qrcode>
     </ng-container>
+    <div *ngIf="section.secondaryOptions?.length" class="second-options">
+      <ng-container *ngFor="let option of section.secondaryOptions; index as j">
+        <button class="option" mat-button (click)="onClick(i, j, true)">
+          {{ option.title }}
+        </button>
+        <qrcode
+          style="visibility: hidden; position: absolute"
+          #secondaryQrcode
+          *ngIf="option.link"
+          [id]="'qrcode' + i + j"
+          [qrdata]="option.link"
+          [elementType]="'img'"
+          [style.margin-top.px]="-25"
+          [errorCorrectionLevel]="'M'"
+          [allowEmptyString]="true"
+          colorDark="#2874AD"
+        ></qrcode>
+      </ng-container>
+    </div>
   </section>
 </mat-action-list>

@@ -349,7 +349,10 @@ export class PaymentsComponent implements OnInit {
           localStorage.getItem('registered-user')
         ) as User;
         this.currentUser =
-          this.order?.user || this.headerService.user || registeredUser;
+          this.order?.user ||
+          this.headerService.user ||
+          this.headerService.alreadyInputtedloginDialogUser ||
+          registeredUser;
         this.logged = Boolean(await this.authService.me());
 
         this.status = 'complete';
@@ -397,7 +400,7 @@ export class PaymentsComponent implements OnInit {
           this.openedDialogFlow = true;
         }
 
-        if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
+        // if (this.azulPaymentsSupported) this.checkIfAzulPaymentURLIsAvailable();
 
         if (this.post && !this.post.author && this.currentUser)
           await this.postsService.postAddUser(

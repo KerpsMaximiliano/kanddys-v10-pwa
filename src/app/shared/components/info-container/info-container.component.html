@@ -1,7 +1,8 @@
-<div class="container" *ngFor="let card of cards; index as i">
+<div class="container" *ngFor="let card of cards; index as i" (click)="card.callback ? card.callback() : null">
   <div *ngIf="card.notification === true" class="notification"></div>
   <div class="top">
-    <img [src]="card.img" alt="" />
+    <!-- <img class="rounded" [src]="card.img" alt="" /> -->
+    <div class="rounded" alt=""></div>
     <p class="title">{{ card.title }}</p>
     <p class="subtitle">{{ card.subtitle }}</p>
     <p class="amount">{{ card.amount }}</p>

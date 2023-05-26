@@ -19,6 +19,7 @@ const orderData = `
     phone
     name
     email
+    image
   }
   answers {
     reference
@@ -46,6 +47,7 @@ const orderData = `
         image
         bio
         slug
+        address
         owner {
           _id
           phone
@@ -124,6 +126,7 @@ const orderData = `
     }
   }
   orderStatus
+  orderStatusDelivery
   statusDelivery
   deliveryZone
   expenditures
@@ -361,6 +364,14 @@ export const authOrder = gql`
 export const order = gql`
   query order($orderId: ObjectID!) {
     order(orderId: $orderId) {
+      ${orderData}
+    }
+  }
+`;
+
+export const orderByDateId = gql`
+  query orderByDateId($dateId: String!) {
+    orderByDateId(dateId: $dateId) {
       ${orderData}
     }
   }

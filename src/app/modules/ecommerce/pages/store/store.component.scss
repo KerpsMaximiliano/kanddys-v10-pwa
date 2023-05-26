@@ -1,112 +1,59 @@
-// button {
-//   all: unset;
-//   cursor: pointer;
-// }
 a {
   text-decoration: none;
-}
-.store-page {
-  height: 100vh;
-  overflow-y: scroll;
-  margin-top: 47px;
 }
 .component {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
-}
-main {
-  flex-grow: 1;
-  background-color: #f6f6f6;
-}
-.top-input-area {
-  margin: 16px;
-}
-:host ::ng-deep .swiper-button-next,
-:host ::ng-deep .swiper-button-prev {
-  display: none;
-}
-.description-view {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px 24px 32px;
-}
-.saleflows-item-grid {
-  width: auto;
-  padding: 12px 24px 32px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  -moz-column-gap: 14px;
-  column-gap: 13px;
-  row-gap: 22px;
-  overflow-x: hidden;
-  justify-items: center;
-  .capsize {
-    width: 100%;
-    height: auto;
-  }
-}
-.panel {
-  border-radius: 0 !important;
-}
-::ng-deep .mat-content {
-  flex: inherit !important;
-}
-::ng-deep .mat-expansion-indicator::after {
-  color: #fff;
-}
-.mat-expansion-panel-header.mat-expanded {
-  height: 48px;
-}
-::ng-deep .mat-expansion-panel-body {
-  background-color: #f5f5f5;
-  padding: 0 !important;
+  background-color: linear-gradient(
+    180deg,
+    white 50%,
+    rgba(213, 213, 213, 0.25) 100%
+  );
 }
 .header {
-  position: fixed;
-  width: 100%;
-  max-width: 500px;
-  height: 48px;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  box-sizing: border-box;
-  top: 0;
-  z-index: 5;
-  text-transform: capitalize;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
 
-  .merchant-info {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    align-items: center;
-    height: 100%;
-  }
-  .icon {
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
-  }
   .title {
-    &:nth-child(2) {
-      padding-left: 7px;
-    }
-    color: #ffffff;
+    margin-left: 11px;
+    color: #181d17;
     font-size: 16px;
-    font-family: "SfProMedium";
+    font-family: "InterBold";
+    text-transform: capitalize;
   }
 
-  .nav-account {
-    grid-column: span 1 / span 1;
-    height: 100%;
+  span {
+    font-family: "InterLight";
+    font-size: 14px;
+    color: #7b7b7b;
+  }
+
+  .contact-button {
+    padding: 7px 21px;
     width: 100%;
-    max-height: 48px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .icon {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+      }
+    }
+
+    .btn {
+      all: unset;
+      cursor: pointer;
+      margin-left: auto;
+    }
   }
 }
+
 .footer-content {
   background-color: #272727;
   padding-bottom: 20px;
@@ -179,4 +126,115 @@ main {
   background-color: #272727;
   width: 100%;
   padding: 2rem;
+}
+
+.action-bar {
+  background-color: #6fcf97;
+  display: flex;
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  z-index: 999;
+  bottom: 0;
+
+  button {
+    font-family: SfProLight;
+    font-size: 13px;
+    color: #272727;
+    width: 100%;
+    text-align: left;
+  }
+}
+.contact-bar {
+  background-color: #171d16;
+  display: flex;
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  z-index: 999;
+  bottom: 0;
+
+  ul {
+    padding: 4px 0;
+    display: flex;
+    gap: 10px;
+    margin: 0 auto;
+
+    li {
+      list-style: none;
+
+      .logo {
+        border-radius: 26px;
+        padding: 6px 8px;
+
+        i {
+          color: #fff;
+          font-size: 30px;
+        }
+      }
+    }
+  }
+}
+.chip-list {
+  display: flex;
+  width: 100%;
+  overflow-x: scroll;
+  gap: 8px;
+
+  .chip {
+    background-color: transparent;
+    border: solid 1px #d4d4d4;
+    font-family: SfProLight;
+    font-size: 1rem;
+    border-radius: 24px;
+    padding: 4px 18px;
+    transition: 0.2s;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    color: #272727;
+
+    &.selected {
+      border-color: #bdbfbd;
+      background-color: #bdbfbd;
+      font-family: SfProSemiBold;
+      color: #171d16;
+      transition: 0.2s;
+      color: #171d16;
+    }
+  }
+}
+
+.top-bar {
+  padding-top: 16px;
+  padding-left: 12px;
+
+  .contact-button {
+    padding: 0 8px;
+    width: 100%;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .icon {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+      }
+      .title {
+        margin-left: 11px;
+        color: #181d17;
+        font-size: 18.84px;
+        font-family: "InterBold";
+      }
+    }
+  }
+}
+
+::ng-deep.mat-bottom-sheet-container {
+  max-width: 500px !important;
+  width: 100% !important;
+  margin: 0 !important;
 }

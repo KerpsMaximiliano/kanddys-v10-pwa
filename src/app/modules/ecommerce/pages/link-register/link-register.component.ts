@@ -9,6 +9,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ContactInput } from 'src/app/core/models/contact';
 
 @Component({
   selector: 'app-link-register',
@@ -287,7 +288,7 @@ export class LinkRegisterComponent implements OnInit {
 
   async save() {
     if (this.itemFormLink.valid) {
-      const contactInput = {
+      const contactInput: ContactInput = {
         name: this.linkName,
         description: this.link,
         image: this.contactImage,

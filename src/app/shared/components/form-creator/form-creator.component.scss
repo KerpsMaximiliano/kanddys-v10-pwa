@@ -1,0 +1,508 @@
+.current-media-shown-indicators {
+  height: 3px;
+  max-width: 500px;
+  display: grid;
+}
+
+.indicator {
+  flex: 1;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  background-color: #7b7b7b;
+
+  &.active {
+    background-color: #fed230;
+  }
+}
+
+header {
+  width: 100%;
+  font-family: SfProSemiBold;
+
+  .back-btn {
+    filter: invert(51%) sepia(0%) saturate(13%) hue-rotate(276deg)
+      brightness(94%) contrast(92%);
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .note-header {
+    padding: 0px 6px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+    font-size: 17px;
+    color: #7b7b7b;
+    height: 30px;
+  }
+
+  .question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 6px;
+    font-family: SfProBold;
+    font-weight: normal;
+    height: 30px;
+    background-color: #e9e9e9;
+
+    .right-area {
+      width: 31.074%;
+      max-width: 133px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .title {
+        font-family: SfProSemiBold;
+        font-size: 17px;
+        color: #7b7b7b;
+      }
+
+      .arrows {
+        margin-right: 16px;
+
+        img:nth-of-type(2) {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .swiper-container {
+  background-color: #e9e9e9;
+}
+
+:host ::ng-deep .swiper-button-next,
+:host ::ng-deep .swiper-button-prev {
+  display: none;
+}
+
+.step {
+  height: auto !important;
+  background-color: #e9e9e9;
+}
+
+.note-step {
+  position: relative;
+  min-height: calc(100vh - 33px) !important;
+  padding-left: clamp(10px, 5.37vw, 23px);
+  padding-right: clamp(10px, 5.37vw, 23px);
+  padding-top: 40px;
+  padding-bottom: 40px;
+
+  h3 {
+    font-family: SfProMedium;
+    font-size: 17px;
+    color: #171d16;
+    padding: 0px;
+    margin: 0px;
+    margin-bottom: 66px;
+    font-weight: normal;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    font-family: SfProLight;
+    font-weight: 500;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #7b7b7b;
+  }
+
+  .next-btn {
+    background-color: #fed230;
+    width: 100%;
+    height: 43px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: SfProBold;
+    font-size: 17px;
+    font-weight: normal;
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    border: none;
+    transition: 0.3s ease-out background-color;
+
+    &.invalid {
+      background-color: #7b7b7b;
+      color: white;
+    }
+  }
+}
+
+.question-edition {
+  min-height: calc(100vh - 33px) !important;
+  padding-left: clamp(10px, 5.37vw, 22px);
+  padding-right: clamp(10px, 5.37vw, 22px);
+  padding-top: 32px;
+  padding-bottom: 110px;
+  width: 100%;
+
+  .question-input-and-input-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    .input-options-icons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      justify-items: center;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-family: SfProLight;
+      font-weight: 500;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #7b7b7b;
+    }
+  }
+
+  input {
+    background-color: #e9e9e9;
+    border: none;
+    padding: 15px 0px;
+    font-family: SfProMedium;
+    font-weight: normal;
+    font-size: 17px;
+    border-bottom: 1.5px solid #fed230;
+    width: 100%;
+
+    &::placeholder {
+      /* Chrome, Firefox, Opera, Safari 10.1+ */
+      color: #a1a1a1;
+      opacity: 1; /* Firefox */
+    }
+  }
+
+  .list-wrapper {
+    h4 {
+      margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      font-family: SfProLight;
+      font-weight: 500;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #7b7b7b;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0px;
+      margin: 0px;
+
+      .list-button {
+        width: 100%;
+        border-radius: 32px;
+        border: 1.5px solid #f2e09d;
+        padding: 20px 0px;
+        text-align: center;
+        font-family: SfProLight;
+        font-size: 17px;
+        margin-bottom: 12px;
+
+        &.selected {
+          background-color: #f2e09d;
+        }
+
+        &:hover {
+          background-color: #f2e09d;
+          transition: 0.3s ease-out background-color;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  footer {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: #fed230;
+    color: #272727;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px clamp(10px, 5.37vw, 23px);
+    font-family: SfProBold;
+    font-size: clamp(14px, 3vw, 17px);
+    font-weight: normal;
+    display: flex;
+
+    button {
+      background-color: rgba(0, 0, 0, 0);
+      border: none;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+input {
+  background-color: #e9e9e9;
+  border: none;
+  padding: 21px 0px;
+  font-family: SfProMedium;
+  font-weight: normal;
+  font-size: 17px;
+  border-bottom: 1.5px solid #fed230;
+  width: 100%;
+
+  &::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #a1a1a1;
+    opacity: 1; /* Firefox */
+  }
+}
+
+.input-wrapper {
+  position: relative;
+
+  .x-delete-btn {
+    position: absolute;
+    background-color: #ffffff;
+    color: #7b7b7b;
+    border: 2px solid #f6f6f6;
+    justify-content: center;
+    align-items: center;
+    left: 0;
+    bottom: 7px;
+    padding: 5px;
+    border-radius: 50%;
+    padding: 13px;
+
+    .x-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .x-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  input {
+    background-color: #e9e9e9;
+    border: none;
+    padding: 15px 0px;
+    font-family: SfProMedium;
+    font-weight: normal;
+    font-size: 17px;
+    border-bottom: 1.5px solid #fed230;
+    width: 100%;
+
+    &::placeholder {
+      /* Chrome, Firefox, Opera, Safari 10.1+ */
+      color: #a1a1a1;
+      opacity: 1; /* Firefox */
+    }
+
+    &.with-content {
+      padding-left: 57px;
+    }
+  }
+
+  .input-options-icons {
+    position: absolute;
+    right: 0;
+    bottom: 15px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    justify-items: center;
+    background-color: #e9e9e9;
+
+    img {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.grid-for-media-files {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(102px, 1fr));
+  column-gap: 7px;
+  row-gap: 19px;
+  justify-items: center;
+}
+
+.media-item {
+  height: 120px;
+  width: 100%;
+  max-width: 102px;
+  border-radius: 17px;
+  background-color: #174b72;
+  border: 1.5px solid #fed230;
+  display: inline-block;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+
+  .x-delete-btn {
+    position: absolute;
+    background-color: #ffffff;
+    color: #7b7b7b;
+    border: 2px solid #f6f6f6;
+    justify-content: center;
+    align-items: center;
+    left: 0;
+    top: 0px;
+    padding: 5px;
+    border-radius: 50%;
+    padding: 13px;
+
+    .x-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .x-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &.add {
+    color: #171d16;
+    font-size: 60px;
+    font-family: SfProBold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fed230;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-inner-container {
+  height: 20px;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-frame {
+  border-color: #707070;
+  border-radius: 4px;
+  height: 18px;
+  width: 18px;
+  border-width: thin;
+  background-color: white;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-label {
+  padding-top: 5px;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-background {
+  height: 18px;
+  width: 18px;
+}
+
+.checkbox-wrapper {
+  margin-top: 20.3px;
+  font-family: SfProLight;
+  font-style: italic;
+  color: #7b7b7b;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-layout {
+  white-space: normal !important;
+}
+
+.checkbox-options-wrapper {
+  margin-top: 40px;
+}
+
+.number-option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+}
+
+.number-circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+
+/* Customize the background color and text color of the mat-select */
+::ng-deep .mat-select-panel {
+  background-color: #e9e9e9;
+  font-family: SfProMedium;
+  font-weight: normal;
+  font-size: 17px;
+  color: black;
+}
+
+/* Customize the border and box-shadow of the mat-select */
+::ng-deep .mat-select-panel .mat-option {
+  border-bottom: 1.5px solid #fed230;
+  box-shadow: none;
+}
+
+/* Customize the hover state of the mat-option */
+::ng-deep .mat-select-panel .mat-option:hover {
+  background-color: #e0e0e0;
+}
+
+:host ::ng-deep .mat-form-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: #e9e9e9;
+  width: 100%;
+  padding-top: 20.3px;
+  padding-left: 0px;
+}
+
+:host ::ng-deep .mat-form-field-underline {
+  border-bottom: 1.5px solid #fed230;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-underline::before {
+  background-color: #fed230;
+}

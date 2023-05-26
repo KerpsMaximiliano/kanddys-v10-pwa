@@ -2,8 +2,10 @@
   <div class="flex space-between">
     <div class="flex">
       <img *ngIf="image" [src]="image" [alt]="title" />
-      <div class="title">{{ title }}</div>
-      <span class="subtitle" *ngIf="subtitle">{{ subtitle }}</span>
+      <div>
+        <div class="title">{{ title }}</div>
+        <span class="subtitle" *ngIf="subtitle">{{ subtitle }}</span>
+      </div>
     </div>
     <div class="info" *ngIf="topInfo">{{ topInfo }}</div>
   </div>

@@ -47,6 +47,26 @@ export class AdminComponent implements OnInit {
       if (this.saleflowService.saleflowData) {
         this.saleflowService.saleflowLoaded.next(true);
       }
+      Promise.all([
+        this.merchantsService.incomeMerchant({
+          findBy: {
+            merchant: this.merchantsService.merchantData._id,
+          },
+        }),
+        this.merchantsService.hotOrdersByMerchant(
+          this.merchantsService.merchantData._id,
+          {
+            options: {
+              limit: -1,
+            },
+          }
+        ),
+      ]).then(([incomeMerchantResponse, { ordersByMerchant }]) => {
+        this.merchantsService.merchantIncome = {
+          income: incomeMerchantResponse,
+          orderAmount: ordersByMerchant.length,
+        };
+      });
     });
   }
 }

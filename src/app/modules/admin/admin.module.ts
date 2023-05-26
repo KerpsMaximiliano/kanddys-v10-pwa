@@ -30,7 +30,7 @@ import { OrderListComponent } from './pages/order-list/order-list.component';
 import { TextOrImageComponent } from 'src/app/shared/components/text-or-image/text-or-image.component';
 import { ItemWebformPreviewComponent } from './pages/item-webform-preview/item-webform-preview.component';
 import { WebformOptionsSelectorComponent } from './pages/webform-options-selector/webform-options-selector.component';
-import { FormResponsesComponent } from './pages/form-responses/form-responses.component';
+//import { FormResponsesComponent } from './pages/form-responses/form-responses.component';
 import { OpenFormResponsesComponent } from './pages/open-form-responses/open-form-responses.component';
 import { WebformsEditorComponent } from './pages/webforms-editor/webforms-editor.component';
 import { BenefitsComponent } from './pages/benefits/benefits.component';
@@ -45,6 +45,8 @@ import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { ReportingsComponent } from './pages/reportings/reportings.component';
+import { FormCreatorComponent } from 'src/app/shared/components/form-creator/form-creator.component';
+import { MediaUploadDndComponentComponent } from 'src/app/shared/components/media-upload-dnd-component/media-upload-dnd-component.component';
 import { OrderSlidesComponent } from './pages/order-slides/order-slides.component';
 import { RewardsDisplayComponent } from './pages/rewards-display/rewards-display.component';
 import { DashboardLibraryComponent } from './pages/dashboard-library/dashboard-library.component';
@@ -62,6 +64,8 @@ import { CreateDeliveryZoneComponent } from './pages/create-delivery-zone/create
 import { TransactionTypesComponent } from './pages/transaction-types/transaction-types.component';
 import { QuestionToAdminComponent } from './pages/question-to-admin/question-to-admin.component';
 import { RenameQuestionComponent } from './pages/rename-question/rename-question.component';
+import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
+import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -211,13 +215,43 @@ const routes: Routes = [
         path: 'webform-preview/:itemId',
         component: ItemWebformPreviewComponent,
       },
+      /*
       {
         path: 'webform-responses/:formId/:itemId',
         component: FormResponsesComponent,
+      },*/
+      {
+        path: 'webform-responses/:itemId',
+        component: FormResponsesComponent,
+      },
+      {
+        path: 'webform-responses-filters/:itemId/:questionId',
+        component: FormResponsesByQuestionComponent,
       },
       {
         path: 'webform-open-responses/:formId',
         component: OpenFormResponsesComponent,
+      },
+      {
+        path: 'order-status-view',
+        component: OrderStatusViewComponent,
+      },
+      {
+        path: 'order-list',
+        children: [
+          {
+            path: 'tags/:tagId',
+            component: OrderListComponent,
+          },
+          {
+            path: 'status/:status',
+            component: OrderListComponent,
+          },
+          {
+            path: 'process/:deliveryStatus',
+            component: OrderListComponent,
+          },
+        ],
       },
       // {
       //   // Asegurar que no se usa y borrar
@@ -281,6 +315,10 @@ const routes: Routes = [
       {
         path: 'create-notification/:notificationId',
         component: NotificationCreatorComponent,
+      },
+      {
+        path: 'order-slides/:orderId',
+        component: OrderSlidesComponent,
       },
       {
         path: 'order-slides',
@@ -351,6 +389,18 @@ const routes: Routes = [
     component: IncomesComponent
   },
   {
+    path: 'form-creator/:itemId',
+    component: FormCreatorComponent,
+  },
+  {
+    path: 'media-upload/:entity/:entityId',
+    component: MediaUploadDndComponentComponent,
+  },
+  {
+    path: 'media-upload/:entity',
+    component: MediaUploadDndComponentComponent,
+  },
+  {
     path: 'dashboard-library',
     component: DashboardLibraryComponent,
   },
@@ -400,7 +450,6 @@ const routes: Routes = [
     OrderListComponent,
     ItemWebformPreviewComponent,
     WebformOptionsSelectorComponent,
-    FormResponsesComponent,
     OpenFormResponsesComponent,
     WebformsEditorComponent,
     BenefitsComponent,
@@ -427,6 +476,7 @@ const routes: Routes = [
     TransactionTypesComponent,
     QuestionToAdminComponent,
     RenameQuestionComponent,
+    RewardsDisplayComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

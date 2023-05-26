@@ -87,6 +87,7 @@ export const merchantDefault = gql`
       activity
       bio
       address
+      contactFooter
       owner {
         _id
         phone
@@ -180,7 +181,13 @@ export const createMerchant = gql`
 
 export const createMerchant2 = gql`
   mutation createMerchant($input: MerchantInput!) {
-    createMerchant(input: $input) { ${bodyWithoutShowItems} }
+    createMerchant(input: $input) { ${body} }
+  }
+`;
+
+export const createMerchantWhatsapp = gql`
+  mutation createMerchantWhatsapp($itemId: ObjectID!, $nameMerchant: String!) {
+    createMerchantWhatsapp(itemId: $itemId, nameMerchant: $nameMerchant)
   }
 `;
 
@@ -239,6 +246,7 @@ export const ordersByMerchant = gql`
         email
         name
         image
+        username
       }
       ocr {
         _id
@@ -291,6 +299,8 @@ export const ordersByMerchantHot = gql`
   query ordersByMerchant($pagination: PaginationInput, $merchant: ObjectID!) {
     ordersByMerchant(pagination: $pagination, merchant: $merchant) {
       _id
+      orderStatus
+      orderStatusDelivery
     }
   }
 `;

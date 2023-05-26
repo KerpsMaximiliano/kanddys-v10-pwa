@@ -71,6 +71,14 @@
               ],
               "serviceWorker": true,
               "ngswConfigPath": "ngsw-config.json"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -80,8 +88,8 @@
             "browserTarget": "rewardcharly:build"
           },
           "configurations": {
-            "production": {
-              "browserTarget": "rewardcharly:build:production"
+            "development": {
+              "browserTarget": "rewardcharly:build:development"
             }
           }
         },

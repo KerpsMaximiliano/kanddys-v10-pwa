@@ -95,6 +95,7 @@ export class Item extends Model<Item> {
   visitorCounter?: VisitorCounter;
   webForms: Array<ItemWebform>;
   amountMerchantCoin:number;
+  active?: boolean;
 }
 
 export class ItemImage extends Model<ItemImage> {

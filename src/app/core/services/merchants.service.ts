@@ -39,6 +39,7 @@ import {
   merchantBySlug,
   viewsMerchants,
   viewsMerchant,
+  createMerchantWhatsapp,
   buyersByMerchant,
   recurringBuyersByMerchant,
   hotBuyersByMerchant,
@@ -48,12 +49,18 @@ import {
   Merchant,
   MerchantInput,
 } from './../models/merchant';
+import { Contact } from '../models/contact';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
   loadedMerchantData = new Subject();
   constructor(private graphql: GraphQLWrapper) {}
   merchantData: Merchant;
+  merchantContact: Contact;
+  merchantIncome: {
+    orderAmount: number;
+    income: number;
+  };
 
   async merchant(id: string, isHot?: boolean): Promise<Merchant> {
     try {
@@ -132,10 +139,11 @@ export class MerchantsService {
 
   async ordersByMerchant(
     merchant: string,
-    pagination?: PaginationInput
+    pagination?: PaginationInput,
+    hotQuery?: boolean
   ): Promise<{ ordersByMerchant: ItemOrder[] }> {
     const response = await this.graphql.query({
-      query: ordersByMerchant,
+      query: !hotQuery ? ordersByMerchant : ordersByMerchantHot,
       variables: { pagination, merchant },
       fetchPolicy: 'cache-first',
     });
@@ -257,6 +265,23 @@ export class MerchantsService {
     const result = await this.graphql.mutate({
       mutation: createMerchant,
       variables: { input, files },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    console.log(result);
+    return result;
+  }
+
+  async createMerchantWhatsapp(
+    itemId: string,
+    nameMerchant: String
+  ): Promise<{ createMerchantWhatsapp: String }> {
+    console.log(nameMerchant);
+    const result = await this.graphql.mutate({
+      mutation: createMerchantWhatsapp,
+      variables: { itemId, nameMerchant },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });

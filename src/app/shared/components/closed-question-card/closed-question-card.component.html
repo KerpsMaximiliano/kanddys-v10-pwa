@@ -1,9 +1,10 @@
 <div class="container" id="{{ id }}">
   <app-card [shadows]="shadows" [containerStyles]="containerStyles">
-    <p class="title" [ngStyle]="labelStyles">{{ question }}</p>
+
+    <p class="title" *ngIf="showTitle" [ngStyle]="labelStyles">{{ question.value }}</p>
 
     <ng-container *ngIf="!multiple">
-      <div class="imgGrid">
+      <div class="imgGrid" *ngIf="isMediaSelection">
         <ng-container *ngFor="let answer of optionsInImageGrid; let i = index">
           <div *ngIf="answer.isMedia" [id]="id + '-' + i" class="radio">
             <img
@@ -14,17 +15,17 @@
             />
             <div
               class="radioButton"
-              (click)="selectOpt(i, 'GRID', answer.img)"
-              [ngClass]="{ active: i === selectedImage }"
-            >
-            </div>
+              (click)="selectOption(i)"
+              [ngClass]="{ active: i === selectedImageIndex }"
+            ></div>
           </div>
         </ng-container>
       </div>
 
       <app-answer-selector
+        *ngIf="!isMediaSelection"
         style="text-align: left"
-        [activeOption]="selected"
+        [activeOption]="0"
         [options]="optionsInAnswerSelector"
         [indicator]="true"
         [containerStyles]="{
@@ -40,55 +41,56 @@
           marginBottom: '0px'
         }"
         [alternativeBackground]="'narrow'"
-        (onSelector)="selectOpt($event, 'OPTIONS-LIST', null)"
+        (onSelector)="(null)"
       ></app-answer-selector>
     </ng-container>
-
-    <ng-container *ngIf="multiple">
-      <div class="imgGrid">
-        <ng-container *ngFor="let answer of optionsInImageGrid; let i = index">
-          <div *ngIf="answer.isMedia" [id]="id + '-' + i" class="radio">
-            <img
-              [src]="answer.img"
-              (error)="answer.img = '/assets/images/noimage.png'"
-              class="radioImg"
-              (click)="goToDetail(i)"
-            />
-            <div
-              class="radioButton"
-              (click)="selectOptMultipleFromGrid(i)"
-              [ngClass]="{ active: selectedImagesIndexes.includes(i) }"
-            >
+  
+      <ng-container *ngIf="multiple">
+        <div class="imgGrid">
+          <ng-container *ngFor="let answer of optionsInImageGrid; let i = index">
+            <div *ngIf="answer.isMedia" [id]="id + '-' + i" class="radio">
+              <img
+                [src]="answer.img"
+                (error)="answer.img = '/assets/images/noimage.png'"
+                class="radioImg"
+                (click)="goToDetail(i)"
+              />
+              <div
+                class="radioButton"
+                (click)="selectOption(i)"
+                [ngClass]="{ active: selectedImageIndexes.includes(i) }"
+              >
+              </div>
             </div>
-          </div>
-        </ng-container>
-      </div>
-
-      <app-answer-selector
-        style="text-align: left"
-        [isMultipleOption]="true"
-        [options]="optionsInAnswerSelector"
-        [activeMultipleOption]="selectedIndexes"
-        [indicator]="true"
-        [containerStyles]="{
-          margin: '0px',
-          marginTop: '17px'
-        }"
-        [itemStyles]="{
-          fontSize: '17px',
-          padding: '7px 0px'
-        }"
-        [boldenWhenSelected]="true"
-        [optionContainerStyles]="{
-          marginBottom: '0px'
-        }"
-        [alternativeBackground]="'narrow'"
-        (activeMultipleOptionValue)="selectOptMultipleFromList($event)"
-      ></app-answer-selector>
-    </ng-container>
-
+          </ng-container>
+        </div>
+  
+        <app-answer-selector
+          style="text-align: left"
+          [isMultipleOption]="true"
+          [options]="optionsInAnswerSelector"
+          [activeMultipleOption]="selectedListOptionIndexes"
+          [indicator]="true"
+          [containerStyles]="{
+            margin: '0px',
+            marginTop: '17px'
+          }"
+          [multipleOptionsLimit]="!question.answerLimit ? 0 : question.answerLimit"
+          [itemStyles]="{
+            fontSize: '17px',
+            padding: '7px 0px'
+          }"
+          [boldenWhenSelected]="true"
+          [optionContainerStyles]="{
+            marginBottom: '0px'
+          }"
+          [alternativeBackground]="'narrow'"
+          (activeMultipleOptionValue)="selectOption($event)"
+        ></app-answer-selector>
+      </ng-container>
+    
     <ng-container
-      *ngIf="questionType === 'multiple-text' && userProvidedAnswerSelected"
+      *ngIf="question.type === 'multiple-text' && userProvidedAnswerSelected"
     >
       <textarea
         class="another-response"

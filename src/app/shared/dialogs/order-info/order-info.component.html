@@ -1,0 +1,70 @@
+<div class="dialog_container">
+  <div class="progress">
+    <div class="title">
+      <a
+        mat-button
+        [routerLink]="['/admin/create-notification']"
+        [queryParams]="{
+          redirectTo: router.url,
+          status: order.orderStatusDelivery
+        }"
+        (click)="dialogRef.close()"
+      >
+        <mat-icon>more_horiz</mat-icon>
+        Progresos
+      </a>
+    </div>
+    <ul>
+      <li *ngFor="let status of statusList">
+        <a
+          mat-stroked-button
+          [ngClass]="{ selected: order.orderStatusDelivery === status }"
+          [routerLink]="['/admin/create-notification']"
+          [queryParams]="{
+            redirectTo: router.url,
+            status: status
+          }"
+          (click)="dialogRef.close()"
+        >
+          <div>{{ orderDeliveryStatus(status) }}</div>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div>
+    <a
+      [routerLink]="['/admin/reports/orders']"
+      (click)="dialogRef.close()"
+      mat-button
+    >
+      Reporte de las facturas y compradores
+    </a>
+  </div>
+  <div>
+    <a
+      [routerLink]="['/ecommerce/order-detail', order._id]"
+      [queryParams]="{
+        redirectTo: router.url,
+        navigationWithMessage: 'Vista del visitante'
+      }"
+      (click)="dialogRef.close()"
+      mat-button
+    >
+      Mira la factura que ve el comprador
+    </a>
+  </div>
+  <div>
+    <button mat-button (click)="share()">Comparte esta factura</button>
+  </div>
+</div>
+<qrcode
+  style="display: none"
+  *ngIf="order"
+  #orderQrCode
+  [qrdata]="URI + '/ecommerce/order-detail/' + order._id"
+  [elementType]="'img'"
+  [width]="40"
+  [errorCorrectionLevel]="'M'"
+  [allowEmptyString]="true"
+  colorDark="#000"
+></qrcode>

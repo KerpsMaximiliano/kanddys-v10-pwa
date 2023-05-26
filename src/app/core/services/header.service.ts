@@ -19,7 +19,6 @@ import { Session } from '../models/session';
 import { User } from '../models/user';
 import { AuthService } from './auth.service';
 import { BookmarksService } from './bookmarks.service';
-import { ContactService } from './contact.service';
 import { MerchantsService } from './merchants.service';
 import { SaleFlowService } from './saleflow.service';
 import { WalletService } from './wallet.service';
@@ -103,6 +102,7 @@ export class HeaderService {
   entityTemplateTemporalData: Record<string, any> = null;
   aiJokes: Array<string> = [];
   selectedJoke: string = null;
+  alreadyInputtedloginDialogUser: User = null;
 
   public session: Session;
   constructor(
@@ -112,10 +112,7 @@ export class HeaderService {
     public wallet: WalletService,
     private bookmark: BookmarksService,
     private merchantService: MerchantsService,
-    // private customizerValueService: CustomizerValueService,
-    // private orderService: OrderService,
-    private saleflowService: SaleFlowService,
-    private contactService: ContactService // private postsService: PostsService
+    private saleflowService: SaleFlowService
   ) {
     this.auth.me().then((data) => {
       if (data != undefined) {
@@ -206,20 +203,6 @@ export class HeaderService {
     }
     //console.log('Completo');
     return true;
-  }
-
-  async getMerchantContact(_id?: string) {
-    this.merchantContact = (
-      await this.contactService.contacts({
-        findBy: {
-          user: _id || this.saleflow.merchant.owner._id,
-        },
-        options: {
-          limit: 1,
-          sortBy: 'createdAt:desc',
-        },
-      })
-    )[0];
   }
 
   isDataComplete(): boolean {

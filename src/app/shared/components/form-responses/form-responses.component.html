@@ -1,0 +1,572 @@
+<div class="container">
+  <ng-container [ngSwitch]="currentView">
+    <ng-container *ngSwitchCase="'FORM_SUBMISSION_RESPONSES'">
+      <header class="submission-responses-header">
+        <div class="left-column">
+          <div class="back-btn">
+            <img
+              (click)="goBack()"
+              [src]="env + '/arrow-double-up-black.svg'"
+              alt="go back"
+            />
+          </div>
+
+          <div
+            class="user-presentation"
+            *ngIf="
+              selectedFormSubmission.user && !selectedFormSubmission.merchant
+            "
+          >
+            <div
+              class="avatar-wrapper"
+              [ngStyle]="{
+                backgroundImage: selectedFormSubmission.user.image
+                  ? 'url(' +
+                    selectedFormSubmission.user.image +
+                    '), url(' +
+                    env +
+                    '/spinner2.gif)'
+                  : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+              }"
+            ></div>
+            <span class="kioskoId">{{
+              selectedFormSubmission.user.name ||
+                selectedFormSubmission.user.phone ||
+                selectedFormSubmission.user.email
+            }}</span>
+          </div>
+
+          <div
+            class="user-presentation"
+            *ngIf="
+              selectedFormSubmission.user && selectedFormSubmission.merchant
+            "
+          >
+            <div
+              class="avatar-wrapper"
+              [ngStyle]="{
+                backgroundImage: selectedFormSubmission.merchant.image
+                  ? 'url(' +
+                    (selectedFormSubmission.merchant.image ||
+                      selectedFormSubmission.user.image) +
+                    '), url(' +
+                    env +
+                    '/spinner2.gif)'
+                  : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+              }"
+            ></div>
+            <span class="kioskoId">{{
+              selectedFormSubmission.merchant.name
+            }}</span>
+
+            {{
+              getCreationDateDifferenceAsItsSaid(
+                selectedFormSubmission.createdAt
+              )
+            }}
+          </div>
+        </div>
+
+        <div class="three-dots">
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
+            alt="more options"
+          />
+        </div>
+      </header>
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+      <ng-container *ngTemplateOutlet="usersAndQuestionHeader"></ng-container>
+    </ng-container>
+  </ng-container>
+
+  <nav>
+    <button
+      [ngClass]="{
+        active: ['FORM_SUBMISSIONS', 'FORM_SUBMISSION_RESPONSES'].includes(
+          currentView
+        )
+      }"
+      (click)="changeView('FORM_SUBMISSIONS')"
+    >
+      {{ answersForWebform.length }} Entradas
+    </button>
+    <button
+      [ngClass]="{
+        active: ['QUESTIONS', 'QUESTION_RESPONSES'].includes(currentView)
+      }"
+      (click)="changeView('QUESTIONS')"
+    >
+      {{ webform?.questions ? webform.questions?.length : 0 }} Preguntas
+    </button>
+  </nav>
+
+  <main>
+    <ng-container [ngSwitch]="currentView">
+      <ng-container *ngSwitchCase="'FORM_SUBMISSIONS'">
+        <ng-container *ngIf="answersForWebform.length === 0">
+          <p class="no-form-responses">
+            No han respondido al formulario todavia...
+          </p>
+        </ng-container>
+
+        <ng-container *ngIf="answersForWebform.length > 0">
+          <ul class="form-submission-list">
+            <ng-container
+              *ngTemplateOutlet="
+                listItem;
+                context: {
+                  arrayOfItems: answersForWebform,
+                  showTextBody: false,
+                  addBlankSpace: true,
+                  showResponsesLink: true,
+                  responsesLinkView: 'FORM_SUBMISSION_RESPONSES'
+                }
+              "
+            >
+            </ng-container>
+          </ul>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase="'FORM_SUBMISSION_RESPONSES'">
+        <ng-container *ngIf="selectedFormSubmission">
+          <div class="webform-description">
+            {{ webform.description }}
+          </div>
+
+          <ul class="question-list">
+            <ng-container
+              *ngFor="
+                let responseForQuestion of selectedFormSubmission.responsesGroupedByQuestion
+              "
+            >
+              <li
+                class="question-response-card"
+                *ngIf="questionsByIdObject[responseForQuestion.question._id]"
+              >
+                <ng-container
+                  *ngIf="
+                    !['multiple', 'multiple-text'].includes(
+                      questionsByIdObject[responseForQuestion.question._id].type
+                    )
+                  "
+                >
+                  <h4 class="title">
+                    {{
+                      questionsByIdObject[responseForQuestion.question._id]
+                        .value
+                    }}
+                  </h4>
+
+                  <p
+                    class="text-responses"
+                    *ngIf="!responseForQuestion.isMedia"
+                  >
+                    {{ responseForQuestion.value }}
+                  </p>
+                </ng-container>
+
+                <!--QUESTION WITH MEDIA SELECTION-->
+                <ng-container
+                  *ngIf="
+                    ['multiple', 'multiple-text'].includes(
+                      questionsByIdObject[responseForQuestion.question._id].type
+                    ) && responseForQuestion.isMedia
+                  "
+                >
+                  <h4 class="title">
+                    {{
+                      questionsByIdObject[responseForQuestion.question._id]
+                        .value
+                    }}
+                  </h4>
+
+                  <div class="media-responses-wrapper">
+                    <div
+                      *ngFor="
+                        let mediaOption of responseForQuestion.multipleValues
+                      "
+                      class="media-response"
+                      [ngStyle]="{
+                        backgroundImage:
+                          'url(' +
+                          mediaOption +
+                          '), url(' +
+                          env +
+                          '/spinner2.gif)'
+                      }"
+                      (click)="mediaOption ? openImageModal(mediaOption) : null"
+                    ></div>
+                  </div>
+                </ng-container>
+
+                <!--QUESTION WITH TEXT SELECTION-->
+                <ng-container
+                  *ngIf="
+                    ['multiple', 'multiple-text'].includes(
+                      questionsByIdObject[responseForQuestion.question._id].type
+                    ) && !responseForQuestion.isMedia
+                  "
+                >
+                  <h4 class="title">
+                    {{
+                      questionsByIdObject[responseForQuestion.question._id]
+                        .value
+                    }}
+                  </h4>
+
+                  <ul class="text-option-list">
+                    <li
+                      *ngFor="
+                        let response of responseForQuestion.multipleValues
+                      "
+                    >
+                      {{ response }}
+                    </li>
+                  </ul>
+                </ng-container>
+              </li>
+            </ng-container>
+          </ul>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase="'QUESTIONS'">
+        <ng-container *ngIf="webform?.questions?.length === 0">
+          <p class="no-form-responses">
+            Sin preguntas para el formulario todavia...
+          </p>
+        </ng-container>
+
+        <ng-container *ngIf="webform?.questions?.length > 0">
+          <ul class="question-list">
+            <li
+              class="question-wrapper"
+              *ngFor="let question of webform.questions"
+            >
+              <div class="top-section">
+                <div class="response-type">
+                  {{ getAnswerType(question) }}
+                </div>
+                <div
+                  class="number-of-responses"
+                  (click)="loadResponsesForASpecificQuestion(question)"
+                >
+                  {{ questionMetadata[question._id].numberOfAnswers }}
+                  Respuestas
+                </div>
+              </div>
+              <div class="title">
+                {{ question.value }}
+              </div>
+
+              <div class="bottom-section">
+                <div
+                  class="relative-date"
+                  *ngIf="questionMetadata[question._id].latestDate"
+                >
+                  Respondieron
+                  {{
+                    getCreationDateDifferenceAsItsSaid(
+                      questionMetadata[question._id].latestDate,
+                      true
+                    )
+                  }}
+                </div>
+
+                <div
+                  class="relative-date"
+                  *ngIf="!questionMetadata[question._id].latestDate"
+                >
+                  No han respondido
+                </div>
+
+                <!--
+                  <div class="three-dots">
+                    <img
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg"
+                      alt="more options"
+                    />
+                  </div>
+                -->
+              </div>
+            </li>
+          </ul>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase="'QUESTION_RESPONSES'">
+        <div class="webform-description">
+          {{ webform.description }}
+        </div>
+
+        <!--
+          <div class="filters">
+            <swiper
+              [config]="responsesFiltersSwiperConfig"
+              #monthsSwiper
+              (sliderMove)="(null)"
+            >
+              <div class="filter selected">Todas</div>
+  
+              <div class="filter">2023</div>
+  
+              <div class="filter">90 dias</div>
+  
+              <div class="filter">MesID</div>
+  
+              <div class="filter">SemanaID</div>
+            </swiper>
+          </div>
+        -->
+
+        <div
+          class="response-options-media"
+          *ngIf="
+            ['multiple', 'multiple-text'].includes(selectedQuestion.type) &&
+            selectedQuestion.answerDefault[0].isMedia
+          "
+        >
+          <swiper [config]="responsesFiltersSwiperConfig" #monthsSwiper>
+            <div
+              class="media-option-wrapper"
+              (click)="selectAnOptionFromQuestionOptionsList(i)"
+              *ngFor="let option of selectedQuestion.answerDefault; index as i"
+            >
+              <div
+                class="image"
+                [ngStyle]="{
+                  backgroundImage:
+                    'url(' + option.value + '), url(' + env + '/spinner2.gif)'
+                }"
+              ></div>
+
+              <div
+                class="users-percentage"
+                [ngClass]="{
+                  selected:
+                    this.indexesOfSelectedOptionsFromSelectedQuestion.includes(
+                      i
+                    )
+                }"
+              >
+                <div class="percentage">
+                  {{
+                    ((answersMetricsByQuestionResponses[selectedQuestion._id]
+                      .options[option.value]
+                      ? answersMetricsByQuestionResponses[selectedQuestion._id]
+                          .options[option.value].totalResponses /
+                        answersMetricsByQuestionResponses[selectedQuestion._id]
+                          .totalResponses
+                      : 0) * 100 | number : "1.0-2") + "%"
+                  }}
+                </div>
+                <div class="border"></div>
+              </div>
+            </div>
+          </swiper>
+        </div>
+
+        <div
+          class="text-options"
+          *ngIf="
+            ['multiple', 'multiple-text'].includes(selectedQuestion.type) &&
+            !selectedQuestion.answerDefault[0].isMedia
+          "
+        >
+          <swiper
+            [config]="responsesFiltersSwiperConfig"
+            #monthsSwiper
+            (sliderMove)="(null)"
+          >
+            <div
+              *ngFor="let option of selectedQuestion.answerDefault; index as i"
+              class="text-option"
+              (click)="selectAnOptionFromQuestionOptionsList(i)"
+              [ngClass]="{
+                selected:
+                  this.indexesOfSelectedOptionsFromSelectedQuestion.includes(i)
+              }"
+            >
+              {{
+                ((answersMetricsByQuestionResponses[selectedQuestion._id]
+                  .options[option.value]
+                  ? answersMetricsByQuestionResponses[selectedQuestion._id]
+                      .options[option.value].totalResponses /
+                    answersMetricsByQuestionResponses[selectedQuestion._id]
+                      .totalResponses
+                  : 0) * 100 | number : "1.0-2") + "%"
+              }}(
+              {{
+                answersMetricsByQuestionResponses[selectedQuestion._id].options[
+                  option.value
+                ]
+                  ? answersMetricsByQuestionResponses[selectedQuestion._id]
+                      .options[option.value].totalResponses
+                  : 0
+              }}
+              ) {{ option.value }}
+            </div>
+          </swiper>
+        </div>
+
+        <ul class="question-responses-list">
+          <ng-container
+            *ngTemplateOutlet="
+              listItem;
+              context: {
+                arrayOfItems: !filteredResponsesForSelectedQuestion
+                  ? responsesForSelectedQuestion
+                  : filteredResponsesForSelectedQuestion,
+                showTextBody:
+                  !['multiple', 'multiple-text'].includes(
+                    selectedQuestion.type
+                  ) || selectedQuestion.type === 'text',
+                textBody: 'value',
+                addBlankSpace:
+                  ['multiple', 'multiple-text'].includes(
+                    selectedQuestion.type
+                  ) ||
+                  (selectedQuestion.answerDefault.length > 0 &&
+                    !selectedQuestion.answerDefault[0].isMedia),
+                showResponsesLink: false,
+                responsesLinkView: 'FORM_SUBMISSION_RESPONSES'
+              }
+            "
+          >
+          </ng-container>
+        </ul>
+      </ng-container>
+    </ng-container>
+  </main>
+
+  <footer>
+    <div class="preview-btn" (click)="goToPreview()">PREVIEW</div>
+    <div class="share-btn" (click)="goToPreview()">
+      VISIBLE EN URL.COM
+
+      <img
+        [src]="env + '/share-icon.svg'"
+        style="margin-left: 11.8px"
+        alt="share"
+      />
+    </div>
+  </footer>
+</div>
+
+<ng-template #usersAndQuestionHeader>
+  <header class="users-by-webform-header">
+    <div class="back-btn">
+      <img
+        (click)="goBack()"
+        [src]="env + '/arrow-double-up-black.svg'"
+        alt="go back"
+      />
+
+      <div class="form-name">
+        {{ webform?.name }}
+      </div>
+    </div>
+
+    <div class="settings-btn">
+      <img [src]="env + '/settings.svg'" alt="settings" />
+    </div>
+  </header>
+</ng-template>
+
+<ng-template
+  #userPresentation
+  let-data="dataObject"
+  let-showUserByMerchantLabel="showMerchantAndUser"
+>
+  <div class="user-presentation" *ngIf="data.user && !data.merchant">
+    <div
+      class="avatar-wrapper"
+      [ngStyle]="{
+        backgroundImage: data.user.image
+          ? 'url(' + data.user.image + '), url(' + env + '/spinner2.gif)'
+          : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+      }"
+    ></div>
+    <span class="kioskoId">{{
+      data.user.name || data.user.phone || data.user.email
+    }}</span>
+  </div>
+
+  <div class="user-presentation" *ngIf="data.user && data.merchant">
+    <div
+      class="avatar-wrapper"
+      [ngStyle]="{
+        backgroundImage: data.merchant.image
+          ? 'url(' +
+            (data.merchant.image || data.user.image) +
+            '), url(' +
+            env +
+            '/spinner2.gif)'
+          : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+      }"
+    ></div>
+    <span class="kioskoId">{{ data.merchant.name }}</span>
+
+    <ng-container *ngIf="showUserByMerchantLabel; else lastAnswered">
+      by {{ data.user.name || data.user.phone || data.user.email }}
+    </ng-container>
+
+    <ng-template #lastAnswered>
+      {{ getCreationDateDifferenceAsItsSaid(data.createdAt) }}
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template
+  #listItem
+  let-list="arrayOfItems"
+  let-showTextBody="showTextBody"
+  let-textBody="textBody"
+  let-addBlankSpace="addBlankSpace"
+  let-showResponsesLink="showResponsesLink"
+  let-responsesLinkView="responsesLinkView"
+>
+  <li class="list-card" *ngFor="let item of list">
+    <div class="top-row">
+      <ng-container
+        *ngTemplateOutlet="
+          userPresentation;
+          context: { dataObject: item, showMerchantAndUser: true }
+        "
+      ></ng-container>
+
+      <div
+        class="responses-link"
+        *ngIf="showResponsesLink && responsesLinkView"
+        (click)="changeView(responsesLinkView, item)"
+      >
+        {{
+          item.responsesGroupedByQuestion
+            ? item.responsesGroupedByQuestion.length
+            : 0
+        }}
+        Respuestas
+      </div>
+    </div>
+
+    <div class="text-body" *ngIf="showTextBody && textBody">
+      {{ item[textBody] }}
+    </div>
+
+    <div class="blank-space" *ngIf="addBlankSpace"></div>
+
+    <div class="bottom-row">
+      <div class="date-relative-info">
+        Respondió
+        {{ getCreationDateDifferenceAsItsSaid(item.createdAt) }}
+      </div>
+
+      <!--
+        <img
+          class="three-dots"
+          [src]="env + '/dots-black.svg'"
+          alt="more options"
+        />
+      -->
+    </div>
+  </li>
+</ng-template>

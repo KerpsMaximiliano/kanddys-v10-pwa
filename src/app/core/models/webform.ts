@@ -60,7 +60,7 @@ export class QuestionInput {
   subIndex?: number;
   value?: string;
   answerDefault?: AnswerDefaultInput[];
-  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME' | 'DECIMAL';
+  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME' | 'MAX12' | 'MIN12' | 'NUMBER';
   answerLimit?: number;
   show?: Boolean;
   required?: Boolean;
@@ -77,7 +77,7 @@ export class Question extends Model<Question> {
   show: boolean;
   required: boolean;
   active: boolean;
-  answerTextType?: 'default' | 'phone' | 'email' | 'phone' | 'name';
+  answerTextType?: 'default' | 'phone' | 'email' | 'phone' | 'name' | 'max12' | 'min12' | 'number';
   answerMedia: boolean;
   answerLimit?: number;
 }
@@ -113,15 +113,13 @@ export interface WebformAnswer extends Model<Answer> {
   reference: string;
 }
 
-
-
 export interface WebformResponseInput {
   question: string;
   value?: string;
   label?: string;
   media?: File;
   isMedia?: boolean;
-};
+}
 
 export interface WebformAnswerInput {
   webform: string;
@@ -133,4 +131,11 @@ export interface WebformAnswerInput {
 export class ItemWebform extends Model<ItemWebform> {
   reference: string;
   active: boolean;
+}
+
+export interface AnswersGroupedByUser {
+  _id: string;
+  answers: Array<Answer>;
+  user?: User;
+  merchant?: Merchant;
 }

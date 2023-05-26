@@ -171,6 +171,7 @@ import { CollectionCardComponent } from './components/collection-card/collection
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { CompactCardComponent } from './components/compact-card/compact-card.component';
 import { WebformsCreatorComponent } from './components/webforms-creator/webforms-creator.component';
 import { WebformQuestionDialogComponent } from './components/webform-question-dialog/webform-question-dialog.component';
@@ -190,11 +191,23 @@ import { ArticleStepperFormComponent } from './components/article-stepper-form/a
 import { FacturasDisplay2Component } from './components/facturas-display2/facturas-display2.component';
 import { FullMenuButtonComponent } from './components/full-menu-button/full-menu-button.component';
 import { NotificationDialogComponent } from './dialogs/notification-dialog/notification-dialog.component';
+import { FormCreatorComponent } from './components/form-creator/form-creator.component';
+import { MediaUploadDndComponentComponent } from './components/media-upload-dnd-component/media-upload-dnd-component.component';
+import { FormResponsesComponent } from './components/form-responses/form-responses.component';
 import { InfoContainerComponent } from './components/info-container/info-container.component';
 import { CardInfoComponent } from './components/card-info/card-info.component';
 import { SmallInfoCardComponent } from './components/small-info-card/small-info-card.component';
 import { KioskerosCardsComponent } from './components/kioskeros-cards/kioskeros-cards.component';
 import { ContactHeaderComponent } from './components/contact-header/contact-header.component';
+import { ItemInfoComponent } from './dialogs/item-info/item-info.component';
+import { OrderInfoComponent } from './dialogs/order-info/order-info.component';
+import { IncomeFilterComponent } from './components/income-filter/income-filter.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { FormResponsesByQuestionComponent } from './components/form-responses-by-question/form-responses-by-question.component';
+import { WebformClientViewComponent } from './components/webform-client-view/webform-client-view.component';
+import { AutofocusDirective } from '../core/directives/autofocus.directive';
+import { BuyerNotificationDialogComponent } from './dialogs/buyer-notification-dialog/buyer-notification-dialog.component';
 
 const imports = [
   CommonModule,
@@ -228,6 +241,8 @@ const imports = [
   MatCheckboxModule,
   MatGridListModule,
   MatTabsModule,
+  MatToolbarModule,
+  MatSidenavModule,
 ];
 const declarations = [
   // Pages
@@ -399,11 +414,22 @@ const declarations = [
   FacturasDisplay2Component,
   FullMenuButtonComponent,
   NotificationDialogComponent,
+  FormCreatorComponent,
+  MediaUploadDndComponentComponent,
+  FormResponsesComponent,
   InfoContainerComponent,
   CardInfoComponent,
   SmallInfoCardComponent,
   KioskerosCardsComponent,
   ContactHeaderComponent,
+  ItemInfoComponent,
+  OrderInfoComponent,
+  IncomeFilterComponent,
+  NavigationComponent,
+  FormResponsesByQuestionComponent,
+  WebformClientViewComponent,
+  AutofocusDirective,
+  BuyerNotificationDialogComponent,
 ];
 
 @NgModule({
