@@ -83,7 +83,7 @@
             class="section-title grayout-label"
             (click)="openWebform(item._id, i)"
           >
-            {{ question.value }}
+            {{ capitalize(question.value) }}
           </p>
 
           <!--RESPUESTA UNICA-->
@@ -108,7 +108,7 @@
                   !answersByQuestion[question._id].isMedia
                 "
               >
-                {{ answersByQuestion[question._id]?.response }}
+                {{ capitalize(answersByQuestion[question._id]?.response) }}
               </div>
 
               <div
@@ -121,10 +121,12 @@
               >
                 {{
                   question.type === "text" && question.answerTextType === "name"
-                    ? answersByQuestion[question._id]?.response +
-                      " " +
-                      answersByQuestion[question._id]?.responseLabel
-                    : answersByQuestion[question._id]?.responseLabel
+                    ? capitalize(
+                        answersByQuestion[question._id]?.response +
+                        " " +
+                        answersByQuestion[question._id]?.responseLabel
+                      )
+                    : capitalize(answersByQuestion[question._id]?.responseLabel)
                 }}
               </div>
             </ng-container>

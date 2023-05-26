@@ -24,6 +24,7 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Subscription } from 'rxjs';
+import { capitalize } from 'src/app/core/helpers/strings.helpers';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -60,6 +61,8 @@ export class CartComponent implements OnInit {
   isCheckboxChecked: boolean = false;
 
   queryParamsSubscription: Subscription = null;
+
+  capitalize = capitalize;
 
   constructor(
     public headerService: HeaderService,
