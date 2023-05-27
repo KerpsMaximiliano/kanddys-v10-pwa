@@ -2,7 +2,7 @@ import { LocationStrategy } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import { capitalize, formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import {
   ItemOrder,
@@ -143,6 +143,7 @@ export class OrderDetailComponent implements OnInit {
   tagPanelState: boolean;
   webformsByItem: Record<string, Webform> = {};
   answersByItem: Record<string, WebformAnswer> = {};
+  answersByItemDropdownOpened: Record<string, boolean> = {};
   from: string;
   navigationWithMessage: string;
   deliveryImages: {
@@ -154,6 +155,8 @@ export class OrderDetailComponent implements OnInit {
   chatLink: string;
   panelOpenState = false;
   openNavigation = false;
+
+  capitalize = capitalize;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
@@ -980,6 +983,7 @@ export class OrderDetailComponent implements OnInit {
             }
 
             this.answersByItem[item._id] = answersForWebform;
+            this.answersByItemDropdownOpened[item._id] = false;
           }
         }
       }

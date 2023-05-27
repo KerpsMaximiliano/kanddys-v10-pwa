@@ -24,6 +24,8 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Subscription } from 'rxjs';
+import { capitalize } from 'src/app/core/helpers/strings.helpers';
+import { PostsService } from 'src/app/core/services/posts.service';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -61,6 +63,8 @@ export class CartComponent implements OnInit {
 
   queryParamsSubscription: Subscription = null;
 
+  capitalize = capitalize;
+
   constructor(
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
@@ -69,7 +73,8 @@ export class CartComponent implements OnInit {
     private _WebformsService: WebformsService,
     private appService: AppService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private postsService: PostsService
   ) {}
 
   async ngOnInit() {
@@ -719,6 +724,8 @@ export class CartComponent implements OnInit {
 
   toggleCheckbox(event: any) {
     this.isCheckboxChecked = event;
+
+    if (this.isCheckboxChecked) this.postsService.post.appliesMessage = false;
   }
 
   ngOnDestroy(): void {
