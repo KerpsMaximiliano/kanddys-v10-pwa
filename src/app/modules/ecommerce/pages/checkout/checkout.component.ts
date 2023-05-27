@@ -757,6 +757,8 @@ export class CheckoutComponent implements OnInit {
       localStorage.removeItem('postReceiverNumber');
       delete this.post.joke;
 
+      this.orderInMemory = this.headerService.order;
+
       /*
       let hasTheUserAnsweredAnyWebform = false;
 
@@ -817,7 +819,6 @@ export class CheckoutComponent implements OnInit {
         return;
       } else if (!this.logged && this.areWebformsValid) {
         console.log("pre creando orden", this.headerService.order);
-        this.orderInMemory = this.headerService.order;
 
         console.log("orden in memory 1", this.orderInMemory);
         const createdOrder = (

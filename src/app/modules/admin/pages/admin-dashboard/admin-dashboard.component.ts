@@ -266,14 +266,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    const income = await this._MerchantsService.incomeMerchant({
+    lockUI();
+
+    const incomeMerchantPromise = this._MerchantsService.incomeMerchant({
       findBy: {
         merchant: this._MerchantsService.merchantData._id,
       },
     });
-
-    console.log(income);
-    this.income = income.toFixed(2);
 
     const notSoldPagination = {
       options: {
@@ -287,14 +286,18 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       },
     };
 
-    const notSoldItems = await this._ItemsService.itemsByMerchantNosale(
-      notSoldPagination
-    );
-    this.notSoldItems = Object.values(notSoldItems)[0];
-    console.log(this.notSoldItems);
-    console.log(this.notSoldItems.length);
+    const notSoldItemsPromise =
+      this._ItemsService.itemsByMerchantNosale(notSoldPagination);
 
-    await this.getOrders();
+    const [income, notSoldItems] = await Promise.all([
+      incomeMerchantPromise,
+      notSoldItemsPromise,
+      this.getOrders(),
+    ]);
+
+    this.income = income.toFixed(2);
+    this.notSoldItems = Object.values(notSoldItems)[0];
+
     if (this._SaleflowService.saleflowData) {
       this.inicializeItems(true, false, true);
       this.getTags();
@@ -304,7 +307,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.getHiddenItems();
       this.getOrdersToConfirm();
 
-      console.log(this.filters);
+      unlockUI();
 
       return;
     }
@@ -313,14 +316,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         if (value) {
           this.inicializeItems(true, false, true);
           this.getTags();
-          //this.getOrders();
           this.getQueryParameters();
           this.getMostSoldItems();
           this.getLessSoldItems();
           this.getHiddenItems();
           this.getOrdersToConfirm();
 
-          console.log(this.filters);
+          unlockUI();
         }
       },
     });

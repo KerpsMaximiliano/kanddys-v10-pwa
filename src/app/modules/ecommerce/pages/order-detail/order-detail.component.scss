@@ -437,6 +437,7 @@ a {
     border-radius: 50%;
   }
   .title {
+    text-transform: capitalize;
     &:nth-child(2) {
       padding-left: 7px;
     }
@@ -1051,16 +1052,43 @@ table {
   text-transform: capitalize;
 }
 
-.mat-expansion-panel:not(.mat-expanded):not([aria-disabled="true"])
-  .mat-expansion-panel-header:hover {
-  background-color: #272727;
+.header-navigation {
+  .mat-expansion-panel:not(.mat-expanded):not([aria-disabled="true"])
+    .mat-expansion-panel-header:hover {
+    background-color: #272727;
+  }
+
+  ::ng-deep.mat-expansion-panel {
+    box-shadow: unset !important;
+    background-color: #272727 !important;
+  }
+
+  ::ng-deep.mat-expansion-panel-header:hover {
+    background-color: #272727 !important;
+  }
 }
 
-::ng-deep.mat-expansion-panel {
-  box-shadow: unset !important;
-  background-color: #272727 !important;
-}
+.answers-by-item {
+  ::ng-deep.mat-expansion-panel {
+    box-shadow: unset !important;
+  }
 
-::ng-deep.mat-expansion-panel-header:hover {
-  background-color: #272727 !important;
+  ::ng-deep.mat-content {
+    align-items: center;
+  }
+
+  ::ng-deep.mat-expansion-panel-header {
+    padding: 0px 15px;
+    color: #7b7b7b;
+    font-size: 15px;
+    font-family: InterRegular;
+  }
+
+  ::ng-deep.mat-expansion-panel-header:hover {
+    background-color: #fff !important;
+  }
+
+  ::ng-deep.mat-expansion-panel-body {
+    padding: 0px 0px 16px;
+  }
 }
