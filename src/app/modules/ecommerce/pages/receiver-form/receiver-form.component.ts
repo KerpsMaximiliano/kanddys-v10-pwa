@@ -4,6 +4,8 @@ import { PostInput } from 'src/app/core/models/post';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-receiver-form',
@@ -29,6 +31,8 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   };
   queryParamsSubscription: Subscription = null;
   redirectTo = 'checkout';
+
+  env: string = environment.assetsUrl;
 
   constructor(
     private postsService: PostsService,
@@ -104,6 +108,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   submit() {
     if (this.isValid()) {
       this.save();
+      this.postsService.post.appliesMessage = true;
       return this.router.navigate([
         `ecommerce/${this.headerService.saleflow.merchant.slug}/` +
           this.redirectTo,
@@ -115,7 +120,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
     if (this.receiver === 'known') {
       if (this.receiverName !== '' && this.receiverContact !== '') return true;
       else return false;
-    } else if (this.receiver) return true;
+    } else if (this.receiver && this.checkboxChecked) return true;
     else false;
   }
 
@@ -124,6 +129,11 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
     this.isAnonymous = value;
     this.checkboxChecked = true;
   }
+
+  checkBoxEvent(event: MatCheckboxChange): void {
+    this.checkboxChecked = event.checked;
+    if (!this.checkboxChecked) this.anonymous = undefined;
+}
 
   ngOnDestroy(): void {
     this.queryParamsSubscription.unsubscribe();

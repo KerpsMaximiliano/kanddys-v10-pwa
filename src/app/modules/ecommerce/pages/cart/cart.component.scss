@@ -147,25 +147,30 @@ main {
 footer {
   position: fixed;
   bottom: 0;
-  z-index: 9999;
+  z-index: 999;
   max-width: 500px;
   width: 100%;
   background-color: #181d17;
-  padding: 20px 15px;
+  padding: 20px 16px;
 
   .form {
-    margin-left: 2em;
+    // margin-left: 2em;
     margin-bottom: 1.5em;
     .checkbox {
       color: #fff;
       font-family: InterRegular;
+    }
+
+    span {
+      color: #FFF;
+      margin-left: 1em;
     }
   }
 
   .cta {
     color: #181d17;
     padding: 10px;
-    width: 95%;
+    width: 100%;
     border-radius: 30px;
     text-align: center;
     color: #181d17;

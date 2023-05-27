@@ -52,7 +52,11 @@
         >
           <ng-container *ngIf="!step.fields.controls['areOptionsMedia'].value">
             <div class="list-introduction">
-              Selecciona una opción para continuar
+              {{
+                step.question.answerLimit === 1
+                  ? "Selecciona una opción para continuar"
+                  : "Selecciona al menos una opción para continuar"
+              }}
             </div>
 
             <ng-container *ngIf="step.question.type === 'multiple'">
@@ -291,5 +295,11 @@
     </div>
   </swiper>
 
-  <button class="save-button" (click)="saveWebform()">Salvar</button>
+  <button
+    class="save-button"
+    (click)="saveWebform(false, true)"
+    *ngIf="steps[currentStepIndex]?.fields.valid"
+  >
+    Salvar
+  </button>
 </main>

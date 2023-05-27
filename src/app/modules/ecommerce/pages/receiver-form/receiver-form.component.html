@@ -36,10 +36,18 @@
             </form>
         </div>
 
-        <div style="display: flex; justify-content: flex-start; align-items: center;">
-            <mat-checkbox class="checkbox" [checked]="checkboxChecked" (check)="checkboxChecked = !checkboxChecked">{{ isAnonymous ? 'Es un regalo anónimo' : 'No es un regalo anónimo' }}</mat-checkbox>
-            <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-right" (click)="showHiddenOption = !showHiddenOption" *ngIf="!showHiddenOption"></i>
-            <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-down" (click)="showHiddenOption = !showHiddenOption" *ngIf="showHiddenOption"></i>
+        <div style="display: flex; justify-content: flex-start; align-items: center; position: relative;">
+            <mat-checkbox class="checkbox" (change)="checkBoxEvent($event)" [checked]="checkboxChecked" (check)="checkboxChecked = !checkboxChecked"></mat-checkbox>
+            <div (click)="showHiddenOption = !showHiddenOption">
+                <span style="color: #FFF; margin-left: 1em;">{{ isAnonymous ? 'Es un regalo anónimo' : 'No es un regalo anónimo' }}</span>
+                <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-right"  *ngIf="!showHiddenOption"></i>
+                <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-down" *ngIf="showHiddenOption"></i>
+                <img
+                    [src]="env + '/green-arrow-small.svg'"
+                    class="small-arrow-green"
+                    *ngIf="!checkboxChecked"
+                />
+            </div>
         </div>
 
         <div class="options-section" *ngIf="showHiddenOption">

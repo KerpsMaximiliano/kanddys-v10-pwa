@@ -121,7 +121,7 @@ export function unformatID(
 }
 
 export function capitalize(text) {
-  return text.replace(/\b\w/g, (l) => l.toUpperCase());
+  return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 }
 
 export function getDaysAgo(date: string) {
