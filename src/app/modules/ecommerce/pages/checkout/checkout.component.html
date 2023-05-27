@@ -75,22 +75,28 @@
           hideToggle
         >
           <mat-expansion-panel-header>
-            <div class="between" style="display: flex; align-items: center">
-              <h2 class="section-title" style="margin: 0">
-                {{ this.headerService?.order?.products.length }} Artículos
-                facturados
-              </h2>
-              <mat-icon
-                [ngStyle]="{
-                  color: '#7B7B7B',
-                  marginLeft: '10px'
-                }"
-                >{{
-                  panelOpenState
-                    ? "keyboard_arrow_down"
-                    : "keyboard_arrow_right"
-                }}
-              </mat-icon>
+            <div class="between" style="display: flex; align-items: center; flex-wrap: wrap;">
+              <div 
+                style="flex: 0 0 60%;
+                display: flex;
+                align-items: center;"
+              >
+                <h2 class="section-title" style="margin: 0">
+                  {{ this.headerService?.order?.products.length }} Artículos
+                  facturados
+                </h2>
+                <mat-icon
+                  [ngStyle]="{
+                    color: '#7B7B7B',
+                    marginLeft: '10px'
+                  }"
+                  >{{
+                    panelOpenState
+                      ? "keyboard_arrow_down"
+                      : "keyboard_arrow_right"
+                  }}
+                </mat-icon>
+              </div>
               <h2
                 class="section-title"
                 style="position: absolute; right: 18px; margin: 0"
@@ -415,7 +421,7 @@
       </button>
     </section>
 
-    <section class="section">
+    <section class="section" *ngIf="postsService?.post?.appliesMessage">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Tarjeta dedicatoria</h2>
       </div>
@@ -450,7 +456,7 @@
       </button>
     </section>
 
-    <section class="section">
+    <section class="section" *ngIf="postsService?.post?.appliesMessage">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Lo recibirá</h2>
       </div>
@@ -469,6 +475,19 @@
                 ? "Un conocido"
                 : "..."
             }}
+            <br *ngIf="postsService.post?.provisionalReceiver">{{ postsService.post?.provisionalReceiver
+              ? "Nombre: " + postsService.post?.provisionalReceiver
+              : ""
+            }}
+            <br *ngIf="postsService.post?.provisionalReceiverContact">{{ postsService.post?.provisionalReceiverContact
+              ? "Contacto: " + postsService.post?.provisionalReceiver
+              : ""
+            }}
+            <br *ngIf="postsService.post?.isAnonymous">{{ postsService.post?.isAnonymous === true
+              ? "Anonimato: sí"
+              : "Anonimato: no"
+            }}
+
           </p>
         </button>
       </ng-container>
