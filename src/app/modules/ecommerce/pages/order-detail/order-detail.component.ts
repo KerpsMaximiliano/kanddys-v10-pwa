@@ -88,7 +88,7 @@ export class OrderDetailComponent implements OnInit {
     percentageBenefits: number;
     percentageLess: number;
   };
-  orderStatus: OrderStatusNameType;
+  orderStatus;
   orderDate: string;
   paymentType: string;
   date: {
@@ -157,6 +157,14 @@ export class OrderDetailComponent implements OnInit {
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
+
+  statusList: OrderStatusDeliveryType[] = [
+    'in progress',
+    'pending',
+    'pickup',
+    'shipped',
+    'delivered',
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -290,16 +298,15 @@ export class OrderDetailComponent implements OnInit {
       this.order.orderStatus
     );
     const temporalDate = new Date(this.order.createdAt);
-    this.orderDate = temporalDate
-      .toLocaleString('es-MX', {
-        hour12: true,
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-      .toLocaleUpperCase();
+    this.orderDate = temporalDate.toLocaleString('es-MX', {
+      hour12: true,
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
     if (!this.headerService.merchantContact) {
       this.headerService.merchantContact = (
         await this.contactService.contacts({
@@ -340,9 +347,17 @@ export class OrderDetailComponent implements OnInit {
           },
         });
 
+        this.entityTemplateLink =
+          this.URI +
+          '/ecommerce/' +
+          this.order.items[0].saleflow.merchant.slug +
+          '/article-detail/post/' +
+          this.post._id;
+
         if (results.length > 0) {
           this.entityTemplate = results[0];
 
+          /*
           this.entityTemplateLink =
             this.entityTemplate.access === 'public' ||
             this.entityTemplate.recipients === 0
@@ -350,6 +365,7 @@ export class OrderDetailComponent implements OnInit {
               : this.URI +
                 '/ecommerce/article-access/' +
                 this.entityTemplate._id;
+                */
         }
       }
     }
@@ -890,7 +906,7 @@ export class OrderDetailComponent implements OnInit {
       await this.webformsService.answerByOrder(this.order._id);
 
     console.log('AnswersByOrder', answers);
-    if (answers.length) {
+    if (answers?.length) {
       const webformsIds = [];
       for (const item of this.order.items) {
         if (item.item.webForms && item.item.webForms.length) {

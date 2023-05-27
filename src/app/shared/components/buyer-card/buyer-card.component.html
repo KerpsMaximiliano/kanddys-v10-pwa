@@ -19,7 +19,6 @@
       }"
     >
       <div>
-        <span class="normal-price">PRECIO NORMAL</span>
         <p>
           <span>RD$ {{ leftAmount | number }} </span>
           <span *ngIf="rightAmount">- ${{ rightAmount | number }}</span>
@@ -30,9 +29,9 @@
         class="cart-button"
         [ngClass]="{ active: ctaActive }"
         (click)="emitClick()"
-        *ngIf="cta"
+        *ngIf="cta && ctaActive"
       >
-        {{ ctaActive ? "En el carrito" : "Comprar" }}
+        En el carrito
         <!-- <span><img [src]="env + '/carrito_blanco.svg'" alt="" /></span> -->
       </button>
     </div>
@@ -47,14 +46,25 @@
       <br />
       <span *ngIf="description" class="description">{{ description }}</span>
     </p>
-    <div class="image-container" *ngIf="mode === 'normal'">
+    <div
+      class="image-container"
+      *ngIf="mode === 'normal'"
+      [ngClass]="{
+        fullWidth: !description && !title
+      }"
+    >
       <img
         class="img"
+        [ngClass]="{
+          full: !description && !title
+        }"
         #imgContainer
         [src]="img"
         (error)="img = '/assets/images/noimage.png'"
       />
-      <span class="see-more">Mira mas</span>
+      <!--
+        <span class="see-more">Ver detalle</span>
+      -->
     </div>
 
     <div
@@ -68,7 +78,10 @@
         [src]="img"
         (error)="img = '/assets/images/noimage.png'"
       />
-      <span class="see-more">Mira mas</span>
+
+      <!--
+        <span class="see-more">Ver detalle</span>
+      -->
     </div>
   </div>
 </ng-template>

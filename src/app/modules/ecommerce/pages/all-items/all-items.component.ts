@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -39,7 +40,8 @@ export class AllItemsComponent implements OnInit {
     public headerService: HeaderService,
     private appService: AppService,
     private saleflowService: SaleFlowService,
-    private ngNavigatorShareService: NgNavigatorShareService
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -56,6 +58,14 @@ export class AllItemsComponent implements OnInit {
         _id: {
           __in: ([] = saleflowItems.map((items) => items.item)),
         },
+        $or: [
+          {
+            status: 'active',
+          },
+          {
+            status: 'featured',
+          },
+        ],
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -210,6 +220,8 @@ export class AllItemsComponent implements OnInit {
     });
 
     this.items[index].isSelected = !this.items[index].isSelected;
+
+    if (this.items[index].isSelected) this.router.navigate([`/ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`]);
   }
 
   shareStore() {

@@ -128,6 +128,7 @@ const fullItem = `
     reference
     active
   }
+  active
 `;
 
 export const items = gql`
@@ -641,5 +642,38 @@ export const itemsArchived = gql`
 export const itemTotalPagination = gql`
   query itemTotalPagination($paginate: PaginationInput) {
     itemTotalPagination(paginate: $paginate)
+  }
+`;
+
+export const itemsByMerchantNosale = gql`
+  query itemsByMerchantNosale($paginate: PaginationInput) {
+    itemsByMerchantNosale(paginate: $paginate) {
+      _id
+      name
+      images {
+        value
+        index
+        active
+      }
+      notifications
+      category {
+        _id
+        name
+      }
+      params {
+        _id
+        name
+        values {
+          _id
+          name
+          price
+          image
+          quantity
+        }
+      }
+      featuredImage
+      pricing
+      status
+    }
   }
 `;

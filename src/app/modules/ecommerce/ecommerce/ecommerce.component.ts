@@ -115,7 +115,7 @@ export class EcommerceComponent implements OnInit {
 
   goToCheckout = () => {
     this.router.navigate([
-      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',
     ]);
   };
 }

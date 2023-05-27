@@ -87,6 +87,7 @@ export const merchantDefault = gql`
       activity
       bio
       address
+      contactFooter
       owner {
         _id
         phone

@@ -15,6 +15,7 @@ export class QrContentComponent implements OnInit {
   @Input() title: string = 'Contenido del QR';
   @Input() slides: Array<SlideInput> = [];
   @Input() shadows: boolean = true;
+  @Input() editing: boolean = true;
   @Input() joke: string = '';
   @Input() defaultText: string = '';
   @Input() alternateStyles: boolean = false;

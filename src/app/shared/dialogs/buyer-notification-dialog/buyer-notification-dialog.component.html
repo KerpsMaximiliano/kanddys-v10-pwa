@@ -1,0 +1,36 @@
+<div style="text-align: center">
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: InterRegular;
+    "
+  >
+    <span style="color: #171d16">Mensaje a {{ data.username }}:</span>
+    <button mat-button style="color: #189ac1" (click)="editNotif()">
+      Editar plantilla
+    </button>
+  </div>
+  <p
+    style="
+      text-align: justify;
+      font-family: InterRegular;
+      margin-bottom: 24px;
+      color: #171d16;
+    "
+  >
+    {{ data.message }}
+  </p>
+  <div>
+    <a
+      mat-flat-button
+      [href]="data.link"
+      target="_blank"
+      style="background-color: #70cf97"
+      (click)="close()"
+    >
+      Enviar por WhatsApp
+    </a>
+  </div>
+</div>
