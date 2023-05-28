@@ -9,20 +9,20 @@
       "
       (click)="iconCallback()"
     >
-      <mat-icon style="margin-right: 7.82px">keyboard_arrow_left</mat-icon>
+      <mat-icon style="margin-right: 7.82px; margin-left: -17px; height: auto; font-size: 34px;">keyboard_arrow_left</mat-icon>
 
       <p class="text">
         {{ item?.name ? item?.name : "Artículo sin Nombre" }}
       </p>
     </button>
 
-    <button style="margin-right: 20px" mat-icon-button>
+    <button style="margin-right: 20px;" mat-icon-button>
       <mat-icon>search</mat-icon>
     </button>
-    <button style="margin-right: 20px" mat-icon-button (click)="plusOptions()">
-      <mat-icon>add</mat-icon>
+    <button style="margin-right: 20px;" mat-icon-button (click)="plusOptions()">
+      <mat-icon style="font-weight: bold;">add</mat-icon>
     </button>
-    <button style="margin-top: -2px" mat-icon-button (click)="dotsOptions()">
+    <button style="margin-top: -2px;" mat-icon-button (click)="dotsOptions()">
       <img [src]="env + '/dots-black.svg'" alt="" />
     </button>
   </div>
@@ -89,7 +89,7 @@
     <span>Configuraciones</span>
   </button> -->
 
-  <div class="section">
+  <div class="section" style="padding-top: 48px">
     <!-- <app-title-icon-header
       title="Slides, contenido del QR"
       [editing]="!editingSlides"
@@ -121,11 +121,7 @@
     ></app-qr-content>
   </div>
 
-  <div
-    class="section"
-    style="padding-top: 52px"
-    *ngIf="editingPrice && price.value !== ''"
-  >
+  <div class="section" *ngIf="editingPrice && price.value !== ''">
     <app-title-icon-header
       title="Precio"
       [editing]="!editingPrice"
@@ -254,11 +250,8 @@
   ></app-menu-button> -->
 </div>
 
-<app-webforms-creator
-  *ngIf="headerService.user && item && endedOnInit"
-  [opened]="openedDialogFlow"
-  [resumingCreation]="resumingWebformCreation"
-  [item]="item"
-  [user]="headerService.user"
-  (closeEvent)="reloadWebform()"
-></app-webforms-creator>
+<footer class="fixed-bottom-bar">
+  <button style="margin-top: -2px" mat-icon-button (click)="dotsOptions()">
+    <img [src]="env + '/dots-black.svg'" alt="" />
+  </button>
+</footer>

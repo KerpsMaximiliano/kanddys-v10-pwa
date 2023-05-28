@@ -4,7 +4,7 @@
 
 .container {
   min-height: 100vh;
-  margin-bottom: 35px;
+  padding-bottom: 60px;
   background-color: #f6f6f6;
 
   .header {
@@ -33,10 +33,10 @@
 
   .card {
     width: 100%;
-    font-family: SFProRegular;
+    font-family: InterRegular;
     color: #000000;
     font-size: 17px;
-    padding: 28.5px 25px;
+    padding: 30.08px 25.01px 26.92px 25.01px;
     resize: none;
     border: none;
     border-radius: 7px;
@@ -326,5 +326,24 @@
       position: absolute;
       right: 20px;
     }
+  }
+}
+
+.fixed-bottom-bar {
+  padding: 13px 11px;
+  background-color: #6FCF97;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  max-width: 500px;
+  margin: auto;
+
+  button {
+    height: auto;
+    line-height: initial;
   }
 }
