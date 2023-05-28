@@ -89,8 +89,8 @@ export class ArticleEditorComponent implements OnInit {
   loadingSlides: boolean;
 
   editingPrice: boolean = true;
-  editingName: boolean = false;
-  editingDescription: boolean = false;
+  editingName: boolean = true;
+  editingDescription: boolean = true;
   editingSlides: boolean = false;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = ['video/mp4', 'video/webm'];
@@ -353,7 +353,9 @@ export class ArticleEditorComponent implements OnInit {
       }
       this.price.setValue(this.item.pricing);
       this.name.setValue(this.item.name);
+      this.productName = this.item.name;
       this.description.setValue(this.item.description);
+      this.productDescription = this.item.description;
       if (this.item.images.length) {
         this.loadingSlides = false;
 
@@ -488,7 +490,7 @@ export class ArticleEditorComponent implements OnInit {
       name: this.name.value || null,
       description: this.description.value || null,
       content: this.content.length > 0 ? this.content : null,
-      pricing: this.price.value
+      pricing: this.price.value,
     };
     this._ItemsService.itemPrice = null;
     this._ItemsService.itemName = null;
@@ -885,7 +887,9 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   async plusOptions() {
-    const link = `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`;
+    const link =
+      `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/article-detail/item/` +
+      this.item._id;
     const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
       data: [
         {
@@ -908,7 +912,7 @@ export class ArticleEditorComponent implements OnInit {
             {
               title: 'Adicionalo a una de tus categorías',
               callback: async () => {
-                this.showIncluded = true;
+                this.openTagDialog();
               },
             },
             {
@@ -922,9 +926,17 @@ export class ArticleEditorComponent implements OnInit {
             {
               title: 'Ver como lo ven otros',
               callback: () => {
-                this._Router.navigate([
-                  `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
-                ]);
+                this._Router.navigate(
+                  [
+                    `/ecommerce/${this._MerchantsService.merchantData.slug}/article-detail/item/` +
+                      this.item._id,
+                  ],
+                  {
+                    queryParams: {
+                      mode: 'saleflow',
+                    },
+                  }
+                );
               },
             },
             {
@@ -932,13 +944,13 @@ export class ArticleEditorComponent implements OnInit {
               callback: () => {
                 this.ngNavigatorShareService.share({
                   title: '',
-                  url: link,
+                  url: link + '?mode=saleflow',
                 });
               },
             },
             {
               title: 'Descargar el qrCode',
-              link,
+              link: link + '?mode=saleflow',
             },
           ],
         },
@@ -954,7 +966,9 @@ export class ArticleEditorComponent implements OnInit {
       this.showArticleText = 'Ocultar';
       this.newStatus = 'disabled';
     }
-    const link = `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`;
+    const link =
+      `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/article-detail/item/` +
+      this.item._id;
     const bottomSheetRef = this._bottomSheet.open(LinksDialogComponent, {
       data: [
         {
@@ -1023,9 +1037,17 @@ export class ArticleEditorComponent implements OnInit {
             {
               title: 'Ver como lo ven otros',
               callback: () => {
-                this._Router.navigate([
-                  `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
-                ]);
+                this._Router.navigate(
+                  [
+                    `/ecommerce/${this._MerchantsService.merchantData.slug}/article-detail/item/` +
+                      this.item._id,
+                  ],
+                  {
+                    queryParams: {
+                      mode: 'saleflow',
+                    },
+                  }
+                );
               },
             },
             {
@@ -1033,13 +1055,13 @@ export class ArticleEditorComponent implements OnInit {
               callback: () => {
                 this.ngNavigatorShareService.share({
                   title: '',
-                  url: link,
+                  url: link + '?mode=saleflow',
                 });
               },
             },
             {
               title: 'Descargar el qrCode',
-              link,
+              link: link + '?mode=saleflow',
             },
           ],
         },
@@ -1251,7 +1273,7 @@ export class ArticleEditorComponent implements OnInit {
   }
 
   async getAnswersForWebform() {
-    if(this.item.webForms.length) {
+    if (this.item.webForms.length) {
       this.answersForWebform = await this.webformsService.answerPaginate({
         findBy: {
           webform: this.item.webForms[0].reference,
@@ -1262,7 +1284,7 @@ export class ArticleEditorComponent implements OnInit {
         },
       });
       console.log(this.answersForWebform);
-  
+
       for (let i = 0; i < this.answersForWebform.length; i++) {
         if (this.answersForWebform[i].response.length > 0) {
           this.totalAnswers =
@@ -1288,8 +1310,8 @@ export class ArticleEditorComponent implements OnInit {
     this.totalSells = revenue.itemTotalPagination[0].count;
     this.totalIncome = revenue.itemTotalPagination[0].total;
 
-    console.log("this.totalSells", this.totalSells);
-    console.log("this.totalIncome", this.totalIncome);
+    console.log('this.totalSells', this.totalSells);
+    console.log('this.totalIncome', this.totalIncome);
   }
 
   goToWebformResponses() {

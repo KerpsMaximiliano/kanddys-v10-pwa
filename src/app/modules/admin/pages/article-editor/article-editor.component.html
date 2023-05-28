@@ -121,17 +121,18 @@
     ></app-qr-content>
   </div>
 
-  <div class="section" style="padding-top: 52px">
+  <div
+    class="section"
+    style="padding-top: 52px"
+    *ngIf="editingPrice && price.value !== ''"
+  >
     <app-title-icon-header
       title="Precio"
       [editing]="!editingPrice"
       (iconClicked)="editingPrice = true; setFocus('pricing')"
     >
     </app-title-icon-header>
-    <app-card [shadows]="editingPrice">
-      <span *ngIf="!editingPrice"
-        >RD$ {{ price.value ? price.value.toLocaleString("es-MX") : "0" }}</span
-      >
+    <app-card [shadows]="false">
       <app-currency-input
         [fieldStyles]="{
           boxShadow: 'none',
@@ -143,19 +144,18 @@
         (onInputEvent)="handleCurrencyInput($event)"
         placeholderColor="#7B7B7B"
         currencyLabel="RD$"
-        *ngIf="editingPrice"
       ></app-currency-input>
     </app-card>
   </div>
 
   <div class="section" *ngIf="initialName || showName">
     <app-title-icon-header
-      title="Nombre"
+      title="Nombre del articulo"
       [editing]="!editingName"
       (iconClicked)="editingName = true; setFocus('name')"
     >
     </app-title-icon-header>
-    <app-card [shadows]="editingName">
+    <app-card [shadows]="false">
       <span *ngIf="!editingName">{{
         name.value ? name.value : "Sin nombre..."
       }}</span>
@@ -181,7 +181,7 @@
       (iconClicked)="editingDescription = true; setFocus('description')"
     >
     </app-title-icon-header>
-    <app-card [shadows]="editingDescription">
+    <app-card [shadows]="false">
       <span *ngIf="!editingDescription" style="display: block; height: 86px">{{
         description.value ? description.value : "Sin descripción..."
       }}</span>

@@ -107,6 +107,7 @@ export class OrderDataComponent implements OnInit {
       .then(({ ordersByMerchant }) => {
         this.orderStatusDelivery.inProgress = {
           ...this.orderStatusDelivery.inProgress,
+          orders: ordersByMerchant,
           length: ordersByMerchant.length,
         };
       });
@@ -160,6 +161,7 @@ export class OrderDataComponent implements OnInit {
         this.orderStatusDelivery.pending = {
           ...this.orderStatusDelivery.pending,
           length: ordersByMerchant.length,
+          orders: ordersByMerchant,
         };
       });
     this.merchantsService
@@ -212,6 +214,7 @@ export class OrderDataComponent implements OnInit {
         this.orderStatusDelivery.pickup = {
           ...this.orderStatusDelivery.pickup,
           length: ordersByMerchant.length,
+          orders: ordersByMerchant,
         };
       });
     this.merchantsService
@@ -264,6 +267,7 @@ export class OrderDataComponent implements OnInit {
         this.orderStatusDelivery.shipped = {
           ...this.orderStatusDelivery.shipped,
           length: ordersByMerchant.length,
+          orders: ordersByMerchant,
         };
       });
     this.merchantsService
@@ -316,6 +320,7 @@ export class OrderDataComponent implements OnInit {
         this.orderStatusDelivery.delivered = {
           ...this.orderStatusDelivery.delivered,
           length: ordersByMerchant.length,
+          orders: ordersByMerchant,
         };
       });
     this.merchantsService
@@ -347,22 +352,28 @@ export class OrderDataComponent implements OnInit {
     console.log(this.orderStatusDelivery);
 
     if (this.articleId !== '') {
-      const inProgressPagination = {
+      const inProgressPagination: PaginationInput = {
         findBy: {
           item: this.articleId,
-          orderStatusDelivery: 'inProgress',
+          orderStatusDelivery: 'in progress',
         },
+        options: {
+          limit: -1
+        }
       };
       this.itemInProgressOrders = await this.ordersService.ordersByItem(
         inProgressPagination
       );
-      // console.log(this.itemInProgressOrders);
+      console.log("this.itemInProgressOrders", this.itemInProgressOrders);
 
       const pendingPagination = {
         findBy: {
           item: this.articleId,
           orderStatusDelivery: 'pending',
         },
+        options: {
+          limit: -1
+        }
       };
       this.itemPendingOrders = await this.ordersService.ordersByItem(
         pendingPagination
@@ -374,6 +385,9 @@ export class OrderDataComponent implements OnInit {
           item: this.articleId,
           orderStatusDelivery: 'pickup',
         },
+        options: {
+          limit: -1
+        }
       };
       this.itemPickupOrders = await this.ordersService.ordersByItem(
         pickupPagination
@@ -385,6 +399,9 @@ export class OrderDataComponent implements OnInit {
           item: this.articleId,
           orderStatusDelivery: 'shipped',
         },
+        options: {
+          limit: -1
+        }
       };
       this.itemShippedOrders = await this.ordersService.ordersByItem(
         shippedPagination
@@ -396,6 +413,9 @@ export class OrderDataComponent implements OnInit {
           item: this.articleId,
           orderStatusDelivery: 'delivered',
         },
+        options: {
+          limit: -1
+        }
       };
       this.itemDeliveredOrders = await this.ordersService.ordersByItem(
         deliveredPagination
