@@ -70,6 +70,7 @@ main {
             color: #FFF;
             font-size: 16px;
             font-family: InterRegular;
+            margin-bottom: 0;
         }
 
         margin-top: 2em;
@@ -92,6 +93,12 @@ main {
     }
 }
 
+.small-arrow-green {
+    position: absolute;
+    right: -16px;
+    top: -4px;
+}
+
 ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline {
     background-color: #82F18D;
 }
@@ -109,6 +116,10 @@ main {
     color: #7B7B7B;
     font-family: InterSemiBold;
     font-size: 21px;
+}
+
+::ng-deep .mat-form-field-should-float .mat-form-field-label {
+    display: none !important;
 }
 
 ::ng-deep .mat-form-field.mat-focused .mat-form-field-label {

@@ -86,6 +86,7 @@ export class PostInput {
   provisionalReceiverContact?: string;
   receiver?: 'me' | 'gifted' | 'unkwown' | 'known';
   isAnonymous?: boolean;
+  appliesMessage?: boolean = true;
 }
 
 export class Slide extends Model<Slide> {
