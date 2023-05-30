@@ -64,7 +64,7 @@
         (click)="openNavigation = true"
       >
         Artículos
-        <mat-icon  style="color: #82f18d; margin-left: 8px">menu</mat-icon>
+        <mat-icon style="color: #82f18d; margin-left: 8px">menu</mat-icon>
       </button>
     </header>
 
@@ -74,7 +74,9 @@
         <div
           class="category-item"
           *ngFor="let filter of filters; let i = index"
-          [ngClass]="{ active: selectedFilter && selectedFilter._id === filter._id }"
+          [ngClass]="{
+            active: selectedFilter && selectedFilter._id === filter._id
+          }"
           (click)="isFilterActive(filter)"
         >
           {{
@@ -121,7 +123,7 @@
       <mat-date-range-picker #picker></mat-date-range-picker>
     </mat-form-field>
 
-    <div class="section">
+    <div class="section" *ngIf="recentlySoldItems?.length > 0">
       <div class="section-header">
         <p class="section-title">Vendidos</p>
 
@@ -172,7 +174,10 @@
                     }"
                   >
                     <div class="caption" *ngIf="item.status === 'disabled'">
-                      <img [src]="environment + '/closed-eye-black.svg'" alt="" />
+                      <img
+                        [src]="environment + '/closed-eye-black.svg'"
+                        alt=""
+                      />
                       Oculto al visitante
                     </div>
                   </div>
@@ -208,7 +213,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section" *ngIf="hiddenItems?.length > 0">
       <div class="section-header">
         <p class="section-title">Ocultos</p>
 
@@ -237,7 +242,10 @@
                     }"
                   >
                     <div class="caption" *ngIf="item.status === 'disabled'">
-                      <img [src]="environment + '/closed-eye-black.svg'" alt="" />
+                      <img
+                        [src]="environment + '/closed-eye-black.svg'"
+                        alt=""
+                      />
                       Oculto al visitante
                     </div>
                   </div>
@@ -267,7 +275,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section" *ngIf="lessSoldItems?.length > 0">
       <div class="section-header">
         <p class="section-title">Sin Venderse</p>
 
@@ -296,7 +304,10 @@
                     }"
                   >
                     <div class="caption" *ngIf="item.status === 'disabled'">
-                      <img [src]="environment + '/closed-eye-black.svg'" alt="" />
+                      <img
+                        [src]="environment + '/closed-eye-black.svg'"
+                        alt=""
+                      />
                       Oculto al visitante
                     </div>
                   </div>
@@ -361,7 +372,10 @@
                     }"
                   >
                     <div class="caption" *ngIf="item.status === 'disabled'">
-                      <img [src]="environment + '/closed-eye-black.svg'" alt="" />
+                      <img
+                        [src]="environment + '/closed-eye-black.svg'"
+                        alt=""
+                      />
                       Oculto al visitante
                     </div>
                   </div>
@@ -399,7 +413,17 @@
     </div>
 
     <div class="sticky-bar" (click)="openDatePicker()">
-      <p>{{ dateString }}</p>
+      <p>
+        {{
+          this.orders +
+            "facturas, " +
+            _MerchantsService.merchantIncome?.income +
+            " desde " +
+            formatDate(startDate) +
+            " hasta " +
+            formatDate(endDate)
+        }}
+      </p>
       <img [src]="environment + '/dots-black.svg'" alt="" />
       <!-- <div>
         <p>VISIBLE EN: URL.COM</p>

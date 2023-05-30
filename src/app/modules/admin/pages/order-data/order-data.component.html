@@ -4,24 +4,26 @@
     <div class="heading flex space-between">
       <div class="title">En preparación</div>
       <a class="info" [routerLink]="['list', 'in-progress']">
-        {{ orderStatusDelivery.inProgress?.length || 0 }}
+        {{ orderStatusDelivery["in progress"]?.length || 0 }}
         <i class="fas fa-chevron-right"></i>
       </a>
     </div>
-    <ng-container *ngIf="orderStatusDelivery.inProgress?.status === 'loading'">
+    <ng-container
+      *ngIf="orderStatusDelivery['in progress']?.status === 'loading'"
+    >
       Cargando...
     </ng-container>
-    <div *ngIf="orderStatusDelivery.inProgress.status === 'complete'">
-      <div *ngIf="!orderStatusDelivery.inProgress.orders.length">
+    <div *ngIf="orderStatusDelivery['in progress'].status === 'complete'">
+      <div *ngIf="!orderStatusDelivery['in progress'].orders.length">
         No hay órdenes en este proceso.
       </div>
 
       <swiper
         [config]="cardSwiperConfig"
-        *ngIf="orderStatusDelivery.inProgress.orders.length"
+        *ngIf="orderStatusDelivery['in progress'].orders.length"
       >
         <a
-          *ngFor="let order of orderStatusDelivery.inProgress.orders"
+          *ngFor="let order of orderStatusDelivery['in progress'].orders"
           [routerLink]="['/admin/order-slides']"
           [queryParams]="{
             progress: 'in progress'
@@ -60,14 +62,13 @@
     <ng-container *ngIf="orderStatusDelivery.pending?.status === 'loading'">
       Cargando...
     </ng-container>
-    <div *ngIf="orderStatusDelivery.pending.status === 'complete'">
-      <div *ngIf="!orderStatusDelivery.pending.orders.length">
-        No hay órdenes en este proceso.
-      </div>
-      <swiper
-        [config]="cardSwiperConfig"
-        *ngIf="orderStatusDelivery.pending.orders.length"
-      >
+    <div
+      *ngIf="
+        orderStatusDelivery.pending.status === 'complete' &&
+        orderStatusDelivery.pending.orders.length
+      "
+    >
+      <swiper [config]="cardSwiperConfig">
         <a
           *ngFor="let order of orderStatusDelivery.pending.orders"
           [routerLink]="['/admin/order-slides']"
@@ -247,26 +248,18 @@
 
 <div *ngIf="articleId">
   <!-- En preparación -->
-  <section>
+  <section *ngIf="itemInProgressOrders && itemInProgressOrders?.length">
     <div class="heading flex space-between">
       <div class="title">En preparación</div>
       <a class="info" [routerLink]="['list', 'in-progress']">
-        {{ itemInProgressOrders?.ordersByItem?.length || 0 }}
+        {{ itemInProgressOrders?.length || 0 }}
         <i class="fas fa-chevron-right"></i>
       </a>
     </div>
-    <ng-container *ngIf="!itemInProgressOrders"> Cargando... </ng-container>
     <div>
-      <div *ngIf="itemInProgressOrders?.ordersByItem?.length === 0">
-        No hay órdenes en este proceso.
-      </div>
-
-      <swiper
-        [config]="cardSwiperConfig"
-        *ngIf="itemInProgressOrders?.ordersByItem?.length"
-      >
+      <swiper [config]="cardSwiperConfig" *ngIf="itemInProgressOrders?.length">
         <a
-          *ngFor="let order of itemInProgressOrders.ordersByItem"
+          *ngFor="let order of itemInProgressOrders"
           [routerLink]="['/admin/order-slides']"
           [queryParams]="{
             progress: 'in progress'
@@ -294,25 +287,18 @@
   </section>
   <!-- En preparación -->
   <!-- Listas para enviarse -->
-  <section>
+  <section *ngIf="itemPendingOrders && itemPendingOrders?.length">
     <div class="heading flex space-between">
       <div class="title">Listas para enviarse</div>
       <a class="info" [routerLink]="['list', 'pending']">
-        {{ itemPendingOrders?.ordersByItem?.length || 0 }}
+        {{ itemPendingOrders?.length || 0 }}
         <i class="fas fa-chevron-right"></i>
       </a>
     </div>
-    <ng-container *ngIf="!itemPendingOrders"> Cargando... </ng-container>
     <div>
-      <div *ngIf="itemPendingOrders?.ordersByItem?.length === 0">
-        No hay órdenes en este proceso.
-      </div>
-      <swiper
-        [config]="cardSwiperConfig"
-        *ngIf="itemPendingOrders?.ordersByItem?.length"
-      >
+      <swiper [config]="cardSwiperConfig">
         <a
-          *ngFor="let order of itemPendingOrders?.ordersByItem"
+          *ngFor="let order of itemPendingOrders"
           [routerLink]="['/admin/order-slides']"
           [queryParams]="{
             progress: 'pending'
@@ -340,25 +326,18 @@
   </section>
   <!-- Listas para enviarse -->
   <!-- Listas para Pick Up -->
-  <section>
+  <section *ngIf="itemPickupOrders && itemPickupOrders?.length">
     <div class="heading flex space-between">
       <div class="title">Listas para Pick Up</div>
       <a class="info" [routerLink]="['list', 'pickup']">
-        {{ itemPickupOrders?.ordersByItem?.length || 0 }}
+        {{ itemPickupOrders?.length || 0 }}
         <i class="fas fa-chevron-right"></i>
       </a>
     </div>
-    <ng-container *ngIf="!itemPickupOrders"> Cargando... </ng-container>
     <div>
-      <div *ngIf="itemPickupOrders?.ordersByItem?.length === 0">
-        No hay órdenes en este proceso.
-      </div>
-      <swiper
-        [config]="cardSwiperConfig"
-        *ngIf="itemPickupOrders?.ordersByItem?.length"
-      >
+      <swiper [config]="cardSwiperConfig">
         <a
-          *ngFor="let order of itemPickupOrders?.ordersByItem"
+          *ngFor="let order of itemPickupOrders"
           [routerLink]="['/admin/order-slides']"
           [queryParams]="{
             progress: 'pickup'
@@ -386,25 +365,18 @@
   </section>
   <!-- Listas para Pick Up -->
   <!-- De camino a ser entregadas -->
-  <section>
+  <section *ngIf="itemShippedOrders && itemShippedOrders?.length">
     <div class="heading flex space-between">
       <div class="title">De camino a ser entregadas</div>
       <a class="info" [routerLink]="['list', 'shipped']">
-        {{ itemShippedOrders?.ordersByItem?.length || 0 }}
+        {{ itemShippedOrders?.length || 0 }}
         <i class="fas fa-chevron-right"></i>
       </a>
     </div>
-    <ng-container *ngIf="!itemShippedOrders"> Cargando... </ng-container>
     <div>
-      <div *ngIf="itemShippedOrders?.ordersByItem?.length === 0">
-        No hay órdenes en este proceso.
-      </div>
-      <swiper
-        [config]="cardSwiperConfig"
-        *ngIf="itemShippedOrders?.ordersByItem?.length"
-      >
+      <swiper [config]="cardSwiperConfig">
         <a
-          *ngFor="let order of itemShippedOrders?.ordersByItem"
+          *ngFor="let order of itemShippedOrders"
           [routerLink]="['/admin/order-slides']"
           [queryParams]="{
             progress: 'shipped'
@@ -432,25 +404,18 @@
   </section>
   <!-- De camino a ser entregadas -->
   <!-- Entregadas -->
-  <section>
+  <section *ngIf="itemDeliveredOrders && itemDeliveredOrders?.length">
     <div class="heading flex space-between">
       <div class="title">Entregadas</div>
       <a class="info" [routerLink]="['list', 'delivered']">
-        {{ itemDeliveredOrders?.ordersByItem?.length || 0 }}
+        {{ itemDeliveredOrders?.length || 0 }}
         <i class="fas fa-chevron-right"></i>
       </a>
     </div>
-    <ng-container *ngIf="!itemDeliveredOrders"> Cargando... </ng-container>
     <div>
-      <div *ngIf="itemDeliveredOrders?.ordersByItem?.length === 0">
-        No hay órdenes en este proceso.
-      </div>
-      <swiper
-        [config]="cardSwiperConfig"
-        *ngIf="itemDeliveredOrders?.ordersByItem?.length"
-      >
+      <swiper [config]="cardSwiperConfig">
         <a
-          *ngFor="let order of itemDeliveredOrders?.ordersByItem"
+          *ngFor="let order of itemDeliveredOrders"
           [routerLink]="['/admin/order-slides']"
           [queryParams]="{
             progress: 'delivered'

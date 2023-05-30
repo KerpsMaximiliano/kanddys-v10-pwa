@@ -1309,9 +1309,6 @@ export class ArticleEditorComponent implements OnInit {
     console.log(revenue);
     this.totalSells = revenue.itemTotalPagination[0].count;
     this.totalIncome = revenue.itemTotalPagination[0].total;
-
-    console.log('this.totalSells', this.totalSells);
-    console.log('this.totalIncome', this.totalIncome);
   }
 
   goToWebformResponses() {

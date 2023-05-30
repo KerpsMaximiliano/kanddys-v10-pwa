@@ -30,7 +30,7 @@ export class OrderDataComponent implements OnInit {
   };
 
   orderStatusDelivery: OrderStatusDeliveryData = {
-    inProgress: {
+    'in progress': {
       status: 'idle',
       orders: [],
       length: 0,
@@ -82,343 +82,58 @@ export class OrderDataComponent implements OnInit {
     } else {
       this.isArticle = false;
     }
-    console.log(this.isArticle);
 
-    this.orderStatusDelivery.inProgress = {
-      ...this.orderStatusDelivery.inProgress,
-      status: 'loading',
-    };
-    this.merchantsService
-      .hotOrdersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: -1,
-        },
-        findBy: {
-          orderStatusDelivery: 'in progress',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.inProgress = {
-          ...this.orderStatusDelivery.inProgress,
-          orders: ordersByMerchant,
-          length: ordersByMerchant.length,
-        };
-      });
-    this.merchantsService
-      .ordersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: 10,
-          sortBy: 'createdAt:desc',
-        },
-        findBy: {
-          orderStatusDelivery: 'in progress',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.inProgress = {
-          ...this.orderStatusDelivery.inProgress,
-          status: 'complete',
-          orders: ordersByMerchant,
-        };
-      });
-    // En preparación
-    // Listas para enviarse
-    this.orderStatusDelivery.pending = {
-      ...this.orderStatusDelivery.pending,
-      status: 'loading',
-    };
-    this.merchantsService
-      .hotOrdersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: -1,
-        },
-        findBy: {
-          orderStatusDelivery: 'pending',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.pending = {
-          ...this.orderStatusDelivery.pending,
-          length: ordersByMerchant.length,
-          orders: ordersByMerchant,
-        };
-      });
-    this.merchantsService
-      .ordersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: 10,
-          sortBy: 'createdAt:desc',
-        },
-        findBy: {
-          orderStatusDelivery: 'pending',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.pending = {
-          ...this.orderStatusDelivery.pending,
-          status: 'complete',
-          orders: ordersByMerchant,
-        };
-      });
-    // Listas para enviarse
-    // Listas para Pick Up
-    this.orderStatusDelivery.pickup = {
-      ...this.orderStatusDelivery.pickup,
-      status: 'loading',
-    };
-    this.merchantsService
-      .hotOrdersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: -1,
-        },
-        findBy: {
-          orderStatusDelivery: 'pickup',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.pickup = {
-          ...this.orderStatusDelivery.pickup,
-          length: ordersByMerchant.length,
-          orders: ordersByMerchant,
-        };
-      });
-    this.merchantsService
-      .ordersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: 10,
-          sortBy: 'createdAt:desc',
-        },
-        findBy: {
-          orderStatusDelivery: 'pickup',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.pickup = {
-          ...this.orderStatusDelivery.pickup,
-          status: 'complete',
-          orders: ordersByMerchant,
-        };
-      });
-    // Listas para Pick Up
-    // De camino a ser entregadas
-    this.orderStatusDelivery.shipped = {
-      ...this.orderStatusDelivery.shipped,
-      status: 'loading',
-    };
-    this.merchantsService
-      .hotOrdersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: -1,
-        },
-        findBy: {
-          orderStatusDelivery: 'shipped',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.shipped = {
-          ...this.orderStatusDelivery.shipped,
-          length: ordersByMerchant.length,
-          orders: ordersByMerchant,
-        };
-      });
-    this.merchantsService
-      .ordersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: 10,
-          sortBy: 'createdAt:desc',
-        },
-        findBy: {
-          orderStatusDelivery: 'shipped',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.shipped = {
-          ...this.orderStatusDelivery.shipped,
-          status: 'complete',
-          orders: ordersByMerchant,
-        };
-      });
-    // De camino a ser entregadas
-    // Entregadas
-    this.orderStatusDelivery.delivered = {
-      ...this.orderStatusDelivery.delivered,
-      status: 'loading',
-    };
-    this.merchantsService
-      .hotOrdersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: -1,
-        },
-        findBy: {
-          orderStatusDelivery: 'delivered',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.delivered = {
-          ...this.orderStatusDelivery.delivered,
-          length: ordersByMerchant.length,
-          orders: ordersByMerchant,
-        };
-      });
-    this.merchantsService
-      .ordersByMerchant(this.merchantsService.merchantData._id, {
-        options: {
-          limit: 10,
-          sortBy: 'createdAt:desc',
-        },
-        findBy: {
-          orderStatusDelivery: 'delivered',
-          orderStatus: [
-            'started',
-            'verifying',
-            'in progress',
-            'to confirm',
-            'completed',
-          ],
-        },
-      })
-      .then(({ ordersByMerchant }) => {
-        this.orderStatusDelivery.delivered = {
-          ...this.orderStatusDelivery.delivered,
-          status: 'complete',
-          orders: ordersByMerchant,
-        };
-      });
-    // Entregadas
-
-    console.log(this.orderStatusDelivery);
-
-    if (this.articleId !== '') {
-      const inProgressPagination: PaginationInput = {
-        findBy: {
-          item: this.articleId,
-          orderStatusDelivery: 'in progress',
-        },
-        options: {
-          limit: -1
-        }
-      };
-      this.itemInProgressOrders = await this.ordersService.ordersByItem(
-        inProgressPagination
+    const ordersGroupedByDeliveryStatus =
+      await this.merchantsService.orderByStatusDelivery(
+        this.merchantsService.merchantData._id
       );
-      console.log("this.itemInProgressOrders", this.itemInProgressOrders);
 
-      const pendingPagination = {
-        findBy: {
-          item: this.articleId,
-          orderStatusDelivery: 'pending',
-        },
-        options: {
-          limit: -1
-        }
+    for (const orderDeliveryStatus of Object.keys(
+      ordersGroupedByDeliveryStatus
+    )) {
+      this.orderStatusDelivery[orderDeliveryStatus] = {
+        ...this.orderStatusDelivery[orderDeliveryStatus],
+        orders: ordersGroupedByDeliveryStatus[orderDeliveryStatus],
+        length: ordersGroupedByDeliveryStatus[orderDeliveryStatus].length,
+        status: 'complete'
       };
-      this.itemPendingOrders = await this.ordersService.ordersByItem(
-        pendingPagination
+
+      this.itemInProgressOrders = ordersGroupedByDeliveryStatus[
+        'in progress'
+      ];
+      this.itemPendingOrders = ordersGroupedByDeliveryStatus['pending']; 
+      this.itemPickupOrders = ordersGroupedByDeliveryStatus['pickup'];
+      this.itemShippedOrders = ordersGroupedByDeliveryStatus['shipped'];
+      this.itemDeliveredOrders = ordersGroupedByDeliveryStatus[
+        'delivered'
+      ];
+    }
+
+    if (this.articleId !== '' && this.articleId) {
+      this.itemInProgressOrders = ordersGroupedByDeliveryStatus[
+        'in progress'
+      ].filter((order) =>
+        order.items.some((item) => (item.item as any) === this.articleId)
       );
-      // console.log(this.itemPendingOrders);
 
-      const pickupPagination = {
-        findBy: {
-          item: this.articleId,
-          orderStatusDelivery: 'pickup',
-        },
-        options: {
-          limit: -1
-        }
-      };
-      this.itemPickupOrders = await this.ordersService.ordersByItem(
-        pickupPagination
+      this.itemPendingOrders = ordersGroupedByDeliveryStatus['pending'].filter(
+        (order) => order.items.some((item) => (item.item as any) === this.articleId)
+      );
+
+      this.itemPickupOrders = ordersGroupedByDeliveryStatus['pickup'].filter(
+        (order) => order.items.some((item) => (item.item as any) === this.articleId)
       );
       // console.log(this.itemPickupOrders);
 
-      const shippedPagination = {
-        findBy: {
-          item: this.articleId,
-          orderStatusDelivery: 'shipped',
-        },
-        options: {
-          limit: -1
-        }
-      };
-      this.itemShippedOrders = await this.ordersService.ordersByItem(
-        shippedPagination
+      this.itemShippedOrders = ordersGroupedByDeliveryStatus['shipped'].filter(
+        (order) => order.items.some((item) => (item.item as any) === this.articleId)
       );
       // console.log(this.itemShippedOrders);
 
-      const deliveredPagination = {
-        findBy: {
-          item: this.articleId,
-          orderStatusDelivery: 'delivered',
-        },
-        options: {
-          limit: -1
-        }
-      };
-      this.itemDeliveredOrders = await this.ordersService.ordersByItem(
-        deliveredPagination
+      this.itemDeliveredOrders = ordersGroupedByDeliveryStatus[
+        'delivered'
+      ].filter((order) =>
+        order.items.some((item) => (item.item as any) === this.articleId)
       );
       //  console.log(this.itemDeliveredOrders);
     }

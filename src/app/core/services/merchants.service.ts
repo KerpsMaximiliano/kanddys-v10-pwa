@@ -43,6 +43,8 @@ import {
   buyersByMerchant,
   recurringBuyersByMerchant,
   hotBuyersByMerchant,
+  orderByStatusDelivery,
+  higherIncomeBuyersByMerchant,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -472,5 +474,27 @@ export class MerchantsService {
     } catch (error) {
       return error;
     }
+  }
+
+  async orderByStatusDelivery(
+    merchantId: string
+  ): Promise<Record<string, Array<ItemOrder>>> {
+    const response = await this.graphql.query({
+      query: orderByStatusDelivery,
+      variables: { merchantId },
+      fetchPolicy: 'cache-first',
+    });
+
+    return response?.orderByStatusDelivery;
+  }
+
+  async higherIncomeBuyersByMerchant(paginate: PaginationInput) {
+    const response = await this.graphql.query({
+      query: higherIncomeBuyersByMerchant,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+    if (!response || response?.errors) return undefined;
+    return response?.higherIncomeBuyersByMerchant;
   }
 }
