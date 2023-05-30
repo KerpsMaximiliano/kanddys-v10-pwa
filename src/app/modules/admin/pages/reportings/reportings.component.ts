@@ -5,6 +5,7 @@ import { MatDatepicker } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Merchant } from 'src/app/core/models/merchant';
+import { Answer, Question } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -29,7 +30,10 @@ export class ReportingsComponent implements OnInit {
   onlyMonthTotal: any = { total: 0, count: 0 };
   recurrentTotal: any = { total: 0, count: 0 };
   incomeByDeliveryZones: any = { total: 0, count: 0 };
-  questions: any = [];
+  questions: Array<{
+    question?: Question;
+    answer?: Answer;
+  }> = [];
   extraIncomesInProducts: Array<{
     _id: string;
     value: string;
@@ -178,11 +182,28 @@ export class ReportingsComponent implements OnInit {
     const result = await this.webformsService.webforms({
       findBy: {
         type: 'order',
+        active: true,
         user: this.merchant.owner._id,
       },
     });
     this.webformOrder = result[0];
-    this.questions = result[0].questions;
+    const questions = result[0].questions;
+    if (questions.length > 0)
+      questions.map(question => {
+        this.questions.push({ question });
+      });
+  }
+
+  async getAnswers(webformId: string) {
+    const result = await this.webformsService.answerPaginate(
+      {
+        findBy: {
+          webform: webformId,
+        }
+      }
+    );
+
+
   }
 
   openDialog(type, question = null) {
@@ -234,7 +255,7 @@ export class ReportingsComponent implements OnInit {
               [questionId],
               this.webformOrder._id
             );
-            this.questions = this.questions.filter((e) => e._id != questionId);
+            this.questions = this.questions.filter((e) => e.question._id != questionId);
           },
         },
       });

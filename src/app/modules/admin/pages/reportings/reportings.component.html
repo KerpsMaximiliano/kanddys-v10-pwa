@@ -22,32 +22,15 @@
     <p class="content-title">INGRESO EXTRA EN FACTURAS</p>
     <div class="content-items-container">
       <!--GRUPOS FIJOS-->
-      <div class="content-item">
-        <div class="content-item-button-container">
-          <div class="content-item-button">
-            <img src="../../../../../assets/icons/dots.svg" />
-          </div>
-        </div>
-        <div class="content-item-texts">
-          <div class="content-item-title-container">
-            <p class="content-item-title">Selecciona la zona de entrega</p>
-            <p class="content-item-title">
-              {{ incomeByDeliveryZones?.total | currency }}
-            </p>
-          </div>
-          <p class="content-item-times-selected">87 veces seleccionado</p>
-        </div>
-      </div>
-
       <div class="content-item" *ngFor="let i of questions">
         <div class="content-item-button-container">
-          <div class="content-item-button" (click)="openDialog('income', i)">
+          <div class="content-item-button" (click)="openDialog('income', i.question)">
             <img src="../../../../../assets/icons/dots.svg" />
           </div>
         </div>
         <div class="content-item-texts">
           <div class="content-item-title-container">
-            <p class="content-item-title">{{ i.value }}</p>
+            <p class="content-item-title">{{ i.question.value }}</p>
             <p class="content-item-title">$0.00</p>
           </div>
           <p class="content-item-times-selected">87 veces seleccionado</p>

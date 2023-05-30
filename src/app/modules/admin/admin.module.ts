@@ -468,7 +468,6 @@ const routes: Routes = [
     OrderDataComponent,
     BuyerDataComponent,
     FilterPipeSearchPipe,
-    AutofocusDirective,
     ExpendituresComponent,
     IncomesComponent,
     CreateExpenditureComponent,

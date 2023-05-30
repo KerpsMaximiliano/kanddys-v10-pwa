@@ -60,7 +60,7 @@ export class QuestionInput {
   subIndex?: number;
   value?: string;
   answerDefault?: AnswerDefaultInput[];
-  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME' | 'MAX12' | 'MIN12' | 'NUMBER';
+  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME' | 'MAX12' | 'MIN12' | 'NUMBER' | 'DECIMAL';
   answerLimit?: number;
   show?: Boolean;
   required?: Boolean;
