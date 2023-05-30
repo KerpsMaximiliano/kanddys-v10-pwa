@@ -269,6 +269,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     lockUI();
 
+    const incomeMerchantPromise = this._MerchantsService.incomeMerchant({
+      findBy: {
+        merchant: this._MerchantsService.merchantData._id,
+      },
+    });
+
     const notSoldPagination = {
       options: {
         sortBy: 'createdAt:asc',
@@ -283,6 +289,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
     const notSoldItemsPromise =
       this._ItemsService.itemsByMerchantNosale(notSoldPagination);
+
+    const [income, notSoldItems] = await Promise.all([
+      incomeMerchantPromise,
+      notSoldItemsPromise,
+      this.getOrders(),
+    ]);
+
+    this.income = income.toFixed(2);
+    this.notSoldItems = Object.values(notSoldItems)[0];
 
     if (this._SaleflowService.saleflowData) {
       const [notSoldItems] = await Promise.all([

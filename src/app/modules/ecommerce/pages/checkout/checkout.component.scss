@@ -327,6 +327,17 @@ a {
           background-color: #82f18d;
         }
 
+        &.to-fill {
+          position: relative;
+          width: 90%;
+
+          .small-arrow-green {
+            position: absolute;
+            right: -73px;
+            top: 10px;
+          }
+        }
+
         .total {
           font-family: "SfProBold";
           font-size: 13px;
