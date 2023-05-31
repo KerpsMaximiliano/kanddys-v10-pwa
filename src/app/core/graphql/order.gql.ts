@@ -445,9 +445,10 @@ export const updateTagsInOrder = gql`
 `;
 
 export const ordersByItem = gql`
-  query ordersByItem($itemId: ObjectID!) {
-    ordersByItem(itemId: $itemId) {
+  query ordersByItem($paginate: PaginationInput!) {
+    ordersByItem(paginate: $paginate) {
       _id
+
       items {
         item {
           name
@@ -463,8 +464,16 @@ export const ordersByItem = gql`
         type
         item
       }
+      user {
+        image
+        username
+        phone
+        email
+        name
+      }
       dateId
       createdAt
+      orderStatusDelivery
     }
   }
 `;

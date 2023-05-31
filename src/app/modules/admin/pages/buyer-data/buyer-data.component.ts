@@ -89,7 +89,7 @@ export class BuyerDataComponent implements OnInit {
         },
       }),
       // Todos los compradores
-    ]).then((result) => {
+    ]).then( async (result) => {
       // Usuarios recurrentes
       this.recurrentBuyers = {
         status: 'complete',
@@ -114,24 +114,28 @@ export class BuyerDataComponent implements OnInit {
         ]),
       ];
 
-      allUsers.forEach(async (id) => {
-        const incomeMerchant = await this.merchantsService.incomeMerchant({
-          findBy: {
-            user: id,
-            merchant: this.merchantsService.merchantData._id,
-          },
-        });
+      const incomesByUser: Array<{
+        total: number;
+        user: User;
+      }> = await this.merchantsService.higherIncomeBuyersByMerchant({
+        findBy: {
+          merchant: this.merchantsService.merchantData._id,
+          user: allUsers,
+        },
+      });
+
+      incomesByUser.forEach(async (userInList) => {
         const recurrentUserIndex = this.recurrentBuyers.users.findIndex(
-          (user) => user._id === id
+          (user) => user._id === userInList.user._id
         );
         if (recurrentUserIndex > -1)
           this.recurrentBuyers.users[recurrentUserIndex].income =
-            incomeMerchant;
+            userInList.total;
         const userIndex = this.allBuyers.users.findIndex(
-          (user) => user._id === id
+          (user) => user._id === userInList.user._id
         );
         if (userIndex > -1)
-          this.allBuyers.users[userIndex].income = incomeMerchant;
+          this.allBuyers.users[userIndex].income = userInList.total;
         // user.income = incomeMerchant;
       });
     });

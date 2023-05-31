@@ -462,3 +462,15 @@ export const recurringBuyersByMerchant = gql`
     recurringBuyersByMerchant(paginate: $paginate)
   }
 `;
+
+export const orderByStatusDelivery = gql`
+  query orderByStatusDelivery($merchantId: ObjectID!) {
+    orderByStatusDelivery(merchantId: $merchantId)
+  }
+`;
+
+export const higherIncomeBuyersByMerchant = gql`
+  query higherIncomeBuyersByMerchant($paginate: PaginationInput!) {
+    higherIncomeBuyersByMerchant(paginate: $paginate)
+  }
+`;
