@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
+import { unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemImageInput } from 'src/app/core/models/item';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -16,7 +17,7 @@ export class CreateExpenditureComponent implements OnInit {
   merchant: any = {};
   type;
   typeRequest;
-  amount = 0;
+  amount;
   name = '';
   file;
   base64: any;
@@ -46,7 +47,7 @@ export class CreateExpenditureComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.selectMonth(1);
+    this.selectMonth();
     await this.getMerchant();
     this.activatedRoute.params.subscribe(params => {
       this.type = params['type'];
@@ -58,23 +59,37 @@ export class CreateExpenditureComponent implements OnInit {
     this.merchant = await this.merchantService.merchantDefault();
   }
 
-  selectMonth(id) {
+  selectMonth(id? : number) {
+    let month = id;
+    if (!id) month = new Date().getMonth() + 1;
     this.months.forEach((e) => {
-      if (e.id == id) e.selected = true;
+      if (e.id == month) e.selected = true;
       else e.selected = false;
     });
-    this.createDays(id);
+    if (id) this.createDays(month);
+    if (!id) this.createDays(month, true);
   }
 
-  createDays(id) {
+  createDays(id, currentDay: boolean = false) {
     this.days = [];
+    const day = new Date().getDate();
+    console.log(day);
+
     let daysCount = this.getDaysInMonth(id);
     for (let i = 1; i <= daysCount; i++) {
       let selected = false;
-      if (i == 1) selected = true;
-      this.days.push({ id: i, selected });
+      if (currentDay && i == day) {
+        selected = true
+        this.days.push({ id: day, selected });
+      } 
+      else if (i == 1 && !currentDay) {
+        selected = true;
+        this.days.push({ id: i, selected });
+      }
+      else this.days.push({ id: i, selected });
     }
   }
+
   getDaysInMonth(month): number {
     const year = new Date().getFullYear();
     return new Date(year, month, 0).getDate();
@@ -102,22 +117,30 @@ export class CreateExpenditureComponent implements OnInit {
   }
 
   async createExpenditure() {
-    if (this.name.length>0) {
-      let result = await this.orderService.createExpenditure(
-        this.merchant._id,
-        {
-          type: this.typeRequest,
-          amount: this.amount,
-          name: this.name,
-          media: this.base64,
-          activeDate: {
-            from: this.createDate(),
-            month: this.months.find((e) => e.selected)?.id,
-          },
-        }
-      );
+    if (this.amount) {
+
+      try {
+        unlockUI();
+        await this.orderService.createExpenditure(
+          this.merchant._id,
+          {
+            type: this.typeRequest,
+            amount: this.amount,
+            name: this.name,
+            media: this.base64,
+            activeDate: {
+              from: this.createDate(),
+              month: this.months.find((e) => e.selected)?.id,
+            },
+          }
+        );
+        unlockUI();
+      } catch (error) {
+        unlockUI();
+        console.log(error);
+      }
     }
-    this.router.navigate([`admin/expenditures/${this.type}`]);
+    this.router.navigate([`admin/reportings`]);
   }
 
   createDate() {

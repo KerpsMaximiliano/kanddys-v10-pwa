@@ -4,7 +4,7 @@
       <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
       <p>Reporte y control de beneficios</p>
     </div>
-    <div [routerLink]="['../transaction-types', webformOrder._id]">
+    <div [routerLink]="['../transaction-types', webformOrder._id]" style="cursor: pointer;">
       <img [src]="env + '/plus-black.svg'" class="plus-icon" />
     </div>
   </div>
@@ -30,14 +30,14 @@
         </div>
         <div class="content-item-texts">
           <div class="content-item-title-container">
-            <p class="content-item-title">{{ i.question.value }}</p>
+            <p class="content-item-title">{{ i?.question.value }}</p>
             <p class="content-item-title">$0.00</p>
           </div>
-          <p class="content-item-times-selected">87 veces seleccionado</p>
+          <p class="content-item-times-selected">{{ i?.answer ? i?.answer.length : 0 }} veces seleccionado</p>
         </div>
       </div>
     </div>
-    <p class="content-title">INGRESO EXTRA EN PRODUCTOS</p>
+    <!-- <p class="content-title">INGRESO EXTRA EN PRODUCTOS</p> -->
     <div
       class="content-items-container"
       *ngFor="let incomeInList of extraIncomesInProducts"
@@ -171,7 +171,7 @@
       <!-- </div> -->
       Desde fechaID hasta hoy
     </p>
-    <p class="footer-prices">$155,458.12 - $15,000 = 140,459.32 ~17%</p>
+    <p class="footer-prices">{{ generalWebformIncome | currency }} - {{ totalExpendituresByType | currency }}  = {{ generalWebformIncome - totalExpendituresByType | currency }} ~17%</p>
   </div>
 </div>
 

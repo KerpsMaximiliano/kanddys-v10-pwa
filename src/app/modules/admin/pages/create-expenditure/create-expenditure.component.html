@@ -1,6 +1,6 @@
 <div class="main-container">
   <div class="header">
-    <div  (click)="createExpenditure()">
+    <div (click)="createExpenditure()" style="cursor: pointer;">
 
         <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
     </div>
@@ -13,10 +13,21 @@
       placeholder="Escribe el nombre del egreso"
       [(ngModel)]="name"
     />
-    <p class="expenditure-amount-title">Monto del egreso</p>
-    <mat-form-field class="expenditure-amount-field">
-      <input matInput placeholder="Escribe.." type="number"   [(ngModel)]="amount"/>
-    </mat-form-field>
+    <form>
+      <p class="expenditure-amount-title">Monto del egreso</p>
+      <mat-form-field class="expenditure-amount-field">
+          <mat-label>Escribe..</mat-label>
+          <input 
+            matInput
+            name="name"
+            type="number"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            min="0"
+            [(ngModel)]="amount"
+          >
+      </mat-form-field>
+    </form>
     <p class="expenditure-amount-title expenditure-input-name-mt">
       Día del egreso
     </p>

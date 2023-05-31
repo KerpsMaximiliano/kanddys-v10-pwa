@@ -32,7 +32,7 @@ export class ReportingsComponent implements OnInit {
   incomeByDeliveryZones: any = { total: 0, count: 0 };
   questions: Array<{
     question?: Question;
-    answer?: Answer;
+    answer?: Answer[];
   }> = [];
   extraIncomesInProducts: Array<{
     _id: string;
@@ -54,7 +54,10 @@ export class ReportingsComponent implements OnInit {
     end: new FormControl(''),
   });
 
+  totalExpendituresByType: number = 0;
+
   webformOrder: any = {};
+  generalWebformIncome: number = 0;
   dateString: string = 'Aún no hay filtros aplicados';
   constructor(
     private deliveryZoneService: DeliveryZonesService,
@@ -72,6 +75,7 @@ export class ReportingsComponent implements OnInit {
     await this.checkIfUserIsAMerchant();
 
     await this.getWebforms();
+    if(this.questions.length) await this.getAnswers(this.webformOrder._id);
     this.getExpenditures();
     this.getIncomes();
     await this.getExtraIncomesInProducts();
@@ -128,18 +132,27 @@ export class ReportingsComponent implements OnInit {
   }
 
   async getExpenditures() {
-    this.getExpendituresTotal('delivery-zone').then((e) => {
-      this.deliveryZonesTotal = e;
-    });
-    this.getExpendituresTotal('only-day').then((e) => {
-      this.onlyDayTotal = e;
-    });
-    this.getExpendituresTotal('only-month').then((e) => {
-      this.onlyMonthTotal = e;
-    });
-    this.getExpendituresTotal('recurrent').then((e) => {
-      this.recurrentTotal = e;
-    });
+    await Promise.all([
+      this.getExpendituresTotal('delivery-zone').then((e) => {
+        this.deliveryZonesTotal = e;
+      }),
+      this.getExpendituresTotal('delivery-zone').then((e) => {
+        this.deliveryZonesTotal = e;
+      }),
+      this.getExpendituresTotal('only-day').then((e) => {
+        this.onlyDayTotal = e;
+      }),
+      this.getExpendituresTotal('only-month').then((e) => {
+        this.onlyMonthTotal = e;
+      }),
+      this.getExpendituresTotal('recurrent').then((e) => {
+        this.recurrentTotal = e;
+      })
+    ]);
+
+    console.log(this.deliveryZonesTotal, this.onlyDayTotal, this.onlyMonthTotal, this.recurrentTotal);
+
+    this.totalExpendituresByType = this.deliveryZonesTotal.total + this.onlyDayTotal.total + this.onlyMonthTotal.total + this.recurrentTotal.total;
   }
 
   async getExpendituresTotal(type) {
@@ -203,6 +216,21 @@ export class ReportingsComponent implements OnInit {
       }
     );
 
+    const answers = result;
+
+    console.log(this.questions);
+    console.log(answers);
+
+    if (answers.length > 0)
+      this.questions.forEach(question => {
+        const answerMatches = answers.filter(answer => answer.response[0].question == question.question._id)
+        if (answerMatches.length > 0) question.answer = answerMatches;
+      });
+
+    console.log(this.questions);
+  }
+
+  async getGeneralIncome() {
 
   }
 

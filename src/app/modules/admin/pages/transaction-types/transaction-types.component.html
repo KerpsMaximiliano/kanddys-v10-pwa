@@ -16,17 +16,17 @@
   <div class="content">
     <p>¿Qué clase de transacción?</p>
 
-    <button [routerLink]="['../../question-to-admin',webformId]">
+    <button mat-button [routerLink]="['../../question-to-admin',webformId]">
       Obligatoria de cada factura (ej: pagan $20 extra cuando la entrega es
       en..)
     </button>
-    <button [routerLink]="['/admin/create-expenditure/day']">
+    <button mat-button [routerLink]="['/admin/create-expenditure/day']">
       Egreso único en un dia especifico
     </button>
-    <button [routerLink]="['/admin/create-expenditure/month']">
+    <button mat-button [routerLink]="['/admin/create-expenditure/month']">
       Egreso especifico de un mes (energía, internet)
     </button>
-    <button [routerLink]="['/admin/create-expenditure/recurrent']">
+    <button mat-button [routerLink]="['/admin/create-expenditure/recurrent']">
       Egresos mensuales y recurrente (salarios, renta)
     </button>
   </div>
