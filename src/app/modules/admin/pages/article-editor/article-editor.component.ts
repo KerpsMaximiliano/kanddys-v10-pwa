@@ -47,6 +47,7 @@ import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions } from 'swiper';
+import { ViewportScroller } from '@angular/common';
 
 interface ExtendedAnswer extends Answer {
   responsesGroupedByQuestion: Array<{
@@ -248,7 +249,8 @@ export class ArticleEditorComponent implements OnInit {
     public headerService: HeaderService,
     protected _DomSanitizer: DomSanitizer,
     private dialogFlowService: DialogFlowService,
-    private webformsService: WebformsService
+    private webformsService: WebformsService,
+    private viewportScroller: ViewportScroller
   ) {}
 
   async ngOnInit() {
@@ -505,8 +507,9 @@ export class ArticleEditorComponent implements OnInit {
       await this._ItemsService.updateItem(itemInput, this.item._id);
     }
 
-    this.dialogFlowService.resetDialogFlow('webform-creator');
+    // this.dialogFlowService.resetDialogFlow('webform-creator');
 
+    // TODO: Borrar esto?
     if (
       this.webformsService.webformQuestions &&
       this.webformsService.webformQuestions.length
@@ -913,6 +916,7 @@ export class ArticleEditorComponent implements OnInit {
               callback: async () => {
                 this.showName = true;
                 console.log(this.showName);
+                this.scrollToBottom();
               },
             },
             {
@@ -920,6 +924,7 @@ export class ArticleEditorComponent implements OnInit {
               callback: async () => {
                 this.showDescription = true;
                 console.log(this.showDescription);
+                this.scrollToBottom();
               },
             },
             {
@@ -939,6 +944,10 @@ export class ArticleEditorComponent implements OnInit {
             {
               title: 'Ver como lo ven otros',
               callback: () => {
+                this._ItemsService.itemName = this.item.name;
+                this._ItemsService.itemDesc = this.item.description;
+                this._ItemsService.itemPrice = this.item.pricing;
+                
                 this._Router.navigate(
                   [
                     `/ecommerce/${this._MerchantsService.merchantData.slug}/article-detail/item/` +
@@ -946,7 +955,7 @@ export class ArticleEditorComponent implements OnInit {
                   ],
                   {
                     queryParams: {
-                      mode: 'saleflow',
+                      mode: 'preview',
                     },
                   }
                 );
@@ -994,12 +1003,17 @@ export class ArticleEditorComponent implements OnInit {
             {
               title: `${this.showArticleText} el artículo de la Tienda`,
               callback: async () => {
-                this._ItemsService.updateItem(
-                  {
-                    status: this.newStatus,
-                  },
-                  this.item._id
-                );
+                try {
+                  await this._ItemsService.updateItem(
+                    {
+                      status: this.newStatus,
+                    },
+                    this.item._id
+                  );
+                  this.item.status = this.newStatus;
+                } catch (error) {
+                  console.log(error);
+                }
               },
             },
             {
@@ -1050,6 +1064,10 @@ export class ArticleEditorComponent implements OnInit {
             {
               title: 'Ver como lo ven otros',
               callback: () => {
+                this._ItemsService.itemName = this.item.name;
+                this._ItemsService.itemDesc = this.item.description;
+                this._ItemsService.itemPrice = this.item.pricing;
+                
                 this._Router.navigate(
                   [
                     `/ecommerce/${this._MerchantsService.merchantData.slug}/article-detail/item/` +
@@ -1057,7 +1075,7 @@ export class ArticleEditorComponent implements OnInit {
                   ],
                   {
                     queryParams: {
-                      mode: 'saleflow',
+                      mode: 'preview',
                     },
                   }
                 );
@@ -1331,5 +1349,9 @@ export class ArticleEditorComponent implements OnInit {
     this._Router.navigate([`admin/reports/orders`], {
       queryParams: { articleId: this.item._id },
     });
+  }
+
+  scrollToBottom() {
+    this.viewportScroller.scrollToAnchor('bottom');
   }
 }
