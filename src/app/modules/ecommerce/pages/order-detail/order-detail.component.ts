@@ -2,7 +2,7 @@ import { LocationStrategy } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import { capitalize, formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import {
   ItemOrder,
@@ -88,7 +88,7 @@ export class OrderDetailComponent implements OnInit {
     percentageBenefits: number;
     percentageLess: number;
   };
-  orderStatus: OrderStatusNameType;
+  orderStatus;
   orderDate: string;
   paymentType: string;
   date: {
@@ -143,6 +143,7 @@ export class OrderDetailComponent implements OnInit {
   tagPanelState: boolean;
   webformsByItem: Record<string, Webform> = {};
   answersByItem: Record<string, WebformAnswer> = {};
+  answersByItemDropdownOpened: Record<string, boolean> = {};
   from: string;
   navigationWithMessage: string;
   deliveryImages: {
@@ -155,8 +156,18 @@ export class OrderDetailComponent implements OnInit {
   panelOpenState = false;
   openNavigation = false;
 
+  capitalize = capitalize;
+
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
+
+  statusList: OrderStatusDeliveryType[] = [
+    'in progress',
+    'pending',
+    'pickup',
+    'shipped',
+    'delivered',
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -290,16 +301,15 @@ export class OrderDetailComponent implements OnInit {
       this.order.orderStatus
     );
     const temporalDate = new Date(this.order.createdAt);
-    this.orderDate = temporalDate
-      .toLocaleString('es-MX', {
-        hour12: true,
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-      .toLocaleUpperCase();
+    this.orderDate = temporalDate.toLocaleString('es-MX', {
+      hour12: true,
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
     if (!this.headerService.merchantContact) {
       this.headerService.merchantContact = (
         await this.contactService.contacts({
@@ -340,9 +350,17 @@ export class OrderDetailComponent implements OnInit {
           },
         });
 
+        this.entityTemplateLink =
+          this.URI +
+          '/ecommerce/' +
+          this.order.items[0].saleflow.merchant.slug +
+          '/article-detail/post/' +
+          this.post._id;
+
         if (results.length > 0) {
           this.entityTemplate = results[0];
 
+          /*
           this.entityTemplateLink =
             this.entityTemplate.access === 'public' ||
             this.entityTemplate.recipients === 0
@@ -350,6 +368,7 @@ export class OrderDetailComponent implements OnInit {
               : this.URI +
                 '/ecommerce/article-access/' +
                 this.entityTemplate._id;
+                */
         }
       }
     }
@@ -964,6 +983,7 @@ export class OrderDetailComponent implements OnInit {
             }
 
             this.answersByItem[item._id] = answersForWebform;
+            this.answersByItemDropdownOpened[item._id] = false;
           }
         }
       }

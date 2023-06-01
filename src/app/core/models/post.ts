@@ -58,6 +58,9 @@ export class Post extends Model<Post> {
   tags: string[];
   visitorCounter: VisitorCounter;
   joke?: string;
+  provisionalReceiver?: string;
+  provisionalReceiverContact?: string;
+  isAnonymous?: boolean;
 }
 
 export class PostInput {
@@ -79,6 +82,11 @@ export class PostInput {
   password?: string;
   type?: string;
   joke?: string;
+  provisionalReceiver?: string;
+  provisionalReceiverContact?: string;
+  receiver?: 'me' | 'gifted' | 'unkwown' | 'known';
+  isAnonymous?: boolean;
+  appliesMessage?: boolean = true;
 }
 
 export class Slide extends Model<Slide> {

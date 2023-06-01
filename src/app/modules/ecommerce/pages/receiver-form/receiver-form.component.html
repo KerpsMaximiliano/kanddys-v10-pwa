@@ -1,0 +1,67 @@
+<div class="container">
+
+    <header>
+        <i class="fas fa-chevron-left" (click)="goBack()"></i>
+    </header>
+
+    <main>
+        <div class="options-section">
+            <h3>¿Quien recibirá lo que compraste?</h3>
+            <button mat-button [ngClass]="{ active: receiver === 'me' }" class="option-cta" (click)="receiver = 'me'">
+                Yo lo recibiré
+            </button>
+            <button mat-button [ngClass]="{ active: receiver === 'gifted' }" class="option-cta" (click)="receiver = 'gifted'">
+                Lo recibirá la persona del arreglo
+            </button>
+            <button mat-button [ngClass]="{ active: receiver === 'unkwown' }" class="option-cta" (click)="receiver = 'unkwown'">
+                Lo recibirá una persona que no conozco (ej: en el lobby de un edificio o comercio)
+            </button>
+                
+            <button mat-button [ngClass]="{ active: receiver === 'known' }" class="option-cta" (click)="receiver = 'known'">
+                Lo recibirá una persona conocida (ej: un cómplice porque es una sorpresa)
+            </button>
+                
+            <form *ngIf="receiver === 'known'">
+                <p class="label">¿Cómo se llama la persona que lo recibirá?</p>
+                <mat-form-field class="field-container">
+                    <mat-label>Escribe..</mat-label>
+                    <input matInput name="name" [(ngModel)]="receiverName">
+                </mat-form-field>
+
+                <p class="label">¿Cuál es su celular? (se contactará en caso de que el mensajero tenga algún tipo de inconveniente).</p>
+                <mat-form-field class="field-container">
+                    <mat-label>Escribe..</mat-label>
+                    <input type="tel" maxlength="13" matInput name="contact" [(ngModel)]="receiverContact">
+                </mat-form-field>
+            </form>
+        </div>
+
+        <div style="display: flex; justify-content: flex-start; align-items: center; position: relative;">
+            <mat-checkbox class="checkbox" (change)="checkBoxEvent($event)" [checked]="checkboxChecked" (check)="checkboxChecked = !checkboxChecked"></mat-checkbox>
+            <div (click)="showHiddenOption = !showHiddenOption">
+                <span style="color: #FFF; margin-left: 1em;">{{ isAnonymous ? 'Es un regalo anónimo' : 'No es un regalo anónimo' }}</span>
+                <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-right"  *ngIf="!showHiddenOption"></i>
+                <i style="color: #FFF; margin-left: 20px;" class="fas fa-chevron-down" *ngIf="showHiddenOption"></i>
+                <img
+                    [src]="env + '/green-arrow-small.svg'"
+                    class="small-arrow-green"
+                    *ngIf="!checkboxChecked"
+                />
+            </div>
+        </div>
+
+        <div class="options-section" *ngIf="showHiddenOption">
+            <button mat-button [ngClass]="{ active: anonymous === 'no' }" class="option-cta" (click)="toggleAnonymous(false)">
+                No es un regalo anónimo
+            </button>
+            <button mat-button [ngClass]="{ active: anonymous === 'yes' }" class="option-cta" (click)="toggleAnonymous(true)">
+                Es anónimo (no mostraremos ningún dato tuyo en la entrega)
+            </button>
+        </div>
+
+        <div style="text-align: center;">
+            <button mat-button [ngClass]="{ active: isValid() }" class="cta" (click)="submit()">Continuar</button>
+        </div>
+    </main>
+
+</div>

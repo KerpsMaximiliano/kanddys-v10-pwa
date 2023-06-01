@@ -576,11 +576,24 @@ export class ArticleEditorComponent implements OnInit {
     ];
 
     const list: Array<SettingsDialogButton> = [
+      // {
+      //   text: 'Crea un nuevo artículo',
+      //   callback: async () => {
+      //     // TODO: Añadir nuevo flow de creación de artículo
+      //     // this._Router.navigate([`admin/create-article`]);
+      //   },
+      // },
       {
-        text: 'Crea un nuevo artículo',
+        text: 'Compartir artículo en el carrito',
         callback: async () => {
-          // TODO: Añadir nuevo flow de creación de artículo
-          // this._Router.navigate([`admin/create-article`]);
+          this.clipboard.copy(`${environment.uri}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/cart?item=${this.item._id}`);
+          this.snackBar.open(
+            'Enlace copiado en el portapapeles',
+            '',
+            {
+              duration: 2000,
+            }
+          );
         },
       },
       {

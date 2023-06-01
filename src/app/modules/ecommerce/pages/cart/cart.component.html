@@ -1,0 +1,245 @@
+<div class="container">
+  <header class="header">
+    <div class="left-area">
+      <a style="cursor: pointer;"> <i class="fas fa-chevron-left" (click)="goToStore()"></i></a>
+      <p class="title">
+        Artículos a facturarse
+        <!-- {{
+          headerService.saleflow?.merchant?.name.length < 26
+            ? headerService.saleflow?.merchant?.name
+            : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+                "Tienda" | titlecase)
+        }} -->
+      </p>
+    </div>
+    <div class="right-area">
+      <span class="header-text" *ngIf="logged || headerService.user">
+        {{ currentUser?.name || currentUser?.phone || currentUser?.email }}
+      </span>
+      <!-- <img [src]="env + '/person.svg'" alt="Icono de una persona" /> -->
+    </div>
+  </header>
+
+  <main>
+    <mat-card class="card" *ngFor="let item of items; index as i">
+      <div class="card-header flex">
+        <div class="left-side flex">
+          <div
+            class="featured-image"
+            [ngStyle]="{
+              backgroundImage: item?.images?.length
+                ? 'url(' +
+                  item.images[0].value +
+                  '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                : 'url(/assets/images/noimage.png)'
+            }"
+            (click)="
+              item?.images?.length && openImageModal(item.images[0].value)
+            "
+          ></div>
+          <div class="item-quantity">
+            <p class="grayout-label">Cantidad</p>
+            <div class="quantity">
+              <span
+                mat-button
+                class="button"
+                (click)="changeAmount(item._id, 'subtract')"
+                >-</span
+              >
+              <span>{{ itemObjects[item._id].amount }}</span>
+              <span
+                mat-button
+                class="button"
+                (click)="changeAmount(item._id, 'add')"
+                >+</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="right-side">
+          <p class="grayout-label">
+            ${{
+              item.pricing * itemObjects[item._id].amount | number : "1.2-2"
+            }}
+          </p>
+        </div>
+      </div>
+      <div class="card-body" *ngIf="webformsByItem[item._id]?.webform">
+        <div
+          class="section"
+          *ngFor="
+            let question of webformsByItem[item._id].webform.questions;
+            let i = index
+          "
+        >
+          <img
+            [src]="env + '/arrow-green.svg'"
+            alt="required question"
+            *ngIf="question.required && !answersByQuestion[question._id]?.response"
+            class="required-question-pointer"
+          />
+
+          <p
+            class="section-title grayout-label"
+            (click)="openWebform(item._id, i)"
+          >
+            {{ capitalize(question.value) }}
+          </p>
+
+          <!--RESPUESTA UNICA-->
+          <ng-container
+            *ngIf="
+              answersByQuestion[question._id] &&
+              ((question.answerLimit === 1 &&
+                ['multiple-text', 'multiple'].includes(question.type)) ||
+                (!['multiple-text', 'multiple'].includes(question.type) &&
+                  question.answerLimit === 0) ||
+                (!['multiple-text', 'multiple'].includes(question.type) &&
+                  question.answerLimit === 1))
+            "
+          >
+            <!-- RESPONSE HAS NO IMAGES-->
+            <ng-container *ngIf="!answersByQuestion[question._id].isMedia">
+              <div
+                class="section-description"
+                *ngIf="
+                  answersByQuestion[question._id]?.response &&
+                  !answersByQuestion[question._id]?.responseLabel &&
+                  !answersByQuestion[question._id].isMedia
+                "
+              >
+                {{ question.answerTextType !== 'number' ? capitalize(answersByQuestion[question._id]?.response) : answersByQuestion[question._id]?.response }}
+              </div>
+
+              <div
+                class="question-text-response"
+                *ngIf="
+                  answersByQuestion[question._id]?.response &&
+                  answersByQuestion[question._id]?.responseLabel &&
+                  !answersByQuestion[question._id].isMedia
+                "
+              >
+                {{
+                  question.type === "text" && question.answerTextType === "name"
+                    ? capitalize(
+                        answersByQuestion[question._id]?.response +
+                        " " +
+                        answersByQuestion[question._id]?.responseLabel
+                      )
+                    : capitalize(answersByQuestion[question._id]?.responseLabel)
+                }}
+              </div>
+            </ng-container>
+
+            <!-- RESPONSE HAS IMAGES AND USER HAS ALREADY ANSWERED-->
+            <div
+              class="question-media-response"
+              *ngIf="
+                (answersByQuestion[question._id]?.response ||
+                  answersByQuestion[question._id]?.responseLabel) &&
+                answersByQuestion[question._id].isMedia &&
+                !this.webformsByItem[item._id].opened
+              "
+            >
+              <app-closed-question-card
+                [id]="'multiple-choices-single-selection'"
+                [shadows]="false"
+                [labelStyles]="{
+                  fontFamily: 'SfProRegular',
+                  color: '#000',
+                  fontSize: '15px'
+                }"
+                [containerStyles]="{ padding: '0px' }"
+                [question]="question"
+                [multiple]="!question.answerLimit || question.answerLimit > 1"
+                [isMediaSelection]="question.answerDefault[0].isMedia"
+                [required]="question?.required"
+                (onSelector)="selectOption(question, item, true, $event)"
+              >
+              </app-closed-question-card>
+            </div>
+          </ng-container>
+
+          <!--RESPUESTA MULTIPLE-->
+          <ng-container
+            *ngIf="
+              answersByQuestion[question._id] &&
+              (question.answerLimit === 0 || question.answerLimit > 1) &&
+              ['multiple-text', 'multiple'].includes(question.type)
+            "
+          >
+            <!-- RESPONSE HAS NO IMAGES-->
+            <ng-container *ngIf="answersByQuestion[question._id]">
+              <div
+                class="question-media-response"
+                *ngIf="
+                  answersByQuestion[question._id]?.multipleResponses &&
+                  !this.webformsByItem[item._id].opened
+                "
+              >
+                <app-closed-question-card
+                  [id]="'multiple-choices-multiple-selection'"
+                  [shadows]="false"
+                  [labelStyles]="{
+                    fontFamily: 'SfProRegular',
+                    color: '#000',
+                    fontSize: '15px'
+                  }"
+                  [containerStyles]="{ padding: '0px' }"
+                  [multiple]="!question.answerLimit || question.answerLimit > 1"
+                  [isMediaSelection]="question.answerDefault[0].isMedia"
+                  [question]="question"
+                  [required]="question?.required"
+                  (onSelector)="selectOption(question, item, true, $event)"
+                >
+                </app-closed-question-card>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- TODO: acomodar esto por estilos de verdad -->
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+  </main>
+
+  <footer>
+    <div class="form">
+      <!-- <mat-checkbox class="checkbox"
+        >Factura sin comprobante <i class="fas fa-chevron-right"></i
+      ></mat-checkbox> -->
+      <div
+        style="display: flex; justify-content: flex-start; align-items: center; position: relative;"
+      >
+        <mat-checkbox (change)="toggleCheckbox($event.checked)"></mat-checkbox>
+        <div (click)="goToReceiverForm()" style="margin-top: 5px;">
+          <span>Sin mensaje de regalo</span>
+          <i
+            style="color: #fff; margin-left: 20px; cursor: pointer"
+            class="fas fa-chevron-right"
+          ></i>
+
+          <img
+            [src]="env + '/green-arrow-small.svg'"
+            class="small-arrow-green"
+            *ngIf="!isCheckboxChecked"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center">
+      <button
+        mat-button
+        class="cta"
+        [ngClass]="{
+          valid: areWebformsValid && isCheckboxChecked
+        }"
+        (click)="submit()"
+      >
+        {{ (!areWebformsValid || !isCheckboxChecked) ? "Llena las preguntas" : "Continuar" }}
+      </button>
+    </div>
+  </footer>
+</div>

@@ -327,6 +327,17 @@ a {
           background-color: #82f18d;
         }
 
+        &.to-fill {
+          position: relative;
+          width: 90%;
+
+          .small-arrow-green {
+            position: absolute;
+            right: -73px;
+            top: 10px;
+          }
+        }
+
         .total {
           font-family: "SfProBold";
           font-size: 13px;
@@ -457,7 +468,7 @@ table {
   bottom: 0;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
 
   .msj {
     font-family: "SfProLight";
@@ -515,4 +526,17 @@ table {
   max-height: 515px;
   border-radius: 12px;
   margin-bottom: 3.6px;
+}
+
+::ng-deep.mat-expansion-panel-header {
+  padding: 0px 18px !important;
+}
+
+::ng-deep.mat-expansion-panel-header:hover {
+  background-color: #fff !important;
+}
+
+::ng-deep.mat-expansion-panel {
+  box-shadow: unset !important;
+  background-color: #fff !important;
 }

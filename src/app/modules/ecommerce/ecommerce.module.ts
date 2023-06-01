@@ -45,6 +45,8 @@ import { PostEditionComponent } from './pages/post-edition/post-edition.componen
 import { WebformClientViewComponent } from 'src/app/shared/components/webform-client-view/webform-client-view.component';
 import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-selector/webform-options-selector.component';
 import { AllItemsComponent } from './pages/all-items/all-items.component';
+import { CartComponent } from './pages/cart/cart.component';
+import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
 
 const routes: Routes = [
   {
@@ -185,6 +187,14 @@ const routes: Routes = [
         component: CheckoutComponent,
       },
       {
+        path: 'cart',
+        component: CartComponent,
+      },
+      {
+        path: 'receiver-form',
+        component: ReceiverFormComponent,
+      },
+      {
         path: 'payments/:orderId',
         component: PaymentsComponent,
       },
@@ -283,6 +293,8 @@ const routes: Routes = [
     ArticleUploadComponent,
     TextEditionAndPreviewComponent,
     AllItemsComponent,
+    CartComponent,
+    ReceiverFormComponent,
   ],
   imports: [
     CommonModule,

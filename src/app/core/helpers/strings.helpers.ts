@@ -71,6 +71,7 @@ export function completeImageURL(url: string) {
 }
 
 export function formatPhoneNumber(phone: string) {
+  if (!phone) return;
   const phoneUtil = PhoneNumberUtil.getInstance();
   let number = phone;
   if (!number.startsWith('+')) number = '+' + number;
@@ -120,7 +121,7 @@ export function unformatID(
 }
 
 export function capitalize(text) {
-  return text.replace(/\b\w/g, (l) => l.toUpperCase());
+  return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 }
 
 export function getDaysAgo(date: string) {

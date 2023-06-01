@@ -117,6 +117,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   selectedFilter: FilterCriteria;
 
+  openNavigation: boolean = false;
+
   options: BarOptions[] = [
     {
       title: 'articulos',
@@ -272,16 +274,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    const income = await this._MerchantsService.incomeMerchant({
-      findBy: {
-        merchant: this._MerchantsService.merchantData._id,
-      },
-    });
-
-    this.income = income.toFixed(2);
+    lockUI();
 
     await this.getItemsThatHaventBeenSold();
-
     //await this.getItemsBoughtByMe();
 
     await this.getOrders();
@@ -292,11 +287,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.getSoldItems();
       this.getQueryParameters();
       this.getHiddenItems();
-      //this.getOrdersToConfirm();
 
-      console.log(this.filters);
-
-      return;
+      unlockUI();
     }
     this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
       next: (value) => {
@@ -306,9 +298,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           this.getSoldItems();
           this.getQueryParameters();
           this.getHiddenItems();
-          this.getOrdersToConfirm();
 
-          console.log(this.filters);
+          unlockUI();
         }
       },
     });

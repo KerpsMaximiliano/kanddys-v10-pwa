@@ -97,58 +97,18 @@
     <ng-container *ngSwitchCase="'hidden'">
       <div class="section" style="margin-bottom: 30px">
         <div class="section-content">
-          <mat-card class="card" *ngFor="let item of hiddenItems">
-            <a [routerLink]="['../article-editor', item._id]">
-              <div class="card-body">
-                <div class="card-l-side">
-                  <h2 class="card-title">
-                    {{ item.name ? item.name : "Sin nombre..." }}
-                  </h2>
-                  <p class="card-description">
-                    {{
-                      item.description ? shortenText(item.description, 60) : ""
-                    }}
-                  </p>
-                </div>
-                <div class="card-r-side">
-                  <div
-                    class="featured-image"
-                    [ngStyle]="{
-                      backgroundImage: 'url(' + item?.images[0]?.value + ')'
-                    }"
-                  >
-                    <div class="caption" *ngIf="item.status === 'disabled'">
-                      <img
-                        [src]="environment + '/closed-eye-black.svg'"
-                        alt=""
-                      />
-                      Oculto al visitante
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </a>
-            <div class="card-footer">
-              <div class="bottom-title">
-                <h3>RD $ {{ item.pricing | number }}</h3>
-              </div>
-              <div class="bottom-icons">
-                <div class="text-icon">
-                  <p>
-                    {{
-                      item?.visitorCounter?.counter
-                        ? item?.visitorCounter?.counter
-                        : "0"
-                    }}
-                  </p>
-                  <img [src]="environment + '/open-eye.svg'" alt="" />
-                </div>
-                <div class="text-icon">
-                  <img [src]="environment + '/dots-black.svg'" alt="" />
-                </div>
-              </div>
-            </div>
-          </mat-card>
+          <div class="item-wrapper"
+          *ngFor="let item of hiddenItems"
+          >
+            <app-item-admin-card
+              [item]="item"
+              [unitSalesCounter]="
+                itemsSelledCountByItemId[item._id]
+                  ? itemsSelledCountByItemId[item._id]
+                  : 0
+              "
+            ></app-item-admin-card>
+          </div>
         </div>
       </div>
     </ng-container>

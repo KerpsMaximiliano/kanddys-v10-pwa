@@ -10,23 +10,6 @@
   </header>
 
   <div class="content">
-    <!-- <div
-      class="chip-list"
-      #elemt
-      (mousedown)="startDragging($event, elemt)"
-      (mouseup)="stopDragging()"
-      (mouseleave)="stopDragging()"
-      (mousemove)="moveEvent($event, elemt)"
-    >
-      <button
-        class="chip"
-        *ngFor="let stts of statusList"
-        [ngClass]="{ 'chip-selected': status === stts }"
-        (click)="setStatus(stts)"
-      >
-        {{ orderDeliveryStatus(stts) }}
-      </button>
-    </div> -->
     <h4>Mensaje al comprador desde {{ merchantNumber }}</h4>
     <form [formGroup]="notificationForm">
       <!-- <p class="label"></p> -->
@@ -65,17 +48,15 @@
 
     <div class="description">
       <!-- <p class="description-title">Como funciona?</p> -->
-      <p class="description-text">
-        Cuando marques este progreso en una factura, recibirás un enlace por
-        WhatsApp.
+      <p class="description-text" *ngIf="type !== 'payment'">
+        Si en las facturas con información segmentadas se cambia el progreso,
+        recibirás un enlace por WhatsApp con este mensaje listo para enviar al
+        comprador.
       </p>
-      <p class="description-text">
-        Al tocar el enlace, se abrirá esta plantilla pre-guardada con el mensaje
-        de progreso en tu WhatsApp, listo para enviar al comprador.
-      </p>
-      <p class="description-text">
-        Así, el cliente recibe el estatus directamente de ti, no de la
-        plataforma.
+      <p class="description-text" *ngIf="type === 'payment'">
+        Si en las facturas con información segmentadas se confirma el pago,
+        recibirás un enlace por WhatsApp con este mensaje listo para enviar al
+        comprador.
       </p>
     </div>
   </div>

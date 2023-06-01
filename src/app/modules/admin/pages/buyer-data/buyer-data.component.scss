@@ -5,13 +5,17 @@ section {
     color: #171d16;
 
     .title {
-      font-family: SfProBold;
-      font-size: 17px;
+      font-family: SfProRegular;
+      font-size: 13px;
+      text-transform: uppercase;
     }
     .info {
       font-family: SfProLight;
       font-size: 16px;
       color: #272727;
+    }
+    i {
+      margin-left: 10px;
     }
   }
 }

@@ -68,6 +68,7 @@ export class WebformClientViewComponent implements OnInit {
     CountryISO.UnitedStates,
   ];
   PhoneNumberFormat = PhoneNumberFormat;
+  redirectTo: string = 'checkout';
   @ViewChild('questionsSwiper') questionsSwiper: SwiperComponent;
 
   constructor(
@@ -83,8 +84,11 @@ export class WebformClientViewComponent implements OnInit {
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ itemId, formId }) => {
         this.routeQueryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ startAtQuestion }) => {
+          async ({ startAtQuestion, redirectTo }) => {
             lockUI();
+
+            if (redirectTo && redirectTo.length > 0)
+              this.redirectTo = redirectTo;
 
             this.item = await this.itemsService.item(itemId);
 
@@ -318,7 +322,8 @@ export class WebformClientViewComponent implements OnInit {
     if (
       isMultipleSelection &&
       alreadySelectedOptionsIndexes.length >=
-        currentStep.question.answerLimit && currentStep.question.answerLimit !== 0 &&
+        currentStep.question.answerLimit &&
+      currentStep.question.answerLimit !== 0 &&
       !alreadySelectedOptionsIndexes.includes(optionIndex)
     ) {
       this.snackbar.open(
@@ -447,6 +452,9 @@ export class WebformClientViewComponent implements OnInit {
           ].valid = false;
         }
       }
+
+      if (this.currentStepIndex < this.steps.length - 1)
+        this.questionsSwiper.directiveRef.setIndex(this.currentStepIndex + 1);
     } else {
       const selectedOptions = options.filter((option) => option.selected);
 
@@ -500,7 +508,11 @@ export class WebformClientViewComponent implements OnInit {
     }
   }
 
-  async saveWebform(preventRedirection?: boolean) {
+  async saveWebform(preventRedirection?: boolean, goToNextStep?: boolean) {
+    if (this.currentStepIndex < this.steps.length - 1 && goToNextStep) {
+      return this.questionsSwiper.directiveRef.setIndex(this.currentStepIndex + 1);
+    }
+
     for (const step of this.steps) {
       if (!['multiple', 'multiple-text'].includes(step.question.type)) {
         const name = step.fields.controls['name']?.value;
@@ -554,7 +566,10 @@ export class WebformClientViewComponent implements OnInit {
 
     if (!preventRedirection)
       return this.router.navigate([
-        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+        '/ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/' +
+          this.redirectTo,
       ]);
   }
 

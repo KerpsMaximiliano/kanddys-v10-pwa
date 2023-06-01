@@ -128,9 +128,11 @@ export class NewAddressComponent implements OnInit {
     this.user = await this.authService.me();
     this.onInitSetup();
     if (this.magicLinkLocation) {
-      this.addressForm.patchValue({ ...this.magicLinkLocation, save: true });
-      this.mode = 'add';
-      this.formSubmit();
+      setTimeout(() => {
+        this.addressForm.patchValue({ ...this.magicLinkLocation, save: true });
+        this.mode = 'add';
+        this.formSubmit();
+      }, 100);
     }
 
     const viewsMerchants = await this.merchantsService.viewsMerchants({
@@ -325,6 +327,9 @@ export class NewAddressComponent implements OnInit {
     this.headerService.storeLocation(addressInput);
     this.headerService.orderProgress.delivery = true;
     this.headerService.storeOrderProgress();
+
+    //console.log('this.headerService.user', this.headerService.user);
+
     if (save && !this.headerService.user) {
       // this.authSelect('address');
 

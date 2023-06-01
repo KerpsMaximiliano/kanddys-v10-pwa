@@ -207,6 +207,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { FormResponsesByQuestionComponent } from './components/form-responses-by-question/form-responses-by-question.component';
 import { WebformClientViewComponent } from './components/webform-client-view/webform-client-view.component';
 import { AutofocusDirective } from '../core/directives/autofocus.directive';
+import { BuyerNotificationDialogComponent } from './dialogs/buyer-notification-dialog/buyer-notification-dialog.component';
+import { ItemAdminCardComponent } from './components/item-admin-card/item-admin-card.component';
 
 const imports = [
   CommonModule,
@@ -428,6 +430,8 @@ const declarations = [
   FormResponsesByQuestionComponent,
   WebformClientViewComponent,
   AutofocusDirective,
+  BuyerNotificationDialogComponent,
+  ItemAdminCardComponent
 ];
 
 @NgModule({

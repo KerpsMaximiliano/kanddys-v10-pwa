@@ -60,6 +60,7 @@ export class DashboardLibraryComponent implements OnInit {
   pagination;
   itemsPagination;
   hiddenItems: Item[] = [];
+  itemsSelledCountByItemId: Record<string, number> = {};
 
   range = new FormGroup({
     start: new FormControl(''),
@@ -382,6 +383,10 @@ export class DashboardLibraryComponent implements OnInit {
           merchant: this.merchant._id,
         },
       })) as any[];
+      
+      for (const record of result) {
+        this.itemsSelledCountByItemId[record.item._id] = record.count;
+      }
 
       this.items = result
         .map((item) => item.item)
