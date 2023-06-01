@@ -43,15 +43,17 @@
   </header> -->
 
   <header class="header">
-    <button mat-icon-button>
+    <!--
+      
+    -->
+    <button mat-icon-button style="margin-right: 25px;">
       <mat-icon [ngStyle]="{ color: 'white' }">search</mat-icon>
     </button>
-    <button mat-icon-button (click)="newArticle()">
+    <button mat-icon-button style="margin-right: 25px;" (click)="newArticle()">
       <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
     </button>
     <button
       class="header-btn"
-      style="margin-bottom: -5px"
       (click)="headerSettings()"
     >
       <img [src]="environment + '/dots-black.svg'" alt="" />
@@ -59,28 +61,39 @@
 
     <button
       style="
-        color: #87CD9B;
-        font-size: 16px;
+        color: #87cd9b;
+        font-size: 17px;
         font-family: InterBold;
         margin-left: auto;
       "
     >
-      Artículos que vendo
-      <mat-icon style="color: #6FCF97; margin-left: 8px">menu</mat-icon>
+      Lo que vendo 🏷️
+      <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
     </button>
   </header>
 
   <div class="categories">
     <swiper [config]="swiperConfig" class="category-swiper">
-      <div class="category-item">TODOS</div>
       <div
         class="category-item"
+        [ngClass]="{
+          active: !selectedFilter && !selectedTags.length
+        }"
+      >
+        TODOS
+      </div>
+      <div
+        class="category-item queryParam"
         *ngFor="let filter of filters; let i = index"
         [ngClass]="{
           active: selectedFilter && selectedFilter._id === filter._id
         }"
         (click)="isFilterActive(filter)"
       >
+        <i
+          class="fas fa-times-circle close-icon"
+          style="align-self: center; padding-right: 6.5px"
+        ></i>
         {{
           filter.type === "queryParameter"
             ? formatDate(filter.queryParameter.from.date, true) +
@@ -125,13 +138,13 @@
     <mat-date-range-picker #picker></mat-date-range-picker>
   </mat-form-field>
 
-  <div class="section">
+  <div class="section" *ngIf="mostSoldItems.length">
     <div class="section-header">
       <p class="section-title">Vendidos</p>
 
       <div class="section-description" (click)="goToDetail('sold')">
         <!-- <p>4 de los últimos 7 días</p> -->
-        <p>{{ recentlySoldItems.length }}</p>
+        <p>{{ mostSoldItems.length }}</p>
         <img [src]="environment + '/arrow-left.svg'" alt="" />
       </div>
     </div>
@@ -158,7 +171,7 @@
       <swiper [config]="cardSwiperConfig">
         <mat-card
           class="card mat-elevation-z0"
-          *ngFor="let item of recentlySoldItems; index as i"
+          *ngFor="let item of mostSoldItems; index as i"
         >
           <a [routerLink]="['../article-editor/', item._id]">
             <div class="card-body">
@@ -184,11 +197,26 @@
             </div>
           </a>
           <div class="card-footer">
-            <div class="bottom-title">
+            <div class="pricing">
               <h3>RD $ {{ item.pricing | number }}</h3>
             </div>
             <div class="bottom-icons">
               <div class="text-icon">
+                <p>
+                  {{
+                    itemsSelledCountByItemId[item._id]
+                      ? itemsSelledCountByItemId[item._id]
+                      : "0"
+                  }}
+                </p>
+                <img
+                  [src]="environment + '/delivery-parcel.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
+              </div>
+
+              <div class="text-icon no-margin">
                 <p>
                   {{
                     item?.visitorCounter?.counter
@@ -196,11 +224,14 @@
                       : "0"
                   }}
                 </p>
-                <img [src]="environment + '/open-eye.svg'" alt="" />
+                <img
+                  [src]="environment + '/tap.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
               </div>
               <div
-                class="text-icon"
-                style="cursor: pointer"
+                class="text-icon dots"
                 (click)="openDotsDialog(item._id, i, 'recent')"
               >
                 <img [src]="environment + '/dots-black.svg'" alt="" />
@@ -212,7 +243,112 @@
     </div>
   </div>
 
-  <div class="section">
+  <div class="section" *ngIf="itemsBoughtByMe?.length">
+    <div class="section-header">
+      <p class="section-title">He comprado</p>
+
+      <div class="section-description" (click)="goToDetail('sold')">
+        <!-- <p>4 de los últimos 7 días</p> -->
+        <p>{{ itemsBoughtByMe.length }}</p>
+        <img [src]="environment + '/arrow-left.svg'" alt="" />
+      </div>
+    </div>
+
+    <qrcode
+      *ngIf="articleId"
+      style="display: none"
+      #orderQrCode
+      [qrdata]="
+        URI +
+        '/ecommerce/' +
+        _SaleflowService.saleflowData.merchant.slug +
+        '/article-detail/item/' +
+        articleId
+      "
+      [elementType]="'img'"
+      [width]="40"
+      [errorCorrectionLevel]="'M'"
+      [allowEmptyString]="true"
+      colorDark="#000"
+    ></qrcode>
+
+    <div class="section-content">
+      <swiper [config]="cardSwiperConfig">
+        <mat-card
+          class="card mat-elevation-z0"
+          *ngFor="let item of itemsBoughtByMe; index as i"
+        >
+          <a [routerLink]="['../article-editor/', item._id]">
+            <div class="card-body">
+              <div class="card-l-side">
+                <h2 class="card-title">
+                  {{ item.name ? item.name : "Sin nombre..." }}
+                </h2>
+                <p class="card-description">{{ item.description }}</p>
+              </div>
+              <div class="card-r-side">
+                <div
+                  class="featured-image"
+                  [ngStyle]="{
+                    backgroundImage: 'url(' + item?.images[0]?.value + ')'
+                  }"
+                >
+                  <div class="caption" *ngIf="item.status === 'disabled'">
+                    <img [src]="environment + '/closed-eye-black.svg'" alt="" />
+                    Oculto al visitante
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+          <div class="card-footer">
+            <div class="pricing">
+              <h3>RD $ {{ item.pricing | number }}</h3>
+            </div>
+            <div class="bottom-icons">
+              <div class="text-icon">
+                <p>
+                  {{
+                    itemsSelledCountByItemId[item._id]
+                      ? itemsSelledCountByItemId[item._id]
+                      : "0"
+                  }}
+                </p>
+                <img
+                  [src]="environment + '/delivery-parcel.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
+              </div>
+
+              <div class="text-icon no-margin">
+                <p>
+                  {{
+                    item?.visitorCounter?.counter
+                      ? item?.visitorCounter?.counter
+                      : "0"
+                  }}
+                </p>
+                <img
+                  [src]="environment + '/tap.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
+              </div>
+              <div
+                class="text-icon dots"
+                (click)="openDotsDialog(item._id, i, 'recent')"
+              >
+                <img [src]="environment + '/dots-black.svg'" alt="" />
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </swiper>
+    </div>
+  </div>
+
+  <div class="section" *ngIf="hiddenItems?.length">
     <div class="section-header">
       <p class="section-title">Ocultos</p>
 
@@ -224,7 +360,10 @@
 
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
-        <mat-card class="card mat-elevation-z0" *ngFor="let item of hiddenItems; index as i">
+        <mat-card
+          class="card mat-elevation-z0"
+          *ngFor="let item of hiddenItems; index as i"
+        >
           <a [routerLink]="['../article-editor/', item._id]">
             <div class="card-body">
               <div class="card-l-side">
@@ -249,17 +388,34 @@
             </div>
           </a>
           <div class="card-footer">
-            <div class="bottom-title">
+            <div class="pricing">
               <h3>RD $ {{ item.pricing | number }}</h3>
             </div>
             <div class="bottom-icons">
               <div class="text-icon">
+                <p>
+                  {{
+                    itemsSelledCountByItemId[item._id]
+                      ? itemsSelledCountByItemId[item._id]
+                      : "0"
+                  }}
+                </p>
+                <img
+                  [src]="environment + '/delivery-parcel.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
+              </div>
+              <div class="text-icon no-margin">
                 <p>{{ item.visitorCounter?.counter }}</p>
-                <img [src]="environment + '/open-eye.svg'" alt="" />
+                <img
+                  [src]="environment + '/tap.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
               </div>
               <div
-                class="text-icon"
-                style="cursor: pointer"
+                class="text-icon dots"
                 (click)="openDotsDialog(item._id, i, 'lessSold')"
               >
                 <img [src]="environment + '/dots-black.svg'" alt="" />
@@ -271,19 +427,22 @@
     </div>
   </div>
 
-  <div class="section">
+  <div class="section" *ngIf="notSoldItems?.length">
     <div class="section-header">
       <p class="section-title">Sin Venderse</p>
 
       <div class="section-description" (click)="goToDetail('notSold')">
-        <p>{{ lessSoldItems.length }}</p>
+        <p>{{ notSoldItems.length }}</p>
         <img [src]="environment + '/arrow-left.svg'" alt="" />
       </div>
     </div>
 
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
-        <mat-card class="card mat-elevation-z0" *ngFor="let item of notSoldItems; index as i">
+        <mat-card
+          class="card mat-elevation-z0"
+          *ngFor="let item of notSoldItems; index as i"
+        >
           <a [routerLink]="['../article-editor/', item._id]">
             <div class="card-body">
               <div class="card-l-side">
@@ -308,23 +467,40 @@
             </div>
           </a>
           <div class="card-footer">
-            <div class="bottom-title">
+            <div class="pricing">
               <h3>RD $ {{ item.pricing | number }}</h3>
             </div>
             <div class="bottom-icons">
               <div class="text-icon">
                 <p>
-                  <!-- {{
+                  {{
+                    itemsSelledCountByItemId[item._id]
+                      ? itemsSelledCountByItemId[item._id]
+                      : "0"
+                  }}
+                </p>
+                <img
+                  [src]="environment + '/delivery-parcel.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
+              </div>
+              <div class="text-icon no-margin">
+                <p>
+                  {{
                     item.visitorCounter.counter
                       ? item.visitorCounter.counter
                       : "0"
-                  }} -->0
+                  }}
                 </p>
-                <img [src]="environment + '/open-eye.svg'" alt="" />
+                <img
+                  [src]="environment + '/tap.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
               </div>
               <div
-                class="text-icon"
-                style="cursor: pointer"
+                class="text-icon dots"
                 (click)="openDotsDialog(item._id, i, 'lessSold')"
               >
                 <img [src]="environment + '/dots-black.svg'" alt="" />
@@ -336,7 +512,7 @@
     </div>
   </div>
 
-  <div class="section" style="margin-bottom: 105px">
+  <div class="section" *ngIf="allItems?.length" style="margin-bottom: 105px">
     <div class="section-header">
       <p class="section-title">Todos</p>
 
@@ -348,7 +524,10 @@
 
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
-        <mat-card class="card mat-elevation-z0" *ngFor="let item of allItems; index as i">
+        <mat-card
+          class="card mat-elevation-z0"
+          *ngFor="let item of allItems; index as i"
+        >
           <a [routerLink]="['../article-editor/', item._id]">
             <div class="card-body">
               <div class="card-l-side">
@@ -373,17 +552,34 @@
             </div>
           </a>
           <div class="card-footer">
-            <div class="bottom-title">
+            <div class="pricing">
               <h3>RD $ {{ item.pricing | number }}</h3>
             </div>
             <div class="bottom-icons">
               <div class="text-icon">
+                <p>
+                  {{
+                    itemsSelledCountByItemId[item._id]
+                      ? itemsSelledCountByItemId[item._id]
+                      : "0"
+                  }}
+                </p>
+                <img
+                  [src]="environment + '/delivery-parcel.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
+              </div>
+              <div class="text-icon no-margin">
                 <p>{{ item.visitorCounter.counter }}</p>
-                <img [src]="environment + '/open-eye.svg'" alt="" />
+                <img
+                  [src]="environment + '/tap.svg'"
+                  style="margin-left: 2px"
+                  alt=""
+                />
               </div>
               <div
-                class="text-icon"
-                style="cursor: pointer"
+                class="text-icon dots"
                 (click)="openDotsDialog(item._id, i, 'mostSold')"
               >
                 <img [src]="environment + '/dots-black.svg'" alt="" />

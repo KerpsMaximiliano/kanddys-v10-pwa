@@ -41,6 +41,7 @@ import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-actio
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ToastrService } from 'ngx-toastr';
 import { ExtendedItem } from '../items-dashboard/items-dashboard.component';
+import { TagsService } from 'src/app/core/services/tags.service';
 
 export class FilterCriteria {
   _id?: string;
@@ -69,7 +70,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   cardSwiperConfig: SwiperOptions = {
     slidesPerView: 1,
     freeMode: false,
-    spaceBetween: 2,
+    spaceBetween: 4,
+    watchSlidesProgress: true,
+    watchSlidesVisibility: true,
   };
 
   layout: 'simple-card' | 'description-card' | 'image-full-width';
@@ -78,6 +81,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   recentlySoldItems: Item[] = [];
   mostSoldItems: Item[] = [];
   lessSoldItems: Item[] = [];
+  itemsBoughtByMe: Item[] = [];
+  myOrders: Array<ItemOrder> = [];
+  itemsSelledCountByItemId: Record<string, number> = {};
   hiddenItems: Item[] = [];
   orders: number;
   income: number;
@@ -252,7 +258,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     public _SaleflowService: SaleFlowService,
     public router: Router,
     private authService: AuthService,
-    // private itemsService: ItemsService,
+    private tagsService: TagsService,
+    private ordersService: OrderService,
     private _ItemsService: ItemsService,
     private snackBar: MatSnackBar,
     private _bottomSheet: MatBottomSheet,
@@ -273,31 +280,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
     this.income = income.toFixed(2);
 
-    const notSoldPagination = {
-      options: {
-        sortBy: 'createdAt:asc',
-        limit: 10,
-        page: 1,
-        range: {},
-      },
-      findBy: {
-        merchant: this._MerchantsService.merchantData._id,
-      },
-    };
+    await this.getItemsThatHaventBeenSold();
 
-    const notSoldItems = await this._ItemsService.itemsByMerchantNosale(
-      notSoldPagination
-    );
-    this.notSoldItems = Object.values(notSoldItems)[0];
+    //await this.getItemsBoughtByMe();
 
     await this.getOrders();
 
     if (this._SaleflowService.saleflowData) {
       this.inicializeItems(true, false, true);
       this.getTags();
+      this.getSoldItems();
       this.getQueryParameters();
-      this.getMostSoldItems();
-      this.getLessSoldItems();
       this.getHiddenItems();
       //this.getOrdersToConfirm();
 
@@ -310,10 +303,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         if (value) {
           this.inicializeItems(true, false, true);
           this.getTags();
-          //this.getOrders();
+          this.getSoldItems();
           this.getQueryParameters();
-          this.getMostSoldItems();
-          this.getLessSoldItems();
           this.getHiddenItems();
           this.getOrdersToConfirm();
 
@@ -322,6 +313,70 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       },
     });
     //{ title: 'colecciones' },
+  }
+
+  async getItemsBoughtByMe() {
+    if (!this.myOrders.length) {
+      this.myOrders = (
+        await this.ordersService.ordersByUser({
+          options: {
+            limit: -1,
+          },
+        })
+      )?.ordersByUser;
+    }
+
+    const haveYouBuyedAnItemByItsID = {};
+
+    for (const order of this.myOrders) {
+      order.items.forEach((item) => {
+        if (!haveYouBuyedAnItemByItsID[item.item._id]) {
+          haveYouBuyedAnItemByItsID[item.item._id] = true;
+
+          this.itemsBoughtByMe.push(item.item);
+        }
+      });
+    }
+  }
+
+  async getItemsThatHaventBeenSold() {
+    const pagination: PaginationInput = {
+      options: {
+        sortBy: 'createdAt:asc',
+        limit: 10,
+        page: 1,
+        range: {},
+      },
+      findBy: {
+        merchant: this._MerchantsService.merchantData._id,
+      },
+    };
+
+    if (this.selectedTags.length)
+      pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
+
+    const notSoldItems = await this._ItemsService.itemsByMerchantNosale(
+      pagination
+    );
+    this.notSoldItems = Object.values(notSoldItems)[0];
+  }
+
+  async getItemsThatWerentSoldOnDateRange() {
+    try {
+      const soldItemsObject = {};
+
+      this.mostSoldItems.forEach((item) => {
+        soldItemsObject[item._id] = true;
+      });
+
+      const itemsThatWerentSold = this.allItems.filter(
+        (item) => !soldItemsObject[item._id]
+      );
+
+      this.notSoldItems = itemsThatWerentSold;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   ngOnDestroy() {
@@ -378,7 +433,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         _id: {
           __in: ([] = saleflowItems.map((items) => items.itemId)),
         },
-        status: this.itemStatus,
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -386,6 +440,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         page: this.paginationState.page,
       },
     };
+
+    if (this.selectedTags.length)
+      pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
 
     this.renderItemsPromise = this._SaleflowService.listItems(pagination, true);
     this.renderItemsPromise.then(async (response) => {
@@ -436,12 +493,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async getTags() {
-    const tagsByMerchant = (
-      await this._MerchantsService.tagsByMerchant(
-        this._MerchantsService.merchantData._id
-      )
-    )?.tagsByMerchant;
-    this.tags = tagsByMerchant.map((value) => value.tags);
+    const tagsByUser = await this.tagsService.tagsByUser({
+      findBy: {
+        entity: 'item',
+      },
+      options: {
+        limit: -1,
+      },
+    });
+    this.tags = tagsByUser;
     if (this.tags.length) {
       this.options.push({
         title: 'categorias',
@@ -491,15 +551,25 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async getRecentlySoldItems() {
-    const { listItems } = await this._ItemsService.listItems({
+    const pagination: PaginationInput = {
       findBy: {
         _id: {
           __in: this.allItemsIds,
         },
       },
-    });
+      options: {},
+    };
 
-    this.recentlySoldItems = listItems;
+    if (this.selectedFilter) {
+      pagination.options.range = {
+        from: this.selectedFilter.queryParameter.from.date as any,
+        to: this.selectedFilter.queryParameter.until.date as any,
+      };
+    }
+
+    if (this.selectedTags.length) {
+      pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
+    }
   }
 
   async getOrdersToConfirm() {
@@ -524,7 +594,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  async getMostSoldItems() {
+  async getSoldItems() {
     try {
       const pagination: PaginationInput = {
         findBy: {
@@ -535,10 +605,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         },
       };
 
-      if (this.selectedTags.length)
-        pagination.findBy.tags = {
-          $in: this.selectedTags.map((tag) => tag._id),
+      if (this.selectedFilter) {
+        pagination.options.range = {
+          from: this.selectedFilter.queryParameter.from.date as any,
+          to: this.selectedFilter.queryParameter.until.date as any,
         };
+      }
+
+      if (this.selectedTags.length)
+        pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
 
       const result = (await this._ItemsService.bestSellersByMerchant(
         false,
@@ -546,6 +621,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       )) as any[];
 
       this.mostSoldItems = result.map((item) => item.item);
+
+      for (const record of result) {
+        this.itemsSelledCountByItemId[record.item._id] = record.count;
+      }
     } catch (error) {
       console.log(error);
     }
@@ -562,10 +641,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         },
       };
 
-      if (this.selectedTags.length)
-        pagination.findBy.tags = {
-          $in: this.selectedTags.map((tag) => tag._id),
+      if (this.selectedFilter) {
+        pagination.options.range = {
+          from: this.selectedFilter.queryParameter.from.date as any,
+          to: this.selectedFilter.queryParameter.until.date as any,
         };
+      }
+
+      if (this.selectedTags.length)
+        pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
 
       const result = (await this._ItemsService.bestSellersByMerchant(
         false,
@@ -798,6 +882,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async getHiddenItems() {
+    //Ocutar la seccion de ocultos cuando haya un rango de fecha seleccionados
+
     try {
       const pagination: PaginationInput = {
         options: {
@@ -809,10 +895,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         },
       };
 
-      if (this.selectedTags.length) {
-        pagination.findBy.tags = {
-          $in: this.selectedTags.map((tag) => tag._id),
+      if (this.selectedFilter) {
+        pagination.options.range = {
+          from: this.selectedFilter.queryParameter.from.date as any,
+          to: this.selectedFilter.queryParameter.until.date as any,
         };
+      }
+
+      if (this.selectedTags.length) {
+        pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
       }
 
       const { listItems } = await this._ItemsService.listItems(pagination);
@@ -849,19 +940,33 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.selectedTags.push(selectedTag);
     }
 
-    await this.getRecentlySoldItems();
-    await this.getMostSoldItems();
-    await this.getLessSoldItems();
+    await this.inicializeItems(true, false, true);
+    await this.getSoldItems();
+    //await this.getLessSoldItems();
     await this.getHiddenItems();
+    if (!this.selectedFilter) {
+      await this.getItemsThatHaventBeenSold();
+    } else {
+      await this.getItemsThatWerentSoldOnDateRange();
+    }
   }
 
-  isFilterActive(filter: FilterCriteria) {
+  async isFilterActive(filter: FilterCriteria) {
     if (this.selectedFilter && filter._id === this.selectedFilter._id) {
       this.selectedFilter = null;
-      return;
+      await this.queryParameterService.deleteQueryParameter(filter._id);
+
+      this.filters = this.filters.filter(
+        (filterInList) => filterInList._id !== filter._id
+      );
+    } else {
+      this.selectedFilter = filter;
     }
 
-    this.selectedFilter = filter;
+    await this.inicializeItems(true, false, true);
+    await this.getSoldItems();
+    await this.getItemsThatWerentSoldOnDateRange();
+    await this.getHiddenItems();
   }
 
   isTagActive(tag: Tag) {
@@ -878,7 +983,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async onDateChange() {
     if (this.range.get('start').value && this.range.get('end').value) {
-      console.log('AZUCARRRRRRRRRR');
       lockUI();
       try {
         const result = await this.queryParameterService.createQueryParameter(
@@ -893,7 +997,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           }
         );
 
-        if (result) this.queryParamaters.unshift(result);
+        if (result) {
+          this.queryParamaters.unshift(result);
+
+          this.filters.push({
+            type: 'queryParameter',
+            queryParameter: result,
+            _id: result._id,
+          });
+
+          this.isFilterActive(this.filters[this.filters.length - 1]);
+        }
 
         const startDate = new Date(result.from.date);
         const endDate = new Date(result.until.date);
