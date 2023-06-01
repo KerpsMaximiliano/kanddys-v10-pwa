@@ -798,6 +798,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                   !this._MerchantsService.merchantData.contactFooter;
               },
             },
+            {
+              title: 'Ve a las configuraciones de las categorias',
+              callback: () => {
+                this.router.navigate(['/admin/tags']);
+              },
+            },
           ],
           secondaryOptions: [
             {
