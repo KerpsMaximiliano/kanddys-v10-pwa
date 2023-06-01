@@ -1,27 +1,29 @@
-<div>
+<div *ngIf="!articleId">
   <!-- En preparación -->
   <section>
     <div class="heading flex space-between">
       <div class="title">En preparación</div>
       <a class="info" [routerLink]="['list', 'in-progress']">
-        {{ orderStatusDelivery.inProgress?.length || 0 }}
+        {{ orderStatusDelivery["in progress"]?.length || 0 }}
         <i class="fas fa-chevron-right"></i>
       </a>
     </div>
-    <ng-container *ngIf="orderStatusDelivery.inProgress?.status === 'loading'">
+    <ng-container
+      *ngIf="orderStatusDelivery['in progress']?.status === 'loading'"
+    >
       Cargando...
     </ng-container>
-    <div *ngIf="orderStatusDelivery.inProgress.status === 'complete'">
-      <div *ngIf="!orderStatusDelivery.inProgress.orders.length">
+    <div *ngIf="orderStatusDelivery['in progress'].status === 'complete'">
+      <div *ngIf="!orderStatusDelivery['in progress'].orders.length">
         No hay órdenes en este proceso.
       </div>
 
       <swiper
         [config]="cardSwiperConfig"
-        *ngIf="orderStatusDelivery.inProgress.orders.length"
+        *ngIf="orderStatusDelivery['in progress'].orders.length"
       >
         <a
-          *ngFor="let order of orderStatusDelivery.inProgress.orders"
+          *ngFor="let order of orderStatusDelivery['in progress'].orders"
           [routerLink]="['/admin/order-slides']"
           [queryParams]="{
             progress: 'in progress'
@@ -60,14 +62,13 @@
     <ng-container *ngIf="orderStatusDelivery.pending?.status === 'loading'">
       Cargando...
     </ng-container>
-    <div *ngIf="orderStatusDelivery.pending.status === 'complete'">
-      <div *ngIf="!orderStatusDelivery.pending.orders.length">
-        No hay órdenes en este proceso.
-      </div>
-      <swiper
-        [config]="cardSwiperConfig"
-        *ngIf="orderStatusDelivery.pending.orders.length"
-      >
+    <div
+      *ngIf="
+        orderStatusDelivery.pending.status === 'complete' &&
+        orderStatusDelivery.pending.orders.length
+      "
+    >
+      <swiper [config]="cardSwiperConfig">
         <a
           *ngFor="let order of orderStatusDelivery.pending.orders"
           [routerLink]="['/admin/order-slides']"
@@ -214,6 +215,207 @@
       >
         <a
           *ngFor="let order of orderStatusDelivery.delivered.orders"
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'delivered'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
+      </swiper>
+    </div>
+  </section>
+  <!-- Entregadas -->
+</div>
+<!-- ---------------------------------------------------------------------- -->
+<!-- --------------------------IF ARTICLEID-------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<div *ngIf="articleId">
+  <!-- En preparación -->
+  <section *ngIf="itemInProgressOrders && itemInProgressOrders?.length">
+    <div class="heading flex space-between">
+      <div class="title">En preparación</div>
+      <a class="info" [routerLink]="['list', 'in-progress']">
+        {{ itemInProgressOrders?.length || 0 }}
+        <i class="fas fa-chevron-right"></i>
+      </a>
+    </div>
+    <div>
+      <swiper [config]="cardSwiperConfig" *ngIf="itemInProgressOrders?.length">
+        <a
+          *ngFor="let order of itemInProgressOrders"
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'in progress'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
+      </swiper>
+    </div>
+  </section>
+  <!-- En preparación -->
+  <!-- Listas para enviarse -->
+  <section *ngIf="itemPendingOrders && itemPendingOrders?.length">
+    <div class="heading flex space-between">
+      <div class="title">Listas para enviarse</div>
+      <a class="info" [routerLink]="['list', 'pending']">
+        {{ itemPendingOrders?.length || 0 }}
+        <i class="fas fa-chevron-right"></i>
+      </a>
+    </div>
+    <div>
+      <swiper [config]="cardSwiperConfig">
+        <a
+          *ngFor="let order of itemPendingOrders"
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'pending'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
+      </swiper>
+    </div>
+  </section>
+  <!-- Listas para enviarse -->
+  <!-- Listas para Pick Up -->
+  <section *ngIf="itemPickupOrders && itemPickupOrders?.length">
+    <div class="heading flex space-between">
+      <div class="title">Listas para Pick Up</div>
+      <a class="info" [routerLink]="['list', 'pickup']">
+        {{ itemPickupOrders?.length || 0 }}
+        <i class="fas fa-chevron-right"></i>
+      </a>
+    </div>
+    <div>
+      <swiper [config]="cardSwiperConfig">
+        <a
+          *ngFor="let order of itemPickupOrders"
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'pickup'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
+      </swiper>
+    </div>
+  </section>
+  <!-- Listas para Pick Up -->
+  <!-- De camino a ser entregadas -->
+  <section *ngIf="itemShippedOrders && itemShippedOrders?.length">
+    <div class="heading flex space-between">
+      <div class="title">De camino a ser entregadas</div>
+      <a class="info" [routerLink]="['list', 'shipped']">
+        {{ itemShippedOrders?.length || 0 }}
+        <i class="fas fa-chevron-right"></i>
+      </a>
+    </div>
+    <div>
+      <swiper [config]="cardSwiperConfig">
+        <a
+          *ngFor="let order of itemShippedOrders"
+          [routerLink]="['/admin/order-slides']"
+          [queryParams]="{
+            progress: 'shipped'
+          }"
+        >
+          <app-small-info-card
+            [image]="order.user?.image"
+            [title]="order.user?.username || 'KiosKo sin nombre'"
+            [subtitle]="
+              'by ' +
+              (order.user?.name || order.user?.phone || order.user?.email)
+            "
+            [topInfo]="
+              '$' + orderTotal(order.subtotals).toLocaleString('es-MX')
+            "
+            [bottomInfo]="
+              getDaysAgo(order.createdAt) +
+              ', factura ' +
+              formatId(order.dateId)
+            "
+          ></app-small-info-card>
+        </a>
+      </swiper>
+    </div>
+  </section>
+  <!-- De camino a ser entregadas -->
+  <!-- Entregadas -->
+  <section *ngIf="itemDeliveredOrders && itemDeliveredOrders?.length">
+    <div class="heading flex space-between">
+      <div class="title">Entregadas</div>
+      <a class="info" [routerLink]="['list', 'delivered']">
+        {{ itemDeliveredOrders?.length || 0 }}
+        <i class="fas fa-chevron-right"></i>
+      </a>
+    </div>
+    <div>
+      <swiper [config]="cardSwiperConfig">
+        <a
+          *ngFor="let order of itemDeliveredOrders"
           [routerLink]="['/admin/order-slides']"
           [queryParams]="{
             progress: 'delivered'
