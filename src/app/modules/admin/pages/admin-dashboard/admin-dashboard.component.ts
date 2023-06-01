@@ -21,7 +21,6 @@ import { Tag } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import {
   BarOptions,
@@ -102,6 +101,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   };
   reachTheEndOfPagination: boolean = false;
   // Pagination
+  startDate: Date = null;
+  endDate: Date = null;
 
   tags: Tag[] = [];
   selectedTags: Tag[] = [];
@@ -299,28 +300,40 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.notSoldItems = Object.values(notSoldItems)[0];
 
     if (this._SaleflowService.saleflowData) {
-      this.inicializeItems(true, false, true);
+      const [notSoldItems] = await Promise.all([
+        notSoldItemsPromise,
+        this.inicializeItems(true, false, true),
+      ]);
+
+      this.notSoldItems = Object.values(notSoldItems)[0];
+
+      this.getOrders();
       this.getTags();
       this.getQueryParameters();
       this.getMostSoldItems();
       this.getLessSoldItems();
       this.getHiddenItems();
-      this.getOrdersToConfirm();
 
       unlockUI();
 
       return;
     }
     this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
-      next: (value) => {
+      next: async (value) => {
         if (value) {
-          this.inicializeItems(true, false, true);
+          const [notSoldItems] = await Promise.all([
+            notSoldItemsPromise,
+            this.inicializeItems(true, false, true),
+          ]);
+
+          this.notSoldItems = Object.values(notSoldItems)[0];
+
+          this.getOrders();
           this.getTags();
           this.getQueryParameters();
           this.getMostSoldItems();
           this.getLessSoldItems();
           this.getHiddenItems();
-          this.getOrdersToConfirm();
 
           unlockUI();
         }
@@ -383,25 +396,27 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         _id: {
           __in: ([] = saleflowItems.map((items) => items.itemId)),
         },
-        status: this.itemStatus,
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: this.paginationState.pageSize,
+        limit: -1,
         page: this.paginationState.page,
       },
     };
 
     this.renderItemsPromise = this._SaleflowService.listItems(pagination, true);
-    this.renderItemsPromise.then(async (response) => {
+    this.layout = this._SaleflowService.saleflowData.layout;
+
+    return this.renderItemsPromise.then(async (response) => {
       const items = response;
       const itemsQueryResult = items?.listItems;
 
+      /*
       if (getTotalNumberOfItems) {
         pagination.options.limit = -1;
         const { listItems: allItems } =
           await this._SaleflowService.hotListItems(pagination);
-      }
+      }*/
 
       if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
         this.allItems = [];
@@ -437,7 +452,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.allItems = [];
       }
     });
-    this.layout = this._SaleflowService.saleflowData.layout;
   }
 
   async getTags() {
@@ -485,45 +499,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       });
 
       this.orders = ordersByMerchant.length;
-      console.log(this.orders);
 
       const filteredItems = Array.from(itemIds);
 
-      const { listItems } = await this._ItemsService.listItems({
-        findBy: {
-          _id: {
-            __in: filteredItems,
-          },
-        },
-      });
-
-      this.recentlySoldItems = listItems;
+      this.recentlySoldItems = this.allItems.filter((item) =>
+        filteredItems.includes(item._id)
+      );
     } catch (error) {
       console.log(error);
     }
   }
 
-  async getOrdersToConfirm() {
-    try {
-      const { ordersByMerchant } =
-        await this._MerchantsService.ordersByMerchant(
-          this._MerchantsService.merchantData._id,
-          {
-            options: {
-              limit: -1,
-              sortBy: 'createdAt:desc',
-            },
-            findBy: {
-              orderStatus: 'to confirm',
-            },
-          }
-        );
-
-      this.ordersToConfirm = ordersByMerchant;
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   async getMostSoldItems() {
     try {
@@ -743,16 +729,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getHiddenItems() {
     try {
-      const { listItems } = await this._ItemsService.listItems({
-        options: {
-          limit: -1,
-        },
-        findBy: {
-          merchant: this._MerchantsService.merchantData._id,
-          status: 'disabled',
-        },
-      });
-      this.hiddenItems = listItems;
+      this.hiddenItems = this.allItems.filter(
+        (item) => item.status === 'disabled'
+      );
     } catch (error) {
       console.log(error);
     }
@@ -801,7 +780,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async onDateChange() {
     if (this.range.get('start').value && this.range.get('end').value) {
-      console.log('AZUCARRRRRRRRRR');
       lockUI();
       try {
         const result = await this.queryParameterService.createQueryParameter(
@@ -818,14 +796,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
         if (result) this.queryParamaters.unshift(result);
 
-        const startDate = new Date(result.from.date);
-        const endDate = new Date(result.until.date);
+        this.startDate = new Date(result.from.date);
+        this.endDate = new Date(result.until.date);
 
-        this.dateString = `${this.orders} facturas, $${
-          this.income
-        } desde ${this.formatDate(startDate)} hasta ${this.formatDate(
-          endDate
-        )}`;
         unlockUI();
       } catch (error) {
         unlockUI();
@@ -849,13 +822,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.queryParamaters = result;
 
       if (this.queryParamaters.length > 0) {
-        const startDate = new Date(this.queryParamaters[0].from.date);
-        const endDate = new Date(this.queryParamaters[0].until.date);
-        this.dateString = `${this.orders} facturas, $${
-          this.income
-        } desde ${this.formatDate(startDate)} hasta ${this.formatDate(
-          endDate
-        )}`;
+        this.startDate = new Date(this.queryParamaters[0].from.date);
+        this.endDate = new Date(this.queryParamaters[0].until.date);
 
         const filters: FilterCriteria[] = this.queryParamaters.map(
           (queryParameter) => {
