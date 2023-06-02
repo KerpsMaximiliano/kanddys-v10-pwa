@@ -190,6 +190,12 @@ export class ExpenditureInput {
   media?:any;
 }
 
+export class ExpenditureActiveDateRangeInput {
+  from?: Date;
+  until?: Date;
+  month?: number;
+}
+
 export class OrderBenefits {
   benefits: number;
   less: number;

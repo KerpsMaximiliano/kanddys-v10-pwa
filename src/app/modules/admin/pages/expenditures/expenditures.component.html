@@ -1,10 +1,10 @@
 <div class="main-container">
     <div class="header">
-      <div class="flex"  [routerLink]="['../../reportings']">
+      <div class="flex"  [routerLink]="['../../reportings']" style="cursor: pointer;">
         <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
         <p>{{title}}</p>
       </div>
-      <div [routerLink]="['../../create-expenditure', type]" >
+      <div [routerLink]="['../../create-expenditure', type]" style="cursor: pointer;">
         <img [src]="env + '/plus-black.svg'" class="plus-icon" />
       </div>
     </div>

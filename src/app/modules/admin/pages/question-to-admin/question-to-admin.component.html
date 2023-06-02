@@ -1,9 +1,9 @@
 <div class="main-container">
   <div class="header">
-    <div [routerLink]="['../../transaction-types',webformId]">
+    <div [routerLink]="['../../transaction-types', webformId]">
       <i class="fas fa-chevron-left"></i>
     </div>
-    <div (click)="addQuestion()">
+    <div [routerLink]="['../../transaction-types', webformId]">
       <i class="fas fa-times"></i>
     </div>
   </div>
@@ -36,5 +36,8 @@
       Esto puede generar ingresos adicionales al incluir costos adicionales
       según las preferencias del cliente.
     </p>
+  </div>
+  <div style="position: fixed; max-width: 500px; width: 100%; bottom: 0; text-align: center;">
+    <button mat-button [ngClass]="{ active: question.length > 0 }" class="cta" (click)="addQuestion()">Continuar</button>
   </div>
 </div>

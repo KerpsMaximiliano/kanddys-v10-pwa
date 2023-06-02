@@ -37,7 +37,7 @@
         </div>
       </div>
     </div>
-    <!-- <p class="content-title">INGRESO EXTRA EN PRODUCTOS</p> -->
+    <!-- <p class="content-title">INGRESO EXTRA EN PRODUCTOS</p>
     <div
       class="content-items-container"
       *ngFor="let incomeInList of extraIncomesInProducts"
@@ -61,7 +61,7 @@
           <p class="content-item-times-selected">87 veces seleccionado</p>
         </div>
       </div>
-    </div>
+    </div> -->
     <p class="content-title">EGRESOS</p>
     <div class="content-items-container">
       <div class="content-item">
@@ -70,7 +70,7 @@
             <img src="../../../../../assets/icons/dots.svg" />
           </div>
         </div>
-        <div class="content-item-texts">
+        <a class="content-item-texts" [routerLink]="['../expenditures/day']">
           <div class="content-item-title-container">
             <p class="content-item-title">Adicionados a días especificos</p>
             <p class="content-item-title">
@@ -80,7 +80,7 @@
           <p class="content-item-times-selected">
             {{ onlyDayTotal.count }} adiciones
           </p>
-        </div>
+        </a>
       </div>
       <div class="content-item">
         <div class="content-item-button-container">
@@ -88,7 +88,7 @@
             <img src="../../../../../assets/icons/dots.svg" />
           </div>
         </div>
-        <div class="content-item-texts">
+        <a class="content-item-texts" [routerLink]="['../expenditures/month']">
           <div class="content-item-title-container">
             <p class="content-item-title">Adicionados a meses especificos</p>
             <p class="content-item-title">
@@ -98,7 +98,7 @@
           <p class="content-item-times-selected">
             {{ onlyMonthTotal.count }} adiciones
           </p>
-        </div>
+        </a>
       </div>
       <div class="content-item">
         <div class="content-item-button-container">
@@ -106,7 +106,7 @@
             <img src="../../../../../assets/icons/dots.svg" />
           </div>
         </div>
-        <div class="content-item-texts">
+        <a class="content-item-texts" [routerLink]="['../expenditures/recurrent']">
           <div class="content-item-title-container">
             <p class="content-item-title">Recurrentes y fijos (Rentas)</p>
             <p class="content-item-title">
@@ -116,7 +116,7 @@
           <p class="content-item-times-selected">
             {{ recurrentTotal.count }} adiciones
           </p>
-        </div>
+        </a>
       </div>
 
       <!-- EGRESOS CUSTOM CREADOS POR EL MERCHANT-->
@@ -141,25 +141,6 @@
             </p>
           </div>
           <p class="content-item-times-selected">87 veces seleccionado</p>
-        </div>
-      </div>
-
-      <div class="content-item">
-        <div class="content-item-button-container">
-          <div class="content-item-button">
-            <img src="../../../../../assets/icons/dots.svg" />
-          </div>
-        </div>
-        <div class="content-item-texts">
-          <div class="content-item-title-container">
-            <p class="content-item-title">Costo de seleccion de la zone de entrega</p>
-            <p class="content-item-title">
-              {{ deliveryZonesTotal.total | currency }}
-            </p>
-          </div>
-          <p class="content-item-times-selected">
-            {{ deliveryZonesTotal.count }} adiciones
-          </p>
         </div>
       </div>
     </div>

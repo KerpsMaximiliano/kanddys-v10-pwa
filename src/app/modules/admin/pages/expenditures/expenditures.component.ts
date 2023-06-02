@@ -35,10 +35,11 @@ export class ExpendituresComponent implements OnInit {
     let result = await this.orderService.expenditures({
       findBy: {
         merchant: this.merchant._id,
-        type:this.typeRequest
+        type: this.typeRequest,
       },
       options: {
         sortBy: 'createdAt:desc',
+        limit: -1
       },
     });
     this.expenditures = result;
@@ -61,16 +62,19 @@ calculateTotal(){
   this.total = this.expenditures.reduce((sum, obj) => sum + obj.amount, 0);
 }
 
-setValues(){
+setValues() {
   if(this.type=='day'){
     this.title = "Egresos especificos en día"; 
     this.typeRequest = 'only-day';
   }else if(this.type=='month'){
     this.title = "Egreso especifico de un mes";
     this.typeRequest = 'only-month';
-  }else{
+  }else if (this.type=='recurrent') {
     this.title ="Egresos mensuales y recurrentes";
     this.typeRequest = 'recurrent';
+  } else {
+    this.title = "Egresos de selección de zonas de entrega";
+    this.typeRequest = 'delivery-zone';
   }
 }
 

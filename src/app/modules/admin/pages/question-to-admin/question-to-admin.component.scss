@@ -91,6 +91,22 @@ p {
   margin-bottom: 13px;
 }
 
+.cta {
+  width: 90%;
+  background-color: #7B7B7B;
+  color: #181D17;
+  padding: 10px;
+  width: 95%;
+  border-radius: 30px;
+  text-align: center;
+  margin: 25px 0;
+  transition: 0.2s all;
+
+  &.active {
+      background-color: #87CD9B;
+  }
+}
+
 ::ng-deep .mat-form-field-placeholder,
 .mat-focused,
 .mat-form-field-placeholder,

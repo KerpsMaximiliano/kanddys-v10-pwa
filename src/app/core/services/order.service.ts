@@ -46,6 +46,7 @@ import {
   incomeTypes,
   incomeTotalByType,
   orderByDateId,
+  expendituresTotalByTypeConstant,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -61,6 +62,7 @@ import {
   Benefits,
   OrderBenefits,
   DeliveryDataInput,
+  ExpenditureActiveDateRangeInput,
 } from '../models/order';
 
 import { PaginationInput, PaginationRangeInput } from '../models/saleflow';
@@ -570,6 +572,15 @@ export class OrderService {
       query: expendituresTotalById,
       fetchPolicy: 'no-cache',
       variables: { merchantId, type },
+    });
+    return result;
+  }
+
+  async expendituresTotalByTypeConstant(paginate: PaginationInput, activeDateRange?: ExpenditureActiveDateRangeInput) {
+    const result = await this.graphql.query({
+      query: expendituresTotalByTypeConstant,
+      fetchPolicy: 'no-cache',
+      variables: { activeDateRange, paginate }
     });
     return result;
   }

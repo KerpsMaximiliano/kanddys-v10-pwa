@@ -736,6 +736,12 @@ export const expenditureTypesCustom = gql`
   }
 `;
 
+export const expendituresTotalByTypeConstant = gql`
+  query expendituresTotalByTypeConstant($activeDateRange: ExpenditureActiveDateRangeInput, $paginate: PaginationInput) {
+    expendituresTotalByTypeConstant(activeDateRange: $activeDateRange, paginate: $paginate)
+  }
+`;
+
 export const itemRemoveExpenditure = gql`
   mutation itemRemoveExpenditure($id: ObjectID!, $webformId: ObjectID!) {
     itemRemoveExpenditure(merchantId: $merchantId, webformId: $webformId) {

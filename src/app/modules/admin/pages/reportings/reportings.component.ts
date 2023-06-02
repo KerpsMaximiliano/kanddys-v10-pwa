@@ -133,26 +133,20 @@ export class ReportingsComponent implements OnInit {
 
   async getExpenditures() {
     await Promise.all([
-      this.getExpendituresTotal('delivery-zone').then((e) => {
-        this.deliveryZonesTotal = e;
-      }),
-      this.getExpendituresTotal('delivery-zone').then((e) => {
-        this.deliveryZonesTotal = e;
-      }),
-      this.getExpendituresTotal('only-day').then((e) => {
+      this.getConstantExpendituresTotal('only-day').then((e) => {
         this.onlyDayTotal = e;
       }),
-      this.getExpendituresTotal('only-month').then((e) => {
+      this.getConstantExpendituresTotal('only-month').then((e) => {
         this.onlyMonthTotal = e;
       }),
-      this.getExpendituresTotal('recurrent').then((e) => {
+      this.getConstantExpendituresTotal('recurrent').then((e) => {
         this.recurrentTotal = e;
       })
     ]);
 
-    console.log(this.deliveryZonesTotal, this.onlyDayTotal, this.onlyMonthTotal, this.recurrentTotal);
+    console.log(this.onlyDayTotal, this.onlyMonthTotal, this.recurrentTotal);
 
-    this.totalExpendituresByType = this.deliveryZonesTotal.total + this.onlyDayTotal.total + this.onlyMonthTotal.total + this.recurrentTotal.total;
+    this.totalExpendituresByType = + this.onlyDayTotal.total + this.onlyMonthTotal.total + this.recurrentTotal.total;
   }
 
   async getExpendituresTotal(type) {
@@ -161,6 +155,19 @@ export class ReportingsComponent implements OnInit {
       this.merchant._id
     );
     return result.expendituresTotalById;
+  }
+
+  async getConstantExpendituresTotal(type) {
+    const result = await this.orderService.expendituresTotalByTypeConstant(
+      {
+        findBy: {
+          merchant: this.merchant._id,
+          type: type,
+          active: true
+        }
+      }
+    );
+    return result.expendituresTotalByTypeConstant;
   }
 
   async getIncomes() {
