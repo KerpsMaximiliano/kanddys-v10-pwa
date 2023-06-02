@@ -4,13 +4,20 @@
 
 .container {
   min-height: 100vh;
-  margin-bottom: 35px;
+  padding-bottom: 60px;
+  background-color: #f6f6f6;
 
   .header {
-    background-color: #a1a1a1;
+    background-color: #ffffff;
     display: flex;
     align-items: center;
-    padding: 14px 27px 14px 21px;
+    padding: 14px 21px;
+    box-shadow: 0px 5px 10px lightslategrey;
+
+    button {
+      all: unset;
+      cursor: pointer;
+    }
 
     img,
     p {
@@ -19,17 +26,17 @@
     p {
       margin-left: auto;
       color: #272727;
-      font-size: 13px;
-      font-family: SFProRegular;
+      font-size: 16px;
+      font-family: InterBold;
     }
   }
 
   .card {
     width: 100%;
-    font-family: SFProRegular;
+    font-family: InterRegular;
     color: #000000;
     font-size: 17px;
-    padding: 28.5px 25px;
+    padding: 30.08px 25.01px 26.92px 25.01px;
     resize: none;
     border: none;
     border-radius: 7px;
@@ -276,7 +283,7 @@
 
 .header {
   width: 100%;
-  background-color: #A1A1A1;
+  background-color: #a1a1a1;
   padding: 13.8px 16px;
   display: flex;
   justify-content: space-between;
@@ -292,5 +299,51 @@
     &:hover {
       cursor: pointer;
     }
+  }
+}
+
+.info {
+  background-color: #ffffff;
+  padding: 20px;
+  margin-top: 1px;
+
+  .cta {
+    border: none;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 17px;
+
+    .left {
+      font-family: InterRegular;
+      color: #7b7b7b;
+    }
+
+    .bold {
+      font-family: InterBold;
+      color: #181d17;
+      position: absolute;
+      right: 20px;
+    }
+  }
+}
+
+.fixed-bottom-bar {
+  padding: 13px 11px;
+  background-color: #6FCF97;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  max-width: 500px;
+  margin: auto;
+
+  button {
+    height: auto;
+    line-height: initial;
   }
 }

@@ -21,7 +21,6 @@ import { Tag } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import {
   BarOptions,
@@ -42,6 +41,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ToastrService } from 'ngx-toastr';
 import { ExtendedItem } from '../items-dashboard/items-dashboard.component';
 import { TagsService } from 'src/app/core/services/tags.service';
+import { OrderService } from 'src/app/core/services/order.service';
 
 export class FilterCriteria {
   _id?: string;
@@ -79,14 +79,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   items: Item[] = [];
   allItems: Item[] = [];
   recentlySoldItems: Item[] = [];
-  mostSoldItems: Item[] = [];
+  soldItems: Item[] = [];
   lessSoldItems: Item[] = [];
+  mostSoldItems: Item[] = [];
+  detailedItemsList: Item[] = [];
   itemsBoughtByMe: Item[] = [];
+  itemsIndexesByList: Record<string, Record<string, number>> = {};
   myOrders: Array<ItemOrder> = [];
   itemsSelledCountByItemId: Record<string, number> = {};
   hiddenItems: Item[] = [];
-  orders: number;
-  income: number;
+  orders: Array<ItemOrder> = [];
 
   articleId: string = '';
 
@@ -109,16 +111,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   };
   reachTheEndOfPagination: boolean = false;
   // Pagination
-
+  startDate: Date = null;
+  endDate: Date = null;
   tags: Tag[] = [];
   selectedTags: Tag[] = [];
-
   filters: FilterCriteria[] = [];
-
   selectedFilter: FilterCriteria;
-
   openNavigation: boolean = false;
-
   options: BarOptions[] = [
     {
       title: 'articulos',
@@ -240,6 +239,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       ],
     },
   ];
+  income: number = 0;
+
+  typeOfView: 'SHOW_LISTS' | 'LIST_DETAILED' = 'SHOW_LISTS';
+  detailedList: 'SOLD' | 'HIDDEN' | 'NOT_SOLD' | 'ALL';
+  detailedHeaderTitle: string = 'Todos los artículos';
+
+  //Estilos para el dashboardLibrary
+  dashboardLibrarySectionHeaderStyles = { marginTop: '0px' };
 
   queryParamaters: QueryParameter[] = [];
 
@@ -249,7 +256,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   });
 
   dateString: string = 'Aún no hay filtros aplicados';
-  notSoldItems;
+  notSoldItems: Array<Item>;
 
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
 
@@ -279,10 +286,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     await this.getItemsThatHaventBeenSold();
     //await this.getItemsBoughtByMe();
 
-    await this.getOrders();
-
     if (this._SaleflowService.saleflowData) {
-      this.inicializeItems(true, false, true);
+      await this.inicializeItems(true, false, true);
       this.getTags();
       this.getSoldItems();
       this.getQueryParameters();
@@ -291,9 +296,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       unlockUI();
     }
     this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
-      next: (value) => {
+      next: async (value) => {
         if (value) {
-          this.inicializeItems(true, false, true);
+          await this.inicializeItems(true, false, true);
           this.getTags();
           this.getSoldItems();
           this.getQueryParameters();
@@ -303,7 +308,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         }
       },
     });
-    //{ title: 'colecciones' },
   }
 
   async getItemsBoughtByMe() {
@@ -349,14 +353,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     const notSoldItems = await this._ItemsService.itemsByMerchantNosale(
       pagination
     );
-    this.notSoldItems = Object.values(notSoldItems)[0];
+    this.notSoldItems = Object.values(notSoldItems)[0] as Array<Item>;
+    this.itemsIndexesByList['NOT_SOLD'] = {};
+
+    this.notSoldItems.forEach((item, index) => {
+      this.itemsIndexesByList['NOT_SOLD'][item._id] = index;
+    });
   }
 
   async getItemsThatWerentSoldOnDateRange() {
     try {
       const soldItemsObject = {};
 
-      this.mostSoldItems.forEach((item) => {
+      this.soldItems.forEach((item) => {
         soldItemsObject[item._id] = true;
       });
 
@@ -427,7 +436,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: this.paginationState.pageSize,
+        limit: -1,
         page: this.paginationState.page,
       },
     };
@@ -436,15 +445,18 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
 
     this.renderItemsPromise = this._SaleflowService.listItems(pagination, true);
-    this.renderItemsPromise.then(async (response) => {
+    this.layout = this._SaleflowService.saleflowData.layout;
+
+    return this.renderItemsPromise.then(async (response) => {
       const items = response;
       const itemsQueryResult = items?.listItems;
 
+      /*
       if (getTotalNumberOfItems) {
         pagination.options.limit = -1;
         const { listItems: allItems } =
           await this._SaleflowService.hotListItems(pagination);
-      }
+      }*/
 
       if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
         this.allItems = [];
@@ -479,8 +491,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
         this.allItems = [];
       }
+
+      this.itemsIndexesByList['ALL'] = {};
+
+      this.allItems.forEach((item, index) => {
+        this.itemsIndexesByList['ALL'][item._id] = index;
+      });
     });
-    this.layout = this._SaleflowService.saleflowData.layout;
   }
 
   async getTags() {
@@ -506,82 +523,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       //   }
       // });
       // this.filters.push(...filters);
-    }
-  }
-
-  async getOrders() {
-    try {
-      const { ordersByMerchant } =
-        await this._MerchantsService.ordersByMerchant(
-          this._MerchantsService.merchantData._id,
-          {
-            options: {
-              limit: 50,
-              sortBy: 'createdAt:desc',
-            },
-          }
-        );
-
-      const itemIds = new Set<string>();
-
-      ordersByMerchant.forEach((order) => {
-        order.items.forEach((item) => {
-          itemIds.add(item.item._id);
-        });
-      });
-
-      this.orders = ordersByMerchant.length;
-
-      const filteredItems = Array.from(itemIds);
-      this.allItemsIds = filteredItems;
-
-      await this.getRecentlySoldItems();
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async getRecentlySoldItems() {
-    const pagination: PaginationInput = {
-      findBy: {
-        _id: {
-          __in: this.allItemsIds,
-        },
-      },
-      options: {},
-    };
-
-    if (this.selectedFilter) {
-      pagination.options.range = {
-        from: this.selectedFilter.queryParameter.from.date as any,
-        to: this.selectedFilter.queryParameter.until.date as any,
-      };
-    }
-
-    if (this.selectedTags.length) {
-      pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
-    }
-  }
-
-  async getOrdersToConfirm() {
-    try {
-      const { ordersByMerchant } =
-        await this._MerchantsService.ordersByMerchant(
-          this._MerchantsService.merchantData._id,
-          {
-            options: {
-              limit: -1,
-              sortBy: 'createdAt:desc',
-            },
-            findBy: {
-              orderStatus: 'to confirm',
-            },
-          }
-        );
-
-      this.ordersToConfirm = ordersByMerchant;
-    } catch (error) {
-      console.log(error);
     }
   }
 
@@ -611,10 +552,45 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         pagination
       )) as any[];
 
-      this.mostSoldItems = result.map((item) => item.item);
+      this.soldItems = result.map((item) => {
+        this.itemsSelledCountByItemId[item.item._id] = item.count;
+        return item.item;
+      });
 
-      for (const record of result) {
-        this.itemsSelledCountByItemId[record.item._id] = record.count;
+      console.log('itemsSelledCountByItemId', this.itemsSelledCountByItemId);
+
+      this.itemsIndexesByList['SOLD'] = {};
+
+      this.soldItems.forEach((item, index) => {
+        this.itemsIndexesByList['SOLD'][item._id] = index;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getMostSoldItems() {
+    try {
+      const percentageLimit = Math.round(this.detailedItemsList.length * 0.2);
+
+      const limit = percentageLimit === 0 ? 1 : percentageLimit;
+
+      if (this.detailedList === 'SOLD' || this.detailedList === 'ALL') {
+        this.mostSoldItems = this.soldItems.slice(0, limit);
+      } else if (this.detailedList === 'HIDDEN') {
+        let hiddenAndSold: Array<Item> = [];
+
+        hiddenAndSold = this.hiddenItems.filter(
+          (item) => item._id in this.itemsSelledCountByItemId
+        );
+
+        this.mostSoldItems = hiddenAndSold.slice(0, limit);
+
+        this.itemsIndexesByList['BEST_SOLD'] = {};
+
+        this.mostSoldItems.forEach((item, index) => {
+          this.itemsIndexesByList['BEST_SOLD'][item._id] = index;
+        });
       }
     } catch (error) {
       console.log(error);
@@ -623,34 +599,60 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async getLessSoldItems() {
     try {
-      const pagination: PaginationInput = {
-        options: {
-          page: 2,
-        },
-        findBy: {
-          merchant: this._MerchantsService.merchantData._id,
-        },
-      };
+      const percentageLimit = Math.round(this.detailedItemsList.length * 0.2);
 
-      if (this.selectedFilter) {
-        pagination.options.range = {
-          from: this.selectedFilter.queryParameter.from.date as any,
-          to: this.selectedFilter.queryParameter.until.date as any,
-        };
+      const limit = percentageLimit === 0 ? 1 : percentageLimit;
+
+      if (this.detailedList === 'SOLD' || this.detailedList === 'ALL') {
+        this.lessSoldItems = this.detailedItemsList.slice(limit * -1);
+      } else if (this.detailedList === 'HIDDEN') {
+        let hiddenAndSold: Array<Item> = [];
+
+        hiddenAndSold = this.hiddenItems.filter(
+          (item) => item._id in this.itemsSelledCountByItemId
+        );
+
+        this.lessSoldItems = hiddenAndSold.slice(limit * -1);
+
+        this.itemsIndexesByList['LESS_SOLD'] = {};
+
+        this.lessSoldItems.forEach((item, index) => {
+          this.itemsIndexesByList['LESS_SOLD'][item._id] = index;
+        });
       }
-
-      if (this.selectedTags.length)
-        pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
-
-      const result = (await this._ItemsService.bestSellersByMerchant(
-        false,
-        pagination
-      )) as any[];
-
-      this.lessSoldItems = result.map((item) => item.item);
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async getIncomeMerchant() {
+    const pagination: PaginationInput = {
+      findBy: {
+        merchant: this._MerchantsService.merchantData._id,
+      },
+      options: {},
+    };
+
+    if (this.selectedFilter) {
+      pagination.options.range = {
+        from: this.selectedFilter.queryParameter.from.date as any,
+        to: this.selectedFilter.queryParameter.until.date as any,
+      };
+    }
+
+    if (this.selectedTags.length)
+      pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
+
+    this.income = await this._MerchantsService.incomeMerchant(pagination);
+
+    pagination.findBy = {};
+
+    this.orders = (
+      await this._MerchantsService.ordersByMerchant(
+        this._MerchantsService.merchantData._id,
+        pagination
+      )
+    )?.ordersByMerchant;
   }
 
   settings() {
@@ -882,29 +884,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     //Ocutar la seccion de ocultos cuando haya un rango de fecha seleccionados
 
     try {
-      const pagination: PaginationInput = {
-        options: {
-          limit: -1,
-        },
-        findBy: {
-          merchant: this._MerchantsService.merchantData._id,
-          status: 'disabled',
-        },
-      };
+      this.hiddenItems = this.allItems.filter(
+        (item) => item.status === 'disabled'
+      );
 
-      if (this.selectedFilter) {
-        pagination.options.range = {
-          from: this.selectedFilter.queryParameter.from.date as any,
-          to: this.selectedFilter.queryParameter.until.date as any,
-        };
-      }
+      this.itemsIndexesByList['HIDDEN'] = {};
 
-      if (this.selectedTags.length) {
-        pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
-      }
-
-      const { listItems } = await this._ItemsService.listItems(pagination);
-      this.hiddenItems = listItems;
+      this.hiddenItems.forEach((item, index) => {
+        this.itemsIndexesByList['HIDDEN'][item._id] = index;
+      });
     } catch (error) {
       console.log(error);
     }
@@ -946,6 +934,29 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     } else {
       await this.getItemsThatWerentSoldOnDateRange();
     }
+
+    if (
+      this.typeOfView === 'LIST_DETAILED' &&
+      ['SOLD', 'HIDDEN', 'ALL'].includes(this.detailedList)
+    ) {
+      this.detailedItemsList =
+        this.detailedList === 'HIDDEN'
+          ? this.hiddenItems
+          : this.detailedList === 'SOLD'
+          ? this.soldItems
+          : this.allItems;
+
+      if (this.selectedTags.length) {
+        this.detailedItemsList = (
+          JSON.parse(JSON.stringify(this.detailedItemsList)) as Array<Item>
+        ).filter((item) =>
+          this.selectedTags.some((tag) => item.tags.includes(tag._id))
+        );
+      }
+
+      await this.getMostSoldItems();
+      await this.getLessSoldItems();
+    }
   }
 
   async isFilterActive(filter: FilterCriteria) {
@@ -964,6 +975,46 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     await this.getSoldItems();
     await this.getItemsThatWerentSoldOnDateRange();
     await this.getHiddenItems();
+
+    if (
+      this.typeOfView === 'LIST_DETAILED' &&
+      ['SOLD', 'HIDDEN', 'ALL'].includes(this.detailedList)
+    ) {
+      this.detailedItemsList =
+        this.detailedList === 'HIDDEN'
+          ? this.hiddenItems
+          : this.detailedList === 'SOLD'
+          ? this.soldItems
+          : this.allItems;
+
+      if (this.selectedTags.length) {
+        this.detailedItemsList = (
+          JSON.parse(JSON.stringify(this.detailedItemsList)) as Array<Item>
+        ).filter((item) =>
+          this.selectedTags.some((tag) => item.tags.includes(tag._id))
+        );
+      }
+
+      await this.getMostSoldItems();
+      await this.getLessSoldItems();
+    }
+
+    if (this.selectedFilter) {
+      await this.getIncomeMerchant();
+
+      this.dateString =
+        this.orders.length +
+        ' facturas, RD$' +
+        this.income +
+        ' desde ' +
+        this.formatDate(
+          new Date(this.selectedFilter.queryParameter.from.date)
+        ) +
+        ' hasta ' +
+        this.formatDate(
+          new Date(this.selectedFilter.queryParameter.until.date)
+        );
+    } else this.dateString = 'Aún no hay filtros aplicados';
   }
 
   isTagActive(tag: Tag) {
@@ -1006,21 +1057,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           this.isFilterActive(this.filters[this.filters.length - 1]);
         }
 
-        const startDate = new Date(result.from.date);
-        const endDate = new Date(result.until.date);
+        this.startDate = new Date(result.from.date);
+        this.endDate = new Date(result.until.date);
 
-        this.dateString = `${this.orders} facturas, $${
-          this.income
-        } desde ${this.formatDate(startDate)} hasta ${this.formatDate(
-          endDate
-        )}`;
         unlockUI();
       } catch (error) {
         unlockUI();
         console.log(error);
       }
     }
-    // this.dateString = `Desde ${this.startDate} hasta ${this.endDate} N artículos vendidos. $XXX`
   }
 
   async getQueryParameters() {
@@ -1037,13 +1082,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.queryParamaters = result;
 
       if (this.queryParamaters.length > 0) {
-        const startDate = new Date(this.queryParamaters[0].from.date);
-        const endDate = new Date(this.queryParamaters[0].until.date);
-        this.dateString = `${this.orders} facturas, $${
-          this.income
-        } desde ${this.formatDate(startDate)} hasta ${this.formatDate(
-          endDate
-        )}`;
+        this.startDate = new Date(this.queryParamaters[0].from.date);
+        this.endDate = new Date(this.queryParamaters[0].until.date);
 
         const filters: FilterCriteria[] = this.queryParamaters.map(
           (queryParameter) => {
@@ -1070,149 +1110,107 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         .format('DD')}`;
   }
 
-  goToDetail(dataToRequest: string) {
-    this.router.navigate([`admin/dashboard-library`], {
-      queryParams: {
-        data: dataToRequest,
-      },
-    });
+  async goToDetail(dataToRequest: string) {
+    this.typeOfView = 'LIST_DETAILED';
+    this.detailedList = dataToRequest as any;
+
+    switch (dataToRequest) {
+      case 'SOLD':
+        this.detailedItemsList = this.soldItems;
+        this.detailedHeaderTitle = 'Artículos Vendidos';
+        lockUI();
+
+        await this.getMostSoldItems();
+        await this.getLessSoldItems();
+
+        unlockUI();
+        break;
+      case 'NOT_SOLD':
+        this.detailedItemsList = this.notSoldItems;
+
+        this.detailedHeaderTitle = 'Sin venderse';
+        break;
+      case 'HIDDEN':
+        this.detailedItemsList = this.hiddenItems;
+
+        await this.getMostSoldItems();
+        await this.getLessSoldItems();
+
+        this.detailedHeaderTitle = 'Artículos ocultos';
+        break;
+      case 'ALL':
+        this.detailedItemsList = this.allItems;
+
+        await this.getMostSoldItems();
+        await this.getLessSoldItems();
+
+        this.detailedHeaderTitle = 'Todos los artículos';
+        break;
+    }
   }
 
-  async openDotsDialog(id: string, index: number, type: string) {
-    const item = await this._ItemsService.item(id);
-    console.log(item);
-    this.articleId = item._id;
-    this._ItemsService.itemPrice = item.pricing;
-    this._bottomSheet.open(LinksDialogComponent, {
-      data: [
-        {
-          // title: 'Del exhibidor',
-          options: [
-            {
-              title: 'Compartir',
-              callback: () => {
-                const link = `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${id}?mode=image-preview`;
-                //this.router.navigate(['/admin/view-configuration-cards']);
-                this.ngNavigatorShareService.share({
-                  title: '',
-                  url: `${link}`,
-                });
-                console.log('Compartir');
-              },
-              icon: '/upload.svg',
-            },
-            {
-              title: 'Editar',
-              callback: () => {
-                this.router.navigate([`admin/article-editor/${id}`]);
-              },
-              icon: '/settings.svg',
-            },
-            {
-              title: 'Ocultar',
-              callback: () => {
-                this.hideItem(item);
-                if (type === 'recent') {
-                  console.log(this.recentlySoldItems[index].status);
-                  this.recentlySoldItems[index].status = 'disabled';
-                } else if (type === 'lessSold') {
-                  console.log(this.lessSoldItems[index].status);
-                  this.lessSoldItems[index].status = 'disabled';
-                } else if (type === 'mostSold') {
-                  console.log(this.mostSoldItems[index].status);
-                  this.mostSoldItems[index].status = 'disabled';
-                }
-              },
-            },
-            {
-              title: 'Preview de visitantes y compradores',
-              callback: () => {
-                this.router.navigate(
-                  [
-                    `ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${id}`,
-                  ],
-                  {
-                    queryParams: {
-                      mode: 'image-preview',
-                      redirectTo: 'dashboard',
-                    },
-                  }
-                );
-              },
-            },
-            {
-              title: 'Respuestas del Formulario',
-              callback: async () => {
-                // const item = await this._ItemsService.item(id);
-                // console.log(item);
-                if (item.webForms.length > 0) {
-                  this.router.navigate([
-                    `admin/webform-metrics/${item.webForms[0]._id}/${id}`,
-                  ]);
-                }
-              },
-            },
-            {
-              title: 'Descarga el QR para tus ads impresos',
-              callback: () => {
-                console.log('QR');
-                this.articleId = id;
-                console.log(this.articleId);
-                this.qrLink = `${this.URI}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/article-detail/item/${id}`;
-                console.log(this.qrLink);
-                this.downloadQr(id);
-              },
-            },
-            {
-              title: 'Eliminar',
-              callback: () => {
-                console.log('Eliminar');
-                // console.log(this.recentlySoldItems[index].webForms);
-                this.dialogService.open(SingleActionDialogComponent, {
-                  type: 'fullscreen-translucent',
-                  props: {
-                    title: '¿Quieres eliminar este artículo?',
-                    buttonText: 'Sí, borrar',
-                    mainButton: async () => {
-                      const removeItemFromSaleFlow =
-                        await this._SaleflowService.removeItemFromSaleFlow(
-                          id,
-                          this._SaleflowService.saleflowData._id
-                        );
+  changeItemStatus = (type: string, item: Item, newStatus: string) => {
+    let list: Array<Item> = null;
 
-                      if (!removeItemFromSaleFlow) return;
-                      const deleteItem = await this._ItemsService.deleteItem(
-                        id
-                      );
-                      if (!deleteItem) return;
-                      else {
-                        this._ToastrService.info(
-                          '¡Item eliminado exitosamente!'
-                        );
+    if (type === 'ALL') list = this.allItems;
+    else if (type === 'NOT_SOLD') list = this.notSoldItems;
+    else if (type === 'SOLD') list = this.soldItems;
+    else if (type === 'HIDDEN') {
+      this.removeItemFromTheHiddenItemsList(item);
+    }
 
-                        this._SaleflowService.saleflowData =
-                          await this._SaleflowService.saleflowDefault(
-                            this._MerchantsService.merchantData._id
-                          );
+    let statusesToUpdate: Array<string> = [];
 
-                        //this.router.navigate(['/admin/dashboard']);
-                      }
-                    },
-                    btnBackgroundColor: '#272727',
-                    btnMaxWidth: '133px',
-                    btnPadding: '7px 2px',
-                  },
-                  customClass: 'app-dialog',
-                  flags: ['no-header'],
-                });
-                //this._ItemsService.deleteItem(this.recentlySoldItems[index]._id)
-              },
-            },
-          ],
-        },
-      ],
+    if (type !== 'HIDDEN') {
+      if (!(item._id in this.itemsIndexesByList['HIDDEN'])) {
+        this.hiddenItems.push(item);
+
+        this.itemsIndexesByList['HIDDEN'] = {};
+
+        this.hiddenItems.forEach((item, index) => {
+          this.itemsIndexesByList['HIDDEN'][item._id] = index;
+        });
+      } else {
+        this.removeItemFromTheHiddenItemsList(item);
+      }
+
+      statusesToUpdate = ['SOLD', 'NOT_SOLD', 'ALL', 'HIDDEN'];
+    } else {
+      statusesToUpdate = ['SOLD', 'NOT_SOLD', 'ALL'];
+    }
+
+    statusesToUpdate.forEach((typeOfList) => {
+      if (typeOfList === 'ALL') list = this.allItems;
+      else if (typeOfList === 'NOT_SOLD') list = this.notSoldItems;
+      else if (typeOfList === 'SOLD') list = this.soldItems;
+      else if (typeOfList === 'HIDDEN') list = this.hiddenItems;
+
+      if (list[this.itemsIndexesByList[typeOfList][item._id]]) {
+        list[this.itemsIndexesByList[typeOfList][item._id]].status =
+          newStatus as any;
+      }
     });
-  }
+
+    if (this.detailedList !== null) {
+      this.goToDetail(this.detailedList);
+    }
+  };
+
+  removeItemFromTheHiddenItemsList = (item: Item) => {
+    const itemIndex = this.hiddenItems.findIndex(
+      (itemInList) => item._id === itemInList._id
+    );
+
+    this.hiddenItems = this.hiddenItems.filter(
+      (item, index) => itemIndex !== index
+    );
+
+    this.itemsIndexesByList['HIDDEN'] = {};
+
+    this.hiddenItems.forEach((item, index) => {
+      this.itemsIndexesByList['HIDDEN'][item._id] = index;
+    });
+  };
 
   downloadQr(id: string) {
     const parentElement =
@@ -1233,32 +1231,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  hideItem = (item: ExtendedItem): Promise<any> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const updatedItem = await this._ItemsService.updateItem(
-          {
-            status:
-              item.status === 'active' || item.status === 'featured'
-                ? 'disabled'
-                : item.status === 'disabled'
-                ? 'active'
-                : 'draft',
-          },
-          item._id
-        );
-
-        if (updatedItem)
-          resolve({
-            success: true,
-            id: item._id,
-          });
-      } catch (error) {
-        reject({
-          success: false,
-          id: null,
-        });
-      }
-    });
+  showAllLists = () => {
+    this.typeOfView = 'SHOW_LISTS';
+    this.detailedList = null;
+    this.detailedItemsList = [];
+    this.detailedHeaderTitle = 'Todos los Artículos';
   };
 }

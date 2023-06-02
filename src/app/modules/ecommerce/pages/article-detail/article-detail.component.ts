@@ -286,9 +286,12 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   goBack() {
-    if (this.redirectTo === 'dashboard') {
+    if (this.redirectTo === 'dashboard') 
       this.router.navigate([`admin/dashboard`]);
-    }
+    else if (this.mode === 'preview') 
+      this.router.navigate([`admin/article-editor/${this.itemData._id}`]);
+    else if (this.mode === 'image-preview')
+      this.router.navigate([`admin/slides-editor/${this.itemData._id}`]);
     // else {
     //   this.router.navigate([`../../../store`]);
     // }

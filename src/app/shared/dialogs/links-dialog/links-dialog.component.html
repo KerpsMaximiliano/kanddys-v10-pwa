@@ -1,13 +1,13 @@
 <mat-action-list
   class="list"
   [ngClass]="{
-    'full-screen': data[0]?.styles['fullScreen']
+    'full-screen': data[0]?.styles?.fullScreen
   }"
 >
   <p class="close">
     <button mat-icon-button (click)="openLink()">
-      <mat-icon *ngIf="!data[0]?.styles['fullScreen']">close</mat-icon>
-      <mat-icon *ngIf="data[0]?.styles['fullScreen']" style="color: #fff; transform: scale(0.8); margin-left: -18px;">
+      <mat-icon *ngIf="!data[0]?.styles?.fullScreen">close</mat-icon>
+      <mat-icon *ngIf="data[0]?.styles?.fullScreen" style="color: #fff; transform: scale(0.8); margin-left: -18px;">
         arrow_back_ios
       </mat-icon>
     </button>

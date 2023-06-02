@@ -41,11 +41,12 @@
         <p>{{ item.visitorCounter?.counter }}</p>
         <img [src]="environment + '/tap.svg'" style="margin-left: 2px" alt="" />
       </div>
-      <div
-        class="text-icon dots"
-        (click)="null"
-      >
-        <img [src]="environment + '/dots-black.svg'" alt="" />
+      <div class="text-icon dots" (click)="(null)">
+        <img
+          [src]="environment + '/dots-black.svg'"
+          alt=""
+          (click)="openDotsDialog()"
+        />
       </div>
     </div>
   </div>

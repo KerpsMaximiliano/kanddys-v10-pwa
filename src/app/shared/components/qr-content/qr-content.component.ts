@@ -18,6 +18,7 @@ export class QrContentComponent implements OnInit {
   @Input() editing: boolean = true;
   @Input() joke: string = '';
   @Input() defaultText: string = '';
+  @Input() alternateStyles: boolean = false;
   @Output() buttonClicked = new EventEmitter();
   slidesPath: Array<{
     type: 'IMAGE' | 'VIDEO' | 'TEXT';
