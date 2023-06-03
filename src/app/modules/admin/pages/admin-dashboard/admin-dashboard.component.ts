@@ -83,6 +83,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   lessSoldItems: Item[] = [];
   mostSoldItems: Item[] = [];
   detailedItemsList: Item[] = [];
+  detailedItemsSubList: Item[] = [];
   itemsBoughtByMe: Item[] = [];
   itemsIndexesByList: Record<string, Record<string, number>> = {};
   myOrders: Array<ItemOrder> = [];
@@ -241,8 +242,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ];
   income: number = 0;
 
-  typeOfView: 'SHOW_LISTS' | 'LIST_DETAILED' = 'SHOW_LISTS';
+  typeOfView: 'SHOW_LISTS' | 'LIST_DETAILED' | 'SUBLIST_DETAILED' =
+    'SHOW_LISTS';
   detailedList: 'SOLD' | 'HIDDEN' | 'NOT_SOLD' | 'ALL';
+  detailedSubList: 'MOST_SOLD' | 'LESS_SOLD' | 'FULL';
   detailedHeaderTitle: string = 'Todos los artículos';
 
   //Estilos para el dashboardLibrary
@@ -547,17 +550,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       if (this.selectedTags.length)
         pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
 
+      console.log('pagination', pagination);
+
       const result = (await this._ItemsService.bestSellersByMerchant(
         false,
         pagination
       )) as any[];
 
+      console.log('Vendidos', result);
+
       this.soldItems = result.map((item) => {
         this.itemsSelledCountByItemId[item.item._id] = item.count;
         return item.item;
       });
-
-      console.log('itemsSelledCountByItemId', this.itemsSelledCountByItemId);
 
       this.itemsIndexesByList['SOLD'] = {};
 
@@ -776,22 +781,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               },
             },
             {
-              title: this._MerchantsService.merchantData.contactFooter
-                ? 'Remueve cuentas sociales del footer'
-                : 'Adiciona cuentas sociales al footer',
-              callback: () => {
-                this._MerchantsService.updateMerchant(
-                  {
-                    contactFooter:
-                      !this._MerchantsService.merchantData.contactFooter,
-                  },
-                  this._MerchantsService.merchantData._id
-                );
-                this._MerchantsService.merchantData.contactFooter =
-                  !this._MerchantsService.merchantData.contactFooter;
-              },
-            },
-            {
               title: 'Ve a las configuraciones de las categorias',
               callback: () => {
                 this.router.navigate(['/admin/tags']);
@@ -956,6 +945,38 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
       await this.getMostSoldItems();
       await this.getLessSoldItems();
+
+      if (this.detailedItemsSubList.length) {
+        this.detailedItemsSubList =
+          this.detailedSubList === 'MOST_SOLD'
+            ? this.mostSoldItems
+            : this.detailedSubList === 'LESS_SOLD'
+            ? this.lessSoldItems
+            : this.detailedItemsList;
+
+        if (this.selectedTags.length) {
+          this.detailedItemsSubList = (
+            JSON.parse(JSON.stringify(this.detailedItemsSubList)) as Array<Item>
+          ).filter((item) =>
+            this.selectedTags.some((tag) => item.tags.includes(tag._id))
+          );
+        }
+      }
+    }
+
+    if (
+      this.typeOfView === 'LIST_DETAILED' &&
+      this.detailedList === 'NOT_SOLD'
+    ) {
+      this.detailedItemsList = this.notSoldItems;
+
+      if (this.selectedTags.length) {
+        this.detailedItemsList = (
+          JSON.parse(JSON.stringify(this.detailedItemsList)) as Array<Item>
+        ).filter((item) =>
+          this.selectedTags.some((tag) => item.tags.includes(tag._id))
+        );
+      }
     }
   }
 
@@ -995,8 +1016,41 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         );
       }
 
+      if (this.selectedFilter) {
+        this.detailedItemsList = (
+          JSON.parse(JSON.stringify(this.detailedItemsList)) as Array<Item>
+        ).filter((item) =>
+          this.soldItems.some((itemInList) => itemInList._id === item._id)
+        );
+      }
+
       await this.getMostSoldItems();
       await this.getLessSoldItems();
+
+      if (this.detailedItemsSubList.length) {
+        this.detailedItemsSubList =
+          this.detailedSubList === 'MOST_SOLD'
+            ? this.mostSoldItems
+            : this.detailedSubList === 'LESS_SOLD'
+            ? this.lessSoldItems
+            : this.detailedItemsList;
+
+        if (this.selectedTags.length) {
+          this.detailedItemsSubList = (
+            JSON.parse(JSON.stringify(this.detailedItemsSubList)) as Array<Item>
+          ).filter((item) =>
+            this.selectedTags.some((tag) => item.tags.includes(tag._id))
+          );
+        }
+
+        if (this.selectedFilter) {
+          this.detailedItemsSubList = (
+            JSON.parse(JSON.stringify(this.detailedItemsSubList)) as Array<Item>
+          ).filter((item) =>
+            this.soldItems.some((itemInList) => itemInList._id === item._id)
+          );
+        }
+      }
     }
 
     if (this.selectedFilter) {
@@ -1110,9 +1164,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         .format('DD')}`;
   }
 
-  async goToDetail(dataToRequest: string) {
+  async goToDetail(
+    dataToRequest: string,
+    resetScroll: boolean = false,
+    typeOfSubList: string = null
+  ) {
     this.typeOfView = 'LIST_DETAILED';
     this.detailedList = dataToRequest as any;
+
+    if (resetScroll) window.scroll(0, 0);
 
     switch (dataToRequest) {
       case 'SOLD':
@@ -1147,6 +1207,20 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.detailedHeaderTitle = 'Todos los artículos';
         break;
     }
+
+    switch (typeOfSubList) {
+      case 'MOST_SOLD':
+        this.detailedItemsSubList = this.mostSoldItems;
+        break;
+      case 'LESS_SOLD':
+        this.detailedItemsSubList = this.lessSoldItems;
+        break;
+      case 'FULL_LIST':
+        this.detailedItemsSubList = this.detailedItemsList;
+        break;
+    }
+
+    if (this.detailedItemsSubList) this.detailedSubList = typeOfSubList as any;
   }
 
   changeItemStatus = (type: string, item: Item, newStatus: string) => {
@@ -1192,7 +1266,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
 
     if (this.detailedList !== null) {
-      this.goToDetail(this.detailedList);
+      this.goToDetail(this.detailedList, false, this.detailedSubList);
     }
   };
 
@@ -1232,6 +1306,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   showAllLists = () => {
+    if (this.detailedItemsSubList.length) {
+      this.detailedItemsSubList = [];
+      return;
+    }
+
     this.typeOfView = 'SHOW_LISTS';
     this.detailedList = null;
     this.detailedItemsList = [];

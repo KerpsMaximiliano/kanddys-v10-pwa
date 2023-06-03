@@ -207,7 +207,9 @@
     </ng-container>
 
     <!-- DASHBOARD LIBRARY -->
-    <ng-container *ngIf="typeOfView === 'LIST_DETAILED'">
+    <ng-container
+      *ngIf="typeOfView === 'LIST_DETAILED' && !detailedItemsSubList.length"
+    >
       <ng-container *ngIf="['SOLD', 'HIDDEN', 'ALL'].includes(detailedList)">
         <ng-container
           *ngTemplateOutlet="
@@ -216,6 +218,7 @@
               list: mostSoldItems,
               titleList: '20% MAS VENDIDOS',
               typeOfList: detailedList,
+              typeOfSubList: 'MOST_SOLD',
               sectionHeaderStyles: dashboardLibrarySectionHeaderStyles
             }
           "
@@ -229,6 +232,7 @@
               list: lessSoldItems,
               titleList: '20% MENOS VENDIDOS',
               typeOfList: detailedList,
+              typeOfSubList: 'LESS_SOLD',
               sectionHeaderStyles: dashboardLibrarySectionHeaderStyles
             }
           "
@@ -242,6 +246,7 @@
               list: detailedItemsList,
               titleList: 'Todos',
               typeOfList: detailedList,
+              typeOfSubList: 'FULL_LIST',
               sectionStyles: {
                 marginBottom: '105px'
               },
@@ -256,6 +261,9 @@
         <div
           class="item-wrapper not-swiper"
           *ngFor="let item of detailedItemsList; index as i"
+          [ngClass]="{
+            lastItem: i === detailedItemsList.length - 1
+          }"
         >
           <app-item-admin-card
             [item]="item"
@@ -268,6 +276,28 @@
           ></app-item-admin-card>
         </div>
       </ng-container>
+    </ng-container>
+
+    <ng-container
+      *ngIf="typeOfView === 'LIST_DETAILED' && detailedItemsSubList.length"
+    >
+      <div
+        class="item-wrapper not-swiper"
+        *ngFor="let item of detailedItemsSubList; index as i"
+        [ngClass]="{
+          lastItem: i === detailedItemsSubList.length - 1
+        }"
+      >
+        <app-item-admin-card
+          [item]="item"
+          [unitSalesCounter]="
+            itemsSelledCountByItemId[item._id]
+              ? itemsSelledCountByItemId[item._id]
+              : 0
+          "
+          (changeStatusAction)="changeItemStatus(detailedList, item, $event)"
+        ></app-item-admin-card>
+      </div>
     </ng-container>
 
     <div class="sticky-bar" (click)="openDatePicker()">
@@ -301,6 +331,7 @@
   let-list="list"
   let-titleList="titleList"
   let-typeOfList="typeOfList"
+  let-typeOfSubList="typeOfSubList"
   let-sectionStyles="sectionStyles"
   let-sectionHeaderStyles="sectionHeaderStyles"
 >
@@ -308,7 +339,10 @@
     <div class="section-header" [ngStyle]="sectionHeaderStyles">
       <p class="section-title">{{ titleList }}</p>
 
-      <div class="section-description" (click)="goToDetail(typeOfList)">
+      <div
+        class="section-description"
+        (click)="goToDetail(typeOfList, true, typeOfSubList)"
+      >
         <!-- <p>4 de los últimos 7 días</p> -->
         <p>{{ list.length }}</p>
         <img [src]="environment + '/arrow-left.svg'" alt="" />
@@ -335,7 +369,10 @@
 
     <div class="section-content">
       <swiper [config]="cardSwiperConfig">
-        <div class="item-wrapper" *ngFor="let item of list; index as i">
+        <div
+          class="item-wrapper"
+          *ngFor="let item of list.slice(0, 20); index as i"
+        >
           <app-item-admin-card
             [item]="item"
             [unitSalesCounter]="
