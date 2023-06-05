@@ -8,7 +8,7 @@
       <img [src]="env + '/plus-black.svg'" class="plus-icon" />
     </div>
   </div>
-  <div class="slider-container">
+  <!-- <div class="slider-container">
     <div class="slider-item">
       <p>Todas</p>
     </div>
@@ -17,24 +17,24 @@
     <div class="slider-item">MesEnCursoID</div>
     <div class="slider-item">MesEnCursoID</div>
     <div class="slider-item">MesEnCursoID</div>
-  </div>
+  </div> -->
   <div class="content">
     <p class="content-title">INGRESO EXTRA EN FACTURAS</p>
     <div class="content-items-container">
       <!--GRUPOS FIJOS-->
-      <div class="content-item" *ngFor="let i of questions">
+      <div class="content-item" *ngFor="let i of questions" >
         <div class="content-item-button-container">
           <div class="content-item-button" (click)="openDialog('income', i.question)">
             <img src="../../../../../assets/icons/dots.svg" />
           </div>
         </div>
-        <div class="content-item-texts">
+        <a class="content-item-texts" [routerLink]="['../edit-question/' + webformOrder._id + '/' + i.question._id]">
           <div class="content-item-title-container">
             <p class="content-item-title">{{ i?.question.value }}</p>
             <p class="content-item-title">$0.00</p>
           </div>
           <p class="content-item-times-selected">{{ i?.answer ? i?.answer.length : 0 }} veces seleccionado</p>
-        </div>
+        </a>
       </div>
     </div>
     <!-- <p class="content-title">INGRESO EXTRA EN PRODUCTOS</p>

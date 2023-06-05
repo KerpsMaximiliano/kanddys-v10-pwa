@@ -409,7 +409,7 @@ const routes: Routes = [
     component: CreateExpenditureComponent,
   },
   {
-    path: 'create-delivery-zone/:questionid',
+    path: 'edit-question/:webformid/:questionid',
     component: CreateDeliveryZoneComponent,
   },
   {
@@ -421,7 +421,7 @@ const routes: Routes = [
     component: QuestionToAdminComponent,
   },
   {
-    path: 'rename-question/:param',
+    path: 'rename-question/:webformid/:param',
     component: RenameQuestionComponent,
   }
 ];

@@ -37,6 +37,8 @@
   padding-right: 14px;
 }
 .slider-item {
+  cursor: pointer;
+  text-transform: capitalize;
   border: 2px solid #dbdbdb;
   border-radius: 16px;
   padding-left: 19px;
@@ -48,7 +50,9 @@
   font-family: SFProRegular;
   font-size: 16px;
   color: #171d16;
-  min-width: 80px;
+  min-width: 120px;
+  justify-content: center;
+  transition: all 0.1s ease-in-out;
   img{
     margin-right: 10px;
   }
@@ -57,7 +61,7 @@
 .slider-item-selected {
   background-color: #bdbebd;
   font-weight: bold;
-  min-width: 120px;
+  min-width: 145px;
 }
 
 .content {

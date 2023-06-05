@@ -28,13 +28,31 @@ export class QuestionToAdminComponent implements OnInit {
     if (this.question.length > 0) {
       try {
         lockUI();
-        const question:QuestionInput = {type:'text',value:this.question,answerTextType:'DEFAULT'}
+        const question: QuestionInput = {
+          type: 'multiple',
+          value: this.question,
+          answerTextType: 'DEFAULT',
+          answerDefault: [
+            {
+              value: "Opción 1",
+            },
+            {
+              value: "Opción 2",
+            },
+            {
+              value: "Opción 3",
+            },
+            {
+              value: "Opción 4",
+            }
+          ]
+        }
         const result = await this.webformService.webformAddQuestion([question],this.webformId);
         if (result) {
-          var questionCreated = result.questions[result.questions.length-1];
+          var questionCreated = result.questions[result.questions.length - 1];
           this.webformService.editingQuestion = questionCreated;
           unlockUI();
-          this.router.navigate([`/admin/create-delivery-zone/${questionCreated._id}`]);
+          this.router.navigate([`/admin/edit-question/${this.webformId}/${questionCreated._id}`]);
         }
       } catch (error) {
         console.log(error);

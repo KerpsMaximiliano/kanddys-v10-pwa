@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { QuestionInput } from 'src/app/core/models/webform';
+import { Subscription } from 'rxjs';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { AnswerDefault, Question, QuestionInput } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { environment } from 'src/environments/environment';
 
@@ -12,9 +14,16 @@ import { environment } from 'src/environments/environment';
 export class RenameQuestionComponent implements OnInit {
   env: string = environment.assetsUrl;
   title = 'Renombrar ';
-  question: any = {};
+  question: any;
   questionName = '';
   param = '';
+
+  webformId: string;
+
+  queryParamsSubscription: Subscription = null;
+
+  answerDefault: AnswerDefault;
+  hasAnswerDefault = false;
 
   constructor(
     private router: Router,
@@ -23,25 +32,95 @@ export class RenameQuestionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.webformId = this.activatedRoute.snapshot.paramMap.get('webformid');
     this.param = this.activatedRoute.snapshot.paramMap.get('param');
-    this.getQuestion();
+    this.queryParamsSubscription = this.activatedRoute.queryParams.subscribe(
+      async ({ answer }) => {
+        // if (answer)
+        await this.getQuestion();
+        if (answer) {
+          this.getAnswerDefault(parseInt(answer))
+          this.questionName = this.answerDefault.value;
+        } else this.questionName = this.question.value;
+      }
+    );
   }
 
-  getQuestion() {
-    this.question = this.webformService.editingQuestion;
+  async getQuestion() {
+    const question = this.webformService.editingQuestion;
+    if (question) this.question = question;
+    else {
+      const result = await this.webformService.questionPaginate(
+        {
+          findBy: {
+            _id: this.param,
+          }
+        }
+      );
+      this.question = result[0];
+      this.webformService.editingQuestion = this.question;
+    }
+
     this.title = this.title + this.question?.value;
+  }
+
+  getAnswerDefault(index: number) {
+    const answersDefault = this.question.answerDefault;
+    if (answersDefault.length > 0) {
+      this.answerDefault = answersDefault[index];
+      this.hasAnswerDefault = true;
+    }
   }
 
   async updateQuestion() {
     if (this.questionName.length > 0) {
-      const webformId = this.webformService.webformId;
+      if (!this.hasAnswerDefault) await this.updateQuestionValue();
+      else await this.updateQuestionAnswerDefault(this.answerDefault._id);
+    }
+    console.log("Actualizado");
+
+    this.router.navigate([`../../admin/edit-question/${this.webformId}/${this.question._id}`]);
+  }
+
+  private async updateQuestionValue() {
+    try {
+      lockUI();
       const result = await this.webformService.webformUpdateQuestion(
         this.getInput(),
         this.question._id,
-        webformId
+        this.webformId
       );
+
+      this.question = result;
+      this.webformService.editingQuestion = this.question;
+      unlockUI();
+    } catch (error) {
+      console.log(error);
+      unlockUI();
     }
-    this.router.navigate(['../../admin/reportings']);
+  }
+
+  private async updateQuestionAnswerDefault(answerDefaultId: string) {
+    console.log(answerDefaultId);
+    try {
+      lockUI();
+      const result = await this.webformService.questionUpdateAnswerDefault(
+        {
+          value: this.questionName
+        },
+        answerDefaultId,
+        this.question._id,
+        this.webformId
+      );
+
+      const answerDefaultIndex = parseInt(this.activatedRoute.snapshot.queryParams.answer);
+      this.question.answerDefault[answerDefaultIndex] = this.answerDefault;
+      this.webformService.editingQuestion = this.question;
+      unlockUI();
+    } catch (error) {
+      console.log(error);
+      unlockUI();
+    }
   }
 
   getInput(): QuestionInput {
@@ -66,5 +145,9 @@ export class RenameQuestionComponent implements OnInit {
       input.answerDefault = array;
     }
     return input;
+  }
+
+  ngOnDestroy(): void {
+    this.queryParamsSubscription.unsubscribe();
   }
 }

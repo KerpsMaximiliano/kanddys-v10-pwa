@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
-import { QuestionInput } from 'src/app/core/models/webform';
+import { Question, QuestionInput } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
@@ -20,8 +20,11 @@ export class CreateDeliveryZoneComponent implements OnInit {
   excedent;
   lower;
   cost;
-  numb = 1;
-  question: any = { value: '' };
+  numb = 0;
+  question: Question;
+
+  webformId: string;
+
   constructor(
     private _bottomSheet: MatBottomSheet,
     private webformService: WebformsService,
@@ -31,6 +34,7 @@ export class CreateDeliveryZoneComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.webformId = this.activatedRoute.snapshot.paramMap.get('webformid');
     this.questionId = this.activatedRoute.snapshot.paramMap.get('questionid');
     this.getQuestion();
   }
@@ -40,8 +44,20 @@ export class CreateDeliveryZoneComponent implements OnInit {
     return val.toString();
   }
 
-  getQuestion() {
-    this.question = this.webformService.editingQuestion;
+  async getQuestion() {
+    const question = this.webformService.editingQuestion;
+    if (question) this.question = question;
+    else {
+      const result = await this.webformService.questionPaginate(
+        {
+          findBy: {
+            _id: this.questionId,
+          }
+        }
+      );
+      this.question = result[0];
+      this.webformService.editingQuestion = this.question;
+    }
   }
 
   async updateQuestion() {
@@ -72,11 +88,10 @@ export class CreateDeliveryZoneComponent implements OnInit {
         },
       ],
     };
-    const webformId = this.webformService.webformId;
     const result = await this.webformService.webformUpdateQuestion(
       input,
       this.questionId,
-      webformId
+      this.webformId
     );
     this.question = result;
   }
@@ -87,23 +102,26 @@ export class CreateDeliveryZoneComponent implements OnInit {
         {
           options: [
             {
-              title: `Renombrar ${this.question.value}`,
-              callback: () =>       this.router.navigate(['../../admin/rename-question/name']),
+              title: `Renombrar "${this.question.value}"`,
+              callback: () => this.router.navigate([`../../admin/rename-question/${this.webformId}/${this.question._id}`])
             },
             {
-              title: `Editar el orden de las opciones`,
-              // callback: () => this.navigate(type),
+              title: `Renombrar "${this.question.answerDefault[numb].value}"`,
+              callback: () => {
+                this.router.navigate(
+                  [`../../admin/rename-question/${this.webformId}/${this.question._id}`],
+                  {
+                    queryParams: {
+                      answer: numb
+                    },
+                  }
+                )
+              }
             },
             {
-              title: `Renombrar ZonaId`,
-              callback: () => this.router.navigate(['../../admin/rename-question/',numb]),
-            },
-            {
-              title: `Eliminar la opcion ZonaId`,
-              // callback: () => this.navigate(type),
-            },
-
-           
+              title: `Eliminar la opcion "${this.question.answerDefault[numb].value}"`,
+              callback: () => console.log('Eliminar la opción')
+            }
           ],
         },
       ],
@@ -119,7 +137,7 @@ export class CreateDeliveryZoneComponent implements OnInit {
         mainButton: () => {
           this.webformService.webformRemoveQuestion(
             [this.questionId],
-            this.webformService.webformId
+            this.webformId
           );
         },
       },
@@ -128,7 +146,7 @@ export class CreateDeliveryZoneComponent implements OnInit {
   }
 
   select(numb){
-    if(numb==this.numb){
+    if(numb == this.numb){
       this.webformService.editingQuestion = this.question;
       this.openDialog(numb)
     }
