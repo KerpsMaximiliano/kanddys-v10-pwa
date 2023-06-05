@@ -20,6 +20,7 @@ export class QrContentComponent implements OnInit {
   @Input() defaultText: string = '';
   @Input() alternateStyles: boolean = false;
   @Output() buttonClicked = new EventEmitter();
+  @Input() showButton:boolean = true;
   slidesPath: Array<{
     type: 'IMAGE' | 'VIDEO' | 'TEXT';
     path?: string | SafeUrl;

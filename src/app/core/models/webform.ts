@@ -60,11 +60,12 @@ export class QuestionInput {
   subIndex?: number;
   value?: string;
   answerDefault?: AnswerDefaultInput[];
-  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME' | 'MAX12' | 'MIN12' | 'NUMBER';
+  answerTextType?: 'DEFAULT' | 'PHONE' | 'EMAIL' | 'NAME' | 'MAX12' | 'MIN12' | 'NUMBER' | 'DECIMAL';
   answerLimit?: number;
   show?: Boolean;
   required?: Boolean;
   answerMedia?: Boolean;
+  trigger?:string;
 }
 
 export class Question extends Model<Question> {
@@ -86,6 +87,7 @@ export class WebformInput {
   description?: string;
   bookmark?: string;
   exchangeData?: string;
+  type?:string;
 }
 
 export class Webform extends Model<Webform> {
