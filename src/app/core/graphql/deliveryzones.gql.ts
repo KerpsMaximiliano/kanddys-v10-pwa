@@ -1,9 +1,12 @@
 import gql from 'graphql-tag';
 
 export const createDeliveryZone = gql`
-  mutation createDeliveryZone($merchantId: ObjectID!, $input: DeliveryZoneInput!) {
+  mutation createDeliveryZone(
+    $merchantId: ObjectID!
+    $input: DeliveryZoneInput!
+  ) {
     createDeliveryZone(merchantId: $merchantId, input: $input) {
-        _id
+      _id
     }
   }
 `;
@@ -11,7 +14,7 @@ export const createDeliveryZone = gql`
 export const updateDeliveryZone = gql`
   mutation updateDeliveryZone($input: DeliveryZoneInput!, $id: ObjectID!) {
     updateDeliveryZone(input: $input, id: $id) {
-        _id
+      _id
     }
   }
 `;
@@ -23,17 +26,23 @@ export const deleteDeliveryZone = gql`
 `;
 
 export const deliveryZoneAddExpenditure = gql`
-  mutation deliveryZoneAddExpenditure($expenditureId: ObjectID!, $id: ObjectID!) {
+  mutation deliveryZoneAddExpenditure(
+    $expenditureId: ObjectID!
+    $id: ObjectID!
+  ) {
     deliveryZoneAddExpenditure(expenditureId: $expenditureId, id: $id) {
-        _id
+      _id
     }
   }
 `;
 
 export const createExpenditure = gql`
-  mutation createExpenditure($merchantId: ObjectID!, $input: ExpenditureInput!) {
+  mutation createExpenditure(
+    $merchantId: ObjectID!
+    $input: ExpenditureInput!
+  ) {
     createExpenditure(merchantId: $merchantId, input: $input) {
-        _id
+      _id
     }
   }
 `;
@@ -41,7 +50,7 @@ export const createExpenditure = gql`
 export const updateExpenditure = gql`
   mutation updateExpenditure($input: ExpenditureInput!, $id: ObjectID!) {
     updateExpenditure(input: $input, id: $id) {
-        _id
+      _id
     }
   }
 `;
@@ -77,5 +86,17 @@ export const deliveryZones = gql`
       expenditure
       createdAt
     }
+  }
+`;
+
+export const incomeTotalDeliveryZoneByMerchant = gql`
+  query incomeTotalDeliveryZoneByMerchant(
+    $merchantId: ObjectID!
+    $range: PaginationRangeInput
+  ) {
+    incomeTotalDeliveryZoneByMerchant(
+      merchantId: $merchantId
+      range: $range
+    )
   }
 `;

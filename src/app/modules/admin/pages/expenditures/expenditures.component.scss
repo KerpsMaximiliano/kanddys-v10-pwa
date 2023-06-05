@@ -1,0 +1,152 @@
+.main-container {
+  height: 100vh;
+  overflow-y: scroll;
+  position: relative;
+  background-color: #f6f6f6;
+}
+
+.header {
+  box-shadow: inset 0px 3px 3px rgba(0, 0, 0, 0.16);
+  background: #c1c4c1;
+  height: 46px;
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  p {
+    font-family: SFProRegular;
+    font-size: 16px;
+    font-weight: bold;
+    color: #272727;
+    margin: 0;
+    margin-left: 18px;
+  }
+}
+
+.plus-icon {
+  width: 25px;
+  height: 22px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.container {
+  padding-left: 17px;
+  padding-right: 17px;
+  padding-top: 25px;
+  padding-bottom: 10px;
+  background: #f4f4f4;
+  height: calc(100% - 77px);
+  overflow-y: scroll;
+}
+
+.content {
+  padding-left: 18px;
+  padding-right: 18px;
+  padding-top: 20px;
+}
+
+.content-title {
+  font-size: 13px;
+  font-family: SFProRegular;
+  color: #272727;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.content-items-container {
+  padding-top: 17px;
+  padding-bottom: 45px;
+  width: 100%;
+}
+
+.content-item {
+  background-color: #ffffff;
+  height: 58px;
+  width: 100%;
+  border-radius: 7px;
+  display: flex;
+  width: 100%;
+  border-top-left-radius: 17px;
+  margin-bottom: 4px;
+  filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.16));
+}
+
+.content-item-texts {
+  padding-top: 10px;
+  padding-right: 14px;
+  width: 100%;
+}
+
+.content-item-title {
+  font-family: SFProRegular;
+  font-size: 17px;
+  font-weight: 500;
+  font-style: normal;
+  color: #272727;
+  margin: 0;
+}
+
+.content-item-title-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.content-item-times-selected {
+  font-family: SFProRegular;
+  font-size: 13px;
+  font-weight: 500;
+  color: #7b7b7b;
+  margin: 0;
+}
+
+.content-item-button-container {
+  width: 47px;
+  height: 100%;
+}
+
+.content-item-button {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border-color: #f6f6f6;
+  border-width: 2px;
+  border-style: solid;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer {
+  height: 31px;
+  width: 100%;
+  background-color: #6fcf97;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img{
+    margin-right: 3px;
+  }
+  p {
+    font-family: SFProRegular;
+    font-size: 15px;
+    font-weight: 500;
+    color: #171d16;
+    margin: 0;
+  }
+
+  .ml{
+    margin-left:6px;
+  }
+}

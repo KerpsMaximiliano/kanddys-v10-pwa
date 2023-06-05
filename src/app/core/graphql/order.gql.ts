@@ -314,6 +314,31 @@ const expenditureData = `
   description
   amount
   useDate
+  typeCustom{
+    _id
+    value
+  }
+  activeDate{
+    from
+    month
+  }
+`;
+
+const incomeData = `
+  _id
+  createdAt
+  type{
+    _id
+    createdAt
+    value
+    table
+    field
+  }
+  name
+  description
+  amount
+  useDate
+  subType
 `;
 
 export const toggleUserNotifications = gql`
@@ -509,6 +534,15 @@ export const createExpenditure = gql`
   ) {
     createExpenditure(merchantId: $merchantId, input: $input) {
       _id
+      type
+      useDate
+      name
+      amount
+      description
+      activeDate {
+        from
+        month
+      }
     }
   }
 `;
@@ -664,5 +698,109 @@ export const orderConfirm = gql`
     orderConfirm(merchantId: $merchantId, orderId: $orderId) {
       _id
     }
+  }
+`;
+
+export const incomes = gql`
+  query incomes($pagination: PaginationInput) {
+    incomes(paginate: $pagination) {
+      ${incomeData}
+    }
+  }
+`;
+
+export const expendituresTotal = gql`
+  query expendituresTotal(
+    $type: String!
+    $merchantId: ObjectID!
+    $typeCustomId: ObjectID!
+    $range: PaginationRangeInput
+  ) {
+    expendituresTotal(
+      type: $type
+      merchantId: $merchantId
+      typeCustomId: $typeCustomId
+      range: $range
+    )
+  }
+`;
+
+export const expenditureTypesCustom = gql`
+  query expenditureTypesCustom($merchantId: ObjectID!) {
+    expenditureTypesCustom(merchantId: $merchantId) {
+      _id
+      value
+      merchant
+      field
+    }
+  }
+`;
+
+export const expendituresTotalByTypeConstant = gql`
+  query expendituresTotalByTypeConstant($activeDateRange: ExpenditureActiveDateRangeInput, $paginate: PaginationInput) {
+    expendituresTotalByTypeConstant(activeDateRange: $activeDateRange, paginate: $paginate)
+  }
+`;
+
+export const itemRemoveExpenditure = gql`
+  mutation itemRemoveExpenditure($id: ObjectID!, $webformId: ObjectID!) {
+    itemRemoveExpenditure(merchantId: $merchantId, webformId: $webformId) {
+      _id
+    }
+  }
+`;
+
+export const deleteExpenditure = gql`
+  mutation deleteExpenditure($id: ObjectID!) {
+    deleteExpenditure(id: $id)
+  }
+`;
+
+export const expendituresTotalById = gql`
+  query expendituresTotalById(
+    $range: PaginationRangeInput
+    $id: ObjectID
+    $type: String!
+    $merchantId: ObjectID
+  ) {
+    expendituresTotalById(
+      range: $range
+      id: $id
+      type: $type
+      merchantId: $merchantId
+    )
+  }
+`;
+
+export const answerIncomeTotal = gql`
+  query answerIncomeTotal($webformId: ObjectID!) {
+    answerIncomeTotal(webformId: $webformId)
+  }
+`;
+
+export const incomeTypes = gql`
+  query incomeTypes($merchantId: ObjectID!) {
+    incomeTypes(merchantId: $merchantId) {
+      _id
+      value
+      table
+      merchant
+    }
+  }
+`;
+
+export const incomeTotalByType = gql`
+  query incomeTotalByType(
+    $range: PaginationRangeInput
+    $subType: String!
+    $merchantId: ObjectID!
+    $typeId: ObjectID!
+  ) {
+    incomeTotalByType(
+      range: $range
+      subType: $subType
+      merchantId: $merchantId
+      typeId: $typeId
+    )
   }
 `;

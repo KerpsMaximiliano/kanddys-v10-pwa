@@ -1,0 +1,62 @@
+<div class="main-container">
+  <div class="header">
+    <div (click)="createExpenditure()" style="cursor: pointer;">
+
+        <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
+    </div>
+    <p>{{title}}</p>
+  </div>
+
+  <div class="container">
+    <input
+      class="expenditure-input-name"
+      placeholder="Escribe el nombre del egreso"
+      [(ngModel)]="name"
+    />
+    <form>
+      <p class="expenditure-amount-title">Monto del egreso</p>
+      <mat-form-field class="expenditure-amount-field">
+          <mat-label>Escribe..</mat-label>
+          <input 
+            matInput
+            name="name"
+            type="number"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            min="0"
+            [(ngModel)]="amount"
+          >
+      </mat-form-field>
+    </form>
+    <p class="expenditure-amount-title expenditure-input-name-mt">
+      Día del egreso
+    </p>
+    <div class="expenditure-month-items-container">
+      <div
+        class="expenditure-month-item"
+        *ngFor="let i of months"
+        (click)="selectMonth(i.id)"
+        [ngClass]="{ 'expenditure-month-item-selected': i.selected }"
+      >
+        {{ i.month }}
+      </div>
+    </div>
+
+    <div class="expenditure-month-items-container" *ngIf="showDays">
+      <div
+        class="expenditure-month-item"
+        *ngFor="let i of days"
+        (click)="selectDay(i.id)"
+        [ngClass]="{ 'expenditure-month-item-selected': i.selected }"
+      >
+        {{ i.id }}
+      </div>
+    </div>
+    <app-item-images
+      (enteredImages)="onImageInput($event)"
+      [containerStyles]="{ background: '#f4f4f4' }"
+      [inputPosition]="'left'"
+      caption="Imagen (Opcional)"
+    ></app-item-images>
+  </div>
+</div>

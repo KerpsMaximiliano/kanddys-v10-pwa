@@ -1,0 +1,66 @@
+<div class="main-container">
+  <div class="header">
+    <div (click)="updateQuestion()">
+      <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" style="cursor: pointer;"/>
+    </div>
+    <p>{{ question?.value }}</p>
+    <div class="dots-icon">
+      <img src="../../../../../assets/icons/gray-dots.svg" />
+    </div>
+  </div>
+  <div class="slider-container">
+    <div class="slider-item " *ngFor="let defaultAnswer of question.answerDefault; let i = index" (click)="select(i)" [ngClass]="{'slider-item-selected': numb == i}" ><img src="../../../../../assets/icons/gray-dots.svg" *ngIf="numb == i"/>{{ defaultAnswer.value }}</div>
+    <!-- <div class="slider-item" (click)="select(2)" [ngClass]="{'slider-item-selected': numb == 2 }"><img src="../../../../../assets/icons/gray-dots.svg" *ngIf="numb==2" />Type 2</div>
+    <div class="slider-item" (click)="select(3)" [ngClass]="{'slider-item-selected': numb ==3 }"><img src="../../../../../assets/icons/gray-dots.svg" *ngIf="numb==3" />Type 3</div>
+    <div class="slider-item" (click)="select(4)" [ngClass]="{'slider-item-selected': numb == 4 }"><img src="../../../../../assets/icons/gray-dots.svg"  *ngIf="numb==4" />Type 4</div> -->
+  </div>
+  <div class="content">
+    <p class="expenditure-amount-title">
+      Monto que el comprador tiene que pagar adicional al seleccionar esta
+      opción
+    </p>
+    <mat-form-field class="expenditure-amount-field">
+      <input
+        matInput
+        placeholder="Escribe.."
+        type="number"
+        [(ngModel)]="aditional"
+      />
+    </mat-form-field>
+    <p class="expenditure-amount-title">
+      Cuando el monto de la compra excede: (condición opcional)
+    </p>
+    <mat-form-field class="expenditure-amount-field">
+      <input
+        matInput
+        placeholder="Escribe.."
+        type="number"
+        [(ngModel)]="excedent"
+      />
+    </mat-form-field>
+
+    <p class="expenditure-amount-title">
+      Cuando el monto de la compra es menor a: (condición opcional)
+    </p>
+    <mat-form-field class="expenditure-amount-field">
+      <input
+        matInput
+        placeholder="Escribe.."
+        type="number"
+        [(ngModel)]="lower"
+      />
+    </mat-form-field>
+
+    <p class="expenditure-amount-title">
+      ¿Cuál es tu costo? (opcional para el control de tus beneficios)
+    </p>
+    <mat-form-field class="expenditure-amount-field">
+      <input
+        matInput
+        placeholder="Escribe.."
+        type="number"
+        [(ngModel)]="cost"
+      />
+    </mat-form-field>
+  </div>
+</div>
