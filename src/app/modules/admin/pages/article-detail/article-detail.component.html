@@ -1,0 +1,117 @@
+<div class="main-container">
+  <div class="header">
+    <div class="flex">
+      <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
+      <p>{{ itemId }}</p>
+    </div>
+    <div class="bell-container">
+      <img src="../../../../../assets/icons/bell.svg" />
+    </div>
+  </div>
+  <div class="content">
+    <app-qr-content
+      title="Slides"
+      *ngIf="slides"
+      [slides]="slides"
+      [defaultText]="
+        !loadingSlides
+          ? 'Incluyes fotos, memes, videos, música o chistes de la Inteligencia Artificial.'
+          : 'Cargando...'
+      "
+      [shadows]="false"
+      [showButton]="false"
+    ></app-qr-content>
+    <div class="sales-block">
+      <p>{{totalItems}} ventas</p>
+      <p>{{totalPrice | currency}}</p>
+    </div>
+    <div class="row-item-price row-item-price-first-row">
+      <p>Precio Normal</p>
+      <div class="row-item-price-block-container">
+        <div class="row-item-price-block row-item-price-first-block">
+          <p>
+            {{ item.pricing | currency }}
+          </p>
+        </div>
+
+        <div class="row-item-price-block row-item-price-second-block">
+          <p>
+            {{item.amountMerchantCoin}} <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
+            = $3500
+          </p>
+        </div>
+        <div class="row-item-price-block row-item-price-third-block">
+          <p>457</p>
+        </div>
+      </div>
+    </div>
+    <div class="row-item-price">
+      <p>Precio VIP</p>
+      <div class="row-item-price-block-container">
+        <div class="row-item-price-block row-item-price-first-block">
+          <p>   {{ item.pricing | currency }}</p>
+        </div>
+        <div class="row-item-price-block row-item-price-second-block">
+          <p>
+            {{item.amountMerchantCoin}} <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
+            = $3500
+          </p>
+        </div>
+        <div class="row-item-price-block row-item-price-third-block">
+          <p>457</p>
+        </div>
+      </div>
+    </div>
+    <div class="row-item-price">
+      <p>RECOMPENSA A COMPRADORES Y PREMIO A VENDEDORES</p>
+      <div class="row-item-price-block-container">
+        <div class="row-item-price-block row-item-price-first-block">
+          <p>   {{ item.pricing | currency }}</p>
+        </div>
+        <div class="row-item-price-block row-item-price-second-block">
+          <p>
+            {{item.amountMerchantCoin}} <img src="../../../../../assets/icons/star-filled.svg" /> ~ 2.3%
+            = $3500
+          </p>
+        </div>
+        <div class="row-item-price-block row-item-price-third-block">
+          <p>457</p>
+        </div>
+      </div>
+    </div>
+    <div class="row-item-price">
+      <p>Nombre del articulo</p>
+      <textarea disabled placeholder="ID">
+        {{ item.name }}
+        </textarea
+      >
+    </div>
+    <div class="row-item-price row-item-price-description">
+      <p>DESCRIPCION</p>
+      <textarea disabled
+        >{{ item.description }}
+        </textarea
+      >
+    </div>
+    <div class="row-item-price">
+      <p>LO INCLUIDO</p>
+      <textarea disabled placeholder="ID">{{ id }} </textarea>
+      <textarea disabled placeholder="ID">{{ id }} </textarea>
+    </div>
+    <div class="row-item-price">
+      <p>DISPONIBILIDAD (STOCK)</p>
+      <textarea disabled placeholder="ID">{{ item.stock }} </textarea>
+    </div>
+    <app-menu-button
+      [position]="{ bottom: '50px' }"
+      [options]="menuOptions"
+    ></app-menu-button>
+  </div>
+  <div class="footer">
+    <p>Preview</p>
+    <div class="flex">
+      <p>VISIBLE EN: URL.COM</p>
+      <img [src]="env + '/upload.svg'" class="upload-icon" />
+    </div>
+  </div>
+</div>

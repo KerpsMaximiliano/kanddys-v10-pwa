@@ -1,0 +1,126 @@
+.main-container {
+  height: 100vh;
+  overflow-y: scroll;
+  position: relative;
+  background-color: #f6f6f6;
+}
+
+.header {
+  box-shadow: inset 0px 3px 3px rgba(0, 0, 0, 0.16);
+  background: #c1c4c1;
+  height: 46px;
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  align-items: center;
+
+  p {
+    font-family: SFProRegular;
+    font-size: 16px;
+    font-weight: bold;
+    color: #272727;
+    margin: 0;
+    margin-left: 18px;
+  }
+}
+
+.container {
+  padding-left: 17px;
+  padding-right: 17px;
+  padding-top: 25px;
+  padding-bottom: 10px;
+  background: #f4f4f4;
+  height: calc(100% - 46px);
+  overflow-y: scroll;
+}
+
+.expenditure-input-name {
+  width: 100%;
+  height: 57.8px;
+  border: 0;
+  border-radius: 8px;
+  background: #ffffff;
+  padding-left: 15px;
+}
+
+.expenditure-amount-title {
+  font-family: SFProRegular;
+  font-size: 17px;
+  font-weight: 500;
+  color: #7b7b7b;
+  margin-top: 28px;
+  margin-bottom: 0;
+}
+
+
+.expenditure-amount-field {
+  width: 100%;
+
+  input {
+    width: 100%;
+  }
+}
+
+.expenditure-input-name-mt {
+  margin-top: 40px;
+}
+
+.expenditure-month-items-container {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.expenditure-month-item {
+  width: 57px;
+  height: 38px;
+  font-family: "Roboto";
+  font-size: 20px;
+  font-weight: 500;
+  color: #7b7b7b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+}
+
+.expenditure-month-item-selected {
+  color: #272727;
+  background: #6fcf97;
+}
+
+::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline {
+  background-color: #82F18D;
+}
+
+::ng-deep .field-container.mat-focused {
+  .mat-form-field-underline {
+      background-color: #E9E9E9;
+  }
+  .mat-form-field-ripple {
+      background-color: #82F18D;
+  }
+}
+
+::ng-deep .mat-form-field-appearance-legacy .mat-form-field-label {
+  color: #7B7B7B;
+  font-family: InterSemiBold;
+  font-size: 21px;
+}
+
+::ng-deep .mat-form-field-should-float .mat-form-field-label {
+  display: none !important;
+}
+
+::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+  color: #7B7B7B;
+}
+
+::ng-deep .mat-form-field-infix {
+  position: inherit !important;
+}
+
+::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline {
+  margin-bottom: -5px;
+}
