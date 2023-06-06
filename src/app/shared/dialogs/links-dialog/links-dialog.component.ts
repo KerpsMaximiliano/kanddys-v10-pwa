@@ -29,6 +29,7 @@ export interface DialogTemplate {
   title: string;
   options: DialogOptions[];
   secondaryOptions: DialogSecondaryOptions[];
+  styles?: Record<string, Record<string, boolean>>;
 }
 
 @Component({
@@ -50,7 +51,13 @@ export class LinksDialogComponent implements OnInit {
   @ViewChildren('secondaryQrcode', { read: ElementRef })
   private secondaryQr: QueryList<ElementRef>;
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if(this.data.length > 0 && this.data[0].styles && this.data[0].styles['fullScreen']) {
+      const element: HTMLElement = document.querySelector('.mat-bottom-sheet-container');
+
+      element.style.maxHeight = 'unset';
+    }
+  }
 
   openLink(event?: MouseEvent): void {
     this._bottomSheetRef.dismiss();

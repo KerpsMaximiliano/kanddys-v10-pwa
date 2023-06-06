@@ -676,6 +676,11 @@ export const itemsByMerchantNosale = gql`
       featuredImage
       pricing
       status
+      visitorCounter {
+        entity
+        counter
+        reference
+      }
     }
   }
 `;

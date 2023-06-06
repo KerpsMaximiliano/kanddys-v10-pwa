@@ -18,7 +18,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
 
   > * {
     display: flex;
@@ -90,7 +89,7 @@
     color: #ffffff;
     display: flex;
     align-items: center;
-    font-size: 36px;
+    font-size: 19px;
     img {
       filter: brightness(0) invert(100%) sepia(0%) saturate(7500%)
         hue-rotate(124deg) brightness(107%) contrast(108%);
@@ -99,37 +98,83 @@
 }
 
 .categories {
-  margin: 1em 0;
+  margin: 23px 16px;
+  margin-bottom: 33px;
+
+  &.lessPadding {
+    margin-bottom: 3.14px;
+  }
+
   .category-item {
     cursor: pointer;
     text-align: center;
     text-transform: capitalize;
-    max-width: 130px !important;
+    max-width: fit-content !important;
     border: 1px solid #707070;
     border-radius: 20px;
-    padding: 10px;
-    margin-left: 1em;
+    padding: 0px 20px;
+    padding-top: 3px;
+    padding-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    font-family: InterRegular;
+    display: flex;
+
+    .options {
+      display: none;
+    }
+
+    .close-icon {
+      display: none;
+    }
+
+    &.active {
+      &.queryParam {
+        padding-left: 11px;
+      }
+
+      .close-icon {
+        display: block;
+      }
+
+      .options {
+        display: block;
+        margin-right: 6.5px;
+        filter: invert(100%) sepia(100%) saturate(13%) hue-rotate(237deg)
+          brightness(104%) contrast(104%);
+      }
+    }
+
+    &:nth-of-type(1) {
+      margin-left: 0px;
+    }
+
+    margin-left: 3px;
 
     &.active {
       background-color: #c4c5c3;
       color: #272727;
       border: none;
-      font-family: SFProBold;
+      font-family: InterBold;
+      font-size: 16px;
     }
   }
 }
 
 .section {
-  margin-bottom: 2em;
   .section-header {
     margin: 12px 21px;
+    margin-bottom: 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     .section-title {
-      font-family: SfProRegular;
+      font-family: InterRegular;
       font-size: 13px;
+      color: #272727;
       text-transform: uppercase;
     }
 
@@ -153,15 +198,16 @@
       }
     }
   }
-
-  .section-content {
-    margin-left: 1em;
-  }
 }
 
 .card {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  padding-bottom: 7px;
+  filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
+  padding: 11.45px 8.75px 14.67px 10.75px;
+  border-radius: 10px;
+
+  &:nth-of-type(1) {
+    width: calc(100% - 19px) !important;
+  }
 
   a {
     all: unset;
@@ -171,18 +217,18 @@
     cursor: pointer;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 13.55px;
 
     .card-l-side {
       max-width: 50%;
       .card-title {
-        font-family: SfProDisplayBold;
+        font-family: InterBold;
         font-size: 21px;
         margin-top: 10px;
-        margin-bottom: 5px;
+        margin-bottom: 11.86px;
       }
       .card-description {
-        font-family: SfProLight;
+        font-family: InterRegular;
         font-size: 17px;
       }
     }
@@ -193,20 +239,21 @@
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        width: 150px;
-        height: 170px;
+        width: 157.36px;
+        height: 198.33px;
         background-color: #293628;
         object-fit: cover;
         border-radius: 10px;
+        overflow: hidden;
 
         .caption {
           background-color: #936105;
           color: #fff;
           position: absolute;
-          bottom: 56px;
-          width: 150px;
+          bottom: 63px;
+          width: 157.36px;
           padding: 7px 10px;
-          border-radius: 10px 0px 10px 0px;
+          border-radius: 0px 0px 10px 10px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -226,6 +273,8 @@
   .card-footer {
     border-top: 1px solid #e9e9e9;
     padding: 10px 5px;
+    padding-top: 15px;
+    padding-bottom: 0px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -247,6 +296,16 @@
         display: flex;
         justify-content: center;
         margin-right: 7px;
+
+        &.dots {
+          cursor: pointer;
+          margin-left: 14.62px;
+        }
+
+        &.no-margin {
+          margin-right: 0px;
+        }
+
         p {
           color: #a1a1a1;
           margin-right: 1px;
@@ -267,18 +326,18 @@
   max-width: 500px;
   width: 100%;
   background-color: #6fcf97;
-  padding: 5px 20px;
+  padding: 5px 13px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   z-index: 999;
   bottom: 0;
 
   p {
-    max-width: 80%;
-    color: #272727;
-    font-family: SfProLight;
-    font-size: 13px;
+    max-width: 90%;
+    color: #171d16;
+    font-family: InterRegular;
+    font-size: 15px;
   }
 
   div {
@@ -361,4 +420,83 @@
 
 ::ng-deep .mat-datepicker-content {
   max-height: 354px !important;
+}
+
+::ng-deep .swiper-container {
+  padding-bottom: 34px !important;
+  padding-top: 14px !important;
+  padding-left: 1rem !important;
+}
+
+.category-swiper {
+  ::ng-deep .swiper-container {
+    padding: 0px !important;
+  }
+}
+
+.pricing h3 {
+  font-family: InterRegular;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 17px;
+}
+
+::ng-deep .swiper-slide-next {
+  .mat-card {
+    padding-left: 15px !important;
+  }
+}
+
+.item-wrapper {
+  filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
+
+  &.not-swiper {
+    padding: 0px 16px;
+    margin-top: 14.86px;
+  }
+
+  &.lastItem {
+    margin-bottom: 105px;
+  }
+
+  &:nth-of-type(1) {
+    width: calc(100% - 19px) !important;
+  }
+}
+
+.header-dashboard-library {
+  padding: 0px;
+  padding-right: 18px;
+  padding-left: 11.76px;
+  height: 47px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.06);
+
+  .go_back_arrow {
+    margin-right: 7.82px;
+    margin-left: -12.23px;
+    height: auto;
+    font-size: 34px;
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+
+    h2 {
+      font-family: InterBold;
+      font-size: 16px;
+      color: #272727;
+      margin: 0px;
+      padding: 0px;
+    }
+  }
+
+  .icon {
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(218deg)
+      brightness(101%) contrast(104%);
+  }
 }

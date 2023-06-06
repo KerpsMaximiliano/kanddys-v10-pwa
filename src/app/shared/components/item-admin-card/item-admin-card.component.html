@@ -1,0 +1,53 @@
+<mat-card class="card mat-elevation-z0">
+  <a [routerLink]="['../article-editor/', item._id]">
+    <div class="card-body">
+      <div class="card-l-side">
+        <h2 class="card-title">
+          {{ item.name ? item.name : "Sin nombre..." }}
+        </h2>
+        <p class="card-description">{{ item.description }}</p>
+      </div>
+      <div class="card-r-side">
+        <div
+          class="featured-image"
+          [ngStyle]="{
+            backgroundImage: 'url(' + item?.images[0]?.value + ')'
+          }"
+        >
+          <div class="caption" *ngIf="item.status === 'disabled'">
+            <img [src]="environment + '/closed-eye-black.svg'" alt="" />
+            Oculto al visitante
+          </div>
+        </div>
+      </div>
+    </div>
+  </a>
+  <div class="card-footer">
+    <div class="pricing">
+      <h3>RD $ {{ item.pricing | number }}</h3>
+    </div>
+    <div class="bottom-icons">
+      <div class="text-icon">
+        <p>
+          {{ unitSalesCounter }}
+        </p>
+        <img
+          [src]="environment + '/delivery-parcel.svg'"
+          style="margin-left: 2px"
+          alt=""
+        />
+      </div>
+      <div class="text-icon no-margin">
+        <p>{{ item.visitorCounter?.counter }}</p>
+        <img [src]="environment + '/tap.svg'" style="margin-left: 2px" alt="" />
+      </div>
+      <div class="text-icon dots" (click)="(null)">
+        <img
+          [src]="environment + '/dots-black.svg'"
+          alt=""
+          (click)="openDotsDialog()"
+        />
+      </div>
+    </div>
+  </div>
+</mat-card>

@@ -235,7 +235,7 @@ export class ItemsService {
         variables: { isObjectID, paginate },
         fetchPolicy: 'no-cache',
       });
-      return response.bestSellersByMerchant;
+      return response?.bestSellersByMerchant;
     } catch (e) {
       console.log(e);
     }
