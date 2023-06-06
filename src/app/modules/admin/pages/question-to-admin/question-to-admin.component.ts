@@ -32,6 +32,8 @@ export class QuestionToAdminComponent implements OnInit {
           type: 'multiple',
           value: this.question,
           answerTextType: 'DEFAULT',
+          required: true,
+          answerLimit: 1,
           answerDefault: [
             {
               value: "Opción 1",
