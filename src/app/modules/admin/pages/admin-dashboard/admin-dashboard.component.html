@@ -1,53 +1,10 @@
 <app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
   <div class="container">
-    <!-- <header class="header">
-      <div class="left">
-        <button class="btn merchant-btn" [matMenuTriggerFor]="menu">
-          <img [src]="_MerchantsService.merchantData.image" class="img" />
-          <p class="title">{{ _MerchantsService.merchantData.name }}</p>
-        </button>
-        <mat-menu #menu="matMenu">
-          <a mat-menu-item [routerLink]="['']">
-            <mat-icon>settings</mat-icon>
-            <span>Configuración</span>
-          </a>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon>exit_to_app</mat-icon>
-            <span>Cerrar Sesión</span>
-          </button>
-        </mat-menu>
-      </div>
-
-      <div class="right">
-        <a
-          class="btn"
-          [routerLink]="['../notifications-menu']"
-          [queryParams]="{
-            redirectTo: router.url
-          }"
-          *ngIf="ordersToConfirm.length === 0"
-        >
-          <img class="listIcon" [src]="environment + '/icon-i.svg'" />
-        </a>
-
-        <a
-          class="btn"
-          [routerLink]="['../notifications-menu']"
-          [queryParams]="{
-            redirectTo: router.url
-          }"
-          *ngIf="ordersToConfirm.length > 0"
-        >
-          <img class="listIcon" [src]="environment + '/bell-notification.svg'" />
-        </a>
-      </div>
-    </header> -->
-
-    <header class="header">
-      <button mat-icon-button>
+    <header class="header" *ngIf="typeOfView === 'SHOW_LISTS'">
+      <button mat-icon-button style="margin-right: 25px">
         <mat-icon [ngStyle]="{ color: 'white' }">search</mat-icon>
       </button>
-      <button mat-icon-button (click)="newArticle()">
+      <button mat-icon-button style="margin-right: 25px" (click)="newArticle()">
         <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
       </button>
       <button class="header-btn" (click)="headerSettings()">
@@ -56,29 +13,79 @@
 
       <button
         style="
-          color: #82f18d;
-          font-size: 16px;
-          font-family: SFProRegular;
+          color: #87cd9b;
+          font-size: 17px;
+          font-family: InterBold;
           margin-left: auto;
         "
-        (click)="openNavigation = true"
       >
-        Artículos
-        <mat-icon style="color: #82f18d; margin-left: 8px">menu</mat-icon>
+        Lo que vendo 🏷️
+        <mat-icon
+          style="color: #6fcf97; margin-left: 8px"
+          (click)="openNavigation = true"
+          >menu</mat-icon
+        >
       </button>
     </header>
 
-    <div class="categories">
-      <swiper [config]="swiperConfig">
-        <div class="category-item active">TODOS</div>
+    <header
+      class="header-dashboard-library"
+      *ngIf="typeOfView === 'LIST_DETAILED'"
+    >
+      <div class="title">
+        <mat-icon class="go_back_arrow" (click)="showAllLists()"
+          >keyboard_arrow_left</mat-icon
+        >
+
+        <h2>{{ detailedHeaderTitle }}</h2>
+      </div>
+
+      <div class="options">
+        <button mat-icon-button style="margin-right: 25px">
+          <mat-icon [ngStyle]="{ color: 'black' }">search</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          style="margin-right: 25px"
+          (click)="newArticle()"
+        >
+          <mat-icon [ngStyle]="{ color: 'black' }">add</mat-icon>
+        </button>
+        <img
+          [src]="environment + '/dots-black.svg'"
+          alt="more options"
+          (click)="headerSettings()"
+        />
+      </div>
+    </header>
+
+    <div
+      class="categories"
+      [ngClass]="{
+        lessPadding: detailedList === 'NOT_SOLD'
+      }"
+    >
+      <swiper [config]="swiperConfig" class="category-swiper">
         <div
           class="category-item"
+          [ngClass]="{
+            active: !selectedFilter && !selectedTags.length
+          }"
+        >
+          TODOS
+        </div>
+        <div
+          class="category-item queryParam"
           *ngFor="let filter of filters; let i = index"
           [ngClass]="{
             active: selectedFilter && selectedFilter._id === filter._id
           }"
           (click)="isFilterActive(filter)"
         >
+          <i
+            class="fas fa-times-circle close-icon"
+            style="align-self: center; padding-right: 6.5px"
+          ></i>
           {{
             filter.type === "queryParameter"
               ? formatDate(filter.queryParameter.from.date, true) +
@@ -86,6 +93,16 @@
                 formatDate(filter.queryParameter.until.date, true)
               : "Otro"
           }}
+          <mat-menu #menu="matMenu">
+            <a mat-menu-item [routerLink]="['']">
+              <mat-icon>settings</mat-icon>
+              <span>Configuración</span>
+            </a>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>exit_to_app</mat-icon>
+              <span>Cerrar Sesión</span>
+            </button>
+          </mat-menu>
         </div>
         <div
           class="category-item"
@@ -99,14 +116,14 @@
     </div>
 
     <!-- <div class="contents">
-      <app-options-bar
-        [type]="'3'"
-        [options]="options"
-        (selectedIndex)="selectTag($event)"
-        (selectedMenuIndex)="selectedMenuOption($event)"
-      >
-      </app-options-bar>
-    </div> -->
+    <app-options-bar
+      [type]="'3'"
+      [options]="options"
+      (selectedIndex)="selectTag($event)"
+      (selectedMenuIndex)="selectedMenuOption($event)"
+    >
+    </app-options-bar>
+  </div> -->
 
     <mat-form-field appearance="fill" style="display: none">
       <mat-label>Enter a date range</mat-label>
@@ -123,374 +140,177 @@
       <mat-date-range-picker #picker></mat-date-range-picker>
     </mat-form-field>
 
-    <div class="section" *ngIf="recentlySoldItems?.length > 0">
-      <div class="section-header">
-        <p class="section-title">Vendidos</p>
-
-        <div class="section-description" (click)="goToDetail('sold')">
-          <!-- <p>4 de los últimos 7 días</p> -->
-          <p>{{ recentlySoldItems.length }}</p>
-          <img [src]="environment + '/arrow-left.svg'" alt="" />
-        </div>
-      </div>
-
-      <qrcode
-        *ngIf="articleId"
-        style="display: none"
-        #orderQrCode
-        [qrdata]="
-          URI +
-          '/ecommerce/' +
-          _SaleflowService.saleflowData.merchant.slug +
-          '/article-detail/item/' +
-          articleId
+    <!-- DASHBOARD -->
+    <ng-container *ngIf="typeOfView === 'SHOW_LISTS'">
+      <ng-container
+        *ngTemplateOutlet="
+          itemsCardSwiper;
+          context: {
+            list: soldItems,
+            titleList: 'Vendidos',
+            typeOfList: 'SOLD'
+          }
         "
-        [elementType]="'img'"
-        [width]="40"
-        [errorCorrectionLevel]="'M'"
-        [allowEmptyString]="true"
-        colorDark="#000"
-      ></qrcode>
+      >
+      </ng-container>
+      <ng-container
+        *ngTemplateOutlet="
+          itemsCardSwiper;
+          context: {
+            list: itemsBoughtByMe,
+            titleList: 'He comprado',
+            typeOfList: 'BOUGHT'
+          }
+        "
+      >
+      </ng-container>
 
-      <div class="section-content">
-        <swiper [config]="cardSwiperConfig">
-          <mat-card
-            class="card"
-            *ngFor="let item of recentlySoldItems; index as i"
-          >
-            <a [routerLink]="['../article-editor/', item._id]">
-              <div class="card-body">
-                <div class="card-l-side">
-                  <h2 class="card-title">
-                    {{ item.name ? item.name : "Sin nombre..." }}
-                  </h2>
-                  <p class="card-description">{{ item.description }}</p>
-                </div>
-                <div class="card-r-side">
-                  <div
-                    class="featured-image"
-                    [ngStyle]="{
-                      backgroundImage: 'url(' + item?.images[0]?.value + ')'
-                    }"
-                  >
-                    <div class="caption" *ngIf="item.status === 'disabled'">
-                      <img
-                        [src]="environment + '/closed-eye-black.svg'"
-                        alt=""
-                      />
-                      Oculto al visitante
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </a>
-            <div class="card-footer">
-              <div class="bottom-title">
-                <h3>RD $ {{ item.pricing | number }}</h3>
-              </div>
-              <div class="bottom-icons">
-                <div class="text-icon">
-                  <p>
-                    {{
-                      item?.visitorCounter?.counter
-                        ? item?.visitorCounter?.counter
-                        : "0"
-                    }}
-                  </p>
-                  <img [src]="environment + '/open-eye.svg'" alt="" />
-                </div>
-                <div
-                  class="text-icon"
-                  style="cursor: pointer"
-                  (click)="openDotsDialog(item._id, i, 'recent')"
-                >
-                  <img [src]="environment + '/dots-black.svg'" alt="" />
-                </div>
-              </div>
-            </div>
-          </mat-card>
-        </swiper>
-      </div>
-    </div>
+      <ng-container *ngIf="!selectedFilter">
+        <ng-container
+          *ngTemplateOutlet="
+            itemsCardSwiper;
+            context: {
+              list: hiddenItems,
+              titleList: 'Ocultos',
+              typeOfList: 'HIDDEN'
+            }
+          "
+        ></ng-container>
+      </ng-container>
 
-    <div class="section" *ngIf="hiddenItems?.length > 0">
-      <div class="section-header">
-        <p class="section-title">Ocultos</p>
+      <ng-container
+        *ngTemplateOutlet="
+          itemsCardSwiper;
+          context: {
+            list: notSoldItems,
+            titleList: 'Sin Venderse',
+            typeOfList: 'NOT_SOLD'
+          }
+        "
+      ></ng-container>
 
-        <div class="section-description" (click)="goToDetail('hidden')">
-          <p>{{ hiddenItems.length }}</p>
-          <img [src]="environment + '/arrow-left.svg'" alt="" />
+      <ng-container *ngIf="!selectedFilter">
+        <ng-container
+          *ngTemplateOutlet="
+            itemsCardSwiper;
+            context: {
+              list: allItems,
+              titleList: 'Todos',
+              typeOfList: 'ALL',
+              sectionStyles: {
+                marginBottom: '105px'
+              }
+            }
+          "
+        ></ng-container>
+      </ng-container>
+    </ng-container>
+
+    <!-- DASHBOARD LIBRARY -->
+    <ng-container
+      *ngIf="typeOfView === 'LIST_DETAILED' && !detailedItemsSubList.length"
+    >
+      <ng-container *ngIf="['SOLD', 'HIDDEN', 'ALL'].includes(detailedList)">
+        <ng-container
+          *ngTemplateOutlet="
+            itemsCardSwiper;
+            context: {
+              list: mostSoldItems,
+              titleList: '20% MAS VENDIDOS',
+              typeOfList: detailedList,
+              typeOfSubList: 'MOST_SOLD',
+              sectionHeaderStyles: dashboardLibrarySectionHeaderStyles
+            }
+          "
+        >
+        </ng-container>
+
+        <ng-container
+          *ngTemplateOutlet="
+            itemsCardSwiper;
+            context: {
+              list: lessSoldItems,
+              titleList: '20% MENOS VENDIDOS',
+              typeOfList: detailedList,
+              typeOfSubList: 'LESS_SOLD',
+              sectionHeaderStyles: dashboardLibrarySectionHeaderStyles
+            }
+          "
+        >
+        </ng-container>
+
+        <ng-container
+          *ngTemplateOutlet="
+            itemsCardSwiper;
+            context: {
+              list: detailedItemsList,
+              titleList: 'Todos',
+              typeOfList: detailedList,
+              typeOfSubList: 'FULL_LIST',
+              sectionStyles: {
+                marginBottom: '105px'
+              },
+              sectionHeaderStyles: dashboardLibrarySectionHeaderStyles
+            }
+          "
+        >
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="detailedList === 'NOT_SOLD'">
+        <div
+          class="item-wrapper not-swiper"
+          *ngFor="let item of detailedItemsList; index as i"
+          [ngClass]="{
+            lastItem: i === detailedItemsList.length - 1
+          }"
+        >
+          <app-item-admin-card
+            [item]="item"
+            [unitSalesCounter]="
+              itemsSelledCountByItemId[item._id]
+                ? itemsSelledCountByItemId[item._id]
+                : 0
+            "
+            (changeStatusAction)="changeItemStatus(detailedList, item, $event)"
+          ></app-item-admin-card>
         </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-container
+      *ngIf="typeOfView === 'LIST_DETAILED' && detailedItemsSubList.length"
+    >
+      <div
+        class="item-wrapper not-swiper"
+        *ngFor="let item of detailedItemsSubList; index as i"
+        [ngClass]="{
+          lastItem: i === detailedItemsSubList.length - 1
+        }"
+      >
+        <app-item-admin-card
+          [item]="item"
+          [unitSalesCounter]="
+            itemsSelledCountByItemId[item._id]
+              ? itemsSelledCountByItemId[item._id]
+              : 0
+          "
+          (changeStatusAction)="changeItemStatus(detailedList, item, $event)"
+        ></app-item-admin-card>
       </div>
+    </ng-container>
 
-      <div class="section-content">
-        <swiper [config]="cardSwiperConfig">
-          <mat-card class="card" *ngFor="let item of hiddenItems; index as i">
-            <a [routerLink]="['../article-editor/', item._id]">
-              <div class="card-body">
-                <div class="card-l-side">
-                  <h2 class="card-title">
-                    {{ item.name ? item.name : "Sin nombre..." }}
-                  </h2>
-                  <p class="card-description">{{ item.description }}</p>
-                </div>
-                <div class="card-r-side">
-                  <div
-                    class="featured-image"
-                    [ngStyle]="{
-                      backgroundImage: 'url(' + item?.images[0]?.value + ')'
-                    }"
-                  >
-                    <div class="caption" *ngIf="item.status === 'disabled'">
-                      <img
-                        [src]="environment + '/closed-eye-black.svg'"
-                        alt=""
-                      />
-                      Oculto al visitante
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </a>
-            <div class="card-footer">
-              <div class="bottom-title">
-                <h3>RD $ {{ item.pricing | number }}</h3>
-              </div>
-              <div class="bottom-icons">
-                <div class="text-icon">
-                  <p>{{ item?.visitorCounter?.counter }}</p>
-                  <img [src]="environment + '/open-eye.svg'" alt="" />
-                </div>
-                <div
-                  class="text-icon"
-                  style="cursor: pointer"
-                  (click)="openDotsDialog(item._id, i, 'lessSold')"
-                >
-                  <img [src]="environment + '/dots-black.svg'" alt="" />
-                </div>
-              </div>
-            </div>
-          </mat-card>
-        </swiper>
-      </div>
-    </div>
-
-    <div class="section" *ngIf="lessSoldItems?.length > 0">
-      <div class="section-header">
-        <p class="section-title">Sin Venderse</p>
-
-        <div class="section-description" (click)="goToDetail('notSold')">
-          <p>{{ lessSoldItems.length }}</p>
-          <img [src]="environment + '/arrow-left.svg'" alt="" />
-        </div>
-      </div>
-
-      <div class="section-content">
-        <swiper [config]="cardSwiperConfig">
-          <mat-card class="card" *ngFor="let item of notSoldItems; index as i">
-            <a [routerLink]="['../article-editor/', item._id]">
-              <div class="card-body">
-                <div class="card-l-side">
-                  <h2 class="card-title">
-                    {{ item.name ? item.name : "Sin nombre..." }}
-                  </h2>
-                  <p class="card-description">{{ item.description }}</p>
-                </div>
-                <div class="card-r-side">
-                  <div
-                    class="featured-image"
-                    [ngStyle]="{
-                      backgroundImage: 'url(' + item?.images[0]?.value + ')'
-                    }"
-                  >
-                    <div class="caption" *ngIf="item.status === 'disabled'">
-                      <img
-                        [src]="environment + '/closed-eye-black.svg'"
-                        alt=""
-                      />
-                      Oculto al visitante
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </a>
-            <div class="card-footer">
-              <div class="bottom-title">
-                <h3>RD $ {{ item.pricing | number }}</h3>
-              </div>
-              <div class="bottom-icons">
-                <div class="text-icon">
-                  <p>
-                    <!-- {{
-                      item.visitorCounter.counter
-                        ? item.visitorCounter.counter
-                        : "0"
-                    }} -->0
-                  </p>
-                  <img [src]="environment + '/open-eye.svg'" alt="" />
-                </div>
-                <div
-                  class="text-icon"
-                  style="cursor: pointer"
-                  (click)="openDotsDialog(item._id, i, 'lessSold')"
-                >
-                  <img [src]="environment + '/dots-black.svg'" alt="" />
-                </div>
-              </div>
-            </div>
-          </mat-card>
-        </swiper>
-      </div>
-    </div>
-
-    <div class="section" style="margin-bottom: 105px">
-      <div class="section-header">
-        <p class="section-title">Todos</p>
-
-        <div class="section-description" (click)="goToDetail('allItems')">
-          <p>{{ allItems.length }}</p>
-          <img [src]="environment + '/arrow-left.svg'" alt="" />
-        </div>
-      </div>
-
-      <div class="section-content">
-        <swiper [config]="cardSwiperConfig">
-          <mat-card class="card" *ngFor="let item of allItems; index as i">
-            <a [routerLink]="['../article-editor/', item._id]">
-              <div class="card-body">
-                <div class="card-l-side">
-                  <h2 class="card-title">
-                    {{ item.name ? item.name : "Sin nombre..." }}
-                  </h2>
-                  <p class="card-description">{{ item.description }}</p>
-                </div>
-                <div class="card-r-side">
-                  <div
-                    class="featured-image"
-                    [ngStyle]="{
-                      backgroundImage: 'url(' + item?.images[0]?.value + ')'
-                    }"
-                  >
-                    <div class="caption" *ngIf="item.status === 'disabled'">
-                      <img
-                        [src]="environment + '/closed-eye-black.svg'"
-                        alt=""
-                      />
-                      Oculto al visitante
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </a>
-            <div class="card-footer">
-              <div class="bottom-title">
-                <h3>RD $ {{ item.pricing | number }}</h3>
-              </div>
-              <div class="bottom-icons">
-                <div class="text-icon">
-                  <p>{{ item?.visitorCounter?.counter }}</p>
-                  <img [src]="environment + '/open-eye.svg'" alt="" />
-                </div>
-                <div
-                  class="text-icon"
-                  style="cursor: pointer"
-                  (click)="openDotsDialog(item._id, i, 'mostSold')"
-                >
-                  <img [src]="environment + '/dots-black.svg'" alt="" />
-                </div>
-              </div>
-            </div>
-          </mat-card>
-        </swiper>
-      </div>
+    <div class="sticky-bar" (click)="openDatePicker()">
+      <p>{{ dateString }}</p>
+      <img [src]="environment + '/dots-black.svg'" alt="" />
     </div>
 
     <div class="uploadButton">
       <button mat-fab class="button" (click)="settings()">
         <mat-icon style="color: #82f18d">menu</mat-icon>
-        <!-- <img class="icon" [src]="environment + '/upload.svg'" /> -->
       </button>
     </div>
 
-    <div class="sticky-bar" (click)="openDatePicker()">
-      <p>
-        {{
-          this.orders +
-            "facturas, " +
-            _MerchantsService.merchantIncome?.income +
-            " desde " +
-            formatDate(startDate) +
-            " hasta " +
-            formatDate(endDate)
-        }}
-      </p>
-      <img [src]="environment + '/dots-black.svg'" alt="" />
-      <!-- <div>
-        <p>VISIBLE EN: URL.COM</p>
-        <img [src]="environment + '/upload.svg'" alt="">
-      </div> -->
-    </div>
-
-    <!-- <div
-      class="saleflows-item-grid"
-      (scroll)="infinitePagination()"
-      *ngIf="allItems.length && (layout === 'simple-card' || !layout)"
-    >
-      <a
-        class="capsize"
-        [routerLink]="['../article-editor', item._id]"
-        *ngFor="let item of allItems; let itemIndex = index"
-      >
-        <app-saleflow-item
-          [itemIndex]="itemIndex"
-          [itemId]="item._id"
-          [type]="4"
-          [showViews]="true"
-          [viewsCounter]="item.visitorCounter ? item.visitorCounter.counter : 0"
-          [inactive]="
-            item.status != 'active' && item.status != 'featured' ? true : false
-          "
-          [imgURL]="item.images.length ? item.images[0].value : ''"
-          [price]="item.pricing"
-          [showPrice]="true"
-          [itemParams]="item.params"
-          [responsiveWidthVersion]="true"
-        ></app-saleflow-item>
-      </a>
-    </div>
-    <div
-      *ngIf="allItems.length && layout === 'description-card'"
-      class="description-card-grid"
-      style="
-        padding: 24px;
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 15px;
-        height: calc(100vh - 98px);
-        overflow-y: scroll;
-        overflow-x: hidden;
-      "
-      (scroll)="infinitePagination()"
-    >
-      <a
-        class="capsize"
-        [routerLink]="['../article-editor', item._id]"
-        *ngFor="let item of allItems; let itemIndex = index"
-        style="text-decoration: none"
-      >
-        <app-buyer-card
-          [index]="itemIndex"
-          [title]="item.name"
-          [description]="item.description"
-          [img]="item.images?.length ? item.images[0].value : ''"
-          [leftAmount]="item.pricing"
-          [cta]="false"
-          [ctaActive]="item.isSelected"
-          [viewsCounter]="true"
-          [views]="item.visitorCounter ? item.visitorCounter.counter : 0"
-        ></app-buyer-card>
-      </a>
-    </div> -->
     <div
       [ngStyle]="{
         width: '100%',
@@ -505,3 +325,65 @@
     </div>
   </div>
 </app-navigation>
+
+<ng-template
+  #itemsCardSwiper
+  let-list="list"
+  let-titleList="titleList"
+  let-typeOfList="typeOfList"
+  let-typeOfSubList="typeOfSubList"
+  let-sectionStyles="sectionStyles"
+  let-sectionHeaderStyles="sectionHeaderStyles"
+>
+  <div class="section" [ngStyle]="sectionStyles" *ngIf="list?.length">
+    <div class="section-header" [ngStyle]="sectionHeaderStyles">
+      <p class="section-title">{{ titleList }}</p>
+
+      <div
+        class="section-description"
+        (click)="goToDetail(typeOfList, true, typeOfSubList)"
+      >
+        <!-- <p>4 de los últimos 7 días</p> -->
+        <p>{{ list.length }}</p>
+        <img [src]="environment + '/arrow-left.svg'" alt="" />
+      </div>
+    </div>
+
+    <qrcode
+      *ngIf="articleId"
+      style="display: none"
+      #orderQrCode
+      [qrdata]="
+        URI +
+        '/ecommerce/' +
+        _SaleflowService.saleflowData.merchant.slug +
+        '/article-detail/item/' +
+        articleId
+      "
+      [elementType]="'img'"
+      [width]="40"
+      [errorCorrectionLevel]="'M'"
+      [allowEmptyString]="true"
+      colorDark="#000"
+    ></qrcode>
+
+    <div class="section-content">
+      <swiper [config]="cardSwiperConfig">
+        <div
+          class="item-wrapper"
+          *ngFor="let item of list.slice(0, 20); index as i"
+        >
+          <app-item-admin-card
+            [item]="item"
+            [unitSalesCounter]="
+              itemsSelledCountByItemId[item._id]
+                ? itemsSelledCountByItemId[item._id]
+                : 0
+            "
+            (changeStatusAction)="changeItemStatus(typeOfList, item, $event)"
+          ></app-item-admin-card>
+        </div>
+      </swiper>
+    </div>
+  </div>
+</ng-template>

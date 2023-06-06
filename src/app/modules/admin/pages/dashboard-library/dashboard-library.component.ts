@@ -24,6 +24,7 @@ import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { ExtendedItem } from '../items-dashboard/items-dashboard.component';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 
 @Component({
   selector: 'app-dashboard-library',
@@ -59,6 +60,7 @@ export class DashboardLibraryComponent implements OnInit {
   pagination;
   itemsPagination;
   hiddenItems: Item[] = [];
+  itemsSelledCountByItemId: Record<string, number> = {};
 
   range = new FormGroup({
     start: new FormControl(''),
@@ -244,7 +246,6 @@ export class DashboardLibraryComponent implements OnInit {
           this.allItems.push(item);
         }
       }
-      console.log(this.allItems);
 
       const notSoldPagination = {
         options: {
@@ -261,6 +262,8 @@ export class DashboardLibraryComponent implements OnInit {
       const notSoldItems = await this._ItemsService.itemsByMerchantNosale(
         notSoldPagination
       );
+
+      await this.getHiddenItems();
 
       // console.log('NO VENDIDOS: ' + JSON.stringify(notSoldItems));
       // console.log(Object.values(notSoldItems)[0]);
@@ -380,6 +383,10 @@ export class DashboardLibraryComponent implements OnInit {
           merchant: this.merchant._id,
         },
       })) as any[];
+      
+      for (const record of result) {
+        this.itemsSelledCountByItemId[record.item._id] = record.count;
+      }
 
       this.items = result
         .map((item) => item.item)
@@ -529,16 +536,24 @@ export class DashboardLibraryComponent implements OnInit {
   }
 
   async getHiddenItems() {
+    //Ocutar la seccion de ocultos cuando haya un rango de fecha seleccionados
+
     try {
-      const { listItems } = await this._ItemsService.listItems({
+      const pagination: PaginationInput = {
         options: {
-          limit: 10,
+          limit: -1,
         },
         findBy: {
-          merchant: this.merchant._id,
+          merchant: this._MerchantsService.merchantData._id,
           status: 'disabled',
         },
-      });
+      };
+
+      if (this.selectedTags.length) {
+        pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
+      }
+
+      const { listItems } = await this._ItemsService.listItems(pagination);
       this.hiddenItems = listItems;
     } catch (error) {
       console.log(error);

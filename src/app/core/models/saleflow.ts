@@ -105,6 +105,7 @@ export class PaginationOptionsInput {
   select?: string;
   populate?: string[];
   range?: PaginationRangeInput;
+  percentageResult?: number;
 }
 
 export class PaginationInput {
