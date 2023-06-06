@@ -114,6 +114,10 @@ export class RenameQuestionComponent implements OnInit {
       );
 
       const answerDefaultIndex = parseInt(this.activatedRoute.snapshot.queryParams.answer);
+
+      const answerIndex = result.questions.findIndex(question => question._id == this.question._id);
+      this.answerDefault = result.questions[answerIndex].answerDefault[answerDefaultIndex];
+      
       this.question.answerDefault[answerDefaultIndex] = this.answerDefault;
       this.webformService.editingQuestion = this.question;
       unlockUI();

@@ -45,6 +45,7 @@ export class CreateDeliveryZoneComponent implements OnInit {
   }
 
   async getQuestion() {
+    console.log(this.webformService.editingQuestion);
     const question = this.webformService.editingQuestion;
     if (question) this.question = question;
     else {

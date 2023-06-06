@@ -185,7 +185,7 @@ export class WebformsService {
     answerDefaultId: string,
     questionId: string,
     webformId: string
-  ) {
+  ): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: questionUpdateAnswerDefault,
       variables: { input, answerDefaultId, questionId, webformId },
@@ -335,7 +335,7 @@ export class WebformsService {
       const response = await this.graphql.query({
         query: questionPaginate,
         variables: { paginate },
-        fetchPolicy: 'no-cache',
+        fetchPolicy: 'network-only',
       });
 
       if (!response || response?.errors) return undefined;
