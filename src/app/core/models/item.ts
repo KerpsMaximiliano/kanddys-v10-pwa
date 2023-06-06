@@ -93,7 +93,8 @@ export class Item extends Model<Item> {
   };
   index?: number;
   visitorCounter?: VisitorCounter;
-  webForms: Array<ItemWebform>
+  webForms: Array<ItemWebform>;
+  amountMerchantCoin:number;
   active?: boolean;
 }
 

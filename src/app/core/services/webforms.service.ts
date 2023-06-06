@@ -14,6 +14,7 @@ import {
   orderAddAnswer,
   questionAddAnswerDefault,
   questionPaginate,
+  questionUpdateAnswerDefault,
   updateWebform,
   webform,
   webformAddQuestion,
@@ -85,6 +86,8 @@ export class WebformsService {
   currentEditingQuestion: Question = null;
   currentEditingQuestionChoices: AnswerDefaultInput[] = null;
   webformQuestionsRoute: string;
+  webformId:string;
+  editingQuestion: Question;
   formCreationData: {
     currentStep: WebformCreatorStepsNames;
     steps: Array<{
@@ -143,6 +146,7 @@ export class WebformsService {
     input: QuestionInput[],
     id: string
   ): Promise<Webform> {
+    this.webformId = id;
     const result = await this.graphql.mutate({
       mutation: webformAddQuestion,
       variables: { input, id },
@@ -167,12 +171,26 @@ export class WebformsService {
     questionId: string,
     webformId: string
   ): Promise<Webform> {
+
     const result = await this.graphql.mutate({
       mutation: questionAddAnswerDefault,
       variables: { input, questionId, webformId },
       context: { useMultipart: true },
     });
     return result?.questionAddAnswerDefault;
+  }
+
+  async questionUpdateAnswerDefault (
+    input: AnswerDefaultInput,
+    answerDefaultId: string,
+    questionId: string,
+    webformId: string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: questionUpdateAnswerDefault,
+      variables: { input, answerDefaultId, questionId, webformId },
+    });
+    return result?.questionUpdateAnswerDefault;
   }
 
   async webform(id: string): Promise<Webform> {

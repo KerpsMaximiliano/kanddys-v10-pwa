@@ -244,7 +244,7 @@ export class ItemsService {
   async totalByItem(
     merchantId: string,
     itemId?: string[]
-  ): Promise<{ item: Item; itemInOrder: number; total: number }[]> {
+  ): Promise<{ item: Item; itemInOrder: number; total: number;itemUnits:number }[]> {
     try {
       const response = await this.graphql.query({
         query: totalByItem,

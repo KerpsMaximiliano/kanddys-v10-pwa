@@ -1,0 +1,12 @@
+<div class="main-container">
+  <div class="header">
+    <div class="flex" (click)="updateQuestion()" style="cursor: pointer;">
+      <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" />
+      <p>{{ questionName }}</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <input placeholder="Escribe la opcion..." [(ngModel)]="questionName" />
+  </div>
+</div>

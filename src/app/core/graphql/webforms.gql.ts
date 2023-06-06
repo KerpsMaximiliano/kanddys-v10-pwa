@@ -4,6 +4,7 @@ const webformBody = `
     _id
     name
     description
+    type
     user {
       _id
       name
@@ -16,6 +17,7 @@ const webformBody = `
         value
         answerLimit
         answerDefault {
+          _id
           active
           isMedia
           value
@@ -150,6 +152,14 @@ export const questionAddAnswerDefault = gql`
   }
 `;
 
+export const questionUpdateAnswerDefault = gql`
+  mutation questionUpdateAnswerDefault($input: AnswerDefaultInput!, $answerDefaultId: ObjectID!, $questionId: ObjectID!, $webformId: ObjectID!) {
+    questionUpdateAnswerDefault(input: $input, answerDefaultId: $answerDefaultId, questionId: $questionId, webformId: $webformId) {
+      ${webformBody}
+    }
+  }
+`;
+
 export const webformAddQuestion = gql`
   mutation webformAddQuestion($input: [QuestionInput!]!, $id: ObjectID!) {
     webformAddQuestion(input: $input, id: $id) {
@@ -191,6 +201,7 @@ export const webformUpdateQuestion = gql`
       value
       answerLimit
       answerDefault {
+        _id
         active
         isMedia
         value
@@ -249,6 +260,7 @@ export const questionPaginate = gql`
       value
       answerLimit
       answerDefault {
+        _id
         active
         isMedia
         value

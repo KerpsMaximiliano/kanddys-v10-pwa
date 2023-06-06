@@ -12,7 +12,7 @@ import {
   PhoneNumberFormat,
   SearchCountryField,
 } from 'ngx-intl-tel-input';
-import { Country, State, City } from 'country-state-city';
+// import { Country, State, City } from 'country-state-city';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { NotificationDialogComponent } from '../../../../shared/dialogs/notification-dialog/notification-dialog.component';
@@ -473,7 +473,7 @@ export class RegistroKioskoComponent implements OnInit {
       console.log(this.filteredCountries[index]);
     }
 
-    this.cities = await City.getCitiesOfCountry(this.selectedCountryCode);
+    // this.cities = await City.getCitiesOfCountry(this.selectedCountryCode);
 
     console.log(this.cities);
 

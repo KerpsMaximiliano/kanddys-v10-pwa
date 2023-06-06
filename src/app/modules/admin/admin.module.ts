@@ -43,6 +43,8 @@ import { OrderProcessComponent } from './pages/order-process/order-process.compo
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DeliveryOrdersComponent } from './pages/delivery-orders/delivery-orders.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
+import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
+import { ReportingsComponent } from './pages/reportings/reportings.component';
 import { FormCreatorComponent } from 'src/app/shared/components/form-creator/form-creator.component';
 import { MediaUploadDndComponentComponent } from 'src/app/shared/components/media-upload-dnd-component/media-upload-dnd-component.component';
 import { OrderSlidesComponent } from './pages/order-slides/order-slides.component';
@@ -54,6 +56,14 @@ import { ReportsComponent } from './pages/reports/reports.component';
 import { FilterPipeSearchPipe } from 'src/app/core/pipes/filter-pipe-search.pipe';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
+import { ExpendituresComponent } from './pages/expenditures/expenditures.component';
+import { IncomesComponent } from './pages/incomes/incomes.component';
+import { CreateExpenditureComponent } from './pages/create-expenditure/create-expenditure.component';
+import { CreateDeliveryZoneComponent } from './pages/create-delivery-zone/create-delivery-zone.component';
+import { TransactionTypesComponent } from './pages/transaction-types/transaction-types.component';
+import { QuestionToAdminComponent } from './pages/question-to-admin/question-to-admin.component';
+import { RenameQuestionComponent } from './pages/rename-question/rename-question.component';
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
 import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 
@@ -363,6 +373,22 @@ const routes: Routes = [
     component: OrderProcessComponent,
   },
   {
+    path: 'article-detail/:articleId',
+    component: ArticleDetailComponent
+  },
+  {
+    path: 'reportings',
+    component: ReportingsComponent
+  },
+  {
+    path: 'expenditures/:type',
+    component: ExpendituresComponent
+  },
+  {
+    path: 'incomes',
+    component: IncomesComponent
+  },
+  {
     path: 'form-creator/:itemId',
     component: FormCreatorComponent,
   },
@@ -378,6 +404,26 @@ const routes: Routes = [
     path: 'dashboard-library',
     component: DashboardLibraryComponent,
   },
+  {
+    path: 'create-expenditure/:type',
+    component: CreateExpenditureComponent,
+  },
+  {
+    path: 'edit-question/:webformid/:questionid',
+    component: CreateDeliveryZoneComponent,
+  },
+  {
+    path: 'transaction-types/:webformid',
+    component: TransactionTypesComponent,
+  },
+  {
+    path: 'question-to-admin/:webformid',
+    component: QuestionToAdminComponent,
+  },
+  {
+    path: 'rename-question/:webformid/:param',
+    component: RenameQuestionComponent,
+  }
 ];
 
 @NgModule({
@@ -414,12 +460,21 @@ const routes: Routes = [
     OrderProcessComponent,
     DeliveryOrdersComponent,
     NotificationCreatorComponent,
+    ArticleDetailComponent,
+    ReportingsComponent,
     OrderSlidesComponent,
     DashboardLibraryComponent,
     ReportsComponent,
     OrderDataComponent,
     BuyerDataComponent,
     FilterPipeSearchPipe,
+    ExpendituresComponent,
+    IncomesComponent,
+    CreateExpenditureComponent,
+    CreateDeliveryZoneComponent,
+    TransactionTypesComponent,
+    QuestionToAdminComponent,
+    RenameQuestionComponent,
     RewardsDisplayComponent,
   ],
   exports: [ArticleCreatorComponent],

@@ -169,7 +169,7 @@ export class OCRInput {
   platform?: string;
 }
 
-export type ExpenditureType = 'delivery-zone' | 'others' | 'employee';
+export type ExpenditureType = 'delivery-zone' | 'others' | 'employee' | 'only-day' | 'only-month';
 
 export class Expenditure extends Model<Expenditure> {
   type: ExpenditureType;
@@ -178,6 +178,7 @@ export class Expenditure extends Model<Expenditure> {
   description: string;
   amount: number;
   useDate: Date;
+  activeDate: ActiveDate;
 }
 
 export class ExpenditureInput {
@@ -185,6 +186,14 @@ export class ExpenditureInput {
   name: string;
   description?: string;
   amount: number;
+  activeDate: ActiveDate;
+  media?:any;
+}
+
+export class ExpenditureActiveDateRangeInput {
+  from?: Date;
+  until?: Date;
+  month?: number;
 }
 
 export class OrderBenefits {
@@ -199,4 +208,9 @@ export class Benefits {
   moreResult: boolean;
   pageResultCount: number;
   totalResults: number;
+}
+
+export class ActiveDate{
+  from:string;
+  month:number;
 }
