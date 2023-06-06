@@ -1095,6 +1095,9 @@ export class ArticleEditorComponent implements OnInit {
               link: link + '?mode=saleflow',
             },
           ],
+          styles: {
+            fullScreen: true
+          }
         },
       ],
     });

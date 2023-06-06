@@ -1,0 +1,125 @@
+.card {
+  width: 100%;
+  padding: 11.45px 8.75px 14.67px 10.75px;
+  border-radius: 10px;
+
+  a {
+    all: unset;
+  }
+
+  .card-body {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 13.55px;
+
+    .card-l-side {
+      max-width: 50%;
+      .card-title {
+        font-family: InterBold;
+        font-size: 21px;
+        margin-top: 10px;
+        margin-bottom: 11.86px;
+      }
+      .card-description {
+        font-family: InterRegular;
+        font-size: 17px;
+      }
+    }
+
+    .card-r-side {
+      max-width: 50%;
+      .featured-image {
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        width: 157.36px;
+        height: 198.33px;
+        background-color: #293628;
+        object-fit: cover;
+        border-radius: 10px;
+        overflow: hidden;
+
+        .caption {
+          background-color: #936105;
+          color: #fff;
+          position: absolute;
+          bottom: 64px;
+          width: 157.36px;
+          padding: 7px 10px;
+          border-radius: 0px 0px 10px 10px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 13px;
+
+          img {
+            margin-right: 3px;
+            width: 15px;
+            filter: invert(99%) sepia(99%) saturate(2%) hue-rotate(150deg)
+              brightness(102%) contrast(100%);
+          }
+        }
+      }
+    }
+  }
+
+  .card-footer {
+    border-top: 1px solid #e9e9e9;
+    padding: 10px 5px;
+    padding-top: 15px;
+    padding-bottom: 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .botton-title {
+      h3 {
+        font-family: SfProMedium;
+        font-size: 17px;
+        color: #272727;
+      }
+    }
+
+    .bottom-icons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .text-icon {
+        display: flex;
+        justify-content: center;
+        margin-right: 7px;
+
+        &.dots {
+          cursor: pointer;
+          margin-left: 14.62px;
+        }
+
+        &.no-margin {
+          margin-right: 0px;
+        }
+
+        p {
+          color: #a1a1a1;
+          margin: 0px;
+          margin-right: 1px;
+        }
+        img {
+          width: 15px;
+          filter: invert(60%) sepia(47%) saturate(0%) hue-rotate(291deg)
+            brightness(98%) contrast(92%);
+        }
+      }
+    }
+  }
+}
+
+.pricing h3 {
+  font-family: InterRegular;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 17px;
+  margin: 0px;
+  padding: 0px;
+}
