@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Question, QuestionInput } from 'src/app/core/models/webform';
+import { AnswerDefault, Question, QuestionInput } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { LinksDialogComponent } from 'src/app/shared/dialogs/links-dialog/links-dialog.component';
@@ -25,6 +25,8 @@ export class CreateDeliveryZoneComponent implements OnInit {
   question: Question;
 
   webformId: string;
+
+  answerDefaults: AnswerDefault[] = [];
 
   constructor(
     private _bottomSheet: MatBottomSheet,
@@ -59,30 +61,32 @@ export class CreateDeliveryZoneComponent implements OnInit {
       );
       this.question = result[0];
       this.webformService.editingQuestion = this.question;
+
+      this.answerDefaults = this.question.answerDefault;
     }
   }
 
-  async updateAnswerDefault() {
-    // try {
-    //   lockUI();
-    //   const result = await this.webformService.questionUpdateAnswerDefault(
-    //     {
-    //       trigger: [
-    //         {
-    //           type: "EQUAL",
-    //           value: 0
-    //         }
-    //       ]
-    //     },
-    //     this.question.answerDefault[this.numb]._id,
-    //     this.question._id,
-    //     this.webformId
-    //   );
-    //   unlockUI();
-    // } catch (error) {
-    //   console.log(error)
-    //   unlockUI();
-    // }
+  async updateAnswersDefault() {
+    try {
+      lockUI();
+
+      this.question.answerDefault.forEach(async answerDefault => {
+        await this.webformService.questionUpdateAnswerDefault(
+          {
+            value: answerDefault.value,
+            amount: answerDefault.amount,
+            trigger: answerDefault.trigger,
+          },
+          answerDefault._id,
+          this.question._id,
+          this.webformId
+        );
+      });
+      unlockUI();
+    } catch (error) {
+      console.log(error)
+      unlockUI();
+    }
   }
 
   openDialog(numb) {
@@ -134,12 +138,73 @@ export class CreateDeliveryZoneComponent implements OnInit {
     this.router.navigate(['../../admin/reportings']);
   }
 
-  select(numb){
-    if(numb == this.numb){
+  select (numb) {
+    if (numb == this.numb) {
       this.webformService.editingQuestion = this.question;
       this.openDialog(numb)
     }
 
     this.numb = numb;
+
+    this.aditional = this.question.answerDefault[this.numb].amount;
+    this.excedent = this.question.answerDefault[this.numb].trigger.find(
+      (trigger) => trigger.type === 'GREATER'
+    )?.value;
+    this.lower = this.question.answerDefault[this.numb].trigger.find(
+      (trigger) => trigger.type === 'LESS'
+    )?.value;
+  }
+
+  onkeyPress(event: any, input: 'aditional' | 'excedent' | 'lower' | 'cost') {
+    switch (input) {
+      case 'aditional':
+        this.question.answerDefault[this.numb].amount = this.aditional;
+        break;
+      case 'excedent':
+        const excedentIndex = this.question.answerDefault[this.numb].trigger.findIndex(
+          (trigger) => trigger.type === 'GREATER'
+        );
+
+        if (excedentIndex === -1) {
+          this.question.answerDefault[this.numb].trigger.push({
+            type: 'GREATER',
+            conditionValue: this.excedent,
+            value: this.excedent,
+          });
+        } else {
+          this.question.answerDefault[this.numb].trigger[
+            excedentIndex
+          ].value = this.excedent;
+
+          this.question.answerDefault[this.numb].trigger[
+            excedentIndex
+          ].conditionValue = this.excedent;
+        }
+        break;
+      case 'lower':
+        const lowerIndex = this.question.answerDefault[this.numb].trigger.findIndex(
+          (trigger) => trigger.type === 'LESS'
+        );
+
+        if (lowerIndex === -1) {
+          this.question.answerDefault[this.numb].trigger.push({
+            type: 'LESS',
+            conditionValue: this.lower,
+            value: this.lower,
+          });
+        } else {
+          this.question.answerDefault[this.numb].trigger[
+            lowerIndex
+          ].value = this.lower;
+
+          this.question.answerDefault[this.numb].trigger[
+            lowerIndex
+          ].conditionValue = this.lower;
+        }
+        break;
+      case 'cost':
+        // TODO
+        break;
+    }
   }
 }

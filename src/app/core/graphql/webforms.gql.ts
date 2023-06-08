@@ -23,6 +23,13 @@ const webformBody = `
           value
           defaultValue
           label
+          amount
+          expenditure
+          trigger {
+            type
+            conditionValue
+            value
+          }
         }
         answerTextType
         show
@@ -208,6 +215,13 @@ export const webformUpdateQuestion = gql`
         value
         defaultValue
         label
+        amount
+        expenditure
+        trigger {
+          type
+          conditionValue
+          value
+        }
       }
       answerTextType
       show
@@ -267,6 +281,13 @@ export const questionPaginate = gql`
         value
         defaultValue
         label
+        amount
+        expenditure
+        trigger {
+          type
+          conditionValue
+          value
+        }
       }
       answerTextType
       show
