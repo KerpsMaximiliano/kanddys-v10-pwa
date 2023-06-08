@@ -80,6 +80,9 @@ export class Question extends Model<Question> {
   answerTextType?: 'default' | 'phone' | 'email' | 'phone' | 'name' | 'max12' | 'min12' | 'number';
   answerMedia: boolean;
   answerLimit?: number;
+  pastVersions?: Array<{
+    pastId:string;
+  }>
 }
 
 export class WebformInput {
