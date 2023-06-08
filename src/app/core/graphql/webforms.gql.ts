@@ -189,11 +189,12 @@ export const createAnswer = gql`
 
 export const webformUpdateQuestion = gql`
   mutation webformUpdateQuestion(
+    $createNew: Boolean
     $input: QuestionInput!
     $questionId: ObjectID!
     $id: ObjectID!
   ) {
-    webformUpdateQuestion(input: $input, questionId: $questionId, id: $id) {
+    webformUpdateQuestion(createNew: $createNew, input: $input, questionId: $questionId, id: $id) {
       _id
       type
       index

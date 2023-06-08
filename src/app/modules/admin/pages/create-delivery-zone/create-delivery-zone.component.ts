@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Question, QuestionInput } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -61,40 +62,27 @@ export class CreateDeliveryZoneComponent implements OnInit {
     }
   }
 
-  async updateQuestion() {
-    let input: QuestionInput = {
-      type: 'multiple',
-      answerLimit: 1,
-      answerTextType: 'DECIMAL',
-      trigger: 'income',
-      answerDefault: [
-        {
-          label:
-            'Monto que el comprador tiene que pagar adicional al seleccionar esta opción',
-          value: this.getAsString(this.aditional),
-        },
-        {
-          label: 'Cuando el monto de la compra excede: (condición opcional)',
-          value: this.getAsString(this.excedent),
-        },
-        {
-          label:
-            'Cuando el monto de la compra es menor a: (condición opcional)',
-          value: this.getAsString(this.lower),
-        },
-        {
-          label:
-            '¿Cuál es tu costo? (opcional para el control de tus beneficios)',
-          value: this.getAsString(this.cost),
-        },
-      ],
-    };
-    const result = await this.webformService.webformUpdateQuestion(
-      input,
-      this.questionId,
-      this.webformId
-    );
-    this.question = result;
+  async updateAnswerDefault() {
+    // try {
+    //   lockUI();
+    //   const result = await this.webformService.questionUpdateAnswerDefault(
+    //     {
+    //       trigger: [
+    //         {
+    //           type: "EQUAL",
+    //           value: 0
+    //         }
+    //       ]
+    //     },
+    //     this.question.answerDefault[this.numb]._id,
+    //     this.question._id,
+    //     this.webformId
+    //   );
+    //   unlockUI();
+    // } catch (error) {
+    //   console.log(error)
+    //   unlockUI();
+    // }
   }
 
   openDialog(numb) {

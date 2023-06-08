@@ -77,7 +77,6 @@ export class RenameQuestionComponent implements OnInit {
       if (!this.hasAnswerDefault) await this.updateQuestionValue();
       else await this.updateQuestionAnswerDefault(this.answerDefault._id);
     }
-    console.log("Actualizado");
 
     this.router.navigate([`../../admin/edit-question/${this.webformId}/${this.question._id}`]);
   }
@@ -86,9 +85,14 @@ export class RenameQuestionComponent implements OnInit {
     try {
       lockUI();
       const result = await this.webformService.webformUpdateQuestion(
-        this.getInput(),
+        {
+          value: this.questionName,
+          type: this.question.type,
+          answerTextType: this.question.answerTextType
+        },
         this.question._id,
-        this.webformId
+        this.webformId,
+        false
       );
 
       this.question = result;
@@ -125,30 +129,6 @@ export class RenameQuestionComponent implements OnInit {
       console.log(error);
       unlockUI();
     }
-  }
-
-  getInput(): QuestionInput {
-    let input: QuestionInput = {
-      type: this.question.type,
-      answerLimit: this.question.answerLimit,
-      answerTextType: this.question.answerTextType,
-      trigger: this.question.trigger,
-    };
-    if (this.param == 'name') {
-      input.value = this.questionName;
-      input.answerDefault = this.question.answerDefault;
-    } else {
-      input.value = this.question.value;
-      let itemIndex = parseInt(this.param);
-      var item = this.question.answerDefault[itemIndex];
-      item.label = this.questionName;
-      var array = this.question.answerDefault.filter(
-        (_, index) => index !== itemIndex
-      );
-      array.push(item);
-      input.answerDefault = array;
-    }
-    return input;
   }
 
   ngOnDestroy(): void {

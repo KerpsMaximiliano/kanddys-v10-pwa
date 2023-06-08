@@ -44,6 +44,14 @@ export class AnswerDefaultInput {
   value?: string;
   label?: string;
   defaultValue?: string;
+  expenditure?: string;
+  trigger?: AnswerDefaultTriggerInput[];
+}
+
+export class AnswerDefaultTriggerInput {
+  type: 'EQUAL' | 'GREATER' | 'LESS';
+  conditionValue?: number;
+  value: number;
 }
 
 export class AnswerDefault extends Model<AnswerDefault> {
