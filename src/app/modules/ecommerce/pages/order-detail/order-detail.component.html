@@ -958,16 +958,13 @@
         (mouseleave)="stopDragging()"
         (mousemove)="moveEvent($event, elemt)"
       >
-        <div class="chip selected">
-          {{ orderStatus }}
-        </div>
         <!-- <ng-container *ngIf="deliveryOrder.tagsData?.length">
           <div class="chip" *ngFor="let tag of deliveryOrder.tagsData">
             {{ tag.name }}
           </div>
         </ng-container> -->
         <ng-container *ngFor="let status of statusList">
-          <button *ngIf="status !== orderStatus" class="chip">
+          <button *ngIf="status !== orderStatus" class="chip" [ngClass]="{ selected: order.orderStatusDelivery === status }">
             {{ orderDeliveryStatus(status) }}
           </button>
         </ng-container>
