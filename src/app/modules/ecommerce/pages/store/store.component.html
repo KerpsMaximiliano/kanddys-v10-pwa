@@ -188,7 +188,7 @@
       <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px">
       <p class="highlighted-text">Stars for causes</p>
     </ng-container>
-    <div class="cart-container" *ngIf="headerService.order?.products?.length">
+    <div class="cart-container" *ngIf="headerService.order?.products?.length" (click)="goToCart()">
       {{ headerService.order?.products?.length }}
       <img [src]="env + '/cart-green.png'" alt="" style="width: 15px; margin-bottom: 2px;">
     </div>
