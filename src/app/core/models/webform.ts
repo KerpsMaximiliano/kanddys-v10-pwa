@@ -44,6 +44,15 @@ export class AnswerDefaultInput {
   value?: string;
   label?: string;
   defaultValue?: string;
+  expenditure?: string;
+  amount?: number;
+  trigger?: AnswerDefaultTriggerInput[];
+}
+
+export class AnswerDefaultTriggerInput {
+  type: 'EQUAL' | 'GREATER' | 'LESS';
+  conditionValue?: number;
+  value: number;
 }
 
 export class AnswerDefault extends Model<AnswerDefault> {
@@ -52,6 +61,15 @@ export class AnswerDefault extends Model<AnswerDefault> {
   value: string;
   defaultValue: string;
   label: string;
+  amount?: number;
+  expenditure?: string;
+  trigger?: AnswerDefaultTrigger[];
+}
+
+export class AnswerDefaultTrigger {
+  type: 'EQUAL' | 'GREATER' | 'LESS';
+  conditionValue: number;
+  value: number;
 }
 
 export class QuestionInput {
@@ -65,7 +83,7 @@ export class QuestionInput {
   show?: Boolean;
   required?: Boolean;
   answerMedia?: Boolean;
-  trigger?:string;
+  trigger?: string;
 }
 
 export class Question extends Model<Question> {
