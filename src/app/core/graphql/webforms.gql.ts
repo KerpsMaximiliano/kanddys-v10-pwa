@@ -36,6 +36,9 @@ const webformBody = `
         required
         active
         answerMedia
+        pastVersions {
+          pastId
+        }
     }
 `;
 
