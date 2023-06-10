@@ -210,4 +210,10 @@ export class StoreComponent implements OnInit {
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
   }
+
+  goToCart() {
+    this.router.navigate([
+      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',
+    ]);
+  }
 }

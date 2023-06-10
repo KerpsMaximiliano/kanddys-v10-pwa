@@ -880,7 +880,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.webform) {
       lockUI();
       const webformToCreate: WebformInput = {
-        name: 'Formulario para el producto ' + this.item.name,
+        name: this.item.name ? 'Formulario para el producto ' + this.item.name : 'Formulario para el producto',
         description: this.steps[0].fields.controls['note'].value,
       };
 
