@@ -159,6 +159,36 @@ export class FormResponsesComponent implements OnInit {
           };
         }
 
+        const pastVersionsIDs: Array<string> = [];
+
+        for await (const question of this.webform.questions) {
+          if (this.questionsByIdObject[question._id].pastVersions)
+            for (const pastVersion of this.questionsByIdObject[question._id]
+              .pastVersions) {
+              pastVersionsIDs.push(pastVersion.pastId);
+            }
+        }
+
+        const pastQuestions = await this.webformsService.questionPaginate({
+          findBy: {
+            _id: {
+              __in: pastVersionsIDs,
+            },
+          },
+          options: {
+            limit: -1,
+          },
+        });
+
+        if (pastQuestions) {
+          for (const question of pastQuestions) {
+            this.questionsByIdObject[question._id] = question;
+            this.questionMetadata[question._id] = {
+              numberOfAnswers: 0,
+            };
+          }
+        }
+
         for (const formSubmission of this.answersForWebform) {
           const questionsIdPassed = {};
           const questionIndexes = {};
@@ -170,20 +200,27 @@ export class FormResponsesComponent implements OnInit {
               if (!formSubmission.responsesGroupedByQuestion)
                 formSubmission.responsesGroupedByQuestion = [];
 
+              const value = !response.label
+                ? response.value
+                : response.value + ' ' + response.label;
               formSubmission.responsesGroupedByQuestion.push({
                 question: this.questionsByIdObject[response.question],
                 isMedia: response.isMedia,
                 label: response.label,
-                value: response.value,
-                multipleValues: [response.value],
+                value: value,
+                multipleValues: [value],
               });
 
               questionIndexes[response.question] =
                 formSubmission.responsesGroupedByQuestion.length - 1;
             } else {
+              const value = !response.label
+                ? response.value
+                : response.value + ' ' + response.label;
+
               formSubmission.responsesGroupedByQuestion[
                 questionIndexes[response.question]
-              ].multipleValues.push(response.value);
+              ].multipleValues.push(value);
             }
           }
         }

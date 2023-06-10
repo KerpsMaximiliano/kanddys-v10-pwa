@@ -1,6 +1,6 @@
 <div class="main-container">
   <div class="header">
-    <div (click)="updateQuestion()">
+    <div (click)="updateAnswersDefault()">
       <img [src]="env + '/arrow-double-up-black.svg'" class="back-icon" style="cursor: pointer;"/>
     </div>
     <p>{{ question?.value }}</p>
@@ -24,6 +24,7 @@
         matInput
         placeholder="Escribe.."
         type="number"
+        (change)="onkeyPress($event, 'aditional')"
         [(ngModel)]="aditional"
       />
     </mat-form-field>
@@ -35,6 +36,7 @@
         matInput
         placeholder="Escribe.."
         type="number"
+        (keypress)="onkeyPress($event, 'excedent')"
         [(ngModel)]="excedent"
       />
     </mat-form-field>
@@ -47,6 +49,7 @@
         matInput
         placeholder="Escribe.."
         type="number"
+        (keypress)="onkeyPress($event, 'lower')"
         [(ngModel)]="lower"
       />
     </mat-form-field>
@@ -59,6 +62,7 @@
         matInput
         placeholder="Escribe.."
         type="number"
+        onkeyPress="onkeyPress($event, 'cost')"
         [(ngModel)]="cost"
       />
     </mat-form-field>

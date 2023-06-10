@@ -37,6 +37,7 @@ export class Calendar extends Model<Calendar> {
   rules: CalendarRules[];
   exceptions?: Array<CalendarException>;
   mode: string;
+  timeZone: string;
 }
 
 export class DateModelInput {

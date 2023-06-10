@@ -185,10 +185,11 @@ export class WebformsService {
     answerDefaultId: string,
     questionId: string,
     webformId: string
-  ) {
+  ): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: questionUpdateAnswerDefault,
       variables: { input, answerDefaultId, questionId, webformId },
+      context: { useMultipart: true }
     });
     return result?.questionUpdateAnswerDefault;
   }
@@ -292,11 +293,12 @@ export class WebformsService {
   async webformUpdateQuestion(
     input: QuestionInput,
     questionId: string,
-    id: string
+    id: string,
+    createNew: boolean = true,
   ): Promise<Question> {
     const result = await this.graphql.mutate({
       mutation: webformUpdateQuestion,
-      variables: { input, questionId, id },
+      variables: { createNew, input, questionId, id },
       context: { useMultipart: true },
     });
     return result?.webformUpdateQuestion;
@@ -335,7 +337,7 @@ export class WebformsService {
       const response = await this.graphql.query({
         query: questionPaginate,
         variables: { paginate },
-        fetchPolicy: 'no-cache',
+        fetchPolicy: 'network-only',
       });
 
       if (!response || response?.errors) return undefined;

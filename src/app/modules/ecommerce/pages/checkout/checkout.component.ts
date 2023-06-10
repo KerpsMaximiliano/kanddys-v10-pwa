@@ -780,7 +780,6 @@ export class CheckoutComponent implements OnInit {
         this.headerService.order.products[0].post = postResult;
 
         //await this.createEntityTemplateForOrderPost(postResult);
-        console.log("finish order 1");
         await this.finishOrderCreation();
       } else if (this.postsService.privatePost) {
         unlockUI();
@@ -811,22 +810,16 @@ export class CheckoutComponent implements OnInit {
             this.headerService.order.products[0].post = postResult;
 
             //await this.createEntityTemplateForOrderPost(postResult);
-            console.log("finish order 2");
             await this.finishOrderCreation();
           }
         });
 
         return;
       } else if (!this.logged && this.areWebformsValid) {
-        console.log("pre creando orden", this.headerService.order);
 
-        console.log("orden in memory 1", this.orderInMemory);
         const createdOrder = (
           await this.orderService.createPreOrder(this.headerService.order)
         )?.createPreOrder._id;
-
-        console.log("orden in memory 2", this.orderInMemory);
-        console.log("data 1", this.headerService.order);
 
         if (
           this.hasDeliveryZone &&
@@ -838,9 +831,6 @@ export class CheckoutComponent implements OnInit {
             createdOrder
           );
         }
-
-        console.log("orden in memory 3", this.orderInMemory);
-        console.log("data 2", this.headerService.order);
 
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
           data: {
@@ -855,18 +845,11 @@ export class CheckoutComponent implements OnInit {
         matDialogRef.afterClosed().subscribe(async (value) => {
           if (!value) return;
 
-          console.log("orden in memory 4", this.orderInMemory);
-          console.log("data 3", this.headerService.order);
-
           if (value.user?._id || value.session.user._id) {
             this.logged = true;
             this.headerService.alreadyInputtedloginDialogUser =
               value.user || value.session.user;
 
-              console.log("orden in memory 5", this.orderInMemory);
-              console.log("data 4", this.headerService.order);
-
-            console.log("finish order 3");
             await this.finishOrderCreation();
             unlockUI();
           }
@@ -879,27 +862,19 @@ export class CheckoutComponent implements OnInit {
         this.headerService.order.products[0].post = postResult;
 
         //await this.createEntityTemplateForOrderPost(postResult);
-        console.log("finish order 4");
         await this.finishOrderCreation();
       }
     } else {
-      console.log("finish order 5");
       await this.finishOrderCreation();
     }
   };
 
   finishOrderCreation = async () => {
-    console.log("Ejecutando finishOrderCreation");
-    console.log("orden in memory 6", this.orderInMemory);
-    console.log("data 5", this.headerService.order);
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
       this.headerService.order.orderStatusDelivery = 'in progress';
       this.orderInMemory.orderStatusDelivery = 'in progress';
-
-      console.log("orden in memory 7", this.orderInMemory);
-      console.log("data 6", this.headerService.order);
 
       if (this.headerService.user && !anonymous) {
         console.log(this.headerService.order);
@@ -919,12 +894,10 @@ export class CheckoutComponent implements OnInit {
           );
         }
       } else {
-        console.log("pre creando orden 2", this.headerService.order);
         createdOrder = (
           await this.orderService.createPreOrder(this.orderInMemory)
         )?.createPreOrder._id;
 
-        console.log("Borrando data 1");
         this.headerService.deleteSaleflowOrder();
         this.headerService.resetOrderProgress();
         this.headerService.orderId = createdOrder;
@@ -943,7 +916,6 @@ export class CheckoutComponent implements OnInit {
         }
       }
 
-      console.log("Borrando data 2");
       this.headerService.deleteSaleflowOrder();
       this.headerService.resetOrderProgress();
       this.headerService.orderId = createdOrder;
