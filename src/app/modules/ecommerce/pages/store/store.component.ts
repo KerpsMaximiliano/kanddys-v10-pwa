@@ -153,11 +153,11 @@ export class StoreComponent implements OnInit {
 
   closeFooter() {
     document.getElementById('footer').classList.add('hide');
-    document.getElementById('footerbtn').classList.remove('hide');
+    document.getElementById('footerbtn')?.classList.remove('hide');
   }
   displayFooter() {
     document.getElementById('footer').classList.remove('hide');
-    document.getElementById('footerbtn').classList.add('hide');
+    document.getElementById('footerbtn')?.classList.add('hide');
   }
 
   shareStore() {

@@ -469,6 +469,7 @@ table {
   max-width: 500px;
   width: 100%;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+  z-index: 999;
 
   .msj {
     font-family: "SfProLight";
@@ -539,4 +540,8 @@ table {
 ::ng-deep.mat-expansion-panel {
   box-shadow: unset !important;
   background-color: #fff !important;
+}
+
+.small-arrow-green-2 {
+  margin-right: -18px;
 }

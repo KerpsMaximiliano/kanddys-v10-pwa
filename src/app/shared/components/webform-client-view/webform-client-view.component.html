@@ -40,7 +40,7 @@
     >
       <div class="step-inner-container">
         <div class="question-title">
-          {{ step.question.value }}
+          {{ capitalize(step.question.value) }}
         </div>
 
         <ng-container
@@ -199,6 +199,9 @@
 
             <input
               type="number"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              min="0"
               [id]="stepIndex + '-text-response'"
               class="text-response-input"
               placeholder="Escribe un número aquí"

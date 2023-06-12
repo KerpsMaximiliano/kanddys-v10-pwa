@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { Question } from 'src/app/core/models/webform';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-closed-question-card',
@@ -50,6 +51,7 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
   constructor(
     private webformsService: WebformsService,
     private snackbar: MatSnackBar,
+    private headerService: HeaderService,
     private router: Router
   ) {}
 
@@ -468,6 +470,9 @@ export class ClosedQuestionCardComponent implements OnInit, OnDestroy {
       this.webformsService.clientResponsesByItem[this.question._id].allOptions =
         options;
     }
+
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
 
     this.router.navigate(['/ecommerce/webform-options-selector'], {
       queryParams: {

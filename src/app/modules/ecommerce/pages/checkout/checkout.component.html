@@ -75,12 +75,11 @@
           hideToggle
         >
           <mat-expansion-panel-header>
-            <div class="between" style="display: flex; align-items: center; flex-wrap: wrap;">
-              <div 
-                style="flex: 0 0 60%;
-                display: flex;
-                align-items: center;"
-              >
+            <div
+              class="between"
+              style="display: flex; align-items: center; flex-wrap: wrap"
+            >
+              <div style="flex: 0 0 60%; display: flex; align-items: center">
                 <h2 class="section-title" style="margin: 0">
                   {{ this.headerService?.order?.products.length }} Artículos
                   facturados
@@ -174,9 +173,20 @@
                           }"
                           (click)="openWebform(item._id, i)"
                         >
-                          <p style="text-transform: capitalize">
-                            {{ question.value }}
-                          </p>
+                          <div [ngStyle]="{ display: 'flex', justifyContent: 'space-between'}">
+                            <p style="text-transform: capitalize">
+                              {{ question.value }}
+                            </p>
+
+                            <img
+                              *ngIf="
+                                question.required &&
+                                !answersByQuestion[question._id]?.response
+                              "
+                              [src]="env + '/green-arrow-small.svg'"
+                              class="small-arrow-green-2"
+                            />
+                          </div>
                           <div
                             class="question-text-response"
                             *ngIf="
@@ -222,9 +232,20 @@
                           answersByQuestion[question._id].isMedia
                         "
                       >
-                        <p>
-                          {{ question.value }}
-                        </p>
+                        <div [ngStyle]="{ display: 'flex', justifyContent: 'space-between'}">
+                          <p style="text-transform: capitalize">
+                            {{ question.value }}
+                          </p>
+
+                          <img
+                            *ngIf="
+                              question.required &&
+                              !answersByQuestion[question._id]?.response
+                            "
+                            [src]="env + '/green-arrow-small.svg'"
+                            class="small-arrow-green-2"
+                          />
+                        </div>
                       </li>
 
                       <!-- RESPONSE HAS IMAGES AND USER HAS ALREADY ANSWERED-->
@@ -286,9 +307,20 @@
                           }"
                           (click)="openWebform(item._id, i)"
                         >
-                          <p>
-                            {{ question.value }}
-                          </p>
+                          <div [ngStyle]="{ display: 'flex', justifyContent: 'space-between'}">
+                            <p style="text-transform: capitalize">
+                              {{ question.value }}
+                            </p>
+
+                            <img
+                              *ngIf="
+                                question.required &&
+                                !answersByQuestion[question._id]?.response
+                              "
+                              [src]="env + '/green-arrow-small.svg'"
+                              class="small-arrow-green-2"
+                            />
+                          </div>
                         </li>
 
                         <div
@@ -475,19 +507,21 @@
                 ? "Un conocido"
                 : "..."
             }}
-            <br *ngIf="postsService.post?.provisionalReceiver">{{ postsService.post?.provisionalReceiver
-              ? "Nombre: " + postsService.post?.provisionalReceiver
-              : ""
+            <br *ngIf="postsService.post?.provisionalReceiver" />{{
+              postsService.post?.provisionalReceiver
+                ? "Nombre: " + postsService.post?.provisionalReceiver
+                : ""
             }}
-            <br *ngIf="postsService.post?.provisionalReceiverContact">{{ postsService.post?.provisionalReceiverContact
-              ? "Contacto: " + postsService.post?.provisionalReceiver
-              : ""
+            <br *ngIf="postsService.post?.provisionalReceiverContact" />{{
+              postsService.post?.provisionalReceiverContact
+                ? "Contacto: " + postsService.post?.provisionalReceiver
+                : ""
             }}
-            <br *ngIf="postsService.post?.isAnonymous">{{ postsService.post?.isAnonymous === true
-              ? "Anonimato: sí"
-              : "Anonimato: no"
+            <br *ngIf="postsService.post?.isAnonymous" />{{
+              postsService.post?.isAnonymous === true
+                ? "Anonimato: sí"
+                : "Anonimato: no"
             }}
-
           </p>
         </button>
       </ng-container>

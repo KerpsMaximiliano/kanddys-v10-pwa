@@ -83,6 +83,7 @@ export class EcommerceComponent implements OnInit {
           },
         })
       )[0];
+      console.log(this.headerService.merchantContact);
       this.activePath = this.route.firstChild.routeConfig.path;
 
       if (this.router.url.includes('/store'))

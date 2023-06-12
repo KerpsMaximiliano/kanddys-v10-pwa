@@ -97,7 +97,7 @@ export class WebformsService {
     currentStepIndex: number;
   } = null;
   clientResponsesByItem: Record<string, ResponsesByQuestion> = {};
-  selectedQuestion: { questionId: string; question: Question; required: boolean; multiple: boolean } = null;
+  selectedQuestion: { questionId: string; question: Question; required: boolean; multiple: boolean; index?: number } = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 
