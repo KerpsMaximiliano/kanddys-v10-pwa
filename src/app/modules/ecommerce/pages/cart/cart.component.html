@@ -1,7 +1,9 @@
 <div class="container">
   <header class="header">
     <div class="left-area">
-      <a style="cursor: pointer;"> <i class="fas fa-chevron-left" (click)="goToStore()"></i></a>
+      <a style="cursor: pointer">
+        <i class="fas fa-chevron-left" (click)="goToStore()"></i
+      ></a>
       <p class="title">
         Artículos a facturarse
         <!-- {{
@@ -75,7 +77,11 @@
           <img
             [src]="env + '/arrow-green.svg'"
             alt="required question"
-            *ngIf="question.required && !answersByQuestion[question._id]?.response"
+            *ngIf="
+              question.required &&
+              !answersByQuestion[question._id]?.response &&
+              !answersByQuestion[question._id]?.multipleResponses?.length
+            "
             class="required-question-pointer"
           />
 
@@ -108,7 +114,11 @@
                   !answersByQuestion[question._id].isMedia
                 "
               >
-                {{ question.answerTextType !== 'number' ? capitalize(answersByQuestion[question._id]?.response) : answersByQuestion[question._id]?.response }}
+                {{
+                  question.answerTextType !== "number"
+                    ? capitalize(answersByQuestion[question._id]?.response)
+                    : answersByQuestion[question._id]?.response
+                }}
               </div>
 
               <div
@@ -123,8 +133,8 @@
                   question.type === "text" && question.answerTextType === "name"
                     ? capitalize(
                         answersByQuestion[question._id]?.response +
-                        " " +
-                        answersByQuestion[question._id]?.responseLabel
+                          " " +
+                          answersByQuestion[question._id]?.responseLabel
                       )
                     : capitalize(answersByQuestion[question._id]?.responseLabel)
                 }}
@@ -210,10 +220,15 @@
         >Factura sin comprobante <i class="fas fa-chevron-right"></i
       ></mat-checkbox> -->
       <div
-        style="display: flex; justify-content: flex-start; align-items: center; position: relative;"
+        style="
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          position: relative;
+        "
       >
         <mat-checkbox (change)="toggleCheckbox($event.checked)"></mat-checkbox>
-        <div (click)="goToReceiverForm()" style="margin-top: 5px;">
+        <div (click)="goToReceiverForm()" style="margin-top: 5px">
           <span>Sin mensaje de regalo</span>
           <i
             style="color: #fff; margin-left: 20px; cursor: pointer"
@@ -238,7 +253,11 @@
         }"
         (click)="submit()"
       >
-        {{ (!areWebformsValid || !isCheckboxChecked) ? "Llena las preguntas" : "Continuar" }}
+        {{
+          !areWebformsValid || !isCheckboxChecked
+            ? "Llena las preguntas"
+            : "Continuar"
+        }}
       </button>
     </div>
   </footer>

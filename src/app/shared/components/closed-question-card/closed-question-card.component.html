@@ -1,7 +1,7 @@
 <div class="container" id="{{ id }}">
   <app-card [shadows]="shadows" [containerStyles]="containerStyles">
 
-    <p class="title" *ngIf="showTitle" [ngStyle]="labelStyles">{{ question.value }}</p>
+    <p class="title" *ngIf="showTitle" [ngStyle]="labelStyles">{{ question.value | titlecase }}</p>
 
     <ng-container *ngIf="!multiple">
       <div class="imgGrid" *ngIf="isMediaSelection">

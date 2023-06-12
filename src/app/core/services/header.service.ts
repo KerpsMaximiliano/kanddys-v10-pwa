@@ -22,6 +22,7 @@ import { BookmarksService } from './bookmarks.service';
 import { MerchantsService } from './merchants.service';
 import { SaleFlowService } from './saleflow.service';
 import { WalletService } from './wallet.service';
+import { Router } from '@angular/router';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -112,7 +113,8 @@ export class HeaderService {
     public wallet: WalletService,
     private bookmark: BookmarksService,
     private merchantService: MerchantsService,
-    private saleflowService: SaleFlowService
+    private saleflowService: SaleFlowService,
+    private router: Router
   ) {
     this.auth.me().then((data) => {
       if (data != undefined) {
@@ -560,5 +562,43 @@ export class HeaderService {
   removeTempNewItem() {
     this.newTempItem = null;
     this.newTempItemRoute = null;
+  }
+
+  redirectFromQueryParams() {
+    let redirectionRoute = this.flowRoute;
+
+    if (!redirectionRoute) redirectionRoute = localStorage.getItem('flowRoute');
+
+    if (redirectionRoute.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        {
+          url: null,
+          queryParams: {},
+        };
+      const routeParts = redirectionRoute.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return { [queryStringElements[0]]: queryStringElements[1] };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([redirectionRoute], {
+        replaceUrl: true,
+      });
+    }
   }
 }

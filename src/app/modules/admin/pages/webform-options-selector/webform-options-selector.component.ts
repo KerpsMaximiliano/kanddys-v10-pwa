@@ -3,7 +3,9 @@ import { Component, OnInit, Input, Output, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { updateQueryParam } from 'src/app/core/helpers/strings.helpers';
 import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import {
@@ -41,6 +43,7 @@ export class WebformOptionsSelectorComponent implements OnInit {
   @Input() selectedImage: number = null;
   @Input() selectedImagesIndexes: Array<number> = [];
   @Input() selectedIndexes: Array<number> = [];
+  questionIndex: number = null;
   env: string = environment.assetsUrl;
 
   optionsByImages: Record<number, number> = {}; //index of option, index of image
@@ -53,14 +56,16 @@ export class WebformOptionsSelectorComponent implements OnInit {
     private webformsService: WebformsService,
     private location: Location,
     private merchantsService: MerchantsService,
-    private saleflowService: SaleFlowService,
+    private headerService: HeaderService,
     private router: Router,
     private route: ActivatedRoute,
     private snackbar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(({ startAt }) => {
+    this.route.queryParams.subscribe(({ startAt, questionIndex }) => {
+      this.questionIndex = questionIndex;
+
       if (this.webformsService.selectedQuestion === null) {
         this.router.navigate([
           '/ecommerce/' + this.merchantsService.merchantData.slug + '/checkout',
@@ -138,7 +143,40 @@ export class WebformOptionsSelectorComponent implements OnInit {
   }
 
   back() {
-    this.location.back();
+    let flowRoute = this.headerService.flowRoute;
+
+    if (!flowRoute) {
+      flowRoute = localStorage.getItem('flowRoute');
+    }
+
+    if (flowRoute.includes('startAtQuestion')) {
+      if (
+        !this.questionIndex &&
+        this.webformsService.selectedQuestion.index !== null
+      )
+        this.questionIndex = this.webformsService.selectedQuestion.index;
+
+      if (
+        !this.questionIndex &&
+        this.webformsService.selectedQuestion.index === null
+      ) {
+        this.questionIndex = 0;
+      }
+
+      const updatedUrl = updateQueryParam(
+        environment.uri + flowRoute,
+        'startAtQuestion',
+        this.questionIndex.toString()
+      );
+
+      console.log('updatedURL', updatedUrl);
+
+      this.headerService.flowRoute = updatedUrl;
+
+      this.headerService.redirectFromQueryParams();
+    } else {
+      this.location.back();
+    }
   }
 
   selectOptMultipleFromGrid(indexClicked: number) {
