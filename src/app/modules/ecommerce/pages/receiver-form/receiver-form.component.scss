@@ -133,3 +133,20 @@ main {
 ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline {
     margin-bottom: -5px;
 }
+
+.mat-checkbox ::ng-deep .mat-checkbox-frame {
+    background-color: white;
+    border-color: #707070;
+    border-radius: 4px;
+    height: 18px;
+    width: 18px;
+    border-width: thin;
+}
+
+.mat-checkbox ::ng-deep .mat-checkbox-layout .mat-checkbox-label {
+    color: #FFF;
+  }
+  
+::ng-deep .mat-checkbox.mat-checkbox-checked .mat-checkbox-background {
+background-color: #87CD9B;
+}

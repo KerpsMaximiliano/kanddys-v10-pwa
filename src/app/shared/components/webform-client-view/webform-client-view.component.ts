@@ -28,6 +28,7 @@ import {
 import { Country, State, City } from 'country-state-city';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { capitalize } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-webform-client-view',
@@ -69,6 +70,8 @@ export class WebformClientViewComponent implements OnInit {
   ];
   PhoneNumberFormat = PhoneNumberFormat;
   redirectTo: string = 'checkout';
+
+  capitalize = capitalize;
   @ViewChild('questionsSwiper') questionsSwiper: SwiperComponent;
 
   constructor(
