@@ -510,7 +510,9 @@ export class WebformClientViewComponent implements OnInit {
 
   async saveWebform(preventRedirection?: boolean, goToNextStep?: boolean) {
     if (this.currentStepIndex < this.steps.length - 1 && goToNextStep) {
-      return this.questionsSwiper.directiveRef.setIndex(this.currentStepIndex + 1);
+      return this.questionsSwiper.directiveRef.setIndex(
+        this.currentStepIndex + 1
+      );
     }
 
     for (const step of this.steps) {
@@ -583,6 +585,7 @@ export class WebformClientViewComponent implements OnInit {
       multiple:
         this.steps[this.currentStepIndex].question.answerLimit === 0 ||
         this.steps[this.currentStepIndex].question.answerLimit > 1,
+      index: this.currentStepIndex,
     };
 
     const options =
@@ -598,9 +601,13 @@ export class WebformClientViewComponent implements OnInit {
       ].allOptions = options;
     }
 
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+
     this.router.navigate(['/ecommerce/webform-options-selector'], {
       queryParams: {
         startAt: index,
+        questionIndex: this.currentStepIndex
       },
     });
   }

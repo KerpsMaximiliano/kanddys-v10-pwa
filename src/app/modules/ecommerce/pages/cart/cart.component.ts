@@ -78,10 +78,12 @@ export class CartComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.queryParamsSubscription = this.route.queryParams.subscribe(async ({ item }) => {
-      if (item) await this.executeProcessesAfterLoading(item);
-      else await this.executeProcessesAfterLoading();
-    });
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
+      async ({ item }) => {
+        if (item) await this.executeProcessesAfterLoading(item);
+        else await this.executeProcessesAfterLoading();
+      }
+    );
   }
 
   async executeProcessesAfterLoading(itemId?: string) {
@@ -654,12 +656,14 @@ export class CartComponent implements OnInit {
   }
 
   async addItemToCart(itemId: string) {
-
     if (!(await this.checkIfItemisAvailable(itemId))) return;
 
     if (!this.isItemInCart) {
-      if (!this.isItemInCart && !this.headerService.saleflow.canBuyMultipleItems)
-       this.headerService.emptyOrderProducts();
+      if (
+        !this.isItemInCart &&
+        !this.headerService.saleflow.canBuyMultipleItems
+      )
+        this.headerService.emptyOrderProducts();
 
       const product: ItemSubOrderInput = {
         item: itemId,
@@ -679,11 +683,20 @@ export class CartComponent implements OnInit {
 
   async checkIfItemisAvailable(itemId: string) {
     const result = await this.itemsService.item(itemId);
-    if (!result || (!result.active || result.status === 'disabled' || result.status === 'archived' || result.status === 'draft')) return false;
+    if (
+      !result ||
+      !result.active ||
+      result.status === 'disabled' ||
+      result.status === 'archived' ||
+      result.status === 'draft'
+    )
+      return false;
 
     this.itemInCart(itemId);
 
-    const exists = this.headerService.saleflow.items.find((item) => item.item._id === result._id);
+    const exists = this.headerService.saleflow.items.find(
+      (item) => item.item._id === result._id
+    );
     return exists ? true : false;
   }
 
@@ -692,9 +705,7 @@ export class CartComponent implements OnInit {
       (subOrder) => subOrder.item
     );
     if (productData?.length) {
-      this.isItemInCart = productData.some(
-        (item) => item === itemId
-      );
+      this.isItemInCart = productData.some((item) => item === itemId);
     } else this.isItemInCart = false;
 
     // Validation to avoid getting deleted or unavailable items in the count of the cart
@@ -714,11 +725,11 @@ export class CartComponent implements OnInit {
           this.headerService.saleflow.merchant.slug +
           '/receiver-form',
       ],
-      // {
-      //   queryParams: {
-      //     redirectTo: 'checkout',
-      //   },
-      // }
+      {
+        queryParams: {
+          redirectTo: 'cart',
+        },
+      }
     );
   }
 

@@ -146,3 +146,13 @@ export function getDaysAgo(date: string) {
   }
   return daysAgo;
 }
+
+export function updateQueryParam(
+  url: string,
+  paramKey: string,
+  newValue: string
+): string {
+  const urlObj = new URL(url);
+  urlObj.searchParams.set(paramKey, newValue);
+  return urlObj.pathname + urlObj.search;
+}
