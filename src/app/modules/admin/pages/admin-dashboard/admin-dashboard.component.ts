@@ -791,9 +791,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             {
               title: 'Mira como lo ven otros',
               callback: () => {
-                this.router.navigate([
-                  `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
-                ]);
+                this.router.navigate(
+                  [
+                    `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
+                  ], 
+                  { queryParams: { adminView: true } }
+                );
               },
             },
             {
