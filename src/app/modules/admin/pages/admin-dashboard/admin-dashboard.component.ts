@@ -284,30 +284,25 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    lockUI();
-
-    await this.getItemsThatHaventBeenSold();
     //await this.getItemsBoughtByMe();
 
     if (this._SaleflowService.saleflowData) {
       await this.inicializeItems(true, false, true);
       this.getTags();
-      this.getSoldItems();
       this.getQueryParameters();
       this.getHiddenItems();
-
-      unlockUI();
+      this.getSoldItems();
+      this.getItemsThatHaventBeenSold();
     }
     this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
       next: async (value) => {
         if (value) {
           await this.inicializeItems(true, false, true);
           this.getTags();
-          this.getSoldItems();
           this.getQueryParameters();
           this.getHiddenItems();
-
-          unlockUI();
+          this.getSoldItems();
+          this.getItemsThatHaventBeenSold();
         }
       },
     });
