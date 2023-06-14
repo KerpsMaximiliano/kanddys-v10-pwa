@@ -5,7 +5,17 @@ a {
   height: 100vh;
   overflow-y: scroll;
   flex-grow: 1;
+  padding-top: 50px;
+
+  &.tagsPresent {
+    padding-top: 99px;
+  }
 }
+
+.content {
+  padding-bottom: 50px;
+}
+
 .description-view {
   display: flex;
   flex-direction: column;
