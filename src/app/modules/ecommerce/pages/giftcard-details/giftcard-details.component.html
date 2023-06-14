@@ -1,0 +1,70 @@
+<div class="container">
+  <header>
+    <button>
+      <mat-icon [ngStyle]="{ color: '#7B7B7B' }">chevron_left</mat-icon>
+    </button>
+    <button
+      style="margin-left: auto; color: #87cd9b"
+      *ngIf="itemFormPhone.valid || itemFormMail.valid"
+    >
+      Continuar
+    </button>
+  </header>
+
+  <div class="content">
+    <div *ngIf="!isQr && !isText">
+      <p class="title">Expuesto en la tarjeta dedicatoria:</p>
+      <button class="btn" (click)="qrClicked()">Solo QR (nada visible)</button>
+      <button class="btn" (click)="textClicked()">
+        Con el texto escrito y QR
+      </button>
+    </div>
+
+    <div *ngIf="isQr || isText">
+      <p class="title">Contenido de la tarjeta dedicatoria:</p>
+      <button
+        class="btn"
+        style="background-color: #87cd9b; color: #181d17"
+        (click)="backToMain()"
+      >
+        {{ isQr ? "Solo QR (nada visible)" : "Con el texto escrito y QR" }}
+      </button>
+
+      <p class="title" style="margin-top: 22px; margin-bottom: 25px">
+        WhatsApp o email que le recibirá el MagicLink para accesar
+      </p>
+      <ngx-intl-tel-input
+        *ngIf="isWhatsapp"
+        [cssClass]="'custom'"
+        [enableAutoCountrySelect]="true"
+        [enablePlaceholder]="true"
+        [searchCountryFlag]="true"
+        [selectFirstCountry]="false"
+        [preferredCountries]="preferredCountries"
+        [selectedCountryISO]="CountryISO"
+        maxLength="13"
+        minlength="10"
+        [phoneValidation]="true"
+        [separateDialCode]="true"
+        [customPlaceholder]="'(000) 000-0000'"
+        [numberFormat]="PhoneNumberFormat.International"
+        tabindex="1"
+        id="phone"
+        [(ngModel)]="inputPhone"
+        (ngModelChange)="onPhoneInput()"
+      ></ngx-intl-tel-input>
+      <input
+        *ngIf="!isWhatsapp"
+        #input2
+        type="text"
+        placeholder="Escribe..."
+        [(ngModel)]="mail"
+        (input)="onMailInput($event, input2)"
+      />
+      <button class="option" (click)="changeOption()">
+        Prefiero que me llegue por
+        {{ isWhatsapp ? "Correo Electrónico" : "WhatsApp" }}
+      </button>
+    </div>
+  </div>
+</div>

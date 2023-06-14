@@ -47,6 +47,7 @@ import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-
 import { AllItemsComponent } from './pages/all-items/all-items.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
+import { GiftcardDetailsComponent } from './pages/giftcard-details/giftcard-details.component';
 
 const routes: Routes = [
   {
@@ -254,6 +255,10 @@ const routes: Routes = [
         path: 'webform/:itemId',
         component: WebformClientViewComponent,
       },
+      {
+        path: 'giftcard-details',
+        component: GiftcardDetailsComponent,
+      },
     ],
   },
 ];
@@ -295,6 +300,7 @@ const routes: Routes = [
     AllItemsComponent,
     CartComponent,
     ReceiverFormComponent,
+    GiftcardDetailsComponent,
   ],
   imports: [
     CommonModule,
