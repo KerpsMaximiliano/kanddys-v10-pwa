@@ -39,6 +39,14 @@ a {
       justify-content: space-between;
       align-items: center;
 
+      .go_back_arrow {
+        cursor: pointer;
+        height: 30px;
+        width: 30px;
+        font-size: 30px;
+        margin-left: -10px;
+      }
+
       .icon {
         height: 30px;
         width: 30px;
@@ -50,6 +58,7 @@ a {
       all: unset;
       cursor: pointer;
       margin-left: auto;
+      text-align: right;
     }
   }
 }
