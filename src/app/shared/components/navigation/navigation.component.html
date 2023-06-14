@@ -7,83 +7,86 @@
     (keydown.escape)="close()"
     disableClose
   >
-    <p class="close">
-      <button mat-icon-button (click)="close()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </p>
+    <div class="close">
+      <span (click)="close()">X</span>
+    </div>
     <div class="nav-container">
       <nav>
-        <ul>
-          <li routerLinkActive="active" *ngIf="headerService.user">
-            <a
-              mat-button
-              [routerLink]="['/admin/dashboard']"
-              style="padding: 0px 8px"
+        <section>
+          <h2>Proveedor de ✨</h2>
+
+          <ul>
+            <li routerLinkActive="active" *ngIf="headerService.user">
+              <a
+                mat-button
+                [routerLink]="['/admin/dashboard']"
+                style="padding: 0px"
+              >
+                Lo que vendo 🏷️
+              </a>
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
+                class="icon"
+              />
+            </li>
+
+            <li routerLinkActive="active" *ngIf="headerService.user">
+              <a
+                mat-button
+                [routerLink]="['/admin/reports']"
+                style="padding: 0px"
+              >
+                Lo vendido 🧾
+              </a>
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
+                class="icon"
+              />
+            </li>
+
+            <li routerLinkActive="active" *ngIf="headerService.user">
+              <a
+                mat-button
+                [routerLink]="['/admin/reportings']"
+                style="padding: 0px"
+              >
+                Control & Beneficios 🎛️
+              </a>
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
+                class="icon"
+              />
+            </li>
+
+            <li
+              routerLinkActive="active"
+              *ngIf="
+                merchantsService.merchantData ||
+                headerService.user?._id ===
+                  headerService.saleflow?.merchant.owner._id
+              "
             >
-              Lo que vendo
-            </a>
-            <mat-icon class="icon"> menu </mat-icon>
-          </li>
-          <li routerLinkActive="active" *ngIf="headerService.user">
-            <a
-              mat-button
-              [routerLink]="['/admin/reportings']"
-              style="padding: 0px 8px"
-            >
-              Control de beneficios
-            </a>
-            <mat-icon class="icon"> menu </mat-icon>
-          </li>
-          <li routerLinkActive="active" *ngIf="headerService.user">
-            <a
-              mat-button
-              [routerLink]="['/admin/reports']"
-              style="padding: 0px 8px"
-            >
-              Lo vendido
-            </a>
-            <mat-icon class="icon"> menu </mat-icon>
-          </li>
-          <li
-            routerLinkActive="active"
-            *ngIf="
-              merchantsService.merchantData ||
-              headerService.user?._id ===
-                headerService.saleflow?.merchant.owner._id
-            "
-          >
-            <a
-              mat-button
-              [routerLink]="[
-                '/ecommerce',
-                merchantsService.merchantData?.slug ||
-                  headerService.saleflow?.merchant.slug,
-                'store'
-              ]"
-              [queryParams]="{ adminView: true }"
-              style="padding: 0px 8px"
-            >
-              Vista de compradores
-            </a>
-            <mat-icon class="icon"> menu </mat-icon>
-          </li>
-          <li routerLinkActive="active" *ngIf="!headerService.user?._id">
-            <a
-              mat-button
-              [routerLink]="[
-                '/ecommerce',
-                headerService.saleflow?.merchant.slug,
-                'store'
-              ]"
-              style="padding: 0px 8px"
-            >
-              Stars for Causes
-            </a>
-            <mat-icon class="icon"> menu </mat-icon>
-          </li>
-        </ul>
+              <a
+                mat-button
+                [routerLink]="[
+                  '/ecommerce',
+                  merchantsService.merchantData?.slug ||
+                    headerService.saleflow?.merchant.slug,
+                  'store'
+                ]"
+                style="padding: 0px"
+              >
+                Vista de compradores 👀
+              </a>
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
+                class="icon"
+              />
+            </li>
+          </ul>
+        </section>
       </nav>
+
       <div class="actions">
         <button mat-button (click)="signout()" *ngIf="headerService.user">
           <mat-icon>exit_to_app</mat-icon>
