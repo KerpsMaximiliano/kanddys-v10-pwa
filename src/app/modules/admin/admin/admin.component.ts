@@ -47,6 +47,7 @@ export class AdminComponent implements OnInit {
       if (this.saleflowService.saleflowData) {
         this.saleflowService.saleflowLoaded.next(true);
       }
+      /*
       Promise.all([
         this.merchantsService.incomeMerchant({
           findBy: {
@@ -66,7 +67,7 @@ export class AdminComponent implements OnInit {
           income: incomeMerchantResponse,
           orderAmount: ordersByMerchant.length,
         };
-      });
+      });*/
     });
   }
 }

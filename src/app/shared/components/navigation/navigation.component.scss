@@ -1,8 +1,23 @@
 .nav-container {
-  padding: 20px 10px;
+  padding: 20px 0px;
 }
 nav {
-  margin-bottom: 24px;
+  section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-right: 39px;
+    margin-bottom: 68px;
+
+    h2 {
+      color: #ffffff;
+      font-family: InterBold;
+      font-size: 24px;
+      margin: 0px;
+      padding: 0px;
+    }
+  }
+
   ul {
     margin: 0;
     padding: 0;
@@ -19,15 +34,14 @@ nav {
 
       a {
         color: #c4c5c3;
-        font-family: SfProLight;
-        font-size: 18px;
+        font-family: InterRegular;
+        font-size: 17px;
       }
 
       .icon {
+        position: absolute;
         visibility: hidden;
-        width: 20px;
-        height: 20px;
-        font-size: 20px;
+        right: 17px;
       }
 
       &.active {
@@ -51,10 +65,12 @@ nav {
   flex-direction: column;
   align-items: flex-end;
   color: #c4c5c3;
-  padding: 0 12px;
+  padding: 0px;
+  margin-right: 39px;
 
   button {
     font-family: SfProLight;
+    padding: 0px;
   }
 }
 .sidenav {
@@ -65,4 +81,16 @@ nav {
   margin: 0;
   text-align: right;
   color: #c4c5c3;
+  padding-right: 17px;
+  padding: 12px;
+
+  span {
+    font-size: 24px;
+    font-family: InterLight;
+    color: #c4c5c3;
+
+    &::hover {
+      cursor: pointer;
+    }
+  }
 }

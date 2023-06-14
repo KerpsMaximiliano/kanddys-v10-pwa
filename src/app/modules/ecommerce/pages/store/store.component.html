@@ -14,6 +14,7 @@
     <div class="contact-button">
       <div>
         <div>
+          <mat-icon class="go_back_arrow" (click)="goToAdmin()" *ngIf="adminView">keyboard_arrow_left</mat-icon>
           <div
             class="icon"
             [style.background]="
