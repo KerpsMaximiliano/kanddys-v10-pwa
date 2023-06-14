@@ -409,7 +409,9 @@ export const viewsMerchants = gql`
   query viewsMerchants($paginate: PaginationInput) {
     viewsMerchants(paginate: $paginate) {
       _id
-      merchant
+      merchant {
+        _id
+      }
       type
       description
       numeration {
@@ -429,7 +431,9 @@ export const viewsMerchant = gql`
       _id
       description
       type
-      merchant
+      merchant {
+        _id
+      }
       numeration {
         value
       }

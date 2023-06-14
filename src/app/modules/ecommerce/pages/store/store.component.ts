@@ -44,6 +44,8 @@ export class StoreComponent implements OnInit {
   openNavigation = false;
   terms: any[] = [];
 
+  adminView: boolean = false;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -58,10 +60,12 @@ export class StoreComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     setTimeout(() => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        let { startOnSnapshot } = queryParams;
+        let { startOnSnapshot, adminView } = queryParams;
         startOnSnapshot = Boolean(startOnSnapshot);
         localStorage.removeItem('flowRoute');
         this.headerService.flowRoute = null;
+
+        if (adminView) this.adminView = true;
 
         if (
           !this.headerService.storeTemporalData &&
@@ -215,5 +219,9 @@ export class StoreComponent implements OnInit {
     this.router.navigate([
       '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',
     ]);
+  }
+
+  goToAdmin() {
+    this.router.navigate(['/admin/dashboard']);
   }
 }
