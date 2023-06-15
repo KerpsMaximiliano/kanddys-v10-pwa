@@ -583,7 +583,11 @@ export class PaymentsComponent implements OnInit {
       },
       this.order.user._id,
       'bank-transfer',
-      this.order._id
+      this.order._id,
+      {
+        paymentMethod: this.paymentMethod,
+        paymentReceiverId: this.paymentMethod === 'bank-transfer' ? this.banks[0]?.paymentReceiver._id : this.electronicPayments[0]?.paymentReceiver._id,
+      }
     );
     unlockUI();
     this.orderCompleted();

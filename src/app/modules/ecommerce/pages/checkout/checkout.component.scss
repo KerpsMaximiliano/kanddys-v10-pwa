@@ -26,14 +26,15 @@ a {
   .header {
     width: 100%;
     height: 36px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 23px;
+    // display: flex;
+    // justify-content: space-between;
+    // align-items: center;
+    padding: 0 15px;
+    background-color: #FFF;
 
     .title {
       text-transform: capitalize;
-      color: #fff;
+      color: #000;
       font-family: SfProBold;
       font-size: 21px;
       overflow: hidden;
@@ -44,7 +45,7 @@ a {
     }
 
     .far {
-      color: #ffffff;
+      color: #000;
       font-size: 1.752rem;
     }
 
@@ -109,9 +110,10 @@ a {
         align-items: center;
 
         .section-title {
-          font-family: "RobotoMedium";
-          font-size: 19px;
-          color: #7b7b7b;
+          font-family: "InterRegular";
+          font-size: 13px;
+          text-transform: uppercase;
+          color: #272727;
           margin: 0;
           margin-bottom: 10px;
           font-weight: normal;
@@ -122,7 +124,7 @@ a {
         background-color: #ffffff;
         padding: 10px 12px;
         border-radius: 6px;
-        box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
         width: 100%;
         box-sizing: border-box;
 
@@ -456,14 +458,14 @@ table {
   cursor: pointer;
 }
 .top {
-  background-color: #ffffff;
+  // background-color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   gap: 16px;
-  padding: 16px;
+  padding: 12px 0;
   position: fixed;
   bottom: 0;
   max-width: 500px;
@@ -477,12 +479,13 @@ table {
     color: #272727;
   }
   .confirmButton {
-    font-family: "SfProBold";
-    font-size: 17px;
+    font-family: "InterBold";
+    font-weight: bold;
+    font-size: 16px;
     padding: 13px;
     border-radius: 19px;
     text-align: center;
-    width: 280px;
+    // width: 280px;
     cursor: pointer;
   }
 
