@@ -86,6 +86,7 @@ export const exchangeData = gql`
         routingNumber
         typeAccount
         bankName
+        feePercentage
       }
       electronicPayment {
         paymentReceiver {
@@ -96,6 +97,7 @@ export const exchangeData = gql`
         email
         link
         name
+        feePercentage
       }
     }
   }
@@ -120,6 +122,7 @@ export const updateExchangeData = gql`
         isActive
         account
         routingNumber
+        feePercentage
       }
       electronicPayment {
         paymentReceiver {
@@ -129,6 +132,7 @@ export const updateExchangeData = gql`
         email
         link
         name
+        feePercentage
       }
     }
   }
@@ -256,6 +260,7 @@ export const exchangeDataByUser = gql`
         isActive
         account
         routingNumber
+        feePercentage
       }
       electronicPayment {
         paymentReceiver {
@@ -267,6 +272,7 @@ export const exchangeDataByUser = gql`
         isActive
         email
         link
+        feePercentage
       }
     }
   }
