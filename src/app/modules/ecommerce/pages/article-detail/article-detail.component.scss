@@ -352,6 +352,8 @@ header {
   }
 }
 .information {
+  position: fixed;
+  bottom: 0px;
   width: 100%;
   max-width: 500px;
   background-color: #171d16;

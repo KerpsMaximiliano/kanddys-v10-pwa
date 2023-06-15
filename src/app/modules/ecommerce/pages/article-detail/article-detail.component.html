@@ -68,7 +68,7 @@
       #swiperContainer
       [ngStyle]="{
         width: '100%',
-        height: (swiperContainer.clientWidth * 10) / 7 + 'px'
+        height: imageCanvasHeight + 'px'
       }"
     >
       <swiper
@@ -126,15 +126,31 @@
       </swiper>
     </div>
   </div>
-  <div style="position: fixed; max-width: 500px; width: 100%; bottom: 0">
-    <div class="information">
-      <button mat-button (click)="itemInformationDialog()">
-        <p *ngIf="itemData.name || itemData.description">
-          <span>{{ itemData.name }}.</span>
+  <div
+    style="
+      position: fixed;
+      max-width: 500px;
+      width: 100%;
+      bottom: 0;
+      z-index: 9999;
+    "
+  >
+    <div class="information" style="position: relative">
+      <p
+        *ngIf="itemData.name || itemData.description"
+        (click)="itemInformationDialog()"
+      >
+        <span *ngIf="itemData.name">{{ itemData.name }}.</span>
+        {{ itemData.description }}
+      </p>
+      <!-- mira más -->
+
+      <div class="expandedInfo" *ngIf="openedMessage">
+        <div class="close-btn-flex" (click)="openedMessage = false">X</div>
+        <p class="expandedParragraph">
           {{ itemData.description }}
         </p>
-        <!-- mira más -->
-      </button>
+      </div>
     </div>
     <div class="actions">
       <div class="pricing">
@@ -421,7 +437,7 @@
       #swiperContainer
       [ngStyle]="{
         width: '100%',
-        height: (swiperContainer.clientWidth * 10) / 7 + 'px'
+        height: imageCanvasHeight + 'px'
       }"
     >
       <swiper
@@ -505,13 +521,18 @@
       </swiper>
     </div>
     <div class="information">
-      <button mat-button (click)="itemInformationDialog(true)">
-        <p>
-          <span>{{ postData.title }}.</span>
+      <p (click)="itemInformationDialog(true)">
+        <span *ngIf="postData.title">{{ postData.title }}.</span>
+        {{ postData.message }}
+      </p>
+      <!-- mira más -->
+
+      <div class="expandedInfo" *ngIf="openedMessage">
+        <div class="close-btn-flex" (click)="openedMessage = false">X</div>
+        <p class="expandedParragraph">
           {{ postData.message }}
         </p>
-        <!-- mira más -->
-      </button>
+      </div>
     </div>
     <div class="actions"></div>
   </div>
