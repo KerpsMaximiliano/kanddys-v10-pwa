@@ -1,0 +1,71 @@
+* {
+  margin: 0;
+}
+
+.container {
+  background-color: #181d17;
+  min-height: 100vh;
+
+  header {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    padding-right: 15px;
+
+    button {
+      all: unset;
+      cursor: pointer;
+    }
+  }
+
+  .content {
+    padding: 0px 20px;
+    font-size: 17px;
+    font-family: SFProLight;
+    color: #ffffff;
+    .title {
+      margin-bottom: 25px;
+    }
+    .btn {
+      cursor: pointer;
+      background-color: transparent;
+      align-items: center;
+      padding: 10px 35px;
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 27px;
+      border: 1px solid #7b7b7b;
+      color: #ffffff;
+    }
+  }
+
+  .option {
+    all: unset;
+    cursor: pointer;
+    font-family: "InterThin";
+    font-size: 17px;
+    color: #ffffff;
+    font-style: italic;
+    margin-top: 10px;
+  }
+}
+
+input {
+  border: none;
+  padding: 17.5px 0px;
+  background-color: transparent;
+  border-bottom: 1px solid #82f18d;
+  width: 100%;
+  font-size: 17px;
+  color: #ffffff;
+  font-family: SFProSemibold;
+}
+
+::ng-deep #phone {
+  background-color: transparent;
+  color: #ffffff;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #82f18d;
+}
