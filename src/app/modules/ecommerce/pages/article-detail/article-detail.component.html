@@ -350,7 +350,7 @@
     <div class="title">
       <a
         mat-icon-button
-        *ngIf="redirectTo !== 'dashboard'"
+        *ngIf="!redirectTo"
         [routerLink]="['../../../store']"
         style="height: 32px; line-height: 32px"
       >
@@ -358,7 +358,7 @@
       </a>
       <button
         mat-icon-button
-        *ngIf="redirectTo === 'dashboard'"
+        *ngIf="redirectTo"
         (click)="goBack()"
         style="height: 32px; line-height: 32px"
       >
@@ -372,6 +372,7 @@
   </header>
   <div
     class="current-media-shown-indicators"
+    *ngIf="fractions !== ''"
     [style]="{
       'grid-template-columns': '' + fractions + ''
     }"
@@ -401,6 +402,16 @@
           active: slideIndex === currentMediaSlide
         }"
         *ngFor="let slide of slidesInput; let slideIndex = index"
+      ></div>
+    </ng-container>
+
+    <ng-container *ngIf="entity === 'post' && postPresentation === 'DEMO'">
+      <div
+        class="indicator"
+        [ngClass]="{
+          active: slideIndex === currentMediaSlide
+        }"
+        *ngFor="let slide of [1, 2]; let slideIndex = index"
       ></div>
     </ng-container>
   </div>
@@ -510,7 +521,7 @@
       #swiperContainer
       [ngStyle]="{
         width: '100%',
-        height: 'calc(100vh - 35px)'
+        height: imageCanvasHeight + 'px'
       }"
     >
       <swiper
@@ -564,14 +575,80 @@
         {{ postData.message }}
       </p>
       <!-- mira más -->
+
+      <div class="expandedInfo" *ngIf="openedMessage">
+        <div class="close-btn-flex" (click)="openedMessage = false">X</div>
+        <p class="expandedParragraph">
+          {{ postData.message }}
+        </p>
+      </div>
     </div>
     <div class="actions"></div>
+  </div>
 
-    <div class="expandedInfo" *ngIf="openedMessage">
-      <div class="close-btn-flex" (click)="openedMessage = false">X</div>
-      <p>
-        {{ postData.message }}
-      </p>
+  <div class="media-swiper-wrapper" *ngIf="postPresentation === 'DEMO'">
+    <div
+      #swiperContainer
+      [ngStyle]="{
+        width: '100%',
+        height: imageCanvasHeight + 'px'
+      }"
+    >
+      <swiper
+        [config]="swiperConfig"
+        #mediaSwiper
+        (slideChange)="updateCurrentSlideData($event)"
+      >
+        <ng-container
+          *ngFor="
+            let slideImage of [
+              'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/corgi.jpg',
+              'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/kitten.jpg'
+            ];
+            let i = index
+          "
+        >
+          <div
+            class="entity-image"
+            [ngStyle]="{
+              'background-image': 'url(' + slideImage + ')'
+            }"
+          >
+            <div
+              class="post-content-maximized"
+              *ngIf="!postContentMinimized"
+              (click)="postContentMinimized = !postContentMinimized"
+            >
+              <p class="title2">Titulo del simbolo</p>
+              <p class="subtitle2">Descripción del simbolo</p>
+            </div>
+          </div>
+        </ng-container>
+      </swiper>
     </div>
+    <div class="information">
+      <p (click)="itemInformationDialog(true)">
+        <span *ngIf="postData.title">Titulo del simbolo.</span>
+        Descripción del simbolo
+      </p>
+      <!-- mira más -->
+
+      <div class="expandedInfo" *ngIf="openedMessage">
+        <div class="close-btn-flex" (click)="openedMessage = false">X</div>
+        <p class="expandedParragraph">Descripción del simbolo</p>
+      </div>
+    </div>
+    <div class="actions"></div>
+  </div>
+
+  <div
+    class="just-message"
+    *ngIf="
+      slidesInput.length === 0 &&
+      postSlides.length === 0 &&
+      postPresentation !== 'DEMO'
+    "
+  >
+    {{ postData.message }}
   </div>
 </div>

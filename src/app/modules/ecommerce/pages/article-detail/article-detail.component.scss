@@ -199,7 +199,7 @@ video {
 .current-media-shown-indicators {
   height: 3px;
   max-width: 500px;
-  background-color: white;
+  background-color: #7B7B7B;
   display: grid;
 }
 
@@ -209,7 +209,7 @@ video {
   border-right: 1px solid black;
 
   &.active {
-    background-color: #82f18d;
+    background-color: #6FCF97;
   }
 }
 
@@ -343,6 +343,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #171D16;
 
   .title {
     font-family: SfProLight;
@@ -351,13 +352,11 @@ header {
   }
 }
 .information {
-  position: fixed;
-  bottom: 0px;
   width: 100%;
   max-width: 500px;
   background-color: #171d16;
   z-index: 9999;
-  padding: 8.83px 20px 10.5px 17px;
+  padding: 15px 45px 32px 17px;
 
   button {
     padding: 0;
@@ -366,7 +365,7 @@ header {
     text-align: left;
   }
 
-  p {
+  & > p {
     color: #ffffff;
     font-size: 15px;
     font-family: SfProLight;
@@ -389,10 +388,11 @@ header {
 }
 
 .expandedInfo {
-  padding: 80px 18px 98px 18px;
-  background: linear-gradient(180deg, rgba(72, 72, 72, 0) 0%, #181d17 19.57%);
-  position: fixed;
+  padding: 240px 18px 98px 18px;
+  background: linear-gradient(180deg, rgba(72, 72, 72, 0) 0%, #181d17 47.57%);
+  position: absolute;
   bottom: 0px;
+  left: 0px;
   width: 100%;
   max-width: 500px;
   z-index: 9999;
@@ -410,9 +410,11 @@ header {
     }
   }
 
-  p {
+  .expandedParragraph {
     margin-top: 20px;
     text-align: justify;
+    font-size: 19px;
+    font-family: InterRegular;
   }
 }
 
@@ -441,4 +443,13 @@ header {
       background-color: #c1c4c1;
     }
   }
+}
+
+.just-message {
+  background-color: #171d16;
+  padding: 172px 18px;
+  font-family: InterRegular;
+  font-size: 19px;
+  color: #ffffff;
+  height: 100%;
 }

@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -88,7 +88,7 @@ export class ArticleDetailComponent implements OnInit {
     text?: string;
   }> = [];
   filesStrings: string[] = [];
-  postPresentation: 'DEMO' | 'PREVIEW' = 'DEMO';
+  postPresentation: 'DEMO' | 'PREVIEW' = null;
   // selectedParam: {
   //   param: number;
   //   value: number;
@@ -142,8 +142,11 @@ export class ArticleDetailComponent implements OnInit {
   articleId: string = '';
   fromQR: boolean = false;
   openedMessage: boolean = false;
+  imageCanvasHeight = 0;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
+  @ViewChild('swiperContainer', { read: ElementRef })
+  swiperContainer: ElementRef;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -194,15 +197,14 @@ export class ArticleDetailComponent implements OnInit {
       | 'preview'
       | 'image-preview'
       | 'saleflow';
-    this.redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
-    console.log(this.redirectTo);
 
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
         await this.verifyIfUserIsLogged();
         const validEntities = ['item', 'post', 'template', 'collection'];
         const { entity, entityId } = routeParams;
-        const { mode } = queryParams;
+        const { mode, redirectTo } = queryParams;
+        this.redirectTo = redirectTo;
 
         this.postPresentation = mode;
 
@@ -213,43 +215,21 @@ export class ArticleDetailComponent implements OnInit {
           this.postPresentation === 'DEMO' &&
           entity === 'post'
         ) {
-          /*
-          const post: PostInput = {
-            message: "lorem ipsum dolor sit amet",
-            slides: [
-              {
-                
-              }
-            ]
-          };
+          this.entity = entity;
 
+          this.postData = {
+            message: this.postsService.post.message,
+          } as any;
 
-        const slides = await this.postsService.slidesByPost(post._id);
-        this.postSlides = slides;
-
-        for (const slide of this.postSlides) {
-          if (slide.type === 'poster' && isVideo(slide.media)) {
-            slide.isVideo = true;
-
-            if (
-              !slide.media.includes('https://') &&
-              !slide.media.includes('http://')
-            ) {
-              slide.media = 'https://' + slide.media;
-            }
-          }
-        }
-
-        this.updateFrantions();
-
-        this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
-            */
+          this.fractions = '1fr 1fr';
           return;
         } else if (
           this.postPresentation &&
           this.postPresentation === 'PREVIEW' &&
           entity === 'post'
         ) {
+          this.entity = entity;
+
           this.postData = {
             message: this.postsService.post.message,
           } as any;
@@ -287,6 +267,10 @@ export class ArticleDetailComponent implements OnInit {
               });
             }
           }
+
+          this.fractions = (this.slidesInput as Array<any>)
+            .map(() => `${'1'}fr`)
+            .join(' ');
           return;
         }
 
@@ -368,6 +352,19 @@ export class ArticleDetailComponent implements OnInit {
         }
       });
     });
+
+    setTimeout(() => {
+      const width = window.innerWidth >= 500 ? 500 : window.innerWidth;
+
+      this.imageCanvasHeight = (width * 1391) / 1080;
+
+      window.addEventListener('resize', () => {
+        this.imageCanvasHeight =
+          ((this.swiperContainer.nativeElement as HTMLDivElement).clientWidth *
+            1391) /
+          1080;
+      });
+    }, 500);
   }
 
   fileToBase64 = (file: File) =>
@@ -396,6 +393,10 @@ export class ArticleDetailComponent implements OnInit {
   goBack() {
     if (this.redirectTo === 'dashboard')
       this.router.navigate([`admin/dashboard`]);
+    else if (this.redirectTo === 'post-edit')
+      this.router.navigate([
+        `ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+      ]);
     else if (this.mode === 'preview')
       this.router.navigate([`admin/article-editor/${this.itemData._id}`]);
     else if (this.mode === 'image-preview')

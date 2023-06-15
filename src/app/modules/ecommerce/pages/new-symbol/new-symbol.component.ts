@@ -53,6 +53,8 @@ export class NewSymbolComponent implements OnInit {
   }
 
   goToPostDetail(mode: 'DEMO' | 'PREVIEW') {
+    this.postsService.post.message = this.postForm.controls['message'].value;
+
     this.router.navigate(
       [
         'ecommerce/' +
@@ -62,6 +64,7 @@ export class NewSymbolComponent implements OnInit {
       {
         queryParams: {
           mode,
+          redirectTo: 'post-edit'
         },
       }
     );
