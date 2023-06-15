@@ -94,7 +94,7 @@ h3 {
     background-position: center;
     background-repeat: no-repeat;
     background-color: #2e2e2e;
-    background-size: contain;
+    background-size: cover;
   }
 
   video {
@@ -351,8 +351,13 @@ header {
   }
 }
 .information {
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  max-width: 500px;
   background-color: #171d16;
-  padding: 14px;
+  z-index: 9999;
+  padding: 8.83px 20px 10.5px 17px;
 
   button {
     padding: 0;
@@ -368,8 +373,8 @@ header {
 
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
 
     &::before {
@@ -382,6 +387,35 @@ header {
     }
   }
 }
+
+.expandedInfo {
+  padding: 80px 18px 98px 18px;
+  background: linear-gradient(180deg, rgba(72, 72, 72, 0) 0%, #181d17 19.57%);
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  max-width: 500px;
+  z-index: 9999;
+  color: #ffffff;
+  font-family: InterRegular;
+  font-size: 19px;
+
+  .close-btn-flex {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 26px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  p {
+    margin-top: 20px;
+    text-align: justify;
+  }
+}
+
 .actions {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));

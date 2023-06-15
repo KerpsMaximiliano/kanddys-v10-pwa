@@ -400,7 +400,7 @@ export class QrEditComponent implements OnInit {
     this._Router.navigate([
       'ecommerce',
       this.headerService.saleflow.merchant.slug,
-      'post-edition',
+      'new-symbol',
     ]);
     return;
   }

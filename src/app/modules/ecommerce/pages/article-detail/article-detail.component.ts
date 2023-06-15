@@ -13,7 +13,7 @@ import { EntityTemplate } from 'src/app/core/models/entity-template';
 import { ItemInput } from 'src/app/core/models/item';
 import { Item, ItemImage } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
-import { Post, Slide } from 'src/app/core/models/post';
+import { Post, PostInput, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -33,6 +33,7 @@ import {
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import SwiperCore, { Virtual } from 'swiper/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 SwiperCore.use([Virtual]);
 
@@ -78,7 +79,16 @@ export class ArticleDetailComponent implements OnInit {
   tagData: Tag;
   itemTags: Array<ExtendedTag> = [];
   postData: Post = null;
+  postDataInput: PostInput = null;
   postSlides: Array<ExtendedSlide> = [];
+  slidesInput: Array<{
+    type: 'IMAGE' | 'VIDEO' | 'TEXT';
+    path?: string | SafeUrl;
+    title?: string;
+    text?: string;
+  }> = [];
+  filesStrings: string[] = [];
+  postPresentation: 'DEMO' | 'PREVIEW' = 'DEMO';
   // selectedParam: {
   //   param: number;
   //   value: number;
@@ -131,11 +141,13 @@ export class ArticleDetailComponent implements OnInit {
   postContentMinimized: boolean = true;
   articleId: string = '';
   fromQR: boolean = false;
+  openedMessage: boolean = false;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
   constructor(
     private _ItemsService: ItemsService,
+    private _DomSanitizer: DomSanitizer,
     private tagsService: TagsService,
     public headerService: HeaderService,
     private route: ActivatedRoute,
@@ -186,89 +198,185 @@ export class ArticleDetailComponent implements OnInit {
     console.log(this.redirectTo);
 
     this.route.params.subscribe(async (routeParams) => {
-      await this.verifyIfUserIsLogged();
-      const validEntities = ['item', 'post', 'template', 'collection'];
-      const { entity, entityId } = routeParams;
+      this.route.queryParams.subscribe(async (queryParams) => {
+        await this.verifyIfUserIsLogged();
+        const validEntities = ['item', 'post', 'template', 'collection'];
+        const { entity, entityId } = routeParams;
+        const { mode } = queryParams;
 
-      this.articleId = entityId;
+        this.postPresentation = mode;
 
-      // if (this.headerService.saleflow?._id)
-      //   this.doesModuleDependOnSaleflow = true;
+        this.articleId = entityId;
 
-      if (validEntities.includes(entity)) {
-        if (entity !== 'template') {
-          this.entityId = entityId;
-          this.entity = entity;
-
-          if (entity === 'item') {
-            await this.getItemData();
-            this.itemInCart();
-          } else if (entity === 'post') {
-            await this.getPostData();
-          } else if (entity === 'collection') {
-            await this.getCollection();
-          }
-        } else {
-          let entityTemplate = await this.entityTemplateService.entityTemplate(
-            entityId
-          );
-          this.entityTemplate = entityTemplate;
-
-          if (
-            entityTemplate.access === 'private' &&
-            this.entityTemplate.recipients?.length > 0
-          ) {
-            try {
-              const result =
-                await this.entityTemplateService.entityTemplateRecipient(
-                  entityId,
-                  ['ACCESS']
-                );
-
-              if (!result)
-                return this.router.navigate([
-                  'ecommerce/article-access/' + entityTemplate._id,
-                ]);
-              else {
-                entityTemplate = result;
-
-                this.fromQR = true;
+        if (
+          this.postPresentation &&
+          this.postPresentation === 'DEMO' &&
+          entity === 'post'
+        ) {
+          /*
+          const post: PostInput = {
+            message: "lorem ipsum dolor sit amet",
+            slides: [
+              {
+                
               }
+            ]
+          };
 
-              this.entityTemplate = entityTemplate;
-            } catch (error) {
-              this.router.navigate(['qr/article-access/' + entityTemplate._id]);
+
+        const slides = await this.postsService.slidesByPost(post._id);
+        this.postSlides = slides;
+
+        for (const slide of this.postSlides) {
+          if (slide.type === 'poster' && isVideo(slide.media)) {
+            slide.isVideo = true;
+
+            if (
+              !slide.media.includes('https://') &&
+              !slide.media.includes('http://')
+            ) {
+              slide.media = 'https://' + slide.media;
             }
-          }
-
-          if (entityTemplate.reference && entityTemplate.entity) {
-            this.entityId = entityTemplate.reference;
-            this.entity = entityTemplate.entity as any;
-
-            if (this.entity === 'item') {
-              await this.getItemData();
-            } else if (this.entity === 'post') {
-              await this.getPostData();
-            }
-          } else {
-            const redirectionRoute = this.headerService.saleflow._id
-              ? 'ecommerce/' +
-                this.headerService.saleflow._id +
-                '/article-template/' +
-                entityId
-              : '';
-
-            this.router.navigate([redirectionRoute]);
           }
         }
 
-        if (this.headerService.saleflow?._id && this.entity === 'item')
-          this.itemInCart();
-      } else {
-        this.router.navigate([`others/error-screen/`]);
-      }
+        this.updateFrantions();
+
+        this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+            */
+          return;
+        } else if (
+          this.postPresentation &&
+          this.postPresentation === 'PREVIEW' &&
+          entity === 'post'
+        ) {
+          this.postData = {
+            message: this.postsService.post.message,
+          } as any;
+
+          for await (const slide of this.postsService.post.slides) {
+            if (slide.media) {
+              if (slide.media.type.includes('image')) {
+                const base64 = await this.fileToBase64(slide.media);
+                this.slidesInput.push({
+                  path: `url(${base64})`,
+                  type: 'IMAGE',
+                });
+                this.filesStrings.push(base64 as string);
+              } else if (slide.media.type.includes('video')) {
+                const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+                  URL.createObjectURL(slide.media)
+                );
+                this.slidesInput.push({
+                  path: fileUrl,
+                  type: 'VIDEO',
+                });
+                this.filesStrings.push(fileUrl as string);
+              }
+            } else if (slide.url) {
+              this.slidesInput.push({
+                path: isVideo(slide.url) ? slide.url : `url(${slide.url})`,
+                type: isVideo(slide.url) ? 'VIDEO' : 'IMAGE',
+              });
+              this.filesStrings.push(slide.url);
+            } else if (slide.type === 'text') {
+              this.slidesInput.push({
+                text: slide.text,
+                title: slide.title,
+                type: 'TEXT',
+              });
+            }
+          }
+          return;
+        }
+
+        // if (this.headerService.saleflow?._id)
+        //   this.doesModuleDependOnSaleflow = true;
+
+        if (validEntities.includes(entity)) {
+          if (entity !== 'template') {
+            this.entityId = entityId;
+            this.entity = entity;
+
+            if (entity === 'item') {
+              await this.getItemData();
+              this.itemInCart();
+            } else if (entity === 'post') {
+              await this.getPostData();
+            } else if (entity === 'collection') {
+              await this.getCollection();
+            }
+          } else {
+            let entityTemplate =
+              await this.entityTemplateService.entityTemplate(entityId);
+            this.entityTemplate = entityTemplate;
+
+            if (
+              entityTemplate.access === 'private' &&
+              this.entityTemplate.recipients?.length > 0
+            ) {
+              try {
+                const result =
+                  await this.entityTemplateService.entityTemplateRecipient(
+                    entityId,
+                    ['ACCESS']
+                  );
+
+                if (!result)
+                  return this.router.navigate([
+                    'ecommerce/article-access/' + entityTemplate._id,
+                  ]);
+                else {
+                  entityTemplate = result;
+
+                  this.fromQR = true;
+                }
+
+                this.entityTemplate = entityTemplate;
+              } catch (error) {
+                this.router.navigate([
+                  'qr/article-access/' + entityTemplate._id,
+                ]);
+              }
+            }
+
+            if (entityTemplate.reference && entityTemplate.entity) {
+              this.entityId = entityTemplate.reference;
+              this.entity = entityTemplate.entity as any;
+
+              if (this.entity === 'item') {
+                await this.getItemData();
+              } else if (this.entity === 'post') {
+                await this.getPostData();
+              }
+            } else {
+              const redirectionRoute = this.headerService.saleflow._id
+                ? 'ecommerce/' +
+                  this.headerService.saleflow._id +
+                  '/article-template/' +
+                  entityId
+                : '';
+
+              this.router.navigate([redirectionRoute]);
+            }
+          }
+
+          if (this.headerService.saleflow?._id && this.entity === 'item')
+            this.itemInCart();
+        } else {
+          this.router.navigate([`others/error-screen/`]);
+        }
+      });
     });
   }
+
+  fileToBase64 = (file: File) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
   // async setMerchantDefault() {
   //   const authorize = await this.merchantsService.merchantAuthorize(
@@ -286,9 +394,9 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   goBack() {
-    if (this.redirectTo === 'dashboard') 
+    if (this.redirectTo === 'dashboard')
       this.router.navigate([`admin/dashboard`]);
-    else if (this.mode === 'preview') 
+    else if (this.mode === 'preview')
       this.router.navigate([`admin/article-editor/${this.itemData._id}`]);
     else if (this.mode === 'image-preview')
       this.router.navigate([`admin/slides-editor/${this.itemData._id}`]);
@@ -816,7 +924,9 @@ export class ArticleDetailComponent implements OnInit {
   // }
 
   itemInformationDialog(post = false) {
+    this.openedMessage = !this.openedMessage;
 
+    /*
     let fakeItem: ItemInput = {
       name: post ? this.postData.title : '',
       description: post ? this.postData.message : '',
@@ -829,6 +939,6 @@ export class ArticleDetailComponent implements OnInit {
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
-    });
+    });*/
   }
 }

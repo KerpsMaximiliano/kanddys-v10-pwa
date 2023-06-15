@@ -733,6 +733,12 @@ export class CartComponent implements OnInit {
     );
   }
 
+  goToSymbolCreation() {
+    this.router.navigate([
+      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-symbol',
+    ]);
+  }
+
   toggleCheckbox(event: any) {
     this.isCheckboxChecked = event;
 

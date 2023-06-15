@@ -125,9 +125,8 @@
         </ng-container>
       </swiper>
     </div>
-    
   </div>
-  <div style="position: fixed; max-width: 500px; width: 100%; bottom: 0;">
+  <div style="position: fixed; max-width: 500px; width: 100%; bottom: 0">
     <div class="information">
       <button mat-button (click)="itemInformationDialog()">
         <p *ngIf="itemData.name || itemData.description">
@@ -353,6 +352,7 @@
         mat-icon-button
         *ngIf="redirectTo !== 'dashboard'"
         [routerLink]="['../../../store']"
+        style="height: 32px; line-height: 32px"
       >
         <i class="fas fa-chevron-left"></i>
       </a>
@@ -360,10 +360,10 @@
         mat-icon-button
         *ngIf="redirectTo === 'dashboard'"
         (click)="goBack()"
+        style="height: 32px; line-height: 32px"
       >
         <i class="fas fa-chevron-left"></i>
       </button>
-      {{ headerService.saleflow.merchant.name }}
     </div>
     <div></div>
     <!-- <button mat-icon-button>
@@ -376,7 +376,11 @@
       'grid-template-columns': '' + fractions + ''
     }"
   >
-    <ng-container *ngIf="entity === 'post' && postSlides.length > 0">
+    <ng-container
+      *ngIf="
+        entity === 'post' && postSlides.length > 0 && slidesInput.length === 0
+      "
+    >
       <div
         class="indicator"
         [ngClass]="{
@@ -385,9 +389,23 @@
         *ngFor="let slide of postSlides; let slideIndex = index"
       ></div>
     </ng-container>
+
+    <ng-container
+      *ngIf="
+        entity === 'post' && postSlides.length === 0 && slidesInput.length > 0
+      "
+    >
+      <div
+        class="indicator"
+        [ngClass]="{
+          active: slideIndex === currentMediaSlide
+        }"
+        *ngFor="let slide of slidesInput; let slideIndex = index"
+      ></div>
+    </ng-container>
   </div>
 
-  <div class="media-swiper-wrapper">
+  <div class="media-swiper-wrapper" *ngIf="postSlides.length > 0">
     <div
       #swiperContainer
       [ngStyle]="{
@@ -484,8 +502,76 @@
         <!-- mira más -->
       </button>
     </div>
-    <div class="actions">
-     
+    <div class="actions"></div>
+  </div>
+
+  <div class="media-swiper-wrapper" *ngIf="slidesInput.length > 0">
+    <div
+      #swiperContainer
+      [ngStyle]="{
+        width: '100%',
+        height: 'calc(100vh - 35px)'
+      }"
+    >
+      <swiper
+        [config]="swiperConfig"
+        #mediaSwiper
+        (slideChange)="updateCurrentSlideData($event)"
+      >
+        <ng-container *ngFor="let slide of slidesInput; let i = index">
+          <ng-container *ngIf="slide.type === 'IMAGE'">
+            <div
+              class="entity-image"
+              [ngStyle]="{
+                'background-image': slide.path
+              }"
+            >
+              <div
+                class="post-content-maximized"
+                *ngIf="!postContentMinimized"
+                (click)="postContentMinimized = !postContentMinimized"
+              >
+                <p class="title2" *ngIf="slide.title">{{ postData.title }}</p>
+                <p class="subtitle2" *ngIf="slide.text">
+                  {{ postData.message }}
+                </p>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="slide.type === 'TEXT'">
+            <div class="text-content">
+              <div class="content">
+                <p class="title2" *ngIf="slide.title">{{ slide.title }}</p>
+                <p class="subtitle2" *ngIf="slide.text">{{ slide.text }}</p>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="slide.type === 'VIDEO'">
+            <video
+              [id]="'post-media' + i"
+              [src]="slide.path"
+              (click)="playVideoOnFullscreen('post-media' + i)"
+            ></video>
+          </ng-container>
+        </ng-container>
+      </swiper>
+    </div>
+    <div class="information">
+      <p (click)="itemInformationDialog(true)">
+        <span *ngIf="postData.title">{{ postData.title }}.</span>
+        {{ postData.message }}
+      </p>
+      <!-- mira más -->
+    </div>
+    <div class="actions"></div>
+
+    <div class="expandedInfo" *ngIf="openedMessage">
+      <div class="close-btn-flex" (click)="openedMessage = false">X</div>
+      <p>
+        {{ postData.message }}
+      </p>
     </div>
   </div>
 </div>

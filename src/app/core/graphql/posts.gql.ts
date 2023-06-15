@@ -4,7 +4,21 @@ export const createPost = gql`
   mutation createPost($input: PostInput!) {
     createPost(input: $input) {
       _id
-      password
+      author {
+        _id
+      }
+      message
+      from
+      to
+      title
+      multimedia
+      socialNetworks {
+        url
+      }
+      targets {
+        name
+        emailOrPhone
+      }
     }
   }
 `;
@@ -63,16 +77,16 @@ export const post = gql`
 `;
 
 export const getSimplePost = gql`
-query post($id:ObjectID!){
-  post(id:$id) {
-    _id,
-    targets{
-      name
-      emailOrPhone
-      nickname
+  query post($id: ObjectID!) {
+    post(id: $id) {
+      _id
+      targets {
+        name
+        emailOrPhone
+        nickname
+      }
     }
-  } 
-}
+  }
 `;
 
 export const slidesByPost = gql`
