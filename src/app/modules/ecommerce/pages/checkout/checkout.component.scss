@@ -128,9 +128,9 @@ a {
         width: 100%;
         box-sizing: border-box;
 
-        &.ready {
-          box-shadow: none;
-        }
+        // &.ready {
+        //   box-shadow: none;
+        // }
 
         .productData {
           display: flex;
@@ -478,16 +478,6 @@ table {
     font-size: 23px;
     color: #272727;
   }
-  .confirmButton {
-    font-family: "InterBold";
-    font-weight: bold;
-    font-size: 16px;
-    padding: 13px;
-    border-radius: 19px;
-    text-align: center;
-    // width: 280px;
-    cursor: pointer;
-  }
 
   .bannerLink {
     font-family: "SfProBold";
@@ -495,6 +485,15 @@ table {
     size: 17px;
     cursor: pointer;
   }
+}
+
+.confirmButton {
+  font-family: "InterBold";
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  // width: 280px;
+  cursor: pointer;
 }
 
 .list-of-webform-questions {
