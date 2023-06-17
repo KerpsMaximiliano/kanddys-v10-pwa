@@ -775,12 +775,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 this.router.navigate(['/admin/view-configuration-cards']);
               },
             },
-            {
-              title: 'Ve a las configuraciones de las categorias',
-              callback: () => {
-                this.router.navigate(['/admin/tags']);
-              },
-            },
+            // {
+            //   title: 'Ve a las configuraciones de las categorias',
+            //   callback: () => {
+            //     this.router.navigate(['/admin/tags']);
+            //   },
+            // },
           ],
           secondaryOptions: [
             {

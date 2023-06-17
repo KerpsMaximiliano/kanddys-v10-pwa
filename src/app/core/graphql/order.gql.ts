@@ -445,12 +445,13 @@ export const ordersTotal = gql`
 
 export const payOrder = gql`
   mutation payOrder(
+    $setting: PayOrderSettingInput
     $ocr: OCRInput
     $payMode: String
     $orderId: ObjectID!
     $userId: ObjectID!
   ) {
-    payOrder(ocr: $ocr, payMode: $payMode, orderId: $orderId, userId: $userId) {
+    payOrder(setting: $setting, ocr: $ocr, payMode: $payMode, orderId: $orderId, userId: $userId) {
       _id
     }
   }
