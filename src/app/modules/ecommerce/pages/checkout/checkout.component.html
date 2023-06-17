@@ -42,7 +42,7 @@
       class="top confirmButton"
       [ngStyle]="{
         backgroundColor:
-          missingOrderData || !areWebformsValid ? '#e9e9e9' : '#87CD9B'
+          missingOrderData || !areWebformsValid ? '#b5b5b5' : '#87CD9B'
       }"
       [disabled]="missingOrderData || !areWebformsValid"
       (click)="createOrder()"
@@ -74,7 +74,7 @@
               style="display: flex; align-items: center; flex-wrap: wrap"
             >
               <div style="display: flex; align-items: center">
-                <h2 class="inner-title" style="margin: 0">
+                <h2 class="inner-title responsive-flex" style="margin: 0">
                   {{ this.headerService?.order?.products.length }} Artículos
                   facturados
                 </h2>
@@ -362,17 +362,9 @@
 
           <div style="margin: 2em 0;">
             <ng-container *ngFor="let item of items; index as i">
-
-              <!-- Este for quizas no hace falta (?) -->
-              <ng-container *ngFor="
-                let question of webformsByItem[item._id].webform
-                  .questions;
-                let i = index
-              ">
-                
+              <ng-container *ngIf="webformsByItem[item._id]">
+                <p class="link-title" (click)="openWebform(item._id, 0)">Respuestas de {{ item?.name ? item?.name : 'Artículo sin nombre' }}</p>
               </ng-container>
-              <p class="link-title">Respuestas de ArticuloID</p>
-              <p class="link-title">Respuestas de ArticuloID</p>
             </ng-container>
           </div>
 
@@ -399,6 +391,45 @@
       </div> -->
     </section>
 
+    <!-- <section class="section" *ngIf="postsService?.post?.appliesMessage"> -->
+      <section class="section">
+        <div class="between" style="margin-top: 32px">
+          <h2 class="section-title">Mensaje de regalo</h2>
+        </div>
+  
+        <ng-container *ngIf="postsService.post">
+          <button class="items-container ready" (click)="createOrEditMessage()">
+            <p class="address-name filled">
+              {{
+                postsService.post?.message
+                  ? postsService.post?.message
+                  : postsService.post?.title
+                  ? postsService.post?.title
+                  : postsService.post?.to
+                  ? "Para: " + postsService.post?.to
+                  : postsService.post?.from
+                  ? "De parte de: " + postsService.post?.from
+                  : "..."
+              }}
+            </p>
+          </button>
+        </ng-container>
+  
+        <button
+          class="items-container column pointer"
+          [ngClass]="{
+            'to-fill': missingOrderData
+          }"
+          *ngIf="!postsService.post"
+          (click)="createOrEditMessage()"
+        >
+          <p class="address-name">Agrega una tarjeta dedicatoria (opcional)</p>
+        </button>
+      </section>
+      <p class="bottom-label">
+        {{ headerService.saleflow.merchant.name }} imprimirá un QR y no tiene acceso al contenido.
+      </p>
+
     <section
       class="section"
       *ngIf="headerService.saleflow?.module?.delivery?.isActive"
@@ -414,6 +445,11 @@
         </h2>
       </div>
 
+
+      <!-- [ngClass]="{
+        'to-fill': missingOrderData || !areWebformsValid
+      }" -->
+
       <ng-container *ngIf="deliveryLocation">
         <button
           *ngIf="
@@ -423,7 +459,7 @@
           "
           class="items-container ready"
           [ngClass]="{
-            'to-fill': missingOrderData || !areWebformsValid
+            'to-fill': missingOrderData
           }"
           (click)="editOrder('address')"
         >
@@ -433,7 +469,7 @@
           <div
             class="items-container ready"
             [ngClass]="{
-              'to-fill': missingOrderData || !areWebformsValid
+              'to-fill': missingOrderData
             }"
           >
             <ng-container *ngTemplateOutlet="deliveryTemplate"></ng-container>
@@ -460,7 +496,7 @@
 
       <ng-container *ngIf="deliveryZone">
         <button class="items-container ready" (click)="openDeliveryZones()">
-          <p class="address-name">
+          <p class="address-name filled">
             {{ deliveryZone?.zona }}
           </p>
         </button>
@@ -476,50 +512,14 @@
       </button>
     </section>
 
-    <!-- <section class="section" *ngIf="postsService?.post?.appliesMessage"> -->
-    <section class="section">
-      <div class="between" style="margin-top: 32px">
-        <h2 class="section-title">Tarjeta dedicatoria</h2>
-      </div>
-
-      <ng-container *ngIf="postsService.post">
-        <button class="items-container ready" (click)="createOrEditMessage()">
-          <p class="address-name">
-            {{
-              postsService.post?.message
-                ? postsService.post?.message
-                : postsService.post?.title
-                ? postsService.post?.title
-                : postsService.post?.to
-                ? "Para: " + postsService.post?.to
-                : postsService.post?.from
-                ? "De parte de: " + postsService.post?.from
-                : "..."
-            }}
-          </p>
-        </button>
-      </ng-container>
-
-      <button
-        class="items-container column pointer"
-        [ngClass]="{
-          'to-fill': missingOrderData || !areWebformsValid
-        }"
-        *ngIf="!postsService.post"
-        (click)="createOrEditMessage()"
-      >
-        <p class="address-name">Agrega una tarjeta dedicatoria (opcional)</p>
-      </button>
-    </section>
-
     <section class="section" *ngIf="postsService?.post?.appliesMessage">
       <div class="between" style="margin-top: 32px">
-        <h2 class="section-title">Lo recibirá</h2>
+        <h2 class="section-title">Recipiente</h2>
       </div>
 
       <ng-container *ngIf="postsService.post && postsService.post?.receiver">
         <button class="items-container ready" (click)="editReceiver()">
-          <p class="address-name">
+          <p class="address-name filled">
             {{
               postsService.post?.receiver === "me"
                 ? "Yo"
@@ -553,7 +553,7 @@
       <button
         class="items-container column pointer"
         [ngClass]="{
-          'to-fill': missingOrderData || !areWebformsValid
+          'to-fill': missingOrderData
         }"
         *ngIf="!postsService.post?.receiver"
         (click)="editReceiver()"
@@ -572,7 +572,7 @@
     >
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">
-          Fecha de
+          Tiempo de
           {{
             headerService.saleflow._id === "62ed5ad9bd70dde4db98b924"
               ? "la sesión"
@@ -584,7 +584,7 @@
       <button
         class="items-container ready"
         [ngClass]="{
-          'to-fill': missingOrderData || !areWebformsValid
+          'to-fill': missingOrderData
         }"
         *ngIf="reservation && date"
       >
@@ -850,13 +850,14 @@
 </ng-template>
 
 <ng-template #deliveryTemplate>
-  <p class="address-name" *ngIf="deliveryLocation.nickName">
+  <p class="address-name filled" *ngIf="deliveryLocation.nickName">
     {{ deliveryLocation.nickName }}
   </p>
   <p
     [ngClass]="{
       added: deliveryLocation.nickName,
-      'address-name': !deliveryLocation.nickName
+      'address-name': !deliveryLocation.nickName,
+      'filled': deliveryLocation.street
     }"
     *ngIf="deliveryLocation.street"
   >
@@ -876,7 +877,7 @@
 </ng-template>
 
 <ng-template #reservationTemplate>
-  <p class="amount">
+  <p class="amount filled">
     {{ date.weekday }}, {{ date.day }} de {{ date.month }} del {{ date.year }}.
     {{ date.time }}
   </p>

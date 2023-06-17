@@ -446,6 +446,18 @@ a {
   margin-bottom: 10px;
 }
 
+.filled {
+  color: #7B7B7B !important;
+}
+
+.bottom-label {
+  color: #7B7B7B;
+  font-family: "InterLight";
+  font-style: italic;
+  font-size: 17px;
+  padding: 15px 15px 0 15px;
+}
+
 .sub {
   font-family: "RobotoLight";
   font-size: 19px;
@@ -576,4 +588,10 @@ table {
 
 .small-arrow-green-2 {
   margin-right: -18px;
+}
+
+@media (max-width: 389px) {
+  .responsive-flex {
+    flex: 0 0 45%;
+  }
 }
