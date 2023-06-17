@@ -251,6 +251,7 @@
         [ngClass]="{
           valid: areWebformsValid && isCheckboxChecked
         }"
+        [disabled]="!areWebformsValid || !isCheckboxChecked"
         (click)="submit()"
       >
         {{

@@ -370,12 +370,12 @@
 
           <div class="bottom-section" *ngIf="deliveryZone">
             <p class="inner-title">Zona de entrega</p>
-            <p class="inner-title">RD $ {{ deliveryZone.amount ? deliveryZone.amount : 0 | number : "1.2-2" }}</p>
+            <p class="inner-title">RD $ {{ deliveryZone?.amount ? deliveryZone?.amount : 0 | number : "1.2-2" }}</p>
           </div>
 
           <div class="bottom-section">
             <p class="inner-title bold">Monto total</p>
-            <p class="inner-title bold">RD $ {{ payment | number : "1.2-2" }}</p>
+            <p class="inner-title bold">RD $ {{ deliveryZone?.amount ? (payment + deliveryZone?.amount) : payment | number : "1.2" }}</p>
           </div>
         </mat-expansion-panel>
       </mat-accordion>
@@ -399,7 +399,7 @@
   
         <ng-container *ngIf="postsService.post">
           <button class="items-container ready" (click)="createOrEditMessage()">
-            <p class="address-name filled">
+            <p class="address-name filled" style="height: 80px;">
               {{
                 postsService.post?.message
                   ? postsService.post?.message
