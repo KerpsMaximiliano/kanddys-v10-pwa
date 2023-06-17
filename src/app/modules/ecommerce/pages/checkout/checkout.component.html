@@ -73,8 +73,8 @@
               class="between"
               style="display: flex; align-items: center; flex-wrap: wrap"
             >
-              <div style="flex: 0 0 60%; display: flex; align-items: center">
-                <h2 class="section-title" style="margin: 0">
+              <div style="display: flex; align-items: center">
+                <h2 class="inner-title" style="margin: 0">
                   {{ this.headerService?.order?.products.length }} Artículos
                   facturados
                 </h2>
@@ -91,7 +91,7 @@
                 </mat-icon>
               </div>
               <h2
-                class="section-title"
+                class="inner-title"
                 style="position: absolute; right: 18px; margin: 0"
               >
                 RD $ {{ payment | number : "1.2-2" }}
@@ -101,7 +101,7 @@
           <div class="flexBox">
             <ng-container *ngFor="let item of items; index as i">
               <div
-                class="items-container flexBox ready"
+                class="flexBox ready"
                 *ngIf="!item.ready && itemObjects[item._id]"
               >
                 <ng-container
@@ -128,7 +128,7 @@
                   webformsByItem[item._id] && webformsByItem[item._id].webform
                 "
               >
-                <ul class="list-of-webform-questions">
+                <!-- <ul class="list-of-webform-questions">
                   <ng-container
                     *ngFor="
                       let question of webformsByItem[item._id].webform
@@ -136,7 +136,7 @@
                       let i = index
                     "
                   >
-                    <!--RESPUESTA UNICA-->
+                    RESPUESTA UNICA
                     <ng-container
                       *ngIf="
                         answersByQuestion[question._id] &&
@@ -154,7 +154,7 @@
                             question.answerLimit === 1))
                       "
                     >
-                      <!-- RESPONSE HAS NO IMAGES-->
+                      RESPONSE HAS NO IMAGES
                       <ng-container
                         *ngIf="!answersByQuestion[question._id].isMedia"
                       >
@@ -212,7 +212,7 @@
                         </li>
                       </ng-container>
 
-                      <!-- RESPONSE HAS IMAGES AND USER HASNT ANSWERED-->
+                      RESPONSE HAS IMAGES AND USER HASNT ANSWERED
                       <li
                         class="webform-question-container"
                         [ngClass]="{
@@ -242,7 +242,7 @@
                         </div>
                       </li>
 
-                      <!-- RESPONSE HAS IMAGES AND USER HAS ALREADY ANSWERED-->
+                      RESPONSE HAS IMAGES AND USER HAS ALREADY ANSWERED
                       <div
                         class="question-media-response"
                         *ngIf="
@@ -276,7 +276,7 @@
                       </div>
                     </ng-container>
 
-                    <!--RESPUESTA MULTIPLE-->
+                    RESPUESTA MULTIPLE
                     <ng-container
                       *ngIf="
                         answersByQuestion[question._id] &&
@@ -285,7 +285,7 @@
                         ['multiple-text', 'multiple'].includes(question.type)
                       "
                     >
-                      <!-- RESPONSE HAS NO IMAGES-->
+                      RESPONSE HAS NO IMAGES
                       <ng-container *ngIf="answersByQuestion[question._id]">
                         <li
                           *ngIf="
@@ -352,9 +352,38 @@
                       </ng-container>
                     </ng-container>
                   </ng-container>
-                </ul>
+                </ul> -->
               </ng-container>
+
+              <!-- ÁREA INFERIOR DE LA SECCIÓN DE LOS ARTÍCULOS -->
+
             </ng-container>
+          </div>
+
+          <div style="margin: 2em 0;">
+            <ng-container *ngFor="let item of items; index as i">
+
+              <!-- Este for quizas no hace falta (?) -->
+              <ng-container *ngFor="
+                let question of webformsByItem[item._id].webform
+                  .questions;
+                let i = index
+              ">
+                
+              </ng-container>
+              <p class="link-title">Respuestas de ArticuloID</p>
+              <p class="link-title">Respuestas de ArticuloID</p>
+            </ng-container>
+          </div>
+
+          <div class="bottom-section" *ngIf="deliveryZone">
+            <p class="inner-title">Zona de entrega</p>
+            <p class="inner-title">RD $ {{ deliveryZone.amount ? deliveryZone.amount : 0 | number : "1.2-2" }}</p>
+          </div>
+
+          <div class="bottom-section">
+            <p class="inner-title bold">Monto total</p>
+            <p class="inner-title bold">RD $ {{ payment | number : "1.2-2" }}</p>
           </div>
         </mat-expansion-panel>
       </mat-accordion>
@@ -447,7 +476,8 @@
       </button>
     </section>
 
-    <section class="section" *ngIf="postsService?.post?.appliesMessage">
+    <!-- <section class="section" *ngIf="postsService?.post?.appliesMessage"> -->
+    <section class="section">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Tarjeta dedicatoria</h2>
       </div>
@@ -774,7 +804,7 @@
         ></video>
       </div>
     </button>
-    <div class="rightSection" *ngIf="itemObjects[item._id]">
+    <!-- <div class="rightSection" *ngIf="itemObjects[item._id]">
       <div class="title">
         <p>
           <span *ngIf="item.ready && item.name">
@@ -815,7 +845,7 @@
           </p>
         </ng-container>
       </div>
-    </div>
+    </div> -->
   </div>
 </ng-template>
 
