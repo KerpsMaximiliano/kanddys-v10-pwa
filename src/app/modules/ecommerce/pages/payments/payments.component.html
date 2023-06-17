@@ -1,9 +1,9 @@
 <div class="container">
-  <header class="header" [style.backgroundColor]="headerService.colorTheme">
+  <header class="header">
     <button (click)="onBackClick()" class="back-btn">
-      <img [src]="env + '/double-arrow-up.png'" alt="open info" />
+      <mat-icon class="go_back_arrow" style="font-size: 30px; margin-top: 0.7em;">keyboard_arrow_left</mat-icon>
     </button>
-    <h1 class="method">Métodos de Pagos</h1>
+    <!-- <h1 class="method">Métodos de Pagos</h1> -->
   </header>
 
   <div class="payment-method" *ngIf="status === 'complete'">
@@ -38,11 +38,18 @@
           <h3 class="label">Impuestos</h3>
           <h2 class="amount">RD $ 0</h2>
         </div>
+        <div class="amount-flex-wrapper" *ngIf="paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage">
+          <h3 class="label">Fee de Paypal</h3>
+          <h2 class="amount">RD $ {{ (paymentAmount * electronicPayments[0]?.feePercentage) | number : "1.2-2" }}</h2>
+        </div>
       </ng-container>
       <div class="amount-flex-wrapper">
-        <h3 class="label">Total a pagar</h3>
-        <h2 class="amount">RD $ {{ paymentAmount | number : "1.2-2" }}</h2>
+        <h3 class="label highlight">Total a pagar</h3>
+        <h2 class="amount highlight">RD $ {{ (paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage ? (paymentAmount * electronicPayments[0]?.feePercentage) + paymentAmount : paymentAmount) | number : "1.2-2" }}</h2>
       </div>
+
+      <br>
+      <hr style="margin: 0;">
 
       <div class="refunds-policies" *ngIf="viewMerchantForRefund">
         <div class="labels">
@@ -72,7 +79,39 @@
     </div>
     <span class="payment-selection"> Como prefieres pagar?</span>
 
-    <ng-container *ngIf="!selectedBank">
+    <div style="margin-top: 2em;">
+      <button mat-button [ngClass]="{ active: paymentMethod === 'bank-transfer' }" class="option-cta" (click)="selectPaymentMethod('bank-transfer')" *ngIf="paymentMethod !== 'paypal' && banks.length">
+        Transferencia bancaria
+      </button>
+  
+      <button mat-button [ngClass]="{ active: paymentMethod === 'paypal' }" class="option-cta" (click)="selectPaymentMethod('paypal')" *ngIf="paymentMethod !== 'bank-transfer' && electronicPayments.length">
+        Paypal
+      </button>
+    </div>
+
+    <ng-container *ngIf="paymentMethod">
+      <p class="text-description" *ngIf="paymentMethod === 'bank-transfer'">
+        Por favor transfiera en el <span *ngFor="let bank of banks; let i = index">{{ bank.bankName }}, cuenta {{ bank.account }} {{ (banks.length > 1 && i + 1 !== banks.length) ? 'o ' : '' }}</span> y suba aquí una foto de la pantalla 👇
+      </p>
+      <p class="text-description" *ngIf="paymentMethod === 'paypal'">
+        PayPal te cobra un {{ electronicPayments[0]?.feePercentage | percent:'1.1-2' }} adicional. Por favor haga el pago en <span *ngFor="let electronicPayment of electronicPayments; let i = index">{{ electronicPayment.email }} {{ (electronicPayments.length > 1 && i + 1 !== electronicPayments.length) ? 'o ' : '' }}</span> y suba aquí una foto de la pantalla 👇
+      </p>
+
+      <div 
+        mat-button class="file-chooser" 
+        (click)="fileChooser.click()" 
+        [ngStyle]="{ 
+          backgroundImage: 'url(' + imageBase64 + ')',
+          padding: imageBase64 ? '70px' : '50px'
+        }"
+      >
+        <mat-icon style="color: #87CD9B; font-size: 45px; font-weight: bold;" *ngIf="!imageBase64">add</mat-icon>
+      </div>
+    </ng-container>
+
+    <input #fileChooser type="file" [accept]="['.png', '.jpg', '.jpeg', '.webp']" style="display: none;" (change)="fileUpload($event)">
+
+    <!-- <ng-container *ngIf="!selectedBank">
       <div 
         class="payment-options-wrapper"
         (click)="acceptedRefundPolicies || !viewMerchantForRefund ? null : remindRefundPolicies()"
@@ -112,9 +151,9 @@
         >
         </app-answer-selector>
       </div>
-    </ng-container>
+    </ng-container> -->
 
-    <ng-container *ngIf="selectedBank">
+    <!-- <ng-container *ngIf="selectedBank">
       <div class="option-content">
         <div class="option-icon-wrapper">
           <svg
@@ -122,7 +161,6 @@
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 640 512"
           >
-            <!--! Font Awesome Pro 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
             <path
               d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64H337.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64zm64 64H96v64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64h64V320zM320 352c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96s43 96 96 96z"
             />
@@ -142,7 +180,7 @@
           <button class="option-remove" (click)="removeBank()">X</button>
         </div>
       </div>
-    </ng-container>
+    </ng-container> -->
   </div>
 
   <ng-container *ngIf="selectedBank">
@@ -170,13 +208,13 @@
   </ng-container>
 
   <app-sticky-button
-    *ngIf="selectedBank && (order || (!order && depositAmount > 0))"
+    *ngIf="paymentMethod && (order || (!order && depositAmount > 0))"
     (click)="!disableButton && image && submitPayment()"
     [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
     [text]="
       image
         ? 'SALVAR EL PAGO & FACTURAR'
-        : selectedBank
+        : paymentMethod
         ? 'SUBE LA IMAGEN QUE EVIDENCIA EL PAGO'
         : ''
     "

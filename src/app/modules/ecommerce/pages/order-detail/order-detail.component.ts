@@ -199,27 +199,27 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.route.queryParams.subscribe(async (queryParams) => {
-      const {
-        notify: notification,
-        redirectTo,
-        from,
-        navigationWithMessage,
-      } = queryParams;
-      this.notify = Boolean(notification);
-      this.redirectTo = redirectTo;
-      this.from = from;
-      this.navigationWithMessage = navigationWithMessage;
+    // this.route.queryParams.subscribe(async (queryParams) => {
+    //   const {
+    //     notify: notification,
+    //     redirectTo,
+    //     from,
+    //     navigationWithMessage,
+    //   } = queryParams;
+    //   this.notify = Boolean(notification);
+    //   this.redirectTo = redirectTo;
+    //   this.from = from;
+    //   this.navigationWithMessage = navigationWithMessage;
 
-      if (typeof redirectTo === 'undefined') this.redirectTo = null;
+    //   if (typeof redirectTo === 'undefined') this.redirectTo = null;
 
-      this.route.params.subscribe(async (params) => {
-        const { orderId } = params;
+    //   this.route.params.subscribe(async (params) => {
+    //     const { orderId } = params;
 
-        await this.executeProcessesAfterLoading(orderId, notification);
-        //console.log(this.order.user._id);
-      });
-    });
+    //     await this.executeProcessesAfterLoading(orderId, notification);
+    //     //console.log(this.order.user._id);
+    //   });
+    // });
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {

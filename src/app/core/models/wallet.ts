@@ -12,6 +12,7 @@ export class ElectronicPayment extends Model<ElectronicPayment> {
     email: string;
     link?: string;
     name?: string;
+    feePercentage?: number;
 }
 
 export class ExchangeData extends Model<ExchangeData> {
@@ -28,7 +29,7 @@ export class Bank extends Model<Bank> {
     account: string;
     routingNumber: number;
     bankName?: string;
-
+    feePercentage?: number;
     name?: string;
 }
 

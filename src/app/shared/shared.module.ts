@@ -209,6 +209,7 @@ import { WebformClientViewComponent } from './components/webform-client-view/web
 import { AutofocusDirective } from '../core/directives/autofocus.directive';
 import { BuyerNotificationDialogComponent } from './dialogs/buyer-notification-dialog/buyer-notification-dialog.component';
 import { ItemAdminCardComponent } from './components/item-admin-card/item-admin-card.component';
+import { ProgressSliderComponent } from './components/progress-slider/progress-slider.component';
 
 const imports = [
   CommonModule,
@@ -431,7 +432,8 @@ const declarations = [
   WebformClientViewComponent,
   AutofocusDirective,
   BuyerNotificationDialogComponent,
-  ItemAdminCardComponent
+  ItemAdminCardComponent,
+  ProgressSliderComponent
 ];
 
 @NgModule({
