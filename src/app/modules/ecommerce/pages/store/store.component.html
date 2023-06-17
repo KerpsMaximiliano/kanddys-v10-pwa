@@ -14,7 +14,12 @@
     <div class="contact-button">
       <div>
         <div>
-          <mat-icon class="go_back_arrow" (click)="goToAdmin()" *ngIf="adminView">keyboard_arrow_left</mat-icon>
+          <mat-icon
+            class="go_back_arrow"
+            (click)="goToAdmin()"
+            *ngIf="adminView"
+            >keyboard_arrow_left</mat-icon
+          >
           <div
             class="icon"
             [style.background]="
@@ -39,49 +44,49 @@
         </button>
       </div>
     </div>
-  </div>
-  <div class="top-bar">
-    <div
-      *ngIf="tags.length"
-      class="chip-list"
-      #elemt
-      (mousedown)="startDragging($event, elemt)"
-      (mouseup)="stopDragging()"
-      (mouseleave)="stopDragging()"
-      (mousemove)="moveEvent($event, elemt)"
-    >
-      <a
-        class="chip"
-        [routerLink]="[
-          '/ecommerce',
-          headerService.saleflow.merchant.slug,
-          'store'
-        ]"
-        routerLinkActive="selected"
-        [routerLinkActiveOptions]="{ exact: true }"
+
+    <div class="top-bar" *ngIf="tags.length">
+      <div
+        class="chip-list"
+        #elemt
+        (mousedown)="startDragging($event, elemt)"
+        (mouseup)="stopDragging()"
+        (mouseleave)="stopDragging()"
+        (mousemove)="moveEvent($event, elemt)"
       >
-        Todos
-      </a>
-      <a
-        *ngFor="let tag of tags"
-        class="chip"
-        [routerLink]="[
-          '/ecommerce',
-          headerService.saleflow.merchant.slug,
-          'store',
-          'categories',
-          tag._id
-        ]"
-        routerLinkActive="selected"
-      >
-        <!-- <app-gradient-card [tag]="tag"></app-gradient-card> -->
-        {{ tag.name }}
-      </a>
+        <a
+          class="chip"
+          [routerLink]="[
+            '/ecommerce',
+            headerService.saleflow.merchant.slug,
+            'store'
+          ]"
+          routerLinkActive="selected"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Todos
+        </a>
+        <a
+          *ngFor="let tag of tags"
+          class="chip"
+          [routerLink]="[
+            '/ecommerce',
+            headerService.saleflow.merchant.slug,
+            'store',
+            'categories',
+            tag._id
+          ]"
+          routerLinkActive="selected"
+        >
+          <!-- <app-gradient-card [tag]="tag"></app-gradient-card> -->
+          {{ tag.name }}
+        </a>
+      </div>
     </div>
   </div>
+
   <router-outlet></router-outlet>
 </div>
-<br /><br /><br /><br />
 <div id="footer" class="display-footer hide">
   <button class="close" (click)="closeFooter()">X</button>
   <div class="footer-content">
@@ -116,13 +121,17 @@
 <div class="contact-bar">
   <ul>
     <li>
-      <a
-        (click)="displayFooter()"
-        style="cursor: pointer;"
-      >
+      <a (click)="displayFooter()" style="cursor: pointer">
         <div class="contact">
           <div class="logo phone">
-            <img [src]="env + '/icon-i.svg'" alt="" style="filter: invert(99%) sepia(99%) saturate(34%) hue-rotate(112deg) brightness(106%) contrast(100%);">
+            <img
+              [src]="env + '/icon-i.svg'"
+              alt=""
+              style="
+                filter: invert(99%) sepia(99%) saturate(34%) hue-rotate(112deg)
+                  brightness(106%) contrast(100%);
+              "
+            />
           </div>
         </div>
       </a>
@@ -167,7 +176,10 @@
       </a>
     </li>
     <ng-container *ngIf="headerService.merchantContact">
-      <li *ngFor="let link of headerService.merchantContact.link" [ngStyle]="{ display: link.name !== 'Twitter' ? 'block' : 'none' }">
+      <li
+        *ngFor="let link of headerService.merchantContact.link"
+        [ngStyle]="{ display: link.name !== 'Twitter' ? 'block' : 'none' }"
+      >
         <a [href]="link.value" target="_blank" *ngIf="link.name !== 'Twitter'">
           <div class="contact">
             <div class="logo instagram" *ngIf="link.name == 'Instagram'">
@@ -184,14 +196,22 @@
       </li>
     </ng-container>
   </ul>
-  <div style="display: flex; justify-content: center; align-items: center;">
+  <div style="display: flex; justify-content: center; align-items: center">
     <ng-container *ngIf="!headerService.order?.products?.length">
-      <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px">
+      <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px" />
       <p class="highlighted-text">Stars for causes</p>
     </ng-container>
-    <div class="cart-container" *ngIf="headerService.order?.products?.length" (click)="goToCart()">
+    <div
+      class="cart-container"
+      *ngIf="headerService.order?.products?.length"
+      (click)="goToCart()"
+    >
       {{ headerService.order?.products?.length }}
-      <img [src]="env + '/cart-green.png'" alt="" style="width: 15px; margin-bottom: 2px;">
+      <img
+        [src]="env + '/cart-green.png'"
+        alt=""
+        style="width: 15px; margin-bottom: 2px"
+      />
     </div>
   </div>
 </div>

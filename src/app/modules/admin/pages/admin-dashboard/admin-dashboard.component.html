@@ -66,14 +66,14 @@
       }"
     >
       <swiper [config]="swiperConfig" class="category-swiper">
-        <div
+        <!-- <div
           class="category-item"
           [ngClass]="{
             active: !selectedFilter && !selectedTags.length
           }"
         >
           TODOS
-        </div>
+        </div> -->
         <div
           class="category-item queryParam"
           *ngFor="let filter of filters; let i = index"
@@ -305,11 +305,11 @@
       <img [src]="environment + '/dots-black.svg'" alt="" />
     </div>
 
-    <div class="uploadButton">
+    <!-- <div class="uploadButton">
       <button mat-fab class="button" (click)="settings()">
         <mat-icon style="color: #82f18d">menu</mat-icon>
       </button>
-    </div>
+    </div> -->
 
     <div
       [ngStyle]="{

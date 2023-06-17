@@ -1,0 +1,92 @@
+<div class="container">
+  <header>
+    <button (click)="goBack()">
+      <i
+        style="color: #c4c5c3; cursor: pointer; font-size: 1.2rem"
+        class="fas fa-chevron-left"
+      ></i>
+    </button>
+
+    <h3>Nuevo Simbolo</h3>
+  </header>
+
+  <main>
+    <form [formGroup]="postForm">
+      <textarea
+        formControlName="message"
+        placeholder="Escribe el mensaje de dedicatoria.."
+        cols="30"
+        rows="10"
+      ></textarea>
+
+      <div class="icons-row" *ngIf="postsService.post?.slides?.length === 0">
+        <img
+          (click)="goToMediaUpload()"
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery-black2.svg"
+          class="icon gray"
+        />
+      </div>
+
+      <ng-container *ngIf="postsService.post?.slides?.length > 0">
+        <app-qr-content
+          [slides]="postsService.post.slides"
+          [title]="'Contenido del QR'"
+          [mode]="'SMALL'"
+          [editing]="false"
+          [defaultText]="'Incluyes fotos, memes, videos o música.'"
+          (buttonClicked)="(null)"
+        ></app-qr-content>
+      </ng-container>
+    </form>
+
+    <!--
+      <div class="posts-virtual-content-wrapper">
+        <div class="posts-virtual-content-grid">
+          <div
+            class="media-wrapper"
+            *ngFor="let media of postsService.post.slides"
+          ></div>
+        </div>
+        <div class="upload-button">
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+            alt=""
+          />
+        </div>
+      </div>
+    -->
+  </main>
+
+  <footer>
+    <button
+      class="left"
+      (click)="
+        !(
+          postForm.controls.message.value?.length ||
+          postsService.post.slides?.length
+        )
+          ? goToPostDetail('DEMO')
+          : goToPostDetail('PREVIEW')
+      "
+    >
+      {{
+        !(
+          postForm.controls.message.value?.length ||
+          postsService.post.slides?.length
+        )
+          ? "Mira un Demo"
+          : "Preview de la versión virtual"
+      }}
+    </button>
+    <button
+      class="right"
+      *ngIf="
+        postForm.controls.message.value?.length ||
+        postsService.post.slides?.length
+      "
+      (click)="save()"
+    >
+      Guardar
+    </button>
+  </footer>
+</div>

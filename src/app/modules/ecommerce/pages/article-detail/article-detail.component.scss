@@ -94,7 +94,7 @@ h3 {
     background-position: center;
     background-repeat: no-repeat;
     background-color: #2e2e2e;
-    background-size: contain;
+    background-size: cover;
   }
 
   video {
@@ -199,7 +199,7 @@ video {
 .current-media-shown-indicators {
   height: 3px;
   max-width: 500px;
-  background-color: white;
+  background-color: #7B7B7B;
   display: grid;
 }
 
@@ -209,7 +209,7 @@ video {
   border-right: 1px solid black;
 
   &.active {
-    background-color: #82f18d;
+    background-color: #6FCF97;
   }
 }
 
@@ -343,6 +343,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #171D16;
 
   .title {
     font-family: SfProLight;
@@ -351,8 +352,14 @@ header {
   }
 }
 .information {
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  max-width: 500px;
   background-color: #171d16;
-  padding: 14px;
+  z-index: 9999;
+  padding: 15px 45px 32px 17px;
+  min-height: 96px;
 
   button {
     padding: 0;
@@ -361,15 +368,15 @@ header {
     text-align: left;
   }
 
-  p {
+  & > p {
     color: #ffffff;
     font-size: 15px;
     font-family: SfProLight;
 
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
 
     &::before {
@@ -382,6 +389,38 @@ header {
     }
   }
 }
+
+.expandedInfo {
+  padding: 240px 18px 98px 18px;
+  background: linear-gradient(180deg, rgba(72, 72, 72, 0) 0%, #181d17 47.57%);
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  max-width: 500px;
+  z-index: 9999;
+  color: #ffffff;
+  font-family: InterRegular;
+  font-size: 19px;
+
+  .close-btn-flex {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 26px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .expandedParragraph {
+    margin-top: 20px;
+    font-size: 19px;
+    font-family: InterRegular;
+    margin-right: 2px;
+  }
+}
+
 .actions {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -407,4 +446,13 @@ header {
       background-color: #c1c4c1;
     }
   }
+}
+
+.just-message {
+  background-color: #171d16;
+  padding: 172px 18px;
+  font-family: InterRegular;
+  font-size: 19px;
+  color: #ffffff;
+  height: 100%;
 }

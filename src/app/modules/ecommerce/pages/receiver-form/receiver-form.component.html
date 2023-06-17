@@ -1,10 +1,57 @@
 <div class="container">
+  <header>
+    <i class="fas fa-chevron-left" (click)="goBack()"></i>
 
-    <header>
-        <i class="fas fa-chevron-left" (click)="goBack()"></i>
-    </header>
+    <button
+      style="margin-left: auto; color: #87cd9b"
+      *ngIf="form.valid"
+      (click)="save()"
+    >
+      Continuar
+    </button>
+  </header>
 
-    <main>
+  <main class="options-section" style="padding: 0px 20px" [formGroup]="form">
+    <p class="title">
+      Quien recibirá lo comprado? (Ej: Juan el portero del edificio. Michelle la
+      que cumpleaños)
+    </p>
+    <input
+      #input
+      type="text"
+      placeholder="Escribe..."
+      formControlName="receiverName"
+    />
+    <p class="title">Teléfono de quien recibirá lo comprado (opcional)</p>
+    <ngx-intl-tel-input
+      [cssClass]="'custom'"
+      [enableAutoCountrySelect]="true"
+      [enablePlaceholder]="true"
+      [searchCountryFlag]="true"
+      [selectFirstCountry]="false"
+      [preferredCountries]="preferredCountries"
+      [selectedCountryISO]="CountryISO"
+      maxLength="13"
+      minlength="10"
+      [phoneValidation]="true"
+      [separateDialCode]="true"
+      [customPlaceholder]="'(000) 000-0000'"
+      [numberFormat]="PhoneNumberFormat.International"
+      tabindex="1"
+      id="phone"
+      formControlName="receiverPhoneNumber"
+    ></ngx-intl-tel-input>
+
+    <p class="title">Quien envía? Dejar vacío si es anónimo</p>
+    <input
+      #input2
+      type="text"
+      placeholder="Escribe..."
+      formControlName="senderName"
+    />
+  </main>
+
+  <!-- <main>
         <div class="options-section">
             <h3>¿Quien recibirá lo que compraste?</h3>
             <button mat-button [ngClass]="{ active: receiver === 'me' }" class="option-cta" (click)="receiver = 'me'">
@@ -62,6 +109,5 @@
         <div style="text-align: center;">
             <button mat-button [ngClass]="{ active: isValid() }" class="cta" (click)="submit()">Continuar</button>
         </div>
-    </main>
-
+    </main> -->
 </div>

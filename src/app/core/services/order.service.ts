@@ -107,11 +107,16 @@ export class OrderService {
     ocr: OCRInput,
     userId: string,
     payMode: string,
-    orderId: string
+    orderId: string,
+    setting?: {
+      income?: string,
+      paymentMethod: string,
+      paymentReceiverId: string
+    }
   ): Promise<{ payOrder: { _id: string } }> {
     const result = await this.graphql.mutate({
       mutation: payOrder,
-      variables: { ocr, userId, payMode, orderId },
+      variables: { setting, ocr, userId, payMode, orderId },
       context: { useMultipart: true },
     });
 

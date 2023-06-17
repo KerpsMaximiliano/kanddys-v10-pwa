@@ -135,8 +135,9 @@ export class CheckoutComponent implements OnInit {
   areWebformsValid: boolean = false;
   webformPreview: boolean = false;
   URI: string = environment.uri;
-  atStart: 'auth-order-and-create-answers-for-every-item' =
-    'auth-order-and-create-answers-for-every-item';
+  atStart:
+    | 'auth-order-and-create-answers-for-every-item'
+    | 'auth-entity-template-and-add-recipients' = null;
 
   totalItems: number = 0;
   panelOpenState = false;
@@ -184,10 +185,20 @@ export class CheckoutComponent implements OnInit {
         atStart,
         orderId,
         answers,
+        data,
       } = queryParams;
 
       //Handles magic link cases
       this.atStart = atStart;
+
+      let queryParamsDecoded: any;
+      if (data) {
+        queryParamsDecoded = JSON.parse(decodeURIComponent(data));
+
+        if (queryParamsDecoded.atStart) {
+          this.atStart = queryParamsDecoded.atStart;
+        }
+      }
 
       if (this.atStart === 'auth-order-and-create-answers-for-every-item') {
         const answersDecoded: Array<{
@@ -234,6 +245,47 @@ export class CheckoutComponent implements OnInit {
             relativeTo: this.route,
             replaceUrl: true,
           });
+          return;
+        }
+
+        return;
+      } else if (this.atStart === 'auth-entity-template-and-add-recipients') {
+        this.postsService.postReceiverNumber =
+          queryParamsDecoded.entityTemplateRecipient;
+
+        this.postsService.postAddUser(
+          queryParamsDecoded.post,
+          this.headerService.user._id
+        );
+
+        await this.orderService.authOrder(
+          queryParamsDecoded.orderId,
+          this.headerService.user._id
+        );
+
+        await this.createEntityTemplateForOrderPost(queryParamsDecoded.post);
+
+        this.appService.events.emit({ type: 'order-done', data: true });
+        if (this.hasPaymentModule) {
+          if (this.postsService.privatePost && !this.logged) {
+            //REEMPLAZAR AQUI
+          }
+          localStorage.removeItem('privatePost');
+          this.postsService.privatePost = false;
+          unlockUI();
+          this.router.navigate([`../payments/${queryParamsDecoded.orderId}`], {
+            relativeTo: this.route,
+            replaceUrl: true,
+          });
+          return;
+        } else {
+          this.router.navigate(
+            [`../../order-detail/${queryParamsDecoded.orderId}`],
+            {
+              relativeTo: this.route,
+              replaceUrl: true,
+            }
+          );
           return;
         }
 
@@ -779,9 +831,36 @@ export class CheckoutComponent implements OnInit {
           ?.createPost?._id;
         this.headerService.order.products[0].post = postResult;
 
-        //await this.createEntityTemplateForOrderPost(postResult);
+        await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       } else if (this.postsService.privatePost) {
+        unlockUI();
+
+        lockUI();
+
+        const postResult = (await this.postsService.createPost(this.post))
+          ?.createPost?._id;
+
+        this.headerService.order.products[0].post = postResult;
+
+        const entityTemplate =
+          await this.entityTemplateService.precreateEntityTemplate();
+
+        const createdOrder = (
+          await this.orderService.createPreOrder(this.headerService.order)
+        )?.createPreOrder._id;
+
+        if (
+          this.hasDeliveryZone &&
+          this.deliveryZone &&
+          this.deliveryLocation.street
+        ) {
+          await this.orderService.orderSetDeliveryZone(
+            this.deliveryZone.id,
+            createdOrder
+          );
+        }
+
         unlockUI();
 
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
@@ -793,6 +872,14 @@ export class CheckoutComponent implements OnInit {
                 this.headerService.saleflow.merchant.slug +
                 '/checkout',
               entity: 'EntityTemplatePostCreation',
+              redirectionRouteQueryParams: {
+                data: JSON.stringify({
+                  atStart: 'auth-entity-template-and-add-recipients',
+                  post: postResult,
+                  entityTemplateRecipient: this.postsService.postReceiverNumber,
+                  orderId: createdOrder,
+                }),
+              },
             },
           },
         });
@@ -805,18 +892,19 @@ export class CheckoutComponent implements OnInit {
               value.user || value.session.user;
 
             lockUI();
-            const postResult = (await this.postsService.createPost(this.post))
-              ?.createPost?._id;
+
             this.headerService.order.products[0].post = postResult;
 
-            //await this.createEntityTemplateForOrderPost(postResult);
+            await this.createEntityTemplateForOrderPost(
+              postResult,
+              entityTemplate
+            );
             await this.finishOrderCreation();
           }
         });
 
         return;
       } else if (!this.logged && this.areWebformsValid) {
-
         const createdOrder = (
           await this.orderService.createPreOrder(this.headerService.order)
         )?.createPreOrder._id;
@@ -861,7 +949,7 @@ export class CheckoutComponent implements OnInit {
 
         this.headerService.order.products[0].post = postResult;
 
-        //await this.createEntityTemplateForOrderPost(postResult);
+        await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
       }
     } else {
@@ -878,9 +966,8 @@ export class CheckoutComponent implements OnInit {
 
       if (this.headerService.user && !anonymous) {
         console.log(this.headerService.order);
-        createdOrder = (
-          await this.orderService.createOrder(this.orderInMemory)
-        ).createOrder._id;
+        createdOrder = (await this.orderService.createOrder(this.orderInMemory))
+          .createOrder._id;
 
         if (
           this.hasDeliveryZone &&
@@ -1031,19 +1118,22 @@ export class CheckoutComponent implements OnInit {
     return answers;
   }
 
-  /*
-  createEntityTemplateForOrderPost = async (postId: string) => {
+  createEntityTemplateForOrderPost = async (
+    postId: string,
+    entityTemplateToUpdate: EntityTemplate = null
+  ) => {
     try {
-      const entityTemplate =
-        await this.entityTemplateService.createEntityTemplate();
+      const entityTemplate = !entityTemplateToUpdate
+        ? await this.entityTemplateService.createEntityTemplate()
+        : entityTemplateToUpdate;
 
       await this.entityTemplateService.entityTemplateAuthSetData(
         entityTemplate._id,
         {
           reference: postId,
           entity: 'post',
-          access: Boolean(this.postsService.privatePost) ? 'private' : 'public',
-          templateNotifications:
+          access: Boolean(this.postsService.privatePost || this.postsService.postReceiverNumber?.length > 0) ? 'private' : 'public',
+          /*templateNotifications:
             this.postsService.entityTemplateNotificationsToAdd.map(
               (keyword) => ({
                 key: keyword,
@@ -1059,7 +1149,7 @@ export class CheckoutComponent implements OnInit {
                       entityTemplate._id +
                       '\nAccedió el receptor: ',
               })
-            ),
+            ),*/
         }
       );
 
@@ -1070,7 +1160,7 @@ export class CheckoutComponent implements OnInit {
           phone: this.postsService.postReceiverNumber,
         });
 
-        if (this.postsService.privatePost) {
+        if (this.postsService.privatePost || this.postsService.postReceiverNumber?.length > 0) {
           await this.entityTemplateService.entityTemplateAddRecipient(
             entityTemplate._id,
             {
@@ -1085,7 +1175,7 @@ export class CheckoutComponent implements OnInit {
     } catch (error) {
       console.error('ocurrio un error al crear el simbolo', error);
     }
-  };*/
+  };
 
   login() {
     localStorage.removeItem('privatePost');

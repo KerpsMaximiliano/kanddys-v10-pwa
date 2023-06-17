@@ -10,7 +10,7 @@ import { ItemOrder } from 'src/app/core/models/order';
 import { Post } from 'src/app/core/models/post';
 import { User } from 'src/app/core/models/user';
 import { ViewsMerchant } from 'src/app/core/models/views-merchant';
-import { Bank } from 'src/app/core/models/wallet';
+import { Bank, ElectronicPayment } from 'src/app/core/models/wallet';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { EntityTemplateService } from 'src/app/core/services/entity-template.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -37,6 +37,7 @@ import {
   LoginDialogData,
 } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 
 @Component({
   selector: 'app-payments',
@@ -50,10 +51,12 @@ export class PaymentsComponent implements OnInit {
   selectedBank: Bank;
   selectedOption: number;
   image: File;
+  imageBase64: string;
   subtotal: number;
   deliveryAmount: number;
   paymentAmount: number;
   banks: Bank[];
+  electronicPayments: ElectronicPayment[];
   order: ItemOrder;
   merchant: Merchant;
   whatsappLink: string;
@@ -63,6 +66,7 @@ export class PaymentsComponent implements OnInit {
   currentUser: User;
   acceptedRefundPolicies: boolean = false;
   openedDialogFlow: boolean;
+  paymentMethod: 'bank-transfer' | 'paypal';
   onlinePaymentsOptions: WebformAnswerLayoutOption[] = [
     {
       type: 'WEBFORM-ANSWER',
@@ -344,6 +348,7 @@ export class PaymentsComponent implements OnInit {
         );
 
         this.banks = exchangeData?.ExchangeData?.bank;
+        this.electronicPayments = exchangeData?.ExchangeData?.electronicPayment;
 
         const registeredUser = JSON.parse(
           localStorage.getItem('registered-user')
@@ -488,6 +493,15 @@ export class PaymentsComponent implements OnInit {
       });
   }
 
+  fileUpload(event: any) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.imageBase64 = e.target.result as string;
+      this.image = base64ToFile(e.target.result as string);
+    };
+    reader.readAsDataURL(event.target.files[0] as File);
+  }
+
   onFileInput(file: File | { image: File; index: number }) {
     if (!('index' in file)) this.image = file;
   }
@@ -569,7 +583,11 @@ export class PaymentsComponent implements OnInit {
       },
       this.order.user._id,
       'bank-transfer',
-      this.order._id
+      this.order._id,
+      {
+        paymentMethod: this.paymentMethod,
+        paymentReceiverId: this.paymentMethod === 'bank-transfer' ? this.banks[0]?.paymentReceiver._id : this.electronicPayments[0]?.paymentReceiver._id,
+      }
     );
     unlockUI();
     this.orderCompleted();
@@ -842,5 +860,15 @@ export class PaymentsComponent implements OnInit {
         panelClass: ['mat-accent'],
       }
     );
+  }
+
+  selectPaymentMethod(method: 'bank-transfer' | 'paypal') {
+    if (!this.paymentMethod) this.paymentMethod = method;
+    else if (this.paymentMethod === method) {
+      this.paymentMethod = null;
+      this.image = null;
+      this.imageBase64 = null;
+    }
+    else this.paymentMethod = method;
   }
 }
