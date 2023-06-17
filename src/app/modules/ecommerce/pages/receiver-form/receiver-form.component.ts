@@ -11,7 +11,12 @@ import {
   PhoneNumberFormat,
   SearchCountryField,
 } from 'ngx-intl-tel-input';
-import { FormBuilder, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-receiver-form',
@@ -40,8 +45,6 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
 
   env: string = environment.assetsUrl;
 
-  name: string = '';
-
   CountryISO = CountryISO.DominicanRepublic;
   preferredCountries: CountryISO[] = [
     CountryISO.DominicanRepublic,
@@ -49,34 +52,18 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   ];
   PhoneNumberFormat = PhoneNumberFormat;
 
-  inputPhone;
-  phoneNumber: string;
-  mail: string = '';
-
-  senderName: string = '';
-
-  itemFormPhone = this._formBuilder.group({
-    phone: [
-      null,
-      [Validators.required, Validators.minLength(12), Validators.maxLength(15)],
-    ],
-  });
-
-  itemFormMail = this._formBuilder.group({
-    mail: [
-      null,
-      [
-        Validators.required,
-        Validators.pattern(
-          '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'
-        ),
-      ],
-    ],
+  form: FormGroup = new FormGroup({
+    receiverName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/[\S]/),
+    ]),
+    receiverPhoneNumber: new FormControl(''),
+    senderName: new FormControl('', [Validators.pattern(/[\S]/)]),
   });
 
   constructor(
+    public headerService: HeaderService,
     private postsService: PostsService,
-    private headerService: HeaderService,
     private router: Router,
     private route: ActivatedRoute,
     private _formBuilder: FormBuilder
@@ -108,20 +95,39 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
     );
   }
 
+  /*
+     receiverName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/[\S]/),
+    ]),
+    receiverPhoneNumber: new FormControl(''),
+    senderName: new FormControl('', [Validators.pattern(/[\S]/)]),
+  */
+
   save() {
     this.postsService.post = {
-      ...this.data,
-      provisionalReceiver: this.receiverName,
-      provisionalReceiverContact: this.receiverContact,
-      receiver: this.receiver,
-      isAnonymous: this.isAnonymous,
+      ...this.postsService.post,
+      from:
+        this.form.controls['senderName'].value !== ''
+          ? this.form.controls['senderName'].value
+          : 'Anónimo',
+      to: this.form.controls['receiverName'].value,
+      provisionalReceiverContact:
+        this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
+          '+'
+        )[1],
     };
     this.headerService.post = {
-      ...this.data,
-      provisionalReceiver: this.receiverName,
-      provisionalReceiverContact: this.receiverContact,
-      receiver: this.receiver,
-      isAnonymous: this.isAnonymous,
+      ...this.postsService.post,
+      from:
+        this.form.controls['senderName'].value !== ''
+          ? this.form.controls['senderName'].value
+          : 'Anónimo',
+      to: this.form.controls['receiverName'].value,
+      provisionalReceiverContact:
+        this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
+          '+'
+        )[1],
     };
     localStorage.setItem(
       'post',
@@ -130,20 +136,18 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
         title: this.postsService.post.title,
         to: this.postsService.post.to,
         from: this.postsService.post.from,
-        provisionalReceiver: this.receiverName,
         provisionalReceiverContact: this.receiverContact,
-        receiver: this.receiver,
-        isAnonymous: this.isAnonymous,
       })
     );
+
+    this.router.navigate([
+      `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`
+    ]);
   }
 
   goBack() {
     this.save();
-    return this.router.navigate([
-      `ecommerce/${this.headerService.saleflow.merchant.slug}/` +
-        this.redirectTo,
-    ]);
+    return this.headerService.redirectFromQueryParams();
   }
 
   submit() {
@@ -179,20 +183,6 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   onReceiverInput(event: Event | string, input: HTMLInputElement) {
     this.receiverName = input.value;
     console.log(this.receiverName);
-  }
-  onSenderInput(event: Event | string, input: HTMLInputElement) {
-    this.senderName = input.value;
-    console.log(this.senderName);
-  }
-
-  async onPhoneInput() {
-    if (this.inputPhone != null) {
-      let data: any = this.inputPhone;
-      this.phoneNumber = data.e164Number;
-      console.log('full number: ', data.e164Number);
-    }
-    this.itemFormPhone.get('phone').patchValue(this.phoneNumber);
-    console.log(this.itemFormPhone.valid);
   }
 
   ngOnDestroy(): void {

@@ -38,6 +38,7 @@ export class PostsService {
   post: PostInput;
   privatePost: boolean;
   postReceiverNumber: string;
+  postReceiverEmail: string;
   content: PostContent;
   swiperConfig: SwiperOptions;
   dialogs: Array<EmbeddedComponentWithId> = [];

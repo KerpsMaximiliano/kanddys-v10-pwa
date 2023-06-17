@@ -1,6 +1,6 @@
 <div class="container">
   <header>
-    <button>
+    <button (click)="goBack()">
       <i
         style="color: #c4c5c3; cursor: pointer; font-size: 1.2rem"
         class="fas fa-chevron-left"
@@ -19,7 +19,7 @@
         rows="10"
       ></textarea>
 
-      <div class="icons-row" *ngIf="postsService.post?.slides.length === 0">
+      <div class="icons-row" *ngIf="postsService.post?.slides?.length === 0">
         <img
           (click)="goToMediaUpload()"
           src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery-black2.svg"
@@ -27,7 +27,7 @@
         />
       </div>
 
-      <ng-container *ngIf="postsService.post?.slides.length > 0">
+      <ng-container *ngIf="postsService.post?.slides?.length > 0">
         <app-qr-content
           [slides]="postsService.post.slides"
           [title]="'Contenido del QR'"

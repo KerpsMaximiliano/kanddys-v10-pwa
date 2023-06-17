@@ -13,8 +13,14 @@ header {
     font-size: 22px;
     color: #c4c5c3;
   }
+
+  button {
+    all: unset;
+    cursor: pointer;
+  }
 }
 
+/*
 main {
   margin: 10px 15px;
   .options-section {
@@ -89,7 +95,7 @@ main {
       }
     }
   }
-}
+}*/
 
 .content {
   padding: 0px 20px;
@@ -164,13 +170,15 @@ input {
   font-family: SFProSemibold;
 }
 
-::ng-deep #phone {
-  background-color: transparent;
-  color: #ffffff;
-  box-shadow: none;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid #82f18d;
+.options-section {
+  ::ng-deep #phone {
+    background-color: transparent;
+    color: #ffffff;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid #82f18d;
+  }
 }
 
 .title {

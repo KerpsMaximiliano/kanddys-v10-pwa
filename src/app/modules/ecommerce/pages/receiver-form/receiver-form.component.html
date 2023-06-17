@@ -1,21 +1,28 @@
 <div class="container">
   <header>
     <i class="fas fa-chevron-left" (click)="goBack()"></i>
+
+    <button
+      style="margin-left: auto; color: #87cd9b"
+      *ngIf="form.valid"
+      (click)="save()"
+    >
+      Continuar
+    </button>
   </header>
 
-  <div class="options-section" style="padding: 0px 20px">
+  <main class="options-section" style="padding: 0px 20px" [formGroup]="form">
     <p class="title">
-      Quien lo recibirá? (Ej: Juan el portero del edificio, Michelle la que
-      cumple años)
+      Quien recibirá lo comprado? (Ej: Juan el portero del edificio. Michelle la
+      que cumpleaños)
     </p>
     <input
       #input
       type="text"
       placeholder="Escribe..."
-      [(ngModel)]="name"
-      (input)="onReceiverInput($event, input)"
+      formControlName="receiverName"
     />
-    <p class="title">Telefono de quien recibirá (opcional)</p>
+    <p class="title">Teléfono de quien recibirá lo comprado (opcional)</p>
     <ngx-intl-tel-input
       [cssClass]="'custom'"
       [enableAutoCountrySelect]="true"
@@ -32,8 +39,7 @@
       [numberFormat]="PhoneNumberFormat.International"
       tabindex="1"
       id="phone"
-      [(ngModel)]="inputPhone"
-      (ngModelChange)="onPhoneInput()"
+      formControlName="receiverPhoneNumber"
     ></ngx-intl-tel-input>
 
     <p class="title">Quien envía? Dejar vacío si es anónimo</p>
@@ -41,10 +47,9 @@
       #input2
       type="text"
       placeholder="Escribe..."
-      [(ngModel)]="name"
-      (input)="onSenderInput($event, input2)"
+      formControlName="senderName"
     />
-  </div>
+  </main>
 
   <!-- <main>
         <div class="options-section">

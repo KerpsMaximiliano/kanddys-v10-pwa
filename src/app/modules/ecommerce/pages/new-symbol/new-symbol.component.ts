@@ -47,6 +47,17 @@ export class NewSymbolComponent implements OnInit {
   save() {
     this.postsService.post.message = this.postForm.controls['message'].value;
 
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+
+    this.router.navigate([
+      'ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/giftcard-details',
+    ]);
+  }
+
+  goBack() {
     this.router.navigate([
       'ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',
     ]);
@@ -64,7 +75,7 @@ export class NewSymbolComponent implements OnInit {
       {
         queryParams: {
           mode,
-          redirectTo: 'post-edit'
+          redirectTo: 'post-edit',
         },
       }
     );

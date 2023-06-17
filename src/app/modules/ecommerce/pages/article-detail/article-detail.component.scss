@@ -359,6 +359,7 @@ header {
   background-color: #171d16;
   z-index: 9999;
   padding: 15px 45px 32px 17px;
+  min-height: 96px;
 
   button {
     padding: 0;
@@ -414,9 +415,9 @@ header {
 
   .expandedParragraph {
     margin-top: 20px;
-    text-align: justify;
     font-size: 19px;
     font-family: InterRegular;
+    margin-right: 2px;
   }
 }
 

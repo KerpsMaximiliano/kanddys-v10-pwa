@@ -7,6 +7,8 @@ import {
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 
 @Component({
   selector: 'app-giftcard-details',
@@ -51,12 +53,13 @@ export class GiftcardDetailsComponent implements OnInit {
   constructor(
     private _formBuilder: FormBuilder,
     private router: Router,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private headerService: HeaderService,
+    private postsService: PostsService
   ) {}
 
   async ngOnInit() {
-    const merchant = this.merchantsService.merchantData;
-    console.log(merchant);
+    if(!this.postsService.post) this.router.navigate(['/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart'])
   }
 
   qrClicked() {
@@ -86,11 +89,37 @@ export class GiftcardDetailsComponent implements OnInit {
   async onPhoneInput() {
     if (this.inputPhone != null) {
       let data: any = this.inputPhone;
-      this.phoneNumber = data.e164Number;
-      console.log('full number: ', data.e164Number);
+      this.phoneNumber = data.e164Number.split('+')[1];
     }
     this.itemFormPhone.get('phone').patchValue(this.phoneNumber);
-    console.log(this.itemFormPhone.valid);
+  }
+
+  save() {
+    if (this.phoneNumber && this.phoneNumber !== '') {
+      this.postsService.postReceiverNumber = this.phoneNumber;
+    } else if (this.mail && this.mail !== '') {
+      this.postsService.postReceiverEmail = this.mail;
+    }
+    this.postsService.privatePost = true;
+    localStorage.setItem('privatePost', 'true');
+
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+
+    this.postsService.post.envelopePresentation = this.isQr ? 'QR' : 'QR-TEXT';
+
+    this.router.navigate([
+      '/ecommerce/' +
+        this.headerService.saleflow.merchant.slug +
+        '/receiver-form',
+    ]);
+  }
+
+  back() {
+    this.router.navigate([
+      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-symbol',
+    ]);
+    //this.headerService.redirectFromQueryParams();
   }
 
   send() {

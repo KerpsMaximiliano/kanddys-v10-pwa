@@ -650,9 +650,20 @@ export class CartComponent implements OnInit {
   }
 
   async submit() {
-    this.router.navigate([
-      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
-    ]);
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+
+    if (this.isCheckboxChecked) {
+      this.router.navigate([
+        '/ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/receiver-form',
+      ]);
+    } else {
+      this.router.navigate([
+        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+      ]);
+    }
   }
 
   async addItemToCart(itemId: string) {
@@ -742,7 +753,7 @@ export class CartComponent implements OnInit {
   toggleCheckbox(event: any) {
     this.isCheckboxChecked = event;
 
-    if (this.isCheckboxChecked) this.postsService.post.appliesMessage = false;
+    if (this.isCheckboxChecked) this.postsService.post = null;
   }
 
   ngOnDestroy(): void {

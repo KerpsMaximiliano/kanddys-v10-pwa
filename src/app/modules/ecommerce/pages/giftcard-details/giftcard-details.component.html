@@ -1,11 +1,12 @@
 <div class="container">
   <header>
     <button>
-      <mat-icon [ngStyle]="{ color: '#7B7B7B' }">chevron_left</mat-icon>
+      <mat-icon [ngStyle]="{ color: '#7B7B7B' }" (click)="back()">chevron_left</mat-icon>
     </button>
     <button
       style="margin-left: auto; color: #87cd9b"
       *ngIf="itemFormPhone.valid || itemFormMail.valid"
+      (click)="save()"
     >
       Continuar
     </button>
@@ -23,15 +24,14 @@
     <div *ngIf="isQr || isText">
       <p class="title">Contenido de la tarjeta dedicatoria:</p>
       <button
-        class="btn"
-        style="background-color: #87cd9b; color: #181d17"
+        class="btn active"
         (click)="backToMain()"
       >
         {{ isQr ? "Solo QR (nada visible)" : "Con el texto escrito y QR" }}
       </button>
 
       <p class="title" style="margin-top: 22px; margin-bottom: 25px">
-        WhatsApp o email que le recibirá el MagicLink para accesar
+        WhatsApp o email que le recibirá el MagicLink para accesar al mensaje del regalo
       </p>
       <ngx-intl-tel-input
         *ngIf="isWhatsapp"
@@ -56,15 +56,18 @@
       <input
         *ngIf="!isWhatsapp"
         #input2
-        type="text"
+        type="email"
         placeholder="Escribe..."
         [(ngModel)]="mail"
         (input)="onMailInput($event, input2)"
       />
-      <button class="option" (click)="changeOption()">
-        Prefiero que me llegue por
-        {{ isWhatsapp ? "Correo Electrónico" : "WhatsApp" }}
-      </button>
+
+      <!--
+        <button class="option" (click)="changeOption()">
+          Prefiero que me llegue por
+          {{ isWhatsapp ? "Correo Electrónico" : "WhatsApp" }}
+        </button>
+      -->
     </div>
   </div>
 </div>

@@ -24,7 +24,9 @@
     font-family: SFProLight;
     color: #ffffff;
     .title {
-      margin-bottom: 25px;
+      font-family: InterRegular;
+      font-size: 17px;
+      margin-bottom: 35px;
     }
     .btn {
       cursor: pointer;
@@ -36,6 +38,18 @@
       border-radius: 27px;
       border: 1px solid #7b7b7b;
       color: #ffffff;
+      font-family: InterRegular;
+      font-size: 17px;
+      /* identical to box height */
+      text-align: center;
+      color: #ffffff;
+
+      &.active {
+        background-color: #87cd9b;
+        color: #181d17;
+        font-family: InterBold;
+        font-size: 17px;
+      }
     }
   }
 
@@ -61,11 +75,13 @@ input {
   font-family: SFProSemibold;
 }
 
-::ng-deep #phone {
-  background-color: transparent;
-  color: #ffffff;
-  box-shadow: none;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid #82f18d;
+.content {
+  ::ng-deep #phone {
+    background-color: transparent;
+    color: #ffffff;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid #82f18d;
+  }
 }
