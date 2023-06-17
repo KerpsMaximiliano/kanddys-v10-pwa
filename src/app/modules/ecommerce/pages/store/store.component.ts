@@ -135,6 +135,7 @@ export class StoreComponent implements OnInit {
     });
     if (tagsList) {
       this.tags = tagsList;
+      this.headerService.tags = this.tags;
       // this.hasCollections = tagsList.some(
       //   (tag) => tag.notes != null && tag.notes != ''
       // );

@@ -47,6 +47,8 @@ import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-
 import { AllItemsComponent } from './pages/all-items/all-items.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
+import { NewSymbolComponent } from './pages/new-symbol/new-symbol.component';
+import { GiftcardDetailsComponent } from './pages/giftcard-details/giftcard-details.component';
 
 const routes: Routes = [
   {
@@ -163,6 +165,10 @@ const routes: Routes = [
         component: ArticleDetailComponent,
       },
       {
+        path: 'article-detail/:entity',
+        component: ArticleDetailComponent,
+      },
+      {
         path: 'order-info/:id',
         component: OrderDetailComponent,
       },
@@ -254,6 +260,14 @@ const routes: Routes = [
         path: 'webform/:itemId',
         component: WebformClientViewComponent,
       },
+      {
+        path: 'new-symbol',
+        component: NewSymbolComponent,
+      },
+      {
+        path: 'giftcard-details',
+        component: GiftcardDetailsComponent,
+      },
     ],
   },
 ];
@@ -295,6 +309,8 @@ const routes: Routes = [
     AllItemsComponent,
     CartComponent,
     ReceiverFormComponent,
+    NewSymbolComponent,
+    GiftcardDetailsComponent,
   ],
   imports: [
     CommonModule,

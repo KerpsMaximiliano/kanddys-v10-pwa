@@ -1,0 +1,29 @@
+<div class="slider">
+  <p class="title">ACTUALIZACION DEL PROGRESO</p>
+  <div class="progress-bar-selected" [style]="getProgressSelected()"></div>
+  <div class="progress-bar">
+    <div
+      class="progress-item first"
+      [ngClass]="{ 'progress-item-selected': this.selected > 0 }"
+    ></div>
+    <div
+      class="progress-item"
+      [ngClass]="{ 'progress-item-selected': this.selected > 1 }"
+    ></div>
+    <div
+      class="progress-item"
+      [ngClass]="{ 'progress-item-selected': this.selected > 2 }"
+    ></div>
+
+    <div
+      class="progress-item last"
+      [ngClass]="{ 'progress-item-selected': this.selected > 3 }"
+    ></div>
+  </div>
+  <div class="flex-space-between">
+    <p class="progress-title" [ngClass]="{'progress-title-selected':this.selected>0}">ProgresoId</p>
+    <p class="progress-title" [ngClass]="{'progress-title-selected':this.selected>1}">ProgresoId</p>
+    <p class="progress-title" [ngClass]="{'progress-title-selected':this.selected>2}">ProgresoId</p>
+    <p class="progress-title" [ngClass]="{'progress-title-selected':this.selected>3}">ProgresoId</p>
+  </div>
+</div>
