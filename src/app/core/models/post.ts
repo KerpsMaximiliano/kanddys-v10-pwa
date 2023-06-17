@@ -87,6 +87,7 @@ export class PostInput {
   receiver?: 'me' | 'gifted' | 'unkwown' | 'known';
   isAnonymous?: boolean;
   appliesMessage?: boolean = true;
+  envelopePresentation?: string;
 }
 
 export class Slide extends Model<Slide> {

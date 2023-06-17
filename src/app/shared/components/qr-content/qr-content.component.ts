@@ -5,6 +5,8 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from '../../dialogs/image-view/image-view.component';
 import { isVideo } from 'src/app/core/helpers/strings.helpers';
 import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { Router } from '@angular/router';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-qr-content',
@@ -20,7 +22,8 @@ export class QrContentComponent implements OnInit {
   @Input() defaultText: string = '';
   @Input() alternateStyles: boolean = false;
   @Output() buttonClicked = new EventEmitter();
-  @Input() showButton:boolean = true;
+  @Input() showButton: boolean = true;
+  @Input() mode: 'LARGE' | 'SMALL' = 'LARGE';
   slidesPath: Array<{
     type: 'IMAGE' | 'VIDEO' | 'TEXT';
     path?: string | SafeUrl;
@@ -32,7 +35,9 @@ export class QrContentComponent implements OnInit {
 
   constructor(
     private _DomSanitizer: DomSanitizer,
-    private dialog: DialogService
+    private router: Router,
+    private dialog: DialogService,
+    private headerService: HeaderService
   ) {}
 
   async ngOnInit() {
@@ -112,5 +117,11 @@ export class QrContentComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  goToMediaUpload() {
+    this.router.navigate([
+      'ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit',
+    ]);
   }
 }

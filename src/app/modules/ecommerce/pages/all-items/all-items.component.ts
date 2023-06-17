@@ -144,6 +144,14 @@ export class AllItemsComponent implements OnInit {
         await this.getItems();
       }
     }
+
+    const topBar = document.querySelector('.top-bar') as HTMLElement;
+
+    if (page.scrollTop > 10 && topBar) {
+      topBar.style.display = 'none';
+    } else if (topBar) {
+      topBar.style.display = 'block';
+    }
   }
 
   async getItems(restartPagination = false) {
@@ -221,7 +229,10 @@ export class AllItemsComponent implements OnInit {
 
     this.items[index].isSelected = !this.items[index].isSelected;
 
-    if (this.items[index].isSelected) this.router.navigate([`/ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`]);
+    if (this.items[index].isSelected)
+      this.router.navigate([
+        `/ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+      ]);
   }
 
   shareStore() {

@@ -1,4 +1,10 @@
-<div class="store-page" (scroll)="infinitePagination()">
+<div
+  class="store-page"
+  (scroll)="infinitePagination()"
+  [ngClass]="{
+    tagsPresent: headerService.tags?.length > 0
+  }"
+>
   <!--REGULAR MERCHANT-->
   <div class="content">
     <div

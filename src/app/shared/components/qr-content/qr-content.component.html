@@ -1,86 +1,178 @@
-<div class="top-flex">
-  <h4>{{ title }}</h4>
-
-</div>
-
-<div
-  class="cards"
-  [ngClass]="{
-    noGrid: slidesPath.length === 0,
-    boxShadow: shadows && slidesPath.length === 0
-  }"
-  (click)="emitClick()"
->
-  <div class="card" *ngFor="let slide of slidesPath; index as i">
-    <div
-      class="itemContainer"
-      *ngIf="slide.type !== 'TEXT'"
-      (click)="
-        slide.type === 'IMAGE'
-          ? openImageModal(filesStrings[i], slide.type)
-          : playVideoOnFullscreen('media' + i)
-      "
-    >
-      <ng-container *ngIf="slide.type === 'IMAGE'">
-        <div
-          class="imgBox"
-          [ngStyle]="{
-            backgroundImage:
-              slide.path +
-              ', url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }"
-        ></div>
-      </ng-container>
-      <ng-container *ngIf="slide.type === 'VIDEO'">
-        <img
-          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
-          alt="play"
-          class="playVideoIcon"
-          style="
-            padding: 1.5rem !important;
-            z-index: 99;
-            z-index: 99;
-            left: 0;
-            right: 0;
-            max-width: 80px;
-            min-width: 70px;
-          "
-        />
-
-        <video
-          class="video-content"
-          [id]="'media' + i"
-          [muted]="true"
-          [src]="slide.path"
-        ></video>
-      </ng-container>
-      <div class="labelBox"></div>
-
-      <!--
-        <p class="text">{{ gridItem.text }}</p>
-        <div class="label">{{ gridItem.title }}</div>
-      -->
-    </div>
-
-    <div class="itemContainer" *ngIf="slide.type === 'TEXT'">
-      <div class="joke">{{ slide.text }}</div>
-
-      <div class="joke-label">{{ slide.title }}</div>
-
-      <!--
-        <p class="text">{{ gridItem.text }}</p>
-        <div class="label">{{ gridItem.title }}</div>
-      -->
-    </div>
+<ng-container *ngIf="mode === 'LARGE'">
+  <div class="top-flex">
+    <h4>{{ title }}</h4>
   </div>
 
-  <p
-    class="placeholder"
-    *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)"
+  <div
+    class="cards"
+    [ngClass]="{
+      noGrid: slidesPath.length === 0,
+      boxShadow: shadows && slidesPath.length === 0
+    }"
+    (click)="emitClick()"
   >
-    {{ defaultText }}
-  </p>
-</div>
+    <div class="card" *ngFor="let slide of slidesPath; index as i">
+      <div
+        class="itemContainer"
+        *ngIf="slide.type !== 'TEXT'"
+        (click)="
+          slide.type === 'IMAGE'
+            ? openImageModal(filesStrings[i], slide.type)
+            : playVideoOnFullscreen('media' + i)
+        "
+      >
+        <ng-container *ngIf="slide.type === 'IMAGE'">
+          <div
+            class="imgBox"
+            [ngStyle]="{
+              backgroundImage:
+                slide.path +
+                ', url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }"
+          ></div>
+        </ng-container>
+        <ng-container *ngIf="slide.type === 'VIDEO'">
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+            alt="play"
+            class="playVideoIcon"
+            style="
+              padding: 1.5rem !important;
+              z-index: 99;
+              z-index: 99;
+              left: 0;
+              right: 0;
+              max-width: 80px;
+              min-width: 70px;
+            "
+          />
+
+          <video
+            class="video-content"
+            [id]="'media' + i"
+            [muted]="true"
+            [src]="slide.path"
+          ></video>
+        </ng-container>
+        <div class="labelBox"></div>
+
+        <!--
+          <p class="text">{{ gridItem.text }}</p>
+          <div class="label">{{ gridItem.title }}</div>
+        -->
+      </div>
+
+      <div class="itemContainer" *ngIf="slide.type === 'TEXT'">
+        <div class="joke">{{ slide.text }}</div>
+
+        <div class="joke-label">{{ slide.title }}</div>
+
+        <!--
+          <p class="text">{{ gridItem.text }}</p>
+          <div class="label">{{ gridItem.title }}</div>
+        -->
+      </div>
+    </div>
+
+    <p
+      class="placeholder"
+      *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)"
+    >
+      {{ defaultText }}
+    </p>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="mode === 'SMALL'">
+  <div class="flex-small-mode">
+    <div
+      class="cards-small"
+      [ngClass]="{
+        noGrid: slidesPath.length === 0,
+        boxShadow: shadows && slidesPath.length === 0
+      }"
+      (click)="emitClick()"
+    >
+      <div class="card" *ngFor="let slide of slidesPath; index as i">
+        <div
+          class="itemContainer"
+          *ngIf="slide.type !== 'TEXT'"
+          (click)="
+            slide.type === 'IMAGE'
+              ? openImageModal(filesStrings[i], slide.type)
+              : playVideoOnFullscreen('media' + i)
+          "
+        >
+          <ng-container *ngIf="slide.type === 'IMAGE'">
+            <div
+              class="imgBox"
+              [ngStyle]="{
+                backgroundImage:
+                  slide.path +
+                  ', url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }"
+            ></div>
+          </ng-container>
+          <ng-container *ngIf="slide.type === 'VIDEO'">
+            <img
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+              alt="play"
+              class="playVideoIcon"
+              style="
+                padding: 1.5rem !important;
+                z-index: 99;
+                z-index: 99;
+                left: 0;
+                right: 0;
+                max-width: 80px;
+                min-width: 70px;
+              "
+            />
+
+            <video
+              class="video-content"
+              [id]="'media' + i"
+              [muted]="true"
+              [src]="slide.path"
+            ></video>
+          </ng-container>
+          <!--
+            <p class="text">{{ gridItem.text }}</p>
+            <div class="label">{{ gridItem.title }}</div>
+          -->
+        </div>
+
+        <div class="itemContainer" *ngIf="slide.type === 'TEXT'">
+          <div class="joke">{{ slide.text }}</div>
+
+          <div class="joke-label">{{ slide.title }}</div>
+
+          <!--
+            <p class="text">{{ gridItem.text }}</p>
+            <div class="label">{{ gridItem.title }}</div>
+          -->
+        </div>
+      </div>
+
+      <p
+        class="placeholder"
+        *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)"
+      >
+        {{ defaultText }}
+      </p>
+    </div>
+
+    <img
+      (click)="goToMediaUpload()"
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+      alt="add media"
+      class="upload-media"
+    />
+  </div>
+</ng-container>
