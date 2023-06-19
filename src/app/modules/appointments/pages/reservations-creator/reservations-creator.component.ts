@@ -144,6 +144,8 @@ export class ReservationsCreatorComponent implements OnInit {
     }),
   });
 
+  flow: 'cart' | 'checkout' = 'checkout';
+
   constructor(
     private route: ActivatedRoute,
     private calendarsService: CalendarsService,
@@ -164,7 +166,7 @@ export class ReservationsCreatorComponent implements OnInit {
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
         const { calendarId, reservationId } = routeParams;
-        const { clientEmail, clientPhone, saleflowId } = queryParams;
+        const { clientEmail, clientPhone, saleflowId, flow } = queryParams;
 
         //this queryParams are here for the merchant to use
         //when any of these two is present, then a notification
@@ -173,6 +175,8 @@ export class ReservationsCreatorComponent implements OnInit {
         //has been made on their behalf
         this.clientEmail = clientEmail;
         this.clientPhone = clientPhone;
+
+        if (flow === 'cart') this.flow = flow;
 
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
 
