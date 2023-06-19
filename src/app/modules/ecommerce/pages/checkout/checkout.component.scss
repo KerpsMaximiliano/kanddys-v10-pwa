@@ -104,6 +104,7 @@ a {
 
     .section {
       width: 100%;
+      transition: all 0.2s;
       .between {
         display: flex;
         justify-content: space-between;
@@ -134,17 +135,6 @@ a {
 
         &.green {
           background-color: #82f18d;
-        }
-
-        &.to-fill {
-          position: relative;
-          width: 90%;
-
-          .small-arrow-green {
-            position: absolute;
-            right: -73px;
-            top: 10px;
-          }
         }
 
         .total {
@@ -567,6 +557,17 @@ table {
   max-height: 515px;
   border-radius: 12px;
   margin-bottom: 3.6px;
+}
+
+.to-fill {
+  position: relative;
+  width: 90% !important;
+
+  .small-arrow-green {
+    position: absolute;
+    right: -73px;
+    top: 10px;
+  }
 }
 
 ::ng-deep.mat-expansion-panel-body {
