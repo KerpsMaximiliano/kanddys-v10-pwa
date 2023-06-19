@@ -1,4 +1,5 @@
 import { Model } from '../objects/model';
+import { Merchant } from './merchant';
 import { SocialMediaModel, SocialMediaModelInput } from './saleflow';
 
 export enum TypeViewsMerchantEnum {
@@ -26,7 +27,7 @@ export class ViewsMerchantInput {
 }
 
 export class ViewsMerchant extends Model<ViewsMerchant> {
-  merchant: string;
+  merchant: Merchant;
   type: TypeViewsMerchantEnum;
   description: string;
   numeration: Array<Numeration>;

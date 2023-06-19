@@ -111,6 +111,7 @@
   align-items: center;
 
   img {
+    cursor: pointer;
     filter: invert(75%) sepia(2%) saturate(9%) hue-rotate(315deg)
       brightness(88%) contrast(80%);
   }
