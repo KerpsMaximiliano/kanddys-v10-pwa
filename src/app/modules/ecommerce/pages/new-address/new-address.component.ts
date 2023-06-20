@@ -72,6 +72,7 @@ export class NewAddressComponent implements OnInit {
     ) as User;
   }
   mode: 'normal' | 'add' | 'delete' | 'edit' = 'normal';
+  flow: 'cart' | 'checkout' = 'checkout';
   editingId: string;
   loggedIn: boolean;
   registered: User;
@@ -109,6 +110,10 @@ export class NewAddressComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const magicLinkData = this.route.snapshot.queryParamMap.get('data');
+    const flow = this.route.snapshot.queryParamMap.get('flow');
+
+    if (flow === 'cart') this.flow = 'cart';
+
     if (magicLinkData) {
       const orderData = JSON.parse(
         decodeURIComponent(magicLinkData)
@@ -363,10 +368,26 @@ export class NewAddressComponent implements OnInit {
 
       return;
     }
-    this.router.navigate([`../checkout`], {
-      replaceUrl: this.headerService.checkoutRoute ? true : false,
-      relativeTo: this.route,
-    });
+
+    if (this.flow === 'cart') {
+      this.router.navigate(
+        [
+          `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
+        ],
+        {
+          relativeTo: this.route,
+          queryParams: {
+            saleflowId: this.headerService.saleflow._id,
+            flow: 'cart'
+          }
+        }
+      );
+    } else {
+      this.router.navigate([`../checkout`], {
+        replaceUrl: this.headerService.checkoutRoute ? true : false,
+        relativeTo: this.route,
+      });
+    }
   }
 
   authSelect(auth: 'order' | 'address') {
@@ -379,7 +400,7 @@ export class NewAddressComponent implements OnInit {
     const matDialogRef = this.matDialog.open(LoginDialogComponent, {
       data: {
         magicLinkData: {
-          redirectionRoute: `ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
+          redirectionRoute: `ecommerce/${this.headerService.saleflow.merchant.slug}/new-address?flow=${this.flow}`,
           entity: 'NonExistingOrder',
           redirectionRouteQueryParams: {
             data: localStorage.getItem(this.headerService.saleflow._id),
@@ -400,11 +421,27 @@ export class NewAddressComponent implements OnInit {
         timeOut: 3000,
         positionClass: 'toast-top-center',
       });
-      this.router.navigate([`../checkout`], {
-        replaceUrl: this.headerService.checkoutRoute ? true : false,
-        relativeTo: this.route,
-      });
-      return;
+
+      if (this.flow === 'cart') {
+        this.router.navigate(
+          [
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
+          ],
+          {
+            relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+              flow: 'cart'
+            }
+          }
+        );
+      } else {
+        this.router.navigate([`../checkout`], {
+          replaceUrl: this.headerService.checkoutRoute ? true : false,
+          relativeTo: this.route,
+        });
+        return;
+      }
     }
     if (
       this.headerService.saleflow.module.delivery.pickUpLocations.length > 1 ||
@@ -434,10 +471,26 @@ export class NewAddressComponent implements OnInit {
           positionClass: 'toast-top-center',
         }
       );
-      this.router.navigate([`../checkout`], {
-        replaceUrl: true,
-        relativeTo: this.route,
-      });
+
+      if (this.flow === 'cart') {
+        this.router.navigate(
+          [
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
+          ],
+          {
+            relativeTo: this.route,
+            queryParams: {
+              saleflowId: this.headerService.saleflow._id,
+              flow: 'cart'
+            }
+          }
+        );
+      } else {
+        this.router.navigate([`../checkout`], {
+          replaceUrl: true,
+          relativeTo: this.route,
+        });
+      }
     }
   }
 
@@ -508,10 +561,17 @@ export class NewAddressComponent implements OnInit {
   }
 
   goBack() {
-    if (this.mode === 'normal')
-      return this.router.navigate([`../checkout`], {
-        relativeTo: this.route,
-      });
+    if (this.mode === 'normal') {
+      if (this.flow === 'cart') {
+        return this.router.navigate([`../receiver-form`], {
+          relativeTo: this.route,
+        });
+      } else {
+        return this.router.navigate([`../checkout`], {
+          relativeTo: this.route,
+        });
+      }
+    }
     this.mode = 'normal';
     this.editingId = null;
     this.addressForm.reset({

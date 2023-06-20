@@ -61,7 +61,7 @@
     > -->
 
   <main class="information">
-    <section class="section" style="box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px;">
+    <section class="section" style="box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px;" [ngClass]="{ 'to-fill': !areWebformsValid && !panelOpenState }">
       <mat-accordion>
         <mat-expansion-panel
           (opened)="panelOpenState = true"
@@ -379,6 +379,8 @@
           </div>
         </mat-expansion-panel>
       </mat-accordion>
+      
+      <img [src]="env + '/green-arrow-small.svg'" class="small-arrow-green" *ngIf="!areWebformsValid && !panelOpenState" />
 
       <!-- <div class="items-container ready" style="margin-top: 8px">
         <div
