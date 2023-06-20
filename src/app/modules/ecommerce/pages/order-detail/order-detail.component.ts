@@ -2,7 +2,11 @@ import { LocationStrategy } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import { capitalize, formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  capitalize,
+  formatID,
+  isVideo,
+} from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import {
   ItemOrder,
@@ -991,10 +995,14 @@ export class OrderDetailComponent implements OnInit {
   }
 
   openContactInfo() {
+    const { phone, email } = this.headerService.saleflow?.merchant.owner;
     this._bottomSheet.open(ContactHeaderComponent, {
       data: {
-        bio: this.order?.items[0].saleflow.merchant.bio,
+        link: `${this.URI}${this.router.url}`,
+        bio: this.headerService.saleflow?.merchant.bio,
         contact: this.headerService.merchantContact,
+        phone,
+        email,
       },
     });
   }
