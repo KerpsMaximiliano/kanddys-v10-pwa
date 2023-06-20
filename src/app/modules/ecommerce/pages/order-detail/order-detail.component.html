@@ -689,12 +689,14 @@
               </div>
             </div>
   
-            <div class="question lastQuestion">
-              <p class="top-text">Nombre del sobre</p>
-              <p class="bottom-text">
-                {{ post?.targets[0]?.name || post?.title }}
-              </p>
-            </div>
+            <!--
+              <div class="question lastQuestion">
+                <p class="top-text">Nombre del sobre</p>
+                <p class="bottom-text">
+                  {{ post?.targets[0]?.name || post?.title }}
+                </p>
+              </div>
+            -->
   
             <button class="blue" (click)="downloadQr(qrcodeTemplate)">
               Imprime o descarga el QR que enlaza el contenido

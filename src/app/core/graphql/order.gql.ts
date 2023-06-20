@@ -24,6 +24,11 @@ const orderData = `
   answers {
     reference
   }
+  receiverData {
+    receiver
+    receiverPhoneNumber
+    sender
+  }
   items {
     _id
     deliveryLocation {

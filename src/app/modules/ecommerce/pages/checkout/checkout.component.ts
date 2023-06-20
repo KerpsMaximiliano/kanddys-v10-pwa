@@ -1405,7 +1405,7 @@ export class CheckoutComponent implements OnInit {
     this.router.navigate([
       'ecommerce/' +
         this.headerService.saleflow.merchant.slug +
-        '/post-edition',
+        '/new-symbol',
     ]);
 
     // if (this.postsService.post) {

@@ -107,40 +107,19 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   */
 
   save() {
-    this.postsService.post = {
-      ...this.postsService.post,
-      from:
+    this.headerService.post = this.postsService.post;
+    this.headerService.order.receiverData = {
+      sender:
         this.form.controls['senderName'].value !== ''
           ? this.form.controls['senderName'].value
           : 'Anónimo',
-      to: this.form.controls['receiverName'].value,
-      provisionalReceiverContact:
+      receiver: this.form.controls['receiverName'].value,
+      receiverPhoneNumber:
         this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
           '+'
         )[1],
     };
-    this.headerService.post = {
-      ...this.postsService.post,
-      from:
-        this.form.controls['senderName'].value !== ''
-          ? this.form.controls['senderName'].value
-          : 'Anónimo',
-      to: this.form.controls['receiverName'].value,
-      provisionalReceiverContact:
-        this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
-          '+'
-        )[1],
-    };
-    localStorage.setItem(
-      'post',
-      JSON.stringify({
-        message: this.postsService.post.message,
-        title: this.postsService.post.title,
-        to: this.postsService.post.to,
-        from: this.postsService.post.from,
-        provisionalReceiverContact: this.receiverContact,
-      })
-    );
+    this.headerService.storeOrder(this.headerService.order);
 
     if (!this.webformsService.areWebformsValid) {
       return this.router.navigate([
