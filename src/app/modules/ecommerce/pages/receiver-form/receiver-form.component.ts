@@ -17,6 +17,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 
 @Component({
   selector: 'app-receiver-form',
@@ -66,6 +67,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
     private postsService: PostsService,
     private router: Router,
     private route: ActivatedRoute,
+    private webformsService: WebformsService,
     private _formBuilder: FormBuilder
   ) {}
 
@@ -140,8 +142,14 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
       })
     );
 
+    if (!this.webformsService.areWebformsValid) {
+      return this.router.navigate([
+        `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
+      ]);
+    }
+
     this.router.navigate([
-      `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`
+      `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
     ]);
   }
 
