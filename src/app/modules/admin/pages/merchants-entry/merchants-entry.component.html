@@ -1,9 +1,14 @@
-<div class="form-container">
+<div class="container">
+  <div class="form-container">
     <h2>Crear una nueva tienda</h2>
     <form [formGroup]="merchantForm" (ngSubmit)="submitForm()">
       <div class="form-group">
         <label for="name">Nombre de la tienda:</label>
         <input type="text" id="name" formControlName="name" required>
+      </div>
+      <div class="form-group">
+        <label for="name">Slug de la tienda:</label>
+        <input type="text" id="name" formControlName="slug" required>
       </div>
       <div class="form-group">
         <label for="phone">Teléfono:</label>
@@ -15,4 +20,12 @@
       </div>
       <button type="submit" [disabled]="merchantForm.invalid">Guardar</button>
     </form>
+  </div>
+
+  <br><br>
+  <div *ngIf="merchantCreated" style="text-align: center;">
+    <button mat-button>Copiar enlace para logearse con el nuevo usuario</button>
+    <br><br>
+    <button mat-button (click)="clearForm()">Limpiar form</button>
+  </div>
 </div>
