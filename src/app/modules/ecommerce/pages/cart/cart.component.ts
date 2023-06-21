@@ -403,10 +403,21 @@ export class CartComponent implements OnInit {
     );
 
     this.headerService.changeItemAmount(product.item, type);
-    this.headerService.order.products.forEach((product) => {
-      if (product.amount) this.itemObjects[product.item] = product;
-      else this.headerService.removeOrderProduct(product.item);
+
+    const itemsIdsDeleted = {};
+
+    this.items.forEach((item) => {
+      itemsIdsDeleted[item._id] = true;
     });
+
+    this.headerService.order.products.forEach((product) => {
+      if (product.amount) {
+        this.itemObjects[product.item] = product;
+        itemsIdsDeleted[product.item] = false;
+      }
+    });
+
+    this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
   }
 
   openImageModal(imageSourceURL: string | ArrayBuffer) {
@@ -655,7 +666,12 @@ export class CartComponent implements OnInit {
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
 
-    if (this.isCheckboxChecked) {
+    this.areItemsQuestionsAnswered();
+
+    if (
+      !this.headerService.order.receiverData ||
+      !this.headerService.receiverDataNew
+    ) {
       this.router.navigate([
         '/ecommerce/' +
           this.headerService.saleflow.merchant.slug +

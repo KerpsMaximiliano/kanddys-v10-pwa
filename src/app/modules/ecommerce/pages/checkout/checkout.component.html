@@ -427,7 +427,7 @@
       </div> -->
     </section>
 
-    <section class="section" *ngIf="postsService?.post?.appliesMessage">
+    <section class="section" *ngIf="postsService?.appliesMessage">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Mensaje de regalo</h2>
       </div>
@@ -573,12 +573,12 @@
       </button>
     </section>
 
-    <section class="section" *ngIf="postsService?.post?.appliesMessage">
+    <section class="section"  *ngIf="postsService.post && postsService.post?.receiver">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Recipiente</h2>
       </div>
 
-      <ng-container *ngIf="postsService.post && postsService.post?.receiver">
+      <ng-container>
         <button class="items-container ready" (click)="editReceiver()">
           <p class="address-name filled">
             {{

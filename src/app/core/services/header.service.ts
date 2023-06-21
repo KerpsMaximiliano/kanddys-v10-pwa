@@ -24,6 +24,9 @@ import { MerchantsService } from './merchants.service';
 import { SaleFlowService } from './saleflow.service';
 import { WalletService } from './wallet.service';
 import { Router } from '@angular/router';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -106,6 +109,7 @@ export class HeaderService {
   selectedJoke: string = null;
   alreadyInputtedloginDialogUser: User = null;
   orderReceiverData: ReceiverDataInput = null;
+  receiverDataNew: boolean = false;
 
   public session: Session;
   constructor(
@@ -116,6 +120,7 @@ export class HeaderService {
     private bookmark: BookmarksService,
     private merchantService: MerchantsService,
     private saleflowService: SaleFlowService,
+    public matDialog: MatDialog,
     private router: Router
   ) {
     this.auth.me().then((data) => {
@@ -336,6 +341,11 @@ export class HeaderService {
       order.products[index].amount--;
       this.order.products[index].amount--;
     }
+
+    if (type === 'subtract' && order.products[index].amount === 1) {
+      return this.removeOrderProduct(this.order.products[index].item);
+    }
+
     localStorage.setItem(this.saleflow._id, JSON.stringify({ order, ...rest }));
   }
 
