@@ -30,7 +30,7 @@ a {
     // justify-content: space-between;
     // align-items: center;
     padding: 0 15px;
-    background-color: #FFF;
+    background-color: #fff;
 
     .title {
       text-transform: capitalize;
@@ -104,6 +104,7 @@ a {
 
     .section {
       width: 100%;
+      transition: all 0.2s;
       .between {
         display: flex;
         justify-content: space-between;
@@ -128,23 +129,29 @@ a {
         width: 100%;
         box-sizing: border-box;
 
+        .receiverData {
+          list-style: none;
+          margin: 0px;
+          padding: 0px;
+
+          li {
+            margin-bottom: 13px;
+            font-family: InterRegular;
+            font-size: 17px;
+            color: #7b7b7b;
+
+            &:nth-of-type(3) {
+              margin-bottom: 0px;
+            }
+          }
+        }
+
         // &.ready {
         //   box-shadow: none;
         // }
 
         &.green {
           background-color: #82f18d;
-        }
-
-        &.to-fill {
-          position: relative;
-          width: 90%;
-
-          .small-arrow-green {
-            position: absolute;
-            right: -73px;
-            top: 10px;
-          }
         }
 
         .total {
@@ -427,31 +434,31 @@ a {
   margin-bottom: 10px;
 
   .bold {
-    color: #181D17;
+    color: #181d17;
     font-weight: bold;
   }
 }
 
 .inner-title {
-  color: #7B7B7B;
+  color: #7b7b7b;
   font-family: "InterMedium";
   font-size: 17px;
 }
 
 .link-title {
   cursor: pointer;
-  color: #189AC1;
+  color: #189ac1;
   font-family: "InterMedium";
   font-size: 17px;
   margin-bottom: 10px;
 }
 
 .filled {
-  color: #7B7B7B !important;
+  color: #7b7b7b !important;
 }
 
 .bottom-label {
-  color: #7B7B7B;
+  color: #7b7b7b;
   font-family: "InterLight";
   font-style: italic;
   font-size: 17px;
@@ -567,6 +574,17 @@ table {
   max-height: 515px;
   border-radius: 12px;
   margin-bottom: 3.6px;
+}
+
+.to-fill {
+  position: relative;
+  width: 90% !important;
+
+  .small-arrow-green {
+    position: absolute;
+    right: -73px;
+    top: 10px;
+  }
 }
 
 ::ng-deep.mat-expansion-panel-body {

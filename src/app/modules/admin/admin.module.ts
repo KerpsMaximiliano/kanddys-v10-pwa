@@ -66,6 +66,7 @@ import { QuestionToAdminComponent } from './pages/question-to-admin/question-to-
 import { RenameQuestionComponent } from './pages/rename-question/rename-question.component';
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
 import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
+import { MerchantsEntryComponent } from './pages/merchants-entry/merchants-entry.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -423,6 +424,10 @@ const routes: Routes = [
   {
     path: 'rename-question/:webformid/:param',
     component: RenameQuestionComponent,
+  },
+  {
+    path: 'merchants-entry',
+    component: MerchantsEntryComponent
   }
 ];
 
@@ -476,6 +481,7 @@ const routes: Routes = [
     QuestionToAdminComponent,
     RenameQuestionComponent,
     RewardsDisplayComponent,
+    MerchantsEntryComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

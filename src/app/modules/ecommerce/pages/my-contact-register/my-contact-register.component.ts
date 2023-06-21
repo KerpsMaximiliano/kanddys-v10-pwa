@@ -7,7 +7,8 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ContactInput } from 'src/app/core/models/contact';
+import { Contact, ContactInput } from 'src/app/core/models/contact';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-my-contact-register',
@@ -26,6 +27,7 @@ export class MyContactRegisterComponent implements OnInit {
   title: string;
   bio: string;
   userId: string;
+  myContact: Contact = null;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -49,6 +51,16 @@ export class MyContactRegisterComponent implements OnInit {
       this.file
     ) {
       this.showButton = true;
+    }
+
+    const myContacts = await this.contactService.contacts({
+      findBy: {
+        user: this.userId,
+      },
+    });
+
+    if (myContacts.length) {
+      this.myContact = myContacts[0];
     }
   }
 
@@ -116,53 +128,87 @@ export class MyContactRegisterComponent implements OnInit {
   }
 
   async save() {
-    if (
-      this.itemFormName.valid &&
-      this.itemFormBio.valid &&
-      this.itemFormLastName.valid &&
-      this.itemFormTitle.valid
-    ) {
-      const fullName = this.name + ' ' + this.lastname;
+    lockUI();
 
-      const contactInput: ContactInput = {
-        name: fullName,
-        description: this.title,
-        image: this.contactImage,
-        type: 'user',
-      };
+    try {
+      if (
+        this.itemFormName.valid &&
+        this.itemFormBio.valid &&
+        this.itemFormLastName.valid &&
+        this.itemFormTitle.valid
+      ) {
+        const fullName = this.name + ' ' + this.lastname;
 
-      const newContact = await this.contactService.createContact(contactInput);
+        const contactInput: ContactInput = {
+          name: fullName,
+          description: this.title,
+          image: this.contactImage,
+          type: 'user',
+        };
 
-      console.log(newContact);
-      this.snackBar.open('Ha creado un link de contacto con exito', '', {
-        duration: 5000,
-      });
-    } else if (
-      (!this.itemFormName.valid || !this.itemFormLastName.valid) &&
-      this.itemFormBio.valid &&
-      this.itemFormTitle.valid
-    ) {
-      const contactInput: ContactInput = {
-        name: this.bio,
-        description: this.title,
-        image: this.contactImage,
-        type: 'user',
-      };
+        if (this.myContact) {
+          await this.contactService.updateContact(
+            this.myContact._id,
+            contactInput
+          );
 
-      const newContact = await this.contactService.createContact(contactInput);
+          this.snackBar.open('Se ha actualizado su contacto con exito', '', {
+            duration: 5000,
+          });
+        } else {
+          await this.contactService.createContact(contactInput);
 
-      console.log(newContact);
-      this.snackBar.open('Ha creado un link de contacto con exito', '', {
-        duration: 5000,
-      });
-    } else {
-      this.snackBar.open(
-        'Los campos: Titulo, Bio e Imagen son obligatorios',
-        '',
-        {
-          duration: 5000,
+          this.snackBar.open('Ha creado un link de contacto con exito', '', {
+            duration: 5000,
+          });
         }
-      );
+      } else if (
+        (!this.itemFormName.valid || !this.itemFormLastName.valid) &&
+        this.itemFormBio.valid &&
+        this.itemFormTitle.valid
+      ) {
+        const contactInput: ContactInput = {
+          name: this.bio,
+          description: this.title,
+          image: this.contactImage,
+          type: 'user',
+        };
+
+        if (this.myContact) {
+          await this.contactService.updateContact(
+            this.myContact._id,
+            contactInput
+          );
+
+          this.snackBar.open(
+            'Se ha actualizado un link de contacto con exito',
+            '',
+            {
+              duration: 5000,
+            }
+          );
+        } else {
+          const newContact = await this.contactService.createContact(
+            contactInput
+          );
+
+          this.snackBar.open('Ha creado un link de contacto con exito', '', {
+            duration: 5000,
+          });
+        }
+      } else {
+        this.snackBar.open(
+          'Los campos: Titulo, Bio e Imagen son obligatorios',
+          '',
+          {
+            duration: 5000,
+          }
+        );
+      }
+
+      unlockUI();
+    } catch (error) {
+      unlockUI();
     }
   }
 }

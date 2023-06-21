@@ -41,6 +41,12 @@
   }
 }
 
+.step {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 47px) !important;
+}
+
 .content {
   padding: 30px 22px;
 
@@ -151,6 +157,7 @@
   background-color: #fed230;
   color: #272727;
   position: relative;
+  border: none;
 
   button {
     all: unset;

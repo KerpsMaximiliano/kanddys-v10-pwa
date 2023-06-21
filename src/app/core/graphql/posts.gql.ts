@@ -64,6 +64,7 @@ export const post = gql`
       from
       to
       title
+      envelopePresentation
       multimedia
       socialNetworks {
         url

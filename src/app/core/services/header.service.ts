@@ -11,6 +11,7 @@ import {
   ItemOrderInput,
   ItemSubOrderInput,
   ItemSubOrderParamsInput,
+  ReceiverDataInput,
 } from '../models/order';
 import { PostInput } from '../models/post';
 import { ReservationInput } from '../models/reservation';
@@ -104,6 +105,7 @@ export class HeaderService {
   aiJokes: Array<string> = [];
   selectedJoke: string = null;
   alreadyInputtedloginDialogUser: User = null;
+  orderReceiverData: ReceiverDataInput = null;
 
   public session: Session;
   constructor(

@@ -12,14 +12,24 @@
     }"
   ></app-helper-headerv2> -->
 
-  <header
-    class="header"
-  >
-    <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center;">
+  <header class="header">
+    <div
+      style="
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        align-items: center;
+      "
+    >
       <a>
-        <mat-icon class="go_back_arrow" style="font-size: 30px; margin-top: 0.1em;" (click)="!webformPreview ? editOrder('item') : location.back()">keyboard_arrow_left</mat-icon>
+        <mat-icon
+          class="go_back_arrow"
+          style="font-size: 30px; margin-top: 0.1em"
+          (click)="!webformPreview ? editOrder('item') : location.back()"
+          >keyboard_arrow_left</mat-icon
+        >
       </a>
-      <p class="title" style="margin: 0 auto;">
+      <p class="title" style="margin: 0 auto">
         Prefactura
         <!-- {{
           headerService.saleflow?.merchant?.name.length < 26
@@ -37,19 +47,19 @@
     </div>
   </header>
 
-    <!-- <p class="msj">Excelente! Mira como va tu factura.</p> -->
-    <button
-      class="top confirmButton"
-      [ngStyle]="{
-        backgroundColor:
-          missingOrderData || !areWebformsValid ? '#b5b5b5' : '#87CD9B'
-      }"
-      [disabled]="missingOrderData || !areWebformsValid"
-      (click)="createOrder()"
-    >
-      Continuar y pagar
-    </button>
-    <!-- <a
+  <!-- <p class="msj">Excelente! Mira como va tu factura.</p> -->
+  <button
+    class="top confirmButton"
+    [ngStyle]="{
+      backgroundColor:
+        missingOrderData || !areWebformsValid ? '#b5b5b5' : '#87CD9B'
+    }"
+    [disabled]="missingOrderData || !areWebformsValid"
+    (click)="createOrder()"
+  >
+    Continuar y pagar
+  </button>
+  <!-- <a
       class="bannerLink"
       *ngIf="headerService.saleflow.module?.post?.isActive"
       (click)="createOrEditMessage()"
@@ -61,7 +71,11 @@
     > -->
 
   <main class="information">
-    <section class="section" style="box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px;">
+    <section
+      class="section"
+      style="box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); border-radius: 6px"
+      [ngClass]="{ 'to-fill': !areWebformsValid && !panelOpenState }"
+    >
       <mat-accordion>
         <mat-expansion-panel
           (opened)="panelOpenState = true"
@@ -356,29 +370,51 @@
               </ng-container>
 
               <!-- ÁREA INFERIOR DE LA SECCIÓN DE LOS ARTÍCULOS -->
-
             </ng-container>
           </div>
 
-          <div style="margin: 2em 0;">
+          <div style="margin: 2em 0">
             <ng-container *ngFor="let item of items; index as i">
               <ng-container *ngIf="webformsByItem[item._id]">
-                <p class="link-title" (click)="openWebform(item._id, 0)">Respuestas de {{ item?.name ? item?.name : 'Artículo sin nombre' }}</p>
+                <p class="link-title" (click)="openWebform(item._id, 0)">
+                  Respuestas de
+                  {{ item?.name ? item?.name : "Artículo sin nombre" }}
+                </p>
               </ng-container>
             </ng-container>
           </div>
 
           <div class="bottom-section" *ngIf="deliveryZone">
             <p class="inner-title">Zona de entrega</p>
-            <p class="inner-title">RD $ {{ deliveryZone?.amount ? deliveryZone?.amount : 0 | number : "1.2-2" }}</p>
+            <p class="inner-title">
+              RD $
+              {{
+                deliveryZone?.amount
+                  ? deliveryZone?.amount
+                  : (0 | number : "1.2-2")
+              }}
+            </p>
           </div>
 
           <div class="bottom-section">
             <p class="inner-title bold">Monto total</p>
-            <p class="inner-title bold">RD $ {{ deliveryZone?.amount ? (payment + deliveryZone?.amount) : payment | number : "1.2" }}</p>
+            <p class="inner-title bold">
+              RD $
+              {{
+                deliveryZone?.amount
+                  ? payment + deliveryZone?.amount
+                  : (payment | number : "1.2")
+              }}
+            </p>
           </div>
         </mat-expansion-panel>
       </mat-accordion>
+
+      <img
+        [src]="env + '/green-arrow-small.svg'"
+        class="small-arrow-green"
+        *ngIf="!areWebformsValid && !panelOpenState"
+      />
 
       <!-- <div class="items-container ready" style="margin-top: 8px">
         <div
@@ -391,44 +427,70 @@
       </div> -->
     </section>
 
-    <!-- <section class="section" *ngIf="postsService?.post?.appliesMessage"> -->
-      <section class="section">
-        <div class="between" style="margin-top: 32px">
-          <h2 class="section-title">Mensaje de regalo</h2>
-        </div>
-  
-        <ng-container *ngIf="postsService.post">
-          <button class="items-container ready" (click)="createOrEditMessage()">
-            <p class="address-name filled" style="height: 80px;">
-              {{
-                postsService.post?.message
-                  ? postsService.post?.message
-                  : postsService.post?.title
-                  ? postsService.post?.title
-                  : postsService.post?.to
-                  ? "Para: " + postsService.post?.to
-                  : postsService.post?.from
-                  ? "De parte de: " + postsService.post?.from
-                  : "..."
-              }}
-            </p>
-          </button>
-        </ng-container>
-  
-        <button
-          class="items-container column pointer"
-          [ngClass]="{
-            'to-fill': missingOrderData
-          }"
-          *ngIf="!postsService.post"
-          (click)="createOrEditMessage()"
-        >
-          <p class="address-name">Agrega una tarjeta dedicatoria (opcional)</p>
+    <section class="section" *ngIf="postsService?.post?.appliesMessage">
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Mensaje de regalo</h2>
+      </div>
+
+      <ng-container *ngIf="postsService.post">
+        <button class="items-container ready" (click)="createOrEditMessage()">
+          <p class="address-name filled">
+            {{
+              postsService.post?.message
+                ? postsService.post?.message
+                : postsService.post?.title
+                ? postsService.post?.title
+                : postsService.post?.to
+                ? "Para: " + postsService.post?.to
+                : postsService.post?.from
+                ? "De parte de: " + postsService.post?.from
+                : "..."
+            }}
+          </p>
         </button>
-      </section>
-      <p class="bottom-label">
-        {{ headerService.saleflow.merchant.name }} imprimirá un QR y no tiene acceso al contenido.
-      </p>
+      </ng-container>
+
+      <button
+        class="items-container column pointer"
+        [ngClass]="{
+          'to-fill': missingOrderData
+        }"
+        *ngIf="!postsService.post"
+        (click)="createOrEditMessage()"
+      >
+        <p class="address-name">Agrega una tarjeta dedicatoria (opcional)</p>
+      </button>
+    </section>
+    <p class="bottom-label">
+      {{ headerService.saleflow.merchant.name }} imprimirá un QR y no tiene
+      acceso al contenido.
+    </p>
+
+    <div class="section" *ngIf="headerService.order.receiverData">
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Recipiente</h2>
+      </div>
+
+      <button
+        class="items-container ready"
+        [routerLink]="[
+          '/ecommerce',
+          headerService.saleflow.merchant.slug,
+          'receiver-form'
+        ]"
+        style="padding: 17px"
+      >
+        <ul class="receiverData">
+          <li>Lo recibirá: {{ headerService.order.receiverData.receiver }}</li>
+          <li *ngIf="headerService.order.receiverData.receiverPhoneNumber">
+            Telefono: {{ headerService.order.receiverData.receiverPhoneNumber }}
+          </li>
+          <li *ngIf="headerService.order.receiverData.sender">
+            Envía: {{ headerService.order.receiverData.sender }}
+          </li>
+        </ul>
+      </button>
+    </div>
 
     <section
       class="section"
@@ -444,7 +506,6 @@
           }}
         </h2>
       </div>
-
 
       <!-- [ngClass]="{
         'to-fill': missingOrderData || !areWebformsValid
@@ -857,7 +918,7 @@
     [ngClass]="{
       added: deliveryLocation.nickName,
       'address-name': !deliveryLocation.nickName,
-      'filled': deliveryLocation.street
+      filled: deliveryLocation.street
     }"
     *ngIf="deliveryLocation.street"
   >

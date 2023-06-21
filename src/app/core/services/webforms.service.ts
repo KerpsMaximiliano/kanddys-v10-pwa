@@ -96,6 +96,7 @@ export class WebformsService {
     }>;
     currentStepIndex: number;
   } = null;
+  areWebformsValid: boolean = false;
   clientResponsesByItem: Record<string, ResponsesByQuestion> = {};
   selectedQuestion: { questionId: string; question: Question; required: boolean; multiple: boolean; index?: number } = null;
 

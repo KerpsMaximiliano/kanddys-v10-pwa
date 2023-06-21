@@ -179,6 +179,12 @@ export const createMerchant = gql`
   }
 `;
 
+export const entryMerchant = gql`
+  mutation entryMerchant($merchantID: ObjectID!, $merchantInput: MerchantInput, $userInput: UserInput) {
+    entryMerchant(merchantID: $merchantID, merchantInput: $merchantInput, userInput: $userInput)
+  }
+`;
+
 export const createMerchant2 = gql`
   mutation createMerchant($input: MerchantInput!) {
     createMerchant(input: $input) { ${body} }

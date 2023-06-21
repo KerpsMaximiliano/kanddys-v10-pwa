@@ -56,7 +56,7 @@ export class TermsOfUseComponent implements OnInit {
             numeration: [],
           };
         this.viewMerchantType = type;
-        this.merchant = await this._MerchantsService.merchant(merchant);
+        this.merchant = await this._MerchantsService.merchant(merchant._id);
         this.merchantSaleflow = await this._SaleflowService.saleflowDefault(
           this.merchant._id
         );
