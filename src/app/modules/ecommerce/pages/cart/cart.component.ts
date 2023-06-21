@@ -74,7 +74,7 @@ export class CartComponent implements OnInit {
     private appService: AppService,
     private router: Router,
     private route: ActivatedRoute,
-    private postsService: PostsService
+    public postsService: PostsService
   ) {}
 
   async ngOnInit() {
@@ -647,6 +647,8 @@ export class CartComponent implements OnInit {
     //console.log('VALIDANDO WEBFORMS');
 
     this.areWebformsValid = areWebformsValid;
+
+    this._WebformsService.areWebformsValid = this.areWebformsValid;
   }
 
   async submit() {
@@ -745,6 +747,8 @@ export class CartComponent implements OnInit {
   }
 
   goToSymbolCreation() {
+    this.areItemsQuestionsAnswered();
+
     this.router.navigate([
       '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-symbol',
     ]);

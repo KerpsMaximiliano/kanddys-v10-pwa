@@ -27,6 +27,20 @@ export const updateContact = gql`
   }
 `;
 
+export const contactSetDefault = gql`
+  mutation contactSetDefault($id: ObjectID!) {
+    contactSetDefault(id: $id) {
+      _id
+      description
+      image
+      name
+      decription
+      banner
+      default
+    }
+  }
+`;
+
 export const contactAddLink = gql`
   mutation contactAddLink($input: LinkInput!, $id: ObjectID!) {
     contactAddLink(input: $input, id: $id) {
