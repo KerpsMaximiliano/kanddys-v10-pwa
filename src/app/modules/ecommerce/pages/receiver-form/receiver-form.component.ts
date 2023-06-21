@@ -125,11 +125,21 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
       return this.router.navigate([
         `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
       ]);
+
+      // TODO poner un toast message que avise que se deben llenar el form
     }
 
-    this.router.navigate([
-      `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
-    ]);
+    this.router.navigate(
+      [
+        `../new-address`,
+      ],
+      {
+        relativeTo: this.route,
+        queryParams: {
+          flow: 'cart'
+        }
+      }
+    );
   }
 
   goBack() {

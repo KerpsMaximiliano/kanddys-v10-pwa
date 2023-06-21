@@ -160,18 +160,23 @@ export class OrderDetailComponent implements OnInit {
   panelOpenState = false;
   openNavigation = false;
 
+  statusList: Array<{
+    name: string;
+  }> = [];
+  activeStatusIndex = 0;
+
   capitalize = capitalize;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
 
-  statusList: OrderStatusDeliveryType[] = [
-    'in progress',
-    'pending',
-    'pickup',
-    'shipped',
-    'delivered',
-  ];
+  // statusList: OrderStatusDeliveryType[] = [
+  //   'in progress',
+  //   'pending',
+  //   'pickup',
+  //   'shipped',
+  //   'delivered',
+  // ];
 
   constructor(
     private route: ActivatedRoute,
@@ -230,7 +235,7 @@ export class OrderDetailComponent implements OnInit {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
 
-    console.log(this.order);
+    this.buildStatusList();
 
     await this.getAnswersForEachItem();
 
@@ -1005,5 +1010,31 @@ export class OrderDetailComponent implements OnInit {
         email,
       },
     });
+  }
+
+  buildStatusList() {
+    const statusList: OrderStatusDeliveryType[] = [
+      'in progress',
+      'delivered',
+    ];
+
+    const location = this.order.items[0].deliveryLocation;
+
+    if (location.street) {
+      statusList.splice(1, 0, 'pending');
+      statusList.splice(2, 0, 'shipped');
+    } else statusList.splice(1, 0, 'pickup');
+
+    for (const status of statusList) {
+      this.statusList.push({
+        name: this.orderService.orderDeliveryStatus(status),
+      });
+    }
+
+    const orderStatuDelivery = this.order.orderStatusDelivery;
+
+    this.activeStatusIndex = statusList.findIndex(
+      (status) => status === orderStatuDelivery
+    );
   }
 }

@@ -125,7 +125,11 @@
       />
     </button>
 
-    <app-progress-slider></app-progress-slider>
+    <app-progress-slider
+      [title]="'Actualización del progreso'"
+      [statusList]="statusList"
+      [activeIndex]="activeStatusIndex"
+    ></app-progress-slider>
 
     <div style="position: fixed; max-width: 500px; width: 100%; bottom: 100px">
       <a
@@ -191,7 +195,7 @@
       </div>
     </ng-container> -->
 
-    <section class="top" style="margin-top: 7px" *ngIf="order">
+    <section class="top" *ngIf="order">
       <div style="display: grid">
         <div style="display: flex; align-items: center; margin-bottom: 10px">
           <p style="margin-right: auto">
@@ -500,13 +504,16 @@
       </section>
 
       <div class="section">
+        <ng-container *ngIf="deliveryImages?.deliveryZone">
+          <p class="section-label">ZONA DE ENTREGA</p>
+          <div class="questions">
+            <!-- <p class="label">Zona de entrega</p> -->
+            <p class="label gray-out capitalize">
+              {{ deliveryImages?.deliveryZone.zona }}
+            </p>
+          </div>
+        </ng-container>
         <p class="section-label">LUGAR DE ENTREGA</p>
-        <div class="questions" *ngIf="deliveryImages?.deliveryZone">
-          <p class="label">Zona de entrega</p>
-          <p class="label gray-out capitalize">
-            {{ deliveryImages?.deliveryZone.zona }}
-          </p>
-        </div>
         <div class="questions" *ngIf="order?.items[0].deliveryLocation">
           <p class="label gray-out capitalize">
             <ng-container *ngIf="!order?.items[0]?.deliveryLocation?.street">
@@ -689,7 +696,11 @@
           >
             <p class="top-text">Escrito en tarjetita física</p>
             <p class="bottom-text">
-              {{ post?.message }}
+              {{
+                post?.message ||
+                post?.from ||
+                (post?.targets?.length && post.targets[0].name) ? post.targets[0].name : ''
+              }}
             </p>
           </div>
 
@@ -1140,7 +1151,7 @@
       </button>
     </div>
 
-    <div class="uploadButton">
+    <!-- <div class="uploadButton">
       <button
         class="button top"
         style="border: none; border-radius: 50%; height: 56px; width: 56px"
@@ -1148,9 +1159,8 @@
         mat-fab
       >
         <img [src]="env + '/whatsapp_black.svg'" alt="" />
-        <!-- <img class="icon" [src]="environment + '/upload.svg'" /> -->
       </button>
-    </div>
+    </div> -->
 
     <div
       style="visibility: hidden; position: absolute; z-index: -99; bottom: 0"

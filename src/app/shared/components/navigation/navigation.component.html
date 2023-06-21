@@ -7,7 +7,7 @@
     (keydown.escape)="close()"
     disableClose
   >
-    <div class="close">
+    <div class="close" style="cursor: pointer;">
       <span (click)="close()">X</span>
     </div>
     <div class="nav-container">
@@ -51,6 +51,20 @@
                 style="padding: 0px"
               >
                 Control & Beneficios 🎛️
+              </a>
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
+                class="icon"
+              />
+            </li>
+
+            <li routerLinkActive="active" *ngIf="headerService.user">
+              <a
+                mat-button
+                [routerLink]="['/admin/merchants-entry']"
+                style="padding: 0px"
+              >
+                Registrar nuevos afiliados 📒
               </a>
               <img
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
