@@ -232,7 +232,6 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
-    lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
 
     this.buildStatusList();
@@ -521,7 +520,6 @@ export class OrderDetailComponent implements OnInit {
       };
     });
     this.benefits = await this.orderService.orderBenefits(this.order._id);
-    unlockUI();
   }
 
   goToWhatsapp() {

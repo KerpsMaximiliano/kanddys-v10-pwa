@@ -360,7 +360,7 @@
               <div *ngFor="let item of order?.items; index as i">
                 <div class="answers-by-item" *ngIf="answersByItem[item._id]">
                   <button class="blue" *ngFor="let item of order.items">
-                    Respuestas de {{ item.item.name }}
+                    Respuestas de {{ item.item?.name ? item.item?.name : 'Artículo sin nombre' }}
                   </button>
 
                   <!-- <mat-accordion>
@@ -538,25 +538,25 @@
           </p>
         </div>
         <p class="section-label" *ngIf="order?.receiverData">RECIPIENTE</p>
-        <div class="questions">
+        <div class="questions" *ngIf="order?.receiverData">
           <p
             class="label body gray-out capitalize"
-            *ngIf="order?.receiverData.receiver"
+            *ngIf="order?.receiverData?.receiver"
           >
-            Lo recibirá: {{ order?.receiverData.receiver }}
+            Lo recibirá: {{ order?.receiverData?.receiver }}
           </p>
           <p
             class="label body gray-out capitalize"
-            *ngIf="order?.receiverData.receiverPhoneNumber"
+            *ngIf="order?.receiverData?.receiverPhoneNumber"
           >
             Teléfono:
-            {{ order?.receiverData.receiverPhoneNumber }}
+            {{ order?.receiverData?.receiverPhoneNumber }}
           </p>
           <p
             class="label body gray-out capitalize"
-            *ngIf="order?.receiverData.sender"
+            *ngIf="order?.receiverData?.sender"
           >
-            {{ order?.receiverData.sender }}
+            {{ order?.receiverData?.sender }}
           </p>
         </div>
         <p class="section-label">TIEMPO DE LA ENTREGA</p>
