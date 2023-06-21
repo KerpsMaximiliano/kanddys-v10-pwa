@@ -61,6 +61,7 @@ export class Post extends Model<Post> {
   provisionalReceiver?: string;
   provisionalReceiverContact?: string;
   isAnonymous?: boolean;
+  envelopePresentation?: string;
 }
 
 export class PostInput {

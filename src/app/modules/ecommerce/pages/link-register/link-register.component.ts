@@ -9,7 +9,11 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ContactInput } from 'src/app/core/models/contact';
+import { Contact, ContactInput } from 'src/app/core/models/contact';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { filter } from 'rxjs/operators';
+import { AppService } from 'src/app/app.service';
+import { User } from 'src/app/core/models/user';
 
 @Component({
   selector: 'app-link-register',
@@ -30,6 +34,15 @@ export class LinkRegisterComponent implements OnInit {
   contactImage;
 
   slides = [
+    { number: 0 },
+    { number: 1 },
+    { number: 2 },
+    { number: 3 },
+    { number: 4 },
+    //{ number: 5 },
+  ];
+
+  filteredSlides = [
     { number: 0 },
     { number: 1 },
     { number: 2 },
@@ -69,9 +82,8 @@ export class LinkRegisterComponent implements OnInit {
     this.router.navigate([`ecommerce/links-view/${this.userId}`]);
   }
 
-  async goBack2() {
-    await this.save();
-    this.mediaSwiper.directiveRef.prevSlide();
+  async goBack2(preventRedirection = false) {
+    await this.save(preventRedirection);
     this.mediaSwiper.directiveRef.prevSlide();
   }
 
@@ -79,11 +91,21 @@ export class LinkRegisterComponent implements OnInit {
     {
       name: 'Facebook',
       callback: async () => {
+        if (this.isOtherContact) {
+          this.isOtherContact = false;
+          this.isBasicContact = true;
+        }
+
         this.linkName = 'Facebook';
         this.itemFormLink.get('name').patchValue(this.linkName);
         this.isMyContact = false;
         this.isOtherContact = false;
+
         this.contactImage = this.contactLogos[0].img;
+        this.mediaSwiper.directiveRef.update();
+
+        this.filteredSlides = [this.slides[0], this.slides[1]];
+
         this.nextSlide();
         console.log(this.linkName);
       },
@@ -91,66 +113,108 @@ export class LinkRegisterComponent implements OnInit {
     {
       name: 'Instagram',
       callback: async () => {
+        if (this.isOtherContact) {
+          this.isOtherContact = false;
+          this.isBasicContact = true;
+        }
+
         this.linkName = 'Instagram';
         this.itemFormLink.get('name').patchValue(this.linkName);
         this.isMyContact = false;
         this.isOtherContact = false;
         this.contactImage = this.contactLogos[1].img;
+        this.mediaSwiper.directiveRef.update();
+        this.filteredSlides = [this.slides[0], this.slides[1]];
         this.nextSlide();
       },
     },
     {
       name: 'TikTok',
       callback: async () => {
+        if (this.isOtherContact) {
+          this.isOtherContact = false;
+          this.isBasicContact = true;
+        }
+
         this.linkName = 'TikTok';
         this.itemFormLink.get('name').patchValue(this.linkName);
         this.isMyContact = false;
         this.isOtherContact = false;
         this.contactImage = this.contactLogos[2].img;
+        this.mediaSwiper.directiveRef.update();
+        this.filteredSlides = [this.slides[0], this.slides[1]];
         this.nextSlide();
       },
     },
     {
       name: 'Twitter',
       callback: async () => {
+        if (this.isOtherContact) {
+          this.isOtherContact = false;
+          this.isBasicContact = true;
+        }
+
         this.linkName = 'Twitter';
         this.itemFormLink.get('name').patchValue(this.linkName);
         this.isMyContact = false;
         this.isOtherContact = false;
         this.contactImage = this.contactLogos[3].img;
+        this.mediaSwiper.directiveRef.update();
+        this.filteredSlides = [this.slides[0], this.slides[1]];
         this.nextSlide();
       },
     },
     {
       name: 'Website',
       callback: async () => {
+        if (this.isOtherContact) {
+          this.isOtherContact = false;
+          this.isBasicContact = true;
+        }
+
         this.linkName = 'Website';
         this.itemFormLink.get('name').patchValue(this.linkName);
         this.isMyContact = false;
         this.isOtherContact = false;
         this.contactImage = this.contactLogos[4].img;
+        this.mediaSwiper.directiveRef.update();
+        this.filteredSlides = [this.slides[0], this.slides[1]];
         this.nextSlide();
       },
     },
     {
       name: 'Correo Electrónico',
       callback: async () => {
+        if (this.isOtherContact) {
+          this.isOtherContact = false;
+          this.isBasicContact = true;
+        }
+
         this.linkName = 'Correo Electrónico';
         this.itemFormLink.get('name').patchValue(this.linkName);
         this.isMyContact = false;
         this.isOtherContact = false;
         this.contactImage = this.contactLogos[5].img;
+        this.mediaSwiper.directiveRef.update();
+        this.filteredSlides = [this.slides[0], this.slides[1]];
         this.nextSlide();
       },
     },
     {
       name: 'WhatsApp',
       callback: async () => {
+        if (this.isOtherContact) {
+          this.isOtherContact = false;
+          this.isBasicContact = true;
+        }
+
         this.linkName = 'WhatsApp';
         this.itemFormLink.get('name').patchValue(this.linkName);
         this.isMyContact = false;
         this.isOtherContact = false;
         this.contactImage = this.contactLogos[6].img;
+        this.mediaSwiper.directiveRef.update();
+        this.filteredSlides = [this.slides[0], this.slides[1]];
         this.nextSlide();
       },
     },
@@ -159,6 +223,7 @@ export class LinkRegisterComponent implements OnInit {
       callback: async () => {
         this.isBasicContact = false;
         this.isOtherContact = false;
+        this.mediaSwiper.directiveRef.update();
         //this.contactImage = this.contactLogos[7].img;
         //this.nextSlide();
         this.router.navigate([`ecommerce/register-my-contact/${this.userId}`]);
@@ -168,11 +233,18 @@ export class LinkRegisterComponent implements OnInit {
     {
       name: 'Link de afiliado de Amazon',
       callback: async () => {
+        if (this.isOtherContact) {
+          this.isOtherContact = false;
+          this.isBasicContact = true;
+        }
+
         this.linkName = 'Amazon';
         this.itemFormLink.get('name').patchValue(this.linkName);
         this.isOtherContact = false;
         this.isMyContact = false;
         this.contactImage = this.contactLogos[8].img;
+        this.mediaSwiper.directiveRef.update();
+        this.filteredSlides = [this.slides[0], this.slides[1]];
         this.nextSlide();
       },
     },
@@ -181,6 +253,14 @@ export class LinkRegisterComponent implements OnInit {
       callback: async () => {
         this.isBasicContact = false;
         this.isMyContact = false;
+        this.isOtherContact = true;
+        this.mediaSwiper.directiveRef.update();
+        this.filteredSlides = [
+          this.slides[0],
+          this.slides[2],
+          this.slides[3],
+          this.slides[4],
+        ];
         this.nextSlide();
       },
     },
@@ -252,12 +332,17 @@ export class LinkRegisterComponent implements OnInit {
     name: [null, [Validators.required, Validators.minLength(4)]],
   });
 
+  myContact: Contact = null;
+  myUser: User = null;
+
   constructor(
     private contactService: ContactService,
     private _ItemsService: ItemsService,
     private router: Router,
     private route: ActivatedRoute,
     private _formBuilder: FormBuilder,
+    private headerService: HeaderService,
+    private app: AppService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -266,7 +351,25 @@ export class LinkRegisterComponent implements OnInit {
 
     this.route.params.subscribe(async (params) => {
       this.userId = params.userId;
-      console.log(this.userId);
+
+      const sub = this.app.events
+        .pipe(filter((e) => e.type === 'auth'))
+        .subscribe(async (e) => {
+          this.myUser = e.data.user;
+
+          const myContacts = await this.contactService.contacts({
+            findBy: {
+              user: this.myUser._id,
+            },
+          });
+
+          if (myContacts.length) {
+            this.myContact = myContacts[0];
+          }
+
+          console.log('Mis contactos', myContacts);
+          console.log('Usuario', this.headerService.user);
+        });
     });
   }
 
@@ -286,23 +389,75 @@ export class LinkRegisterComponent implements OnInit {
     this.itemFormLink.get('name').patchValue(this.linkName);
   }
 
-  async save() {
+  getIndicators() {
+    return 'repeat( ' + this.filteredSlides.length + ',1fr)';
+  }
+
+  isSlideVisible(index: number) {
+    return this.filteredSlides.find((slide) => slide.number === index);
+  }
+
+  async save(preventRedirection = false) {
     if (this.itemFormLink.valid) {
+      /*
       const contactInput: ContactInput = {
         name: this.linkName,
         description: this.link,
         image: this.contactImage,
         type: 'user',
       };
+      */
 
-      const newContact = await this.contactService.createContact(contactInput);
+      const contactInput: ContactInput = {
+        name: 'Mis formas de contacto',
+        type: 'user',
+      };
 
-      console.log(newContact);
-      this.snackBar.open('Ha creado un link de contacto con exito', '', {
-        duration: 5000,
-      });
+      try {
+        if (this.myContact) {
+          const linkAdded = await this.contactService.contactAddLink(
+            {
+              name: this.linkName,
+              image: this.contactImage,
+              value: this.link,
+            },
+            this.myContact._id
+          );
 
-      this.router.navigate([`ecommerce/links-view/${this.userId}`]);
+          this.snackBar.open('Ha creado un link de contacto con exito', '', {
+            duration: 5000,
+          });
+
+          if (!preventRedirection)
+            this.router.navigate([`ecommerce/links-view/${this.userId}`]);
+        } else {
+          const newContact = await this.contactService.createContact(
+            contactInput
+          );
+
+          const linkAdded = await this.contactService.contactAddLink(
+            {
+              name: this.linkName,
+              image: this.contactImage,
+              value: this.link,
+            },
+            newContact._id
+          );
+
+          this.snackBar.open('Ha creado un link de contacto con exito', '', {
+            duration: 5000,
+          });
+
+          if (!preventRedirection)
+            this.router.navigate([`ecommerce/links-view/${this.userId}`]);
+        }
+      } catch (error) {
+        this.snackBar.open('Ocurrió un error', '', {
+          duration: 5000,
+        });
+
+        console.error(error);
+      }
     } else {
       this.snackBar.open('Debe llenar todos los campos', '', {
         duration: 5000,

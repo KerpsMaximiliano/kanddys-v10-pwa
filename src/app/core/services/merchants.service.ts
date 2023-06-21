@@ -6,7 +6,7 @@ import { Item } from '../models/item';
 import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
 import { Tag } from '../models/tags';
-import { RecurrentUserData, User } from '../models/user';
+import { RecurrentUserData, User, UserInput } from '../models/user';
 import { ViewsMerchant } from '../models/views-merchant';
 import { ListParams } from '../types/general.types';
 import {
@@ -45,6 +45,7 @@ import {
   hotBuyersByMerchant,
   orderByStatusDelivery,
   higherIncomeBuyersByMerchant,
+  entryMerchant,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -496,5 +497,21 @@ export class MerchantsService {
     });
     if (!response || response?.errors) return undefined;
     return response?.higherIncomeBuyersByMerchant;
+  }
+
+  async entryMerchant(
+    merchantID: string,
+    merchantInput: MerchantInput,
+    userInput: UserInput,
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: entryMerchant,
+      variables: { merchantID, merchantInput, userInput },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.entryMerchant;
   }
 }

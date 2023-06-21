@@ -5,7 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ContactInput } from 'src/app/core/models/contact';
+import { Contact, ContactInput } from 'src/app/core/models/contact';
 
 @Component({
   selector: 'app-link-update',
@@ -39,7 +39,7 @@ export class LinkUpdateComponent implements OnInit {
   contactImage;
 
   userId: string;
-  contacts;
+  contacts: Array<Contact>;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -88,7 +88,7 @@ export class LinkUpdateComponent implements OnInit {
     },
   ];
 
-  contactIndex: number;
+  linkIndex: number;
 
   async updateCurrentSlideData() {
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
@@ -96,52 +96,45 @@ export class LinkUpdateComponent implements OnInit {
   }
   onLinkInput(input: HTMLInputElement) {
     this.link = input.value;
-    console.log(this.link);
     this.itemFormLink.get('link').patchValue(this.link);
   }
 
   async ngOnInit() {
     this.route.params.subscribe(async (params) => {
       this.userId = params.userId;
-      console.log(this.userId);
     });
 
     const pagination = {
-      options: { sortBy: 'createdAt:asc', limit: 10, page: 1, range: {} },
+      options: { sortBy: 'createdAt:asc', limit: 1, page: 1, range: {} },
       findBy: { user: this.userId },
     };
 
     const contacts = await this.contactService.contacts(pagination);
     this.contacts = contacts;
 
-    console.log(this.contacts);
-
     const index = this.route.snapshot.queryParamMap.get('index');
-    console.log(index);
-    this.contactIndex = +index;
-    console.log(this.contactIndex);
+    this.linkIndex = +index;
   }
 
   async save() {
-    const contact = this.contacts[this.contactIndex];
-    console.log(contact);
+    const link = this.contacts[0].link[this.linkIndex];
 
-    this.linkName = contact.name;
+    this.linkName = this.contacts[0].link[this.linkIndex].name;
 
-    const linkInput: ContactInput = {
-      image: contact.image,
+    const linkInput: any = {
+      image: link.image,
       name: this.linkName,
-      description: this.link,
-      type: 'user',
+      value: this.link
     };
 
-    const linkId = contact._id;
+    const linkId = link._id;
 
     // Aqui se esta utilizando updateContact para actualizar un link?
     // El EP para actualizar el link de un contacto es "contactUpdateLink"
-    const updatedContact = await this.contactService.updateContact(
+    const updatedContact = await this.contactService.contactUpdateLink(
+      linkInput,
       linkId,
-      linkInput
+      this.contacts[0]._id
     );
 
     console.log(updatedContact);

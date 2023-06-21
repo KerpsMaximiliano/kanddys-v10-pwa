@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'src/app/core/services/users.service';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { async } from '@angular/core/testing';
+import { Contact } from 'src/app/core/models/contact';
 
 @Component({
   selector: 'app-links-page',
@@ -14,7 +15,7 @@ export class LinksPageComponent implements OnInit {
   env: string = environment.assetsUrl;
   userId: string;
   user;
-  contacts;
+  contacts: Array<Contact>;
   contactIndex: number;
 
   constructor(
@@ -135,33 +136,35 @@ export class LinksPageComponent implements OnInit {
       findBy: { user: this.userId },
     };
 
-    const contacts = await this.contactServive.contacts(pagination);
-
-    console.log(contacts);
+    const contacts: Array<Contact> = await this.contactServive.contacts(
+      pagination
+    );
 
     this.contacts = contacts;
 
-    for (let i = 0; i < this.contacts.length; i++) {
-      let card = {
-        bg: '#fff',
-        img: this.contacts[i]?.image,
-        title: this.contacts[i]?.name,
-        subtitle: this.contacts[i]?.description,
-        callback: async () => {
-          console.log('Click');
-        },
-      };
-      this.contactCards.push(card);
-    }
+    if (this.contacts.length > 0) {
+      for (let i = 0; i < this.contacts[0].link.length; i++) {
+        let card = {
+          bg: '#fff',
+          img: this.contacts[0].link[i].image,
+          title: this.contacts[0].link[i].name,
+          subtitle: this.contacts[0].link[i].value,
+          callback: async () => {
+            console.log('Click');
+          },
+        };
+        this.contactCards.push(card);
+      }
 
-    this.card = [
-      {
-        bg: '#fff',
-        title: this.user.username ? this.user.username : this.user.email,
-        img: this.user.image,
-        subtitle: this.user.title,
-      },
-    ];
+      this.card = [
+        {
+          bg: '#fff',
+          title: this.user.username ? this.user.username : this.user.email,
+          img: this.user.image,
+          subtitle: this.user.title,
+        },
+      ];
+    }
   }
 
   goBack() {

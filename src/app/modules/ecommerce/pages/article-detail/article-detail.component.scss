@@ -199,7 +199,7 @@ video {
 .current-media-shown-indicators {
   height: 3px;
   max-width: 500px;
-  background-color: #7B7B7B;
+  background-color: #7b7b7b;
   display: grid;
 }
 
@@ -209,7 +209,7 @@ video {
   border-right: 1px solid black;
 
   &.active {
-    background-color: #6FCF97;
+    background-color: #6fcf97;
   }
 }
 
@@ -343,7 +343,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #171D16;
+  background-color: #171d16;
 
   .title {
     font-family: SfProLight;
@@ -360,6 +360,10 @@ header {
   z-index: 9999;
   padding: 15px 45px 32px 17px;
   min-height: 96px;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
 
   button {
     padding: 0;
@@ -382,10 +386,6 @@ header {
     &::before {
       float: right;
       line-height: 3;
-    }
-
-    span {
-      font-family: SfProBold;
     }
   }
 }
@@ -414,6 +414,7 @@ header {
   }
 
   .expandedParragraph {
+    word-wrap: break-word;
     margin-top: 20px;
     font-size: 19px;
     font-family: InterRegular;

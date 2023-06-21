@@ -17,6 +17,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 
 @Component({
   selector: 'app-receiver-form',
@@ -66,6 +67,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
     private postsService: PostsService,
     private router: Router,
     private route: ActivatedRoute,
+    private webformsService: WebformsService,
     private _formBuilder: FormBuilder
   ) {}
 
@@ -105,44 +107,39 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   */
 
   save() {
-    this.postsService.post = {
-      ...this.postsService.post,
-      from:
+    this.headerService.post = this.postsService.post;
+    this.headerService.order.receiverData = {
+      sender:
         this.form.controls['senderName'].value !== ''
           ? this.form.controls['senderName'].value
           : 'Anónimo',
-      to: this.form.controls['receiverName'].value,
-      provisionalReceiverContact:
+      receiver: this.form.controls['receiverName'].value,
+      receiverPhoneNumber:
         this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
           '+'
         )[1],
     };
-    this.headerService.post = {
-      ...this.postsService.post,
-      from:
-        this.form.controls['senderName'].value !== ''
-          ? this.form.controls['senderName'].value
-          : 'Anónimo',
-      to: this.form.controls['receiverName'].value,
-      provisionalReceiverContact:
-        this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
-          '+'
-        )[1],
-    };
-    localStorage.setItem(
-      'post',
-      JSON.stringify({
-        message: this.postsService.post.message,
-        title: this.postsService.post.title,
-        to: this.postsService.post.to,
-        from: this.postsService.post.from,
-        provisionalReceiverContact: this.receiverContact,
-      })
-    );
+    this.headerService.storeOrder(this.headerService.order);
 
-    this.router.navigate([
-      `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`
-    ]);
+    if (!this.webformsService.areWebformsValid) {
+      return this.router.navigate([
+        `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
+      ]);
+
+      // TODO poner un toast message que avise que se deben llenar el form
+    }
+
+    this.router.navigate(
+      [
+        `../new-address`,
+      ],
+      {
+        relativeTo: this.route,
+        queryParams: {
+          flow: 'cart'
+        }
+      }
+    );
   }
 
   goBack() {

@@ -8,6 +8,7 @@ export class ContactInput {
   name?: String;
   decription?: String;
   banner?: string;
+  default?: boolean;
 }
 
 export class LinkInput {

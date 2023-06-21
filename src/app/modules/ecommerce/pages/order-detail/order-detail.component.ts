@@ -2,7 +2,11 @@ import { LocationStrategy } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import { capitalize, formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  capitalize,
+  formatID,
+  isVideo,
+} from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import {
   ItemOrder,
@@ -156,18 +160,23 @@ export class OrderDetailComponent implements OnInit {
   panelOpenState = false;
   openNavigation = false;
 
+  statusList: Array<{
+    name: string;
+  }> = [];
+  activeStatusIndex = 0;
+
   capitalize = capitalize;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
 
-  statusList: OrderStatusDeliveryType[] = [
-    'in progress',
-    'pending',
-    'pickup',
-    'shipped',
-    'delivered',
-  ];
+  // statusList: OrderStatusDeliveryType[] = [
+  //   'in progress',
+  //   'pending',
+  //   'pickup',
+  //   'shipped',
+  //   'delivered',
+  // ];
 
   constructor(
     private route: ActivatedRoute,
@@ -226,7 +235,7 @@ export class OrderDetailComponent implements OnInit {
     lockUI();
     this.order = (await this.orderService.order(orderId))?.order;
 
-    console.log(this.order);
+    this.buildStatusList();
 
     await this.getAnswersForEachItem();
 
@@ -991,11 +1000,41 @@ export class OrderDetailComponent implements OnInit {
   }
 
   openContactInfo() {
+    const { phone, email } = this.headerService.saleflow?.merchant.owner;
     this._bottomSheet.open(ContactHeaderComponent, {
       data: {
-        bio: this.order?.items[0].saleflow.merchant.bio,
+        link: `${this.URI}${this.router.url}`,
+        bio: this.headerService.saleflow?.merchant.bio,
         contact: this.headerService.merchantContact,
+        phone,
+        email,
       },
     });
+  }
+
+  buildStatusList() {
+    const statusList: OrderStatusDeliveryType[] = [
+      'in progress',
+      'delivered',
+    ];
+
+    const location = this.order.items[0].deliveryLocation;
+
+    if (location.street) {
+      statusList.splice(1, 0, 'pending');
+      statusList.splice(2, 0, 'shipped');
+    } else statusList.splice(1, 0, 'pickup');
+
+    for (const status of statusList) {
+      this.statusList.push({
+        name: this.orderService.orderDeliveryStatus(status),
+      });
+    }
+
+    const orderStatuDelivery = this.order.orderStatusDelivery;
+
+    this.activeStatusIndex = statusList.findIndex(
+      (status) => status === orderStatuDelivery
+    );
   }
 }
