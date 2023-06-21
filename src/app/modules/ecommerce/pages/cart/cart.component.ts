@@ -114,7 +114,7 @@ export class CartComponent implements OnInit {
 
     this.fixImagesURL();
 
-    // Check if some of the items in the cart has no amount (quantity that defines how many units of the item are getting ordered)
+    // Check if some of the items in the cart have no amount (quantity that defines how many units of the item are getting ordered)
     this.headerService.order.products.forEach((product) => {
       if (product.amount) this.itemObjects[product.item] = product;
       else this.headerService.removeOrderProduct(product.item);
