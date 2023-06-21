@@ -355,9 +355,10 @@
 
               <div *ngFor="let item of order?.items; index as i">
                 <div class="answers-by-item" *ngIf="answersByItem[item._id]">
-                  <button class="blue" *ngFor="let button of order.items">
-                    Respuesta de
+                  <button class="blue" *ngFor="let item of order.items">
+                    Respuestas de {{ item.item.name }}
                   </button>
+
                   <!-- <mat-accordion>
                     <mat-expansion-panel
                       (opened)="answersByItemDropdownOpened[item._id] = true"
@@ -382,67 +383,7 @@
                         </mat-icon>
                       </mat-expansion-panel-header>
 
-                      <ng-container
-                        *ngFor="
-                          let question of answersByItem[item._id].response;
-                          index as i
-                        "
-                      >
-                        <div
-                          *ngIf="question.question"
-                          class="webform-question-wrapper"
-                        >
-                          <div
-                            class="question"
-                            [ngClass]="{
-                              lastQuestion:
-                                i ===
-                                answersByItem[item._id].response.length - 1
-                            }"
-                          >
-                            <p class="top-text">
-                              {{ capitalize(question.question) }}
-                            </p>
-                            <p
-                              class="bottom-text"
-                              *ngIf="!question.isMedia && !question.label"
-                            >
-                              {{ question.value }}
-                            </p>
-                            <p
-                              class="bottom-text"
-                              *ngIf="!question.isMedia && question.label"
-                            >
-                              {{ question.value + " " + question.label }}
-                            </p>
-                            <p
-                              class="bottom-text"
-                              *ngIf="question.isMedia && question.label"
-                            >
-                              {{ question.label }}
-                            </p>
-
-                            <div
-                              class="question-img-wrapper"
-                              *ngIf="question.isMedia"
-                            >
-                              <div
-                                class="image"
-                                (click)="openImageModal(question.value)"
-                                [ngStyle]="{
-                                  backgroundRepeat: 'no-repeat',
-                                  backgroundPosition: 'center',
-                                  backgroundSize: 'cover',
-                                  backgroundImage:
-                                    'url(' +
-                                    question.value +
-                                    '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
-                                }"
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-                      </ng-container>
+                      
                     </mat-expansion-panel>
                   </mat-accordion> -->
                 </div>
@@ -589,13 +530,27 @@
             </ng-container>
           </p>
         </div>
-        <p class="section-label">RECIPIENTE</p>
+        <p class="section-label" *ngIf="order?.receiverData">RECIPIENTE</p>
         <div class="questions">
-          <p class="label body gray-out capitalize">
-            {{ order?.user?.name ? order?.user?.name : order?.user?.phone }}
+          <p
+            class="label body gray-out capitalize"
+            *ngIf="order?.receiverData.receiver"
+          >
+            Lo recibirá: {{ order?.receiverData.receiver }}
           </p>
-          <p class="label body gray-out capitalize">Prueba</p>
-          <p class="label body gray-out capitalize">Prueba</p>
+          <p
+            class="label body gray-out capitalize"
+            *ngIf="order?.receiverData.receiverPhoneNumber"
+          >
+            Teléfono:
+            {{ order?.receiverData.receiverPhoneNumber }}
+          </p>
+          <p
+            class="label body gray-out capitalize"
+            *ngIf="order?.receiverData.sender"
+          >
+            {{ order?.receiverData.sender }}
+          </p>
         </div>
         <p class="section-label">TIEMPO DE LA ENTREGA</p>
         <div class="questions" *ngIf="deliveryImages?.reservation">
@@ -723,17 +678,95 @@
       >
         <p class="section-label">MENSAJE DE REGALO (OPCIONAL)</p>
 
-        <div class="webform-question-wrapper">
-          <div class="question firstQuestion">
+        <div class="questions">
+          <div
+            class="question firstQuestion"
+            *ngIf="
+              !post.envelopePresentation ||
+              (post.envelopePresentation &&
+                post.envelopePresentation === 'QR-TEXT')
+            "
+          >
             <p class="top-text">Escrito en tarjetita física</p>
             <p class="bottom-text">
               {{ post?.message }}
             </p>
           </div>
 
-          <div class="question" *ngIf="slides && slides.length">
+          <div
+            class="question"
+            *ngIf="
+              slides &&
+              slides.length &&
+              (!post.envelopePresentation ||
+                (post.envelopePresentation &&
+                  post.envelopePresentation === 'QR-TEXT') ||
+                post.envelopePresentation === 'QR')
+            "
+          >
             <p class="top-text">Contenido del QR:</p>
 
+            <div
+              class="items-container"
+              style="margin-bottom: 5px; padding-left: 0px"
+            >
+              <div
+                class="image-container"
+                *ngFor="let slide of slides; index as i"
+              >
+                <button class="btn">
+                  <div
+                    *ngIf="slide.type === 'poster' && !slide.isVideo"
+                    class="image"
+                    (click)="openImageModal(slide.media)"
+                    [ngStyle]="{
+                      backgroundImage: slide.media
+                        ? 'url(' + slide.media + ')'
+                        : '/assets/images/noimage.png',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover'
+                    }"
+                  ></div>
+                  <div
+                    *ngIf="slide.type === 'poster' && slide.isVideo"
+                    class="video-wrapper videoThumbnail"
+                    (click)="playVideoOnFullscreen('video' + i)"
+                  >
+                    <img
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                      alt="play"
+                      class="playVideoIcon"
+                      style="padding: 1rem !important; z-index: 99"
+                    />
+
+                    <video
+                      [src]="slide.media"
+                      [id]="'video' + i"
+                      class="video"
+                      [muted]="true"
+                    ></video>
+                  </div>
+                </button>
+                <!-- <div class="right" style="width: 100%">
+                  <div class="top-flex">
+                    <p class="left-text">
+                      {{ item.amount }}x {{ item.item.name || "artículo(s)" }}
+                    </p>
+                    <p class="right-text">
+                      ${{ order.subtotals[i].amount | number }}
+                    </p>
+                  </div>
+                  <p class="grey">
+                    {{ item.item.description }}
+                  </p>
+                </div> -->
+              </div>
+            </div>
+
+            <!--
+
+           
             <div class="qr-content">
               <div
                 class="slide-container"
@@ -779,18 +812,41 @@
                 </ng-container>
               </div>
             </div>
+             -->
+
+            <!--
+              <div class="question lastQuestion">
+                <p class="top-text">Nombre del sobre</p>
+                <p class="bottom-text">
+                  {{ post?.targets[0]?.name || post?.title }}
+                </p>
+              </div>
+            -->
+
+            <button
+              style="margin-left: 0px; margin-top: 0px"
+              class="blue"
+              (click)="downloadQr(qrcodeTemplate)"
+            >
+              Imprime o descarga el QR que enlaza el contenido
+            </button>
           </div>
 
-          <div class="question lastQuestion">
+          <div
+            class="question lastQuestion"
+            *ngIf="post?.targets[0]?.name || post?.title"
+          >
             <p class="top-text">Nombre del sobre</p>
             <p class="bottom-text">
               {{ post?.targets[0]?.name || post?.title }}
             </p>
           </div>
 
-          <button class="blue" (click)="downloadQr(qrcodeTemplate)">
-            Imprime o descarga el QR que enlaza el contenido
-          </button>
+          <!--
+            <button class="blue" (click)="downloadQr(qrcodeTemplate)">
+              Imprime o descarga el QR que enlaza el contenido
+            </button>
+          -->
         </div>
       </div>
 

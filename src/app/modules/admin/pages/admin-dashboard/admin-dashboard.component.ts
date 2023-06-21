@@ -42,6 +42,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ExtendedItem } from '../items-dashboard/items-dashboard.component';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 export class FilterCriteria {
   _id?: string;
@@ -276,11 +277,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private _bottomSheet: MatBottomSheet,
     public dialog: MatDialog,
+    private headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private clipboard: Clipboard,
-    private queryParameterService: QueryparametersService,
-    private dialogService: DialogService,
-    private _ToastrService: ToastrService
+    private queryParameterService: QueryparametersService
   ) {}
 
   async ngOnInit() {
@@ -775,6 +774,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 this.router.navigate(['/admin/view-configuration-cards']);
               },
             },
+            {
+              title:
+                'Edita cuentas sociales y WhatsApp de contacto al footer de la tienda',
+              callback: () => {
+                this.router.navigate([
+                  `/ecommerce/link-register/${this.headerService.user._id}`,
+                ]);
+              },
+            },
             // {
             //   title: 'Ve a las configuraciones de las categorias',
             //   callback: () => {
@@ -789,7 +797,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 this.router.navigate(
                   [
                     `/ecommerce/${this._MerchantsService.merchantData.slug}/store`,
-                  ], 
+                  ],
                   { queryParams: { adminView: true } }
                 );
               },

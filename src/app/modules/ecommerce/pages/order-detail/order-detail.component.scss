@@ -216,8 +216,11 @@ a {
 
           .video-wrapper {
             position: relative;
-            width: 84px;
-            height: 74px;
+            width: 82px;
+            height: 82px;
+            overflow: hidden;
+            border-radius: 6px;
+
           }
 
           .video {
@@ -226,6 +229,8 @@ a {
             height: 74px;
             position: relative;
             cursor: pointer;
+            width: 82px;
+            height: 82px;
 
             .item-video {
               width: 86px;
@@ -660,8 +665,8 @@ table {
 .question {
   background-color: #fff;
   border-radius: 0px;
-  padding: 18px 15px 17px 15px;
-  border: 1px solid #f6f6f6;
+  padding: 0px;
+  border: none;
 
   &.firstQuestion {
     border-radius: 7px 7px 0px 0px;
@@ -672,12 +677,13 @@ table {
   }
 
   .top-text {
-    color: #7b7b7b;
-    font-family: InterBold;
-    font-size: 17px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-family: InterRegular;
+    font-size: 13px;
+    margin: 0;
+    margin-bottom: 10px;
+    color: #272727;
+    font-weight: 400;
+    text-transform: uppercase;
   }
 
   .bottom-text {
@@ -1122,6 +1128,7 @@ table {
   .items-container {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
 
     // &.ready {

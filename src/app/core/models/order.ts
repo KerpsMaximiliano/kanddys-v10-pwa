@@ -138,10 +138,11 @@ export class ItemOrder extends Model<ItemOrder> {
   }>;
   answers?: Array<{
     reference: string;
-  }>
+  }>;
   expenditures: string[];
   notifications: string[];
   deliveryData?: DeliveryData;
+  receiverData?: ReceiverData;
 }
 
 export class ItemOrderInput {
@@ -150,6 +151,7 @@ export class ItemOrderInput {
   products?: ItemSubOrderInput[];
   itemPackage?: string;
   tags?: string[];
+  receiverData?: ReceiverDataInput;
 }
 
 export class DeliveryDataInput {
@@ -160,6 +162,17 @@ export class DeliveryData extends Model<DeliveryData> {
   image: string;
 }
 
+export class ReceiverDataInput {
+  receiver: string;
+  receiverPhoneNumber?: string;
+  sender?: string;
+}
+
+export class ReceiverData extends Model<ReceiverData> {
+  receiver: string;
+  receiverPhoneNumber?: string;
+  sender?: string;
+}
 
 export class OCRInput {
   total?: number;
@@ -169,7 +182,12 @@ export class OCRInput {
   platform?: string;
 }
 
-export type ExpenditureType = 'delivery-zone' | 'others' | 'employee' | 'only-day' | 'only-month';
+export type ExpenditureType =
+  | 'delivery-zone'
+  | 'others'
+  | 'employee'
+  | 'only-day'
+  | 'only-month';
 
 export class Expenditure extends Model<Expenditure> {
   type: ExpenditureType;
@@ -187,7 +205,7 @@ export class ExpenditureInput {
   description?: string;
   amount: number;
   activeDate: ActiveDate;
-  media?:any;
+  media?: any;
 }
 
 export class ExpenditureActiveDateRangeInput {
@@ -210,7 +228,7 @@ export class Benefits {
   totalResults: number;
 }
 
-export class ActiveDate{
-  from:string;
-  month:number;
+export class ActiveDate {
+  from: string;
+  month: number;
 }
