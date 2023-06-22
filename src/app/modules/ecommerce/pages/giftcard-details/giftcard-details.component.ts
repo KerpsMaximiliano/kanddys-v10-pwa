@@ -5,7 +5,7 @@ import {
   SearchCountryField,
 } from 'ngx-intl-tel-input';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -50,15 +50,20 @@ export class GiftcardDetailsComponent implements OnInit {
     ],
   });
 
+  flow: 'cart' | 'checkout' = 'cart';
+
   constructor(
     private _formBuilder: FormBuilder,
     private router: Router,
+    private route: ActivatedRoute,
     private merchantsService: MerchantsService,
     private headerService: HeaderService,
     private postsService: PostsService
   ) {}
 
   async ngOnInit() {
+    const flow = this.route.snapshot.queryParamMap.get('flow');
+    if (flow) this.flow = flow as 'cart' | 'checkout';
     if(!this.postsService.post) this.router.navigate(['/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart'])
   }
 
@@ -108,7 +113,14 @@ export class GiftcardDetailsComponent implements OnInit {
 
     this.postsService.post.envelopePresentation = this.isQr ? 'QR' : 'QR-TEXT';
 
-    this.router.navigate([
+    if (this.flow === 'checkout') 
+      return this.router.navigate([
+        '/ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/checkout',
+      ]);
+
+    return this.router.navigate([
       '/ecommerce/' +
         this.headerService.saleflow.merchant.slug +
         '/receiver-form',
@@ -116,9 +128,16 @@ export class GiftcardDetailsComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate([
+    this.router.navigate(
+      [
       '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-symbol',
-    ]);
+      ],
+      {
+        queryParams: {
+          flow: this.flow
+        }
+      }
+    );
     //this.headerService.redirectFromQueryParams();
   }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -13,8 +13,11 @@ import { PostsService } from 'src/app/core/services/posts.service';
 export class NewSymbolComponent implements OnInit {
   postForm: FormGroup;
 
+  flow: 'cart' | 'checkout' = 'cart';
+
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private headerService: HeaderService,
     private merchantsService: MerchantsService,
     public postsService: PostsService,
@@ -22,6 +25,11 @@ export class NewSymbolComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
+    const flow = this.route.snapshot.queryParamMap.get('flow');
+    if (flow)
+      this.flow = flow as 'cart' | 'checkout';
+
     if (!this.postsService.post) {
       this.postsService.post = {
         title: '',
@@ -51,14 +59,28 @@ export class NewSymbolComponent implements OnInit {
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
 
-    this.router.navigate([
+
+    this.router.navigate(
+      [
       'ecommerce/' +
         this.headerService.saleflow.merchant.slug +
         '/giftcard-details',
-    ]);
+      ],
+      {
+        queryParams: {
+          flow: this.flow,
+        }
+      }
+    );
   }
 
   goBack() {
+
+    if (this.flow === 'checkout')
+      return this.router.navigate([
+        'ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+      ]);
+
     if (
       (!this.postsService.post.slides ||
         this.postsService.post.slides.length === 0) &&
