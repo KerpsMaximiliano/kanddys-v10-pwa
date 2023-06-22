@@ -1402,11 +1402,18 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrEditMessage() {
-    this.router.navigate([
+    this.router.navigate(
+      [
       'ecommerce/' +
         this.headerService.saleflow.merchant.slug +
         '/new-symbol',
-    ]);
+      ],
+      {
+        queryParams: {
+          flow: 'checkout'
+        }
+      }
+    );
 
     // if (this.postsService.post) {
     //   this.router.navigate([
