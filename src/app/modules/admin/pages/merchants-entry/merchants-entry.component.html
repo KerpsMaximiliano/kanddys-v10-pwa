@@ -12,7 +12,25 @@
       </div>
       <div class="form-group">
         <label for="phone">Teléfono:</label>
-        <input type="tel" id="phone" formControlName="phone" required>
+        <div class="wrapper">
+          <ngx-intl-tel-input
+            [cssClass]="'custom'"
+            [enableAutoCountrySelect]="true"
+            [enablePlaceholder]="true"
+            [searchCountryFlag]="true"
+            [selectFirstCountry]="false"
+            [preferredCountries]="preferredCountries"
+            [selectedCountryISO]="CountryISO"
+            maxLength="13"
+            minlength="10"
+            [phoneValidation]="true"
+            [separateDialCode]="true"
+            [customPlaceholder]="'(000) 000-0000'"
+            [numberFormat]="PhoneNumberFormat.International"
+            formControlName="phone"
+            tabindex="1"
+          ></ngx-intl-tel-input>
+        </div>
       </div>
       <div class="form-group">
         <label for="password">Contraseña:</label>
@@ -24,7 +42,7 @@
 
   <br><br>
   <div *ngIf="merchantCreated" style="text-align: center;">
-    <button mat-button>Copiar enlace para logearse con el nuevo usuario</button>
+    <button mat-button (click)="copyLinkToClipboard()">Copiar enlace para logearse con el nuevo usuario</button>
     <br><br>
     <button mat-button (click)="clearForm()">Limpiar form</button>
   </div>

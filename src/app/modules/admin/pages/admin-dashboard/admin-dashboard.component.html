@@ -6,6 +6,10 @@
       </button>
       <button mat-icon-button style="margin-right: 25px" (click)="newArticle()">
         <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
+        <div class="tooltip" *ngIf="(hiddenItems.length === 0) && (soldItems.length === 0) && (notSoldItems.length === 0)">
+          <span>¡Empieza ya creando tu primer artículo!</span>
+          <div class="arrow"></div>
+        </div>
       </button>
       <button class="header-btn" (click)="headerSettings()">
         <img [src]="environment + '/dots-black.svg'" alt="" />
@@ -64,6 +68,7 @@
       [ngClass]="{
         lessPadding: detailedList === 'NOT_SOLD'
       }"
+      *ngIf="(hiddenItems.length > 0) || (soldItems.length > 0) || (notSoldItems.length > 0)"
     >
       <swiper [config]="swiperConfig" class="category-swiper">
         <!-- <div
