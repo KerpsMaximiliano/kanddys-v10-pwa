@@ -299,7 +299,10 @@
               </div>
             </mat-expansion-panel-header>
             <ng-container>
-              <div class="items-container no-padding" style="margin-bottom: 5px">
+              <div
+                class="items-container no-padding"
+                style="margin-bottom: 5px"
+              >
                 <div
                   class="image-container"
                   *ngFor="let item of order?.items; index as i"
@@ -360,7 +363,10 @@
               <div *ngFor="let item of order?.items; index as i">
                 <div class="answers-by-item" *ngIf="answersByItem[item._id]">
                   <button class="blue" *ngFor="let item of order.items">
-                    Respuestas de {{ item.item?.name ? item.item?.name : 'Artículo sin nombre' }}
+                    Respuestas de
+                    {{
+                      item.item?.name ? item.item?.name : "Artículo sin nombre"
+                    }}
                   </button>
 
                   <!-- <mat-accordion>
@@ -432,14 +438,17 @@
         </div> -->
                 <div
                   class="items-container space-between"
-                  style="margin: 0px; padding: 0px;"
+                  style="margin: 0px; padding: 0px"
                 >
                   <p class="total">Monto Total:</p>
                   <p class="amount" [style]="{ fontSize: '21px' }">
                     $ {{ payment | number : "1.2-2" }}
                   </p>
                 </div>
-                <div class="items-container" style="margin-top: 33px; padding: 0px;">
+                <div
+                  class="items-container"
+                  style="margin-top: 33px; padding: 0px"
+                >
                   <div class="image-container">
                     <button
                       (click)="
@@ -461,7 +470,7 @@
                     </button>
                     <div class="payment-info">
                       <span>Pago por {{ paymentType }}</span>
-                      <div style="margin-top: 12px;">
+                      <div style="margin-top: 12px">
                         <div
                           *ngIf="order.orderStatus === 'to confirm'"
                           class="status pending"
@@ -700,13 +709,19 @@
           >
             <p class="top-text">Escrito en tarjetita física</p>
             <p class="bottom-text">
-              {{
-                post?.message ||
-                post?.from ||
-                (post?.targets?.length && post.targets[0].name)
-                  ? post.targets[0].name
-                  : ""
-              }}
+              <ng-container *ngIf="post?.message">
+                {{ post?.message }}
+              </ng-container>
+
+              <ng-container *ngIf="post?.from">
+                {{ post?.from }}
+              </ng-container>
+
+              <ng-container
+                *ngIf="post?.targets?.length > 0 && post.targets[0]?.name"
+              >
+                {{ post.targets[0]?.name }}
+              </ng-container>
             </p>
           </div>
 

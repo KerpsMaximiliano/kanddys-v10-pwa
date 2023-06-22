@@ -43,11 +43,17 @@
             <p class="grayout-label">Cantidad</p>
             <div class="quantity">
               <span
+                *ngIf="items.length > 1 || itemObjects[item._id].amount > 1"
                 mat-button
                 class="button"
                 (click)="changeAmount(item._id, 'subtract')"
                 >-</span
               >
+
+              <span *ngIf="items.length === 1 && itemObjects[item._id].amount === 1" mat-button class="button disabled"
+                >-</span
+              >
+
               <span>{{ itemObjects[item._id].amount }}</span>
               <span
                 mat-button
@@ -229,7 +235,11 @@
       >
         <mat-checkbox (change)="toggleCheckbox($event.checked)"></mat-checkbox>
         <div (click)="goToSymbolCreation()" style="margin-top: 5px">
-          <span>{{!postsService.post ? 'Sin incluir mensaje de regalo' : 'Quitar mensaje de regalo'}}</span>
+          <span>{{
+            !postsService.post
+              ? "Sin incluir mensaje de regalo"
+              : "Quitar mensaje de regalo"
+          }}</span>
           <i
             style="color: #fff; margin-left: 20px; cursor: pointer"
             class="fas fa-chevron-right"
