@@ -39,12 +39,6 @@
         }} -->
       </p>
     </div>
-    <div class="right-area" *ngIf="logged || headerService.user">
-      <span class="header-text">{{
-        currentUser?.name || currentUser?.phone || currentUser?.email
-      }}</span>
-      <img [src]="env + '/person.svg'" alt="Icono de una persona" />
-    </div>
   </header>
 
   <!-- <p class="msj">Excelente! Mira como va tu factura.</p> -->
@@ -106,7 +100,7 @@
               </div>
               <h2
                 class="inner-title"
-                style="position: absolute; right: 18px; margin: 0"
+                style="position: absolute; right: 18px; margin: 0; font-family: InterBold;"
               >
                 RD $ {{ payment | number : "1.2-2" }}
               </h2>
@@ -461,7 +455,7 @@
         <p class="address-name">Agrega una tarjeta dedicatoria (opcional)</p>
       </button>
     </section>
-    <p class="bottom-label">
+    <p class="bottom-label" *ngIf="postsService?.appliesMessage">
       {{ headerService.saleflow.merchant.name }} imprimirá un QR y no tiene
       acceso al contenido.
     </p>
