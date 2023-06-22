@@ -123,7 +123,7 @@ a {
 
       .items-container {
         background-color: #ffffff;
-        padding: 10px 12px;
+        padding: 17px;
         border-radius: 6px;
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
         width: 100%;
@@ -161,18 +161,18 @@ a {
         }
 
         .amount {
-          font-family: "SfProBold";
+          color: #7b7b7b;
           font-size: 17px;
-          color: #272727;
+          font-family: InterRegular;
           text-transform: capitalize;
         }
 
         .address-name {
-          font-family: "RobotoMedium";
           font-size: 19px;
-          color: #272727;
-          margin: 0 8px 0;
           word-break: break-word;
+          color: #7b7b7b;
+          font-size: 17px;
+          font-family: InterRegular;
         }
 
         .added {
@@ -435,7 +435,7 @@ a {
 
   .bold {
     color: #181d17;
-    font-weight: bold;
+    font-family: InterBold;
   }
 }
 
@@ -443,6 +443,7 @@ a {
   color: #7b7b7b;
   font-family: "InterMedium";
   font-size: 17px;
+  font-weight: normal;
 }
 
 .link-title {
