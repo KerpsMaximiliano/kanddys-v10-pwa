@@ -360,7 +360,7 @@
               <div *ngFor="let item of order?.items; index as i">
                 <div class="answers-by-item" *ngIf="answersByItem[item._id]">
                   <button class="blue" *ngFor="let item of order.items">
-                    Respuestas de {{ item.item.name }}
+                    Respuestas de {{ item.item?.name ? item.item?.name : 'Artículo sin nombre' }}
                   </button>
 
                   <!-- <mat-accordion>

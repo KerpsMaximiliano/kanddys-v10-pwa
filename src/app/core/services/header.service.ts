@@ -117,7 +117,6 @@ export class HeaderService {
     private app: AppService,
     private auth: AuthService,
     public wallet: WalletService,
-    private bookmark: BookmarksService,
     private merchantService: MerchantsService,
     private saleflowService: SaleFlowService,
     public matDialog: MatDialog,
@@ -141,14 +140,9 @@ export class HeaderService {
           console.log('Autenticando o refrescando token');
 
           this.user = e.data.user;
-          this.wallet.globalWallet().then((data) => {
-            this.walletData = data.globalWallet;
-          });
-          this.bookmark.bookmarkByUser().then((data) => {
-            if (data.bookmarkByUser) {
-              this.savedBookmarks = data.bookmarkByUser;
-            }
-          });
+          // this.wallet.globalWallet().then((data) => {
+          //   this.walletData = data.globalWallet;
+          // });
           this.merchantService.myMerchants().then((data) => {
             this.myMerchants = data;
             this.loadedMerchants.emit(true);
@@ -247,12 +241,12 @@ export class HeaderService {
       delivery: false,
     };
   }
-  async saveBookmarks() {
-    await this.bookmark.bookmarkByUser().then((data) => {
-      this.savedBookmarks = data.bookmarkByUser;
-    });
-    return this.savedBookmarks;
-  }
+  // async saveBookmarks() {
+  //   await this.bookmark.bookmarkByUser().then((data) => {
+  //     this.savedBookmarks = data.bookmarkByUser;
+  //   });
+  //   return this.savedBookmarks;
+  // }
 
   async fetchSaleflow(id: string) {
     if (!this.saleflow || this.saleflow._id !== id)
