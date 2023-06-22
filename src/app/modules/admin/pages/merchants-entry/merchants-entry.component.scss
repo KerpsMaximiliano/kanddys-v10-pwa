@@ -3,7 +3,7 @@
 }
 
 .form-container {
-    max-width: 400px;
+    max-width: 350px;
     margin: 0 auto;
   }
   
@@ -39,4 +39,18 @@
   button:disabled {
     background-color: #aaa;
     cursor: not-allowed;
+  }
+
+  .wrapper {
+    padding: 8px 0;
+  
+    .confirm {
+      top: 27px;
+      right: 6%;
+    }
+  }
+
+  ::ng-deep .snack-toast-error {
+    background-color: #BD362F !important;
+    color: #FFF;
   }

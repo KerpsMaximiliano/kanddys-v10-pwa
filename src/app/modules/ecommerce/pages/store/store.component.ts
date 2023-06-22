@@ -77,49 +77,44 @@ export class StoreComponent implements OnInit {
         }
 
         // if (!this.headerService.storeTemporalData || !startOnSnapshot)
-        this.executeProcessesAfterLoading();
+        this.getTags();
+        this.status = 'loading';
+        // Resetear status de la ultima orden creada
+        this.headerService.orderId = null;
+        this.headerService.merchantInfo = this.headerService.saleflow.merchant;
         // else this.getPageSnapshot();
-      });
 
-      this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-
-      window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
-      });
-      const viewsMerchants = (async () => {
+
+        window.addEventListener('resize', () => {
+          this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+        });
+
         const pagination: PaginationInput = {
           findBy: {
-            type: 'refund',
+            type: {
+              $in: ['refund', 'delivery-politics', 'security', 'privacy'],
+            },
+            merchant: this.headerService.saleflow.merchant._id,
           },
         };
-        const types: any[] = [
-          { type: 'refund', text: 'Políticas de reembolsos' },
-          { type: 'delivery-politics', text: 'Políticas de entregas' },
-          { type: 'security', text: 'Políticas de seguridad' },
-          { type: 'privacy', text: 'Políticas de privacidad' },
-        ];
-        for (const { type, text } of types) {
-          pagination.findBy.type = type;
-          const [{ _id, description }] =
-            ((await this.merchantService.viewsMerchants(
-              pagination
-            )) as any) || { _id: '' };
 
-          this.terms.push({ _id, text });
+        const types = {
+          refund: 'Políticas de reembolsos',
+          'delivery-politics': 'Políticas de entregas',
+          security: 'Políticas de seguridad',
+          privacy: 'Políticas de privacidad',
+        };
+
+        const viewMerchants = await this.merchantService.viewsMerchants(
+          pagination
+        );
+
+        for (const record of viewMerchants) {
+          this.terms.push({ _id: record._id, text: types[record.type] });
         }
-      })();
+      });
     }, 300);
-  }
-
-  async executeProcessesAfterLoading() {
-    this.status = 'loading';
-    lockUI();
-
-    // Resetear status de la ultima orden creada
-    this.headerService.orderId = null;
-    this.getTags();
-    this.headerService.merchantInfo = this.headerService.saleflow.merchant;
-    unlockUI();
   }
 
   async getTags() {

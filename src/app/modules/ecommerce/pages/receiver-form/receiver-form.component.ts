@@ -119,6 +119,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
           '+'
         )[1],
     };
+    this.headerService.receiverDataNew = true;
     this.headerService.storeOrder(this.headerService.order);
 
     if (!this.webformsService.areWebformsValid) {
@@ -150,7 +151,6 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   submit() {
     if (this.isValid()) {
       this.save();
-      this.postsService.post.appliesMessage = true;
       return this.router.navigate([
         `ecommerce/${this.headerService.saleflow.merchant.slug}/` +
           this.redirectTo,

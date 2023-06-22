@@ -299,7 +299,7 @@
               </div>
             </mat-expansion-panel-header>
             <ng-container>
-              <div class="items-container" style="margin-bottom: 5px">
+              <div class="items-container no-padding" style="margin-bottom: 5px">
                 <div
                   class="image-container"
                   *ngFor="let item of order?.items; index as i"
@@ -360,7 +360,7 @@
               <div *ngFor="let item of order?.items; index as i">
                 <div class="answers-by-item" *ngIf="answersByItem[item._id]">
                   <button class="blue" *ngFor="let item of order.items">
-                    Respuestas de {{ item.item.name }}
+                    Respuestas de {{ item.item?.name ? item.item?.name : 'Artículo sin nombre' }}
                   </button>
 
                   <!-- <mat-accordion>
@@ -394,7 +394,7 @@
               </div>
               <section
                 class="section"
-                style="margin-top: 50px"
+                style="margin-top: 29px"
                 *ngIf="order?.ocr || payedWithAzul"
               >
                 <ng-container *ngIf="payedWithAzul">
@@ -432,15 +432,15 @@
         </div> -->
                 <div
                   class="items-container space-between"
-                  style="margin-top: 4px"
+                  style="margin: 0px; padding: 0px;"
                 >
                   <p class="total">Monto Total:</p>
                   <p class="amount" [style]="{ fontSize: '21px' }">
                     $ {{ payment | number : "1.2-2" }}
                   </p>
                 </div>
-                <div class="items-container" style="margin-top: 5px">
-                  <div class="image-container" style="align-items: center">
+                <div class="items-container" style="margin-top: 33px; padding: 0px;">
+                  <div class="image-container">
                     <button
                       (click)="
                         order.ocr ? openImageModal(order.ocr.image) : null
@@ -461,7 +461,7 @@
                     </button>
                     <div class="payment-info">
                       <span>Pago por {{ paymentType }}</span>
-                      <div>
+                      <div style="margin-top: 12px;">
                         <div
                           *ngIf="order.orderStatus === 'to confirm'"
                           class="status pending"
@@ -537,28 +537,32 @@
             </ng-container>
           </p>
         </div>
-        <p class="section-label" *ngIf="order?.receiverData">RECIPIENTE</p>
-        <div class="questions">
-          <p
-            class="label body gray-out capitalize"
-            *ngIf="order?.receiverData.receiver"
-          >
-            Lo recibirá: {{ order?.receiverData.receiver }}
-          </p>
-          <p
-            class="label body gray-out capitalize"
-            *ngIf="order?.receiverData.receiverPhoneNumber"
-          >
-            Teléfono:
-            {{ order?.receiverData.receiverPhoneNumber }}
-          </p>
-          <p
-            class="label body gray-out capitalize"
-            *ngIf="order?.receiverData.sender"
-          >
-            {{ order?.receiverData.sender }}
-          </p>
-        </div>
+
+        <ng-container *ngIf="order?.receiverData">
+          <p class="section-label">RECIPIENTE</p>
+          <div class="questions">
+            <p
+              class="label body gray-out capitalize"
+              *ngIf="order?.receiverData?.receiver"
+            >
+              Lo recibirá: {{ order?.receiverData?.receiver }}
+            </p>
+            <p
+              class="label body gray-out capitalize m-top"
+              *ngIf="order?.receiverData?.receiverPhoneNumber"
+            >
+              Teléfono:
+              {{ order?.receiverData?.receiverPhoneNumber }}
+            </p>
+            <p
+              class="label body gray-out capitalize m-top"
+              *ngIf="order?.receiverData?.sender"
+            >
+              {{ order?.receiverData?.sender }}
+            </p>
+          </div>
+        </ng-container>
+
         <p class="section-label">TIEMPO DE LA ENTREGA</p>
         <div class="questions" *ngIf="deliveryImages?.reservation">
           <p class="label body gray-out capitalize">
@@ -699,7 +703,9 @@
               {{
                 post?.message ||
                 post?.from ||
-                (post?.targets?.length && post.targets[0].name) ? post.targets[0].name : ''
+                (post?.targets?.length && post.targets[0].name)
+                  ? post.targets[0].name
+                  : ""
               }}
             </p>
           </div>
@@ -1135,10 +1141,12 @@
       <div class="status-section"></div>
     </div> -->
 
-    <div class="sticky-bar">
-      <p>WeDoWeLike, para colaborar, monetizar y vender</p>
-      <img [src]="env + '/dots-black.svg'" alt="" style="margin-left: auto" />
-    </div>
+    <!--
+      <div class="sticky-bar">
+        <p>WeDoWeLike, para colaborar, monetizar y vender</p>
+        <img [src]="env + '/dots-black.svg'" alt="" style="margin-left: auto" />
+      </div>
+    -->
 
     <!-- <div class="sticky-bar">
       <p>hieofjfiekfn</p>

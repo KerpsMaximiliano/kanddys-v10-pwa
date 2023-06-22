@@ -46,6 +46,7 @@ export class NewSymbolComponent implements OnInit {
 
   save() {
     this.postsService.post.message = this.postForm.controls['message'].value;
+    this.postsService.appliesMessage = true;
 
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
@@ -58,6 +59,15 @@ export class NewSymbolComponent implements OnInit {
   }
 
   goBack() {
+    if (
+      (!this.postsService.post.slides ||
+        this.postsService.post.slides.length === 0) &&
+      (!this.postsService.post.message ||
+        !this.postsService.post.message.length)
+    ) {
+      this.postsService.post = null;
+    }
+
     this.router.navigate([
       'ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',
     ]);
