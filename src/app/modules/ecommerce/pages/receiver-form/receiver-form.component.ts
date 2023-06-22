@@ -44,6 +44,8 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   queryParamsSubscription: Subscription = null;
   redirectTo = 'checkout';
 
+  flow: 'cart' | 'checkout' = 'cart';
+
   env: string = environment.assetsUrl;
 
   CountryISO = CountryISO.DominicanRepublic;
@@ -73,17 +75,21 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      ({ redirectTo }) => {
+      ({ redirectTo, flow }) => {
         const storedPost = localStorage.getItem('post');
 
         this.data = this.postsService.post;
 
         if (redirectTo && redirectTo.length) this.redirectTo = redirectTo;
 
+        if (flow && flow.length) this.flow = flow;
+
         if (storedPost && !this.postsService.post) {
           this.postsService.post = JSON.parse(storedPost);
           this.data = this.postsService.post;
         }
+
+        console.log(this.data);
 
         if (this.data) {
           this.receiverName = this.data.provisionalReceiver;
@@ -92,6 +98,13 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
           this.isAnonymous = this.data.isAnonymous;
           this.anonymous = this.isAnonymous ? 'yes' : 'no';
           this.checkboxChecked = this.data.isAnonymous ? true : false;
+        }
+
+        if (this.headerService?.order?.receiverData) {
+          const receiverData = this.headerService?.order?.receiverData;
+          this.form.controls['receiverName'].setValue(receiverData.receiver);
+          // this.form.controls['receiverPhoneNumber'].setValue(receiverData.receiverPhoneNumber);
+          this.form.controls['senderName'].setValue(receiverData.sender);
         }
       }
     );
@@ -114,15 +127,17 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
           ? this.form.controls['senderName'].value
           : 'Anónimo',
       receiver: this.form.controls['receiverName'].value,
-      receiverPhoneNumber:
+      receiverPhoneNumber: this.form.controls['receiverPhoneNumber']?.value ?
         this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
           '+'
-        )[1],
+        )[1] : this.headerService.order.receiverData.receiverPhoneNumber,
     };
+    
     this.headerService.receiverDataNew = true;
+
     this.headerService.storeOrder(this.headerService.order);
 
-    if (!this.webformsService.areWebformsValid) {
+    if (!this.webformsService.areWebformsValid && this.flow === 'cart') {
       return this.router.navigate([
         `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
       ]);
@@ -130,7 +145,14 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
       // TODO poner un toast message que avise que se deben llenar el form
     }
 
-    this.router.navigate(
+    if (this.flow === 'checkout')
+      return this.router.navigate(
+        [
+          `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`
+        ]
+      );
+
+    return this.router.navigate(
       [
         `../new-address`,
       ],
@@ -145,6 +167,14 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
 
   goBack() {
     this.save();
+
+    if (this.flow === 'checkout')
+      return this.router.navigate(
+        [
+          `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`
+        ]
+      );
+
     return this.headerService.redirectFromQueryParams();
   }
 
