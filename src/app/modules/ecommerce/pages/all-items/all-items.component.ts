@@ -45,7 +45,6 @@ export class AllItemsComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    lockUI();
     const saleflowItems = this.headerService.saleflow.items.map(
       (saleflowItem) => ({
         item: saleflowItem.item._id,
@@ -128,7 +127,6 @@ export class AllItemsComponent implements OnInit {
 
     this.status = 'complete';
     this.paginationState.status = 'complete';
-    unlockUI();
   }
 
   async infinitePagination() {
