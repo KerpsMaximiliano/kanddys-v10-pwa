@@ -368,6 +368,8 @@ export class OrderDetailComponent implements OnInit {
         if (results.length > 0) {
           this.entityTemplate = results[0];
 
+          console.log("Results", results);
+
           this.entityTemplateLink =
             this.entityTemplate.access === 'public' ||
             this.entityTemplate.recipients === 0

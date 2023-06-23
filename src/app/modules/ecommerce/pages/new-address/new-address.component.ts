@@ -370,18 +370,22 @@ export class NewAddressComponent implements OnInit {
     }
 
     if (this.flow === 'cart') {
-      this.router.navigate(
-        [
-          `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
-        ],
-        {
-          relativeTo: this.route,
-          queryParams: {
-            saleflowId: this.headerService.saleflow._id,
-            flow: 'cart'
-          }
-        }
-      );
+      const isAppointmentActive =
+        this.headerService.saleflow.module.appointment?.isActive;
+
+      let redirectionRoute = isAppointmentActive
+        ? `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
+        : `../checkout`;
+
+      this.router.navigate([redirectionRoute], {
+        relativeTo: this.route,
+        queryParams: isAppointmentActive
+          ? {
+              saleflowId: this.headerService.saleflow._id,
+              flow: 'cart',
+            }
+          : {},
+      });
     } else {
       this.router.navigate([`../checkout`], {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
@@ -425,14 +429,14 @@ export class NewAddressComponent implements OnInit {
       if (this.flow === 'cart') {
         this.router.navigate(
           [
-            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
           ],
           {
             relativeTo: this.route,
             queryParams: {
               saleflowId: this.headerService.saleflow._id,
-              flow: 'cart'
-            }
+              flow: 'cart',
+            },
           }
         );
       } else {
@@ -475,14 +479,14 @@ export class NewAddressComponent implements OnInit {
       if (this.flow === 'cart') {
         this.router.navigate(
           [
-            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
           ],
           {
             relativeTo: this.route,
             queryParams: {
               saleflowId: this.headerService.saleflow._id,
-              flow: 'cart'
-            }
+              flow: 'cart',
+            },
           }
         );
       } else {

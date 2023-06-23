@@ -23,7 +23,7 @@ header {
 
   h3 {
     margin: 0px;
-    font-family: InterRegular;
+    font-family: InterBold;
     font-weight: 700;
     font-size: 15px;
     color: #181d17;
@@ -34,22 +34,88 @@ main {
   padding: 16px 20px 0px 20px;
   flex: 1;
 
-  textarea {
+  .textarea-wrapper {
     width: 100%;
-    height: 188px;
-    resize: none;
-    background: #ffffff;
+    min-height: 104.03px;
+    background: white;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 4px;
-    border: none;
-    padding: 27px 21px;
-    font-family: InterBold;
-    font-weight: 700;
-    font-size: 17px;
+    margin-bottom: 0px;
+    padding: 14px 12.29px 14px 14px;
 
-    color: #181d17;
+    &.no-shadow {
+      box-shadow: none;
+    }
 
-    &::placeholder {
-      color: #c4c5c3;
+    .textarea-header {
+      color: black;
+      font-size: 13px;
+      font-family: InterRegular;
+      font-style: italic;
+      word-wrap: break-word;
+    }
+
+    textarea {
+      margin-top: 16px;
+      width: 100%;
+      height: 188px;
+      resize: none;
+      background: #ffffff;
+      border-radius: 4px;
+      border: none;
+      padding: 0px;
+      font-family: InterBold;
+      font-weight: 700;
+      font-size: 17px;
+
+      height: 70px;
+      text-align: center;
+      color: #7b7b7b;
+      font-size: 17px;
+      font-family: InterBold;
+      word-wrap: break-word;
+
+      &::placeholder {
+        color: #c4c5c3;
+      }
+    }
+  }
+
+  .added-slides {
+    margin-top: 23px;
+  }
+
+  .optional-stuff {
+    margin-top: 52px;
+
+    h3 {
+      color: #000;
+      font-size: 13px;
+      font-family: InterRegular;
+      margin: 0px;
+      font-weight: normal;
+      margin-bottom: 12px;
+    }
+
+    .row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 18px 13px 18px;
+      border-radius: 4px;
+      background: #fff;
+      margin-top: 12px;
+
+      span {
+        color: #000;
+        font-size: 17px;
+        font-family: InterRegular;
+        font-style: italic;
+      }
+
+      img:hover {
+        cursor: pointer;
+      }
     }
   }
 

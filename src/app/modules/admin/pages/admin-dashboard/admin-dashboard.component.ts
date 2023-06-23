@@ -79,6 +79,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   layout: 'simple-card' | 'description-card' | 'image-full-width';
   items: Item[] = [];
   allItems: Item[] = [];
+  allItemsCopy: Item[] = [];
   recentlySoldItems: Item[] = [];
   soldItems: Item[] = [];
   lessSoldItems: Item[] = [];
@@ -286,7 +287,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     //await this.getItemsBoughtByMe();
 
     if (this._SaleflowService.saleflowData) {
-      await this.inicializeItems(true, false, true);
+      await this.inicializeItems(true, false, true, true);
       this.getTags();
       this.getQueryParameters();
       this.getHiddenItems();
@@ -296,7 +297,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
       next: async (value) => {
         if (value) {
-          await this.inicializeItems(true, false, true);
+          await this.inicializeItems(true, false, true, true);
           this.getTags();
           this.getQueryParameters();
           this.getHiddenItems();
@@ -405,7 +406,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   async inicializeItems(
     restartPagination = false,
     triggeredFromScroll = false,
-    getTotalNumberOfItems = false
+    getTotalNumberOfItems = false,
+    createCopyOfAllItems = false
   ) {
     const saleflowItems = this._SaleflowService.saleflowData.items.map(
       (saleflowItem) => ({
@@ -494,6 +496,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.allItems.forEach((item, index) => {
         this.itemsIndexesByList['ALL'][item._id] = index;
       });
+
+      if(createCopyOfAllItems) {
+        this.allItemsCopy = JSON.parse(JSON.stringify(this.allItems))
+      }
     });
   }
 

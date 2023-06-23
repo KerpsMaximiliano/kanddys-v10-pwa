@@ -91,6 +91,13 @@ export class CartComponent implements OnInit {
     await this.getItems();
     this.checkLogged();
     await this.getQuestions();
+
+    if (
+      !this.headerService.saleflow.module.post ||
+      !this.headerService.saleflow.module.post.isActive
+    ) {
+      this.isCheckboxChecked = true;
+    }
   }
 
   private async getItems() {

@@ -221,7 +221,7 @@
   </main>
 
   <footer>
-    <div class="form">
+    <div class="form" *ngIf="headerService.saleflow.module.post?.isActive">
       <!-- <mat-checkbox class="checkbox"
         >Factura sin comprobante <i class="fas fa-chevron-right"></i
       ></mat-checkbox> -->

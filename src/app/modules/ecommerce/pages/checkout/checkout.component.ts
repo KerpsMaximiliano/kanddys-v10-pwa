@@ -787,6 +787,8 @@ export class CheckoutComponent implements OnInit {
     if (this.reservation)
       this.headerService.order.products[0].reservation = this.reservation;
     // ---------------------- Managing Post ----------------------------
+    this.orderInMemory = this.headerService.order;
+
     if (this.headerService.saleflow.module?.post?.isActive) {
       if (!this.post)
         this.post = {
@@ -865,41 +867,33 @@ export class CheckoutComponent implements OnInit {
 
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
           data: {
-            loginType: 'full',
-            magicLinkData: {
-              redirectionRoute:
-                'ecommerce/' +
-                this.headerService.saleflow.merchant.slug +
-                '/checkout',
-              entity: 'EntityTemplatePostCreation',
-              redirectionRouteQueryParams: {
-                data: JSON.stringify({
-                  atStart: 'auth-entity-template-and-add-recipients',
-                  post: postResult,
-                  entityTemplateRecipient: this.postsService.postReceiverNumber,
-                  orderId: createdOrder,
-                }),
-              },
-            },
+            loginType: 'phone',
+            route:
+              'ecommerce/' +
+              this.headerService.saleflow.merchant.slug +
+              '/checkout',
+            justReturnUser: true,
           },
         });
         matDialogRef.afterClosed().subscribe(async (value) => {
           if (!value) return;
+
           if (value.user?._id || value.session.user._id) {
             this.logged = true;
-
             this.headerService.alreadyInputtedloginDialogUser =
               value.user || value.session.user;
-
-            lockUI();
 
             this.headerService.order.products[0].post = postResult;
 
             await this.createEntityTemplateForOrderPost(
               postResult,
-              entityTemplate
+              entityTemplate,
+              true,
+              this.headerService.alreadyInputtedloginDialogUser._id
             );
             await this.finishOrderCreation();
+
+            unlockUI();
           }
         });
 
@@ -953,7 +947,43 @@ export class CheckoutComponent implements OnInit {
         await this.finishOrderCreation();
       }
     } else {
-      await this.finishOrderCreation();
+      const createdOrder = (
+        await this.orderService.createPreOrder(this.headerService.order)
+      )?.createPreOrder._id;
+
+      if (
+        this.hasDeliveryZone &&
+        this.deliveryZone &&
+        this.deliveryLocation.street
+      ) {
+        await this.orderService.orderSetDeliveryZone(
+          this.deliveryZone.id,
+          createdOrder
+        );
+      }
+
+      const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+        data: {
+          loginType: 'phone',
+          route:
+            'ecommerce/' +
+            this.headerService.saleflow.merchant.slug +
+            '/checkout',
+          justReturnUser: true,
+        },
+      });
+      matDialogRef.afterClosed().subscribe(async (value) => {
+        if (!value) return;
+
+        if (value.user?._id || value.session.user._id) {
+          this.logged = true;
+          this.headerService.alreadyInputtedloginDialogUser =
+            value.user || value.session.user;
+
+          await this.finishOrderCreation();
+          unlockUI();
+        }
+      });
     }
   };
 
@@ -1120,20 +1150,28 @@ export class CheckoutComponent implements OnInit {
 
   createEntityTemplateForOrderPost = async (
     postId: string,
-    entityTemplateToUpdate: EntityTemplate = null
+    entityTemplateToUpdate: EntityTemplate = null,
+    withoutAuth: boolean = false,
+    userId: string = null
   ) => {
     try {
       const entityTemplate = !entityTemplateToUpdate
         ? await this.entityTemplateService.createEntityTemplate()
         : entityTemplateToUpdate;
 
-      await this.entityTemplateService.entityTemplateAuthSetData(
-        entityTemplate._id,
-        {
-          reference: postId,
-          entity: 'post',
-          access: Boolean(this.postsService.privatePost || this.postsService.postReceiverNumber?.length > 0) ? 'private' : 'public',
-          /*templateNotifications:
+      if (!withoutAuth) {
+        await this.entityTemplateService.entityTemplateAuthSetData(
+          entityTemplate._id,
+          {
+            reference: postId,
+            entity: 'post',
+            access: Boolean(
+              this.postsService.privatePost ||
+                this.postsService.postReceiverNumber?.length > 0
+            )
+              ? 'private'
+              : 'public',
+            /*templateNotifications:
             this.postsService.entityTemplateNotificationsToAdd.map(
               (keyword) => ({
                 key: keyword,
@@ -1150,18 +1188,59 @@ export class CheckoutComponent implements OnInit {
                       '\nAccedió el receptor: ',
               })
             ),*/
-        }
-      );
+          }
+        );
+      } else {
+        await this.entityTemplateService.entityTemplateSetData(
+          entityTemplate._id,
+          {
+            reference: postId,
+            entity: 'post',
+            access: Boolean(
+              this.postsService.privatePost ||
+                this.postsService.postReceiverNumber?.length > 0
+            )
+              ? 'private'
+              : 'public',
+          }
+        );
+      }
 
       const recipientUser = this.postsService.postReceiverNumber;
 
-      if (recipientUser) {
+      if (recipientUser && !withoutAuth) {
         const recipient = await this.entityTemplateService.createRecipient({
           phone: this.postsService.postReceiverNumber,
         });
 
-        if (this.postsService.privatePost || this.postsService.postReceiverNumber?.length > 0) {
+        if (
+          this.postsService.privatePost ||
+          this.postsService.postReceiverNumber?.length > 0
+        ) {
           await this.entityTemplateService.entityTemplateAddRecipient(
+            entityTemplate._id,
+            {
+              edit: false,
+              recipient: recipient._id,
+            }
+          );
+        }
+
+        this.postsService.entityTemplateNotificationsToAdd = [];
+      } else if (recipientUser && withoutAuth) {
+        const recipient =
+          await this.entityTemplateService.createRecipientWithoutAuth(
+            {
+              phone: this.postsService.postReceiverNumber,
+            },
+            userId
+          );
+
+        if (
+          this.postsService.privatePost ||
+          this.postsService.postReceiverNumber?.length > 0
+        ) {
+          await this.entityTemplateService.entityTemplateAddRecipientWithoutAuth(
             entityTemplate._id,
             {
               edit: false,
@@ -1402,18 +1481,9 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrEditMessage() {
-    this.router.navigate(
-      [
-      'ecommerce/' +
-        this.headerService.saleflow.merchant.slug +
-        '/new-symbol',
-      ],
-      {
-        queryParams: {
-          flow: 'checkout'
-        }
-      }
-    );
+    this.router.navigate([
+      'ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-symbol',
+    ]);
 
     // if (this.postsService.post) {
     //   this.router.navigate([

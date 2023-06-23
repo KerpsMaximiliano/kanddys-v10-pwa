@@ -120,6 +120,12 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   */
 
   save() {
+    if (this.form.untouched || !this.form.valid) {
+      return this.router.navigate([
+        `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
+      ]);
+    }
+
     this.headerService.post = this.postsService.post;
     this.headerService.order.receiverData = {
       sender:
@@ -127,12 +133,13 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
           ? this.form.controls['senderName'].value
           : 'Anónimo',
       receiver: this.form.controls['receiverName'].value,
-      receiverPhoneNumber: this.form.controls['receiverPhoneNumber']?.value ?
-        this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
-          '+'
-        )[1] : this.headerService.order.receiverData.receiverPhoneNumber,
+      receiverPhoneNumber: this.form.controls['receiverPhoneNumber']?.value
+        ? this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
+            '+'
+          )[1]
+        : null,
     };
-    
+
     this.headerService.receiverDataNew = true;
 
     this.headerService.storeOrder(this.headerService.order);
@@ -146,34 +153,30 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
     }
 
     if (this.flow === 'checkout')
-      return this.router.navigate(
-        [
-          `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`
-        ]
-      );
+      return this.router.navigate([
+        `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+      ]);
 
-    return this.router.navigate(
-      [
-        `../new-address`,
-      ],
-      {
+    if (
+      this.headerService.saleflow.module.delivery?.isActive &&
+      this.headerService.saleflow.module.delivery.deliveryLocation
+    ) {
+      return this.router.navigate([`../new-address`], {
         relativeTo: this.route,
         queryParams: {
-          flow: 'cart'
-        }
-      }
-    );
+          flow: 'cart',
+        },
+      });
+    }
   }
 
   goBack() {
     this.save();
 
     if (this.flow === 'checkout')
-      return this.router.navigate(
-        [
-          `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`
-        ]
-      );
+      return this.router.navigate([
+        `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+      ]);
 
     return this.headerService.redirectFromQueryParams();
   }

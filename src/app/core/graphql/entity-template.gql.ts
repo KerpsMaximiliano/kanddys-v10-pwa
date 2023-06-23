@@ -223,6 +223,30 @@ export const entityTemplateAddRecipient = gql`
   }
 `;
 
+export const entityTemplateAddRecipientWithoutAuth = gql`
+  mutation entityTemplateAddRecipientWithoutAuth(
+    $entityTemplateId: ObjectID!
+    $input: RecipientsInput!
+  ) {
+    entityTemplateAddRecipientWithoutAuth(
+      entityTemplateId: $entityTemplateId
+      input: $input
+    ) {
+      _id
+      reference
+      entity
+      dateId
+      status
+      user
+      recipients {
+        _id
+        edit
+        recipient
+      }
+    }
+  }
+`;
+
 export const createEntityTemplate = gql`
   mutation createEntityTemplate {
     createEntityTemplate {
@@ -236,6 +260,18 @@ export const createEntityTemplate = gql`
 export const createRecipient = gql`
   mutation createRecipient($input: RecipientInput!) {
     createRecipient(input: $input) {
+      _id
+      email
+      phone
+      lastName
+      user
+    }
+  }
+`;
+
+export const createRecipientWithoutAuth = gql`
+  mutation createRecipientWithoutAuth($input: RecipientInput!, $userId: ObjectID!) {
+    createRecipientWithoutAuth(input: $input, userId: $userId) {
       _id
       email
       phone
