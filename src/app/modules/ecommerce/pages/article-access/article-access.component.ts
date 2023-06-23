@@ -69,6 +69,8 @@ export class ArticleAccessComponent implements OnInit, OnDestroy {
               ['SCAN']
             )) || { recipients: [] };
 
+          console.log(recipients, hasPassword, access, entity, user)
+
           if (this._HeaderService.user?._id === user) {
             unlockUI();
 

@@ -97,6 +97,7 @@ export class ArticleDetailComponent implements OnInit {
   itemsAmount: string;
   mode: 'preview' | 'image-preview' | 'saleflow';
   redirectTo: string;
+  flow: 'cart' | 'checkout' = 'cart';
   // signup: 'true' | 'false';
   // createArticle: 'true' | 'false';
   // isCreateArticle: boolean;
@@ -181,6 +182,8 @@ export class ArticleDetailComponent implements OnInit {
     // ) as 'true' | 'false';
 
     this.fromQR = Boolean(this.route.snapshot.queryParamMap.get('fromQR'));
+
+    this.flow = this.route.snapshot.queryParamMap.get('flow') as 'cart' | 'checkout';
 
     // this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
     // if (this.merchantId !== '') {
@@ -394,9 +397,16 @@ export class ArticleDetailComponent implements OnInit {
     if (this.redirectTo === 'dashboard')
       this.router.navigate([`admin/dashboard`]);
     else if (this.redirectTo === 'post-edit')
-      this.router.navigate([
+      this.router.navigate(
+        [
         `ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
-      ]);
+        ],
+        {
+          queryParams: {
+            flow: this.flow
+          }
+        }
+      );
     else if (this.mode === 'preview')
       this.router.navigate([`admin/article-editor/${this.itemData._id}`]);
     else if (this.mode === 'image-preview')

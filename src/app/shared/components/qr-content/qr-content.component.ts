@@ -120,8 +120,6 @@ export class QrContentComponent implements OnInit {
   }
 
   goToMediaUpload() {
-    this.router.navigate([
-      'ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit',
-    ]);
+    this.buttonClicked.emit(true);
   }
 }

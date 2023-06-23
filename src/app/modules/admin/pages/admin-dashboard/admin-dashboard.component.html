@@ -6,7 +6,15 @@
       </button>
       <button mat-icon-button style="margin-right: 25px" (click)="newArticle()">
         <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
-        <div class="tooltip" *ngIf="(hiddenItems.length === 0) && (soldItems.length === 0) && (notSoldItems.length === 0)">
+        <div
+          class="tooltip"
+          *ngIf="
+            hiddenItems?.length === 0 &&
+            soldItems?.length === 0 &&
+            notSoldItems?.length === 0 &&
+            allItemsCopy?.length === 0
+          "
+        >
           <span>¡Empieza ya creando tu primer artículo!</span>
           <div class="arrow"></div>
         </div>
@@ -68,7 +76,12 @@
       [ngClass]="{
         lessPadding: detailedList === 'NOT_SOLD'
       }"
-      *ngIf="(hiddenItems.length > 0) || (soldItems.length > 0) || (notSoldItems.length > 0)"
+      *ngIf="
+        hiddenItems?.length > 0 ||
+        soldItems?.length > 0 ||
+        notSoldItems?.length > 0 ||
+        allItemsCopy?.length > 0
+      "
     >
       <swiper [config]="swiperConfig" class="category-swiper">
         <!-- <div

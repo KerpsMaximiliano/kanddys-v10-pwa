@@ -7,36 +7,57 @@
       ></i>
     </button>
 
-    <h3>Nuevo Simbolo</h3>
+    <h3>Nuevo Símbolo de mensaje</h3>
   </header>
 
   <main>
     <form [formGroup]="postForm">
-      <textarea
-        formControlName="message"
-        placeholder="Escribe el mensaje de dedicatoria.."
-        cols="30"
-        rows="10"
-      ></textarea>
+      <div
+        class="textarea-wrapper"
+        [ngClass]="{
+          'no-shadow':
+            postForm.controls['message'].value &&
+            postForm.controls['message'].value.length > 0
+        }"
+      >
+        <label for="textarea-label" class="textarea-header"
+          >Texto principal y centralizado</label
+        >
 
-      <div class="icons-row" *ngIf="postsService.post?.slides?.length === 0">
-        <img
-          (click)="goToMediaUpload()"
-          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery-black2.svg"
-          class="icon gray"
-        />
+        <textarea
+          formControlName="message"
+          placeholder="Escribe el mensaje de dedicatoria.."
+          cols="30"
+          rows="10"
+          id="textarea-label"
+        ></textarea>
       </div>
 
-      <ng-container *ngIf="postsService.post?.slides?.length > 0">
+      <div class="added-slides" *ngIf="postsService.post?.slides?.length > 0">
         <app-qr-content
           [slides]="postsService.post.slides"
-          [title]="'Contenido del QR'"
+          [title]="'Slides visuales'"
           [mode]="'SMALL'"
           [editing]="false"
           [defaultText]="'Incluyes fotos, memes, videos o música.'"
-          (buttonClicked)="(null)"
+          (buttonClicked)="goToMediaUpload()"
         ></app-qr-content>
-      </ng-container>
+      </div>
+
+      <div class="optional-stuff"  *ngIf="postsService.post?.slides?.length === 0">
+        <h3>CHULERIAS OPCIONALES</h3>
+
+        <div class="row">
+          <span>Slides con fotos y videos</span>
+
+          <img
+            (click)="goToMediaUpload()"
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+            alt="add media"
+            class="upload-media"
+          />
+        </div>
+      </div>
     </form>
 
     <!--
