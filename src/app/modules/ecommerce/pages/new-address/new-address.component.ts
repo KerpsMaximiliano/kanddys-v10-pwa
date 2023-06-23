@@ -72,7 +72,7 @@ export class NewAddressComponent implements OnInit {
     ) as User;
   }
   mode: 'normal' | 'add' | 'delete' | 'edit' = 'normal';
-  flow: 'cart' | 'checkout' = 'checkout';
+  flow: 'cart' | 'checkout' | 'unAnsweredQuestions' = 'checkout';
   editingId: string;
   loggedIn: boolean;
   registered: User;
@@ -112,7 +112,7 @@ export class NewAddressComponent implements OnInit {
     const magicLinkData = this.route.snapshot.queryParamMap.get('data');
     const flow = this.route.snapshot.queryParamMap.get('flow');
 
-    if (flow === 'cart') this.flow = 'cart';
+    if (flow) this.flow = flow as 'cart' | 'checkout' | 'unAnsweredQuestions';
 
     if (magicLinkData) {
       const orderData = JSON.parse(
@@ -369,7 +369,7 @@ export class NewAddressComponent implements OnInit {
       return;
     }
 
-    if (this.flow === 'cart') {
+    if (this.flow === 'cart' || this.flow === 'unAnsweredQuestions') {
       const isAppointmentActive =
         this.headerService.saleflow.module.appointment?.isActive;
 
@@ -382,7 +382,7 @@ export class NewAddressComponent implements OnInit {
         queryParams: isAppointmentActive
           ? {
               saleflowId: this.headerService.saleflow._id,
-              flow: 'cart',
+              flow: this.flow,
             }
           : {},
       });
@@ -426,7 +426,7 @@ export class NewAddressComponent implements OnInit {
         positionClass: 'toast-top-center',
       });
 
-      if (this.flow === 'cart') {
+      if (this.flow === 'cart' || this.flow === 'unAnsweredQuestions') {
         this.router.navigate(
           [
             `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
@@ -435,7 +435,7 @@ export class NewAddressComponent implements OnInit {
             relativeTo: this.route,
             queryParams: {
               saleflowId: this.headerService.saleflow._id,
-              flow: 'cart',
+              flow: this.flow,
             },
           }
         );
@@ -476,7 +476,7 @@ export class NewAddressComponent implements OnInit {
         }
       );
 
-      if (this.flow === 'cart') {
+      if (this.flow === 'cart' || this.flow === 'unAnsweredQuestions') {
         this.router.navigate(
           [
             `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
@@ -485,7 +485,7 @@ export class NewAddressComponent implements OnInit {
             relativeTo: this.route,
             queryParams: {
               saleflowId: this.headerService.saleflow._id,
-              flow: 'cart',
+              flow: this.flow,
             },
           }
         );
@@ -568,6 +568,10 @@ export class NewAddressComponent implements OnInit {
     if (this.mode === 'normal') {
       if (this.flow === 'cart') {
         return this.router.navigate([`../receiver-form`], {
+          relativeTo: this.route,
+        });
+      } else if (this.flow === 'unAnsweredQuestions') {
+        return this.router.navigate([`../cart`], {
           relativeTo: this.route,
         });
       } else {
