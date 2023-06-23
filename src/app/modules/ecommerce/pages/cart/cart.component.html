@@ -43,11 +43,17 @@
             <p class="grayout-label">Cantidad</p>
             <div class="quantity">
               <span
+                *ngIf="items.length > 1 || itemObjects[item._id].amount > 1"
                 mat-button
                 class="button"
                 (click)="changeAmount(item._id, 'subtract')"
                 >-</span
               >
+
+              <span *ngIf="items.length === 1 && itemObjects[item._id].amount === 1" mat-button class="button disabled"
+                >-</span
+              >
+
               <span>{{ itemObjects[item._id].amount }}</span>
               <span
                 mat-button
@@ -75,6 +81,7 @@
           "
         >
           <img
+            style="cursor: pointer;"
             [src]="env + '/arrow-green.svg'"
             alt="required question"
             *ngIf="
@@ -83,6 +90,7 @@
               !answersByQuestion[question._id]?.multipleResponses?.length
             "
             class="required-question-pointer"
+            (click)="openWebform(item._id, i)"
           />
 
           <p
@@ -215,7 +223,7 @@
   </main>
 
   <footer>
-    <div class="form">
+    <div class="form" *ngIf="headerService.saleflow.module.post?.isActive">
       <!-- <mat-checkbox class="checkbox"
         >Factura sin comprobante <i class="fas fa-chevron-right"></i
       ></mat-checkbox> -->
@@ -228,8 +236,12 @@
         "
       >
         <mat-checkbox (change)="toggleCheckbox($event.checked)"></mat-checkbox>
-        <div (click)="goToSymbolCreation()" style="margin-top: 5px">
-          <span>{{!postsService.post ? 'Sin incluir mensaje de regalo' : 'Quitar mensaje de regalo'}}</span>
+        <div (click)="goToSymbolCreation()" style="margin-top: 5px; cursor: pointer;">
+          <span>{{
+            !postsService.post
+              ? "Sin incluir mensaje de regalo"
+              : "Quitar mensaje de regalo"
+          }}</span>
           <i
             style="color: #fff; margin-left: 20px; cursor: pointer"
             class="fas fa-chevron-right"

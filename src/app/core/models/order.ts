@@ -11,7 +11,7 @@ export class OrderSubtotal {
   currency: string;
   amount: number;
   item: string;
-  type: 'item' | 'delivery';
+  type: 'item' | 'delivery' | 'fee-payment-method';
 }
 
 export class OCR extends Model<OCR> {

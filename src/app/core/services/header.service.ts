@@ -19,14 +19,13 @@ import { DeliveryLocationInput, SaleFlow } from '../models/saleflow';
 import { Session } from '../models/session';
 import { User } from '../models/user';
 import { AuthService } from './auth.service';
-import { BookmarksService } from './bookmarks.service';
 import { MerchantsService } from './merchants.service';
 import { SaleFlowService } from './saleflow.service';
 import { WalletService } from './wallet.service';
 import { Router } from '@angular/router';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject } from 'rxjs';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -110,6 +109,7 @@ export class HeaderService {
   alreadyInputtedloginDialogUser: User = null;
   orderReceiverData: ReceiverDataInput = null;
   receiverDataNew: boolean = false;
+  changedItemAmountSubject = new Subject<Array<ItemSubOrderInput>>();
 
   public session: Session;
   constructor(
@@ -331,14 +331,17 @@ export class HeaderService {
       order.products[index].amount++;
       this.order.products[index].amount++;
     }
+
+    if (type === 'subtract' && order.products[index].amount === 1) {
+      return this.deleteProduct(this.order.products[index].item);
+    }
+
     if (type === 'subtract' && order.products[index].amount > 1) {
       order.products[index].amount--;
       this.order.products[index].amount--;
     }
 
-    if (type === 'subtract' && order.products[index].amount === 1) {
-      return this.removeOrderProduct(this.order.products[index].item);
-    }
+    this.changedItemAmountSubject.next(this.order.products);
 
     localStorage.setItem(this.saleflow._id, JSON.stringify({ order, ...rest }));
   }
@@ -509,6 +512,20 @@ export class HeaderService {
     return customizer;
   }
 
+  deleteProduct(itemId: string) {
+    let dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Borrar producto`,
+        description: `¿Estás seguro que deseas borrar este producto?`,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        this.removeOrderProduct(itemId);
+      }
+    });
+  }
+
   // Removes order product from localStorage
   removeOrderProduct(id: string) {
     let { order, ...rest }: SaleflowData =
@@ -524,6 +541,8 @@ export class HeaderService {
       this.order.products.splice(index, 1);
     } else return;
     localStorage.setItem(this.saleflow._id, JSON.stringify({ order, ...rest }));
+
+    this.changedItemAmountSubject.next(this.order.products);
   }
 
   emptyReservation() {

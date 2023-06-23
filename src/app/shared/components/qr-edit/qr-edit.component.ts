@@ -52,6 +52,8 @@ export class QrEditComponent implements OnInit {
   item: Item;
   returnTo: 'checkout' | 'post-edition' | 'article-editor' = null;
 
+  flow: 'cart' | 'checkout' = 'cart';
+
   gridArray: Array<any> = [];
   playVideoOnFullscreen = playVideoOnFullscreen;
 
@@ -70,6 +72,10 @@ export class QrEditComponent implements OnInit {
   async ngOnInit() {
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     const returnTo = this._Route.snapshot.queryParamMap.get('returnTo');
+    this.flow = this._Route.snapshot.queryParamMap.get('flow') as 'cart' | 'checkout';
+
+    console.log(this.flow);
+
     this.returnTo = returnTo as any;
 
     if (itemId) {
@@ -397,11 +403,18 @@ export class QrEditComponent implements OnInit {
       return;
     }
 
-    this._Router.navigate([
-      'ecommerce',
-      this.headerService.saleflow.merchant.slug,
-      'new-symbol',
-    ]);
+    this._Router.navigate(
+      [
+        'ecommerce',
+        this.headerService.saleflow.merchant.slug,
+        'new-symbol',
+      ],
+      {
+        queryParams: {
+          flow: this.flow
+        }
+      }
+    );
     return;
   }
 
@@ -545,6 +558,7 @@ export class QrEditComponent implements OnInit {
       {
         queryParams: {
           mode: 'image-preview',
+          flow: this.flow
         },
       }
     );
