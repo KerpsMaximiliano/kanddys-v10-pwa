@@ -80,16 +80,20 @@
     <span class="payment-selection"> Como prefieres pagar?</span>
 
     <div style="margin-top: 2em;">
-      <button mat-button [ngClass]="{ active: paymentMethod === 'bank-transfer' }" class="option-cta" (click)="selectPaymentMethod('bank-transfer')" *ngIf="paymentMethod !== 'paypal' && banks.length">
+      <button mat-button [ngClass]="{ active: paymentMethod === 'bank-transfer' }" class="option-cta" (click)="selectPaymentMethod('bank-transfer')" *ngIf="(paymentMethod !== 'paypal' && paymentMethod !== 'azul') && banks.length">
         Transferencia bancaria
       </button>
   
-      <button mat-button [ngClass]="{ active: paymentMethod === 'paypal' }" class="option-cta" (click)="selectPaymentMethod('paypal')" *ngIf="paymentMethod !== 'bank-transfer' && electronicPayments.length">
+      <button mat-button [ngClass]="{ active: paymentMethod === 'paypal' }" class="option-cta" (click)="selectPaymentMethod('paypal')" *ngIf="(paymentMethod !== 'bank-transfer' && paymentMethod !== 'azul') && electronicPayments.length">
         Paypal
+      </button>
+
+      <button mat-button [ngClass]="{ active: paymentMethod === 'azul' }" class="option-cta" (click)="selectPaymentMethod('azul')" *ngIf="(paymentMethod !== 'bank-transfer' && paymentMethod !== 'paypal') && azulPaymentsSupported">
+        Tarjeta de crédito
       </button>
     </div>
 
-    <ng-container *ngIf="paymentMethod">
+    <ng-container *ngIf="paymentMethod && paymentMethod !== 'azul'">
       <p class="text-description" *ngIf="paymentMethod === 'bank-transfer'">
         Por favor transfiera en el <span *ngFor="let bank of banks; let i = index">{{ bank.bankName }}, cuenta {{ bank.account }} {{ (banks.length > 1 && i + 1 !== banks.length) ? 'o ' : '' }}</span> y suba aquí una foto de la pantalla 👇
       </p>

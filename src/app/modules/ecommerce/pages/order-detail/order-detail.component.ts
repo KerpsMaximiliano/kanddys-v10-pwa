@@ -87,6 +87,7 @@ export class OrderDetailComponent implements OnInit {
   payment: number;
   deliveryAmount: number;
   paymentFeeAmount: number;
+  itemsAmount: number;
   isMerchant: boolean;
   benefits: {
     benefits: number;
@@ -288,6 +289,10 @@ export class OrderDetailComponent implements OnInit {
       }&text=${encodeURIComponent(message)}`;
     }
 
+    this.itemsAmount = this.order.subtotals.reduce(
+      (a, b) => (b?.type === 'item' ? a + b.amount : a),
+      0
+    );
     this.deliveryAmount = this.order.subtotals.reduce(
       (a, b) => (b?.type === 'delivery' ? a + b.amount : a),
       0

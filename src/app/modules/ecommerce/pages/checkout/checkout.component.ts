@@ -410,10 +410,11 @@ export class CheckoutComponent implements OnInit {
 
       this.post = this.headerService.getPost();
 
-      this.post.slides.forEach((slide: any) => {
-        if (slide.background) delete slide.background;
-        if (slide._type) delete slide._type;
-      });
+      if (this.post?.slides.length)
+        this.post?.slides.forEach((slide: any) => {
+          if (slide.background) delete slide.background;
+          if (slide._type) delete slide._type;
+        });
 
       const storedPost = localStorage.getItem('post');
 
@@ -471,6 +472,7 @@ export class CheckoutComponent implements OnInit {
         }
       }
       this.reservation = this.headerService.getReservation().reservation;
+
       if (this.reservation) {
         const fromDate = new Date(this.reservation.date.from);
         if (fromDate < new Date()) {
@@ -494,6 +496,7 @@ export class CheckoutComponent implements OnInit {
             this.reservation.breakTime
           )}`,
         };
+
         this.headerService.orderProgress.reservation = true;
       }
       this.headerService.checkoutRoute = null;
