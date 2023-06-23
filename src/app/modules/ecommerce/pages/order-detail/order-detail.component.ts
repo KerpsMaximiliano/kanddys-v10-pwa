@@ -368,7 +368,8 @@ export class OrderDetailComponent implements OnInit {
         if (results.length > 0) {
           this.entityTemplate = results[0];
 
-          /*
+          console.log("Results", results);
+
           this.entityTemplateLink =
             this.entityTemplate.access === 'public' ||
             this.entityTemplate.recipients === 0
@@ -376,7 +377,6 @@ export class OrderDetailComponent implements OnInit {
               : this.URI +
                 '/ecommerce/article-access/' +
                 this.entityTemplate._id;
-                */
         }
       }
     }
@@ -1011,10 +1011,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   buildStatusList() {
-    const statusList: OrderStatusDeliveryType[] = [
-      'in progress',
-      'delivered',
-    ];
+    const statusList: OrderStatusDeliveryType[] = ['in progress', 'delivered'];
 
     const location = this.order.items[0].deliveryLocation;
 

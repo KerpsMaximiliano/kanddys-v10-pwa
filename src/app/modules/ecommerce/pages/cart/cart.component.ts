@@ -91,6 +91,13 @@ export class CartComponent implements OnInit {
     await this.getItems();
     this.checkLogged();
     await this.getQuestions();
+
+    if (
+      !this.headerService.saleflow.module.post ||
+      !this.headerService.saleflow.module.post.isActive
+    ) {
+      this.isCheckboxChecked = true;
+    }
   }
 
   private async getItems() {
@@ -404,20 +411,24 @@ export class CartComponent implements OnInit {
 
     this.headerService.changeItemAmount(product.item, type);
 
-    const itemsIdsDeleted = {};
+    this.headerService.changedItemAmountSubject.subscribe({
+      next: (value: Array<ItemSubOrderInput>) => {
+        const itemsIdsDeleted = {};
 
-    this.items.forEach((item) => {
-      itemsIdsDeleted[item._id] = true;
+        this.items.forEach((item) => {
+          itemsIdsDeleted[item._id] = true;
+        });
+
+        this.headerService.order.products.forEach((product) => {
+          if (product.amount) {
+            this.itemObjects[product.item] = product;
+            itemsIdsDeleted[product.item] = false;
+          }
+        });
+
+        this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
+      },
     });
-
-    this.headerService.order.products.forEach((product) => {
-      if (product.amount) {
-        this.itemObjects[product.item] = product;
-        itemsIdsDeleted[product.item] = false;
-      }
-    });
-
-    this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
   }
 
   openImageModal(imageSourceURL: string | ArrayBuffer) {

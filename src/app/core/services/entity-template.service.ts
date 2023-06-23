@@ -21,6 +21,8 @@ import {
   entityTemplateUpdateRecipient,
   entityTemplates,
   entityTemplateAddNotification,
+  entityTemplateAddRecipientWithoutAuth,
+  createRecipientWithoutAuth,
 } from '../graphql/entity-template.gql';
 import { PaginationEvents } from 'swiper/types/components/pagination';
 import { PaginationInput } from '../models/saleflow';
@@ -185,6 +187,21 @@ export class EntityTemplateService {
     }
   }
 
+  async createRecipientWithoutAuth(input: RecipientInput, userId: string): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: createRecipientWithoutAuth,
+        variables: { input, userId },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.createRecipientWithoutAuth;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
   async entityTemplateAddRecipient(
     entityTemplateId: string,
     input: RecipientsInput
@@ -197,6 +214,24 @@ export class EntityTemplateService {
       });
 
       return result?.entityTemplateAddRecipient;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async entityTemplateAddRecipientWithoutAuth(
+    entityTemplateId: string,
+    input: RecipientsInput
+  ): Promise<EntityTemplate> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: entityTemplateAddRecipientWithoutAuth,
+        variables: { entityTemplateId, input },
+        fetchPolicy: 'no-cache',
+      });
+
+      return result?.entityTemplateAddRecipientWithoutAuth;
     } catch (error) {
       console.log(error);
       return null;

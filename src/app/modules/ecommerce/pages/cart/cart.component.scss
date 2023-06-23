@@ -99,6 +99,11 @@ main {
             &.button {
               cursor: pointer;
             }
+
+            &.disabled {
+              color: rgba(0, 0, 0, 0.4);
+              cursor: not-allowed;
+            }
           }
         }
       }
@@ -162,7 +167,7 @@ footer {
     }
 
     span {
-      color: #FFF;
+      color: #fff;
       margin-left: 1em;
     }
   }
@@ -220,9 +225,9 @@ footer {
 }
 
 .mat-checkbox ::ng-deep .mat-checkbox-layout .mat-checkbox-label {
-  color: #FFF;
+  color: #fff;
 }
 
 ::ng-deep .mat-checkbox.mat-checkbox-checked .mat-checkbox-background {
-  background-color: #87CD9B;
+  background-color: #87cd9b;
 }

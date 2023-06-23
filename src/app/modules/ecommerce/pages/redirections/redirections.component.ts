@@ -65,6 +65,8 @@ export class RedirectionsComponent implements OnInit {
           authCode
         );
 
+        console.log("redirectionRoute", redirectionRoute);
+
         if (redirectionRoute.includes('?')) {
           const routeParts = redirectionRoute.split('?');
           const redirectionURL = routeParts[0];
@@ -100,6 +102,8 @@ export class RedirectionsComponent implements OnInit {
                 entity: '',
                 reference: '',
               };
+
+            console.log(entity, reference);
             if (entity && reference)
               this.router.navigate(
                 ['qr', 'article-detail', 'template', text],
