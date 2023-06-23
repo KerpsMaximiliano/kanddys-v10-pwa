@@ -436,6 +436,21 @@
           <p class="total">MerchantID GiftCard</p>
           <p class="amount">$ {{ payment | number : "1.2-2" }}</p>
         </div> -->
+
+                <div class="bottom-section" *ngIf="deliveryAmount">
+                  <p class="inner-title">Zona de entrega</p>
+                  <p class="inner-title">
+                    RD $ {{ deliveryAmount | number : "1.2-2" }}
+                  </p>
+                </div>
+
+                <div class="bottom-section" *ngIf="paymentFeeAmount">
+                  <p class="inner-title">Comisión de método de pago</p>
+                  <p class="inner-title">
+                    RD $ {{ paymentFeeAmount | number : "1.2-2" }}
+                  </p>
+                </div>
+
                 <div
                   class="items-container space-between"
                   style="margin: 0px; padding: 0px"

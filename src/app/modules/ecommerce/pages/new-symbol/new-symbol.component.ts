@@ -47,9 +47,16 @@ export class NewSymbolComponent implements OnInit {
 
   goToMediaUpload() {
     this.postsService.post.message = this.postForm.controls['message'].value;
-    this.router.navigate([
+    this.router.navigate(
+      [
       'ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit',
-    ]);
+      ],
+      {
+        queryParams: {
+          flow: this.flow
+        }
+      }
+    );
   }
 
   save() {
@@ -108,6 +115,7 @@ export class NewSymbolComponent implements OnInit {
         queryParams: {
           mode,
           redirectTo: 'post-edit',
+          flow: this.flow
         },
       }
     );

@@ -85,6 +85,8 @@ export class OrderDetailComponent implements OnInit {
   post: Post;
   slides: ExtendedSlide[];
   payment: number;
+  deliveryAmount: number;
+  paymentFeeAmount: number;
   isMerchant: boolean;
   benefits: {
     benefits: number;
@@ -286,6 +288,14 @@ export class OrderDetailComponent implements OnInit {
       }&text=${encodeURIComponent(message)}`;
     }
 
+    this.deliveryAmount = this.order.subtotals.reduce(
+      (a, b) => (b?.type === 'delivery' ? a + b.amount : a),
+      0
+    );
+    this.paymentFeeAmount = this.order.subtotals.reduce(
+      (a, b) => (b?.type === 'fee-payment-method' ? a + b.amount : a),
+      0
+    );
     this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     // if (this.order.orderStatus === 'draft') return unlockUI();
     if (!this.order.ocr) {

@@ -81,6 +81,7 @@
           "
         >
           <img
+            style="cursor: pointer;"
             [src]="env + '/arrow-green.svg'"
             alt="required question"
             *ngIf="
@@ -89,6 +90,7 @@
               !answersByQuestion[question._id]?.multipleResponses?.length
             "
             class="required-question-pointer"
+            (click)="openWebform(item._id, i)"
           />
 
           <p
@@ -234,7 +236,7 @@
         "
       >
         <mat-checkbox (change)="toggleCheckbox($event.checked)"></mat-checkbox>
-        <div (click)="goToSymbolCreation()" style="margin-top: 5px">
+        <div (click)="goToSymbolCreation()" style="margin-top: 5px; cursor: pointer;">
           <span>{{
             !postsService.post
               ? "Sin incluir mensaje de regalo"

@@ -410,6 +410,11 @@ export class CheckoutComponent implements OnInit {
 
       this.post = this.headerService.getPost();
 
+      this.post.slides.forEach((slide: any) => {
+        if (slide.background) delete slide.background;
+        if (slide._type) delete slide._type;
+      });
+
       const storedPost = localStorage.getItem('post');
 
       if (storedPost && !this.post) {
@@ -1481,9 +1486,16 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrEditMessage() {
-    this.router.navigate([
+    this.router.navigate(
+      [
       'ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-symbol',
-    ]);
+      ],
+      {
+        queryParams: {
+          flow: 'checkout',
+        }
+      }
+    );
 
     // if (this.postsService.post) {
     //   this.router.navigate([

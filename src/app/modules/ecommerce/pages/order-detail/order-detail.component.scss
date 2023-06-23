@@ -1447,9 +1447,34 @@ table {
   }
 }
 
+.bottom-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+
+  .bold {
+    color: #181d17;
+    font-family: InterBold;
+  }
+}
+
+.inner-title {
+  color: #7b7b7b;
+  font-family: "InterMedium";
+  font-size: 17px;
+  font-weight: normal;
+}
+
 .header-navigation {
   ::ng-deep .mat-expansion-panel-header {
     padding: 0px !important;
     padding-right: 20px !important;
+  }
+}
+
+@media (max-width: 425px) {
+  .responsive-flex {
+    flex: 0 0 45%;
   }
 }

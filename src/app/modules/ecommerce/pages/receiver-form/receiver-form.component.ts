@@ -120,11 +120,11 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   */
 
   save() {
-    if (this.form.untouched || !this.form.valid) {
-      return this.router.navigate([
-        `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
-      ]);
-    }
+    // if ((this.form.untouched || !this.form.valid) && this.flow === 'cart') {
+    //   return this.router.navigate([
+    //     `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
+    //   ]);
+    // }
 
     this.headerService.post = this.postsService.post;
     this.headerService.order.receiverData = {
@@ -137,7 +137,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
         ? this.form.controls['receiverPhoneNumber']?.value?.e164Number.split(
             '+'
           )[1]
-        : null,
+        : this.headerService?.order?.receiverData?.receiverPhoneNumber,
     };
 
     this.headerService.receiverDataNew = true;
