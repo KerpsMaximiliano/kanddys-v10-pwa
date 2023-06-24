@@ -12,10 +12,10 @@ export function lockUI(waitFor?: Promise<any>) {
 }
 
 export function unlockUI() {
-  if(!counter) return;
+  if (!counter) return;
   try {
     counter--;
-    if(counter === 0) document?.body?.removeChild(blocker);
+    if (counter === 0) document?.body?.removeChild(blocker);
   } catch (e) {}
 }
 
@@ -275,17 +275,25 @@ export const playVideoOnFullscreen = (id: string) => {
       onFullscreenChange,
       false
     );
-    document.addEventListener(
-      'mozfullscreenchange',
-      onFullscreenChange,
-      false
-    );
+    document.addEventListener('mozfullscreenchange', onFullscreenChange, false);
     document.addEventListener('fullscreenchange', onFullscreenChange, false);
-    document.addEventListener(
-      'MSFullscreenChange',
-      onFullscreenChange,
-      false
-    );
+    document.addEventListener('MSFullscreenChange', onFullscreenChange, false);
     document.addEventListener('keydown', onEscapeKeyDown);
   }, 300);
-}
+};
+
+export const playVideoNoFullscreen = (id: string) => {
+  const elem: HTMLVideoElement = document.getElementById(
+    id
+  ) as HTMLVideoElement;
+  elem.play();
+  elem.muted = false;
+};
+
+export const isVideoPlaying = (video: HTMLVideoElement) =>
+  !!(
+    video.currentTime > 0 &&
+    !video.paused &&
+    !video.ended &&
+    video.readyState > 2
+  );

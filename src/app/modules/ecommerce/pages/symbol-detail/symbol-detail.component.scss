@@ -1,0 +1,133 @@
+.container {
+  min-height: 100vh;
+  background-color: #181d17;
+  position: relative;
+}
+
+header {
+  height: 38px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px;
+  padding-top: 8.71px;
+  padding-bottom: 11.69px;
+
+  .go-back-arrow {
+    filter: invert(52%) sepia(12%) saturate(26%) hue-rotate(353deg)
+      brightness(90%) contrast(85%);
+    width: 13px;
+    height: 16px;
+  }
+}
+
+main {
+  padding: 0px 15px;
+  display: flex;
+  flex-direction: column;
+
+  .media-canvas {
+    .the-swiper-container {
+      transition: 0.1s ease-in height;
+    }
+
+    img {
+      transition: 0.1s ease-in width, 0.1s ease-in border;
+
+      &.minimized {
+        border-radius: 18px;
+      }
+    }
+
+    video {
+      transition: 0.1s ease-in width, 0.1s ease-in border;
+
+      &.minimized {
+        border-radius: 18px;
+      }
+    }
+  }
+}
+
+.media-canvas {
+  border-radius: 18px;
+  overflow: hidden;
+
+  &.minimized {
+    border-radius: 0px;
+    overflow: initial;
+  }
+}
+
+.title {
+  margin: 0px;
+  padding: 0px;
+  margin-top: 20px;
+  margin-bottom: 14px;
+  color: #fff;
+  text-align: center;
+  font-size: 15px;
+  font-family: InterRegular;
+  font-weight: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+
+  &.expanded {
+    margin: 0px;
+    margin-bottom: 14px;
+  }
+}
+
+.description {
+  color: #fff;
+  font-size: 15px;
+  font-family: InterRegular;
+  width: 100%;
+  margin-top: 25px;
+  word-break: break-word;
+
+}
+
+.bottom-flex {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  margin: auto;
+  max-width: 500px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 17px 15px;
+  background-color: #181d17;
+
+  .left {
+    color: #c4c5c3;
+    font-size: 17px;
+    font-family: InterBold;
+  }
+
+  .right {
+    color: #87cd9b;
+    font-size: 17px;
+    font-family: InterBold;
+  }
+}
+
+.video-wrapper {
+  position: relative;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  object-fit: cover;
+  margin-bottom: 63px;
+  margin: 0px;
+  padding: 0px;
+}
