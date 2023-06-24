@@ -132,8 +132,11 @@ main {
 }
 
 footer {
-  background-color: #ffffff;
+  position: fixed;
+  bottom: 0;
+  max-width: 500px;
   width: 100%;
+  background-color: #ffffff;
   padding: 17px;
   display: flex;
   justify-content: space-between;
