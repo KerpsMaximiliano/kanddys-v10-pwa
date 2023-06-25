@@ -3,17 +3,14 @@ a {
 }
 .store-page {
   height: 100vh;
+  padding-top: 50px;
+  padding-bottom: 50px;
   overflow-y: scroll;
   flex-grow: 1;
-  padding-top: 50px;
 
   &.tagsPresent {
     padding-top: 99px;
   }
-}
-
-.content {
-  padding-bottom: 50px;
 }
 
 .description-view {
