@@ -120,7 +120,7 @@ export class RecordRTCService {
   private recordAudio() {
     this.recorder = new RecordRTC.StereoAudioRecorder(this.stream, {
       type: 'audio',
-      mimeType: 'audio/webm'
+      mimeType: 'audio/wav'
     });
 
     (<any>this.recorder).record();

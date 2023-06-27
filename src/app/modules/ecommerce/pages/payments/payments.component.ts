@@ -66,7 +66,7 @@ export class PaymentsComponent implements OnInit {
   currentUser: User;
   acceptedRefundPolicies: boolean = false;
   openedDialogFlow: boolean;
-  paymentMethod: 'bank-transfer' | 'paypal';
+  paymentMethod: 'bank-transfer' | 'paypal' | 'azul';
   onlinePaymentsOptions: WebformAnswerLayoutOption[] = [
     {
       type: 'WEBFORM-ANSWER',
@@ -379,6 +379,8 @@ export class PaymentsComponent implements OnInit {
             this.headerService.saleflow.merchant._id
           );
 
+        console.log(this.azulPaymentsSupported);
+
         if (redirectToAzulPaymentsPage) {
           this.redirectToAzulPaymentPage();
         }
@@ -603,6 +605,7 @@ export class PaymentsComponent implements OnInit {
   }
 
   async selectOnlinePayment(paymentIndex: number) {
+
     const paymentOptionName =
       this.onlinePaymentsOptions[paymentIndex].texts.topLeft.text;
 
@@ -862,7 +865,7 @@ export class PaymentsComponent implements OnInit {
     );
   }
 
-  selectPaymentMethod(method: 'bank-transfer' | 'paypal') {
+  selectPaymentMethod(method: 'bank-transfer' | 'paypal' | 'azul') {
     if (!this.paymentMethod) this.paymentMethod = method;
     else if (this.paymentMethod === method) {
       this.paymentMethod = null;
@@ -870,5 +873,9 @@ export class PaymentsComponent implements OnInit {
       this.imageBase64 = null;
     }
     else this.paymentMethod = method;
+
+    if (this.paymentMethod === 'azul') {
+      this.selectOnlinePayment(0);
+    }
   }
 }

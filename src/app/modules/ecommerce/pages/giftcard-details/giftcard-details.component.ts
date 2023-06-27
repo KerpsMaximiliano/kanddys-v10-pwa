@@ -34,7 +34,7 @@ export class GiftcardDetailsComponent implements OnInit {
   itemFormPhone = this._formBuilder.group({
     phone: [
       null,
-      [Validators.required, Validators.minLength(12), Validators.maxLength(15)],
+      [Validators.required, Validators.minLength(11), Validators.maxLength(15)],
     ],
   });
 

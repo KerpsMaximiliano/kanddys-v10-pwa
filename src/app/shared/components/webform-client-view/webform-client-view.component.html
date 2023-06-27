@@ -126,7 +126,12 @@
                   [ngStyle]="{
                     backgroundImage: 'url(' + option.value.fileInput + ')'
                   }"
-                  (click)="goToDetail(i)"
+                  (click)="
+                    (
+                      steps[currentStepIndex].question.answerLimit === 0 ||
+                      steps[currentStepIndex].question.answerLimit > 1
+                    ) ?
+                    selectOptMultipleFromGrid(i) : selectOpt(i)"
                 >
                   <div
                     *ngIf="option.value.selected"
@@ -303,6 +308,6 @@
     (click)="saveWebform(false, true)"
     *ngIf="steps[currentStepIndex]?.fields.valid"
   >
-    Salvar
+    {{currentStepIndex < this.steps.length - 1 ? 'Siguiente pregunta' : 'Salvar'}}
   </button>
 </main>

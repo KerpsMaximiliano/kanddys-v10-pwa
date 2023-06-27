@@ -610,9 +610,142 @@ export class WebformClientViewComponent implements OnInit {
     this.router.navigate(['/ecommerce/webform-options-selector'], {
       queryParams: {
         startAt: index,
-        questionIndex: this.currentStepIndex
+        questionIndex: this.currentStepIndex,
       },
     });
+  }
+
+  selectOpt(index: number) {
+    const completeAnswers =
+      this.steps[this.currentStepIndex].fields.controls.options.value;
+
+    for (let i = 0; i < completeAnswers.length; i++) {
+      if (i == index) {
+        completeAnswers[i].selected = !completeAnswers[i].selected;
+      } else {
+        completeAnswers[i].selected = false;
+      }
+    }
+
+    this.webformsService.clientResponsesByItem[
+      this.steps[this.currentStepIndex].question._id
+    ].allOptions = completeAnswers;
+
+    if (completeAnswers[index].selected) {
+      this.webformsService.clientResponsesByItem[
+        this.steps[this.currentStepIndex].question._id
+      ].response = completeAnswers[index].fileInput;
+
+      this.webformsService.clientResponsesByItem[
+        this.steps[this.currentStepIndex].question._id
+      ].valid = !this.steps[this.currentStepIndex].question.required
+        ? true
+        : this.steps[this.currentStepIndex].question.required &&
+          completeAnswers[index].fileInput?.length > 0 &&
+          completeAnswers[index].selected;
+    } else {
+      this.webformsService.clientResponsesByItem[
+        this.steps[this.currentStepIndex].question._id
+      ].response = null;
+
+      this.webformsService.clientResponsesByItem[
+        this.steps[this.currentStepIndex].question._id
+      ].valid = !this.steps[this.currentStepIndex].question.required
+        ? true
+        : this.steps[this.currentStepIndex].question.required &&
+          completeAnswers[index].fileInput?.length > 0 &&
+          completeAnswers[index].selected;
+    }
+  }
+
+  selectOptMultipleFromGrid(indexClicked: number) {
+    const completeAnswers =
+      this.steps[this.currentStepIndex].fields.controls.options.value;
+
+    const multiple =
+      this.steps[this.currentStepIndex].question.answerLimit === 0 ||
+      this.steps[this.currentStepIndex].question.answerLimit > 1;
+
+    const alreadySelectedOptionsIndexes: Array<number> = completeAnswers
+      .map((option, index) => {
+        return option.selected ? index : null;
+      })
+      .filter((index) => index !== null);
+
+    if (
+      multiple &&
+      alreadySelectedOptionsIndexes.length >=
+        this.webformsService.clientResponsesByItem[
+          this.steps[this.currentStepIndex].question._id
+        ].question.answerLimit &&
+      this.webformsService.clientResponsesByItem[
+        this.steps[this.currentStepIndex].question._id
+      ].question.answerLimit !== 0 &&
+      !alreadySelectedOptionsIndexes.includes(indexClicked)
+    ) {
+      this.snackbar.open(
+        'Recuerda que solo puedes seleccionar máximo ' +
+          this.webformsService.clientResponsesByItem[
+            this.steps[this.currentStepIndex].question._id
+          ].question.answerLimit +
+          ' opciones',
+        'Cerrar',
+        {
+          duration: 3000,
+        }
+      );
+      return;
+    }
+
+    for (let i = 0; i < completeAnswers.length; i++) {
+      if (i === indexClicked)
+        completeAnswers[i].selected = !completeAnswers[i].selected;
+    }
+
+    this.webformsService.clientResponsesByItem[
+      this.steps[this.currentStepIndex].question._id
+    ].allOptions = completeAnswers;
+
+    const selectedOptions = completeAnswers.filter((answer) => answer.selected);
+
+    if (selectedOptions.length) {
+      this.webformsService.clientResponsesByItem[
+        this.steps[this.currentStepIndex].question._id
+      ].multipleResponses = [];
+
+      for (const optionSelected of selectedOptions) {
+        const isTheAnswerProvidedByUser = false;
+
+        this.webformsService.clientResponsesByItem[
+          this.steps[this.currentStepIndex].question._id
+        ].multipleResponses.push({
+          response: optionSelected.fileInput || optionSelected.text,
+          isProvidedByUser: isTheAnswerProvidedByUser,
+          isMedia:
+            optionSelected.fileInput &&
+            optionSelected.fileInput.includes('https'),
+        });
+
+        this.webformsService.clientResponsesByItem[
+          this.steps[this.currentStepIndex].question._id
+        ].valid = !this.steps[this.currentStepIndex].question.required
+          ? true
+          : this.steps[this.currentStepIndex].question.required &&
+            this.webformsService.clientResponsesByItem[
+              this.steps[this.currentStepIndex].question._id
+            ].multipleResponses?.length > 0;
+      }
+    } else {
+      this.webformsService.clientResponsesByItem[
+        this.steps[this.currentStepIndex].question._id
+      ].multipleResponses = [];
+
+      this.webformsService.clientResponsesByItem[
+        this.steps[this.currentStepIndex].question._id
+      ].valid = !this.steps[this.currentStepIndex].question.required
+        ? true
+        : false;
+    }
   }
 
   templateStyles() {

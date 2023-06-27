@@ -690,8 +690,8 @@ export class CartComponent implements OnInit {
       ]);
     } else {
       this.router.navigate([
-        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
-      ]);
+        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-address',
+      ], { queryParams: { flow: 'unAnsweredQuestions' } });
     }
   }
 
