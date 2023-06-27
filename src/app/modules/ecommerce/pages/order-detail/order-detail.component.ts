@@ -303,23 +303,23 @@ export class OrderDetailComponent implements OnInit {
     );
     this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     // if (this.order.orderStatus === 'draft') return unlockUI();
-    if (!this.order.ocr) {
-      const result = await this.paymentLogService.paymentLogsByOrder({
-        findBy: {
-          order: this.order._id,
-        },
-      });
 
-      if (result && result.length > 0 && result[0].paymentMethod === 'azul') {
-        this.payedWithAzul = true;
-      }
-    } else {
-      this.paymentType =
-        {
-          'bank-transfer': 'transferencia bancaria',
-          azul: 'tarjeta: xx.6547',
-        }[this.order.ocr.platform] || 'Desconocido';
+
+    const paymentLog = await this.paymentLogService.paymentLogsByOrder({
+      findBy: {
+        order: this.order._id,
+      },
+    });
+      
+    if (paymentLog && paymentLog.length > 0 && paymentLog[0].paymentMethod === 'azul')
+      this.payedWithAzul = true;
+    else {
+    this.paymentType =
+      (paymentLog && paymentLog.length > 0) ? 
+        this.getPaymentMethodName(paymentLog[0].paymentMethod) :
+        null;
     }
+
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
     );
@@ -1046,5 +1046,22 @@ export class OrderDetailComponent implements OnInit {
     this.activeStatusIndex = statusList.findIndex(
       (status) => status === orderStatuDelivery
     );
+  }
+
+  private getPaymentMethodName(paymentMethod: string): string {
+    switch (paymentMethod) {
+      case 'azul':
+        return 'Azul';
+      case 'stripe':
+        return 'Tarjeta de crédito';
+      case 'paypal':
+        return 'PayPal';
+      case 'cash':
+        return 'Efectivo';
+      case 'bank-transfer':
+        return 'Transferencia';
+      default:
+        return '';
+    }
   }
 }

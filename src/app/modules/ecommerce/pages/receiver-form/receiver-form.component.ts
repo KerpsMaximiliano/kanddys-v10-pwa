@@ -215,6 +215,12 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
     console.log(this.receiverName);
   }
 
+  focusPhoneInput() {
+    const ngxIntlPhoneInput = document.querySelector('#phone');
+
+    (ngxIntlPhoneInput.querySelector('#phone') as HTMLInputElement).focus();
+  }
+
   ngOnDestroy(): void {
     this.queryParamsSubscription.unsubscribe();
   }

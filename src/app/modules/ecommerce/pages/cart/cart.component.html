@@ -95,6 +95,12 @@
 
           <p
             class="section-title grayout-label"
+            [ngClass]="{
+              required:
+                question.required &&
+                !answersByQuestion[question._id]?.response &&
+                !answersByQuestion[question._id]?.multipleResponses?.length
+            }"
             (click)="openWebform(item._id, i)"
           >
             {{ capitalize(question.value) }}

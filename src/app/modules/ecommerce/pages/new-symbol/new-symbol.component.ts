@@ -31,6 +31,7 @@ export class NewSymbolComponent implements OnInit {
       this.flow = flow as 'cart' | 'checkout';
 
     if (!this.postsService.post) {
+      console.log('no post');
       this.postsService.post = {
         title: '',
         slides: [],
@@ -39,10 +40,14 @@ export class NewSymbolComponent implements OnInit {
         message: [''],
       });
     } else {
+      console.log('post');
       this.postForm = this.fb.group({
         message: [this.postsService.post.message],
       });
     }
+
+    console.log(this.postsService.post);
+    console.log(this.headerService.getPost())
   }
 
   goToMediaUpload() {
