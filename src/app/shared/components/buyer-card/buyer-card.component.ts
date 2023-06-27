@@ -1,4 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -25,11 +27,21 @@ export class BuyerCardComponent implements OnInit {
 
   env: string = environment.assetsUrl;
 
-  constructor() {}
+  constructor(private router: Router, private route: ActivatedRoute, private headerService: HeaderService) {}
 
   ngOnInit(): void {}
 
   emitClick() {
     this.ctaClicked.emit(this.index);
+  }
+
+  clickHandler() {
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+
+    this.router.navigate(this.redirectionParams.link, {
+      relativeTo: this.route,
+      queryParams: this.redirectionParams.param,
+    });
   }
 }

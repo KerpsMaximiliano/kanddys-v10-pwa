@@ -26,6 +26,13 @@ main {
   display: flex;
   flex-direction: column;
 
+  &.justText {
+    display: flex;
+    height: calc(100vh - 38px);
+    flex-direction: column;
+    justify-content: center;
+  }
+
   .media-canvas {
     .the-swiper-container {
       transition: 0.1s ease-in height;
@@ -89,7 +96,7 @@ main {
   width: 100%;
   margin-top: 25px;
   word-break: break-word;
-
+  overflow-y: scroll;
 }
 
 .bottom-flex {
@@ -120,6 +127,7 @@ main {
 
 .video-wrapper {
   position: relative;
+  width: fit-content !important;
 }
 
 video {
@@ -130,4 +138,18 @@ video {
   margin-bottom: 63px;
   margin: 0px;
   padding: 0px;
+}
+
+.invisible-from-layer {
+  display: none;
+  position: absolute;
+  z-index: 999;
+
+  &.visible {
+    display: block;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+  }
 }

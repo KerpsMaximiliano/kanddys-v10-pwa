@@ -105,6 +105,9 @@ export class NewSymbolComponent implements OnInit {
   goToPostDetail(mode: 'DEMO' | 'PREVIEW') {
     this.postsService.post.message = this.postForm.controls['message'].value;
 
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+
     this.router.navigate(
       [
         'ecommerce/' +

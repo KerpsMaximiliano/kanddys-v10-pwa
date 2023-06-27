@@ -44,6 +44,9 @@ import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { AppService } from 'src/app/app.service';
 
+//Third party modules
+import * as Hammer from 'hammerjs';
+
 interface ExtendedItem extends Item {
   media?: Array<{
     src: string;
@@ -82,6 +85,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     resistance: false,
     freeMode: false,
     spaceBetween: 0,
+    touchEventsTarget: '.swiper-container:not(.container)' as any,
   };
   currentMediaSlide: number = 0;
   entity: ValidEntities;
@@ -169,7 +173,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     private entityTemplateService: EntityTemplateService,
     private saleflowService: SaleFlowService,
     private appService: AppService,
-    private postsService: PostsService
+    private postsService: PostsService,
+    private elementRef: ElementRef
   ) {}
 
   async ngOnInit() {
@@ -190,7 +195,25 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit() {
-    console.log('this.mediaSwiper', this.mediaSwiper);
+    const element = this.elementRef.nativeElement.querySelector('.container'); // Replace with the appropriate CSS class or ID of your <div> element
+    const excludedRegion = element.querySelector('.description');
+
+    const hammertime = new Hammer(element);
+    hammertime.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
+
+    hammertime.on('swipeup', (event) => {
+      const excludedRegion = element.querySelector('.description');
+      if (!excludedRegion?.contains(event.target)) {
+        this.back();
+      }
+    });
+
+    hammertime.on('swipedown', (event) => {
+      const excludedRegion = element.querySelector('.description');
+      if (!excludedRegion?.contains(event.target)) {
+        this.back();
+      }
+    });
   }
 
   async applyAnyEntityToGenericModelForTheHTML() {}
@@ -304,6 +327,23 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         message: this.postsService.post.message,
       } as any;
 
+      this.genericModelTemplate = {
+        type: 'INPUT',
+        description:
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nulla neque, tempus id mauris et, imperdiet consequat ipsum. Proin eu nisl scelerisque, vestibulum nibh in, pellentesque felis. Duis sollicitudin accumsan nisi, vel ornare metus cursus a. Cras nisl ante, sollicitudin quis sem sit amet, placerat vehicula justo. Maecenas ac augue nibh. Ut posuere urna in velit facilisis, et porta dui cursus. Maecenas quis ipsum at metus vehicula dapibus dapibus nec est. Interdum et malesuada fames ac ante ipsum primis in faucibus. Fusce mi elit, luctus at aliquam in, sollicitudin at neque. Duis molestie ligula eu interdum ornare. Pellentesque eleifend in lacus a egestas. Fusce tempor diam sapien, a cursus risus cursus in. Sed sed maximus urna, sed pellentesque nibh.',
+        title: this.postsService.post.title,
+        slides: [
+          {
+            src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/corgi.jpg',
+            type: 'IMAGE',
+          },
+          {
+            src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/kitten.jpg',
+            type: 'IMAGE',
+          },
+        ],
+      };
+
       this.fractions = '1fr 1fr';
       return;
     } else if (
@@ -322,7 +362,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           if (slide.media.type.includes('image')) {
             const base64 = await this.fileToBase64(slide.media);
             this.slidesInput.push({
-              path: `url(${base64})`,
+              path: base64,
               type: 'IMAGE',
             });
             this.filesStrings.push(base64 as string);
@@ -338,7 +378,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           }
         } else if (slide.url) {
           this.slidesInput.push({
-            path: isVideo(slide.url) ? slide.url : `url(${slide.url})`,
+            path: slide.url,
             type: isVideo(slide.url) ? 'VIDEO' : 'IMAGE',
           });
           this.filesStrings.push(slide.url);
@@ -354,6 +394,17 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       this.fractions = (this.slidesInput as Array<any>)
         .map(() => `${'1'}fr`)
         .join(' ');
+
+      this.genericModelTemplate = {
+        type: 'INPUT',
+        description: this.postsService.post.message,
+        title: this.postsService.post.title,
+        slides: this.slidesInput.map((slide) => ({
+          src: slide.path,
+          type: slide.type as any,
+        })),
+      };
+
       return;
     }
   }
@@ -376,6 +427,23 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       this.swiperConfig.spaceBetween = 0;
       this.layout = 'EXPANDED-SLIDE';
     }
+  }
+
+  expandDescriptionAndShowAllSlidesSwiper() {
+    this.swiperConfig.slidesPerView = 'auto';
+    this.swiperConfig.spaceBetween = 6;
+    setTimeout(() => {
+      this.imageWidthWhenResized =
+        (this.swiperContainer.nativeElement as HTMLDivElement).clientWidth *
+        0.271;
+      this.layout = 'ZOOMED-OUT-INFO';
+    }, 50);
+  }
+
+  expandSlidesAndCropDescription() {
+    this.swiperConfig.slidesPerView = 1;
+    this.swiperConfig.spaceBetween = 0;
+    this.layout = 'EXPANDED-SLIDE';
   }
 
   updateCurrentSlideData(event: any) {
@@ -428,7 +496,6 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
               type: 'IMAGE',
             };
           } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-            this.videosPlaying['media' + index2] = false;
             return {
               src: url,
               type: 'VIDEO',
@@ -555,9 +622,19 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
   async getCollection() {
     this.tagData = (await this.tagsService.tag(this.entityId)).tag;
+
+    this.genericModelTemplate = {
+      type: 'MODEL',
+      title: this.tagData.name,
+      description: this.tagData.notes,
+      slides: this.tagData.images.map((image) => ({
+        type: 'IMAGE',
+        src: image,
+      })),
+    };
   }
 
-  async back() {
+  back = async () => {
     if (this.mode === 'preview') {
       this.itemsService.itemUrls = [];
       return this.router.navigate([
@@ -618,7 +695,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           this.router.navigate(['ecommerce/store/' + itemSaleflow._id]);
       }
     }
-  }
+  };
 
   async applyConfigurationsForSlidesDimensions() {
     const width = window.innerWidth >= 500 ? 500 : window.innerWidth;
@@ -642,6 +719,10 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         (this.swiperContainer.nativeElement as HTMLDivElement).clientWidth *
         0.271;
     });
+
+    if (this.layout !== 'EXPANDED-SLIDE') {
+      this.expandDescriptionAndShowAllSlidesSwiper();
+    }
 
     setTimeout(() => {
       var event = new Event('resize');
@@ -682,10 +763,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     ) as HTMLVideoElement;
 
     if (!isVideoPlaying(elem)) {
-      console.log('reproduciendo');
       this.playVideo(id);
     } else {
-      console.log('parando');
       elem.pause();
     }
 

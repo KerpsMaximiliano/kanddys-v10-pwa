@@ -17,7 +17,11 @@
     />
   </header>
 
-  <main *ngIf="genericModelTemplate">
+  <main *ngIf="genericModelTemplate"
+    [ngClass]="{
+      justText: !genericModelTemplate?.slides || genericModelTemplate?.slides?.length === 0
+    }"
+  >
     <ng-container *ngIf="layout === 'ZOOMED-OUT-INFO'">
       <h1 class="title expanded" (click)="zoomOutOrZoomInDetails()">
         {{ genericModelTemplate.title }}
@@ -40,6 +44,7 @@
               ? imageCanvasHeight + 'px'
               : imageCanvasHeightWhenZoomedOut + 'px'
         }"
+        *ngIf="genericModelTemplate?.slides?.length > 0"
       >
         <swiper
           [config]="swiperConfig"
@@ -71,6 +76,13 @@
             </ng-container>
 
             <div class="video-wrapper" *ngIf="slide.type === 'VIDEO'">
+              <div
+                class="invisible-from-layer"
+                [ngClass]="{
+                  visible: layout === 'ZOOMED-OUT-INFO'
+                }"
+                (click)="zoomOutOrZoomInDetails(i)"
+              ></div>
               <!--
                   <img
                       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
@@ -94,11 +106,7 @@
 
               <video
                 [id]="'media' + i"
-                (click)="
-                  videosPlaying['media' + i]
-                    ? playCurrentSlideVideo('media' + i)
-                    : null
-                "
+                (click)="playCurrentSlideVideo('media' + i)"
                 [ngStyle]="{
                   width:
                     layout === 'EXPANDED-SLIDE'
@@ -139,7 +147,11 @@
     </ng-container>
 
     <ng-container *ngIf="layout === 'ZOOMED-OUT-INFO'">
-      <p class="description" (click)="zoomOutOrZoomInDetails()">
+      <p class="description"
+        [ngStyle]="{
+          height: 'calc((100vh - ' + imageCanvasHeightWhenZoomedOut + 'px) - (53.55px + 25px + 14px + 54px))'
+        }"
+      >
         {{ genericModelTemplate.description }}
       </p>
     </ng-container>
