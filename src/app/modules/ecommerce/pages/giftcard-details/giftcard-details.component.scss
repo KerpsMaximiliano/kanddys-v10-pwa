@@ -85,3 +85,19 @@ input {
     border-bottom: 1px solid #82f18d;
   }
 }
+
+.phone-wrapper {
+  position: relative;
+
+  .phoneNumber-formatted {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #181d17;
+    color: white;
+    width: 100%;
+    left: 92px;
+    font-family: RobotoMedium;
+    font-size: 20px;
+  }
+}

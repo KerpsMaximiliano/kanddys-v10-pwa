@@ -64,7 +64,10 @@ export class GiftcardDetailsComponent implements OnInit {
   async ngOnInit() {
     const flow = this.route.snapshot.queryParamMap.get('flow');
     if (flow) this.flow = flow as 'cart' | 'checkout';
-    if(!this.postsService.post) this.router.navigate(['/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart'])
+    if (!this.postsService.post)
+      this.router.navigate([
+        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',
+      ]);
   }
 
   qrClicked() {
@@ -113,11 +116,9 @@ export class GiftcardDetailsComponent implements OnInit {
 
     this.postsService.post.envelopePresentation = this.isQr ? 'QR' : 'QR-TEXT';
 
-    if (this.flow === 'checkout') 
+    if (this.flow === 'checkout')
       return this.router.navigate([
-        '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
-          '/checkout',
+        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
       ]);
 
     return this.router.navigate([
@@ -130,15 +131,23 @@ export class GiftcardDetailsComponent implements OnInit {
   back() {
     this.router.navigate(
       [
-      '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-symbol',
+        '/ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/new-symbol',
       ],
       {
         queryParams: {
-          flow: this.flow
-        }
+          flow: this.flow,
+        },
       }
     );
     //this.headerService.redirectFromQueryParams();
+  }
+
+  focusPhoneInput() {
+    const ngxIntlPhoneInput = document.querySelector('#phone');
+  
+    (ngxIntlPhoneInput.querySelector("#phone") as HTMLInputElement).focus();
   }
 
   send() {
