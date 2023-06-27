@@ -211,6 +211,7 @@ import { BuyerNotificationDialogComponent } from './dialogs/buyer-notification-d
 import { ItemAdminCardComponent } from './components/item-admin-card/item-admin-card.component';
 import { ProgressSliderComponent } from './components/progress-slider/progress-slider.component';
 import { ListCardComponent } from './components/list-card/list-card.component';
+import { PostsSlidesEditorComponent } from './components/posts-slides-editor/posts-slides-editor.component';
 
 const imports = [
   CommonModule,
@@ -435,7 +436,8 @@ const declarations = [
   BuyerNotificationDialogComponent,
   ItemAdminCardComponent,
   ProgressSliderComponent,
-  ListCardComponent
+  ListCardComponent,
+  PostsSlidesEditorComponent
 ];
 
 @NgModule({

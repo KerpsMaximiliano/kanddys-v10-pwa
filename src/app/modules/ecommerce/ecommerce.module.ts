@@ -44,6 +44,7 @@ import { PostPreviewComponent } from './pages/post-preview/post-preview.componen
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { WebformClientViewComponent } from 'src/app/shared/components/webform-client-view/webform-client-view.component';
 import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-selector/webform-options-selector.component';
+import { PostsSlidesEditorComponent } from 'src/app/shared/components/posts-slides-editor/posts-slides-editor.component';
 import { AllItemsComponent } from './pages/all-items/all-items.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
@@ -160,6 +161,10 @@ const routes: Routes = [
       {
         path: 'create-article',
         component: CreateArticleComponent,
+      },
+      {
+        path: 'post-slide-editor',
+        component: PostsSlidesEditorComponent,
       },
       {
         path: 'article-detail/:entity/:entityId',

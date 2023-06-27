@@ -72,7 +72,9 @@ export class QrEditComponent implements OnInit {
   async ngOnInit() {
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     const returnTo = this._Route.snapshot.queryParamMap.get('returnTo');
-    this.flow = this._Route.snapshot.queryParamMap.get('flow') as 'cart' | 'checkout';
+    this.flow = this._Route.snapshot.queryParamMap.get('flow') as
+      | 'cart'
+      | 'checkout';
 
     console.log(this.flow);
 
@@ -87,36 +89,38 @@ export class QrEditComponent implements OnInit {
         return;
       }
       if (this.item.images.length) {
-        this.gridArray = this.item.images.sort(({index:a},{index:b}) => a>b?1:-1).map((image) => {
-          const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
-          let auxiliarImageFileExtension = 'image/' + fileExtension;
-          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+        this.gridArray = this.item.images
+          .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+          .map((image) => {
+            const fileParts = image.value.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
-          if (
-            image.value &&
-            !image.value.includes('http') &&
-            !image.value.includes('https')
-          ) {
-            image.value = 'https://' + image.value;
-          }
+            if (
+              image.value &&
+              !image.value.includes('http') &&
+              !image.value.includes('https')
+            ) {
+              image.value = 'https://' + image.value;
+            }
 
-          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-            return {
-              _id: image._id,
-              background: image.value,
-              _type: auxiliarImageFileExtension,
-              index: image.index
-            };
-          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-            return {
-              _id: image._id,
-              background: image.value,
-              _type: auxiliarVideoFileExtension,
-              index: image.index
-            };
-          }
-        });
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              return {
+                _id: image._id,
+                background: image.value,
+                _type: auxiliarImageFileExtension,
+                index: image.index,
+              };
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              return {
+                _id: image._id,
+                background: image.value,
+                _type: auxiliarVideoFileExtension,
+                index: image.index,
+              };
+            }
+          });
       }
       return;
     }
@@ -182,7 +186,7 @@ export class QrEditComponent implements OnInit {
   }
 
   async dropTagDraggable(event: CdkDragDrop<{ gridItem: any; index: number }>) {
-    const { _id:itemId } = this.item || {} 
+    const { _id: itemId } = this.item || {};
     this.gridArray[event.previousContainer.data.index].index =
       event.container.data.index;
     this.gridArray[event.container.data.index].index =
@@ -191,17 +195,13 @@ export class QrEditComponent implements OnInit {
       event.container.data.gridItem;
     this.gridArray[event.container.data.index] =
       event.previousContainer.data.gridItem;
-    const {
-      _id,
-      index
-    } = this.gridArray[event.container.data.index];
-    const {
-      _id:_id2,
-      index:index2
-    } = this.gridArray[event.previousContainer.data.index];
-    const itemImage = {index,active:true};
-    const itemImage2 = {index: index2,active:true};
-    if(!itemId) return;
+    const { _id, index } = this.gridArray[event.container.data.index];
+    const { _id: _id2, index: index2 } =
+      this.gridArray[event.previousContainer.data.index];
+    const itemImage = { index, active: true };
+    const itemImage2 = { index: index2, active: true };
+
+    if (!itemId) return;
     const result = await this._ItemsService.itemUpdateImage(
       itemImage,
       _id,
@@ -253,7 +253,7 @@ export class QrEditComponent implements OnInit {
             [
               {
                 file,
-                index
+                index,
               },
             ],
             this.item._id
@@ -269,7 +269,7 @@ export class QrEditComponent implements OnInit {
             const reader = new FileReader();
             reader.onload = (e) => {
               this.gridArray.push({
-                _id: addedImage?.images[addedImage.images.length-1]?._id,
+                _id: addedImage?.images[addedImage.images.length - 1]?._id,
                 background: reader.result,
                 _type: file.type,
               });
@@ -304,7 +304,7 @@ export class QrEditComponent implements OnInit {
             console.log(auxiliarFileExtension);
 
             this.gridArray.push({
-              _id: addedImage?.images[addedImage.images.length-1]?._id,
+              _id: addedImage?.images[addedImage.images.length - 1]?._id,
               background: uploadedVideoURL,
               _type: auxiliarFileExtension,
             });
@@ -355,8 +355,19 @@ export class QrEditComponent implements OnInit {
             content['_type'] = file.type;
             this.gridArray.push(content);
             this._PostsService.post.slides.push(content);
+
+            this._PostsService.editingSlide =
+              this._PostsService.post.slides.length - 1;
+
+            this._Router.navigate([
+              'ecommerce/' +
+                this.headerService.saleflow.merchant.slug +
+                '/post-slide-editor',
+            ]);
           };
         }
+
+        console.log('Archivo droppeado en post');
       }
       index++;
     }
@@ -381,6 +392,7 @@ export class QrEditComponent implements OnInit {
     );
 
     this._PostsService.post.slides = slides;
+    this._PostsService.editingSlide = null;
 
     if (this.returnTo === 'checkout') {
       this._Router.navigate(
@@ -404,15 +416,11 @@ export class QrEditComponent implements OnInit {
     }
 
     this._Router.navigate(
-      [
-        'ecommerce',
-        this.headerService.saleflow.merchant.slug,
-        'new-symbol',
-      ],
+      ['ecommerce', this.headerService.saleflow.merchant.slug, 'new-symbol'],
       {
         queryParams: {
-          flow: this.flow
-        }
+          flow: this.flow,
+        },
       }
     );
     return;
@@ -509,9 +517,20 @@ export class QrEditComponent implements OnInit {
   }
 
   editSlide(index: number) {
-    this._ItemsService.editingImageId = this.gridArray[index]._id;
-    lockUI();
-    this._Router.navigate([`admin/create-article/${this.item._id}`]);
+    if (this.item) {
+      this._ItemsService.editingImageId = this.gridArray[index]._id;
+      lockUI();
+      this._Router.navigate([`admin/create-article/${this.item._id}`]);
+    } else {
+      this._PostsService.editingSlide =
+        index;
+
+      this._Router.navigate([
+        'ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/post-slide-editor',
+      ]);
+    }
   }
 
   async deleteImage(index: number) {
@@ -558,7 +577,7 @@ export class QrEditComponent implements OnInit {
       {
         queryParams: {
           mode: 'image-preview',
-          flow: this.flow
+          flow: this.flow,
         },
       }
     );
