@@ -78,6 +78,10 @@ const routes: Routes = [
     component: OrderDetailComponent,
   },
   {
+    path: 'order-confirmation/:orderId',
+    component: OrderConfirmationComponent
+  },
+  {
     path: 'contact-landing/:idUser',
     component: ContactLandingContainerComponent,
   },
@@ -268,10 +272,6 @@ const routes: Routes = [
       {
         path: 'giftcard-details',
         component: GiftcardDetailsComponent,
-      },
-      {
-        path: 'order-confirmation/:orderId',
-        component: OrderConfirmationComponent
       }
     ],
   },
