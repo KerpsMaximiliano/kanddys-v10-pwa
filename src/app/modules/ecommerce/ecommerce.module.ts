@@ -49,6 +49,7 @@ import { CartComponent } from './pages/cart/cart.component';
 import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
 import { NewSymbolComponent } from './pages/new-symbol/new-symbol.component';
 import { GiftcardDetailsComponent } from './pages/giftcard-details/giftcard-details.component';
+import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
 
 const routes: Routes = [
   {
@@ -268,6 +269,10 @@ const routes: Routes = [
         path: 'giftcard-details',
         component: GiftcardDetailsComponent,
       },
+      {
+        path: 'order-confirmation/:orderId',
+        component: OrderConfirmationComponent
+      }
     ],
   },
 ];
@@ -311,6 +316,7 @@ const routes: Routes = [
     ReceiverFormComponent,
     NewSymbolComponent,
     GiftcardDetailsComponent,
+    OrderConfirmationComponent,
   ],
   imports: [
     CommonModule,
