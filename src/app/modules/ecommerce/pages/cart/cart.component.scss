@@ -126,6 +126,10 @@ main {
         cursor: pointer;
         font-size: 17px;
         margin-bottom: 0.7em;
+
+        &.required {
+          max-width: 75%;
+        }
       }
       .section-description {
         cursor: pointer;
