@@ -33,26 +33,36 @@
       <p class="title" style="margin-top: 22px; margin-bottom: 25px">
         WhatsApp o email que le recibirá el MagicLink para accesar al mensaje del regalo
       </p>
-      <ngx-intl-tel-input
-        *ngIf="isWhatsapp"
-        [cssClass]="'custom'"
-        [enableAutoCountrySelect]="true"
-        [enablePlaceholder]="true"
-        [searchCountryFlag]="true"
-        [selectFirstCountry]="false"
-        [preferredCountries]="preferredCountries"
-        [selectedCountryISO]="CountryISO"
-        maxLength="13"
-        minlength="10"
-        [phoneValidation]="true"
-        [separateDialCode]="true"
-        [customPlaceholder]="'(000) 000-0000'"
-        [numberFormat]="PhoneNumberFormat.International"
-        tabindex="1"
-        id="phone"
-        [(ngModel)]="inputPhone"
-        (ngModelChange)="onPhoneInput()"
-      ></ngx-intl-tel-input>
+      <div class="phone-wrapper">
+        <ngx-intl-tel-input
+          *ngIf="isWhatsapp"
+          [cssClass]="'custom'"
+          [enableAutoCountrySelect]="true"
+          [enablePlaceholder]="true"
+          [searchCountryFlag]="true"
+          [selectFirstCountry]="false"
+          [preferredCountries]="preferredCountries"
+          [selectedCountryISO]="CountryISO"
+          maxLength="13"
+          minlength="10"
+          [phoneValidation]="true"
+          [separateDialCode]="true"
+          [customPlaceholder]="'(000) 000-0000'"
+          [numberFormat]="PhoneNumberFormat.International"
+          tabindex="1"
+          id="phone"
+          [(ngModel)]="inputPhone"
+          (ngModelChange)="onPhoneInput()"
+        ></ngx-intl-tel-input>
+
+        <span
+          class="phoneNumber-formatted"
+          *ngIf="inputPhone"
+          (click)="focusPhoneInput()"
+        >
+          {{ inputPhone.nationalNumber }}
+        </span>
+      </div>
       <input
         *ngIf="!isWhatsapp"
         #input2

@@ -408,38 +408,51 @@ export class CheckoutComponent implements OnInit {
         }
       }
 
-      this.post = this.headerService.getPost();
+      console.log("obteniendo post 1");
+
+      this.post = this.headerService?.post || this.postsService?.post;
+
+      console.log("leyendo slides 1");
 
       if (this.post?.slides.length)
         this.post?.slides.forEach((slide: any) => {
           if (slide.background) delete slide.background;
           if (slide._type) delete slide._type;
+          if (slide?.media && !slide.media?.type) delete slide.media;
         });
 
       const storedPost = localStorage.getItem('post');
 
       if (storedPost && !this.post) {
+        console.log("obteniendo post 2");
         this.headerService.post = JSON.parse(storedPost);
         this.post = this.headerService.post;
       }
 
+      console.log("leyendo slides 2");
+      
+      console.log(this.post);
+      console.log(this.post?.slides);
+
+      console.log(this.postsService.post);
+
       if (this.post?.slides?.length) {
         this.post.slides.forEach((slide) => {
-          if (slide.media?.type.includes('image')) {
+          if (slide.media?.type?.includes('image')) {
             const reader = new FileReader();
             reader.onload = (e) => {
               this.postSlideImages.push(reader.result);
             };
             reader.readAsDataURL(slide.media);
           }
-          if (slide.media?.type.includes('video')) {
+          if (slide.media?.type?.includes('video')) {
             const reader = new FileReader();
             reader.onload = (e) => {
               this.postSlideVideos.push(reader.result);
             };
             reader.readAsDataURL(slide.media);
           }
-          if (slide.media?.type.includes('audio')) {
+          if (slide.media?.type?.includes('audio')) {
             const reader = new FileReader();
             reader.onload = (e) => {
               this.postSlideAudio.push(
@@ -452,6 +465,8 @@ export class CheckoutComponent implements OnInit {
           }
         });
       }
+
+      console.log("obteniendo delivery zones")
 
       await this.getDeliveryZones(this.headerService.saleflow.merchant._id);
 

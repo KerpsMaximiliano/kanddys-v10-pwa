@@ -113,7 +113,7 @@
         all: unset;
         cursor: pointer;
         position: absolute;
-        top: 57px;
+        top: 51px;
         right: 20px;
       "
       (click)="goToWhatsapp()"
@@ -711,16 +711,21 @@
             (post?.targets?.length && post.targets[0].name))
         "
       >
-        <p class="section-label">MENSAJE DE REGALO (OPCIONAL)</p>
+        <p class="section-label">MENSAJE DE REGALO</p>
 
+        
+
+        <!-- 
+          Condicional que tenía el div de abajo
+          *ngIf="
+            !post.envelopePresentation ||
+            (post.envelopePresentation &&
+              post.envelopePresentation === 'QR-TEXT')
+          " 
+        -->
         <div class="questions">
           <div
             class="question firstQuestion"
-            *ngIf="
-              !post.envelopePresentation ||
-              (post.envelopePresentation &&
-                post.envelopePresentation === 'QR-TEXT')
-            "
           >
             <p class="top-text">Escrito en tarjetita física</p>
             <p class="bottom-text">
