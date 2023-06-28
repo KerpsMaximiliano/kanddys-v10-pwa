@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
-import { ItemOrder } from 'src/app/core/models/order';
+import { capitalize, formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
 import { Reservation } from 'src/app/core/models/reservation';
 import { OrderService } from 'src/app/core/services/order.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
@@ -17,6 +18,7 @@ import { environment } from 'src/environments/environment';
 export class OrderConfirmationComponent implements OnInit {
 
   order: ItemOrder;
+  env: string = environment.assetsUrl;
   environment: string = environment.uri;
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
@@ -38,6 +40,16 @@ export class OrderConfirmationComponent implements OnInit {
   reservation: Reservation;
   messageLink: string;
 
+  capitalize = capitalize;
+  playVideoOnFullscreen = playVideoOnFullscreen;
+
+  statusList: Array<{
+    name: string;
+  }> = [];
+  activeStatusIndex: number;
+
+  payment: number;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -55,11 +67,21 @@ export class OrderConfirmationComponent implements OnInit {
   }
 
   async executeProcessesAfterLoading(orderId: string) {
+
+    // Getting order
+    // If order is not found, redirect to error screen
     await this.getOrder(orderId);
 
+    // Builds the delivery status array
+    this.buildStatusList();
+
+    // Fixes images URL when they have no https
     if (this.order?.items) this.fixImagesURL();
 
-    if (this.order?.items[0]?.reservation) await this.getReservation(this.order?.items[0].reservation._id);
+    // Gets the total payment amount
+    this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
+
+    if (this.order?.items[0]?.reservation) await this.getReservation(this.order?.items[0]?.reservation._id);
 
     this.generateMessage();
   }
@@ -137,17 +159,17 @@ export class OrderConfirmationComponent implements OnInit {
 
     const day = fromDate.getDate();
     const weekday = fromDate.toLocaleString('es-MX', {
-      weekday: 'short',
+      weekday: 'long',
     });
     const month = fromDate.toLocaleString('es-MX', {
-      month: 'short',
+      month: 'long',
     });
-    const time = `De ${this.formatHour(fromDate)} a ${this.formatHour(
+    const time = `${this.formatHour(fromDate)} - ${this.formatHour(
       untilDate,
       reservation.breakTime
     )}`;
 
-    return `${weekday}, ${day} de ${month}. ${time}`;
+    return `el ${capitalize(weekday)} ${day} de ${capitalize(month)} entre ${time}`;
   }
 
   private formatHour(date: Date, breakTime?: number) {
@@ -166,29 +188,74 @@ export class OrderConfirmationComponent implements OnInit {
     return result;
   }
 
-  private generateMessage() {
-    // const message = `*🐝 FACTURA ${formatID(
-    //   this.order.dateId
-    // )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
-    //   'es-MX'
-    // )}: ${fullLink}\n\n*Comprador*: ${
-    //   this.order.user?.name ||
-    //   this.order.user?.phone ||
-    //   this.order.user?.email ||
-    //   'Anónimo'
-    // }${address}\n\n${
-    //   giftMessage
-    //     ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
-    //     : ''
-    // }`;
+  buildStatusList() {
+    const statusList: OrderStatusDeliveryType[] = ['in progress', 'delivered'];
 
-    // this.messageLink = `https://api.whatsapp.com/send?phone=${
-    //   this.order.items[0].saleflow.merchant.owner.phone
-    // }&text=${encodeURIComponent(message)}`;
+    const location = this.order.items[0].deliveryLocation;
+
+    if (location.street) {
+      statusList.splice(1, 0, 'pending');
+      statusList.splice(2, 0, 'shipped');
+    } else statusList.splice(1, 0, 'pickup');
+
+    for (const status of statusList) {
+      this.statusList.push({
+        name: this.orderService.orderDeliveryStatus(status),
+      });
+    }
+
+    const orderStatuDelivery = this.order.orderStatusDelivery;
+
+    this.activeStatusIndex = statusList.findIndex(
+      (status) => status === orderStatuDelivery
+    );
+  }
+
+  urlIsVideo(url: string) {
+    return isVideo(url);
+  }
+
+  private generateMessage() {
+
+    let address = '';
+    const location = this.order.items[0].deliveryLocation;
+    if (location) {
+      address = '\n\nDirección: ';
+      if (location.street) {
+        if (location.houseNumber) address += '#' + location.houseNumber + ', ';
+        address += location.street + ', ';
+        if (location.referencePoint) address += location.referencePoint + ', ';
+        address += location.city + ', República Dominicana';
+        if (location.note) address += ` (${location.note})`;
+      } else address += location.nickName;
+    }
+
+    const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+    const message = `*🐝 FACTURA ${formatID(
+      this.order.dateId
+    )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
+      'es-MX'
+    )}: ${fullLink}\n\n*Comprador*: ${
+      this.order.user?.name ||
+      this.order.user?.phone ||
+      this.order.user?.email ||
+      'Anónimo'
+    }${address}`;
+
+    this.messageLink = `https://api.whatsapp.com/send?phone=${
+      this.order.items[0].saleflow.merchant.owner.phone
+    }&text=${encodeURIComponent(message)}`;
   }
 
   back() {
-    // TODO: Navigate to order-detail
+    return this.router.navigate(
+      [`/ecommerce/order-detail/${this.order._id}`],
+      {
+        queryParams: {
+          notify: true
+        }
+      }
+    );
   }
 
 }

@@ -1,3 +1,85 @@
 <div class="container">
+    <header class="flex">
+        <span (click)="back()">X</span>
+    </header>
+    <main>
+        <div style="margin-top: 1.5em;">
+            <h1 class="screen-title">Orden completada,</h1>
+            <h1 class="screen-title">{{ order?.user?.name || order?.user?.phone || order?.user?.email }}. Gracias!</h1>
+        </div>
+        <p class="description" *ngIf="reservation">
+            Tiempo reservado de entrega es {{ displayReservation(reservation) }}
+        </p>
 
+        <div style="text-align: center; margin-top: 2.5em;">
+            <button mat-button class="main-cta" (click)="goToWhatsapp()">
+                Confírmalo desde el WhatsApp
+                <img [src]="env + '/whatsApp-img.webp'" alt="">
+            </button>
+        </div>
+    </main>
+    <div class="fixed-section">
+        <div style="margin: 0 17px;">
+            <div class="flex">
+                <p>{{ order?.items?.length }} Artículos en tu factura</p>
+                <a
+                    [routerLink]="['../../order-detail/', order._id]"
+                    [queryParams]="{
+                        notify: true
+                    }"
+                >
+                    Mira la factura
+                </a>
+            </div>
+        </div>
+        <div class="items-container">
+            <div
+                class="image-container"
+                *ngFor="let item of order?.items; index as i"
+            >
+                <button class="btn">
+                <div
+                    class="image"
+                    *ngIf="!urlIsVideo(item.item.images[0].value)"
+                    (click)="
+                    item.item.images?.length &&
+                        openImageModal(item.item.images[0].value)
+                    "
+                    [ngStyle]="{
+                    backgroundImage: item.item.images?.length
+                        ? 'url(' + item.item.images[0].value + ')'
+                        : '/assets/images/noimage.png',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover'
+                    }"
+                ></div>
+                <div
+                    class="video-wrapper videoThumbnail"
+                    *ngIf="urlIsVideo(item.item.images[0].value)"
+                    (click)="playVideoOnFullscreen('media' + item._id)"
+                >
+                    <img
+                    src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                    alt="play"
+                    class="playVideoIcon"
+                    style="padding: 1rem !important; z-index: 99"
+                    />
+
+                    <video
+                    [src]="item.item.images[0].value"
+                    [id]="'media' + item._id"
+                    class="video"
+                    [muted]="true"
+                    ></video>
+                </div>
+                </button>
+            </div>
+        </div>
+        <app-progress-slider
+            [title]="'Actualización del progreso'"
+            [statusList]="statusList"
+            [activeIndex]="activeStatusIndex"
+        ></app-progress-slider>
+    </div>
 </div>
