@@ -211,6 +211,10 @@ import { BuyerNotificationDialogComponent } from './dialogs/buyer-notification-d
 import { ItemAdminCardComponent } from './components/item-admin-card/item-admin-card.component';
 import { ProgressSliderComponent } from './components/progress-slider/progress-slider.component';
 import { ListCardComponent } from './components/list-card/list-card.component';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { CreateButtonLinkComponent } from './dialogs/create-button-link/create-button-link.component';
+import { createTranslateLoader } from '../core/functions/create-translate-loader';
+import { HttpClient } from '@angular/common/http';
 
 const imports = [
   CommonModule,
@@ -246,6 +250,7 @@ const imports = [
   MatTabsModule,
   MatToolbarModule,
   MatSidenavModule,
+  TranslateModule
 ];
 const declarations = [
   // Pages
@@ -435,7 +440,8 @@ const declarations = [
   BuyerNotificationDialogComponent,
   ItemAdminCardComponent,
   ProgressSliderComponent,
-  ListCardComponent
+  ListCardComponent,
+  CreateButtonLinkComponent
 ];
 
 @NgModule({

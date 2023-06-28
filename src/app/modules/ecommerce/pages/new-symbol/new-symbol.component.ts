@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { CreateButtonLinkComponent } from 'src/app/shared/dialogs/create-button-link/create-button-link.component';
 
 @Component({
   selector: 'app-new-symbol',
@@ -21,11 +24,15 @@ export class NewSymbolComponent implements OnInit {
     private headerService: HeaderService,
     private merchantsService: MerchantsService,
     public postsService: PostsService,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    private translate: TranslateService,
+    private dialog:DialogService
+  ) {
+        translate.setDefaultLang('en');
+        translate.use('en');
+  }
 
   ngOnInit(): void {
-
     const flow = this.route.snapshot.queryParamMap.get('flow');
     if (flow)
       this.flow = flow as 'cart' | 'checkout';
@@ -119,5 +126,17 @@ export class NewSymbolComponent implements OnInit {
         },
       }
     );
+  }
+
+  openButtonLinkDialog(){
+      this.dialog.open(CreateButtonLinkComponent, {
+         type: 'action-sheet',
+         props: {
+            closeEvent: ()=> {
+            }
+         },
+         customClass: 'app-dialog',
+         flags: ['no-header'],
+      });
   }
 }
