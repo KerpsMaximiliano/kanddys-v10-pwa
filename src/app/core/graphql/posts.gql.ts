@@ -73,6 +73,7 @@ export const post = gql`
         name
         emailOrPhone
       }
+      layout
     }
   }
 `;

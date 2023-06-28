@@ -161,6 +161,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 import { WebformTextareaQuestionComponent } from './components/webform-textarea-question/webform-textarea-question.component';
 import { WebformMultipleSelectionQuestionComponent } from './components/webform-multiple-selection-question/webform-multiple-selection-question.component';
@@ -243,6 +244,7 @@ const imports = [
   MatSnackBarModule,
   MatCardModule,
   MatCheckboxModule,
+  MatRadioModule,
   MatGridListModule,
   MatTabsModule,
   MatToolbarModule,

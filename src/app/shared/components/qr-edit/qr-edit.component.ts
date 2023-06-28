@@ -379,13 +379,14 @@ export class QrEditComponent implements OnInit {
       return;
     }
     const slides: Array<SlideInput> = this.gridArray.map(
-      ({ text, title, media, type, index }) => {
+      ({ text, title, media, type, index , background}) => {
         const result = {
           text,
           title,
           media,
           type,
           index,
+          background
         };
         return result;
       }

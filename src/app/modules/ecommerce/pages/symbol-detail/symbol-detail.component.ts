@@ -510,6 +510,9 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         id: this.itemData._id,
         slides: this.itemData.media,
       };
+
+      this.layout = this.itemData.layout || 'EXPANDED-SLIDE';
+
       this.updateFractions();
 
       setTimeout(() => {
@@ -564,6 +567,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           slides: transformedSlides,
           title: this.postData.title,
         };
+
+        this.layout = this.postData.layout || 'EXPANDED-SLIDE';
 
         this.updateFractions();
 

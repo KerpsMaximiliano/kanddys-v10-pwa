@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -12,7 +12,8 @@ import { PostsService } from 'src/app/core/services/posts.service';
 })
 export class NewSymbolComponent implements OnInit {
   postForm: FormGroup;
-
+  isLayoutDropdownOpened = false;
+  layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
   flow: 'cart' | 'checkout' = 'cart';
 
   constructor(
@@ -25,10 +26,8 @@ export class NewSymbolComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-
     const flow = this.route.snapshot.queryParamMap.get('flow');
-    if (flow)
-      this.flow = flow as 'cart' | 'checkout';
+    if (flow) this.flow = flow as 'cart' | 'checkout';
 
     if (!this.postsService.post) {
       this.postsService.post = {
@@ -37,10 +36,14 @@ export class NewSymbolComponent implements OnInit {
       };
       this.postForm = this.fb.group({
         message: [''],
+        defaultLayout: [this.postsService.post.layout || this.layout],
       });
     } else {
+      console.log("layout que ya estaba", this.postsService.post.layout);
+
       this.postForm = this.fb.group({
         message: [this.postsService.post.message],
+        defaultLayout: [this.postsService.post.layout || this.layout],
       });
     }
   }
@@ -48,41 +51,38 @@ export class NewSymbolComponent implements OnInit {
   goToMediaUpload() {
     this.postsService.post.message = this.postForm.controls['message'].value;
     this.router.navigate(
-      [
-      'ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit',
-      ],
+      ['ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit'],
       {
         queryParams: {
-          flow: this.flow
-        }
+          flow: this.flow,
+        },
       }
     );
   }
 
   save() {
     this.postsService.post.message = this.postForm.controls['message'].value;
+    this.postsService.post.layout = this.postForm.controls['defaultLayout'].value;
     this.postsService.appliesMessage = true;
 
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
 
-
     this.router.navigate(
       [
-      'ecommerce/' +
-        this.headerService.saleflow.merchant.slug +
-        '/giftcard-details',
+        'ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/giftcard-details',
       ],
       {
         queryParams: {
           flow: this.flow,
-        }
+        },
       }
     );
   }
 
   goBack() {
-
     if (this.flow === 'checkout')
       return this.router.navigate([
         'ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
@@ -104,6 +104,7 @@ export class NewSymbolComponent implements OnInit {
 
   goToPostDetail(mode: 'DEMO' | 'PREVIEW') {
     this.postsService.post.message = this.postForm.controls['message'].value;
+    this.postsService.post.layout = this.postForm.controls['defaultLayout'].value;
 
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
@@ -118,7 +119,7 @@ export class NewSymbolComponent implements OnInit {
         queryParams: {
           mode,
           redirectTo: 'post-edit',
-          flow: this.flow
+          flow: this.flow,
         },
       }
     );

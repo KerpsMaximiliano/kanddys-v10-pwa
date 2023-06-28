@@ -14,15 +14,17 @@
       />
       Guardar
     </button>
-    <div
-      class="cropper__image"
-      #cropperImage
-      [ngStyle]="{
-        width: '100%',
-        height: (cropperImage.clientWidth * 10) / 7 + 'px'
-      }"
-    >
-      <img #image [src]="imgUrl" (load)="imageLoaded($event)" />
+    <div class="image-canvas-wrapper">
+      <div
+        class="cropper__image"
+        #cropperImage
+        [ngStyle]="{
+          width: '100%',
+          height: imageCanvasHeight + 'px'
+        }"
+      >
+        <img #image [src]="imgUrl" (load)="imageLoaded($event)" />
+      </div>
     </div>
     <div class="cropper__zoomSlider">
       <div class="text-icons-container">

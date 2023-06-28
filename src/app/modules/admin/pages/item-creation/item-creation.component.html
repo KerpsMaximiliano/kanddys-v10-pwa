@@ -1,0 +1,36 @@
+<div class="container">
+  <header>
+    <div class="close">X</div>
+    <h2>Nuevo Simbolo que se vende</h2>
+  </header>
+
+  <main>
+    <div class="img-input">
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery-black.svg"
+        alt="icon"
+      />
+    </div>
+
+    <div class="price-wrapper">
+      <app-currency-input
+        [innerLabel]="'Precio*'"
+        [innerLabelStyles]="{
+          fontFamily: 'InterLight',
+          fontStyle: 'italic',
+          fontSize: '13px'
+        }"
+        [fieldStyles]="{
+          boxShadow: 'none',
+          backgroundColor: 'white',
+          borderRadius: '6px',
+          padding: '8px 0px'
+        }"
+        [initialValue]="0"
+        (onInputEvent)="(null)"
+        placeholderColor="#7B7B7B"
+        currencyLabel="RD$"
+      ></app-currency-input>
+    </div>
+  </main>
+</div>

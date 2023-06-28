@@ -113,7 +113,9 @@
             <div class="title">{{ gridItem.title }}</div>
           </ng-container>
 
-          <div class="labelBox" (click)="item && !isSlideVideo(i) ? editSlide(i) : playVideoOnFullscreen('media' + i)"></div>
+          <!--
+            <div class="labelBox" (click)="item && !isSlideVideo(i) ? editSlide(i) : playVideoOnFullscreen('media' + i)"></div>
+          -->
           <button class="circleButton" (click)="deleteSlide(i)">
             <i class="fa fa-times" aria-hidden="true"></i>
           </button>

@@ -34,6 +34,7 @@ export class PostsSlidesEditorComponent implements OnInit {
   }
 
   async onEditSubmit(result: CroppResult) {
+    console.log("result", result);
     try {
       const file = new File([result.blob], 'image.jpg', {
         type: 'image/jpg',
@@ -66,6 +67,7 @@ export class PostsSlidesEditorComponent implements OnInit {
         unlockUI();
       }
     } catch (error) {
+      console.log("error", error);
       this.toastsService.error(
         'Ocurrio un error al editar la imagen, intenta de nuevo',
         null,

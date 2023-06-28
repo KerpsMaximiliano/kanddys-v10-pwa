@@ -32,11 +32,33 @@ export class ImageEditorComponent implements OnDestroy {
   currentViewMode: Cropper.ViewMode = 3;
   cropper: Cropper;
   modified = false;
+  imageCanvasHeight = 0;
 
   @ViewChild('image') image: ElementRef;
+  @ViewChild('cropperImage', { read: ElementRef }) cropperImageContainer: ElementRef;
 
   ngOnInit() {
     if (!this.imgUrl) return this.cropped.emit();
+
+    this.applyConfigurationsForSlidesDimensions();
+  }
+
+  async applyConfigurationsForSlidesDimensions() {
+    const width = window.innerWidth >= 500 ? 500 : window.innerWidth;
+
+    this.imageCanvasHeight = (width * 1400) / 1080;
+
+    window.addEventListener('resize', () => {
+      this.imageCanvasHeight =
+        ((this.cropperImageContainer.nativeElement as HTMLDivElement).clientWidth *
+          1400) /
+        1080;
+    });
+
+    setTimeout(() => {
+      var event = new Event('resize');
+      window.dispatchEvent(event);
+    }, 500);
   }
 
   ngAfterViewInit() {

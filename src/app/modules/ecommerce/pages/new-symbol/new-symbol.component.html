@@ -44,7 +44,68 @@
         ></app-qr-content>
       </div>
 
-      <div class="optional-stuff"  *ngIf="postsService.post?.slides?.length === 0">
+      <div class="layout-row" *ngIf="postsService.post?.slides?.length !== 0">
+        <mat-accordion>
+          <mat-expansion-panel
+            (opened)="isLayoutDropdownOpened = true"
+            (closed)="isLayoutDropdownOpened = false"
+            hideToggle
+          >
+            <mat-expansion-panel-header>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  width: 100%;
+                "
+              >
+                <span> Layout de los slides predeterminado </span>
+                <mat-icon
+                  [ngStyle]="{
+                    color: '#7B7B7B',
+                    marginLeft: '10px'
+                  }"
+                  >{{
+                    isLayoutDropdownOpened
+                      ? "keyboard_arrow_down"
+                      : "keyboard_arrow_right"
+                  }}
+                </mat-icon>
+              </div>
+            </mat-expansion-panel-header>
+
+            <div class="layouts-options">
+              <div class="image-layout-wrapper">
+                <img
+                  class="image-layout"
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/Expanded-Slide-icon.png"
+                  alt="expanded slide"
+                />
+                <input
+                  type="radio"
+                  formControlName="defaultLayout"
+                  [value]="'EXPANDED-SLIDE'"
+                />
+              </div>
+              <div class="image-layout-wrapper">
+                <img
+                  class="image-layout"
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/minimized-slides.png"
+                  alt="minimized slides"
+                />
+                <input
+                  type="radio"
+                  formControlName="defaultLayout"
+                  [value]="'ZOOMED-OUT-INFO'"
+                />
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+
+      <div class="optional-stuff" *ngIf="postsService.post?.slides?.length === 0">
         <h3>CHULERIAS OPCIONALES</h3>
 
         <div class="row">
@@ -59,29 +120,12 @@
         </div>
       </div>
     </form>
-
-    <!--
-      <div class="posts-virtual-content-wrapper">
-        <div class="posts-virtual-content-grid">
-          <div
-            class="media-wrapper"
-            *ngFor="let media of postsService.post.slides"
-          ></div>
-        </div>
-        <div class="upload-button">
-          <img
-            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
-            alt=""
-          />
-        </div>
-      </div>
-    -->
   </main>
 
   <footer>
     <button
       class="left"
-      style="color: #272727;"
+      style="color: #272727"
       (click)="
         !(
           postForm.controls.message.value?.length ||
@@ -106,7 +150,7 @@
         postForm.controls.message.value?.length ||
         postsService.post.slides?.length
       "
-      style="color: #272727;"
+      style="color: #272727"
       (click)="save()"
     >
       Guardar

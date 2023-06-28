@@ -130,6 +130,7 @@ const fullItem = `
     reference
     active
   }
+  layout
   active
 `;
 
