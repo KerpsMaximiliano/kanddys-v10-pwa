@@ -1,4 +1,10 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  EventEmitter,
+  Output,
+} from '@angular/core';
 import { SlideInput } from 'src/app/core/models/post';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -41,7 +47,12 @@ export class QrContentComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    await this.fillSlides();
+  }
+
+  async fillSlides(reset: boolean = false) {
     if (this.slides) {
+      this.slidesPath = [];
       for await (const slide of this.slides) {
         if (slide.media) {
           if (slide.media.type.includes('image')) {

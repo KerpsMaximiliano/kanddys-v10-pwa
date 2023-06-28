@@ -34,15 +34,26 @@
   }
 }
 
+.back-button {
+  position: absolute;
+  left: 16px;
+  top: 10px;
+  color: #82f18d;
+  font-family: SfProBold;
+  background-color: rgba(0,0,0,0);
+  border: none;
+}
+
 .fixed-button {
   position: absolute;
-  top: 48px;
+  right: 16px;
+  top: 10px;
   border: none;
   border-radius: 24px;
   cursor: pointer;
   z-index: 2;
   background-color: #272727;
-  box-shadow: 0 3px 6px 3px rgb(0 0 0 / 16%);
+  background-color: rgba(0,0,0,0);
   display: flex;
   justify-content: center;
   align-items: center;

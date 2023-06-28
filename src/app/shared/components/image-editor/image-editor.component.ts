@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -36,6 +37,10 @@ export class ImageEditorComponent implements OnDestroy {
 
   @ViewChild('image') image: ElementRef;
   @ViewChild('cropperImage', { read: ElementRef }) cropperImageContainer: ElementRef;
+
+  constructor(
+    private location: Location
+  ) {}
 
   ngOnInit() {
     if (!this.imgUrl) return this.cropped.emit();
@@ -150,6 +155,10 @@ export class ImageEditorComponent implements OnDestroy {
     canvas.toBlob((blob) => {
       this.cropped.emit({ ...data, blob, modified: this.modified });
     });
+  }
+
+  back() {
+    this.location.back();
   }
 
   private destroyCropper() {

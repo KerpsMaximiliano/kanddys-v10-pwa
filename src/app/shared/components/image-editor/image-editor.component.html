@@ -1,19 +1,7 @@
 <div class="cropper">
   <div class="cropper__imageContainer">
-    <button
-      class="fixed-button left"
-      style="padding: 12px 16px"
-      (click)="exportCanvas()"
-    >
-      <img
-        class="icon green"
-        [src]="env + '/arrow-double-up.svg'"
-        alt="Back"
-        height="13"
-        width="16"
-      />
-      Guardar
-    </button>
+    <button class="back-button" (click)="back()">X</button>
+    <button class="fixed-button" (click)="exportCanvas()">Continuar</button>
     <div class="image-canvas-wrapper">
       <div
         class="cropper__image"
