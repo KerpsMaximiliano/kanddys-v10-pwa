@@ -130,8 +130,7 @@ export class QrEditComponent implements OnInit {
         console.log('los slides', this._ItemsService.temporalItemInput.slides);
 
         for await (const slide of this._ItemsService.temporalItemInput.slides) {
-          /*
-          if (!slide.media && slide.url) {
+          /*if (!slide.media && slide.url) {
             const fileParts = slide.url.split('.');
             const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
             let auxiliarImageFileExtension = 'image/' + fileExtension;
@@ -159,8 +158,8 @@ export class QrEditComponent implements OnInit {
                 _type: auxiliarVideoFileExtension,
                 index: image.index,
               };
-            }*/
-          }
+            }
+          }*/
 
           if (slide.media && slide.media.type.includes('image')) {
             await fileToBase64(slide.media).then((result) => {
