@@ -56,6 +56,7 @@ export class QrEditComponent implements OnInit {
 
   gridArray: Array<any> = [];
   playVideoOnFullscreen = playVideoOnFullscreen;
+  entity: string = null;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -72,11 +73,13 @@ export class QrEditComponent implements OnInit {
   async ngOnInit() {
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     const returnTo = this._Route.snapshot.queryParamMap.get('returnTo');
+    const useSlidesInMemory = Boolean(
+      this._Route.snapshot.queryParamMap.get('useSlidesInMemory')
+    );
     this.flow = this._Route.snapshot.queryParamMap.get('flow') as
       | 'cart'
       | 'checkout';
-
-    console.log(this.flow);
+    this.entity = this._Route.snapshot.paramMap.get('entity');
 
     this.returnTo = returnTo as any;
 
@@ -88,7 +91,7 @@ export class QrEditComponent implements OnInit {
         });
         return;
       }
-      if (this.item.images.length) {
+      if (this.item.images.length && !useSlidesInMemory) {
         this.gridArray = this.item.images
           .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
           .map((image) => {
@@ -122,10 +125,107 @@ export class QrEditComponent implements OnInit {
             }
           });
       }
+
+      if (useSlidesInMemory && this._ItemsService.temporalItemInput.slides) {
+        console.log('los slides', this._ItemsService.temporalItemInput.slides);
+
+        for await (const slide of this._ItemsService.temporalItemInput.slides) {
+          /*
+          if (!slide.media && slide.url) {
+            const fileParts = slide.url.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+            if (
+              slide.url &&
+              !slide.url.includes('http') &&
+              !slide.url.includes('https')
+            ) {
+              slide.url = 'https://' + slide.url;
+            }
+
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              return {
+                _id: image._id,
+                background: image.value,
+                _type: auxiliarImageFileExtension,
+                index: image.index,
+              };
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              return {
+                _id: image._id,
+                background: image.value,
+                _type: auxiliarVideoFileExtension,
+                index: image.index,
+              };
+            }*/
+          }
+
+          if (slide.media && slide.media.type.includes('image')) {
+            await fileToBase64(slide.media).then((result) => {
+              this.gridArray.push({
+                ...slide,
+                background: result,
+                _type: slide.media.type,
+              });
+            });
+          } else if (slide.media && slide.media.type.includes('video')) {
+            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(slide.media)
+            );
+            this.gridArray.push({
+              ...slide,
+              background: fileUrl,
+              _type: slide.media.type,
+            });
+          } else if (!slide.media && slide.type === 'text') {
+            this.gridArray.push({
+              ...slide,
+            });
+          }
+        }
+      }
       return;
     }
 
-    if (!itemId) {
+    if (this.entity === 'item' && !itemId) {
+      if (!this._ItemsService.temporalItemInput) {
+        this._Router.navigate([
+          'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+        ]);
+        return;
+      }
+
+      if (this._ItemsService.temporalItemInput.slides.length) {
+        for await (const slide of this._ItemsService.temporalItemInput.slides) {
+          if (slide.media && slide.media.type.includes('image')) {
+            await fileToBase64(slide.media).then((result) => {
+              this.gridArray.push({
+                ...slide,
+                background: result,
+                _type: slide.media.type,
+              });
+            });
+          } else if (slide.media && slide.media.type.includes('video')) {
+            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(slide.media)
+            );
+            this.gridArray.push({
+              ...slide,
+              background: fileUrl,
+              _type: slide.media.type,
+            });
+          } else if (!slide.media && slide.type === 'text') {
+            this.gridArray.push({
+              ...slide,
+            });
+          }
+        }
+      }
+    }
+
+    if (!itemId && this.entity !== 'item') {
       if (!this._PostsService.post) {
         const storedPost = localStorage.getItem('post');
         if (storedPost) this._PostsService.post = JSON.parse(storedPost);
@@ -172,7 +272,7 @@ export class QrEditComponent implements OnInit {
       }
     }
 
-    if (!this._PostsService.post) {
+    if (!this._PostsService.post && this.entity !== 'item') {
       this._Router.navigate([
         'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
       ]);
@@ -379,14 +479,14 @@ export class QrEditComponent implements OnInit {
       return;
     }
     const slides: Array<SlideInput> = this.gridArray.map(
-      ({ text, title, media, type, index , background}) => {
+      ({ text, title, media, type, index, background }) => {
         const result = {
           text,
           title,
           media,
           type,
           index,
-          background
+          background,
         };
         return result;
       }
@@ -523,8 +623,7 @@ export class QrEditComponent implements OnInit {
       lockUI();
       this._Router.navigate([`admin/create-article/${this.item._id}`]);
     } else {
-      this._PostsService.editingSlide =
-        index;
+      this._PostsService.editingSlide = index;
 
       this._Router.navigate([
         'ecommerce/' +

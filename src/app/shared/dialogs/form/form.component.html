@@ -1,0 +1,21 @@
+<div class="dialog-container" [formGroup]="formGroup">
+  <div mat-dialog-content>
+    <ng-container *ngFor="let field of data.fields">
+      <div class="field-wrapper">
+        <label [for]="field.name">{{ field.label }}</label>
+        <input
+          type="text"
+          [id]="field.name"
+          [formControlName]="field.name"
+          placeholder="Escribe"
+        />
+      </div>
+    </ng-container>
+  </div>
+  <div mat-dialog-actions class="buttons-flex">
+    <button class="cancel" (click)="close()">Cancelar</button>
+    <button class="accept" [mat-dialog-close]="formGroup" cdkFocusInitial>
+      Salvar cambios
+    </button>
+  </div>
+</div>

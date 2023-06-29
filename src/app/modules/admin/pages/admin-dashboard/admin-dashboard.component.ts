@@ -831,6 +831,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async newArticle() {
+    this.router.navigate(['admin/item-creation']);
+    /*
     let dialogRef = this.dialog.open(StepperFormComponent);
     dialogRef
       .afterClosed()
@@ -878,7 +880,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           this.router.navigate([`admin/article-editor/${createItem._id}`]);
         };
         reader.readAsDataURL(images[0].file as File);
-      });
+      });*/
   }
 
   async getHiddenItems() {

@@ -51,6 +51,9 @@ import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.compo
 import { NewSymbolComponent } from './pages/new-symbol/new-symbol.component';
 import { GiftcardDetailsComponent } from './pages/giftcard-details/giftcard-details.component';
 import { SymbolDetailComponent } from './pages/symbol-detail/symbol-detail.component';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
+import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
 
 const routes: Routes = [
   {
@@ -325,6 +328,14 @@ const routes: Routes = [
     AppointmentsModule,
     AdminModule,
     RouterModule.forChild(routes),
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: (createTranslateLoader),
+          deps: [HttpClient]
+      }
+  })
+
   ],
 })
 export class EcommerceModule {}

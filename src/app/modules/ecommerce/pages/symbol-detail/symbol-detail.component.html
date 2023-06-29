@@ -17,9 +17,12 @@
     />
   </header>
 
-  <main *ngIf="genericModelTemplate"
+  <main
+    *ngIf="genericModelTemplate"
     [ngClass]="{
-      justText: !genericModelTemplate?.slides || genericModelTemplate?.slides?.length === 0
+      justText:
+        !genericModelTemplate?.slides ||
+        genericModelTemplate?.slides?.length === 0
     }"
   >
     <ng-container *ngIf="layout === 'ZOOMED-OUT-INFO'">
@@ -147,9 +150,13 @@
     </ng-container>
 
     <ng-container *ngIf="layout === 'ZOOMED-OUT-INFO'">
-      <p class="description"
+      <p
+        class="description"
         [ngStyle]="{
-          height: 'calc((100vh - ' + imageCanvasHeightWhenZoomedOut + 'px) - (53.55px + 25px + 14px + 54px))'
+          maxHeight:
+            'calc((100vh - ' +
+            imageCanvasHeightWhenZoomedOut +
+            'px) - (53.55px + 25px + 14px + 54px))'
         }"
       >
         {{ genericModelTemplate.description }}
@@ -161,14 +168,29 @@
     <div class="left">
       <ng-container [ngSwitch]="entity">
         <div class="price" *ngSwitchCase="'item'">
-          RD$ {{ itemData?.pricing | number : "1.2-2" }}
+          <ng-container *ngIf="entityPresentation !== 'DEMO'">
+            RD$ {{ itemData?.pricing | number : "1.2-2" }}
+          </ng-container>
+
+          <ng-container *ngIf="entityPresentation === 'DEMO'">
+            RD$ 9.99
+          </ng-container>
         </div>
       </ng-container>
     </div>
     <div class="right">
       <ng-container [ngSwitch]="entity">
         <div class="add-to-cart" *ngSwitchCase="'item'" (click)="saveProduct()">
-          {{ !isItemInCart ? "Agrégalo al carrito" : "Quitar del carrito" }}
+          <ng-container *ngIf="entityPresentation !== 'DEMO'">
+            {{
+              !isItemInCart
+                ? itemData?.ctaText || "Agregar al carrito"
+                : "Quitar del carrito"
+            }}
+          </ng-container>
+          <ng-container *ngIf="entityPresentation === 'DEMO'">
+            Agregar al carrito
+          </ng-container>
         </div>
       </ng-container>
     </div>

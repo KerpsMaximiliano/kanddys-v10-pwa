@@ -27,6 +27,8 @@
     "@babel/compat-data": "^7.21.7",
     "@babel/core": "^7.21.8",
     "@mukuve/ngx-forms": "0.0.1",
+    "@ngx-translate/core": "^13.0.0",
+    "@ngx-translate/http-loader": "^6.0.0",
     "@types/css-font-loading-module": "^0.0.7",
     "@types/gapi": "^0.0.41",
     "@types/gapi.auth2": "^0.0.56",

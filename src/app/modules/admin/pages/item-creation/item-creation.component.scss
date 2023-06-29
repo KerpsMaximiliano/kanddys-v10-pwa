@@ -25,10 +25,17 @@
       font-size: 15px;
       margin-left: 11px;
     }
+
+    .options-wrapper {
+      margin-left: auto;
+      display: flex;
+      column-gap: 16px;
+    }
   }
 
   main {
     padding: 18px;
+    padding-bottom: 50px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -59,7 +66,8 @@
 
     .price-wrapper {
       border-radius: 4px;
-
+      overflow: hidden;
+      overflow-x: scroll;
       margin-top: 9px;
       width: 146px;
       box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
@@ -67,13 +75,19 @@
       background-color: white;
     }
 
-    .button-name {
+    .field-text {
       border-radius: 4px;
       background: #fff;
       padding: 13px;
       display: flex;
       flex-direction: column;
       margin-top: 16px;
+
+      &.hover {
+        &:hover {
+          cursor: pointer;
+        }
+      }
 
       label {
         color: #000;
@@ -93,11 +107,30 @@
           color: #7b7b7b;
         }
       }
+
+      h6 {
+        color: #000;
+        font-size: 13px;
+        font-family: InterLight;
+        font-style: italic;
+        font-weight: normal;
+        margin: 0px;
+        margin-bottom: 10px;
+      }
+
+      h4 {
+        color: #7b7b7b;
+        font-size: 17px;
+        font-family: InterBold;
+        font-style: normal;
+        line-height: normal;
+        margin: 0px;
+      }
     }
 
     .optional-stuff {
       margin-top: 52px;
-  
+
       h3 {
         color: #000;
         font-size: 13px;
@@ -106,7 +139,7 @@
         font-weight: normal;
         margin-bottom: 12px;
       }
-  
+
       .row {
         width: 100%;
         display: flex;
@@ -115,18 +148,146 @@
         border-radius: 4px;
         background: #fff;
         margin-top: 12px;
-  
+
         span {
           color: #000;
           font-size: 17px;
           font-family: InterLight;
           font-style: italic;
         }
-  
+
         img:hover {
           cursor: pointer;
         }
       }
     }
+  }
+}
+
+.no-shadows {
+  box-shadow: none !important;
+}
+
+::ng-deep.mat-expansion-panel {
+  box-shadow: unset !important;
+  background-color: #fff !important;
+}
+
+::ng-deep.mat-expansion-panel-header:hover {
+  background-color: #fff !important;
+}
+
+::ng-deep.mat-expansion-panel-header {
+  width: 100%;
+  display: flex !important;
+  justify-content: space-between !important;
+  padding: 14px 18px 13px 18px !important;
+  border-radius: 4px !important;
+  background: #fff;
+
+  span {
+    color: #000;
+    font-size: 17px;
+    font-family: InterRegular;
+    font-style: italic;
+  }
+}
+
+.layout-row {
+  margin-top: 12px;
+}
+
+.layouts-options {
+  display: flex;
+  gap: 10px;
+
+  .image-layout {
+    min-width: 100px;
+    width: 30vw;
+    max-width: 150px;
+  }
+}
+
+.image-layout-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  input {
+    margin-top: 10px;
+  }
+}
+
+.metrics-title {
+  color: #181d17;
+  font-size: 17px;
+  font-family: InterBold;
+  font-weight: 700;
+  line-height: normal;
+  margin: 0px;
+  margin-bottom: 35px;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  padding: 13px;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+  background: #fff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+
+  h4 {
+    color: #7b7b7b;
+    font-size: 17px;
+    font-family: InterBold;
+    font-weight: 600;
+    margin: 0px;
+  }
+
+  p {
+    margin-top: 15px;
+    color: #7b7b7b;
+    font-size: 17px;
+    font-family: InterRegular;
+    font-weight: 400;
+    margin: 0px;
+  }
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  max-width: 500px;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 11px 17px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 17px;
+  button {
+    border: none;
+    background-color: #fff;
+    font-size: 17px;
+    color: #272727;
+    font-family: InterMedium;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  .left {
+    font-family: InterRegular;
+  }
+
+  .right {
+    font-family: InterBold;
   }
 }

@@ -1,0 +1,4 @@
+<app-image-editor
+  [imgUrl]="itemsService.temporalItemInput.slides[itemsService.editingSlide]['background']"
+  (cropped)="onEditSubmit($event)"
+></app-image-editor>

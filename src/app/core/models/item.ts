@@ -97,6 +97,8 @@ export class Item extends Model<Item> {
   amountMerchantCoin:number;
   active?: boolean;
   layout?: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO';
+  ctaText?: string;
+  ctaBehavior?: 'ADD_TO_CART';
 }
 
 export class ItemImage extends Model<ItemImage> {
@@ -194,6 +196,8 @@ export class ItemInput {
   collaboration?: number;
   categories?: string[];
   layout?: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO';
+  ctaText?: string;
+  ctaBehavior?: 'ADD_TO_CART';
 }
 
 export class ItemImageInput {

@@ -7,9 +7,28 @@
 header {
   background-color: #ffffff;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.06);
-  padding: 15px 17px;
+  padding-left: 17px;
+  padding-right: 17px;
+  height: 46px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+
+  div{
+    display:flex;
+    align-items: center;
+  }
+  
+  .more-icon{
+    color:#181D17;
+
+  }
+  .close-icon{
+    color: #C4C5C3;
+    font-size: 24px;
+    margin-right: 6px;
+    margin-top:-3px;
+  }
 
   button {
     border: none;
@@ -31,7 +50,7 @@ header {
 }
 
 main {
-  padding: 16px 20px 0px 20px;
+  padding: 20px;
   flex: 1;
 
   .textarea-wrapper {
@@ -42,6 +61,7 @@ main {
     border-radius: 4px;
     margin-bottom: 0px;
     padding: 14px 12.29px 14px 14px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 
     &.no-shadow {
       box-shadow: none;
@@ -56,7 +76,7 @@ main {
     }
 
     textarea {
-      margin-top: 16px;
+      margin-top: 27px;
       width: 100%;
       height: 188px;
       resize: none;
@@ -82,12 +102,10 @@ main {
   }
 
   .added-slides {
-    margin-top: 23px;
+    margin-top: 9px;
   }
-
   .optional-stuff {
-    margin-top: 52px;
-
+    margin-top: 88px;
     h3 {
       color: #000;
       font-size: 13px;
@@ -101,7 +119,7 @@ main {
       width: 100%;
       display: flex;
       justify-content: space-between;
-      padding: 14px 18px 13px 18px;
+      padding: 14px 16px 13px 18px;
       border-radius: 4px;
       background: #fff;
       margin-top: 12px;
@@ -112,10 +130,12 @@ main {
         font-family: InterRegular;
         font-style: italic;
       }
-
       img:hover {
         cursor: pointer;
       }
+    }
+    .row-mid{
+      margin-top: 9px;
     }
   }
 
@@ -137,7 +157,7 @@ footer {
   max-width: 500px;
   width: 100%;
   background-color: #ffffff;
-  padding: 17px;
+  padding: 11px 17px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -145,6 +165,9 @@ footer {
   button {
     border: none;
     background-color: #fff;
+    font-size: 17px;
+    color:#272727;
+    font-family: InterMedium;
 
     &:hover {
       cursor: pointer;

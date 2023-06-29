@@ -131,6 +131,8 @@ const fullItem = `
     active
   }
   layout
+  ctaText
+  ctaBehavior
   active
 `;
 

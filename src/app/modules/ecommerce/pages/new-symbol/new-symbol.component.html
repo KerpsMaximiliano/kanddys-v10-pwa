@@ -1,13 +1,12 @@
 <div class="container">
   <header>
-    <button (click)="goBack()">
-      <i
-        style="color: #c4c5c3; cursor: pointer; font-size: 1.2rem"
-        class="fas fa-chevron-left"
-      ></i>
-    </button>
-
-    <h3>Nuevo Símbolo de mensaje</h3>
+    <div>
+      <div (click)="goBack()">
+        <mat-icon class="close-icon">close</mat-icon>
+      </div>
+      <h3>{{ "new-symbol.title" | translate }}</h3>
+    </div>
+    <mat-icon class="more-icon">more_horiz</mat-icon>
   </header>
 
   <main>
@@ -20,13 +19,13 @@
             postForm.controls['message'].value.length > 0
         }"
       >
-        <label for="textarea-label" class="textarea-header"
-          >Texto principal y centralizado</label
-        >
+        <label for="textarea-label" class="textarea-header">{{
+          "new-symbol.text-title" | translate
+        }}</label>
 
         <textarea
           formControlName="message"
-          placeholder="Escribe el mensaje de dedicatoria.."
+          [placeholder]="'new-symbol.text-placeholder' | translate"
           cols="30"
           rows="10"
           id="textarea-label"
@@ -105,14 +104,36 @@
         </mat-accordion>
       </div>
 
-      <div class="optional-stuff" *ngIf="postsService.post?.slides?.length === 0">
-        <h3>CHULERIAS OPCIONALES</h3>
+      <div
+        class="optional-stuff"
+        *ngIf="postsService.post?.slides?.length === 0"
+      >
+        <h3>{{'new-symbol.chulerias' | translate}}</h3>
 
-        <div class="row">
-          <span>Slides con fotos y videos</span>
+        <div class="row" *ngIf="postsService.post?.slides?.length === 0">
+          <span>{{ "new-symbol.slides" | translate }}</span>
 
           <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+            alt="add media"
+            class="upload-media"
             (click)="goToMediaUpload()"
+          />
+        </div>
+        <div class="row row-mid">
+          <span>{{ "new-symbol.long-text" | translate }}</span>
+
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+            alt="add media"
+            class="upload-media"
+          />
+        </div>
+        <div class="row row-mid">
+          <span>{{ "new-symbol.long-link-button" | translate }}</span>
+
+          <img
+            (click)="openButtonLinkDialog()"
             src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
             alt="add media"
             class="upload-media"
@@ -136,12 +157,13 @@
       "
     >
       {{
-        !(
+        (!(
           postForm.controls.message.value?.length ||
           postsService.post.slides?.length
         )
-          ? "Mira un Demo"
-          : "Preview de la versión virtual"
+          ? "new-symbol.see-demo"
+          : "new-symbol-preview"
+        ) | translate
       }}
     </button>
     <button
@@ -153,7 +175,7 @@
       style="color: #272727"
       (click)="save()"
     >
-      Guardar
+      {{ "new-symbol.save" | translate }}
     </button>
   </footer>
 </div>

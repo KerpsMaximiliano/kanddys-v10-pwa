@@ -92,7 +92,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   entityId: string;
   fractions: string = '';
   layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
-  postPresentation: 'DEMO' | 'PREVIEW' = null;
+  entityPresentation: 'DEMO' | 'PREVIEW' = null;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = [
     'video/mp4',
@@ -224,14 +224,18 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     const { entity, entityId } = this.routeParams;
     const { mode, redirectTo } = this.queryParams;
 
-    this.postPresentation = mode;
+    this.entityPresentation = mode;
     this.redirectTo = redirectTo;
 
-    await this.applyPostDemoAndPreviewMode(entity);
+    if (
+      this.entityPresentation === 'DEMO' ||
+      this.entityPresentation === 'PREVIEW'
+    ) {
+      return await this.applyDemoAndPreviewMode(entity);
+    }
 
     // if (this.headerService.saleflow?._id)
     //   this.doesModuleDependOnSaleflow = true;
-
     if (validEntities.includes(entity)) {
       if (entity !== 'template') {
         this.entityId = entityId;
@@ -315,10 +319,10 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     this.user = fetchedUser;
   }
 
-  async applyPostDemoAndPreviewMode(entity: string) {
+  async applyDemoAndPreviewMode(entity: string) {
     if (
-      this.postPresentation &&
-      this.postPresentation === 'DEMO' &&
+      this.entityPresentation &&
+      this.entityPresentation === 'DEMO' &&
       entity === 'post'
     ) {
       this.entity = entity;
@@ -347,8 +351,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       this.fractions = '1fr 1fr';
       return;
     } else if (
-      this.postPresentation &&
-      this.postPresentation === 'PREVIEW' &&
+      this.entityPresentation &&
+      this.entityPresentation === 'PREVIEW' &&
       entity === 'post'
     ) {
       this.entity = entity;
@@ -399,6 +403,91 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         type: 'INPUT',
         description: this.postsService.post.message,
         title: this.postsService.post.title,
+        slides: this.slidesInput.map((slide) => ({
+          src: slide.path,
+          type: slide.type as any,
+        })),
+      };
+
+      return;
+    } else if (
+      this.entityPresentation &&
+      this.entityPresentation === 'DEMO' &&
+      entity === 'item'
+    ) {
+      this.entity = entity;
+
+      this.genericModelTemplate = {
+        type: 'INPUT',
+        description: 'Texto mas largo',
+        title: 'Texto principal y centralizado',
+        slides: [
+          {
+            src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/corgi.jpg',
+            type: 'IMAGE',
+          },
+          {
+            src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/kitten.jpg',
+            type: 'IMAGE',
+          },
+        ],
+      };
+
+      this.fractions = '1fr 1fr';
+      return;
+    } else if (
+      this.entityPresentation &&
+      this.entityPresentation === 'PREVIEW' &&
+      entity === 'item'
+    ) {
+      this.entity = entity;
+
+      for await (const slide of this.itemsService.temporalItemInput.slides) {
+        if (slide.media) {
+          if (slide.media.type.includes('image')) {
+            const base64 = await this.fileToBase64(slide.media);
+            this.slidesInput.push({
+              path: base64,
+              type: 'IMAGE',
+            });
+            this.filesStrings.push(base64 as string);
+          } else if (slide.media.type.includes('video')) {
+            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(slide.media)
+            );
+            this.slidesInput.push({
+              path: fileUrl,
+              type: 'VIDEO',
+            });
+            this.filesStrings.push(fileUrl as string);
+          }
+        } else if (slide.url) {
+          this.slidesInput.push({
+            path: slide.url,
+            type: isVideo(slide.url) ? 'VIDEO' : 'IMAGE',
+          });
+          this.filesStrings.push(slide.url);
+        } else if (slide.type === 'text') {
+          this.slidesInput.push({
+            text: slide.text,
+            title: slide.title,
+            type: 'TEXT',
+          });
+        }
+      }
+
+      this.itemData = {
+        pricing: this.itemsService.temporalItemInput.pricing,
+      } as any;
+
+      this.fractions = (this.slidesInput as Array<any>)
+        .map(() => `${'1'}fr`)
+        .join(' ');
+
+      this.genericModelTemplate = {
+        type: 'INPUT',
+        description: this.itemsService.temporalItemInput.description,
+        title: this.itemsService.temporalItemInput.name,
         slides: this.slidesInput.map((slide) => ({
           src: slide.path,
           type: slide.type as any,

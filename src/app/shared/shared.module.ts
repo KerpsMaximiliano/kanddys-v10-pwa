@@ -213,6 +213,12 @@ import { ItemAdminCardComponent } from './components/item-admin-card/item-admin-
 import { ProgressSliderComponent } from './components/progress-slider/progress-slider.component';
 import { ListCardComponent } from './components/list-card/list-card.component';
 import { PostsSlidesEditorComponent } from './components/posts-slides-editor/posts-slides-editor.component';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { CreateButtonLinkComponent } from './dialogs/create-button-link/create-button-link.component';
+import { createTranslateLoader } from '../core/functions/create-translate-loader';
+import { HttpClient } from '@angular/common/http';
+import { FormComponent } from './dialogs/form/form.component';
+import { ItemsSlidesEditorComponent } from './components/items-slides-editor/items-slides-editor.component';
 
 const imports = [
   CommonModule,
@@ -249,6 +255,7 @@ const imports = [
   MatTabsModule,
   MatToolbarModule,
   MatSidenavModule,
+  TranslateModule,
 ];
 const declarations = [
   // Pages
@@ -439,7 +446,10 @@ const declarations = [
   ItemAdminCardComponent,
   ProgressSliderComponent,
   ListCardComponent,
-  PostsSlidesEditorComponent
+  PostsSlidesEditorComponent,
+  CreateButtonLinkComponent,
+  FormComponent,
+  ItemsSlidesEditorComponent
 ];
 
 @NgModule({
