@@ -1,3 +1,4 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -14,6 +15,8 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ToastrService } from 'ngx-toastr';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { TagAsignationComponent } from '../../dialogs/tag-asignation/tag-asignation.component';
+import { truncateString } from 'src/app/core/helpers/strings.helpers';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-item-admin-card',
@@ -28,6 +31,8 @@ export class ItemAdminCardComponent implements OnInit {
   @Output() changeStatusAction = new EventEmitter();
   URI: string = environment.uri;
 
+  truncateString = truncateString;
+
   constructor(
     private itemsService: ItemsService,
     private tagsService: TagsService,
@@ -37,7 +42,9 @@ export class ItemAdminCardComponent implements OnInit {
     private dialogService: DialogService,
     private merchantsService: MerchantsService,
     private _ToastrService: ToastrService,
-    private router: Router
+    private router: Router,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {}
@@ -140,8 +147,7 @@ export class ItemAdminCardComponent implements OnInit {
 
                 this.router.navigate(
                   [
-                    `/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/` +
-                      this.item._id,
+                    `/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`
                   ],
                   {
                     queryParams: {
@@ -158,6 +164,19 @@ export class ItemAdminCardComponent implements OnInit {
                   title: '',
                   url: link + '?mode=saleflow',
                 });
+              },
+            },
+            {
+              title: 'Copiar el Link',
+              callback: () => {
+                this.clipboard.copy(`${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`);
+                this.snackBar.open(
+                  'Enlace copiado en el portapapeles',
+                  '',
+                  {
+                    duration: 2000,
+                  }
+                );
               },
             },
             {

@@ -1,9 +1,9 @@
 <app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
   <div class="container">
     <header class="header" *ngIf="typeOfView === 'SHOW_LISTS'">
-      <button mat-icon-button style="margin-right: 25px">
+      <!-- <button mat-icon-button style="margin-right: 25px">
         <mat-icon [ngStyle]="{ color: 'white' }">search</mat-icon>
-      </button>
+      </button> -->
       <button mat-icon-button style="margin-right: 25px" (click)="newArticle()">
         <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
         <div
@@ -30,11 +30,11 @@
           font-family: InterBold;
           margin-left: auto;
         "
+        (click)="openNavigation = true"
       >
         Lo que vendo 🏷️
         <mat-icon
           style="color: #6fcf97; margin-left: 8px"
-          (click)="openNavigation = true"
           >menu</mat-icon
         >
       </button>
@@ -53,9 +53,9 @@
       </div>
 
       <div class="options">
-        <button mat-icon-button style="margin-right: 25px">
+        <!-- <button mat-icon-button style="margin-right: 25px">
           <mat-icon [ngStyle]="{ color: 'black' }">search</mat-icon>
-        </button>
+        </button> -->
         <button
           mat-icon-button
           style="margin-right: 25px"
@@ -67,6 +67,7 @@
           [src]="environment + '/dots-black.svg'"
           alt="more options"
           (click)="headerSettings()"
+          style="cursor: pointer;"
         />
       </div>
     </header>
@@ -76,11 +77,17 @@
       [ngClass]="{
         lessPadding: detailedList === 'NOT_SOLD'
       }"
+      [ngStyle]="{
+        display: detailedList === 'NOT_SOLD' ? '0px' : '20px'
+      }"
       *ngIf="
-        hiddenItems?.length > 0 ||
-        soldItems?.length > 0 ||
-        notSoldItems?.length > 0 ||
-        allItemsCopy?.length > 0
+        (
+          hiddenItems?.length > 0 ||
+          soldItems?.length > 0 ||
+          notSoldItems?.length > 0 ||
+          allItemsCopy?.length > 0
+        ) &&
+        filters.length > 0
       "
     >
       <swiper [config]="swiperConfig" class="category-swiper">
@@ -318,7 +325,16 @@
       </div>
     </ng-container>
 
-    <div class="sticky-bar" (click)="openDatePicker()">
+    <div 
+      class="sticky-bar"
+      (click)="openDatePicker()" 
+      *ngIf="
+        hiddenItems?.length > 0 ||
+        soldItems?.length > 0 ||
+        notSoldItems?.length > 0 ||
+        allItemsCopy?.length > 0
+      "
+    >
       <p>{{ dateString }}</p>
       <img [src]="environment + '/dots-black.svg'" alt="" />
     </div>

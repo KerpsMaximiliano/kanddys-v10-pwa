@@ -10,7 +10,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -267,10 +267,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   qrLink: string = '';
 
+  view: 'sold' | 'notSold' | 'hidden' | 'all' | 'default' = 'default';
+
   constructor(
     public _MerchantsService: MerchantsService,
     public _SaleflowService: SaleFlowService,
     public router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private tagsService: TagsService,
     private ordersService: OrderService,
@@ -280,11 +283,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private queryParameterService: QueryparametersService
+    private queryParameterService: QueryparametersService,
+    private clipboard: Clipboard
   ) {}
 
   async ngOnInit() {
     //await this.getItemsBoughtByMe();
+
+    const view = this.route.snapshot.queryParamMap.get('view');
+
+    if (view) this.view = view as 'sold' | 'notSold' | 'hidden' | 'all' | 'default';
 
     if (this._SaleflowService.saleflowData) {
       await this.inicializeItems(true, false, true, true);
@@ -306,6 +314,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         }
       },
     });
+
+    
   }
 
   async getItemsBoughtByMe() {
@@ -815,6 +825,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                   title: '',
                   url: link,
                 });
+              },
+            },
+            {
+              title: 'Copiar el Link de compradores',
+              callback: () => {
+                this.clipboard.copy(`${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`);
+                this.snackBar.open(
+                  'Enlace copiado en el portapapeles',
+                  '',
+                  {
+                    duration: 2000,
+                  }
+                );
               },
             },
             {
