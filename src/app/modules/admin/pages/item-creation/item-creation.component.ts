@@ -367,9 +367,9 @@ export class ItemCreationComponent implements OnInit {
 
         this.itemsService.editingSlide = this.itemSlides.length - 1;
 
-        if (this.itemSlides.length === 1) {
+        if (this.itemSlides.length === 1 && fileList.length === 1) {
           this.router.navigate(['admin/items-slides-editor']);
-        } else {
+        } else if (fileList.length > 1 && i === fileList.length - 1) {
           if (!this.item)
             this.router.navigate(['admin/slides-editor'], {
               queryParams: {
@@ -379,6 +379,7 @@ export class ItemCreationComponent implements OnInit {
           else {
             this.router.navigate(['admin/slides-editor/' + this.item._id], {
               queryParams: {
+                entity: 'item',
                 useSlidesInMemory: true,
               },
             });

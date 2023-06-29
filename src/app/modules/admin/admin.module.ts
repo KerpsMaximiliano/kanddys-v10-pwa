@@ -207,6 +207,10 @@ const routes: Routes = [
         component: QrEditComponent,
       },
       {
+        path: 'slides-editor',
+        component: QrEditComponent,
+      },
+      {
         path: 'dashboard',
         component: AdminDashboardComponent,
       },

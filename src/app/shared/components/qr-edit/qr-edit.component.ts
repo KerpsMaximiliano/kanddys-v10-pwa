@@ -79,10 +79,11 @@ export class QrEditComponent implements OnInit {
     this.flow = this._Route.snapshot.queryParamMap.get('flow') as
       | 'cart'
       | 'checkout';
-    this.entity = this._Route.snapshot.paramMap.get('entity');
+    this.entity = this._Route.snapshot.queryParamMap.get('entity');
 
     this.returnTo = returnTo as any;
 
+    //Items already on the database
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (this.item?.merchant._id !== this._MerchantsService.merchantData._id) {
@@ -188,10 +189,11 @@ export class QrEditComponent implements OnInit {
       return;
     }
 
+    //Items that are being created, not in the database, yet
     if (this.entity === 'item' && !itemId) {
       if (!this._ItemsService.temporalItemInput) {
         this._Router.navigate([
-          'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+          'ecommerce/' + this._MerchantsService.merchantData.slug + '/store',
         ]);
         return;
       }
@@ -224,6 +226,7 @@ export class QrEditComponent implements OnInit {
       }
     }
 
+    //For posts
     if (!itemId && this.entity !== 'item') {
       if (!this._PostsService.post) {
         const storedPost = localStorage.getItem('post');
@@ -231,7 +234,7 @@ export class QrEditComponent implements OnInit {
       }
       if (!this._PostsService.post) {
         this._Router.navigate([
-          'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+          'ecommerce/' + this.headerService.saleflow?.merchant.slug + '/store',
         ]);
         return;
       }
@@ -273,7 +276,7 @@ export class QrEditComponent implements OnInit {
 
     if (!this._PostsService.post && this.entity !== 'item') {
       this._Router.navigate([
-        'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+        'ecommerce/' + this.headerService.saleflow?.merchant.slug + '/store',
       ]);
     }
 
@@ -410,6 +413,62 @@ export class QrEditComponent implements OnInit {
           }
         };
         reader.readAsDataURL(file);
+      } else if (this.entity === 'item' && !this.item) {
+        if (
+          ![
+            ...this.imageFiles,
+            ...this.videoFiles,
+            ...this.audioFiles,
+          ].includes(file.type)
+        )
+          return;
+        const reader = new FileReader();
+
+        if (file.type.includes('video')) {
+          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+            URL.createObjectURL(file)
+          );
+
+          const content: SlideInput = {
+            text: 'test',
+            title: 'test',
+            media: file,
+            type: 'poster',
+            index: this.gridArray.length,
+          };
+          content['background'] = fileUrl;
+          content['_type'] = 'video';
+
+          this.gridArray.push(content);
+          this._ItemsService.temporalItemInput.slides.push(content);
+        } else {
+          reader.readAsDataURL(file);
+
+          reader.onload = async (e) => {
+            let result = reader.result;
+            const content: SlideInput = {
+              text: 'test',
+              title: 'test',
+              media: file,
+              type: 'poster',
+              index: this.gridArray.length,
+            };
+            content['background'] = result;
+            content['_type'] = file.type;
+            this.gridArray.push(content);
+            this._ItemsService.temporalItemInput.slides.push(content);
+            this._ItemsService.editingSlide =
+              this._ItemsService.temporalItemInput.slides.length - 1;
+
+            if (this.item) {
+              this._Router.navigate([
+                'admin/items-slides-editor' + this.item._id,
+              ]);
+            } else {
+              this._Router.navigate(['admin/items-slides-editor']);
+            }
+          };
+        }
       } else {
         if (
           ![
@@ -460,13 +519,11 @@ export class QrEditComponent implements OnInit {
 
             this._Router.navigate([
               'ecommerce/' +
-                this.headerService.saleflow.merchant.slug +
+                this.headerService.saleflow?.merchant.slug +
                 '/post-slide-editor',
             ]);
           };
         }
-
-        console.log('Archivo droppeado en post');
       }
       index++;
     }
@@ -491,12 +548,19 @@ export class QrEditComponent implements OnInit {
       }
     );
 
+    //Items that are being created, not in the database
+    if (this.entity !== 'item' && !this.item) {
+      this._ItemsService.temporalItemInput.slides = slides;
+      this._Router.navigate(['admin/item-creation']);
+      return;
+    }
+
     this._PostsService.post.slides = slides;
     this._PostsService.editingSlide = null;
 
     if (this.returnTo === 'checkout') {
       this._Router.navigate(
-        ['ecommerce', this.headerService.saleflow.merchant.slug, 'checkout'],
+        ['ecommerce', this.headerService.saleflow?.merchant.slug, 'checkout'],
         {
           queryParams: {
             startOnDialogFlow: true,
@@ -509,14 +573,14 @@ export class QrEditComponent implements OnInit {
     } else if (this.returnTo === 'post-edition') {
       this._Router.navigate([
         'ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
+          this.headerService.saleflow?.merchant.slug +
           '/post-edition',
       ]);
       return;
     }
 
     this._Router.navigate(
-      ['ecommerce', this.headerService.saleflow.merchant.slug, 'new-symbol'],
+      ['ecommerce', this.headerService.saleflow?.merchant.slug, 'new-symbol'],
       {
         queryParams: {
           flow: this.flow,
@@ -626,7 +690,7 @@ export class QrEditComponent implements OnInit {
 
       this._Router.navigate([
         'ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
+          this.headerService.saleflow?.merchant.slug +
           '/post-slide-editor',
       ]);
     }
