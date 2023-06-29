@@ -439,9 +439,6 @@ export class OrderDetailComponent implements OnInit {
       reservation: reservation ? reservation : null,
     };
 
-    console.log(reservation);
-    console.log(this.deliveryImages);
-
     let address = '';
     const location = this.order.items[0].deliveryLocation;
     if (location) {
