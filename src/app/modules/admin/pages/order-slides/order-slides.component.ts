@@ -110,6 +110,7 @@ export class OrderSlidesComponent implements OnInit {
     image?: string;
     deliveryZone?: DeliveryZone;
     reservation?: Reservation;
+    statusList?: OrderStatusDeliveryType[];
     order: string;
   }> = [];
 
@@ -621,6 +622,8 @@ export class OrderSlidesComponent implements OnInit {
               ? order.deliveryData?.image
               : null;
 
+            console.log(this.deliveryImages);
+
             let deliveryZone: DeliveryZone;
             let reservation: Reservation;
             if (order.deliveryZone) {
@@ -975,6 +978,19 @@ export class OrderSlidesComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  getStatusList(order: ExtendedItemOrder) {
+    const statusList: OrderStatusDeliveryType[] = ['in progress', 'delivered'];
+
+    if (order?.items[0]?.deliveryLocation) {
+      if (order?.items[0]?.deliveryLocation?.street) {
+        statusList.splice(1, 0, 'pending');
+        statusList.splice(2, 0, 'shipped');
+      } else statusList.splice(1, 0, 'pickup');
+    }
+
+    return statusList;
   }
 
   private getPaymentMethodName(paymentMethod: string): string {

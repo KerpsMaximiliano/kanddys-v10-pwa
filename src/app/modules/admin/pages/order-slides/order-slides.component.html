@@ -42,8 +42,7 @@
                 <div style="display: flex; align-items: center">
                   <img
                     class="user-pfp"
-                    *ngIf="deliveryOrder?.user?.image"
-                    [src]="deliveryOrder?.user?.image"
+                    [src]="deliveryOrder?.user?.image ? deliveryOrder?.user?.image : 'https://www.gravatar.com/avatar/0?s=250&d=mp'"
                     alt="Imagen del usuario"
                   />
                   <div
@@ -56,7 +55,8 @@
                     {{
                       deliveryOrder?.user?.name ||
                         deliveryOrder?.user?.phone ||
-                        deliveryOrder?.user?.email
+                        deliveryOrder?.user?.email ||
+                        "Factura sin usuario"
                     }}
                   </div>
                   <mat-icon>keyboard_arrow_right</mat-icon>
@@ -522,20 +522,22 @@
                 )
               }}
             </button>
-            <ng-container *ngFor="let status of statusList">
-              <button
-                *ngIf="
-                  status !== ordersToConfirm[activeIndex].loadedDeliveryStatus
-                "
-                class="chip"
-                [ngClass]="{
-                  selected:
-                    ordersToConfirm[activeIndex].orderStatusDelivery === status
-                }"
-                (click)="changeOrderStatus(status)"
-              >
-                {{ orderDeliveryStatus(status) }}
-              </button>
+            <ng-container *ngIf="isPopulated(ordersToConfirm[activeIndex])">
+              <ng-container *ngFor="let status of getStatusList(ordersToConfirm[activeIndex])">
+                <button
+                  *ngIf="
+                    status !== ordersToConfirm[activeIndex].loadedDeliveryStatus
+                  "
+                  class="chip"
+                  [ngClass]="{
+                    selected:
+                      ordersToConfirm[activeIndex].orderStatusDelivery === status
+                  }"
+                  (click)="changeOrderStatus(status)"
+                >
+                  {{ orderDeliveryStatus(status) }}
+                </button>
+              </ng-container>
             </ng-container>
           </div>
         </div>
