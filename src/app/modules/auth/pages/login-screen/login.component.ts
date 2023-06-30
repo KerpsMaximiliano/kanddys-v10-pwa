@@ -107,6 +107,7 @@ export class LoginComponent implements OnInit {
   ];
   PhoneNumberFormat = PhoneNumberFormat;
   paymentWithAzul: boolean = false;
+  recoverPasswordMode: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -131,6 +132,9 @@ export class LoginComponent implements OnInit {
     this.itemId = this.route.snapshot.queryParamMap.get('itemId');
     this.action = this.route.snapshot.queryParamMap.get('action');
     this.redirectionRoute = this.route.snapshot.queryParamMap.get('redirect');
+    this.recoverPasswordMode = Boolean(
+      this.route.snapshot.queryParamMap.get('recoverPassword')
+    );
     this.paymentWithAzul = Boolean(
       this.route.snapshot.queryParamMap.get('paymentWithAzul')
     );
@@ -161,6 +165,9 @@ export class LoginComponent implements OnInit {
     //     }
     //   }
     // }
+
+    if (this.recoverPasswordMode) return;
+
     this.getNumber();
     const phone = this.route.snapshot.queryParamMap.get('phone');
     const SaleFlow = this.route.snapshot.queryParamMap.get('saleflow');
@@ -977,6 +984,28 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  async updateMyPassword() {
+    try {
+      await this.authService.updateMe({
+        password: this.password.value,
+      });
+
+      this.toastr.info('Contraseña actualizada', null, {
+        timeOut: 3000,
+      });
+
+      this.router.navigate(['admin/dashboard']);
+    } catch (error) {
+      this.toastr.error(
+        'Ocurrió un error al intentar actualizar la contraseña',
+        null,
+        {
+          timeOut: 1500,
+        }
+      );
+    }
+  }
+
   async getDefaultMerchantAndSaleflows(user: User): Promise<{
     merchantDefault: Merchant;
     saleflowDefault: SaleFlow;
@@ -1116,7 +1145,7 @@ export class LoginComponent implements OnInit {
           image: this.image,
           platform: 'bank-transfer',
           transactionCode: '',
-          subtotal: this.paymentAmount
+          subtotal: this.paymentAmount,
         },
         order.user._id,
         'bank-transfer',
@@ -1150,6 +1179,24 @@ export class LoginComponent implements OnInit {
     this.router.navigate([`ecommerce/order-detail/${order._id}`], {
       queryParams: { notify: 'true' },
     });
+  }
+
+  async recoverPassword() {
+    await this.authService.generateMagicLink(
+      this.phoneNumber.value.e164Number.split('+')[1],
+      'auth/login',
+      null,
+      'PasswordRecovery',
+      {
+        recoverPassword: 'true',
+      }
+    );
+
+    this.toastr.info(
+      'Se ha enviado un link a tu telefono, úsalo para recuperar tu contraseña',
+      null,
+      { timeOut: 8000 }
+    );
   }
 
   back() {

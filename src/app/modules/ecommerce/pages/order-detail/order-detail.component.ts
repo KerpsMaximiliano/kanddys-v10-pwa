@@ -235,7 +235,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
-    this.order = (await this.orderService.order(orderId))?.order;
+    this.order = (await this.orderService.order(orderId, false))?.order;
 
     this.buildStatusList();
 
@@ -438,9 +438,6 @@ export class OrderDetailComponent implements OnInit {
       deliveryZone: deliveryZone ? deliveryZone : null,
       reservation: reservation ? reservation : null,
     };
-
-    console.log(reservation);
-    console.log(this.deliveryImages);
 
     let address = '';
     const location = this.order.items[0].deliveryLocation;

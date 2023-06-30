@@ -5,7 +5,7 @@
         <h2 class="card-title">
           {{ item.name ? item.name : "Sin nombre..." }}
         </h2>
-        <p class="card-description">{{ item.description }}</p>
+        <p class="card-description" *ngIf="item?.description">{{ truncateString(item.description, 60) }}</p>
       </div>
       <div class="card-r-side">
         <div

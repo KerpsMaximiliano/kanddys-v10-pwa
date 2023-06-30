@@ -23,7 +23,7 @@
             <div class="flex">
                 <p>{{ order?.items?.length }} Artículos en tu factura</p>
                 <a
-                    [routerLink]="['../../order-detail/', order._id]"
+                    [routerLink]="['../../order-detail/', order?._id]"
                     [queryParams]="{
                         notify: true
                     }"
