@@ -427,6 +427,14 @@ export class CartComponent implements OnInit {
         });
 
         this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
+
+        Object.keys(itemsIdsDeleted).forEach((itemId) => {
+          if (itemsIdsDeleted[itemId]) {
+            delete this.webformsByItem[itemId]; 
+          }
+        });
+
+        this.areItemsQuestionsAnswered();
       },
     });
   }
@@ -689,9 +697,14 @@ export class CartComponent implements OnInit {
           '/receiver-form',
       ]);
     } else {
-      this.router.navigate([
-        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-address',
-      ], { queryParams: { flow: 'unAnsweredQuestions' } });
+      this.router.navigate(
+        [
+          '/ecommerce/' +
+            this.headerService.saleflow.merchant.slug +
+            '/new-address',
+        ],
+        { queryParams: { flow: 'unAnsweredQuestions' } }
+      );
     }
   }
 

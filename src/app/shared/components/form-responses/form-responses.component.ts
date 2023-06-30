@@ -308,12 +308,12 @@ export class FormResponsesComponent implements OnInit {
     if (this.currentView === 'FORM_SUBMISSION_RESPONSES') {
       this.currentView = 'FORM_SUBMISSIONS' as any;
       this.selectedFormSubmission = null;
-    }
-
-    if (this.currentView === 'QUESTION_RESPONSES') {
+    }else if (this.currentView === 'QUESTION_RESPONSES') {
       this.currentView = 'QUESTIONS' as any;
       this.responsesForSelectedQuestion = [];
       this.selectedQuestion = null;
+    } else {
+      this.router.navigate(['admin/article-editor/' + this.item._id])
     }
   }
 
