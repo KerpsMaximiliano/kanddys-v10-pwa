@@ -11,6 +11,7 @@ import {
   formatID,
   formatPhoneNumber,
   isVideo,
+  truncateString,
 } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Contact } from 'src/app/core/models/contact';
@@ -75,6 +76,7 @@ export class OrderSlidesComponent implements OnInit {
 
   orderDeliveryStatus = this.orderService.orderDeliveryStatus;
   formatId = formatID;
+  truncateString = truncateString;
 
   redirectTo: string = null;
 
@@ -108,6 +110,7 @@ export class OrderSlidesComponent implements OnInit {
     image?: string;
     deliveryZone?: DeliveryZone;
     reservation?: Reservation;
+    statusList?: OrderStatusDeliveryType[];
     order: string;
   }> = [];
 
@@ -619,6 +622,8 @@ export class OrderSlidesComponent implements OnInit {
               ? order.deliveryData?.image
               : null;
 
+            console.log(this.deliveryImages);
+
             let deliveryZone: DeliveryZone;
             let reservation: Reservation;
             if (order.deliveryZone) {
@@ -634,43 +639,39 @@ export class OrderSlidesComponent implements OnInit {
               );
               this.deliveryImages[i].reservation = reservation;
             }
-            console.log(order.ocr);
-            if (!order.ocr) {
-              const result = await this.paymentLogService.paymentLogsByOrder({
-                findBy: {
-                  order: order._id,
-                },
-              });
 
-              if (
-                result &&
-                result.length > 0 &&
-                result[0].paymentMethod === 'azul'
-              ) {
-                order.payedWithAzul = true;
-                order.paymentType = 'azul';
-              }
+            const paymentLog = await this.paymentLogService.paymentLogsByOrder({
+              findBy: {
+                order: order._id,
+              },
+            });
+
+            if (paymentLog && paymentLog.length > 0 && paymentLog[0].paymentMethod === 'azul') {
+              order.payedWithAzul = true;
+              order.paymentType = 'azul';
             } else {
               order.paymentType =
-                {
-                  'bank-transfer': 'transferencia bancaria',
-                  azul: 'tarjeta: xx.6547',
-                }[order.ocr.platform] || 'Desconocido';
+              {
+                'bank-transfer': paymentLog && paymentLog.length > 0 ? this.getPaymentMethodName(paymentLog[0].paymentMethod) : null,
+                azul: 'tarjeta: xx.6547',
+              }[order.ocr.platform] || 'Desconocido';
             }
+
             order.tagsData = this.userTags.filter((tag) =>
               order.tags.includes(tag._id)
             );
             console.log(order.tagsData);
             order.benefits = await this.orderService.orderBenefits(order._id);
-            const userContact = this.getUserContact(order.user._id);
+            const userContact = order?.user ? this.getUserContact(order?.user?._id) : null;
             if (
+              order?.user &&
               !userContact &&
-              !this.usersWithoutContact.includes(order.user._id)
+              !this.usersWithoutContact.includes(order?.user?._id)
             ) {
               const contact = (
                 await this.contactService.contacts({
                   findBy: {
-                    user: order.user._id,
+                    user: order?.user?._id,
                   },
                   options: {
                     limit: 1,
@@ -680,7 +681,7 @@ export class OrderSlidesComponent implements OnInit {
               )[0];
               if (contact) {
                 this.usersContact.push(contact);
-              } else this.usersWithoutContact.push(order.user._id);
+              } else this.usersWithoutContact.push(order?.user?._id);
             }
             this.getAnswersForEachItem(order);
             console.log(`Posición ${i} reemplazada`);
@@ -890,7 +891,7 @@ export class OrderSlidesComponent implements OnInit {
 
   orderHasDelivery(deliveryZone: DeliveryZone, order: ItemOrder) {
     if (deliveryZone) return true;
-    if (order.items[0]?.deliveryLocation?.street) return true;
+    if (order.items[0]?.deliveryLocation) return true;
 
     return false;
   }
@@ -977,5 +978,35 @@ export class OrderSlidesComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  getStatusList(order: ExtendedItemOrder) {
+    const statusList: OrderStatusDeliveryType[] = ['in progress', 'delivered'];
+
+    if (order?.items[0]?.deliveryLocation) {
+      if (order?.items[0]?.deliveryLocation?.street) {
+        statusList.splice(1, 0, 'pending');
+        statusList.splice(2, 0, 'shipped');
+      } else statusList.splice(1, 0, 'pickup');
+    }
+
+    return statusList;
+  }
+
+  private getPaymentMethodName(paymentMethod: string): string {
+    switch (paymentMethod) {
+      case 'azul':
+        return 'Azul';
+      case 'stripe':
+        return 'Tarjeta de crédito';
+      case 'paypal':
+        return 'PayPal';
+      case 'cash':
+        return 'Efectivo';
+      case 'bank-transfer':
+        return 'Transferencia';
+      default:
+        return '';
+    }
   }
 }

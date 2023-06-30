@@ -42,8 +42,7 @@
                 <div style="display: flex; align-items: center">
                   <img
                     class="user-pfp"
-                    *ngIf="deliveryOrder.user.image"
-                    [src]="deliveryOrder.user.image"
+                    [src]="deliveryOrder?.user?.image ? deliveryOrder?.user?.image : 'https://www.gravatar.com/avatar/0?s=250&d=mp'"
                     alt="Imagen del usuario"
                   />
                   <div
@@ -54,9 +53,10 @@
                     "
                   >
                     {{
-                      deliveryOrder.user.name ||
-                        deliveryOrder.user.phone ||
-                        deliveryOrder.user.email
+                      deliveryOrder?.user?.name ||
+                        deliveryOrder?.user?.phone ||
+                        deliveryOrder?.user?.email ||
+                        "Factura sin usuario"
                     }}
                   </div>
                   <mat-icon>keyboard_arrow_right</mat-icon>
@@ -87,14 +87,14 @@
                     <button class="btn">
                       <div
                         class="image"
-                        *ngIf="!urlIsVideo(item.item.images[0].value)"
+                        *ngIf="!urlIsVideo(item?.item?.images[0]?.value)"
                         (click)="
-                          item.item.images?.length &&
-                            openImageModal(item.item.images[0].value)
+                          item?.item?.images?.length &&
+                            openImageModal(item?.item?.images[0]?.value)
                         "
                         [ngStyle]="{
-                          backgroundImage: item.item.images?.length
-                            ? 'url(' + item.item.images[0].value + ')'
+                          backgroundImage: item?.item?.images?.length
+                            ? 'url(' + item?.item?.images[0]?.value + ')'
                             : '/assets/images/noimage.png',
                           backgroundRepeat: 'no-repeat',
                           backgroundPosition: 'center',
@@ -103,7 +103,7 @@
                       ></div>
                       <div
                         class="video-wrapper videoThumbnail"
-                        *ngIf="urlIsVideo(item.item.images[0].value)"
+                        *ngIf="urlIsVideo(item?.item?.images[0]?.value)"
                       >
                         <img
                           src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
@@ -130,8 +130,8 @@
                           ${{ deliveryOrder.subtotals[i].amount | number }}
                         </p>
                       </div>
-                      <p class="grey">
-                        {{ item.item.description }}
+                      <p class="grey" *ngIf="item?.item?.description">
+                        {{ truncateString(item.item.description, 60) }}
                       </p>
                     </div>
                     <!-- <div class="question">
@@ -336,7 +336,7 @@
                     *ngIf="deliveryOrder.items[0].deliveryLocation"
                   >
                     <p class="label">¿Donde entregaremos?</p>
-                    <p class="answer capitalize">
+                    <p class="answer capitalize" *ngIf="deliveryOrder?.items[0]?.deliveryLocation?.street">
                       {{
                         deliveryOrder?.items[0]?.deliveryLocation?.houseNumber
                           ? "#" +
@@ -354,6 +354,10 @@
                           : ""
                       }}
                       {{ deliveryOrder?.items[0]?.deliveryLocation?.city }},
+                      República Dominicana
+                    </p>
+                    <p class="answer capitalize" *ngIf="!deliveryOrder?.items[0]?.deliveryLocation?.street">
+                      {{ deliveryOrder?.items[0]?.deliveryLocation?.nickName }},
                       República Dominicana
                     </p>
                   </div>
@@ -458,6 +462,16 @@
               </div>
             </div>
           </ng-container>
+          <ng-container *ngIf="!isPopulated(deliveryOrder)">
+            <h2
+              style="
+                text-align: center;
+                margin-top: 2em;
+              "
+            >
+              Cargando...
+            </h2>
+          </ng-container>
         </div>
       </swiper>
 
@@ -508,20 +522,22 @@
                 )
               }}
             </button>
-            <ng-container *ngFor="let status of statusList">
-              <button
-                *ngIf="
-                  status !== ordersToConfirm[activeIndex].loadedDeliveryStatus
-                "
-                class="chip"
-                [ngClass]="{
-                  selected:
-                    ordersToConfirm[activeIndex].orderStatusDelivery === status
-                }"
-                (click)="changeOrderStatus(status)"
-              >
-                {{ orderDeliveryStatus(status) }}
-              </button>
+            <ng-container *ngIf="isPopulated(ordersToConfirm[activeIndex])">
+              <ng-container *ngFor="let status of getStatusList(ordersToConfirm[activeIndex])">
+                <button
+                  *ngIf="
+                    status !== ordersToConfirm[activeIndex].loadedDeliveryStatus
+                  "
+                  class="chip"
+                  [ngClass]="{
+                    selected:
+                      ordersToConfirm[activeIndex].orderStatusDelivery === status
+                  }"
+                  (click)="changeOrderStatus(status)"
+                >
+                  {{ orderDeliveryStatus(status) }}
+                </button>
+              </ng-container>
             </ng-container>
           </div>
         </div>
