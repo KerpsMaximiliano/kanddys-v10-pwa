@@ -17,6 +17,7 @@ import { TagsService } from 'src/app/core/services/tags.service';
 import { TagAsignationComponent } from '../../dialogs/tag-asignation/tag-asignation.component';
 import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-item-admin-card',
@@ -44,6 +45,7 @@ export class ItemAdminCardComponent implements OnInit {
     private _ToastrService: ToastrService,
     private router: Router,
     private clipboard: Clipboard,
+    private headerService: HeaderService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -145,9 +147,12 @@ export class ItemAdminCardComponent implements OnInit {
                 this.itemsService.itemDesc = this.item.description;
                 this.itemsService.itemPrice = this.item.pricing;
 
+                this.headerService.flowRoute = this.router.url;
+                localStorage.setItem('flowRoute', this.router.url);
+
                 this.router.navigate(
                   [
-                    `/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`
+                    `/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}`,
                   ],
                   {
                     queryParams: {
@@ -169,14 +174,12 @@ export class ItemAdminCardComponent implements OnInit {
             {
               title: 'Copiar el Link',
               callback: () => {
-                this.clipboard.copy(`${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`);
-                this.snackBar.open(
-                  'Enlace copiado en el portapapeles',
-                  '',
-                  {
-                    duration: 2000,
-                  }
+                this.clipboard.copy(
+                  `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`
                 );
+                this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                  duration: 2000,
+                });
               },
             },
             {
