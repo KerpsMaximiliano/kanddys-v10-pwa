@@ -126,7 +126,18 @@ export class ItemAdminCardComponent implements OnInit {
                             this.merchantsService.merchantData._id
                           );
 
-                        this.router.navigate(['/admin/dashboard']);
+                        if (this.router.url === '/admin/dashboard') {
+                          this.router.routeReuseStrategy.shouldReuseRoute =
+                            () => false;
+                          const currentUrl = this.router.url;
+                          this.router
+                            .navigateByUrl('/', { skipLocationChange: true })
+                            .then(() => {
+                              this.router.navigate([currentUrl]);
+                            });
+                        } else {
+                          this.router.navigate(['/admin/dashboard']);
+                        }
                       }
                     },
                     btnBackgroundColor: '#272727',
