@@ -44,13 +44,27 @@
               />
             </li>
 
-            <li routerLinkActive="active" *ngIf="headerService.user">
+            <!-- <li routerLinkActive="active" *ngIf="headerService.user">
               <a
                 mat-button
                 [routerLink]="['/admin/reportings']"
                 style="padding: 0px"
               >
                 Control & Beneficios 🎛️
+              </a>
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
+                class="icon"
+              />
+            </li> -->
+
+            <li routerLinkActive="active" *ngIf="headerService.user">
+              <a
+                mat-button
+                [routerLink]="['/admin/order-slides']"
+                style="padding: 0px"
+              >
+                Progresos de facturas ⏩
               </a>
               <img
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
