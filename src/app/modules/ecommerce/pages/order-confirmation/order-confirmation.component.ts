@@ -88,7 +88,7 @@ export class OrderConfirmationComponent implements OnInit {
 
   private async getOrder(orderId: string) {
     try {
-      const order = await this.orderService.order(orderId);
+      const order = await this.orderService.order(orderId, false);
       if (order) this.order = order?.order;
     } catch (error) {
       console.log(error);

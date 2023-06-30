@@ -10,7 +10,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -169,6 +169,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                     },
                     this._SaleflowService.saleflowData._id
                   );
+
+                  this._SaleflowService.saleflowData.items.push({
+                    item: createItem,
+                    customizer: null,
+                    index: null,
+                  } as any);
+
                   this.snackBar.open(
                     'Producto creado satisfactoriamente!',
                     '',
@@ -267,10 +274,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   qrLink: string = '';
 
+  view: 'sold' | 'notSold' | 'hidden' | 'all' | 'default' = 'default';
+  showItems: string = null;
+
   constructor(
     public _MerchantsService: MerchantsService,
     public _SaleflowService: SaleFlowService,
     public router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private tagsService: TagsService,
     private ordersService: OrderService,
@@ -280,11 +291,18 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private queryParameterService: QueryparametersService
+    private queryParameterService: QueryparametersService,
+    private clipboard: Clipboard
   ) {}
 
   async ngOnInit() {
     //await this.getItemsBoughtByMe();
+
+    const view = this.route.snapshot.queryParamMap.get('view');
+    this.showItems = this.route.snapshot.queryParamMap.get('showItems');
+
+    if (view)
+      this.view = view as 'sold' | 'notSold' | 'hidden' | 'all' | 'default';
 
     if (this._SaleflowService.saleflowData) {
       await this.inicializeItems(true, false, true, true);
@@ -336,7 +354,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     const pagination: PaginationInput = {
       options: {
         sortBy: 'createdAt:asc',
-        limit: 10,
+        limit: -1,
         page: 1,
         range: {},
       },
@@ -357,6 +375,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.notSoldItems.forEach((item, index) => {
       this.itemsIndexesByList['NOT_SOLD'][item._id] = index;
     });
+
+    if (this.showItems === 'notSold') {
+      this.goToDetail('NOT_SOLD', true, 'FULL_LIST');
+    }
   }
 
   async getItemsThatWerentSoldOnDateRange() {
@@ -497,8 +519,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.itemsIndexesByList['ALL'][item._id] = index;
       });
 
-      if(createCopyOfAllItems) {
-        this.allItemsCopy = JSON.parse(JSON.stringify(this.allItems))
+      if (createCopyOfAllItems) {
+        this.allItemsCopy = JSON.parse(JSON.stringify(this.allItems));
       }
     });
   }
@@ -711,6 +733,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                         },
                         this._SaleflowService.saleflowData._id
                       );
+
+                      this._SaleflowService.saleflowData.items.push({
+                        item: createItem,
+                        customizer: null,
+                        index: null,
+                      } as any);
+
                       this.snackBar.open(
                         'Producto creado satisfactoriamente!',
                         '',
@@ -818,6 +847,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               },
             },
             {
+              title: 'Copiar el Link de compradores',
+              callback: () => {
+                this.clipboard.copy(
+                  `${this.URI}/ecommerce/${this._MerchantsService.merchantData.slug}/store`
+                );
+                this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                  duration: 2000,
+                });
+              },
+            },
+            {
               title: 'Descargar el QR',
               link,
             },
@@ -868,6 +908,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           },
           this._SaleflowService.saleflowData._id
         );
+
+        this._SaleflowService.saleflowData.items.push({
+          item: createItem,
+          customizer: null,
+          index: null,
+        } as any);
+
         this.snackBar.open('Producto creado satisfactoriamente!', '', {
           duration: 5000,
         });
