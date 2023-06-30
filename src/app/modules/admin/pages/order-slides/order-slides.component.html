@@ -303,6 +303,7 @@
                         <span
                           *ngIf="deliveryOrder.orderStatus === 'completed'"
                           class="status confirmed"
+                          (click)="confirmPayment(deliveryOrder, true)"
                           >Pago confirmado</span
                         >
                       </div>

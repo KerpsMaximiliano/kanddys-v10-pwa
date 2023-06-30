@@ -235,7 +235,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
-    this.order = (await this.orderService.order(orderId))?.order;
+    this.order = (await this.orderService.order(orderId, false))?.order;
 
     this.buildStatusList();
 

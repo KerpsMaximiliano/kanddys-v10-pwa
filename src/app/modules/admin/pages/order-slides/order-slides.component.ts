@@ -230,9 +230,17 @@ export class OrderSlidesComponent implements OnInit {
           : null;
     }
 
-    if (!this.order) return this.throwErrorScreen();
-    if (this.order.merchants[0]._id !== this.merchantsService.merchantData._id)
-      return this.throwErrorScreen();
+    // if (!this.order) return this.throwErrorScreen();
+    // if (this.order.merchants[0]._id !== this.merchantsService.merchantData._id)
+    //   return this.throwErrorScreen();
+    if (!this.order) {
+      unlockUI();
+      return;
+    }
+    if (this.order.merchants[0]._id !== this.merchantsService.merchantData._id) {
+      unlockUI();
+      return;
+    }
 
     this.ordersToConfirm.forEach(async (order) => {
       let deliveryZone: DeliveryZone;
@@ -393,12 +401,14 @@ export class OrderSlidesComponent implements OnInit {
     await this.populateOrder(this.activeIndex, 3, true);
   }
 
-  confirmPayment(order: ExtendedItemOrder) {
-    this.orderService.orderConfirm(
-      order.items[0].saleflow.merchant._id,
-      order._id
-    );
-    order.orderStatus = 'completed';
+  confirmPayment(order: ExtendedItemOrder, justNotification: boolean = false) {
+    if (!justNotification) {
+      this.orderService.orderConfirm(
+        order.items[0].saleflow.merchant._id,
+        order._id
+      );
+      order.orderStatus = 'completed';
+    }
     const { name, phone, email } = order.user;
     const link = `${this.URI}/ecommerce/order-detail/${order._id}`;
     const notification = this.notifications.find(
@@ -407,7 +417,7 @@ export class OrderSlidesComponent implements OnInit {
         notif.trigger[0].value === 'completed'
     );
     let message: string;
-    if (notification) {
+    if (notification && this.notifications.length > 0) {
       message = notification.message.replace('[name]', name || phone || email);
     } else {
       message = `El pago de tu factura ${this.formatShortId(
@@ -531,7 +541,7 @@ export class OrderSlidesComponent implements OnInit {
       this.ordersToConfirm[this.activeIndex]._id
     }`;
     let message: string;
-    if (notification) {
+    if (notification && this.notifications.length > 0) {
       message = notification.message.replace('[name]', name || phone || email);
     } else {
       message = `tu factura ${this.formatShortId(

@@ -170,10 +170,11 @@ export class OrderService {
     return result;
   }
 
-  async order(orderId: string): Promise<{ order: ItemOrder }> {
+  async order(orderId: string, cache: boolean = true): Promise<{ order: ItemOrder }> {
     try {
       const response = await this.graphql.query({
         query: order,
+        fetchPolicy: cache ? 'cache-first' : 'no-cache',
         variables: { orderId },
       });
       return response;
