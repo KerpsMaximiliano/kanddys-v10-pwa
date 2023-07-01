@@ -211,6 +211,8 @@ import { BuyerNotificationDialogComponent } from './dialogs/buyer-notification-d
 import { ItemAdminCardComponent } from './components/item-admin-card/item-admin-card.component';
 import { ProgressSliderComponent } from './components/progress-slider/progress-slider.component';
 import { ListCardComponent } from './components/list-card/list-card.component';
+import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.component';
+import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
 
 const imports = [
   CommonModule,
@@ -435,7 +437,9 @@ const declarations = [
   BuyerNotificationDialogComponent,
   ItemAdminCardComponent,
   ProgressSliderComponent,
-  ListCardComponent
+  ListCardComponent,
+  StoreChatbotComponent,
+  InputDialogComponent
 ];
 
 @NgModule({
@@ -443,6 +447,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}

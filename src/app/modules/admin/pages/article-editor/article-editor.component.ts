@@ -49,6 +49,8 @@ import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions } from 'swiper';
 import { ViewportScroller } from '@angular/common';
 import * as moment from 'moment';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
+import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-dialog.component';
 
 interface ExtendedAnswer extends Answer {
   responsesGroupedByQuestion: Array<{
@@ -251,7 +253,8 @@ export class ArticleEditorComponent implements OnInit {
     protected _DomSanitizer: DomSanitizer,
     private dialogFlowService: DialogFlowService,
     private webformsService: WebformsService,
-    private viewportScroller: ViewportScroller
+    private viewportScroller: ViewportScroller,
+    private gpt3Service: Gpt3Service
   ) {}
 
   async ngOnInit() {
@@ -1126,6 +1129,41 @@ export class ArticleEditorComponent implements OnInit {
           },
         },
       ],
+    });
+  }
+
+  async generateAIDescription() {
+    const bottomSheetRef = this._bottomSheet.open(InputDialogComponent, {
+      data: {
+          label: `Escribe las características de tu producto, cada una separada por una coma, para generar una descripción con inteligencia artificial`,
+          styles: {
+            fullScreen: true,
+          },
+          callback: async (metaDescription) => {
+            if (metaDescription) {
+              lockUI()
+
+              try {
+                const result = await this.gpt3Service.generateCompletionForMerchant(
+                  this.merchant._id,
+                  `
+                    Genera una descripción corta para un producto que está compuesto por las siguientes características: ${metaDescription}
+                  `
+                );
+
+                this.productDescription = result.trim();
+                this.description.setValue(result.trim());
+                this.description.markAsDirty();
+                
+                console.log(result);
+                unlockUI();
+              } catch (error) {
+                console.log(error);
+                unlockUI();
+              }
+            }
+          }
+        },
     });
   }
 
