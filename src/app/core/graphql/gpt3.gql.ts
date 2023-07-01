@@ -17,3 +17,15 @@ export const requestQAResponse = gql`
     requestQAResponse(saleflowId: $saleflowId, prompt: $prompt)
   }
 `;
+
+export const generateCompletionForMerchant = gql`
+  mutation generateCompletionForMerchant(
+    $merchantID: ObjectID!
+    $prompt: String!
+  ) {
+    generateCompletionForMerchant(
+      merchantID: $merchantID
+      prompt: $prompt
+    )
+  }
+`;

@@ -347,3 +347,15 @@
     line-height: initial;
   }
 }
+
+.icon-button {
+  position: relative;
+  float: right;
+  bottom: 32px;
+  right: 10px;
+  background: none;
+  border: 0;
+  img {
+    width: 20px;
+  }
+}

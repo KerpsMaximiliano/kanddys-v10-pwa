@@ -212,6 +212,7 @@ import { ItemAdminCardComponent } from './components/item-admin-card/item-admin-
 import { ProgressSliderComponent } from './components/progress-slider/progress-slider.component';
 import { ListCardComponent } from './components/list-card/list-card.component';
 import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.component';
+import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
 
 const imports = [
   CommonModule,
@@ -437,7 +438,8 @@ const declarations = [
   ItemAdminCardComponent,
   ProgressSliderComponent,
   ListCardComponent,
-  StoreChatbotComponent
+  StoreChatbotComponent,
+  InputDialogComponent
 ];
 
 @NgModule({
@@ -445,6 +447,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}
