@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  generateCompletionForMerchant,
   generateResponseForTemplate,
   requestQAResponse,
 } from '../graphql/gpt3.gql';
@@ -39,5 +40,16 @@ export class Gpt3Service {
       variables: { prompt, saleflowId },
     });
     return result?.requestQAResponse;
+  }
+
+  async generateCompletionForMerchant(
+    merchantID: string,
+    prompt: string
+  ): Promise<string> {
+    const result = await this.graphql.mutate({
+      mutation: generateCompletionForMerchant,
+      variables: { merchantID, prompt },
+    });
+    return result.generateCompletionForMerchant;
   }
 }

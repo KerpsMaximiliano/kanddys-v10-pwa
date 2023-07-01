@@ -191,6 +191,7 @@
         [(ngModel)]="productDescription"
       ></textarea>
     </app-card>
+    <button (click)="generateAIDescription()" class="icon-button"><img [src]="env + '/hat-wizard-solid.svg'" alt=""></button>
   </div>
 
   <div class="section" *ngIf="showIncluded">
