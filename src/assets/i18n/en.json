@@ -1,7 +1,8 @@
 {
     "new-symbol.save": "Save",
-    "new-symbol.title" :"New symbol message",
+    "new-symbol.title" :"Virtual message",
     "new-symbol.text-title":"Centralized and main text",
+    "new-symbol.longer-text":"Longer text",
     "new-symbol.text-placeholder":"Write the message",
     "new-symbol.chulerias":"OPTIONAL STUFFS",
     "new-symbol.slides":"Slides with videos and images",

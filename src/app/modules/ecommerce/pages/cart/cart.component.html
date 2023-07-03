@@ -43,16 +43,25 @@
             <p class="grayout-label">Cantidad</p>
             <div class="quantity">
               <span
-                *ngIf="items.length > 1 || itemObjects[item._id].amount > 1"
                 mat-button
                 class="button"
                 (click)="changeAmount(item._id, 'subtract')"
                 >-</span
               >
 
-              <span *ngIf="items.length === 1 && itemObjects[item._id].amount === 1" mat-button class="button disabled"
-                >-</span
-              >
+              <!--
+                <span
+                  *ngIf="items.length > 1 || itemObjects[item._id].amount > 1"
+                  mat-button
+                  class="button"
+                  (click)="changeAmount(item._id, 'subtract')"
+                  >-</span
+                >
+
+                <span *ngIf="items.length === 1 && itemObjects[item._id].amount === 1" mat-button class="button disabled"
+                  >-</span
+                >
+              -->
 
               <span>{{ itemObjects[item._id].amount }}</span>
               <span

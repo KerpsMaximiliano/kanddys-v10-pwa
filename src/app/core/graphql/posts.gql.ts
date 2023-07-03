@@ -74,6 +74,8 @@ export const post = gql`
         emailOrPhone
       }
       layout
+      ctaText
+      ctaLink
     }
   }
 `;

@@ -28,7 +28,7 @@ export class ItemsSlidesEditorComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(({ itemId }) => {
       this.itemId = itemId;
-      
+
       if (
         !this.itemsService.temporalItemInput ||
         !this.itemsService.temporalItemInput.slides ||
@@ -68,14 +68,31 @@ export class ItemsSlidesEditorComponent implements OnInit {
           ]['media'] = file;
 
           this.ngZone.run(() => {
-            this.router.navigate(
-              [`/ecommerce/${this.merchantsService.merchantData.slug}/qr-edit`],
-              {
-                queryParams: {
-                  articleId: this.itemId,
-                },
-              }
-            );
+
+            if (this.itemId) {
+              this.router.navigate(
+                [
+                  `/ecommerce/${this.merchantsService.merchantData.slug}/qr-edit`,
+                ],
+                {
+                  queryParams: {
+                    articleId: this.itemId,
+                    useSlidesInMemory: true,
+                  },
+                }
+              );
+            } else {
+              this.router.navigate(
+                [
+                  `/ecommerce/${this.merchantsService.merchantData.slug}/qr-edit`,
+                ],
+                {
+                  queryParams: {
+                    entity: 'item',
+                  },
+                }
+              );
+            }
           });
         };
         unlockUI();

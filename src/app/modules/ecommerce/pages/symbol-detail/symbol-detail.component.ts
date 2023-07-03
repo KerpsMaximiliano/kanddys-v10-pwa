@@ -732,7 +732,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     if (this.mode === 'preview') {
       this.itemsService.itemUrls = [];
       return this.router.navigate([
-        `/admin/article-editor/${this.itemData._id}`,
+        `/admin/item-creation/${this.itemData._id}`,
       ]);
     }
     if (this.mode === 'image-preview') {

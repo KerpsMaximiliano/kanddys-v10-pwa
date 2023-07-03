@@ -1,7 +1,8 @@
 {
     "new-symbol.save": "Guardar",
-    "new-symbol.title" :"Nuevo Símbolo de mensaje",
+    "new-symbol.title" :"Mensaje virtual",
     "new-symbol.text-title":"Texto principal y centralizado",
+    "new-symbol.longer-text":"Texto más largo",
     "new-symbol.text-placeholder":"Escribe el mensaje de dedicatoria..",
     "new-symbol.chulerias":"CHULERIAS OPCIONALES",
     "new-symbol.slides":"Slides con fotos y videos",

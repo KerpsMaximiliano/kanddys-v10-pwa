@@ -192,6 +192,23 @@
             Agregar al carrito
           </ng-container>
         </div>
+
+        <div class="add-to-cart" *ngSwitchCase="'post'">
+          <a
+            target="_blank"
+            [href]="postData?.ctaLink"
+            *ngIf="
+              entityPresentation !== 'DEMO' &&
+              postData?.ctaText &&
+              postData?.ctaLink
+            "
+          >
+            {{ postData?.ctaText }}
+          </a>
+          <ng-container *ngIf="entityPresentation === 'DEMO'">
+            Botón de enlace
+          </ng-container>
+        </div>
       </ng-container>
     </div>
   </footer>

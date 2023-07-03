@@ -7,7 +7,7 @@
           type="text"
           [id]="field.name"
           [formControlName]="field.name"
-          placeholder="Escribe"
+          [placeholder]="field.placeholder || 'Escribe..'"
         />
       </div>
     </ng-container>

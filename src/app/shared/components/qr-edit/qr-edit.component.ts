@@ -50,7 +50,7 @@ export class QrEditComponent implements OnInit {
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;
-  returnTo: 'checkout' | 'post-edition' | 'article-editor' = null;
+  returnTo: 'checkout' | 'post-edition' | 'item-creation' = null;
 
   flow: 'cart' | 'checkout' = 'cart';
 
@@ -131,7 +131,7 @@ export class QrEditComponent implements OnInit {
         console.log('los slides', this._ItemsService.temporalItemInput.slides);
 
         for await (const slide of this._ItemsService.temporalItemInput.slides) {
-          /*if (!slide.media && slide.url) {
+          if (!slide.media && slide.url) {
             const fileParts = slide.url.split('.');
             const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
             let auxiliarImageFileExtension = 'image/' + fileExtension;
@@ -146,21 +146,19 @@ export class QrEditComponent implements OnInit {
             }
 
             if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-              return {
-                _id: image._id,
-                background: image.value,
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
                 _type: auxiliarImageFileExtension,
-                index: image.index,
-              };
+              });
             } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-              return {
-                _id: image._id,
-                background: image.value,
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
                 _type: auxiliarVideoFileExtension,
-                index: image.index,
-              };
+              });
             }
-          }*/
+          }
 
           if (slide.media && slide.media.type.includes('image')) {
             await fileToBase64(slide.media).then((result) => {
@@ -275,6 +273,7 @@ export class QrEditComponent implements OnInit {
     }
 
     if (!this._PostsService.post && this.entity !== 'item') {
+
       this._Router.navigate([
         'ecommerce/' + this.headerService.saleflow?.merchant.slug + '/store',
       ]);
@@ -531,7 +530,7 @@ export class QrEditComponent implements OnInit {
 
   async submit() {
     if (this.item) {
-      this._Router.navigate([`admin/article-editor/${this.item._id}`]);
+      this._Router.navigate([`admin/item-creation/${this.item._id}`]);
       return;
     }
     const slides: Array<SlideInput> = this.gridArray.map(
@@ -549,7 +548,7 @@ export class QrEditComponent implements OnInit {
     );
 
     //Items that are being created, not in the database
-    if (this.entity !== 'item' && !this.item) {
+    if (this.entity === 'item' && !this.item) {
       this._ItemsService.temporalItemInput.slides = slides;
       this._Router.navigate(['admin/item-creation']);
       return;

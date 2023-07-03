@@ -367,8 +367,45 @@ export class ItemCreationComponent implements OnInit {
 
         this.itemsService.editingSlide = this.itemSlides.length - 1;
 
+        if (this.item) {
+          lockUI();
+          await this.itemsService.itemAddImage(
+            [
+              {
+                file,
+                index: this.itemSlides.length - 1,
+              },
+            ],
+            this.item._id
+          );
+        }
+
+        let routeForItemEntity;
+
+        if (this.item && this.itemSlides.length === 1) {
+          routeForItemEntity = 'admin/items-slides-editor/' + +this.item._id;
+        } else if (this.item && this.itemSlides.length > 1) {
+          routeForItemEntity = 'admin/slides-editor/' + this.item._id;
+        } else if (!this.item && this.itemSlides.length === 1) {
+          routeForItemEntity = 'admin/items-slides-editor';
+        } else if (!this.item && this.itemSlides.length > 1) {
+          routeForItemEntity = 'admin/slides-editor';
+        }
+
         if (this.itemSlides.length === 1 && fileList.length === 1) {
-          this.router.navigate(['admin/items-slides-editor']);
+          this.router.navigate([routeForItemEntity], {
+            queryParams: {
+              entity: 'item',
+            },
+          });
+        } else if (this.itemSlides.length > 1) {
+          if (this.item) unlockUI();
+
+          this.router.navigate([routeForItemEntity], {
+            queryParams: {
+              entity: 'item',
+            },
+          });
         } else if (fileList.length > 1 && i === fileList.length - 1) {
           if (!this.item)
             this.router.navigate(['admin/slides-editor'], {
@@ -733,7 +770,7 @@ export class ItemCreationComponent implements OnInit {
         unlockUI();
 
         this.webformsService.formCreationData = null;
-        this.router.navigate(['/admin/article-editor/' + this.item._id]);
+        this.router.navigate(['/admin/item-creation/' + this.item._id]);
       } catch (error) {
         unlockUI();
 

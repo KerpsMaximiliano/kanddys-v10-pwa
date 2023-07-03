@@ -427,6 +427,11 @@ export class CartComponent implements OnInit {
         });
 
         this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
+
+        if (this.items.length === 0)
+          this.router.navigate([
+            'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+          ]);
       },
     });
   }
@@ -689,9 +694,14 @@ export class CartComponent implements OnInit {
           '/receiver-form',
       ]);
     } else {
-      this.router.navigate([
-        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-address',
-      ], { queryParams: { flow: 'unAnsweredQuestions' } });
+      this.router.navigate(
+        [
+          '/ecommerce/' +
+            this.headerService.saleflow.merchant.slug +
+            '/new-address',
+        ],
+        { queryParams: { flow: 'unAnsweredQuestions' } }
+      );
     }
   }
 

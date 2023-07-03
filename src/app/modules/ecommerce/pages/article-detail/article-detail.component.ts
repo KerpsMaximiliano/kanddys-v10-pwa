@@ -408,7 +408,7 @@ export class ArticleDetailComponent implements OnInit {
         }
       );
     else if (this.mode === 'preview')
-      this.router.navigate([`admin/article-editor/${this.itemData._id}`]);
+      this.router.navigate([`admin/item-creation/${this.itemData._id}`]);
     else if (this.mode === 'image-preview')
       this.router.navigate([`admin/slides-editor/${this.itemData._id}`]);
     // else {
@@ -702,7 +702,7 @@ export class ArticleDetailComponent implements OnInit {
     if (this.mode === 'preview') {
       this._ItemsService.itemUrls = [];
       return this.router.navigate([
-        `/admin/article-editor/${this.itemData._id}`,
+        `/admin/item-creation/${this.itemData._id}`,
       ]);
     }
     if (this.mode === 'image-preview') {

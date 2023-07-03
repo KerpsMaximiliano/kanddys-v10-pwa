@@ -339,7 +339,7 @@ export class ItemsDashboardComponent implements OnInit {
                 reader.onload = (e) => {
                   this._ItemsService.editingImageId = createItem.images[0]._id;
                   this.router.navigate([
-                    `admin/article-editor/${createItem._id}`,
+                    `admin/item-creation/${createItem._id}`,
                   ]);
                 };
                 reader.readAsDataURL(images[0].file as File);
@@ -814,7 +814,7 @@ export class ItemsDashboardComponent implements OnInit {
 
   goToDetail(id: string) {
     this.savePageSnapshot();
-    this.router.navigate([`admin/article-editor/${id}`]);
+    this.router.navigate([`admin/item-creation/${id}`]);
     this._ItemsService.itemImages = [];
   }
 

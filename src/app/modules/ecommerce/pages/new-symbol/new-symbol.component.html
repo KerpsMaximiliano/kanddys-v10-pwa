@@ -15,8 +15,8 @@
         class="textarea-wrapper"
         [ngClass]="{
           'no-shadow':
-            postForm.controls['message'].value &&
-            postForm.controls['message'].value.length > 0
+            postForm.controls['title'].value &&
+            postForm.controls['title'].value.length > 0
         }"
       >
         <label for="textarea-label" class="textarea-header">{{
@@ -24,7 +24,7 @@
         }}</label>
 
         <textarea
-          formControlName="message"
+          formControlName="title"
           [placeholder]="'new-symbol.text-placeholder' | translate"
           cols="30"
           rows="10"
@@ -105,10 +105,60 @@
       </div>
 
       <div
-        class="optional-stuff"
-        *ngIf="postsService.post?.slides?.length === 0"
+        class="textarea-wrapper not-first"
+        *ngIf="postForm.controls['message'].value"
+        [ngClass]="{
+          'no-shadow':
+            postForm.controls['message'].value &&
+            postForm.controls['message'].value.length > 0
+        }"
       >
-        <h3>{{'new-symbol.chulerias' | translate}}</h3>
+        <label for="textarea-label" class="textarea-header">{{
+          "new-symbol.longer-text" | translate
+        }}</label>
+
+        <textarea
+          formControlName="message"
+          [placeholder]="'new-symbol.text-placeholder' | translate"
+          cols="30"
+          rows="10"
+          id="textarea-label"
+        ></textarea>
+      </div>
+
+      <div
+        (click)="openFormForField('LINK-BUTTON')"
+        class="link-button"
+        *ngIf="
+          postForm.controls['ctaText'].value &&
+          postForm.controls['ctaLink'].value
+        "
+      >
+        <h6>Botón de enlace</h6>
+
+        <ng-container>
+          <h4>
+            {{ postForm.controls["ctaText"].value }}
+          </h4>
+
+          <div class="link">
+            {{ postForm.controls["ctaLink"].value }}
+          </div>
+        </ng-container>
+      </div>
+
+      <div
+        class="optional-stuff"
+        *ngIf="
+          postsService.post?.slides?.length === 0 ||
+          !postForm.controls['message'].value ||
+          !(
+            postForm.controls['ctaText'].value &&
+            postForm.controls['ctaLink'].value
+          )
+        "
+      >
+        <h3>{{ "new-symbol.chulerias" | translate }}</h3>
 
         <div class="row" *ngIf="postsService.post?.slides?.length === 0">
           <span>{{ "new-symbol.slides" | translate }}</span>
@@ -120,20 +170,39 @@
             (click)="goToMediaUpload()"
           />
         </div>
-        <div class="row row-mid">
+        <div class="row row-mid" *ngIf="!postForm.controls['message'].value">
           <span>{{ "new-symbol.long-text" | translate }}</span>
 
           <img
+            (click)="openFormForField('LARGE-TEXT')"
             src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
             alt="add media"
             class="upload-media"
           />
         </div>
-        <div class="row row-mid">
+
+        <div
+          class="row row-mid"
+          *ngIf="
+            !(
+              postForm.controls['ctaText'].value &&
+              postForm.controls['ctaLink'].value
+            )
+          "
+        >
           <span>{{ "new-symbol.long-link-button" | translate }}</span>
 
+          <!--
           <img
             (click)="openButtonLinkDialog()"
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+            alt="add media"
+            class="upload-media"
+          />
+
+        -->
+          <img
+            (click)="openFormForField('LINK-BUTTON')"
             src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
             alt="add media"
             class="upload-media"

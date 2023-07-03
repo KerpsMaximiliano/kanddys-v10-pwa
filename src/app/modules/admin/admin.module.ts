@@ -199,7 +199,7 @@ const routes: Routes = [
         component: ContactLandingContainerComponent,
       },
       {
-        path: 'article-editor/:articleId',
+        path: 'item-creation/:articleId',
         component: ArticleEditorComponent,
       },
       {

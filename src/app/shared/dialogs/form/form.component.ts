@@ -18,6 +18,7 @@ interface Field {
   type: 'text' | 'email' | 'phone' | 'file';
   validators: Array<ValidatorFn>;
   name: string;
+  placeholder?: string;
   label: string;
 }
 
