@@ -219,6 +219,8 @@ import { createTranslateLoader } from '../core/functions/create-translate-loader
 import { HttpClient } from '@angular/common/http';
 import { FormComponent } from './dialogs/form/form.component';
 import { ItemsSlidesEditorComponent } from './components/items-slides-editor/items-slides-editor.component';
+import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.component';
+import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
 
 const imports = [
   CommonModule,
@@ -449,7 +451,9 @@ const declarations = [
   PostsSlidesEditorComponent,
   CreateButtonLinkComponent,
   FormComponent,
-  ItemsSlidesEditorComponent
+  ItemsSlidesEditorComponent,
+  StoreChatbotComponent,
+  InputDialogComponent
 ];
 
 @NgModule({
@@ -457,6 +461,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}

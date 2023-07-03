@@ -43,6 +43,7 @@ export class NewSymbolComponent implements OnInit {
     if (flow) this.flow = flow as 'cart' | 'checkout';
 
     if (!this.postsService.post) {
+      console.log('no post');
       this.postsService.post = {
         title: '',
         slides: [],
@@ -55,6 +56,7 @@ export class NewSymbolComponent implements OnInit {
         ctaLink: [''],
       });
     } else {
+      console.log('post');
       this.postForm = this.fb.group({
         title: [this.postsService.post.title],
         message: [this.postsService.post.message],
@@ -63,6 +65,9 @@ export class NewSymbolComponent implements OnInit {
         ctaLink: [this.postsService.post.ctaLink],
       });
     }
+
+    console.log(this.postsService.post);
+    console.log(this.headerService.getPost())
   }
 
   goToMediaUpload() {

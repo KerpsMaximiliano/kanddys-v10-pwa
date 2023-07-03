@@ -146,8 +146,8 @@ export class GiftcardDetailsComponent implements OnInit {
 
   focusPhoneInput() {
     const ngxIntlPhoneInput = document.querySelector('#phone');
-  
-    (ngxIntlPhoneInput.querySelector("#phone") as HTMLInputElement).focus();
+
+    (ngxIntlPhoneInput.querySelector('#phone') as HTMLInputElement).focus();
   }
 
   send() {

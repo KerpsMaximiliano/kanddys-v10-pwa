@@ -16,9 +16,9 @@
       </p>
     </button>
 
-    <button style="margin-right: 20px;" mat-icon-button>
+    <!-- <button style="margin-right: 20px;" mat-icon-button>
       <mat-icon>search</mat-icon>
-    </button>
+    </button> -->
     <button style="margin-right: 20px;" mat-icon-button (click)="plusOptions()">
       <mat-icon style="font-weight: bold;">add</mat-icon>
     </button>
@@ -191,6 +191,7 @@
         [(ngModel)]="productDescription"
       ></textarea>
     </app-card>
+    <button (click)="generateAIDescription()" class="icon-button"><img [src]="env + '/hat-wizard-solid.svg'" alt=""></button>
   </div>
 
   <div class="section" *ngIf="showIncluded">

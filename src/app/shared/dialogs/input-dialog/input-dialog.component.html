@@ -1,0 +1,16 @@
+<div style="padding: 20px;">
+
+    <main [formGroup]="form">
+        <p class="label">{{ data.label }}</p>
+        <input
+            #input
+            type="text"
+            placeholder="Escribe..."
+            formControlName="metaDescription"
+        />
+    </main>
+
+    <div style="text-align: center; margin-top: 2em;">
+        <button mat-button class="main-cta" [disabled]="!form.valid" [ngClass]="{ disabled: !form.valid }" (click)="onClick()">Continuar</button>
+    </div>
+</div>

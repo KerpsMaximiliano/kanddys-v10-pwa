@@ -27,6 +27,7 @@
 // }
 .container {
   min-height: 100vh;
+  word-break: break-word;
 
   .section {
     margin-top: 5px;
@@ -393,6 +394,7 @@
   &.confirmed {
     background-color: #6fcf97;
     color: #293628;
+    cursor: pointer;
   }
 }
 

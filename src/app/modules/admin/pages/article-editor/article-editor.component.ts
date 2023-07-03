@@ -48,6 +48,9 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { EmbeddedComponentWithId } from 'src/app/core/types/multistep-form';
 import { SwiperOptions } from 'swiper';
 import { ViewportScroller } from '@angular/common';
+import * as moment from 'moment';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
+import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-dialog.component';
 
 interface ExtendedAnswer extends Answer {
   responsesGroupedByQuestion: Array<{
@@ -250,7 +253,8 @@ export class ArticleEditorComponent implements OnInit {
     protected _DomSanitizer: DomSanitizer,
     private dialogFlowService: DialogFlowService,
     private webformsService: WebformsService,
-    private viewportScroller: ViewportScroller
+    private viewportScroller: ViewportScroller,
+    private gpt3Service: Gpt3Service
   ) {}
 
   async ngOnInit() {
@@ -520,7 +524,34 @@ export class ArticleEditorComponent implements OnInit {
     if (!ignore) {
       unlockUI();
       this._ItemsService.removeTemporalItem();
-      this._Router.navigate([`admin/dashboard`]);
+
+      // ISO date strings
+      const isoDateString1 = this.item.createdAt;
+      const isoDateString2 = new Date().toISOString(); // Current ISO date string
+
+      // Parse the ISO date strings into Date objects
+      const date1: any = new Date(isoDateString1);
+      const date2: any = new Date(isoDateString2);
+
+      // Calculate the difference in milliseconds
+      const millisecondsDiff = date2 - date1;
+
+      // Convert milliseconds to minutes
+      const minutesDiff = Math.floor(millisecondsDiff / (1000 * 60));
+
+      console.log('Minutes passed:', minutesDiff);
+
+      if (minutesDiff < 20 && this.totalSells === 0) {
+        this._Router.navigate([
+          `admin/dashboard`
+        ], {
+          queryParams: {
+            showItems: 'notSold'
+          }
+        });
+      } else {
+        this._Router.navigate([`admin/dashboard`]);
+      }
     }
   };
 
@@ -645,14 +676,12 @@ export class ArticleEditorComponent implements OnInit {
       {
         text: 'Compartir artículo en el carrito',
         callback: async () => {
-          this.clipboard.copy(`${environment.uri}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/cart?item=${this.item._id}`);
-          this.snackBar.open(
-            'Enlace copiado en el portapapeles',
-            '',
-            {
-              duration: 2000,
-            }
+          this.clipboard.copy(
+            `${environment.uri}/ecommerce/${this._SaleflowService.saleflowData.merchant.slug}/cart?item=${this.item._id}`
           );
+          this.snackBar.open('Enlace copiado en el portapapeles', '', {
+            duration: 2000,
+          });
         },
       },
       {
@@ -947,7 +976,7 @@ export class ArticleEditorComponent implements OnInit {
                 this._ItemsService.itemName = this.item.name;
                 this._ItemsService.itemDesc = this.item.description;
                 this._ItemsService.itemPrice = this.item.pricing;
-                
+
                 this._Router.navigate(
                   [
                     `/ecommerce/${this._MerchantsService.merchantData.slug}/article-detail/item/` +
@@ -1067,7 +1096,7 @@ export class ArticleEditorComponent implements OnInit {
                 this._ItemsService.itemName = this.item.name;
                 this._ItemsService.itemDesc = this.item.description;
                 this._ItemsService.itemPrice = this.item.pricing;
-                
+
                 this._Router.navigate(
                   [
                     `/ecommerce/${this._MerchantsService.merchantData.slug}/article-detail/item/` +
@@ -1096,10 +1125,45 @@ export class ArticleEditorComponent implements OnInit {
             },
           ],
           styles: {
-            fullScreen: true
-          }
+            fullScreen: true,
+          },
         },
       ],
+    });
+  }
+
+  async generateAIDescription() {
+    const bottomSheetRef = this._bottomSheet.open(InputDialogComponent, {
+      data: {
+          label: `Escribe las características de tu producto, cada una separada por una coma, para generar una descripción con inteligencia artificial`,
+          styles: {
+            fullScreen: true,
+          },
+          callback: async (metaDescription) => {
+            if (metaDescription) {
+              lockUI()
+
+              try {
+                const result = await this.gpt3Service.generateCompletionForMerchant(
+                  this.merchant._id,
+                  `
+                    Genera una descripción corta para un producto que está compuesto por las siguientes características: ${metaDescription}
+                  `
+                );
+
+                this.productDescription = result.trim();
+                this.description.setValue(result.trim());
+                this.description.markAsDirty();
+                
+                console.log(result);
+                unlockUI();
+              } catch (error) {
+                console.log(error);
+                unlockUI();
+              }
+            }
+          }
+        },
     });
   }
 

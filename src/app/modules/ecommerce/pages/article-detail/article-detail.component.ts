@@ -183,7 +183,9 @@ export class ArticleDetailComponent implements OnInit {
 
     this.fromQR = Boolean(this.route.snapshot.queryParamMap.get('fromQR'));
 
-    this.flow = this.route.snapshot.queryParamMap.get('flow') as 'cart' | 'checkout';
+    this.flow = this.route.snapshot.queryParamMap.get('flow') as
+      | 'cart'
+      | 'checkout';
 
     // this.merchantId = this.route.snapshot.queryParamMap.get('merchant');
     // if (this.merchantId !== '') {
@@ -394,21 +396,21 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   goBack() {
+    if (this.mode === 'preview') {
+      return this.headerService.redirectFromQueryParams();
+    }
+
     if (this.redirectTo === 'dashboard')
       this.router.navigate([`admin/dashboard`]);
     else if (this.redirectTo === 'post-edit')
       this.router.navigate(
-        [
-        `ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
-        ],
+        [`ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`],
         {
           queryParams: {
-            flow: this.flow
-          }
+            flow: this.flow,
+          },
         }
       );
-    else if (this.mode === 'preview')
-      this.router.navigate([`admin/item-creation/${this.itemData._id}`]);
     else if (this.mode === 'image-preview')
       this.router.navigate([`admin/slides-editor/${this.itemData._id}`]);
     // else {

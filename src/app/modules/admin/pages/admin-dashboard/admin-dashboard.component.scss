@@ -165,7 +165,7 @@
 
 .section {
   .section-header {
-    margin: 12px 21px;
+    margin: 21px;
     margin-bottom: 0px;
     display: flex;
     align-items: center;
@@ -467,7 +467,7 @@
 
   &.not-swiper {
     padding: 0px 16px;
-    margin-top: 14.86px;
+    margin-top: 21px;
   }
 
   &.lastItem {
@@ -476,6 +476,14 @@
 
   &:nth-of-type(1) {
     width: calc(100% - 19px) !important;
+  }
+
+  &.not-swiper {
+    margin-bottom: 0px;
+
+    &:nth-of-type(1) {
+      width: 100% !important;
+    }
   }
 }
 
@@ -491,6 +499,7 @@
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.06);
 
   .go_back_arrow {
+    cursor: pointer;
     margin-right: 7.82px;
     margin-left: -12.23px;
     height: auto;
@@ -522,7 +531,7 @@
   padding: 20px;
   border-radius: 10px;
   margin-top: 25px;
-  margin-left: -48px;
+  margin-left: -12px;
   
   span {
     color: #FFF;
@@ -531,7 +540,7 @@
 
   .arrow {
     position: absolute;
-    margin: -50px 0 0 29px;
+    margin: -50px 0 0 -7px;
     width: 0;
     height: 0;
     border-left: 10px solid transparent;

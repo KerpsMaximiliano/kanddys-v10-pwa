@@ -35,3 +35,25 @@
   [cartAmount]="headerService.order?.products?.length"
   (click)="goToCheckout()"
 ></app-bubble-button>
+
+<app-store-chatbot
+  *ngIf="
+    activePath !== 'checkout' &&
+    activePath !== 'article-detail/:entity/:entityId' &&
+    activePath !== 'article-detail/:entity' &&
+    activePath !== 'new-address' &&
+    activePath !== 'create-giftcard' &&
+    activePath !== 'create-article' &&
+    activePath !== 'reservations/:calendarId' &&
+    activePath !== 'post-edition' &&
+    activePath !== 'qr-edit' &&
+    activePath !== 'post-preview' &&
+    activePath !== 'text-edition-and-preview' &&
+    activePath !== 'cart' &&
+    activePath !== 'receiver-form' &&
+    activePath !== 'new-symbol' &&
+    activePath !== 'giftcard-details' && 
+    activePath !== 'terms-of-use/:viewsMerchantId' &&
+    activePath !== 'webform/:itemId'
+  "
+></app-store-chatbot>

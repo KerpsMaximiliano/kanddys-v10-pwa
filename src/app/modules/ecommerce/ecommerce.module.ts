@@ -54,6 +54,7 @@ import { SymbolDetailComponent } from './pages/symbol-detail/symbol-detail.compo
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
+import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
 
 const routes: Routes = [
   {
@@ -80,6 +81,10 @@ const routes: Routes = [
   {
     path: 'order-detail/:orderId',
     component: OrderDetailComponent,
+  },
+  {
+    path: 'order-confirmation/:orderId',
+    component: OrderConfirmationComponent
   },
   {
     path: 'contact-landing/:idUser',
@@ -276,7 +281,7 @@ const routes: Routes = [
       {
         path: 'giftcard-details',
         component: GiftcardDetailsComponent,
-      },
+      }
     ],
   },
 ];
@@ -321,6 +326,7 @@ const routes: Routes = [
     NewSymbolComponent,
     GiftcardDetailsComponent,
     SymbolDetailComponent,
+    OrderConfirmationComponent,
   ],
   imports: [
     CommonModule,

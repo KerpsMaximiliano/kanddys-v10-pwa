@@ -655,6 +655,7 @@ export const itemsByMerchantNosale = gql`
     itemsByMerchantNosale(paginate: $paginate) {
       _id
       name
+      description
       images {
         value
         index
