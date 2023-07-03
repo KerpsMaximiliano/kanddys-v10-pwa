@@ -440,6 +440,8 @@ export class CartComponent implements OnInit {
         });
 
         this.areItemsQuestionsAnswered();
+
+        if (this.items.length === 0) this.router.navigate(['/ecommerce/' + this.headerService.saleflow.merchant.slug + '/store']);
       },
     });
   }
