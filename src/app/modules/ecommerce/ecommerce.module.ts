@@ -50,6 +50,7 @@ import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.compo
 import { NewSymbolComponent } from './pages/new-symbol/new-symbol.component';
 import { GiftcardDetailsComponent } from './pages/giftcard-details/giftcard-details.component';
 import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
+import { InvalidMagicLinkComponent } from './pages/invalid-magic-link/invalid-magic-link.component';
 
 const routes: Routes = [
   {
@@ -138,6 +139,10 @@ const routes: Routes = [
   {
     path: 'webform-options-selector',
     component: WebformOptionsSelectorComponent,
+  },
+  {
+    path: 'invalid-link',
+    component: InvalidMagicLinkComponent
   },
   {
     path: ':merchantSlug',
@@ -317,6 +322,7 @@ const routes: Routes = [
     NewSymbolComponent,
     GiftcardDetailsComponent,
     OrderConfirmationComponent,
+    InvalidMagicLinkComponent,
   ],
   imports: [
     CommonModule,

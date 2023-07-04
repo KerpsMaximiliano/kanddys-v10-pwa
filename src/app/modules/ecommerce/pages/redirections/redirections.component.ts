@@ -119,7 +119,7 @@ export class RedirectionsComponent implements OnInit {
           unlockUI();
         }
       } catch (error) {
-        this.router.navigate([`admin/dashboard`]);
+        this.router.navigate([`ecommerce/invalid-link`]);
         unlockUI();
         // console.error(error);
       }
