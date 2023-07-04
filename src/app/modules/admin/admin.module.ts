@@ -67,6 +67,7 @@ import { RenameQuestionComponent } from './pages/rename-question/rename-question
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
 import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 import { MerchantsEntryComponent } from './pages/merchants-entry/merchants-entry.component';
+import { StarsLandingComponent } from './pages/stars-landing/stars-landing.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -428,6 +429,10 @@ const routes: Routes = [
   {
     path: 'merchants-entry',
     component: MerchantsEntryComponent
+  },
+  {
+    path:'stars-landing',
+    component:StarsLandingComponent
   }
 ];
 
@@ -482,6 +487,7 @@ const routes: Routes = [
     RenameQuestionComponent,
     RewardsDisplayComponent,
     MerchantsEntryComponent,
+    StarsLandingComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
