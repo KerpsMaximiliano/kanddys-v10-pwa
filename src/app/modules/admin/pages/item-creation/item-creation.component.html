@@ -274,9 +274,8 @@
             !itemFormData.controls['description'].value ||
             (itemsService.questionsToAddToItem.length === 0 &&
               !webform &&
-              !item) || (
-                item && !webform
-              )
+              !item) ||
+            (item && !webform)
           "
         >
           <h3>FUNCIONALIDADES OPCIONALES</h3>
@@ -402,18 +401,20 @@
       class="left"
       style="color: #272727"
       (click)="
-        !(itemFormData?.valid || itemSlides.length)
+        !(itemFormData?.valid && itemSlides.length > 0)
           ? goToItemDetail('DEMO')
           : goToItemDetail('PREVIEW')
       "
     >
       {{
-        !(itemFormData?.valid || itemSlides.length) ? "Mira un demo" : "Preview"
+        itemFormData?.valid && itemSlides.length > 0 
+          ? "Preview"
+          : "Mira un demo"
       }}
     </button>
     <button
       class="right"
-      *ngIf="itemFormData?.valid && !item"
+      *ngIf="(itemFormData?.valid && itemSlides.length > 0) && !item"
       style="color: #272727"
       (click)="saveItem()"
     >
@@ -422,7 +423,9 @@
 
     <button
       class="right"
-      *ngIf="itemFormData?.valid && isFormUpdated && item"
+      *ngIf="
+        (itemFormData?.valid && itemSlides.length > 0) && isFormUpdated && item
+      "
       style="color: #272727"
       (click)="saveItem()"
     >
