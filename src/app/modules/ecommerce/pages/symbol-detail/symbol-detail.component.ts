@@ -359,7 +359,11 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
       this.postData = {
         message: this.postsService.post.message,
+        ctaText: this.postsService.post.ctaText,
+        ctaLink: this.postsService.post.ctaLink,
       } as any;
+      
+      this.layout = this.postsService.post.layout || 'EXPANDED-SLIDE';
 
       for await (const slide of this.postsService.post.slides) {
         if (slide.media) {
@@ -479,6 +483,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       this.itemData = {
         pricing: this.itemsService.temporalItemInput.pricing,
       } as any;
+
+      this.layout = this.itemsService.temporalItemInput.layout || 'EXPANDED-SLIDE';
 
       this.fractions = (this.slidesInput as Array<any>)
         .map(() => `${'1'}fr`)

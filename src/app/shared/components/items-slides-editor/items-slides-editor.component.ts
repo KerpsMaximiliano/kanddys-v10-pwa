@@ -49,54 +49,47 @@ export class ItemsSlidesEditorComponent implements OnInit {
         type: 'image/jpg',
       });
 
-      if (result.modified) {
-        lockUI();
+      lockUI();
 
-        const reader = new FileReader();
+      const reader = new FileReader();
 
-        reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
 
-        reader.onload = async (e) => {
-          let result = reader.result;
+      reader.onload = async (e) => {
+        let result = reader.result;
 
-          this.itemsService.temporalItemInput.slides[
-            this.itemsService.editingSlide
-          ]['background'] = result;
+        this.itemsService.temporalItemInput.slides[
+          this.itemsService.editingSlide
+        ]['background'] = result;
 
-          this.itemsService.temporalItemInput.slides[
-            this.itemsService.editingSlide
-          ]['media'] = file;
+        this.itemsService.temporalItemInput.slides[
+          this.itemsService.editingSlide
+        ]['media'] = file;
 
-          this.ngZone.run(() => {
-
-            if (this.itemId) {
-              this.router.navigate(
-                [
-                  `/ecommerce/${this.merchantsService.merchantData.slug}/qr-edit`,
-                ],
-                {
-                  queryParams: {
-                    articleId: this.itemId,
-                    useSlidesInMemory: true,
-                  },
-                }
-              );
-            } else {
-              this.router.navigate(
-                [
-                  `/ecommerce/${this.merchantsService.merchantData.slug}/qr-edit`,
-                ],
-                {
-                  queryParams: {
-                    entity: 'item',
-                  },
-                }
-              );
-            }
-          });
-        };
-        unlockUI();
-      }
+        this.ngZone.run(() => {
+          if (this.itemId) {
+            this.router.navigate(
+              [`/ecommerce/${this.merchantsService.merchantData.slug}/qr-edit`],
+              {
+                queryParams: {
+                  articleId: this.itemId,
+                  useSlidesInMemory: true,
+                },
+              }
+            );
+          } else {
+            this.router.navigate(
+              [`/ecommerce/${this.merchantsService.merchantData.slug}/qr-edit`],
+              {
+                queryParams: {
+                  entity: 'item',
+                },
+              }
+            );
+          }
+        });
+      };
+      unlockUI();
     } catch (error) {
       console.log('error', error);
       this.toastsService.error(

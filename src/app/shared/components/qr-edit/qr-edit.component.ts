@@ -273,7 +273,6 @@ export class QrEditComponent implements OnInit {
     }
 
     if (!this._PostsService.post && this.entity !== 'item') {
-
       this._Router.navigate([
         'ecommerce/' + this.headerService.saleflow?.merchant.slug + '/store',
       ]);
@@ -684,6 +683,9 @@ export class QrEditComponent implements OnInit {
       this._ItemsService.editingImageId = this.gridArray[index]._id;
       lockUI();
       this._Router.navigate([`admin/create-article/${this.item._id}`]);
+    } else if (this.entity === 'item' && !this.item) {
+      this._ItemsService.editingSlide = index;
+      this._Router.navigate(['admin/items-slides-editor']);
     } else {
       this._PostsService.editingSlide = index;
 

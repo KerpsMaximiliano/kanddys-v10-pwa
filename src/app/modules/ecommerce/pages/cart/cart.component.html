@@ -42,20 +42,18 @@
           <div class="item-quantity">
             <p class="grayout-label">Cantidad</p>
             <div class="quantity">
-              <!--
-                <span
-                  mat-button
-                  class="button"
-                  (click)="changeAmount(item._id, 'subtract')"
-                  >-</span
-                >
-              -->
-
-              <span 
-                *ngIf="items.length === 1 && itemObjects[item._id].amount === 1"
+              <span
+                *ngIf="items.length > 1 || itemObjects[item._id].amount > 1"
                 mat-button
                 class="button"
                 (click)="changeAmount(item._id, 'subtract')"
+                >-</span
+              >
+
+              <span
+                *ngIf="items.length === 1 && itemObjects[item._id].amount === 1"
+                mat-button
+                class="button disabled"
                 >-</span
               >
 
@@ -86,7 +84,7 @@
           "
         >
           <img
-            style="cursor: pointer;"
+            style="cursor: pointer"
             [src]="env + '/arrow-green.svg'"
             alt="required question"
             *ngIf="
@@ -247,7 +245,10 @@
         "
       >
         <mat-checkbox (change)="toggleCheckbox($event.checked)"></mat-checkbox>
-        <div (click)="goToSymbolCreation()" style="margin-top: 5px; cursor: pointer;">
+        <div
+          (click)="goToSymbolCreation()"
+          style="margin-top: 5px; cursor: pointer"
+        >
           <span>{{
             !postsService.post
               ? "Sin incluir mensaje de regalo"

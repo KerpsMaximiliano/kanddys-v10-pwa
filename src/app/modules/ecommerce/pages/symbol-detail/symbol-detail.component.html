@@ -147,6 +147,19 @@
       >
         {{ genericModelTemplate.description }}
       </h1>
+
+      <ng-container
+        *ngIf="
+          (!genericModelTemplate?.slides ||
+            genericModelTemplate?.slides?.length === 0) &&
+          genericModelTemplate.title &&
+          genericModelTemplate.description
+        "
+      >
+        <p class="description just-text">
+          {{ genericModelTemplate.description }}
+        </p>
+      </ng-container>
     </ng-container>
 
     <ng-container *ngIf="layout === 'ZOOMED-OUT-INFO'">
@@ -206,7 +219,7 @@
             {{ postData?.ctaText }}
           </a>
           <ng-container *ngIf="entityPresentation === 'DEMO'">
-            Botón de enlace
+            {{ "link-button" | translate }}
           </ng-container>
         </div>
       </ng-container>

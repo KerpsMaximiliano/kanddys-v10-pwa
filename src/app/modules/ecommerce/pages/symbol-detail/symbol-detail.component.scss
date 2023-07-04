@@ -60,6 +60,10 @@ main {
   border-radius: 18px;
   overflow: hidden;
 
+  ::ng-deep .swiper-container {
+    padding: 0px !important;
+  }
+
   &.minimized {
     border-radius: 0px;
     overflow: initial;
@@ -97,6 +101,10 @@ main {
   margin-top: 25px;
   word-break: break-word;
   overflow-y: scroll;
+
+  &.just-text {
+    text-align: center;
+  }
 }
 
 .bottom-flex {

@@ -34,40 +34,36 @@ export class PostsSlidesEditorComponent implements OnInit {
   }
 
   async onEditSubmit(result: CroppResult) {
-    console.log("result", result);
     try {
       const file = new File([result.blob], 'image.jpg', {
         type: 'image/jpg',
       });
 
-      if (result.modified) {
-        lockUI();
+      lockUI();
 
-        const reader = new FileReader();
+      const reader = new FileReader();
 
-        reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
 
-        reader.onload = async (e) => {
-          let result = reader.result;
+      reader.onload = async (e) => {
+        let result = reader.result;
 
-          this.postsService.post.slides[this.postsService.editingSlide][
-            'background'
-          ] = result;
+        this.postsService.post.slides[this.postsService.editingSlide][
+          'background'
+        ] = result;
 
-          this.postsService.post.slides[this.postsService.editingSlide][
-            'media'
-          ] = file;
+        this.postsService.post.slides[this.postsService.editingSlide]['media'] =
+          file;
 
-          this.ngZone.run(() => {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow.merchant.slug}/qr-edit`,
-            ]);
-          });
-        };
-        unlockUI();
-      }
+        this.ngZone.run(() => {
+          this.router.navigate([
+            `/ecommerce/${this.headerService.saleflow.merchant.slug}/qr-edit`,
+          ]);
+        });
+      };
+      unlockUI();
     } catch (error) {
-      console.log("error", error);
+      console.log('error', error);
       this.toastsService.error(
         'Ocurrio un error al editar la imagen, intenta de nuevo',
         null,

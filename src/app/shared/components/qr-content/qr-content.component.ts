@@ -28,7 +28,9 @@ export class QrContentComponent implements OnInit {
   @Input() defaultText: string = '';
   @Input() alternateStyles: boolean = false;
   @Output() buttonClicked = new EventEmitter();
+  @Output() buttonClicked2 = new EventEmitter();
   @Input() showButton: boolean = true;
+  @Input() showReorderButton: boolean = false;
   @Input() mode: 'LARGE' | 'SMALL' = 'LARGE';
   slidesPath: Array<{
     type: 'IMAGE' | 'VIDEO' | 'TEXT';
@@ -132,5 +134,9 @@ export class QrContentComponent implements OnInit {
 
   goToMediaUpload() {
     this.buttonClicked.emit(true);
+  }
+
+  goToReorderMedia() {
+    this.buttonClicked2.emit(true);
   }
 }

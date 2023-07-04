@@ -94,6 +94,7 @@ export class ItemCreationComponent implements OnInit {
   totalIncome: number = 0;
   currentView: 'ITEM_FORM' | 'ITEM_METRICS' = 'ITEM_FORM';
   assetsFolder: string = environment.assetsUrl;
+  isFormUpdated: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -156,6 +157,10 @@ export class ItemCreationComponent implements OnInit {
               this.itemsService.temporalItem?.layout || this.layout,
             ],
             ctaName: [this.itemsService.temporalItem?.ctaText],
+          });
+
+          this.itemFormData.valueChanges.subscribe(() => {
+            this.isFormUpdated = true;
           });
 
           if (this.itemsService.temporalItem?.images) {
@@ -895,6 +900,26 @@ export class ItemCreationComponent implements OnInit {
   }
 
   back() {
+    this.itemsService.temporalItem = null;
     this.router.navigate(['admin/dashboard']);
+  }
+
+  goToReorderMedia() {
+    this.saveTemporalItemInMemory();
+
+
+    if (!this.item)
+      this.router.navigate(['admin/slides-editor'], {
+        queryParams: {
+          entity: 'item',
+        },
+      });
+    else {
+      this.router.navigate(['admin/slides-editor/' + this.item._id], {
+        queryParams: {
+          entity: 'item',
+        },
+      });
+    }
   }
 }

@@ -32,10 +32,32 @@
         ></textarea>
       </div>
 
+      <div
+        class="textarea-wrapper not-first"
+        *ngIf="postForm.controls['message'].value"
+        [ngClass]="{
+          'no-shadow':
+            postForm.controls['message'].value &&
+            postForm.controls['message'].value.length > 0
+        }"
+      >
+        <label for="textarea-label" class="textarea-header">{{
+          "new-symbol.longer-text" | translate
+        }}</label>
+
+        <textarea
+          formControlName="message"
+          [placeholder]="'new-symbol.text-placeholder' | translate"
+          cols="30"
+          rows="10"
+          id="textarea-label"
+        ></textarea>
+      </div>
+
       <div class="added-slides" *ngIf="postsService.post?.slides?.length > 0">
         <app-qr-content
           [slides]="postsService.post.slides"
-          [title]="'Slides visuales'"
+          [title]="'new-symbol.visual-slides' | translate"
           [mode]="'SMALL'"
           [editing]="false"
           [defaultText]="'Incluyes fotos, memes, videos o música.'"
@@ -59,7 +81,9 @@
                   width: 100%;
                 "
               >
-                <span> Layout de los slides predeterminado </span>
+                <span>
+                  {{ "new-symbol.default-slides-layout" | translate }}
+                </span>
                 <mat-icon
                   [ngStyle]="{
                     color: '#7B7B7B',
@@ -105,28 +129,6 @@
       </div>
 
       <div
-        class="textarea-wrapper not-first"
-        *ngIf="postForm.controls['message'].value"
-        [ngClass]="{
-          'no-shadow':
-            postForm.controls['message'].value &&
-            postForm.controls['message'].value.length > 0
-        }"
-      >
-        <label for="textarea-label" class="textarea-header">{{
-          "new-symbol.longer-text" | translate
-        }}</label>
-
-        <textarea
-          formControlName="message"
-          [placeholder]="'new-symbol.text-placeholder' | translate"
-          cols="30"
-          rows="10"
-          id="textarea-label"
-        ></textarea>
-      </div>
-
-      <div
         (click)="openFormForField('LINK-BUTTON')"
         class="link-button"
         *ngIf="
@@ -134,7 +136,7 @@
           postForm.controls['ctaLink'].value
         "
       >
-        <h6>Botón de enlace</h6>
+        <h6>{{ "link-button" | translate }}</h6>
 
         <ng-container>
           <h4>
@@ -218,6 +220,7 @@
       style="color: #272727"
       (click)="
         !(
+          postForm.controls.title.value?.length || 
           postForm.controls.message.value?.length ||
           postsService.post.slides?.length
         )
@@ -227,6 +230,7 @@
     >
       {{
         (!(
+          postForm.controls.title.value?.length || 
           postForm.controls.message.value?.length ||
           postsService.post.slides?.length
         )

@@ -65,9 +65,6 @@ export class NewSymbolComponent implements OnInit {
         ctaLink: [this.postsService.post.ctaLink],
       });
     }
-
-    console.log(this.postsService.post);
-    console.log(this.headerService.getPost())
   }
 
   goToMediaUpload() {
@@ -92,62 +89,72 @@ export class NewSymbolComponent implements OnInit {
       fields: [],
     };
 
-    switch (field) {
-      case 'LARGE-TEXT':
-        fieldsToCreate.fields = [
-          {
-            label: 'Texto más largo',
-            name: 'large-text',
-            type: 'text',
-            validators: [Validators.pattern(/[\S]/)],
-          },
-        ];
-        break;
-      case 'LINK-BUTTON':
-        fieldsToCreate.fields = [
-          {
-            label: 'Botón',
-            name: 'button-name',
-            placeholder: 'Escribe el nombre..',
-            type: 'text',
-            validators: [Validators.pattern(/[\S]/), Validators.required],
-          },
-          {
-            label: 'Enlace',
-            name: 'link-url',
-            placeholder: 'Pega el url',
-            type: 'text',
-            validators: [Validators.pattern(/[\S]/), Validators.required],
-          },
-        ];
-        break;
-    }
+    this.translate
+      .get([
+        'new-symbol.longer-text',
+        'new-symbol.button-name-placeholder',
+        'button',
+        'link',
+        'paste-url',
+      ])
+      .subscribe((translations) => {
+        switch (field) {
+          case 'LARGE-TEXT':
+            fieldsToCreate.fields = [
+              {
+                label: translations['new-symbol.longer-text'],
+                name: 'large-text',
+                type: 'text',
+                validators: [Validators.pattern(/[\S]/)],
+              },
+            ];
+            break;
+          case 'LINK-BUTTON':
+            fieldsToCreate.fields = [
+              {
+                label: translations['button'],
+                name: 'button-name',
+                placeholder: translations['new-symbol.button-name-placeholder'],
+                type: 'text',
+                validators: [Validators.pattern(/[\S]/), Validators.required],
+              },
+              {
+                label: translations['link'],
+                name: 'link-url',
+                placeholder: translations['paste-url'],
+                type: 'text',
+                validators: [Validators.pattern(/[\S]/), Validators.required],
+              },
+            ];
+            break;
+        }
 
-    const dialogRef = this.dialog.open(FormComponent, {
-      data: fieldsToCreate,
-    });
-
-    dialogRef.afterClosed().subscribe((result: FormGroup) => {
-      console.log(result.value);
-
-      if (result.value['large-text']) {
-        this.postForm.patchValue({
-          message: result.value['large-text'],
+        const dialogRef = this.dialog.open(FormComponent, {
+          data: fieldsToCreate,
         });
-      }
 
-      if (result.value['button-name']) {
-        this.postForm.patchValue({
-          ctaText: result.value['button-name'],
-        });
-      }
+        dialogRef.afterClosed().subscribe((result: FormGroup) => {
+          console.log(result.value);
 
-      if (result.value['link-url']) {
-        this.postForm.patchValue({
-          ctaLink: result.value['link-url'],
+          if (result.value['large-text']) {
+            this.postForm.patchValue({
+              message: result.value['large-text'],
+            });
+          }
+
+          if (result.value['button-name']) {
+            this.postForm.patchValue({
+              ctaText: result.value['button-name'],
+            });
+          }
+
+          if (result.value['link-url']) {
+            this.postForm.patchValue({
+              ctaLink: result.value['link-url'],
+            });
+          }
         });
-      }
-    });
+      });
   }
 
   save() {
@@ -197,11 +204,14 @@ export class NewSymbolComponent implements OnInit {
   }
 
   goToPostDetail(mode: 'DEMO' | 'PREVIEW') {
+    this.postsService.post.title = this.postForm.controls['title'].value;
     this.postsService.post.message = this.postForm.controls['message'].value;
     this.postsService.post.layout =
       this.postForm.controls['defaultLayout'].value;
-
+    this.postsService.post.ctaText = this.postForm.controls['ctaText'].value;
+    this.postsService.post.ctaLink = this.postForm.controls['ctaLink'].value;
     this.headerService.flowRoute = this.router.url;
+
     localStorage.setItem('flowRoute', this.router.url);
 
     this.router.navigate(

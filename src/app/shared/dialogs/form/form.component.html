@@ -13,9 +13,11 @@
     </ng-container>
   </div>
   <div mat-dialog-actions class="buttons-flex">
-    <button class="cancel" (click)="close()">Cancelar</button>
+    <button class="cancel" (click)="close()">
+      {{ "cancel" | translate }}
+    </button>
     <button class="accept" [mat-dialog-close]="formGroup" cdkFocusInitial>
-      Salvar cambios
+      {{ "save-changes" | translate }}
     </button>
   </div>
 </div>

@@ -13,6 +13,7 @@ import {
   MatDialogRef,
   MatDialogModule,
 } from '@angular/material/dialog';
+import { TranslateService } from '@ngx-translate/core';
 
 interface Field {
   type: 'text' | 'email' | 'phone' | 'file';
@@ -37,8 +38,12 @@ export class FormComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FormData,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    private translate: TranslateService
+  ) {
+    translate.setDefaultLang('en');
+    translate.use('en');
+  }
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({});

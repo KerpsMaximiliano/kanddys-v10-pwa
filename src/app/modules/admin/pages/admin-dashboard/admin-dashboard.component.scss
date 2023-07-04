@@ -437,11 +437,14 @@
   justify-content: center;
 }
 
-::ng-deep .swiper-container {
-  padding-bottom: 34px !important;
-  padding-top: 14px !important;
-  padding-left: 1rem !important;
+.section-content {
+  ::ng-deep .swiper-container {
+    padding-bottom: 34px !important;
+    padding-top: 14px !important;
+    padding-left: 1rem !important;
+  }
 }
+
 
 .category-swiper {
   ::ng-deep .swiper-container {

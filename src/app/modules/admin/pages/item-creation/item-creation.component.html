@@ -73,11 +73,13 @@
         >
           <app-qr-content
             [slides]="itemSlides"
+            [showReorderButton]="true"
             [title]="'Slides visuales'"
             [mode]="'SMALL'"
             [editing]="false"
             [defaultText]="'Incluyes fotos, memes, videos o música.'"
             (buttonClicked)="emitFileInputClick()"
+            (buttonClicked2)="goToReorderMedia()"
           ></app-qr-content>
         </div>
 
@@ -272,7 +274,9 @@
             !itemFormData.controls['description'].value ||
             (itemsService.questionsToAddToItem.length === 0 &&
               !webform &&
-              !item)
+              !item) || (
+                item && !webform
+              )
           "
         >
           <h3>FUNCIONALIDADES OPCIONALES</h3>
@@ -398,18 +402,18 @@
       class="left"
       style="color: #272727"
       (click)="
-        !(itemFormData.valid || itemSlides.length)
+        !(itemFormData?.valid || itemSlides.length)
           ? goToItemDetail('DEMO')
           : goToItemDetail('PREVIEW')
       "
     >
       {{
-        !(itemFormData.valid || itemSlides.length) ? "Mira un demo" : "Preview"
+        !(itemFormData?.valid || itemSlides.length) ? "Mira un demo" : "Preview"
       }}
     </button>
     <button
       class="right"
-      *ngIf="(itemFormData.valid || itemSlides.length) && !item"
+      *ngIf="itemFormData?.valid && !item"
       style="color: #272727"
       (click)="saveItem()"
     >
@@ -418,7 +422,7 @@
 
     <button
       class="right"
-      *ngIf="itemFormData.valid && itemFormData.touched && item"
+      *ngIf="itemFormData?.valid && isFormUpdated && item"
       style="color: #272727"
       (click)="saveItem()"
     >

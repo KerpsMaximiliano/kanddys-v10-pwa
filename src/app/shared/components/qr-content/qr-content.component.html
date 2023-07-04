@@ -139,7 +139,7 @@
                   min-width: 70px;
                 "
               />
-  
+
               <video
                 class="video-content"
                 [id]="'media' + i"
@@ -152,19 +152,19 @@
               <div class="label">{{ gridItem.title }}</div>
             -->
           </div>
-  
+
           <div class="itemContainer" *ngIf="slide.type === 'TEXT'">
             <div class="joke">{{ slide.text }}</div>
-  
+
             <div class="joke-label">{{ slide.title }}</div>
-  
+
             <!--
               <p class="text">{{ gridItem.text }}</p>
               <div class="label">{{ gridItem.title }}</div>
             -->
           </div>
         </div>
-  
+
         <p
           class="placeholder"
           *ngIf="slidesPath.length === 0 && (!joke || joke.length === 0)"
@@ -172,12 +172,20 @@
           {{ defaultText }}
         </p>
       </div>
-  
+
       <img
         (click)="goToMediaUpload()"
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
         alt="add media"
         class="upload-media"
+      />
+
+      <img
+        *ngIf="showReorderButton"
+        (click)="goToReorderMedia()"
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/reorder.svg"
+        alt="reorder media"
+        class="reorder-media"
       />
     </div>
   </div>
