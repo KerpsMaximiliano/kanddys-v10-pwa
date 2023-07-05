@@ -130,6 +130,9 @@ const fullItem = `
     reference
     active
   }
+  layout
+  ctaText
+  ctaBehavior
   active
 `;
 

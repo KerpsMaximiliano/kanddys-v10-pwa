@@ -116,7 +116,7 @@
       <div class="section" style="margin-bottom: 30px">
         <div class="section-content">
           <mat-card class="card" *ngFor="let item of notSoldItems">
-            <a [routerLink]="['../article-editor', item._id]">
+            <a [routerLink]="['../item-creation', item._id]">
               <div class="card-body">
                 <div class="card-l-side">
                   <h2 class="card-title">
@@ -205,7 +205,7 @@
               class="card"
               *ngFor="let item of mostSoldItems; index as i"
             >
-              <a [routerLink]="['../article-editor/', item._id]">
+              <a [routerLink]="['../item-creation/', item._id]">
                 <div class="card-body">
                   <div class="card-l-side">
                     <h2 class="card-title">
@@ -270,7 +270,7 @@
               class="card"
               *ngFor="let item of lessSoldItems; index as i"
             >
-              <a [routerLink]="['../article-editor/', item._id]">
+              <a [routerLink]="['../item-creation/', item._id]">
                 <div class="card-body">
                   <div class="card-l-side">
                     <h2 class="card-title">
@@ -332,7 +332,7 @@
         <div class="section-content">
           <swiper [config]="cardSwiperConfig">
             <mat-card class="card" *ngFor="let item of allItems; index as i">
-              <a [routerLink]="['../article-editor/', item._id]">
+              <a [routerLink]="['../item-creation/', item._id]">
                 <div class="card-body">
                   <div class="card-l-side">
                     <h2 class="card-title">

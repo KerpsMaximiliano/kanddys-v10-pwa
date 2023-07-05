@@ -161,6 +161,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 import { WebformTextareaQuestionComponent } from './components/webform-textarea-question/webform-textarea-question.component';
 import { WebformMultipleSelectionQuestionComponent } from './components/webform-multiple-selection-question/webform-multiple-selection-question.component';
@@ -211,6 +212,13 @@ import { BuyerNotificationDialogComponent } from './dialogs/buyer-notification-d
 import { ItemAdminCardComponent } from './components/item-admin-card/item-admin-card.component';
 import { ProgressSliderComponent } from './components/progress-slider/progress-slider.component';
 import { ListCardComponent } from './components/list-card/list-card.component';
+import { PostsSlidesEditorComponent } from './components/posts-slides-editor/posts-slides-editor.component';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { CreateButtonLinkComponent } from './dialogs/create-button-link/create-button-link.component';
+import { createTranslateLoader } from '../core/functions/create-translate-loader';
+import { HttpClient } from '@angular/common/http';
+import { FormComponent } from './dialogs/form/form.component';
+import { ItemsSlidesEditorComponent } from './components/items-slides-editor/items-slides-editor.component';
 import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.component';
 import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
 
@@ -244,10 +252,12 @@ const imports = [
   MatSnackBarModule,
   MatCardModule,
   MatCheckboxModule,
+  MatRadioModule,
   MatGridListModule,
   MatTabsModule,
   MatToolbarModule,
   MatSidenavModule,
+  TranslateModule,
 ];
 const declarations = [
   // Pages
@@ -438,6 +448,10 @@ const declarations = [
   ItemAdminCardComponent,
   ProgressSliderComponent,
   ListCardComponent,
+  PostsSlidesEditorComponent,
+  CreateButtonLinkComponent,
+  FormComponent,
+  ItemsSlidesEditorComponent,
   StoreChatbotComponent,
   InputDialogComponent
 ];

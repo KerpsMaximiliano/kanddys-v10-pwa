@@ -1,0 +1,31 @@
+{
+    "button":"Botón",
+    "link":"Enlace",
+    "link-button":"Botón de enlace",
+    "paste-url":"Pega el url",
+    "cancel":"Cancelar",
+    "save-changes":"Salvar cambios",
+    "new-symbol.button-name-placeholder":"Escribe el nombre..",
+    "new-symbol.save": "Guardar",
+    "new-symbol.title" :"Mensaje virtual",
+    "new-symbol.text-title":"Texto principal y centralizado",
+    "new-symbol.longer-text":"Texto más largo",
+    "new-symbol.text-placeholder":"Escribe el mensaje de dedicatoria..",
+    "new-symbol.chulerias":"CHULERIAS OPCIONALES",
+    "new-symbol.slides":"Slides con fotos y videos",
+    "new-symbol.visual-slides":"Slides visuales",
+    "new-symbol.default-slides-layout":"Layout de los slides predeterminado",
+    "new-symbol.long-text": "Texto más largo",
+    "new-symbol.long-link-button":"Botón de enlace",
+    "new-symbol.see-demo":"Mira un Demo",
+    "new-symbol-preview":"Preview de la versión virtual",
+    "new-item.see-demo":"Mira un demo",
+    "create-button-link.button":"Botón",
+    "create-button-link.link":"Enlace",
+    "create-button-link.cancel":"Cancelar",
+    "create-button-link.save":"Salvar cambios",
+    "create-button-link.write-name":"Escribe el nombre...",
+    "create-button-link.paste-link":"Pega el url..."
+
+
+}

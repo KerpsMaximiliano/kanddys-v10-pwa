@@ -140,7 +140,7 @@ export class FormResponsesComponent implements OnInit {
           formId = this.item.webForms[0].reference;
 
         if (formId) this.webform = await this.webformsService.webform(formId);
-        else this.router.navigate(['/admin/article-editor/' + this.item._id]);
+        else this.router.navigate(['/admin/item-creation/' + this.item._id]);
 
         this.answersForWebform = await this.webformsService.answerPaginate({
           findBy: {

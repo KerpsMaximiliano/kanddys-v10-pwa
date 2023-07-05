@@ -7,9 +7,27 @@
 header {
   background-color: #ffffff;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.06);
-  padding: 15px 17px;
+  padding-left: 17px;
+  padding-right: 17px;
+  height: 46px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+
+  div {
+    display: flex;
+    align-items: center;
+  }
+
+  .more-icon {
+    color: #181d17;
+  }
+  .close-icon {
+    color: #c4c5c3;
+    font-size: 24px;
+    margin-right: 6px;
+    margin-top: -3px;
+  }
 
   button {
     border: none;
@@ -31,8 +49,87 @@ header {
 }
 
 main {
-  padding: 16px 20px 0px 20px;
+  padding: 20px;
   flex: 1;
+
+  .introduction {
+    color: #7b7b7b;
+    font-size: 17px;
+    font-family: InterLight;
+    font-style: normal;
+    line-height: normal;
+
+    p {
+      margin: 0px;
+      margin-bottom: 26px;
+
+      &:last-child {
+        margin-bottom: 16px;
+      }
+    }
+  }
+
+  .link-button {
+    border-radius: 4px;
+    background: #fff;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+
+    &.hover {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    label {
+      color: #000;
+      font-size: 13px;
+      font-family: InterLight;
+      font-style: italic;
+      font-weight: 300;
+      margin-bottom: 10px;
+    }
+
+    input {
+      border: none;
+      font-size: 17px;
+      font-family: InterBold;
+
+      &::placeholder {
+        color: #7b7b7b;
+      }
+    }
+
+    h6 {
+      color: #000;
+      font-size: 13px;
+      font-family: InterLight;
+      font-style: italic;
+      font-weight: normal;
+      margin: 0px;
+      margin-bottom: 10px;
+    }
+
+    h4 {
+      color: #7b7b7b;
+      font-size: 17px;
+      font-family: InterBold;
+      font-style: normal;
+      line-height: normal;
+      margin: 0px;
+    }
+
+    .link {
+      color: #189ac1;
+      font-size: 13px;
+      font-family: Inter;
+      font-style: italic;
+      font-weight: 300;
+      line-height: normal;
+    }
+  }
 
   .textarea-wrapper {
     width: 100%;
@@ -42,6 +139,11 @@ main {
     border-radius: 4px;
     margin-bottom: 0px;
     padding: 14px 12.29px 14px 14px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+
+    &.not-first {
+      margin-top: 9px;
+    }
 
     &.no-shadow {
       box-shadow: none;
@@ -56,7 +158,7 @@ main {
     }
 
     textarea {
-      margin-top: 16px;
+      margin-top: 27px;
       width: 100%;
       height: 188px;
       resize: none;
@@ -82,12 +184,10 @@ main {
   }
 
   .added-slides {
-    margin-top: 23px;
+    margin-top: 9px;
   }
-
   .optional-stuff {
-    margin-top: 52px;
-
+    margin-top: 88px;
     h3 {
       color: #000;
       font-size: 13px;
@@ -101,7 +201,7 @@ main {
       width: 100%;
       display: flex;
       justify-content: space-between;
-      padding: 14px 18px 13px 18px;
+      padding: 14px 16px 13px 18px;
       border-radius: 4px;
       background: #fff;
       margin-top: 12px;
@@ -112,10 +212,12 @@ main {
         font-family: InterRegular;
         font-style: italic;
       }
-
       img:hover {
         cursor: pointer;
       }
+    }
+    .row-mid {
+      margin-top: 9px;
     }
   }
 
@@ -137,7 +239,7 @@ footer {
   max-width: 500px;
   width: 100%;
   background-color: #ffffff;
-  padding: 17px;
+  padding: 11px 17px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -145,6 +247,9 @@ footer {
   button {
     border: none;
     background-color: #fff;
+    font-size: 17px;
+    color: #272727;
+    font-family: InterMedium;
 
     &:hover {
       cursor: pointer;
@@ -162,4 +267,59 @@ footer {
 .gray {
   filter: invert(86%) sepia(0%) saturate(4017%) hue-rotate(135deg)
     brightness(96%) contrast(82%);
+}
+
+::ng-deep.mat-expansion-panel {
+  box-shadow: unset !important;
+  background-color: #fff !important;
+}
+
+::ng-deep.mat-expansion-panel-header:hover {
+  background-color: #fff !important;
+}
+
+::ng-deep.mat-expansion-panel-header {
+  width: 100%;
+  display: flex !important;
+  justify-content: space-between !important;
+  padding: 14px 18px 13px 18px !important;
+  border-radius: 4px !important;
+  background: #fff;
+
+  span {
+    color: #000;
+    font-size: 17px;
+    font-family: InterRegular;
+    font-style: italic;
+  }
+}
+
+.layout-row {
+  margin-top: 12px;
+}
+
+.layouts-options {
+  display: flex;
+  gap: 10px;
+
+  .image-layout {
+    min-width: 100px;
+    width: 30vw;
+    max-width: 150px;
+  }
+}
+
+.image-layout-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  input {
+    margin-top: 10px;
+  }
 }

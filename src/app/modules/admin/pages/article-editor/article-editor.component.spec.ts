@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ArticleEditorComponent } from './article-editor.component';
+import { ArticleEditorComponent } from './item-creation.component';
 
 describe('ArticleEditorComponent', () => {
   let component: ArticleEditorComponent;

@@ -1,11 +1,7 @@
 <div class="container" [ngClass]="{ shadow: shadow }">
-  <a
-    *ngIf="redirectionParams"
-    [routerLink]="redirectionParams.link"
-    [queryParams]="redirectionParams.param"
-  >
+  <div *ngIf="redirectionParams" (click)="clickHandler()">
     <ng-container [ngTemplateOutlet]="cardContent"></ng-container>
-  </a>
+  </div>
   <ng-container
     *ngIf="!redirectionParams"
     [ngTemplateOutlet]="cardContent"

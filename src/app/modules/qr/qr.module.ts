@@ -6,6 +6,7 @@ import { ArticleDetailComponent } from '../ecommerce/pages/article-detail/articl
 import { PostsXlsComponent } from 'src/app/shared/components/posts-xls/posts-xls.component';
 import { ArticleTemplateComponent } from '../ecommerce/pages/article-template/article-template.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { SymbolDetailComponent } from '../ecommerce/pages/symbol-detail/symbol-detail.component';
 
 const routes: Routes = [
   {
@@ -18,7 +19,7 @@ const routes: Routes = [
   },
   {
     path: 'article-detail/:entity/:entityId',
-    component: ArticleDetailComponent,
+    component: SymbolDetailComponent,
   },
   {
     path: 'article-template/:entityTemplateId',

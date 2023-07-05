@@ -1,7 +1,9 @@
 <div class="container">
   <header>
     <button>
-      <mat-icon [ngStyle]="{ color: '#7B7B7B' }" (click)="back()">chevron_left</mat-icon>
+      <mat-icon [ngStyle]="{ color: '#7B7B7B' }" (click)="back()"
+        >chevron_left</mat-icon
+      >
     </button>
     <button
       style="margin-left: auto; color: #87cd9b"
@@ -23,15 +25,13 @@
 
     <div *ngIf="isQr || isText">
       <p class="title">Contenido de la tarjeta dedicatoria:</p>
-      <button
-        class="btn active"
-        (click)="backToMain()"
-      >
+      <button class="btn active" (click)="backToMain()">
         {{ isQr ? "Solo QR (nada visible)" : "Con el texto escrito y QR" }}
       </button>
 
       <p class="title" style="margin-top: 22px; margin-bottom: 25px">
-        WhatsApp o email que le recibirá el MagicLink para accesar al mensaje del regalo
+        WhatsApp o email que le recibirá el MagicLink para accesar al mensaje
+        del regalo
       </p>
       <div class="phone-wrapper">
         <ngx-intl-tel-input

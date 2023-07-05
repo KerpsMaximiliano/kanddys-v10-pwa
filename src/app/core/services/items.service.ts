@@ -53,10 +53,17 @@ import {
 } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
+import { ExtendedQuestionInput } from 'src/app/shared/components/form-creator/form-creator.component';
+import { SlideInput } from '../models/post';
+
+export interface ExtendedItemInput extends ItemInput {
+  slides?: Array<SlideInput>;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
   temporalItem: Item = null;
+  temporalItemInput: ExtendedItemInput = null;
   temporalItemParams: ItemParamInput[];
   temporalImages: {
     old: string[];
@@ -69,6 +76,8 @@ export class ItemsService {
   itemDesc: string;
   itemPassword: string;
   editingImageId: string;
+  editingSlide: number;
+  questionsToAddToItem: Array<ExtendedQuestionInput> = [];
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;
