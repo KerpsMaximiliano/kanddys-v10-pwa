@@ -50,7 +50,7 @@
                 >-</span
               >
 
-              <span 
+              <span
                 *ngIf="items.length === 1 && itemObjects[item._id].amount === 1"
                 mat-button
                 class="button"
@@ -85,7 +85,7 @@
           "
         >
           <img
-            style="cursor: pointer;"
+            style="cursor: pointer"
             [src]="env + '/arrow-green.svg'"
             alt="required question"
             *ngIf="
@@ -246,7 +246,10 @@
         "
       >
         <mat-checkbox (change)="toggleCheckbox($event.checked)"></mat-checkbox>
-        <div (click)="goToSymbolCreation()" style="margin-top: 5px; cursor: pointer;">
+        <div
+          (click)="goToSymbolCreation()"
+          style="margin-top: 5px; cursor: pointer"
+        >
           <span>{{
             !postsService.post
               ? "Sin incluir mensaje de regalo"

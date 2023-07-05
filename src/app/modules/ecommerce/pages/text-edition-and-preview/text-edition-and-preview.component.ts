@@ -25,7 +25,7 @@ export class TextEditionAndPreviewComponent implements OnInit {
     slidesPerView: 1,
   };
   type: 'POST' | 'AI-JOKE' = 'POST';
-  returnTo: 'checkout' | 'post-edition' | 'article-editor' = null;
+  returnTo: 'checkout' | 'post-edition' | 'item-creation' = null;
 
   constructor(
     private router: Router,

@@ -88,8 +88,11 @@ export class MediaUploadDndComponentComponent implements OnInit {
                 1 + this.webformQuestionIndex
               ].fields.controls['responseOptions'] &&
               !this.webformsService.formCreationData
-            )
-              this.router.navigate(['/admin/form-creator/' + this.itemId]);
+            ) {
+              if (this.itemId)
+                this.router.navigate(['/admin/form-creator/' + this.itemId]);
+              else this.router.navigate(['/admin/form-creator']);
+            }
           }
 
           this.availableFiles = [
@@ -208,7 +211,9 @@ export class MediaUploadDndComponentComponent implements OnInit {
         );
       });
 
-      this.router.navigate(['/admin/form-creator/' + this.itemId]);
+      if (this.itemId)
+        this.router.navigate(['/admin/form-creator/' + this.itemId]);
+      else this.router.navigate(['/admin/form-creator']);
     }
 
     if (
@@ -216,7 +221,9 @@ export class MediaUploadDndComponentComponent implements OnInit {
       this.webformQuestionIndex >= 0 &&
       this.gridArray.length === 0
     ) {
-      this.router.navigate(['/admin/form-creator/' + this.itemId]);
+      if (this.itemId)
+        this.router.navigate(['/admin/form-creator/' + this.itemId]);
+      else this.router.navigate(['/admin/form-creator']);
     }
   }
 

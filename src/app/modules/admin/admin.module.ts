@@ -67,6 +67,12 @@ import { RenameQuestionComponent } from './pages/rename-question/rename-question
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
 import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 import { MerchantsEntryComponent } from './pages/merchants-entry/merchants-entry.component';
+import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
+
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
+import { HttpClient } from '@angular/common/http';
+import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slides-editor/items-slides-editor.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -101,6 +107,22 @@ const routes: Routes = [
       {
         path: 'create-article/:itemId',
         component: ArticleCreatorComponent,
+      },
+      {
+        path: 'items-slides-editor',
+        component: ItemsSlidesEditorComponent,
+      },
+      {
+        path: 'items-slides-editor/:itemId',
+        component: ItemsSlidesEditorComponent,
+      },
+      {
+        path: 'item-creation/:itemId',
+        component: ItemCreationComponent,
+      },
+      {
+        path: 'item-creation',
+        component: ItemCreationComponent,
       },
       {
         path: 'merchant-items',
@@ -177,11 +199,15 @@ const routes: Routes = [
         component: ContactLandingContainerComponent,
       },
       {
-        path: 'article-editor/:articleId',
+        path: 'item-creation/:articleId',
         component: ArticleEditorComponent,
       },
       {
         path: 'slides-editor/:articleId',
+        component: QrEditComponent,
+      },
+      {
+        path: 'slides-editor',
         component: QrEditComponent,
       },
       {
@@ -375,22 +401,26 @@ const routes: Routes = [
   },
   {
     path: 'article-detail/:articleId',
-    component: ArticleDetailComponent
+    component: ArticleDetailComponent,
   },
   {
     path: 'reportings',
-    component: ReportingsComponent
+    component: ReportingsComponent,
   },
   {
     path: 'expenditures/:type',
-    component: ExpendituresComponent
+    component: ExpendituresComponent,
   },
   {
     path: 'incomes',
-    component: IncomesComponent
+    component: IncomesComponent,
   },
   {
     path: 'form-creator/:itemId',
+    component: FormCreatorComponent,
+  },
+  {
+    path: 'form-creator',
     component: FormCreatorComponent,
   },
   {
@@ -427,8 +457,8 @@ const routes: Routes = [
   },
   {
     path: 'merchants-entry',
-    component: MerchantsEntryComponent
-  }
+    component: MerchantsEntryComponent,
+  },
 ];
 
 @NgModule({
@@ -482,6 +512,7 @@ const routes: Routes = [
     RenameQuestionComponent,
     RewardsDisplayComponent,
     MerchantsEntryComponent,
+    ItemCreationComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
@@ -492,6 +523,13 @@ const routes: Routes = [
     MatDatepickerModule,
     MatNativeDateModule,
     RouterModule.forChild(routes),
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: createTranslateLoader,
+        deps: [HttpClient],
+      },
+    }),
   ],
 })
 export class AdminModule {}

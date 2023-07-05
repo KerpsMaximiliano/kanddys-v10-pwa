@@ -7,6 +7,10 @@
   }
 }
 
+::ng-deep .mat-dialog-container {
+  padding: 24px;
+}
+
 .button-cta {
   color: #181d17;
   padding: 10px;

@@ -1,13 +1,12 @@
 <div class="container">
   <header>
-    <button (click)="goBack()">
-      <i
-        style="color: #c4c5c3; cursor: pointer; font-size: 1.2rem"
-        class="fas fa-chevron-left"
-      ></i>
-    </button>
-
-    <h3>Nuevo Símbolo de mensaje</h3>
+    <div>
+      <div (click)="goBack()">
+        <mat-icon class="close-icon">close</mat-icon>
+      </div>
+      <h3>{{ "new-symbol.title" | translate }}</h3>
+    </div>
+    <mat-icon class="more-icon">more_horiz</mat-icon>
   </header>
 
   <main>
@@ -16,17 +15,39 @@
         class="textarea-wrapper"
         [ngClass]="{
           'no-shadow':
+            postForm.controls['title'].value &&
+            postForm.controls['title'].value.length > 0
+        }"
+      >
+        <label for="textarea-label" class="textarea-header">{{
+          "new-symbol.text-title" | translate
+        }}</label>
+
+        <textarea
+          formControlName="title"
+          [placeholder]="'new-symbol.text-placeholder' | translate"
+          cols="30"
+          rows="10"
+          id="textarea-label"
+        ></textarea>
+      </div>
+
+      <div
+        class="textarea-wrapper not-first"
+        *ngIf="postForm.controls['message'].value"
+        [ngClass]="{
+          'no-shadow':
             postForm.controls['message'].value &&
             postForm.controls['message'].value.length > 0
         }"
       >
-        <label for="textarea-label" class="textarea-header"
-          >Texto principal y centralizado</label
-        >
+        <label for="textarea-label" class="textarea-header">{{
+          "new-symbol.longer-text" | translate
+        }}</label>
 
         <textarea
           formControlName="message"
-          placeholder="Escribe el mensaje de dedicatoria.."
+          [placeholder]="'new-symbol.text-placeholder' | translate"
           cols="30"
           rows="10"
           id="textarea-label"
@@ -36,7 +57,7 @@
       <div class="added-slides" *ngIf="postsService.post?.slides?.length > 0">
         <app-qr-content
           [slides]="postsService.post.slides"
-          [title]="'Slides visuales'"
+          [title]="'new-symbol.visual-slides' | translate"
           [mode]="'SMALL'"
           [editing]="false"
           [defaultText]="'Incluyes fotos, memes, videos o música.'"
@@ -44,14 +65,146 @@
         ></app-qr-content>
       </div>
 
-      <div class="optional-stuff"  *ngIf="postsService.post?.slides?.length === 0">
-        <h3>CHULERIAS OPCIONALES</h3>
+      <div class="layout-row" *ngIf="postsService.post?.slides?.length !== 0">
+        <mat-accordion>
+          <mat-expansion-panel
+            (opened)="isLayoutDropdownOpened = true"
+            (closed)="isLayoutDropdownOpened = false"
+            hideToggle
+          >
+            <mat-expansion-panel-header>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  width: 100%;
+                "
+              >
+                <span>
+                  {{ "new-symbol.default-slides-layout" | translate }}
+                </span>
+                <mat-icon
+                  [ngStyle]="{
+                    color: '#7B7B7B',
+                    marginLeft: '10px'
+                  }"
+                  >{{
+                    isLayoutDropdownOpened
+                      ? "keyboard_arrow_down"
+                      : "keyboard_arrow_right"
+                  }}
+                </mat-icon>
+              </div>
+            </mat-expansion-panel-header>
 
-        <div class="row">
-          <span>Slides con fotos y videos</span>
+            <div class="layouts-options">
+              <div class="image-layout-wrapper">
+                <img
+                  class="image-layout"
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/Expanded-Slide-icon.png"
+                  alt="expanded slide"
+                />
+                <input
+                  type="radio"
+                  formControlName="defaultLayout"
+                  [value]="'EXPANDED-SLIDE'"
+                />
+              </div>
+              <div class="image-layout-wrapper">
+                <img
+                  class="image-layout"
+                  src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/minimized-slides.png"
+                  alt="minimized slides"
+                />
+                <input
+                  type="radio"
+                  formControlName="defaultLayout"
+                  [value]="'ZOOMED-OUT-INFO'"
+                />
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+
+      <div
+        (click)="openFormForField('LINK-BUTTON')"
+        class="link-button"
+        *ngIf="
+          postForm.controls['ctaText'].value &&
+          postForm.controls['ctaLink'].value
+        "
+      >
+        <h6>{{ "link-button" | translate }}</h6>
+
+        <ng-container>
+          <h4>
+            {{ postForm.controls["ctaText"].value }}
+          </h4>
+
+          <div class="link">
+            {{ postForm.controls["ctaLink"].value }}
+          </div>
+        </ng-container>
+      </div>
+
+      <div
+        class="optional-stuff"
+        *ngIf="
+          postsService.post?.slides?.length === 0 ||
+          !postForm.controls['message'].value ||
+          !(
+            postForm.controls['ctaText'].value &&
+            postForm.controls['ctaLink'].value
+          )
+        "
+      >
+        <h3>{{ "new-symbol.chulerias" | translate }}</h3>
+
+        <div class="row" *ngIf="postsService.post?.slides?.length === 0">
+          <span>{{ "new-symbol.slides" | translate }}</span>
 
           <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+            alt="add media"
+            class="upload-media"
             (click)="goToMediaUpload()"
+          />
+        </div>
+        <div class="row row-mid" *ngIf="!postForm.controls['message'].value">
+          <span>{{ "new-symbol.long-text" | translate }}</span>
+
+          <img
+            (click)="openFormForField('LARGE-TEXT')"
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+            alt="add media"
+            class="upload-media"
+          />
+        </div>
+
+        <div
+          class="row row-mid"
+          *ngIf="
+            !(
+              postForm.controls['ctaText'].value &&
+              postForm.controls['ctaLink'].value
+            )
+          "
+        >
+          <span>{{ "new-symbol.long-link-button" | translate }}</span>
+
+          <!--
+          <img
+            (click)="openButtonLinkDialog()"
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+            alt="add media"
+            class="upload-media"
+          />
+
+        -->
+          <img
+            (click)="openFormForField('LINK-BUTTON')"
             src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
             alt="add media"
             class="upload-media"
@@ -59,31 +212,15 @@
         </div>
       </div>
     </form>
-
-    <!--
-      <div class="posts-virtual-content-wrapper">
-        <div class="posts-virtual-content-grid">
-          <div
-            class="media-wrapper"
-            *ngFor="let media of postsService.post.slides"
-          ></div>
-        </div>
-        <div class="upload-button">
-          <img
-            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
-            alt=""
-          />
-        </div>
-      </div>
-    -->
   </main>
 
   <footer>
     <button
       class="left"
-      style="color: #272727;"
+      style="color: #272727"
       (click)="
         !(
+          postForm.controls.title.value?.length || 
           postForm.controls.message.value?.length ||
           postsService.post.slides?.length
         )
@@ -92,12 +229,14 @@
       "
     >
       {{
-        !(
+        (!(
+          postForm.controls.title.value?.length || 
           postForm.controls.message.value?.length ||
           postsService.post.slides?.length
         )
-          ? "Mira un Demo"
-          : "Preview de la versión virtual"
+          ? "new-symbol.see-demo"
+          : "new-symbol-preview"
+        ) | translate
       }}
     </button>
     <button
@@ -106,10 +245,10 @@
         postForm.controls.message.value?.length ||
         postsService.post.slides?.length
       "
-      style="color: #272727;"
+      style="color: #272727"
       (click)="save()"
     >
-      Guardar
+      {{ "new-symbol.save" | translate }}
     </button>
   </footer>
 </div>
