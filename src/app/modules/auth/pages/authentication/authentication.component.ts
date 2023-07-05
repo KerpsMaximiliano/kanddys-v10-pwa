@@ -178,7 +178,7 @@ export class Authentication implements OnInit {
               if (this.type === 'create-item') {
                 await this.authService.generateMagicLink(
                   phoneNumber,
-                  `admin/article-editor`,
+                  `admin/item-creation`,
                   this.itemId,
                   'NewItem',
                   {}

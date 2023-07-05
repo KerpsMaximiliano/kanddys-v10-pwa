@@ -428,13 +428,20 @@ export class CartComponent implements OnInit {
 
         this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
 
+        if (this.items.length === 0)
+          this.router.navigate([
+            'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+          ]);
+
         Object.keys(itemsIdsDeleted).forEach((itemId) => {
           if (itemsIdsDeleted[itemId]) {
-            delete this.webformsByItem[itemId]; 
+            delete this.webformsByItem[itemId];
           }
         });
 
         this.areItemsQuestionsAnswered();
+
+        if (this.items.length === 0) this.router.navigate(['/ecommerce/' + this.headerService.saleflow.merchant.slug + '/store']);
       },
     });
   }

@@ -32,16 +32,16 @@
           ></div>
           <span class="title">
             {{
-              headerService.saleflow?.merchant?.name.length < 26
+              headerService.saleflow?.merchant?.name.length < 40
                 ? headerService.saleflow?.merchant?.name
-                : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+                : (headerService.saleflow?.merchant?.name.slice(0, 40) + ".." ||
                     "Tienda" | titlecase)
             }}
           </span>
         </div>
-        <button class="btn" (click)="openContactInfo()">
+        <!-- <button class="btn" (click)="openContactInfo()">
           <span>Simbolos & Contactos</span>
-        </button>
+        </button> -->
       </div>
     </div>
 
