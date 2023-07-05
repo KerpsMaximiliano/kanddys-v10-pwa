@@ -66,6 +66,10 @@ ngx-intl-tel-input input {
     box-shadow: rgb(0 0 0 / 20%) 0px 0px 4px 1px inset;
     border-radius: 22px;
   }
+
+  &.no-shadow {
+    box-shadow: none;
+  }
 }
 
 ngx-intl-tel-input.ng-invalid.ng-touched input {

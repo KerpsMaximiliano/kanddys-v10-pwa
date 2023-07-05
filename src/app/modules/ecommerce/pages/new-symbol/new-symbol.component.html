@@ -6,18 +6,90 @@
       </div>
       <h3>{{ "new-symbol.title" | translate }}</h3>
     </div>
-    <mat-icon class="more-icon">more_horiz</mat-icon>
+
+    <div class="options-wrapper">
+      <img
+        [src]="
+          !introTextDisplayed
+            ? assetsFolder + '/icon_info.png'
+            : assetsFolder + '/dropdown_icon.png'
+        "
+        alt="open internal information"
+        (click)="introTextDisplayed = !introTextDisplayed"
+      />
+      <mat-icon class="more-icon">more_horiz</mat-icon>
+    </div>
   </header>
 
   <main>
+    <div class="introduction" *ngIf="introTextDisplayed">
+      <p *ngFor="let paragraph of introductionTexts">
+        {{ paragraph }}
+      </p>
+    </div>
+
     <form [formGroup]="postForm">
       <div
-        class="textarea-wrapper"
+        class="textarea-wrapper m-bottom"
         [ngClass]="{
           'no-shadow':
             postForm.controls['title'].value &&
             postForm.controls['title'].value.length > 0
         }"
+      >
+        <label
+          for="access-key-field"
+          class="textarea-header"
+          (click)="isPhoneInputFocused = !isPhoneInputFocused"
+          >{{ "new-symbol.access-key" | translate }}</label
+        >
+
+        <div
+          class="placeholder"
+          *ngIf="!isPhoneInputFocused"
+          (click)="isPhoneInputFocused = !isPhoneInputFocused"
+        >
+          {{ "new-symbol.access-key-placeholder" | translate }}
+        </div>
+
+        <div class="phone-wrapper" *ngIf="isPhoneInputFocused">
+          <ngx-intl-tel-input
+            [cssClass]="'no-shadow'"
+            [enableAutoCountrySelect]="true"
+            [enablePlaceholder]="true"
+            [searchCountryFlag]="true"
+            [selectFirstCountry]="false"
+            [preferredCountries]="preferredCountries"
+            [selectedCountryISO]="CountryISO"
+            maxLength="13"
+            minlength="10"
+            [phoneValidation]="true"
+            [separateDialCode]="true"
+            [customPlaceholder]="'(000) 000-0000'"
+            [numberFormat]="PhoneNumberFormat.International"
+            tabindex="1"
+            id="phone"
+            formControlName="accessKey"
+          ></ngx-intl-tel-input>
+
+          <span
+            class="phoneNumber-formatted"
+            *ngIf="postForm.controls['accessKey']?.value"
+            (click)="focusPhoneInput()"
+          >
+            {{ postForm.controls["accessKey"]?.value.nationalNumber }}
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="textarea-wrapper m-bottom"
+        [ngClass]="{
+          'no-shadow':
+            postForm.controls['title'].value &&
+            postForm.controls['title'].value.length > 0
+        }"
+        *ngIf="postForm.controls['title']?.value"
       >
         <label for="textarea-label" class="textarea-header">{{
           "new-symbol.text-title" | translate
@@ -160,7 +232,18 @@
           )
         "
       >
-        <h3>{{ "new-symbol.chulerias" | translate }}</h3>
+        <h3>{{ "type-of-content" | translate }}</h3>
+
+        <div class="row row-mid" *ngIf="!postForm.controls['title'].value">
+          <span>{{ "new-symbol.short-text" | translate }}</span>
+
+          <img
+            (click)="openFormForField('SHORT-TEXT')"
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+            alt="add media"
+            class="upload-media"
+          />
+        </div>
 
         <div class="row" *ngIf="postsService.post?.slides?.length === 0">
           <span>{{ "new-symbol.slides" | translate }}</span>
@@ -220,7 +303,7 @@
       style="color: #272727"
       (click)="
         !(
-          postForm.controls.title.value?.length || 
+          postForm.controls.title.value?.length ||
           postForm.controls.message.value?.length ||
           postsService.post.slides?.length
         )
@@ -230,7 +313,7 @@
     >
       {{
         (!(
-          postForm.controls.title.value?.length || 
+          postForm.controls.title.value?.length ||
           postForm.controls.message.value?.length ||
           postsService.post.slides?.length
         )

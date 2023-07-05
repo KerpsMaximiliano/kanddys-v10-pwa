@@ -273,17 +273,15 @@
         mat-button
         class="cta"
         [ngClass]="{
-          valid:
-            areWebformsValid &&
-            (isCheckboxChecked || (!isCheckboxChecked && postsService.post))
+          valid: areWebformsValid
         }"
         [disabled]="
-          !areWebformsValid || (!isCheckboxChecked && !postsService.post)
+          !areWebformsValid
         "
-        (click)="submit()"
+        (click)="openSubmitDialog()"
       >
         {{
-          !areWebformsValid || (!isCheckboxChecked && !postsService.post)
+          !areWebformsValid
             ? "Llena las preguntas"
             : "Continuar"
         }}

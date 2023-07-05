@@ -6,12 +6,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { PostsService } from 'src/app/core/services/posts.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { CreateButtonLinkComponent } from 'src/app/shared/dialogs/create-button-link/create-button-link.component';
 import {
   FormComponent,
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
+import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-new-symbol',
@@ -23,6 +23,20 @@ export class NewSymbolComponent implements OnInit {
   isLayoutDropdownOpened = false;
   layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
   flow: 'cart' | 'checkout' = 'cart';
+  introductionTexts: Array<string> = [
+    'Nosotros transformamos tu mensaje en un código QR que se imprime y se pone en tu regalo.',
+    'Cuando la persona recibe tu regalo, solo tiene que escanear el código QR con su teléfono. Esto les enviará un enlace a su teléfono o correo electrónico. Al hacer clic en el enlace, pueden ver tu mensaje, las fotos y los videos que has enviado',
+    '¡Y lo mejor de todo es que solo ellos pueden verlo, nadie más!',
+  ];
+  introTextDisplayed: boolean = false;
+  CountryISO = CountryISO.DominicanRepublic;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
+  PhoneNumberFormat = PhoneNumberFormat;
+  isPhoneInputFocused: boolean = false;
+  assetsFolder: string = environment.assetsUrl;
 
   constructor(
     private router: Router,
@@ -49,6 +63,7 @@ export class NewSymbolComponent implements OnInit {
         slides: [],
       };
       this.postForm = this.fb.group({
+        accessKey: [''],
         title: [''],
         message: [''],
         defaultLayout: [this.postsService.post.layout || this.layout],
@@ -58,6 +73,7 @@ export class NewSymbolComponent implements OnInit {
     } else {
       console.log('post');
       this.postForm = this.fb.group({
+        accessKey: [''],
         title: [this.postsService.post.title],
         message: [this.postsService.post.message],
         defaultLayout: [this.postsService.post.layout || this.layout],
@@ -84,7 +100,9 @@ export class NewSymbolComponent implements OnInit {
     );
   }
 
-  openFormForField(field: 'TITLE' | 'LARGE-TEXT' | 'LINK-BUTTON') {
+  openFormForField(
+    field: 'SHORT-TEXT' | 'TITLE' | 'LARGE-TEXT' | 'LINK-BUTTON'
+  ) {
     let fieldsToCreate: FormData = {
       fields: [],
     };
@@ -96,9 +114,20 @@ export class NewSymbolComponent implements OnInit {
         'button',
         'link',
         'paste-url',
+        'new-symbol.short-text'
       ])
       .subscribe((translations) => {
         switch (field) {
+          case 'SHORT-TEXT':
+            fieldsToCreate.fields = [
+              {
+                label: translations['new-symbol.short-text'],
+                name: 'short-text',
+                type: 'text',
+                validators: [Validators.pattern(/[\S]/)],
+              },
+            ];
+            break;
           case 'LARGE-TEXT':
             fieldsToCreate.fields = [
               {
@@ -135,6 +164,12 @@ export class NewSymbolComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((result: FormGroup) => {
           console.log(result.value);
+
+          if (result.value['short-text']) {
+            this.postForm.patchValue({
+              title: result.value['short-text'],
+            });
+          }
 
           if (result.value['large-text']) {
             this.postForm.patchValue({
@@ -228,6 +263,12 @@ export class NewSymbolComponent implements OnInit {
         },
       }
     );
+  }
+
+  focusPhoneInput() {
+    const ngxIntlPhoneInput = document.querySelector('#phone');
+
+    (ngxIntlPhoneInput.querySelector('#phone') as HTMLInputElement).focus();
   }
 
   /*
