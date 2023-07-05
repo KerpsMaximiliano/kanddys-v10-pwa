@@ -55,6 +55,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
 import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
+import { InvalidMagicLinkComponent } from './pages/invalid-magic-link/invalid-magic-link.component';
 
 const routes: Routes = [
   {
@@ -143,6 +144,10 @@ const routes: Routes = [
   {
     path: 'webform-options-selector',
     component: WebformOptionsSelectorComponent,
+  },
+  {
+    path: 'invalid-link',
+    component: InvalidMagicLinkComponent
   },
   {
     path: ':merchantSlug',
@@ -327,6 +332,7 @@ const routes: Routes = [
     GiftcardDetailsComponent,
     SymbolDetailComponent,
     OrderConfirmationComponent,
+    InvalidMagicLinkComponent,
   ],
   imports: [
     CommonModule,
