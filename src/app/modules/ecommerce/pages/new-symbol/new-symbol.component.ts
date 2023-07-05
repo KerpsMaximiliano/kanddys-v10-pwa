@@ -37,6 +37,11 @@ export class NewSymbolComponent implements OnInit {
   PhoneNumberFormat = PhoneNumberFormat;
   isPhoneInputFocused: boolean = false;
   assetsFolder: string = environment.assetsUrl;
+  type: 'VIRTUAL-MESSAGE' | 'TRADITIONAL-MESSAGE' = 'VIRTUAL-MESSAGE';
+  messageFlow:
+    | 'VIRTUAL-MESSAGE'
+    | 'TRADITIONAL-MESSAGE'
+    | 'TRADITIONAL-AND-VIRTUAL' = 'VIRTUAL-MESSAGE';
 
   constructor(
     private router: Router,
@@ -53,34 +58,45 @@ export class NewSymbolComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const flow = this.route.snapshot.queryParamMap.get('flow');
-    if (flow) this.flow = flow as 'cart' | 'checkout';
+    this.route.queryParams.subscribe(({ flow, type }) => {
+      if (flow) this.flow = flow as 'cart' | 'checkout';
 
-    if (!this.postsService.post) {
-      console.log('no post');
-      this.postsService.post = {
-        title: '',
-        slides: [],
-      };
-      this.postForm = this.fb.group({
-        accessKey: [''],
-        title: [''],
-        message: [''],
-        defaultLayout: [this.postsService.post.layout || this.layout],
-        ctaText: [''],
-        ctaLink: [''],
-      });
-    } else {
-      console.log('post');
-      this.postForm = this.fb.group({
-        accessKey: [''],
-        title: [this.postsService.post.title],
-        message: [this.postsService.post.message],
-        defaultLayout: [this.postsService.post.layout || this.layout],
-        ctaText: [this.postsService.post.ctaText],
-        ctaLink: [this.postsService.post.ctaLink],
-      });
-    }
+      if (type && type === 'traditional') {
+        this.messageFlow = 'TRADITIONAL-MESSAGE';
+        this.type = 'TRADITIONAL-MESSAGE';
+      }
+      if (type && type === 'both') {
+        this.messageFlow = 'TRADITIONAL-AND-VIRTUAL';
+        this.type = 'TRADITIONAL-MESSAGE';
+      }
+
+      if (!this.postsService.post) {
+        console.log('no post');
+        this.postsService.post = {
+          title: '',
+          slides: [],
+        };
+        this.postForm = this.fb.group({
+          accessKey: [''],
+          title: [''],
+          message: [''],
+          defaultLayout: [this.postsService.post.layout || this.layout],
+          ctaText: [''],
+          ctaLink: [''],
+        });
+      } else {
+        if(this.postsService.postReceiverNumberObject) this.isPhoneInputFocused = true;
+
+        this.postForm = this.fb.group({
+          accessKey: [this.postsService.postReceiverNumberObject],
+          title: [this.postsService.post.title],
+          message: [this.postsService.post.message],
+          defaultLayout: [this.postsService.post.layout || this.layout],
+          ctaText: [this.postsService.post.ctaText],
+          ctaLink: [this.postsService.post.ctaLink],
+        });
+      }
+    });
   }
 
   goToMediaUpload() {
@@ -90,6 +106,17 @@ export class NewSymbolComponent implements OnInit {
       this.postForm.controls['defaultLayout'].value;
     this.postsService.post.ctaText = this.postForm.controls['ctaText'].value;
     this.postsService.post.ctaLink = this.postForm.controls['ctaLink'].value;
+
+    if (
+      this.postForm.controls['accessKey'].valid &&
+      this.postForm.controls['accessKey'].value
+    ) {
+      this.postsService.postReceiverNumberObject =
+        this.postForm.controls['accessKey'].value;
+      this.postsService.postReceiverNumber =
+        this.postForm.controls['accessKey'].value.e164Number.split('+')[1];
+    }
+
     this.router.navigate(
       ['ecommerce/' + this.headerService.saleflow.merchant.slug + '/qr-edit'],
       {
@@ -114,7 +141,7 @@ export class NewSymbolComponent implements OnInit {
         'button',
         'link',
         'paste-url',
-        'new-symbol.short-text'
+        'new-symbol.short-text',
       ])
       .subscribe((translations) => {
         switch (field) {
@@ -201,14 +228,37 @@ export class NewSymbolComponent implements OnInit {
     this.postsService.post.ctaText = this.postForm.controls['ctaText'].value;
     this.postsService.post.ctaLink = this.postForm.controls['ctaLink'].value;
 
+    if (
+      this.postForm.controls['accessKey'].valid &&
+      this.postForm.controls['accessKey'].value
+    ) {
+      this.postsService.postReceiverNumberObject =
+        this.postForm.controls['accessKey'].value;
+      this.postsService.postReceiverNumber =
+        this.postForm.controls['accessKey'].value.e164Number.split('+')[1];
+    }
+
+    this.postsService.privatePost = true;
+    localStorage.setItem('privatePost', 'true');
+
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
+
+    this.postsService.post.envelopePresentation = 'QR-TEXT';
+
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+
+    if (this.flow === 'checkout')
+      return this.router.navigate([
+        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/checkout',
+      ]);
 
     this.router.navigate(
       [
         'ecommerce/' +
           this.headerService.saleflow.merchant.slug +
-          '/giftcard-details',
+          '/receiver-form',
       ],
       {
         queryParams: {
@@ -269,6 +319,14 @@ export class NewSymbolComponent implements OnInit {
     const ngxIntlPhoneInput = document.querySelector('#phone');
 
     (ngxIntlPhoneInput.querySelector('#phone') as HTMLInputElement).focus();
+  }
+
+  saveTraditionalMessage() {
+    if (this.messageFlow === 'TRADITIONAL-AND-VIRTUAL') {
+      this.type = 'VIRTUAL-MESSAGE';
+    } else {
+      this.save();
+    }
   }
 
   /*
