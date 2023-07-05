@@ -26,6 +26,8 @@ import { SwiperOptions } from 'swiper';
 import { Subscription } from 'rxjs';
 import { capitalize } from 'src/app/core/helpers/strings.helpers';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -74,7 +76,8 @@ export class CartComponent implements OnInit {
     private appService: AppService,
     private router: Router,
     private route: ActivatedRoute,
-    public postsService: PostsService
+    public postsService: PostsService,
+    private _bottomSheet: MatBottomSheet,
   ) {}
 
   async ngOnInit() {
@@ -771,6 +774,83 @@ export class CartComponent implements OnInit {
     console.log(this.isItemInCart);
 
     // this.itemsAmount = itemsInCart.length > 0 ? itemsInCart.length + '' : null;
+  }
+
+  openSubmitDialog() {
+    const bottomSheetRef = this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+          title: `¿Quieres añadir un mensaje de regalo?`,
+          description: `¡Dale un toque personal a tu regalo! Opcional.`,
+          options: [
+            {
+              value: `Sin mensajes de regalo`,
+              callback: () => {
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                    },
+                  }
+                );
+              }
+            },
+            {
+              value: `Mensaje tradicional, lo escribiremos en la tarjeta dedicatoria`,
+              callback: () => {
+                // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                    },
+                  }
+                );
+              }
+            },
+            {
+              value: `Mensaje virtual, con texto, fotos y videos`,
+              callback: () => {
+                // TODO - Agregar query param a la ruta para que se sepa que es un mensaje virtual
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                    },
+                  }
+                );
+              }
+            },
+            {
+              value: `Mensaje tradicional y virtual`,
+              callback: () => {
+                // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional y virtual
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                    },
+                  }
+                );
+              }
+            }
+          ],
+          styles: {
+            fullScreen: true,
+          }
+        }
+    });
   }
 
   goToReceiverForm() {

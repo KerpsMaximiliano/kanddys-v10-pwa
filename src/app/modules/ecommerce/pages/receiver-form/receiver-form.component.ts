@@ -119,7 +119,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
     senderName: new FormControl('', [Validators.pattern(/[\S]/)]),
   */
 
-  save() {
+  save(backwards?: boolean) {
     // if ((this.form.untouched || !this.form.valid) && this.flow === 'cart') {
     //   return this.router.navigate([
     //     `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
@@ -158,6 +158,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
       ]);
 
     if (
+      !backwards &&
       this.headerService.saleflow.module.delivery?.isActive &&
       this.headerService.saleflow.module.delivery.deliveryLocation
     ) {
@@ -171,12 +172,19 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.save();
+    this.save(true);
 
     if (this.flow === 'checkout')
       return this.router.navigate([
         `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
       ]);
+
+    // TODO - Potencialmente cambiar esta redirección hacia new-symbol, si vienes de new-symbol
+    if (this.flow === 'cart') {
+      return this.router.navigate([
+        `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
+      ]);
+    }
 
     return this.headerService.redirectFromQueryParams();
   }

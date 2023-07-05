@@ -1,0 +1,16 @@
+<div style="padding: 3em 0px 0px 0px;">
+    <h3 class="title">{{ data.title }}</h3>
+    <p class="description">{{ data.description }}</p>
+
+    <div style="display: flex; flex-direction: column; margin-top: 3em">
+        <button 
+            mat-button 
+            class="option-button" 
+            *ngFor="let option of data.options; let i = index" 
+            [ngClass]="{ active: selectedIndex === i }"
+            (click)="onClick(i)"
+        >
+            {{ option.value }}
+        </button>
+    </div>
+</div>
