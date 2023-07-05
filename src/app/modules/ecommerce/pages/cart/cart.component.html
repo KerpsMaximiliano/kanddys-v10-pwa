@@ -53,7 +53,8 @@
               <span
                 *ngIf="items.length === 1 && itemObjects[item._id].amount === 1"
                 mat-button
-                class="button disabled"
+                class="button"
+                (click)="changeAmount(item._id, 'subtract')"
                 >-</span
               >
 

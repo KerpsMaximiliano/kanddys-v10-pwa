@@ -878,6 +878,13 @@ export class ItemCreationComponent implements OnInit {
     });
   }
 
+  selectLayout(value: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO') {
+    this.layout = value;
+    this.itemFormData.patchValue({
+      defaultLayout: value,
+    });
+  }
+
   goToItemDetail(mode: 'DEMO' | 'PREVIEW') {
     this.saveTemporalItemInMemory();
 

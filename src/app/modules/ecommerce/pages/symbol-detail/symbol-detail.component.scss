@@ -39,6 +39,7 @@ main {
 
     img {
       transition: 0.1s ease-in width, 0.1s ease-in border;
+      cursor: pointer;
 
       &.minimized {
         border-radius: 18px;
@@ -47,6 +48,7 @@ main {
 
     video {
       transition: 0.1s ease-in width, 0.1s ease-in border;
+      cursor: pointer;
 
       &.minimized {
         border-radius: 18px;
