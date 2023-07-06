@@ -213,6 +213,7 @@ import { ProgressSliderComponent } from './components/progress-slider/progress-s
 import { ListCardComponent } from './components/list-card/list-card.component';
 import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.component';
 import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
+import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 
 const imports = [
   CommonModule,
@@ -439,7 +440,8 @@ const declarations = [
   ProgressSliderComponent,
   ListCardComponent,
   StoreChatbotComponent,
-  InputDialogComponent
+  InputDialogComponent,
+  ProgressBarComponent
 ];
 
 @NgModule({
