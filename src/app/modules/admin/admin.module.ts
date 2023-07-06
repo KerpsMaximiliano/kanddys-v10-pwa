@@ -69,6 +69,7 @@ import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form
 import { MerchantsEntryComponent } from './pages/merchants-entry/merchants-entry.component';
 import { StarsLandingComponent } from './pages/stars-landing/stars-landing.component';
 import { UserStarsComponent } from './pages/user-stars/user-stars.component';
+import { StarsMetricsComponent } from './pages/stars-metrics/stars-metrics.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -438,6 +439,10 @@ const routes: Routes = [
   {
     path:'user-stars',
     component: UserStarsComponent
+  },
+  {
+    path:'stars-metrics',
+    component: StarsMetricsComponent
   }
 ];
 
@@ -494,6 +499,7 @@ const routes: Routes = [
     MerchantsEntryComponent,
     StarsLandingComponent,
     UserStarsComponent,
+    StarsMetricsComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
