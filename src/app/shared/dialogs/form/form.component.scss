@@ -87,3 +87,17 @@ button {
     color: #c4c5c3;
   }
 }
+
+.icon-button {
+  position: relative;
+  float: right;
+  bottom: 92px;
+  right: -18px;
+  background: none;
+  border: 0;
+  img {
+    filter: invert(93%) sepia(69%) saturate(7476%) hue-rotate(187deg) brightness(129%) contrast(100%);
+    cursor: pointer;
+    width: 20px;
+  }
+}

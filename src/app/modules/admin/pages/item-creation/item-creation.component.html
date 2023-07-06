@@ -254,17 +254,22 @@
           />
         </div>
 
-        <div
-          class="field-text"
-          *ngIf="itemFormData.controls['description'].value"
-        >
-          <label for="">Texto más largo</label>
+        <div>
+          <div
+            class="field-text"
+            *ngIf="itemFormData.controls['description'].value"
+            style="padding-bottom: 40px;"
+          >
+            <label for="">Texto más largo</label>
 
-          <input
-            type="text"
-            placeholder="Escribe"
-            [formControlName]="'description'"
-          />
+            <textarea
+              cols="30"
+              rows="3"
+              placeholder="Escribe"
+              [formControlName]="'description'"
+            ></textarea>
+          </div>
+          <button (click)="openMetaDescriptionDialog()" class="icon-button"><img [src]="assetsFolder + '/hat-wizard-solid.svg'" alt="" *ngIf="itemFormData.controls['description'].value"></button>
         </div>
 
         <div
@@ -292,7 +297,7 @@
           </div>
 
           <div class="row" *ngIf="!itemFormData.controls['description'].value">
-            <span>Texto mas largo</span>
+            <span>Texto más largo</span>
 
             <img
               (click)="openFormForField('DESCRIPTION')"
