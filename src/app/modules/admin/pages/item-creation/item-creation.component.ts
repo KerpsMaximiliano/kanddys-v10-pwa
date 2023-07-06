@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,6 +17,7 @@ import {
   Webform,
   WebformInput,
 } from 'src/app/core/models/webform';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import {
   ExtendedItemInput,
@@ -32,6 +34,7 @@ import {
   FormComponent,
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
+import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-dialog.component';
 import { environment } from 'src/environments/environment';
 
 interface ExtendedAnswer extends Answer {
@@ -107,7 +110,9 @@ export class ItemCreationComponent implements OnInit {
     private merchantsService: MerchantsService,
     private headerService: HeaderService,
     private translate: TranslateService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private gpt3Service: Gpt3Service,
+    private _bottomSheet: MatBottomSheet
   ) {}
 
   ngOnInit(): void {
@@ -368,6 +373,8 @@ export class ItemCreationComponent implements OnInit {
         content['_type'] = file.type;
         this.itemSlides.push(content);
 
+        if (this.itemFormData.controls['description'].value === '') await this.generateAIDescription();
+
         this.saveTemporalItemInMemory();
 
         this.itemsService.editingSlide = this.itemSlides.length - 1;
@@ -481,6 +488,22 @@ export class ItemCreationComponent implements OnInit {
             name: 'item-description',
             type: 'text',
             validators: [Validators.pattern(/[\S]/)],
+            secondaryIcon: true,
+            secondaryIconCallback: () => {
+              this._bottomSheet.open(InputDialogComponent, {
+                data: {
+                  label: 'Descripción',
+                  styles: {
+                    fullScreen: true,
+                  },
+                  callback: (value) => {
+                    if (value) {
+                      this.generateAIDescription(value);
+                    }
+                  },
+                },
+              });
+            }
           },
         ];
         break;
@@ -493,13 +516,13 @@ export class ItemCreationComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: FormGroup) => {
       console.log('The dialog was closed');
 
-      if (result.value['item-title']) {
+      if (result && result.value['item-title']) {
         this.itemFormData.patchValue({
           title: result.value['item-title'],
         });
       }
 
-      if (result.value['item-description']) {
+      if (result && result.value['item-description']) {
         this.itemFormData.patchValue({
           description: result.value['item-description'],
         });
@@ -876,6 +899,46 @@ export class ItemCreationComponent implements OnInit {
     this.snackbar.open('Item creado exitosamente', 'Cerrar', {
       duration: 3000,
     });
+  }
+
+  async openMetaDescriptionDialog() {
+    const bottomSheetRef = this._bottomSheet.open(InputDialogComponent, {
+      data: {
+          label: `Escribe las características de tu producto, cada una separada por una coma, para generar una descripción con inteligencia artificial`,
+          styles: {
+            fullScreen: true,
+          },
+          callback: async (metaDescription) => {
+            if (metaDescription) this.generateAIDescription(metaDescription)
+          }
+        },
+    });
+  }
+
+  async generateAIDescription(prompt?: string) {
+    lockUI()
+    try {
+      const result = await this.gpt3Service.generateCompletionForMerchant(
+        this.merchantsService.merchantData._id,
+        prompt ?
+        `
+          Genera una descripción corta para un producto que está compuesto por las siguientes características: ${prompt}
+        ` :
+        `Genera una descripción corta para un producto de una tienda que vende en un ecommerce`
+      );
+
+      this.itemFormData.patchValue({
+        description: result.trim(),
+      });
+
+      this.itemFormData.controls['description'].markAsDirty();
+      
+      console.log(result);
+      unlockUI();
+    } catch (error) {
+      console.log(error);
+      unlockUI();
+    }
   }
 
   selectLayout(value: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO') {
