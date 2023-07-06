@@ -14,6 +14,7 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
+import { environment } from 'src/environments/environment';
 
 interface Field {
   type: 'text' | 'email' | 'phone' | 'file';
@@ -21,6 +22,8 @@ interface Field {
   name: string;
   placeholder?: string;
   label: string;
+  secondaryIcon?: boolean;
+  secondaryIconCallback?: () => void;
 }
 
 export interface FormData {
@@ -34,6 +37,7 @@ export interface FormData {
 })
 export class FormComponent implements OnInit {
   formGroup: FormGroup;
+  env: string = environment.assetsUrl;
 
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
@@ -64,6 +68,11 @@ export class FormComponent implements OnInit {
 
       this.formGroup.addControl(field.name, fieldToInsert);
     }
+  }
+
+  onIconClick(index: number) {
+    this.data.fields[index].secondaryIconCallback();
+    this.close();
   }
 
   close(): void {
