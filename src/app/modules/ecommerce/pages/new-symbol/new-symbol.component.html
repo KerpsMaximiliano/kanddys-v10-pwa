@@ -34,8 +34,7 @@
           <div
             class="textarea-wrapper m-bottom"
             [ngClass]="{
-              'no-shadow':
-                postForm.controls['accessKey'].valid
+              'no-shadow': postForm.controls['accessKey'].valid
             }"
           >
             <label
@@ -133,11 +132,13 @@
           >
             <app-qr-content
               [slides]="postsService.post.slides"
+              [showReorderButton]="true"
               [title]="'new-symbol.visual-slides' | translate"
               [mode]="'SMALL'"
               [editing]="false"
               [defaultText]="'Incluyes fotos, memes, videos o música.'"
-              (buttonClicked)="goToMediaUpload()"
+              (buttonClicked)="emitFileInputClick()"
+              (buttonClicked2)="goToMediaUpload()"
             ></app-qr-content>
           </div>
 
@@ -228,6 +229,31 @@
             </ng-container>
           </div>
 
+          <input
+            type="file"
+            id="file"
+            [style.display]="'none'"
+            (change)="loadFile($event)"
+            multiple
+            [accept]="[
+              '.png',
+              '.jpg',
+              '.jpeg',
+              '.webp',
+              '.webm',
+              '.mp4',
+              '.m4v',
+              '.mpg',
+              '.mpeg',
+              '.mpeg4',
+              '.mov',
+              '.3gp',
+              '.mts',
+              '.m2ts',
+              '.mxf'
+            ]"
+          />
+
           <div
             class="optional-stuff"
             *ngIf="
@@ -241,35 +267,41 @@
           >
             <h3>{{ "type-of-content" | translate }}</h3>
 
-            <div class="row row-mid" *ngIf="!postForm.controls['title'].value">
+            <div
+              class="row row-mid"
+              *ngIf="!postForm.controls['title'].value"
+              (click)="openFormForField('SHORT-TEXT')"
+            >
               <span>{{ "new-symbol.short-text" | translate }}</span>
 
               <img
-                (click)="openFormForField('SHORT-TEXT')"
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
                 alt="add media"
                 class="upload-media"
               />
             </div>
 
-            <div class="row" *ngIf="postsService.post?.slides?.length === 0">
+            <div
+              class="row"
+              *ngIf="postsService.post?.slides?.length === 0"
+              (click)="emitFileInputClick()"
+            >
               <span>{{ "new-symbol.slides" | translate }}</span>
 
               <img
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
                 alt="add media"
                 class="upload-media"
-                (click)="goToMediaUpload()"
               />
             </div>
             <div
               class="row row-mid"
               *ngIf="!postForm.controls['message'].value"
+              (click)="openFormForField('LARGE-TEXT')"
             >
               <span>{{ "new-symbol.long-text" | translate }}</span>
 
               <img
-                (click)="openFormForField('LARGE-TEXT')"
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
                 alt="add media"
                 class="upload-media"
@@ -284,6 +316,7 @@
                   postForm.controls['ctaLink'].value
                 )
               "
+              (click)="openFormForField('LINK-BUTTON')"
             >
               <span>{{ "new-symbol.long-link-button" | translate }}</span>
 
@@ -297,7 +330,6 @@
     
             -->
               <img
-                (click)="openFormForField('LINK-BUTTON')"
                 src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
                 alt="add media"
                 class="upload-media"
@@ -360,7 +392,7 @@
         <form [formGroup]="postForm">
           <textarea
             class="traditional-message"
-            formControlName="message"
+            formControlName="envelopeText"
             [placeholder]="'new-symbol.text-placeholder' | translate"
             cols="30"
             rows="10"
@@ -371,7 +403,7 @@
 
       <footer
         class="traditional"
-        *ngIf="postForm.controls['message'].value"
+        *ngIf="postForm.controls['envelopeText'].value"
         (click)="saveTraditionalMessage()"
       >
         <button>

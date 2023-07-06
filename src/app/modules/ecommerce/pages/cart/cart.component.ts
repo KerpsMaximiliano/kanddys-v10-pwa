@@ -790,6 +790,7 @@ export class CartComponent implements OnInit {
           {
             value: `Sin mensajes de regalo`,
             callback: () => {
+              this.postsService.post = null;
               return this.router.navigate(
                 [
                   `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`,
@@ -805,6 +806,7 @@ export class CartComponent implements OnInit {
           {
             value: `Mensaje tradicional, lo escribiremos en la tarjeta dedicatoria`,
             callback: () => {
+              this.postsService.post = null;
               // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional
               return this.router.navigate(
                 [
@@ -822,6 +824,7 @@ export class CartComponent implements OnInit {
           {
             value: `Mensaje virtual, con texto, fotos y videos`,
             callback: () => {
+              this.postsService.post = null;
               // TODO - Agregar query param a la ruta para que se sepa que es un mensaje virtual
               return this.router.navigate(
                 [
@@ -838,6 +841,7 @@ export class CartComponent implements OnInit {
           {
             value: `Mensaje tradicional y virtual`,
             callback: () => {
+              this.postsService.post = null;
               // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional y virtual
               return this.router.navigate(
                 [

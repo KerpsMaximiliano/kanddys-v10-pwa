@@ -220,6 +220,10 @@ main {
       background: #fff;
       margin-top: 12px;
 
+      &:hover {
+        cursor: pointer;
+      }
+
       span {
         color: #000;
         font-size: 17px;
