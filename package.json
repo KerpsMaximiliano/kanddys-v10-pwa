@@ -1,6 +1,6 @@
 {
   "name": "rewardcharly",
-  "version": "2.42.2",
+  "version": "2.43.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -79,6 +79,7 @@
     "@angular/cli": "~10.2.4",
     "@angular/compiler-cli": "^10.2.5",
     "@types/google-libphonenumber": "^7.4.23",
+    "@types/hammerjs": "^2.0.41",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",

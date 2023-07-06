@@ -1,14 +1,17 @@
 <div class="dialog-container" [formGroup]="formGroup">
   <div mat-dialog-content>
-    <ng-container *ngFor="let field of data.fields">
-      <div class="field-wrapper">
-        <label [for]="field.name">{{ field.label }}</label>
-        <input
-          type="text"
-          [id]="field.name"
-          [formControlName]="field.name"
-          [placeholder]="field.placeholder || 'Escribe..'"
-        />
+    <ng-container *ngFor="let field of data.fields; let i = index;">
+      <div>
+        <div class="field-wrapper">
+          <label [for]="field.name">{{ field.label }}</label>
+          <input
+            type="text"
+            [id]="field.name"
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder || 'Escribe..'"
+          />
+        </div>
+        <button (click)="onIconClick(i)" class="icon-button" *ngIf="field.secondaryIcon"><img [src]="env + '/hat-wizard-solid.svg'" alt=""></button>
       </div>
     </ng-container>
   </div>
