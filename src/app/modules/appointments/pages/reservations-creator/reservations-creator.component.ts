@@ -145,6 +145,10 @@ export class ReservationsCreatorComponent implements OnInit {
   });
 
   flow: 'cart' | 'checkout' = 'checkout';
+  messageFlow:
+  | 'VIRTUAL-MESSAGE'
+  | 'TRADITIONAL-MESSAGE'
+  | 'TRADITIONAL-AND-VIRTUAL';
 
   constructor(
     private route: ActivatedRoute,
@@ -166,7 +170,7 @@ export class ReservationsCreatorComponent implements OnInit {
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
         const { calendarId, reservationId } = routeParams;
-        const { clientEmail, clientPhone, saleflowId, flow } = queryParams;
+        const { clientEmail, clientPhone, saleflowId, flow, messageFlow } = queryParams;
 
         //this queryParams are here for the merchant to use
         //when any of these two is present, then a notification
@@ -177,6 +181,7 @@ export class ReservationsCreatorComponent implements OnInit {
         this.clientPhone = clientPhone;
 
         if (flow === 'cart') this.flow = flow;
+        if (messageFlow) this.messageFlow = messageFlow;
 
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
 

@@ -343,6 +343,7 @@ export class NewSymbolComponent implements OnInit {
       {
         queryParams: {
           flow: this.flow,
+          messageFlow: this.messageFlow
         },
       }
     );
