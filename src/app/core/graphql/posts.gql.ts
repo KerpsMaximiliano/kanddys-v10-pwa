@@ -76,6 +76,8 @@ export const post = gql`
       layout
       ctaText
       ctaLink
+      envelopeText
+      virtualMessage
     }
   }
 `;

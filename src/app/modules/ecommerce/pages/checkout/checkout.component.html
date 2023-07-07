@@ -438,7 +438,9 @@
                 ? "Para: " + postsService.post?.to
                 : postsService.post?.from
                 ? "De parte de: " + postsService.post?.from
-                : "..."
+                : postsService.post?.envelopeText
+                ? postsService.post?.envelopeText
+                :  "..."
             }}
           </p>
         </button>

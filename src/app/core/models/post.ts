@@ -65,6 +65,8 @@ export class Post extends Model<Post> {
   layout?: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO';
   ctaText?: string;
   ctaLink?: string;
+  envelopeText?: string;
+  virtualMessage?: boolean;
 }
 
 export class PostInput {
@@ -95,6 +97,8 @@ export class PostInput {
   layout?: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO';
   ctaText?: string;
   ctaLink?: string;
+  envelopeText?: string;
+  virtualMessage?: boolean;
 }
 
 export class Slide extends Model<Slide> {
