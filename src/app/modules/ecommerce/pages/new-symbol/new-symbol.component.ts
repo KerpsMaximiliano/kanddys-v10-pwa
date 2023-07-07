@@ -256,6 +256,9 @@ export class NewSymbolComponent implements OnInit {
                 name: 'link-url',
                 placeholder: translations['paste-url'],
                 type: 'text',
+                styles: {
+                  marginTop: '3em',
+                },
                 validators: [Validators.pattern(/[\S]/), Validators.required],
               },
             ];
@@ -408,6 +411,13 @@ export class NewSymbolComponent implements OnInit {
     } else {
       this.save();
     }
+  }
+
+  selectLayout(value: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO') {
+    this.layout = value;
+    this.postForm.patchValue({
+      defaultLayout: value,
+    });
   }
 
   /*

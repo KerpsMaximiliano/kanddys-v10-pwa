@@ -23,6 +23,7 @@ interface Field {
   placeholder?: string;
   label: string;
   secondaryIcon?: boolean;
+  styles?: Record<string, string>;
   secondaryIconCallback?: () => void;
 }
 

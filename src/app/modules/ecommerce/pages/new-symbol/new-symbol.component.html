@@ -179,7 +179,7 @@
                 </mat-expansion-panel-header>
 
                 <div class="layouts-options">
-                  <div class="image-layout-wrapper">
+                  <div class="image-layout-wrapper" (click)="selectLayout('EXPANDED-SLIDE')">
                     <img
                       class="image-layout"
                       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/Expanded-Slide-icon.png"
@@ -191,7 +191,7 @@
                       [value]="'EXPANDED-SLIDE'"
                     />
                   </div>
-                  <div class="image-layout-wrapper">
+                  <div class="image-layout-wrapper" (click)="selectLayout('ZOOMED-OUT-INFO')">
                     <img
                       class="image-layout"
                       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/minimized-slides.png"
