@@ -30,6 +30,7 @@ import {
   WebformsService,
 } from 'src/app/core/services/webforms.service';
 import { ExtendedQuestionInput } from 'src/app/shared/components/form-creator/form-creator.component';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import {
   FormComponent,
   FormData,
@@ -98,6 +99,7 @@ export class ItemCreationComponent implements OnInit {
   currentView: 'ITEM_FORM' | 'ITEM_METRICS' = 'ITEM_FORM';
   assetsFolder: string = environment.assetsUrl;
   isFormUpdated: boolean = false;
+  itemFormInitialValue: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -134,6 +136,12 @@ export class ItemCreationComponent implements OnInit {
             ctaName: [this.itemsService.temporalItemInput?.ctaText],
           });
 
+          this.itemFormData.valueChanges.subscribe(() => {
+            this.isFormUpdated = true;
+          });
+
+          this.itemFormInitialValue = { ...this.itemFormData.value };
+
           if (this.itemsService.temporalItemInput?.slides) {
             this.itemSlides = this.itemsService.temporalItemInput?.slides;
           }
@@ -163,6 +171,8 @@ export class ItemCreationComponent implements OnInit {
             ],
             ctaName: [this.itemsService.temporalItem?.ctaText],
           });
+
+          this.itemFormInitialValue = { ...this.itemFormData.value };
 
           this.itemFormData.valueChanges.subscribe(() => {
             this.isFormUpdated = true;
@@ -373,8 +383,12 @@ export class ItemCreationComponent implements OnInit {
         content['_type'] = file.type;
         this.itemSlides.push(content);
 
-        const label = await this.getObjectLabel(file, this.merchantsService.merchantData._id);
-        if (this.itemFormData.controls['description'].value === '' && label) await this.generateAIDescription(label);
+        const label = await this.getObjectLabel(
+          file,
+          this.merchantsService.merchantData._id
+        );
+        if (this.itemFormData.controls['description'].value === '' && label)
+          await this.generateAIDescription(label);
 
         this.saveTemporalItemInMemory();
 
@@ -504,7 +518,7 @@ export class ItemCreationComponent implements OnInit {
                   },
                 },
               });
-            }
+            },
           },
         ];
         break;
@@ -905,14 +919,14 @@ export class ItemCreationComponent implements OnInit {
   async openMetaDescriptionDialog() {
     const bottomSheetRef = this._bottomSheet.open(InputDialogComponent, {
       data: {
-          label: `Escribe las características de tu producto, cada una separada por una coma, para generar una descripción con inteligencia artificial`,
-          styles: {
-            fullScreen: true,
-          },
-          callback: async (metaDescription) => {
-            if (metaDescription) this.generateAIDescription(metaDescription)
-          }
+        label: `Escribe las características de tu producto, cada una separada por una coma, para generar una descripción con inteligencia artificial`,
+        styles: {
+          fullScreen: true,
         },
+        callback: async (metaDescription) => {
+          if (metaDescription) this.generateAIDescription(metaDescription);
+        },
+      },
     });
   }
 
@@ -932,15 +946,15 @@ export class ItemCreationComponent implements OnInit {
   }
 
   async generateAIDescription(prompt?: string) {
-    lockUI()
+    lockUI();
     try {
       const result = await this.gpt3Service.generateCompletionForMerchant(
         this.merchantsService.merchantData._id,
-        prompt ?
-        `
+        prompt
+          ? `
           Genera una descripción corta para un producto que está compuesto por las siguientes características: ${prompt}
-        ` :
-        `Genera una descripción corta para un producto de una tienda que vende en un ecommerce`
+        `
+          : `Genera una descripción corta para un producto de una tienda que vende en un ecommerce`
       );
 
       this.itemFormData.patchValue({
@@ -948,7 +962,7 @@ export class ItemCreationComponent implements OnInit {
       });
 
       this.itemFormData.controls['description'].markAsDirty();
-      
+
       console.log(result);
       unlockUI();
     } catch (error) {
@@ -986,13 +1000,35 @@ export class ItemCreationComponent implements OnInit {
   }
 
   back() {
-    this.itemsService.temporalItem = null;
-    this.router.navigate(['admin/dashboard']);
+    //this.itemsService.temporalItemInput = null;
+
+    if (
+      this.isFormUpdated ||
+      JSON.stringify(this.itemFormInitialValue) !==
+        JSON.stringify(this.itemFormData.value)
+    ) {
+      let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: `¿Descartar cambios?`,
+          description: `¿Quieres regresar sin guardar tus cambios?`,
+        },
+      });
+      dialogRef.afterClosed().subscribe(async (result) => {
+        if (result === 'confirm') {
+          this.itemsService.temporalItem = null;
+          this.itemsService.temporalItemInput = null;
+          this.router.navigate(['admin/dashboard']);
+        }
+      });
+    } else {
+      this.itemsService.temporalItem = null;
+      this.itemsService.temporalItemInput = null;
+      this.router.navigate(['admin/dashboard']);
+    }
   }
 
   goToReorderMedia() {
     this.saveTemporalItemInMemory();
-
 
     if (!this.item)
       this.router.navigate(['admin/slides-editor'], {
