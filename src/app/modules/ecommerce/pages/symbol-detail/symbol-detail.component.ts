@@ -80,6 +80,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   imageCanvasHeight = 0;
   imageCanvasHeightWhenZoomedOut = 0;
   imageWidthWhenResized = 0;
+  deviceViewportHeight: number = 0;
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
     resistance: false,
@@ -362,7 +363,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         ctaText: this.postsService.post.ctaText,
         ctaLink: this.postsService.post.ctaLink,
       } as any;
-      
+
       this.layout = this.postsService.post.layout || 'EXPANDED-SLIDE';
 
       for await (const slide of this.postsService.post.slides) {
@@ -484,7 +485,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         pricing: this.itemsService.temporalItemInput.pricing,
       } as any;
 
-      this.layout = this.itemsService.temporalItemInput.layout || 'EXPANDED-SLIDE';
+      this.layout =
+        this.itemsService.temporalItemInput.layout || 'EXPANDED-SLIDE';
 
       this.fractions = (this.slidesInput as Array<any>)
         .map(() => `${'1'}fr`)
@@ -799,12 +801,15 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
   async applyConfigurationsForSlidesDimensions() {
     const width = window.innerWidth >= 500 ? 500 : window.innerWidth;
+    this.deviceViewportHeight = window.innerHeight;
 
     this.imageCanvasHeight = (width * 1400) / 1080;
     this.imageCanvasHeightWhenZoomedOut = (width * 0.271 * 1400) / 1080;
     this.imageWidthWhenResized = width * 0.271 * 1400;
 
     window.addEventListener('resize', () => {
+      this.deviceViewportHeight = window.innerHeight;
+
       this.imageCanvasHeight =
         ((this.swiperContainer.nativeElement as HTMLDivElement).clientWidth *
           1400) /

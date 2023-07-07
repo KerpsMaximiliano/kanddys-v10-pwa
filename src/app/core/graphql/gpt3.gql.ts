@@ -29,3 +29,15 @@ export const generateCompletionForMerchant = gql`
     )
   }
 `;
+
+export const imageObjectRecognition = gql`
+  mutation imageObjectRecognition(
+    $merchantId: ObjectID!
+    $file: Upload
+  ) {
+    imageObjectRecognition(
+      merchantId: $merchantId
+      file: $file
+    )
+  }
+`;

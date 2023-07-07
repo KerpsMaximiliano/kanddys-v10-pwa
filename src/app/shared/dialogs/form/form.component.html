@@ -2,7 +2,7 @@
   <div mat-dialog-content>
     <ng-container *ngFor="let field of data.fields; let i = index;">
       <div>
-        <div class="field-wrapper">
+        <div class="field-wrapper" [ngStyle]="field.styles">
           <label [for]="field.name">{{ field.label }}</label>
           <input
             type="text"

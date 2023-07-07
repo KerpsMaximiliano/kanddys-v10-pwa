@@ -373,7 +373,8 @@ export class ItemCreationComponent implements OnInit {
         content['_type'] = file.type;
         this.itemSlides.push(content);
 
-        if (this.itemFormData.controls['description'].value === '') await this.generateAIDescription();
+        const label = await this.getObjectLabel(file, this.merchantsService.merchantData._id);
+        if (this.itemFormData.controls['description'].value === '' && label) await this.generateAIDescription(label);
 
         this.saveTemporalItemInMemory();
 
@@ -913,6 +914,21 @@ export class ItemCreationComponent implements OnInit {
           }
         },
     });
+  }
+
+  async getObjectLabel(file: File, merchantID: string): Promise<string> {
+    try {
+      lockUI();
+      const result = await this.gpt3Service.imageObjectRecognition(
+        merchantID,
+        file
+      );
+      unlockUI();
+      return result;
+    } catch (error) {
+      unlockUI();
+      console.log(error);
+    }
   }
 
   async generateAIDescription(prompt?: string) {
