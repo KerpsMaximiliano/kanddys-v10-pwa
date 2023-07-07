@@ -45,6 +45,11 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
   redirectTo = 'checkout';
 
   flow: 'cart' | 'checkout' = 'cart';
+  messageFlow:
+  | 'VIRTUAL-MESSAGE'
+  | 'TRADITIONAL-MESSAGE'
+  | 'TRADITIONAL-AND-VIRTUAL';
+
 
   env: string = environment.assetsUrl;
 
@@ -75,7 +80,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      ({ redirectTo, flow }) => {
+      ({ redirectTo, flow, messageFlow }) => {
         const storedPost = localStorage.getItem('post');
 
         this.data = this.postsService.post;
@@ -83,6 +88,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
         if (redirectTo && redirectTo.length) this.redirectTo = redirectTo;
 
         if (flow && flow.length) this.flow = flow;
+        if (messageFlow && messageFlow.length) this.messageFlow = messageFlow;
 
         if (storedPost && !this.postsService.post) {
           this.postsService.post = JSON.parse(storedPost);
@@ -119,7 +125,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
     senderName: new FormControl('', [Validators.pattern(/[\S]/)]),
   */
 
-  save() {
+  save(backwards?: boolean) {
     // if ((this.form.untouched || !this.form.valid) && this.flow === 'cart') {
     //   return this.router.navigate([
     //     `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
@@ -158,6 +164,7 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
       ]);
 
     if (
+      !backwards &&
       this.headerService.saleflow.module.delivery?.isActive &&
       this.headerService.saleflow.module.delivery.deliveryLocation
     ) {
@@ -165,18 +172,42 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
         relativeTo: this.route,
         queryParams: {
           flow: 'cart',
+          messageFlow: this.messageFlow ? this.messageFlow : null
         },
       });
     }
   }
 
   goBack() {
-    this.save();
+    this.save(true);
 
     if (this.flow === 'checkout')
       return this.router.navigate([
         `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
       ]);
+
+    // TODO - Potencialmente cambiar esta redirección hacia new-symbol, si vienes de new-symbol
+    if (this.flow === 'cart') {
+
+      if (this.messageFlow)
+        return this.router.navigate(
+          [
+            `ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+          ],
+          {
+            queryParams: {
+              type: this.messageFlow === 'TRADITIONAL-MESSAGE' ?
+                'traditional' :
+                this.messageFlow === 'TRADITIONAL-AND-VIRTUAL' ?
+                'both' : 'virtual'
+            }
+          }
+        );
+
+      return this.router.navigate([
+        `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
+      ]);
+    }
 
     return this.headerService.redirectFromQueryParams();
   }

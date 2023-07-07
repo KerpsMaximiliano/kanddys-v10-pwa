@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   generateCompletionForMerchant,
   generateResponseForTemplate,
+  imageObjectRecognition,
   requestQAResponse,
 } from '../graphql/gpt3.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
@@ -51,5 +52,17 @@ export class Gpt3Service {
       variables: { merchantID, prompt },
     });
     return result.generateCompletionForMerchant;
+  }
+
+  async imageObjectRecognition(
+    merchantId: string,
+    file: File
+  ): Promise<string> {
+    const result = await this.graphql.mutate({
+      mutation: imageObjectRecognition,
+      variables: { merchantId, file },
+      context: { useMultipart: true }
+    });
+    return result.imageObjectRecognition;
   }
 }

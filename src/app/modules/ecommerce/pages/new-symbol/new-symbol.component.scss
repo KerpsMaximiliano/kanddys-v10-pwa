@@ -46,10 +46,15 @@ header {
     font-size: 15px;
     color: #181d17;
   }
+
+  .options-wrapper {
+    column-gap: 16px;
+  }
 }
 
 main {
   padding: 20px;
+  padding-bottom: 60px;
   flex: 1;
 
   .introduction {
@@ -141,12 +146,21 @@ main {
     padding: 14px 12.29px 14px 14px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 
-    &.not-first {
-      margin-top: 9px;
+    &.m-bottom {
+      margin-bottom: 9px;
     }
 
     &.no-shadow {
       box-shadow: none;
+    }
+
+    .placeholder {
+      margin-top: 15px;
+      color: #c4c5c3;
+      font-size: 17px;
+      font-family: InterBold;
+      font-style: normal;
+      line-height: normal;
     }
 
     .textarea-header {
@@ -206,6 +220,10 @@ main {
       background: #fff;
       margin-top: 12px;
 
+      &:hover {
+        cursor: pointer;
+      }
+
       span {
         color: #000;
         font-size: 17px;
@@ -233,6 +251,24 @@ main {
   }
 }
 
+.traditional-message {
+  border-radius: 4px;
+  border: none;
+  background: #fff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  height: 181px;
+  flex-shrink: 0;
+  resize: none;
+  color: #c4c5c3;
+  font-size: 17px;
+  font-family: InterBold;
+  font-style: normal;
+  line-height: normal;
+  color: #181d17;
+  padding: 27px 24px;
+}
+
 footer {
   position: fixed;
   bottom: 0;
@@ -244,6 +280,22 @@ footer {
   justify-content: space-between;
   align-items: center;
   font-size: 17px;
+
+  &.traditional {
+    justify-content: flex-end;
+    background-color: #6fcf97;
+
+    button {
+      background-color: transparent;
+      color: #272727;
+      text-align: right;
+      font-size: 17px;
+      font-family: InterBold;
+      font-style: normal;
+      line-height: normal;
+    }
+  }
+
   button {
     border: none;
     background-color: #fff;
@@ -321,5 +373,21 @@ footer {
 
   input {
     margin-top: 10px;
+  }
+}
+
+.phone-wrapper {
+  position: relative;
+
+  .phoneNumber-formatted {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #fff;
+    color: black;
+    left: 92px;
+    font-family: RobotoMedium;
+    font-size: 20px;
+    width: calc(100% - 100px);
   }
 }

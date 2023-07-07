@@ -38,6 +38,7 @@ export class PostsService {
   post: PostInput;
   privatePost: boolean;
   postReceiverNumber: string;
+  postReceiverNumberObject: any;
   postReceiverEmail: string;
   content: PostContent;
   swiperConfig: SwiperOptions;

@@ -73,6 +73,10 @@ export class NewAddressComponent implements OnInit {
   }
   mode: 'normal' | 'add' | 'delete' | 'edit' = 'normal';
   flow: 'cart' | 'checkout' | 'unAnsweredQuestions' = 'checkout';
+  messageFlow:
+  | 'VIRTUAL-MESSAGE'
+  | 'TRADITIONAL-MESSAGE'
+  | 'TRADITIONAL-AND-VIRTUAL';
   editingId: string;
   loggedIn: boolean;
   registered: User;
@@ -111,8 +115,10 @@ export class NewAddressComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const magicLinkData = this.route.snapshot.queryParamMap.get('data');
     const flow = this.route.snapshot.queryParamMap.get('flow');
+    const messageFlow = this.route.snapshot.queryParamMap.get('messageFlow');
 
     if (flow) this.flow = flow as 'cart' | 'checkout' | 'unAnsweredQuestions';
+    if (messageFlow) this.messageFlow = messageFlow as any;
 
     if (magicLinkData) {
       const orderData = JSON.parse(
@@ -383,6 +389,7 @@ export class NewAddressComponent implements OnInit {
           ? {
               saleflowId: this.headerService.saleflow._id,
               flow: this.flow,
+              messageFlow: this.messageFlow ? this.messageFlow : null,
             }
           : {},
       });
@@ -404,7 +411,7 @@ export class NewAddressComponent implements OnInit {
     const matDialogRef = this.matDialog.open(LoginDialogComponent, {
       data: {
         magicLinkData: {
-          redirectionRoute: `ecommerce/${this.headerService.saleflow.merchant.slug}/new-address?flow=${this.flow}`,
+          redirectionRoute: `ecommerce/${this.headerService.saleflow.merchant.slug}/new-address?flow=${this.flow}&messageFlow=${this.messageFlow ? this.messageFlow : null}`,
           entity: 'NonExistingOrder',
           redirectionRouteQueryParams: {
             data: localStorage.getItem(this.headerService.saleflow._id),
@@ -436,6 +443,7 @@ export class NewAddressComponent implements OnInit {
             queryParams: {
               saleflowId: this.headerService.saleflow._id,
               flow: this.flow,
+              messageFlow: this.messageFlow ? this.messageFlow : null,
             },
           }
         );
@@ -486,6 +494,7 @@ export class NewAddressComponent implements OnInit {
             queryParams: {
               saleflowId: this.headerService.saleflow._id,
               flow: this.flow,
+              messageFlow: this.messageFlow ? this.messageFlow : null,
             },
           }
         );
@@ -569,6 +578,9 @@ export class NewAddressComponent implements OnInit {
       if (this.flow === 'cart') {
         return this.router.navigate([`../receiver-form`], {
           relativeTo: this.route,
+          queryParams: {
+            messageFlow: this.messageFlow ? this.messageFlow : null
+          }
         });
       } else if (this.flow === 'unAnsweredQuestions') {
         return this.router.navigate([`../cart`], {
