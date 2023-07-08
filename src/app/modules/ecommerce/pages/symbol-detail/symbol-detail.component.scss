@@ -72,6 +72,7 @@ main {
 }
 
 .title {
+  cursor: pointer;
   margin: 0px;
   padding: 0px;
   margin-top: 20px;
@@ -161,4 +162,8 @@ video {
     left: 0px;
     right: 0px;
   }
+}
+
+.add-to-cart {
+  cursor: pointer;
 }

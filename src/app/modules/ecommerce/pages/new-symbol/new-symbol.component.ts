@@ -321,8 +321,16 @@ export class NewSymbolComponent implements OnInit {
         this.postForm.controls['accessKey'].value.e164Number.split('+')[1];
     }
 
-    this.postsService.privatePost = true;
-    localStorage.setItem('privatePost', 'true');
+    if (this.postForm.controls['accessKey'].value) {
+      this.postsService.privatePost = true;
+      localStorage.setItem('privatePost', 'true');
+    }
+    else {
+      this.postsService.privatePost = false;
+      localStorage.setItem('privatePost', 'false');
+    }
+
+
 
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
