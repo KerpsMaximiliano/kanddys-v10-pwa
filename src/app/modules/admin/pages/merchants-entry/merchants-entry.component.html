@@ -12,7 +12,7 @@
       </div>
       <div class="form-group">
         <label for="phone">Teléfono:</label>
-        <div class="wrapper">
+        <div class="phone-wrapper">
           <ngx-intl-tel-input
             [cssClass]="'custom'"
             [enableAutoCountrySelect]="true"
@@ -29,7 +29,15 @@
             [numberFormat]="PhoneNumberFormat.International"
             formControlName="phone"
             tabindex="1"
+            id="phone"
           ></ngx-intl-tel-input>
+          <span
+            class="phoneNumber-formatted"
+            *ngIf="merchantForm.controls['phone']?.value"
+            (click)="focusPhoneInput()"
+          >
+            {{ merchantForm.controls['phone']?.value.nationalNumber }}
+          </span>
         </div>
       </div>
       <div class="form-group">
