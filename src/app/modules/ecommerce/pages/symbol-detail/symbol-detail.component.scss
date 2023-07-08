@@ -72,6 +72,7 @@ main {
 }
 
 .title {
+  cursor: pointer;
   margin: 0px;
   padding: 0px;
   margin-top: 20px;
@@ -137,6 +138,7 @@ main {
 .video-wrapper {
   position: relative;
   width: fit-content !important;
+  width: 100% !important;
 }
 
 video {
@@ -161,4 +163,8 @@ video {
     left: 0px;
     right: 0px;
   }
+}
+
+.add-to-cart {
+  cursor: pointer;
 }

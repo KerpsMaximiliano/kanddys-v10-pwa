@@ -150,13 +150,14 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
 
     this.headerService.storeOrder(this.headerService.order);
 
-    if (!this.webformsService.areWebformsValid && this.flow === 'cart') {
-      return this.router.navigate([
-        `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
-      ]);
+    // if (!this.webformsService.areWebformsValid && this.flow === 'cart') {
+    //   console.log('webforms invalidos');
+    //   return this.router.navigate([
+    //     `ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
+    //   ]);
 
-      // TODO poner un toast message que avise que se deben llenar el form
-    }
+    //   // TODO poner un toast message que avise que se deben llenar el form
+    // }
 
     if (this.flow === 'checkout')
       return this.router.navigate([
