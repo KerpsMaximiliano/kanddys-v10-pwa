@@ -858,7 +858,10 @@ export class CheckoutComponent implements OnInit {
 
         await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
-      } else if (this.postsService.privatePost) {
+      } else if (this.postsService?.post?.slides?.length || this.postsService?.post?.message || this.postsService?.post?.envelopeText) {
+
+        console.log("Creando post pro");
+        
         unlockUI();
 
         lockUI();

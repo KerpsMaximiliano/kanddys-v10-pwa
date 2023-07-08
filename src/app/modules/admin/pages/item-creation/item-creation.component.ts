@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
@@ -37,6 +37,8 @@ import {
 } from 'src/app/shared/dialogs/form/form.component';
 import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-dialog.component';
 import { environment } from 'src/environments/environment';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 
 interface ExtendedAnswer extends Answer {
   responsesGroupedByQuestion: Array<{
@@ -98,8 +100,13 @@ export class ItemCreationComponent implements OnInit {
   totalIncome: number = 0;
   currentView: 'ITEM_FORM' | 'ITEM_METRICS' = 'ITEM_FORM';
   assetsFolder: string = environment.assetsUrl;
+  URI: string = environment.uri;
   isFormUpdated: boolean = false;
   itemFormInitialValue: any = null;
+
+  itemURL: string = '';
+
+  @ViewChild('articleQrCode', { read: ElementRef }) articleQrCode: ElementRef;
 
   constructor(
     private fb: FormBuilder,
@@ -114,7 +121,9 @@ export class ItemCreationComponent implements OnInit {
     private translate: TranslateService,
     private route: ActivatedRoute,
     private gpt3Service: Gpt3Service,
-    private _bottomSheet: MatBottomSheet
+    private _bottomSheet: MatBottomSheet,
+    private clipboard: Clipboard,
+    private ngNavigatorShareService: NgNavigatorShareService,
   ) {}
 
   ngOnInit(): void {
@@ -152,6 +161,8 @@ export class ItemCreationComponent implements OnInit {
           }
         } else {
           this.item = await this.itemsService.item(itemId);
+
+          this.itemURL = `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`;
 
           if (!this.itemsService.temporalItem) {
             this.itemsService.temporalItem = this.item;
@@ -1044,4 +1055,60 @@ export class ItemCreationComponent implements OnInit {
       });
     }
   }
+
+  copyToClipboard() {
+    this.clipboard.copy(`${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`);
+    this.snackbar.open(
+      'Enlace copiado en el portapapeles',
+      '',
+      {
+        duration: 2000,
+      }
+    );
+  }
+
+  share() {
+    this.ngNavigatorShareService.share({
+      title: '',
+      url: `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`,
+    });
+  }
+
+  downloadQr(qrElment: ElementRef) {
+    const parentElement = qrElment.nativeElement.querySelector('img').src;
+    let blobData = this.convertBase64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData
+      );
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.item._id;
+      link.click();
+    }
+  }
+
+  private convertBase64ToBlob(Base64Image: string) {
+    // SPLIT INTO TWO PARTS
+    const parts = Base64Image.split(';base64,');
+    // HOLD THE CONTENT TYPE
+    const imageType = parts[0].split(':')[1];
+    // DECODE BASE64 STRING
+    const decodedData = window.atob(parts[1]);
+    // CREATE UNIT8ARRAY OF SIZE SAME AS ROW DATA LENGTH
+    const uInt8Array = new Uint8Array(decodedData.length);
+    // INSERT ALL CHARACTER CODE INTO UINT8ARRAY
+    for (let i = 0; i < decodedData.length; ++i) {
+      uInt8Array[i] = decodedData.charCodeAt(i);
+    }
+    // RETURN BLOB IMAGE AFTER CONVERSION
+    return new Blob([uInt8Array], { type: imageType });
+  }
+
 }
