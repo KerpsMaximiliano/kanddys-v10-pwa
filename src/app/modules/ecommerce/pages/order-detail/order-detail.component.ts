@@ -6,6 +6,7 @@ import {
   capitalize,
   formatID,
   isVideo,
+  truncateString,
 } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import {
@@ -169,6 +170,7 @@ export class OrderDetailComponent implements OnInit {
   activeStatusIndex = 0;
 
   capitalize = capitalize;
+  truncateString = truncateString;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;

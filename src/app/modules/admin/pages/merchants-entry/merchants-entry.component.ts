@@ -148,6 +148,12 @@ export class MerchantsEntryComponent implements OnInit {
     }
   }
 
+  focusPhoneInput() {
+    const ngxIntlPhoneInput = document.querySelector('#phone');
+
+    (ngxIntlPhoneInput.querySelector('#phone') as HTMLInputElement).focus();
+  }
+
   copyLinkToClipboard() {
     this.clipboard.copy(`${this.URI}/auth/login`);
     this.matSnackBar.open(

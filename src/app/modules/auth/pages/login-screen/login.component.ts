@@ -1243,4 +1243,10 @@ export class LoginComponent implements OnInit {
       }
     } else this.merchantNumber = '';
   }
+
+  focusPhoneInput() {
+    const ngxIntlPhoneInput = document.querySelector('#phone');
+
+    (ngxIntlPhoneInput.querySelector('#phone') as HTMLInputElement).focus();
+  }
 }
