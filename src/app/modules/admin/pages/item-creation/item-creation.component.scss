@@ -146,6 +146,7 @@
       }
 
       .row {
+        cursor: pointer;
         width: 100%;
         display: flex;
         justify-content: space-between;
@@ -308,4 +309,11 @@ footer {
     cursor: pointer;
     width: 20px;
   }
+}
+
+.link-button {
+  cursor: pointer;
+  color: #2874AD;
+  font-size: 17px;
+  font-family: InterBold;
 }

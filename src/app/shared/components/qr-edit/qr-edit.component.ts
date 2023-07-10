@@ -32,7 +32,7 @@ import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
 export class QrEditComponent implements OnInit {
   environment: string = environment.assetsUrl;
   spinnerGif: string = `${environment.assetsUrl}/spinner2.gif`;
-  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
   videoFiles: string[] = [
     'video/mp4',
     'video/webm',
