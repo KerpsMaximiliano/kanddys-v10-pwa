@@ -75,6 +75,7 @@ import { HttpClient } from '@angular/common/http';
 import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slides-editor/items-slides-editor.component';
 import { ItemSelectorComponent } from './pages/item-selector/item-selector.component';
 import { SupplierRegisterComponent } from './pages/supplier-register/supplier-register.component';
+import { InventoryComponent } from './pages/inventory/inventory.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -469,6 +470,10 @@ const routes: Routes = [
     path: 'supplier-register',
     component: SupplierRegisterComponent,
   },
+  {
+    path: 'inventory',
+    component: InventoryComponent,
+  },
 ];
 
 @NgModule({
@@ -525,6 +530,7 @@ const routes: Routes = [
     ItemCreationComponent,
     ItemSelectorComponent,
     SupplierRegisterComponent,
+    InventoryComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
