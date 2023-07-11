@@ -1,49 +1,37 @@
-<div class="container">
-  <div class="header">
-    <div class="flex">
-      <img src="../../../../../assets/icons/info.svg" />
-      <mat-icon class="plus-icon">add</mat-icon>
-    </div>
-    <div class="flex">
-      <p>Cotiza y compra a suplidores</p>
-      <mat-icon>menu</mat-icon>
-    </div>
-  </div>
-  <div class="content">
-    <div class="content-card">
-      <div class="content-card-top-container">
-        <div class="flex">
-          <img src="../../../../../assets/icons/shopping_cart.svg" />
-          <div>
-            <p class="content-card-title">Cotización sin nombreID</p>
-            <p class="content-card-quantity">4 artículos</p>
-          </div>
-        </div>
-        <p class="content-card-new">Nuevo</p>
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+  <div class="container">
+    <div class="header">
+      <div class="flex">
+        <img [src]="env + '/info-icon.svg'" />
+        <!-- [routerLink]="['/ecommerce/item-selector']" -->
+        <a>
+          <mat-icon class="plus-icon">add</mat-icon>
+        </a>
       </div>
-      <div class="hr-container">
-        <hr />
+      <div class="flex" (click)="openNavigation = true" style="cursor: pointer;">
+        <p>Cotiza y compra a suplidores</p>
+        <mat-icon>menu</mat-icon>
       </div>
-      <p class="content-card-desc">
-        Se están preparando las cotizaciones en los suplidores locales
-      </p>
     </div>
-    <div class="content-card">
+    <div class="content">
+      <div class="content-card" *ngFor="let quotation of quotations; let i = index">
         <div class="content-card-top-container">
           <div class="flex">
-            <img src="../../../../../assets/icons/shopping_cart.svg" />
+            <img [src]="env + '/shopping_cart.svg'" />
             <div>
-              <p class="content-card-title">Cotización sin nombreID</p>
-              <p class="content-card-quantity">4 artículos</p>
+              <p class="content-card-title">{{ quotation?.name ? quotation.name : 'Cotización sin nombre'}}</p>
+              <p class="content-card-quantity">{{ quotation?.items?.length }} artículos</p>
             </div>
           </div>
+          <p class="content-card-new" *ngIf="quotations.length && i === 0">Nuevo</p>
         </div>
         <div class="hr-container">
           <hr />
         </div>
         <p class="content-card-desc">
-            8 opciones de suplidores entre $14,123.36 a $15,789.35
+          Se están preparando las cotizaciones en los suplidores locales
         </p>
       </div>
+    </div>
   </div>
-</div>
+</app-navigation>
