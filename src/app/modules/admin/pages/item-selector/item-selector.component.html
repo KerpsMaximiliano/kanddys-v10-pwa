@@ -41,7 +41,7 @@
     </button>
   </ng-container>
 
-  <div class="items-container" *ngIf="items.length > 0">
+  <div class="items-container" *ngIf="itemsToShow.length > 0">
     <div
       class="item"
       *ngFor="let item of itemsToShow; let i = index"

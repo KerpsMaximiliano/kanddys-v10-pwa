@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -38,8 +38,7 @@ export class ItemSelectorComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.route.params.subscribe(async ({quotationId}) => {
-
+    this.route.params.subscribe(async ({ quotationId }) => {
       const pagination: PaginationInput = {
         findBy: {
           type: 'supplier',
@@ -55,39 +54,40 @@ export class ItemSelectorComponent implements OnInit {
     if (this.selectedTags.length)
       pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
     */
-
-      if(quotationId) {
-        this.quotation = await this.quotationService.quotation(quotationId);
-
-        console.log("quotation", this.quotation);
-      }
-
       lockUI();
 
-      this.items = (await this.itemsService.listItems(pagination))?.listItems;
+      if (quotationId) {
+        this.quotation = await this.quotationService.quotation(quotationId);
+
+        this.selectedItems = this.quotation.items;
+        this.items = (await this.itemsService.listItems(pagination))?.listItems;
+        this.items = this.items.filter((item) => !item.parentItem);
+        this.currentView = 'SELECTED_ITEMS';
+
+        this.itemsToShow = this.items.filter((item) =>
+          this.selectedItems.includes(item._id)
+        );
+      } else {
+        this.items = (await this.itemsService.listItems(pagination))?.listItems;
+
+        this.items = this.items.filter((item) => !item.parentItem);
+
+        this.itemsToShow = JSON.parse(JSON.stringify(this.items));
+      }
 
       unlockUI();
 
-      this.items = this.items.filter((item) => !item.parentItem);
-
-      this.itemsToShow = JSON.parse(JSON.stringify(this.items));
-
       this.createCheckboxes();
-      this.itemsForm.controls['checkboxes'].valueChanges.subscribe((value) => {
-        this.selectedItems = [];
 
-        value.forEach((isSelected, index) => {
-          if (isSelected) this.selectedItems.push(this.items[index]._id);
-        });
-      });
+      this.itemsForm.controls['checkboxes'].valueChanges.subscribe(
+        this.setSelectedItems
+      );
 
       this.itemsForm.controls['searchbar'].valueChanges.subscribe(
         (value: string) => {
           if (value === '')
             this.itemsToShow = JSON.parse(JSON.stringify(this.items));
           else {
-            console.log('VALOR', value);
-
             this.itemsToShow = this.items.filter((item) =>
               item.name.toLowerCase().includes(value.toLowerCase())
             );
@@ -97,6 +97,14 @@ export class ItemSelectorComponent implements OnInit {
     });
   }
 
+  setSelectedItems = (value: Array<string>) => {
+    this.selectedItems = [];
+
+    value.forEach((isSelected, index) => {
+      if (isSelected) this.selectedItems.push(this.items[index]._id);
+    });
+  };
+
   changeView() {
     this.currentView =
       this.currentView === 'ALL_ITEMS' ? 'SELECTED_ITEMS' : 'ALL_ITEMS';
@@ -105,6 +113,8 @@ export class ItemSelectorComponent implements OnInit {
       this.itemsToShow = this.items.filter((item) =>
         this.selectedItems.includes(item._id)
       );
+    } else {
+      this.itemsToShow = JSON.parse(JSON.stringify(this.items));
     }
   }
 
@@ -112,26 +122,52 @@ export class ItemSelectorComponent implements OnInit {
     const checkboxes = this.itemsForm.get('checkboxes') as FormArray;
     this.items.forEach(() => checkboxes.push(this.formBuilder.control(false)));
     this.createdCheckboxes = true;
+
+    if (this.quotation && this.selectedItems.length) {
+      this.items.forEach((item, index) => {
+        //checkboxes.push(this.formBuilder.control(false));
+
+        this.selectedItems.forEach((selectedItem) => {
+          if (selectedItem === item._id) {
+            this.setValueAtIndex(index, true);
+          }
+        });
+      });
+    }
+  }
+
+  setValueAtIndex(index: number, value: any): void {
+    const checkboxes = this.itemsForm.get('checkboxes') as FormArray;
+    checkboxes.setControl(index, new FormControl(value));
   }
 
   async submit() {
     lockUI();
-    const quotation: QuotationInput = {
+    const quotationInput: QuotationInput = {
       name: 'Cotización de ' + new Date().toLocaleString(),
       merchant: this.saleflowService.saleflowData.merchant._id,
       items: this.selectedItems,
     };
 
     try {
-      await this.quotationService.createQuotation(
-        this.saleflowService.saleflowData.merchant._id,
-        quotation
-      );
-  
-      this.router.navigate(['/admin/quotations']);
-      unlockUI();
+      if (!this.quotation) {
+        await this.quotationService.createQuotation(
+          this.saleflowService.saleflowData.merchant._id,
+          quotationInput
+        );
+
+        this.router.navigate(['/admin/quotations']);
+        unlockUI();
+      } else {
+        await this.quotationService.updateQuotation(
+          quotationInput,
+          this.quotation._id
+        );
+
+        this.router.navigate(['/admin/quotations']);
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       unlockUI();
     }
   }
