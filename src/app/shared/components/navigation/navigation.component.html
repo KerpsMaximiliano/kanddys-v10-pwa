@@ -7,115 +7,45 @@
     (keydown.escape)="close()"
     disableClose
   >
-    <div class="close" style="cursor: pointer;">
+    <div class="close" style="cursor: pointer">
       <span (click)="close()">X</span>
     </div>
+    <div class="tabs">
+      <div
+        class="tab"
+        (click)="changeTab(i)"
+        *ngFor="let tab of tabs; index as i"
+        [ngClass]="{ active: tab.active }"
+      >
+        {{ tab.text }}
+      </div>
+    </div>
+
     <div class="nav-container">
       <nav>
-        <section>
-          <h2>Proveedor de ✨</h2>
+        <ng-container *ngFor="let tab of tabs">
+          <section *ngIf="tab.active">
+            <h2>{{ tab.headerText }}</h2>
+            <div class="header-border"></div>
 
-          <ul>
-            <li routerLinkActive="active" *ngIf="headerService.user">
-              <a
-                mat-button
-                [routerLink]="['/admin/dashboard']"
-                style="padding: 0px"
-              >
-                Lo que vendo 🏷️
-              </a>
-              <img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
-                class="icon"
-              />
-            </li>
-
-            <li routerLinkActive="active" *ngIf="headerService.user">
-              <a
-                mat-button
-                [routerLink]="['/admin/reports']"
-                style="padding: 0px"
-              >
-                Lo vendido 🧾
-              </a>
-              <img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
-                class="icon"
-              />
-            </li>
-
-            <!-- <li routerLinkActive="active" *ngIf="headerService.user">
-              <a
-                mat-button
-                [routerLink]="['/admin/reportings']"
-                style="padding: 0px"
-              >
-                Control & Beneficios 🎛️
-              </a>
-              <img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
-                class="icon"
-              />
-            </li> -->
-
-            <li routerLinkActive="active" *ngIf="headerService.user">
-              <a
-                mat-button
-                [routerLink]="['/admin/order-slides']"
-                style="padding: 0px"
-              >
-                Progreso de facturas ⏩
-              </a>
-              <img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
-                class="icon"
-              />
-            </li>
-
-            <li routerLinkActive="active" *ngIf="headerService.user">
-              <a
-                mat-button
-                [routerLink]="['/admin/merchants-entry']"
-                style="padding: 0px"
-              >
-                Registrar nuevos afiliados 📒
-              </a>
-              <img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
-                class="icon"
-              />
-            </li>
-
-            <li
-              routerLinkActive="active"
-              *ngIf="
-                merchantsService.merchantData ||
-                headerService.user?._id ===
-                  headerService.saleflow?.merchant.owner._id
-              "
-            >
-              <a
-                mat-button
-                [routerLink]="[
-                  '/ecommerce',
-                  merchantsService.merchantData?.slug ||
-                    headerService.saleflow?.merchant.slug,
-                  'store'
-                ]"
-                style="padding: 0px"
-              >
-                Vista de compradores 👀
-              </a>
-              <img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/burguer-menu.svg"
-                class="icon"
-              />
-            </li>
-          </ul>
-        </section>
+            <ul>
+              <ng-container *ngFor="let link of tab.links">
+                <li routerLinkActive="active" *ngIf="headerService.user">
+                  <a
+                    mat-button
+                    [routerLink]="link.routerLink"
+                    style="padding: 0px"
+                  >
+                    {{ link.text }}
+                  </a>
+                </li>
+              </ng-container>
+            </ul>
+          </section>
+        </ng-container>
       </nav>
 
-      <div class="actions">
+      <div class="actions" *ngIf="tabs[0].active">
         <button mat-button (click)="signout()" *ngIf="headerService.user">
           <mat-icon>exit_to_app</mat-icon>
           Cerrar sesión

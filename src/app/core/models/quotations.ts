@@ -1,13 +1,13 @@
-import { Model } from "../objects/model";
+import { Model } from '../objects/model';
 
 export class Quotation extends Model<Quotation> {
-    name: string;
-    items: [string];
-    merchant: string;
+  name: string;
+  items: Array<string>;
+  merchant: string;
 }
 
 export class QuotationInput {
-    name?: string;
-    items?: [string];
-    merchant?: string;
+  name?: string;
+  items?: Array<string>;
+  merchant?: string;
 }
