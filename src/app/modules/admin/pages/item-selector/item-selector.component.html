@@ -18,7 +18,7 @@
         <div class="search-bar-icon-container">
           <mat-icon>search</mat-icon>
         </div>
-        <input type="text" [formControlName]="'searchbar'"/>
+        <input type="text" [formControlName]="'searchbar'" />
       </div>
     </ng-container>
 
@@ -60,6 +60,7 @@
       ></div>
       <div class="item-text">{{ item.name }}</div>
       <input
+        class="checkbox"
         type="checkbox"
         [formControlName]="i"
         *ngIf="createdCheckboxes && currentView === 'ALL_ITEMS'"

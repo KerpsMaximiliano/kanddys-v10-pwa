@@ -74,22 +74,26 @@ input[type="text"] {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   border: 0;
+  font-family: InterLight;
+  font-size: 17px;
 }
 
 .items-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  align-items: baseline;
+  row-gap: 28px;
+  margin-top: 28px;
 }
 
 .item {
-  margin-top: 28px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  height: 100%;
 
   input[type="checkbox"] {
-    margin-top: 7px;
+    margin-top: auto;
   }
 }
 
