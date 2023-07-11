@@ -1,0 +1,133 @@
+.container {
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.header {
+  background: #fff;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.06));
+  height: 46px;
+  padding-left: 14px;
+  padding-right: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  mat-icon {
+    color: #c4c5c3;
+    font-size: 28px;
+    height: 28px;
+    width: 28px;
+    margin-right: 8px;
+    margin-bottom: -1px;
+  }
+}
+
+.header-title {
+  color: #272727;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin: 0;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.content {
+  padding-left: 14px;
+  padding-right: 21px;
+  padding-top: 24px;
+  padding-bottom: 165px;
+}
+
+.content-title {
+  color: #181d17;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.content-card {
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  background: #ffffff;
+  border-radius: 10px;
+  padding-top: 16px;
+  padding-left: 14px;
+  padding-right: 6px;
+  padding-bottom: 12px;
+  width: 100%;
+  margin-top: 5px;
+}
+
+.content-card-top-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 8px;
+  padding-right: 12px;
+}
+
+.content-card-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e9e371;
+  margin-right: 10px;
+}
+
+.content-card-title {
+  color: #272727;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin: 0;
+}
+
+.content-card-cotization {
+  color: #7b7b7b;
+  font-family: InterMedium;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin: 0;
+}
+
+.content-card-list-container {
+  padding-left: 33px;
+  margin-top: 16px;
+
+  li {
+    color: #272727;
+    font-family: InterMedium;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 5px;
+  }
+}
+
+hr{
+    border:1px solid #E9E9E9;
+    margin-bottom: 13px;
+    margin-top:10px;
+}
+
+
+@media (max-width:380px){
+    .content-card-title{
+        font-size: 15px;
+    }
+}
