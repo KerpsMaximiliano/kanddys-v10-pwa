@@ -397,7 +397,7 @@ const routes: Routes = [
         component: ItemSelectorComponent,
       },
       {
-        path: 'quotes',
+        path: 'quotations',
         component: InventoryComponent,
       }
     ],
