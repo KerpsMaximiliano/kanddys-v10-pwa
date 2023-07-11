@@ -2,20 +2,20 @@ import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { PaginationInput } from '../models/saleflow';
 import { Quotation } from '../models/quotations';
-import { createQuotation, deleteQuotation, quotations } from '../graphql/quotations.gql';
+import {
+  createQuotation,
+  deleteQuotation,
+  quotation,
+  quotations,
+} from '../graphql/quotations.gql';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class QuotationsService {
+  constructor(private graphql: GraphQLWrapper) {}
 
-  constructor(
-    private graphql: GraphQLWrapper
-  ) { }
-
-  async quotations(
-    input?: PaginationInput
-  ): Promise<Quotation[]> {
+  async quotations(input?: PaginationInput): Promise<Quotation[]> {
     try {
       const result = await this.graphql.query({
         query: quotations,
@@ -25,6 +25,21 @@ export class QuotationsService {
 
       if (!result || result?.errors) return undefined;
       return result.quotations;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async quotation(id: string): Promise<Quotation> {
+    try {
+      const result = await this.graphql.query({
+        query: quotation,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.quotation;
     } catch (e) {
       console.log(e);
     }

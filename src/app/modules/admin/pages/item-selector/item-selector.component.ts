@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
-import { QuotationInput } from 'src/app/core/models/quotations';
+import { Quotation, QuotationInput } from 'src/app/core/models/quotations';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -25,6 +25,7 @@ export class ItemSelectorComponent implements OnInit {
   });
   createdCheckboxes: boolean = false;
   currentView: 'ALL_ITEMS' | 'SELECTED_ITEMS' = 'ALL_ITEMS';
+  quotation: Quotation = null;
 
   constructor(
     private itemsService: ItemsService,
@@ -35,7 +36,7 @@ export class ItemSelectorComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.route.params.subscribe(({quotationId}) => {
+    this.route.params.subscribe(async ({quotationId}) => {
 
       const pagination: PaginationInput = {
         findBy: {
@@ -52,6 +53,12 @@ export class ItemSelectorComponent implements OnInit {
     if (this.selectedTags.length)
       pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
     */
+
+      if(quotationId) {
+        this.quotation = await this.quotationService.quotation(quotationId);
+
+        console.log("quotation", this.quotation);
+      }
 
       lockUI();
 
