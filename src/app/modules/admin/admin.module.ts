@@ -77,6 +77,7 @@ import { ItemSelectorComponent } from './pages/item-selector/item-selector.compo
 import { SupplierRegisterComponent } from './pages/supplier-register/supplier-register.component';
 import { InventoryComponent } from './pages/inventory/inventory.component';
 import { QuotationBidsComponent } from './pages/quotation-bids/quotation-bids.component';
+import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-creator.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -479,6 +480,10 @@ const routes: Routes = [
     path: 'quotation-bids',
     component: QuotationBidsComponent,
   },
+  {
+    path: 'inventory-creator',
+    component: InventoryCreatorComponent,
+  },
 ];
 
 @NgModule({
@@ -537,6 +542,7 @@ const routes: Routes = [
     SupplierRegisterComponent,
     InventoryComponent,
     QuotationBidsComponent,
+    InventoryCreatorComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
