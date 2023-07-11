@@ -110,6 +110,8 @@ export class HeaderService {
   orderReceiverData: ReceiverDataInput = null;
   receiverDataNew: boolean = false;
   changedItemAmountSubject = new Subject<Array<ItemSubOrderInput>>();
+  ecommerceDataLoaded = new Subject<boolean>();
+
 
   public session: Session;
   constructor(

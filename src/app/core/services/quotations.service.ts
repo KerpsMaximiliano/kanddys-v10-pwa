@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { PaginationInput } from '../models/saleflow';
+import { PaginationInput, PaginationOptionsInput } from '../models/saleflow';
 import { Quotation, QuotationInput } from '../models/quotations';
 import {
   createQuotation,
   deleteQuotation,
   quotation,
+  quotationCoincidences,
   quotations,
   updateQuotation,
 } from '../graphql/quotations.gql';
@@ -31,6 +32,24 @@ export class QuotationsService {
     }
   }
 
+  async quotationCoincidences(
+    id: string,
+    paginationOptionsInput: PaginationOptionsInput
+  ): Promise<Array<any>> {
+    try {
+      const result = await this.graphql.query({
+        query: quotationCoincidences,
+        variables: { id, paginationOptionsInput },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.quotationCoincidences;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async quotation(id: string): Promise<Quotation> {
     try {
       const result = await this.graphql.query({
@@ -46,7 +65,10 @@ export class QuotationsService {
     }
   }
 
-  async createQuotation(merchantId: string, input: QuotationInput): Promise<any> {
+  async createQuotation(
+    merchantId: string,
+    input: QuotationInput
+  ): Promise<any> {
     const result = await this.graphql.mutate({
       mutation: createQuotation,
       variables: { merchantId, input },

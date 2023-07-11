@@ -170,6 +170,7 @@ export class ItemSelectorComponent implements OnInit {
           this.quotation._id
         );
 
+        unlockUI();
         this.router.navigate(['/admin/quotations']);
       }
     } catch (error) {

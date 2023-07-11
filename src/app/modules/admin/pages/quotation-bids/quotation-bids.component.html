@@ -1,68 +1,80 @@
 <div class="container">
   <div class="header">
     <div class="flex">
-      <mat-icon>close</mat-icon>
+      <mat-icon
+        (click)="showQuotations()"
+      >close</mat-icon>
       <p class="header-title">Cotización sin nombreID</p>
     </div>
-    <img src="../../../../../assets/icons/info-black.svg" />
+    <img
+      [src]="
+        currentView === 'SUPPLIERS_LIST'
+          ? assetsFolder + '/icon_info.png'
+          : assetsFolder + '/dropdown_icon.png'
+      "
+      src="../../../../../assets/icons/info-black.svg"
+      (click)="
+        currentView =
+          currentView === 'SUPPLIERS_LIST'
+            ? 'QUOTATION_CONFIG'
+            : 'SUPPLIERS_LIST'
+      "
+    />
   </div>
   <div class="content">
-    <p class="content-title">Precios de Suplidores:</p>
-    <div class="content-cards-container">
-      <div class="content-card">
-        <div class="content-card-top-container">
-          <div class="flex">
-            <div class="content-card-img"></div>
-            <p class="content-card-title">MerchantSuplidorID</p>
+    <ng-container [ngSwitch]="currentView">
+      <ng-container *ngSwitchCase="'SUPPLIERS_LIST'">
+        <p class="content-title">Precios de Suplidores:</p>
+        <div class="content-cards-container">
+          <div
+            class="content-card"
+            *ngFor="let match of quotationMatches"
+            (click)="createOrder(match)"
+          >
+            <div class="content-card-top-container">
+              <div class="flex">
+                <div
+                  class="content-card-img"
+                  [ngStyle]="{
+                    backgroundImage: match.merchant.image
+                      ? 'url(' + match.merchant.image + ')'
+                      : 'url(/assets/images/noimage.png)',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover'
+                  }"
+                ></div>
+                <p class="content-card-title">
+                  {{ match.merchant.name || match.merchant.slug }}
+                </p>
+              </div>
+              <p class="content-card-cotization">Cotizó ${{ match.total }}</p>
+            </div>
+            <ul class="content-card-list-container">
+              <li>
+                {{ match.items.length }} de {{ match.itemsMax }} artículos
+                disponibles
+              </li>
+            </ul>
+
+            <!--
+              <hr />
+            -->
           </div>
-          <p class="content-card-cotization">Cotizó $14,452</p>
         </div>
-        <ul class="content-card-list-container">
-          <li>3 de 4 artículos disponibles</li>
-          <li>Entregan 3 horas después de la orden</li>
-          <li>Entregan lugarid, lugarid, lugarid</li>
-        </ul>
-        <hr>
-        <p class="content-card-cotization">
-            Solicitada hace FechaID
-        </p>
-      </div>
-      <div class="content-card">
-        <div class="content-card-top-container">
-          <div class="flex">
-            <div class="content-card-img"></div>
-            <p class="content-card-title">MerchantSuplidorID</p>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'QUOTATION_CONFIG'">
+        <p class="content-title">Información:</p>
+
+        <div class="content-cards-container">
+          <div class="content-card info" (click)="editQuotation()">
+            <h3>Articulos en el carrito</h3>
+
+            <h6>{{ quotation.items.length }}</h6>
           </div>
-          <p class="content-card-cotization">Cotizó $14,452</p>
         </div>
-        <ul class="content-card-list-container">
-          <li>3 de 4 artículos disponibles</li>
-          <li>Entregan 3 horas después de la orden</li>
-          <li>Entregan lugarid, lugarid, lugarid</li>
-        </ul>
-        <hr>
-        <p class="content-card-cotization">
-            Solicitada hace FechaID
-        </p>
-      </div>
-      <div class="content-card">
-        <div class="content-card-top-container">
-          <div class="flex">
-            <div class="content-card-img"></div>
-            <p class="content-card-title">MerchantSuplidorID</p>
-          </div>
-          <p class="content-card-cotization">Cotizó $14,452</p>
-        </div>
-        <ul class="content-card-list-container">
-          <li>3 de 4 artículos disponibles</li>
-          <li>Entregan 3 horas después de la orden</li>
-          <li>Entregan lugarid, lugarid, lugarid</li>
-        </ul>
-        <hr>
-        <p class="content-card-cotization">
-            Solicitada hace FechaID
-        </p>
-      </div>
-    </div>
+      </ng-container>
+    </ng-container>
   </div>
 </div>

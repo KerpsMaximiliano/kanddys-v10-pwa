@@ -484,7 +484,7 @@ const routes: Routes = [
     component: InventoryComponent,
   },
   {
-    path: 'quotation-bids',
+    path: 'quotation-bids/:quotationId',
     component: QuotationBidsComponent,
   },
 ];
