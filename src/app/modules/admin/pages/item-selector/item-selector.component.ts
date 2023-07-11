@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -34,7 +35,8 @@ export class ItemSelectorComponent implements OnInit {
     private saleflowService: SaleFlowService,
     private quotationService: QuotationsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   async ngOnInit() {
@@ -139,6 +141,10 @@ export class ItemSelectorComponent implements OnInit {
   setValueAtIndex(index: number, value: any): void {
     const checkboxes = this.itemsForm.get('checkboxes') as FormArray;
     checkboxes.setControl(index, new FormControl(value));
+  }
+
+  back() {
+    this.location.back();
   }
 
   async submit() {

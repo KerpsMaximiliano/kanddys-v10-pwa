@@ -2,7 +2,9 @@
   <ng-container [ngSwitch]="currentView">
     <ng-container *ngSwitchCase="'ALL_ITEMS'">
       <div class="top-flex">
-        <mat-icon class="back-icon"> arrow_back_ios </mat-icon>
+        <mat-icon class="back-icon"
+          (click)="back()"
+        > arrow_back_ios </mat-icon>
 
         <span
           class="selected-items-label"
