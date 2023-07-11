@@ -279,6 +279,7 @@ export const listItems = gql`
       visitorCounter {
         counter
       }
+      type
     }
   }
 `;
