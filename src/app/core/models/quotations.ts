@@ -7,7 +7,7 @@ export class Quotation extends Model<Quotation> {
 }
 
 export class QuotationInput {
-  name: string;
-  items: Array<string>;
-  merchant: string;
+  name?: string;
+  items?: Array<string>;
+  merchant?: string;
 }
