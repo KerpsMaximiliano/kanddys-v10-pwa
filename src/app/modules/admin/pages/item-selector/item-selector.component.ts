@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { QuotationInput } from 'src/app/core/models/quotations';
@@ -29,7 +30,8 @@ export class ItemSelectorComponent implements OnInit {
     private itemsService: ItemsService,
     private formBuilder: FormBuilder,
     private saleflowService: SaleFlowService,
-    private quotationService: QuotationsService
+    private quotationService: QuotationsService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -108,11 +110,17 @@ export class ItemSelectorComponent implements OnInit {
       items: this.selectedItems,
     };
 
-    await this.quotationService.createQuotation(
-      this.saleflowService.saleflowData.merchant._id,
-      quotation
-    );
-
-    unlockUI();
+    try {
+      await this.quotationService.createQuotation(
+        this.saleflowService.saleflowData.merchant._id,
+        quotation
+      );
+  
+      this.router.navigate(['/admin/quotations']);
+      unlockUI();
+    } catch (error) {
+      console.log(error)
+      unlockUI();
+    }
   }
 }
