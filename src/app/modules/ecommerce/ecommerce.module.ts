@@ -56,7 +56,6 @@ import { HttpClient } from '@angular/common/http';
 import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
 import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
 import { InvalidMagicLinkComponent } from './pages/invalid-magic-link/invalid-magic-link.component';
-import { InventoryComponent } from './pages/inventory/inventory.component';
 
 const routes: Routes = [
   {
@@ -149,10 +148,6 @@ const routes: Routes = [
   {
     path: 'invalid-link',
     component: InvalidMagicLinkComponent
-  },
-  {
-    path: 'inventory',
-    component: InventoryComponent
   },
   {
     path: ':merchantSlug',
@@ -337,8 +332,7 @@ const routes: Routes = [
     GiftcardDetailsComponent,
     SymbolDetailComponent,
     OrderConfirmationComponent,
-    InvalidMagicLinkComponent,
-    InventoryComponent
+    InvalidMagicLinkComponent
   ],
   imports: [
     CommonModule,

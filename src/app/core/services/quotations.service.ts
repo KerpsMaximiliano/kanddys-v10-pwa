@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { PaginationInput } from '../models/saleflow';
 import { Quotation } from '../models/quotations';
-import { createQuotation, quotations } from '../graphql/quotations.gql';
+import { createQuotation, deleteQuotation, quotations } from '../graphql/quotations.gql';
 
 @Injectable({
   providedIn: 'root'
@@ -36,5 +36,13 @@ export class QuotationsService {
       variables: { merchantId, input },
     });
     return result?.createQuotation;
+  }
+
+  async deleteQuotation(id: string): Promise<any> {
+    const result = await this.graphql.mutate({
+      mutation: deleteQuotation,
+      variables: { id },
+    });
+    return result?.deleteQuotation;
   }
 }

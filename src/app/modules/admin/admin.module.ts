@@ -392,6 +392,10 @@ const routes: Routes = [
         path: 'item-selector',
         component: ItemSelectorComponent,
       },
+      {
+        path: 'quotes',
+        component: InventoryComponent,
+      }
     ],
   },
   {
@@ -469,10 +473,6 @@ const routes: Routes = [
   {
     path: 'supplier-register',
     component: SupplierRegisterComponent,
-  },
-  {
-    path: 'inventory',
-    component: InventoryComponent,
   },
 ];
 
