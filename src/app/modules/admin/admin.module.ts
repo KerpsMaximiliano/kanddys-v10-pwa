@@ -392,6 +392,10 @@ const routes: Routes = [
         path: 'item-selector',
         component: ItemSelectorComponent,
       },
+      {
+        path: 'item-selector/:quotationId',
+        component: ItemSelectorComponent,
+      },
     ],
   },
   {

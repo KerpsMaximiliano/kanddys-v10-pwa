@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { QuotationInput } from 'src/app/core/models/quotations';
@@ -29,58 +30,62 @@ export class ItemSelectorComponent implements OnInit {
     private itemsService: ItemsService,
     private formBuilder: FormBuilder,
     private saleflowService: SaleFlowService,
-    private quotationService: QuotationsService
+    private quotationService: QuotationsService,
+    private route: ActivatedRoute
   ) {}
 
   async ngOnInit() {
-    const pagination: PaginationInput = {
-      findBy: {
-        type: 'supplier',
-      },
-      options: {
-        sortBy: 'createdAt:desc',
-        limit: -1,
-        page: 1,
-      },
-    };
+    this.route.params.subscribe(({quotationId}) => {
 
-    /*
+      const pagination: PaginationInput = {
+        findBy: {
+          type: 'supplier',
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: -1,
+          page: 1,
+        },
+      };
+
+      /*
     if (this.selectedTags.length)
       pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
     */
 
-    lockUI();
+      lockUI();
 
-    this.items = (await this.itemsService.listItems(pagination))?.listItems;
+      this.items = (await this.itemsService.listItems(pagination))?.listItems;
 
-    unlockUI();
+      unlockUI();
 
-    this.items = this.items.filter((item) => !item.parentItem);
+      this.items = this.items.filter((item) => !item.parentItem);
 
-    this.itemsToShow = JSON.parse(JSON.stringify(this.items));
+      this.itemsToShow = JSON.parse(JSON.stringify(this.items));
 
-    this.createCheckboxes();
-    this.itemsForm.controls['checkboxes'].valueChanges.subscribe((value) => {
-      this.selectedItems = [];
+      this.createCheckboxes();
+      this.itemsForm.controls['checkboxes'].valueChanges.subscribe((value) => {
+        this.selectedItems = [];
 
-      value.forEach((isSelected, index) => {
-        if (isSelected) this.selectedItems.push(this.items[index]._id);
+        value.forEach((isSelected, index) => {
+          if (isSelected) this.selectedItems.push(this.items[index]._id);
+        });
       });
-    });
 
-    this.itemsForm.controls['searchbar'].valueChanges.subscribe(
-      (value: string) => {
-        if (value === '')
-          this.itemsToShow = JSON.parse(JSON.stringify(this.items));
-        else {
-          console.log('VALOR', value);
+      this.itemsForm.controls['searchbar'].valueChanges.subscribe(
+        (value: string) => {
+          if (value === '')
+            this.itemsToShow = JSON.parse(JSON.stringify(this.items));
+          else {
+            console.log('VALOR', value);
 
-          this.itemsToShow = this.items.filter((item) =>
-            item.name.toLowerCase().includes(value.toLowerCase())
-          );
+            this.itemsToShow = this.items.filter((item) =>
+              item.name.toLowerCase().includes(value.toLowerCase())
+            );
+          }
         }
-      }
-    );
+      );
+    });
   }
 
   changeView() {
