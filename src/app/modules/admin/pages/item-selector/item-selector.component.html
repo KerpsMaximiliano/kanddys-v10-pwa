@@ -1,48 +1,69 @@
-<div class="container">
-  <mat-icon class="back-icon"> arrow_back_ios </mat-icon>
-  <p class="title">Selecciona el artículo que le vendes a floristerias:</p>
-  <div class="search-bar-container">
-    <div class="search-bar-icon-container">
-      <mat-icon>search</mat-icon>
-    </div>
-    <input />
-  </div>
-  <div class="items-container">
-    <div class="item">
-      <div class="item-card"></div>
-      <div class="item-text">NombreId</div>
-    </div>
-    <div class="item">
-      <div class="item-card"></div>
-      <div class="item-text">NombreId</div>
-    </div>
-    <div class="item">
-      <div class="item-card"></div>
-      <div class="item-text">NombreId</div>
-    </div>
-    <div class="item">
-      <div class="item-card"></div>
-      <div class="item-text">NombreId</div>
-    </div>
-    <div class="item">
-      <div class="item-card"></div>
-      <div class="item-text">NombreId</div>
-    </div>
-    <div class="item">
-      <div class="item-card"></div>
-      <div class="item-text">NombreId</div>
-    </div>
-    <div class="item">
-      <div class="item-card"></div>
-      <div class="item-text">NombreId</div>
-    </div>
-    <div class="item">
-      <div class="item-card"></div>
-      <div class="item-text">NombreId</div>
-    </div>
-    <div class="item">
-      <div class="item-card"></div>
-      <div class="item-text">NombreId</div>
+<div class="container" [formGroup]="itemsForm">
+  <ng-container [ngSwitch]="currentView">
+    <ng-container *ngSwitchCase="'ALL_ITEMS'">
+      <div class="top-flex">
+        <mat-icon class="back-icon"> arrow_back_ios </mat-icon>
+
+        <span
+          class="selected-items-label"
+          (click)="changeView()"
+          *ngIf="selectedItems.length"
+        >
+          {{ selectedItems.length }} seleccionados
+        </span>
+      </div>
+
+      <p class="title">Selecciona el artículo que le vendes a floristerias:</p>
+      <div class="search-bar-container">
+        <div class="search-bar-icon-container">
+          <mat-icon>search</mat-icon>
+        </div>
+        <input type="text" [formControlName]="'searchbar'"/>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'SELECTED_ITEMS'">
+      <div class="top-flex">
+        <span (click)="changeView()">Incluye más artículos</span>
+        <span (click)="submit()">Salva el carrito</span>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngIf="items.length === 0">
+    <button class="add-button">
+      <span>Agrega el nombre del producto</span>
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/plus_button.svg"
+        class="add-button-icon"
+        alt="add item"
+      />
+    </button>
+  </ng-container>
+
+  <div class="items-container" *ngIf="items.length > 0">
+    <div
+      class="item"
+      *ngFor="let item of itemsToShow; let i = index"
+      [formArrayName]="'checkboxes'"
+    >
+      <div
+        class="item-card"
+        [ngStyle]="{
+          backgroundImage: item.images?.length
+            ? 'url(' + item.images[0].value + ')'
+            : '/assets/images/noimage.png',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundSize: 'cover'
+        }"
+      ></div>
+      <div class="item-text">{{ item.name }}</div>
+      <input
+        type="checkbox"
+        [formControlName]="i"
+        *ngIf="createdCheckboxes && currentView === 'ALL_ITEMS'"
+      />
     </div>
   </div>
 </div>

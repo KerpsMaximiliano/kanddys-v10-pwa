@@ -99,6 +99,7 @@ export class Item extends Model<Item> {
   layout?: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO';
   ctaText?: string;
   ctaBehavior?: 'ADD_TO_CART';
+  parentItem?: string;
 }
 
 export class ItemImage extends Model<ItemImage> {

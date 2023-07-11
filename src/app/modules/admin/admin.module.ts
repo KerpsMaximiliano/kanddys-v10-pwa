@@ -388,6 +388,10 @@ const routes: Routes = [
         path: 'notifications-menu',
         component: RewardsDisplayComponent,
       },
+      {
+        path: 'item-selector',
+        component: ItemSelectorComponent,
+      },
     ],
   },
   {
@@ -461,10 +465,6 @@ const routes: Routes = [
   {
     path: 'merchants-entry',
     component: MerchantsEntryComponent,
-  },
-  {
-    path: 'item-selector',
-    component: ItemSelectorComponent,
   },
   {
     path: 'supplier-register',
