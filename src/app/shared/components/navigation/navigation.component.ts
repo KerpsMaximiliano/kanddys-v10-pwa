@@ -101,6 +101,8 @@ export class NavigationComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    if(this.headerService.navigationTabState) this.tabs = this.headerService.navigationTabState;
+
     this.quotations = await this.quotationsService.quotations({
       findBy: {
         merchant: this.merchantsService.merchantData._id,
@@ -125,6 +127,8 @@ export class NavigationComponent implements OnInit {
     this.tabs.forEach((tab, index) => {
       if (index !== tabIndex) tab.active = false;
     });
+
+    this.headerService.navigationTabState = this.tabs;
   }
 
   login() {

@@ -39,6 +39,7 @@ export class ItemSelectorComponent implements OnInit {
   createdCheckboxes: boolean = false;
   currentView: 'ALL_ITEMS' | 'SELECTED_ITEMS' = 'ALL_ITEMS';
   quotation: Quotation = null;
+  supplierMode: boolean = false;
 
   constructor(
     private itemsService: ItemsService,
@@ -53,61 +54,69 @@ export class ItemSelectorComponent implements OnInit {
 
   async ngOnInit() {
     this.route.params.subscribe(async ({ quotationId }) => {
-      const pagination: PaginationInput = {
-        findBy: {
-          type: 'supplier',
-        },
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: -1,
-          page: 1,
-        },
-      };
+      this.route.queryParams.subscribe(async ({ supplierMode }) => {
+        this.supplierMode = Boolean(supplierMode);
 
-      /*
-    if (this.selectedTags.length)
-      pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
-    */
-      lockUI();
+        const pagination: PaginationInput = {
+          findBy: {
+            type: 'supplier',
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: -1,
+            page: 1,
+          },
+        };
 
-      if (quotationId) {
-        this.quotation = await this.quotationService.quotation(quotationId);
+        /*
+      if (this.selectedTags.length)
+        pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
+      */
+        lockUI();
 
-        this.selectedItems = this.quotation.items;
-        this.items = (await this.itemsService.listItems(pagination))?.listItems;
-        this.items = this.items.filter((item) => !item.parentItem);
-        this.currentView = 'SELECTED_ITEMS';
+        if (quotationId) {
+          this.quotation = await this.quotationService.quotation(quotationId);
 
-        this.itemsToShow = this.items.filter((item) =>
-          this.selectedItems.includes(item._id)
-        );
-      } else {
-        this.items = (await this.itemsService.listItems(pagination))?.listItems;
+          this.selectedItems = this.quotation.items;
+          this.items = (
+            await this.itemsService.listItems(pagination)
+          )?.listItems;
+          this.items = this.items.filter((item) => !item.parentItem);
+          this.currentView = 'SELECTED_ITEMS';
 
-        this.items = this.items.filter((item) => !item.parentItem);
+          this.itemsToShow = this.items.filter((item) =>
+            this.selectedItems.includes(item._id)
+          );
+        } else {
+          this.items = (
+            await this.itemsService.listItems(pagination)
+          )?.listItems;
 
-        this.itemsToShow = JSON.parse(JSON.stringify(this.items));
-      }
+          this.items = this.items.filter((item) => !item.parentItem);
 
-      unlockUI();
-
-      this.createCheckboxes();
-
-      this.itemsForm.controls['checkboxes'].valueChanges.subscribe(
-        this.setSelectedItems
-      );
-
-      this.itemsForm.controls['searchbar'].valueChanges.subscribe(
-        (value: string) => {
-          if (value === '')
-            this.itemsToShow = JSON.parse(JSON.stringify(this.items));
-          else {
-            this.itemsToShow = this.items.filter((item) =>
-              item.name.toLowerCase().includes(value.toLowerCase())
-            );
-          }
+          this.itemsToShow = JSON.parse(JSON.stringify(this.items));
         }
-      );
+
+        unlockUI();
+
+        this.createCheckboxes();
+
+        this.itemsForm.controls['checkboxes'].valueChanges.subscribe(
+          this.setSelectedItems
+        );
+
+        this.itemsForm.controls['searchbar'].valueChanges.subscribe(
+          (value: string) => {
+            if (value === '')
+              this.itemsToShow = JSON.parse(JSON.stringify(this.items));
+            else {
+              this.itemsToShow = this.items.filter((item) =>
+                item.name.toLowerCase().includes(value.toLowerCase())
+              );
+            }
+          }
+        );
+      });
     });
   }
 

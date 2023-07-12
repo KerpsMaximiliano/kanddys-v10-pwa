@@ -67,6 +67,7 @@ export class CartComponent implements OnInit {
 
   capitalize = capitalize;
   wait: boolean = false;
+  redirectFromFlowRoute: boolean = false;
 
   constructor(
     public headerService: HeaderService,
@@ -83,8 +84,9 @@ export class CartComponent implements OnInit {
 
   async ngOnInit() {
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ item, wait }) => {
+      async ({ item, wait, redirectFromFlowRoute }) => {
         this.wait = wait;
+        this.redirectFromFlowRoute = Boolean(redirectFromFlowRoute);
 
         if (this.wait)
           this.headerService.ecommerceDataLoaded.subscribe({
@@ -474,7 +476,9 @@ export class CartComponent implements OnInit {
     });
   }
 
-  goToStore() {
+  goBack() {
+    if(this.redirectFromFlowRoute) return this.headerService.redirectFromQueryParams();
+
     this.router.navigate([
       `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
     ]);

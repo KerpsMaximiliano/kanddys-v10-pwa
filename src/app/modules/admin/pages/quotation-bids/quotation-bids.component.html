@@ -1,9 +1,7 @@
 <div class="container">
   <div class="header">
     <div class="flex">
-      <mat-icon
-        (click)="showQuotations()"
-      >close</mat-icon>
+      <mat-icon (click)="showQuotations()">close</mat-icon>
       <p class="header-title">Cotización sin nombreID</p>
     </div>
     <img
@@ -48,7 +46,7 @@
                   {{ match.merchant.name || match.merchant.slug }}
                 </p>
               </div>
-              <p class="content-card-cotization">Cotizó ${{ match.total }}</p>
+              <p class="content-card-cotization">${{ match.total }}</p>
             </div>
             <ul class="content-card-list-container">
               <li>
@@ -72,6 +70,12 @@
             <h3>Articulos en el carrito</h3>
 
             <h6>{{ quotation.items.length }}</h6>
+          </div>
+        </div>
+
+        <div class="content-cards-container">
+          <div class="content-card info" (click)="deleteQuotation()">
+            <h3>Eliminar esta cotización</h3>
           </div>
         </div>
       </ng-container>
