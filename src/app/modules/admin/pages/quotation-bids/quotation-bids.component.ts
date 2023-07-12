@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-=======
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
->>>>>>> staging-v3
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -35,13 +31,9 @@ export class QuotationBidsComponent implements OnInit {
     private headerService: HeaderService,
     private appService: AppService,
     private route: ActivatedRoute,
-<<<<<<< HEAD
     private matDialog: MatDialog,
-    private router: Router
-=======
     private router: Router,
     private matSnackBar: MatSnackBar
->>>>>>> staging-v3
   ) {}
 
   ngOnInit(): void {
