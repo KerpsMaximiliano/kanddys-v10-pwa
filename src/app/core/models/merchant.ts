@@ -36,6 +36,8 @@ export class Merchant extends Model<Merchant> {
   receiveNotifications?: boolean;
   address?: string;
   notes?: String;
+  receiveNotificationsMainPhone?: boolean;
+  secondaryContacts?: string[];
 }
 
 export class EmployeeContract extends Model<EmployeeContract> {

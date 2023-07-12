@@ -13,7 +13,7 @@ import { ReloadComponent } from './shared/dialogs/reload/reload.component';
   selector: 'app-root',
   template: `
     <main [ngStyle]="{overflowX: 'hidden', maxWidth: '500px !important', position: 'relative'}">
-      <div [@routeAnimations]="getRouteAnimationData()">
+      <div [@routeAnimations]="getRouteAnimationData()" style="height: 100%;">
         <router-outlet></router-outlet>
       </div>
     </main>

@@ -86,8 +86,7 @@
                   {{ this.headerService?.order?.products.length }} Artículos
                   facturados
                 </h2>
-                <mat-icon
-                  class="expansion-arrow-icon"
+                <mat-icon class="expansion-arrow-icon"
                   >{{
                     panelOpenState
                       ? "keyboard_arrow_down"
@@ -97,7 +96,12 @@
               </div>
               <h2
                 class="inner-title"
-                style="position: absolute; right: 18px; margin: 0; font-family: InterBold;"
+                style="
+                  position: absolute;
+                  right: 18px;
+                  margin: 0;
+                  font-family: InterBold;
+                "
               >
                 RD $ {{ payment | number : "1.2-2" }}
               </h2>
@@ -437,7 +441,7 @@
                 ? "De parte de: " + postsService.post?.from
                 : postsService.post?.envelopeText
                 ? postsService.post?.envelopeText
-                :  "..."
+                : "..."
             }}
           </p>
         </button>
@@ -567,7 +571,10 @@
       </button>
     </section>
 
-    <section class="section"  *ngIf="postsService.post && postsService.post?.receiver">
+    <section
+      class="section"
+      *ngIf="postsService.post && postsService.post?.receiver"
+    >
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Recipiente</h2>
       </div>
@@ -825,7 +832,13 @@
 <ng-template #itemInfoTemplate let-item="item" let-i="i">
   <div class="productData">
     <button (click)="goToArticleDetail(item._id)">
-      <div class="image" *ngIf="!urlIsVideo(item.images[0].value)">
+      <div
+        class="image"
+        *ngIf="
+          (!item.images.length || !item.images) ||
+          (item.images?.length && !urlIsVideo(item.images[0].value))
+        "
+      >
         <div
           class="image-for-item"
           [ngStyle]="{
@@ -842,7 +855,7 @@
       </div>
       <div
         class="video-wrapper videoThumbnail"
-        *ngIf="urlIsVideo(item.images[0].value)"
+        *ngIf="item.images?.length && urlIsVideo(item.images[0].value)"
       >
         <img
           src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"

@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { environment } from 'src/environments/environment';
 
 interface Field {
-  type: 'text' | 'email' | 'phone' | 'file';
+  type: 'text' | 'email' | 'phone' | 'file' | 'number';
   validators: Array<ValidatorFn>;
   name: string;
   placeholder?: string;
@@ -59,6 +59,9 @@ export class FormComponent implements OnInit {
         case 'text':
           fieldToInsert = new FormControl('', field.validators);
           break;
+        case 'number':
+          fieldToInsert = new FormControl('', field.validators);
+          break;
         case 'email':
           fieldToInsert = new FormControl(
             '',
@@ -69,6 +72,8 @@ export class FormComponent implements OnInit {
 
       this.formGroup.addControl(field.name, fieldToInsert);
     }
+
+    console.log('formGroup', this.formGroup);
   }
 
   onIconClick(index: number) {

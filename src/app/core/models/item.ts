@@ -177,6 +177,9 @@ export class ItemInput {
   fixedQuantity?: number;
   pricePerUnit?: number;
   stock?: number;
+  useStock?: boolean;
+  notificationStock?: boolean;
+  notificationStockLimit?: number;
   featuredImage?: string;
   description?: string;
   purchaseLocations?: string[];
@@ -199,6 +202,8 @@ export class ItemInput {
   layout?: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO';
   ctaText?: string;
   ctaBehavior?: 'ADD_TO_CART';
+  type?: string;
+  parentItem?: string;
 }
 
 export class ItemImageInput {

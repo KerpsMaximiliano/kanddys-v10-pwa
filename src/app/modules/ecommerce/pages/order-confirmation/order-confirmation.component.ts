@@ -242,8 +242,15 @@ export class OrderConfirmationComponent implements OnInit {
       'Anónimo'
     }${address}`;
 
+    const phone =
+      this.order.items[0].saleflow.merchant.receiveNotificationsMainPhone ?
+      this.order.items[0].saleflow.merchant.owner.phone :
+      this.order.items[0].saleflow.merchant.secondaryContacts.length > 0 ?
+      this.order.items[0].saleflow.merchant.secondaryContacts[0] :
+      `19188156444`;
+
     this.messageLink = `https://api.whatsapp.com/send?phone=${
-      this.order.items[0].saleflow.merchant.owner.phone
+      phone
     }&text=${encodeURIComponent(message)}`;
   }
 
