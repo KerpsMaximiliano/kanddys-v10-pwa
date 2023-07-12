@@ -66,6 +66,7 @@ export class CartComponent implements OnInit {
   queryParamsSubscription: Subscription = null;
 
   capitalize = capitalize;
+  wait: boolean = false;
 
   constructor(
     public headerService: HeaderService,
@@ -82,9 +83,22 @@ export class CartComponent implements OnInit {
 
   async ngOnInit() {
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ item }) => {
-        if (item) await this.executeProcessesAfterLoading(item);
-        else await this.executeProcessesAfterLoading();
+      async ({ item, wait }) => {
+        this.wait = wait;
+
+        if (this.wait)
+          this.headerService.ecommerceDataLoaded.subscribe({
+            next: async (value: boolean) => {
+              if (value) {
+                if (item) await this.executeProcessesAfterLoading(item);
+                else await this.executeProcessesAfterLoading();
+              }
+            },
+          });
+        else {
+          if (item) await this.executeProcessesAfterLoading(item);
+          else await this.executeProcessesAfterLoading();
+        }
       }
     );
   }

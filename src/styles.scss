@@ -65,7 +65,7 @@ body {
     box-sizing: border-box;
     outline: none !important;
   }
-  touch-action: pan-x pan-y !important;
+  touch-action: manipulation !important;
   /*&:after {
     content: "";
     width: 100%;
@@ -413,6 +413,7 @@ body {
   height: 100%;
 }
 body {
+  height: 100% !important;
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }

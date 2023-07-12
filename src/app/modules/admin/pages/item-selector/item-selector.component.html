@@ -2,7 +2,9 @@
   <ng-container [ngSwitch]="currentView">
     <ng-container *ngSwitchCase="'ALL_ITEMS'">
       <div class="top-flex">
-        <mat-icon class="back-icon"> arrow_back_ios </mat-icon>
+        <mat-icon class="back-icon"
+          (click)="back()"
+        > arrow_back_ios </mat-icon>
 
         <span
           class="selected-items-label"
@@ -18,7 +20,7 @@
         <div class="search-bar-icon-container">
           <mat-icon>search</mat-icon>
         </div>
-        <input type="text" [formControlName]="'searchbar'"/>
+        <input type="text" [formControlName]="'searchbar'" />
       </div>
     </ng-container>
 
@@ -41,7 +43,7 @@
     </button>
   </ng-container>
 
-  <div class="items-container" *ngIf="items.length > 0">
+  <div class="items-container" *ngIf="itemsToShow.length > 0">
     <div
       class="item"
       *ngFor="let item of itemsToShow; let i = index"
@@ -52,7 +54,7 @@
         [ngStyle]="{
           backgroundImage: item.images?.length
             ? 'url(' + item.images[0].value + ')'
-            : '/assets/images/noimage.png',
+            : 'url(/assets/images/noimage.png)',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           backgroundSize: 'cover'
@@ -60,6 +62,7 @@
       ></div>
       <div class="item-text">{{ item.name }}</div>
       <input
+        class="checkbox"
         type="checkbox"
         [formControlName]="i"
         *ngIf="createdCheckboxes && currentView === 'ALL_ITEMS'"
