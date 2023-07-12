@@ -53,6 +53,8 @@ const orderData = `
         bio
         slug
         address
+        secondaryContacts
+        receiveNotificationsMainPhone
         owner {
           _id
           phone
@@ -236,6 +238,8 @@ const preOrderData = `
       merchant {
         _id
         name
+        secondaryContacts
+        receiveNotificationsMainPhone
         owner {
           phone
         }

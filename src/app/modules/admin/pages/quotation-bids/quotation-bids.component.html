@@ -1,7 +1,14 @@
 <div class="container">
   <div class="header">
     <div class="flex">
+<<<<<<< HEAD
       <mat-icon (click)="showQuotations()">close</mat-icon>
+=======
+      <mat-icon
+        style="cursor: pointer;"
+        (click)="showQuotations()"
+      >close</mat-icon>
+>>>>>>> staging-v3
       <p class="header-title">Cotización sin nombreID</p>
     </div>
     <img
@@ -17,6 +24,7 @@
             ? 'QUOTATION_CONFIG'
             : 'SUPPLIERS_LIST'
       "
+      style="cursor: pointer;"
     />
   </div>
   <div class="content">
@@ -46,7 +54,11 @@
                   {{ match.merchant.name || match.merchant.slug }}
                 </p>
               </div>
+<<<<<<< HEAD
               <p class="content-card-cotization">${{ match.total }}</p>
+=======
+              <p class="content-card-cotization">Cotizó {{ match.total | currency }}</p>
+>>>>>>> staging-v3
             </div>
             <ul class="content-card-list-container">
               <li>

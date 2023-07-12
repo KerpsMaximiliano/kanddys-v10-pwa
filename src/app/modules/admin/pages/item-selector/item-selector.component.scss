@@ -15,6 +15,7 @@
   align-items: center;
 
   .back-icon {
+    cursor: pointer;
     color: #c4c5c3;
     font-size: 25px;
     height: 25px;
@@ -89,6 +90,7 @@ input[type="text"] {
 }
 
 .item {
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -136,6 +138,10 @@ input[type="text"] {
   &:hover {
     cursor: pointer;
   }
+}
+
+.selected-items-label {
+  cursor: pointer;
 }
 
 .add-button-icon {

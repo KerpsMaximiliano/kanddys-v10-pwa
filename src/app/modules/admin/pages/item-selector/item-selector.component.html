@@ -45,8 +45,8 @@
 
     <ng-container *ngSwitchCase="'SELECTED_ITEMS'">
       <div class="top-flex">
-        <span (click)="changeView()">Incluye más artículos</span>
-        <span (click)="submit()">Salva el carrito</span>
+        <span (click)="changeView()" style="cursor: pointer;">Incluye más artículos</span>
+        <span (click)="submit()" style="cursor: pointer;">Salva el carrito</span>
       </div>
     </ng-container>
   </ng-container>
@@ -67,6 +67,7 @@
       class="item"
       *ngFor="let item of itemsToShow; let i = index"
       [formArrayName]="'checkboxes'"
+      (click)="toggleItemSelection(i)"
     >
       <div
         class="item-card"

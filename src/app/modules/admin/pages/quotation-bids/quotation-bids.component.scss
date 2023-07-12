@@ -39,7 +39,7 @@
 
 .content {
   padding-left: 14px;
-  padding-right: 21px;
+  padding-right: 14px;
   padding-top: 24px;
   padding-bottom: 165px;
 }
@@ -114,6 +114,7 @@
 }
 
 .content-card-title {
+  text-transform: capitalize;
   color: #272727;
   font-family: InterBold;
   font-size: 17px;
@@ -124,6 +125,7 @@
 }
 
 .content-card-cotization {
+  text-align: right;
   color: #7b7b7b;
   font-family: InterMedium;
   font-size: 15px;

@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+=======
+import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+>>>>>>> staging-v3
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -30,23 +35,27 @@ export class QuotationBidsComponent implements OnInit {
     private headerService: HeaderService,
     private appService: AppService,
     private route: ActivatedRoute,
+<<<<<<< HEAD
     private matDialog: MatDialog,
     private router: Router
+=======
+    private router: Router,
+    private matSnackBar: MatSnackBar
+>>>>>>> staging-v3
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(async ({ quotationId }) => {
-      lockUI();
       this.quotation = await this.quotationsService.quotation(quotationId);
 
       const quotationMatches: Array<QuotationMatches> =
         await this.quotationsService.quotationCoincidences(quotationId, {});
       this.quotationMatches = quotationMatches;
 
-      unlockUI();
-
       if (this.quotationMatches.length === 0) {
-        this.router.navigate(['/admin/dashboard']);
+        this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
+          duration: 5000,
+        });
       }
     });
   }
