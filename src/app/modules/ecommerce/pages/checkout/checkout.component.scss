@@ -588,6 +588,11 @@ table {
   }
 }
 
+.expansion-arrow-icon {
+  margin-left: 10px;
+  color: #7B7B7B;
+}
+
 ::ng-deep.mat-expansion-panel-body {
   padding: 0 18px 16px !important;
 }
@@ -612,5 +617,11 @@ table {
 @media (max-width: 425px) {
   .responsive-flex {
     flex: 0 0 45%;
+  }
+}
+
+@media (max-width: 375px) {
+  .expansion-arrow-icon {
+    margin-left: 0px;
   }
 }

@@ -1,0 +1,236 @@
+<div class="container"
+  [ngStyle]="{
+    minHeight: deviceViewportHeight + 'px'
+  }"
+>
+  <header>
+    <img
+      style="cursor: pointer"
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/back.svg"
+      alt="go back to previous slide"
+    />
+
+    <img
+      style="cursor: pointer"
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-double-up-black.svg"
+      alt="go back to previous page"
+      class="go-back-arrow"
+      (click)="back()"
+    />
+
+    <img
+      style="cursor: pointer"
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/next.svg"
+      alt="go to next slide"
+    />
+  </header>
+
+  <main
+    *ngIf="genericModelTemplate"
+    [ngClass]="{
+      justText:
+        !genericModelTemplate?.slides ||
+        genericModelTemplate?.slides?.length === 0
+    }"
+  >
+    <ng-container *ngIf="layout === 'ZOOMED-OUT-INFO'">
+      <h1 class="title expanded" (click)="zoomOutOrZoomInDetails()">
+        {{ genericModelTemplate.title }}
+      </h1>
+    </ng-container>
+
+    <div
+      class="media-canvas"
+      [ngClass]="{
+        minimized: layout === 'ZOOMED-OUT-INFO'
+      }"
+    >
+      <div
+        #swiperContainer
+        class="the-swiper-container"
+        [ngStyle]="{
+          width: '100%',
+          height:
+            layout === 'EXPANDED-SLIDE'
+              ? imageCanvasHeight + 'px'
+              : imageCanvasHeightWhenZoomedOut + 'px'
+        }"
+        *ngIf="genericModelTemplate?.slides?.length > 0"
+      >
+        <swiper
+          [config]="swiperConfig"
+          #mediaSwiper
+          (slideChange)="updateCurrentSlideData($event)"
+        >
+          <ng-container
+            *ngFor="let slide of genericModelTemplate.slides; index as i"
+          >
+            <ng-container *ngIf="slide.type === 'IMAGE'">
+              <img
+                [ngStyle]="{
+                  width:
+                    layout === 'EXPANDED-SLIDE'
+                      ? '100%'
+                      : imageWidthWhenResized + 'px'
+                }"
+                [ngClass]="{
+                  minimized: layout === 'ZOOMED-OUT-INFO'
+                }"
+                (click)="
+                  layout === 'ZOOMED-OUT-INFO'
+                    ? zoomOutOrZoomInDetails(i)
+                    : null
+                "
+                [src]="slide.src"
+                alt="catto"
+              />
+            </ng-container>
+
+            <div class="video-wrapper" *ngIf="slide.type === 'VIDEO'">
+              <div
+                class="invisible-from-layer"
+                [ngClass]="{
+                  visible: layout === 'ZOOMED-OUT-INFO'
+                }"
+                (click)="zoomOutOrZoomInDetails(i)"
+              ></div>
+              <!--
+                  <img
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+                      alt="play"
+                      class="playVideoIcon"
+                      style="
+                        padding: 7rem !important;
+                        z-index: 99;
+                        max-width: 300px;
+                        margin: auto;
+                        left: 0;
+                        right: 0;
+                        top: 0;
+                        bottom: 0;
+                        height: 50%;
+                      "
+                      *ngIf="!videosPlaying['media' + i]"
+                      (click)="playCurrentSlideVideo('media' + i)"
+                    />
+              -->
+
+              <video
+                [id]="'media' + i"
+                (click)="playCurrentSlideVideo('media' + i)"
+                [ngStyle]="{
+                  width:
+                    layout === 'EXPANDED-SLIDE'
+                      ? '100%'
+                      : imageWidthWhenResized + 'px'
+                }"
+                [ngClass]="{
+                  minimized: layout === 'ZOOMED-OUT-INFO'
+                }"
+                [src]="slide.src"
+                [controls]="layout !== 'ZOOMED-OUT-INFO'"
+              ></video>
+            </div>
+          </ng-container>
+        </swiper>
+      </div>
+    </div>
+
+    <!--
+        TITLE OF THE SYMBOL WHEN THE SLIDE IS EXPANDED
+    -->
+    <ng-container *ngIf="layout === 'EXPANDED-SLIDE'">
+      <h1
+        class="title"
+        *ngIf="genericModelTemplate.title"
+        (click)="zoomOutOrZoomInDetails()"
+      >
+        {{ genericModelTemplate.title }}
+      </h1>
+
+      <h1
+        class="title"
+        *ngIf="!genericModelTemplate.title && genericModelTemplate.description"
+        (click)="zoomOutOrZoomInDetails()"
+      >
+        {{ genericModelTemplate.description }}
+      </h1>
+
+      <ng-container
+        *ngIf="
+          (!genericModelTemplate?.slides ||
+            genericModelTemplate?.slides?.length === 0) &&
+          genericModelTemplate.title &&
+          genericModelTemplate.description
+        "
+      >
+        <p class="description just-text">
+          {{ genericModelTemplate.description }}
+        </p>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="layout === 'ZOOMED-OUT-INFO'">
+      <p
+        class="description"
+        [ngStyle]="{
+          maxHeight:
+            'calc((100vh - ' +
+            imageCanvasHeightWhenZoomedOut +
+            'px) - (53.55px + 25px + 14px + 54px))'
+        }"
+      >
+        {{ genericModelTemplate.description }}
+      </p>
+    </ng-container>
+  </main>
+
+  <footer class="bottom-flex">
+    <div class="left">
+      <ng-container [ngSwitch]="entity">
+        <div class="price" *ngSwitchCase="'item'">
+          <ng-container *ngIf="entityPresentation !== 'DEMO'">
+            RD$ {{ itemData?.pricing | number : "1.2-2" }}
+          </ng-container>
+
+          <ng-container *ngIf="entityPresentation === 'DEMO'">
+            RD$ 9.99
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+    <div class="right">
+      <ng-container [ngSwitch]="entity">
+        <div class="add-to-cart" *ngSwitchCase="'item'" (click)="saveProduct()">
+          <ng-container *ngIf="entityPresentation !== 'DEMO'">
+            {{
+              !isItemInCart
+                ? itemData?.ctaText || "Agregar al carrito"
+                : "Quitar del carrito"
+            }}
+          </ng-container>
+          <ng-container *ngIf="entityPresentation === 'DEMO'">
+            Agregar al carrito
+          </ng-container>
+        </div>
+
+        <div class="add-to-cart" *ngSwitchCase="'post'">
+          <a
+            target="_blank"
+            [href]="postData?.ctaLink"
+            *ngIf="
+              entityPresentation !== 'DEMO' &&
+              postData?.ctaText &&
+              postData?.ctaLink
+            "
+          >
+            {{ postData?.ctaText }}
+          </a>
+          <ng-container *ngIf="entityPresentation === 'DEMO'">
+            {{ "link-button" | translate }}
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </footer>
+</div>

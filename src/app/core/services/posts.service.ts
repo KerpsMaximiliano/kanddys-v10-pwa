@@ -38,6 +38,7 @@ export class PostsService {
   post: PostInput;
   privatePost: boolean;
   postReceiverNumber: string;
+  postReceiverNumberObject: any;
   postReceiverEmail: string;
   content: PostContent;
   swiperConfig: SwiperOptions;
@@ -50,6 +51,7 @@ export class PostsService {
     message: string;
   }> = [];
   appliesMessage: boolean = false;
+  editingSlide: number;
 
   async createPost(input: PostInput): Promise<{ createPost: { _id: string } }> {
     let value = await this.graphql.mutate({

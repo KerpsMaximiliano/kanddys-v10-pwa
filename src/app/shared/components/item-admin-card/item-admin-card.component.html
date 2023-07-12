@@ -1,11 +1,11 @@
 <mat-card class="card mat-elevation-z0">
-  <a [routerLink]="['../article-editor/', item._id]">
+  <a [routerLink]="['../item-creation/', item._id]">
     <div class="card-body">
       <div class="card-l-side">
         <h2 class="card-title">
           {{ item.name ? item.name : "Sin nombre..." }}
         </h2>
-        <p class="card-description" *ngIf="item?.description">{{ truncateString(item.description, 60) }}</p>
+        <p class="card-description">{{ item.description?.length > 150 ? item.description.slice(0, 150) + '...' : item.description ? item.description : '' }}</p>
       </div>
       <div class="card-r-side">
         <div

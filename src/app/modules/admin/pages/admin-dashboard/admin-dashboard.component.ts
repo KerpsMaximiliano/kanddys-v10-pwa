@@ -189,7 +189,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                     this._ItemsService.editingImageId =
                       createItem.images[0]._id;
                     this.router.navigate([
-                      `admin/article-editor/${createItem._id}`,
+                      `admin/item-creation/${createItem._id}`,
                     ]);
                   };
                   reader.readAsDataURL(images[0].file as File);
@@ -753,7 +753,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                         this._ItemsService.editingImageId =
                           createItem.images[0]._id;
                         this.router.navigate([
-                          `admin/article-editor/${createItem._id}`,
+                          `admin/item-creation/${createItem._id}`,
                         ]);
                       };
                       reader.readAsDataURL(images[0].file as File);
@@ -871,6 +871,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async newArticle() {
+    this.router.navigate(['admin/item-creation']);
+    /*
     let dialogRef = this.dialog.open(StepperFormComponent);
     dialogRef
       .afterClosed()
@@ -922,10 +924,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         const reader = new FileReader();
         reader.onload = (e) => {
           this._ItemsService.editingImageId = createItem.images[0]._id;
-          this.router.navigate([`admin/article-editor/${createItem._id}`]);
+          this.router.navigate([`admin/item-creation/${createItem._id}`]);
         };
         reader.readAsDataURL(images[0].file as File);
-      });
+      });*/
   }
 
   async getHiddenItems() {

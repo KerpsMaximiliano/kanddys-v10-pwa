@@ -585,7 +585,7 @@ export class DashboardLibraryComponent implements OnInit {
             {
               title: 'Editar',
               callback: () => {
-                this.router.navigate([`admin/article-editor/${id}`]);
+                this.router.navigate([`admin/item-creation/${id}`]);
               },
               icon: '/settings.svg',
             },

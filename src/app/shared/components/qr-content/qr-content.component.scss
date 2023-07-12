@@ -223,7 +223,12 @@ video {
   display: flex;
   flex-direction: column;
 
-  .upload-media:hover {
+  .reorder-media {
+    filter: invert(96%) sepia(3%) saturate(103%) hue-rotate(47deg) brightness(85%) contrast(84%);
+    margin-left: 0.3rem;
+  }
+
+  .upload-media:hover, .reorder-media:hover {
     cursor: pointer;
   }
 

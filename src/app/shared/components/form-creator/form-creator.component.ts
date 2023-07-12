@@ -44,7 +44,7 @@ interface OptionInList {
   label: string;
 }
 
-interface ExtendedQuestionInput extends QuestionInput {
+export interface ExtendedQuestionInput extends QuestionInput {
   id?: string;
 }
 
@@ -190,17 +190,16 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
         lockUI();
 
-        this.item = await this.itemsService.item(itemId);
+        if (itemId) this.item = await this.itemsService.item(itemId);
 
         const isUserTheOwner = this.item
           ? myMerchant?._id === this.item.merchant._id
           : null;
 
-        if (!isUserTheOwner) this.router.navigate(['/auth/login']);
+        if (itemId && !isUserTheOwner) this.router.navigate(['/auth/login']);
 
         if (itemId && !formId && this.item.webForms?.length > 0)
           formId = this.item.webForms[0].reference;
-
         if (this.webformsService.formCreationData === null && !formId) {
           this.webformsService.formCreationData = {
             currentStep: this.currentStepName,
@@ -266,6 +265,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         }, 30000);
 
         unlockUI();
+        console.log("desbloqueado");
       }
     );
   }
@@ -876,11 +876,19 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async finishFormSubmission(questionsToAdd: ExtendedQuestionInput[]) {
+    if (!this.item) {
+      this.itemsService.questionsToAddToItem = questionsToAdd;
+
+      this.router.navigate(['admin/item-creation']);
+    }
+
     let createdWebform = null;
-    if (!this.webform) {
+    if (!this.webform && this.item) {
       lockUI();
       const webformToCreate: WebformInput = {
-        name: this.item.name ? 'Formulario para el producto ' + this.item.name : 'Formulario para el producto',
+        name: this.item.name
+          ? 'Formulario para el producto ' + this.item.name
+          : 'Formulario para el producto',
         description: this.steps[0].fields.controls['note'].value,
       };
 
@@ -963,7 +971,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           unlockUI();
 
           this.webformsService.formCreationData = null;
-          this.router.navigate(['/admin/article-editor/' + this.item._id]);
+          this.router.navigate(['/admin/item-creation/' + this.item._id]);
         } else {
           //console.log('NO SE CREO');
           throw new Error('Ocurrió un error al crear el formulario');
@@ -976,7 +984,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         });
         console.error(error);
       }
-    } else {
+    } else if(this.webform && this.item) {
       try {
         const toUpdate = questionsToAdd.filter((question) => question.id);
         const toAdd = questionsToAdd.filter((question) => !question.id);
@@ -1139,7 +1147,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         unlockUI();
 
         this.webformsService.formCreationData = null;
-        this.router.navigate(['/admin/article-editor/' + this.item._id]);
+        this.router.navigate(['/admin/item-creation/' + this.item._id]);
       } catch (error) {
         unlockUI();
 
@@ -1310,7 +1318,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   back() {
-    this.router.navigate(['/admin/article-editor/' + this.item?._id]);
+    this.router.navigate(['/admin/item-creation/' + this.item?._id]);
   }
 
   redirectToMediaUploadPage(optionIndex: number) {

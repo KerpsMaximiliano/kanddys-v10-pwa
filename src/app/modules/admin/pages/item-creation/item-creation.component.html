@@ -1,0 +1,460 @@
+<div class="container">
+  <header>
+    <div class="close" (click)="back()">X</div>
+    <h2>
+      {{
+        !item
+          ? "Nuevo Simbolo que se vende"
+          : totalSells > 0
+          ? "Artículo que se ha vendido"
+          : "Detalles del articulo"
+      }}
+    </h2>
+
+    <div *ngIf="item" class="options-wrapper">
+      <img
+        [src]="
+          currentView === 'ITEM_FORM'
+            ? assetsFolder + '/icon_info.png'
+            : assetsFolder + '/dropdown_icon.png'
+        "
+        alt="open internal information"
+        (click)="
+          currentView =
+            currentView === 'ITEM_FORM' ? 'ITEM_METRICS' : 'ITEM_FORM'
+        "
+        style="cursor: pointer;"
+      />
+      <img [src]="assetsFolder + '/dots-black.svg'" alt="more options" />
+    </div>
+  </header>
+
+  <main [formGroup]="itemFormData">
+    <ng-container [ngSwitch]="currentView">
+      <ng-container *ngSwitchCase="'ITEM_FORM'">
+        <label
+          for="file"
+          class="itemContainer add"
+          [style.cursor]="'pointer'"
+          *ngIf="itemSlides.length === 0"
+        >
+          <div class="img-input">
+            <img [src]="assetsFolder + '/galery-black.svg'" alt="icon" />
+          </div>
+        </label>
+
+        <input
+          type="file"
+          id="file"
+          [style.display]="'none'"
+          (change)="loadFile($event)"
+          multiple
+          [accept]="[
+            '.png',
+            '.jpg',
+            '.jpeg',
+            '.webp',
+            '.webm',
+            '.mp4',
+            '.m4v',
+            '.mpg',
+            '.mpeg',
+            '.mpeg4',
+            '.mov',
+            '.3gp',
+            '.mts',
+            '.m2ts',
+            '.mxf'
+          ]"
+        />
+
+        <div
+          class="added-slides"
+          *ngIf="itemSlides.length > 0 && renderQrContent"
+        >
+          <app-qr-content
+            [slides]="itemSlides"
+            [showReorderButton]="true"
+            [title]="'Slides visuales'"
+            [mode]="'SMALL'"
+            [editing]="false"
+            [defaultText]="'Incluyes fotos, memes, videos o música.'"
+            (buttonClicked)="emitFileInputClick()"
+            (buttonClicked2)="goToReorderMedia()"
+          ></app-qr-content>
+        </div>
+
+        <div class="layout-row" *ngIf="itemSlides.length > 0">
+          <mat-accordion>
+            <mat-expansion-panel
+              (opened)="isLayoutDropdownOpened = true"
+              (closed)="isLayoutDropdownOpened = false"
+              hideToggle
+            >
+              <mat-expansion-panel-header>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    width: 100%;
+                  "
+                >
+                  <span> Layout de los slides predeterminado </span>
+                  <mat-icon
+                    [ngStyle]="{
+                      color: '#7B7B7B',
+                      marginLeft: '10px'
+                    }"
+                    >{{
+                      isLayoutDropdownOpened
+                        ? "keyboard_arrow_down"
+                        : "keyboard_arrow_right"
+                    }}
+                  </mat-icon>
+                </div>
+              </mat-expansion-panel-header>
+
+              <div class="layouts-options">
+                <div class="image-layout-wrapper" (click)="selectLayout('EXPANDED-SLIDE')">
+                  <img
+                    class="image-layout"
+                    [src]="assetsFolder + '/Expanded-Slide-icon.png'"
+                    alt="expanded slide"
+                  />
+                  <input
+                    type="radio"
+                    formControlName="defaultLayout"
+                    [value]="'EXPANDED-SLIDE'"
+                  />
+                </div>
+                <div class="image-layout-wrapper" (click)="selectLayout('ZOOMED-OUT-INFO')">
+                  <img
+                    class="image-layout"
+                    [src]="assetsFolder + '/minimized-slides.png'"
+                    alt="minimized slides"
+                  />
+                  <input
+                    type="radio"
+                    formControlName="defaultLayout"
+                    [value]="'ZOOMED-OUT-INFO'"
+                  />
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+
+        <div
+          class="price-wrapper"
+          [ngClass]="{
+            'no-shadows': itemFormData.controls['pricing'].value !== 0
+          }"
+        >
+          <app-currency-input
+            [innerLabel]="'Precio*'"
+            [innerLabelStyles]="{
+              fontFamily: 'InterLight',
+              fontStyle: 'italic',
+              fontSize: '13px'
+            }"
+            [fieldStyles]="{
+              boxShadow: 'none',
+              backgroundColor: 'white',
+              borderRadius: '6px',
+              padding: '8px 0px'
+            }"
+            [initialValue]="itemFormData.controls['pricing'].value"
+            (onInputEvent)="updateItemPrice($event)"
+            placeholderColor="#7B7B7B"
+            currencyLabel=""
+          ></app-currency-input>
+        </div>
+
+        <div class="field-text">
+          <label for="">Nombre del botón</label>
+
+          <input
+            type="text"
+            placeholder="Agregar al carrito"
+            [formControlName]="'ctaName'"
+          />
+        </div>
+
+        <div
+          class="field-text"
+          *ngIf="
+            itemsService.questionsToAddToItem &&
+            itemsService.questionsToAddToItem.length > 0
+          "
+        >
+          <h6>Formulario de preguntas</h6>
+
+          <ng-container
+            *ngIf="
+              requiredQuestionsCounter.required > 0;
+              else notRequiredQuestions
+            "
+          >
+            <h4>
+              {{
+                requiredQuestionsCounter.required + " preguntas obligatorias"
+              }}
+
+              <ng-container *ngIf="requiredQuestionsCounter.notRequired > 0">
+                {{ " y " + requiredQuestionsCounter.notRequired + " mas" }}
+              </ng-container>
+            </h4>
+          </ng-container>
+
+          <ng-template #notRequiredQuestions>
+            <h4>
+              {{ requiredQuestionsCounter.notRequired + " preguntas" }}
+            </h4>
+          </ng-template>
+        </div>
+
+        <div
+          class="field-text hover"
+          *ngIf="webform && item"
+          (click)="goToWebformCreationOrEdition()"
+        >
+          <h6>Formulario de preguntas</h6>
+
+          <ng-container
+            *ngIf="
+              requiredQuestionsCounter.required > 0;
+              else notRequiredQuestions
+            "
+          >
+            <h4>
+              {{
+                requiredQuestionsCounter.required + " preguntas obligatorias"
+              }}
+
+              <ng-container *ngIf="requiredQuestionsCounter.notRequired > 0">
+                {{ " y " + requiredQuestionsCounter.notRequired + " mas" }}
+              </ng-container>
+            </h4>
+          </ng-container>
+
+          <ng-template #notRequiredQuestions>
+            <h4>
+              {{ requiredQuestionsCounter.notRequired + " preguntas" }}
+            </h4>
+          </ng-template>
+        </div>
+
+        <div class="field-text" *ngIf="itemFormData.controls['title'].value">
+          <label for="">Texto principal y centralizado</label>
+
+          <input
+            type="text"
+            placeholder="Escribe"
+            [formControlName]="'title'"
+          />
+        </div>
+
+        <div>
+          <div
+            class="field-text"
+            *ngIf="itemFormData.controls['description'].value"
+            style="padding-bottom: 40px;"
+          >
+            <label for="">Texto más largo</label>
+
+            <textarea
+              cols="30"
+              rows="3"
+              placeholder="Escribe"
+              [formControlName]="'description'"
+            ></textarea>
+          </div>
+          <button (click)="openMetaDescriptionDialog()" class="icon-button"><img [src]="assetsFolder + '/hat-wizard-solid.svg'" alt="" *ngIf="itemFormData.controls['description'].value"></button>
+        </div>
+
+        <div
+          class="optional-stuff"
+          *ngIf="
+            !itemFormData.controls['title'].value ||
+            !itemFormData.controls['description'].value ||
+            (itemsService.questionsToAddToItem.length === 0 &&
+              !webform &&
+              !item) ||
+            (item && !webform)
+          "
+        >
+          <h3>FUNCIONALIDADES OPCIONALES</h3>
+
+          <div class="row" *ngIf="!itemFormData.controls['title'].value" (click)="openFormForField('TITLE')">
+            <span>Texto principal y centralizado</span>
+
+            <img
+              [src]="assetsFolder + '/add_button_circle.svg'"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+
+          <div class="row" *ngIf="!itemFormData.controls['description'].value" (click)="openFormForField('DESCRIPTION')">
+            <span>Texto más largo</span>
+
+            <img
+              [src]="assetsFolder + '/add_button_circle.svg'"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+
+          <div
+            class="row"
+            *ngIf="
+              itemsService.questionsToAddToItem.length === 0 &&
+              !webform &&
+              !item
+            "
+            (click)="goToWebformCreationOrEdition()"
+          >
+            <span>Preguntas a compradores</span>
+
+            <img
+              [src]="assetsFolder + '/add_button_circle.svg'"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+
+          <div class="row" *ngIf="!webform && item" (click)="goToWebformCreationOrEdition()">
+            <span>Preguntas a compradores</span>
+
+            <img
+              [src]="assetsFolder + '/add_button_circle.svg'"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+
+          <!--
+          <div class="row">
+            <span>Costo para el control de beneficios</span>
+    
+            <img
+              (click)="(null)"
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+        --></div>
+
+        <!--
+        <div class="optional-stuff">
+          <h3>FUNCIONALIDADES PARA QUE VENDAN POR TI</h3>
+    
+          <div class="row">
+            <span>Inventario para que se auto-oculte</span>
+    
+            <img
+              (click)="(null)"
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+    
+          <div class="row">
+            <span>¿Qué es?</span>
+    
+            <img
+              (click)="(null)"
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+    
+          <div class="row">
+            <span>% de comisión que pagarás a vendedor..</span>
+    
+            <img
+              (click)="(null)"
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+        </div>
+      -->
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'ITEM_METRICS'">
+        <div style="margin-bottom: 2em;">
+          <p class="link-button" (click)="copyToClipboard()">Copia el link</p>
+          <p class="link-button" (click)="downloadQr(articleQrCode)">Descarga el QR</p>
+          <p class="link-button" (click)="share()">Compártelo</p>
+          <p class="link-button" (click)="goToItemDetail('PREVIEW')">Míralo como la ven los compradores</p>
+        </div>
+        <h3 class="metrics-title">Información interna que sólo tu ves:</h3>
+
+        <div class="metric">
+          <h4>Cantidad de veces vendido</h4>
+
+          <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
+        </div>
+      </ng-container>
+    </ng-container>
+  </main>
+
+  <footer>
+    <button
+      class="left"
+      style="color: #272727"
+      (click)="
+        !(itemFormData?.valid && itemSlides.length > 0)
+          ? goToItemDetail('DEMO')
+          : goToItemDetail('PREVIEW')
+      "
+    >
+      {{
+        itemFormData?.valid && itemSlides.length > 0 
+          ? "Preview"
+          : "Mira un demo"
+      }}
+    </button>
+    <button
+      class="right"
+      *ngIf="(itemFormData?.valid && itemSlides.length > 0) && !item"
+      style="color: #272727"
+      (click)="saveItem()"
+    >
+      Guardar
+    </button>
+
+    <button
+      class="right"
+      *ngIf="
+        (itemFormData?.valid && itemSlides.length > 0) && isFormUpdated && item
+      "
+      style="color: #272727"
+      (click)="saveItem()"
+    >
+      Actualizar
+    </button>
+  </footer>
+</div>
+
+<div
+  style="display: none;"
+  *ngIf="itemURL"
+>
+  <qrcode
+    #articleQrCode
+    [qrdata]="itemURL"
+    [elementType]="'img'"
+    [width]="500"
+    [style.margin-top.px]="-25"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#000000"
+  ></qrcode>
+</div>

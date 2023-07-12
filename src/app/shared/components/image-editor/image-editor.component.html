@@ -1,28 +1,18 @@
 <div class="cropper">
   <div class="cropper__imageContainer">
-    <button
-      class="fixed-button left"
-      style="padding: 12px 16px"
-      (click)="exportCanvas()"
-    >
-      <img
-        class="icon green"
-        [src]="env + '/arrow-double-up.svg'"
-        alt="Back"
-        height="13"
-        width="16"
-      />
-      Guardar
-    </button>
-    <div
-      class="cropper__image"
-      #cropperImage
-      [ngStyle]="{
-        width: '100%',
-        height: (cropperImage.clientWidth * 10) / 7 + 'px'
-      }"
-    >
-      <img #image [src]="imgUrl" (load)="imageLoaded($event)" />
+    <button class="back-button" (click)="back()">X</button>
+    <button class="fixed-button" (click)="exportCanvas()">Continuar</button>
+    <div class="image-canvas-wrapper">
+      <div
+        class="cropper__image"
+        #cropperImage
+        [ngStyle]="{
+          width: '100%',
+          height: imageCanvasHeight + 'px'
+        }"
+      >
+        <img #image [src]="imgUrl" (load)="imageLoaded($event)" />
+      </div>
     </div>
     <div class="cropper__zoomSlider">
       <div class="text-icons-container">

@@ -130,6 +130,9 @@ const fullItem = `
     reference
     active
   }
+  layout
+  ctaText
+  ctaBehavior
   active
 `;
 
@@ -276,6 +279,8 @@ export const listItems = gql`
       visitorCounter {
         counter
       }
+      type
+      parentItem
     }
   }
 `;

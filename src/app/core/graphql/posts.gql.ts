@@ -73,6 +73,11 @@ export const post = gql`
         name
         emailOrPhone
       }
+      layout
+      ctaText
+      ctaLink
+      envelopeText
+      virtualMessage
     }
   }
 `;

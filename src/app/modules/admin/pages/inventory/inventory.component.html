@@ -1,0 +1,52 @@
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+  <div class="container">
+    <div class="header">
+      <div class="flex">
+        <img [src]="env + '/info-icon.svg'" />
+        <a [routerLink]="['/admin/item-selector']">
+          <mat-icon class="plus-icon">add</mat-icon>
+        </a>
+      </div>
+      <div class="flex" (click)="openNavigation = true" style="cursor: pointer">
+        <p>Cotiza y compra a suplidores</p>
+        <mat-icon>menu</mat-icon>
+      </div>
+    </div>
+    <div class="content">
+      <div
+        class="content-card"
+        *ngFor="let quotation of quotations; let i = index"
+        (click)="goToQuotationDetail(quotation._id, $event)"
+      >
+        <div class="content-card-top-container">
+          <div class="flex">
+            <img [src]="env + '/shopping_cart.svg'" />
+            <div>
+              <p class="content-card-title">
+                {{ quotation?.name ? quotation.name : "Cotización sin nombre" }}
+              </p>
+              <p class="content-card-quantity">
+                {{ quotation?.items?.length }} artículos
+              </p>
+            </div>
+          </div>
+          <div style="text-align: right">
+            <p class="content-card-new" *ngIf="quotations.length && i === 0">
+              Nuevo
+            </p>
+            <mat-icon class="delete-icon" (click)="deleteQuotation(i)"
+              >delete</mat-icon
+            >
+          </div>
+        </div>
+
+        <!-- <div class="hr-container">
+          <hr />
+        </div>
+        <p class="content-card-desc">
+          Se están preparando las cotizaciones en los suplidores locales
+        </p> -->
+      </div>
+    </div>
+  </div>
+</app-navigation>

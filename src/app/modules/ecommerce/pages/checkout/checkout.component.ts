@@ -408,11 +408,11 @@ export class CheckoutComponent implements OnInit {
         }
       }
 
-      console.log("obteniendo post 1");
+      console.log('obteniendo post 1');
 
       this.post = this.headerService?.post || this.postsService?.post;
 
-      console.log("leyendo slides 1");
+      console.log('leyendo slides 1');
 
       if (this.post?.slides.length)
         this.post?.slides.forEach((slide: any) => {
@@ -424,13 +424,13 @@ export class CheckoutComponent implements OnInit {
       const storedPost = localStorage.getItem('post');
 
       if (storedPost && !this.post) {
-        console.log("obteniendo post 2");
+        console.log('obteniendo post 2');
         this.headerService.post = JSON.parse(storedPost);
         this.post = this.headerService.post;
       }
 
-      console.log("leyendo slides 2");
-      
+      console.log('leyendo slides 2');
+
       console.log(this.post);
       console.log(this.post?.slides);
 
@@ -466,7 +466,7 @@ export class CheckoutComponent implements OnInit {
         });
       }
 
-      console.log("obteniendo delivery zones")
+      console.log('obteniendo delivery zones');
 
       await this.getDeliveryZones(this.headerService.saleflow.merchant._id);
 
@@ -858,7 +858,10 @@ export class CheckoutComponent implements OnInit {
 
         await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
-      } else if (this.postsService.privatePost) {
+      } else if (this.postsService?.post?.slides?.length || this.postsService?.post?.message || this.postsService?.post?.envelopeText) {
+
+        console.log("Creando post pro");
+        
         unlockUI();
 
         lockUI();
@@ -1504,14 +1507,22 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrEditMessage() {
+    const queryParams: Record<string, string> = {
+      flow: 'checkout',
+    };
+
+    if (!this.postsService.post.virtualMessage) {
+      queryParams.type = 'traditional';
+    }
+
     this.router.navigate(
       [
-      'ecommerce/' + this.headerService.saleflow.merchant.slug + '/new-symbol',
+        'ecommerce/' +
+          this.headerService.saleflow.merchant.slug +
+          '/new-symbol',
       ],
       {
-        queryParams: {
-          flow: 'checkout',
-        }
+        queryParams,
       }
     );
 

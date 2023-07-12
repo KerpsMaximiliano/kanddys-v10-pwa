@@ -83,6 +83,7 @@ export class EcommerceComponent implements OnInit {
           },
         })
       )[0];
+      this.headerService.ecommerceDataLoaded.next(true);
       console.log(this.headerService.merchantContact);
       this.activePath = this.route.firstChild.routeConfig.path;
 

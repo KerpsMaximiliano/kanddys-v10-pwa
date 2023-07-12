@@ -44,12 +44,18 @@ import { PostPreviewComponent } from './pages/post-preview/post-preview.componen
 import { PostEditionComponent } from './pages/post-edition/post-edition.component';
 import { WebformClientViewComponent } from 'src/app/shared/components/webform-client-view/webform-client-view.component';
 import { WebformOptionsSelectorComponent } from '../admin/pages/webform-options-selector/webform-options-selector.component';
+import { PostsSlidesEditorComponent } from 'src/app/shared/components/posts-slides-editor/posts-slides-editor.component';
 import { AllItemsComponent } from './pages/all-items/all-items.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
 import { NewSymbolComponent } from './pages/new-symbol/new-symbol.component';
 import { GiftcardDetailsComponent } from './pages/giftcard-details/giftcard-details.component';
+import { SymbolDetailComponent } from './pages/symbol-detail/symbol-detail.component';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
+import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
 import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
+import { InvalidMagicLinkComponent } from './pages/invalid-magic-link/invalid-magic-link.component';
 
 const routes: Routes = [
   {
@@ -140,6 +146,10 @@ const routes: Routes = [
     component: WebformOptionsSelectorComponent,
   },
   {
+    path: 'invalid-link',
+    component: InvalidMagicLinkComponent
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -166,12 +176,16 @@ const routes: Routes = [
         component: CreateArticleComponent,
       },
       {
+        path: 'post-slide-editor',
+        component: PostsSlidesEditorComponent,
+      },
+      {
         path: 'article-detail/:entity/:entityId',
-        component: ArticleDetailComponent,
+        component: SymbolDetailComponent,
       },
       {
         path: 'article-detail/:entity',
-        component: ArticleDetailComponent,
+        component: SymbolDetailComponent,
       },
       {
         path: 'order-info/:id',
@@ -316,7 +330,9 @@ const routes: Routes = [
     ReceiverFormComponent,
     NewSymbolComponent,
     GiftcardDetailsComponent,
+    SymbolDetailComponent,
     OrderConfirmationComponent,
+    InvalidMagicLinkComponent
   ],
   imports: [
     CommonModule,
@@ -324,6 +340,14 @@ const routes: Routes = [
     AppointmentsModule,
     AdminModule,
     RouterModule.forChild(routes),
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: (createTranslateLoader),
+          deps: [HttpClient]
+      }
+  })
+
   ],
 })
 export class EcommerceModule {}

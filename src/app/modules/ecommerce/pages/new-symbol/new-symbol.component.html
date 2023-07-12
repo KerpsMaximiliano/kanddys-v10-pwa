@@ -1,115 +1,415 @@
 <div class="container">
-  <header>
-    <button (click)="goBack()">
-      <i
-        style="color: #c4c5c3; cursor: pointer; font-size: 1.2rem"
-        class="fas fa-chevron-left"
-      ></i>
-    </button>
-
-    <h3>Nuevo Símbolo de mensaje</h3>
-  </header>
-
-  <main>
-    <form [formGroup]="postForm">
-      <div
-        class="textarea-wrapper"
-        [ngClass]="{
-          'no-shadow':
-            postForm.controls['message'].value &&
-            postForm.controls['message'].value.length > 0
-        }"
-      >
-        <label for="textarea-label" class="textarea-header"
-          >Texto principal y centralizado</label
-        >
-
-        <textarea
-          formControlName="message"
-          placeholder="Escribe el mensaje de dedicatoria.."
-          cols="30"
-          rows="10"
-          id="textarea-label"
-        ></textarea>
-      </div>
-
-      <div class="added-slides" *ngIf="postsService.post?.slides?.length > 0">
-        <app-qr-content
-          [slides]="postsService.post.slides"
-          [title]="'Slides visuales'"
-          [mode]="'SMALL'"
-          [editing]="false"
-          [defaultText]="'Incluyes fotos, memes, videos o música.'"
-          (buttonClicked)="goToMediaUpload()"
-        ></app-qr-content>
-      </div>
-
-      <div class="optional-stuff"  *ngIf="postsService.post?.slides?.length === 0">
-        <h3>CHULERIAS OPCIONALES</h3>
-
-        <div class="row">
-          <span>Slides con fotos y videos</span>
-
-          <img
-            (click)="goToMediaUpload()"
-            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
-            alt="add media"
-            class="upload-media"
-          />
+  <ng-container [ngSwitch]="type">
+    <ng-container *ngSwitchCase="'VIRTUAL-MESSAGE'">
+      <header>
+        <div>
+          <div (click)="goBack()">
+            <mat-icon class="close-icon">close</mat-icon>
+          </div>
+          <h3>{{ "new-symbol.title" | translate }}</h3>
         </div>
-      </div>
-    </form>
 
-    <!--
-      <div class="posts-virtual-content-wrapper">
-        <div class="posts-virtual-content-grid">
+        <div class="options-wrapper">
+          <img
+            [src]="
+              !introTextDisplayed
+                ? assetsFolder + '/icon_info.png'
+                : assetsFolder + '/dropdown_icon.png'
+            "
+            alt="open internal information"
+            (click)="introTextDisplayed = !introTextDisplayed"
+          />
+          <mat-icon class="more-icon">more_horiz</mat-icon>
+        </div>
+      </header>
+
+      <main>
+        <div class="introduction" *ngIf="introTextDisplayed">
+          <p *ngFor="let paragraph of introductionTexts">
+            {{ paragraph }}
+          </p>
+        </div>
+
+        <form [formGroup]="postForm">
           <div
-            class="media-wrapper"
-            *ngFor="let media of postsService.post.slides"
-          ></div>
-        </div>
-        <div class="upload-button">
-          <img
-            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
-            alt=""
-          />
-        </div>
-      </div>
-    -->
-  </main>
+            class="textarea-wrapper m-bottom"
+            [ngClass]="{
+              'no-shadow': postForm.controls['accessKey'].valid
+            }"
+          >
+            <label
+              for="access-key-field"
+              class="textarea-header"
+              (click)="isPhoneInputFocused = !isPhoneInputFocused"
+              >{{ "new-symbol.access-key" | translate }}</label
+            >
 
-  <footer>
-    <button
-      class="left"
-      style="color: #272727;"
-      (click)="
-        !(
-          postForm.controls.message.value?.length ||
-          postsService.post.slides?.length
-        )
-          ? goToPostDetail('DEMO')
-          : goToPostDetail('PREVIEW')
-      "
-    >
-      {{
-        !(
-          postForm.controls.message.value?.length ||
-          postsService.post.slides?.length
-        )
-          ? "Mira un Demo"
-          : "Preview de la versión virtual"
-      }}
-    </button>
-    <button
-      class="right"
-      *ngIf="
-        postForm.controls.message.value?.length ||
-        postsService.post.slides?.length
-      "
-      style="color: #272727;"
-      (click)="save()"
-    >
-      Guardar
-    </button>
-  </footer>
+            <div
+              class="placeholder"
+              *ngIf="!isPhoneInputFocused"
+              (click)="isPhoneInputFocused = !isPhoneInputFocused"
+            >
+              {{ "new-symbol.access-key-placeholder" | translate }}
+            </div>
+
+            <div class="phone-wrapper" *ngIf="isPhoneInputFocused">
+              <ngx-intl-tel-input
+                [cssClass]="'no-shadow'"
+                [enableAutoCountrySelect]="true"
+                [enablePlaceholder]="true"
+                [searchCountryFlag]="true"
+                [selectFirstCountry]="false"
+                [preferredCountries]="preferredCountries"
+                [selectedCountryISO]="CountryISO"
+                maxLength="13"
+                minlength="10"
+                [phoneValidation]="true"
+                [separateDialCode]="true"
+                [customPlaceholder]="'(000) 000-0000'"
+                [numberFormat]="PhoneNumberFormat.International"
+                tabindex="1"
+                id="phone"
+                formControlName="accessKey"
+              ></ngx-intl-tel-input>
+
+              <span
+                class="phoneNumber-formatted"
+                *ngIf="postForm.controls['accessKey']?.value"
+                (click)="focusPhoneInput()"
+              >
+                {{ postForm.controls["accessKey"]?.value.nationalNumber }}
+              </span>
+            </div>
+          </div>
+
+          <div
+            class="textarea-wrapper m-bottom"
+            [ngClass]="{
+              'no-shadow':
+                postForm.controls['title'].value &&
+                postForm.controls['title'].value.length > 0
+            }"
+            *ngIf="postForm.controls['title']?.value"
+          >
+            <label for="textarea-label" class="textarea-header">{{
+              "new-symbol.text-title" | translate
+            }}</label>
+
+            <textarea
+              formControlName="title"
+              [placeholder]="'new-symbol.text-placeholder' | translate"
+              cols="30"
+              rows="10"
+              id="textarea-label"
+            ></textarea>
+          </div>
+
+          <div
+            class="textarea-wrapper not-first"
+            *ngIf="postForm.controls['message'].value"
+            [ngClass]="{
+              'no-shadow':
+                postForm.controls['message'].value &&
+                postForm.controls['message'].value.length > 0
+            }"
+          >
+            <label for="textarea-label" class="textarea-header">{{
+              "new-symbol.longer-text" | translate
+            }}</label>
+
+            <textarea
+              formControlName="message"
+              [placeholder]="'new-symbol.text-placeholder' | translate"
+              cols="30"
+              rows="10"
+              id="textarea-label"
+            ></textarea>
+          </div>
+
+          <div
+            class="added-slides"
+            *ngIf="postsService.post?.slides?.length > 0"
+          >
+            <app-qr-content
+              [slides]="postsService.post.slides"
+              [showReorderButton]="true"
+              [title]="'new-symbol.visual-slides' | translate"
+              [mode]="'SMALL'"
+              [editing]="false"
+              [defaultText]="'Incluyes fotos, memes, videos o música.'"
+              (buttonClicked)="emitFileInputClick()"
+              (buttonClicked2)="goToMediaUpload()"
+            ></app-qr-content>
+          </div>
+
+          <div
+            class="layout-row"
+            *ngIf="postsService.post?.slides?.length !== 0"
+          >
+            <mat-accordion>
+              <mat-expansion-panel
+                (opened)="isLayoutDropdownOpened = true"
+                (closed)="isLayoutDropdownOpened = false"
+                hideToggle
+              >
+                <mat-expansion-panel-header>
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                      width: 100%;
+                    "
+                  >
+                    <span>
+                      {{ "new-symbol.default-slides-layout" | translate }}
+                    </span>
+                    <mat-icon
+                      [ngStyle]="{
+                        color: '#7B7B7B',
+                        marginLeft: '10px'
+                      }"
+                      >{{
+                        isLayoutDropdownOpened
+                          ? "keyboard_arrow_down"
+                          : "keyboard_arrow_right"
+                      }}
+                    </mat-icon>
+                  </div>
+                </mat-expansion-panel-header>
+
+                <div class="layouts-options">
+                  <div class="image-layout-wrapper" (click)="selectLayout('EXPANDED-SLIDE')">
+                    <img
+                      class="image-layout"
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/Expanded-Slide-icon.png"
+                      alt="expanded slide"
+                    />
+                    <input
+                      type="radio"
+                      formControlName="defaultLayout"
+                      [value]="'EXPANDED-SLIDE'"
+                    />
+                  </div>
+                  <div class="image-layout-wrapper" (click)="selectLayout('ZOOMED-OUT-INFO')">
+                    <img
+                      class="image-layout"
+                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/minimized-slides.png"
+                      alt="minimized slides"
+                    />
+                    <input
+                      type="radio"
+                      formControlName="defaultLayout"
+                      [value]="'ZOOMED-OUT-INFO'"
+                    />
+                  </div>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+
+          <div
+            (click)="openFormForField('LINK-BUTTON')"
+            class="link-button"
+            *ngIf="
+              postForm.controls['ctaText'].value &&
+              postForm.controls['ctaLink'].value
+            "
+          >
+            <h6>{{ "link-button" | translate }}</h6>
+
+            <ng-container>
+              <h4>
+                {{ postForm.controls["ctaText"].value }}
+              </h4>
+
+              <div class="link">
+                {{ postForm.controls["ctaLink"].value }}
+              </div>
+            </ng-container>
+          </div>
+
+          <input
+            type="file"
+            id="file"
+            [style.display]="'none'"
+            (change)="loadFile($event)"
+            multiple
+            [accept]="[
+              '.png',
+              '.jpg',
+              '.jpeg',
+              '.webp',
+              '.webm',
+              '.mp4',
+              '.m4v',
+              '.mpg',
+              '.mpeg',
+              '.mpeg4',
+              '.mov',
+              '.3gp',
+              '.mts',
+              '.m2ts',
+              '.mxf'
+            ]"
+          />
+
+          <div
+            class="optional-stuff"
+            *ngIf="
+              postsService.post?.slides?.length === 0 ||
+              !postForm.controls['message'].value ||
+              !(
+                postForm.controls['ctaText'].value &&
+                postForm.controls['ctaLink'].value
+              )
+            "
+          >
+            <h3>{{ "type-of-content" | translate }}</h3>
+
+            <div
+              class="row row-mid"
+              *ngIf="!postForm.controls['title'].value"
+              (click)="openFormForField('SHORT-TEXT')"
+            >
+              <span>{{ "new-symbol.short-text" | translate }}</span>
+
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+                alt="add media"
+                class="upload-media"
+              />
+            </div>
+
+            <div
+              class="row"
+              *ngIf="postsService.post?.slides?.length === 0"
+              (click)="emitFileInputClick()"
+            >
+              <span>{{ "new-symbol.slides" | translate }}</span>
+
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+                alt="add media"
+                class="upload-media"
+              />
+            </div>
+            <div
+              class="row row-mid"
+              *ngIf="!postForm.controls['message'].value"
+              (click)="openFormForField('LARGE-TEXT')"
+            >
+              <span>{{ "new-symbol.long-text" | translate }}</span>
+
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+                alt="add media"
+                class="upload-media"
+              />
+            </div>
+
+            <div
+              class="row row-mid"
+              *ngIf="
+                !(
+                  postForm.controls['ctaText'].value &&
+                  postForm.controls['ctaLink'].value
+                )
+              "
+              (click)="openFormForField('LINK-BUTTON')"
+            >
+              <span>{{ "new-symbol.long-link-button" | translate }}</span>
+
+              <!--
+              <img
+                (click)="openButtonLinkDialog()"
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+                alt="add media"
+                class="upload-media"
+              />
+    
+            -->
+              <img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+                alt="add media"
+                class="upload-media"
+              />
+            </div>
+          </div>
+        </form>
+      </main>
+
+      <footer>
+        <button
+          class="left"
+          style="color: #272727"
+          (click)="
+            !(
+              postForm.controls.title.value?.length ||
+              postForm.controls.message.value?.length ||
+              postsService.post.slides?.length
+            )
+              ? goToPostDetail('DEMO')
+              : goToPostDetail('PREVIEW')
+          "
+        >
+          {{
+            (!(
+              postForm.controls.title.value?.length ||
+              postForm.controls.message.value?.length ||
+              postsService.post.slides?.length
+            )
+              ? "new-symbol.see-demo"
+              : "new-symbol-preview"
+            ) | translate
+          }}
+        </button>
+        <button
+          class="right"
+          *ngIf="
+            postForm.controls.message.value?.length ||
+            postsService.post.slides?.length
+          "
+          style="color: #272727"
+          (click)="save()"
+        >
+          {{ "new-symbol.save" | translate }}
+        </button>
+      </footer>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'TRADITIONAL-MESSAGE'">
+      <header>
+        <div>
+          <div (click)="goBack()">
+            <mat-icon class="close-icon">close</mat-icon>
+          </div>
+          <h3>{{ "new-symbol.traditional-message-title" | translate }}</h3>
+        </div>
+      </header>
+
+      <main>
+        <form [formGroup]="postForm">
+          <textarea
+            class="traditional-message"
+            formControlName="envelopeText"
+            [placeholder]="'new-symbol.text-placeholder' | translate"
+            cols="30"
+            rows="10"
+            id="textarea-label"
+          ></textarea>
+        </form>
+      </main>
+
+      <footer
+        class="traditional"
+        *ngIf="postForm.controls['envelopeText'].value"
+        (click)="saveTraditionalMessage()"
+      >
+        <button>
+          {{ "new-symbol.save" | translate }}
+        </button>
+      </footer>
+    </ng-container>
+  </ng-container>
 </div>

@@ -32,7 +32,7 @@ import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
 export class QrEditComponent implements OnInit {
   environment: string = environment.assetsUrl;
   spinnerGif: string = `${environment.assetsUrl}/spinner2.gif`;
-  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
   videoFiles: string[] = [
     'video/mp4',
     'video/webm',
@@ -50,12 +50,14 @@ export class QrEditComponent implements OnInit {
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;
-  returnTo: 'checkout' | 'post-edition' | 'article-editor' = null;
+  returnTo: 'checkout' | 'post-edition' | 'item-creation' = null;
 
   flow: 'cart' | 'checkout' = 'cart';
 
   gridArray: Array<any> = [];
   playVideoOnFullscreen = playVideoOnFullscreen;
+  entity: string = null;
+  redirectFromFlowRoute: boolean = false;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -72,12 +74,20 @@ export class QrEditComponent implements OnInit {
   async ngOnInit() {
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     const returnTo = this._Route.snapshot.queryParamMap.get('returnTo');
-    this.flow = this._Route.snapshot.queryParamMap.get('flow') as 'cart' | 'checkout';
-
-    console.log(this.flow);
-
+    const redirectFromFlowRoute = Boolean(
+      this._Route.snapshot.queryParamMap.get('redirectFromFlowRoute')
+    );
+    const useSlidesInMemory = Boolean(
+      this._Route.snapshot.queryParamMap.get('useSlidesInMemory')
+    );
+    this.flow = this._Route.snapshot.queryParamMap.get('flow') as
+      | 'cart'
+      | 'checkout';
+    this.entity = this._Route.snapshot.queryParamMap.get('entity');
+    this.redirectFromFlowRoute = redirectFromFlowRoute;
     this.returnTo = returnTo as any;
 
+    //Items already on the database
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (this.item?.merchant._id !== this._MerchantsService.merchantData._id) {
@@ -86,49 +96,147 @@ export class QrEditComponent implements OnInit {
         });
         return;
       }
-      if (this.item.images.length) {
-        this.gridArray = this.item.images.sort(({index:a},{index:b}) => a>b?1:-1).map((image) => {
-          const fileParts = image.value.split('.');
-          const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
-          let auxiliarImageFileExtension = 'image/' + fileExtension;
-          let auxiliarVideoFileExtension = 'video/' + fileExtension;
+      if (this.item.images.length && !useSlidesInMemory) {
+        this.gridArray = this.item.images
+          .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+          .map((image) => {
+            const fileParts = image.value.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
 
-          if (
-            image.value &&
-            !image.value.includes('http') &&
-            !image.value.includes('https')
-          ) {
-            image.value = 'https://' + image.value;
+            if (
+              image.value &&
+              !image.value.includes('http') &&
+              !image.value.includes('https')
+            ) {
+              image.value = 'https://' + image.value;
+            }
+
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              return {
+                _id: image._id,
+                background: image.value,
+                _type: auxiliarImageFileExtension,
+                index: image.index,
+              };
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              return {
+                _id: image._id,
+                background: image.value,
+                _type: auxiliarVideoFileExtension,
+                index: image.index,
+              };
+            }
+          });
+      }
+
+      if (useSlidesInMemory && this._ItemsService.temporalItemInput.slides) {
+        console.log('los slides', this._ItemsService.temporalItemInput.slides);
+
+        for await (const slide of this._ItemsService.temporalItemInput.slides) {
+          if (!slide.media && slide.url) {
+            const fileParts = slide.url.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+            if (
+              slide.url &&
+              !slide.url.includes('http') &&
+              !slide.url.includes('https')
+            ) {
+              slide.url = 'https://' + slide.url;
+            }
+
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
+                _type: auxiliarImageFileExtension,
+              });
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
+                _type: auxiliarVideoFileExtension,
+              });
+            }
           }
 
-          if (this.imageFiles.includes(auxiliarImageFileExtension)) {
-            return {
-              _id: image._id,
-              background: image.value,
-              _type: auxiliarImageFileExtension,
-              index: image.index
-            };
-          } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
-            return {
-              _id: image._id,
-              background: image.value,
-              _type: auxiliarVideoFileExtension,
-              index: image.index
-            };
+          if (slide.media && slide.media.type.includes('image')) {
+            await fileToBase64(slide.media).then((result) => {
+              this.gridArray.push({
+                ...slide,
+                background: result,
+                _type: slide.media.type,
+              });
+            });
+          } else if (slide.media && slide.media.type.includes('video')) {
+            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(slide.media)
+            );
+            this.gridArray.push({
+              ...slide,
+              background: fileUrl,
+              _type: slide.media.type,
+            });
+          } else if (!slide.media && slide.type === 'text') {
+            this.gridArray.push({
+              ...slide,
+            });
           }
-        });
+        }
       }
       return;
     }
 
-    if (!itemId) {
+    //Items that are being created, not in the database, yet
+    if (this.entity === 'item' && !itemId) {
+      if (!this._ItemsService.temporalItemInput) {
+        this._Router.navigate([
+          'ecommerce/' + this._MerchantsService.merchantData.slug + '/store',
+        ]);
+        return;
+      }
+
+      if (this._ItemsService.temporalItemInput.slides.length) {
+        for await (const slide of this._ItemsService.temporalItemInput.slides) {
+          if (slide.media && slide.media.type.includes('image')) {
+            await fileToBase64(slide.media).then((result) => {
+              this.gridArray.push({
+                ...slide,
+                background: result,
+                _type: slide.media.type,
+              });
+            });
+          } else if (slide.media && slide.media.type.includes('video')) {
+            const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(slide.media)
+            );
+            this.gridArray.push({
+              ...slide,
+              background: fileUrl,
+              _type: slide.media.type,
+            });
+          } else if (!slide.media && slide.type === 'text') {
+            this.gridArray.push({
+              ...slide,
+            });
+          }
+        }
+      }
+    }
+
+    //For posts
+    if (!itemId && this.entity !== 'item') {
       if (!this._PostsService.post) {
         const storedPost = localStorage.getItem('post');
         if (storedPost) this._PostsService.post = JSON.parse(storedPost);
       }
       if (!this._PostsService.post) {
         this._Router.navigate([
-          'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+          'ecommerce/' + this.headerService.saleflow?.merchant.slug + '/store',
         ]);
         return;
       }
@@ -168,9 +276,9 @@ export class QrEditComponent implements OnInit {
       }
     }
 
-    if (!this._PostsService.post) {
+    if (!this._PostsService.post && this.entity !== 'item') {
       this._Router.navigate([
-        'ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+        'ecommerce/' + this.headerService.saleflow?.merchant.slug + '/store',
       ]);
     }
 
@@ -182,7 +290,7 @@ export class QrEditComponent implements OnInit {
   }
 
   async dropTagDraggable(event: CdkDragDrop<{ gridItem: any; index: number }>) {
-    const { _id:itemId } = this.item || {} 
+    const { _id: itemId } = this.item || {};
     this.gridArray[event.previousContainer.data.index].index =
       event.container.data.index;
     this.gridArray[event.container.data.index].index =
@@ -191,17 +299,13 @@ export class QrEditComponent implements OnInit {
       event.container.data.gridItem;
     this.gridArray[event.container.data.index] =
       event.previousContainer.data.gridItem;
-    const {
-      _id,
-      index
-    } = this.gridArray[event.container.data.index];
-    const {
-      _id:_id2,
-      index:index2
-    } = this.gridArray[event.previousContainer.data.index];
-    const itemImage = {index,active:true};
-    const itemImage2 = {index: index2,active:true};
-    if(!itemId) return;
+    const { _id, index } = this.gridArray[event.container.data.index];
+    const { _id: _id2, index: index2 } =
+      this.gridArray[event.previousContainer.data.index];
+    const itemImage = { index, active: true };
+    const itemImage2 = { index: index2, active: true };
+
+    if (!itemId) return;
     const result = await this._ItemsService.itemUpdateImage(
       itemImage,
       _id,
@@ -253,7 +357,7 @@ export class QrEditComponent implements OnInit {
             [
               {
                 file,
-                index
+                index,
               },
             ],
             this.item._id
@@ -269,7 +373,7 @@ export class QrEditComponent implements OnInit {
             const reader = new FileReader();
             reader.onload = (e) => {
               this.gridArray.push({
-                _id: addedImage?.images[addedImage.images.length-1]?._id,
+                _id: addedImage?.images[addedImage.images.length - 1]?._id,
                 background: reader.result,
                 _type: file.type,
               });
@@ -304,13 +408,69 @@ export class QrEditComponent implements OnInit {
             console.log(auxiliarFileExtension);
 
             this.gridArray.push({
-              _id: addedImage?.images[addedImage.images.length-1]?._id,
+              _id: addedImage?.images[addedImage.images.length - 1]?._id,
               background: uploadedVideoURL,
               _type: auxiliarFileExtension,
             });
           }
         };
         reader.readAsDataURL(file);
+      } else if (this.entity === 'item' && !this.item) {
+        if (
+          ![
+            ...this.imageFiles,
+            ...this.videoFiles,
+            ...this.audioFiles,
+          ].includes(file.type)
+        )
+          return;
+        const reader = new FileReader();
+
+        if (file.type.includes('video')) {
+          const fileUrl = this._DomSanitizer.bypassSecurityTrustUrl(
+            URL.createObjectURL(file)
+          );
+
+          const content: SlideInput = {
+            text: 'test',
+            title: 'test',
+            media: file,
+            type: 'poster',
+            index: this.gridArray.length,
+          };
+          content['background'] = fileUrl;
+          content['_type'] = 'video';
+
+          this.gridArray.push(content);
+          this._ItemsService.temporalItemInput.slides.push(content);
+        } else {
+          reader.readAsDataURL(file);
+
+          reader.onload = async (e) => {
+            let result = reader.result;
+            const content: SlideInput = {
+              text: 'test',
+              title: 'test',
+              media: file,
+              type: 'poster',
+              index: this.gridArray.length,
+            };
+            content['background'] = result;
+            content['_type'] = file.type;
+            this.gridArray.push(content);
+            this._ItemsService.temporalItemInput.slides.push(content);
+            this._ItemsService.editingSlide =
+              this._ItemsService.temporalItemInput.slides.length - 1;
+
+            if (this.item) {
+              this._Router.navigate([
+                'admin/items-slides-editor' + this.item._id,
+              ]);
+            } else {
+              this._Router.navigate(['admin/items-slides-editor']);
+            }
+          };
+        }
       } else {
         if (
           ![
@@ -355,6 +515,15 @@ export class QrEditComponent implements OnInit {
             content['_type'] = file.type;
             this.gridArray.push(content);
             this._PostsService.post.slides.push(content);
+
+            this._PostsService.editingSlide =
+              this._PostsService.post.slides.length - 1;
+
+            this._Router.navigate([
+              'ecommerce/' +
+                this.headerService.saleflow?.merchant.slug +
+                '/post-slide-editor',
+            ]);
           };
         }
       }
@@ -364,27 +533,45 @@ export class QrEditComponent implements OnInit {
 
   async submit() {
     if (this.item) {
-      this._Router.navigate([`admin/article-editor/${this.item._id}`]);
+      if (this.redirectFromFlowRoute)
+        return this.headerService.redirectFromQueryParams();
+
+      this._Router.navigate([`admin/item-creation/${this.item._id}`]);
       return;
     }
     const slides: Array<SlideInput> = this.gridArray.map(
-      ({ text, title, media, type, index }) => {
+      ({ text, title, media, type, index, background }) => {
         const result = {
           text,
           title,
           media,
           type,
           index,
+          background,
         };
         return result;
       }
     );
 
+    //Items that are being created, not in the database
+    if (this.entity === 'item' && !this.item) {
+      this._ItemsService.temporalItemInput.slides = slides;
+      if (this.redirectFromFlowRoute)
+        return this.headerService.redirectFromQueryParams();
+
+      this._Router.navigate(['admin/item-creation']);
+      return;
+    }
+
     this._PostsService.post.slides = slides;
+    this._PostsService.editingSlide = null;
+
+    if (this.redirectFromFlowRoute)
+      return this.headerService.redirectFromQueryParams();
 
     if (this.returnTo === 'checkout') {
       this._Router.navigate(
-        ['ecommerce', this.headerService.saleflow.merchant.slug, 'checkout'],
+        ['ecommerce', this.headerService.saleflow?.merchant.slug, 'checkout'],
         {
           queryParams: {
             startOnDialogFlow: true,
@@ -397,22 +584,18 @@ export class QrEditComponent implements OnInit {
     } else if (this.returnTo === 'post-edition') {
       this._Router.navigate([
         'ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
+          this.headerService.saleflow?.merchant.slug +
           '/post-edition',
       ]);
       return;
     }
 
     this._Router.navigate(
-      [
-        'ecommerce',
-        this.headerService.saleflow.merchant.slug,
-        'new-symbol',
-      ],
+      ['ecommerce', this.headerService.saleflow?.merchant.slug, 'new-symbol'],
       {
         queryParams: {
-          flow: this.flow
-        }
+          flow: this.flow,
+        },
       }
     );
     return;
@@ -509,9 +692,22 @@ export class QrEditComponent implements OnInit {
   }
 
   editSlide(index: number) {
-    this._ItemsService.editingImageId = this.gridArray[index]._id;
-    lockUI();
-    this._Router.navigate([`admin/create-article/${this.item._id}`]);
+    if (this.item) {
+      this._ItemsService.editingImageId = this.gridArray[index]._id;
+      lockUI();
+      this._Router.navigate([`admin/create-article/${this.item._id}`]);
+    } else if (this.entity === 'item' && !this.item) {
+      this._ItemsService.editingSlide = index;
+      this._Router.navigate(['admin/items-slides-editor']);
+    } else {
+      this._PostsService.editingSlide = index;
+
+      this._Router.navigate([
+        'ecommerce/' +
+          this.headerService.saleflow?.merchant.slug +
+          '/post-slide-editor',
+      ]);
+    }
   }
 
   async deleteImage(index: number) {
@@ -558,7 +754,7 @@ export class QrEditComponent implements OnInit {
       {
         queryParams: {
           mode: 'image-preview',
-          flow: this.flow
+          flow: this.flow,
         },
       }
     );

@@ -1,0 +1,4 @@
+<app-image-editor
+  [imgUrl]="postsService.post.slides[postsService.editingSlide]['background']"
+  (cropped)="onEditSubmit($event)"
+></app-image-editor>

@@ -70,6 +70,17 @@ import { MerchantsEntryComponent } from './pages/merchants-entry/merchants-entry
 import { StarsLandingComponent } from './pages/stars-landing/stars-landing.component';
 import { UserStarsComponent } from './pages/user-stars/user-stars.component';
 import { StarsMetricsComponent } from './pages/stars-metrics/stars-metrics.component';
+import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
+
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
+import { HttpClient } from '@angular/common/http';
+import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slides-editor/items-slides-editor.component';
+import { ItemSelectorComponent } from './pages/item-selector/item-selector.component';
+import { SupplierRegisterComponent } from './pages/supplier-register/supplier-register.component';
+import { InventoryComponent } from './pages/inventory/inventory.component';
+import { QuotationBidsComponent } from './pages/quotation-bids/quotation-bids.component';
+import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-creator.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -104,6 +115,22 @@ const routes: Routes = [
       {
         path: 'create-article/:itemId',
         component: ArticleCreatorComponent,
+      },
+      {
+        path: 'items-slides-editor',
+        component: ItemsSlidesEditorComponent,
+      },
+      {
+        path: 'items-slides-editor/:itemId',
+        component: ItemsSlidesEditorComponent,
+      },
+      {
+        path: 'item-creation/:itemId',
+        component: ItemCreationComponent,
+      },
+      {
+        path: 'item-creation',
+        component: ItemCreationComponent,
       },
       {
         path: 'merchant-items',
@@ -180,11 +207,15 @@ const routes: Routes = [
         component: ContactLandingContainerComponent,
       },
       {
-        path: 'article-editor/:articleId',
+        path: 'item-creation/:articleId',
         component: ArticleEditorComponent,
       },
       {
         path: 'slides-editor/:articleId',
+        component: QrEditComponent,
+      },
+      {
+        path: 'slides-editor',
         component: QrEditComponent,
       },
       {
@@ -362,6 +393,18 @@ const routes: Routes = [
         path: 'notifications-menu',
         component: RewardsDisplayComponent,
       },
+      {
+        path: 'item-selector',
+        component: ItemSelectorComponent,
+      },
+      {
+        path: 'item-selector/:quotationId',
+        component: ItemSelectorComponent,
+      },
+      {
+        path: 'quotations',
+        component: InventoryComponent,
+      }
     ],
   },
   {
@@ -378,22 +421,26 @@ const routes: Routes = [
   },
   {
     path: 'article-detail/:articleId',
-    component: ArticleDetailComponent
+    component: ArticleDetailComponent,
   },
   {
     path: 'reportings',
-    component: ReportingsComponent
+    component: ReportingsComponent,
   },
   {
     path: 'expenditures/:type',
-    component: ExpendituresComponent
+    component: ExpendituresComponent,
   },
   {
     path: 'incomes',
-    component: IncomesComponent
+    component: IncomesComponent,
   },
   {
     path: 'form-creator/:itemId',
+    component: FormCreatorComponent,
+  },
+  {
+    path: 'form-creator',
     component: FormCreatorComponent,
   },
   {
@@ -443,7 +490,23 @@ const routes: Routes = [
   {
     path:'stars-metrics',
     component: StarsMetricsComponent
-  }
+  },
+  {
+    path: 'supplier-register',
+    component: SupplierRegisterComponent,
+  },
+  {
+    path: 'inventory',
+    component: InventoryComponent,
+  },
+  {
+    path: 'quotation-bids/:quotationId',
+    component: QuotationBidsComponent,
+  },
+  {
+    path: 'inventory-creator',
+    component: InventoryCreatorComponent,
+  },
 ];
 
 @NgModule({
@@ -500,6 +563,12 @@ const routes: Routes = [
     StarsLandingComponent,
     UserStarsComponent,
     StarsMetricsComponent,
+    ItemCreationComponent,
+    ItemSelectorComponent,
+    SupplierRegisterComponent,
+    InventoryComponent,
+    QuotationBidsComponent,
+    InventoryCreatorComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
@@ -510,6 +579,13 @@ const routes: Routes = [
     MatDatepickerModule,
     MatNativeDateModule,
     RouterModule.forChild(routes),
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: createTranslateLoader,
+        deps: [HttpClient],
+      },
+    }),
   ],
 })
 export class AdminModule {}
