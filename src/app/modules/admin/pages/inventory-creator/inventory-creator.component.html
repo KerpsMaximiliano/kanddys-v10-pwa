@@ -1,13 +1,23 @@
-<div class="container">
+<div class="container" [formGroup]="itemFormData">
   <div class="header">
     <div class="flex">
-      <mat-icon>close</mat-icon>
-      <p class="header-title">NombreID para cotizar y vender localmente</p>
+      <mat-icon (click)="back()">close</mat-icon>
+      <p class="header-title">
+        {{ itemsService.temporalItemInput?.name }} para cotizar y vender
+        localmente
+      </p>
     </div>
-    <img src="../../../../../assets/icons/triangle-black.svg" />
+    <img
+      [src]="
+        !showIntroParagraph
+          ? assetsFolder + '/icon_info.png'
+          : assetsFolder + '/dropdown_icon.png'
+      "
+      (click)="showIntroParagraph = !showIntroParagraph"
+    />
   </div>
   <div class="content">
-    <div class="content-title">
+    <div class="content-title" *ngIf="showIntroParagraph">
       Esta plataforma te pone al frente de floristas que necesitan exactamente
       lo que ofreces. Cada vez que un florista de tu localidad busque flores, tu
       producto y precio se mostrarán, facilitando transacciones rápidas y
@@ -15,31 +25,110 @@
       información del producto y el inventario. Recibirás las órdenes según
       <strong> tu promesa. </strong>
     </div>
-    <div class="content-image-container">
-        <img src="../../../../../assets/images/noimage.png" />
+
+    <input
+      type="file"
+      id="file"
+      [style.display]="'none'"
+      (change)="loadFile($event)"
+      multiple
+      [accept]="[
+        '.png',
+        '.jpg',
+        '.jpeg',
+        '.webp',
+        '.webm',
+        '.mp4',
+        '.m4v',
+        '.mpg',
+        '.mpeg',
+        '.mpeg4',
+        '.mov',
+        '.3gp',
+        '.mts',
+        '.m2ts',
+        '.mxf'
+      ]"
+    />
+
+    <div class="content-image-container" *ngIf="itemSlides.length === 0">
+      <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
+        <div class="img-input">
+          <img [src]="assetsFolder + '/galery-black.svg'" alt="icon" />
+        </div>
+      </label>
     </div>
-    <div class="content-price-container">
-        <p>Precio*</p>
-        <input placeholder="$00.00"/>
+
+    <div class="added-slides" *ngIf="itemSlides.length > 0 && renderQrContent">
+      <app-qr-content
+        [slides]="itemSlides"
+        [showReorderButton]="true"
+        [title]="'Slides visuales'"
+        [mode]="'SMALL'"
+        [editing]="false"
+        [defaultText]="'Incluyes fotos, memes, videos o música.'"
+        (buttonClicked)="emitFileInputClick()"
+        (buttonClicked2)="goToReorderMedia()"
+      ></app-qr-content>
     </div>
-    <div class="content-inventary-container">
-        <p>Inventario</p>
-        <input placeholder="0"/>
-        <p class="content-inventary-detail">
-            No se está mostrando a Floristerias
-        </p>
+
+    <div
+      class="price-wrapper"
+      [ngClass]="{
+        'no-shadows': itemFormData.controls['pricing'].value !== 0
+      }"
+    >
+      <app-currency-input
+        [innerLabel]="'Precio*'"
+        [innerLabelStyles]="{
+          fontFamily: 'InterLight',
+          fontStyle: 'italic',
+          fontSize: '13px'
+        }"
+        [fieldStyles]="{
+          boxShadow: 'none',
+          backgroundColor: 'white',
+          borderRadius: '6px',
+          padding: '8px 0px'
+        }"
+        [initialValue]="itemFormData.controls['pricing'].value"
+        (onInputEvent)="updateItemPrice($event)"
+        placeholderColor="#7B7B7B"
+        currencyLabel=""
+      ></app-currency-input>
     </div>
-    <p class="content-optionals-fuctions">
-        FUNCIONALIDADES OPCIONALES
-    </p>
-    <div class="content-optional-function">
-        <p>
-            Costo para el control de beneficios
-        </p>
+
+    <div
+      class="content-inventary-container"
+      [ngClass]="{
+        'no-shadows': itemFormData.controls['stock'].value
+      }"
+      (click)="openFormForField()"
+    >
+      <p>Inventario</p>
+      <input placeholder="0" type="number" formControlName="stock" />
+      <p class="content-inventary-detail">
+        No se está mostrando a Floristerias
+      </p>
+    </div>
+
+    <!--
+      <p class="content-optionals-fuctions">FUNCIONALIDADES OPCIONALES</p>
+      <div class="content-optional-function">
+        <p>Costo para el control de beneficios</p>
         <mat-icon>add_circle</mat-icon>
-    </div>
+      </div>
+    -->
   </div>
 </div>
-<div class="footer">
-    <mat-icon>more_horiz</mat-icon>
-</div>
+
+<footer>
+  <button
+    class="right"
+    *ngIf="itemFormData?.valid && itemSlides.length > 0"
+    style="color: #272727"
+    (click)="saveItem()"
+  >
+    Guardar
+  </button>
+</footer>

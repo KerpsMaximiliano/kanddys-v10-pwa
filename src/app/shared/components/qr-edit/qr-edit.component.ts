@@ -57,6 +57,7 @@ export class QrEditComponent implements OnInit {
   gridArray: Array<any> = [];
   playVideoOnFullscreen = playVideoOnFullscreen;
   entity: string = null;
+  redirectFromFlowRoute: boolean = false;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -73,6 +74,9 @@ export class QrEditComponent implements OnInit {
   async ngOnInit() {
     const itemId = this._Route.snapshot.paramMap.get('articleId');
     const returnTo = this._Route.snapshot.queryParamMap.get('returnTo');
+    const redirectFromFlowRoute = Boolean(
+      this._Route.snapshot.queryParamMap.get('redirectFromFlowRoute')
+    );
     const useSlidesInMemory = Boolean(
       this._Route.snapshot.queryParamMap.get('useSlidesInMemory')
     );
@@ -80,7 +84,7 @@ export class QrEditComponent implements OnInit {
       | 'cart'
       | 'checkout';
     this.entity = this._Route.snapshot.queryParamMap.get('entity');
-
+    this.redirectFromFlowRoute = redirectFromFlowRoute;
     this.returnTo = returnTo as any;
 
     //Items already on the database
@@ -529,6 +533,9 @@ export class QrEditComponent implements OnInit {
 
   async submit() {
     if (this.item) {
+      if (this.redirectFromFlowRoute)
+        return this.headerService.redirectFromQueryParams();
+
       this._Router.navigate([`admin/item-creation/${this.item._id}`]);
       return;
     }
@@ -549,12 +556,18 @@ export class QrEditComponent implements OnInit {
     //Items that are being created, not in the database
     if (this.entity === 'item' && !this.item) {
       this._ItemsService.temporalItemInput.slides = slides;
+      if (this.redirectFromFlowRoute)
+        return this.headerService.redirectFromQueryParams();
+
       this._Router.navigate(['admin/item-creation']);
       return;
     }
 
     this._PostsService.post.slides = slides;
     this._PostsService.editingSlide = null;
+
+    if (this.redirectFromFlowRoute)
+      return this.headerService.redirectFromQueryParams();
 
     if (this.returnTo === 'checkout') {
       this._Router.navigate(

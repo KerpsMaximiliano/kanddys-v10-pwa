@@ -1,6 +1,12 @@
 ::ng-deep .mat-dialog-container {
     padding: 0px;
+    background: none;
 }
+
+::ng-deep .mat-dialog-actions {
+  margin-bottom: 0px;
+}
+
 
 ::ng-deep .cdk-overlay-pane {
     width: 90vw;
@@ -17,17 +23,20 @@
   font-style: normal;
 }
 
+.external-field-wrapper {
+  margin-bottom: 54px;
+
+  &:last-child {
+    margin-bottom: 0px;
+  }
+}
+
 .field-wrapper {
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 30px;
   width: 100%;
-  margin-bottom: 54px;
-
-  &:last-child {
-    margin-bottom: 0px;
-  }
 
   label {
     color: #fff;
@@ -100,4 +109,16 @@ button {
     cursor: pointer;
     width: 20px;
   }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }

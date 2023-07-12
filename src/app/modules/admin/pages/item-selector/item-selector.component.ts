@@ -1,6 +1,13 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -11,6 +18,10 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import {
+  FormComponent,
+  FormData,
+} from 'src/app/shared/dialogs/form/form.component';
 
 @Component({
   selector: 'app-item-selector',
@@ -36,7 +47,8 @@ export class ItemSelectorComponent implements OnInit {
     private quotationService: QuotationsService,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private dialog: MatDialog
   ) {}
 
   async ngOnInit() {
@@ -177,5 +189,38 @@ export class ItemSelectorComponent implements OnInit {
       console.log(error);
       unlockUI();
     }
+  }
+
+  openFormForField() {
+    let fieldsToCreate: FormData = {
+      fields: [],
+    };
+
+    fieldsToCreate.fields = [
+      {
+        label: 'Nombre del producto',
+        name: 'product-name',
+        type: 'text',
+        validators: [Validators.pattern(/[\S]/)],
+      },
+    ];
+
+    const dialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreate,
+    });
+
+    dialogRef.afterClosed().subscribe((result: FormGroup) => {
+      if (result && result.value['product-name']) {
+        this.itemsService.temporalItemInput = {
+          name: result.value['product-name'],
+        };
+
+        this.router.navigate(['/admin/inventory-creator']);
+        /*
+        this.itemFormData.patchValue({
+          title: result.value['item-title'],
+        });*/
+      }
+    });
   }
 }

@@ -33,7 +33,7 @@
   </ng-container>
 
   <ng-container *ngIf="items.length === 0">
-    <button class="add-button">
+    <button class="add-button" (click)="openFormForField()">
       <span>Agrega el nombre del producto</span>
       <img
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/plus_button.svg"
