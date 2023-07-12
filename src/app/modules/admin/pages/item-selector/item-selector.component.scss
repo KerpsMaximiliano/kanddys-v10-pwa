@@ -1,10 +1,12 @@
+
 .container {
-  height: 100vh;
   background: #181d17;
   padding-left: 22px;
   padding-right: 22px;
   padding-top: 26px;
-  padding-bottom: 150px;
+  height: 100%;
+  overflow-y: scroll;
+  padding-bottom: 3rem;
 }
 
 .top-flex {
@@ -13,6 +15,7 @@
   align-items: center;
 
   .back-icon {
+    cursor: pointer;
     color: #c4c5c3;
     font-size: 25px;
     height: 25px;
@@ -74,22 +77,27 @@ input[type="text"] {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   border: 0;
+  font-family: InterLight;
+  font-size: 17px;
 }
 
 .items-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  align-items: baseline;
+  row-gap: 28px;
+  margin-top: 28px;
 }
 
 .item {
-  margin-top: 28px;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  height: 100%;
 
   input[type="checkbox"] {
-    margin-top: 7px;
+    margin-top: auto;
   }
 }
 
@@ -110,6 +118,7 @@ input[type="text"] {
   margin: 0;
   margin-top: 7px;
   text-align: center;
+  padding-bottom: 7px;
 }
 
 .add-button {
@@ -131,15 +140,16 @@ input[type="text"] {
   }
 }
 
+.selected-items-label {
+  cursor: pointer;
+}
+
 .add-button-icon {
   filter: invert(80%) sepia(40%) saturate(423%) hue-rotate(87deg)
     brightness(86%) contrast(90%);
 }
 
 @media (max-width: 400px) {
-  .item {
-    margin-top: 24px;
-  }
   .item-card {
     width: 100px;
     height: 116px;

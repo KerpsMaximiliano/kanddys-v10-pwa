@@ -280,6 +280,7 @@ export const listItems = gql`
         counter
       }
       type
+      parentItem
     }
   }
 `;

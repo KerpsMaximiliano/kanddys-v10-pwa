@@ -14,6 +14,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 })
 export class ItemsSlidesEditorComponent implements OnInit {
   itemId: string;
+  redirectFromFlowRoute: boolean = false;
 
   constructor(
     public itemsService: ItemsService,
@@ -27,18 +28,21 @@ export class ItemsSlidesEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(({ itemId }) => {
-      this.itemId = itemId;
+      this.route.queryParams.subscribe(({ redirectFromFlowRoute }) => {
+        this.itemId = itemId;
+        this.redirectFromFlowRoute = redirectFromFlowRoute;
 
-      if (
-        !this.itemsService.temporalItemInput ||
-        !this.itemsService.temporalItemInput.slides ||
-        !this.itemsService.temporalItemInput?.slides?.length ||
-        this.itemsService.temporalItemInput?.slides?.length === 0
-      ) {
-        this.router.navigate([
-          `/ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
-        ]);
-      }
+        if (
+          !this.itemsService.temporalItemInput ||
+          !this.itemsService.temporalItemInput.slides ||
+          !this.itemsService.temporalItemInput?.slides?.length ||
+          this.itemsService.temporalItemInput?.slides?.length === 0
+        ) {
+          this.router.navigate([
+            `/ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
+          ]);
+        }
+      });
     });
   }
 
@@ -67,6 +71,10 @@ export class ItemsSlidesEditorComponent implements OnInit {
         ]['media'] = file;
 
         this.ngZone.run(() => {
+          if(this.redirectFromFlowRoute) {
+            return this.headerService.redirectFromQueryParams();
+          }
+
           if (this.itemId) {
             this.router.navigate(
               [`/ecommerce/${this.merchantsService.merchantData.slug}/qr-edit`],

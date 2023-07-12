@@ -3,6 +3,7 @@
 
 :host {
   @include flex(column nowrap, stretch, flex-start);
+  height: 100%;
 
   .new-version {
     position: absolute;
@@ -13,6 +14,7 @@
     @include flex(column nowrap, stretch);
     @include size(100vw, auto);
     flex: 1 1;
+    height: 100%;
   }
 
   navbar {
@@ -25,7 +27,7 @@
     &:not(.content-fullscreen) main,
     navbar {
       max-width: 500px !important;
-      box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+      box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
     }
     navbar {
       overflow: hidden !important;
