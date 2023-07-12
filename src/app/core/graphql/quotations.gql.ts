@@ -25,6 +25,12 @@ export const quotations = gql`
     }
 `;
 
+export const quotationCoincidences = gql`
+    query quotationCoincidences($id: ObjectID!, $paginationOptionsInput: PaginationOptionsInput) {
+      quotationCoincidences(id: $id, paginationOptionsInput: $paginationOptionsInput)
+    }
+`;
+
 export const createQuotation = gql`
   mutation createQuotation($merchantId: ObjectID!, $input: QuotationInput!) {
     createQuotation(merchantId: $merchantId, input: $input) {
