@@ -162,7 +162,7 @@ export class ItemSelectorComponent implements OnInit {
   async submit() {
     lockUI();
     const quotationInput: QuotationInput = {
-      name: 'Cotización de ' + new Date().toLocaleString(),
+      name: `Cotización de ${new Date().toLocaleString()}`,
       merchant: this.saleflowService.saleflowData.merchant._id,
       items: this.selectedItems,
     };
@@ -222,5 +222,11 @@ export class ItemSelectorComponent implements OnInit {
         });*/
       }
     });
+  }
+
+  toggleItemSelection(index: number) {
+    const checkboxes = this.itemsForm.get('checkboxes') as FormArray;
+    const currentValue = checkboxes.value[index];
+    checkboxes.at(index).patchValue(!currentValue);
   }
 }

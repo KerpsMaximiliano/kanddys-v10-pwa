@@ -2,6 +2,7 @@
   <div class="header">
     <div class="flex">
       <mat-icon
+        style="cursor: pointer;"
         (click)="showQuotations()"
       >close</mat-icon>
       <p class="header-title">Cotización sin nombreID</p>
@@ -19,6 +20,7 @@
             ? 'QUOTATION_CONFIG'
             : 'SUPPLIERS_LIST'
       "
+      style="cursor: pointer;"
     />
   </div>
   <div class="content">
@@ -48,7 +50,7 @@
                   {{ match.merchant.name || match.merchant.slug }}
                 </p>
               </div>
-              <p class="content-card-cotization">Cotizó ${{ match.total }}</p>
+              <p class="content-card-cotization">Cotizó {{ match.total | currency }}</p>
             </div>
             <ul class="content-card-list-container">
               <li>
