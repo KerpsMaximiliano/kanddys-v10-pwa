@@ -53,22 +53,25 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   async createOrder(match: QuotationMatches) {
+
+    console.log(match);
+
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
 
     lockUI();
 
-    if (!this.headerService.saleflow) {
-      const merchantDefault = await this.merchantsService.merchantDefault(
-        this.headerService.user._id
-      );
-      const saleflowDefault = await this.saleflowService.saleflowDefault(
-        merchantDefault._id
-      );
-      this.headerService.saleflow = saleflowDefault;
-    }
+    const merchant = match.merchant._id;
+
+    const saleflowDefault = await this.saleflowService.saleflowDefault(
+      merchant
+    );
+    this.headerService.saleflow = saleflowDefault;
 
     this.headerService.deleteSaleflowOrder();
+
+    console.log(this.headerService.saleflow);
+    console.log(localStorage.getItem(this.headerService.saleflow._id));
 
     this.router.navigate(['/ecommerce/' + match.merchant.slug + '/cart'], {
       queryParams: {
@@ -77,34 +80,33 @@ export class QuotationBidsComponent implements OnInit {
       },
     });
 
-    if (!this.quotationsService.cartRouteChangeSubscription) {
-      this.quotationsService.cartRouteChangeSubscription =
-        this.headerService.ecommerceDataLoaded.subscribe({
-          next: (value: boolean) => {
-            if (value) {
-              for (const item of match.items) {
-                const product: ItemSubOrderInput = {
-                  item: item,
-                  amount: 1,
-                };
+    this.quotationsService.cartRouteChangeSubscription =
+      this.headerService.ecommerceDataLoaded.subscribe({
+        next: (value: boolean) => {
+          if (value) {
+            console.log(value);
+            for (const item of match.items) {
+              const product: ItemSubOrderInput = {
+                item: item,
+                amount: 1,
+              };
 
-                this.headerService.storeOrderProduct(product);
+              this.headerService.storeOrderProduct(product);
 
-                this.appService.events.emit({
-                  type: 'added-item',
-                  data: item,
-                });
+              this.appService.events.emit({
+                type: 'added-item',
+                data: item,
+              });
 
-                console.log(
-                  'this.header.order',
-                  JSON.stringify(this.headerService.order.products)
-                );
-              }
-              unlockUI();
+              console.log(
+                'this.header.order',
+                JSON.stringify(this.headerService.order.products)
+              );
             }
-          },
-        });
-    }
+            unlockUI();
+          }
+        },
+      });
   }
 
   editQuotation() {

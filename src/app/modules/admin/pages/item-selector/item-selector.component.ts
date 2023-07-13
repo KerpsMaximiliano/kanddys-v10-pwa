@@ -192,7 +192,7 @@ export class ItemSelectorComponent implements OnInit {
   async submit() {
     lockUI();
     const quotationInput: QuotationInput = {
-      name: `Cotización de ${new Date().toLocaleString()}`,
+      name: `${new Date().toLocaleString()}`,
       merchant: this.saleflowService.saleflowData.merchant._id,
       items: this.selectedItems,
     };

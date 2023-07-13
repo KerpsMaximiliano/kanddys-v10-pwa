@@ -5,7 +5,7 @@
         style="cursor: pointer;"
         (click)="showQuotations()"
       >close</mat-icon>
-      <p class="header-title">Cotización sin nombreID</p>
+      <p class="header-title">{{ quotation?.name ? quotation?.name : 'Cotización sin nombre' }}</p>
     </div>
     <img
       [src]="
