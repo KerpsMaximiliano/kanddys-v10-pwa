@@ -908,6 +908,20 @@ export class CartComponent implements OnInit {
     ]);
   }
 
+  goToArticleDetail(itemId: string) {
+    this.headerService.flowRoute = this.router.url;
+    this.router.navigate(
+      [
+        `/ecommerce/'${this.headerService.saleflow.merchant.slug}/article-detail/item/${itemId}`,
+      ],
+      {
+        queryParams: {
+          mode: 'saleflow'
+        }
+      }
+    );
+  }
+
   toggleCheckbox(event: any) {
     this.isCheckboxChecked = event;
 

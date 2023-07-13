@@ -40,9 +40,7 @@
               !item.images ||
               (item.images?.length && !urlIsVideo(item.images[0].value))
             "
-            (click)="
-              item?.images?.length && openImageModal(item.images[0].value)
-            "
+            (click)="goToArticleDetail(item._id)"
           ></div>
 
           <div
@@ -58,7 +56,7 @@
               alt="play"
               class="playVideoIcon"
               style="padding: 1rem !important; z-index: 99"
-              (click)="playVideoOnFullscreen('media' + item._id)"
+              (click)="goToArticleDetail(item._id)"
             />
 
             <video
@@ -273,7 +271,7 @@
         [disabled]="!areWebformsValid"
         (click)="openSubmitDialog()"
       >
-        {{ !areWebformsValid ? "Llena las preguntas" : "Continuar" }}
+        {{ !areWebformsValid ? "Llena las preguntas" : "Continuar a ver una pre-factura" }}
       </button>
     </div>
   </footer>
