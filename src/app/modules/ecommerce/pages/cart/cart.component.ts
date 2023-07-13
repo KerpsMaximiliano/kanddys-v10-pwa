@@ -28,6 +28,8 @@ import { capitalize } from 'src/app/core/helpers/strings.helpers';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -67,7 +69,9 @@ export class CartComponent implements OnInit {
 
   capitalize = capitalize;
   wait: boolean = false;
-
+  redirectFromFlowRoute: boolean = false;
+  playVideoOnFullscreen = playVideoOnFullscreen;
+  
   constructor(
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
@@ -82,9 +86,11 @@ export class CartComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    console.log(this.headerService.saleflow);
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ item, wait }) => {
+      async ({ item, wait, redirectFromFlowRoute }) => {
         this.wait = wait;
+        this.redirectFromFlowRoute = Boolean(redirectFromFlowRoute);
 
         if (this.wait)
           this.headerService.ecommerceDataLoaded.subscribe({
@@ -474,7 +480,9 @@ export class CartComponent implements OnInit {
     });
   }
 
-  goToStore() {
+  goBack() {
+    if(this.redirectFromFlowRoute) return this.headerService.redirectFromQueryParams();
+
     this.router.navigate([
       `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
     ]);
@@ -796,86 +804,91 @@ export class CartComponent implements OnInit {
   }
 
   openSubmitDialog() {
-    const bottomSheetRef = this._bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        title: `¿Quieres añadir un mensaje de regalo?`,
-        description: `¡Dale un toque personal a tu regalo! Opcional.`,
-        options: [
-          {
-            value: `Sin mensajes de regalo`,
-            callback: () => {
-              this.postsService.post = null;
-              return this.router.navigate(
-                [
-                  `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`,
-                ],
-                {
-                  queryParams: {
-                    redirectTo: 'cart',
-                  },
-                }
-              );
+
+    if (this.headerService.saleflow?.module?.post && this.headerService.saleflow?.module?.post?.post && this.headerService.saleflow?.module?.post?.isActive) {
+      const bottomSheetRef = this._bottomSheet.open(OptionsMenuComponent, {
+        data: {
+          title: `¿Quieres añadir un mensaje de regalo?`,
+          description: `¡Dale un toque personal a tu regalo! Opcional.`,
+          options: [
+            {
+              value: `Sin mensajes de regalo`,
+              callback: () => {
+                this.postsService.post = null;
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                    },
+                  }
+                );
+              },
             },
-          },
-          {
-            value: `Mensaje tradicional, lo escribiremos en la tarjeta dedicatoria`,
-            callback: () => {
-              this.postsService.post = null;
-              // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional
-              return this.router.navigate(
-                [
-                  `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
-                ],
-                {
-                  queryParams: {
-                    redirectTo: 'cart',
-                    type: 'traditional',
-                  },
-                }
-              );
+            {
+              value: `Mensaje tradicional, lo escribiremos en la tarjeta dedicatoria`,
+              callback: () => {
+                this.postsService.post = null;
+                // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                      type: 'traditional',
+                    },
+                  }
+                );
+              },
             },
-          },
-          {
-            value: `Mensaje virtual, con texto, fotos y videos`,
-            callback: () => {
-              this.postsService.post = null;
-              // TODO - Agregar query param a la ruta para que se sepa que es un mensaje virtual
-              return this.router.navigate(
-                [
-                  `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
-                ],
-                {
-                  queryParams: {
-                    redirectTo: 'cart',
-                  },
-                }
-              );
+            {
+              value: `Mensaje virtual, con texto, fotos y videos`,
+              callback: () => {
+                this.postsService.post = null;
+                // TODO - Agregar query param a la ruta para que se sepa que es un mensaje virtual
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                    },
+                  }
+                );
+              },
             },
-          },
-          {
-            value: `Mensaje tradicional y virtual`,
-            callback: () => {
-              this.postsService.post = null;
-              // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional y virtual
-              return this.router.navigate(
-                [
-                  `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
-                ],
-                {
-                  queryParams: {
-                    redirectTo: 'cart',
-                    type: 'both',
-                  },
-                }
-              );
+            {
+              value: `Mensaje tradicional y virtual`,
+              callback: () => {
+                this.postsService.post = null;
+                // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional y virtual
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                      type: 'both',
+                    },
+                  }
+                );
+              },
             },
+          ],
+          styles: {
+            fullScreen: true,
           },
-        ],
-        styles: {
-          fullScreen: true,
         },
-      },
-    });
+      });
+    } else {
+      this.goToReceiverForm();
+    }
   }
 
   goToReceiverForm() {
@@ -901,6 +914,20 @@ export class CartComponent implements OnInit {
     ]);
   }
 
+  goToArticleDetail(itemId: string) {
+    this.headerService.flowRoute = this.router.url;
+    this.router.navigate(
+      [
+        `/ecommerce/'${this.headerService.saleflow.merchant.slug}/article-detail/item/${itemId}`,
+      ],
+      {
+        queryParams: {
+          mode: 'saleflow'
+        }
+      }
+    );
+  }
+
   toggleCheckbox(event: any) {
     this.isCheckboxChecked = event;
 
@@ -909,5 +936,9 @@ export class CartComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.queryParamsSubscription.unsubscribe();
+  }
+
+  urlIsVideo(url: string) {
+    return isVideo(url);
   }
 }

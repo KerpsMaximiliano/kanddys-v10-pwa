@@ -2,9 +2,7 @@
   <ng-container [ngSwitch]="currentView">
     <ng-container *ngSwitchCase="'ALL_ITEMS'">
       <div class="top-flex">
-        <mat-icon class="back-icon"
-          (click)="back()"
-        > arrow_back_ios </mat-icon>
+        <mat-icon class="back-icon" (click)="back()"> arrow_back_ios </mat-icon>
 
         <span
           class="selected-items-label"
@@ -15,7 +13,28 @@
         </span>
       </div>
 
-      <p class="title">Selecciona el artículo que le vendes a floristerias:</p>
+      <ng-container *ngIf="items.length > 0 && supplierMode">
+        <button
+          class="add-button"
+          (click)="openFormForField()"
+          style="margin-left: 0px"
+        >
+          <span>Agrega el nombre del producto</span>
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/plus_button.svg"
+            class="add-button-icon"
+            alt="add item"
+          />
+        </button>
+      </ng-container>
+
+      <p class="title">
+        {{
+          !supplierMode
+            ? "Selecciona los artículos de tu interés"
+            : "Selecciona el artículo que le vendes a floristerias:"
+        }}
+      </p>
       <div class="search-bar-container">
         <div class="search-bar-icon-container">
           <mat-icon>search</mat-icon>
@@ -26,13 +45,15 @@
 
     <ng-container *ngSwitchCase="'SELECTED_ITEMS'">
       <div class="top-flex">
-        <span (click)="changeView()" style="cursor: pointer;">Incluye más artículos</span>
-        <span (click)="submit()" style="cursor: pointer;">Salva el carrito</span>
+        <span (click)="changeView()" style="cursor: pointer"
+          >Incluye más artículos</span
+        >
+        <span (click)="submit()" style="cursor: pointer">Salva el carrito</span>
       </div>
     </ng-container>
   </ng-container>
 
-  <ng-container *ngIf="items.length === 0">
+  <ng-container *ngIf="items.length === 0 && supplierMode">
     <button class="add-button" (click)="openFormForField()">
       <span>Agrega el nombre del producto</span>
       <img
@@ -50,17 +71,52 @@
       [formArrayName]="'checkboxes'"
       (click)="toggleItemSelection(i)"
     >
-      <div
-        class="item-card"
-        [ngStyle]="{
-          backgroundImage: item.images?.length
-            ? 'url(' + item.images[0].value + ')'
-            : 'url(/assets/images/noimage.png)',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          backgroundSize: 'cover'
-        }"
-      ></div>
+      <ng-container
+        *ngIf="
+          item.images?.length && isVideoWrapper(item.images[0].value);
+          else images
+        "
+      >
+        <div class="item-card" style="background-color: black;">
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+            alt="play"
+            (click)="playVideoOnFullscreen('media' + i)"
+            class="playVideoIcon"
+            style="
+              padding: 1.5rem !important;
+              z-index: 99;
+              z-index: 99;
+              left: 0;
+              right: 0;
+              max-width: 80px;
+              min-width: 70px;
+            "
+          />
+
+          <video
+            class="video-content"
+            [id]="'media' + i"
+            [muted]="true"
+            [src]="item.images[0].value"
+          ></video>
+        </div>
+      </ng-container>
+
+      <ng-template #images>
+        <div
+          class="item-card"
+          [ngStyle]="{
+            backgroundImage: item.images?.length
+              ? 'url(' + item.images[0].value + ')'
+              : 'url(/assets/images/noimage.png)',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover'
+          }"
+        ></div>
+      </ng-template>
+
       <div class="item-text">{{ item.name }}</div>
       <input
         class="checkbox"
