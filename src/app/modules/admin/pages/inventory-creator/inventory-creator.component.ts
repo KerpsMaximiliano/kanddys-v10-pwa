@@ -2,8 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
+import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
@@ -58,6 +60,8 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     secondsTrigger: 30,
     warning: false,
   };
+  queryParamsSubscription: Subscription = null;
+  existingItem: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -68,43 +72,68 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private snackbar: MatSnackBar,
     private toastr: ToastrService,
+    private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    /*
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
+      ({ existingItem }) => {
+        this.existingItem = Boolean(existingItem);
+
+        /*
     if (!this.itemsService.temporalItemInput?.name)
       this.router.navigate(['/admin/item-selector']);
     */
 
-    if (!this.itemsService.temporalItemInput?.name) {
-      this.router.navigate(['/admin/item-selector']);
-    }
+        if (!this.itemsService.temporalItemInput?.name) {
+          this.router.navigate(['/admin/item-selector']);
+        }
 
-    this.itemFormData = this.fb.group({
-      title: [this.itemsService.temporalItemInput?.name || ''],
-      pricing: [
-        this.itemsService.temporalItemInput?.pricing || 0,
-        Validators.compose([Validators.required, Validators.min(0.1)]),
-      ],
-      defaultLayout: [
-        this.itemsService.temporalItemInput?.layout || this.layout,
-      ],
-      stock: [
-        this.itemsService.temporalItemInput?.stock || '',
-        Validators.compose([Validators.required, Validators.min(1)]),
-      ],
-      notificationStockLimit: [
-        this.itemsService.temporalItemInput?.notificationStockLimit || '',
-        Validators.compose([Validators.required, Validators.min(1)]),
-      ],
-    });
+        this.itemFormData = this.fb.group({
+          title: [this.itemsService.temporalItemInput?.name || ''],
+          pricing: [
+            this.itemsService.temporalItemInput?.pricing || 0,
+            Validators.compose([Validators.required, Validators.min(0.1)]),
+          ],
+          defaultLayout: [
+            this.itemsService.temporalItemInput?.layout || this.layout,
+          ],
+          stock: [
+            this.itemsService.temporalItemInput?.stock || '',
+            Validators.compose([Validators.required, Validators.min(1)]),
+          ],
+          notificationStockLimit: [
+            this.itemsService.temporalItemInput?.notificationStockLimit || '',
+            Validators.compose([Validators.required, Validators.min(1)]),
+          ],
+        });
 
-    if (this.itemsService.temporalItemInput?.slides) {
-      this.itemSlides = this.itemsService.temporalItemInput?.slides;
-    }
+        if (this.itemsService.temporalItemInput?.slides && !existingItem) {
+          this.itemSlides = this.itemsService.temporalItemInput?.slides;
+        }
 
-    this.addToastReminder(true);
+        if (existingItem && !this.itemsService.modifiedImagesFromExistingItem) {
+          this.itemSlides = this.itemsService.temporalItem.images
+            .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+            .map(({ index, ...image }) => {
+              return {
+                url: completeImageURL(image.value),
+                index,
+                type: 'poster',
+                text: '',
+              };
+            });
+        } else if (
+          existingItem &&
+          this.itemsService.modifiedImagesFromExistingItem
+        ) {
+          this.itemSlides = this.itemsService.temporalItemInput.slides;
+        }
+
+        this.addToastReminder(true);
+      }
+    );
   }
 
   async loadFile(event: Event) {
@@ -138,13 +167,28 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
         this.saveTemporalItemInMemory();
 
+        if (this.existingItem) {
+          this.itemsService.modifiedImagesFromExistingItem = true;
+        }
+
         this.itemsService.editingSlide = this.itemSlides.length - 1;
 
         let routeForItemEntity;
 
-        if (this.itemSlides.length === 1 && !file.type.includes("video")) {
+        const queryParams = {
+          entity: 'item',
+          redirectFromFlowRoute: true,
+          useSlidesInMemory: this.existingItem,
+        };
+
+        if (this.itemSlides.length === 1 && !file.type.includes('video')) {
           routeForItemEntity = 'admin/items-slides-editor';
-        } else if (this.itemSlides.length === 1 && file.type.includes("video")) {
+
+          queryParams.redirectFromFlowRoute = true;
+        } else if (
+          this.itemSlides.length === 1 &&
+          file.type.includes('video')
+        ) {
           routeForItemEntity = 'admin/slides-editor';
         } else if (this.itemSlides.length > 1) {
           routeForItemEntity = 'admin/slides-editor';
@@ -152,24 +196,15 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
         if (this.itemSlides.length === 1 && fileList.length === 1) {
           this.router.navigate([routeForItemEntity], {
-            queryParams: {
-              entity: 'item',
-              redirectFromFlowRoute: true,
-            },
+            queryParams,
           });
         } else if (this.itemSlides.length > 1) {
           this.router.navigate([routeForItemEntity], {
-            queryParams: {
-              entity: 'item',
-              redirectFromFlowRoute: true,
-            },
+            queryParams,
           });
         } else if (fileList.length > 1 && i === fileList.length - 1) {
           this.router.navigate(['admin/slides-editor'], {
-            queryParams: {
-              entity: 'item',
-              redirectFromFlowRoute: true,
-            },
+            queryParams,
           });
         }
 
@@ -194,6 +229,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       queryParams: {
         entity: 'item',
         redirectFromFlowRoute: true,
+        useSlidesInMemory: this.existingItem,
       },
     });
   }
@@ -325,6 +361,10 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         duration: 5000,
       });
 
+      this.itemsService.temporalItem = null;
+      this.itemsService.temporalItemInput = null;
+      this.itemsService.modifiedImagesFromExistingItem = false;
+
       this.router.navigate(['admin/item-selector']);
 
       unlockUI();
@@ -371,5 +411,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.reminderToast.timeoutId)
       clearTimeout(this.reminderToast.timeoutId);
+
+    this.queryParamsSubscription.unsubscribe();
   }
 }

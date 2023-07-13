@@ -74,6 +74,12 @@ export class QrContentComponent implements OnInit {
             });
             this.filesStrings.push(fileUrl as string);
           }
+        } else if (slide.background) {
+          this.slidesPath.push({
+            path: isVideo(slide.background) ? slide.background : `url(${slide.background})`,
+            type: isVideo(slide.background) ? 'VIDEO' : 'IMAGE',
+          });
+          this.filesStrings.push(slide.background);
         } else if (slide.url) {
           this.slidesPath.push({
             path: isVideo(slide.url) ? slide.url : `url(${slide.url})`,

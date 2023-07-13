@@ -202,6 +202,65 @@ export class QrEditComponent implements OnInit {
 
       if (this._ItemsService.temporalItemInput.slides.length) {
         for await (const slide of this._ItemsService.temporalItemInput.slides) {
+
+          if (!slide.media && slide.url) {
+            const fileParts = slide.url.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+            if (
+              slide.url &&
+              !slide.url.includes('http') &&
+              !slide.url.includes('https')
+            ) {
+              slide.url = 'https://' + slide.url;
+            }
+
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
+                _type: auxiliarImageFileExtension,
+              });
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
+                _type: auxiliarVideoFileExtension,
+              });
+            }
+          }
+
+          if (!slide.media && slide.background) {
+            const fileParts = slide.background.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+            if (
+              slide.background &&
+              !slide.background.includes('http') &&
+              !slide.background.includes('https')
+            ) {
+              slide.background = 'https://' + slide.background;
+            }
+
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).background,
+                _type: auxiliarImageFileExtension,
+              });
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).background,
+                _type: auxiliarVideoFileExtension,
+              });
+            }
+          }
+
           if (slide.media && slide.media.type.includes('image')) {
             await fileToBase64(slide.media).then((result) => {
               this.gridArray.push({
@@ -443,6 +502,7 @@ export class QrEditComponent implements OnInit {
 
           this.gridArray.push(content);
           this._ItemsService.temporalItemInput.slides.push(content);
+          this._ItemsService.modifiedImagesFromExistingItem = true;
         } else {
           reader.readAsDataURL(file);
 
@@ -692,13 +752,21 @@ export class QrEditComponent implements OnInit {
   }
 
   editSlide(index: number) {
+    const queryParams: any = {};
+
+    if(this.redirectFromFlowRoute) queryParams.redirectFromFlowRoute = this.redirectFromFlowRoute;
+
     if (this.item) {
       this._ItemsService.editingImageId = this.gridArray[index]._id;
       lockUI();
-      this._Router.navigate([`admin/create-article/${this.item._id}`]);
+      this._Router.navigate([`admin/create-article/${this.item._id}`], {
+        queryParams
+      });
     } else if (this.entity === 'item' && !this.item) {
       this._ItemsService.editingSlide = index;
-      this._Router.navigate(['admin/items-slides-editor']);
+      this._Router.navigate(['admin/items-slides-editor'], {
+        queryParams
+      });
     } else {
       this._PostsService.editingSlide = index;
 
@@ -706,7 +774,9 @@ export class QrEditComponent implements OnInit {
         'ecommerce/' +
           this.headerService.saleflow?.merchant.slug +
           '/post-slide-editor',
-      ]);
+      ], {
+        queryParams
+      });
     }
   }
 
