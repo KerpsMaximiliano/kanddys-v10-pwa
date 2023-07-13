@@ -111,7 +111,7 @@ export class HeaderService {
   receiverDataNew: boolean = false;
   changedItemAmountSubject = new Subject<Array<ItemSubOrderInput>>();
   ecommerceDataLoaded = new Subject<boolean>();
-
+  navigationTabState: any = null;
 
   public session: Session;
   constructor(

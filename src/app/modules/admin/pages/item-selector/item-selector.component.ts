@@ -10,7 +10,8 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { Quotation, QuotationInput } from 'src/app/core/models/quotations';
 import { PaginationInput } from 'src/app/core/models/saleflow';
@@ -39,6 +40,8 @@ export class ItemSelectorComponent implements OnInit {
   createdCheckboxes: boolean = false;
   currentView: 'ALL_ITEMS' | 'SELECTED_ITEMS' = 'ALL_ITEMS';
   quotation: Quotation = null;
+  supplierMode: boolean = false;
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private itemsService: ItemsService,
@@ -53,61 +56,88 @@ export class ItemSelectorComponent implements OnInit {
 
   async ngOnInit() {
     this.route.params.subscribe(async ({ quotationId }) => {
-      const pagination: PaginationInput = {
-        findBy: {
-          type: 'supplier',
-        },
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: -1,
-          page: 1,
-        },
-      };
+      this.route.queryParams.subscribe(async ({ supplierMode }) => {
+        this.supplierMode = Boolean(supplierMode);
 
-      /*
-    if (this.selectedTags.length)
-      pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
-    */
-      lockUI();
+        const pagination: PaginationInput = {
+          findBy: {
+            type: 'supplier',
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: -1,
+            page: 1,
+          },
+        };
 
-      if (quotationId) {
-        this.quotation = await this.quotationService.quotation(quotationId);
+        /*
+      if (this.selectedTags.length)
+        pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
+      */
+        lockUI();
 
-        this.selectedItems = this.quotation.items;
-        this.items = (await this.itemsService.listItems(pagination))?.listItems;
-        this.items = this.items.filter((item) => !item.parentItem);
-        this.currentView = 'SELECTED_ITEMS';
+        if (quotationId) {
+          this.quotation = await this.quotationService.quotation(quotationId);
 
-        this.itemsToShow = this.items.filter((item) =>
-          this.selectedItems.includes(item._id)
-        );
-      } else {
-        this.items = (await this.itemsService.listItems(pagination))?.listItems;
+          this.selectedItems = this.quotation.items;
+          this.items = (
+            await this.itemsService.listItems(pagination)
+          )?.listItems;
+          this.items = this.items.filter((item) => !item.parentItem);
 
-        this.items = this.items.filter((item) => !item.parentItem);
+          this.items.forEach((item, itemIndex) => {
+            item.images.forEach((image) => {
+              if (!image.value.includes('http'))
+                image.value = 'https://' + image.value;
+            });
 
-        this.itemsToShow = JSON.parse(JSON.stringify(this.items));
-      }
+            this.items[itemIndex].images = item.images;
+          });
+          
+          this.currentView = 'SELECTED_ITEMS';
 
-      unlockUI();
+          this.itemsToShow = this.items.filter((item) =>
+            this.selectedItems.includes(item._id)
+          );
+        } else {
+          this.items = (
+            await this.itemsService.listItems(pagination)
+          )?.listItems;
 
-      this.createCheckboxes();
+          this.items = this.items.filter((item) => !item.parentItem);
 
-      this.itemsForm.controls['checkboxes'].valueChanges.subscribe(
-        this.setSelectedItems
-      );
+          this.items.forEach((item, itemIndex) => {
+            item.images.forEach((image) => {
+              if (!image.value.includes('http'))
+                image.value = 'https://' + image.value;
+            });
 
-      this.itemsForm.controls['searchbar'].valueChanges.subscribe(
-        (value: string) => {
-          if (value === '')
-            this.itemsToShow = JSON.parse(JSON.stringify(this.items));
-          else {
-            this.itemsToShow = this.items.filter((item) =>
-              item.name.toLowerCase().includes(value.toLowerCase())
-            );
-          }
+            this.items[itemIndex].images = item.images;
+          });
+
+          this.itemsToShow = JSON.parse(JSON.stringify(this.items));
         }
-      );
+
+        unlockUI();
+
+        this.createCheckboxes();
+
+        this.itemsForm.controls['checkboxes'].valueChanges.subscribe(
+          this.setSelectedItems
+        );
+
+        this.itemsForm.controls['searchbar'].valueChanges.subscribe(
+          (value: string) => {
+            if (value === '')
+              this.itemsToShow = JSON.parse(JSON.stringify(this.items));
+            else {
+              this.itemsToShow = this.items.filter((item) =>
+                item.name.toLowerCase().includes(value.toLowerCase())
+              );
+            }
+          }
+        );
+      });
     });
   }
 
@@ -228,5 +258,9 @@ export class ItemSelectorComponent implements OnInit {
     const checkboxes = this.itemsForm.get('checkboxes') as FormArray;
     const currentValue = checkboxes.value[index];
     checkboxes.at(index).patchValue(!currentValue);
+  }
+
+  isVideoWrapper(filename: string) {
+    return isVideo(filename);
   }
 }

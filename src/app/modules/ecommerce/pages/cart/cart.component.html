@@ -2,7 +2,7 @@
   <header class="header">
     <div class="left-area">
       <a style="cursor: pointer">
-        <i class="fas fa-chevron-left" (click)="goToStore()"></i
+        <i class="fas fa-chevron-left" (click)="goBack()"></i
       ></a>
       <p class="title">
         Artículos a facturarse
@@ -35,10 +35,40 @@
                   '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
                 : 'url(/assets/images/noimage.png)'
             }"
+            *ngIf="
+              !item.images.length ||
+              !item.images ||
+              (item.images?.length && !urlIsVideo(item.images[0].value))
+            "
             (click)="
               item?.images?.length && openImageModal(item.images[0].value)
             "
           ></div>
+
+          <div
+            class="featured-image video-wrapper"
+            [ngStyle]="{
+              backgroundImage:
+                'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+            }"
+            *ngIf="item.images?.length && urlIsVideo(item.images[0].value)"
+          >
+            <img
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+              alt="play"
+              class="playVideoIcon"
+              style="padding: 1rem !important; z-index: 99"
+              (click)="playVideoOnFullscreen('media' + item._id)"
+            />
+
+            <video
+              [src]="item.images[0].value"
+              [id]="'media' + item._id"
+              class="video"
+              [muted]="true"
+            ></video>
+          </div>
+
           <div class="item-quantity">
             <p class="grayout-label">Cantidad</p>
             <div class="quantity">
@@ -50,7 +80,7 @@
                 >-</span
               >
 
-              <span 
+              <span
                 *ngIf="items.length === 1 && itemObjects[item._id].amount === 1"
                 mat-button
                 class="button"
@@ -85,7 +115,7 @@
           "
         >
           <img
-            style="cursor: pointer;"
+            style="cursor: pointer"
             [src]="env + '/arrow-green.svg'"
             alt="required question"
             *ngIf="
@@ -240,16 +270,10 @@
         [ngClass]="{
           valid: areWebformsValid
         }"
-        [disabled]="
-          !areWebformsValid
-        "
+        [disabled]="!areWebformsValid"
         (click)="openSubmitDialog()"
       >
-        {{
-          !areWebformsValid
-            ? "Llena las preguntas"
-            : "Continuar"
-        }}
+        {{ !areWebformsValid ? "Llena las preguntas" : "Continuar" }}
       </button>
     </div>
   </footer>
