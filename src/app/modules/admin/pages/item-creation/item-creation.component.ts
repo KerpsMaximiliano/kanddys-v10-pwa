@@ -123,7 +123,7 @@ export class ItemCreationComponent implements OnInit {
     private gpt3Service: Gpt3Service,
     private _bottomSheet: MatBottomSheet,
     private clipboard: Clipboard,
-    private ngNavigatorShareService: NgNavigatorShareService,
+    private ngNavigatorShareService: NgNavigatorShareService
   ) {}
 
   ngOnInit(): void {
@@ -420,12 +420,32 @@ export class ItemCreationComponent implements OnInit {
 
         let routeForItemEntity;
 
-        if (this.item && this.itemSlides.length === 1) {
+        if (
+          this.item &&
+          this.itemSlides.length === 1 &&
+          !file.type.includes('video')
+        ) {
           routeForItemEntity = 'admin/items-slides-editor/' + +this.item._id;
+        } else if (
+          this.item &&
+          this.itemSlides.length === 1 &&
+          file.type.includes('video')
+        ) {
+          routeForItemEntity = 'admin/slides-editor/' + this.item._id;
         } else if (this.item && this.itemSlides.length > 1) {
           routeForItemEntity = 'admin/slides-editor/' + this.item._id;
-        } else if (!this.item && this.itemSlides.length === 1) {
+        } else if (
+          !this.item &&
+          this.itemSlides.length === 1 &&
+          !file.type.includes('video')
+        ) {
           routeForItemEntity = 'admin/items-slides-editor';
+        } else if (
+          !this.item &&
+          this.itemSlides.length === 1 &&
+          file.type.includes('video')
+        ) {
+          routeForItemEntity = 'admin/slides-editor';
         } else if (!this.item && this.itemSlides.length > 1) {
           routeForItemEntity = 'admin/slides-editor';
         }
@@ -1057,14 +1077,12 @@ export class ItemCreationComponent implements OnInit {
   }
 
   copyToClipboard() {
-    this.clipboard.copy(`${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`);
-    this.snackbar.open(
-      'Enlace copiado en el portapapeles',
-      '',
-      {
-        duration: 2000,
-      }
+    this.clipboard.copy(
+      `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`
     );
+    this.snackbar.open('Enlace copiado en el portapapeles', '', {
+      duration: 2000,
+    });
   }
 
   share() {
@@ -1079,9 +1097,7 @@ export class ItemCreationComponent implements OnInit {
     let blobData = this.convertBase64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
       //IE
-      (window.navigator as any).msSaveOrOpenBlob(
-        blobData
-      );
+      (window.navigator as any).msSaveOrOpenBlob(blobData);
     } else {
       // chrome
       const blob = new Blob([blobData], { type: 'image/png' });
@@ -1110,5 +1126,4 @@ export class ItemCreationComponent implements OnInit {
     // RETURN BLOB IMAGE AFTER CONVERSION
     return new Blob([uInt8Array], { type: imageType });
   }
-
 }

@@ -28,6 +28,8 @@ import { capitalize } from 'src/app/core/helpers/strings.helpers';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -68,7 +70,8 @@ export class CartComponent implements OnInit {
   capitalize = capitalize;
   wait: boolean = false;
   redirectFromFlowRoute: boolean = false;
-
+  playVideoOnFullscreen = playVideoOnFullscreen;
+  
   constructor(
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
@@ -913,5 +916,9 @@ export class CartComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.queryParamsSubscription.unsubscribe();
+  }
+
+  urlIsVideo(url: string) {
+    return isVideo(url);
   }
 }

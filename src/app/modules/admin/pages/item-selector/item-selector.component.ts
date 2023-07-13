@@ -10,7 +10,8 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { Quotation, QuotationInput } from 'src/app/core/models/quotations';
 import { PaginationInput } from 'src/app/core/models/saleflow';
@@ -40,6 +41,7 @@ export class ItemSelectorComponent implements OnInit {
   currentView: 'ALL_ITEMS' | 'SELECTED_ITEMS' = 'ALL_ITEMS';
   quotation: Quotation = null;
   supplierMode: boolean = false;
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private itemsService: ItemsService,
@@ -82,6 +84,16 @@ export class ItemSelectorComponent implements OnInit {
             await this.itemsService.listItems(pagination)
           )?.listItems;
           this.items = this.items.filter((item) => !item.parentItem);
+
+          this.items.forEach((item, itemIndex) => {
+            item.images.forEach((image) => {
+              if (!image.value.includes('http'))
+                image.value = 'https://' + image.value;
+            });
+
+            this.items[itemIndex].images = item.images;
+          });
+          
           this.currentView = 'SELECTED_ITEMS';
 
           this.itemsToShow = this.items.filter((item) =>
@@ -93,6 +105,15 @@ export class ItemSelectorComponent implements OnInit {
           )?.listItems;
 
           this.items = this.items.filter((item) => !item.parentItem);
+
+          this.items.forEach((item, itemIndex) => {
+            item.images.forEach((image) => {
+              if (!image.value.includes('http'))
+                image.value = 'https://' + image.value;
+            });
+
+            this.items[itemIndex].images = item.images;
+          });
 
           this.itemsToShow = JSON.parse(JSON.stringify(this.items));
         }
@@ -237,5 +258,9 @@ export class ItemSelectorComponent implements OnInit {
     const checkboxes = this.itemsForm.get('checkboxes') as FormArray;
     const currentValue = checkboxes.value[index];
     checkboxes.at(index).patchValue(!currentValue);
+  }
+
+  isVideoWrapper(filename: string) {
+    return isVideo(filename);
   }
 }
