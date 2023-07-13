@@ -577,6 +577,7 @@ export class HeaderService {
 
   // Deletes saleflow order object from localStorage
   deleteSaleflowOrder() {
+    console.log(this.saleflow._id);
     localStorage.removeItem(this.saleflow._id);
     this.order = null;
   }

@@ -187,7 +187,6 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
         `ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
       ]);
 
-    // TODO - Potencialmente cambiar esta redirección hacia new-symbol, si vienes de new-symbol
     if (this.flow === 'cart') {
 
       if (this.messageFlow)
