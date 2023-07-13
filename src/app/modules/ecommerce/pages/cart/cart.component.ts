@@ -713,32 +713,32 @@ export class CartComponent implements OnInit {
     this._WebformsService.areWebformsValid = this.areWebformsValid;
   }
 
-  async submit() {
-    this.headerService.flowRoute = this.router.url;
-    localStorage.setItem('flowRoute', this.router.url);
+  // async submit() {
+  //   this.headerService.flowRoute = this.router.url;
+  //   localStorage.setItem('flowRoute', this.router.url);
 
-    this.areItemsQuestionsAnswered();
+  //   this.areItemsQuestionsAnswered();
 
-    if (
-      !this.headerService.order.receiverData ||
-      !this.headerService.receiverDataNew
-    ) {
-      this.router.navigate([
-        '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
-          '/receiver-form',
-      ]);
-    } else {
-      this.router.navigate(
-        [
-          '/ecommerce/' +
-            this.headerService.saleflow.merchant.slug +
-            '/new-address',
-        ],
-        { queryParams: { flow: 'unAnsweredQuestions' } }
-      );
-    }
-  }
+  //   if (
+  //     !this.headerService.order.receiverData ||
+  //     !this.headerService.receiverDataNew
+  //   ) {
+  //     this.router.navigate([
+  //       '/ecommerce/' +
+  //         this.headerService.saleflow.merchant.slug +
+  //         '/receiver-form',
+  //     ]);
+  //   } else {
+  //     this.router.navigate(
+  //       [
+  //         '/ecommerce/' +
+  //           this.headerService.saleflow.merchant.slug +
+  //           '/new-address',
+  //       ],
+  //       { queryParams: { flow: 'unAnsweredQuestions' } }
+  //     );
+  //   }
+  // }
 
   async addItemToCart(itemId: string) {
     if (!(await this.checkIfItemisAvailable(itemId))) return;
@@ -817,10 +817,11 @@ export class CartComponent implements OnInit {
                 this.postsService.post = null;
                 return this.router.navigate(
                   [
-                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`,
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
                   ],
                   {
                     queryParams: {
+                      flow: 'cart',
                       redirectTo: 'cart',
                     },
                   }
@@ -887,21 +888,34 @@ export class CartComponent implements OnInit {
         },
       });
     } else {
-      this.goToReceiverForm();
+      this.goToAddressForm();
     }
+  }
+
+  goToAddressForm() {
+    this.router.navigate(
+      [
+        `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
+      ],
+      {
+        queryParams: {
+          flow: 'cart',
+          redirectTo: 'cart'
+        },
+      }
+    );
   }
 
   goToReceiverForm() {
     this.router.navigate(
       [
-        '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
-          '/receiver-form',
+        `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`
       ],
       {
         queryParams: {
+          flow: 'cart',
           redirectTo: 'cart',
-        },
+        }
       }
     );
   }
