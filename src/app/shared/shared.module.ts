@@ -222,6 +222,7 @@ import { ItemsSlidesEditorComponent } from './components/items-slides-editor/ite
 import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.component';
 import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
 import { OptionsMenuComponent } from './dialogs/options-menu/options-menu.component';
+import { TagFilteringComponent } from './dialogs/tag-filtering/tag-filtering.component';
 
 const imports = [
   CommonModule,
@@ -455,7 +456,8 @@ const declarations = [
   ItemsSlidesEditorComponent,
   StoreChatbotComponent,
   InputDialogComponent,
-  OptionsMenuComponent
+  OptionsMenuComponent,
+  TagFilteringComponent
 ];
 
 @NgModule({
