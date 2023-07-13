@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
@@ -24,7 +25,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './inventory-creator.component.html',
   styleUrls: ['./inventory-creator.component.scss'],
 })
-export class InventoryCreatorComponent implements OnInit {
+export class InventoryCreatorComponent implements OnInit, OnDestroy {
   itemSlides: Array<any> = [];
   assetsFolder: string = environment.assetsUrl;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
@@ -47,6 +48,16 @@ export class InventoryCreatorComponent implements OnInit {
   layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
   renderQrContent: boolean = true;
   showIntroParagraph: boolean = true;
+  reminderToast: {
+    message: string;
+    warning?: boolean;
+    secondsTrigger: number;
+    timeoutId?: ReturnType<typeof setTimeout>;
+  } = {
+    message: 'Los campos que tienen (*) son obligatorios',
+    secondsTrigger: 30,
+    warning: false,
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -56,6 +67,7 @@ export class InventoryCreatorComponent implements OnInit {
     private saleflowService: SaleFlowService,
     public dialog: MatDialog,
     private snackbar: MatSnackBar,
+    private toastr: ToastrService,
     private router: Router
   ) {}
 
@@ -91,6 +103,8 @@ export class InventoryCreatorComponent implements OnInit {
     if (this.itemsService.temporalItemInput?.slides) {
       this.itemSlides = this.itemsService.temporalItemInput?.slides;
     }
+
+    this.addToastReminder(true);
   }
 
   async loadFile(event: Event) {
@@ -128,8 +142,10 @@ export class InventoryCreatorComponent implements OnInit {
 
         let routeForItemEntity;
 
-        if (this.itemSlides.length === 1) {
+        if (this.itemSlides.length === 1 && !file.type.includes("video")) {
           routeForItemEntity = 'admin/items-slides-editor';
+        } else if (this.itemSlides.length === 1 && file.type.includes("video")) {
+          routeForItemEntity = 'admin/slides-editor';
         } else if (this.itemSlides.length > 1) {
           routeForItemEntity = 'admin/slides-editor';
         }
@@ -325,5 +341,35 @@ export class InventoryCreatorComponent implements OnInit {
 
   back() {
     this.router.navigate(['admin/item-selector']);
+  }
+
+  addToastReminder(firstLoad: boolean = false) {
+    if (this.reminderToast) {
+      this.reminderToast.timeoutId = setTimeout(
+        () => {
+          if (!this.reminderToast.warning) {
+            this.toastr.info(this.reminderToast.message, null, {
+              timeOut: 1500,
+              tapToDismiss: true,
+              positionClass: 'toast-top-center',
+            });
+          } else {
+            this.toastr.warning(this.reminderToast.message, null, {
+              timeOut: 1500,
+              tapToDismiss: true,
+              positionClass: 'toast-top-center',
+            });
+          }
+
+          this.addToastReminder();
+        },
+        !firstLoad ? this.reminderToast.secondsTrigger * 1000 : 3000
+      );
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.reminderToast.timeoutId)
+      clearTimeout(this.reminderToast.timeoutId);
   }
 }

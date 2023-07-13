@@ -10,11 +10,14 @@ import {
   quotations,
   updateQuotation,
 } from '../graphql/quotations.gql';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuotationsService {
+  cartRouteChangeSubscription: Subscription = null;
+
   constructor(private graphql: GraphQLWrapper) {}
 
   async quotations(input?: PaginationInput): Promise<Quotation[]> {

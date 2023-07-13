@@ -401,7 +401,11 @@ const routes: Routes = [
       {
         path: 'quotations',
         component: InventoryComponent,
-      }
+      },
+      {
+        path: 'quotation-bids/:quotationId',
+        component: QuotationBidsComponent,
+      },
     ],
   },
   {
@@ -483,10 +487,6 @@ const routes: Routes = [
   {
     path: 'inventory',
     component: InventoryComponent,
-  },
-  {
-    path: 'quotation-bids/:quotationId',
-    component: QuotationBidsComponent,
   },
   {
     path: 'inventory-creator',

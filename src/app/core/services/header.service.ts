@@ -111,7 +111,7 @@ export class HeaderService {
   receiverDataNew: boolean = false;
   changedItemAmountSubject = new Subject<Array<ItemSubOrderInput>>();
   ecommerceDataLoaded = new Subject<boolean>();
-
+  navigationTabState: any = null;
 
   public session: Session;
   constructor(
@@ -577,6 +577,7 @@ export class HeaderService {
 
   // Deletes saleflow order object from localStorage
   deleteSaleflowOrder() {
+    console.log(this.saleflow._id);
     localStorage.removeItem(this.saleflow._id);
     this.order = null;
   }

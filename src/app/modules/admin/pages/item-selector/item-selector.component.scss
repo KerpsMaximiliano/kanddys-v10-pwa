@@ -1,4 +1,3 @@
-
 .container {
   background: #181d17;
   padding-left: 22px;
@@ -106,6 +105,18 @@ input[type="text"] {
   height: 126px;
   border-radius: 8px;
   background: #936105;
+  position: relative;
+
+  video {
+    width: 100%;
+    height: 60%;
+    // object-fit: cover;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+  }
 }
 
 .item-text {
