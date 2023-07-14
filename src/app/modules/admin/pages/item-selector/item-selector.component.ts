@@ -11,7 +11,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { isVideo } from 'src/app/core/helpers/strings.helpers';
-import { lockUI, playVideoOnFullscreen, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { Quotation, QuotationInput } from 'src/app/core/models/quotations';
 import { PaginationInput } from 'src/app/core/models/saleflow';
@@ -93,7 +97,7 @@ export class ItemSelectorComponent implements OnInit {
 
             this.items[itemIndex].images = item.images;
           });
-          
+
           this.currentView = 'SELECTED_ITEMS';
 
           this.itemsToShow = this.items.filter((item) =>
@@ -262,5 +266,20 @@ export class ItemSelectorComponent implements OnInit {
 
   isVideoWrapper(filename: string) {
     return isVideo(filename);
+  }
+
+  createItemBasedOnExistingSupplierItems(item: Item) {
+    this.itemsService.temporalItemInput = {
+      name: item.name,
+      pricing: item.pricing,
+      layout: item.layout,
+    };
+    this.itemsService.temporalItem = item;
+
+    this.router.navigate(['/admin/inventory-creator'], {
+      queryParams: {
+        existingItem: true,
+      },
+    });
   }
 }

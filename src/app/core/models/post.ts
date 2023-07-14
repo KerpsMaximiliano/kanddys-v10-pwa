@@ -28,6 +28,7 @@ export class IlustrationInput {
 export class SlideInput {
   media?: File;
   url?: string;
+  background?: any;
   ilustration?: IlustrationInput;
   title?: string;
   text: string;

@@ -69,7 +69,11 @@
       class="item"
       *ngFor="let item of itemsToShow; let i = index"
       [formArrayName]="'checkboxes'"
-      (click)="toggleItemSelection(i)"
+      (click)="
+        !supplierMode
+          ? toggleItemSelection(i)
+          : createItemBasedOnExistingSupplierItems(item)
+      "
     >
       <ng-container
         *ngIf="
@@ -77,7 +81,7 @@
           else images
         "
       >
-        <div class="item-card" style="background-color: black;">
+        <div class="item-card" style="background-color: black">
           <img
             src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
             alt="play"
@@ -122,7 +126,9 @@
         class="checkbox"
         type="checkbox"
         [formControlName]="i"
-        *ngIf="createdCheckboxes && currentView === 'ALL_ITEMS'"
+        *ngIf="
+          createdCheckboxes && currentView === 'ALL_ITEMS' && !supplierMode
+        "
       />
     </div>
   </div>
