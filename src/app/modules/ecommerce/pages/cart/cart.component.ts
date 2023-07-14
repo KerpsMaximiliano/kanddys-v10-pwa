@@ -804,8 +804,12 @@ export class CartComponent implements OnInit {
   }
 
   openSubmitDialog() {
-
-    if (this.headerService.saleflow?.module?.post && this.headerService.saleflow?.module?.post?.post && this.headerService.saleflow?.module?.post?.isActive) {
+    if (
+      !this.isSuppliersBuyerFlow(this.items) &&
+      (this.headerService.saleflow?.module?.post &&
+      this.headerService.saleflow?.module?.post?.post &&
+      this.headerService.saleflow?.module?.post?.isActive)
+    ) {
       const bottomSheetRef = this._bottomSheet.open(OptionsMenuComponent, {
         data: {
           title: `¿Quieres añadir un mensaje de regalo?`,
@@ -890,6 +894,10 @@ export class CartComponent implements OnInit {
     } else {
       this.goToAddressForm();
     }
+  }
+
+  isSuppliersBuyerFlow(items: Item[]): boolean {
+    return items.some((item) => item.type === 'supplier');
   }
 
   goToAddressForm() {
