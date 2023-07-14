@@ -810,10 +810,9 @@ export class CartComponent implements OnInit {
       this.headerService.saleflow?.module?.post?.post &&
       this.headerService.saleflow?.module?.post?.isActive)
     ) {
-      const bottomSheetRef = this._bottomSheet.open(OptionsMenuComponent, {
+      this._bottomSheet.open(OptionsMenuComponent, {
         data: {
           title: `¿Quieres añadir un mensaje de regalo?`,
-          description: `¡Dale un toque personal a tu regalo! Opcional.`,
           options: [
             {
               value: `Sin mensajes de regalo`,
@@ -892,7 +891,47 @@ export class CartComponent implements OnInit {
         },
       });
     } else {
-      this.goToAddressForm();
+      if (this.isSuppliersBuyerFlow(this.items)) {
+        this._bottomSheet.open(OptionsMenuComponent, {
+          data: {
+            title: `Confirmación de precios y disponibilidad:`,
+            description: `Te recomendamos que te asegures la disponibilidad y precio de ${this.headerService.saleflow.merchant.name} compartiendo la cotización.`,
+            options: [
+              {
+                value: `Compartir cotización con ${capitalize(this.headerService.saleflow.merchant.name)}`,
+                callback: () => {
+                  let itemsContent = ``;
+                  this.items.forEach((item) => {
+                    itemsContent += `- ${item?.name ? item?.name : 'Artículo sin nombre'}, $${item.pricing}\n`
+                  });
+                  const message = `Hola ${
+                    capitalize(this.headerService.saleflow.merchant.name)
+                  },\n\nSoy ${
+                    this.currentUser?.name || this.currentUser?.phone || this.currentUser?.email
+                  } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${
+                    itemsContent
+                  }\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace [Enlace del carrito en la plataforma POV Suplidor]\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: [enlace del método de pago]`;
+                  const whatsappLink = `https://api.whatsapp.com/send?phone=${
+                    this.headerService.saleflow.merchant.owner.phone
+                  }&text=${encodeURIComponent(message)}`;
+
+                  window.open(whatsappLink, '_blank');
+                },
+              },
+              {
+                value: `Continuar a la prefactura`,
+                callback: () => {
+                  // TODO - Validar que la redirección ocurra al módulo que esté disponible
+                  return this.goToAddressForm();
+                },
+              }
+            ],
+            styles: {
+              fullScreen: true,
+            },
+          },
+        });
+      } else this.goToAddressForm(); // TODO - Validar que la redirección ocurra al módulo que esté disponible
     }
   }
 
