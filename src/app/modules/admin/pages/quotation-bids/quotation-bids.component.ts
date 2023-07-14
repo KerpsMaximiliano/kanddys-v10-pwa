@@ -78,8 +78,10 @@ export class QuotationBidsComponent implements OnInit {
     ) {
       if (
         thereAlreadyIsASaleflowInHeaderServiceAndIsNotTheSameAsTheSelectedSupplier
-      )
+      ) 
+      {
         this.headerService.deleteSaleflowOrder();
+      }
 
       this.headerService.saleflow = saleflowDefault;
       this.headerService.deleteSaleflowOrder();
@@ -94,13 +96,14 @@ export class QuotationBidsComponent implements OnInit {
 
     const fillSaleflowOrder = (value: boolean) => {
       if (value) {
+        console.log("fillSaleflowOrder", JSON.stringify(match.items));
         for (const item of match.items) {
           const product: ItemSubOrderInput = {
             item: item,
             amount: 1,
           };
 
-          this.headerService.storeOrderProduct(product);
+          this.headerService.storeOrderProduct(product, false);
 
           this.appService.events.emit({
             type: 'added-item',

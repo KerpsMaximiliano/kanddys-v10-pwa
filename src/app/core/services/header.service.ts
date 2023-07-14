@@ -283,7 +283,10 @@ export class HeaderService {
   }
 
   // Stores order product data in localStorage
-  storeOrderProduct(product: ItemSubOrderInput) {
+  storeOrderProduct(
+    product: ItemSubOrderInput,
+    removeSameProductIfIsFound: boolean = true
+  ) {
     let { order, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     if (!order) order = {};
@@ -299,10 +302,11 @@ export class HeaderService {
         products: [],
       };
     }
-    if (index >= 0) {
+    if (index >= 0 && removeSameProductIfIsFound) {
       order.products.splice(index, 1);
       this.order?.products?.splice(index, 1);
-    } else {
+    } else if (index >= 0 && !removeSameProductIfIsFound) {//if vacio, para evitar el caso
+    } else if (index < 0) {
       order.products.push(product);
       this.order?.products?.push(product);
     }
