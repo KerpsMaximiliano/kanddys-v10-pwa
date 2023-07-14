@@ -1,11 +1,12 @@
 <div class="container">
   <div class="header">
     <div class="flex">
-      <mat-icon
-        style="cursor: pointer;"
-        (click)="showQuotations()"
-      >close</mat-icon>
-      <p class="header-title">{{ quotation?.name ? quotation?.name : 'Cotización sin nombre' }}</p>
+      <mat-icon style="cursor: pointer" (click)="showQuotations()"
+        >close</mat-icon
+      >
+      <p class="header-title">
+        {{ quotation?.name ? quotation?.name : "Cotización sin nombre" }}
+      </p>
     </div>
     <img
       [src]="
@@ -20,7 +21,7 @@
             ? 'QUOTATION_CONFIG'
             : 'SUPPLIERS_LIST'
       "
-      style="cursor: pointer;"
+      style="cursor: pointer"
     />
   </div>
   <div class="content">
@@ -62,6 +63,13 @@
             <!--
               <hr />
             -->
+          </div>
+        </div>
+
+        <div class="another-supplier-button" (click)="createExternalSupplierInvitation()">
+          <div class="text">
+            Copia en tu clipboard los artículos y compartelo por WhatsApp con un
+            suplidor que no está entre las opciones
           </div>
         </div>
       </ng-container>
