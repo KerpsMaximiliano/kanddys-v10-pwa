@@ -53,25 +53,39 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   async createOrder(match: QuotationMatches) {
-
-    console.log(match);
-
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
 
+    if (this.quotationsService.cartRouteChangeSubscription)
+      this.quotationsService.cartRouteChangeSubscription.unsubscribe();
+
     lockUI();
 
-    const merchant = match.merchant._id;
-
-    const saleflowDefault = await this.saleflowService.saleflowDefault(
-      merchant
+    const merchantDefault = await this.merchantsService.merchantDefault(
+      this.headerService.user._id
     );
-    this.headerService.saleflow = saleflowDefault;
+    const saleflowDefault = await this.saleflowService.saleflowDefault(
+      merchantDefault._id
+    );
 
-    this.headerService.deleteSaleflowOrder();
+    const thereAlreadyIsASaleflowInHeaderServiceAndIsNotTheSameAsTheSelectedSupplier =
+      this.headerService.saleflow &&
+      saleflowDefault._id !== this.headerService.saleflow._id;
 
-    console.log(this.headerService.saleflow);
-    console.log(localStorage.getItem(this.headerService.saleflow._id));
+    if (
+      !this.headerService.saleflow ||
+      thereAlreadyIsASaleflowInHeaderServiceAndIsNotTheSameAsTheSelectedSupplier
+    ) {
+      if (
+        thereAlreadyIsASaleflowInHeaderServiceAndIsNotTheSameAsTheSelectedSupplier
+      ) 
+      {
+        this.headerService.deleteSaleflowOrder();
+      }
+
+      this.headerService.saleflow = saleflowDefault;
+      this.headerService.deleteSaleflowOrder();
+    }
 
     this.router.navigate(['/ecommerce/' + match.merchant.slug + '/cart'], {
       queryParams: {
@@ -80,32 +94,29 @@ export class QuotationBidsComponent implements OnInit {
       },
     });
 
+    const fillSaleflowOrder = (value: boolean) => {
+      if (value) {
+        console.log("fillSaleflowOrder", JSON.stringify(match.items));
+        for (const item of match.items) {
+          const product: ItemSubOrderInput = {
+            item: item,
+            amount: 1,
+          };
+
+          this.headerService.storeOrderProduct(product, false);
+
+          this.appService.events.emit({
+            type: 'added-item',
+            data: item,
+          });
+        }
+        unlockUI();
+      }
+    };
+
     this.quotationsService.cartRouteChangeSubscription =
       this.headerService.ecommerceDataLoaded.subscribe({
-        next: (value: boolean) => {
-          if (value) {
-            console.log(value);
-            for (const item of match.items) {
-              const product: ItemSubOrderInput = {
-                item: item,
-                amount: 1,
-              };
-
-              this.headerService.storeOrderProduct(product);
-
-              this.appService.events.emit({
-                type: 'added-item',
-                data: item,
-              });
-
-              console.log(
-                'this.header.order',
-                JSON.stringify(this.headerService.order.products)
-              );
-            }
-            unlockUI();
-          }
-        },
+        next: fillSaleflowOrder,
       });
   }
 

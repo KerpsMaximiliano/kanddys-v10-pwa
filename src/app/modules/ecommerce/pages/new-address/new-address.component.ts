@@ -379,7 +379,12 @@ export class NewAddressComponent implements OnInit {
       const isAppointmentActive =
         this.headerService.saleflow.module.appointment?.isActive;
 
-      let redirectionRoute = isAppointmentActive
+
+      console.log(this.addresses[this.selectedDeliveryIndex]);
+
+      let redirectionRoute = this.addresses[this.selectedDeliveryIndex].street
+        ? `../receiver-form` 
+        : isAppointmentActive
         ? `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
         : `../checkout`;
 
@@ -434,9 +439,19 @@ export class NewAddressComponent implements OnInit {
       });
 
       if (this.flow === 'cart' || this.flow === 'unAnsweredQuestions') {
+
+        const isAppointmentActive =
+        this.headerService.saleflow.module.appointment?.isActive;
+
+        const redirectionRoute = this.addresses[this.selectedDeliveryIndex].street
+          ? `../receiver-form` 
+          : isAppointmentActive
+          ? `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
+          : `../checkout`;
+
         this.router.navigate(
           [
-            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+            `${redirectionRoute}`
           ],
           {
             relativeTo: this.route,
@@ -485,9 +500,17 @@ export class NewAddressComponent implements OnInit {
       );
 
       if (this.flow === 'cart' || this.flow === 'unAnsweredQuestions') {
+
+        const isAppointmentActive =
+        this.headerService.saleflow.module.appointment?.isActive;
+
+        const redirectionRoute = isAppointmentActive
+          ? `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
+          : `../checkout`;
+
         this.router.navigate(
           [
-            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+            `${redirectionRoute}`,
           ],
           {
             relativeTo: this.route,
@@ -576,10 +599,22 @@ export class NewAddressComponent implements OnInit {
   goBack() {
     if (this.mode === 'normal') {
       if (this.flow === 'cart') {
-        return this.router.navigate([`../receiver-form`], {
+        if (this.messageFlow) {
+          return this.router.navigate([`../new-symbol`], {
+            relativeTo: this.route,
+            queryParams: {
+              type: this.messageFlow === 'TRADITIONAL-MESSAGE' ?
+                'traditional' :
+                this.messageFlow === 'TRADITIONAL-AND-VIRTUAL' ?
+                'both' : 'virtual'
+            }
+          });
+        }
+
+        return this.router.navigate([`../cart`], {
           relativeTo: this.route,
           queryParams: {
-            messageFlow: this.messageFlow ? this.messageFlow : null
+            // TODO incluir query param de flow de supplier
           }
         });
       } else if (this.flow === 'unAnsweredQuestions') {

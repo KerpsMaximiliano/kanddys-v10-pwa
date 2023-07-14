@@ -349,7 +349,7 @@ export class NewSymbolComponent implements OnInit {
       [
         'ecommerce/' +
           this.headerService.saleflow.merchant.slug +
-          '/receiver-form',
+          '/new-address',
       ],
       {
         queryParams: {
