@@ -124,7 +124,11 @@
   </div>
 </div>
 
-<footer>
+<footer
+  [ngClass]="{
+    updateMode: updateItem
+  }"
+>
   <button
     class="right"
     *ngIf="itemFormData?.valid && itemSlides.length > 0"

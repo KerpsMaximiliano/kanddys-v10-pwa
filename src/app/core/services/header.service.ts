@@ -112,6 +112,7 @@ export class HeaderService {
   changedItemAmountSubject = new Subject<Array<ItemSubOrderInput>>();
   ecommerceDataLoaded = new Subject<boolean>();
   navigationTabState: any = null;
+  redirectFromFlowRoute: boolean = false;
 
   public session: Session;
   constructor(
@@ -598,6 +599,7 @@ export class HeaderService {
 
   redirectFromQueryParams() {
     let redirectionRoute = this.flowRoute;
+
 
     if (!redirectionRoute) redirectionRoute = localStorage.getItem('flowRoute');
 

@@ -408,10 +408,6 @@ const routes: Routes = [
         path: 'quotation-bids/:quotationId',
         component: QuotationBidsComponent,
       },
-      {
-        path: 'supplier-register/:quotationId',
-        component: SupplierRegistrationComponent,
-      },
     ],
   },
   {
@@ -506,7 +502,11 @@ const routes: Routes = [
   {
     path: 'supplier-orders',
     component: OrderProgressFilteringComponent
-  }
+  },
+  {
+    path: 'supplier-register/:quotationId',
+    component: SupplierRegistrationComponent,
+  },
 ];
 
 @NgModule({

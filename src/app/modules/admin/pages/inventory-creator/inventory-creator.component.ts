@@ -15,6 +15,7 @@ import {
   ItemsService,
 } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import {
   FormComponent,
@@ -72,6 +73,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     private headerService: HeaderService,
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
+    private quotationsService: QuotationsService,
     public dialog: MatDialog,
     private snackbar: MatSnackBar,
     private toastr: ToastrService,
@@ -83,10 +85,13 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     this.routerParamsSubscription = this.route.params.subscribe(
       ({ itemId }) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
-          ({ existingItem, updateItem }) => {
+          async ({ existingItem, updateItem }) => {
             this.existingItem = Boolean(existingItem);
             this.updateItem = Boolean(updateItem);
             this.itemId = itemId;
+
+            this.merchantsService.merchantData =
+              await this.merchantsService.merchantDefault();
 
             if (!this.itemsService.temporalItemInput?.name && !existingItem) {
               this.router.navigate(['/admin/item-selector']);
@@ -128,7 +133,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
                     index,
                     type: 'poster',
                     text: '',
-                    _id: image._id
+                    _id: image._id,
                   };
                 });
             } else if (
@@ -272,7 +277,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           file: slide.media,
           index,
           active: true,
-          _id: slide._id
+          _id: slide._id,
         };
       }
     );
@@ -361,13 +366,26 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             duration: 5000,
           });
 
-          
-          unlockUI()
+          this.router.navigate(
+            [
+              'admin/supplier-register/' +
+                this.quotationsService.quotationBeingEdited._id,
+            ],
+            {
+              queryParams: {
+                supplierMerchantId:
+                  this.quotationsService.quotationBeingEdited.merchant,
+                requesterId: this.merchantsService.merchantData?._id,
+              },
+            }
+          );
+
+          unlockUI();
         } catch (error) {
           this.snackbar.open('Ocurrió un error al crear el producto', '', {
             duration: 5000,
           });
-          unlockUI()
+          unlockUI();
         }
 
         return;
@@ -437,6 +455,22 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   }
 
   back() {
+    if(this.updateItem) {
+      return this.router.navigate(
+        [
+          'admin/supplier-register/' +
+            this.quotationsService.quotationBeingEdited._id,
+        ],
+        {
+          queryParams: {
+            supplierMerchantId:
+              this.quotationsService.quotationBeingEdited.merchant,
+            requesterId: this.merchantsService.merchantData?._id,
+          },
+        }
+      );
+    }
+
     this.router.navigate(['admin/item-selector']);
   }
 
