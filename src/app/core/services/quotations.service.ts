@@ -19,6 +19,7 @@ import { Item } from '../models/item';
 export class QuotationsService {
   cartRouteChangeSubscription: Subscription = null;
   quotationItemsBeingEdited: Array<Item> = null;
+  quotationBeingEdited: Quotation = null;
   quotationInCart: Quotation = null;
 
   constructor(private graphql: GraphQLWrapper) {}
@@ -68,6 +69,8 @@ export class QuotationsService {
       return result?.quotation;
     } catch (e) {
       console.log(e);
+
+      return e;
     }
   }
 

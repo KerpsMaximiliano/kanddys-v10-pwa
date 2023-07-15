@@ -6,12 +6,17 @@ import { Item, ItemInput } from 'src/app/core/models/item';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { LoginDialogComponent } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
+import {
+  LoginDialogComponent,
+  LoginDialogData,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from 'src/app/core/models/user';
 import { UsersService } from 'src/app/core/services/users.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { Merchant } from 'src/app/core/models/merchant';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-supplier-registration',
@@ -25,14 +30,17 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   quotation: Quotation;
   requester: Merchant = null;
   quotationItems: Array<Item> = [];
+  authorized: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private quotationsService: QuotationsService,
     private itemsService: ItemsService,
     private merchantsService: MerchantsService,
+    private authService: AuthService,
     private router: Router,
-    public matDialog: MatDialog
+    public matDialog: MatDialog,
+    private snackbar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -43,34 +51,78 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             this.requester = await this.merchantsService.merchant(requesterId);
             this.supplierMerchantId = supplierMerchantId;
 
-            this.quotation = await this.quotationsService.quotation(
-              quotationId
-            );
-
-            const supplierSpecificItemsInput: PaginationInput = {
-              findBy: {
-                parentItem: {
-                  $in: ([] = this.quotation.items),
-                },
-                merchant: this.supplierMerchantId,
-              },
-              options: {
-                sortBy: 'createdAt:desc',
-                limit: -1,
-                page: 1,
-              },
-            };
-            const supplierSpecificItems: Array<Item> = (
-              await this.itemsService.listItems(supplierSpecificItemsInput)
-            )?.listItems;
-
-            this.quotationItems = supplierSpecificItems;
-            this.quotationsService.quotationItemsBeingEdited = JSON.parse(
-              JSON.stringify(this.quotationItems)
-            );
+            await this.executeAuthRequest(quotationId);
           }
         );
       }
+    );
+  }
+
+  async executeAuthRequest(quotationId: string) {
+    const myUser = await this.authService.me();
+
+    if (!myUser && !myUser?._id) this.authorized = false;
+    else {
+      this.authorized = true;
+    }
+
+    if (!this.authorized) {
+      this.snackbar.open(
+        'Antes de poder ajustar el precio y disponibilidad, debemos validar tu identidad',
+        'Ok',
+        {
+          duration: 10000,
+        }
+      );
+      
+      const matDialogRef = this.matDialog.open(LoginDialogComponent, {
+        data: {
+          loginType: 'full',
+          magicLinkData: {
+            redirectionRoute: window.location.href
+              .split('/')
+              .slice(3)
+              .join('/'),
+            entity: 'UserAccess',
+          },
+        } as LoginDialogData,
+        disableClose: true,
+      });
+      return matDialogRef.afterClosed().subscribe(async (value) => {
+        if (!value) return;
+        if (value.user?._id || value.session.user._id) {
+          this.quotation = await this.quotationsService.quotation(quotationId);
+          await this.executeInitProcesses();
+        }
+      });
+    } else {
+      this.quotation = await this.quotationsService.quotation(quotationId);
+      await this.executeInitProcesses();
+    }
+  }
+
+  async executeInitProcesses() {
+    const supplierSpecificItemsInput: PaginationInput = {
+      findBy: {
+        parentItem: {
+          $in: ([] = this.quotation.items),
+        },
+        merchant: this.supplierMerchantId,
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+        page: 1,
+      },
+    };
+    const supplierSpecificItems: Array<Item> = (
+      await this.itemsService.listItems(supplierSpecificItemsInput)
+    )?.listItems;
+
+    this.quotationItems = supplierSpecificItems;
+    this.quotationsService.quotationBeingEdited = this.quotation;
+    this.quotationsService.quotationItemsBeingEdited = JSON.parse(
+      JSON.stringify(this.quotationItems)
     );
   }
 
