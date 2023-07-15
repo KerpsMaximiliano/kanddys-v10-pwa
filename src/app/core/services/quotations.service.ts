@@ -11,12 +11,14 @@ import {
   updateQuotation,
 } from '../graphql/quotations.gql';
 import { Subscription } from 'rxjs';
+import { Item } from '../models/item';
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuotationsService {
   cartRouteChangeSubscription: Subscription = null;
+  quotationItemsBeingEdited: Array<Item> = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 

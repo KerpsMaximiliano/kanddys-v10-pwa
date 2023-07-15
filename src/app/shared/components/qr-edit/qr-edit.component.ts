@@ -90,6 +90,7 @@ export class QrEditComponent implements OnInit {
     //Items already on the database
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
+
       if (this.item?.merchant._id !== this._MerchantsService.merchantData._id) {
         this._Router.navigate(['../../'], {
           relativeTo: this._Route,
@@ -132,7 +133,6 @@ export class QrEditComponent implements OnInit {
       }
 
       if (useSlidesInMemory && this._ItemsService.temporalItemInput.slides) {
-        console.log('los slides', this._ItemsService.temporalItemInput.slides);
 
         for await (const slide of this._ItemsService.temporalItemInput.slides) {
           if (!slide.media && slide.url) {
@@ -202,7 +202,6 @@ export class QrEditComponent implements OnInit {
 
       if (this._ItemsService.temporalItemInput.slides.length) {
         for await (const slide of this._ItemsService.temporalItemInput.slides) {
-
           if (!slide.media && slide.url) {
             const fileParts = slide.url.split('.');
             const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
@@ -441,8 +440,11 @@ export class QrEditComponent implements OnInit {
           }
           //   this._Router.navigate([`admin/create-article/${this.item._id}`]);
 
-          if (isImage(itemUpdated.images[itemUpdated.images.length - 1].value))
-            this._Router.navigate([`admin/create-article/${this.item._id}`]);
+          if (
+            isImage(itemUpdated.images[itemUpdated.images.length - 1].value)
+          ) {
+          }
+          this._Router.navigate([`admin/create-article/${this.item._id}`]);
 
           if (
             itemUpdated &&
@@ -754,29 +756,33 @@ export class QrEditComponent implements OnInit {
   editSlide(index: number) {
     const queryParams: any = {};
 
-    if(this.redirectFromFlowRoute) queryParams.redirectFromFlowRoute = this.redirectFromFlowRoute;
+    if (this.redirectFromFlowRoute)
+      queryParams.redirectFromFlowRoute = this.redirectFromFlowRoute;
 
     if (this.item) {
       this._ItemsService.editingImageId = this.gridArray[index]._id;
       lockUI();
       this._Router.navigate([`admin/create-article/${this.item._id}`], {
-        queryParams
+        queryParams,
       });
     } else if (this.entity === 'item' && !this.item) {
       this._ItemsService.editingSlide = index;
       this._Router.navigate(['admin/items-slides-editor'], {
-        queryParams
+        queryParams,
       });
     } else {
       this._PostsService.editingSlide = index;
 
-      this._Router.navigate([
-        'ecommerce/' +
-          this.headerService.saleflow?.merchant.slug +
-          '/post-slide-editor',
-      ], {
-        queryParams
-      });
+      this._Router.navigate(
+        [
+          'ecommerce/' +
+            this.headerService.saleflow?.merchant.slug +
+            '/post-slide-editor',
+        ],
+        {
+          queryParams,
+        }
+      );
     }
   }
 

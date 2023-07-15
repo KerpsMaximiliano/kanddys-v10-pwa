@@ -34,6 +34,7 @@ export class SlideInput {
   text: string;
   index: number;
   type: 'audio' | 'poster' | 'text';
+  _id?: string;
 }
 
 export class Post extends Model<Post> {

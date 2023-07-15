@@ -1,11 +1,7 @@
 <div class="container" [ngClass]="{ shadow: shadow }">
-  <div *ngIf="redirectionParams" (click)="clickHandler()">
+  <div (click)="clickHandler()">
     <ng-container [ngTemplateOutlet]="cardContent"></ng-container>
   </div>
-  <ng-container
-    *ngIf="!redirectionParams"
-    [ngTemplateOutlet]="cardContent"
-  ></ng-container>
   <div class="bottom" *ngIf="leftAmount">
     <div
       [ngClass]="{ center: !title && !description }"
@@ -36,12 +32,26 @@
 
 <ng-template #cardContent>
   <div class="top">
-    <p *ngIf="(title || description) && mode === 'normal'" class="text">
+    <div *ngIf="(title || description) && mode === 'normal'" class="text">
       <span *ngIf="title" class="title">{{ title }}</span
       ><br />
       <br />
       <span *ngIf="description" class="description">{{ description }}</span>
-    </p>
+
+      <button
+        class="stock-button"
+        *ngIf="supplierProvidedData.stock >= 0"
+      >
+        En inventario: {{ supplierProvidedData.stock }}
+      </button>
+
+      <button
+        class="stock-button"
+        *ngIf="!supplierProvidedData.stock && supplierProvidedData.stock !== 0"
+      >
+        Adicionar disponibilidad
+      </button>
+    </div>
     <div
       class="image-container"
       *ngIf="mode === 'normal'"
