@@ -29,7 +29,13 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { isVideo } from 'src/app/core/helpers/strings.helpers';
-import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
+import { QuotationsService } from 'src/app/core/services/quotations.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -71,13 +77,15 @@ export class CartComponent implements OnInit {
   wait: boolean = false;
   redirectFromFlowRoute: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
-  
+
   constructor(
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
     private itemsService: ItemsService,
     private dialogService: DialogService,
     private _WebformsService: WebformsService,
+    private quotationsService: QuotationsService,
+    private merchantsService: MerchantsService,
     private appService: AppService,
     private router: Router,
     private route: ActivatedRoute,
@@ -91,6 +99,12 @@ export class CartComponent implements OnInit {
       async ({ item, wait, redirectFromFlowRoute }) => {
         this.wait = wait;
         this.redirectFromFlowRoute = Boolean(redirectFromFlowRoute);
+
+        if (!this.headerService.redirectFromFlowRoute)
+          this.headerService.redirectFromFlowRoute = this.redirectFromFlowRoute;
+        else {
+          this.redirectFromFlowRoute = this.headerService.redirectFromFlowRoute;
+        }
 
         if (this.wait)
           this.headerService.ecommerceDataLoaded.subscribe({
@@ -481,7 +495,12 @@ export class CartComponent implements OnInit {
   }
 
   goBack() {
-    if(this.redirectFromFlowRoute) return this.headerService.redirectFromQueryParams();
+    if(this.quotationsService.quotationInCart) {
+      this.headerService.flowRoute = '/admin/quotation-bids/' + this.quotationsService.quotationInCart._id;
+    }
+
+    if (this.redirectFromFlowRoute)
+      return this.headerService.redirectFromQueryParams();
 
     this.router.navigate([
       `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
@@ -806,9 +825,9 @@ export class CartComponent implements OnInit {
   openSubmitDialog() {
     if (
       !this.isSuppliersBuyerFlow(this.items) &&
-      (this.headerService.saleflow?.module?.post &&
+      this.headerService.saleflow?.module?.post &&
       this.headerService.saleflow?.module?.post?.post &&
-      this.headerService.saleflow?.module?.post?.isActive)
+      this.headerService.saleflow?.module?.post?.isActive
     ) {
       this._bottomSheet.open(OptionsMenuComponent, {
         data: {
@@ -898,19 +917,49 @@ export class CartComponent implements OnInit {
             description: `Te recomendamos que te asegures la disponibilidad y precio de ${this.headerService.saleflow.merchant.name} compartiendo la cotización.`,
             options: [
               {
-                value: `Compartir cotización con ${capitalize(this.headerService.saleflow.merchant.name)}`,
-                callback: () => {
+                value: `Compartir cotización con ${capitalize(
+                  this.headerService.saleflow.merchant.name
+                )}`,
+                callback: async () => {
+                  lockUI();
+
+                  const merchantDefault =
+                    await this.merchantsService.merchantDefault();
+
+                  if (
+                    !merchantDefault ||
+                    !this.quotationsService.quotationInCart
+                  ) {
+                    unlockUI();
+                    return this.router.navigate([
+                      '/ecommerce/' +
+                        this.headerService.saleflow.merchant.slug +
+                        '/store',
+                    ]);
+                  }
+
+                  const supplierRegistrationLink =
+                    environment.uri +
+                    '/admin/supplier-register/' +
+                    this.quotationsService.quotationInCart._id +
+                    '?supplierMerchantId=' +
+                    this.headerService.saleflow.merchant._id +
+                    '&requesterId=' +
+                    merchantDefault._id;
+
                   let itemsContent = ``;
                   this.items.forEach((item) => {
-                    itemsContent += `- ${item?.name ? item?.name : 'Artículo sin nombre'}, $${item.pricing}\n`
+                    itemsContent += `- ${
+                      item?.name ? item?.name : 'Artículo sin nombre'
+                    }, $${item.pricing}\n`;
                   });
-                  const message = `Hola ${
-                    capitalize(this.headerService.saleflow.merchant.name)
-                  },\n\nSoy ${
-                    this.currentUser?.name || this.currentUser?.phone || this.currentUser?.email
-                  } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${
-                    itemsContent
-                  }\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace [Enlace del carrito en la plataforma POV Suplidor]\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: [enlace del método de pago]`;
+                  const message = `Hola ${capitalize(
+                    this.headerService.saleflow.merchant.name
+                  )},\n\nSoy ${
+                    this.currentUser?.name ||
+                    this.currentUser?.phone ||
+                    this.currentUser?.email
+                  } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${itemsContent}\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace ${supplierRegistrationLink}\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: [enlace del método de pago]`;
                   const whatsappLink = `https://api.whatsapp.com/send?phone=${
                     this.headerService.saleflow.merchant.receiveNotificationsMainPhone ?
                       this.headerService.saleflow.merchant.owner.phone :
@@ -918,6 +967,8 @@ export class CartComponent implements OnInit {
                       this.headerService.saleflow.merchant?.secondaryContacts[0] :
                       '19188156444'
                   }&text=${encodeURIComponent(message)}`;
+
+                  unlockUI();
 
                   window.open(whatsappLink, '_blank');
                 },
@@ -928,7 +979,7 @@ export class CartComponent implements OnInit {
                   // TODO - Validar que la redirección ocurra al módulo que esté disponible
                   return this.goToAddressForm();
                 },
-              }
+              },
             ],
             styles: {
               fullScreen: true,
@@ -945,13 +996,11 @@ export class CartComponent implements OnInit {
 
   goToAddressForm() {
     this.router.navigate(
-      [
-        `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
-      ],
+      [`/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`],
       {
         queryParams: {
           flow: 'cart',
-          redirectTo: 'cart'
+          redirectTo: 'cart',
         },
       }
     );
@@ -959,14 +1008,12 @@ export class CartComponent implements OnInit {
 
   goToReceiverForm() {
     this.router.navigate(
-      [
-        `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`
-      ],
+      [`/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`],
       {
         queryParams: {
           flow: 'cart',
           redirectTo: 'cart',
-        }
+        },
       }
     );
   }
@@ -987,8 +1034,8 @@ export class CartComponent implements OnInit {
       ],
       {
         queryParams: {
-          mode: 'saleflow'
-        }
+          mode: 'saleflow',
+        },
       }
     );
   }
