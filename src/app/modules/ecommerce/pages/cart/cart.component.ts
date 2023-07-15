@@ -713,32 +713,32 @@ export class CartComponent implements OnInit {
     this._WebformsService.areWebformsValid = this.areWebformsValid;
   }
 
-  async submit() {
-    this.headerService.flowRoute = this.router.url;
-    localStorage.setItem('flowRoute', this.router.url);
+  // async submit() {
+  //   this.headerService.flowRoute = this.router.url;
+  //   localStorage.setItem('flowRoute', this.router.url);
 
-    this.areItemsQuestionsAnswered();
+  //   this.areItemsQuestionsAnswered();
 
-    if (
-      !this.headerService.order.receiverData ||
-      !this.headerService.receiverDataNew
-    ) {
-      this.router.navigate([
-        '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
-          '/receiver-form',
-      ]);
-    } else {
-      this.router.navigate(
-        [
-          '/ecommerce/' +
-            this.headerService.saleflow.merchant.slug +
-            '/new-address',
-        ],
-        { queryParams: { flow: 'unAnsweredQuestions' } }
-      );
-    }
-  }
+  //   if (
+  //     !this.headerService.order.receiverData ||
+  //     !this.headerService.receiverDataNew
+  //   ) {
+  //     this.router.navigate([
+  //       '/ecommerce/' +
+  //         this.headerService.saleflow.merchant.slug +
+  //         '/receiver-form',
+  //     ]);
+  //   } else {
+  //     this.router.navigate(
+  //       [
+  //         '/ecommerce/' +
+  //           this.headerService.saleflow.merchant.slug +
+  //           '/new-address',
+  //       ],
+  //       { queryParams: { flow: 'unAnsweredQuestions' } }
+  //     );
+  //   }
+  // }
 
   async addItemToCart(itemId: string) {
     if (!(await this.checkIfItemisAvailable(itemId))) return;
@@ -804,12 +804,15 @@ export class CartComponent implements OnInit {
   }
 
   openSubmitDialog() {
-
-    if (this.headerService.saleflow?.module?.post && this.headerService.saleflow?.module?.post?.post && this.headerService.saleflow?.module?.post?.isActive) {
-      const bottomSheetRef = this._bottomSheet.open(OptionsMenuComponent, {
+    if (
+      !this.isSuppliersBuyerFlow(this.items) &&
+      (this.headerService.saleflow?.module?.post &&
+      this.headerService.saleflow?.module?.post?.post &&
+      this.headerService.saleflow?.module?.post?.isActive)
+    ) {
+      this._bottomSheet.open(OptionsMenuComponent, {
         data: {
           title: `¿Quieres añadir un mensaje de regalo?`,
-          description: `¡Dale un toque personal a tu regalo! Opcional.`,
           options: [
             {
               value: `Sin mensajes de regalo`,
@@ -817,10 +820,11 @@ export class CartComponent implements OnInit {
                 this.postsService.post = null;
                 return this.router.navigate(
                   [
-                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`,
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
                   ],
                   {
                     queryParams: {
+                      flow: 'cart',
                       redirectTo: 'cart',
                     },
                   }
@@ -887,21 +891,78 @@ export class CartComponent implements OnInit {
         },
       });
     } else {
-      this.goToReceiverForm();
+      if (this.isSuppliersBuyerFlow(this.items)) {
+        this._bottomSheet.open(OptionsMenuComponent, {
+          data: {
+            title: `Confirmación de precios y disponibilidad:`,
+            description: `Te recomendamos que te asegures la disponibilidad y precio de ${this.headerService.saleflow.merchant.name} compartiendo la cotización.`,
+            options: [
+              {
+                value: `Compartir cotización con ${capitalize(this.headerService.saleflow.merchant.name)}`,
+                callback: () => {
+                  let itemsContent = ``;
+                  this.items.forEach((item) => {
+                    itemsContent += `- ${item?.name ? item?.name : 'Artículo sin nombre'}, $${item.pricing}\n`
+                  });
+                  const message = `Hola ${
+                    capitalize(this.headerService.saleflow.merchant.name)
+                  },\n\nSoy ${
+                    this.currentUser?.name || this.currentUser?.phone || this.currentUser?.email
+                  } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${
+                    itemsContent
+                  }\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace [Enlace del carrito en la plataforma POV Suplidor]\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: [enlace del método de pago]`;
+                  const whatsappLink = `https://api.whatsapp.com/send?phone=${
+                    this.headerService.saleflow.merchant.owner.phone
+                  }&text=${encodeURIComponent(message)}`;
+
+                  window.open(whatsappLink, '_blank');
+                },
+              },
+              {
+                value: `Continuar a la prefactura`,
+                callback: () => {
+                  // TODO - Validar que la redirección ocurra al módulo que esté disponible
+                  return this.goToAddressForm();
+                },
+              }
+            ],
+            styles: {
+              fullScreen: true,
+            },
+          },
+        });
+      } else this.goToAddressForm(); // TODO - Validar que la redirección ocurra al módulo que esté disponible
     }
+  }
+
+  isSuppliersBuyerFlow(items: Item[]): boolean {
+    return items.some((item) => item.type === 'supplier');
+  }
+
+  goToAddressForm() {
+    this.router.navigate(
+      [
+        `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
+      ],
+      {
+        queryParams: {
+          flow: 'cart',
+          redirectTo: 'cart'
+        },
+      }
+    );
   }
 
   goToReceiverForm() {
     this.router.navigate(
       [
-        '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
-          '/receiver-form',
+        `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`
       ],
       {
         queryParams: {
+          flow: 'cart',
           redirectTo: 'cart',
-        },
+        }
       }
     );
   }

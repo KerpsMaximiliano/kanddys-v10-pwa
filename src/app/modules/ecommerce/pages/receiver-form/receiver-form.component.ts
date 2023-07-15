@@ -169,9 +169,17 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
       this.headerService.saleflow.module.delivery?.isActive &&
       this.headerService.saleflow.module.delivery.deliveryLocation
     ) {
-      return this.router.navigate([`../new-address`], {
+      const isAppointmentActive =
+        this.headerService.saleflow.module.appointment?.isActive;
+
+      const redirectionRoute = isAppointmentActive
+      ? `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`
+      : `../checkout`;
+
+      return this.router.navigate([`${redirectionRoute}`], {
         relativeTo: this.route,
         queryParams: {
+          saleflowId: this.headerService.saleflow._id,
           flow: 'cart',
           messageFlow: this.messageFlow ? this.messageFlow : null
         },
@@ -188,6 +196,16 @@ export class ReceiverFormComponent implements OnInit, OnDestroy {
       ]);
 
     if (this.flow === 'cart') {
+
+      if (this.headerService.saleflow.module.delivery?.isActive && this.headerService.saleflow.module.delivery.deliveryLocation) {
+        return this.router.navigate([`../new-address`], {
+          relativeTo: this.route,
+          queryParams: {
+            flow: 'cart',
+            messageFlow: this.messageFlow ? this.messageFlow : null
+          },
+        });
+      }
 
       if (this.messageFlow)
         return this.router.navigate(

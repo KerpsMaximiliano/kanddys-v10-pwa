@@ -79,6 +79,7 @@ import { InventoryComponent } from './pages/inventory/inventory.component';
 import { QuotationBidsComponent } from './pages/quotation-bids/quotation-bids.component';
 import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-creator.component';
 import { SupplierRegistrationComponent } from './pages/supplier-registration/supplier-registration.component';
+import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -502,6 +503,10 @@ const routes: Routes = [
     path: 'inventory-creator/:itemId',
     component: InventoryCreatorComponent,
   },
+  {
+    path: 'supplier-orders',
+    component: OrderProgressFilteringComponent
+  }
 ];
 
 @NgModule({
@@ -562,6 +567,7 @@ const routes: Routes = [
     QuotationBidsComponent,
     InventoryCreatorComponent,
     SupplierRegistrationComponent,
+    OrderProgressFilteringComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [
