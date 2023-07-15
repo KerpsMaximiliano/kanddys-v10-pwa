@@ -125,7 +125,7 @@ export class OrderService {
     return result;
   }
 
-  async ordersByUser(pagination?: any): Promise<{ ordersByUser: ItemOrder[] }> {
+  async ordersByUser(pagination?: PaginationInput): Promise<{ ordersByUser: ItemOrder[] }> {
     try {
       const response = await this.graphql.query({
         query: ordersByUser,

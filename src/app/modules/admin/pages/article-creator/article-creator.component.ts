@@ -77,6 +77,7 @@ export class ArticleCreatorComponent implements OnInit {
   imageElement: HTMLImageElement;
   canvasElement: HTMLCanvasElement;
   public context: CanvasRenderingContext2D;
+  redirectFromFlowRoute: boolean = false;
 
   constructor(
     private ngZone: NgZone,
@@ -92,9 +93,14 @@ export class ArticleCreatorComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this._ActivatedRoute.queryParams.subscribe(async (queryParams) => {
-      const { entity = 'post', fromTemplate } = queryParams;
+      const {
+        entity = 'post',
+        fromTemplate,
+        redirectFromFlowRoute,
+      } = queryParams;
       this.entity = entity;
       this.fromTemplate = fromTemplate;
+      this.redirectFromFlowRoute = redirectFromFlowRoute;
       this.initControllers();
     });
     if (this._ActivatedRoute.snapshot.paramMap.get('merchantSlug')) {
@@ -291,6 +297,8 @@ export class ArticleCreatorComponent implements OnInit {
       unlockUI();
     }
     this.ngZone.run(() => {
+      if(this.redirectFromFlowRoute) return this._HeaderService.redirectFromQueryParams();
+
       this._Router.navigate([`/admin/slides-editor/${this.item._id}`]);
     });
   }

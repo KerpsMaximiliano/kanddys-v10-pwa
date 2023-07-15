@@ -332,7 +332,7 @@ const routes: Routes = [
     GiftcardDetailsComponent,
     SymbolDetailComponent,
     OrderConfirmationComponent,
-    InvalidMagicLinkComponent
+    InvalidMagicLinkComponent,
   ],
   imports: [
     CommonModule,
