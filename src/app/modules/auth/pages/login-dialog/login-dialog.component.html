@@ -53,7 +53,7 @@
       </div>
       <div style="margin-bottom: 8px">
         <button mat-button type="button" (click)="changeInputType()">
-          Facturar con
+          Prefiero acceder con
           {{
             inputType === "email" ? "número de teléfono" : "correo electrónico"
           }}
@@ -84,7 +84,7 @@
     color: #1D1D1D;
     "
   >
-    Para administrar tus direcciones te hemos enviado a tu {{ inputType === 'phone' ? 'WhatsApp' : 'correo electrónico' }} un link mágico que valida tu identidad
+    Para acceder te hemos enviado a tu {{ inputType === 'phone' ? 'WhatsApp' : 'correo electrónico' }} un link mágico que valida tu identidad
   </p>
   <br>
   <div style="text-align: center;" *ngIf="inputType === 'phone'">
