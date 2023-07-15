@@ -52,7 +52,7 @@ export class NavigationComponent implements OnInit {
       active: false,
       links: [
         {
-          text: 'Lo que vendo 🏷️',
+          text: 'Mi KiosKo 💰',
           routerLink: ['/admin/dashboard'],
         },
         {
@@ -73,7 +73,7 @@ export class NavigationComponent implements OnInit {
           ],
         },
         {
-          text: 'Cotiza y compra a suplidores',
+          text: 'Mis suplidores (compras y cotizaciones)',
           routerLink: ['/admin/item-selector'],
         },
       ],

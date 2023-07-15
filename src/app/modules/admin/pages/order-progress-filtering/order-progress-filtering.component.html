@@ -1,0 +1,44 @@
+<div class="container">
+    <div class="header">
+        <div class="flex">
+            <mat-icon class="close-icon" (click)="goBack()">close</mat-icon>
+            <!-- ⏰ -->
+            <p> Facturas de Suplidores</p>
+        </div>
+      <!-- <div class="flex">
+          <mat-icon>remove</mat-icon>
+          <mat-icon class="add-icon">add</mat-icon>
+      </div> -->
+    </div>
+    <div class="dates-container">
+        <div class="progress" *ngFor="let merchantFilter of merchantFilters" [ngClass]="{'progress-selected': merchantFilter.selected}" (click)="selectMerchantFilter(merchantFilter)">
+            {{ merchantFilter.merchant.name }}
+        </div>
+    </div>
+    <div class="content">
+      <div class="content-title-container">
+        <p class="content-title">
+            {{ orders?.length }} facturas
+        </p>
+      </div>
+      <div class="content-cards-container">  
+        <div class="content-card" *ngFor="let order of filteredOrders;" (click)="goToOrderDetail(order)">
+          <div>
+            <p class="content-card-title">
+              {{ 
+                order?.items[0]?.saleflow?.merchant?.name ? 
+                  order?.items[0]?.saleflow?.merchant?.name :
+                  'Suplidor sin nombre'
+              }}
+            </p>
+            <p class="content-card-extra-info">{{ formatID(order.dateId) }}, hace {{ order.createdAt | date }}</p>
+          </div>
+          <div>
+            <p class="content-card-price">{{ getOrderTotal(order) | currency }}</p>
+            <p class="content-card-extra-info">{{ order?.items?.length }} artículos</p>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+  

@@ -1020,6 +1020,11 @@ export class CheckoutComponent implements OnInit {
       this.headerService.order.orderStatusDelivery = 'in progress';
       this.orderInMemory.orderStatusDelivery = 'in progress';
 
+      if (this.isSuppliersBuyerFlow(this.items)) {
+        this.headerService.order.orderType = 'supplier';
+        this.orderInMemory.orderType = 'supplier';
+      }
+
       if (this.headerService.user && !anonymous) {
         console.log(this.headerService.order);
         createdOrder = (await this.orderService.createOrder(this.orderInMemory))
@@ -2118,6 +2123,10 @@ export class CheckoutComponent implements OnInit {
 
     this.areItemsQuestionsAnswered();
   };
+
+  isSuppliersBuyerFlow(items: Item[]): boolean {
+    return items.some((item) => item.type === 'supplier');
+  }
 
   goToReceiver() {
     this.router.navigate([`ecommerce/receiver-form`], {
