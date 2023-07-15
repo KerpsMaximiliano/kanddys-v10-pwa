@@ -912,7 +912,11 @@ export class CartComponent implements OnInit {
                     itemsContent
                   }\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace [Enlace del carrito en la plataforma POV Suplidor]\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: [enlace del método de pago]`;
                   const whatsappLink = `https://api.whatsapp.com/send?phone=${
-                    this.headerService.saleflow.merchant.owner.phone
+                    this.headerService.saleflow.merchant.receiveNotificationsMainPhone ?
+                      this.headerService.saleflow.merchant.owner.phone :
+                      this.headerService.saleflow.merchant?.secondaryContacts?.length ?
+                      this.headerService.saleflow.merchant?.secondaryContacts[0] :
+                      '19188156444'
                   }&text=${encodeURIComponent(message)}`;
 
                   window.open(whatsappLink, '_blank');
