@@ -280,6 +280,8 @@ export const listItems = gql`
         counter
       }
       type
+      stock
+      notificationStockLimit
       parentItem
     }
   }

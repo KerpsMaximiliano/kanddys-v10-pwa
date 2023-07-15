@@ -67,7 +67,9 @@
         [mode]="'SMALL'"
         [editing]="false"
         [defaultText]="'Incluyes fotos, memes, videos o música.'"
-        (buttonClicked)="emitFileInputClick()"
+        (buttonClicked)="
+          !updateItem ? emitFileInputClick() : goToReorderMedia()
+        "
         (buttonClicked2)="goToReorderMedia()"
       ></app-qr-content>
     </div>

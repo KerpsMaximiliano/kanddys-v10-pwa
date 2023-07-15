@@ -100,6 +100,7 @@ export class Item extends Model<Item> {
   ctaText?: string;
   ctaBehavior?: 'ADD_TO_CART';
   parentItem?: string;
+  notificationStockLimit?: number;
 }
 
 export class ItemImage extends Model<ItemImage> {
