@@ -110,6 +110,8 @@ export class QuotationBidsComponent implements OnInit {
       this.headerService.deleteSaleflowOrder();
     }
 
+    this.quotationsService.quotationInCart = this.quotation;
+
     this.router.navigate(['/ecommerce/' + match.merchant.slug + '/cart'], {
       queryParams: {
         wait: true,
