@@ -11,19 +11,19 @@
       </div> -->
     </div>
     <div class="dates-container">
-        <div class="progress" *ngFor="let i of progress" [ngClass]="{'progress-selected':i.selected}" (click)="select(i.id)">
-            {{i.name}}
+        <div class="progress" *ngFor="let merchantFilter of merchantFilters" [ngClass]="{'progress-selected': merchantFilter.selected}" (click)="selectMerchantFilter(merchantFilter)">
+            {{ merchantFilter.merchant.name }}
         </div>
     </div>
     <div class="content">
       <div class="content-title-container">
         <p class="content-title">
-            {{ orders?.length }} facturas. $14,457 de egresos.
+            {{ orders?.length }} facturas
         </p>
       </div>
-      <div class="content-cards-container">
-        <div class="content-card">
-          <div *ngFor="let order of orders;">
+      <div class="content-cards-container">  
+        <div class="content-card" *ngFor="let order of filteredOrders;" (click)="goToOrderDetail(order)">
+          <div>
             <p class="content-card-title">
               {{ 
                 order?.items[0]?.saleflow?.merchant?.name ? 
@@ -33,7 +33,12 @@
             </p>
             <p class="content-card-extra-info">{{ formatID(order.dateId) }}, hace {{ order.createdAt | date }}</p>
           </div>
-      </div>
+          <div>
+            <p class="content-card-price">{{ getOrderTotal(order) | currency }}</p>
+            <p class="content-card-extra-info">{{ order?.items?.length }} artículos</p>
+          </div>
+        </div>
     </div>
   </div>
+</div>
   
