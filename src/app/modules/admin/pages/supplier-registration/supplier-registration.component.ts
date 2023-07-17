@@ -32,6 +32,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   quotationItems: Array<Item> = [];
   quotationItemsIds: Array<string> = [];
   authorized: boolean = false;
+  quotationId: string = null;
+  queryParams: Record<string, any> = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -48,38 +50,86 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ quotationId }) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ supplierMerchantId, requesterId, jsondata }) => {
-            const parsedData = JSON.parse(decodeURIComponent(jsondata));
+          async (queryParams) => {
+            let { jsondata } = queryParams;
+            let parsedData = jsondata
+              ? JSON.parse(decodeURIComponent(jsondata))
+              : null;
+            let supplierMerchantId;
+            let requesterId;
+            let items;
+            this.quotationId = quotationId;
 
             if (!parsedData) {
-              return this.router.navigate(['others/error-screen']);
-            } else {
-              const hasAllKeys =
-                'items' in parsedData &&
-                'requesterId' in parsedData &&
-                'supplierMerchantId' in parsedData;
-
-              if (!hasAllKeys)
-                return this.router.navigate(['others/error-screen']);
-
-              this.quotationItemsIds = parsedData.items.split('-');
-
-              this.requester = await this.merchantsService.merchant(
-                parsedData.requesterId
+              const lastCurrentQuotationRequest: {
+                supplierMerchantId: string;
+                requesterId: string;
+                items: string;
+              } = JSON.parse(
+                localStorage.getItem('lastCurrentQuotationRequest')
               );
-              this.supplierMerchantId = parsedData.supplierMerchantId;
 
-              await this.executeInitProcesses();
+              supplierMerchantId =
+                lastCurrentQuotationRequest.supplierMerchantId;
+              requesterId = lastCurrentQuotationRequest.requesterId;
+              items = lastCurrentQuotationRequest.items;
 
-              //await this.executeAuthRequest(quotationId);
+              this.queryParams = {
+                supplierMerchantId,
+                requesterId,
+                items,
+              };
+            } else {
+              supplierMerchantId = parsedData.supplierMerchantId;
+              requesterId = parsedData.requesterId;
+              items = parsedData.items;
+
+              this.queryParams = {
+                supplierMerchantId,
+                requesterId,
+                items,
+              };
+
+              localStorage.setItem(
+                'lastCurrentQuotationRequest',
+                JSON.stringify({
+                  supplierMerchantId,
+                  requesterId,
+                  items,
+                })
+              );
             }
+
+            if (!items || !requesterId || !supplierMerchantId)
+              return this.router.navigate(['others/error-screen']);
+
+            this.quotationItemsIds = items.split('-');
+
+            this.requester = await this.merchantsService.merchant(requesterId);
+            this.supplierMerchantId = supplierMerchantId;
+
+            await this.checkUser();
+
+            await this.executeInitProcesses();
           }
         );
       }
     );
+    const urlWithoutQueryParams = this.router.url.split('?')[0];
+
+    window.history.replaceState({}, 'SaleFlow', urlWithoutQueryParams);
   }
 
-  async executeAuthRequest(quotationId: string) {
+  async checkUser() {
+    const myUser = await this.authService.me();
+
+    if (!myUser && !myUser?._id) this.authorized = false;
+    else {
+      this.authorized = true;
+    }
+  }
+
+  async executeAuthRequest() {
     const myUser = await this.authService.me();
 
     if (!myUser && !myUser?._id) this.authorized = false;
@@ -100,11 +150,14 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         data: {
           loginType: 'full',
           magicLinkData: {
-            redirectionRoute: window.location.href
-              .split('/')
-              .slice(3)
-              .join('/'),
+            redirectionRoute: '/admin/supplier-register',
+            redirectionRouteId: this.quotationId,
             entity: 'UserAccess',
+            redirectionRouteQueryParams: JSON.stringify({
+              supplierMerchantId: this.queryParams.supplierMerchantId,
+              requesterId: this.queryParams.requesterId,
+              items: this.queryParams.items,
+            }),
           },
         } as LoginDialogData,
         disableClose: true,
@@ -112,12 +165,16 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       return matDialogRef.afterClosed().subscribe(async (value) => {
         if (!value) return;
         if (value.user?._id || value.session.user._id) {
-          this.quotation = await this.quotationsService.quotation(quotationId);
+          this.quotation = await this.quotationsService.quotation(
+            this.quotationId
+          );
+          this.quotationsService.quotationBeingEdited = this.quotation;
           await this.executeInitProcesses();
         }
       });
     } else {
-      this.quotation = await this.quotationsService.quotation(quotationId);
+      this.quotation = await this.quotationsService.quotation(this.quotationId);
+      this.quotationsService.quotationBeingEdited = this.quotation;
       await this.executeInitProcesses();
     }
   }
@@ -141,13 +198,20 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     )?.listItems;
 
     this.quotationItems = supplierSpecificItems;
-    //this.quotationsService.quotationBeingEdited = this.quotation;
+
+    if (!this.quotation && this.authorized) {
+      this.quotation = await this.quotationsService.quotation(this.quotationId);
+      this.quotationsService.quotationBeingEdited = this.quotation;
+    }
+
     this.quotationsService.quotationItemsBeingEdited = JSON.parse(
       JSON.stringify(this.quotationItems)
     );
   }
 
-  redirectToItemEdition(item: Item) {
+  async redirectToItemEdition(item: Item) {
+    if (!this.authorized) return await this.executeAuthRequest();
+
     this.itemsService.temporalItem = item;
     this.itemsService.temporalItemInput = {
       name: item.name,

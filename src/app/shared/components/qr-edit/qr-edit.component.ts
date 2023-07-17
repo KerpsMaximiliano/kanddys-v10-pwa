@@ -58,6 +58,7 @@ export class QrEditComponent implements OnInit {
   playVideoOnFullscreen = playVideoOnFullscreen;
   entity: string = null;
   redirectFromFlowRoute: boolean = false;
+  useSlidesInMemory: boolean = false;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -80,6 +81,8 @@ export class QrEditComponent implements OnInit {
     const useSlidesInMemory = Boolean(
       this._Route.snapshot.queryParamMap.get('useSlidesInMemory')
     );
+
+    this.useSlidesInMemory = useSlidesInMemory;
     this.flow = this._Route.snapshot.queryParamMap.get('flow') as
       | 'cart'
       | 'checkout';
@@ -133,7 +136,6 @@ export class QrEditComponent implements OnInit {
       }
 
       if (useSlidesInMemory && this._ItemsService.temporalItemInput.slides) {
-
         for await (const slide of this._ItemsService.temporalItemInput.slides) {
           if (!slide.media && slide.url) {
             const fileParts = slide.url.split('.');
@@ -787,6 +789,8 @@ export class QrEditComponent implements OnInit {
   }
 
   async deleteImage(index: number) {
+    console.log('image index', index, this.item.images[index]._id);
+
     if (this.item) {
       this._ItemsService.itemImages.splice(index, 1);
 
@@ -809,6 +813,11 @@ export class QrEditComponent implements OnInit {
         );
       }
       this.gridArray.splice(index, 1);
+
+      if (this._ItemsService.temporalItem && !this.useSlidesInMemory) {
+        this._ItemsService.temporalItem.images.splice(index, 1);
+      }
+
       return;
     }
     this.gridArray.splice(index, 1);
