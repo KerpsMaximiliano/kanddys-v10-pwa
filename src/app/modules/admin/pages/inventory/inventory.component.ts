@@ -94,4 +94,8 @@ export class InventoryComponent implements OnInit {
 
     this.router.navigate(['/admin/quotation-bids/' + quotationId]);
   }
+
+  goToOrders() {
+    this.router.navigate(['/admin/supplier-orders']);
+  }
 }
