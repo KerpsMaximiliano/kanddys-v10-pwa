@@ -30,6 +30,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   quotation: Quotation;
   requester: Merchant = null;
   quotationItems: Array<Item> = [];
+  quotationItemsIds: Array<string> = [];
   authorized: boolean = false;
 
   constructor(
@@ -47,11 +48,31 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ quotationId }) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ supplierMerchantId, requesterId }) => {
-            this.requester = await this.merchantsService.merchant(requesterId);
-            this.supplierMerchantId = supplierMerchantId;
+          async ({ supplierMerchantId, requesterId, jsondata }) => {
+            const parsedData = JSON.parse(decodeURIComponent(jsondata));
 
-            await this.executeAuthRequest(quotationId);
+            if (!parsedData) {
+              return this.router.navigate(['others/error-screen']);
+            } else {
+              const hasAllKeys =
+                'items' in parsedData &&
+                'requesterId' in parsedData &&
+                'supplierMerchantId' in parsedData;
+
+              if (!hasAllKeys)
+                return this.router.navigate(['others/error-screen']);
+
+              this.quotationItemsIds = parsedData.items.split('-');
+
+              this.requester = await this.merchantsService.merchant(
+                parsedData.requesterId
+              );
+              this.supplierMerchantId = parsedData.supplierMerchantId;
+
+              await this.executeInitProcesses();
+
+              //await this.executeAuthRequest(quotationId);
+            }
           }
         );
       }
@@ -74,7 +95,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           duration: 10000,
         }
       );
-      
+
       const matDialogRef = this.matDialog.open(LoginDialogComponent, {
         data: {
           loginType: 'full',
@@ -105,7 +126,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     const supplierSpecificItemsInput: PaginationInput = {
       findBy: {
         parentItem: {
-          $in: ([] = this.quotation.items),
+          $in: ([] = this.quotationItemsIds),
         },
         merchant: this.supplierMerchantId,
       },
@@ -120,7 +141,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     )?.listItems;
 
     this.quotationItems = supplierSpecificItems;
-    this.quotationsService.quotationBeingEdited = this.quotation;
+    //this.quotationsService.quotationBeingEdited = this.quotation;
     this.quotationsService.quotationItemsBeingEdited = JSON.parse(
       JSON.stringify(this.quotationItems)
     );
