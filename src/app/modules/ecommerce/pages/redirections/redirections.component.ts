@@ -61,11 +61,15 @@ export class RedirectionsComponent implements OnInit {
         { url: null, queryParams: {} };
 
       try {
-        const { redirectionRoute } = await this.authService.analizeMagicLink(
-          authCode
-        );
+        const response = await this.authService.analizeMagicLink(authCode);
 
-        console.log("redirectionRoute", redirectionRoute);
+        if(!response) throw Error(response);
+
+        const { redirectionRoute, noAuth } = response
+          ? response
+          : { redirectionRoute: null, noAuth: false };
+
+        console.log('redirectionRoute', redirectionRoute);
 
         if (redirectionRoute.includes('?')) {
           const routeParts = redirectionRoute.split('?');
@@ -105,20 +109,18 @@ export class RedirectionsComponent implements OnInit {
 
             console.log(entity, reference);
             if (entity && reference)
-              this.router.navigate(
-                ['qr', 'article-detail', 'template', text],
-                {
-                  queryParams: {
-                    fromQR: true,
-                  },
-                }
-              );
+              this.router.navigate(['qr', 'article-detail', 'template', text], {
+                queryParams: {
+                  fromQR: true,
+                },
+              });
             else this.router.navigate([redirectionRoute]);
           })();
 
           unlockUI();
         }
       } catch (error) {
+        console.error('error', error);
         this.router.navigate([`ecommerce/invalid-link`]);
         unlockUI();
         // console.error(error);

@@ -36,6 +36,7 @@ import {
 } from 'src/app/core/helpers/ui.helpers';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -90,6 +91,7 @@ export class CartComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     public postsService: PostsService,
+    private authService: AuthService,
     private _bottomSheet: MatBottomSheet
   ) {}
 
@@ -495,8 +497,9 @@ export class CartComponent implements OnInit {
   }
 
   goBack() {
-    if(this.quotationsService.quotationInCart) {
-      this.headerService.flowRoute = '/admin/quotation-bids/' + this.quotationsService.quotationInCart._id;
+    if (this.quotationsService.quotationInCart) {
+      this.headerService.flowRoute =
+        '/admin/quotation-bids/' + this.quotationsService.quotationInCart._id;
     }
 
     if (this.redirectFromFlowRoute)
@@ -938,14 +941,27 @@ export class CartComponent implements OnInit {
                     ]);
                   }
 
-                  const supplierRegistrationLink =
-                    environment.uri +
-                    '/admin/supplier-register/' +
-                    this.quotationsService.quotationInCart._id +
-                    '?supplierMerchantId=' +
-                    this.headerService.saleflow.merchant._id +
-                    '&requesterId=' +
-                    merchantDefault._id;
+                  const supplierRegistrationLink = (
+                    await this.authService.generateMagicLinkNoAuth(
+                      null,
+                      '/admin/supplier-register',
+                      this.quotationsService.quotationInCart._id,
+                      'QuotationAccess',
+                      {
+                        jsondata: JSON.stringify({
+                          supplierMerchantId:
+                            this.headerService.saleflow.merchant._id,
+                          requesterId: merchantDefault._id,
+                          items:
+                            this.quotationsService.quotationInCart.items.join(
+                              '-'
+                            ),
+                        }),
+                      },
+                      [],
+                      true
+                    )
+                  )?.generateMagicLinkNoAuth;
 
                   let itemsContent = ``;
                   this.items.forEach((item) => {
@@ -970,7 +986,7 @@ export class CartComponent implements OnInit {
 
                   unlockUI();
 
-                  window.open(whatsappLink, '_blank');
+                  window.location.href = whatsappLink;
                 },
               },
               {

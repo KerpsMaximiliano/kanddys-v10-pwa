@@ -146,11 +146,14 @@
   line-height: normal;
   padding-left: 13px;
   padding-right: 13px;
-  padding-top: 3px;
   border-radius: 29px;
   justify-self: baseline;
   border: 1px solid #928C8B;
   color: #181D17;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .progress-selected {
