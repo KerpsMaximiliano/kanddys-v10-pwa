@@ -78,8 +78,8 @@ export class QrEditComponent implements OnInit {
     const redirectFromFlowRoute = Boolean(
       this._Route.snapshot.queryParamMap.get('redirectFromFlowRoute')
     );
-    const useSlidesInMemory = Boolean(
-      this._Route.snapshot.queryParamMap.get('useSlidesInMemory')
+    const useSlidesInMemory =  JSON.parse(
+      this._Route.snapshot.queryParamMap.get('useSlidesInMemory') || 'false'
     );
 
     this.useSlidesInMemory = useSlidesInMemory;

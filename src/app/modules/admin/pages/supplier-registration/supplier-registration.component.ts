@@ -199,6 +199,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
     this.quotationItems = supplierSpecificItems;
 
+    console.log("this.quotationItems", this.quotationItems);
+
     if (!this.quotation && this.authorized) {
       this.quotation = await this.quotationsService.quotation(this.quotationId);
       this.quotationsService.quotationBeingEdited = this.quotation;
