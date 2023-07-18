@@ -111,6 +111,10 @@ export function formatID(dateId: string, padZeroes = false): string {
   }
 }
 
+export function shortFormatID(dateId: string): string {
+  return `N${formatID(dateId)?.split('N')[1]}`;
+}
+
 export function unformatID(
   month: string,
   day: string,

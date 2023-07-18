@@ -970,7 +970,7 @@ export class CartComponent implements OnInit {
 
                   unlockUI();
 
-                  window.open(whatsappLink, '_blank');
+                  window.location.href = whatsappLink;
                 },
               },
               {
