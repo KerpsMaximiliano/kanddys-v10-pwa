@@ -9,6 +9,7 @@ import {
   analizeMagicLink,
   checkUser,
   generateMagicLink,
+  generateMagicLinkNoAuth,
   generateOTP,
   generatePowerMagicLink,
   getTempCodeData,
@@ -321,6 +322,37 @@ export class AuthService {
     }
   }
 
+  public async generateMagicLinkNoAuth(
+    phoneNumber: string = null,
+    redirectionRoute: string,
+    redirectionRouteId: string,
+    entity: string,
+    redirectionRouteQueryParams: any,
+    attachments?: any,
+    noAuth?: boolean
+  ) {
+    try {
+      const response = await this.graphql.mutate({
+        mutation: generateMagicLinkNoAuth,
+        variables: {
+          phoneNumber,
+          redirectionRoute,
+          redirectionRouteId,
+          entity,
+          redirectionRouteQueryParams,
+          attachments,
+          clientURL: environment.uri,
+          noAuth,
+        },
+        context: { useMultipart: true },
+      });
+
+      return response;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   public async analizeMagicLink(tempcode: String) {
     try {
       const promise = this.graphql.query({
@@ -332,6 +364,9 @@ export class AuthService {
       this.ready = from(promise);
 
       const response = (await promise)?.analizeMagicLink;
+
+      if (response.noAuth) return response;
+
       localStorage.removeItem('session-token');
       this.session = new Session(response?.session, true);
       this.app.events.emit({ type: 'auth', data: this.session });
