@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 
@@ -32,6 +33,8 @@ export class BuyerCardComponent implements OnInit {
   @Input() skipRedirection: boolean = false;
 
   env: string = environment.assetsUrl;
+
+  truncateString = truncateString;
 
   constructor(
     private router: Router,
