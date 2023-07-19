@@ -24,7 +24,7 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Subscription } from 'rxjs';
-import { capitalize } from 'src/app/core/helpers/strings.helpers';
+import { capitalize, capitalizeAllWords } from 'src/app/core/helpers/strings.helpers';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
@@ -917,12 +917,10 @@ export class CartComponent implements OnInit {
         this._bottomSheet.open(OptionsMenuComponent, {
           data: {
             title: `Confirmación de precios y disponibilidad:`,
-            description: `Te recomendamos que te asegures la disponibilidad y precio de ${this.headerService.saleflow.merchant.name} compartiendo la cotización.`,
+            description: `Te recomendamos que te asegures la disponibilidad y precio de ${capitalizeAllWords(this.headerService.saleflow.merchant.name)} compartiendo la cotización.`,
             options: [
               {
-                value: `Compartir cotización con ${capitalize(
-                  this.headerService.saleflow.merchant.name
-                )}`,
+                value: `Compartir cotización con ${capitalizeAllWords(this.headerService.saleflow.merchant.name)}`,
                 callback: async () => {
                   try {
                     lockUI();
