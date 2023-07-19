@@ -420,6 +420,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           };
 
           await this.itemsService.updateItem(itemInput, this.itemId);
+          this.itemsService.modifiedImagesFromExistingItem = false;
 
           this.snackbar.open('Producto actualizado satisfactoriamente!', '', {
             duration: 5000,
