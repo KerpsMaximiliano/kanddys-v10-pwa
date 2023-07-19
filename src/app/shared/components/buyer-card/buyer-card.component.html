@@ -1,5 +1,5 @@
 <div class="container" [ngClass]="{ shadow: shadow }">
-  <div (click)="clickHandler()">
+  <div style="cursor: pointer;" (click)="clickHandler()">
     <ng-container [ngTemplateOutlet]="cardContent"></ng-container>
   </div>
   <div class="bottom" *ngIf="leftAmount">

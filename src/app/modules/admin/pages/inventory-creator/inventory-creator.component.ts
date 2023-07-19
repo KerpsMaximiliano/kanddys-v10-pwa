@@ -67,6 +67,8 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   updateItem: boolean = false;
   merchantRegistration: boolean = false;
   itemId: string = null;
+  quotationId: string = null;
+  requesterId: string = null;
 
   constructor(
     private fb: FormBuilder,
@@ -86,9 +88,12 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     this.routerParamsSubscription = this.route.params.subscribe(
       ({ itemId }) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ existingItem, updateItem, merchantRegistration }) => {
+          async ({ existingItem, updateItem, merchantRegistration, quotationId, requesterId }) => {
             this.existingItem = JSON.parse(existingItem || 'false');
             this.updateItem = Boolean(updateItem);
+            this.quotationId = quotationId;
+            this.requesterId = requesterId;
+            
             this.merchantRegistration = JSON.parse(
               merchantRegistration || 'false'
             );
@@ -422,27 +427,27 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           await this.itemsService.updateItem(itemInput, this.itemId);
           this.itemsService.modifiedImagesFromExistingItem = false;
 
+
           this.snackbar.open('Producto actualizado satisfactoriamente!', '', {
             duration: 5000,
           });
 
           this.router.navigate(
             [
-              'admin/supplier-register/' +
-                this.quotationsService.quotationBeingEdited._id,
+              `admin/supplier-register/${this.quotationId}`
             ],
             {
               queryParams: {
                 supplierMerchantId:
-                  this.quotationsService.quotationBeingEdited.merchant,
-                requesterId: this.merchantsService.merchantData?._id,
+                this.merchantsService.merchantData?._id,
+                requesterId: this.requesterId,
               },
             }
           );
 
           unlockUI();
         } catch (error) {
-          this.snackbar.open('Ocurrió un error al crear el producto', '', {
+          this.snackbar.open('Ocurrió un error al actualizar el producto', '', {
             duration: 5000,
           });
           unlockUI();
@@ -518,14 +523,13 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     if (this.updateItem) {
       return this.router.navigate(
         [
-          'admin/supplier-register/' +
-            this.quotationsService.quotationBeingEdited._id,
+          `admin/supplier-register/${this.quotationId}`
         ],
         {
           queryParams: {
             supplierMerchantId:
-              this.quotationsService.quotationBeingEdited.merchant,
-            requesterId: this.merchantsService.merchantData?._id,
+            this.merchantsService.merchantData?._id,
+            requesterId: this.requesterId,
           },
         }
       );

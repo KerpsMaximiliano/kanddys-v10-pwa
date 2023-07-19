@@ -39,6 +39,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   quotationId: string = null;
   queryParams: Record<string, any> = {};
   newMerchantMode: boolean = false;
+  currentUser: User = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -131,29 +132,50 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
   async checkUser() {
     const myUser = await this.authService.me();
+    this.currentUser = myUser;
+    if (myUser && myUser?._id) {
+      if (await this.checkIfUserIsTheMerchantOwner(myUser)) this.authorized = true;
+      else this.authorized = false;
+    } else this.authorized = false;
+  }
 
-    if (!myUser && !myUser?._id) this.authorized = false;
-    else {
-      this.authorized = true;
+  async checkIfUserIsTheMerchantOwner(user: User): Promise<boolean> {
+    try {
+      const merchant = await this.merchantsService.merchantDefault(user._id);
+      if (merchant && merchant._id === this.supplierMerchantId) return true;
+      else return false;
+    } catch (error) {
+      console.log(error);
+      return false;
     }
   }
 
   async executeAuthRequest() {
     const myUser = await this.authService.me();
 
-    if (!myUser && !myUser?._id) this.authorized = false;
-    else {
-      this.authorized = true;
-    }
+    if (myUser && myUser?._id) {
+      if (await this.checkIfUserIsTheMerchantOwner(myUser)) this.authorized = true;
+      else this.authorized = false;
+    } else this.authorized = false;
 
     if (!this.authorized) {
-      this.snackbar.open(
-        'Antes de poder ajustar el precio y disponibilidad, debemos validar tu identidad',
-        'Ok',
-        {
-          duration: 10000,
-        }
-      );
+      if (this.currentUser) {
+        this.snackbar.open(
+          'El usuario con el que estás logueado no es el suplidor de esta cotización',
+          'Ok',
+          {
+            duration: 10000,
+          }
+        );
+      } else {
+        this.snackbar.open(
+          'Antes de poder ajustar el precio y disponibilidad, debemos validar tu identidad',
+          'Ok',
+          {
+            duration: 10000,
+          }
+        );
+      }
 
       const matDialogRef = this.matDialog.open(LoginDialogComponent, {
         data: {
@@ -336,8 +358,14 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       queryParams: {
         existingItem: true,
         updateItem: true,
+        quotationId: this.quotationId,
+        requesterId: this.requester._id
       },
     });
+  }
+
+  goToDashboard() {
+    if (this.currentUser) this.router.navigate(['/admin/dashboard']);
   }
 
   ngOnDestroy(): void {
