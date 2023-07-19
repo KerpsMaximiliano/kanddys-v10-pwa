@@ -1001,8 +1001,7 @@ export class CartComponent implements OnInit {
                     unlockUI();
 
                     console.log("whatsappLink", whatsappLink)
-
-                    window.open(whatsappLink, '_blank');
+                    window.location.href = whatsappLink;
                   } catch (error) {
                     console.error('error', error);
                   }
