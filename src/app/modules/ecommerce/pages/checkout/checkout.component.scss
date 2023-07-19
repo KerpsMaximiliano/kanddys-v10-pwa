@@ -18,6 +18,10 @@ a {
   display: flex;
   // flex-direction: column;
   gap: 8px;
+
+  &.containerFlexBox {
+    flex-wrap: wrap;
+  }
 }
 .container {
   width: 100%;

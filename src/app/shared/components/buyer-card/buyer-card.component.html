@@ -1,11 +1,7 @@
 <div class="container" [ngClass]="{ shadow: shadow }">
-  <div *ngIf="redirectionParams" (click)="clickHandler()">
+  <div style="cursor: pointer;" (click)="clickHandler()">
     <ng-container [ngTemplateOutlet]="cardContent"></ng-container>
   </div>
-  <ng-container
-    *ngIf="!redirectionParams"
-    [ngTemplateOutlet]="cardContent"
-  ></ng-container>
   <div class="bottom" *ngIf="leftAmount">
     <div
       [ngClass]="{ center: !title && !description }"
@@ -32,16 +28,46 @@
       </button>
     </div>
   </div>
+
+  <div class="bottom" *ngIf="!leftAmount && supplierProvidedData">
+    <div
+      [ngClass]="{ center: !title && !description }"
+      class="amount"
+      [ngClass]="{
+        hasCartButton: cta
+      }"
+    >
+      <div>
+        <p>
+          <span>Para empezar a venderlo adicione el precio</span>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <ng-template #cardContent>
   <div class="top">
-    <p *ngIf="(title || description) && mode === 'normal'" class="text">
+    <div *ngIf="(title || description) && mode === 'normal'" class="text">
       <span *ngIf="title" class="title">{{ title }}</span
       ><br />
       <br />
-      <span *ngIf="description" class="description">{{ description }}</span>
-    </p>
+      <span *ngIf="description" class="description">{{ truncateString(description, 100) }}</span>
+
+      <button
+        class="stock-button"
+        *ngIf="supplierProvidedData?.stock && supplierProvidedData?.stock >= 0"
+      >
+        En inventario: {{ supplierProvidedData?.stock }}
+      </button>
+
+      <button
+        class="stock-button"
+        *ngIf="!supplierProvidedData?.stock && supplierProvidedData?.stock !== 0"
+      >
+        Adicionar disponibilidad
+      </button>
+    </div>
     <div
       class="image-container"
       *ngIf="mode === 'normal'"

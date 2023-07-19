@@ -81,6 +81,30 @@ export const generateMagicLink = gql`
   }
 `;
 
+export const generateMagicLinkNoAuth = gql`
+  mutation generateMagicLinkNoAuth(
+    $phoneNumber: String
+    $redirectionRoute: String!
+    $redirectionRouteId: String
+    $entity: String!
+    $redirectionRouteQueryParams: JSON
+    $attachments: [Upload!],
+    $clientURL: String,
+    $noAuth: Boolean
+  ) {
+    generateMagicLinkNoAuth(
+      phoneNumber: $phoneNumber
+      redirectionRoute: $redirectionRoute
+      redirectionRouteId: $redirectionRouteId
+      entity: $entity
+      redirectionRouteQueryParams: $redirectionRouteQueryParams
+      attachments: $attachments,
+      clientURL: $clientURL,
+      noAuth: $noAuth
+    )
+  }
+`;
+
 export const analizeMagicLink = gql`
   query analizeMagicLink($tempcode: String!) {
     analizeMagicLink(tempcode: $tempcode)

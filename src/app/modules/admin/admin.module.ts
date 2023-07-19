@@ -81,6 +81,8 @@ import { SupplierRegisterComponent } from './pages/supplier-register/supplier-re
 import { InventoryComponent } from './pages/inventory/inventory.component';
 import { QuotationBidsComponent } from './pages/quotation-bids/quotation-bids.component';
 import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-creator.component';
+import { SupplierRegistrationComponent } from './pages/supplier-registration/supplier-registration.component';
+import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -404,7 +406,11 @@ const routes: Routes = [
       {
         path: 'quotations',
         component: InventoryComponent,
-      }
+      },
+      {
+        path: 'quotation-bids/:quotationId',
+        component: QuotationBidsComponent,
+      },
     ],
   },
   {
@@ -491,21 +497,30 @@ const routes: Routes = [
     path:'stars-metrics',
     component: StarsMetricsComponent
   },
+  /*
   {
     path: 'supplier-register',
     component: SupplierRegisterComponent,
-  },
+  },*/
   {
     path: 'inventory',
     component: InventoryComponent,
   },
   {
-    path: 'quotation-bids/:quotationId',
-    component: QuotationBidsComponent,
-  },
-  {
     path: 'inventory-creator',
     component: InventoryCreatorComponent,
+  },
+  {
+    path: 'inventory-creator/:itemId',
+    component: InventoryCreatorComponent,
+  },
+  {
+    path: 'supplier-orders',
+    component: OrderProgressFilteringComponent
+  },
+  {
+    path: 'supplier-register/:quotationId',
+    component: SupplierRegistrationComponent,
   },
 ];
 
@@ -569,6 +584,8 @@ const routes: Routes = [
     InventoryComponent,
     QuotationBidsComponent,
     InventoryCreatorComponent,
+    SupplierRegistrationComponent,
+    OrderProgressFilteringComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [

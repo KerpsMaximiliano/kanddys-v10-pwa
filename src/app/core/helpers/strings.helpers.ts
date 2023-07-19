@@ -111,6 +111,10 @@ export function formatID(dateId: string, padZeroes = false): string {
   }
 }
 
+export function shortFormatID(dateId: string): string {
+  return `N${formatID(dateId)?.split('N')[1]}`;
+}
+
 export function unformatID(
   month: string,
   day: string,
@@ -122,6 +126,10 @@ export function unformatID(
 
 export function capitalize(text) {
   return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+}
+
+export function capitalizeAllWords(text: string) {
+  return text.split(" ").map(text => capitalize(text)).join(" ");
 }
 
 export function getDaysAgo(date: string) {

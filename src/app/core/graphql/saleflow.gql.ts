@@ -227,6 +227,7 @@ export const listItems = gql`
       hasExtraPrice
       showImages
       tags
+      type
       visitorCounter {
         entity
         counter

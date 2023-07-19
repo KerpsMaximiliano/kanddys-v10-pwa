@@ -1,19 +1,20 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Inject,
+  HostListener,
+  ElementRef,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
-  Validator,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import {
-  MatDialog,
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-  MatDialogModule,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
+import { ViewportRuler } from '@angular/cdk/overlay';
 import { environment } from 'src/environments/environment';
 
 interface Field {
@@ -44,6 +45,8 @@ export class FormComponent implements OnInit {
     public dialogRef: MatDialogRef<FormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FormData,
     private fb: FormBuilder,
+    private viewportRuler: ViewportRuler,
+    private elementRef: ElementRef,
     private translate: TranslateService
   ) {
     translate.setDefaultLang('en');
@@ -72,8 +75,6 @@ export class FormComponent implements OnInit {
 
       this.formGroup.addControl(field.name, fieldToInsert);
     }
-
-    console.log('formGroup', this.formGroup);
   }
 
   onIconClick(index: number) {
@@ -83,5 +84,30 @@ export class FormComponent implements OnInit {
 
   close(): void {
     this.dialogRef.close();
+  }
+
+
+  // Listen for focusin and focusout events to track keyboard visibility changes
+  @HostListener('window:focusout', ['$event'])
+  onFocusChange(event: FocusEvent) {
+    const dialogElement = this.elementRef.nativeElement.parentElement;
+
+    const clickedInsideDialog = dialogElement.contains(event.target as Node);
+
+    if (clickedInsideDialog && event.target instanceof HTMLInputElement) {
+      this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
+    }
+  }
+
+  @HostListener('window:focusin', ['$event'])
+  onFocusChange2(event: FocusEvent) {
+    const dialogElement = this.elementRef.nativeElement.parentElement;
+
+
+    const clickedInsideDialog = dialogElement.contains(event.target as Node);
+
+    if (clickedInsideDialog && event.target instanceof HTMLInputElement) {
+      this.dialogRef.updatePosition({ top: '50px' }); // Reset the position when the keyboard is hidden
+    }
   }
 }
