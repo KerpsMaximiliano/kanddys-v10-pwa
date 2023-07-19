@@ -101,7 +101,23 @@ export class NavigationComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    if(this.headerService.navigationTabState) this.tabs = this.headerService.navigationTabState;
+    if (this.headerService.navigationTabState)
+      this.tabs = this.headerService.navigationTabState;
+
+    let activeTabIndex = 0;
+
+    this.tabs.forEach((tab, tabIndex) => {
+      const isCurrentURLInCurrentTab = tab.links.find((link) => {
+        return (
+          JSON.stringify(link.routerLink.join('/')) ===
+          JSON.stringify(this.router.url)
+        );
+      });
+
+      if (isCurrentURLInCurrentTab) activeTabIndex = tabIndex;
+    });
+
+    this.tabs[activeTabIndex].active = true;
 
     this.quotations = await this.quotationsService.quotations({
       findBy: {

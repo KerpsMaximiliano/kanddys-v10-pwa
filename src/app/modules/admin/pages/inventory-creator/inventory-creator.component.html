@@ -1,7 +1,7 @@
 <div class="container" [formGroup]="itemFormData">
   <div class="header">
     <div class="flex">
-      <mat-icon (click)="back()">close</mat-icon>
+      <mat-icon style="cursor: pointer;" (click)="back()">close</mat-icon>
       <p class="header-title">
         {{ itemsService.temporalItemInput?.name }} para cotizar y vender
         localmente
@@ -126,12 +126,12 @@
 
 <footer
   [ngClass]="{
-    updateMode: updateItem
+    updateMode: updateItem || merchantRegistration
   }"
+  *ngIf="itemFormData?.valid && itemSlides.length > 0"
 >
   <button
     class="right"
-    *ngIf="itemFormData?.valid && itemSlides.length > 0"
     style="color: #272727"
     (click)="saveItem()"
   >

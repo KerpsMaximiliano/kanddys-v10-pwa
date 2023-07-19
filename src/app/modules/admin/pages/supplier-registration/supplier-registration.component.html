@@ -1,7 +1,7 @@
 <div class="container">
   <div class="header">
     <div class="flex">
-      <mat-icon style="cursor: pointer" (click)="(null)">close</mat-icon>
+      <mat-icon style="cursor: pointer" (click)="goToDashboard()">close</mat-icon>
       <p class="header-title">Cotización de {{ requester?.name }}</p>
     </div>
   </div>
@@ -23,7 +23,7 @@
         [cta]="true"
         [ctaActive]="item.isSelected"
         [skipRedirection]="true"
-        (cardClicked)="redirectToItemEdition(item)"
+        (cardClicked)="redirectToItemEdition(item, itemIndex)"
       ></app-buyer-card>
     </div>
   </div>

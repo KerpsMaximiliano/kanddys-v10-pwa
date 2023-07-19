@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Quotation } from 'src/app/core/models/quotations';
-import { Item, ItemInput } from 'src/app/core/models/item';
+import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -17,6 +17,10 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { Merchant } from 'src/app/core/models/merchant';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
+import { SlideInput } from 'src/app/core/models/post';
+import { urltoFile } from 'src/app/core/helpers/files.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-supplier-registration',
@@ -34,6 +38,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   authorized: boolean = false;
   quotationId: string = null;
   queryParams: Record<string, any> = {};
+  newMerchantMode: boolean = false;
+  currentUser: User = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -62,7 +68,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
             if (!parsedData) {
               const lastCurrentQuotationRequest: {
-                supplierMerchantId: string;
+                supplierMerchantId?: string;
                 requesterId: string;
                 items: string;
               } = JSON.parse(
@@ -100,7 +106,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               );
             }
 
-            if (!items || !requesterId || !supplierMerchantId)
+            if (!items || !requesterId)
               return this.router.navigate(['others/error-screen']);
 
             this.quotationItemsIds = items.split('-');
@@ -108,7 +114,11 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             this.requester = await this.merchantsService.merchant(requesterId);
             this.supplierMerchantId = supplierMerchantId;
 
-            await this.checkUser();
+            if (this.supplierMerchantId) await this.checkUser();
+            else {
+              this.newMerchantMode = true;
+              this.quotationsService.isANewMerchantAdjustingAQuotation = true;
+            }
 
             await this.executeInitProcesses();
           }
@@ -122,29 +132,50 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
   async checkUser() {
     const myUser = await this.authService.me();
+    this.currentUser = myUser;
+    if (myUser && myUser?._id) {
+      if (await this.checkIfUserIsTheMerchantOwner(myUser)) this.authorized = true;
+      else this.authorized = false;
+    } else this.authorized = false;
+  }
 
-    if (!myUser && !myUser?._id) this.authorized = false;
-    else {
-      this.authorized = true;
+  async checkIfUserIsTheMerchantOwner(user: User): Promise<boolean> {
+    try {
+      const merchant = await this.merchantsService.merchantDefault(user._id);
+      if (merchant && merchant._id === this.supplierMerchantId) return true;
+      else return false;
+    } catch (error) {
+      console.log(error);
+      return false;
     }
   }
 
   async executeAuthRequest() {
     const myUser = await this.authService.me();
 
-    if (!myUser && !myUser?._id) this.authorized = false;
-    else {
-      this.authorized = true;
-    }
+    if (myUser && myUser?._id) {
+      if (await this.checkIfUserIsTheMerchantOwner(myUser)) this.authorized = true;
+      else this.authorized = false;
+    } else this.authorized = false;
 
     if (!this.authorized) {
-      this.snackbar.open(
-        'Antes de poder ajustar el precio y disponibilidad, debemos validar tu identidad',
-        'Ok',
-        {
-          duration: 10000,
-        }
-      );
+      if (this.currentUser) {
+        this.snackbar.open(
+          'El usuario con el que estás logueado no es el suplidor de esta cotización',
+          'Ok',
+          {
+            duration: 10000,
+          }
+        );
+      } else {
+        this.snackbar.open(
+          'Antes de poder ajustar el precio y disponibilidad, debemos validar tu identidad',
+          'Ok',
+          {
+            duration: 10000,
+          }
+        );
+      }
 
       const matDialogRef = this.matDialog.open(LoginDialogComponent, {
         data: {
@@ -199,7 +230,17 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
     this.quotationItems = supplierSpecificItems;
 
-    console.log("this.quotationItems", this.quotationItems);
+    if (
+      this.quotationItems &&
+      !this.quotationsService.quotationItemsBeingEdited &&
+      this.quotationsService.isANewMerchantAdjustingAQuotation
+    ) {
+      this.quotationItems.forEach((item) => {
+        item.pricing = null;
+        item.merchant = null;
+        item.stock = null;
+      });
+    }
 
     if (!this.quotation && this.authorized) {
       this.quotation = await this.quotationsService.quotation(this.quotationId);
@@ -209,26 +250,122 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     this.quotationsService.quotationItemsBeingEdited = JSON.parse(
       JSON.stringify(this.quotationItems)
     );
+
+    if (
+      this.newMerchantMode &&
+      !this.quotationsService.quotationItemsInputBeingEdited
+    ) {
+      lockUI();
+
+      await this.getItemsInputFromQuotationItems();
+
+      unlockUI();
+    }
   }
 
-  async redirectToItemEdition(item: Item) {
-    if (!this.authorized) return await this.executeAuthRequest();
+  getItemsInputFromQuotationItems = async () => {
+    this.quotationsService.quotationItemsInputBeingEdited = await Promise.all(
+      this.quotationsService.quotationItemsBeingEdited.map(
+        async (item, itemIndex) => {
+          const itemSlides: Array<any> = item.images
+            .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+            .map(({ index, ...image }) => {
+              return {
+                url: completeImageURL(image.value),
+                index,
+                type: 'poster',
+                text: '',
+                _id: image._id,
+              };
+            });
 
-    this.itemsService.temporalItem = item;
-    this.itemsService.temporalItemInput = {
-      name: item.name,
-      pricing: item.pricing,
-      layout: item.layout,
-      stock: item.stock,
-      notificationStockLimit: item.notificationStockLimit,
-    };
+          let images: ItemImageInput[] = await Promise.all(
+            itemSlides.map(async (slide: SlideInput, index: number) => {
+              return {
+                file: await urltoFile(slide.url, 'file' + index),
+                index,
+                active: true,
+              };
+            })
+          );
+
+          const itemInput: ItemInput = {
+            name: item.name,
+            description: item.description,
+            pricing: item.pricing,
+            stock: item.stock,
+            useStock: true,
+            notificationStock: true,
+            notificationStockLimit: Number(item.notificationStockLimit),
+            images,
+            layout: 'EXPANDED-SLIDE',
+          };
+
+          return itemInput;
+        }
+      )
+    );
+  };
+
+  async redirectToItemEdition(item: Item, index: number) {
+    if (!this.authorized && !this.newMerchantMode)
+      return await this.executeAuthRequest();
+
+    if (!this.newMerchantMode) {
+      this.itemsService.temporalItem = item;
+      this.itemsService.temporalItemInput = {
+        name: item.name,
+        pricing: item.pricing,
+        layout: item.layout,
+        stock: item.stock,
+        notificationStockLimit: item.notificationStockLimit,
+      };
+    }
+
+    if (
+      this.newMerchantMode &&
+      this.quotationsService.quotationItemsInputBeingEdited
+    ) {
+      this.itemsService.temporalItemInput = {
+        ...this.quotationsService.quotationItemsInputBeingEdited[index],
+      };
+
+      const images =
+        this.quotationsService.quotationItemsInputBeingEdited[index].images;
+
+      this.itemsService.temporalItemInput.slides = images
+        .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+        .map(({ index, ...image }) => {
+          return {
+            media: image.file as File,
+            index,
+            type: 'poster',
+            text: '',
+          };
+        });
+    }
+
+    if (this.newMerchantMode) {
+      return this.router.navigate(['/admin/inventory-creator'], {
+        queryParams: {
+          existingItem: false,
+          merchantRegistration: true,
+        },
+      });
+    }
 
     this.router.navigate(['/admin/inventory-creator/' + item._id], {
       queryParams: {
         existingItem: true,
         updateItem: true,
+        quotationId: this.quotationId,
+        requesterId: this.requester._id
       },
     });
+  }
+
+  goToDashboard() {
+    if (this.currentUser) this.router.navigate(['/admin/dashboard']);
   }
 
   ngOnDestroy(): void {
