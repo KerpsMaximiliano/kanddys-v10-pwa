@@ -11,7 +11,8 @@ import {
   updateQuotation,
 } from '../graphql/quotations.gql';
 import { Subscription } from 'rxjs';
-import { Item } from '../models/item';
+import { Item, ItemInput } from '../models/item';
+
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +20,10 @@ import { Item } from '../models/item';
 export class QuotationsService {
   cartRouteChangeSubscription: Subscription = null;
   quotationItemsBeingEdited: Array<Item> = null;
+  quotationItemsInputBeingEdited: Array<ItemInput> = null;
   quotationBeingEdited: Quotation = null;
   quotationInCart: Quotation = null;
+  isANewMerchantAdjustingAQuotation: boolean = false;
 
   constructor(private graphql: GraphQLWrapper) {}
 

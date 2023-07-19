@@ -28,6 +28,22 @@
       </button>
     </div>
   </div>
+
+  <div class="bottom" *ngIf="!leftAmount && supplierProvidedData">
+    <div
+      [ngClass]="{ center: !title && !description }"
+      class="amount"
+      [ngClass]="{
+        hasCartButton: cta
+      }"
+    >
+      <div>
+        <p>
+          <span>Para empezar a venderlo adicione el precio</span>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <ng-template #cardContent>
