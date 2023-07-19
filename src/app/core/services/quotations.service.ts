@@ -88,7 +88,7 @@ export class QuotationsService {
     return result?.createQuotation;
   }
 
-  async updateQuotation(input: QuotationInput, id: string): Promise<any> {
+  async updateQuotation(input: QuotationInput, id: string): Promise<Quotation> {
     const result = await this.graphql.mutate({
       mutation: updateQuotation,
       variables: { input, id },

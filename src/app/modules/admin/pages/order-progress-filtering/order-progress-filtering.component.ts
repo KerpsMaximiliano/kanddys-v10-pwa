@@ -1,8 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatDatepicker } from '@angular/material/datepicker';
 import { ActivatedRoute, Router } from '@angular/router';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { shortFormatID, truncateString } from 'src/app/core/helpers/strings.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { OrderService } from 'src/app/core/services/order.service';
 
 @Component({
@@ -22,7 +26,15 @@ export class OrderProgressFilteringComponent implements OnInit {
 
   quotationID: string;
 
-  formatID = formatID;
+  shortFormatID = shortFormatID;
+  truncateString = truncateString;
+
+  @ViewChild('picker') datePicker: MatDatepicker<Date>;
+
+  range = new FormGroup({
+    start: new FormControl(''),
+    end: new FormControl(''),
+  });
 
   constructor(
     private ordersService: OrderService,
@@ -34,71 +46,63 @@ export class OrderProgressFilteringComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(async (params) => {
       this.quotationID = params.quotationID;
       await this.getOrders();
-      this.getMerchantsWithoutRepeat();
-      console.log(this.merchantFilters);
     });
   }
 
   selectMerchantFilter(merchantFilter) {
     merchantFilter.selected = !merchantFilter.selected;
-    this.filterOrdersBySelectedMerchantFilters();
+    this.filterOrders();
   }
 
-  // TODO - Refactor this method
-  private filterOrdersBySelectedMerchantFilters() {
-    console.log(this.merchantFilters);
-    let filteredOrders = [];
-    if (this.merchantFilters.some((merchantFilter) => merchantFilter.selected)) {
-      this.merchantFilters.forEach((merchantFilter) => {
-        if (merchantFilter.selected) {
-          const orders = this.filteredOrders.filter((order) => order.items[0].saleflow.merchant._id === merchantFilter.merchant._id);
-          console.log(orders);
-          orders.forEach((order) => {
-            filteredOrders.push(order);
-          });
-        }
-      });
-      this.filteredOrders = filteredOrders;
-    } else {
-      this.filteredOrders = this.orders;
+  private filterOrders() {
+    const selectedFilters = this.merchantFilters.filter(filter => filter.selected);
+    this.filteredOrders = this.orders.filter(order =>
+      selectedFilters.some(filter => filter.merchant._id === order.items[0].saleflow.merchant._id)
+    );
+  }
+
+  async getOrders(rangeFilters: boolean = false) {
+
+    let paginator: PaginationInput = {
+      findBy: {
+        orderType: "supplier"
+      },
+      options: {
+        limit: -1,
+        sortBy: "createdAt:desc"
+      }
+    };
+
+    if (rangeFilters) {
+      paginator.options.range = {
+        from: this.range.get('start').value,
+        to: this.range.get('end').value,
+      }
     }
 
-    console.log(this.filteredOrders);
-  }
-
-  async getOrders() {
     try {
-      const result = await this.ordersService.ordersByUser(
-        {
-          findBy: {
-            orderType: "supplier"
-          },
-          options: {
-            limit: -1,
-            sortBy: "createdAt:desc",
-          }
-        }
-      )
+      const result = await this.ordersService.ordersByUser(paginator)
       this.orders = result.ordersByUser;
       this.filteredOrders = result.ordersByUser;
+      this.getMerchants();
     } catch (error) {
       console.log()
     }
   }
 
-  getMerchantsWithoutRepeat() {
+  getMerchants() {
     this.orders.forEach((order) => {
       if (this.merchantFilters.length == 0) {
         this.merchantFilters.push({
           merchant: order.items[0].saleflow.merchant,
-          selected: false
+          selected: true
         });
       } else {
         const merchant = this.merchantFilters.find((merchantFilter) => merchantFilter.merchant._id == order.items[0].saleflow.merchant._id);
         if (!merchant) {
           this.merchantFilters.push({
             merchant: order.items[0].saleflow.merchant,
-            selected: false
+            selected: true
           });
         }
       }
@@ -123,6 +127,18 @@ export class OrderProgressFilteringComponent implements OnInit {
         }
       }
     );
+  }
+
+  async onDateChange() {
+    if (this.range.get('start').value && this.range.get('end').value) {
+      lockUI();
+      await this.getOrders(true);
+      unlockUI();
+    }
+  }
+
+  openDatePicker() {
+    this.datePicker.open();
   }
 
   goBack() {

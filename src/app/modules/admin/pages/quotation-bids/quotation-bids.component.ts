@@ -1,4 +1,6 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,16 +8,16 @@ import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Quotation, QuotationMatches } from 'src/app/core/models/quotations';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
-import { Clipboard } from '@angular/cdk/clipboard';
+import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
 import { environment } from 'src/environments/environment';
 import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { PaginationInput } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
@@ -42,7 +44,7 @@ export class QuotationBidsComponent implements OnInit {
     private matDialog: MatDialog,
     private clipboard: Clipboard,
     private router: Router,
-    private matSnackBar: MatSnackBar
+    private matSnackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -174,6 +176,41 @@ export class QuotationBidsComponent implements OnInit {
           this.router.navigate(['/admin/quotations']);
         } catch (error) {
           console.log(error);
+        }
+      }
+    });
+  }
+
+  renameQuotation() {
+    const dialogRef = this.matDialog.open(FormComponent, {
+      data: {
+        fields: [
+          {
+            label: 'Nombre de la cotización',
+            name: 'name',
+            type: 'text',
+            validators: [Validators.pattern(/[\S]/)],
+          }
+        ]
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result && result.value) {
+        lockUI();
+        try {
+          const quotation = await this.quotationsService.updateQuotation(
+            {
+              name: result.value['name'],
+            },
+            this.quotation._id
+          );
+
+          this.quotation.name = quotation.name;
+          unlockUI();
+        } catch (error) {
+          console.log(error);
+          unlockUI();
         }
       }
     });

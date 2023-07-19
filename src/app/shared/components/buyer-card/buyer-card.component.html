@@ -52,20 +52,18 @@
       <span *ngIf="title" class="title">{{ title }}</span
       ><br />
       <br />
-      <span *ngIf="description" class="description">{{ description }}</span>
+      <span *ngIf="description" class="description">{{ truncateString(description, 100) }}</span>
 
       <button
         class="stock-button"
-        *ngIf="
-          supplierProvidedData.stock !== null && supplierProvidedData.stock >= 0
-        "
+        *ngIf="supplierProvidedData?.stock && supplierProvidedData?.stock >= 0"
       >
-        En inventario: {{ supplierProvidedData.stock }}
+        En inventario: {{ supplierProvidedData?.stock }}
       </button>
 
       <button
         class="stock-button"
-        *ngIf="!supplierProvidedData.stock && supplierProvidedData.stock !== 0"
+        *ngIf="!supplierProvidedData?.stock && supplierProvidedData?.stock !== 0"
       >
         Adicionar disponibilidad
       </button>
