@@ -924,69 +924,90 @@ export class CartComponent implements OnInit {
                   this.headerService.saleflow.merchant.name
                 )}`,
                 callback: async () => {
-                  lockUI();
+                  try {
+                    lockUI();
 
-                  const merchantDefault =
-                    await this.merchantsService.merchantDefault();
+                    const merchantDefault =
+                      await this.merchantsService.merchantDefault();
 
-                  if (
-                    !merchantDefault ||
-                    !this.quotationsService.quotationInCart
-                  ) {
+
+                    const quotationInCartId = localStorage.getItem("quotationInCart");
+
+                    if(!this.quotationsService.quotationInCart && quotationInCartId) {
+                      this.quotationsService.quotationInCart  = await this.quotationsService.quotation(quotationInCartId);
+                    }
+
+                    if (
+                      !merchantDefault ||
+                      !this.quotationsService.quotationInCart
+                    ) {
+                      unlockUI();
+                      return this.router.navigate([
+                        '/ecommerce/' +
+                          this.headerService.saleflow.merchant.slug +
+                          '/store',
+                      ]);
+                    } 
+                    
+
+                    const supplierRegistrationLink = (
+                      await this.authService.generateMagicLinkNoAuth(
+                        null,
+                        '/admin/supplier-register',
+                        this.quotationsService.quotationInCart._id,
+                        'QuotationAccess',
+                        {
+                          jsondata: JSON.stringify({
+                            supplierMerchantId:
+                              this.headerService.saleflow.merchant._id,
+                            requesterId: merchantDefault._id,
+                            items:
+                              this.quotationsService.quotationInCart.items.join(
+                                '-'
+                              ),
+                          }),
+                        },
+                        [],
+                        true
+                      )
+                    )?.generateMagicLinkNoAuth;
+
+                    let itemsContent = ``;
+                    this.items.forEach((item) => {
+                      itemsContent += `- ${
+                        item?.name ? item?.name : 'Artículo sin nombre'
+                      }, $${item.pricing}\n`;
+                    });
+                    const message = `Hola ${capitalize(
+                      this.headerService.saleflow.merchant.name
+                    )},\n\nSoy ${
+                      this.currentUser?.name ||
+                      this.currentUser?.phone ||
+                      this.currentUser?.email
+                    } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${itemsContent}\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace ${supplierRegistrationLink}\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: ${
+                      environment.uri +
+                      '/admin/quotation-bids/' +
+                      this.quotationsService.quotationInCart._id
+                    }`;
+                    const whatsappLink = `https://api.whatsapp.com/send?phone=${
+                      this.headerService.saleflow.merchant
+                        .receiveNotificationsMainPhone
+                        ? this.headerService.saleflow.merchant.owner.phone
+                        : this.headerService.saleflow.merchant
+                            ?.secondaryContacts?.length
+                        ? this.headerService.saleflow.merchant
+                            ?.secondaryContacts[0]
+                        : '19188156444'
+                    }&text=${encodeURIComponent(message)}`;
+
                     unlockUI();
-                    return this.router.navigate([
-                      '/ecommerce/' +
-                        this.headerService.saleflow.merchant.slug +
-                        '/store',
-                    ]);
+
+                    console.log("whatsappLink", whatsappLink)
+
+                    window.open(whatsappLink, '_blank');
+                  } catch (error) {
+                    console.error('error', error);
                   }
-
-                  const supplierRegistrationLink = (
-                    await this.authService.generateMagicLinkNoAuth(
-                      null,
-                      '/admin/supplier-register',
-                      this.quotationsService.quotationInCart._id,
-                      'QuotationAccess',
-                      {
-                        jsondata: JSON.stringify({
-                          supplierMerchantId:
-                            this.headerService.saleflow.merchant._id,
-                          requesterId: merchantDefault._id,
-                          items:
-                            this.quotationsService.quotationInCart.items.join(
-                              '-'
-                            ),
-                        }),
-                      },
-                      [],
-                      true
-                    )
-                  )?.generateMagicLinkNoAuth;
-
-                  let itemsContent = ``;
-                  this.items.forEach((item) => {
-                    itemsContent += `- ${
-                      item?.name ? item?.name : 'Artículo sin nombre'
-                    }, $${item.pricing}\n`;
-                  });
-                  const message = `Hola ${capitalize(
-                    this.headerService.saleflow.merchant.name
-                  )},\n\nSoy ${
-                    this.currentUser?.name ||
-                    this.currentUser?.phone ||
-                    this.currentUser?.email
-                  } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${itemsContent}\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace ${supplierRegistrationLink}\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: [enlace del método de pago]`;
-                  const whatsappLink = `https://api.whatsapp.com/send?phone=${
-                    this.headerService.saleflow.merchant.receiveNotificationsMainPhone ?
-                      this.headerService.saleflow.merchant.owner.phone :
-                      this.headerService.saleflow.merchant?.secondaryContacts?.length ?
-                      this.headerService.saleflow.merchant?.secondaryContacts[0] :
-                      '19188156444'
-                  }&text=${encodeURIComponent(message)}`;
-
-                  unlockUI();
-
-                  window.open(whatsappLink, '_blank');
                 },
               },
               {

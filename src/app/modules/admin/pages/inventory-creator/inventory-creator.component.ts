@@ -65,6 +65,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   routerParamsSubscription: Subscription = null;
   existingItem: boolean = false;
   updateItem: boolean = false;
+  merchantRegistration: boolean = false;
   itemId: string = null;
 
   constructor(
@@ -85,15 +86,22 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     this.routerParamsSubscription = this.route.params.subscribe(
       ({ itemId }) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ existingItem, updateItem }) => {
-            this.existingItem = Boolean(existingItem);
+          async ({ existingItem, updateItem, merchantRegistration }) => {
+            this.existingItem = JSON.parse(existingItem || 'false');
             this.updateItem = Boolean(updateItem);
+            this.merchantRegistration = JSON.parse(
+              merchantRegistration || 'false'
+            );
             this.itemId = itemId;
 
             this.merchantsService.merchantData =
               await this.merchantsService.merchantDefault();
 
-            if (!this.itemsService.temporalItemInput?.name && !existingItem) {
+            if (
+              !this.itemsService.temporalItemInput?.name &&
+              !this.existingItem &&
+              !merchantRegistration
+            ) {
               this.router.navigate(['/admin/item-selector']);
             }
 
@@ -117,12 +125,15 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               ],
             });
 
-            if (this.itemsService.temporalItemInput?.slides && !existingItem) {
+            if (
+              this.itemsService.temporalItemInput?.slides &&
+              !this.existingItem
+            ) {
               this.itemSlides = this.itemsService.temporalItemInput?.slides;
             }
 
             if (
-              existingItem &&
+              this.existingItem &&
               !this.itemsService.modifiedImagesFromExistingItem
             ) {
               this.itemSlides = this.itemsService.temporalItem.images
@@ -137,7 +148,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
                   };
                 });
             } else if (
-              existingItem &&
+              this.existingItem &&
               this.itemsService.modifiedImagesFromExistingItem
             ) {
               this.itemSlides = this.itemsService.temporalItemInput.slides;
@@ -189,7 +200,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
         let routeForItemEntity;
 
-        const queryParams = {
+        const queryParams: any = {
           entity: 'item',
           redirectFromFlowRoute: true,
           useSlidesInMemory: this.existingItem && !this.updateItem,
@@ -198,12 +209,29 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         if (this.itemSlides.length === 1 && !file.type.includes('video')) {
           routeForItemEntity = 'admin/items-slides-editor';
 
+          if (this.existingItem && this.itemId)
+            routeForItemEntity += '/' + this.itemId;
+
           queryParams.redirectFromFlowRoute = true;
+          queryParams.addEditingImageToExistingItem =
+            this.existingItem && this.itemId && this.updateItem;
         } else if (
           this.itemSlides.length === 1 &&
           file.type.includes('video')
         ) {
           routeForItemEntity = 'admin/slides-editor';
+          queryParams.addEditingImageToExistingItem =
+            this.existingItem && this.itemId && this.updateItem;
+
+          await this.itemsService.itemAddImage(
+            [
+              {
+                file,
+                index,
+              },
+            ],
+            this.itemId
+          );
 
           if (this.updateItem) routeForItemEntity += '/' + this.itemId;
         } else if (this.itemSlides.length > 1) {
@@ -348,6 +376,37 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       );
       lockUI();
 
+      if (this.merchantRegistration) {
+        /*
+        const itemIdBeingEdited = this.itemsService.temporalItem._id;
+
+        const itemInput: ExtendedItemInput = {
+          name: this.itemsService.temporalItemInput?.name,
+          pricing: this.itemFormData.value['pricing'],
+          images,
+          stock: this.itemFormData.value['stock'],
+          notificationStockLimit:
+            this.itemFormData.value['notificationStockLimit'],
+          slides: this.itemSlides,
+        };
+
+        this.itemsService.temporalItemInput = itemInput;
+
+        this.router.navigate(
+          [
+            'admin/supplier-register/' +
+              this.quotationsService.quotationBeingEdited._id,
+          ],
+          {
+            queryParams: {
+              supplierMerchantId:
+                this.quotationsService.quotationBeingEdited.merchant,
+              requesterId: this.merchantsService.merchantData?._id,
+            },
+          }
+        );*/
+      }
+
       if (this.updateItem) {
         try {
           const itemInput: ItemInput = {
@@ -455,7 +514,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   }
 
   back() {
-    if(this.updateItem) {
+    if (this.updateItem) {
       return this.router.navigate(
         [
           'admin/supplier-register/' +

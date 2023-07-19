@@ -126,12 +126,12 @@
 
 <footer
   [ngClass]="{
-    updateMode: updateItem
+    updateMode: updateItem || merchantRegistration
   }"
+  *ngIf="itemFormData?.valid && itemSlides.length > 0"
 >
   <button
     class="right"
-    *ngIf="itemFormData?.valid && itemSlides.length > 0"
     style="color: #272727"
     (click)="saveItem()"
   >

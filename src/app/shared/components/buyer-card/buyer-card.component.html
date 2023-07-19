@@ -28,6 +28,22 @@
       </button>
     </div>
   </div>
+
+  <div class="bottom" *ngIf="!leftAmount && supplierProvidedData">
+    <div
+      [ngClass]="{ center: !title && !description }"
+      class="amount"
+      [ngClass]="{
+        hasCartButton: cta
+      }"
+    >
+      <div>
+        <p>
+          <span>Para empezar a venderlo adicione el precio</span>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <ng-template #cardContent>
@@ -40,7 +56,9 @@
 
       <button
         class="stock-button"
-        *ngIf="supplierProvidedData.stock >= 0"
+        *ngIf="
+          supplierProvidedData.stock !== null && supplierProvidedData.stock >= 0
+        "
       >
         En inventario: {{ supplierProvidedData.stock }}
       </button>
