@@ -71,7 +71,7 @@
       [formArrayName]="'checkboxes'"
       (click)="
         !supplierMode
-          ? toggleItemSelection(i)
+          ? null
           : createItemBasedOnExistingSupplierItems(item)
       "
     >
@@ -81,7 +81,9 @@
           else images
         "
       >
-        <div class="item-card" style="background-color: black">
+        <div class="item-card" style="background-color: black"
+          (click)="!supplierMode && goToArticleDetail(item._id)"
+        >
           <img
             src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
             alt="play"
@@ -109,6 +111,7 @@
 
       <ng-template #images>
         <div
+          (click)="!supplierMode && goToArticleDetail(item._id)"
           class="item-card"
           [ngStyle]="{
             backgroundImage: item.images?.length

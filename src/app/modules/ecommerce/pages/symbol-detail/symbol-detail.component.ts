@@ -46,6 +46,7 @@ import { AppService } from 'src/app/app.service';
 
 //Third party modules
 import * as Hammer from 'hammerjs';
+import { QuotationsService } from 'src/app/core/services/quotations.service';
 
 interface ExtendedItem extends Item {
   media?: Array<{
@@ -156,6 +157,10 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   queryParams: any;
   routeParams: any;
   playVideo = playVideoNoFullscreen;
+  addedItemToQuotation: boolean = false;
+  defaultCtaText: string = 'Agregar al carrito';
+  defaultCtaRemoveText: string = 'Quitar del carrito';
+  supplierItem: boolean = false;
 
   fromQR: boolean = false;
 
@@ -173,6 +178,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     private _DomSanitizer: DomSanitizer,
     private entityTemplateService: EntityTemplateService,
     private saleflowService: SaleFlowService,
+    private quotationsService: QuotationsService,
     private appService: AppService,
     private postsService: PostsService,
     private elementRef: ElementRef
@@ -302,6 +308,24 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
           this.router.navigate([redirectionRoute]);
         }
+      }
+
+      if (this.itemData.type === 'supplier') {
+        this.supplierItem = true;
+        this.defaultCtaText = 'Agregar a la cotización';
+        this.defaultCtaRemoveText = 'Quitar de la cotización';
+        const foundItemIndex =
+          this.quotationsService.selectedItemsForQuotation.findIndex(
+            (itemId) => itemId === this.itemData._id
+          );
+
+        if (foundItemIndex < 0) {
+          this.addedItemToQuotation = false;
+        } else {
+          this.addedItemToQuotation = true;
+        }
+
+        return;
       }
 
       if (this.headerService.saleflow?._id && this.entity === 'item')
@@ -737,6 +761,10 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   back = async () => {
+    if (this.supplierItem) {
+      return this.router.navigate([`/admin/item-selector`]);
+    }
+
     if (this.mode === 'preview') {
       this.itemsService.itemUrls = [];
       return this.router.navigate([
@@ -836,6 +864,28 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   saveProduct() {
+    if (this.itemData.type === 'supplier') {
+      const foundItemIndex =
+        this.quotationsService.selectedItemsForQuotation.findIndex(
+          (itemId) => itemId === this.itemData._id
+        );
+
+      if (foundItemIndex < 0) {
+        this.addedItemToQuotation = true;
+        this.quotationsService.selectedItemsForQuotation.push(
+          this.itemData._id
+        );
+      } else {
+        this.addedItemToQuotation = false;
+        this.quotationsService.selectedItemsForQuotation.splice(
+          foundItemIndex,
+          1
+        );
+      }
+
+      return;
+    }
+
     if (this.mode === 'preview' || this.mode === 'image-preview') return;
     if (!this.isItemInCart && !this.headerService.saleflow.canBuyMultipleItems)
       this.headerService.emptyOrderProducts();
