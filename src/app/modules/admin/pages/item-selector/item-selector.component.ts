@@ -21,6 +21,7 @@ import { Quotation, QuotationInput } from 'src/app/core/models/quotations';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import {
@@ -52,6 +53,8 @@ export class ItemSelectorComponent implements OnInit {
     private formBuilder: FormBuilder,
     private saleflowService: SaleFlowService,
     private quotationService: QuotationsService,
+    private merchantService: MerchantsService,
+    private headerService: HeaderService,
     private route: ActivatedRoute,
     private router: Router,
     private location: Location,
@@ -126,18 +129,56 @@ export class ItemSelectorComponent implements OnInit {
 
         this.createCheckboxes();
 
+        if (this.quotationService.selectedItemsForQuotation.length) {
+          this.selectedItems = this.quotationService.selectedItemsForQuotation;
+
+          if (this.selectedItems.length) {
+            const selectedItemIds = {};
+
+            this.selectedItems.forEach(
+              (selectedItem) => (selectedItemIds[selectedItem] = true)
+            );
+
+            this.itemsToShow.forEach((item, index) => {
+              //checkboxes.push(this.formBuilder.control(false));
+              if (selectedItemIds[item._id]) {
+                this.setValueAtIndex(index, true);
+              } else {
+                this.setValueAtIndex(index, false);
+              }
+            });
+          }
+        }
+
         this.itemsForm.controls['checkboxes'].valueChanges.subscribe(
           this.setSelectedItems
         );
 
         this.itemsForm.controls['searchbar'].valueChanges.subscribe(
           (value: string) => {
-            if (value === '')
+            if (value === '') {
               this.itemsToShow = JSON.parse(JSON.stringify(this.items));
-            else {
+            } else {
               this.itemsToShow = this.items.filter((item) =>
                 item.name.toLowerCase().includes(value.toLowerCase())
               );
+            }
+
+            if (this.selectedItems.length) {
+              const selectedItemIds = {};
+
+              this.selectedItems.forEach(
+                (selectedItem) => (selectedItemIds[selectedItem] = true)
+              );
+
+              this.itemsToShow.forEach((item, index) => {
+                //checkboxes.push(this.formBuilder.control(false));
+                if (selectedItemIds[item._id]) {
+                  this.setValueAtIndex(index, true);
+                } else {
+                  this.setValueAtIndex(index, false);
+                }
+              });
             }
           }
         );
@@ -145,11 +186,23 @@ export class ItemSelectorComponent implements OnInit {
     });
   }
 
+  goToArticleDetail(itemID: string) {
+    this.router.navigate([
+      `ecommerce/${this.merchantService.merchantData.slug}/article-detail/item/${itemID}`,
+    ]);
+  }
+
   setSelectedItems = (value: Array<string>) => {
     this.selectedItems = [];
+    this.quotationService.selectedItemsForQuotation = [];
 
     value.forEach((isSelected, index) => {
-      if (isSelected) this.selectedItems.push(this.items[index]._id);
+      const isIncludedInItemsToShow = this.itemsToShow.find(
+        (item) => isSelected && item._id === this.items[index]._id
+      );
+
+      if (isIncludedInItemsToShow)
+        this.selectedItems.push(this.items[index]._id);
     });
   };
 
@@ -215,6 +268,8 @@ export class ItemSelectorComponent implements OnInit {
           quotationInput,
           this.quotation._id
         );
+
+        this.quotationService.selectedItemsForQuotation = [];
 
         unlockUI();
         this.router.navigate(['/admin/quotations']);
