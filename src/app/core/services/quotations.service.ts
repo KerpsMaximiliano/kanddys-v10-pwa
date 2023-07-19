@@ -24,6 +24,7 @@ export class QuotationsService {
   quotationBeingEdited: Quotation = null;
   quotationInCart: Quotation = null;
   isANewMerchantAdjustingAQuotation: boolean = false;
+  selectedItemsForQuotation: Array<string> = [];
 
   constructor(private graphql: GraphQLWrapper) {}
 
