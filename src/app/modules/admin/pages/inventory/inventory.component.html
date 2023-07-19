@@ -12,6 +12,16 @@
         <mat-icon>menu</mat-icon>
       </div>
     </div>
+    
+    <div class="dates-container">
+      <div class="progress progress-selected">
+        Cotizaciones
+      </div>
+      <div class="progress" style="margin-left: 7px;" (click)="goToOrders()">
+        Compras
+    </div>
+    </div>
+
     <div class="content">
       <div
         class="content-card"
@@ -29,14 +39,6 @@
                 {{ quotation?.items?.length }} artículos
               </p>
             </div>
-          </div>
-          <div style="text-align: right">
-            <p class="content-card-new" *ngIf="quotations.length && i === 0">
-              Nuevo
-            </p>
-            <mat-icon class="delete-icon" (click)="deleteQuotation(i)"
-              >delete</mat-icon
-            >
           </div>
         </div>
 

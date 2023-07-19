@@ -52,7 +52,7 @@ export class NavigationComponent implements OnInit {
       active: false,
       links: [
         {
-          text: 'Lo que vendo 🏷️',
+          text: 'Mi KiosKo 💰',
           routerLink: ['/admin/dashboard'],
         },
         {
@@ -73,7 +73,7 @@ export class NavigationComponent implements OnInit {
           ],
         },
         {
-          text: 'Cotiza y compra a suplidores',
+          text: 'Mis suplidores (compras y cotizaciones)',
           routerLink: ['/admin/item-selector'],
         },
       ],
@@ -101,6 +101,24 @@ export class NavigationComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    if (this.headerService.navigationTabState)
+      this.tabs = this.headerService.navigationTabState;
+
+    let activeTabIndex = 0;
+
+    this.tabs.forEach((tab, tabIndex) => {
+      const isCurrentURLInCurrentTab = tab.links.find((link) => {
+        return (
+          JSON.stringify(link.routerLink.join('/')) ===
+          JSON.stringify(this.router.url)
+        );
+      });
+
+      if (isCurrentURLInCurrentTab) activeTabIndex = tabIndex;
+    });
+
+    this.tabs[activeTabIndex].active = true;
+
     this.quotations = await this.quotationsService.quotations({
       findBy: {
         merchant: this.merchantsService.merchantData._id,
@@ -125,6 +143,8 @@ export class NavigationComponent implements OnInit {
     this.tabs.forEach((tab, index) => {
       if (index !== tabIndex) tab.active = false;
     });
+
+    this.headerService.navigationTabState = this.tabs;
   }
 
   login() {

@@ -28,11 +28,13 @@ export class IlustrationInput {
 export class SlideInput {
   media?: File;
   url?: string;
+  background?: any;
   ilustration?: IlustrationInput;
   title?: string;
   text: string;
   index: number;
   type: 'audio' | 'poster' | 'text';
+  _id?: string;
 }
 
 export class Post extends Model<Post> {

@@ -10,11 +10,21 @@ import {
   quotations,
   updateQuotation,
 } from '../graphql/quotations.gql';
+import { Subscription } from 'rxjs';
+import { Item, ItemInput } from '../models/item';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuotationsService {
+  cartRouteChangeSubscription: Subscription = null;
+  quotationItemsBeingEdited: Array<Item> = null;
+  quotationItemsInputBeingEdited: Array<ItemInput> = null;
+  quotationBeingEdited: Quotation = null;
+  quotationInCart: Quotation = null;
+  isANewMerchantAdjustingAQuotation: boolean = false;
+
   constructor(private graphql: GraphQLWrapper) {}
 
   async quotations(input?: PaginationInput): Promise<Quotation[]> {
@@ -62,6 +72,8 @@ export class QuotationsService {
       return result?.quotation;
     } catch (e) {
       console.log(e);
+
+      return e;
     }
   }
 
@@ -76,7 +88,7 @@ export class QuotationsService {
     return result?.createQuotation;
   }
 
-  async updateQuotation(input: QuotationInput, id: string): Promise<any> {
+  async updateQuotation(input: QuotationInput, id: string): Promise<Quotation> {
     const result = await this.graphql.mutate({
       mutation: updateQuotation,
       variables: { input, id },

@@ -113,7 +113,7 @@ export type OrderStatusDeliveryType =
   | 'shipped'
   | 'delivered';
 
-export type OrderType = 'regular' | 'itemPackage';
+export type OrderType = 'regular' | 'itemPackage' | 'supplier' | 'reward' | 'external';
 
 export class ItemOrder extends Model<ItemOrder> {
   orderStatus: OrderStatusType;
@@ -147,6 +147,7 @@ export class ItemOrder extends Model<ItemOrder> {
 
 export class ItemOrderInput {
   ocr?: string;
+  orderType?: OrderType;
   orderStatusDelivery?: OrderStatusDeliveryType;
   products?: ItemSubOrderInput[];
   itemPackage?: string;

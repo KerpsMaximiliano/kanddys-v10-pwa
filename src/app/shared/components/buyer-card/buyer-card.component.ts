@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 
@@ -16,6 +17,10 @@ export class BuyerCardComponent implements OnInit {
   @Input() img: string = '';
   @Input() title: string;
   @Input() description: string;
+  @Input() supplierProvidedData: {
+    stock?: number;
+    price?: number;
+  } = null;
   @Input() leftAmount: number;
   @Input() rightAmount: number;
   @Input() cta: boolean;
@@ -23,11 +28,19 @@ export class BuyerCardComponent implements OnInit {
   @Input() viewsCounter: boolean = false;
   @Input() views: number;
   @Output() ctaClicked = new EventEmitter();
+  @Output() cardClicked = new EventEmitter();
   @Input() mode: 'normal' | 'fullWidth' = 'normal';
+  @Input() skipRedirection: boolean = false;
 
   env: string = environment.assetsUrl;
 
-  constructor(private router: Router, private route: ActivatedRoute, private headerService: HeaderService) {}
+  truncateString = truncateString;
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private headerService: HeaderService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -36,6 +49,10 @@ export class BuyerCardComponent implements OnInit {
   }
 
   clickHandler() {
+    if (this.skipRedirection) return this.cardClicked.emit(true);
+
+    if(!this.redirectionParams) return;
+
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
 

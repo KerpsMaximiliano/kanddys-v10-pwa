@@ -28,6 +28,15 @@ import { capitalize } from 'src/app/core/helpers/strings.helpers';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
+import { QuotationsService } from 'src/app/core/services/quotations.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -67,6 +76,8 @@ export class CartComponent implements OnInit {
 
   capitalize = capitalize;
   wait: boolean = false;
+  redirectFromFlowRoute: boolean = false;
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     public headerService: HeaderService,
@@ -74,17 +85,28 @@ export class CartComponent implements OnInit {
     private itemsService: ItemsService,
     private dialogService: DialogService,
     private _WebformsService: WebformsService,
+    private quotationsService: QuotationsService,
+    private merchantsService: MerchantsService,
     private appService: AppService,
     private router: Router,
     private route: ActivatedRoute,
     public postsService: PostsService,
+    private authService: AuthService,
     private _bottomSheet: MatBottomSheet
   ) {}
 
   async ngOnInit() {
+    console.log(this.headerService.saleflow);
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ item, wait }) => {
+      async ({ item, wait, redirectFromFlowRoute }) => {
         this.wait = wait;
+        this.redirectFromFlowRoute = Boolean(redirectFromFlowRoute);
+
+        if (!this.headerService.redirectFromFlowRoute)
+          this.headerService.redirectFromFlowRoute = this.redirectFromFlowRoute;
+        else {
+          this.redirectFromFlowRoute = this.headerService.redirectFromFlowRoute;
+        }
 
         if (this.wait)
           this.headerService.ecommerceDataLoaded.subscribe({
@@ -474,7 +496,15 @@ export class CartComponent implements OnInit {
     });
   }
 
-  goToStore() {
+  goBack() {
+    if (this.quotationsService.quotationInCart) {
+      this.headerService.flowRoute =
+        '/admin/quotation-bids/' + this.quotationsService.quotationInCart._id;
+    }
+
+    if (this.redirectFromFlowRoute)
+      return this.headerService.redirectFromQueryParams();
+
     this.router.navigate([
       `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
     ]);
@@ -705,32 +735,32 @@ export class CartComponent implements OnInit {
     this._WebformsService.areWebformsValid = this.areWebformsValid;
   }
 
-  async submit() {
-    this.headerService.flowRoute = this.router.url;
-    localStorage.setItem('flowRoute', this.router.url);
+  // async submit() {
+  //   this.headerService.flowRoute = this.router.url;
+  //   localStorage.setItem('flowRoute', this.router.url);
 
-    this.areItemsQuestionsAnswered();
+  //   this.areItemsQuestionsAnswered();
 
-    if (
-      !this.headerService.order.receiverData ||
-      !this.headerService.receiverDataNew
-    ) {
-      this.router.navigate([
-        '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
-          '/receiver-form',
-      ]);
-    } else {
-      this.router.navigate(
-        [
-          '/ecommerce/' +
-            this.headerService.saleflow.merchant.slug +
-            '/new-address',
-        ],
-        { queryParams: { flow: 'unAnsweredQuestions' } }
-      );
-    }
-  }
+  //   if (
+  //     !this.headerService.order.receiverData ||
+  //     !this.headerService.receiverDataNew
+  //   ) {
+  //     this.router.navigate([
+  //       '/ecommerce/' +
+  //         this.headerService.saleflow.merchant.slug +
+  //         '/receiver-form',
+  //     ]);
+  //   } else {
+  //     this.router.navigate(
+  //       [
+  //         '/ecommerce/' +
+  //           this.headerService.saleflow.merchant.slug +
+  //           '/new-address',
+  //       ],
+  //       { queryParams: { flow: 'unAnsweredQuestions' } }
+  //     );
+  //   }
+  // }
 
   async addItemToCart(itemId: string) {
     if (!(await this.checkIfItemisAvailable(itemId))) return;
@@ -796,97 +826,229 @@ export class CartComponent implements OnInit {
   }
 
   openSubmitDialog() {
-    const bottomSheetRef = this._bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        title: `¿Quieres añadir un mensaje de regalo?`,
-        description: `¡Dale un toque personal a tu regalo! Opcional.`,
-        options: [
-          {
-            value: `Sin mensajes de regalo`,
-            callback: () => {
-              this.postsService.post = null;
-              return this.router.navigate(
-                [
-                  `/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`,
-                ],
-                {
-                  queryParams: {
-                    redirectTo: 'cart',
-                  },
-                }
-              );
+    if (
+      !this.isSuppliersBuyerFlow(this.items) &&
+      this.headerService.saleflow?.module?.post &&
+      this.headerService.saleflow?.module?.post?.post &&
+      this.headerService.saleflow?.module?.post?.isActive
+    ) {
+      this._bottomSheet.open(OptionsMenuComponent, {
+        data: {
+          title: `¿Quieres añadir un mensaje de regalo?`,
+          options: [
+            {
+              value: `Sin mensajes de regalo`,
+              callback: () => {
+                this.postsService.post = null;
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`,
+                  ],
+                  {
+                    queryParams: {
+                      flow: 'cart',
+                      redirectTo: 'cart',
+                    },
+                  }
+                );
+              },
             },
-          },
-          {
-            value: `Mensaje tradicional, lo escribiremos en la tarjeta dedicatoria`,
-            callback: () => {
-              this.postsService.post = null;
-              // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional
-              return this.router.navigate(
-                [
-                  `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
-                ],
-                {
-                  queryParams: {
-                    redirectTo: 'cart',
-                    type: 'traditional',
-                  },
-                }
-              );
+            {
+              value: `Mensaje tradicional, lo escribiremos en la tarjeta dedicatoria`,
+              callback: () => {
+                this.postsService.post = null;
+                // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                      type: 'traditional',
+                    },
+                  }
+                );
+              },
             },
-          },
-          {
-            value: `Mensaje virtual, con texto, fotos y videos`,
-            callback: () => {
-              this.postsService.post = null;
-              // TODO - Agregar query param a la ruta para que se sepa que es un mensaje virtual
-              return this.router.navigate(
-                [
-                  `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
-                ],
-                {
-                  queryParams: {
-                    redirectTo: 'cart',
-                  },
-                }
-              );
+            {
+              value: `Mensaje virtual, con texto, fotos y videos`,
+              callback: () => {
+                this.postsService.post = null;
+                // TODO - Agregar query param a la ruta para que se sepa que es un mensaje virtual
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                    },
+                  }
+                );
+              },
             },
-          },
-          {
-            value: `Mensaje tradicional y virtual`,
-            callback: () => {
-              this.postsService.post = null;
-              // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional y virtual
-              return this.router.navigate(
-                [
-                  `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
-                ],
-                {
-                  queryParams: {
-                    redirectTo: 'cart',
-                    type: 'both',
-                  },
-                }
-              );
+            {
+              value: `Mensaje tradicional y virtual`,
+              callback: () => {
+                this.postsService.post = null;
+                // TODO - Agregar query param a la ruta para que se sepa que es un mensaje tradicional y virtual
+                return this.router.navigate(
+                  [
+                    `/ecommerce/${this.headerService.saleflow.merchant.slug}/new-symbol`,
+                  ],
+                  {
+                    queryParams: {
+                      redirectTo: 'cart',
+                      type: 'both',
+                    },
+                  }
+                );
+              },
             },
+          ],
+          styles: {
+            fullScreen: true,
           },
-        ],
-        styles: {
-          fullScreen: true,
         },
-      },
-    });
+      });
+    } else {
+      if (this.isSuppliersBuyerFlow(this.items)) {
+        this._bottomSheet.open(OptionsMenuComponent, {
+          data: {
+            title: `Confirmación de precios y disponibilidad:`,
+            description: `Te recomendamos que te asegures la disponibilidad y precio de ${this.headerService.saleflow.merchant.name} compartiendo la cotización.`,
+            options: [
+              {
+                value: `Compartir cotización con ${capitalize(
+                  this.headerService.saleflow.merchant.name
+                )}`,
+                callback: async () => {
+                  try {
+                    lockUI();
+
+                    const merchantDefault =
+                      await this.merchantsService.merchantDefault();
+
+
+                    const quotationInCartId = localStorage.getItem("quotationInCart");
+
+                    if(!this.quotationsService.quotationInCart && quotationInCartId) {
+                      this.quotationsService.quotationInCart  = await this.quotationsService.quotation(quotationInCartId);
+                    }
+
+                    if (
+                      !merchantDefault ||
+                      !this.quotationsService.quotationInCart
+                    ) {
+                      unlockUI();
+                      return this.router.navigate([
+                        '/ecommerce/' +
+                          this.headerService.saleflow.merchant.slug +
+                          '/store',
+                      ]);
+                    } 
+                    
+
+                    const supplierRegistrationLink = (
+                      await this.authService.generateMagicLinkNoAuth(
+                        null,
+                        '/admin/supplier-register',
+                        this.quotationsService.quotationInCart._id,
+                        'QuotationAccess',
+                        {
+                          jsondata: JSON.stringify({
+                            supplierMerchantId:
+                              this.headerService.saleflow.merchant._id,
+                            requesterId: merchantDefault._id,
+                            items:
+                              this.quotationsService.quotationInCart.items.join(
+                                '-'
+                              ),
+                          }),
+                        },
+                        [],
+                        true
+                      )
+                    )?.generateMagicLinkNoAuth;
+
+                    let itemsContent = ``;
+                    this.items.forEach((item) => {
+                      itemsContent += `- ${
+                        item?.name ? item?.name : 'Artículo sin nombre'
+                      }, $${item.pricing}\n`;
+                    });
+                    const message = `Hola ${capitalize(
+                      this.headerService.saleflow.merchant.name
+                    )},\n\nSoy ${
+                      this.currentUser?.name ||
+                      this.currentUser?.phone ||
+                      this.currentUser?.email
+                    } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${itemsContent}\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace ${supplierRegistrationLink}\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: ${
+                      environment.uri +
+                      '/admin/quotation-bids/' +
+                      this.quotationsService.quotationInCart._id
+                    }`;
+                    const whatsappLink = `https://api.whatsapp.com/send?phone=${
+                      this.headerService.saleflow.merchant
+                        .receiveNotificationsMainPhone
+                        ? this.headerService.saleflow.merchant.owner.phone
+                        : this.headerService.saleflow.merchant
+                            ?.secondaryContacts?.length
+                        ? this.headerService.saleflow.merchant
+                            ?.secondaryContacts[0]
+                        : '19188156444'
+                    }&text=${encodeURIComponent(message)}`;
+
+                    unlockUI();
+
+                    console.log("whatsappLink", whatsappLink)
+
+                    window.open(whatsappLink, '_blank');
+                  } catch (error) {
+                    console.error('error', error);
+                  }
+                },
+              },
+              {
+                value: `Continuar a la prefactura`,
+                callback: () => {
+                  // TODO - Validar que la redirección ocurra al módulo que esté disponible
+                  return this.goToAddressForm();
+                },
+              },
+            ],
+            styles: {
+              fullScreen: true,
+            },
+          },
+        });
+      } else this.goToAddressForm(); // TODO - Validar que la redirección ocurra al módulo que esté disponible
+    }
+  }
+
+  isSuppliersBuyerFlow(items: Item[]): boolean {
+    return items.some((item) => item.type === 'supplier');
+  }
+
+  goToAddressForm() {
+    this.router.navigate(
+      [`/ecommerce/${this.headerService.saleflow.merchant.slug}/new-address`],
+      {
+        queryParams: {
+          flow: 'cart',
+          redirectTo: 'cart',
+        },
+      }
+    );
   }
 
   goToReceiverForm() {
     this.router.navigate(
-      [
-        '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
-          '/receiver-form',
-      ],
+      [`/ecommerce/${this.headerService.saleflow.merchant.slug}/receiver-form`],
       {
         queryParams: {
+          flow: 'cart',
           redirectTo: 'cart',
         },
       }
@@ -901,6 +1063,20 @@ export class CartComponent implements OnInit {
     ]);
   }
 
+  goToArticleDetail(itemId: string) {
+    this.headerService.flowRoute = this.router.url;
+    this.router.navigate(
+      [
+        `/ecommerce/'${this.headerService.saleflow.merchant.slug}/article-detail/item/${itemId}`,
+      ],
+      {
+        queryParams: {
+          mode: 'saleflow',
+        },
+      }
+    );
+  }
+
   toggleCheckbox(event: any) {
     this.isCheckboxChecked = event;
 
@@ -909,5 +1085,9 @@ export class CartComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.queryParamsSubscription.unsubscribe();
+  }
+
+  urlIsVideo(url: string) {
+    return isVideo(url);
   }
 }

@@ -20,12 +20,14 @@
 
     &.active {
       background-color: #c4c5c3;
+      font-family: InterBold;
       color: #181d17;
     }
 
     &:hover {
       cursor: pointer;
-      background-color: lighten($color: #181d17, $amount: 20);
+      background-color: #c4c5c3;
+      color: #181d17;
     }
   }
 }

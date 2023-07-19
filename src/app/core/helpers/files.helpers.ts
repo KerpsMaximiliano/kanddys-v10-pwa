@@ -76,6 +76,16 @@ export const arrayOfRoutesToBase64 = async (
   return base64Strings;
 };
 
+export const urltoFile = async (
+  dataUrl: string,
+  fileName: string,
+  type?: string
+): Promise<File> => {
+  const res: Response = await fetch(dataUrl);
+  const blob: Blob = await res.blob();
+  return new File([blob], fileName, { type: type || 'image/jpg' });
+};
+
 export async function compressImage(
   file: File | Blob,
   quality: number = 0.6

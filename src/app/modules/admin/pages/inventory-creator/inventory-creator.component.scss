@@ -262,6 +262,7 @@ footer {
   justify-content: space-between;
   align-items: center;
   font-size: 17px;
+
   button {
     border: none;
     background-color: #fff;
@@ -279,6 +280,36 @@ footer {
 
   .right {
     margin-left: auto;
-    font-family: InterBold;
   }
+
+  &.updateMode {
+    background: var(--el-mas-oscuro, #181d17);
+
+    button {
+      border: none;
+      color: #87cd9b !important;
+      background: var(--el-mas-oscuro, #181d17);
+      font-family: InterBold;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

@@ -1,7 +1,7 @@
 <div class="container" [formGroup]="itemFormData">
   <div class="header">
     <div class="flex">
-      <mat-icon (click)="back()">close</mat-icon>
+      <mat-icon style="cursor: pointer;" (click)="back()">close</mat-icon>
       <p class="header-title">
         {{ itemsService.temporalItemInput?.name }} para cotizar y vender
         localmente
@@ -67,7 +67,9 @@
         [mode]="'SMALL'"
         [editing]="false"
         [defaultText]="'Incluyes fotos, memes, videos o música.'"
-        (buttonClicked)="emitFileInputClick()"
+        (buttonClicked)="
+          !updateItem ? emitFileInputClick() : goToReorderMedia()
+        "
         (buttonClicked2)="goToReorderMedia()"
       ></app-qr-content>
     </div>
@@ -105,7 +107,7 @@
       }"
       (click)="openFormForField()"
     >
-      <p>Inventario</p>
+      <p>Inventario*</p>
       <input placeholder="0" type="number" formControlName="stock" />
       <p class="content-inventary-detail">
         No se está mostrando a Floristerias
@@ -122,10 +124,14 @@
   </div>
 </div>
 
-<footer>
+<footer
+  [ngClass]="{
+    updateMode: updateItem || merchantRegistration
+  }"
+  *ngIf="itemFormData?.valid && itemSlides.length > 0"
+>
   <button
     class="right"
-    *ngIf="itemFormData?.valid && itemSlides.length > 0"
     style="color: #272727"
     (click)="saveItem()"
   >

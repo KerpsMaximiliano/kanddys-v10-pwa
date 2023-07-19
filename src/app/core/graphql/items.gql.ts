@@ -6,6 +6,7 @@ const body = `
   image
   description
   purchaseLocations
+  type
   merchant {
     _id
     name
@@ -37,6 +38,7 @@ const itemBody = `
   iconImage
   hasExtraPrice
   status
+  type
   category {
     _id
     name
@@ -81,6 +83,7 @@ const fullItem = `
   content
   hasSelection
   status
+  type
   showImages
   notifications
   tags
@@ -171,6 +174,7 @@ export const itemsByMerchant = gql`
       featuredImage
       pricing
       status
+      type
     }
   }
 `;
@@ -280,6 +284,8 @@ export const listItems = gql`
         counter
       }
       type
+      stock
+      notificationStockLimit
       parentItem
     }
   }
@@ -448,6 +454,7 @@ export const itemAddImage = gql`
       content
       hasSelection
       status
+      type
       showImages
       calendar {
         _id
@@ -508,6 +515,7 @@ export const itemRemoveImage = gql`
       content
       hasSelection
       status
+      type
       showImages
       calendar {
         _id
@@ -682,6 +690,7 @@ export const itemsByMerchantNosale = gql`
       featuredImage
       pricing
       status
+      type
       visitorCounter {
         entity
         counter

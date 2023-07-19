@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
+import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
@@ -12,6 +15,7 @@ import {
   ItemsService,
 } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import {
   FormComponent,
@@ -24,7 +28,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './inventory-creator.component.html',
   styleUrls: ['./inventory-creator.component.scss'],
 })
-export class InventoryCreatorComponent implements OnInit {
+export class InventoryCreatorComponent implements OnInit, OnDestroy {
   itemSlides: Array<any> = [];
   assetsFolder: string = environment.assetsUrl;
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
@@ -47,6 +51,24 @@ export class InventoryCreatorComponent implements OnInit {
   layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
   renderQrContent: boolean = true;
   showIntroParagraph: boolean = true;
+  reminderToast: {
+    message: string;
+    warning?: boolean;
+    secondsTrigger: number;
+    timeoutId?: ReturnType<typeof setTimeout>;
+  } = {
+    message: 'Los campos que tienen (*) son obligatorios',
+    secondsTrigger: 30,
+    warning: false,
+  };
+  queryParamsSubscription: Subscription = null;
+  routerParamsSubscription: Subscription = null;
+  existingItem: boolean = false;
+  updateItem: boolean = false;
+  merchantRegistration: boolean = false;
+  itemId: string = null;
+  quotationId: string = null;
+  requesterId: string = null;
 
   constructor(
     private fb: FormBuilder,
@@ -54,43 +76,94 @@ export class InventoryCreatorComponent implements OnInit {
     private headerService: HeaderService,
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
+    private quotationsService: QuotationsService,
     public dialog: MatDialog,
     private snackbar: MatSnackBar,
+    private toastr: ToastrService,
+    private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    /*
-    if (!this.itemsService.temporalItemInput?.name)
-      this.router.navigate(['/admin/item-selector']);
-    */
+    this.routerParamsSubscription = this.route.params.subscribe(
+      ({ itemId }) => {
+        this.queryParamsSubscription = this.route.queryParams.subscribe(
+          async ({ existingItem, updateItem, merchantRegistration, quotationId, requesterId }) => {
+            this.existingItem = JSON.parse(existingItem || 'false');
+            this.updateItem = Boolean(updateItem);
+            this.quotationId = quotationId;
+            this.requesterId = requesterId;
+            
+            this.merchantRegistration = JSON.parse(
+              merchantRegistration || 'false'
+            );
+            this.itemId = itemId;
 
-    if (!this.itemsService.temporalItemInput?.name) {
-      this.router.navigate(['/admin/item-selector']);
-    }
+            this.merchantsService.merchantData =
+              await this.merchantsService.merchantDefault();
 
-    this.itemFormData = this.fb.group({
-      title: [this.itemsService.temporalItemInput?.name || ''],
-      pricing: [
-        this.itemsService.temporalItemInput?.pricing || 0,
-        Validators.compose([Validators.required, Validators.min(0.1)]),
-      ],
-      defaultLayout: [
-        this.itemsService.temporalItemInput?.layout || this.layout,
-      ],
-      stock: [
-        this.itemsService.temporalItemInput?.stock || '',
-        Validators.compose([Validators.required, Validators.min(1)]),
-      ],
-      notificationStockLimit: [
-        this.itemsService.temporalItemInput?.notificationStockLimit || '',
-        Validators.compose([Validators.required, Validators.min(1)]),
-      ],
-    });
+            if (
+              !this.itemsService.temporalItemInput?.name &&
+              !this.existingItem &&
+              !merchantRegistration
+            ) {
+              this.router.navigate(['/admin/item-selector']);
+            }
 
-    if (this.itemsService.temporalItemInput?.slides) {
-      this.itemSlides = this.itemsService.temporalItemInput?.slides;
-    }
+            this.itemFormData = this.fb.group({
+              title: [this.itemsService.temporalItemInput?.name || ''],
+              pricing: [
+                this.itemsService.temporalItemInput?.pricing || 0,
+                Validators.compose([Validators.required, Validators.min(0.1)]),
+              ],
+              defaultLayout: [
+                this.itemsService.temporalItemInput?.layout || this.layout,
+              ],
+              stock: [
+                this.itemsService.temporalItemInput?.stock || '',
+                Validators.compose([Validators.required, Validators.min(1)]),
+              ],
+              notificationStockLimit: [
+                this.itemsService.temporalItemInput?.notificationStockLimit ||
+                  '',
+                Validators.compose([Validators.required, Validators.min(1)]),
+              ],
+            });
+
+            if (
+              this.itemsService.temporalItemInput?.slides &&
+              !this.existingItem
+            ) {
+              this.itemSlides = this.itemsService.temporalItemInput?.slides;
+            }
+
+            if (
+              this.existingItem &&
+              !this.itemsService.modifiedImagesFromExistingItem
+            ) {
+              this.itemSlides = this.itemsService.temporalItem.images
+                .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+                .map(({ index, ...image }) => {
+                  return {
+                    url: completeImageURL(image.value),
+                    index,
+                    type: 'poster',
+                    text: '',
+                    _id: image._id,
+                  };
+                });
+            } else if (
+              this.existingItem &&
+              this.itemsService.modifiedImagesFromExistingItem
+            ) {
+              this.itemSlides = this.itemsService.temporalItemInput.slides;
+            }
+
+            this.addToastReminder(true);
+          }
+        );
+      }
+    );
   }
 
   async loadFile(event: Event) {
@@ -124,36 +197,65 @@ export class InventoryCreatorComponent implements OnInit {
 
         this.saveTemporalItemInMemory();
 
+        if (this.existingItem) {
+          this.itemsService.modifiedImagesFromExistingItem = true;
+        }
+
         this.itemsService.editingSlide = this.itemSlides.length - 1;
 
         let routeForItemEntity;
 
-        if (this.itemSlides.length === 1) {
+        const queryParams: any = {
+          entity: 'item',
+          redirectFromFlowRoute: true,
+          useSlidesInMemory: this.existingItem && !this.updateItem,
+        };
+
+        if (this.itemSlides.length === 1 && !file.type.includes('video')) {
           routeForItemEntity = 'admin/items-slides-editor';
+
+          if (this.existingItem && this.itemId)
+            routeForItemEntity += '/' + this.itemId;
+
+          queryParams.redirectFromFlowRoute = true;
+          queryParams.addEditingImageToExistingItem =
+            this.existingItem && this.itemId && this.updateItem;
+        } else if (
+          this.itemSlides.length === 1 &&
+          file.type.includes('video')
+        ) {
+          routeForItemEntity = 'admin/slides-editor';
+          queryParams.addEditingImageToExistingItem =
+            this.existingItem && this.itemId && this.updateItem;
+
+          await this.itemsService.itemAddImage(
+            [
+              {
+                file,
+                index,
+              },
+            ],
+            this.itemId
+          );
+
+          if (this.updateItem) routeForItemEntity += '/' + this.itemId;
         } else if (this.itemSlides.length > 1) {
           routeForItemEntity = 'admin/slides-editor';
+
+          if (this.updateItem) routeForItemEntity += '/' + this.itemId;
         }
 
         if (this.itemSlides.length === 1 && fileList.length === 1) {
           this.router.navigate([routeForItemEntity], {
-            queryParams: {
-              entity: 'item',
-              redirectFromFlowRoute: true,
-            },
+            queryParams,
           });
         } else if (this.itemSlides.length > 1) {
           this.router.navigate([routeForItemEntity], {
-            queryParams: {
-              entity: 'item',
-              redirectFromFlowRoute: true,
-            },
+            queryParams,
           });
         } else if (fileList.length > 1 && i === fileList.length - 1) {
           this.router.navigate(['admin/slides-editor'], {
-            queryParams: {
-              entity: 'item',
-              redirectFromFlowRoute: true,
-            },
+            queryParams,
           });
         }
 
@@ -174,10 +276,23 @@ export class InventoryCreatorComponent implements OnInit {
   goToReorderMedia() {
     this.saveTemporalItemInMemory();
 
+    if (this.updateItem) {
+      const queryParams = {
+        entity: 'item',
+        redirectFromFlowRoute: true,
+        useSlidesInMemory: false,
+      };
+
+      return this.router.navigate(['admin/slides-editor/' + this.itemId], {
+        queryParams,
+      });
+    }
+
     this.router.navigate(['admin/slides-editor'], {
       queryParams: {
         entity: 'item',
         redirectFromFlowRoute: true,
+        useSlidesInMemory: this.existingItem,
       },
     });
   }
@@ -195,6 +310,7 @@ export class InventoryCreatorComponent implements OnInit {
           file: slide.media,
           index,
           active: true,
+          _id: slide._id,
         };
       }
     );
@@ -264,6 +380,82 @@ export class InventoryCreatorComponent implements OnInit {
         }
       );
       lockUI();
+
+      if (this.merchantRegistration) {
+        /*
+        const itemIdBeingEdited = this.itemsService.temporalItem._id;
+
+        const itemInput: ExtendedItemInput = {
+          name: this.itemsService.temporalItemInput?.name,
+          pricing: this.itemFormData.value['pricing'],
+          images,
+          stock: this.itemFormData.value['stock'],
+          notificationStockLimit:
+            this.itemFormData.value['notificationStockLimit'],
+          slides: this.itemSlides,
+        };
+
+        this.itemsService.temporalItemInput = itemInput;
+
+        this.router.navigate(
+          [
+            'admin/supplier-register/' +
+              this.quotationsService.quotationBeingEdited._id,
+          ],
+          {
+            queryParams: {
+              supplierMerchantId:
+                this.quotationsService.quotationBeingEdited.merchant,
+              requesterId: this.merchantsService.merchantData?._id,
+            },
+          }
+        );*/
+      }
+
+      if (this.updateItem) {
+        try {
+          const itemInput: ItemInput = {
+            pricing: Number(this.itemFormData.value['pricing']),
+            stock: Number(this.itemFormData.value['stock']),
+            useStock: true,
+            notificationStock: true,
+            notificationStockLimit: Number(
+              this.itemFormData.value['notificationStockLimit']
+            ),
+          };
+
+          await this.itemsService.updateItem(itemInput, this.itemId);
+          this.itemsService.modifiedImagesFromExistingItem = false;
+
+
+          this.snackbar.open('Producto actualizado satisfactoriamente!', '', {
+            duration: 5000,
+          });
+
+          this.router.navigate(
+            [
+              `admin/supplier-register/${this.quotationId}`
+            ],
+            {
+              queryParams: {
+                supplierMerchantId:
+                this.merchantsService.merchantData?._id,
+                requesterId: this.requesterId,
+              },
+            }
+          );
+
+          unlockUI();
+        } catch (error) {
+          this.snackbar.open('Ocurrió un error al actualizar el producto', '', {
+            duration: 5000,
+          });
+          unlockUI();
+        }
+
+        return;
+      }
+
       const itemInput: ItemInput = {
         name: this.itemFormData.value['title'],
         description: this.itemFormData.value['description'],
@@ -309,6 +501,10 @@ export class InventoryCreatorComponent implements OnInit {
         duration: 5000,
       });
 
+      this.itemsService.temporalItem = null;
+      this.itemsService.temporalItemInput = null;
+      this.itemsService.modifiedImagesFromExistingItem = false;
+
       this.router.navigate(['admin/item-selector']);
 
       unlockUI();
@@ -324,6 +520,53 @@ export class InventoryCreatorComponent implements OnInit {
   }
 
   back() {
+    if (this.updateItem) {
+      return this.router.navigate(
+        [
+          `admin/supplier-register/${this.quotationId}`
+        ],
+        {
+          queryParams: {
+            supplierMerchantId:
+            this.merchantsService.merchantData?._id,
+            requesterId: this.requesterId,
+          },
+        }
+      );
+    }
+
     this.router.navigate(['admin/item-selector']);
+  }
+
+  addToastReminder(firstLoad: boolean = false) {
+    if (this.reminderToast) {
+      this.reminderToast.timeoutId = setTimeout(
+        () => {
+          if (!this.reminderToast.warning) {
+            this.toastr.info(this.reminderToast.message, null, {
+              timeOut: 1500,
+              tapToDismiss: true,
+              positionClass: 'toast-top-center',
+            });
+          } else {
+            this.toastr.warning(this.reminderToast.message, null, {
+              timeOut: 1500,
+              tapToDismiss: true,
+              positionClass: 'toast-top-center',
+            });
+          }
+
+          this.addToastReminder();
+        },
+        !firstLoad ? this.reminderToast.secondsTrigger * 1000 : 3000
+      );
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.reminderToast.timeoutId)
+      clearTimeout(this.reminderToast.timeoutId);
+
+    this.queryParamsSubscription.unsubscribe();
   }
 }

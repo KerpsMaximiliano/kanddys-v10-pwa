@@ -67,6 +67,7 @@ import { SwiperOptions } from 'swiper';
 import { Dialogs } from './dialogs';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { filter } from 'rxjs/operators';
+import { QuotationsService } from 'src/app/core/services/quotations.service';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -151,6 +152,7 @@ export class CheckoutComponent implements OnInit {
     private saleflowService: SaleFlowService,
     public postsService: PostsService,
     public orderService: OrderService,
+    private quotationsService: QuotationsService,
     private appService: AppService,
     public location: Location,
     private router: Router,
@@ -227,6 +229,8 @@ export class CheckoutComponent implements OnInit {
           }
         }
 
+        if(this.quotationsService.quotationInCart) this.quotationsService.quotationInCart = null;
+
         this.appService.events.emit({ type: 'order-done', data: true });
         if (this.hasPaymentModule) {
           if (this.postsService.privatePost && !this.logged) {
@@ -264,6 +268,8 @@ export class CheckoutComponent implements OnInit {
         );
 
         await this.createEntityTemplateForOrderPost(queryParamsDecoded.post);
+
+        if(this.quotationsService.quotationInCart) this.quotationsService.quotationInCart = null;
 
         this.appService.events.emit({ type: 'order-done', data: true });
         if (this.hasPaymentModule) {
@@ -1020,6 +1026,11 @@ export class CheckoutComponent implements OnInit {
       this.headerService.order.orderStatusDelivery = 'in progress';
       this.orderInMemory.orderStatusDelivery = 'in progress';
 
+      if (this.isSuppliersBuyerFlow(this.items)) {
+        this.headerService.order.orderType = 'supplier';
+        this.orderInMemory.orderType = 'supplier';
+      }
+
       if (this.headerService.user && !anonymous) {
         console.log(this.headerService.order);
         createdOrder = (await this.orderService.createOrder(this.orderInMemory))
@@ -1067,6 +1078,8 @@ export class CheckoutComponent implements OnInit {
 
       //Answer the webforms of each item and adds it to the order
       await this.createAnswerForEveryWebformItem(createdOrder);
+
+      if(this.quotationsService.quotationInCart) this.quotationsService.quotationInCart = null;
 
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
@@ -2118,6 +2131,10 @@ export class CheckoutComponent implements OnInit {
 
     this.areItemsQuestionsAnswered();
   };
+
+  isSuppliersBuyerFlow(items: Item[]): boolean {
+    return items.some((item) => item.type === 'supplier');
+  }
 
   goToReceiver() {
     this.router.navigate([`ecommerce/receiver-form`], {

@@ -15,6 +15,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 export class ItemsSlidesEditorComponent implements OnInit {
   itemId: string;
   redirectFromFlowRoute: boolean = false;
+  addEditingImageToExistingItem: boolean = false;
 
   constructor(
     public itemsService: ItemsService,
@@ -28,21 +29,26 @@ export class ItemsSlidesEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(({ itemId }) => {
-      this.route.queryParams.subscribe(({ redirectFromFlowRoute }) => {
-        this.itemId = itemId;
-        this.redirectFromFlowRoute = redirectFromFlowRoute;
+      this.route.queryParams.subscribe(
+        ({ redirectFromFlowRoute, addEditingImageToExistingItem }) => {
+          this.itemId = itemId;
+          this.redirectFromFlowRoute = redirectFromFlowRoute;
+          this.addEditingImageToExistingItem = JSON.parse(
+            addEditingImageToExistingItem || 'false'
+          );
 
-        if (
-          !this.itemsService.temporalItemInput ||
-          !this.itemsService.temporalItemInput.slides ||
-          !this.itemsService.temporalItemInput?.slides?.length ||
-          this.itemsService.temporalItemInput?.slides?.length === 0
-        ) {
-          this.router.navigate([
-            `/ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
-          ]);
+          if (
+            !this.itemsService.temporalItemInput ||
+            !this.itemsService.temporalItemInput.slides ||
+            !this.itemsService.temporalItemInput?.slides?.length ||
+            this.itemsService.temporalItemInput?.slides?.length === 0
+          ) {
+            this.router.navigate([
+              `/ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
+            ]);
+          }
         }
-      });
+      );
     });
   }
 
@@ -70,8 +76,23 @@ export class ItemsSlidesEditorComponent implements OnInit {
           this.itemsService.editingSlide
         ]['media'] = file;
 
+        if (this.addEditingImageToExistingItem) {
+
+          lockUI();
+          await this.itemsService.itemAddImage(
+            [
+              {
+                file,
+              },
+            ],
+            this.itemId
+          );
+
+          unlockUI();
+        }
+
         this.ngZone.run(() => {
-          if(this.redirectFromFlowRoute) {
+          if (this.redirectFromFlowRoute) {
             return this.headerService.redirectFromQueryParams();
           }
 

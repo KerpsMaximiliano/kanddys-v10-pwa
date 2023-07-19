@@ -35,6 +35,24 @@ a {
     justify-content: center;
     gap: 8px;
 
+    .stock-button {
+      color: #2874ad;
+      font-family: Inter;
+      font-size: 15px;
+      font-style: normal;
+      font-family: InterBold;
+      font-weight: 700;
+      line-height: normal;
+      margin-top: auto;
+      background: transparent;
+      border: none;
+      width: fit-content;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
     .img {
       object-fit: cover;
       border-radius: 8px;
@@ -56,6 +74,9 @@ a {
       line-clamp: 8;
       -webkit-box-orient: vertical;
       line-height: 21px;
+      min-height: 198.33px;
+      display: flex;
+      flex-direction: column;
 
       .title {
         font-family: InterBold;
