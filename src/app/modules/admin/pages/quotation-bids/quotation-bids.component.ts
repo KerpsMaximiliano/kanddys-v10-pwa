@@ -6,18 +6,19 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Quotation, QuotationMatches } from 'src/app/core/models/quotations';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
 import { environment } from 'src/environments/environment';
+import { Item } from 'src/app/core/models/item';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-quotation-bids',
@@ -37,6 +38,7 @@ export class QuotationBidsComponent implements OnInit {
     private itemsService: ItemsService,
     private saleflowService: SaleFlowService,
     private headerService: HeaderService,
+    private authService: AuthService,
     private appService: AppService,
     private route: ActivatedRoute,
     private matDialog: MatDialog,
@@ -111,6 +113,8 @@ export class QuotationBidsComponent implements OnInit {
       this.headerService.saleflow = saleflowDefault;
       this.headerService.deleteSaleflowOrder();
     }
+
+    localStorage.setItem('quotationInCart', this.quotation._id);
 
     this.quotationsService.quotationInCart = this.quotation;
 
@@ -213,11 +217,29 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   async createExternalSupplierInvitation() {
-    const supplierRegistrationLink = `${
-      environment.uri
-    }/admin/supplierRegistration?items=${this.quotationGlobalItems
-      .map((item) => item._id)
-      .join('-')}&buyerPhone=${this.headerService.user.phone}`;
+    lockUI();
+
+    this.quotationsService.quotationInCart = this.quotation;
+
+    const merchantDefault = await this.merchantsService.merchantDefault();
+
+    const supplierRegistrationLink = (
+      await this.authService.generateMagicLinkNoAuth(
+        null,
+        '/admin/supplier-register',
+        this.quotationsService.quotationInCart._id,
+        'QuotationAccess',
+        {
+          jsondata: JSON.stringify({
+            requesterId: merchantDefault._id,
+            items: this.quotationsService.quotationInCart.items.join('-'),
+            buyerPhone: this.headerService.user.phone,
+          }),
+        },
+        [],
+        true
+      )
+    )?.generateMagicLinkNoAuth;
 
     const listOfItemNames = this.quotationGlobalItems
       .map(
@@ -228,6 +250,8 @@ export class QuotationBidsComponent implements OnInit {
     const placeholderMessage = `Hola [Nombre del Suplidor],\n\nSoy ${
       this.merchantsService.merchantData.name || this.headerService.user.name
     } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n\n${listOfItemNames}\n\nPor favor, adiciona los precios a través de este enlace: ${supplierRegistrationLink}\n\nEse enlace 👆 es de la plataforma del Club de Floristerías que usamos todos los miembros (te tomará menos de 7 minutos inscribirte si es tu primera vez).\n\nSi empiezas a usar esta plataforma de ventas y cotizaciones:\n\nNos evitaremos tareas repetitivas.\n\nTu podrás ajustar tus precios e inventario fácilmente.\n\nPodemos pagarte por transferencia bancaria, PayPal o tarjeta de crédito.\n\nLe podremos dar seguimiento a las ordenes.\n\nUna vez te registres en la plataforma y ajustes los precios de los productos, la plataforma generará un enlace para que me lo envíes. Al finalizar el proceso, automáticamente se abrirá WhatsApp en tu dispositivo, donde podrás enviarme el enlace generado por la plataforma a mi número. Este enlace me permitirá realizar el pago de los productos de la orden.`;
+
+    unlockUI();
 
     this.clipboard.copy(placeholderMessage);
 
