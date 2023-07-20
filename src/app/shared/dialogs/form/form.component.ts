@@ -94,7 +94,7 @@ export class FormComponent implements OnInit {
 
     const clickedInsideDialog = dialogElement.contains(event.target as Node);
 
-    if (clickedInsideDialog && event.target instanceof HTMLInputElement) {
+    if (clickedInsideDialog && event.target instanceof HTMLInputElement && this.viewportRuler.getViewportRect().width <= 500) {
       this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
     }
   }
@@ -106,7 +106,7 @@ export class FormComponent implements OnInit {
 
     const clickedInsideDialog = dialogElement.contains(event.target as Node);
 
-    if (clickedInsideDialog && event.target instanceof HTMLInputElement) {
+    if (clickedInsideDialog && event.target instanceof HTMLInputElement && this.viewportRuler.getViewportRect().width <= 500) {
       this.dialogRef.updatePosition({ top: '50px' }); // Reset the position when the keyboard is hidden
     }
   }
