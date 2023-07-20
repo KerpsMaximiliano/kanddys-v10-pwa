@@ -156,6 +156,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   tagData: Tag;
   queryParams: any;
   routeParams: any;
+  supplierPreview: any;
   playVideo = playVideoNoFullscreen;
   addedItemToQuotation: boolean = false;
   defaultCtaText: string = 'Agregar al carrito';
@@ -229,10 +230,11 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     await this.verifyIfUserIsLogged();
     const validEntities = ['item', 'post', 'template', 'collection'];
     const { entity, entityId } = this.routeParams;
-    const { mode, redirectTo } = this.queryParams;
+    const { mode, redirectTo, supplierPreview } = this.queryParams;
 
     this.entityPresentation = mode;
     this.redirectTo = redirectTo;
+    this.supplierPreview = supplierPreview;
 
     if (
       this.entityPresentation === 'DEMO' ||
@@ -761,7 +763,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   back = async () => {
-    if (this.supplierItem) {
+    if (this.supplierPreview) {
       return this.router.navigate([`/admin/item-selector`]);
     }
 

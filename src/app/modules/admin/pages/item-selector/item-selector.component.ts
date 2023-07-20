@@ -187,9 +187,16 @@ export class ItemSelectorComponent implements OnInit {
   }
 
   goToArticleDetail(itemID: string) {
-    this.router.navigate([
+    this.router.navigate(
+      [
       `ecommerce/${this.merchantService.merchantData.slug}/article-detail/item/${itemID}`,
-    ]);
+      ],
+      {
+        queryParams: {
+          supplierPreview: true
+        }
+      }
+    );
   }
 
   setSelectedItems = (value: Array<string>) => {
