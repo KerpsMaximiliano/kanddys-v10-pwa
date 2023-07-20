@@ -67,44 +67,46 @@
             ></video>
           </div>
 
+          <div class="item-info-container">
+            <p class="main-text">
+              {{ item?.name ? item?.name : 'Artículo sin nombre' }}
+            </p>
+            <p class="greyout-text" *ngIf="item?.description">
+              {{ truncateString((item?.description).trim(), 38) }}
+            </p>
+            <p class="main-text" style="margin-top: 3px;">
+              ${{
+                item.pricing * itemObjects[item._id].amount | number : "1.2-2"
+              }}
+            </p>
+          </div>
+          
+        </div>
+        <div class="right-side">
           <div class="item-quantity">
-            <p class="grayout-label">Cantidad</p>
             <div class="quantity">
               <span
-                *ngIf="items.length > 1 || itemObjects[item._id].amount > 1"
                 mat-button
-                class="button"
+                class="button icon"
                 (click)="changeAmount(item._id, 'subtract')"
-                >-</span
-              >
+                >
+                  {{ itemObjects[item._id].amount > 1 ? '-' : '' }}
+                  <mat-icon *ngIf="itemObjects[item._id].amount === 1" style="font-size: 19px; width: 23px;">delete</mat-icon>
+                </span>
 
-              <span
-                *ngIf="items.length === 1 && itemObjects[item._id].amount === 1"
-                mat-button
-                class="button"
-                (click)="changeAmount(item._id, 'subtract')"
-                >-</span
-              >
-
-              <span>{{ itemObjects[item._id].amount }}</span>
+              <span style="position: relative; bottom: 2px;">{{ itemObjects[item._id].amount }}</span>
               <span
                 mat-button
-                class="button"
+                class="button icon"
                 (click)="changeAmount(item._id, 'add')"
                 >+</span
               >
             </div>
           </div>
         </div>
-        <div class="right-side">
-          <p class="grayout-label">
-            ${{
-              item.pricing * itemObjects[item._id].amount | number : "1.2-2"
-            }}
-          </p>
-        </div>
       </div>
       <div class="card-body" *ngIf="webformsByItem[item._id]?.webform">
+        <hr style="border: #E9E9E9 1px solid;">
         <div
           class="section"
           *ngFor="
@@ -126,7 +128,7 @@
           />
 
           <p
-            class="section-title grayout-label"
+            class="section-title"
             [ngClass]="{
               required:
                 question.required &&
