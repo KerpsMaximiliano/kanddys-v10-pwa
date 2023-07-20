@@ -1,4 +1,5 @@
-<div class="container"
+<div
+  class="container"
   [ngStyle]="{
     minHeight: deviceViewportHeight + 'px'
   }"
@@ -203,11 +204,21 @@
       <ng-container [ngSwitch]="entity">
         <div class="add-to-cart" *ngSwitchCase="'item'" (click)="saveProduct()">
           <ng-container *ngIf="entityPresentation !== 'DEMO'">
-            {{
-              !isItemInCart
-                ? itemData?.ctaText || "Agregar al carrito"
-                : "Quitar del carrito"
-            }}
+            <ng-container *ngIf="!supplierItem">
+              {{
+                !isItemInCart
+                  ? itemData?.ctaText || defaultCtaText
+                  : defaultCtaRemoveText
+              }}
+            </ng-container>
+
+            <ng-container *ngIf="supplierItem">
+              {{
+                !addedItemToQuotation
+                  ? itemData?.ctaText || defaultCtaText
+                  : defaultCtaRemoveText
+              }}
+            </ng-container>
           </ng-container>
           <ng-container *ngIf="entityPresentation === 'DEMO'">
             Agregar al carrito

@@ -1,0 +1,78 @@
+.container {
+  border-radius: 6px;
+  border: 1px solid rgba(59, 101, 74, 0.7);
+  background: #181d17;
+  padding: 20px 20px 20px 20px;
+}
+.modal-top-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  mat-icon {
+    color: #87cd9b;
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.modal-title {
+  color: #ffffff;
+  font-size: 17px;
+  font-family: InterLight;
+  margin: 0;
+}
+
+.modal-all-text {
+  color: #6fcf97;
+  font-family: InterLight;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  margin: 0;
+}
+
+.modal-categories-container {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.modal-category {
+ 
+  color: #f6f6f6;
+  font-family: InterMedium;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding-left: 13px;
+  padding-right: 13px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border-radius: 29px;
+}
+
+.modal-category-selected{
+ color: #181d17;
+ background: #C4C5C3;
+ font-weight: 700;
+}
+
+@media (max-width: 400px) {
+  .modal-top-container {
+    mat-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .modal-all-text,
+  .modal-title {
+    font-size: 15px;
+  }
+}

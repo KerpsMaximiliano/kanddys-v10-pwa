@@ -260,7 +260,7 @@ a {
   padding-bottom: 16px;
   width: 100%;
   max-width: 500px;
-  background-color: #F6F6F6;
+  background-color: #f6f6f6;
 
   .contact-button {
     padding: 0 8px;
@@ -284,6 +284,101 @@ a {
       }
     }
   }
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-family: InterMedium;
+  font-weight: 900;
+
+  mat-icon {
+    color: #171d16;
+  }
+}
+
+.shopping-cart-container {
+  cursor: pointer;
+  width: 55px;
+  height: 35px;
+  border-radius: 5px;
+  background: #6fcf97;
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  justify-content: center !important;
+  font-family: InterMedium;
+  font-weight: 900;
+
+  mat-icon {
+    color: #171d16;
+  }
+}
+
+.input-container {
+  width: 100%;
+  background: #f6f6f6;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 15px;
+
+  input {
+    width: 100%;
+    height: 39px;
+    border-radius: 8px;
+    background: #d9d9d9;
+    border: 0;
+    padding-left: 21px;
+    font-family: InterMedium;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
+  input::placeholder {
+    color: #7b7b7b;
+    font-family: InterMedium;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
+}
+
+.input-items {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -34px;
+
+  div {
+    color: #272727;
+    font-family: InterMedium;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-right: 15px;
+  }
+}
+
+.input-item-text {
+  border-radius: 29px;
+  background: #c4c5c3;
+  width: 100%;
+  color: #181d17;
+  text-align: center;
+  font-family: InterMedium;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  padding: 13px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-top:15px;
 }
 
 ::ng-deep.mat-bottom-sheet-container {

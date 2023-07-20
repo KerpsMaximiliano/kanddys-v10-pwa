@@ -57,7 +57,7 @@ export class NavigationComponent implements OnInit {
         },
         {
           text: 'Lo vendido 🧾',
-          routerLink: ['/admin/reports'],
+          routerLink: ['/admin/reports/orders'],
         },
         {
           text: 'Progreso de facturas ⏩',
@@ -75,6 +75,7 @@ export class NavigationComponent implements OnInit {
         {
           text: 'Mis suplidores (compras y cotizaciones)',
           routerLink: ['/admin/item-selector'],
+          possibleRedirection: ['/admin/quotations'],
         },
       ],
     },
@@ -108,16 +109,27 @@ export class NavigationComponent implements OnInit {
 
     this.tabs.forEach((tab, tabIndex) => {
       const isCurrentURLInCurrentTab = tab.links.find((link) => {
+        console.log(
+          JSON.stringify(link.routerLink.join('/')),
+          JSON.stringify(this.router.url)
+        );
+
         return (
           JSON.stringify(link.routerLink.join('/')) ===
-          JSON.stringify(this.router.url)
+            JSON.stringify(this.router.url) ||
+          (link.possibleRedirection &&
+            JSON.stringify(link.possibleRedirection.join('/')) ===
+              JSON.stringify(this.router.url))
         );
       });
 
       if (isCurrentURLInCurrentTab) activeTabIndex = tabIndex;
     });
 
-    this.tabs[activeTabIndex].active = true;
+    this.tabs.forEach((tab, tabIndex) => {
+      if (tabIndex === activeTabIndex) this.tabs[activeTabIndex].active = true;
+      else this.tabs[tabIndex].active = false;
+    });
 
     this.quotations = await this.quotationsService.quotations({
       findBy: {
