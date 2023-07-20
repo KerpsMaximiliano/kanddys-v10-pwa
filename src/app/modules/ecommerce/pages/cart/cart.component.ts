@@ -24,7 +24,7 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Subscription } from 'rxjs';
-import { capitalize, capitalizeAllWords } from 'src/app/core/helpers/strings.helpers';
+import { capitalize, capitalizeAllWords, truncateString } from 'src/app/core/helpers/strings.helpers';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
@@ -75,6 +75,7 @@ export class CartComponent implements OnInit {
   queryParamsSubscription: Subscription = null;
 
   capitalize = capitalize;
+  truncateString = truncateString;
   wait: boolean = false;
   redirectFromFlowRoute: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;

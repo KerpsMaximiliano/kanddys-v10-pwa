@@ -94,7 +94,7 @@
         </a>
       </div>
     </div>
-    <div class="input-container">
+    <!-- <div class="input-container">
       <input placeholder="Buscar.." />
       <div class="input-items">
         <div>⏰</div>
@@ -115,7 +115,7 @@
         🖇️ Artículos en categoriaID, categoryID
       </div>
 
-    </div>
+    </div> -->
   </div>
   <router-outlet></router-outlet>
 </div>
@@ -223,11 +223,11 @@
     </ng-container>
   </ul>
   <div style="display: flex; justify-content: center; align-items: center">
-    <ng-container *ngIf="!headerService.order?.products?.length">
+    <ng-container>
       <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px" />
       <p class="highlighted-text">Stars for causes</p>
     </ng-container>
-    <div
+    <!-- <div
       class="cart-container"
       *ngIf="headerService.order?.products?.length"
       (click)="goToCart()"
@@ -238,6 +238,6 @@
         alt=""
         style="width: 15px; margin-bottom: 2px"
       />
-    </div>
+    </div> -->
   </div>
 </div>

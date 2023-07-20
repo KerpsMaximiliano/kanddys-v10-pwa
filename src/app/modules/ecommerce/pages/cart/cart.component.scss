@@ -69,12 +69,15 @@ main {
 }
 
 .card {
+  border-radius: 7px;
   box-shadow: none;
   margin-bottom: 19px;
 
   .card-header {
     justify-content: space-between;
     .left-side {
+      justify-content: flex-start;
+      width: 64%;
       .featured-image {
         cursor: pointer;
         width: 82px;
@@ -136,38 +139,31 @@ main {
           }
         }
       }
-
-      .item-quantity {
-        margin-left: 10px;
-        .quantity {
-          margin-top: 1.2em;
-          span {
-            margin-right: 20px;
-            font-size: 40px;
-            color: #000;
-            font-family: "InterSemiBold";
-
-            &.button {
-              cursor: pointer;
-            }
-
-            &.disabled {
-              color: rgba(0, 0, 0, 0.4);
-              cursor: not-allowed;
-            }
-          }
-        }
-      }
     }
     .right-side {
       .header-text {
         text-transform: capitalize;
       }
     }
+    .item-info-container {
+      width: 50%;
+      margin-left: 8px;
+      p {
+        font-family: 'InterRegular';
+        &.main-text {
+          font-size: 17px;
+          color: #181D17;
+        }
+        &.greyout-text {
+          font-size: 13px;
+          color: #7B7B7B;
+        }
+      }
+    }
   }
 
   .card-body {
-    margin-top: 2em;
+    margin-top: 1em;
     margin-bottom: 1em;
 
     .section {
@@ -177,6 +173,8 @@ main {
         cursor: pointer;
         font-size: 17px;
         margin-bottom: 0.7em;
+        font-family: "InterRegular";
+        color: #7B7B7B;
 
         &.required {
           max-width: 75%;
@@ -184,8 +182,9 @@ main {
       }
       .section-description {
         cursor: pointer;
-        font-size: 17px;
+        font-size: 13px;
         font-family: InterRegular;
+        color: #7B7B7B;
       }
 
       .question-text-response {
@@ -200,6 +199,10 @@ main {
         right: -32px;
         top: -18px;
       }
+    }
+
+    .section:nth-child(2) {
+      margin-top: 20px !important;
     }
   }
 }
@@ -271,6 +274,37 @@ footer {
   top: 0px;
 }
 
+.item-quantity {
+  border: 1px solid #C4C5C3;
+  border-radius: 20px;
+  padding: 1px 10px;
+  .quantity {
+    span {
+      font-size: 17px;
+      color: #000;
+      font-family: "InterRegular";
+
+      &.button {
+        cursor: pointer;
+
+        &.icon {
+          font-size: 28px;
+          font-family: "InterSemiBold";
+        }
+      }
+
+      &.disabled {
+        color: rgba(0, 0, 0, 0.4);
+        cursor: not-allowed;
+      }
+    }
+
+    span:nth-child(1), span:nth-child(2) {
+      margin-right: 20px;
+    }
+  }
+}
+
 .mat-checkbox ::ng-deep .mat-checkbox-frame {
   background-color: white;
   border-color: #707070;
@@ -286,4 +320,11 @@ footer {
 
 ::ng-deep .mat-checkbox.mat-checkbox-checked .mat-checkbox-background {
   background-color: #87cd9b;
+}
+
+
+@media (max-width: 374px) {
+  .left-side {
+    width: 60% !important;
+  }
 }
