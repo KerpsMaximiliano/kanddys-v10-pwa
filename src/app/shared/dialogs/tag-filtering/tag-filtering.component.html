@@ -1,0 +1,19 @@
+<div class="container">
+    <div class="modal-top-container">
+
+        <p class="modal-title">
+            🖇️️ Categorias de artículos
+        </p>   
+        <mat-icon>add</mat-icon>
+        <mat-icon>remove</mat-icon>
+        <p class="modal-all-text">
+            Todas
+        </p> 
+    </div>
+    <div class="modal-categories-container">
+        <div class="modal-category " *ngFor="let i of categories" [ngClass]="{'modal-category-selected':i.selected}" (click)="select(i.id)">
+            {{i.name}}
+        </div>
+       
+    </div>
+</div>
