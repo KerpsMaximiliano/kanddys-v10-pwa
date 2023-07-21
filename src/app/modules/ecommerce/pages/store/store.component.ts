@@ -10,6 +10,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
+import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
 import { environment } from 'src/environments/environment';
 import SwiperCore, { Virtual } from 'swiper/core';
 
@@ -183,6 +184,15 @@ export class StoreComponent implements OnInit {
         contact: this.headerService.merchantContact,
         phone,
         email,
+      },
+    });
+  }
+
+  openTagsDialog() {
+    this._bottomSheet.open(TagFilteringComponent, {
+      data: {
+        // 
+
       },
     });
   }
