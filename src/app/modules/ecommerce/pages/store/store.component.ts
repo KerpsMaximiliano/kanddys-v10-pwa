@@ -191,8 +191,30 @@ export class StoreComponent implements OnInit {
   openTagsDialog() {
     this._bottomSheet.open(TagFilteringComponent, {
       data: {
-        // 
-
+        title: "Tags de artículos",
+        rightCTA: {
+          text: "Todas",
+          callback: () => {
+            console.log("asd");
+          }
+        },
+        categories: [
+          {
+            _id: 1,
+            name: "Categoría 1",
+            selected: false
+          },
+          {
+            _id: 2,
+            name: "Categoría 2",
+            selected: false
+          },
+          {
+            _id: 3,
+            name: "Categoría 3",
+            selected: false
+          }
+        ]
       },
     });
   }

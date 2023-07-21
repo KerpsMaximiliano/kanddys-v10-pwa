@@ -1,7 +1,4 @@
 .container {
-  border-radius: 6px;
-  border: 1px solid rgba(59, 101, 74, 0.7);
-  background: #181d17;
   padding: 20px 20px 20px 20px;
 }
 .modal-top-container {
@@ -60,6 +57,10 @@
  color: #181d17;
  background: #C4C5C3;
  font-weight: 700;
+}
+
+::ng-deep.mat-bottom-sheet-container {
+  background-color: #181d17;
 }
 
 @media (max-width: 400px) {

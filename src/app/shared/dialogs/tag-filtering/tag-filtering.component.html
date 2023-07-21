@@ -2,18 +2,17 @@
     <div class="modal-top-container">
 
         <p class="modal-title">
-            🖇️️ Categorias de artículos
+            🖇️️ {{ data.title }}
         </p>   
-        <mat-icon>add</mat-icon>
-        <mat-icon>remove</mat-icon>
-        <p class="modal-all-text">
-            Todas
+        <!-- <mat-icon>add</mat-icon>
+        <mat-icon>remove</mat-icon> -->
+        <p class="modal-all-text" (click)="data.rightCTA?.callback()" *ngIf="data.rightCTA">
+            {{ data.rightCTA?.text }}
         </p> 
     </div>
     <div class="modal-categories-container">
-        <div class="modal-category " *ngFor="let i of categories" [ngClass]="{'modal-category-selected':i.selected}" (click)="select(i.id)">
+        <div class="modal-category " *ngFor="let i of data.categories" [ngClass]="{'modal-category-selected':i.selected}" (click)="select(i._id)">
             {{i.name}}
         </div>
-       
     </div>
 </div>
