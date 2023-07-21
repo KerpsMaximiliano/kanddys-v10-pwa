@@ -351,6 +351,10 @@ a {
   display: flex;
   justify-content: flex-end;
   margin-top: -34px;
+  
+  .input-items {
+    cursor: pointer;
+  }
 
   div {
     color: #272727;

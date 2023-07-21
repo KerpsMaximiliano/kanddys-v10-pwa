@@ -77,20 +77,39 @@
         ></app-currency-input>
       </div>
     </div>
-    <span class="payment-selection"> Como prefieres pagar?</span>
+    <span class="payment-selection" *ngIf="!paymentMethod"> Como prefieres pagar?</span>
 
     <div style="margin-top: 2em;">
-      <button mat-button [ngClass]="{ active: paymentMethod === 'bank-transfer' }" class="option-cta" (click)="selectPaymentMethod('bank-transfer')" *ngIf="(paymentMethod !== 'paypal' && paymentMethod !== 'azul') && banks.length">
+      <button mat-button [ngClass]="{ active: paymentMethod === 'bank-transfer' }" class="option-cta" (click)="selectPaymentMethod('bank-transfer')" *ngIf="!paymentMethod && banks.length">
         Transferencia bancaria
       </button>
   
-      <button mat-button [ngClass]="{ active: paymentMethod === 'paypal' }" class="option-cta" (click)="selectPaymentMethod('paypal')" *ngIf="(paymentMethod !== 'bank-transfer' && paymentMethod !== 'azul') && electronicPayments.length">
+      <button mat-button [ngClass]="{ active: paymentMethod === 'paypal' }" class="option-cta" (click)="selectPaymentMethod('paypal')" *ngIf="!paymentMethod && electronicPayments.length">
         Paypal
       </button>
 
-      <button mat-button [ngClass]="{ active: paymentMethod === 'azul' }" class="option-cta" (click)="selectPaymentMethod('azul')" *ngIf="(paymentMethod !== 'bank-transfer' && paymentMethod !== 'paypal') && azulPaymentsSupported">
+      <button mat-button [ngClass]="{ active: paymentMethod === 'azul' }" class="option-cta" (click)="selectPaymentMethod('azul')" *ngIf="!paymentMethod && azulPaymentsSupported">
         Tarjeta de crédito
       </button>
+      
+      <div
+        class="selected-payment flex"
+        *ngIf="paymentMethod"
+        (click)="selectPaymentMethod(null)"
+      >
+        <p>Método de pago</p>
+        <p>
+          {{ 
+            paymentMethod === 'bank-transfer'
+              ? 'Transferencia bancaria'
+              : paymentMethod === 'paypal'
+              ? 'Paypal'
+              : paymentMethod === 'azul'
+              ? 'Azul'
+              : 'Otro'
+          }} >
+        </p>
+      </div>
     </div>
 
     <ng-container *ngIf="paymentMethod && paymentMethod !== 'azul'">
@@ -114,6 +133,14 @@
     </ng-container>
 
     <input #fileChooser type="file" [accept]="['.png', '.jpg', '.jpeg', '.webp']" style="display: none;" (change)="fileUpload($event)">
+
+    <p
+      class="text-disclaimer"
+      style="margin-top: 7em;"
+      *ngIf="!paymentMethod && electronicPayments.length"
+    >
+      PayPal te cobra un 7.5% adicional
+    </p>
   </div>
 
   <app-sticky-button
