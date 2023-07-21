@@ -301,6 +301,15 @@ a.disabled {
   }
 }
 
+.selected-payment {
+  cursor: pointer;
+  p {
+    font-family: InterRegular;
+    font-size: 17px;
+    color: #FFFFFF;
+  }
+}
+
 .text-description {
   color: #FFF;
   font-size: 17px;
@@ -316,4 +325,16 @@ a.disabled {
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+}
+
+.text-disclaimer {
+  color: #FFFFFF;
+  font-family: "InterLight";
+  font-size: 17px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
