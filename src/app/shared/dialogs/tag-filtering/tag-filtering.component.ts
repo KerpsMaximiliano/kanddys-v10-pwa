@@ -1,4 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+
+
+export interface DialogTemplate {
+  title: string;
+  rightCTA: {
+    text: string;
+    callback: () => void;
+  };
+  categories: Array<{
+    _id: string;
+    name: string;
+    selected: boolean;
+  }>;
+  styles?: Record<string, Record<string, boolean>>;
+}
 
 @Component({
   selector: 'app-tag-filtering',
@@ -6,25 +22,24 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./tag-filtering.component.scss'],
 })
 export class TagFilteringComponent implements OnInit {
-  categories = [
-    { id: 1, name: 'CategoryId', selected: false },
-    { id: 2, name: 'CategoryId', selected: false },
-    { id: 3, name: 'CategoryId', selected: false },
-    { id: 4, name: 'CategoryId', selected: false },
-    { id: 5, name: 'CategoryId', selected: false },
-    { id: 6, name: 'CategoryId', selected: false },
-    { id: 7, name: 'CategoryId', selected: false },
-    { id: 8, name: 'CategoryId', selected: false },
-  ];
-  constructor() {}
+  
+  selectedCategories: string[] = [];
+
+  @Output() selectionOutput = new EventEmitter();
+
+  constructor(
+    @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate,
+  ) {}
 
   ngOnInit(): void {}
 
   select(id) {
-    this.categories.forEach((e) => {
-      if (e.id == id) {
+    this.data.categories.forEach((e) => {
+      if (e._id == id) {
         e.selected = !e.selected;
       }
     });
+    this.selectedCategories = this.data.categories.filter((e) => e.selected).map((e) => (e._id));
+    this.selectionOutput.emit(this.selectedCategories);
   }
 }

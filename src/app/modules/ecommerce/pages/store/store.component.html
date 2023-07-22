@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div class="top-bar" *ngIf="tags.length">
+    <!-- <div class="top-bar" *ngIf="tags.length">
       <div
         class="chip-list"
         #elemt
@@ -89,33 +89,39 @@
           ]"
           routerLinkActive="selected"
         >
-          <!-- <app-gradient-card [tag]="tag"></app-gradient-card> -->
           {{ tag.name }}
         </a>
       </div>
-    </div>
-    <!-- <div class="input-container">
+    </div> -->
+    <div
+      class="input-container"
+      #elemt
+      (mousedown)="startDragging($event, elemt)"
+      (mouseup)="stopDragging()"
+      (mouseleave)="stopDragging()"
+      (mousemove)="moveEvent($event, elemt)"
+    >
       <input placeholder="Buscar.." />
       <div class="input-items">
-        <div class="icon-button">⏰</div>
-        <div class="icon-button">💰</div>
-        <div class="icon-button" (click)="openTagsDialog()">🏷️</div>
-        <div class="icon-button">🖇️️</div>
+        <!-- <div class="icon-button">⏰</div> -->
+        <div class="icon-button" (click)="openPriceRangeDialog()">💰</div>
+        <div class="icon-button" (click)="openTagsDialog()" *ngIf="tags.length">🏷️</div>
+        <!-- <div class="icon-button">🖇️️</div> -->
       </div>
-      <div class="input-item-text">
+      <!-- <div class="input-item-text">
         ⏰  Artículos que se entregan en menos de 2 horas en Santo Domingo
       </div>
       <div class="input-item-text">
         💰 Artículos que cuestan entre $id - $id
-      </div>
-      <div class="input-item-text">
+      </div> -->
+      <!-- <div class="input-item-text">
         🏷️  Artículos con tagid, tagid
-      </div>
-      <div class="input-item-text">
+      </div> -->
+      <!-- <div class="input-item-text">
         🖇️ Artículos en categoriaID, categoryID
-      </div>
+      </div> -->
 
-    </div> -->
+    </div>
   </div>
   <router-outlet></router-outlet>
 </div>
