@@ -74,8 +74,8 @@ export class NavigationComponent implements OnInit {
         },
         {
           text: 'Mis suplidores (compras y cotizaciones)',
-          routerLink: ['/admin/item-selector'],
-          possibleRedirection: ['/admin/quotations'],
+          routerLink: ['/ecommerce/supplier-items-selector'],
+          possibleRedirection: ['/ecommerce/quotations'],
         },
       ],
     },
@@ -109,11 +109,6 @@ export class NavigationComponent implements OnInit {
 
     this.tabs.forEach((tab, tabIndex) => {
       const isCurrentURLInCurrentTab = tab.links.find((link) => {
-        console.log(
-          JSON.stringify(link.routerLink.join('/')),
-          JSON.stringify(this.router.url)
-        );
-
         return (
           JSON.stringify(link.routerLink.join('/')) ===
             JSON.stringify(this.router.url) ||
@@ -131,17 +126,19 @@ export class NavigationComponent implements OnInit {
       else this.tabs[tabIndex].active = false;
     });
 
-    this.quotations = await this.quotationsService.quotations({
-      findBy: {
-        merchant: this.merchantsService.merchantData._id,
-      },
-      options: { limit: -1 },
-    });
+    if (this.merchantsService.merchantData) {
+      this.quotations = await this.quotationsService.quotations({
+        findBy: {
+          merchant: this.merchantsService.merchantData._id,
+        },
+        options: { limit: -1 },
+      });
 
-    if (this.quotations.length > 0) {
-      this.tabs[1].links[this.tabs[1].links.length - 1].routerLink = [
-        '/admin/quotations',
-      ];
+      if (this.quotations.length > 0) {
+        this.tabs[1].links[this.tabs[1].links.length - 1].routerLink = [
+          '/ecommerce/quotations',
+        ];
+      }
     }
   }
 

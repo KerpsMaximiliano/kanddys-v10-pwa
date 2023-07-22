@@ -257,6 +257,7 @@ export const listItems = gql`
       _id
       createdAt
       name
+      description
       images {
         _id
         value
@@ -265,6 +266,7 @@ export const listItems = gql`
       }
       merchant {
         _id
+        slug
       }
       pricing
       category {

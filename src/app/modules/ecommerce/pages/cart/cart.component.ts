@@ -24,7 +24,11 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Subscription } from 'rxjs';
-import { capitalize, capitalizeAllWords, truncateString } from 'src/app/core/helpers/strings.helpers';
+import {
+  capitalize,
+  capitalizeAllWords,
+  truncateString,
+} from 'src/app/core/helpers/strings.helpers';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
@@ -54,6 +58,7 @@ export class CartComponent implements OnInit {
   logged: boolean = false;
 
   items: ExtendedItem[] = [];
+  quotationItemsNotAvailableOrNotInSaleflow: ExtendedItem[] = [];
   itemObjects: Record<string, ItemSubOrderInput> = {};
 
   isItemInCart: boolean = false;
@@ -159,7 +164,86 @@ export class CartComponent implements OnInit {
       })
     )?.listItems;
 
-    this.fixImagesURL();
+    const itemIdsOfQuotationThatAreInSupplierSaleflow: Record<string, boolean> =
+      {};
+    const arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow: Array<string> =
+      [];
+
+    this.items.forEach((item) => {
+      itemIdsOfQuotationThatAreInSupplierSaleflow[item.parentItem] = true;
+    });
+
+    if (this.quotationsService.quotationInCart) {
+      this.quotationsService.quotationInCart.items.forEach(
+        (supplierItemIdInList) => {
+          if (
+            !itemIdsOfQuotationThatAreInSupplierSaleflow[supplierItemIdInList]
+          ) {
+            arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow.push(
+              supplierItemIdInList
+            );
+          }
+        }
+      );
+
+      if (arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow.length > 0)
+        this.quotationItemsNotAvailableOrNotInSaleflow = (
+          await this.saleflowService.listItems({
+            findBy: {
+              _id: {
+                __in: ([] = [
+                  ...arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow,
+                ]),
+              },
+            },
+          })
+        )?.listItems;
+
+      this.quotationItemsNotAvailableOrNotInSaleflow.forEach((item) => {
+        this.itemObjects[item._id] = {
+          amount: 0,
+          item: item._id,
+        };
+      });
+    }
+
+    if (this.quotationsService.selectedTemporalQuotation) {
+      this.quotationsService.selectedTemporalQuotation.items.forEach(
+        (supplierItemIdInList) => {
+          if (
+            !itemIdsOfQuotationThatAreInSupplierSaleflow[supplierItemIdInList]
+          ) {
+            arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow.push(
+              supplierItemIdInList
+            );
+          }
+        }
+      );
+
+      if (arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow.length > 0)
+        this.quotationItemsNotAvailableOrNotInSaleflow = (
+          await this.saleflowService.listItems({
+            findBy: {
+              _id: {
+                __in: ([] = [
+                  ...arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow,
+                ]),
+              },
+            },
+          })
+        )?.listItems;
+
+      this.quotationItemsNotAvailableOrNotInSaleflow.forEach((item) => {
+        this.itemObjects[item._id] = {
+          amount: 0,
+          item: item._id,
+        };
+      });
+    }
+
+    this.fixImagesURL(this.items);
+    if (this.quotationItemsNotAvailableOrNotInSaleflow.length > 0)
+      this.fixImagesURL(this.quotationItemsNotAvailableOrNotInSaleflow);
 
     // Check if some of the items in the cart have no amount (quantity that defines how many units of the item are getting ordered)
     this.headerService.order.products.forEach((product) => {
@@ -169,8 +253,8 @@ export class CartComponent implements OnInit {
   }
 
   // Checks if the URL has no HTTPS then fixes it
-  private fixImagesURL() {
-    for (const item of this.items as Array<ExtendedItem>) {
+  private fixImagesURL(arrayOfItems: Array<ExtendedItem>) {
+    for (const item of arrayOfItems) {
       item.ready = false;
       item.images = item.images.sort(({ index: a }, { index: b }) =>
         a > b ? 1 : -1
@@ -498,9 +582,14 @@ export class CartComponent implements OnInit {
   }
 
   goBack() {
+    if (this.quotationsService.selectedTemporalQuotation) {
+      this.headerService.flowRoute = '/ecommerce/quotation-bids/';
+    }
+
     if (this.quotationsService.quotationInCart) {
       this.headerService.flowRoute =
-        '/admin/quotation-bids/' + this.quotationsService.quotationInCart._id;
+        '/ecommerce/quotation-bids/' +
+        this.quotationsService.quotationInCart._id;
     }
 
     if (this.redirectFromFlowRoute)
@@ -918,10 +1007,14 @@ export class CartComponent implements OnInit {
         this._bottomSheet.open(OptionsMenuComponent, {
           data: {
             title: `Confirmación de precios y disponibilidad:`,
-            description: `Te recomendamos que te asegures la disponibilidad y precio de ${capitalizeAllWords(this.headerService.saleflow.merchant.name)} compartiendo la cotización.`,
+            description: `Te recomendamos que te asegures la disponibilidad y precio de ${capitalizeAllWords(
+              this.headerService.saleflow.merchant.name
+            )} compartiendo la cotización.`,
             options: [
               {
-                value: `Compartir cotización con ${capitalizeAllWords(this.headerService.saleflow.merchant.name)}`,
+                value: `Compartir cotización con ${capitalizeAllWords(
+                  this.headerService.saleflow.merchant.name
+                )}`,
                 callback: async () => {
                   try {
                     lockUI();
@@ -929,80 +1022,142 @@ export class CartComponent implements OnInit {
                     const merchantDefault =
                       await this.merchantsService.merchantDefault();
 
+                    const quotationInCartId =
+                      localStorage.getItem('quotationInCart');
 
-                    const quotationInCartId = localStorage.getItem("quotationInCart");
-
-                    if(!this.quotationsService.quotationInCart && quotationInCartId) {
-                      this.quotationsService.quotationInCart  = await this.quotationsService.quotation(quotationInCartId);
+                    if (
+                      !this.quotationsService.quotationInCart &&
+                      quotationInCartId
+                    ) {
+                      this.quotationsService.quotationInCart =
+                        await this.quotationsService.quotation(
+                          quotationInCartId
+                        );
                     }
 
                     if (
-                      !merchantDefault ||
-                      !this.quotationsService.quotationInCart
+                      this.quotationsService.quotationInCart &&
+                      !this.quotationsService.selectedTemporalQuotation
                     ) {
+                      if (
+                        !merchantDefault ||
+                        !this.quotationsService.quotationInCart
+                      ) {
+                        unlockUI();
+                        return this.router.navigate([
+                          '/ecommerce/' +
+                            this.headerService.saleflow.merchant.slug +
+                            '/store',
+                        ]);
+                      }
+
+                      const supplierRegistrationLink = (
+                        await this.authService.generateMagicLinkNoAuth(
+                          null,
+                          '/ecommerce/supplier-register',
+                          this.quotationsService.quotationInCart._id,
+                          'QuotationAccess',
+                          {
+                            jsondata: JSON.stringify({
+                              supplierMerchantId:
+                                this.headerService.saleflow.merchant._id,
+                              requesterId: merchantDefault._id,
+                              items:
+                                this.quotationsService.quotationInCart.items.join(
+                                  '-'
+                                ),
+                            }),
+                          },
+                          [],
+                          true
+                        )
+                      )?.generateMagicLinkNoAuth;
+
+                      let itemsContent = ``;
+                      this.items.forEach((item) => {
+                        itemsContent += `- ${
+                          item?.name ? item?.name : 'Artículo sin nombre'
+                        }, $${item.pricing}\n`;
+                      });
+                      const message = `Hola ${capitalizeAllWords(
+                        this.headerService.saleflow.merchant.name
+                      )},\n\nSoy ${
+                        this.currentUser?.name ||
+                        this.currentUser?.phone ||
+                        this.currentUser?.email
+                      } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${itemsContent}\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace ${supplierRegistrationLink}\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: ${
+                        environment.uri +
+                        '/ecommerce/quotation-bids/' +
+                        this.quotationsService.quotationInCart._id
+                      }`;
+                      const whatsappLink = `https://api.whatsapp.com/send?phone=${
+                        this.headerService.saleflow.merchant
+                          .receiveNotificationsMainPhone
+                          ? this.headerService.saleflow.merchant.owner.phone
+                          : this.headerService.saleflow.merchant
+                              ?.secondaryContacts?.length
+                          ? this.headerService.saleflow.merchant
+                              ?.secondaryContacts[0]
+                          : '19188156444'
+                      }&text=${encodeURIComponent(message)}`;
+
                       unlockUI();
-                      return this.router.navigate([
-                        '/ecommerce/' +
-                          this.headerService.saleflow.merchant.slug +
-                          '/store',
-                      ]);
-                    } 
-                    
 
-                    const supplierRegistrationLink = (
-                      await this.authService.generateMagicLinkNoAuth(
-                        null,
-                        '/admin/supplier-register',
-                        this.quotationsService.quotationInCart._id,
-                        'QuotationAccess',
-                        {
-                          jsondata: JSON.stringify({
-                            supplierMerchantId:
-                              this.headerService.saleflow.merchant._id,
-                            requesterId: merchantDefault._id,
-                            items:
-                              this.quotationsService.quotationInCart.items.join(
-                                '-'
-                              ),
-                          }),
-                        },
-                        [],
-                        true
-                      )
-                    )?.generateMagicLinkNoAuth;
+                      console.log('whatsappLink', whatsappLink);
+                      window.location.href = whatsappLink;
+                    } else if (
+                      !this.quotationsService.quotationInCart &&
+                      this.quotationsService.selectedTemporalQuotation
+                    ) {
+                      const supplierRegistrationLink = (
+                        await this.authService.generateMagicLinkNoAuth(
+                          null,
+                          '/ecommerce/supplier-register',
+                          null,
+                          'QuotationAccess',
+                          {
+                            jsondata: JSON.stringify({
+                              supplierMerchantId:
+                                this.headerService.saleflow.merchant._id,
+                              items:
+                                this.quotationsService.selectedTemporalQuotation.items.join(
+                                  '-'
+                                ),
+                              temporalQuotation: true,
+                            }),
+                          },
+                          [],
+                          true
+                        )
+                      )?.generateMagicLinkNoAuth;
 
-                    let itemsContent = ``;
-                    this.items.forEach((item) => {
-                      itemsContent += `- ${
-                        item?.name ? item?.name : 'Artículo sin nombre'
-                      }, $${item.pricing}\n`;
-                    });
-                    const message = `Hola ${capitalize(
-                      this.headerService.saleflow.merchant.name
-                    )},\n\nSoy ${
-                      this.currentUser?.name ||
-                      this.currentUser?.phone ||
-                      this.currentUser?.email
-                    } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${itemsContent}\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace ${supplierRegistrationLink}\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: ${
-                      environment.uri +
-                      '/admin/quotation-bids/' +
-                      this.quotationsService.quotationInCart._id
-                    }`;
-                    const whatsappLink = `https://api.whatsapp.com/send?phone=${
-                      this.headerService.saleflow.merchant
-                        .receiveNotificationsMainPhone
-                        ? this.headerService.saleflow.merchant.owner.phone
-                        : this.headerService.saleflow.merchant
-                            ?.secondaryContacts?.length
-                        ? this.headerService.saleflow.merchant
-                            ?.secondaryContacts[0]
-                        : '19188156444'
-                    }&text=${encodeURIComponent(message)}`;
+                      let itemsContent = ``;
+                      this.items.forEach((item) => {
+                        itemsContent += `- ${
+                          item?.name ? item?.name : 'Artículo sin nombre'
+                        }, $${item.pricing}\n`;
+                      });
+                      const message = `Hola ${capitalizeAllWords(
+                        this.headerService.saleflow.merchant.name
+                      )},\n\nSoy [Mi nombre] y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${itemsContent}\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace ${supplierRegistrationLink}\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: ${
+                        environment.uri + '/ecommerce/quotation-bids/'
+                      }`;
+                      const whatsappLink = `https://api.whatsapp.com/send?phone=${
+                        this.headerService.saleflow.merchant
+                          .receiveNotificationsMainPhone
+                          ? this.headerService.saleflow.merchant.owner.phone
+                          : this.headerService.saleflow.merchant
+                              ?.secondaryContacts?.length
+                          ? this.headerService.saleflow.merchant
+                              ?.secondaryContacts[0]
+                          : '19188156444'
+                      }&text=${encodeURIComponent(message)}`;
 
-                    unlockUI();
+                      unlockUI();
 
-                    console.log("whatsappLink", whatsappLink)
-                    window.location.href = whatsappLink;
+                      console.log('whatsappLink', whatsappLink);
+                      window.location.href = whatsappLink;
+                    }
                   } catch (error) {
                     console.error('error', error);
                   }

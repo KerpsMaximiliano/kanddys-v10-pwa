@@ -1,9 +1,10 @@
 .container {
   height: 100vh;
   overflow-y: scroll;
-  background: #F6F6F6;
+  background: #f6f6f6;
   padding: 0px;
 }
+
 
 .header {
   background: #fff;
@@ -70,7 +71,7 @@
   border-radius: 4px 10px 4px 4px;
   //   background: #936105;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  margin-top: 22px;
+  margin-top: 10px;
 }
 
 .content-price-container {
@@ -314,4 +315,78 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+.item-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px 10px 4px 4px;
+  position: relative;
+
+  video {
+    width: 100%;
+    height: 60%;
+    // object-fit: cover;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+  }
+}
+
+.field-text {
+  border-radius: 4px;
+  background: #fff;
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+
+  &.hover {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  label {
+    color: #000;
+    font-family: Inter;
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 300;
+    line-height: normal;
+  }
+
+  span {
+    display: inline-block;
+    padding-top: 10px;
+    border: none;
+    font-size: 17px;
+    font-family: InterBold;
+    color: #7b7b7b;
+
+    &::placeholder {
+      color: #7b7b7b;
+    }
+  }
+
+  h6 {
+    color: #000;
+    font-size: 13px;
+    font-family: InterLight;
+    font-style: italic;
+    font-weight: normal;
+    margin: 0px;
+    margin-bottom: 10px;
+  }
+
+  h4 {
+    color: #7b7b7b;
+    font-size: 17px;
+    font-family: InterBold;
+    font-style: normal;
+    line-height: normal;
+    margin: 0px;
+  }
 }

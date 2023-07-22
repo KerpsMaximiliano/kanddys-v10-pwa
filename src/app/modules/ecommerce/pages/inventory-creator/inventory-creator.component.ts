@@ -7,7 +7,11 @@ import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { urltoFile } from 'src/app/core/helpers/files.helpers';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import {
+  lockUI,
+  playVideoOnFullscreen,
+  unlockUI,
+} from 'src/app/core/helpers/ui.helpers';
 import { ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -22,6 +26,7 @@ import {
   FormComponent,
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
+import { isVideo } from 'src/app/core/helpers/strings.helpers';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -70,6 +75,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   itemId: string = null;
   quotationId: string = null;
   requesterId: string = null;
+  playVideoOnFullscreen = playVideoOnFullscreen;
 
   constructor(
     private fb: FormBuilder,
@@ -77,7 +83,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     private headerService: HeaderService,
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
-    private quotationsService: QuotationsService,
+    public quotationsService: QuotationsService,
     public dialog: MatDialog,
     private snackbar: MatSnackBar,
     private toastr: ToastrService,
@@ -114,11 +120,14 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               !this.existingItem &&
               !merchantRegistration
             ) {
-              this.router.navigate(['/admin/item-selector']);
+              this.router.navigate(['/ecommerce/item-selector']);
             }
 
             this.itemFormData = this.fb.group({
               title: [this.itemsService.temporalItemInput?.name || ''],
+              description: [
+                this.itemsService.temporalItemInput?.description || '',
+              ],
               pricing: [
                 this.itemsService.temporalItemInput?.pricing || 0,
                 Validators.compose([Validators.required, Validators.min(0.1)]),
@@ -375,17 +384,28 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     });
   }
 
+  isVideoWrapper(filename: string) {
+    return isVideo(filename);
+  }
+
   async saveItem() {
     let itemSlideIndex = 0;
-    for await (const slide of this.itemSlides) {
-      if (slide.url && !slide.media) {
-        this.itemSlides[itemSlideIndex].media = await urltoFile(
-          slide.url,
-          'file' + itemSlideIndex
-        );
-      }
 
-      itemSlideIndex++;
+    if (
+      this.existingItem &&
+      !this.quotationsService.supplierItemsAdjustmentsConfig
+        ?.quotationItemBeingEdited.quotationItemInMemory
+    ) {
+      for await (const slide of this.itemSlides) {
+        if (slide.url && !slide.media) {
+          this.itemSlides[itemSlideIndex].media = await urltoFile(
+            slide.url,
+            'file' + itemSlideIndex
+          );
+        }
+
+        itemSlideIndex++;
+      }
     }
 
     try {
@@ -399,37 +419,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         }
       );
       lockUI();
-
-      if (this.merchantRegistration) {
-        /*
-        const itemIdBeingEdited = this.itemsService.temporalItem._id;
-
-        const itemInput: ExtendedItemInput = {
-          name: this.itemsService.temporalItemInput?.name,
-          pricing: this.itemFormData.value['pricing'],
-          images,
-          stock: this.itemFormData.value['stock'],
-          notificationStockLimit:
-            this.itemFormData.value['notificationStockLimit'],
-          slides: this.itemSlides,
-        };
-
-        this.itemsService.temporalItemInput = itemInput;
-
-        this.router.navigate(
-          [
-            'admin/supplier-register/' +
-              this.quotationsService.quotationBeingEdited._id,
-          ],
-          {
-            queryParams: {
-              supplierMerchantId:
-                this.quotationsService.quotationBeingEdited.merchant,
-              requesterId: this.merchantsService.merchantData?._id,
-            },
-          }
-        );*/
-      }
 
       if (this.updateItem) {
         try {
@@ -451,7 +440,11 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           });
 
           this.router.navigate(
-            [`admin/supplier-register/${this.quotationId}`],
+            [
+              this.quotationId
+                ? `ecommerce/supplier-register/${this.quotationId}`
+                : `ecommerce/supplier-register`,
+            ],
             {
               queryParams: {
                 supplierMerchantId: this.merchantsService.merchantData?._id,
@@ -469,6 +462,42 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         }
 
         return;
+      }
+
+      if (
+        this.quotationsService.supplierItemsAdjustmentsConfig
+          ?.quotationItemBeingEdited.quotationItemInMemory
+      ) {
+        const itemInput: ItemInput = {
+          pricing: Number(this.itemFormData.value['pricing']),
+          stock: Number(this.itemFormData.value['stock']),
+          useStock: true,
+          notificationStock: true,
+          notificationStockLimit: Number(
+            this.itemFormData.value['notificationStockLimit']
+          ),
+        };
+
+        const quotation =
+          this.quotationsService.supplierItemsAdjustmentsConfig?.quotationItems[
+            this.quotationsService.supplierItemsAdjustmentsConfig
+              ?.quotationItemBeingEdited.indexInQuotations
+          ];
+
+        quotation.pricing = itemInput.pricing;
+        quotation.stock = itemInput.stock;
+
+        this.quotationsService.supplierItemsAdjustmentsConfig.quotationItems[
+          this.quotationsService.supplierItemsAdjustmentsConfig?.quotationItemBeingEdited.indexInQuotations
+        ] = quotation;
+
+        unlockUI();
+
+        return this.router.navigate([
+          this.quotationId
+            ? `ecommerce/supplier-register/${this.quotationId}`
+            : `ecommerce/supplier-register`,
+        ]);
       }
 
       const itemInput: ItemInput = {
@@ -498,10 +527,11 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       };
       this.itemsService.itemPrice = null;
 
-      const saleflowDefault = await this.saleflowService.saleflowDefault(this.merchantsService.merchantData._id);
+      const saleflowDefault = await this.saleflowService.saleflowDefault(
+        this.merchantsService.merchantData._id
+      );
 
       if (!this.existingItem) {
-
         const createdItem = (await this.itemsService.createItem(itemInput))
           ?.createItem;
 
@@ -517,7 +547,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           saleflowDefault._id
         );
       } else {
-        console.log("suplidor creando item a partir de uno global")
+        console.log('suplidor creando item a partir de uno global');
         itemInput.parentItem = this.itemsService.temporalItem._id;
 
         const createdItem2 = (await this.itemsService.createItem(itemInput))
@@ -547,7 +577,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         duration: 3000,
       });
     } catch (error) {
-      console.log("Ocurrio un error", error);
+      console.log('Ocurrio un error', error);
       this.snackbar.open('Error al crear el producto', 'Cerrar', {
         duration: 3000,
       });
@@ -557,7 +587,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   back() {
     if (this.updateItem) {
       return this.router.navigate(
-        [`admin/supplier-register/${this.quotationId}`],
+        [`ecommerce/supplier-register/${this.quotationId}`],
         {
           queryParams: {
             supplierMerchantId: this.merchantsService.merchantData?._id,
@@ -567,7 +597,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.router.navigate(['admin/item-selector']);
+    this.router.navigate(['ecommerce/item-selector']);
   }
 
   addToastReminder(firstLoad: boolean = false) {
