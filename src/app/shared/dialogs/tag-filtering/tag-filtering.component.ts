@@ -9,7 +9,7 @@ export interface DialogTemplate {
     callback: () => void;
   };
   categories: Array<{
-    _id: number;
+    _id: string;
     name: string;
     selected: boolean;
   }>;
@@ -22,6 +22,8 @@ export interface DialogTemplate {
   styleUrls: ['./tag-filtering.component.scss'],
 })
 export class TagFilteringComponent implements OnInit {
+  
+  selectedCategories: string[] = [];
 
   @Output() selectionOutput = new EventEmitter();
 
@@ -37,6 +39,7 @@ export class TagFilteringComponent implements OnInit {
         e.selected = !e.selected;
       }
     });
-    this.selectionOutput.emit(this.data.categories);
+    this.selectedCategories = this.data.categories.filter((e) => e.selected).map((e) => (e._id));
+    this.selectionOutput.emit(this.selectedCategories);
   }
 }
