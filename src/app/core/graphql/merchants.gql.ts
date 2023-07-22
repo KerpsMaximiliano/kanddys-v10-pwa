@@ -180,8 +180,16 @@ export const createMerchant = gql`
 `;
 
 export const entryMerchant = gql`
-  mutation entryMerchant($merchantID: ObjectID!, $merchantInput: MerchantInput, $userInput: UserInput) {
-    entryMerchant(merchantID: $merchantID, merchantInput: $merchantInput, userInput: $userInput)
+  mutation entryMerchant(
+    $merchantID: ObjectID!
+    $merchantInput: MerchantInput
+    $userInput: UserInput
+  ) {
+    entryMerchant(
+      merchantID: $merchantID
+      merchantInput: $merchantInput
+      userInput: $userInput
+    )
   }
 `;
 
@@ -482,5 +490,40 @@ export const orderByStatusDelivery = gql`
 export const higherIncomeBuyersByMerchant = gql`
   query higherIncomeBuyersByMerchant($paginate: PaginationInput!) {
     higherIncomeBuyersByMerchant(paginate: $paginate)
+  }
+`;
+
+export const currencyStartByMerchant = gql`
+  query currencyStartByMerchant($merchantId: ObjectID!) {
+    currencyStartByMerchant(merchantId: $merchantId)
+  }
+`;
+
+export const merchantFuncionality = gql`
+  query merchantFuncionality($merchantId: ObjectID!) {
+    merchantFuncionality(merchantId: $merchantId) {
+      _id
+      merchant
+      reward {
+        expiryMonth
+        expires
+        rewardPercentage
+        rewardPercentageReferral
+        buyersLimit
+        amountBuyer
+        affiliateLimit
+        amountAffiliate
+        solidaryLimit
+        amountSolidary
+      }
+      queryPercentage
+      minOrder
+      maxOrder
+      countOrder
+      payPlataformFee
+      questionDeliveryZone{
+        value
+      }
+    }
   }
 `;

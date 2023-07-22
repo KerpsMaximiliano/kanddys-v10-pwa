@@ -12,68 +12,20 @@
   <div class="content">
     <p class="content-title">✨ Ganadas</p>
     <div class="content-cards-container">
-      <div class="content-card">
+      <div class="content-card" *ngFor="let i of walletUserStarsList">
         <div class="content-card-top-container">
           <div class="flex-space-between">
             <div class="flex">
               <div class="content-card-img"></div>
-              <div class="content-card-merchant">MerchantID</div>
+              <div class="content-card-merchant">{{i.currency?.merchant?.name || i.currency?.merchant?.email || i.currency?.merchant?.phone}}</div>
             </div>
-            <div class="content-card-swaps">10 canjeos</div>
+            <div class="content-card-swaps">{{i.metadata?.usesStars}} canjeos</div>
           </div>
-          <app-progress-bar text="547 ✨ por acumular para el descuento de $20.00" [status]="50"></app-progress-bar>
+          <app-progress-bar [text]="getText(i)"[status]="getPercentage(i)"></app-progress-bar>
         </div>
           <hr />
           <p class="content-card-bill">
-            10 Facturas en total
-          </p>
-      </div>
-      <div class="content-card">
-        <div class="content-card-top-container">
-          <div class="flex-space-between">
-            <div class="flex">
-              <div class="content-card-img"></div>
-              <div class="content-card-merchant">MerchantID</div>
-            </div>
-            <div class="content-card-swaps">10 canjeos</div>
-          </div>
-          <app-progress-bar text="547 ✨ por acumular para el descuento de $20.00" [status]="75"></app-progress-bar>
-        </div>
-          <hr />
-          <p class="content-card-bill">
-            10 Facturas en total
-          </p>
-      </div>
-      <div class="content-card">
-        <div class="content-card-top-container">
-          <div class="flex-space-between">
-            <div class="flex">
-              <div class="content-card-img"></div>
-              <div class="content-card-merchant">MerchantID</div>
-            </div>
-            <div class="content-card-swaps">10 canjeos</div>
-          </div>
-          <app-progress-bar text="547 ✨ por acumular para el descuento de $20.00" [status]="25"></app-progress-bar>
-        </div>
-          <hr />
-          <p class="content-card-bill">
-            10 Facturas en total
-          </p>
-      </div>
-      <div class="content-card">
-        <div class="content-card-top-container">
-          <div class="flex-space-between">
-            <div class="flex">
-              <div class="content-card-img"></div>
-              <div class="content-card-merchant">MerchantID</div>
-            </div>
-            <div class="content-card-swaps">10 canjeos</div>
-          </div>
-          <app-progress-bar text="547 ✨ por acumular para el descuento de $20.00" [status]="0"></app-progress-bar>
-        </div>
-          <hr />
-          <p class="content-card-bill">
-            10 Facturas en total
+            {{i.orderIncomes?.count }} Facturas en total
           </p>
       </div>
     </div>

@@ -316,7 +316,43 @@ export const payOrderWithStripe = gql`
 `;
 
 export const payOrderWithElectronicPayments = gql`
-  mutation payOrderWithElectronicPayments($payMode: String!, $orderId: ObjectID!) {
+  mutation payOrderWithElectronicPayments(
+    $payMode: String!
+    $orderId: ObjectID!
+  ) {
     payOrderWithElectronicPayments(payMode: $payMode, orderId: $orderId)
+  }
+`;
+
+export const walletsByCurrency = gql`
+  query walletsByCurrency($paginate: PaginationInput!) {
+    walletsByCurrency(paginate: $paginate) {
+      _id
+      code
+      balance
+      currency {
+        _id
+        identifier
+      }
+      owner {
+        _id
+        email
+        name
+        phone
+      }
+      type
+      metadata {
+        usesStars
+      }
+    }
+  }
+`;
+
+export const walletsUserStar = gql`
+  query walletsUserStar(
+    $currencyTypeStar: String!
+    $paginate: PaginationInput!
+  ) {
+    walletsUserStar(currencyTypeStar: $currencyTypeStar, paginate: $paginate)
   }
 `;

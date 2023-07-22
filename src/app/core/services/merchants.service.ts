@@ -46,6 +46,8 @@ import {
   orderByStatusDelivery,
   higherIncomeBuyersByMerchant,
   entryMerchant,
+  currencyStartByMerchant,
+  merchantFuncionality,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -514,4 +516,36 @@ export class MerchantsService {
     if (!result || result?.errors) return undefined;
     return result.entryMerchant;
   }
+
+  async currencyStartByMerchant(
+    merchantId: string,
+  ) {
+    const result = await this.graphql.query({
+      query: currencyStartByMerchant,
+      variables: { merchantId},
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.currencyStartByMerchant;
+  }
+
+  async merchantFuncionality(
+    merchantId: string,
+  ) {
+    const result = await this.graphql.query({
+      query: merchantFuncionality,
+      variables: { merchantId},
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.merchantFuncionality;
+  }
 }
+
+
+
+

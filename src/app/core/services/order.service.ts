@@ -47,6 +47,7 @@ import {
   incomeTotalByType,
   orderByDateId,
   expendituresTotalByTypeConstant,
+  ordersIncomeMerchantByUser,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -109,9 +110,9 @@ export class OrderService {
     payMode: string,
     orderId: string,
     setting?: {
-      income?: string,
-      paymentMethod: string,
-      paymentReceiverId: string
+      income?: string;
+      paymentMethod: string;
+      paymentReceiverId: string;
     }
   ): Promise<{ payOrder: { _id: string } }> {
     const result = await this.graphql.mutate({
@@ -125,7 +126,9 @@ export class OrderService {
     return result;
   }
 
-  async ordersByUser(pagination?: PaginationInput): Promise<{ ordersByUser: ItemOrder[] }> {
+  async ordersByUser(
+    pagination?: PaginationInput
+  ): Promise<{ ordersByUser: ItemOrder[] }> {
     try {
       const response = await this.graphql.query({
         query: ordersByUser,
@@ -170,7 +173,10 @@ export class OrderService {
     return result;
   }
 
-  async order(orderId: string, cache: boolean = true): Promise<{ order: ItemOrder }> {
+  async order(
+    orderId: string,
+    cache: boolean = true
+  ): Promise<{ order: ItemOrder }> {
     try {
       const response = await this.graphql.query({
         query: order,
@@ -535,7 +541,12 @@ export class OrderService {
     return result?.incomes;
   }
 
-  async expendituresTotal(type, merchantId, typeCustomId: string, range?: PaginationRangeInput) {
+  async expendituresTotal(
+    type,
+    merchantId,
+    typeCustomId: string,
+    range?: PaginationRangeInput
+  ) {
     const result = await this.graphql.query({
       query: expendituresTotal,
       fetchPolicy: 'no-cache',
@@ -582,11 +593,14 @@ export class OrderService {
     return result;
   }
 
-  async expendituresTotalByTypeConstant(paginate: PaginationInput, activeDateRange?: ExpenditureActiveDateRangeInput) {
+  async expendituresTotalByTypeConstant(
+    paginate: PaginationInput,
+    activeDateRange?: ExpenditureActiveDateRangeInput
+  ) {
     const result = await this.graphql.query({
       query: expendituresTotalByTypeConstant,
       fetchPolicy: 'no-cache',
-      variables: { activeDateRange, paginate }
+      variables: { activeDateRange, paginate },
     });
     return result;
   }
@@ -621,5 +635,14 @@ export class OrderService {
       variables: { typeId, merchantId, subType, range },
     });
     return result?.incomeTotalByType;
+  }
+
+  async ordersIncomeMerchantByUser(userId: string, merchantId: string) {
+    const result = await this.graphql.query({
+      query: ordersIncomeMerchantByUser,
+      fetchPolicy: 'no-cache',
+      variables: { userId, merchantId },
+    });
+    return result?.ordersIncomeMerchantByUser;
   }
 }
