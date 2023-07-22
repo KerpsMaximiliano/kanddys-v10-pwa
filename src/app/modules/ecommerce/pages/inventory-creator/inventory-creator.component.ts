@@ -137,7 +137,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               ],
               stock: [
                 this.itemsService.temporalItemInput?.stock || '',
-                Validators.compose([Validators.required, Validators.min(1)]),
+                Validators.compose([Validators.required]),
               ],
               notificationStockLimit: [
                 this.itemsService.temporalItemInput?.notificationStockLimit ||
@@ -396,6 +396,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       !this.quotationsService.supplierItemsAdjustmentsConfig
         ?.quotationItemBeingEdited.quotationItemInMemory
     ) {
+      lockUI();
       for await (const slide of this.itemSlides) {
         if (slide.url && !slide.media) {
           this.itemSlides[itemSlideIndex].media = await urltoFile(
@@ -406,6 +407,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
         itemSlideIndex++;
       }
+      unlockUI();
     }
 
     try {
@@ -587,7 +589,11 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   back() {
     if (this.updateItem) {
       return this.router.navigate(
-        [`ecommerce/supplier-register/${this.quotationId}`],
+        [
+          this.quotationId
+            ? `ecommerce/supplier-register/${this.quotationId}`
+            : `ecommerce/supplier-register`,
+        ],
         {
           queryParams: {
             supplierMerchantId: this.merchantsService.merchantData?._id,

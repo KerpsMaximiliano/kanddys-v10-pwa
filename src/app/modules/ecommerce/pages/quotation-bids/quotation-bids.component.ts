@@ -24,6 +24,10 @@ import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { filter } from 'rxjs/operators';
+import {
+  LoginDialogComponent,
+  LoginDialogData,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-quotation-bids',
@@ -76,6 +80,14 @@ export class QuotationBidsComponent implements OnInit {
 
         this.quotation = await this.quotationsService.quotation(quotationId);
 
+        await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+        if (
+          this.quotation.merchant !== this.merchantsService.merchantData._id
+        ) {
+          return this.router.navigate(['others/error-screen']);
+        }
+
         const quotationsItemsInput: PaginationInput = {
           findBy: {
             _id: {
@@ -102,7 +114,26 @@ export class QuotationBidsComponent implements OnInit {
             duration: 5000,
           });
         }
-      } else {
+      } else if (!this.headerService.user && quotationId) {
+        this.matDialog.open(LoginDialogComponent, {
+          data: {
+            magicLinkData: {
+              redirectionRoute: '/ecommerce/quotation-bids/' + quotationId,
+              entity: 'MerchantAccess',
+              overWriteDefaultEntity: true,
+            },
+          } as LoginDialogData,
+          panelClass: 'login-dialog-container',
+        });
+
+        this.matSnackBar.open(
+          'Antes de continuar con tu orden, identificate',
+          'Ok',
+          {
+            duration: 10000,
+          }
+        );
+      } else if (!quotationId) {
         this.typeOfQuotation = 'TEMPORAL_QUOTATION';
 
         this.temporalQuotation = await this.quotationsService
@@ -403,7 +434,7 @@ export class QuotationBidsComponent implements OnInit {
         this.merchantsService.merchantData?.name ||
         this.headerService.user?.name ||
         '[Mi Nombre]'
-      } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n\n${listOfItemNames}\n\nPor favor, adiciona los precios a través de este enlace: ${supplierRegistrationLink}\n\nEse enlace 👆 es de la plataforma del Club de Floristerías que usamos todos los miembros (te tomará menos de 7 minutos inscribirte si es tu primera vez).\n\nSi empiezas a usar esta plataforma de ventas y cotizaciones:\n\nNos evitaremos tareas repetitivas.\n\nTu podrás ajustar tus precios e inventario fácilmente.\n\nPodemos pagarte por transferencia bancaria, PayPal o tarjeta de crédito.\n\nLe podremos dar seguimiento a las ordenes.\n\nUna vez te registres en la plataforma y ajustes los precios de los productos, la plataforma generará un enlace para que me lo envíes. Al finalizar el proceso, automáticamente se abrirá WhatsApp en tu dispositivo, donde podrás enviarme el enlace generado por la plataforma a mi número. Este enlace me permitirá realizar el pago de los productos de la orden.`;
+      } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n\n${listOfItemNames}\n\nPor favor, adiciona los precios a través de este enlace: ${supplierRegistrationLink}\n\nEse enlace 👆 es de la plataforma del Club de Floristerías que usamos todos los miembros (te tomará menos de 7 minutos inscribirte si es tu primera vez).\n\nSi empiezas a usar esta plataforma de ventas y cotizaciones:\n\nNos evitaremos tareas repetitivas.\n\nTu podrás ajustar tus precios e inventario fácilmente.\n\nPodemos pagarte por transferencia bancaria, PayPal o tarjeta de crédito.\n\nLe podremos dar seguimiento a las ordenes.\n\nUna vez te registres en la plataforma y ajustes los precios de los productos, la plataforma te presentará un botón que servirá para contactarme por WhatsApp, al pulsar ese botón, se generará automaticamente un enlace y me será enviado a mi número, dicho enlace me permitirá continuar con mi orden.`;
 
       unlockUI();
 
@@ -413,7 +444,6 @@ export class QuotationBidsComponent implements OnInit {
         duration: 3000,
       });
     } else if (this.temporalQuotation) {
-
       await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
       const queryParams: any = {
@@ -445,7 +475,7 @@ export class QuotationBidsComponent implements OnInit {
         .join('');
 
       const placeholderMessage = `Hola [Nombre del Suplidor],\n\nSoy [Mi Nombre]'
-      } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n\n${listOfItemNames}\n\nPor favor, adiciona los precios a través de este enlace: ${supplierRegistrationLink}\n\nEse enlace 👆 es de la plataforma del Club de Floristerías que usamos todos los miembros (te tomará menos de 7 minutos inscribirte si es tu primera vez).\n\nSi empiezas a usar esta plataforma de ventas y cotizaciones:\n\nNos evitaremos tareas repetitivas.\n\nTu podrás ajustar tus precios e inventario fácilmente.\n\nPodemos pagarte por transferencia bancaria, PayPal o tarjeta de crédito.\n\nLe podremos dar seguimiento a las ordenes.\n\nUna vez te registres en la plataforma y ajustes los precios de los productos, la plataforma generará un enlace para que me lo envíes. Al finalizar el proceso, automáticamente se abrirá WhatsApp en tu dispositivo, donde podrás enviarme el enlace generado por la plataforma a mi número. Este enlace me permitirá realizar el pago de los productos de la orden.`;
+      } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n\n${listOfItemNames}\n\nPor favor, adiciona los precios a través de este enlace: ${supplierRegistrationLink}\n\nEse enlace 👆 es de la plataforma del Club de Floristerías que usamos todos los miembros (te tomará menos de 7 minutos inscribirte si es tu primera vez).\n\nSi empiezas a usar esta plataforma de ventas y cotizaciones:\n\nNos evitaremos tareas repetitivas.\n\nTu podrás ajustar tus precios e inventario fácilmente.\n\nPodemos pagarte por transferencia bancaria, PayPal o tarjeta de crédito.\n\nLe podremos dar seguimiento a las ordenes.\n\nUna vez te registres en la plataforma y ajustes los precios de los productos, Avisame por este medio para continuar con mi orden`;
 
       unlockUI();
 

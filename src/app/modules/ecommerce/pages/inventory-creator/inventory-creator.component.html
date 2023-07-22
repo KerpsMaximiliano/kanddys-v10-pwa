@@ -185,8 +185,10 @@
       (click)="openFormForField()"
     >
       <p>Inventario*</p>
-      <input placeholder="0" type="number" formControlName="stock" />
-      <p class="content-inventary-detail">
+      <input placeholder="0" type="number" [disabled]="true" formControlName="stock" />
+      <p class="content-inventary-detail"
+        *ngIf="itemFormData.controls['stock'].value === '0'"
+      >
         No se está mostrando a Floristerias
       </p>
     </div>

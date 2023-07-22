@@ -9,6 +9,8 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatSidenav } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { AppService } from 'src/app/app.service';
 import { Quotation } from 'src/app/core/models/quotations';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -96,25 +98,66 @@ export class NavigationComponent implements OnInit {
     private authService: AuthService,
     public merchantsService: MerchantsService,
     public headerService: HeaderService,
+    private appService: AppService,
     private quotationsService: QuotationsService,
     private router: Router,
     private matDialog: MatDialog
   ) {}
 
   async ngOnInit() {
+    if (localStorage.getItem('session-token')) {
+      if (!this.headerService.user) {
+        let sub = this.appService.events
+          .pipe(filter((e) => e.type === 'auth'))
+          .subscribe((e) => {
+            this.executeInitProcesses();
+
+            sub.unsubscribe();
+          });
+      } else this.executeInitProcesses();
+    } else this.executeInitProcesses();
+  }
+
+  async executeInitProcesses() {
+    const isUserAMerchant =
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+    if (!this.headerService.user || !isUserAMerchant) {
+      console.log('A');
+      this.tabs[1].links.splice(3, 1);
+    }
+
+    if (this.headerService.user && isUserAMerchant) {
+      this.tabs[1].links[3].routerLink = [
+        '/ecommerce',
+        this.merchantsService.merchantData?.slug ||
+          this.headerService.saleflow?.merchant.slug,
+        'store',
+      ];
+    }
+
     if (this.headerService.navigationTabState)
       this.tabs = this.headerService.navigationTabState;
 
     let activeTabIndex = 0;
 
     this.tabs.forEach((tab, tabIndex) => {
-      const isCurrentURLInCurrentTab = tab.links.find((link) => {
-        return (
+      const isCurrentURLInCurrentTab = tab.links.find((link, linkIndex) => {
+        const doesRouterLinkMatchCurrentURL =
           JSON.stringify(link.routerLink.join('/')) ===
-            JSON.stringify(this.router.url) ||
-          (link.possibleRedirection &&
-            JSON.stringify(link.possibleRedirection.join('/')) ===
-              JSON.stringify(this.router.url))
+          JSON.stringify(this.router.url);
+        const doesPossibleRedirectionRouterLinkMatchURL =
+          link.possibleRedirection &&
+          JSON.stringify(link.possibleRedirection.join('/')) ===
+            JSON.stringify(this.router.url);
+
+        if(doesPossibleRedirectionRouterLinkMatchURL) {
+          this.tabs[tabIndex].links[linkIndex].routerLink = link.possibleRedirection;
+        }
+
+        return (
+          doesRouterLinkMatchCurrentURL ||
+          doesPossibleRedirectionRouterLinkMatchURL
         );
       });
 

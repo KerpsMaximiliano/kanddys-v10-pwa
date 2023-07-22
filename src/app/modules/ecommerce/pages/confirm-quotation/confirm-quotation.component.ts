@@ -3,7 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
-import { completeImageURL, isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  completeImageURL,
+  isVideo,
+} from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { PaginationInput } from 'src/app/core/models/saleflow';
@@ -134,6 +137,14 @@ export class ConfirmQuotationComponent implements OnInit {
     let message =
       'Hola, Ya ajusté los precios y la disponibilidad de los productos de su cotización, puede continuar con su compra.';
 
+    if (this.quotationId) {
+      message +=
+        'Para ello, use este enlace: ' +
+        environment.uri +
+        '/ecommerce/quotation-bids/' +
+        this.quotationId;
+    }
+
     const whatsappLink = `https://api.whatsapp.com/send?phone=${
       this.requesterPhone
     }&text=${encodeURIComponent(message)}`;
@@ -142,12 +153,18 @@ export class ConfirmQuotationComponent implements OnInit {
   }
 
   goToQuotation() {
-    this.router.navigate(['ecommerce/supplier-register/' + (this.quotationId ? this.quotationId : '')], {
-      queryParams: {
-        overwriteSupplier: this.merchantService.merchantData._id,
-        overwriteItems: this.items.map((item) => item.parentItem).join('-'),
-      },
-    });
+    this.router.navigate(
+      [
+        'ecommerce/supplier-register/' +
+          (this.quotationId ? this.quotationId : ''),
+      ],
+      {
+        queryParams: {
+          overwriteSupplier: this.merchantService.merchantData._id,
+          overwriteItems: this.items.map((item) => item.parentItem).join('-'),
+        },
+      }
+    );
   }
 
   goToDashboard() {

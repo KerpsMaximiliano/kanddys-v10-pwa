@@ -50,11 +50,13 @@ export class ItemSelectorComponent implements OnInit {
   quotation: Quotation = null;
   supplierMode: boolean = false;
   createQuotationFromExistingQuotation: boolean = false;
+  updatingTemporalQuotation: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
   mode:
     | 'QUOTATION_CREATION_WITH_USER_SESSION'
     | 'QUOTATION_CREATION_WITHOUT_USER_SESSION'
     | 'QUOTATION_UPDATE'
+    | 'QUOTATION_UPDATE_WITHOUT_USER_SESSION'
     | 'NEW_QUOTATION_BASED_ON_EXISTING_QUOTATION' =
     'QUOTATION_CREATION_WITHOUT_USER_SESSION';
 
@@ -90,10 +92,17 @@ export class ItemSelectorComponent implements OnInit {
   async executeInitProcesses() {
     this.route.params.subscribe(async ({ quotationId }) => {
       this.route.queryParams.subscribe(
-        async ({ supplierMode, createQuotationFromExistingQuotation }) => {
+        async ({
+          supplierMode,
+          createQuotationFromExistingQuotation,
+          updatingTemporalQuotation,
+        }) => {
           this.supplierMode = JSON.parse(supplierMode || 'false');
           this.createQuotationFromExistingQuotation = JSON.parse(
             createQuotationFromExistingQuotation || 'false'
+          );
+          this.updatingTemporalQuotation = JSON.parse(
+            updatingTemporalQuotation || 'false'
           );
 
           const pagination: PaginationInput = {
@@ -165,6 +174,21 @@ export class ItemSelectorComponent implements OnInit {
               });
 
               this.itemsToShow = JSON.parse(JSON.stringify(this.items));
+
+              if (this.updatingTemporalQuotation) {
+                this.mode = 'QUOTATION_UPDATE_WITHOUT_USER_SESSION';
+
+                this.selectedItems =
+                  this.quotationService.selectedTemporalQuotation.items;
+                this.quotationService.selectedItemsForQuotation =
+                  this.selectedItems;
+
+                this.currentView = 'SELECTED_ITEMS';
+
+                this.itemsToShow = this.items.filter((item) =>
+                  this.selectedItems.includes(item._id)
+                );
+              }
             }
           } catch (error) {
             console.error(error);
@@ -235,6 +259,9 @@ export class ItemSelectorComponent implements OnInit {
   }
 
   goToArticleDetail(item: Item) {
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+
     this.router.navigate(
       [
         `ecommerce/${
@@ -273,6 +300,23 @@ export class ItemSelectorComponent implements OnInit {
       );
     } else {
       this.itemsToShow = JSON.parse(JSON.stringify(this.items));
+    }
+
+    if (this.selectedItems.length) {
+      const selectedItemIds = {};
+
+      this.selectedItems.forEach(
+        (selectedItem) => (selectedItemIds[selectedItem] = true)
+      );
+
+      this.itemsToShow.forEach((item, index) => {
+        //checkboxes.push(this.formBuilder.control(false));
+        if (selectedItemIds[item._id]) {
+          this.setValueAtIndex(index, true);
+        } else {
+          this.setValueAtIndex(index, false);
+        }
+      });
     }
   }
 
@@ -371,6 +415,63 @@ export class ItemSelectorComponent implements OnInit {
 
           unlockUI();
           this.router.navigate(['/ecommerce/quotations']);
+          break;
+        case 'QUOTATION_UPDATE_WITHOUT_USER_SESSION':
+          {
+            this.quotationService.selectedTemporalQuotation.items =
+              this.selectedItems;
+
+            const temporalQuotationsStoredInLocalStorage =
+              localStorage.getItem('temporalQuotations');
+            let temporalQuotations: Array<QuotationInput> = null;
+
+            if (temporalQuotationsStoredInLocalStorage) {
+              const storedTemporalQuotations: any = JSON.parse(
+                temporalQuotationsStoredInLocalStorage
+              );
+
+              if (Array.isArray(storedTemporalQuotations)) {
+                temporalQuotations = storedTemporalQuotations;
+
+                const foundIndex = temporalQuotations.findIndex(
+                  (quotation) =>
+                    quotation.name ===
+                    this.quotationService.selectedTemporalQuotation.name
+                );
+
+                if (this.selectedItems.length === 0 && foundIndex >= 0) {
+                  if (foundIndex >= 0) temporalQuotations.splice(foundIndex, 1);
+
+                  this.quotationService.temporalQuotations = temporalQuotations;
+                  this.quotationService.selectedTemporalQuotation = null;
+
+                  localStorage.setItem(
+                    'temporalQuotations',
+                    JSON.stringify(temporalQuotations)
+                  );
+
+                  this.router.navigate(['/ecommerce/quotations']);
+                }
+
+                if (foundIndex >= 0) {
+                  temporalQuotations[foundIndex].items = this.selectedItems;
+
+                  this.quotationService.temporalQuotations = temporalQuotations;
+                  this.quotationService.selectedTemporalQuotation =
+                    temporalQuotations[foundIndex];
+
+                  localStorage.setItem(
+                    'temporalQuotations',
+                    JSON.stringify(temporalQuotations)
+                  );
+                }
+              }
+            }
+
+            unlockUI();
+
+            this.router.navigate(['/ecommerce/quotation-bids']);
+          }
           break;
         case 'NEW_QUOTATION_BASED_ON_EXISTING_QUOTATION':
           break;

@@ -766,7 +766,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
   back = async () => {
     if (this.supplierPreview) {
-      return this.router.navigate([`/ecommerce/supplier-items-selector`]);
+      return this.headerService.redirectFromQueryParams();
     }
 
     if (this.mode === 'preview') {

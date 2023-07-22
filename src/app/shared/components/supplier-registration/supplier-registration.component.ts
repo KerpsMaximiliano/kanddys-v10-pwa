@@ -564,7 +564,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       notificationStockLimit: item.notificationStockLimit,
     };
 
-    if (!item.pricing || !item.stock || !item.merchant) {
+    if (!item.pricing || item.stock === null || !item.merchant) {
       this.quotationsService.supplierItemsAdjustmentsConfig.quotationItemBeingEdited =
         {
           inSaleflow: false,

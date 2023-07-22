@@ -1,7 +1,13 @@
 <div class="container">
   <div class="header">
     <div class="flex">
-      <mat-icon style="cursor: pointer" (click)="goToDashboard()"
+      <mat-icon
+        style="cursor: pointer"
+        *ngIf="
+          this.quotationsService.supplierItemsAdjustmentsConfig
+            .typeOfProvider === 'REGISTERED_SUPPLIER'
+        "
+        (click)="goToDashboard()"
         >close</mat-icon
       >
       <p class="header-title">
@@ -23,7 +29,11 @@
         [index]="itemIndex"
         [title]="item.name"
         [description]="item.description"
-        [img]="item.images?.length ? completeImageURLWrapper(item.images[0].value) : ''"
+        [img]="
+          item.images?.length
+            ? completeImageURLWrapper(item.images[0].value)
+            : ''
+        "
         [leftAmount]="item.pricing"
         [supplierProvidedData]="{
           stock: item.stock
@@ -40,7 +50,9 @@
     *ngIf="
       this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
         'REGISTERED_SUPPLIER' &&
-      this.quotationsService.supplierItemsAdjustmentsConfig && authorized
+      this.quotationsService.supplierItemsAdjustmentsConfig &&
+      authorized &&
+      adjustmentsReady
     "
   >
     <button
@@ -55,8 +67,7 @@
   <footer
     *ngIf="
       this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
-        'NEW_SUPPLIER' &&
-      adjustmentsReady
+        'NEW_SUPPLIER' && adjustmentsReady
     "
   >
     <button
@@ -74,7 +85,9 @@
         'REGISTERED_SUPPLIER' &&
       this.quotationsService.supplierItemsAdjustmentsConfig
         .typeOfQuotationBeingEdited === 'DATABASE_QUOTATION' &&
-      onlyItemsThatAreOnTheSupplierSaleflow && authorized
+      onlyItemsThatAreOnTheSupplierSaleflow &&
+      authorized &&
+      adjustmentsReady
     "
   >
     <button
