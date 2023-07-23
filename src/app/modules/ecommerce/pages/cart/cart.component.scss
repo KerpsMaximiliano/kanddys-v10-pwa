@@ -278,6 +278,11 @@ footer {
   border: 1px solid #C4C5C3;
   border-radius: 20px;
   padding: 1px 10px;
+
+  &.deactivated {
+    background-color: darken($color: #fff, $amount: 3);
+  }
+
   .quantity {
     span {
       font-size: 17px;

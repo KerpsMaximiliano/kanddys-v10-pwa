@@ -63,6 +63,8 @@ export class InventoryComponent implements OnInit {
       this.mode = 'TEMPORAL_QUOTATIONS_WITHOUT_USER_SESSION';
       this.temporalQuotations = this.quotationsService.temporalQuotations;
 
+      localStorage.removeItem("selectedTemporalQuotation");
+
       //If there are no temporal quotations in the service, it retrieves them from the localStorage
       if (this.temporalQuotations.length === 0) {
         const temporalQuotationsStoredInLocalStorage =
@@ -153,6 +155,11 @@ export class InventoryComponent implements OnInit {
   goToTemporalQuotationDetail(index: number) {
     this.quotationsService.selectedTemporalQuotation =
       this.quotationsService.temporalQuotations[index];
+
+    localStorage.setItem(
+      'selectedTemporalQuotation',
+      JSON.stringify(this.quotationsService.selectedTemporalQuotation)
+    );
 
     this.router.navigate(['/ecommerce/quotation-bids/']);
   }

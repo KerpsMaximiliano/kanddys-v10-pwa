@@ -28,7 +28,7 @@
   </div>
 
   <div class="bottom">
-    <h3>2 Artículos en la cotización</h3>
+    <h3>{{ items.length }} Artículos en la cotización</h3>
 
     <div class="flexBox containerFlexBox">
       <ng-container *ngFor="let item of items; index as i">
@@ -59,7 +59,8 @@
         *ngIf="
           !item.images.length ||
           !item.images ||
-          (item.images?.length && !urlIsVideo(completeImageURLWrapper(item.images[0].value)))
+          (item.images?.length &&
+            !urlIsVideo(completeImageURLWrapper(item.images[0].value)))
         "
       >
         <div
@@ -67,7 +68,7 @@
           [ngStyle]="{
             backgroundImage: item.images?.length
               ? 'url(' +
-                  completeImageURLWrapper(item.images[0].value) +
+                completeImageURLWrapper(item.images[0].value) +
                 '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
               : 'url(/assets/images/noimage.png)',
             backgroundPosition: 'center',
@@ -78,7 +79,10 @@
       </div>
       <div
         class="video-wrapper videoThumbnail"
-        *ngIf="item.images?.length && urlIsVideo(completeImageURLWrapper(item.images[0].value))"
+        *ngIf="
+          item.images?.length &&
+          urlIsVideo(completeImageURLWrapper(item.images[0].value))
+        "
       >
         <img
           src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"

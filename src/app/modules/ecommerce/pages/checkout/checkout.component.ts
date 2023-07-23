@@ -623,7 +623,7 @@ export class CheckoutComponent implements OnInit {
     switch (mode) {
       case 'item': {
         if(this.isSuppliersBuyerFlow(this.items)) {
-          return this.router.navigate([`/admin/quotations`]);
+          return this.router.navigate([`/ecommerce/quotations`]);
         }
 
         this.router.navigate([`../store`], {

@@ -123,6 +123,17 @@ export class ConfirmQuotationComponent implements OnInit {
                     )
                   )
                 );
+
+                await Promise.all(
+                  this.items.map((item) =>
+                    this.saleflowService.addItemToSaleFlow(
+                      {
+                        item: item._id,
+                      },
+                      this.headerService.saleflow._id
+                    )
+                  )
+                );
               }
             }
 

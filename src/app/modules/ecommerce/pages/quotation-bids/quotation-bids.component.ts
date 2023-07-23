@@ -136,6 +136,14 @@ export class QuotationBidsComponent implements OnInit {
       } else if (!quotationId) {
         this.typeOfQuotation = 'TEMPORAL_QUOTATION';
 
+        if(!this.quotationsService.selectedTemporalQuotation) {
+          let storedSelectedTemporalQuotation: any = localStorage.getItem("selectedTemporalQuotation");
+
+          if(storedSelectedTemporalQuotation) storedSelectedTemporalQuotation = JSON.parse(storedSelectedTemporalQuotation);
+
+          this.quotationsService.selectedTemporalQuotation = storedSelectedTemporalQuotation;
+        }
+
         this.temporalQuotation = await this.quotationsService
           .selectedTemporalQuotation;
 

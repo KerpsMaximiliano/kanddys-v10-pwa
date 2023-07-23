@@ -587,6 +587,18 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   }
 
   back() {
+    if (
+      this.quotationsService.supplierItemsAdjustmentsConfig
+        ?.quotationItemBeingEdited.quotationItemInMemory
+    ) {
+      return this.router.navigate([
+        this.quotationId
+          ? `ecommerce/supplier-register/${this.quotationId}`
+          : `ecommerce/supplier-register`,
+      ]);
+    }
+
+
     if (this.updateItem) {
       return this.router.navigate(
         [

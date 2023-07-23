@@ -138,8 +138,8 @@ export class CartComponent implements OnInit {
     await this.getQuestions();
 
     if (
-      !this.headerService.saleflow.module.post ||
-      !this.headerService.saleflow.module.post.isActive
+      !this.headerService.saleflow.module?.post ||
+      !this.headerService.saleflow.module?.post?.isActive
     ) {
       this.isCheckboxChecked = true;
     }
@@ -205,6 +205,14 @@ export class CartComponent implements OnInit {
           item: item._id,
         };
       });
+    }
+
+    if(!this.quotationsService.selectedTemporalQuotation && !this.quotationsService.quotationInCart) {
+      let storedSelectedTemporalQuotation: any = localStorage.getItem("selectedTemporalQuotation");
+
+      if(storedSelectedTemporalQuotation) storedSelectedTemporalQuotation = JSON.parse(storedSelectedTemporalQuotation);
+
+      this.quotationsService.selectedTemporalQuotation = storedSelectedTemporalQuotation;
     }
 
     if (this.quotationsService.selectedTemporalQuotation) {
@@ -1166,8 +1174,12 @@ export class CartComponent implements OnInit {
               {
                 value: `Continuar a la prefactura`,
                 callback: () => {
+                  if(!this.headerService.saleflow.module) {
+                    this.router.navigate([`ecommerce/${this.headerService.saleflow._id}/checkout`])
+                  } else {
                   // TODO - Validar que la redirección ocurra al módulo que esté disponible
-                  return this.goToAddressForm();
+                  return this.goToAddressForm();                    
+                  }
                 },
               },
             ],

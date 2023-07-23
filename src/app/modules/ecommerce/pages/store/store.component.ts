@@ -73,6 +73,7 @@ export class StoreComponent implements OnInit {
         let { startOnSnapshot, adminView } = queryParams;
         startOnSnapshot = Boolean(startOnSnapshot);
         localStorage.removeItem('flowRoute');
+        localStorage.removeItem('selectedTemporalQuotation');
         this.headerService.flowRoute = null;
 
         if (adminView) this.adminView = true;
@@ -146,7 +147,7 @@ export class StoreComponent implements OnInit {
         return {
           _id: tag._id,
           name: tag.name,
-          selected: false
+          selected: false,
         };
       });
       // this.hasCollections = tagsList.some(
@@ -217,8 +218,8 @@ export class StoreComponent implements OnInit {
                 triggerID: 'pricing',
                 data: {
                   minPricing: 0,
-                  maxPricing: 2000
-                }
+                  maxPricing: 2000,
+                },
               });
             },
           },
@@ -229,8 +230,8 @@ export class StoreComponent implements OnInit {
                 triggerID: 'pricing',
                 data: {
                   minPricing: 2000,
-                  maxPricing: 4000
-                }
+                  maxPricing: 4000,
+                },
               });
             },
           },
@@ -241,8 +242,8 @@ export class StoreComponent implements OnInit {
                 triggerID: 'pricing',
                 data: {
                   minPricing: 4000,
-                  maxPricing: 6000
-                }
+                  maxPricing: 6000,
+                },
               });
             },
           },
@@ -253,8 +254,8 @@ export class StoreComponent implements OnInit {
                 triggerID: 'pricing',
                 data: {
                   minPricing: 6000,
-                  maxPricing: 8000
-                }
+                  maxPricing: 8000,
+                },
               });
             },
           },
@@ -264,8 +265,8 @@ export class StoreComponent implements OnInit {
               this.saleflowService.notifyTrigger({
                 triggerID: 'pricing',
                 data: {
-                  minPricing: 8000
-                }
+                  minPricing: 8000,
+                },
               });
             },
           },
@@ -280,27 +281,29 @@ export class StoreComponent implements OnInit {
   openTagsDialog() {
     this._bottomSheet.open(TagFilteringComponent, {
       data: {
-        title: "Tags de artículos",
+        title: 'Tags de artículos',
         // rightCTA: {
         //   text: "Todas",
         //   callback: () => {
         //     console.log("asd");
         //   }
         // },
-        categories: this.filteredTags
+        categories: this.filteredTags,
       },
     });
 
-    this._bottomSheet._openedBottomSheetRef?.instance.selectionOutput.subscribe((selectedCategories) => {
-      this.onTagSelectionChange(selectedCategories); // Manejar las categorías seleccionadas
-    });
+    this._bottomSheet._openedBottomSheetRef?.instance.selectionOutput.subscribe(
+      (selectedCategories) => {
+        this.onTagSelectionChange(selectedCategories); // Manejar las categorías seleccionadas
+      }
+    );
   }
 
   onTagSelectionChange(selectedCategories: any[]) {
     console.log(selectedCategories);
     this.saleflowService.notifyTrigger({
       triggerID: 'tags',
-      data: selectedCategories
+      data: selectedCategories,
     });
   }
 

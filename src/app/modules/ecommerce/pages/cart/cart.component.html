@@ -23,19 +23,24 @@
   </header>
 
   <main>
-    <ng-container *ngTemplateOutlet="
-      itemCard;
-      context: {
-        arrayOfItems: items
-      }
-    "></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        itemCard;
+        context: {
+          arrayOfItems: items
+        }
+      "
+    ></ng-container>
 
-    <ng-container *ngTemplateOutlet="
-      itemCard;
-      context: {
-        arrayOfItems: quotationItemsNotAvailableOrNotInSaleflow
-      }
-    "></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        itemCard;
+        context: {
+          arrayOfItems: quotationItemsNotAvailableOrNotInSaleflow,
+          notAvailableItems: true
+        }
+      "
+    ></ng-container>
 
     <!-- TODO: acomodar esto por estilos de verdad -->
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
@@ -58,7 +63,11 @@
   </footer>
 </div>
 
-<ng-template #itemCard let-arrayOfItems="arrayOfItems">
+<ng-template
+  #itemCard
+  let-arrayOfItems="arrayOfItems"
+  let-notAvailableItems="notAvailableItems"
+>
   <mat-card class="card" *ngFor="let item of arrayOfItems; index as i">
     <div class="card-header flex">
       <div class="left-side flex">
@@ -118,12 +127,17 @@
         </div>
       </div>
       <div class="right-side">
-        <div class="item-quantity">
+        <div
+          class="item-quantity"
+          [ngClass]="{
+            deactivated: notAvailableItems
+          }"
+        >
           <div class="quantity">
             <span
               mat-button
               class="button icon"
-              (click)="changeAmount(item._id, 'subtract')"
+              (click)="!notAvailableItems ? changeAmount(item._id, 'subtract') : null"
             >
               {{ itemObjects[item._id]?.amount > 1 ? "-" : "" }}
               <mat-icon
@@ -139,7 +153,7 @@
             <span
               mat-button
               class="button icon"
-              (click)="changeAmount(item._id, 'add')"
+              (click)="!notAvailableItems ? changeAmount(item._id, 'add') : null"
               >+</span
             >
           </div>

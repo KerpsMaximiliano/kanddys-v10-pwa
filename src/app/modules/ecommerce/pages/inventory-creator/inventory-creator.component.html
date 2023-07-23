@@ -1,4 +1,4 @@
-<div class="container" [formGroup]="itemFormData">
+<div class="container" *ngIf="itemFormData" [formGroup]="itemFormData">
   <div class="header">
     <div class="flex">
       <mat-icon style="cursor: pointer" (click)="back()">close</mat-icon>
