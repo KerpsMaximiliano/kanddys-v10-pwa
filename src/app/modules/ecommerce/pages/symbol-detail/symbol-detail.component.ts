@@ -162,6 +162,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   defaultCtaText: string = 'Agregar al carrito';
   defaultCtaRemoveText: string = 'Quitar del carrito';
   supplierItem: boolean = false;
+  supplierViewer: boolean = false;
 
   fromQR: boolean = false;
 
@@ -230,11 +231,12 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     await this.verifyIfUserIsLogged();
     const validEntities = ['item', 'post', 'template', 'collection'];
     const { entity, entityId } = this.routeParams;
-    const { mode, redirectTo, supplierPreview } = this.queryParams;
+    const { mode, redirectTo, supplierPreview, supplierViewer } = this.queryParams;
 
     this.entityPresentation = mode;
     this.redirectTo = redirectTo;
     this.supplierPreview = supplierPreview;
+    this.supplierViewer = JSON.parse(supplierViewer || 'false')
 
     if (
       this.entityPresentation === 'DEMO' ||
@@ -764,7 +766,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
   back = async () => {
     if (this.supplierPreview) {
-      return this.router.navigate([`/admin/item-selector`]);
+      return this.headerService.redirectFromQueryParams();
     }
 
     if (this.mode === 'preview') {

@@ -1,0 +1,77 @@
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+  <div class="container">
+    <div class="header">
+      <div class="flex">
+        <img [src]="env + '/info-icon.svg'" />
+        <a (click)="openAddButtonOptionsMenu()">
+          <mat-icon class="plus-icon">add</mat-icon>
+        </a>
+      </div>
+      <div class="flex" (click)="openNavigation = true" style="cursor: pointer">
+        <p>Cotiza y compra a suplidores</p>
+        <mat-icon>menu</mat-icon>
+      </div>
+    </div>
+
+    <div class="dates-container">
+      <div class="progress progress-selected">Cotizaciones</div>
+      <div class="progress" style="margin-left: 7px" (click)="goToOrders()">
+        Compras
+      </div>
+    </div>
+
+    <div class="content">
+      <ng-container *ngIf="'TEMPORAL_QUOTATIONS_WITHOUT_USER_SESSION'">
+        <div
+          class="content-card"
+          *ngFor="let quotation of temporalQuotations; let i = index"
+          (click)="goToTemporalQuotationDetail(i)"
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              quotationCard;
+              context: {
+                quotation: quotation
+              }
+            "
+          >
+          </ng-container>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="'QUOTATIONS_OF_EXISTING_USER_SESSION'">
+        <div
+          class="content-card"
+          *ngFor="let quotation of quotations; let i = index"
+          (click)="goToQuotationDetail(quotation._id, $event)"
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              quotationCard;
+              context: {
+                quotation: quotation
+              }
+            "
+          >
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</app-navigation>
+
+<ng-template #quotationCard let-quotation="quotation">
+  <div class="content-card-top-container">
+    <div class="flex">
+      <img [src]="env + '/shopping_cart.svg'" />
+      <div>
+        <p class="content-card-title">
+          {{ quotation?.name ? quotation.name : "Cotización sin nombre" }}
+        </p>
+        <p class="content-card-quantity">
+          {{ quotation?.items?.length }} artículos
+        </p>
+      </div>
+    </div>
+  </div>
+</ng-template>

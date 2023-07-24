@@ -57,9 +57,16 @@
       <ng-container *ngIf="supplierProvidedData">
         <button
           class="stock-button"
-          *ngIf="supplierProvidedData?.stock && supplierProvidedData?.stock >= 0"
+          *ngIf="supplierProvidedData?.stock && supplierProvidedData?.stock > 0"
         >
-          En inventario: {{ supplierProvidedData?.stock }}
+          {{ supplierProvidedData?.stock }} disponibles
+        </button>
+
+        <button
+          class="stock-button"
+          *ngIf="supplierProvidedData?.stock === 0"
+        >
+          0 disponible (oculto)
         </button>
 
         <button

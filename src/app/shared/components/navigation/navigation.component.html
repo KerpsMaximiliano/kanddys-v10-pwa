@@ -30,7 +30,7 @@
 
             <ul>
               <ng-container *ngFor="let link of tab.links">
-                <li routerLinkActive="active" *ngIf="headerService.user">
+                <li routerLinkActive="active">
                   <a
                     mat-button
                     [routerLink]="link.routerLink"

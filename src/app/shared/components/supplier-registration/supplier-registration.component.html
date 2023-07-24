@@ -1,0 +1,101 @@
+<div class="container">
+  <div class="header">
+    <div class="flex">
+      <mat-icon
+        style="cursor: pointer"
+        *ngIf="
+          this.quotationsService.supplierItemsAdjustmentsConfig
+            .typeOfProvider === 'REGISTERED_SUPPLIER'
+        "
+        (click)="goToDashboard()"
+        >close</mat-icon
+      >
+      <p class="header-title">
+        {{
+          requester
+            ? "Cotización de " + requester?.name
+            : "Cotización de usuario anónimo"
+        }}
+      </p>
+    </div>
+  </div>
+
+  <div class="list-of-items">
+    <div
+      class="item-wrapper"
+      *ngFor="let item of quotationItems; let itemIndex = index"
+    >
+      <app-buyer-card
+        [index]="itemIndex"
+        [title]="item.name"
+        [description]="item.description"
+        [img]="
+          item.images?.length
+            ? completeImageURLWrapper(item.images[0].value)
+            : ''
+        "
+        [leftAmount]="item.pricing"
+        [supplierProvidedData]="{
+          stock: item.stock
+        }"
+        [cta]="true"
+        [ctaActive]="item.isSelected"
+        [skipRedirection]="true"
+        (cardClicked)="redirectToItemEdition(item, itemIndex)"
+      ></app-buyer-card>
+    </div>
+  </div>
+
+  <footer
+    *ngIf="
+      this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
+        'REGISTERED_SUPPLIER' &&
+      this.quotationsService.supplierItemsAdjustmentsConfig &&
+      authorized &&
+      adjustmentsReady
+    "
+  >
+    <button
+      class="right"
+      style="color: #272727"
+      (click)="confirmChangesForRegisteredUser()"
+    >
+      Confirmar
+    </button>
+  </footer>
+
+  <footer
+    *ngIf="
+      this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
+        'NEW_SUPPLIER' && adjustmentsReady
+    "
+  >
+    <button
+      class="right"
+      style="color: #272727"
+      (click)="confirmChangesForNewUser()"
+    >
+      Guardar y registrarme
+    </button>
+  </footer>
+
+  <footer
+    *ngIf="
+      this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
+        'REGISTERED_SUPPLIER' &&
+      this.quotationsService.supplierItemsAdjustmentsConfig
+        .typeOfQuotationBeingEdited === 'DATABASE_QUOTATION' &&
+      onlyItemsThatAreOnTheSupplierSaleflow &&
+      authorized &&
+      adjustmentsReady
+    "
+  >
+    <button
+      class="right"
+      style="color: #272727"
+      (click)="confirmChangesForRegisteredUser()"
+    >
+      Confirmar
+    </button>
+  </footer>
+</div>

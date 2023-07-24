@@ -26,9 +26,29 @@ export const quotations = gql`
 `;
 
 export const quotationCoincidences = gql`
-    query quotationCoincidences($id: ObjectID!, $paginationOptionsInput: PaginationOptionsInput) {
-      quotationCoincidences(id: $id, paginationOptionsInput: $paginationOptionsInput)
-    }
+  query quotationCoincidences(
+    $id: ObjectID!
+    $paginationOptionsInput: PaginationOptionsInput
+  ) {
+    quotationCoincidences(
+      id: $id
+      paginationOptionsInput: $paginationOptionsInput
+    )
+  }
+`;
+
+export const quotationCoincidencesByItem = gql`
+  query quotationCoincidencesByItem(
+    $paginationOptionsInput: PaginationOptionsInput
+    $categories: [ObjectID!]
+    $itemId: [ObjectID!]!
+  ) {
+    quotationCoincidencesByItem(
+      paginationOptionsInput: $paginationOptionsInput
+      categories: $categories
+      itemId: $itemId
+    )
+  }
 `;
 
 export const createQuotation = gql`
