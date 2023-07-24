@@ -203,7 +203,7 @@
     <div class="right">
       <ng-container [ngSwitch]="entity">
         <div class="add-to-cart" *ngSwitchCase="'item'" (click)="saveProduct()">
-          <ng-container *ngIf="entityPresentation !== 'DEMO'">
+          <ng-container *ngIf="entityPresentation !== 'DEMO' && !supplierViewer">
             <ng-container *ngIf="!supplierItem">
               {{
                 !isItemInCart

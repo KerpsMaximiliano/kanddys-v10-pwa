@@ -122,6 +122,7 @@ export class HeaderService {
     public wallet: WalletService,
     private merchantService: MerchantsService,
     private saleflowService: SaleFlowService,
+    private authService: AuthService,
     public matDialog: MatDialog,
     private router: Router
   ) {
@@ -177,6 +178,33 @@ export class HeaderService {
     //     }
     //   });
   }
+
+  isUserLogged() {
+    if(this.user) return true;
+    else return false;
+  }
+
+  async checkIfUserIsAMerchantAndFetchItsData() {
+    if (this.user && !this.merchantService.merchantData) {
+      const myMerchants = await this.merchantService.myMerchants();
+
+      if (myMerchants.length === 0) return false;
+
+      const merchantDefault = myMerchants.find((merchant) => merchant.default);
+
+      if (merchantDefault) this.merchantService.merchantData = merchantDefault;
+      else {
+        this.merchantService.merchantData = myMerchants[0];
+      }
+
+      return true;
+    }
+
+    if (this.user && this.merchantService.merchantData) {
+      return true;
+    }
+  }
+
   goBack() {
     this.location.back();
   }
@@ -306,7 +334,8 @@ export class HeaderService {
     if (index >= 0 && removeSameProductIfIsFound) {
       order.products.splice(index, 1);
       this.order?.products?.splice(index, 1);
-    } else if (index >= 0 && !removeSameProductIfIsFound) {//if vacio, para evitar el caso
+    } else if (index >= 0 && !removeSameProductIfIsFound) {
+      //if vacio, para evitar el caso
     } else if (index < 0) {
       order.products.push(product);
       this.order?.products?.push(product);
@@ -599,7 +628,6 @@ export class HeaderService {
 
   redirectFromQueryParams() {
     let redirectionRoute = this.flowRoute;
-
 
     if (!redirectionRoute) redirectionRoute = localStorage.getItem('flowRoute');
 

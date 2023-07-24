@@ -23,240 +23,24 @@
   </header>
 
   <main>
-    <mat-card class="card" *ngFor="let item of items; index as i">
-      <div class="card-header flex">
-        <div class="left-side flex">
-          <div
-            class="featured-image"
-            [ngStyle]="{
-              backgroundImage: item?.images?.length
-                ? 'url(' +
-                  item.images[0].value +
-                  '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
-                : 'url(/assets/images/noimage.png)'
-            }"
-            *ngIf="
-              !item.images.length ||
-              !item.images ||
-              (item.images?.length && !urlIsVideo(item.images[0].value))
-            "
-            (click)="goToArticleDetail(item._id)"
-          ></div>
+    <ng-container
+      *ngTemplateOutlet="
+        itemCard;
+        context: {
+          arrayOfItems: items
+        }
+      "
+    ></ng-container>
 
-          <div
-            class="featured-image video-wrapper"
-            [ngStyle]="{
-              backgroundImage:
-                'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
-            }"
-            *ngIf="item.images?.length && urlIsVideo(item.images[0].value)"
-          >
-            <img
-              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
-              alt="play"
-              class="playVideoIcon"
-              style="padding: 1rem !important; z-index: 99"
-              (click)="goToArticleDetail(item._id)"
-            />
-
-            <video
-              [src]="item.images[0].value"
-              [id]="'media' + item._id"
-              class="video"
-              [muted]="true"
-            ></video>
-          </div>
-
-          <div class="item-info-container">
-            <p class="main-text">
-              {{ item?.name ? item?.name : 'Artículo sin nombre' }}
-            </p>
-            <p class="greyout-text" *ngIf="item?.description">
-              {{ truncateString((item?.description).trim(), 38) }}
-            </p>
-            <p class="main-text" style="margin-top: 3px;">
-              ${{
-                item.pricing * itemObjects[item._id].amount | number : "1.2-2"
-              }}
-            </p>
-          </div>
-          
-        </div>
-        <div class="right-side">
-          <div class="item-quantity">
-            <div class="quantity">
-              <span
-                mat-button
-                class="button icon"
-                (click)="changeAmount(item._id, 'subtract')"
-                >
-                  {{ itemObjects[item._id].amount > 1 ? '-' : '' }}
-                  <mat-icon *ngIf="itemObjects[item._id].amount === 1" style="font-size: 19px; width: 23px;">delete</mat-icon>
-                </span>
-
-              <span style="position: relative; bottom: 2px;">{{ itemObjects[item._id].amount }}</span>
-              <span
-                mat-button
-                class="button icon"
-                (click)="changeAmount(item._id, 'add')"
-                >+</span
-              >
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card-body" *ngIf="webformsByItem[item._id]?.webform">
-        <hr style="border: #E9E9E9 1px solid;">
-        <div
-          class="section"
-          *ngFor="
-            let question of webformsByItem[item._id].webform.questions;
-            let i = index
-          "
-        >
-          <img
-            style="cursor: pointer"
-            [src]="env + '/arrow-green.svg'"
-            alt="required question"
-            *ngIf="
-              question.required &&
-              !answersByQuestion[question._id]?.response &&
-              !answersByQuestion[question._id]?.multipleResponses?.length
-            "
-            class="required-question-pointer"
-            (click)="openWebform(item._id, i)"
-          />
-
-          <p
-            class="section-title"
-            [ngClass]="{
-              required:
-                question.required &&
-                !answersByQuestion[question._id]?.response &&
-                !answersByQuestion[question._id]?.multipleResponses?.length
-            }"
-            (click)="openWebform(item._id, i)"
-          >
-            {{ capitalize(question.value) }}
-          </p>
-
-          <!--RESPUESTA UNICA-->
-          <ng-container
-            *ngIf="
-              answersByQuestion[question._id] &&
-              ((question.answerLimit === 1 &&
-                ['multiple-text', 'multiple'].includes(question.type)) ||
-                (!['multiple-text', 'multiple'].includes(question.type) &&
-                  question.answerLimit === 0) ||
-                (!['multiple-text', 'multiple'].includes(question.type) &&
-                  question.answerLimit === 1))
-            "
-          >
-            <!-- RESPONSE HAS NO IMAGES-->
-            <ng-container *ngIf="!answersByQuestion[question._id].isMedia">
-              <div
-                class="section-description"
-                *ngIf="
-                  answersByQuestion[question._id]?.response &&
-                  !answersByQuestion[question._id]?.responseLabel &&
-                  !answersByQuestion[question._id].isMedia
-                "
-              >
-                {{
-                  question.answerTextType !== "number"
-                    ? capitalize(answersByQuestion[question._id]?.response)
-                    : answersByQuestion[question._id]?.response
-                }}
-              </div>
-
-              <div
-                class="section-description"
-                *ngIf="
-                  answersByQuestion[question._id]?.response &&
-                  answersByQuestion[question._id]?.responseLabel &&
-                  !answersByQuestion[question._id].isMedia
-                "
-              >
-                {{
-                  question.type === "text" && question.answerTextType === "name"
-                    ? capitalize(
-                        answersByQuestion[question._id]?.response +
-                          " " +
-                          answersByQuestion[question._id]?.responseLabel
-                      )
-                    : capitalize(answersByQuestion[question._id]?.responseLabel)
-                }}
-              </div>
-            </ng-container>
-
-            <!-- RESPONSE HAS IMAGES AND USER HAS ALREADY ANSWERED-->
-            <div
-              class="question-media-response"
-              *ngIf="
-                (answersByQuestion[question._id]?.response ||
-                  answersByQuestion[question._id]?.responseLabel) &&
-                answersByQuestion[question._id].isMedia &&
-                !this.webformsByItem[item._id].opened
-              "
-            >
-              <app-closed-question-card
-                [id]="'multiple-choices-single-selection'"
-                [shadows]="false"
-                [labelStyles]="{
-                  fontFamily: 'SfProRegular',
-                  color: '#000',
-                  fontSize: '15px'
-                }"
-                [containerStyles]="{ padding: '0px' }"
-                [question]="question"
-                [multiple]="!question.answerLimit || question.answerLimit > 1"
-                [isMediaSelection]="question.answerDefault[0].isMedia"
-                [required]="question?.required"
-                (onSelector)="selectOption(question, item, true, $event)"
-              >
-              </app-closed-question-card>
-            </div>
-          </ng-container>
-
-          <!--RESPUESTA MULTIPLE-->
-          <ng-container
-            *ngIf="
-              answersByQuestion[question._id] &&
-              (question.answerLimit === 0 || question.answerLimit > 1) &&
-              ['multiple-text', 'multiple'].includes(question.type)
-            "
-          >
-            <!-- RESPONSE HAS NO IMAGES-->
-            <ng-container *ngIf="answersByQuestion[question._id]">
-              <div
-                class="question-media-response"
-                *ngIf="
-                  answersByQuestion[question._id]?.multipleResponses &&
-                  !this.webformsByItem[item._id].opened
-                "
-              >
-                <app-closed-question-card
-                  [id]="'multiple-choices-multiple-selection'"
-                  [shadows]="false"
-                  [labelStyles]="{
-                    fontFamily: 'SfProRegular',
-                    color: '#000',
-                    fontSize: '15px'
-                  }"
-                  [containerStyles]="{ padding: '0px' }"
-                  [multiple]="!question.answerLimit || question.answerLimit > 1"
-                  [isMediaSelection]="question.answerDefault[0].isMedia"
-                  [question]="question"
-                  [required]="question?.required"
-                  (onSelector)="selectOption(question, item, true, $event)"
-                >
-                </app-closed-question-card>
-              </div>
-            </ng-container>
-          </ng-container>
-        </div>
-      </div>
-    </mat-card>
+    <ng-container
+      *ngTemplateOutlet="
+        itemCard;
+        context: {
+          arrayOfItems: quotationItemsNotAvailableOrNotInSaleflow,
+          notAvailableItems: true
+        }
+      "
+    ></ng-container>
 
     <!-- TODO: acomodar esto por estilos de verdad -->
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
@@ -278,3 +62,254 @@
     </div>
   </footer>
 </div>
+
+<ng-template
+  #itemCard
+  let-arrayOfItems="arrayOfItems"
+  let-notAvailableItems="notAvailableItems"
+>
+  <mat-card class="card" *ngFor="let item of arrayOfItems; index as i">
+    <div class="card-header flex">
+      <div class="left-side flex">
+        <div
+          class="featured-image"
+          [ngStyle]="{
+            backgroundImage: item?.images?.length
+              ? 'url(' +
+                item.images[0].value +
+                '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+              : 'url(/assets/images/noimage.png)'
+          }"
+          *ngIf="
+            !item.images.length ||
+            !item.images ||
+            (item.images?.length && !urlIsVideo(item.images[0].value))
+          "
+          (click)="goToArticleDetail(item._id)"
+        ></div>
+
+        <div
+          class="featured-image video-wrapper"
+          [ngStyle]="{
+            backgroundImage:
+              'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+          }"
+          *ngIf="item.images?.length && urlIsVideo(item.images[0].value)"
+        >
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+            alt="play"
+            class="playVideoIcon"
+            style="padding: 1rem !important; z-index: 99"
+            (click)="goToArticleDetail(item._id)"
+          />
+
+          <video
+            [src]="item.images[0].value"
+            [id]="'media' + item._id"
+            class="video"
+            [muted]="true"
+          ></video>
+        </div>
+
+        <div class="item-info-container">
+          <p class="main-text">
+            {{ item?.name ? item?.name : "Artículo sin nombre" }}
+          </p>
+          <p class="greyout-text" *ngIf="item?.description">
+            {{ truncateString((item?.description).trim(), 38) }}
+          </p>
+          <p class="main-text" style="margin-top: 3px">
+            ${{
+              item.pricing * itemObjects[item._id]?.amount | number : "1.2-2"
+            }}
+          </p>
+        </div>
+      </div>
+      <div class="right-side">
+        <div
+          class="item-quantity"
+          [ngClass]="{
+            deactivated: notAvailableItems
+          }"
+        >
+          <div class="quantity">
+            <span
+              mat-button
+              class="button icon"
+              (click)="!notAvailableItems ? changeAmount(item._id, 'subtract') : null"
+            >
+              {{ itemObjects[item._id]?.amount > 1 ? "-" : "" }}
+              <mat-icon
+                *ngIf="itemObjects[item._id]?.amount === 1"
+                style="font-size: 19px; width: 23px"
+                >delete</mat-icon
+              >
+            </span>
+
+            <span style="position: relative; bottom: 2px">{{
+              itemObjects[item._id]?.amount
+            }}</span>
+            <span
+              mat-button
+              class="button icon"
+              (click)="!notAvailableItems ? changeAmount(item._id, 'add') : null"
+              >+</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" *ngIf="webformsByItem[item._id]?.webform">
+      <hr style="border: #e9e9e9 1px solid" />
+      <div
+        class="section"
+        *ngFor="
+          let question of webformsByItem[item._id].webform.questions;
+          let i = index
+        "
+      >
+        <img
+          style="cursor: pointer"
+          [src]="env + '/arrow-green.svg'"
+          alt="required question"
+          *ngIf="
+            question.required &&
+            !answersByQuestion[question._id]?.response &&
+            !answersByQuestion[question._id]?.multipleResponses?.length
+          "
+          class="required-question-pointer"
+          (click)="openWebform(item._id, i)"
+        />
+
+        <p
+          class="section-title"
+          [ngClass]="{
+            required:
+              question.required &&
+              !answersByQuestion[question._id]?.response &&
+              !answersByQuestion[question._id]?.multipleResponses?.length
+          }"
+          (click)="openWebform(item._id, i)"
+        >
+          {{ capitalize(question.value) }}
+        </p>
+
+        <!--RESPUESTA UNICA-->
+        <ng-container
+          *ngIf="
+            answersByQuestion[question._id] &&
+            ((question.answerLimit === 1 &&
+              ['multiple-text', 'multiple'].includes(question.type)) ||
+              (!['multiple-text', 'multiple'].includes(question.type) &&
+                question.answerLimit === 0) ||
+              (!['multiple-text', 'multiple'].includes(question.type) &&
+                question.answerLimit === 1))
+          "
+        >
+          <!-- RESPONSE HAS NO IMAGES-->
+          <ng-container *ngIf="!answersByQuestion[question._id].isMedia">
+            <div
+              class="section-description"
+              *ngIf="
+                answersByQuestion[question._id]?.response &&
+                !answersByQuestion[question._id]?.responseLabel &&
+                !answersByQuestion[question._id].isMedia
+              "
+            >
+              {{
+                question.answerTextType !== "number"
+                  ? capitalize(answersByQuestion[question._id]?.response)
+                  : answersByQuestion[question._id]?.response
+              }}
+            </div>
+
+            <div
+              class="section-description"
+              *ngIf="
+                answersByQuestion[question._id]?.response &&
+                answersByQuestion[question._id]?.responseLabel &&
+                !answersByQuestion[question._id].isMedia
+              "
+            >
+              {{
+                question.type === "text" && question.answerTextType === "name"
+                  ? capitalize(
+                      answersByQuestion[question._id]?.response +
+                        " " +
+                        answersByQuestion[question._id]?.responseLabel
+                    )
+                  : capitalize(answersByQuestion[question._id]?.responseLabel)
+              }}
+            </div>
+          </ng-container>
+
+          <!-- RESPONSE HAS IMAGES AND USER HAS ALREADY ANSWERED-->
+          <div
+            class="question-media-response"
+            *ngIf="
+              (answersByQuestion[question._id]?.response ||
+                answersByQuestion[question._id]?.responseLabel) &&
+              answersByQuestion[question._id].isMedia &&
+              !this.webformsByItem[item._id].opened
+            "
+          >
+            <app-closed-question-card
+              [id]="'multiple-choices-single-selection'"
+              [shadows]="false"
+              [labelStyles]="{
+                fontFamily: 'SfProRegular',
+                color: '#000',
+                fontSize: '15px'
+              }"
+              [containerStyles]="{ padding: '0px' }"
+              [question]="question"
+              [multiple]="!question.answerLimit || question.answerLimit > 1"
+              [isMediaSelection]="question.answerDefault[0].isMedia"
+              [required]="question?.required"
+              (onSelector)="selectOption(question, item, true, $event)"
+            >
+            </app-closed-question-card>
+          </div>
+        </ng-container>
+
+        <!--RESPUESTA MULTIPLE-->
+        <ng-container
+          *ngIf="
+            answersByQuestion[question._id] &&
+            (question.answerLimit === 0 || question.answerLimit > 1) &&
+            ['multiple-text', 'multiple'].includes(question.type)
+          "
+        >
+          <!-- RESPONSE HAS NO IMAGES-->
+          <ng-container *ngIf="answersByQuestion[question._id]">
+            <div
+              class="question-media-response"
+              *ngIf="
+                answersByQuestion[question._id]?.multipleResponses &&
+                !this.webformsByItem[item._id].opened
+              "
+            >
+              <app-closed-question-card
+                [id]="'multiple-choices-multiple-selection'"
+                [shadows]="false"
+                [labelStyles]="{
+                  fontFamily: 'SfProRegular',
+                  color: '#000',
+                  fontSize: '15px'
+                }"
+                [containerStyles]="{ padding: '0px' }"
+                [multiple]="!question.answerLimit || question.answerLimit > 1"
+                [isMediaSelection]="question.answerDefault[0].isMedia"
+                [question]="question"
+                [required]="question?.required"
+                (onSelector)="selectOption(question, item, true, $event)"
+              >
+              </app-closed-question-card>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </mat-card>
+</ng-template>
