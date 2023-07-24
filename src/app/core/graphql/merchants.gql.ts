@@ -505,6 +505,7 @@ export const merchantFuncionality = gql`
       _id
       merchant
       reward {
+        active
         expiryMonth
         expires
         rewardPercentage
@@ -526,4 +527,26 @@ export const merchantFuncionality = gql`
       }
     }
   }
+`;
+
+export const updateMerchantFuncionality = gql`
+mutation updateMerchantFuncionality($input: MerchantFuncionalityInput!,$merchantId:ObjectID!) {
+  updateMerchantFuncionality(input: $input,merchantId:$merchantId){
+    _id
+      merchant
+      reward {
+        active
+        expiryMonth
+        expires
+        rewardPercentage
+        rewardPercentageReferral
+        buyersLimit
+        amountBuyer
+        affiliateLimit
+        amountAffiliate
+        solidaryLimit
+        amountSolidary
+      }
+  }
+}
 `;

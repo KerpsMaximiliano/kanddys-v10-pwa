@@ -48,6 +48,7 @@ import {
   entryMerchant,
   currencyStartByMerchant,
   merchantFuncionality,
+  updateMerchantFuncionality,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -544,6 +545,23 @@ export class MerchantsService {
     if (!result || result?.errors) return undefined;
     return result.merchantFuncionality;
   }
+
+  async updateMerchantFuncionality(
+    input:any,
+    merchantId: string,
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: updateMerchantFuncionality,
+      variables: {input, merchantId},
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.updateMerchantFuncionality;
+  }
+
+  
 }
 
 
