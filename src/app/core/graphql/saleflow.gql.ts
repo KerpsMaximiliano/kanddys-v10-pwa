@@ -213,6 +213,7 @@ export const listItems = gql`
       pricePerUnit
       description
       createdAt
+      parentItem
       images {
         _id
         value

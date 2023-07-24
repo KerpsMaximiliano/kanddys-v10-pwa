@@ -223,6 +223,9 @@ import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.
 import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
 import { OptionsMenuComponent } from './dialogs/options-menu/options-menu.component';
 import { TagFilteringComponent } from './dialogs/tag-filtering/tag-filtering.component';
+import { ItemSelectorComponent } from './components/item-selector/item-selector.component';
+import { InventoryComponent } from './components/inventory/inventory.component';
+import { SupplierRegistrationComponent } from './components/supplier-registration/supplier-registration.component';
 
 const imports = [
   CommonModule,
@@ -457,7 +460,10 @@ const declarations = [
   StoreChatbotComponent,
   InputDialogComponent,
   OptionsMenuComponent,
-  TagFilteringComponent
+  TagFilteringComponent,
+  ItemSelectorComponent,
+  InventoryComponent,
+  SupplierRegistrationComponent
 ];
 
 @NgModule({

@@ -1,0 +1,103 @@
+<div class="container">
+  <div class="top">
+    <h2>
+      Artículos confirmados,
+      {{
+        headerService.user?.name ||
+          headerService.user?.phone ||
+          headerService.user?.email
+      }}
+    </h2>
+
+    <button
+      mat-button
+      class="main-cta"
+      *ngIf="requesterPhone"
+      (click)="confirmToWhatsapp()"
+    >
+      <div class="content">
+        Confírmalo desde el WhatsApp
+        <img [src]="assetsFolder + '/whatsApp-img.webp'" alt="" />
+      </div>
+    </button>
+
+    <p *ngIf="!requesterPhone">
+      Ahora puedes avisarle a la floristeria que has confirmado la
+      disponibilidad y los precios en la plataforma
+    </p>
+  </div>
+
+  <div class="bottom">
+    <h3>{{ items.length }} Artículos en la cotización</h3>
+
+    <div class="flexBox containerFlexBox">
+      <ng-container *ngFor="let item of items; index as i">
+        <div class="flexBox ready">
+          <ng-container
+            *ngTemplateOutlet="itemInfoTemplate; context: { item: item, i: i }"
+          ></ng-container>
+        </div>
+
+        <!-- ÁREA INFERIOR DE LA SECCIÓN DE LOS ARTÍCULOS -->
+      </ng-container>
+    </div>
+
+    <div class="supplier-options">
+      <button (click)="goToQuotation()">Ver la cotización</button>
+      <button (click)="goToDashboard()">
+        Ir a la biblioteca de mis artículos
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #itemInfoTemplate let-item="item" let-i="i">
+  <div class="productData">
+    <button (click)="goToArticleDetail(item._id)">
+      <div
+        class="image"
+        *ngIf="
+          !item.images.length ||
+          !item.images ||
+          (item.images?.length &&
+            !urlIsVideo(completeImageURLWrapper(item.images[0].value)))
+        "
+      >
+        <div
+          class="image-for-item"
+          [ngStyle]="{
+            backgroundImage: item.images?.length
+              ? 'url(' +
+                completeImageURLWrapper(item.images[0].value) +
+                '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+              : 'url(/assets/images/noimage.png)',
+            backgroundPosition: 'center',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat'
+          }"
+        ></div>
+      </div>
+      <div
+        class="video-wrapper videoThumbnail"
+        *ngIf="
+          item.images?.length &&
+          urlIsVideo(completeImageURLWrapper(item.images[0].value))
+        "
+      >
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+          alt="play"
+          class="playVideoIcon"
+          style="padding: 1rem !important; z-index: 99"
+        />
+
+        <video
+          [src]="completeImageURLWrapper(item.images[0].value)"
+          [id]="'media' + item._id"
+          class="video"
+          [muted]="true"
+        ></video>
+      </div>
+    </button>
+  </div>
+</ng-template>

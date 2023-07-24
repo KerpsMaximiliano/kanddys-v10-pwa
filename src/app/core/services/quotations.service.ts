@@ -7,12 +7,19 @@ import {
   deleteQuotation,
   quotation,
   quotationCoincidences,
+  quotationCoincidencesByItem,
   quotations,
   updateQuotation,
 } from '../graphql/quotations.gql';
 import { Subscription } from 'rxjs';
 import { Item, ItemInput } from '../models/item';
+import { ExtendedItemInput } from './items.service';
 
+export interface QuotationItem extends Item {
+  inSaleflow?: boolean;
+  valid: boolean;
+  indexInFullList?: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -23,8 +30,36 @@ export class QuotationsService {
   quotationItemsInputBeingEdited: Array<ItemInput> = null;
   quotationBeingEdited: Quotation = null;
   quotationInCart: Quotation = null;
-  isANewMerchantAdjustingAQuotation: boolean = false;
   selectedItemsForQuotation: Array<string> = [];
+
+  typeOfQuotationBeingEdited: 'DATABASE_QUOTATION' | 'TEMPORAL_QUOTATION' = 'DATABASE_QUOTATION';
+  typeOfProvider: 'REGISTERED_SUPPLIER' | 'NEW_SUPPLIER' = null;
+
+  //specific variables for the case when no user session is found when creating a quotation
+  temporalQuotations: Array<QuotationInput> = [];
+  selectedTemporalQuotation: QuotationInput = null;
+
+  //specific variables for when a provider is adjusting item information of a quotation
+  temporalQuotationBeingEdited: QuotationInput = null;
+  
+  supplierItemsAdjustmentsConfig: {
+    typeOfProvider: 'REGISTERED_SUPPLIER' | 'NEW_SUPPLIER',
+    typeOfRequester: 'REGISTERED_USER' | 'UNSPECIFIED_USER',
+    typeOfQuotationBeingEdited: 'DATABASE_QUOTATION' | 'TEMPORAL_QUOTATION',
+    requesterId?: string,
+    supplierMerchantId?: string;
+    globalSupplieritemIdsInQuotation: Array<string>,
+    supplierSpecificOtemIdsInQuotation: Array<string>,
+    quotationItems: Array<QuotationItem>,
+    itemsThatArentInSupplierSaleflow?: Array<ItemInput>,
+    quotationId?: string;
+    quotationItemBeingEdited?: {
+      id?: string,
+      inSaleflow: boolean
+      indexInQuotations: number;
+      quotationItemInMemory: boolean,
+    };
+  } = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 
@@ -56,6 +91,29 @@ export class QuotationsService {
 
       if (!result || result?.errors) return undefined;
       return result?.quotationCoincidences;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async quotationCoincidencesByItem(
+    paginationOptionsInput: PaginationOptionsInput,
+    categories: Array<string>,
+    itemId: Array<string>
+  ): Promise<Array<any>> {
+    try {
+      const result = await this.graphql.query({
+        query: quotationCoincidencesByItem,
+        variables: {
+          paginationOptionsInput,
+          categories,
+          itemId,
+        },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.quotationCoincidencesByItem;
     } catch (e) {
       console.log(e);
     }

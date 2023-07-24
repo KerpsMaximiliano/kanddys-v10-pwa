@@ -75,10 +75,10 @@ import { HttpClient } from '@angular/common/http';
 import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slides-editor/items-slides-editor.component';
 import { ItemSelectorComponent } from './pages/item-selector/item-selector.component';
 import { SupplierRegisterComponent } from './pages/supplier-register/supplier-register.component';
-import { InventoryComponent } from './pages/inventory/inventory.component';
-import { QuotationBidsComponent } from './pages/quotation-bids/quotation-bids.component';
+//import { InventoryComponent } from './pages/inventory/inventory.component';
+//import { QuotationBidsComponent } from './pages/quotation-bids/quotation-bids.component';
 import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-creator.component';
-import { SupplierRegistrationComponent } from './pages/supplier-registration/supplier-registration.component';
+//import { SupplierRegistrationComponent } from '../ecommerce/pages/supplier-registration/supplier-registration.component';
 import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
 
 const routes: Routes = [
@@ -400,6 +400,7 @@ const routes: Routes = [
         path: 'item-selector/:quotationId',
         component: ItemSelectorComponent,
       },
+      /*
       {
         path: 'quotations',
         component: InventoryComponent,
@@ -407,7 +408,7 @@ const routes: Routes = [
       {
         path: 'quotation-bids/:quotationId',
         component: QuotationBidsComponent,
-      },
+      },*/
     ],
   },
   {
@@ -486,7 +487,7 @@ const routes: Routes = [
   {
     path: 'supplier-register',
     component: SupplierRegisterComponent,
-  },*/
+  },
   {
     path: 'inventory',
     component: InventoryComponent,
@@ -499,14 +500,16 @@ const routes: Routes = [
     path: 'inventory-creator/:itemId',
     component: InventoryCreatorComponent,
   },
+  */
   {
     path: 'supplier-orders',
     component: OrderProgressFilteringComponent
   },
+  /*
   {
     path: 'supplier-register/:quotationId',
     component: SupplierRegistrationComponent,
-  },
+  },*/
 ];
 
 @NgModule({
@@ -563,10 +566,11 @@ const routes: Routes = [
     ItemCreationComponent,
     ItemSelectorComponent,
     SupplierRegisterComponent,
+    /*
     InventoryComponent,
-    QuotationBidsComponent,
-    InventoryCreatorComponent,
     SupplierRegistrationComponent,
+    */
+    //InventoryCreatorComponent,
     OrderProgressFilteringComponent
   ],
   exports: [ArticleCreatorComponent],
