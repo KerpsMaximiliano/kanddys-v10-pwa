@@ -308,21 +308,22 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       try {
         const createdItemId = parsedData.createdItem;
 
+        const saleflowDefault = await this._SaleflowService.saleflowDefault(this._MerchantsService.merchantData._id);
+
         await this._ItemsService.authItem(
           this._MerchantsService.merchantData._id,
           createdItemId
         );
 
-        await Promise.all(
-          this.items.map((item) =>
-            this._SaleflowService.addItemToSaleFlow(
-              {
-                item: createdItemId,
-              },
-              this.headerService.saleflow._id
-            )
-          )
+        
+        await this._SaleflowService.addItemToSaleFlow(
+          {
+            item: createdItemId,
+          },
+          saleflowDefault._id
         );
+
+        window.location.href = environment.uri + '/admin/dashboard';
 
         unlockUI();
       } catch (error) {
@@ -332,7 +333,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       }
       lockUI();
 
-      window.location.href = environment.uri + '/admin/dashboard';
     }
 
     if (view)
