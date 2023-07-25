@@ -80,6 +80,8 @@ import { SupplierRegisterComponent } from './pages/supplier-register/supplier-re
 import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-creator.component';
 //import { SupplierRegistrationComponent } from '../ecommerce/pages/supplier-registration/supplier-registration.component';
 import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
+import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
+import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -510,6 +512,14 @@ const routes: Routes = [
     path: 'supplier-register/:quotationId',
     component: SupplierRegistrationComponent,
   },*/
+  {
+    path: 'order-progress',
+    component: OrderProgressComponent
+  },
+  {
+    path: 'order-filtering',
+    component: OrderFilteringComponent
+  }
 ];
 
 @NgModule({
@@ -571,7 +581,9 @@ const routes: Routes = [
     SupplierRegistrationComponent,
     */
     //InventoryCreatorComponent,
-    OrderProgressFilteringComponent
+    OrderProgressFilteringComponent,
+    OrderProgressComponent,
+    OrderFilteringComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [
