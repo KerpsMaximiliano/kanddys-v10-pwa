@@ -12,7 +12,7 @@ import {
   playVideoOnFullscreen,
   unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
-import { ItemImageInput, ItemInput } from 'src/app/core/models/item';
+import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { SlideInput } from 'src/app/core/models/post';
 import { HeaderService } from 'src/app/core/services/header.service';
 import {
@@ -28,6 +28,15 @@ import {
 } from 'src/app/shared/dialogs/form/form.component';
 import { isVideo } from 'src/app/core/helpers/strings.helpers';
 import { environment } from 'src/environments/environment';
+import { PaginationInput } from 'src/app/core/models/saleflow';
+import { Merchant } from 'src/app/core/models/merchant';
+import {
+  LoginDialogComponent,
+  LoginDialogData,
+} from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 
 @Component({
   selector: 'app-inventory-creator',
@@ -76,6 +85,9 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   quotationId: string = null;
   requesterId: string = null;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  supplierEdition: boolean = false;
+  supplierItem: Item = null;
+  loggedMerchant: Merchant = null;
 
   constructor(
     private fb: FormBuilder,
@@ -84,7 +96,9 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
     public quotationsService: QuotationsService,
+    private authService: AuthService,
     public dialog: MatDialog,
+    public dialogService: DialogService,
     private snackbar: MatSnackBar,
     private toastr: ToastrService,
     private route: ActivatedRoute,
@@ -101,8 +115,10 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             merchantRegistration,
             quotationId,
             requesterId,
+            supplierEdition,
           }) => {
             this.existingItem = JSON.parse(existingItem || 'false');
+            this.supplierEdition = JSON.parse(existingItem || 'false');
             this.updateItem = Boolean(updateItem);
             this.quotationId = quotationId;
             this.requesterId = requesterId;
@@ -112,19 +128,67 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             );
             this.itemId = itemId;
 
-            this.merchantsService.merchantData =
-              await this.merchantsService.merchantDefault();
+            this.loggedMerchant = await this.merchantsService.merchantDefault();
+
+            //If a supplier enters the page directly from a link
+            if (
+              this.supplierEdition &&
+              this.itemId &&
+              !this.itemsService.temporalItemInput
+            ) {
+              this.existingItem = true;
+
+              const item = await this.itemsService.item(this.itemId);
+              this.itemsService.temporalItem = item;
+              this.itemsService.temporalItemInput = {
+                name: item.name,
+                description: item.description,
+                notificationStock: true,
+                notificationStockLimit: item.notificationStockLimit,
+                useStock: true,
+              };
+
+              if (this.loggedMerchant) {
+                const supplierSpecificItemsPagination: PaginationInput = {
+                  findBy: {
+                    parentItem: {
+                      $in: ([] = [item._id]),
+                    },
+                    merchant: this.loggedMerchant._id,
+                  },
+                  options: {
+                    sortBy: 'createdAt:desc',
+                    limit: -1,
+                    page: 1,
+                  },
+                };
+
+                const supplierSpecificItems: Array<Item> = (
+                  await this.itemsService.listItems(
+                    supplierSpecificItemsPagination
+                  )
+                )?.listItems;
+
+                if (supplierSpecificItems?.length > 0) {
+                  this.router.navigate([
+                    '/admin/item-creation/' + supplierSpecificItems[0]._id,
+                  ]);
+                }
+
+                this.quotationsService.fetchSupplierItem = false;
+              }
+            }
 
             if (
               !this.itemsService.temporalItemInput?.name &&
               !this.existingItem &&
               !merchantRegistration
             ) {
-              this.router.navigate(['/ecommerce/item-selector']);
+              this.router.navigate(['/ecommerce/supplier-items-selector']);
             }
 
             this.itemFormData = this.fb.group({
-              title: [this.itemsService.temporalItemInput?.name || ''],
+              title: [this.itemsService.temporalItemInput?.name || '', Validators.compose([Validators.required])],
               description: [
                 this.itemsService.temporalItemInput?.description || '',
               ],
@@ -142,7 +206,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               notificationStockLimit: [
                 this.itemsService.temporalItemInput?.notificationStockLimit ||
                   '',
-                Validators.compose([Validators.required, Validators.min(1)]),
+                Validators.compose([Validators.min(1)]),
               ],
             });
 
@@ -332,6 +396,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     );
     const itemInput: ExtendedItemInput = {
       name: this.itemsService.temporalItemInput?.name,
+      description: this.itemFormData.value['description'],
       pricing: this.itemFormData.value['pricing'],
       images,
       stock: this.itemFormData.value['stock'],
@@ -345,44 +410,95 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     localStorage.setItem('flowRoute', this.router.url);
   }
 
-  openFormForField() {
+  openFormForField = (
+    fieldName: 'TITLE' | 'DESCRIPTION' | 'PRICE' | 'STOCK'
+  ) => {
     let fieldsToCreate: FormData = {
       fields: [],
     };
-
-    fieldsToCreate.fields = [
-      {
-        label: 'Cantidad disponible para vender',
-        name: 'initial-stock',
-        type: 'number',
-        validators: [Validators.pattern(/[\S]/)],
-      },
-      {
-        label: 'Cantidad mínima para recibir notificación',
-        name: 'minimal-stock-notification',
-        type: 'number',
-        validators: [Validators.pattern(/[\S]/)],
-      },
-    ];
+    if (fieldName === 'TITLE') {
+      fieldsToCreate.fields = [
+        {
+          label: 'Texto principal y centralizado',
+          name: 'title',
+          type: 'text',
+          validators: [Validators.pattern(/[\S]/)],
+        },
+      ];
+    } else if (fieldName === 'PRICE') {
+      fieldsToCreate.fields = [
+        {
+          label: 'Precio',
+          name: 'price',
+          type: 'currency',
+          validators: [Validators.pattern(/[\S]/)],
+        },
+      ];
+    } else if (fieldName === 'STOCK') {
+      fieldsToCreate.fields = [
+        {
+          label: 'Cantidad disponible para vender',
+          name: 'initial-stock',
+          type: 'number',
+          validators: [Validators.pattern(/[\S]/)],
+        },
+        {
+          label: 'Cantidad mínima para recibir notificación',
+          name: 'minimal-stock-notification',
+          type: 'number',
+          validators: [Validators.pattern(/[\S]/)],
+        },
+      ];
+    } else {
+      fieldsToCreate.fields = [
+        {
+          label: 'Texto mas largo (que incluye?)',
+          name: 'description',
+          type: 'text',
+          validators: [Validators.pattern(/[\S]/)],
+        },
+      ];
+    }
 
     const dialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreate,
     });
 
     dialogRef.afterClosed().subscribe((result: FormGroup) => {
-      if (result.value['initial-stock']) {
-        this.itemFormData.patchValue({
-          stock: result.value['initial-stock'],
-        });
-      }
+      const fields = [
+        {
+          fieldName: 'title',
+          fieldKey: 'title',
+        },
+        {
+          fieldName: 'description',
+          fieldKey: 'description',
+        },
 
-      if (result.value['minimal-stock-notification']) {
-        this.itemFormData.patchValue({
-          notificationStockLimit: result.value['minimal-stock-notification'],
-        });
-      }
+        {
+          fieldName: 'pricing',
+          fieldKey: 'price',
+        },
+        {
+          fieldName: 'stock',
+          fieldKey: 'initial-stock',
+        },
+        {
+          fieldName: 'notificationStockLimit',
+          fieldKey: 'minimal-stock-notification',
+        },
+      ];
+
+      fields.forEach((field) => {
+        console.log(field);
+        if (result?.value[field.fieldKey]) {
+          this.itemFormData.patchValue({
+            [field.fieldName]: result?.value[field.fieldKey],
+          });
+        }
+      });
     });
-  }
+  };
 
   isVideoWrapper(filename: string) {
     return isVideo(filename);
@@ -391,11 +507,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   async saveItem() {
     let itemSlideIndex = 0;
 
-    if (
-      this.existingItem &&
-      !this.quotationsService.supplierItemsAdjustmentsConfig
-        ?.quotationItemBeingEdited.quotationItemInMemory
-    ) {
+    if (this.existingItem) {
       lockUI();
       for await (const slide of this.itemSlides) {
         if (slide.url && !slide.media) {
@@ -441,20 +553,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             duration: 5000,
           });
 
-          this.router.navigate(
-            [
-              this.quotationId
-                ? `ecommerce/supplier-register/${this.quotationId}`
-                : `ecommerce/supplier-register`,
-            ],
-            {
-              queryParams: {
-                supplierMerchantId: this.merchantsService.merchantData?._id,
-                requesterId: this.requesterId,
-              },
-            }
-          );
-
+          this.router.navigate(['/admin/dashboard']);
           unlockUI();
         } catch (error) {
           this.snackbar.open('Ocurrió un error al actualizar el producto', '', {
@@ -513,7 +612,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           this.itemFormData.value['notificationStockLimit']
         ),
         images,
-        merchant: this.merchantsService.merchantData?._id,
         content: [],
         currencies: [],
         hasExtraPrice: false,
@@ -529,55 +627,144 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       };
       this.itemsService.itemPrice = null;
 
-      const saleflowDefault = await this.saleflowService.saleflowDefault(
-        this.merchantsService.merchantData._id
-      );
+      if (this.loggedMerchant) {
+        itemInput.merchant = this.merchantsService.merchantData?._id;
 
-      if (!this.existingItem) {
-        const createdItem = (await this.itemsService.createItem(itemInput))
-          ?.createItem;
-
-        itemInput.parentItem = createdItem._id;
-
-        const createdItem2 = (await this.itemsService.createItem(itemInput))
-          ?.createItem;
-
-        await this.saleflowService.addItemToSaleFlow(
-          {
-            item: createdItem2._id,
-          },
-          saleflowDefault._id
+        const saleflowDefault = await this.saleflowService.saleflowDefault(
+          this.merchantsService.merchantData._id
         );
+
+        if (!this.existingItem) {
+          const createdItem = (await this.itemsService.createItem(itemInput))
+            ?.createItem;
+
+          itemInput.parentItem = createdItem._id;
+
+          const createdItem2 = (await this.itemsService.createItem(itemInput))
+            ?.createItem;
+
+          await this.saleflowService.addItemToSaleFlow(
+            {
+              item: createdItem2._id,
+            },
+            saleflowDefault._id
+          );
+
+          this.snackbar.open('Item creado exitosamente', 'Cerrar', {
+            duration: 3000,
+          });
+
+          this.itemsService.temporalItem = null;
+          this.itemsService.temporalItemInput = null;
+          this.itemsService.modifiedImagesFromExistingItem = false;
+
+          this.router.navigate(['/admin/dashboard']);
+        } else {
+          itemInput.parentItem = this.itemsService.temporalItem._id;
+
+          const createdItem2 = (await this.itemsService.createItem(itemInput))
+            ?.createItem;
+
+          await this.saleflowService.addItemToSaleFlow(
+            {
+              item: createdItem2._id,
+            },
+            saleflowDefault._id
+          );
+
+          this.snackbar.open('Producto creado satisfactoriamente!', '', {
+            duration: 5000,
+          });
+
+          this.itemsService.temporalItem = null;
+          this.itemsService.temporalItemInput = null;
+          this.itemsService.modifiedImagesFromExistingItem = false;
+
+          this.router.navigate(['/admin/dashboard']);
+        }
       } else {
-        console.log('suplidor creando item a partir de uno global');
-        itemInput.parentItem = this.itemsService.temporalItem._id;
-
-        const createdItem2 = (await this.itemsService.createItem(itemInput))
-          ?.createItem;
-
-        await this.saleflowService.addItemToSaleFlow(
-          {
-            item: createdItem2._id,
+        let fieldsToCreate: FormData = {
+          title: {
+            text: '¿Dónde recibirás las facturas y órdenes?',
           },
-          saleflowDefault._id
-        );
+          fields: [
+            {
+              name: 'whatsapp',
+              placeholder: 'Escribe el WhatsApp..',
+              type: 'phone',
+              validators: [Validators.pattern(/[\S]/)],
+            },
+            {
+              name: 'email',
+              placeholder: 'Escribe el correo electrónico..',
+              type: 'email',
+              validators: [Validators.pattern(/[\S]/)],
+            },
+          ],
+        };
+        const dialogRef = this.dialog.open(FormComponent, {
+          data: fieldsToCreate,
+          disableClose: true,
+        });
+
+        dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+          if (!result?.value['whatsapp'] && !result?.value['email']) {
+            this.snackbar.open('Error al crear el producto', 'Cerrar', {
+              duration: 4000,
+            });
+          } else {
+            const phone = result?.value['whatsapp']
+              ? result?.value['whatsapp'].e164Number.split('+')[1]
+              : null;
+            const email = result?.value['email']
+              ? result?.value['email']
+              : null;
+
+            if (result.controls.email.valid || result.controls.phone.valid) {
+              itemInput.parentItem = this.itemId;
+
+              lockUI();
+              const createdItem = (
+                await this.itemsService.createPreItem(itemInput)
+              )?.createPreItem;
+
+              await this.authService.generateMagicLink(
+                phone || email,
+                '/admin/dashboard',
+                null,
+                'MerchantAccess',
+                {
+                  jsondata: JSON.stringify({
+                    createdItem: createdItem._id,
+                  }),
+                },
+                []
+              );
+
+              unlockUI();
+
+              this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+                type: 'centralized-fullscreen',
+                props: {
+                  icon: 'check-circle.svg',
+                  showCloseButton: false,
+                  message:
+                    'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+                },
+                customClass: 'app-dialog',
+                flags: ['no-header'],
+              });
+            } else {
+              unlockUI();
+              this.snackbar.open('Datos invalidos', 'Cerrar', {
+                duration: 3000,
+              });
+            }
+          }
+        });
       }
 
-      this.snackbar.open('Producto creado satisfactoriamente!', '', {
-        duration: 5000,
-      });
-
-      this.itemsService.temporalItem = null;
-      this.itemsService.temporalItemInput = null;
-      this.itemsService.modifiedImagesFromExistingItem = false;
-
-      this.router.navigate(['admin/item-selector']);
-
       unlockUI();
-
-      this.snackbar.open('Item creado exitosamente', 'Cerrar', {
-        duration: 3000,
-      });
     } catch (error) {
       console.log('Ocurrio un error', error);
       this.snackbar.open('Error al crear el producto', 'Cerrar', {
@@ -598,7 +785,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       ]);
     }
 
-
     if (this.updateItem) {
       return this.router.navigate(
         [
@@ -615,7 +801,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.router.navigate(['ecommerce/item-selector']);
+    this.router.navigate(['ecommerce/supplier-items-selector']);
   }
 
   addToastReminder(firstLoad: boolean = false) {

@@ -1,9 +1,10 @@
 .container {
   height: 100vh;
   overflow-y: scroll;
-  background: #F6F6F6;
+  background: #f6f6f6;
   padding: 0px;
   padding-bottom: 3rem;
+  position: relative;
 }
 
 ::ng-deep .mat-dialog-container {
@@ -73,6 +74,17 @@
   padding-bottom: 12px;
   width: 100%;
   margin-top: 5px;
+
+  &.no-background {
+    background-color: transparent;
+    color: #702015;
+    font-family: Inter;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    filter: none;
+  }
 
   &.info {
     padding: 13px;
@@ -191,9 +203,73 @@ hr {
     text-align: center;
     color: #272727;
     font-size: 17px;
-    font-family: 'InterBold';
+    font-family: "InterBold";
     font-weight: 700;
     word-wrap: break-word;
     padding: 0 10px;
+  }
+}
+
+footer {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  max-width: 500px;
+  background: var(--el-verdecito, #87cd9b);
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 15px;
+  margin: auto;
+
+  .share-btn {
+    cursor: pointer;
+    border: none;
+    color: #181d17;
+    font-family: InterBold;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    background-color: transparent;
+    padding: 0px;
+    margin: 0px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .average-label {
+    color: var(--el-mas-oscuro, #181d17);
+    text-align: right;
+    font-family: InterRegular;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+}
+
+.bubble-button {
+  z-index: 999;
+  right: 26px;
+  bottom: 52px;
+  width: 63px;
+  height: 63px;
+  background-color: #87cd9b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  img {
+    transform: rotate(180deg);
+    width: 25.28px;
+    height: 25.28px;
   }
 }

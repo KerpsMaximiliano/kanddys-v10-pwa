@@ -16,13 +16,14 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ViewportRuler } from '@angular/cdk/overlay';
 import { environment } from 'src/environments/environment';
+import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
 
 interface Field {
-  type: 'text' | 'email' | 'phone' | 'file' | 'number';
+  type: 'text' | 'email' | 'phone' | 'file' | 'number' | 'currency';
   validators: Array<ValidatorFn>;
   name: string;
   placeholder?: string;
-  label: string;
+  label?: string;
   secondaryIcon?: boolean;
   styles?: Record<string, string>;
   secondaryIconCallback?: () => void;
@@ -30,6 +31,10 @@ interface Field {
 
 export interface FormData {
   fields: Array<Field>;
+  title?: {
+    text: string;
+    styles?: Record<string, any>;
+  };
 }
 
 @Component({
@@ -40,6 +45,12 @@ export interface FormData {
 export class FormComponent implements OnInit {
   formGroup: FormGroup;
   env: string = environment.assetsUrl;
+  CountryISO = CountryISO.DominicanRepublic;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
+  PhoneNumberFormat = PhoneNumberFormat;
 
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
@@ -62,6 +73,11 @@ export class FormComponent implements OnInit {
         case 'text':
           fieldToInsert = new FormControl('', field.validators);
           break;
+        case 'currency':
+            fieldToInsert = new FormControl('', field.validators);
+            break;
+        case 'phone':
+          fieldToInsert = new FormControl('', field.validators);
         case 'number':
           fieldToInsert = new FormControl('', field.validators);
           break;
@@ -72,6 +88,8 @@ export class FormComponent implements OnInit {
           );
           break;
       }
+
+      console.log("this.formGroup", this.formGroup)
 
       this.formGroup.addControl(field.name, fieldToInsert);
     }
@@ -86,6 +104,9 @@ export class FormComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  updateFieldValue(index: number, value: any) {
+    this.formGroup.get(this.data.fields[index].name).setValue(value);
+  }
 
   // Listen for focusin and focusout events to track keyboard visibility changes
   @HostListener('window:focusout', ['$event'])

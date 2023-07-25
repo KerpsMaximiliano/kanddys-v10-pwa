@@ -87,6 +87,10 @@ export class InventoryComponent implements OnInit {
       this.mode = 'QUOTATIONS_OF_EXISTING_USER_SESSION';
       await this.getMerchantDefault();
       await this.getQuotations(this.merchant._id);
+      localStorage.removeItem('temporalQuotations');
+      localStorage.removeItem('selectedTemporalQuotation');
+      localStorage.removeItem('quotationInCartObject');
+      localStorage.removeItem('quotationInCart');
     }
   }
 

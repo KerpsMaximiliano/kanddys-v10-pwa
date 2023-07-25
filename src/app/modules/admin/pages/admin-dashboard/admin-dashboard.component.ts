@@ -300,6 +300,20 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
     const view = this.route.snapshot.queryParamMap.get('view');
     this.showItems = this.route.snapshot.queryParamMap.get('showItems');
+    const jsondata = this.route.snapshot.queryParamMap.get('jsondata');
+
+    if (jsondata) {
+      let parsedData = JSON.parse(decodeURIComponent(jsondata));
+
+      const createdItemId = parsedData.createdItem;
+
+      await this._ItemsService.authItem(
+        this._MerchantsService.merchantData._id,
+        createdItemId
+      );
+
+      window.location.href = environment.uri + '/admin/dashboard';
+    }
 
     if (view)
       this.view = view as 'sold' | 'notSold' | 'hidden' | 'all' | 'default';
