@@ -1,11 +1,13 @@
 <div class="container" *ngIf="itemFormData" [formGroup]="itemFormData">
   <div class="header">
     <div class="flex">
-      <mat-icon style="cursor: pointer" (click)="back()">close</mat-icon>
-      <p class="header-title">
-        {{ itemsService.temporalItemInput?.name }} para cotizar y vender
-        localmente
-      </p>
+      <mat-icon
+        style="cursor: pointer"
+        *ngIf="!supplierEdition"
+        (click)="back()"
+        >close</mat-icon
+      >
+      <p class="header-title">Artículo de proveedor de floristas</p>
     </div>
     <img
       [src]="
@@ -18,13 +20,92 @@
   </div>
   <div class="content">
     <div class="content-title" *ngIf="showIntroParagraph">
-      Esta plataforma te pone al frente de floristas que necesitan exactamente
-      lo que ofreces. Cada vez que un florista de tu localidad busque flores, tu
-      producto y precio se mostrarán, facilitando transacciones rápidas y
-      eficientes. Tu trabajo será simplemente mantener actualizada la
-      información del producto y el inventario. Recibirás las órdenes según
-      <strong> tu promesa. </strong>
+      Esta plataforma te pone al frente de floristerias que necesitan
+      exactamente lo que ofreces.
     </div>
+
+    <section
+      *ngIf="
+        !itemFormData.controls['title'].value ||
+        (!itemFormData.controls['description'].value && !existingItem) ||
+        itemSlides.length === 0 ||
+        itemFormData.controls['pricing'].value === 0 ||
+        !itemFormData.controls['stock'].value
+      "
+    >
+      <h2 class="section-title">DATOS POR LLENAR</h2>
+
+      <ng-container *ngIf="!itemFormData.controls['title'].value">
+        <ng-container
+          *ngTemplateOutlet="
+            emptyItem;
+            context: {
+              fieldLabel: 'Texto principal y centralizado',
+              iconCallback: openFormForField,
+              fieldNameForCallback: 'TITLE'
+            }
+          "
+        >
+        </ng-container>
+      </ng-container>
+
+      <ng-container
+        *ngIf="!itemFormData.controls['description'].value && !existingItem"
+      >
+        <ng-container
+          *ngTemplateOutlet="
+            emptyItem;
+            context: {
+              fieldLabel: 'Texto mas largo (que incluye?)',
+              iconCallback: openFormForField,
+              fieldNameForCallback: 'DESCRIPTION'
+            }
+          "
+        >
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="itemSlides.length === 0">
+        <ng-container
+          *ngTemplateOutlet="
+            emptyItem;
+            context: {
+              fieldLabel: 'Slides visuales',
+              iconCallback: emitFileInputClick
+            }
+          "
+        >
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="itemFormData.controls['pricing'].value === 0">
+        <ng-container
+          *ngTemplateOutlet="
+            emptyItem;
+            context: {
+              fieldLabel: 'Precio',
+              iconCallback: openFormForField,
+              fieldNameForCallback: 'PRICE'
+            }
+          "
+        >
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="!itemFormData.controls['stock'].value">
+        <ng-container
+          *ngTemplateOutlet="
+            emptyItem;
+            context: {
+              fieldLabel: 'Cantidad disponible para vender',
+              iconCallback: openFormForField,
+              fieldNameForCallback: 'STOCK'
+            }
+          "
+        >
+        </ng-container>
+      </ng-container>
+    </section>
 
     <input
       type="file"
@@ -51,147 +132,133 @@
       ]"
     />
 
-    <div class="content-image-container" *ngIf="itemSlides.length === 0">
-      <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
-        <div class="img-input">
-          <img [src]="assetsFolder + '/galery-black.svg'" alt="icon" />
-        </div>
-      </label>
-    </div>
+    <section
+      *ngIf="
+        itemFormData.controls['title'].value ||
+        itemFormData.controls['description'].value ||
+        itemSlides.length !== 0 ||
+        itemFormData.controls['pricing'].value !== 0 ||
+        itemFormData.controls['stock'].value
+      "
+    >
+      <h2 class="section-title">DATOS LLENOS</h2>
 
-    <div class="field-text" *ngIf="itemFormData.controls['title'].value">
-      <label for="">Texto principal y centralizado</label>
+      <div class="field-text" *ngIf="itemFormData.controls['title'].value">
+        <label for="">Texto principal y centralizado</label>
 
-      <span class="text">{{ itemFormData.controls["title"].value }}</span>
-    </div>
+        <input
+          type="text"
+          *ngIf="!existingItem"
+          placeholder="Escribe"
+          [formControlName]="'title'"
+        />
 
-    <div>
-      <div
-        class="field-text"
-        *ngIf="itemFormData.controls['description'].value"
-        style="padding-bottom: 40px"
-      >
-        <label for="">Texto más largo</label>
-
-        <span class="text">{{
-          itemFormData.controls["description"].value
+        <span *ngIf="existingItem">{{
+          itemFormData.controls["title"].value
         }}</span>
       </div>
-    </div>
 
-    <div
-      class="content-image-container"
-      *ngIf="
-        itemSlides.length > 0 &&
-        quotationsService.supplierItemsAdjustmentsConfig?.quotationItemBeingEdited
-      "
-    >
-      <ng-container *ngIf="isVideoWrapper(itemSlides[0].url); else images">
-        <div class="item-card" style="background-color: black">
-          <img
-            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
-            alt="play"
-            (click)="playVideoOnFullscreen('media0')"
-            class="playVideoIcon"
-            style="
-              padding: 1.5rem !important;
-              z-index: 99;
-              z-index: 99;
-              left: 0;
-              right: 0;
-              max-width: 80px;
-              min-width: 70px;
-            "
-          />
-
-          <video
-            class="video-content"
-            [id]="'media0'"
-            [muted]="true"
-            [src]="itemSlides[0].url"
-          ></video>
-        </div>
-      </ng-container>
-
-      <ng-template #images>
+      <div>
         <div
-          class="item-card"
-          [ngStyle]="{
-            backgroundImage: itemSlides[0].url
-              ? 'url(' + itemSlides[0].url + ')'
-              : 'url(/assets/images/noimage.png)',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-            backgroundSize: 'cover'
-          }"
-        ></div>
-      </ng-template>
-    </div>
+          class="field-text"
+          *ngIf="itemFormData.controls['description'].value"
+          style="padding-bottom: 8px"
+        >
+          <label for="">Texto mas largo (que incluye?)</label>
 
-    <div
-      class="added-slides"
-      *ngIf="
-        itemSlides.length > 0 &&
-        renderQrContent &&
-        !quotationsService.supplierItemsAdjustmentsConfig
-          ?.quotationItemBeingEdited
-      "
-    >
-      <app-qr-content
-        [slides]="itemSlides"
-        [showReorderButton]="true"
-        [title]="'Slides visuales'"
-        [mode]="'SMALL'"
-        [editing]="false"
-        [defaultText]="'Incluyes fotos, memes, videos o música.'"
-        (buttonClicked)="
-          !updateItem ? emitFileInputClick() : goToReorderMedia()
+          <textarea
+            *ngIf="!existingItem"
+            cols="30"
+            rows="3"
+            placeholder="Escribe"
+            [formControlName]="'description'"
+          ></textarea>
+
+          <span *ngIf="existingItem">{{
+            itemFormData.controls["description"].value
+          }}</span>
+        </div>
+      </div>
+
+      <div
+        class="added-slides"
+        *ngIf="
+          itemSlides.length > 0 &&
+          renderQrContent &&
+          !quotationsService.supplierItemsAdjustmentsConfig
+            ?.quotationItemBeingEdited
         "
-        (buttonClicked2)="goToReorderMedia()"
-      ></app-qr-content>
-    </div>
-
-    <div
-      class="price-wrapper"
-      [ngClass]="{
-        'no-shadows': itemFormData.controls['pricing'].value !== 0
-      }"
-    >
-      <app-currency-input
-        [innerLabel]="'Precio*'"
-        [innerLabelStyles]="{
-          fontFamily: 'InterLight',
-          fontStyle: 'italic',
-          fontSize: '13px'
-        }"
-        [fieldStyles]="{
-          boxShadow: 'none',
-          backgroundColor: 'white',
-          borderRadius: '6px',
-          padding: '8px 0px'
-        }"
-        [initialValue]="itemFormData.controls['pricing'].value"
-        (onInputEvent)="updateItemPrice($event)"
-        placeholderColor="#7B7B7B"
-        currencyLabel=""
-      ></app-currency-input>
-    </div>
-
-    <div
-      class="content-inventary-container"
-      [ngClass]="{
-        'no-shadows': itemFormData.controls['stock'].value
-      }"
-      (click)="openFormForField()"
-    >
-      <p>Inventario*</p>
-      <input placeholder="0" type="number" [disabled]="true" formControlName="stock" />
-      <p class="content-inventary-detail"
-        *ngIf="itemFormData.controls['stock'].value === '0'"
       >
-        No se está mostrando a Floristerias
-      </p>
-    </div>
+        <app-qr-content
+          [slides]="itemSlides"
+          [showReorderButton]="true"
+          [title]="'Slides visuales'"
+          [mode]="'SMALL'"
+          [editing]="false"
+          [defaultText]="'Incluyes fotos, memes, videos o música.'"
+          (buttonClicked)="
+            existingItem
+              ? null
+              : !updateItem
+              ? emitFileInputClick()
+              : goToReorderMedia()
+          "
+          (buttonClicked2)="goToReorderMedia()"
+          [showButton]="existingItem && !supplierEdition"
+          [showReorderButton]="existingItem && !supplierEdition"
+        ></app-qr-content>
+      </div>
+
+      <div
+        *ngIf="itemFormData.controls['pricing'].value !== 0"
+        class="price-wrapper"
+        [ngClass]="{
+          'no-shadows': itemFormData.controls['pricing'].value !== 0
+        }"
+      >
+        <app-currency-input
+          [innerLabel]="'Precio*'"
+          [innerLabelStyles]="{
+            fontFamily: 'InterLight',
+            fontStyle: 'italic',
+            fontSize: '13px'
+          }"
+          [fieldStyles]="{
+            boxShadow: 'none',
+            backgroundColor: 'white',
+            borderRadius: '6px',
+            padding: '8px 0px'
+          }"
+          [initialValue]="itemFormData.controls['pricing'].value"
+          (onInputEvent)="updateItemPrice($event)"
+          placeholderColor="#7B7B7B"
+          currencyLabel=""
+        ></app-currency-input>
+      </div>
+
+      <div
+        *ngIf="itemFormData.controls['stock'].value"
+        class="content-inventary-container"
+        [ngClass]="{
+          'no-shadows': itemFormData.controls['stock'].value
+        }"
+        (click)="openFormForField('STOCK')"
+      >
+        <p>Cantidad disponible para vender</p>
+        <input
+          placeholder="0"
+          type="number"
+          [disabled]="true"
+          formControlName="stock"
+        />
+        <p
+          class="content-inventary-detail"
+          *ngIf="itemFormData.controls['stock'].value === '0'"
+        >
+          No se está mostrando a Floristerias
+        </p>
+      </div>
+    </section>
 
     <!--
       <p class="content-optionals-fuctions">FUNCIONALIDADES OPCIONALES</p>
@@ -205,11 +272,35 @@
 
 <footer
   [ngClass]="{
-    updateMode: updateItem || merchantRegistration
+    valid: itemFormData?.valid && itemSlides.length > 0
   }"
-  *ngIf="itemFormData?.valid && itemSlides.length > 0"
 >
-  <button class="right" style="color: #272727" (click)="saveItem()">
-    Guardar
+  <button
+    *ngIf="itemFormData?.valid && itemSlides.length > 0"
+    (click)="saveItem()"
+  >
+    Empezar a Exponerlo a Floristerias
   </button>
 </footer>
+
+<ng-template
+  #emptyItem
+  let-fieldLabel="fieldLabel"
+  let-iconCallback="iconCallback"
+  let-fieldNameForCallback="fieldNameForCallback"
+>
+  <div class="item-field empty">
+    <div class="field-name">{{ fieldLabel }}</div>
+
+    <img
+      (click)="
+        fieldNameForCallback
+          ? iconCallback(fieldNameForCallback)
+          : iconCallback()
+      "
+      class="add-icon"
+      [src]="assetsFolder + '/add_button_circle.svg'"
+      alt="fill value"
+    />
+  </div>
+</ng-template>

@@ -1,5 +1,5 @@
 <div class="container">
-  <header class="header">
+  <header class="header" *ngIf="!isOrderFromAQuotation">
     <div class="left-area">
       <a style="cursor: pointer">
         <i class="fas fa-chevron-left" (click)="goBack()"></i
@@ -22,7 +22,37 @@
     </div>
   </header>
 
-  <main>
+  <header class="header quotation" *ngIf="isOrderFromAQuotation">
+    <div class="left-area">
+      <button class="close" (click)="goBack()">X</button>
+      <p class="title">
+        {{
+          !isOrderFromAQuotation
+            ? "Artículos a facturarse"
+            : (quotationsService.quotationInCart
+                ? quotationsService.quotationInCart.name
+                : quotationsService.selectedTemporalQuotation.name) +
+              " en " +
+              (headerService.saleflow?.merchant?.name.length < 26
+                ? headerService.saleflow?.merchant?.name
+                : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+                    "Tienda" | titlecase))
+        }}
+        <!-- {{
+          headerService.saleflow?.merchant?.name.length < 26
+            ? headerService.saleflow?.merchant?.name
+            : (headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+                "Tienda" | titlecase)
+        }} -->
+      </p>
+    </div>
+  </header>
+
+  <main
+    [ngClass]="{
+      quotation: isOrderFromAQuotation
+    }"
+  >
     <ng-container
       *ngTemplateOutlet="
         itemCard;
@@ -46,7 +76,7 @@
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
   </main>
 
-  <footer>
+  <footer *ngIf="!isOrderFromAQuotation">
     <div style="text-align: center">
       <button
         mat-button
@@ -61,6 +91,14 @@
       </button>
     </div>
   </footer>
+
+  <footer class="quotations-footer" *ngIf="isOrderFromAQuotation">
+    <button class="continue-order" (click)="openSubmitDialog()">
+      Sigue con la orden de Compra
+    </button>
+
+    <span class="total-label">Total: ${{ totalPrice }}</span>
+  </footer>
 </div>
 
 <ng-template
@@ -68,7 +106,13 @@
   let-arrayOfItems="arrayOfItems"
   let-notAvailableItems="notAvailableItems"
 >
-  <mat-card class="card" *ngFor="let item of arrayOfItems; index as i">
+  <mat-card
+    class="card"
+    [ngClass]="{
+      quotation: isOrderFromAQuotation
+    }"
+    *ngFor="let item of arrayOfItems; index as i"
+  >
     <div class="card-header flex">
       <div class="left-side flex">
         <div
@@ -137,7 +181,9 @@
             <span
               mat-button
               class="button icon"
-              (click)="!notAvailableItems ? changeAmount(item._id, 'subtract') : null"
+              (click)="
+                !notAvailableItems ? changeAmount(item._id, 'subtract') : null
+              "
             >
               {{ itemObjects[item._id]?.amount > 1 ? "-" : "" }}
               <mat-icon
@@ -153,7 +199,9 @@
             <span
               mat-button
               class="button icon"
-              (click)="!notAvailableItems ? changeAmount(item._id, 'add') : null"
+              (click)="
+                !notAvailableItems ? changeAmount(item._id, 'add') : null
+              "
               >+</span
             >
           </div>

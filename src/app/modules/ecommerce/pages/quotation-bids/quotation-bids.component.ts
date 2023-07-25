@@ -39,6 +39,7 @@ export class QuotationBidsComponent implements OnInit {
   temporalQuotation: QuotationInput = null;
   quotationGlobalItems: Array<Item> = [];
   quotationMatches: Array<QuotationMatches> = [];
+  providersPriceAverage: number = null;
   assetsFolder: string = environment.assetsUrl;
   currentView: 'SUPPLIERS_LIST' | 'QUOTATION_CONFIG' = 'SUPPLIERS_LIST';
   typeOfQuotation: 'DATABASE_QUOTATION' | 'TEMPORAL_QUOTATION' =
@@ -113,35 +114,78 @@ export class QuotationBidsComponent implements OnInit {
           this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
             duration: 5000,
           });
+        } else {
+          let sumOfProvidersPrices = 0;
+
+          for (const provider of this.quotationMatches) {
+            sumOfProvidersPrices += provider.total;
+          }
+
+          this.providersPriceAverage =
+            sumOfProvidersPrices / this.quotationMatches.length;
         }
       } else if (!this.headerService.user && quotationId) {
-        this.matDialog.open(LoginDialogComponent, {
-          data: {
-            magicLinkData: {
-              redirectionRoute: '/ecommerce/quotation-bids/' + quotationId,
-              entity: 'MerchantAccess',
-              overWriteDefaultEntity: true,
-            },
-          } as LoginDialogData,
-          panelClass: 'login-dialog-container',
-        });
+        this.typeOfQuotation = 'DATABASE_QUOTATION';
 
-        this.matSnackBar.open(
-          'Antes de continuar con tu orden, identificate',
-          'Ok',
-          {
-            duration: 10000,
-          }
+        this.quotation = await this.quotationsService.quotationPublic(
+          quotationId
         );
+
+        const quotationsItemsInput: PaginationInput = {
+          findBy: {
+            _id: {
+              __in: ([] = this.quotation.items),
+            },
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: -1,
+            page: 1,
+          },
+        };
+
+        this.quotationGlobalItems = (
+          await this.itemsService.listItems(quotationsItemsInput)
+        )?.listItems;
+
+        const quotationMatches: Array<QuotationMatches> =
+          await this.quotationsService.quotationCoincidencesByItem(
+            {},
+            [],
+            this.quotation.items
+          );
+
+        this.quotationMatches = quotationMatches;
+
+        if (this.quotationMatches.length === 0) {
+          this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
+            duration: 5000,
+          });
+        } else {
+          let sumOfProvidersPrices = 0;
+
+          for (const provider of this.quotationMatches) {
+            sumOfProvidersPrices += provider.total;
+          }
+
+          this.providersPriceAverage =
+            sumOfProvidersPrices / this.quotationMatches.length;
+        }
       } else if (!quotationId) {
         this.typeOfQuotation = 'TEMPORAL_QUOTATION';
 
-        if(!this.quotationsService.selectedTemporalQuotation) {
-          let storedSelectedTemporalQuotation: any = localStorage.getItem("selectedTemporalQuotation");
+        if (!this.quotationsService.selectedTemporalQuotation) {
+          let storedSelectedTemporalQuotation: any = localStorage.getItem(
+            'selectedTemporalQuotation'
+          );
 
-          if(storedSelectedTemporalQuotation) storedSelectedTemporalQuotation = JSON.parse(storedSelectedTemporalQuotation);
+          if (storedSelectedTemporalQuotation)
+            storedSelectedTemporalQuotation = JSON.parse(
+              storedSelectedTemporalQuotation
+            );
 
-          this.quotationsService.selectedTemporalQuotation = storedSelectedTemporalQuotation;
+          this.quotationsService.selectedTemporalQuotation =
+            storedSelectedTemporalQuotation;
         }
 
         this.temporalQuotation = await this.quotationsService
@@ -176,6 +220,15 @@ export class QuotationBidsComponent implements OnInit {
           this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
             duration: 5000,
           });
+        } else {
+          let sumOfProvidersPrices = 0;
+
+          for (const provider of this.quotationMatches) {
+            sumOfProvidersPrices += provider.total;
+          }
+
+          this.providersPriceAverage =
+            sumOfProvidersPrices / this.quotationMatches.length;
         }
       }
     });
@@ -233,8 +286,18 @@ export class QuotationBidsComponent implements OnInit {
 
     if (this.typeOfQuotation === 'DATABASE_QUOTATION') {
       localStorage.setItem('quotationInCart', this.quotation._id);
+      localStorage.removeItem('temporalQuotations');
+      localStorage.removeItem("selectedTemporalQuotation");
+      localStorage.setItem(
+        'quotationInCartObject',
+        JSON.stringify(this.quotation)
+      );
 
       this.quotationsService.quotationInCart = this.quotation;
+    } else {
+      localStorage.removeItem('quotationInCart');
+      localStorage.removeItem('quotationInCartObject');
+      
     }
 
     this.router.navigate(['/ecommerce/' + match.merchant.slug + '/cart'], {
@@ -330,7 +393,7 @@ export class QuotationBidsComponent implements OnInit {
       data: {
         fields: [
           {
-            label: 'Nombre de la cotización',
+            label: 'Nombre del carrito',
             name: 'name',
             type: 'text',
             validators: [Validators.pattern(/[\S]/)],
@@ -399,99 +462,32 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   async createExternalSupplierInvitation() {
-    lockUI();
+    const listOfItemNames = this.quotationGlobalItems
+      .map(
+        (item) =>
+          `-[${item.name || 'Producto sin nombre'}${
+            item.description ? item.description : ''
+          }], $${
+            item.pricing
+          }\n*Edita el $ 👉 ${`${environment.uri}/ecommerce/inventory-creator/${item._id}?supplierEdition=true&existingItem=true`}\n`
+      )
+      .join('');
 
-    if (this.quotation) {
-      this.quotationsService.quotationInCart = this.quotation;
+    const paymentLink = `${
+      environment.uri +
+      '/ecommerce/quotation-bids/' +
+      (this.quotation ? this.quotation._id : '')
+    }`;
+    const placeholderMessage = `Hola,\n\nSon estos los precios?\n\n${listOfItemNames}\n\nLa orden se puede completar desde 👉👉 ${paymentLink}`;
 
-      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+    this.clipboard.copy(placeholderMessage);
 
-      const queryParams: any = {
-        items: this.quotationsService.quotationInCart.items.join('-'),
-      };
-
-      if (this.merchantsService.merchantData) {
-        queryParams.requesterId = this.merchantsService.merchantData._id;
-        queryParams.buyerPhone = this.headerService.user?.phone;
+    this.matSnackBar.open(
+      'Se ha copiado un mensaje al portapapeles, compartelo WhatsApp con tu proveedor que no está entre las opciones de arriba',
+      'Cerrar',
+      {
+        duration: 3000,
       }
-
-      const supplierRegistrationLink = (
-        await this.authService.generateMagicLinkNoAuth(
-          null,
-          '/ecommerce/supplier-register',
-          this.quotationsService.quotationInCart._id,
-          'QuotationAccess',
-          {
-            jsondata: JSON.stringify({
-              ...queryParams,
-            }),
-          },
-          [],
-          true
-        )
-      )?.generateMagicLinkNoAuth;
-
-      const listOfItemNames = this.quotationGlobalItems
-        .map(
-          (item) =>
-            ('-' + item.name || ('Producto sin nombre' as string)) + '\n'
-        )
-        .join('');
-
-      const placeholderMessage = `Hola [Nombre del Suplidor],\n\nSoy ${
-        this.merchantsService.merchantData?.name ||
-        this.headerService.user?.name ||
-        '[Mi Nombre]'
-      } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n\n${listOfItemNames}\n\nPor favor, adiciona los precios a través de este enlace: ${supplierRegistrationLink}\n\nEse enlace 👆 es de la plataforma del Club de Floristerías que usamos todos los miembros (te tomará menos de 7 minutos inscribirte si es tu primera vez).\n\nSi empiezas a usar esta plataforma de ventas y cotizaciones:\n\nNos evitaremos tareas repetitivas.\n\nTu podrás ajustar tus precios e inventario fácilmente.\n\nPodemos pagarte por transferencia bancaria, PayPal o tarjeta de crédito.\n\nLe podremos dar seguimiento a las ordenes.\n\nUna vez te registres en la plataforma y ajustes los precios de los productos, la plataforma te presentará un botón que servirá para contactarme por WhatsApp, al pulsar ese botón, se generará automaticamente un enlace y me será enviado a mi número, dicho enlace me permitirá continuar con mi orden.`;
-
-      unlockUI();
-
-      this.clipboard.copy(placeholderMessage);
-
-      this.matSnackBar.open('Mensaje copiado al portapapeles', 'Cerrar', {
-        duration: 3000,
-      });
-    } else if (this.temporalQuotation) {
-      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-
-      const queryParams: any = {
-        items: this.temporalQuotation.items.join('-'),
-        temporalQuotation: true,
-      };
-
-      const supplierRegistrationLink = (
-        await this.authService.generateMagicLinkNoAuth(
-          null,
-          '/ecommerce/supplier-register',
-          null,
-          'QuotationAccess',
-          {
-            jsondata: JSON.stringify({
-              ...queryParams,
-            }),
-          },
-          [],
-          true
-        )
-      )?.generateMagicLinkNoAuth;
-
-      const listOfItemNames = this.quotationGlobalItems
-        .map(
-          (item) =>
-            ('-' + item.name || ('Producto sin nombre' as string)) + '\n'
-        )
-        .join('');
-
-      const placeholderMessage = `Hola [Nombre del Suplidor],\n\nSoy [Mi Nombre]'
-      } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n\n${listOfItemNames}\n\nPor favor, adiciona los precios a través de este enlace: ${supplierRegistrationLink}\n\nEse enlace 👆 es de la plataforma del Club de Floristerías que usamos todos los miembros (te tomará menos de 7 minutos inscribirte si es tu primera vez).\n\nSi empiezas a usar esta plataforma de ventas y cotizaciones:\n\nNos evitaremos tareas repetitivas.\n\nTu podrás ajustar tus precios e inventario fácilmente.\n\nPodemos pagarte por transferencia bancaria, PayPal o tarjeta de crédito.\n\nLe podremos dar seguimiento a las ordenes.\n\nUna vez te registres en la plataforma y ajustes los precios de los productos, Avisame por este medio para continuar con mi orden`;
-
-      unlockUI();
-
-      this.clipboard.copy(placeholderMessage);
-
-      this.matSnackBar.open('Mensaje copiado al portapapeles', 'Cerrar', {
-        duration: 3000,
-      });
-    }
+    );
   }
 }
