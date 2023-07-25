@@ -9,9 +9,12 @@
       </p>
 
       <p class="header-title" *ngIf="typeOfQuotation === 'TEMPORAL_QUOTATION'">
-        {{ temporalQuotation?.name ? temporalQuotation?.name : "Cotización sin nombre" }}
+        {{
+          temporalQuotation?.name
+            ? temporalQuotation?.name
+            : "Cotización sin nombre"
+        }}
       </p>
-
     </div>
     <img
       [src]="
@@ -32,7 +35,7 @@
   <div class="content">
     <ng-container [ngSwitch]="currentView">
       <ng-container *ngSwitchCase="'SUPPLIERS_LIST'">
-        <p class="content-title">Precios de Suplidores:</p>
+        <p class="content-title">Precios de Suplidores Locales:</p>
         <div class="content-cards-container">
           <div
             class="content-card"
@@ -70,16 +73,6 @@
             -->
           </div>
         </div>
-
-        <div
-          class="another-supplier-button"
-          (click)="createExternalSupplierInvitation()"
-        >
-          <div class="text">
-            Copia en tu clipboard los artículos y compartelo por WhatsApp con un
-            suplidor que no está entre las opciones
-          </div>
-        </div> 
       </ng-container>
 
       <ng-container *ngSwitchCase="'QUOTATION_CONFIG'">
@@ -89,22 +82,54 @@
           <div class="content-card info" (click)="editQuotation()">
             <h3>Articulos en el carrito</h3>
 
-            <h6>{{ typeOfQuotation === 'TEMPORAL_QUOTATION' ? temporalQuotation.items.length : quotation.items.length }}</h6>
+            <h6>
+              {{
+                typeOfQuotation === "TEMPORAL_QUOTATION"
+                  ? temporalQuotation.items.length
+                  : quotation.items.length
+              }}
+            </h6>
           </div>
         </div>
 
         <div class="content-cards-container">
-          <div class="content-card info" (click)="deleteQuotation()">
-            <h3>Eliminar esta cotización</h3>
+          <div class="content-card info" (click)="renameQuotation()">
+            <h3>Nombre del carrito</h3>
+
+            <h6>
+              {{
+                typeOfQuotation === "TEMPORAL_QUOTATION"
+                  ? temporalQuotation?.name
+                  : quotation?.name
+              }}
+            </h6>
           </div>
         </div>
-        
+
         <div class="content-cards-container">
-          <div class="content-card info" (click)="renameQuotation()">
-            <h3>Renombrar esta cotización</h3>
+          <div class="content-card info no-background" (click)="deleteQuotation()">
+            <h3>Eliminar este carrito</h3>
           </div>
         </div>
       </ng-container>
     </ng-container>
   </div>
+
+  <div
+    class="bubble-button"
+    *ngIf="currentView === 'QUOTATION_CONFIG'"
+    (click)="currentView = 'SUPPLIERS_LIST'"
+  >
+    <img [src]="assetsFolder + '/dropdown_icon.png'" alt="wizard" />
+  </div>
+
+  <footer>
+    <button class="share-btn" (click)="createExternalSupplierInvitation()">
+      Comparte el carrito
+    </button>
+
+    <span class="average-label" *ngIf="quotationMatches?.length > 0"
+      >Promedio: ${{ providersPriceAverage }}</span
+    >
+  </footer>
 </div>

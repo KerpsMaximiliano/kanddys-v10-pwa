@@ -360,12 +360,14 @@ export class ItemSelectorComponent implements OnInit {
           await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
           quotationInput.merchant = this.merchantService.merchantData._id;
-          await this.quotationService.createQuotation(
+          const createdQuotation = await this.quotationService.createQuotation(
             this.merchantService.merchantData._id,
             quotationInput
           );
 
-          this.router.navigate(['/ecommerce/quotations']);
+          this.router.navigate([
+            `/ecommerce/quotation-bids/${createdQuotation._id}`,
+          ]);
           unlockUI();
           break;
         case 'QUOTATION_CREATION_WITHOUT_USER_SESSION':
@@ -414,7 +416,9 @@ export class ItemSelectorComponent implements OnInit {
           this.quotationService.selectedItemsForQuotation = [];
 
           unlockUI();
-          this.router.navigate(['/ecommerce/quotations']);
+          this.router.navigate([
+            `/ecommerce/quotation-bids/${this.quotation._id}`,
+          ]);
           break;
         case 'QUOTATION_UPDATE_WITHOUT_USER_SESSION':
           {
@@ -529,8 +533,8 @@ export class ItemSelectorComponent implements OnInit {
   createItemBasedOnExistingSupplierItems(item: Item) {
     this.itemsService.temporalItemInput = {
       name: item.name,
-      pricing: item.pricing,
       layout: item.layout,
+      description: item.description
     };
     this.itemsService.temporalItem = item;
 

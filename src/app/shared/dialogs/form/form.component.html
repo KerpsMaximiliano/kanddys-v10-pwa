@@ -1,17 +1,87 @@
 <div class="dialog-container" [formGroup]="formGroup">
   <div mat-dialog-content>
-    <ng-container *ngFor="let field of data.fields; let i = index;">
+    <h2 class="title" *ngIf="data.title" [ngStyle]="data.title.styles">
+      {{ data.title.text }}
+    </h2>
+
+    <ng-container *ngFor="let field of data.fields; let i = index">
       <div class="external-field-wrapper">
-        <div class="field-wrapper" [ngStyle]="field.styles">
-          <label [for]="field.name">{{ field.label }}</label>
-          <input
-            [type]="field.type || 'text'"
-            [id]="field.name"
-            [formControlName]="field.name"
-            [placeholder]="field.placeholder || 'Escribe..'"
-          />
-        </div>
-        <button (click)="onIconClick(i)" class="icon-button" *ngIf="field.secondaryIcon"><img [src]="env + '/hat-wizard-solid.svg'" alt=""></button>
+        <ng-container *ngIf="field.type !== 'currency' && field.type !== 'phone'">
+          <div class="field-wrapper" [ngStyle]="field.styles">
+            <label [for]="field.name" *ngIf="field.label">{{ field.label }}</label>
+            <input
+              [type]="field.type || 'text'"
+              [id]="field.name"
+              [formControlName]="field.name"
+              [placeholder]="field.placeholder || 'Escribe..'"
+            />
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="field.type === 'phone'">
+          <div class="phone-input-wrapper">
+            <label
+              class="text-response-label no-margin"
+            >
+              {{ field.label  }}
+            </label>
+
+            <ngx-intl-tel-input
+              [cssClass]="'customPhone'"
+              [enableAutoCountrySelect]="true"
+              [enablePlaceholder]="true"
+              [searchCountryFlag]="true"
+              [selectFirstCountry]="false"
+              [preferredCountries]="preferredCountries"
+              [selectedCountryISO]="CountryISO"
+              maxLength="13"
+              minlength="10"
+              [phoneValidation]="true"
+              [separateDialCode]="true"
+              [customPlaceholder]="'(000) 000-0000'"
+              [numberFormat]="PhoneNumberFormat.International"
+              tabindex="1"
+              [formControlName]="field.name"
+              tabindex="-1"
+            ></ngx-intl-tel-input>
+          </div>
+        </ng-container>
+
+        <app-currency-input
+          *ngIf="field.type === 'currency'"
+          [innerLabel]="field.label"
+          [innerLabelStyles]="{
+            fontFamily: 'InterLight',
+            fontStyle: 'italic',
+            fontSize: '17px',
+            color: 'white'
+          }"
+          [fieldStyles]="{
+            backgroundColor: '#181d17',
+            border: 'none',
+            fontSize: '21px',
+            fontFamily: 'InterBold',
+            fontStyle: 'normal',
+            lineHeight: 'normal',
+            borderBottom: '1px solid #87cd9b',
+            width: '100%',
+            boxShadow: 'none',
+            borderRadius: '0px',
+            padding: '8px 0px'
+          }"
+          [initialValue]="0"
+          (onInputEvent)="updateFieldValue(i, $event)"
+          placeholderColor="#7B7B7B"
+          currencyLabel=""
+        ></app-currency-input>
+
+        <button
+          (click)="onIconClick(i)"
+          class="icon-button"
+          *ngIf="field.secondaryIcon"
+        >
+          <img [src]="env + '/hat-wizard-solid.svg'" alt="" />
+        </button>
       </div>
     </ng-container>
   </div>

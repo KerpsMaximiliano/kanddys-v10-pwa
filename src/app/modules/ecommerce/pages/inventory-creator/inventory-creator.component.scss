@@ -5,7 +5,6 @@
   padding: 0px;
 }
 
-
 .header {
   background: #fff;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.06));
@@ -41,11 +40,50 @@
 }
 
 .content {
-  padding-left: 23px;
-  padding-right: 23px;
-  padding-top: 24px;
+  padding: 0px 20px;
+  padding-top: 15px;
   padding-bottom: 165px;
   background: #f6f6f6;
+}
+
+section {
+  margin-top: 36px;
+
+  .section-title {
+    color: #000;
+    font-family: Inter;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    margin: 0px;
+    padding: 0px;
+    padding-bottom: 12px;
+  }
+
+  .item-field {
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    padding: 13px 18px;
+    padding-right: 16.43px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 9px;
+
+    .field-name {
+      color: #000;
+      font-family: Inter;
+      font-size: 17px;
+      font-style: italic;
+      font-weight: 300;
+      line-height: normal;
+    }
+
+    .add-icon:hover {
+      cursor: pointer;
+    }
+  }
 }
 
 .content-title {
@@ -251,7 +289,7 @@
 }
 
 .added-slides {
-  margin-top: 22px;
+  margin-top: 0px;
 }
 
 footer {
@@ -259,19 +297,31 @@ footer {
   bottom: 0;
   max-width: 500px;
   width: 100%;
+  height: 28.383px;
   background-color: #ffffff;
   padding: 11px 17px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 17px;
+  display: flex;
+  justify-content: center;
+
+  &.valid {
+    height: fit-content;
+    background-color: #87cd9b;
+  }
 
   button {
     border: none;
-    background-color: #fff;
+    background-color: transparent;
+    color: #181d17;
+    text-align: right;
+    font-family: Inter;
     font-size: 17px;
-    color: #272727;
-    font-family: InterMedium;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
 
     &:hover {
       cursor: pointer;
@@ -279,10 +329,6 @@ footer {
   }
   .left {
     font-family: InterRegular;
-  }
-
-  .right {
-    margin-left: auto;
   }
 
   &.updateMode {
@@ -341,12 +387,28 @@ input[type="number"] {
   padding: 13px;
   display: flex;
   flex-direction: column;
-  margin-top: 16px;
+  margin-bottom: 8px;
 
   &.hover {
     &:hover {
       cursor: pointer;
     }
+  }
+
+  input, textarea {
+    border: none;
+    font-size: 17px;
+    font-family: InterBold;
+    margin-top: 10px;
+
+    &::placeholder {
+      color: #7b7b7b;
+    }
+  }
+
+  textarea {
+    height: 71px;
+    resize: none;
   }
 
   label {

@@ -74,6 +74,8 @@ export class StoreComponent implements OnInit {
         startOnSnapshot = Boolean(startOnSnapshot);
         localStorage.removeItem('flowRoute');
         localStorage.removeItem('selectedTemporalQuotation');
+        localStorage.removeItem('quotationInCart');
+        localStorage.removeItem('quotationInCartObject');
         this.headerService.flowRoute = null;
 
         if (adminView) this.adminView = true;
