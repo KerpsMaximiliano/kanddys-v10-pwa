@@ -129,7 +129,7 @@
     </button>
 
     <span class="average-label" *ngIf="quotationMatches?.length > 0"
-      >Promedio: ${{ providersPriceAverage }}</span
+      >Promedio: ${{ providersPriceAverage | number : "1.2-2" }}</span
     >
   </footer>
 </div>
