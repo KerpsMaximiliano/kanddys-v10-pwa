@@ -305,12 +305,32 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (jsondata) {
       let parsedData = JSON.parse(decodeURIComponent(jsondata));
 
-      const createdItemId = parsedData.createdItem;
+      try {
+        const createdItemId = parsedData.createdItem;
 
-      await this._ItemsService.authItem(
-        this._MerchantsService.merchantData._id,
-        createdItemId
-      );
+        await this._ItemsService.authItem(
+          this._MerchantsService.merchantData._id,
+          createdItemId
+        );
+
+        await Promise.all(
+          this.items.map((item) =>
+            this._SaleflowService.addItemToSaleFlow(
+              {
+                item: createdItemId,
+              },
+              this.headerService.saleflow._id
+            )
+          )
+        );
+
+        unlockUI();
+      } catch (error) {
+        unlockUI();
+
+        console.error(error);
+      }
+      lockUI();
 
       window.location.href = environment.uri + '/admin/dashboard';
     }
