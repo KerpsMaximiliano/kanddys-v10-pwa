@@ -204,8 +204,8 @@
               : goToReorderMedia()
           "
           (buttonClicked2)="goToReorderMedia()"
-          [showButton]="existingItem && !supplierEdition"
-          [showReorderButton]="existingItem && !supplierEdition"
+          [showButton]="!supplierEdition"
+          [showReorderButton]="!supplierEdition"
         ></app-qr-content>
       </div>
 

@@ -287,7 +287,7 @@ export class QuotationBidsComponent implements OnInit {
     if (this.typeOfQuotation === 'DATABASE_QUOTATION') {
       localStorage.setItem('quotationInCart', this.quotation._id);
       localStorage.removeItem('temporalQuotations');
-      localStorage.removeItem("selectedTemporalQuotation");
+      localStorage.removeItem('selectedTemporalQuotation');
       localStorage.setItem(
         'quotationInCartObject',
         JSON.stringify(this.quotation)
@@ -297,7 +297,6 @@ export class QuotationBidsComponent implements OnInit {
     } else {
       localStorage.removeItem('quotationInCart');
       localStorage.removeItem('quotationInCartObject');
-      
     }
 
     this.router.navigate(['/ecommerce/' + match.merchant.slug + '/cart'], {
@@ -315,6 +314,8 @@ export class QuotationBidsComponent implements OnInit {
 
   editQuotation() {
     if (this.typeOfQuotation === 'DATABASE_QUOTATION') {
+      if (!this.headerService.user) return;
+
       this.router.navigate([
         '/ecommerce/supplier-items-selector/' + this.quotation._id,
       ]);
@@ -349,6 +350,8 @@ export class QuotationBidsComponent implements OnInit {
       if (result === 'confirm') {
         try {
           if (this.typeOfQuotation === 'DATABASE_QUOTATION') {
+            if (!this.headerService.user) return;
+
             await this.quotationsService.deleteQuotation(this.quotation._id);
           } else {
             const temporalQuotationsStoredInLocalStorage =
@@ -408,6 +411,8 @@ export class QuotationBidsComponent implements OnInit {
           case 'DATABASE_QUOTATION':
             lockUI();
             try {
+              if (!this.headerService.user) return;
+
               const quotation = await this.quotationsService.updateQuotation(
                 {
                   name: result.value['name'],

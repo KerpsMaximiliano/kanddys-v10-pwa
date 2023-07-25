@@ -188,7 +188,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             }
 
             this.itemFormData = this.fb.group({
-              title: [this.itemsService.temporalItemInput?.name || ''],
+              title: [this.itemsService.temporalItemInput?.name || '', Validators.compose([Validators.required])],
               description: [
                 this.itemsService.temporalItemInput?.description || '',
               ],
