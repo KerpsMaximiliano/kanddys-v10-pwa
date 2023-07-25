@@ -58,6 +58,7 @@ export class CartComponent implements OnInit {
   logged: boolean = false;
 
   items: ExtendedItem[] = [];
+  totalPrice: number = 0;
   quotationItemsNotAvailableOrNotInSaleflow: ExtendedItem[] = [];
   itemObjects: Record<string, ItemSubOrderInput> = {};
 
@@ -84,6 +85,7 @@ export class CartComponent implements OnInit {
   wait: boolean = false;
   redirectFromFlowRoute: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
+  isOrderFromAQuotation: boolean = false;
 
   constructor(
     public headerService: HeaderService,
@@ -91,7 +93,7 @@ export class CartComponent implements OnInit {
     private itemsService: ItemsService,
     private dialogService: DialogService,
     private _WebformsService: WebformsService,
-    private quotationsService: QuotationsService,
+    public quotationsService: QuotationsService,
     private merchantsService: MerchantsService,
     private appService: AppService,
     private router: Router,
@@ -164,6 +166,8 @@ export class CartComponent implements OnInit {
       })
     )?.listItems;
 
+    this.totalPrice = this.items.reduce((acc, curr) => acc + curr.pricing, 0);
+
     const itemIdsOfQuotationThatAreInSupplierSaleflow: Record<string, boolean> =
       {};
     const arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow: Array<string> =
@@ -173,7 +177,19 @@ export class CartComponent implements OnInit {
       itemIdsOfQuotationThatAreInSupplierSaleflow[item.parentItem] = true;
     });
 
+    if (!this.quotationsService.quotationInCart) {
+      let storedSelectedQuotation: any = localStorage.getItem(
+        'quotationInCartObject'
+      );
+
+      if (storedSelectedQuotation) {
+        storedSelectedQuotation = JSON.parse(storedSelectedQuotation);
+        this.quotationsService.quotationInCart = storedSelectedQuotation;
+      }
+    }
+
     if (this.quotationsService.quotationInCart) {
+      this.isOrderFromAQuotation = true;
       this.quotationsService.quotationInCart.items.forEach(
         (supplierItemIdInList) => {
           if (
@@ -185,6 +201,8 @@ export class CartComponent implements OnInit {
           }
         }
       );
+
+      console.log("no estan", arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow)
 
       if (arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow.length > 0)
         this.quotationItemsNotAvailableOrNotInSaleflow = (
@@ -207,15 +225,26 @@ export class CartComponent implements OnInit {
       });
     }
 
-    if(!this.quotationsService.selectedTemporalQuotation && !this.quotationsService.quotationInCart) {
-      let storedSelectedTemporalQuotation: any = localStorage.getItem("selectedTemporalQuotation");
+    if (
+      !this.quotationsService.selectedTemporalQuotation &&
+      !this.quotationsService.quotationInCart
+    ) {
+      let storedSelectedTemporalQuotation: any = localStorage.getItem(
+        'selectedTemporalQuotation'
+      );
 
-      if(storedSelectedTemporalQuotation) storedSelectedTemporalQuotation = JSON.parse(storedSelectedTemporalQuotation);
-
-      this.quotationsService.selectedTemporalQuotation = storedSelectedTemporalQuotation;
+      if (storedSelectedTemporalQuotation) {
+        storedSelectedTemporalQuotation = JSON.parse(
+          storedSelectedTemporalQuotation
+        );
+        this.quotationsService.selectedTemporalQuotation =
+          storedSelectedTemporalQuotation;
+      }
     }
 
     if (this.quotationsService.selectedTemporalQuotation) {
+      this.isOrderFromAQuotation = true;
+
       this.quotationsService.selectedTemporalQuotation.items.forEach(
         (supplierItemIdInList) => {
           if (
@@ -559,6 +588,11 @@ export class CartComponent implements OnInit {
         });
 
         this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
+
+        this.totalPrice = this.items.reduce(
+          (acc, curr) => acc + curr.pricing,
+          0
+        );
 
         Object.keys(itemsIdsDeleted).forEach((itemId) => {
           if (itemsIdsDeleted[itemId]) {
@@ -1012,182 +1046,7 @@ export class CartComponent implements OnInit {
       });
     } else {
       if (this.isSuppliersBuyerFlow(this.items)) {
-        this._bottomSheet.open(OptionsMenuComponent, {
-          data: {
-            title: `Confirmación de precios y disponibilidad:`,
-            description: `Te recomendamos que te asegures la disponibilidad y precio de ${capitalizeAllWords(
-              this.headerService.saleflow.merchant.name
-            )} compartiendo la cotización.`,
-            options: [
-              {
-                value: `Compartir cotización con ${capitalizeAllWords(
-                  this.headerService.saleflow.merchant.name
-                )}`,
-                callback: async () => {
-                  try {
-                    lockUI();
-
-                    const merchantDefault =
-                      await this.merchantsService.merchantDefault();
-
-                    const quotationInCartId =
-                      localStorage.getItem('quotationInCart');
-
-                    if (
-                      !this.quotationsService.quotationInCart &&
-                      quotationInCartId
-                    ) {
-                      this.quotationsService.quotationInCart =
-                        await this.quotationsService.quotation(
-                          quotationInCartId
-                        );
-                    }
-
-                    if (
-                      this.quotationsService.quotationInCart &&
-                      !this.quotationsService.selectedTemporalQuotation
-                    ) {
-                      if (
-                        !merchantDefault ||
-                        !this.quotationsService.quotationInCart
-                      ) {
-                        unlockUI();
-                        return this.router.navigate([
-                          '/ecommerce/' +
-                            this.headerService.saleflow.merchant.slug +
-                            '/store',
-                        ]);
-                      }
-
-                      const supplierRegistrationLink = (
-                        await this.authService.generateMagicLinkNoAuth(
-                          null,
-                          '/ecommerce/supplier-register',
-                          this.quotationsService.quotationInCart._id,
-                          'QuotationAccess',
-                          {
-                            jsondata: JSON.stringify({
-                              supplierMerchantId:
-                                this.headerService.saleflow.merchant._id,
-                              requesterId: merchantDefault._id,
-                              items:
-                                this.quotationsService.quotationInCart.items.join(
-                                  '-'
-                                ),
-                            }),
-                          },
-                          [],
-                          true
-                        )
-                      )?.generateMagicLinkNoAuth;
-
-                      let itemsContent = ``;
-                      this.items.forEach((item) => {
-                        itemsContent += `- ${
-                          item?.name ? item?.name : 'Artículo sin nombre'
-                        }, $${item.pricing}\n`;
-                      });
-                      const message = `Hola ${capitalizeAllWords(
-                        this.headerService.saleflow.merchant.name
-                      )},\n\nSoy ${
-                        this.currentUser?.name ||
-                        this.currentUser?.phone ||
-                        this.currentUser?.email
-                      } y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${itemsContent}\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace ${supplierRegistrationLink}\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: ${
-                        environment.uri +
-                        '/ecommerce/quotation-bids/' +
-                        this.quotationsService.quotationInCart._id
-                      }`;
-                      const whatsappLink = `https://api.whatsapp.com/send?phone=${
-                        this.headerService.saleflow.merchant
-                          .receiveNotificationsMainPhone
-                          ? this.headerService.saleflow.merchant.owner.phone
-                          : this.headerService.saleflow.merchant
-                              ?.secondaryContacts?.length
-                          ? this.headerService.saleflow.merchant
-                              ?.secondaryContacts[0]
-                          : '19188156444'
-                      }&text=${encodeURIComponent(message)}`;
-
-                      unlockUI();
-
-                      console.log('whatsappLink', whatsappLink);
-                      window.location.href = whatsappLink;
-                    } else if (
-                      !this.quotationsService.quotationInCart &&
-                      this.quotationsService.selectedTemporalQuotation
-                    ) {
-                      const supplierRegistrationLink = (
-                        await this.authService.generateMagicLinkNoAuth(
-                          null,
-                          '/ecommerce/supplier-register',
-                          null,
-                          'QuotationAccess',
-                          {
-                            jsondata: JSON.stringify({
-                              supplierMerchantId:
-                                this.headerService.saleflow.merchant._id,
-                              items:
-                                this.quotationsService.selectedTemporalQuotation.items.join(
-                                  '-'
-                                ),
-                              temporalQuotation: true,
-                            }),
-                          },
-                          [],
-                          true
-                        )
-                      )?.generateMagicLinkNoAuth;
-
-                      let itemsContent = ``;
-                      this.items.forEach((item) => {
-                        itemsContent += `- ${
-                          item?.name ? item?.name : 'Artículo sin nombre'
-                        }, $${item.pricing}\n`;
-                      });
-                      const message = `Hola ${capitalizeAllWords(
-                        this.headerService.saleflow.merchant.name
-                      )},\n\nSoy [Mi nombre] y estoy interesado en confirmar la disponibilidad y el precio de los siguientes productos para mi próxima orden:\n${itemsContent}\nSi necesitas ajustar los precios antes de mi orden, por favor hazlo a través de este enlace ${supplierRegistrationLink}\n\nUna vez me confirmes pasaré a finalizar mi orden desde este enlace: ${
-                        environment.uri + '/ecommerce/quotation-bids/'
-                      }`;
-                      const whatsappLink = `https://api.whatsapp.com/send?phone=${
-                        this.headerService.saleflow.merchant
-                          .receiveNotificationsMainPhone
-                          ? this.headerService.saleflow.merchant.owner.phone
-                          : this.headerService.saleflow.merchant
-                              ?.secondaryContacts?.length
-                          ? this.headerService.saleflow.merchant
-                              ?.secondaryContacts[0]
-                          : '19188156444'
-                      }&text=${encodeURIComponent(message)}`;
-
-                      unlockUI();
-
-                      console.log('whatsappLink', whatsappLink);
-                      window.location.href = whatsappLink;
-                    }
-                  } catch (error) {
-                    console.error('error', error);
-                  }
-                },
-              },
-              {
-                value: `Continuar a la prefactura`,
-                callback: () => {
-                  if(!this.headerService.saleflow.module) {
-                    this.router.navigate([`ecommerce/${this.headerService.saleflow._id}/checkout`])
-                  } else {
-                  // TODO - Validar que la redirección ocurra al módulo que esté disponible
-                  return this.goToAddressForm();                    
-                  }
-                },
-              },
-            ],
-            styles: {
-              fullScreen: true,
-            },
-          },
-        });
+        this.goToAddressForm();
       } else this.goToAddressForm(); // TODO - Validar que la redirección ocurra al módulo que esté disponible
     }
   }

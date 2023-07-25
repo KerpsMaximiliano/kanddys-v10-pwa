@@ -17,6 +17,14 @@ export const quotation = gql`
     }
 `;
 
+export const quotationPublic = gql`
+    query quotationPublic($id: ObjectID!) {
+      quotationPublic(id: $id) {
+          ${quotationBody}
+        }
+    }
+`;
+
 export const quotations = gql`
     query quotations($input: PaginationInput) {
         quotations(input: $input) {

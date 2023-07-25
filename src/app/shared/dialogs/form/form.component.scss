@@ -1,16 +1,15 @@
 ::ng-deep .mat-dialog-container {
-    padding: 0px;
-    background: none;
+  padding: 0px;
+  background: none;
 }
 
 ::ng-deep .mat-dialog-actions {
   margin-bottom: 0px;
 }
 
-
 ::ng-deep .cdk-overlay-pane {
-    width: 90vw;
-    max-width: 500px !important;
+  width: 90vw;
+  max-width: 500px !important;
 }
 
 .dialog-container {
@@ -29,6 +28,18 @@
   &:last-child {
     margin-bottom: 0px;
   }
+}
+
+.title {
+  color: #fff;
+  font-family: InterRegular;
+  font-size: 19px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin: 0px;
+  padding: 0px;
+  margin-bottom: 30px;
 }
 
 .field-wrapper {
@@ -105,7 +116,8 @@ button {
   background: none;
   border: 0;
   img {
-    filter: invert(93%) sepia(69%) saturate(7476%) hue-rotate(187deg) brightness(129%) contrast(100%);
+    filter: invert(93%) sepia(69%) saturate(7476%) hue-rotate(187deg)
+      brightness(129%) contrast(100%);
     cursor: pointer;
     width: 20px;
   }
@@ -119,6 +131,22 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
+}
+
+.phone-input-wrapper {
+  width: 100%;
+  margin: auto;
+}
+
+::ng-deep .customPhone {
+  background-color: transparent;
+  color: #ffffff;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  margin: auto;
+  width: 100%;
+  border-bottom: 1px solid #82f18d;
 }

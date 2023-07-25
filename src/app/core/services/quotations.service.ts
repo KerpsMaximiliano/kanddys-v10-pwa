@@ -8,6 +8,7 @@ import {
   quotation,
   quotationCoincidences,
   quotationCoincidencesByItem,
+  quotationPublic,
   quotations,
   updateQuotation,
 } from '../graphql/quotations.gql';
@@ -41,6 +42,9 @@ export class QuotationsService {
 
   //specific variables for when a provider is adjusting item information of a quotation
   temporalQuotationBeingEdited: QuotationInput = null;
+
+  supplierItemBeingEdited: Item = null;
+  fetchSupplierItem: boolean = true;
   
   supplierItemsAdjustmentsConfig: {
     typeOfProvider: 'REGISTERED_SUPPLIER' | 'NEW_SUPPLIER',
@@ -136,10 +140,28 @@ export class QuotationsService {
     }
   }
 
+  async quotationPublic(id: string): Promise<Quotation> {
+    try {
+      const result = await this.graphql.query({
+        query: quotationPublic,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.quotationPublic;
+    } catch (e) {
+      console.log(e);
+
+      return e;
+    }
+  }
+
+
   async createQuotation(
     merchantId: string,
     input: QuotationInput
-  ): Promise<any> {
+  ): Promise<Quotation> {
     const result = await this.graphql.mutate({
       mutation: createQuotation,
       variables: { merchantId, input },
