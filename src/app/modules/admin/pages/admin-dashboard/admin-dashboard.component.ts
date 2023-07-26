@@ -305,14 +305,102 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (jsondata) {
       let parsedData = JSON.parse(decodeURIComponent(jsondata));
 
-      const createdItemId = parsedData.createdItem;
+      if (parsedData.createdItem) {
+        try {
+          lockUI();
+          const createdItemId = parsedData.createdItem;
 
-      await this._ItemsService.authItem(
-        this._MerchantsService.merchantData._id,
-        createdItemId
-      );
+          const saleflowDefault = await this._SaleflowService.saleflowDefault(
+            this._MerchantsService.merchantData._id
+          );
 
-      window.location.href = environment.uri + '/admin/dashboard';
+          await this._ItemsService.authItem(
+            this._MerchantsService.merchantData._id,
+            createdItemId
+          );
+
+          await this._SaleflowService.addItemToSaleFlow(
+            {
+              item: createdItemId,
+            },
+            saleflowDefault._id
+          );
+
+          unlockUI();
+          window.location.href = environment.uri + '/admin/dashboard';
+        } catch (error) {
+          unlockUI();
+
+          console.error(error);
+        }
+      } else if (parsedData.quotationItems) {
+        try {
+          lockUI();
+          await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+          const saleflow = await this._SaleflowService.saleflowDefault(
+            this._MerchantsService.merchantData?._id
+          );
+
+          const quotationItemsIDs = parsedData.quotationItems.split('-');
+
+          this.headerService.saleflow = saleflow;
+          this.headerService.storeSaleflow(saleflow);
+
+          const supplierSpecificItemsInput: PaginationInput = {
+            findBy: {
+              _id: {
+                __in: ([] = quotationItemsIDs),
+              },
+            },
+            options: {
+              sortBy: 'createdAt:desc',
+              limit: -1,
+              page: 1,
+            },
+          };
+
+          //Fetches supplier specfic items, meaning they already are on the saleflow
+          let quotationItems: Array<Item> = [];
+
+          quotationItems = (
+            await this._ItemsService.listItems(supplierSpecificItemsInput)
+          )?.listItems;
+
+          if (quotationItems?.length) {
+            this.items = quotationItems;
+
+            if (!this.items[0].merchant) {
+              await Promise.all(
+                this.items.map((item) =>
+                  this._ItemsService.authItem(
+                    this._MerchantsService.merchantData._id,
+                    item._id
+                  )
+                )
+              );
+
+              await Promise.all(
+                this.items.map((item) =>
+                  this._SaleflowService.addItemToSaleFlow(
+                    {
+                      item: item._id,
+                    },
+                    this.headerService.saleflow._id
+                  )
+                )
+              );
+            }
+          }
+
+          unlockUI();
+          window.location.href = environment.uri + '/admin/dashboard';
+        } catch (error) {
+          unlockUI();
+
+          console.error(error);
+        }
+      }
     }
 
     if (view)

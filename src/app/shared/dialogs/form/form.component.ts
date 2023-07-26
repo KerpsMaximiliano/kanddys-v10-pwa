@@ -35,6 +35,7 @@ export interface FormData {
     text: string;
     styles?: Record<string, any>;
   };
+  automaticallyFocusFirstField?: boolean;
 }
 
 @Component({
@@ -66,33 +67,55 @@ export class FormComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({});
+
+    let firstEditableFieldFound = false;
+    let alreadyFocusedFirstEditableField = false;
+    let firstEditableFieldId = null;
     for (const field of this.data.fields) {
       let fieldToInsert = null;
 
       switch (field.type) {
-        case 'text':
-          fieldToInsert = new FormControl('', field.validators);
-          break;
-        case 'currency':
-            fieldToInsert = new FormControl('', field.validators);
-            break;
-        case 'phone':
-          fieldToInsert = new FormControl('', field.validators);
-        case 'number':
-          fieldToInsert = new FormControl('', field.validators);
-          break;
         case 'email':
           fieldToInsert = new FormControl(
             '',
             field.validators.concat(Validators.email)
           );
+          if (
+            !firstEditableFieldFound &&
+            this.data.automaticallyFocusFirstField
+          )
+            firstEditableFieldFound = true;
+          break;
+        case 'text':
+        case 'currency':
+        case 'phone':
+        case 'number':
+          if (
+            !firstEditableFieldFound &&
+            this.data.automaticallyFocusFirstField
+          )
+            firstEditableFieldFound = true;
+          fieldToInsert = new FormControl('', field.validators);
           break;
       }
 
-      console.log("this.formGroup", this.formGroup)
+      if (
+        firstEditableFieldFound &&
+        !alreadyFocusedFirstEditableField &&
+        this.data.automaticallyFocusFirstField
+      ) {
+        alreadyFocusedFirstEditableField = true;
+        firstEditableFieldId = '#' + field.name;
+      }
 
       this.formGroup.addControl(field.name, fieldToInsert);
     }
+
+    setTimeout(() => {
+      if(this.data.automaticallyFocusFirstField && firstEditableFieldFound) {
+        (document.querySelector(firstEditableFieldId) as HTMLElement).focus();
+      }
+    }, 300);
   }
 
   onIconClick(index: number) {
@@ -115,7 +138,11 @@ export class FormComponent implements OnInit {
 
     const clickedInsideDialog = dialogElement.contains(event.target as Node);
 
-    if (clickedInsideDialog && event.target instanceof HTMLInputElement && this.viewportRuler.getViewportRect().width <= 500) {
+    if (
+      clickedInsideDialog &&
+      event.target instanceof HTMLInputElement &&
+      this.viewportRuler.getViewportRect().width <= 500
+    ) {
       this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
     }
   }
@@ -124,10 +151,13 @@ export class FormComponent implements OnInit {
   onFocusChange2(event: FocusEvent) {
     const dialogElement = this.elementRef.nativeElement.parentElement;
 
-
     const clickedInsideDialog = dialogElement.contains(event.target as Node);
 
-    if (clickedInsideDialog && event.target instanceof HTMLInputElement && this.viewportRuler.getViewportRect().width <= 500) {
+    if (
+      clickedInsideDialog &&
+      event.target instanceof HTMLInputElement &&
+      this.viewportRuler.getViewportRect().width <= 500
+    ) {
       this.dialogRef.updatePosition({ top: '50px' }); // Reset the position when the keyboard is hidden
     }
   }
