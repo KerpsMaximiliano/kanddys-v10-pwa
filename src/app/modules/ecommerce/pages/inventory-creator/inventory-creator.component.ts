@@ -188,9 +188,13 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             }
 
             this.itemFormData = this.fb.group({
-              title: [this.itemsService.temporalItemInput?.name || '', Validators.compose([Validators.required])],
+              title: [
+                this.itemsService.temporalItemInput?.name || '',
+                Validators.compose([Validators.required]),
+              ],
               description: [
                 this.itemsService.temporalItemInput?.description || '',
+                Validators.compose([Validators.required]),
               ],
               pricing: [
                 this.itemsService.temporalItemInput?.pricing || 0,
@@ -415,6 +419,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   ) => {
     let fieldsToCreate: FormData = {
       fields: [],
+      automaticallyFocusFirstField: true,
     };
     if (fieldName === 'TITLE') {
       fieldsToCreate.fields = [
@@ -490,7 +495,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       ];
 
       fields.forEach((field) => {
-        console.log(field);
+        //console.log(field);
         if (result?.value[field.fieldKey]) {
           this.itemFormData.patchValue({
             [field.fieldName]: result?.value[field.fieldKey],
@@ -539,6 +544,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           const itemInput: ItemInput = {
             pricing: Number(this.itemFormData.value['pricing']),
             stock: Number(this.itemFormData.value['stock']),
+            description: this.itemFormData.value['description'],
             useStock: true,
             notificationStock: true,
             notificationStockLimit: Number(
@@ -553,8 +559,29 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             duration: 5000,
           });
 
-          this.router.navigate(['/admin/dashboard']);
           unlockUI();
+
+          if (
+            this.quotationsService.supplierItemsAdjustmentsConfig
+              .quotationItemBeingEdited
+          ) {
+
+            return this.router.navigate(
+              [
+                this.quotationId
+                  ? `ecommerce/supplier-register/${this.quotationId}`
+                  : `ecommerce/supplier-register`,
+              ],
+              {
+                queryParams: {
+                  supplierMerchantId: this.merchantsService.merchantData?._id,
+                  requesterId: this.requesterId,
+                },
+              }
+            );
+          }
+
+          this.router.navigate(['/admin/dashboard']);
         } catch (error) {
           this.snackbar.open('Ocurrió un error al actualizar el producto', '', {
             duration: 5000,
@@ -572,6 +599,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         const itemInput: ItemInput = {
           pricing: Number(this.itemFormData.value['pricing']),
           stock: Number(this.itemFormData.value['stock']),
+          description: this.itemFormData.value['description'],
           useStock: true,
           notificationStock: true,
           notificationStockLimit: Number(
@@ -579,18 +607,20 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           ),
         };
 
-        const quotation =
+        const itemInQuotation =
           this.quotationsService.supplierItemsAdjustmentsConfig?.quotationItems[
             this.quotationsService.supplierItemsAdjustmentsConfig
               ?.quotationItemBeingEdited.indexInQuotations
           ];
 
-        quotation.pricing = itemInput.pricing;
-        quotation.stock = itemInput.stock;
+        itemInQuotation.pricing = itemInput.pricing;
+        itemInQuotation.stock = itemInput.stock;
+        itemInQuotation.description = itemInput.description;
+        itemInQuotation.notificationStockLimit = itemInput.notificationStockLimit;
 
         this.quotationsService.supplierItemsAdjustmentsConfig.quotationItems[
           this.quotationsService.supplierItemsAdjustmentsConfig?.quotationItemBeingEdited.indexInQuotations
-        ] = quotation;
+        ] = itemInQuotation;
 
         unlockUI();
 
@@ -766,7 +796,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
       unlockUI();
     } catch (error) {
-      console.log('Ocurrio un error', error);
+      unlockUI();
       this.snackbar.open('Error al crear el producto', 'Cerrar', {
         duration: 3000,
       });

@@ -1,9 +1,8 @@
 <div class="container">
   <div class="header">
     <div class="flex">
-      <mat-icon style="cursor: pointer" (click)="showQuotations()"
-        >close</mat-icon
-      >
+      <button class="close" (click)="showQuotations()">X</button>
+
       <p class="header-title" *ngIf="typeOfQuotation === 'DATABASE_QUOTATION'">
         {{ quotation?.name ? quotation?.name : "Cotización sin nombre" }}
       </p>
@@ -16,19 +15,25 @@
         }}
       </p>
     </div>
+
+    <img
+      *ngIf="
+        (currentView === 'QUOTATION_CONFIG' &&
+          isTheCurrentUserTheQuotationMerchant) ||
+        typeOfQuotation === 'TEMPORAL_QUOTATION'
+      "
+      [src]="assetsFolder + '/trash-black.svg'"
+      class="delete-icon"
+      (click)="deleteQuotation()"
+    />
+
     <img
       [src]="
         currentView === 'SUPPLIERS_LIST'
           ? assetsFolder + '/icon_info.png'
           : assetsFolder + '/dropdown_icon.png'
       "
-      src="../../../../../assets/icons/info-black.svg"
-      (click)="
-        currentView =
-          currentView === 'SUPPLIERS_LIST'
-            ? 'QUOTATION_CONFIG'
-            : 'SUPPLIERS_LIST'
-      "
+      (click)="changeView()"
       style="cursor: pointer"
     />
   </div>
@@ -76,7 +81,7 @@
       </ng-container>
 
       <ng-container *ngSwitchCase="'QUOTATION_CONFIG'">
-        <p class="content-title">Información:</p>
+        <p class="content-title-light">Información:</p>
 
         <div class="content-cards-container">
           <div class="content-card info" (click)="editQuotation()">
@@ -106,30 +111,62 @@
           </div>
         </div>
 
-        <div class="content-cards-container">
-          <div class="content-card info no-background" (click)="deleteQuotation()">
-            <h3>Eliminar este carrito</h3>
+        <div class="optional-stuff">
+          <p class="content-title-light">Información:</p>
+
+          <div class="item-field empty" (click)="changeView(true)">
+            <div class="field-name">
+              {{
+                !isCurrentUserASupplier
+                  ? "Registrarme como Proveedor"
+                  : "Quiero convertirme en proveedor de estos productos"
+              }}
+            </div>
+
+            <img
+              class="add-icon"
+              [src]="assetsFolder + '/add_button_circle.svg'"
+              alt="fill value"
+            />
           </div>
         </div>
       </ng-container>
     </ng-container>
   </div>
 
-  <div
-    class="bubble-button"
-    *ngIf="currentView === 'QUOTATION_CONFIG'"
-    (click)="currentView = 'SUPPLIERS_LIST'"
-  >
-    <img [src]="assetsFolder + '/dropdown_icon.png'" alt="wizard" />
+  <div class="bubble-button-wrapper">
+    <div
+      class="bubble-button"
+      *ngIf="currentView === 'QUOTATION_CONFIG'"
+      (click)="currentView = 'SUPPLIERS_LIST'"
+    >
+      <img [src]="assetsFolder + '/dropdown_icon.png'" alt="wizard" />
+    </div>
   </div>
 
-  <footer>
-    <button class="share-btn" (click)="createExternalSupplierInvitation()">
-      Comparte el carrito
+  <qrcode
+    *ngIf="quotationLink"
+    style="display: none"
+    #quotationQrCode
+    [qrdata]="quotationLink"
+    [elementType]="'img'"
+    [width]="500"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#000000"
+  ></qrcode>
+
+  <footer *ngIf="currentView === 'SUPPLIERS_LIST'">
+    <button
+      class="share-btn"
+      *ngIf="typeOfQuotation === 'DATABASE_QUOTATION'"
+      (click)="shareQuotation()"
+    >
+      Comparte y monetiza
     </button>
 
     <span class="average-label" *ngIf="quotationMatches?.length > 0"
-      >Promedio: ${{ providersPriceAverage }}</span
+      >Promedio: ${{ providersPriceAverage | number : "1.2-2" }}</span
     >
   </footer>
 </div>
