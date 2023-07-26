@@ -29,7 +29,8 @@ p {
 
     .title {
       color: #272727;
-      font-family: Inter;
+      font-family: InterBold;
+      text-transform: capitalize;
       font-size: 17px;
       font-style: normal;
       font-weight: 700;
@@ -348,7 +349,7 @@ footer {
   .continue-order {
     border: none;
     color: #181d17;
-    font-family: Inter;
+    font-family: InterBold;
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
@@ -365,7 +366,7 @@ footer {
   .total-label {
     color: var(--el-mas-oscuro, #181d17);
     text-align: right;
-    font-family: Inter;
+    font-family: InterRegular;
     font-size: 17px;
     font-style: normal;
     font-weight: 400;
