@@ -407,6 +407,7 @@ export class ItemSelectorComponent implements OnInit {
           break;
         case 'QUOTATION_UPDATE':
           quotationInput.merchant = this.merchantService.merchantData._id;
+          quotationInput.name = this.quotation.name;
 
           await this.quotationService.updateQuotation(
             quotationInput,

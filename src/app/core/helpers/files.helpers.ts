@@ -119,7 +119,7 @@ export const urltoFile = async (
 
   const blob: Blob = await res.blob();
 
-  console.log(fileName, { type: type || 'image/jpg' })
+  //console.log(fileName, { type: type || 'image/jpg' })
 
   return new File([blob], fileName, { type: type || 'image/jpg' });
 };

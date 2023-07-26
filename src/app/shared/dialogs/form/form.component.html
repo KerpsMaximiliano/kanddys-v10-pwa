@@ -42,6 +42,7 @@
               [numberFormat]="PhoneNumberFormat.International"
               tabindex="1"
               [formControlName]="field.name"
+              [id]="field.name"
               tabindex="-1"
             ></ngx-intl-tel-input>
           </div>
@@ -69,6 +70,7 @@
             borderRadius: '0px',
             padding: '8px 0px'
           }"
+          [inputId]="field.name"
           [initialValue]="0"
           (onInputEvent)="updateFieldValue(i, $event)"
           placeholderColor="#7B7B7B"
