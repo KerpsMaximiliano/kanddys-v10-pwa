@@ -26,6 +26,10 @@ import { urltoFile } from 'src/app/core/helpers/files.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { FormComponent, FormData } from '../../dialogs/form/form.component';
+import { FormGroup, Validators } from '@angular/forms';
+import { GeneralFormSubmissionDialogComponent } from '../../dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 
 @Component({
   selector: 'app-supplier-registration',
@@ -49,6 +53,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   adjustmentsReady: boolean = false;
   onlyItemsThatAreOnTheSupplierSaleflow: boolean = false;
   completeImageURLWrapper = completeImageURL;
+  quotationName: string = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -58,6 +63,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     private headerService: HeaderService,
     private saleflowService: SaleFlowService,
     private authService: AuthService,
+    private dialogService: DialogService,
     private router: Router,
     public matDialog: MatDialog,
     private snackbar: MatSnackBar
@@ -74,6 +80,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               : null;
             let supplierMerchantId;
             let requesterId;
+            let quotationName;
             let temporalQuotation = false;
             let items;
             this.quotationId = quotationId;
@@ -84,6 +91,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                 requesterId: string;
                 items: string;
                 temporalQuotation?: boolean;
+                quotationName?: string;
               } = JSON.parse(
                 localStorage.getItem('lastCurrentQuotationRequest')
               );
@@ -93,12 +101,14 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               requesterId = lastCurrentQuotationRequest.requesterId;
               items = lastCurrentQuotationRequest.items;
               temporalQuotation = lastCurrentQuotationRequest.temporalQuotation;
+              quotationName = lastCurrentQuotationRequest.quotationName;
 
               this.queryParams = {
                 supplierMerchantId,
                 requesterId,
                 items,
                 temporalQuotation,
+                quotationName,
               };
 
               //Handles the case when you come back from the quotation confirm screen after registering a new user
@@ -115,8 +125,6 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                 items = overwriteItems;
                 this.queryParams.items = items;
 
-                console.log('items', items);
-
                 this.storeQueryParams(this.queryParams as any);
               }
             } else {
@@ -124,9 +132,12 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               requesterId = parsedData.requesterId;
               items = parsedData.items;
               temporalQuotation = parsedData.temporalQuotation;
+              quotationName = parsedData.quotationName;
 
               this.storeQueryParams(parsedData as any);
             }
+
+            this.quotationName = quotationName;
 
             if (!items && !temporalQuotation && !requesterId)
               return this.router.navigate(['others/error-screen']);
@@ -198,15 +209,22 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     requesterId: string;
     items: string;
     temporalQuotation?: boolean;
+    quotationName?: string;
   }) {
-    const { supplierMerchantId, requesterId, items, temporalQuotation } =
-      queryParams;
+    const {
+      supplierMerchantId,
+      requesterId,
+      items,
+      temporalQuotation,
+      quotationName,
+    } = queryParams;
 
     this.queryParams = {
       supplierMerchantId,
       requesterId,
       items,
       temporalQuotation,
+      quotationName,
     };
 
     localStorage.setItem(
@@ -216,6 +234,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         requesterId,
         items,
         temporalQuotation,
+        quotationName,
       })
     );
   }
@@ -241,7 +260,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       if (merchant && merchant._id === this.supplierMerchantId) return true;
       else return false;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return false;
     }
   }
@@ -548,7 +567,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   };*/
 
   async redirectToItemEdition(item: Item, index: number) {
-    const { typeOfProvider, typeOfQuotationBeingEdited, typeOfRequester } =
+    const { typeOfProvider } =
       this.quotationsService.supplierItemsAdjustmentsConfig;
 
     if (!this.authorized && typeOfProvider === 'REGISTERED_SUPPLIER')
@@ -599,7 +618,17 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     }
   }
 
-  goToDashboard() {
+  goBack() {
+    if (this.quotationId) {
+      return this.router.navigate([
+        '/ecommerce/quotation-bids/' + this.quotationId,
+      ]);
+    }
+
+    if (!this.currentUser) {
+      return this.router.navigate(['/ecommerce/quotations/']);
+    }
+
     if (this.currentUser) this.router.navigate(['/admin/dashboard']);
   }
 
@@ -678,24 +707,13 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         });
       }
 
-      this.router.navigate(
-        [
-          'ecommerce/confirm-quotation',
-          this.quotationId ? this.quotationId : '',
-        ],
-        {
-          queryParams: {
-            quotationItems: idsOfSupplierSaleflowItems
-              .concat(idsOfCreatedItems)
-              .join('-'),
-            requesterPhone:
-              typeOfRequester === 'REGISTERED_USER'
-                ? this.requester?.owner?.phone
-                : null,
-          },
-        }
-      );
-    } catch (error) {}
+      this.router.navigate(['/admin/dashboard']);
+    } catch (error) {
+      console.error(error);
+      this.snackbar.open('Error al crear/actualizar los productos', 'Cerrar', {
+        duration: 4000,
+      });
+    }
   }
 
   async confirmChangesForNewUser() {
@@ -739,7 +757,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           });
 
         for await (const itemInput of inputArray) {
-          console.log("itemInput", itemInput);
+          //console.log('itemInput', itemInput);
 
           const createdItem = (await this.itemsService.createPreItem(itemInput))
             ?.createPreItem;
@@ -749,27 +767,68 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
         unlockUI();
 
-        const matDialogRef = this.matDialog.open(LoginDialogComponent, {
-          data: {
-            magicLinkData: {
-              redirectionRoute:
-                '/ecommerce/confirm-quotation/' +
-                (this.quotationId ? this.quotationId : ''),
-              entity: 'MerchantAccess',
-              redirectionRouteQueryParams: {
-                jsondata: JSON.stringify({
-                  quotationItems: idsOfCreatedItems.join('-'),
-                  requesterPhone:
-                    typeOfRequester === 'REGISTERED_USER'
-                      ? this.requester?.owner?.phone
-                      : null,
-                }),
-              },
-              overWriteDefaultEntity: true,
+        let fieldsToCreate: FormData = {
+          title: {
+            text: '¿Dónde recibirás las facturas y órdenes?',
+          },
+          fields: [
+            {
+              name: 'phone',
+              placeholder: 'Escribe el WhatsApp..',
+              type: 'phone',
+              validators: [Validators.pattern(/[\S]/)],
             },
-          } as LoginDialogData,
-          panelClass: 'login-dialog-container',
+            {
+              name: 'email',
+              placeholder: 'Escribe el correo electrónico..',
+              type: 'email',
+              validators: [Validators.pattern(/[\S]/)],
+            },
+          ],
+        };
+        const dialogRef = this.matDialog.open(FormComponent, {
+          data: fieldsToCreate,
           disableClose: true,
+        });
+
+        dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+          if (!result?.value['phone'] && !result?.value['email']) {
+            this.snackbar.open('Error al crear el producto', 'Cerrar', {
+              duration: 4000,
+            });
+          } else {
+            const phone = result?.value['phone']
+              ? result?.value['phone'].e164Number.split('+')[1]
+              : null;
+            const email = result?.value['email']
+              ? result?.value['email']
+              : null;
+
+            let firstLinkSent = false;
+
+            if (result.controls.phone.valid && phone) {
+              firstLinkSent = !firstLinkSent;
+              await this.generateMagicLinkFor(
+                phone,
+                idsOfCreatedItems,
+                firstLinkSent
+              );
+            }
+            if (result.controls.email.valid && email) {
+              firstLinkSent = !firstLinkSent;
+              await this.generateMagicLinkFor(
+                email,
+                idsOfCreatedItems,
+                firstLinkSent
+              );
+            }
+
+            if (!result.controls.phone.valid && !result.controls.email.valid) {
+              this.snackbar.open('Datos invalidos', 'Cerrar', {
+                duration: 3000,
+              });
+            }
+          }
         });
 
         this.snackbar.open(
@@ -780,6 +839,44 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           }
         );
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+      this.snackbar.open('Error al crear los productos', 'Cerrar', {
+        duration: 4000,
+      });
+    }
+  }
+
+  async generateMagicLinkFor(
+    emailOrPhone: string,
+    idsOfCreatedItems: Array<string>,
+    openSuccessDialog: boolean = true
+  ) {
+    await this.authService.generateMagicLink(
+      emailOrPhone,
+      '/admin/dashboard',
+      null,
+      'MerchantAccess',
+      {
+        jsondata: JSON.stringify({
+          quotationItems: idsOfCreatedItems.join('-'),
+        }),
+      },
+      []
+    );
+
+    if (openSuccessDialog) {
+      this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+        type: 'centralized-fullscreen',
+        props: {
+          icon: 'check-circle.svg',
+          showCloseButton: false,
+          message:
+            'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+    }
   }
 }

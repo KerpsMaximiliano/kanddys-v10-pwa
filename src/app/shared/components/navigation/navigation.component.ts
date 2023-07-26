@@ -49,6 +49,13 @@ export class NavigationComponent implements OnInit {
     },
     {
       headerText:
+        'Es un ecosistema digital en constante desarrollo, diseñado para proporcionar soluciones a los desafíos que enfrentan las floristerías y sus proveedores.',
+      text: 'El Club',
+      active: false,
+      links: [],
+    },
+    {
+      headerText:
         'Vende online. Cotiza y ordena al suplidor local que te convenga',
       text: 'Floristerias',
       active: false,
@@ -124,11 +131,11 @@ export class NavigationComponent implements OnInit {
 
     if (!this.headerService.user || !isUserAMerchant) {
       console.log('A');
-      this.tabs[1].links.splice(3, 1);
+      this.tabs[2].links.splice(3, 1);
     }
 
     if (this.headerService.user && isUserAMerchant) {
-      this.tabs[1].links[3].routerLink = [
+      this.tabs[2].links[3].routerLink = [
         '/ecommerce',
         this.merchantsService.merchantData?.slug ||
           this.headerService.saleflow?.merchant.slug,
@@ -151,8 +158,9 @@ export class NavigationComponent implements OnInit {
           JSON.stringify(link.possibleRedirection.join('/')) ===
             JSON.stringify(this.router.url);
 
-        if(doesPossibleRedirectionRouterLinkMatchURL) {
-          this.tabs[tabIndex].links[linkIndex].routerLink = link.possibleRedirection;
+        if (doesPossibleRedirectionRouterLinkMatchURL) {
+          this.tabs[tabIndex].links[linkIndex].routerLink =
+            link.possibleRedirection;
         }
 
         return (
@@ -178,7 +186,7 @@ export class NavigationComponent implements OnInit {
       });
 
       if (this.quotations.length > 0) {
-        this.tabs[1].links[this.tabs[1].links.length - 1].routerLink = [
+        this.tabs[2].links[this.tabs[2].links.length - 1].routerLink = [
           '/ecommerce/quotations',
         ];
       }
