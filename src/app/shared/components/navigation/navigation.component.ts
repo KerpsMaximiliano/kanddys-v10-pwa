@@ -11,15 +11,22 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
+import { Item } from 'src/app/core/models/item';
 import { Quotation } from 'src/app/core/models/quotations';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
 import {
   LoginDialogComponent,
   LoginDialogData,
 } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
+import { SwiperOptions } from 'swiper';
+import { FormComponent, FormData } from '../../dialogs/form/form.component';
+import { FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-navigation',
@@ -30,15 +37,48 @@ export class NavigationComponent implements OnInit {
   @Input() opened: boolean;
   @Output() closed = new EventEmitter();
   quotations: Array<Quotation> = [];
+  loggedUser: boolean = false;
+  isCurrentUserASupplier: boolean = false;
+
+  tabName = {
+    CLUB: 'El Club',
+    ME: 'Yo',
+    FLORISTS: 'Mi floristeria',
+    PROVIDERS: 'Proveedor',
+  };
+
+  tabByName = {
+    'El Club': 'CLUB',
+    Yo: 'ME',
+    'Mi floristeria': 'FLORISTS',
+    Proveedor: 'PROVIDERS',
+  };
+
   tabs: Array<{
     headerText: string;
     text: string;
     active?: boolean;
-    links: Array<any>;
+    links?: Array<any>;
+    textList?: Array<{
+      title?: string;
+      content: string;
+    }>;
+    footer?: {
+      button: {
+        text: string;
+        callback: any;
+      };
+      swiper?: {
+        title: string;
+        slides: Array<{
+          content: string;
+        }>;
+      };
+    };
   }> = [
     {
       headerText: 'Proveedor de ✨',
-      text: 'Yo',
+      text: this.tabName['ME'],
       active: true,
       links: [
         {
@@ -50,16 +90,117 @@ export class NavigationComponent implements OnInit {
     {
       headerText:
         'Es un ecosistema digital en constante desarrollo, diseñado para proporcionar soluciones a los desafíos que enfrentan las floristerías y sus proveedores.',
-      text: 'El Club',
+      text: this.tabName['CLUB'],
       active: false,
       links: [],
+      textList: [
+        {
+          title: 'Gestión de las Ordenes',
+          content:
+            'Mantén el control de las ordenes desde tu celular. Mira las ordenes según su estado y notificale a tus clientes por WhatsApp o correo electrónico.',
+        },
+        {
+          title: 'Cotización Eficiente con Proveedores',
+          content:
+            'Accede a una amplia red de proveedores de flores y obtén cotizaciones para tus compras. Compara y elige la oferta más conveniente para ti, maximizando tus ganancias.',
+        },
+        {
+          title: 'Gestión Simplificada de Compras',
+          content:
+            'Convierte las cotizaciones de los proveedores en compras con un solo clic, manteniendo un seguimiento detallado para optimizar tus beneficios.',
+        },
+        {
+          title: 'Inteligencia Artificial',
+          content:
+            'una bot entrenada a tu floristería para ahorrarte tiempo a ti o a tu personal de servicio y ser consistentes en el mensaje que reciben tus clientes.',
+        },
+        {
+          title: 'Ventas con #hashtag',
+          content:
+            'asigna un #hashtag a tus artículos para que desde el Bio de tu Instagram tus compradores aterricen directo a comprar.',
+        },
+        {
+          title: 'Ventas por WhatsApp',
+          content:
+            'Sube tus productos fácilmente y vende directamente a través de WhatsApp.Conecta con tus clientes donde ya se encuentran.',
+        },
+        {
+          title: 'Experiencia Mejorada para tus Clientes',
+          content:
+            'Permite a tus clientes añadir videos a sus mensajes dedicatorios, añadiendo un toque personal único a sus regalos.',
+        },
+        {
+          title: 'Tarifas de Entrega Personalizadas',
+          content:
+            'Ajusta tus tarifas de entrega en función de la zona de entrega, maximizando tus ingresos.',
+        },
+        {
+          title: 'Marketing Segmentado',
+          content:
+            'Cuenta con una base de datos segmentada de tus compradores, facilitándote la planificación de tus futuras campañas de marketing.',
+        },
+        {
+          title: 'Compra Fácil para los Clientes',
+          content:
+            'Tus clientes pueden comprar tus productos sin necesidad de descargar ninguna aplicación, facilitándoles la experiencia de compra.',
+        },
+        {
+          title: 'Recompensas para tus Clientes',
+          content:
+            'Ofrece incentivos a tus clientes para fomentar la fidelidad y satisfacción.',
+        },
+        {
+          title: 'Venden por Ti',
+          content:
+            'Paga comisiones a influencers e instituciones que están recaudando fondos dependiendo de las ventas enlazadas.',
+        },
+        {
+          title: 'Comunicación Efectiva',
+          content:
+            'Informa a tus clientes sobre el estado de su pedido a través de WhatsApp, proporcionando un servicio transparente y eficiente.',
+        },
+        {
+          title: '',
+          content:
+            'Giftcards de terceros (para que seas tu quien colabores y comisiones con spas, salones y restaurantes).',
+        },
+      ],
     },
     {
       headerText:
-        'Vende online. Cotiza y ordena al suplidor local que te convenga',
-      text: 'Floristerias',
+        'Vendes. Venden por ti. Recompensa a compradores. Cotiza y compra al proveedor conveniente',
+      text: this.tabName['FLORISTS'],
       active: false,
       links: [
+        {
+          text: 'Mi KiosKo 💰',
+          routerLink: ['/admin/dashboard'],
+        },
+        {
+          text: 'Recompensa a compradores ✨',
+          routerLink: ['/admin/tba'],
+        },
+        {
+          text: 'Comisiones a embajadores 📢',
+          routerLink: ['/admin/tba'],
+        },
+        {
+          text: 'Oferta de hoy de proveedores locales 🚨',
+          routerLink: ['/admin/tba'],
+        },
+        {
+          text: 'Carritos de proveedores',
+          routerLink: ['/admin/tba'],
+        },
+        {
+          text: 'Carritos de compradores',
+          routerLink: ['/admin/tba'],
+        },
+        {
+          text: 'Boletín del Genio 🧞‍♂️',
+          routerLink: ['/admin/tba'],
+        },
+        /*
         {
           text: 'Mi KiosKo 💰',
           routerLink: ['/admin/dashboard'],
@@ -85,21 +226,89 @@ export class NavigationComponent implements OnInit {
           text: 'Mis suplidores (compras y cotizaciones)',
           routerLink: ['/ecommerce/supplier-items-selector'],
           possibleRedirection: ['/ecommerce/quotations'],
+        },*/
+      ],
+      textList: [
+        {
+          title: 'Vende Fácil',
+          content: 'Desde tu celular, online y por WhatsApp',
+        },
+        {
+          title: 'Vende Más',
+          content: 'Paga comisión a los embajadores que vendieron por ti',
+        },
+        {
+          title: 'Sigue Vendiendo',
+          content: 'Recompensa a tus compradores',
         },
       ],
+      footer: {
+        button: {
+          text: 'Administración de mi KiosKo',
+          callback: () => {
+            this.router.navigate(['/admin/dashboard']);
+          },
+        },
+      },
     },
     {
-      headerText: 'Cotiza y vende a Floristerías fácilemente.',
-      text: 'Suplidores',
+      headerText:
+        'Alcanza a mas floristerías. Simplifica las cotizaciones y el proceso de ventas.',
+      text: this.tabName['PROVIDERS'],
       active: false,
       links: [
         {
-          text: 'Lo que vendo a Floristerias 🏷️',
-          routerLink: ['/admin/merchants-entry'],
+          text: 'Mi KiosKo 💰',
+          routerLink: ['/admin/dashboard'],
+        },
+        {
+          text: 'Carritos de compradores',
+          routerLink: ['/admin/tba'],
+        },
+        {
+          text: 'Tengo un problema',
+          routerLink: ['/admin/tba'],
+        },
+        {
+          text: 'Boletín del Genio 🧞‍♂️',
+          routerLink: ['/admin/tba'],
         },
       ],
+      textList: [
+        {
+          title: 'Alcanza a mas floristerías',
+          content: 'Desde tu celular, online y por WhatsApp',
+        },
+        {
+          title: 'Simplifica las cotizaciones',
+          content: 'Paga comisión a los embajadores que vendieron por ti',
+        },
+        {
+          title: 'Proceso de ventas',
+          content: 'Recompensa a tus compradores',
+        },
+      ],
+      footer: {
+        button: {
+          text: 'Administración de mis artículos',
+          callback: () => {
+            this.router.navigate(['/admin/dashboard']);
+          },
+        },
+      },
     },
   ];
+
+  footerSwiperConfig: SwiperOptions = {
+    slidesPerView: 1,
+    freeMode: false,
+    spaceBetween: 0,
+    pagination: {
+      el: '.swiper-pagination',
+      type: 'bullets',
+      clickable: true,
+    },
+  };
 
   constructor(
     private authService: AuthService,
@@ -107,8 +316,10 @@ export class NavigationComponent implements OnInit {
     public headerService: HeaderService,
     private appService: AppService,
     private quotationsService: QuotationsService,
+    private itemsService: ItemsService,
     private router: Router,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    private matSnackBar: MatSnackBar
   ) {}
 
   async ngOnInit() {
@@ -130,8 +341,40 @@ export class NavigationComponent implements OnInit {
       await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
     if (!this.headerService.user || !isUserAMerchant) {
-      console.log('A');
       this.tabs[2].links.splice(3, 1);
+    }
+
+    if (!this.headerService.user) {
+      //tab floristeria no registrada
+      this.tabs[2].footer = {
+        button: {
+          text: 'Sube tu primer arreglo para vender',
+          callback: () => {
+            this.startArticleCreationForUnregisteredMerchant();
+          },
+        },
+        swiper: {
+          title: 'LO QUE MAS LE GUSTA A LOS MIEMBROS',
+          slides: [
+            {
+              content:
+                '“.. lo de las ventas a través de WhatsApp, mensajes de video para clientes, comunicación de estado de pedidos, y la base de datos de mis clientes segmentada”',
+            },
+            {
+              content:
+                '“.. lo fácil que es convertir cotizaciones en compras y mantener un seguimiento de todas las transacciones, me ayuda a gestionar los costos y mi inventario”',
+            },
+            {
+              content:
+                '“.. me aseguro de ahorrarme $ al obtener las cotizaciones de múltiples proveedores al mismo tiempo”',
+            },
+          ],
+        },
+      };
+    }
+
+    if (this.headerService.user) {
+      this.loggedUser = true;
     }
 
     if (this.headerService.user && isUserAMerchant) {
@@ -141,6 +384,54 @@ export class NavigationComponent implements OnInit {
           this.headerService.saleflow?.merchant.slug,
         'store',
       ];
+
+      const listItemsPagination: PaginationInput = {
+        findBy: {
+          merchant: this.merchantsService.merchantData._id,
+          type: 'supplier',
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: -1,
+          page: 1,
+        },
+      };
+
+      const items: Array<Item> = (
+        await this.itemsService.listItems(listItemsPagination)
+      )?.listItems;
+
+      if (items.length) {
+        //If the current user is a supplier, it redirects them to the screen where they may adjust the quotation items prices and stock
+        this.isCurrentUserASupplier = true;
+      }
+    }
+
+    if (!this.isCurrentUserASupplier) {
+      //tab proveedor no registrado
+      this.tabs[3].footer = {
+        button: {
+          text: 'Sube los artículos que te comprarán las floristerias',
+          callback: () => {
+            console.log(
+              'Comenzar flow de creacion de articulo para un proveedor'
+            );
+          },
+        },
+        swiper: {
+          title: 'LO QUE MAS LE GUSTA A LOS PROVEEDORES',
+          slides: [
+            {
+              content:
+                '“.. es que no hay manera más fácil de cotizarles a las floristerías, me ahorra tiempo y una empleada.”',
+            },
+            {
+              content:
+                '“.. las floristerías convierten las cotizaciones en compras con un solo clic y eso simplifica el proceso de venta”',
+            },
+          ],
+        },
+      };
     }
 
     if (this.headerService.navigationTabState)
@@ -191,6 +482,60 @@ export class NavigationComponent implements OnInit {
         ];
       }
     }
+  }
+
+  startArticleCreationForUnregisteredMerchant() {
+    let fieldsToCreate: FormData = {
+      fields: [
+        {
+          label: '¿Cuál es el precio de venta?',
+          name: 'price',
+          type: 'currency',
+          validators: [
+            Validators.pattern(/[\S]/),
+            Validators.required,
+            Validators.min(0.1),
+          ],
+        },
+      ],
+      automaticallyFocusFirstField: true,
+    };
+
+    const dialogRef = this.matDialog.open(FormComponent, {
+      data: fieldsToCreate,
+    });
+
+    dialogRef.afterClosed().subscribe((result: FormGroup) => {
+      const fields = [
+        {
+          fieldName: 'pricing',
+          fieldKey: 'price',
+        },
+      ];
+
+      this.itemsService.temporalItemInput = this.itemsService.temporalItemInput
+        ? this.itemsService.temporalItemInput
+        : {};
+
+      fields.forEach((field) => {
+        try {
+          if (
+            result?.value[field.fieldKey] &&
+            result?.controls[field.fieldKey].valid
+          ) {
+            throw Error("HUEVO")
+
+            this.itemsService.temporalItemInput[field.fieldName] =
+              result?.value[field.fieldKey];
+          } else {
+            this.headerService.showErrorToast();
+          }
+        } catch (error) {
+          console.error(error);
+          this.headerService.showErrorToast();
+        }
+      });
+    });
   }
 
   signout() {

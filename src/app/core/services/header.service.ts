@@ -26,6 +26,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -124,6 +125,7 @@ export class HeaderService {
     private saleflowService: SaleFlowService,
     private authService: AuthService,
     public matDialog: MatDialog,
+    private matSnackBar: MatSnackBar,
     private router: Router
   ) {
     this.auth.me().then((data) => {
@@ -180,7 +182,7 @@ export class HeaderService {
   }
 
   isUserLogged() {
-    if(this.user) return true;
+    if (this.user) return true;
     else return false;
   }
 
@@ -624,6 +626,17 @@ export class HeaderService {
   removeTempNewItem() {
     this.newTempItem = null;
     this.newTempItemRoute = null;
+  }
+
+  showErrorToast(
+    message: string = 'Ocurrió un error',
+    duration: number = 3000,
+    optionalErrorCssClass: string = 'snack-toast-error'
+  ) {
+    this.matSnackBar.open(message, '', {
+      duration,
+      panelClass: optionalErrorCssClass,
+    });
   }
 
   redirectFromQueryParams() {

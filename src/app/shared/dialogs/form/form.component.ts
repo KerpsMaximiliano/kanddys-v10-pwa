@@ -52,6 +52,7 @@ export class FormComponent implements OnInit {
     CountryISO.UnitedStates,
   ];
   PhoneNumberFormat = PhoneNumberFormat;
+  keyboardVisible: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
@@ -67,6 +68,10 @@ export class FormComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({});
+
+    if(!this.data.automaticallyFocusFirstField) {
+      this.data.automaticallyFocusFirstField = true;
+    }
 
     let firstEditableFieldFound = false;
     let alreadyFocusedFirstEditableField = false;
@@ -143,6 +148,7 @@ export class FormComponent implements OnInit {
       event.target instanceof HTMLInputElement &&
       this.viewportRuler.getViewportRect().width <= 500
     ) {
+      this.keyboardVisible = false;
       this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
     }
   }
@@ -158,7 +164,21 @@ export class FormComponent implements OnInit {
       event.target instanceof HTMLInputElement &&
       this.viewportRuler.getViewportRect().width <= 500
     ) {
+      this.keyboardVisible = true;
       this.dialogRef.updatePosition({ top: '50px' }); // Reset the position when the keyboard is hidden
+    }
+  }
+
+  @HostListener('window:popstate', ['$event'])
+  onBackButtonPress(event: PopStateEvent) {
+    // Add your custom logic here for what should happen when the back button is pressed.
+    // For example, you can navigate to a different route or show a confirmation dialog.
+    console.log("boton de ir hacia atras presionado")
+    if (
+      this.keyboardVisible &&
+      this.viewportRuler.getViewportRect().width <= 500
+    ) {
+      this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
     }
   }
 }
