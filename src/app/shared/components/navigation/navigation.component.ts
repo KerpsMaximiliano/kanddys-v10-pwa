@@ -523,10 +523,10 @@ export class NavigationComponent implements OnInit {
             result?.value[field.fieldKey] &&
             result?.controls[field.fieldKey].valid
           ) {
-            throw Error("HUEVO")
-
             this.itemsService.temporalItemInput[field.fieldName] =
               result?.value[field.fieldKey];
+
+            this.router.navigate(['/ecommerce/item-management']);
           } else {
             this.headerService.showErrorToast();
           }
