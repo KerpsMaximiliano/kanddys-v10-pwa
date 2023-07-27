@@ -10,7 +10,7 @@ import { IpUser, User } from './user';
 export class OrderSubtotal {
   currency: string;
   amount: number;
-  item: string;
+  item?: string;
   type: 'item' | 'delivery' | 'fee-payment-method';
 }
 
@@ -49,7 +49,7 @@ export class ItemSubOrder extends Model<ItemSubOrder> {
   amount: number;
   creator: User;
   deliveryLocation: DeliveryLocation;
-  item: ExtendedItem;
+  item?: ExtendedItem;
   itemSelected: string[];
   merchant: Merchant;
   params: ItemSubOrderParams[];
