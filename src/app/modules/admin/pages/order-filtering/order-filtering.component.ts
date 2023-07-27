@@ -91,7 +91,6 @@ export class OrderFilteringComponent implements OnInit {
   change_start_date(type: string, event) {
     this.start_date = event.value;
     console.log("start: ", this.start_date, "\nend: ", this.end_date)
-    // this.formatDate(event.value);
   }
 
   change_end_date(type: string, event) {
