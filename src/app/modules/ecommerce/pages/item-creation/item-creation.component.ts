@@ -49,7 +49,7 @@ interface ExtendedAnswer extends Answer {
 }
 
 @Component({
-  selector: 'app-item-creation-2',
+  selector: 'app-item-creation',
   templateUrl: './item-creation.component.html',
   styleUrls: ['./item-creation.component.scss'],
 })
@@ -98,6 +98,7 @@ export class ItemCreationComponent implements OnInit {
   currentView: 'ITEM_FORM' | 'ITEM_METRICS' = 'ITEM_FORM';
   assetsFolder: string = environment.assetsUrl;
   isFormUpdated: boolean = false;
+  isASupplierItem: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -107,7 +108,7 @@ export class ItemCreationComponent implements OnInit {
     private snackbar: MatSnackBar,
     private webformsService: WebformsService,
     private saleflowService: SaleFlowService,
-    private merchantsService: MerchantsService,
+    public merchantsService: MerchantsService,
     private headerService: HeaderService,
     private translate: TranslateService,
     private route: ActivatedRoute,
@@ -117,7 +118,9 @@ export class ItemCreationComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async ({ itemId }) => {
-      this.route.queryParams.subscribe(async (queryParams) => {
+      this.route.queryParams.subscribe(async ({ supplierItem }) => {
+        this.isASupplierItem = JSON.parse(supplierItem || 'false');
+
         if (!itemId) {
           this.itemFormData = this.fb.group({
             title: [this.itemsService.temporalItemInput?.name || ''],
@@ -127,6 +130,18 @@ export class ItemCreationComponent implements OnInit {
             pricing: [
               this.itemsService.temporalItemInput?.pricing || 0,
               Validators.compose([Validators.required, Validators.min(0.1)]),
+            ],
+            stock: [
+              this.itemsService.temporalItemInput?.stock || '',
+              !this.isASupplierItem
+                ? []
+                : Validators.compose([Validators.required]),
+            ],
+            notificationStockLimit: [
+              this.itemsService.temporalItemInput?.notificationStockLimit || '',
+              !this.isASupplierItem
+                ? []
+                : Validators.compose([Validators.min(1)]),
             ],
             defaultLayout: [
               this.itemsService.temporalItemInput?.layout || this.layout,
@@ -157,6 +172,18 @@ export class ItemCreationComponent implements OnInit {
             pricing: [
               this.itemsService.temporalItem?.pricing || 0,
               Validators.compose([Validators.required, Validators.min(0.1)]),
+            ],
+            stock: [
+              this.itemsService.temporalItem?.stock || '',
+              !this.isASupplierItem
+                ? []
+                : Validators.compose([Validators.required]),
+            ],
+            notificationStockLimit: [
+              this.itemsService.temporalItem?.notificationStockLimit || '',
+              !this.isASupplierItem
+                ? []
+                : Validators.compose([Validators.min(1)]),
             ],
             defaultLayout: [
               this.itemsService.temporalItem?.layout || this.layout,
@@ -373,8 +400,12 @@ export class ItemCreationComponent implements OnInit {
         content['_type'] = file.type;
         this.itemSlides.push(content);
 
-        const label = await this.getObjectLabel(file, this.merchantsService.merchantData._id);
-        if (this.itemFormData.controls['description'].value === '' && label) await this.generateAIDescription(label);
+        const label = await this.getObjectLabel(
+          file,
+          this.merchantsService.merchantData._id
+        );
+        if (this.itemFormData.controls['description'].value === '' && label)
+          await this.generateAIDescription(label);
 
         this.saveTemporalItemInMemory();
 
@@ -466,14 +497,21 @@ export class ItemCreationComponent implements OnInit {
     }
   }
 
-  openFormForField(field: 'TITLE' | 'DESCRIPTION' | 'WEBFORM-QUESTIONS') {
-    let fieldsToCreate: FormData = {
+  openFormForField = (
+    field: 'TITLE' | 'DESCRIPTION' | 'WEBFORM-QUESTIONS' | 'PRICE' | 'STOCK'
+  ) => {
+    let fieldsToCreateForFormDialog: FormData = {
       fields: [],
     };
+    const fieldsArrayForFieldValidation: Array<{
+      fieldName: string;
+      fieldKey: string;
+      fieldTextDescription: string;
+    }> = [];
 
     switch (field) {
       case 'TITLE':
-        fieldsToCreate.fields = [
+        fieldsToCreateForFormDialog.fields = [
           {
             label: 'Texto principal y centralizado',
             name: 'item-title',
@@ -481,9 +519,14 @@ export class ItemCreationComponent implements OnInit {
             validators: [Validators.pattern(/[\S]/)],
           },
         ];
+        fieldsArrayForFieldValidation.push({
+          fieldName: 'title',
+          fieldKey: 'item-title',
+          fieldTextDescription: 'Texto principal y centralizado',
+        });
         break;
       case 'DESCRIPTION':
-        fieldsToCreate.fields = [
+        fieldsToCreateForFormDialog.fields = [
           {
             label: 'Texto más largo',
             name: 'item-description',
@@ -504,32 +547,84 @@ export class ItemCreationComponent implements OnInit {
                   },
                 },
               });
-            }
+            },
           },
         ];
+        fieldsArrayForFieldValidation.push({
+          fieldName: 'description',
+          fieldKey: 'item-description',
+          fieldTextDescription: 'Texto más largo',
+        });
+        break;
+      case 'PRICE':
+        fieldsToCreateForFormDialog.fields = [
+          {
+            label: 'Precio',
+            name: 'price',
+            type: 'currency',
+            validators: [Validators.pattern(/[\S]/), Validators.min(0.1)],
+          },
+        ];
+        fieldsArrayForFieldValidation.push({
+          fieldName: 'pricing',
+          fieldKey: 'price',
+          fieldTextDescription: 'Precio',
+        });
+        break;
+      case 'STOCK':
+        fieldsToCreateForFormDialog.fields = [
+          {
+            label: 'Cantidad disponible para vender',
+            name: 'initial-stock',
+            type: 'number',
+            validators: [Validators.pattern(/[\S]/)],
+          },
+          {
+            label: 'Cantidad mínima para recibir notificación',
+            name: 'minimal-stock-notification',
+            type: 'number',
+            validators: [Validators.pattern(/[\S]/)],
+          },
+        ];
+        fieldsArrayForFieldValidation.push({
+          fieldName: 'stock',
+          fieldKey: 'stock',
+          fieldTextDescription: 'Cantidad disponible para vender',
+        });
+        fieldsArrayForFieldValidation.push({
+          fieldName: 'notificationStockLimit',
+          fieldKey: 'notificationStockLimit',
+          fieldTextDescription: 'Cantidad mínima para recibir notificación',
+        });
         break;
     }
 
     const dialogRef = this.dialog.open(FormComponent, {
-      data: fieldsToCreate,
+      data: fieldsToCreateForFormDialog,
     });
 
     dialogRef.afterClosed().subscribe((result: FormGroup) => {
-      console.log('The dialog was closed');
+      fieldsArrayForFieldValidation.forEach((field) => {
+        let error = `${field.fieldTextDescription} invalido`;
 
-      if (result && result.value['item-title']) {
-        this.itemFormData.patchValue({
-          title: result.value['item-title'],
-        });
-      }
-
-      if (result && result.value['item-description']) {
-        this.itemFormData.patchValue({
-          description: result.value['item-description'],
-        });
-      }
+        try {
+          if (
+            result?.value[field.fieldKey] &&
+            result?.controls[field.fieldKey].valid
+          ) {
+            this.itemFormData.patchValue({
+              [field.fieldName]: result?.value[field.fieldKey],
+            });
+          } else {
+            this.headerService.showErrorToast(error);
+          }
+        } catch (error) {
+          console.error(error);
+          this.headerService.showErrorToast(error);
+        }
+      });
     });
-  }
+  };
 
   async createWebform(
     questionsToAdd: ExtendedQuestionInput[],
@@ -905,14 +1000,14 @@ export class ItemCreationComponent implements OnInit {
   async openMetaDescriptionDialog() {
     const bottomSheetRef = this._bottomSheet.open(InputDialogComponent, {
       data: {
-          label: `Escribe las características de tu producto, cada una separada por una coma, para generar una descripción con inteligencia artificial`,
-          styles: {
-            fullScreen: true,
-          },
-          callback: async (metaDescription) => {
-            if (metaDescription) this.generateAIDescription(metaDescription)
-          }
+        label: `Escribe las características de tu producto, cada una separada por una coma, para generar una descripción con inteligencia artificial`,
+        styles: {
+          fullScreen: true,
         },
+        callback: async (metaDescription) => {
+          if (metaDescription) this.generateAIDescription(metaDescription);
+        },
+      },
     });
   }
 
@@ -932,15 +1027,15 @@ export class ItemCreationComponent implements OnInit {
   }
 
   async generateAIDescription(prompt?: string) {
-    lockUI()
+    lockUI();
     try {
       const result = await this.gpt3Service.generateCompletionForMerchant(
         this.merchantsService.merchantData._id,
-        prompt ?
-        `
+        prompt
+          ? `
           Genera una descripción corta para un producto que está compuesto por las siguientes características: ${prompt}
-        ` :
-        `Genera una descripción corta para un producto de una tienda que vende en un ecommerce`
+        `
+          : `Genera una descripción corta para un producto de una tienda que vende en un ecommerce`
       );
 
       this.itemFormData.patchValue({
@@ -948,7 +1043,7 @@ export class ItemCreationComponent implements OnInit {
       });
 
       this.itemFormData.controls['description'].markAsDirty();
-      
+
       console.log(result);
       unlockUI();
     } catch (error) {
@@ -992,7 +1087,6 @@ export class ItemCreationComponent implements OnInit {
 
   goToReorderMedia() {
     this.saveTemporalItemInMemory();
-
 
     if (!this.item)
       this.router.navigate(['admin/slides-editor'], {

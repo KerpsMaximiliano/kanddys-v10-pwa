@@ -62,6 +62,7 @@ import { QuotationBidsComponent } from './pages/quotation-bids/quotation-bids.co
 import { SupplierRegistrationComponent } from '../../shared/components/supplier-registration/supplier-registration.component';
 import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-creator.component';
 import { ConfirmQuotationComponent } from './pages/confirm-quotation/confirm-quotation.component';
+import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
 
 const routes: Routes = [
   {
@@ -174,6 +175,14 @@ const routes: Routes = [
   {
     path: 'quotations',
     component: InventoryComponent,
+  },
+  {
+    path: 'item-management/:itemId',
+    component: ItemCreationComponent,
+  },
+  {
+    path: 'item-management',
+    component: ItemCreationComponent,
   },
   {
     path: 'inventory-creator',
@@ -385,7 +394,8 @@ const routes: Routes = [
     InvalidMagicLinkComponent,
     QuotationBidsComponent,
     InventoryCreatorComponent,
-    ConfirmQuotationComponent
+    ConfirmQuotationComponent,
+    ItemCreationComponent
   ],
   imports: [
     CommonModule,
