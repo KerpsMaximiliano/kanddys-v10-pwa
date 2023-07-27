@@ -4,21 +4,6 @@
     <p>💰 Ventas en un intérvalo de tiempo</p>
   </div>
   <div class="dates-container">
-    <!-- <div class="date-box"> -->
-      
-    <!-- </div> -->
-    <!-- <div class="date-box">
-      <mat-form-field>
-        <input
-          matInput
-          [matDatepicker]="end"
-          placeholder="Hasta"
-          (dateChange)="change_end_date('change', $event)"
-        >
-        <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
-        <mat-datepicker #end></mat-datepicker>
-      </mat-form-field>
-    </div> -->
     <div class="date-box" (click)="start.open()">
       <p class="date-box-title">Desde</p>
       <p class="date-box-date">{{formatDate(start_date)}}</p>
