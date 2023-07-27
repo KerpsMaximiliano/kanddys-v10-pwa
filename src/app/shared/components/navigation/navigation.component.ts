@@ -175,7 +175,7 @@ export class NavigationComponent implements OnInit {
         {
           text: 'Mi KiosKo 💰',
           routerLink: ['/admin/dashboard'],
-        },
+        },/*
         {
           text: 'Recompensa a compradores ✨',
           routerLink: ['/admin/tba'],
@@ -341,7 +341,9 @@ export class NavigationComponent implements OnInit {
       await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
     if (!this.headerService.user || !isUserAMerchant) {
+      /*
       this.tabs[2].links.splice(3, 1);
+      */
     }
 
     if (!this.headerService.user) {
@@ -378,12 +380,13 @@ export class NavigationComponent implements OnInit {
     }
 
     if (this.headerService.user && isUserAMerchant) {
+      /*
       this.tabs[2].links[3].routerLink = [
         '/ecommerce',
         this.merchantsService.merchantData?.slug ||
           this.headerService.saleflow?.merchant.slug,
         'store',
-      ];
+      ];*/
 
       const listItemsPagination: PaginationInput = {
         findBy: {
@@ -406,6 +409,8 @@ export class NavigationComponent implements OnInit {
         this.isCurrentUserASupplier = true;
       }
     }
+
+    console.log("this.isCurrentUserASupplier", this.isCurrentUserASupplier);
 
     if (!this.isCurrentUserASupplier) {
       //tab proveedor no registrado
@@ -477,9 +482,10 @@ export class NavigationComponent implements OnInit {
       });
 
       if (this.quotations.length > 0) {
+        /*
         this.tabs[2].links[this.tabs[2].links.length - 1].routerLink = [
           '/ecommerce/quotations',
-        ];
+        ];*/
       }
     }
   }
