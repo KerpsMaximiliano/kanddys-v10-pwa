@@ -82,6 +82,7 @@ import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-c
 import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
 import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
 import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
+import { AmbassadorPaymentsLibraryComponent } from './pages/ambassador-payments-library/ambassador-payments-library.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -519,6 +520,10 @@ const routes: Routes = [
   {
     path: 'order-filtering',
     component: OrderFilteringComponent
+  },
+  {
+    path: 'ambassador-payments',
+    component: AmbassadorPaymentsLibraryComponent
   }
 ];
 
@@ -583,7 +588,8 @@ const routes: Routes = [
     //InventoryCreatorComponent,
     OrderProgressFilteringComponent,
     OrderProgressComponent,
-    OrderFilteringComponent
+    OrderFilteringComponent,
+    AmbassadorPaymentsLibraryComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [
