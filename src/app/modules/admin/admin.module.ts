@@ -67,7 +67,7 @@ import { RenameQuestionComponent } from './pages/rename-question/rename-question
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
 import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 import { MerchantsEntryComponent } from './pages/merchants-entry/merchants-entry.component';
-import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
+import { ItemCreationComponent as ItemCreation2Component } from './pages/item-creation/item-creation.component';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
@@ -127,11 +127,11 @@ const routes: Routes = [
       },
       {
         path: 'item-creation/:itemId',
-        component: ItemCreationComponent,
+        component: ItemCreation2Component,
       },
       {
         path: 'item-creation',
-        component: ItemCreationComponent,
+        component: ItemCreation2Component,
       },
       {
         path: 'merchant-items',
@@ -573,7 +573,7 @@ const routes: Routes = [
     RenameQuestionComponent,
     RewardsDisplayComponent,
     MerchantsEntryComponent,
-    ItemCreationComponent,
+    ItemCreation2Component,
     ItemSelectorComponent,
     SupplierRegisterComponent,
     /*
