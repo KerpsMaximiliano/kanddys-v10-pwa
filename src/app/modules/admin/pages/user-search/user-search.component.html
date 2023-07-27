@@ -10,7 +10,7 @@
   </p>
   <div class="input-container">
     <div><mat-icon>search</mat-icon></div>
-    <input placeholder="Buscar Comprador" (keydown)="searchHandler($event)" />
+    <input (keydown)="searchHandler($event)" />
   </div>
   <div *ngIf="orders; else elseBlock" class="items-container">
     <div *ngFor="let order of orders" class="item">
