@@ -227,6 +227,7 @@ import { ItemSelectorComponent } from './components/item-selector/item-selector.
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { SupplierRegistrationComponent } from './components/supplier-registration/supplier-registration.component';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
+import { CardImageComponent } from './components/card-image/card-image.component';
 
 const imports = [
   CommonModule,
@@ -465,7 +466,8 @@ const declarations = [
   ItemSelectorComponent,
   InventoryComponent,
   SupplierRegistrationComponent,
-  ProgressBarComponent
+  ProgressBarComponent,
+  CardImageComponent
 ];
 
 @NgModule({
