@@ -25,10 +25,8 @@ export class UserSearchComponent implements OnInit {
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
       if(event.target.value) {
-        console.log('search on delay', event.target.value)
         this.UsersService.ordersByUserSearchParam(this.id, event.target.value, {sortBy: "createdAt:desc"}).then((data) => {
           this.orders = data;
-          console.log(this.orders)
         });
       }
     }, 1000);
