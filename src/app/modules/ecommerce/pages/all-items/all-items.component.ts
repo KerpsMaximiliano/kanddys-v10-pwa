@@ -38,7 +38,7 @@ export class AllItemsComponent implements OnInit {
   reachedTheEndOfPagination = false;
 
   filterTrigger: {
-    triggerID: 'pricing' | 'tags',
+    triggerID: 'pricing' | 'tags' | 'search',
     data: any
   }
   
@@ -169,7 +169,7 @@ export class AllItemsComponent implements OnInit {
     }
   }
 
-  async getItems(restartPagination = false, filterCriteria?: 'pricing' | 'tags', filterCriteriaData?: any) {
+  async getItems(restartPagination = false, filterCriteria?: 'pricing' | 'tags' | 'search', filterCriteriaData?: any) {
     this.paginationState.status = 'loading';
 
     const saleflowItems = this.headerService.saleflow.items.map(
@@ -209,7 +209,7 @@ export class AllItemsComponent implements OnInit {
       },
     };
 
-    this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
+    this.renderItemsPromise = this.saleflowService.listItems(pagination, true, filterCriteria === 'search' ? filterCriteriaData : '');
     this.renderItemsPromise
       .then((response) => {
         const items = response;

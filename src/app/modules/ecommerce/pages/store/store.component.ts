@@ -309,6 +309,21 @@ export class StoreComponent implements OnInit {
     });
   }
 
+  onKeywordSearch(event: any) {
+    console.log(event.target.value);
+    const value = event.target.value;
+    setTimeout(() => {
+      // Obtener el valor del input de búsqueda
+      if (value !== '') {
+        console.log("Enviando keyword");
+        this.saleflowService.notifyTrigger({
+          triggerID: 'search',
+          data: value,
+        });
+      }
+    }, 500);
+  }
+
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;
