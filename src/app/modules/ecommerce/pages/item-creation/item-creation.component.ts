@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
@@ -17,6 +18,7 @@ import {
   Webform,
   WebformInput,
 } from 'src/app/core/models/webform';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import {
@@ -29,11 +31,13 @@ import {
   ResponsesByQuestion,
   WebformsService,
 } from 'src/app/core/services/webforms.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ExtendedQuestionInput } from 'src/app/shared/components/form-creator/form-creator.component';
 import {
   FormComponent,
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-dialog.component';
 import { environment } from 'src/environments/environment';
 
@@ -96,13 +100,19 @@ export class ItemCreationComponent implements OnInit {
   totalSells: number = 0;
   totalIncome: number = 0;
   currentView: 'ITEM_FORM' | 'ITEM_METRICS' = 'ITEM_FORM';
+  typeOfFlow:
+    | 'ITEM_CREATION'
+    | 'UPDATE_EXISTING_ITEM'
+    | 'UPDATE_EXISTING_SUPPLIER_ITEM' = 'UPDATE_EXISTING_ITEM';
   assetsFolder: string = environment.assetsUrl;
   isFormUpdated: boolean = false;
   isASupplierItem: boolean = false;
+  isCurrentUserAMerchant: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
+    private dialogService: DialogService,
     public itemsService: ItemsService,
     private router: Router,
     private snackbar: MatSnackBar,
@@ -111,6 +121,8 @@ export class ItemCreationComponent implements OnInit {
     public merchantsService: MerchantsService,
     private headerService: HeaderService,
     private translate: TranslateService,
+    private authService: AuthService,
+    private location: Location,
     private route: ActivatedRoute,
     private gpt3Service: Gpt3Service,
     private _bottomSheet: MatBottomSheet
@@ -121,7 +133,19 @@ export class ItemCreationComponent implements OnInit {
       this.route.queryParams.subscribe(async ({ supplierItem }) => {
         this.isASupplierItem = JSON.parse(supplierItem || 'false');
 
+        if (this.headerService.user)
+          this.isCurrentUserAMerchant =
+            await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+        if (this.merchantsService.merchantData) {
+          this.saleflowService.saleflowData =
+            await this.saleflowService.saleflowDefault(
+              this.merchantsService.merchantData._id
+            );
+        }
+
         if (!itemId) {
+          this.typeOfFlow = 'ITEM_CREATION';
           this.itemFormData = this.fb.group({
             title: [this.itemsService.temporalItemInput?.name || ''],
             description: [
@@ -160,6 +184,27 @@ export class ItemCreationComponent implements OnInit {
         } else {
           this.item = await this.itemsService.item(itemId);
 
+          if (this.item.type === 'supplier') this.isASupplierItem = true;
+
+          this.typeOfFlow =
+            this.item.type === 'supplier'
+              ? 'UPDATE_EXISTING_SUPPLIER_ITEM'
+              : 'UPDATE_EXISTING_ITEM';
+
+          this.isCurrentUserAMerchant =
+            await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+          const isCurrentMerchantTheSameAsTheItemMerchant =
+            this.item.merchant?._id === this.merchantsService.merchantData?._id;
+
+          if (
+            this.item &&
+            this.isCurrentUserAMerchant &&
+            !isCurrentMerchantTheSameAsTheItemMerchant
+          ) {
+            this.router.navigate(['/auth/login']);
+          }
+
           if (!this.itemsService.temporalItem) {
             this.itemsService.temporalItem = this.item;
           }
@@ -190,6 +235,15 @@ export class ItemCreationComponent implements OnInit {
             ],
             ctaName: [this.itemsService.temporalItem?.ctaText],
           });
+          
+          if(this.isASupplierItem && this.itemFormData.controls['title'].value !== '') {
+            this.itemFormData.controls['title'].disable()
+          }
+          
+          if(this.isASupplierItem && this.itemFormData.controls['description'].value !== '') {
+            this.itemFormData.controls['description'].disable()
+          }
+
 
           this.itemFormData.valueChanges.subscribe(() => {
             this.isFormUpdated = true;
@@ -366,9 +420,10 @@ export class ItemCreationComponent implements OnInit {
     const revenue = await this.itemsService.itemTotalPagination(
       sellsPagination
     );
-    console.log(revenue);
-    this.totalSells = revenue.itemTotalPagination[0].count;
-    this.totalIncome = revenue.itemTotalPagination[0].total;
+    if (revenue && revenue.itemTotalPagination?.length) {
+      this.totalSells = revenue.itemTotalPagination[0]?.count;
+      this.totalIncome = revenue.itemTotalPagination[0]?.total;
+    }
   }
 
   async loadFile(event: Event) {
@@ -400,12 +455,17 @@ export class ItemCreationComponent implements OnInit {
         content['_type'] = file.type;
         this.itemSlides.push(content);
 
-        const label = await this.getObjectLabel(
-          file,
-          this.merchantsService.merchantData._id
-        );
-        if (this.itemFormData.controls['description'].value === '' && label)
-          await this.generateAIDescription(label);
+        if (
+          this.itemSlides.length === 0 &&
+          this.merchantsService.merchantData
+        ) {
+          const label = await this.getObjectLabel(
+            file,
+            this.merchantsService.merchantData._id
+          );
+          if (this.itemFormData.controls['description'].value === '' && label)
+            await this.generateAIDescription(label);
+        }
 
         this.saveTemporalItemInMemory();
 
@@ -427,13 +487,14 @@ export class ItemCreationComponent implements OnInit {
         let routeForItemEntity;
 
         if (this.item && this.itemSlides.length === 1) {
-          routeForItemEntity = 'admin/items-slides-editor/' + +this.item._id;
+          routeForItemEntity =
+            'ecommerce/items-slides-editor-2/' + +this.item._id;
         } else if (this.item && this.itemSlides.length > 1) {
-          routeForItemEntity = 'admin/slides-editor/' + this.item._id;
+          routeForItemEntity = 'ecommerce/slides-editor-2/' + this.item._id;
         } else if (!this.item && this.itemSlides.length === 1) {
-          routeForItemEntity = 'admin/items-slides-editor';
+          routeForItemEntity = 'ecommerce/items-slides-editor-2';
         } else if (!this.item && this.itemSlides.length > 1) {
-          routeForItemEntity = 'admin/slides-editor';
+          routeForItemEntity = 'ecommerce/slides-editor-2';
         }
 
         if (this.itemSlides.length === 1 && fileList.length === 1) {
@@ -452,13 +513,13 @@ export class ItemCreationComponent implements OnInit {
           });
         } else if (fileList.length > 1 && i === fileList.length - 1) {
           if (!this.item)
-            this.router.navigate(['admin/slides-editor'], {
+            this.router.navigate(['admin/slides-editor-2'], {
               queryParams: {
                 entity: 'item',
               },
             });
           else {
-            this.router.navigate(['admin/slides-editor/' + this.item._id], {
+            this.router.navigate(['admin/slides-editor-2/' + this.item._id], {
               queryParams: {
                 entity: 'item',
                 useSlidesInMemory: true,
@@ -487,15 +548,17 @@ export class ItemCreationComponent implements OnInit {
     (document.querySelector('#file') as HTMLElement).click();
   }
 
-  goToWebformCreationOrEdition() {
+  goToWebformCreationOrEdition = () => {
     this.saveTemporalItemInMemory();
 
     if (!this.item) {
-      this.router.navigate(['admin/form-creator']);
+      this.router.navigate(['ecommerce/webform-creator']);
     } else {
-      return this.router.navigate(['/admin/form-creator/' + this.item._id]);
+      return this.router.navigate([
+        '/ecommerce/webform-creator/' + this.item._id,
+      ]);
     }
-  }
+  };
 
   openFormForField = (
     field: 'TITLE' | 'DESCRIPTION' | 'WEBFORM-QUESTIONS' | 'PRICE' | 'STOCK'
@@ -577,23 +640,23 @@ export class ItemCreationComponent implements OnInit {
             label: 'Cantidad disponible para vender',
             name: 'initial-stock',
             type: 'number',
-            validators: [Validators.pattern(/[\S]/)],
+            validators: [Validators.pattern(/[\S]/), Validators.min(1)],
           },
           {
             label: 'Cantidad mínima para recibir notificación',
             name: 'minimal-stock-notification',
             type: 'number',
-            validators: [Validators.pattern(/[\S]/)],
+            validators: [Validators.pattern(/[\S]/), Validators.min(1)],
           },
         ];
         fieldsArrayForFieldValidation.push({
           fieldName: 'stock',
-          fieldKey: 'stock',
+          fieldKey: 'initial-stock',
           fieldTextDescription: 'Cantidad disponible para vender',
         });
         fieldsArrayForFieldValidation.push({
           fieldName: 'notificationStockLimit',
-          fieldKey: 'notificationStockLimit',
+          fieldKey: 'minimal-stock-notification',
           fieldTextDescription: 'Cantidad mínima para recibir notificación',
         });
         break;
@@ -628,10 +691,11 @@ export class ItemCreationComponent implements OnInit {
 
   async createWebform(
     questionsToAdd: ExtendedQuestionInput[],
-    idOfCreatedItem: string = null
-  ) {
+    idOfCreatedItem: string = null,
+    preItem: boolean = false
+  ): Promise<string | null> {
     let createdWebform = null;
-    if (!this.webform && !this.item && idOfCreatedItem) {
+    if (!this.webform && !this.item) {
       lockUI();
       const webformToCreate: WebformInput = {
         name: this.itemFormData.value['title']
@@ -641,9 +705,9 @@ export class ItemCreationComponent implements OnInit {
       };
 
       try {
-        createdWebform = await this.webformsService.createWebform(
-          webformToCreate
-        );
+        createdWebform = !preItem
+          ? await this.webformsService.createWebform(webformToCreate)
+          : await this.webformsService.precreateWebform(webformToCreate);
 
         if (createdWebform) {
           questionsToAdd.forEach((question) => {
@@ -660,8 +724,13 @@ export class ItemCreationComponent implements OnInit {
               question.answerDefault?.length <= 20 || !question.answerDefault
           );
 
-          if (smallInputQuestions.length > 0) {
+          if (smallInputQuestions.length > 0 && !preItem) {
             await this.webformsService.webformAddQuestion(
+              smallInputQuestions,
+              createdWebform._id
+            );
+          } else if (smallInputQuestions.length > 0 && preItem) {
+            await this.webformsService.webformAddQuestionWithoutUser(
               smallInputQuestions,
               createdWebform._id
             );
@@ -684,22 +753,32 @@ export class ItemCreationComponent implements OnInit {
               question.answerDefault = partsInAnswerDefault[0];
 
               try {
-                const results = await this.webformsService.webformAddQuestion(
-                  [question],
-                  createdWebform._id
-                );
+                const results = !preItem
+                  ? await this.webformsService.webformAddQuestion(
+                      [question],
+                      createdWebform._id
+                    )
+                  : await this.webformsService.webformAddQuestionWithoutUser(
+                      [question],
+                      createdWebform._id
+                    );
 
                 if (results && partsInAnswerDefault.length > 1) {
                   for (let i = 1; i < partsInAnswerDefault.length; i++) {
                     const questionId =
                       results.questions[results.questions.length - 1]._id;
                     const answerDefault = partsInAnswerDefault[i];
-                    const result =
-                      await this.webformsService.questionAddAnswerDefault(
-                        answerDefault,
-                        questionId,
-                        results._id
-                      );
+                    const result = !preItem
+                      ? await this.webformsService.questionAddAnswerDefault(
+                          answerDefault,
+                          questionId,
+                          results._id
+                        )
+                      : await this.webformsService.questionAddAnswerDefaultWithoutUser(
+                          answerDefault,
+                          questionId,
+                          results._id
+                        );
                   }
                 }
               } catch (error) {
@@ -711,14 +790,18 @@ export class ItemCreationComponent implements OnInit {
             }
           }
 
-          await this.webformsService.itemAddWebForm(
-            idOfCreatedItem,
-            createdWebform._id
-          );
+          if (idOfCreatedItem) {
+            await this.webformsService.itemAddWebForm(
+              idOfCreatedItem,
+              createdWebform._id
+            );
+          }
 
           unlockUI();
 
           this.webformsService.formCreationData = null;
+
+          return createdWebform._id;
         } else {
           //console.log('NO SE CREO');
           throw new Error('Ocurrió un error al crear el formulario');
@@ -730,6 +813,8 @@ export class ItemCreationComponent implements OnInit {
           duration: 3000,
         });
         console.error(error);
+
+        return null;
       }
     } /*else if(this.webform && this.item) {
       try {
@@ -894,7 +979,7 @@ export class ItemCreationComponent implements OnInit {
         unlockUI();
 
         this.webformsService.formCreationData = null;
-        this.router.navigate(['/admin/item-creation/' + this.item._id]);
+        this.router.navigate(['/ecommerce/item-management/' + this.item._id]);
       } catch (error) {
         unlockUI();
 
@@ -906,7 +991,7 @@ export class ItemCreationComponent implements OnInit {
     }*/
   }
 
-  saveTemporalItemInMemory() {
+  saveTemporalItemInMemory = () => {
     let images: ItemImageInput[] = this.itemSlides.map(
       (slide: SlideInput, index: number) => {
         return {
@@ -932,7 +1017,7 @@ export class ItemCreationComponent implements OnInit {
     };
 
     this.itemsService.temporalItemInput = itemInput;
-  }
+  };
 
   async saveItem() {
     let images: ItemImageInput[] = this.itemSlides.map(
@@ -965,6 +1050,103 @@ export class ItemCreationComponent implements OnInit {
     };
     this.itemsService.itemPrice = null;
 
+    if (!this.item && this.itemsService.createUserAlongWithItem) {
+      let fieldsToCreate: FormData = {
+        title: {
+          text: '¿Dónde recibirás las facturas y órdenes?',
+        },
+        fields: [
+          {
+            name: 'whatsapp',
+            placeholder: 'Escribe el WhatsApp..',
+            type: 'phone',
+            validators: [Validators.pattern(/[\S]/)],
+          },
+          {
+            name: 'email',
+            placeholder: 'Escribe el correo electrónico..',
+            type: 'email',
+            validators: [Validators.pattern(/[\S]/)],
+          },
+        ],
+      };
+
+      unlockUI();
+
+      const dialogRef = this.dialog.open(FormComponent, {
+        data: fieldsToCreate,
+        disableClose: true,
+      });
+
+      dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+        if (!result?.value['whatsapp'] && !result?.value['email']) {
+          this.snackbar.open('Error al crear el producto', 'Cerrar', {
+            duration: 4000,
+          });
+        } else {
+          const phone = result?.value['whatsapp']
+            ? result?.value['whatsapp'].e164Number.split('+')[1]
+            : null;
+          const email = result?.value['email'] ? result?.value['email'] : null;
+
+          if (result.controls.email.valid || result.controls.phone.valid) {
+            lockUI();
+
+            const createdItem = (
+              await this.itemsService.createPreItem(itemInput)
+            )?.createPreItem;
+
+            const queryParamsForRedirectionRoute: any = {
+              createdItem: createdItem._id,
+            };
+
+            if (this.itemsService.questionsToAddToItem.length) {
+              const createdWebformId = await this.createWebform(
+                this.itemsService.questionsToAddToItem,
+                null,
+                true
+              );
+
+              if (createdWebformId)
+                queryParamsForRedirectionRoute.createdWebformId =
+                  createdWebformId;
+              this.itemsService.questionsToAddToItem = [];
+            }
+
+            await this.authService.generateMagicLink(
+              phone || email,
+              '/admin/dashboard',
+              null,
+              'MerchantAccess',
+              {
+                jsondata: JSON.stringify(queryParamsForRedirectionRoute),
+              },
+              []
+            );
+
+            unlockUI();
+
+            this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: 'check-circle.svg',
+                showCloseButton: false,
+                message:
+                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+          } else {
+            unlockUI();
+            this.snackbar.open('Datos invalidos', 'Cerrar', {
+              duration: 3000,
+            });
+          }
+        }
+      });
+    }
+
     if (!this.item) {
       const createdItem = (await this.itemsService.createItem(itemInput))
         ?.createItem;
@@ -983,6 +1165,7 @@ export class ItemCreationComponent implements OnInit {
           this.itemsService.questionsToAddToItem,
           createdItem._id
         );
+        this.itemsService.questionsToAddToItem = [];
       }
     } else {
       await this.itemsService.updateItem(itemInput, this.item._id);
@@ -1065,41 +1248,86 @@ export class ItemCreationComponent implements OnInit {
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.router.url);
 
-    this.router.navigate(
-      [
-        'ecommerce/' +
-          this.merchantsService.merchantData.slug +
-          '/article-detail/item',
-      ],
-      {
+    if (this.merchantsService.merchantData) {
+      this.router.navigate(
+        [
+          'ecommerce/' +
+            this.merchantsService.merchantData.slug +
+            '/article-detail/item',
+        ],
+        {
+          queryParams: {
+            mode,
+            flow: this.flow,
+          },
+        }
+      );
+    } else {
+      this.router.navigate(['ecommerce/article-detail/item'], {
         queryParams: {
           mode,
           flow: this.flow,
         },
-      }
-    );
+      });
+    }
   }
 
   back() {
-    this.itemsService.temporalItem = null;
-    this.router.navigate(['admin/dashboard']);
+    if (
+      this.itemsService.createUserAlongWithItem &&
+      this.headerService.flowRouteForEachPage['florist-creating-item']
+    ) {
+      this.headerService.flowRoute =
+        this.headerService.flowRouteForEachPage['florist-creating-item'];
+      this.headerService.redirectFromQueryParams();
+    } else {
+      this.itemsService.temporalItem = null;
+      this.router.navigate(['admin/dashboard']);
+    }
   }
 
   goToReorderMedia() {
     this.saveTemporalItemInMemory();
 
     if (!this.item)
-      this.router.navigate(['admin/slides-editor'], {
+      this.router.navigate(['ecommerce/slides-editor-2'], {
         queryParams: {
           entity: 'item',
         },
       });
     else {
-      this.router.navigate(['admin/slides-editor/' + this.item._id], {
+      this.router.navigate(['ecommerce/slides-editor-2/' + this.item._id], {
         queryParams: {
           entity: 'item',
         },
       });
     }
   }
+
+  toggleItemVisibility = async (): Promise<boolean> => {
+    try {
+      lockUI();
+      this.itemsService.updateItem(
+        {
+          status: this.item.status === 'disabled' ? 'active' : 'disabled',
+        },
+        this.item._id
+      );
+
+      this.item.status =
+        this.item.status === 'disabled' ? 'active' : 'disabled';
+
+      unlockUI();
+
+      return true;
+    } catch (error) {
+      unlockUI();
+
+      console.log(error);
+      this.headerService.showErrorToast();
+      return false;
+    }
+
+    return false;
+  };
 }

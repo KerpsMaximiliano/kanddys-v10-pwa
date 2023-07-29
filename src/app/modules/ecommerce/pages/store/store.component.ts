@@ -313,14 +313,11 @@ export class StoreComponent implements OnInit {
     console.log(event.target.value);
     const value = event.target.value;
     setTimeout(() => {
-      // Obtener el valor del input de búsqueda
-      if (value !== '') {
-        console.log("Enviando keyword");
-        this.saleflowService.notifyTrigger({
-          triggerID: 'search',
-          data: value,
-        });
-      }
+      console.log("Enviando keyword");
+      this.saleflowService.notifyTrigger({
+        triggerID: 'search',
+        data: value
+      });
     }, 500);
   }
 

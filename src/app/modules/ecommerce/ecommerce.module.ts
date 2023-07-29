@@ -63,6 +63,8 @@ import { SupplierRegistrationComponent } from '../../shared/components/supplier-
 import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-creator.component';
 import { ConfirmQuotationComponent } from './pages/confirm-quotation/confirm-quotation.component';
 import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
+import { FormCreatorComponent } from 'src/app/shared/components/form-creator/form-creator.component';
+import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slides-editor/items-slides-editor.component';
 
 const routes: Routes = [
   {
@@ -185,6 +187,14 @@ const routes: Routes = [
     component: ItemCreationComponent,
   },
   {
+    path: 'webform-creator/:itemId',
+    component: FormCreatorComponent,
+  },
+  {
+    path: 'webform-creator',
+    component: FormCreatorComponent,
+  },
+  {
     path: 'inventory-creator',
     component: InventoryCreatorComponent,
   },
@@ -207,6 +217,26 @@ const routes: Routes = [
   {
     path: 'confirm-quotation/:quotationId',
     component: ConfirmQuotationComponent,
+  },
+  {
+    path: 'article-detail/:entity',
+    component: SymbolDetailComponent,
+  },
+  {
+    path: 'items-slides-editor-2',
+    component: ItemsSlidesEditorComponent,
+  },
+  {
+    path: 'items-slides-editor-2/:itemId',
+    component: ItemsSlidesEditorComponent,
+  },
+  {
+    path: 'slides-editor-2/:articleId',
+    component: QrEditComponent,
+  },
+  {
+    path: 'slides-editor-2',
+    component: QrEditComponent,
   },
   {
     path: ':merchantSlug',

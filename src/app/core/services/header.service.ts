@@ -114,6 +114,8 @@ export class HeaderService {
   ecommerceDataLoaded = new Subject<boolean>();
   navigationTabState: any = null;
   redirectFromFlowRoute: boolean = false;
+  flowRouteForEachPage: Record<string, string> = {};
+
 
   public session: Session;
   constructor(

@@ -340,7 +340,7 @@ export class ManageTagComponent implements OnInit, OnDestroy {
 
               this.headerService.flowRoute = null;
               localStorage.removeItem('flowRoute');
-              this.router.navigate(['admin/item-creation/' + this.entityId], {
+              this.router.navigate(['ecommerce/item-management/' + this.entityId], {
                 queryParams: {
                   tagsAsignationOnStart: true,
                 },
@@ -385,7 +385,7 @@ export class ManageTagComponent implements OnInit, OnDestroy {
           if (this.entity === 'item') {
             this.headerService.flowRoute = null;
             localStorage.removeItem('flowRoute');
-            this.router.navigate(['admin/item-creation/' + this.entityId]);
+            this.router.navigate(['ecommerce/item-management/' + this.entityId]);
           }
           if (!this.entity) this.router.navigate(['admin/items-dashboard']);
         }

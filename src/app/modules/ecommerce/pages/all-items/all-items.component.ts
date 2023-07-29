@@ -160,7 +160,7 @@ export class AllItemsComponent implements OnInit {
       }
     }
 
-    const topBar = document.querySelector('.top-bar') as HTMLElement;
+    const topBar = document.querySelector('.input-container') as HTMLElement;
 
     if (page.scrollTop > 10 && topBar) {
       topBar.style.display = 'none';
