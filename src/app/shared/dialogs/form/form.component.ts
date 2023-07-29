@@ -69,7 +69,7 @@ export class FormComponent implements OnInit {
   ngOnInit(): void {
     this.formGroup = this.fb.group({});
 
-    if(!this.data.automaticallyFocusFirstField) {
+    if (!this.data.automaticallyFocusFirstField) {
       this.data.automaticallyFocusFirstField = true;
     }
 
@@ -117,7 +117,7 @@ export class FormComponent implements OnInit {
     }
 
     setTimeout(() => {
-      if(this.data.automaticallyFocusFirstField && firstEditableFieldFound) {
+      if (this.data.automaticallyFocusFirstField && firstEditableFieldFound) {
         (document.querySelector(firstEditableFieldId) as HTMLElement).focus();
       }
     }, 300);
@@ -173,12 +173,33 @@ export class FormComponent implements OnInit {
   onBackButtonPress(event: PopStateEvent) {
     // Add your custom logic here for what should happen when the back button is pressed.
     // For example, you can navigate to a different route or show a confirmation dialog.
-    console.log("boton de ir hacia atras presionado")
+    console.log('boton de ir hacia atras presionado');
     if (
       this.keyboardVisible &&
       this.viewportRuler.getViewportRect().width <= 500
     ) {
       this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
     }
+  }
+
+  updateDialogPosition() {
+    const container = document.querySelector(
+      '.cdk-overlay-container'
+    ) as HTMLElement;
+    const dialog = document.querySelector(
+      '#' + this.dialogRef.id
+    ) as HTMLElement;
+
+    const containerRect = container.getBoundingClientRect();
+    const dialogRect = dialog.getBoundingClientRect();
+
+    console.log(containerRect, dialogRect)
+
+    this.dialogRef.updatePosition({
+      top:
+        (containerRect.height - dialogRect.height) / 2 +
+        containerRect.top +
+        'px',
+    });
   }
 }

@@ -97,8 +97,8 @@ export class ItemSelectorComponent implements OnInit {
           createQuotationFromExistingQuotation,
           updatingTemporalQuotation,
         }) => {
-          console.log("this.router.url", this.router.url);
-          console.log("queryParams", this.route.queryParams);
+          console.log('this.router.url', this.router.url);
+          console.log('queryParams', this.route.queryParams);
 
           this.supplierMode = JSON.parse(supplierMode || 'false');
           this.createQuotationFromExistingQuotation = JSON.parse(
@@ -347,6 +347,12 @@ export class ItemSelectorComponent implements OnInit {
   }
 
   back() {
+    if (this.headerService.flowRouteForEachPage['quotations-link']) {
+      this.headerService.redirectFromQueryParams();
+
+      delete this.headerService.flowRouteForEachPage['quotations-link'];
+    }
+
     this.location.back();
   }
 
@@ -468,10 +474,12 @@ export class ItemSelectorComponent implements OnInit {
                   this.quotationService.selectedTemporalQuotation =
                     temporalQuotations[foundIndex];
 
-                    localStorage.setItem(
-                      'selectedTemporalQuotation',
-                      JSON.stringify(this.quotationService.selectedTemporalQuotation)
-                    );                
+                  localStorage.setItem(
+                    'selectedTemporalQuotation',
+                    JSON.stringify(
+                      this.quotationService.selectedTemporalQuotation
+                    )
+                  );
 
                   localStorage.setItem(
                     'temporalQuotations',
@@ -543,7 +551,7 @@ export class ItemSelectorComponent implements OnInit {
     this.itemsService.temporalItemInput = {
       name: item.name,
       layout: item.layout,
-      description: item.description
+      description: item.description,
     };
     this.itemsService.temporalItem = item;
 

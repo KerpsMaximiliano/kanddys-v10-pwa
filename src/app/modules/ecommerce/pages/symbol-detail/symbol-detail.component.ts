@@ -206,8 +206,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit() {
-    const element = this.elementRef.nativeElement.querySelector('.container'); // Replace with the appropriate CSS class or ID of your <div> element
-    const excludedRegion = element.querySelector('.description');
+    const element = this.elementRef.nativeElement.querySelector('.container');
 
     const hammertime = new Hammer(element);
     hammertime.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
