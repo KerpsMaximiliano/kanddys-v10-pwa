@@ -97,6 +97,9 @@ export class ItemSelectorComponent implements OnInit {
           createQuotationFromExistingQuotation,
           updatingTemporalQuotation,
         }) => {
+          console.log("this.router.url", this.router.url);
+          console.log("queryParams", this.route.queryParams);
+
           this.supplierMode = JSON.parse(supplierMode || 'false');
           this.createQuotationFromExistingQuotation = JSON.parse(
             createQuotationFromExistingQuotation || 'false'
@@ -464,6 +467,11 @@ export class ItemSelectorComponent implements OnInit {
                   this.quotationService.temporalQuotations = temporalQuotations;
                   this.quotationService.selectedTemporalQuotation =
                     temporalQuotations[foundIndex];
+
+                    localStorage.setItem(
+                      'selectedTemporalQuotation',
+                      JSON.stringify(this.quotationService.selectedTemporalQuotation)
+                    );                
 
                   localStorage.setItem(
                     'temporalQuotations',

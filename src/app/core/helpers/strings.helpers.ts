@@ -165,10 +165,9 @@ export function updateQueryParam(
   return urlObj.pathname + urlObj.search;
 }
 
-export function truncateString(input: string, maxLength: number): string {
+export function truncateString(input: string, maxLength: number, dots: number = 3): string {
   if (input.length <= maxLength) {
     return input;
   }
-
-  return input.substring(0, maxLength) + "...";
+  return `${input.substring(0, maxLength)}${'.'.repeat(dots)}`;
 }

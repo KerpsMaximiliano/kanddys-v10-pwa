@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 //Helper functions
-import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import { formatID, isVideo, truncateString } from 'src/app/core/helpers/strings.helpers';
 import {
   isVideoPlaying,
   playVideoNoFullscreen,
@@ -158,6 +158,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   routeParams: any;
   supplierPreview: any;
   playVideo = playVideoNoFullscreen;
+  truncateString = truncateString;
   addedItemToQuotation: boolean = false;
   defaultCtaText: string = 'Agregar al carrito';
   defaultCtaRemoveText: string = 'Quitar del carrito';
@@ -191,6 +192,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       async (routeParams) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
           async (queryParams) => {
+            console.log("INICIALIZANDO SYMBOL DETAIL");
+
             this.routeParams = routeParams;
             this.queryParams = queryParams;
 
@@ -575,6 +578,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     const prevIndex = this.currentMediaSlide;
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
 
+    console.log(this.currentMediaSlide);
+
     if (this.genericModelTemplate.slides[prevIndex].type === 'VIDEO') {
       this.playCurrentSlideVideo('media' + prevIndex);
     }
@@ -772,7 +777,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     if (this.mode === 'preview') {
       this.itemsService.itemUrls = [];
       return this.router.navigate([
-        `/admin/item-creation/${this.itemData._id}`,
+        `/ecommerce/item-management/${this.itemData._id}`,
       ]);
     }
     if (this.mode === 'image-preview') {

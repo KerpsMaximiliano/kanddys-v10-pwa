@@ -39,6 +39,7 @@ export class NavigationComponent implements OnInit {
   quotations: Array<Quotation> = [];
   loggedUser: boolean = false;
   isCurrentUserASupplier: boolean = false;
+  activeTabIndex: number = 0;
 
   tabName = {
     CLUB: 'El Club',
@@ -58,7 +59,14 @@ export class NavigationComponent implements OnInit {
     headerText: string;
     text: string;
     active?: boolean;
-    links?: Array<any>;
+    links?: Array<{
+      text: string;
+      routerLink: Array<string>;
+      possibleRedirection?: Array<string>;
+      queryParams?: Record<string, any>;
+      possibleRedirectionQueryParams?: Record<string, any>;
+      hardcodedURL?: string;
+    }>;
     textList?: Array<{
       title?: string;
       content: string;
@@ -122,7 +130,7 @@ export class NavigationComponent implements OnInit {
         {
           title: 'Ventas por WhatsApp',
           content:
-            'Sube tus productos fácilmente y vende directamente a través de WhatsApp.Conecta con tus clientes donde ya se encuentran.',
+            'Sube tus productos fácilmente y vende directamente a través de WhatsApp. Conecta con tus clientes donde ya se encuentran.',
         },
         {
           title: 'Experiencia Mejorada para tus Clientes',
@@ -160,9 +168,9 @@ export class NavigationComponent implements OnInit {
             'Informa a tus clientes sobre el estado de su pedido a través de WhatsApp, proporcionando un servicio transparente y eficiente.',
         },
         {
-          title: '',
+          title: 'Giftcards de terceros',
           content:
-            'Giftcards de terceros (para que seas tu quien colabores y comisiones con spas, salones y restaurantes).',
+            'Para que seas tu quien colabores y comisiones con spas, salones y restaurantes.',
         },
       ],
     },
@@ -175,7 +183,18 @@ export class NavigationComponent implements OnInit {
         {
           text: 'Mi KiosKo 💰',
           routerLink: ['/admin/dashboard'],
-        },/*
+        },
+        {
+          text: 'Carritos de proveedores',
+          routerLink: ['/ecommerce/supplier-items-selector'],
+        } /*
+        {
+          text: 'Carritos de compradores',
+          routerLink: ['/ecommerce/supplier-items-selector'],
+          queryParams: {
+            createOrder: true,
+          },
+        }*/ /*
         {
           text: 'Recompensa a compradores ✨',
           routerLink: ['/admin/tba'],
@@ -226,7 +245,7 @@ export class NavigationComponent implements OnInit {
           text: 'Mis suplidores (compras y cotizaciones)',
           routerLink: ['/ecommerce/supplier-items-selector'],
           possibleRedirection: ['/ecommerce/quotations'],
-        },*/
+        },*/,
       ],
       textList: [
         {
@@ -260,19 +279,15 @@ export class NavigationComponent implements OnInit {
         {
           text: 'Mi KiosKo 💰',
           routerLink: ['/admin/dashboard'],
-        },
+          queryParams: {
+            supplierMode: true,
+          },
+          hardcodedURL: '/admin/dashboard?supplierMode=true',
+        } /*
         {
           text: 'Carritos de compradores',
-          routerLink: ['/admin/tba'],
-        },
-        {
-          text: 'Tengo un problema',
-          routerLink: ['/admin/tba'],
-        },
-        {
-          text: 'Boletín del Genio 🧞‍♂️',
-          routerLink: ['/admin/tba'],
-        },
+          routerLink: ['/ecommerce/supplier-items-selector'],
+        },*/,
       ],
       textList: [
         {
@@ -292,7 +307,11 @@ export class NavigationComponent implements OnInit {
         button: {
           text: 'Administración de mis artículos',
           callback: () => {
-            this.router.navigate(['/admin/dashboard']);
+            this.router.navigate(['/admin/dashboard'], {
+              queryParams: {
+                supplierMode: true,
+              },
+            });
           },
         },
       },
@@ -410,7 +429,7 @@ export class NavigationComponent implements OnInit {
       }
     }
 
-    console.log("this.isCurrentUserASupplier", this.isCurrentUserASupplier);
+    console.log('this.isCurrentUserASupplier', this.isCurrentUserASupplier);
 
     if (!this.isCurrentUserASupplier) {
       //tab proveedor no registrado
@@ -418,8 +437,13 @@ export class NavigationComponent implements OnInit {
         button: {
           text: 'Sube los artículos que te comprarán las floristerias',
           callback: () => {
-            console.log(
-              'Comenzar flow de creacion de articulo para un proveedor'
+            return this.router.navigate(
+              ['/ecommerce/supplier-items-selector'],
+              {
+                queryParams: {
+                  supplierMode: true,
+                },
+              }
             );
           },
         },
@@ -444,33 +468,55 @@ export class NavigationComponent implements OnInit {
 
     let activeTabIndex = 0;
 
+    let urlAlreadyFound: Record<string, boolean> = {};
+
     this.tabs.forEach((tab, tabIndex) => {
       const isCurrentURLInCurrentTab = tab.links.find((link, linkIndex) => {
+        const doesCurrentURLHaveQueryParams = this.router.url.includes('?');
+
         const doesRouterLinkMatchCurrentURL =
-          JSON.stringify(link.routerLink.join('/')) ===
-          JSON.stringify(this.router.url);
+          doesCurrentURLHaveQueryParams && link.queryParams && link.hardcodedURL
+            ? link.hardcodedURL === this.router.url
+            : !link.queryParams &&
+              JSON.stringify(link.routerLink.join('/')) ===
+                JSON.stringify(this.router.url);
+
         const doesPossibleRedirectionRouterLinkMatchURL =
-          link.possibleRedirection &&
-          JSON.stringify(link.possibleRedirection.join('/')) ===
-            JSON.stringify(this.router.url);
+          doesCurrentURLHaveQueryParams &&
+          link.possibleRedirectionQueryParams &&
+          link.hardcodedURL
+            ? link.hardcodedURL === this.router.url
+            : !link.possibleRedirectionQueryParams &&
+              link.possibleRedirection &&
+              JSON.stringify(link.possibleRedirection.join('/')) ===
+                JSON.stringify(this.router.url);
 
         if (doesPossibleRedirectionRouterLinkMatchURL) {
           this.tabs[tabIndex].links[linkIndex].routerLink =
             link.possibleRedirection;
+
+          if (link.possibleRedirectionQueryParams && link.hardcodedURL) {
+            this.tabs[tabIndex].links[linkIndex].queryParams =
+              link.possibleRedirectionQueryParams;
+          }
         }
 
-        return (
-          doesRouterLinkMatchCurrentURL ||
-          doesPossibleRedirectionRouterLinkMatchURL
-        );
+        if (!urlAlreadyFound[this.router.url]) {
+          return (
+            doesRouterLinkMatchCurrentURL ||
+            doesPossibleRedirectionRouterLinkMatchURL
+          );
+        }
       });
 
       if (isCurrentURLInCurrentTab) activeTabIndex = tabIndex;
     });
 
     this.tabs.forEach((tab, tabIndex) => {
-      if (tabIndex === activeTabIndex) this.tabs[activeTabIndex].active = true;
-      else this.tabs[tabIndex].active = false;
+      if (tabIndex === activeTabIndex) {
+        this.tabs[activeTabIndex].active = true;
+        this.activeTabIndex = activeTabIndex;
+      } else this.tabs[tabIndex].active = false;
     });
 
     if (this.merchantsService.merchantData) {
@@ -529,9 +575,12 @@ export class NavigationComponent implements OnInit {
             result?.value[field.fieldKey] &&
             result?.controls[field.fieldKey].valid
           ) {
+            this.itemsService.createUserAlongWithItem = true;
             this.itemsService.temporalItemInput[field.fieldName] =
               result?.value[field.fieldKey];
 
+            this.headerService.flowRouteForEachPage['florist-creating-item'] =
+              this.router.url;
             this.router.navigate(['/ecommerce/item-management']);
           } else {
             this.headerService.showErrorToast();

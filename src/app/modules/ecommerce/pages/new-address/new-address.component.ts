@@ -341,6 +341,8 @@ export class NewAddressComponent implements OnInit {
 
     //console.log('this.headerService.user', this.headerService.user);
 
+    console.log(this.headerService.user, save)
+
     if (save && !this.headerService.user) {
       // this.authSelect('address');
 

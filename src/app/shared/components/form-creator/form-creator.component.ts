@@ -198,6 +198,10 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (itemId && !isUserTheOwner) this.router.navigate(['/auth/login']);
 
+        if(this.webformsService.formCreationData?.steps?.length === 0) {
+          this.webformsService.formCreationData = null;
+        } 
+
         if (itemId && !formId && this.item.webForms?.length > 0)
           formId = this.item.webForms[0].reference;
         if (this.webformsService.formCreationData === null && !formId) {
@@ -218,6 +222,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (formId) this.webform = await this.webformsService.webform(formId);
         } else if (this.webformsService.formCreationData === null && formId) {
+
           const isFormPartOfTheRoutesItem = this.item.webForms.find(
             (form) => form.reference === formId
           );
@@ -879,7 +884,8 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.item) {
       this.itemsService.questionsToAddToItem = questionsToAdd;
 
-      this.router.navigate(['admin/item-creation']);
+      this.router.navigate(['ecommerce/item-management']);
+      //this.router.navigate(['ecommerce/item-management']);
     }
 
     let createdWebform = null;
@@ -971,7 +977,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           unlockUI();
 
           this.webformsService.formCreationData = null;
-          this.router.navigate(['/admin/item-creation/' + this.item._id]);
+          this.router.navigate(['/ecommerce/item-management/' + this.item._id]);
         } else {
           //console.log('NO SE CREO');
           throw new Error('Ocurrió un error al crear el formulario');
@@ -1147,7 +1153,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         unlockUI();
 
         this.webformsService.formCreationData = null;
-        this.router.navigate(['/admin/item-creation/' + this.item._id]);
+        this.router.navigate(['/ecommerce/item-management/' + this.item._id]);
       } catch (error) {
         unlockUI();
 
@@ -1318,7 +1324,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   back() {
-    this.router.navigate(['/admin/item-creation/' + this.item?._id]);
+    this.router.navigate(['/ecommerce/item-management/' + this.item?._id]);
   }
 
   redirectToMediaUploadPage(optionIndex: number) {

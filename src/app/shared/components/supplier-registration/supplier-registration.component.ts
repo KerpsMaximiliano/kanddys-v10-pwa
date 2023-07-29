@@ -707,7 +707,11 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         });
       }
 
-      this.router.navigate(['/admin/dashboard']);
+      this.router.navigate(['/admin/dashboard'], {
+        queryParams: {
+          supplierMode: true
+        }
+      });
     } catch (error) {
       console.error(error);
       this.snackbar.open('Error al crear/actualizar los productos', 'Cerrar', {
