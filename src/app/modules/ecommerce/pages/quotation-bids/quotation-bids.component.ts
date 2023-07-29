@@ -410,6 +410,12 @@ export class QuotationBidsComponent implements OnInit {
 
         this.createTemporalQuotationBasedOnCurrentQuotation(quotationInput);
 
+        this.router.navigate(['/ecommerce/supplier-items-selector/'], {
+          queryParams: {
+            updatingTemporalQuotation: true,
+          },
+        });
+
         this.matSnackBar.open('Se ha creado un carrito nuevo!', 'Cerrar', {
           duration: 3000,
         });

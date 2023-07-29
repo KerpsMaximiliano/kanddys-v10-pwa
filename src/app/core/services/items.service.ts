@@ -76,9 +76,10 @@ export class ItemsService {
   itemDesc: string;
   itemPassword: string;
   editingImageId: string;
-  editingSlide: number;
+  editingSlide: number = null;
   questionsToAddToItem: Array<ExtendedQuestionInput> = [];
   modifiedImagesFromExistingItem: boolean = false;
+  createUserAlongWithItem: boolean = false;
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;

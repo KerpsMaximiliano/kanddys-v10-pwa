@@ -191,6 +191,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       async (routeParams) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
           async (queryParams) => {
+            console.log("INICIALIZANDO SYMBOL DETAIL");
+
             this.routeParams = routeParams;
             this.queryParams = queryParams;
 
@@ -772,7 +774,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     if (this.mode === 'preview') {
       this.itemsService.itemUrls = [];
       return this.router.navigate([
-        `/admin/item-creation/${this.itemData._id}`,
+        `/ecommerce/item-management/${this.itemData._id}`,
       ]);
     }
     if (this.mode === 'image-preview') {

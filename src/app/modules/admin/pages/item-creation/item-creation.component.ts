@@ -799,7 +799,7 @@ export class ItemCreationComponent implements OnInit {
         unlockUI();
 
         this.webformsService.formCreationData = null;
-        this.router.navigate(['/admin/item-creation/' + this.item._id]);
+        this.router.navigate(['/ecommerce/item-management/' + this.item._id]);
       } catch (error) {
         unlockUI();
 

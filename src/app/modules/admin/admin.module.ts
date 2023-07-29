@@ -425,10 +425,11 @@ const routes: Routes = [
     path: 'order-process/:merchantId',
     component: OrderProcessComponent,
   },
+  /*
   {
     path: 'article-detail/:articleId',
     component: ArticleDetailComponent,
-  },
+  },*/
   {
     path: 'reportings',
     component: ReportingsComponent,
