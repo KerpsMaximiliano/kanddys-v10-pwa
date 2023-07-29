@@ -101,7 +101,10 @@
       (mouseleave)="stopDragging()"
       (mousemove)="moveEvent($event, elemt)"
     >
-      <input placeholder="Buscar.." />
+      <input 
+        placeholder="Buscar.."
+        (keyup)="onKeywordSearch($event)"
+      />
       <div class="input-items">
         <!-- <div class="icon-button">⏰</div> -->
         <div class="icon-button" (click)="openPriceRangeDialog()">💰</div>

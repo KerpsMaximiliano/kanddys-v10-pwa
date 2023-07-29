@@ -94,7 +94,7 @@ main {
   margin-bottom: 14px;
   color: #fff;
   text-align: center;
-  font-size: 15px;
+  font-size: 23px;
   font-family: InterRegular;
   font-weight: normal;
   overflow: hidden;
@@ -107,6 +107,10 @@ main {
   &.expanded {
     margin: 0px;
     margin-bottom: 14px;
+  }
+
+  &.small {
+    font-size: 15px !important;
   }
 }
 
@@ -182,4 +186,8 @@ video {
 
 .add-to-cart {
   cursor: pointer;
+}
+
+.hidden {
+  opacity: 0;
 }

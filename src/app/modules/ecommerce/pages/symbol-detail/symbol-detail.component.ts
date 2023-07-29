@@ -17,11 +17,17 @@ import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 //Helper functions
-import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  formatID,
+  isVideo,
+  truncateString,
+} from 'src/app/core/helpers/strings.helpers';
 import {
   isVideoPlaying,
+  lockUI,
   playVideoNoFullscreen,
   playVideoOnFullscreen,
+  unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
 
 //Imported models
@@ -158,10 +164,12 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   routeParams: any;
   supplierPreview: any;
   playVideo = playVideoNoFullscreen;
+  truncateString = truncateString;
   addedItemToQuotation: boolean = false;
   defaultCtaText: string = 'Agregar al carrito';
   defaultCtaRemoveText: string = 'Quitar del carrito';
   supplierItem: boolean = false;
+  supplierItemInSaleflow: boolean = false;
   supplierViewer: boolean = false;
 
   fromQR: boolean = false;
@@ -191,8 +199,6 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       async (routeParams) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
           async (queryParams) => {
-            console.log("INICIALIZANDO SYMBOL DETAIL");
-
             this.routeParams = routeParams;
             this.queryParams = queryParams;
 
@@ -232,12 +238,13 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     await this.verifyIfUserIsLogged();
     const validEntities = ['item', 'post', 'template', 'collection'];
     const { entity, entityId } = this.routeParams;
-    const { mode, redirectTo, supplierPreview, supplierViewer } = this.queryParams;
+    const { mode, redirectTo, supplierPreview, supplierViewer } =
+      this.queryParams;
 
     this.entityPresentation = mode;
     this.redirectTo = redirectTo;
     this.supplierPreview = supplierPreview;
-    this.supplierViewer = JSON.parse(supplierViewer || 'false')
+    this.supplierViewer = JSON.parse(supplierViewer || 'false');
 
     if (
       this.entityPresentation === 'DEMO' ||
@@ -323,6 +330,17 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           this.quotationsService.selectedItemsForQuotation.findIndex(
             (itemId) => itemId === this.itemData._id
           );
+
+        const doesThisItemExistInCurrentSaleflow =
+          this.headerService.saleflow?.items?.find(
+            (item) => item.item._id === this.itemData._id
+          );
+
+        this.supplierItemInSaleflow = doesThisItemExistInCurrentSaleflow
+          ? true
+          : !this.headerService.saleflow || this.supplierPreview
+          ? true
+          : false;
 
         if (foundItemIndex < 0) {
           this.addedItemToQuotation = false;
@@ -575,6 +593,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   updateCurrentSlideData(event: any) {
     const prevIndex = this.currentMediaSlide;
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+
+    console.log(this.currentMediaSlide);
 
     if (this.genericModelTemplate.slides[prevIndex].type === 'VIDEO') {
       this.playCurrentSlideVideo('media' + prevIndex);
@@ -868,7 +888,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     }, 500);
   }
 
-  saveProduct() {
+  async saveProduct() {
     if (this.itemData.type === 'supplier') {
       const foundItemIndex =
         this.quotationsService.selectedItemsForQuotation.findIndex(
@@ -886,6 +906,17 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           foundItemIndex,
           1
         );
+      }
+
+      if (this.quotationsService.quotationToUpdate) {
+        lockUI()
+        await this.quotationsService.updateQuotation(
+          {
+            items: this.quotationsService.selectedItemsForQuotation,
+          },
+          this.quotationsService.quotationToUpdate._id
+        );
+        unlockUI();
       }
 
       return;
