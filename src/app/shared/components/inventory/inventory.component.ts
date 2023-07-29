@@ -202,12 +202,12 @@ export class InventoryComponent implements OnInit {
                 this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
               if (isUserAMerchant) {
-                this.router.navigate(['admin/item-creation']);
+                this.router.navigate(['ecommerce/item-management']);
               } else {
                 this.matDialog.open(LoginDialogComponent, {
                   data: {
                     magicLinkData: {
-                      redirectionRoute: `admin/item-creation`,
+                      redirectionRoute: `ecommerce/item-management`,
                       entity: 'MerchantAccess',
                       redirectionRouteId: null,
                       overWriteDefaultEntity: true,

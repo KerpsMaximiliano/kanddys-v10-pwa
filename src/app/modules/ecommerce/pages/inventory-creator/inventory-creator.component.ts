@@ -171,7 +171,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
                 if (supplierSpecificItems?.length > 0) {
                   this.router.navigate([
-                    '/admin/item-creation/' + supplierSpecificItems[0]._id,
+                    '/ecommerce/item-management/' + supplierSpecificItems[0]._id,
                   ]);
                 }
 
@@ -296,7 +296,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         };
 
         if (this.itemSlides.length === 1 && !file.type.includes('video')) {
-          routeForItemEntity = 'admin/items-slides-editor';
+          routeForItemEntity = 'ecommerce/items-slides-editor-2';
 
           if (this.existingItem && this.itemId)
             routeForItemEntity += '/' + this.itemId;
@@ -308,7 +308,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           this.itemSlides.length === 1 &&
           file.type.includes('video')
         ) {
-          routeForItemEntity = 'admin/slides-editor';
+          routeForItemEntity = 'ecommerce/slides-editor-2';
           queryParams.addEditingImageToExistingItem =
             this.existingItem && this.itemId && this.updateItem;
 
@@ -324,7 +324,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
           if (this.updateItem) routeForItemEntity += '/' + this.itemId;
         } else if (this.itemSlides.length > 1) {
-          routeForItemEntity = 'admin/slides-editor';
+          routeForItemEntity = 'ecommerce/slides-editor-2';
 
           if (this.updateItem) routeForItemEntity += '/' + this.itemId;
         }
@@ -338,7 +338,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             queryParams,
           });
         } else if (fileList.length > 1 && i === fileList.length - 1) {
-          this.router.navigate(['admin/slides-editor'], {
+          this.router.navigate(['ecommerce/slides-editor-2'], {
             queryParams,
           });
         }
@@ -367,12 +367,12 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         useSlidesInMemory: false,
       };
 
-      return this.router.navigate(['admin/slides-editor/' + this.itemId], {
+      return this.router.navigate(['ecommerce/slides-editor-2/' + this.itemId], {
         queryParams,
       });
     }
 
-    this.router.navigate(['admin/slides-editor'], {
+    this.router.navigate(['ecommerce/slides-editor-2'], {
       queryParams: {
         entity: 'item',
         redirectFromFlowRoute: true,

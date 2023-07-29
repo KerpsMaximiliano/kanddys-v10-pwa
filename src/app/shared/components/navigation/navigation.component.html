@@ -24,7 +24,7 @@
 
       <div class="nav-container">
         <nav *ngIf="!(!headerService.user && tabs[0].active)">
-          <ng-container *ngFor="let tab of tabs">
+          <ng-container *ngFor="let tab of tabs; let i = index">
             <section *ngIf="tab.active">
               <ng-container *ngIf="loggedUser">
                 <ng-container *ngIf="tab.text !== tabName['CLUB']">
@@ -53,9 +53,13 @@
                     <ul>
                       <ng-container *ngFor="let link of tab.links">
                         <li routerLinkActive="active">
+
                           <a
                             mat-button
                             [routerLink]="link.routerLink"
+                            [queryParams]="
+                              link.queryParams ? link.queryParams : null
+                            "
                             style="padding: 0px"
                           >
                             {{ link.text }}
