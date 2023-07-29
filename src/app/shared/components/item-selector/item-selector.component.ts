@@ -468,6 +468,11 @@ export class ItemSelectorComponent implements OnInit {
                   this.quotationService.selectedTemporalQuotation =
                     temporalQuotations[foundIndex];
 
+                    localStorage.setItem(
+                      'selectedTemporalQuotation',
+                      JSON.stringify(this.quotationService.selectedTemporalQuotation)
+                    );                
+
                   localStorage.setItem(
                     'temporalQuotations',
                     JSON.stringify(temporalQuotations)

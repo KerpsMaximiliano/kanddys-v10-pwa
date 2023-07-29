@@ -205,7 +205,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               ],
               stock: [
                 this.itemsService.temporalItemInput?.stock || '',
-                Validators.compose([Validators.required]),
+                Validators.compose([Validators.required, Validators.min(1)]),
               ],
               notificationStockLimit: [
                 this.itemsService.temporalItemInput?.notificationStockLimit ||

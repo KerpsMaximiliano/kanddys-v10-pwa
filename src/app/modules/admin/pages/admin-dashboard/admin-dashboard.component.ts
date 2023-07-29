@@ -409,7 +409,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             }
   
             unlockUI();
-            window.location.href = environment.uri + '/admin/dashboard';
+            window.location.href = environment.uri + '/admin/dashboard?supplierMode=true';
           } catch (error) {
             unlockUI();
   
