@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 //Helper functions
-import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import { formatID, isVideo, truncateString } from 'src/app/core/helpers/strings.helpers';
 import {
   isVideoPlaying,
   playVideoNoFullscreen,
@@ -158,6 +158,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   routeParams: any;
   supplierPreview: any;
   playVideo = playVideoNoFullscreen;
+  truncateString = truncateString;
   addedItemToQuotation: boolean = false;
   defaultCtaText: string = 'Agregar al carrito';
   defaultCtaRemoveText: string = 'Quitar del carrito';
@@ -576,6 +577,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   updateCurrentSlideData(event: any) {
     const prevIndex = this.currentMediaSlide;
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+
+    console.log(this.currentMediaSlide);
 
     if (this.genericModelTemplate.slides[prevIndex].type === 'VIDEO') {
       this.playCurrentSlideVideo('media' + prevIndex);

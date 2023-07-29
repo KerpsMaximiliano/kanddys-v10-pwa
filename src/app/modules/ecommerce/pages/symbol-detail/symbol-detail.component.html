@@ -9,6 +9,10 @@
       style="cursor: pointer"
       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/back.svg"
       alt="go back to previous slide"
+      [ngClass]="
+        !(genericModelTemplate?.slides?.length > 1 &&
+        currentMediaSlide > 0) ? 'hidden' : ''
+      "
     />
 
     <img
@@ -23,6 +27,10 @@
       style="cursor: pointer"
       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/next.svg"
       alt="go to next slide"
+      [ngClass]="
+        !(genericModelTemplate?.slides?.length > 1 &&
+        currentMediaSlide !== genericModelTemplate?.slides?.length - 1) ? 'hidden' : ''
+      "
     />
   </header>
 
@@ -150,11 +158,11 @@
       </h1>
 
       <h1
-        class="title"
-        *ngIf="!genericModelTemplate.title && genericModelTemplate.description"
+        class="title small"
+        *ngIf="genericModelTemplate.description"
         (click)="zoomOutOrZoomInDetails()"
       >
-        {{ genericModelTemplate.description }}
+        {{ truncateString(genericModelTemplate?.description, 48, 2) }}
       </h1>
 
       <ng-container
