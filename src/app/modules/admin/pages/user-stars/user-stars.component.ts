@@ -6,14 +6,16 @@ import { WalletService } from 'src/app/core/services/wallet.service';
 @Component({
   selector: 'app-user-stars',
   templateUrl: './user-stars.component.html',
-  styleUrls: ['./user-stars.component.scss']
+  styleUrls: ['./user-stars.component.scss'],
 })
 export class UserStarsComponent implements OnInit {
   merchant: any = {};
   currencyId;
   walletCurrencies: any = [];
   merchantFunctionality: any = { reward: {} };
-  walletUserStarsList:any = []
+  walletUserStarsList: any = [];
+  openNavigation = false;
+  totalStars = 0;
   constructor(
     private merchantService: MerchantsService,
     private walletService: WalletService,
@@ -23,7 +25,6 @@ export class UserStarsComponent implements OnInit {
   async ngOnInit() {
     await this.merchantDefault();
     await this.walletUserStars();
-
   }
 
   async merchantDefault() {
@@ -39,41 +40,61 @@ export class UserStarsComponent implements OnInit {
     if (result != undefined) this.currencyId = result.buyer?._id;
   }
 
-  async walletUserStars(){
-    let result = await this.walletService.walletsUserStar("buyer",{options:
-    {
-      sortBy:"createdAt:desc"
-    }});
-    if(result!=undefined) {
-
+  async walletUserStars() {
+    let result = await this.walletService.walletsUserStar('buyer', {
+      options: {
+        sortBy: 'createdAt:desc',
+      },
+    });
+    if (result != undefined) {
       this.walletUserStarsList = result;
-      this.walletUserStarsList.forEach(async element => {
+      result.forEach((element) => {
+        this.totalStars += element.metadata?.usesStars || 0;
+      });
+      this.walletUserStarsList.forEach(async (element) => {
         console.log(element);
-        element.orderIncomes =  await this.orderIncomes(element.owner);
+        element.orderIncomes = await this.orderIncomes(element.owner);
       });
     }
   }
 
   getText(wallet) {
     return (
-    
       (
         wallet.merchantFuncionality?.reward?.buyersLimit -
-        wallet.metadata?.usesStars || 0 
+          wallet.metadata?.usesStars || 0
       ).toString() +
       ' por acomular para el descuento de ' +
-      wallet.merchantFuncionality?.reward?.buyersLimit
+      (wallet.merchantFuncionality?.reward?.amountBuyer != undefined
+        ? wallet.merchantFuncionality?.reward?.amountBuyer
+        : 0)
     );
   }
 
-  getPercentage(wallet){
-    return 100- (wallet.merchantFuncionality?.reward?.buyersLimit -
-     wallet.metadata?.usesStars || 0) *100/ (wallet.merchantFuncionality?.reward?.buyersLimit || 1)
-   }
+  getPercentage(wallet) {
+    if (
+      wallet.metadata == undefined ||
+      wallet.metadata == null ||
+      Number.isNaN(wallet.metadata.usesStars) ||
+      wallet.merchantFuncionality?.reward == null ||
+      wallet.merchantFuncionality?.reward == undefined
+    )
+      return 0;
+    let value =
+      100 -
+      ((wallet.merchantFuncionality?.reward?.buyersLimit -
+        wallet.metadata?.usesStars) *
+        100) /
+        (wallet.merchantFuncionality?.reward?.buyersLimit || 1);
+    return value;
+  }
 
-   async orderIncomes(userId){
-    let result = await this.orderService.ordersIncomeMerchantByUser(userId,this.merchant._id);
-    if(result != undefined && result.length>0) return result[0];
+  async orderIncomes(userId) {
+    let result = await this.orderService.ordersIncomeMerchantByUser(
+      userId,
+      this.merchant._id
+    );
+    if (result != undefined && result.length > 0) return result[0];
     return undefined;
   }
 }

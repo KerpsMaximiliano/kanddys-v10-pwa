@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { addLocation, deleteLocation } from '../graphql/saleflow.gql';
-import { user, users, buyersByItem, deleteMe } from '../graphql/users.gql';
+import { user, users, buyersByItem, deleteMe, paginateUsers } from '../graphql/users.gql';
 import { DeliveryLocation, DeliveryLocationInput } from '../models/saleflow';
 import { User } from '../models/user';
 import { ListParams } from '../types/general.types';
@@ -67,5 +67,14 @@ export class UsersService {
     });
 
     return response?.deleteMe;
+  }
+
+  async paginateUsers(input) {
+    const result = await this.graphql.query({
+      query: paginateUsers,
+      variables: { input },
+    });
+    if (!result || result?.errors) return undefined;
+    return result.paginateUsers?.results;
   }
 }

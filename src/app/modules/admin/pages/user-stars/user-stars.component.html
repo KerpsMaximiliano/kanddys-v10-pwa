@@ -1,7 +1,8 @@
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
 <div class="container">
   <div class="header">
-    <div class="header-top">
-      <p>144 ✨</p>
+    <div class="header-top" (click)="openNavigation = !openNavigation">
+      <p>{{totalStars}} ✨</p>
       <mat-icon>menu</mat-icon>
     </div>
     <p class="header-title">
@@ -19,15 +20,16 @@
               <div class="content-card-img"></div>
               <div class="content-card-merchant">{{i.currency?.merchant?.name || i.currency?.merchant?.email || i.currency?.merchant?.phone}}</div>
             </div>
-            <div class="content-card-swaps">{{i.metadata?.usesStars}} canjeos</div>
+            <div class="content-card-swaps">{{i.metadata?.usesStars || 0}} canjeos</div>
           </div>
           <app-progress-bar [text]="getText(i)"[status]="getPercentage(i)"></app-progress-bar>
         </div>
           <hr />
           <p class="content-card-bill">
-            {{i.orderIncomes?.count }} Facturas en total
+            {{i.orderIncomes?.count || 0 }} Facturas en total
           </p>
       </div>
     </div>
   </div>
 </div>
+</app-navigation>

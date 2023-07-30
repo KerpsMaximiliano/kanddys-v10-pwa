@@ -2,15 +2,18 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { FormComponent,FormData } from 'src/app/shared/dialogs/form/form.component';
+import {
+  FormComponent,
+  FormData,
+} from 'src/app/shared/dialogs/form/form.component';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { environment } from '../../../../../environments/environment'
+import { environment } from '../../../../../environments/environment';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-stars-landing',
   templateUrl: './stars-landing.component.html',
-  styleUrls: ['./stars-landing.component.scss']
+  styleUrls: ['./stars-landing.component.scss'],
 })
 export class StarsLandingComponent implements OnInit {
   merchant: any = {};
@@ -18,13 +21,13 @@ export class StarsLandingComponent implements OnInit {
   active = false;
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @ViewChild('qrcodeTemplate', { read: ElementRef }) qrcodeTemplate: ElementRef;
-
+  openNavigation = false;
   constructor(
     private merchantService: MerchantsService,
     public dialog: MatDialog,
     private clipboard: Clipboard,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private router:Router
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -42,63 +45,75 @@ export class StarsLandingComponent implements OnInit {
     let result = await this.merchantService.merchantFuncionality(
       this.merchant._id
     );
-    if (result != undefined){
+    if (result != undefined) {
       this.merchantFunctionality = result;
       this.active = result.reward?.active;
-    } 
-   
+    }
   }
 
-  openForm(){
+  openForm() {
     let fieldsToCreate: FormData = {
-     fields:[
-      {
-        label: '¿% del monto facturado que invertirás en recompensar al comprador?',
-        name: 'item-percentage',
-        type: 'number',
-        placeholder:'Escribe el %...',
-        validators: [Validators.pattern(/[\^[0-9]+$]/),Validators.max(100),Validators.min(0)],
-      },
-      {
-        label: '¿Descuento de la recompensa?',
-        name: 'item-value',
-        type: 'number',
-        placeholder:'Escribe el monto que descontarás...',
-        validators: [Validators.pattern(/[\^[0-9]+$]/)],
-      },
-     ]
+      fields: [
+        {
+          label:
+            '¿% del monto facturado que invertirás en recompensar al comprador?',
+          name: 'item-percentage',
+          type: 'number',
+          placeholder: 'Escribe el %...',
+          validators: [
+            Validators.max(100),
+            Validators.min(0),
+            Validators.required,
+          ],
+        },
+        {
+          label: '¿Descuento de la recompensa?',
+          name: 'item-value',
+          type: 'number',
+          placeholder: 'Escribe el monto que descontarás...',
+          validators: [Validators.min(0), Validators.required],
+        },
+      ],
     };
     const dialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreate,
     });
 
-    dialogRef.afterClosed().subscribe((result:FormGroup)=>{
-      if(result )
-       this.updateMerchantFunctionality(result.get('item-value').value,result.get('item-percentage').value);
-    })
+    dialogRef.afterClosed().subscribe((result: FormGroup) => {
+      if (
+        result &&
+        result.get('item-percentage').valid &&
+        result.get('item-value').valid
+      )
+        this.updateMerchantFunctionality(
+          result.get('item-percentage').value,
+          result.get('item-value').value
+        );
+    });
   }
 
- async updateMerchantFunctionality(rewardPercentage,amountBuyer){
-    let result = await this.merchantService.updateMerchantFuncionality({
-      reward:{
-        active:true,
-        rewardPercentage:rewardPercentage/100,
-        rewardPercentageReferral:0,
-        amountBuyer: parseFloat(amountBuyer)
-      }
-      },this.merchant._id
-    )
-    if(result!=undefined)
-    this.merchantFunctionality = result;
+  async updateMerchantFunctionality(rewardPercentage, amountBuyer) {
+    let result = await this.merchantService.updateMerchantFuncionality(
+      {
+        reward: {
+          active: true,
+          rewardPercentage: rewardPercentage / 100,
+          rewardPercentageReferral: 0,
+          amountBuyer: parseFloat(amountBuyer),
+        },
+      },
+      this.merchant._id
+    );
+    if (result != undefined) this.merchantFunctionality = result;
     this.active = true;
   }
 
-  copyClipboard(){
+  copyClipboard() {
     let url = environment.uri + '/ecommerce/' + this.merchant.slug + '/store';
     this.clipboard.copy(url);
   }
 
-  share(){
+  share() {
     let url = environment.uri + '/ecommerce/' + this.merchant.slug + '/store';
     this.ngNavigatorShareService.share({
       title: '',
@@ -106,21 +121,20 @@ export class StarsLandingComponent implements OnInit {
     });
   }
 
-  navigate(){
-    this.router.navigate(['ecommerce/'+ this.merchant.slug + '/store']);
+  navigate() {
+    this.router.navigate(['ecommerce/' + this.merchant.slug + '/store']);
   }
 
-  downloadQr(qrElment: ElementRef) {
-    // let url = environment.uri + '/ecommerce/' + this.merchant.slug + '/store';
-    console.log(qrElment.nativeElement)
-    const parentElement = this.qrcodeTemplate.nativeElement.querySelector('img').src;
+  downloadQr() {
+    const parentElement =
+      this.qrcodeTemplate.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
-      const blob = new Blob([blobData], { type: 'image/png' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = "qr";
-      link.click();
+    const blob = new Blob([blobData], { type: 'image/png' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'qr';
+    link.click();
   }
   private convertBase64ToBlob(Base64Image: string) {
     // SPLIT INTO TWO PARTS
@@ -139,7 +153,7 @@ export class StarsLandingComponent implements OnInit {
     return new Blob([uInt8Array], { type: imageType });
   }
 
-  getUrl(){
-    return environment.uri + '/ecommerce/' + this.merchant.slug + '/store'; 
+  getUrl() {
+    return environment.uri + '/ecommerce/' + this.merchant.slug + '/store';
   }
 }

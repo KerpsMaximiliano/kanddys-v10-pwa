@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { UsersService } from 'src/app/core/services/users.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
 
 @Component({
@@ -14,10 +15,13 @@ export class StarsMetricsComponent implements OnInit {
   currencyId;
   walletCurrencies: any = [];
   merchantFunctionality: any = { reward: {} };
+  userIds = [];
+  openNavigation = false;
   constructor(
     private merchantService: MerchantsService,
     private walletService: WalletService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private usersService: UsersService
   ) {}
 
   async ngOnInit() {
@@ -25,11 +29,11 @@ export class StarsMetricsComponent implements OnInit {
     await this.currencyStartByMerchant();
     await this.walletsByCurrency();
     await this.getMerchantFunctionality();
+    await this.getUsers();
   }
 
   async merchantDefault() {
     const merchant = await this.merchantService.merchantDefault();
-    console.log(merchant);
     this.merchant = merchant;
   }
 
@@ -53,10 +57,10 @@ export class StarsMetricsComponent implements OnInit {
     let result = await this.walletService.walletsByCurrency(paginate);
     if (result != undefined) {
       this.walletCurrencies = result;
-      this.walletCurrencies.forEach(async element => {
-       element.orderIncomes =  await this.orderIncomes(element.owner._id);
+      this.walletCurrencies.forEach(async (element) => {
+        element.orderIncomes = await this.orderIncomes(element.owner._id);
       });
-      console.log(this.walletCurrencies)
+      this.userIds = this.walletCurrencies.map((e) => e.owner?._id);
     }
   }
 
@@ -65,12 +69,14 @@ export class StarsMetricsComponent implements OnInit {
       this.merchant._id
     );
     if (result != undefined) this.merchantFunctionality = result;
-    console.log(this.merchantFunctionality);
   }
 
-  async orderIncomes(userId){
-    let result = await this.orderService.ordersIncomeMerchantByUser(userId,this.merchant._id);
-    if(result != undefined && result.length>0) return result[0];
+  async orderIncomes(userId) {
+    let result = await this.orderService.ordersIncomeMerchantByUser(
+      userId,
+      this.merchant._id
+    );
+    if (result != undefined && result.length > 0) return result[0];
     return undefined;
   }
 
@@ -79,15 +85,48 @@ export class StarsMetricsComponent implements OnInit {
       '$' +
       (
         this.merchantFunctionality?.reward?.buyersLimit -
-        wallet.metadata?.usesStars
+        (wallet.metadata?.usesStars || 0)
       ).toString() +
-      ' por facturar para ganarse el descuento de ' +
-      this.merchantFunctionality?.reward?.buyersLimit
+      ' por facturar para ganarse el descuento de $' +
+      this.merchantFunctionality?.reward?.amountBuyer
     );
   }
 
-  getPercentage(wallet){
-   return 100 - ((this.merchantFunctionality?.reward?.buyersLimit -
-    wallet.metadata?.usesStars) || 0)*100/ (this.merchantFunctionality?.reward?.buyersLimit || 1)
+  getPercentage(wallet) {
+    if (
+      wallet.metadata == undefined ||
+      wallet.metadata == null ||
+      Number.isNaN(wallet.metadata.usesStars)
+    )
+      return 0;
+    let value =
+      100 -
+      ((this.merchantFunctionality?.reward?.buyersLimit -
+        wallet.metadata?.usesStars) *
+        100) /
+        (this.merchantFunctionality?.reward?.buyersLimit || 1);
+    return value;
+  }
+
+  async getUsers() {
+    let result = await this.usersService.paginateUsers({
+      options: {
+        limit: 500,
+      },
+      findBy: {
+        _id: {
+          __in: this.userIds,
+        },
+      },
+    });
+    console.log("result",result);
+    if (result != undefined) {
+      this.walletCurrencies.forEach((element) => {
+        let val = result.find((e:any) => e._id == element.owner._id);
+        if(val!=undefined)
+        element.owner = val;
+      });
+      console.log("asd",this.walletCurrencies);
+    }
   }
 }

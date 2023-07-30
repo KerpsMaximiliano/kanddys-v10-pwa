@@ -1,8 +1,9 @@
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
 <div class="container">
   <div class="header">
     <div class="header-top-container">
       <img src="../../../../../assets/icons/triangle.svg" />
-      <div class="flex">
+      <div class="flex" (click)="openNavigation = !openNavigation">
         <p class="header-top-text">Programa de ✨ para 🚀</p>
         <mat-icon>menu</mat-icon>
       </div>
@@ -40,7 +41,7 @@
   <div class="content-item" (click)="copyClipboard()">
       Copia el link
     </div>
-    <div class="content-item" (click)="downloadQr(qrcodeTemplate)">
+    <div class="content-item" (click)="downloadQr()">
       Descarga el QR
     </div>
     <div class="content-item" (click)="share()">
@@ -58,8 +59,9 @@
     [errorCorrectionLevel]="'M'"
     [allowEmptyString]="true"
     colorDark="#000000"
-    (click)="downloadQr(qrcodeTemplate)"
+    (click)="downloadQr()"
     ></qrcode>
   </div>
   </div>
 </div>
+</app-navigation>
