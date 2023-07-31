@@ -235,15 +235,20 @@ export class ItemCreationComponent implements OnInit {
             ],
             ctaName: [this.itemsService.temporalItem?.ctaText],
           });
-          
-          if(this.isASupplierItem && this.itemFormData.controls['title'].value !== '') {
-            this.itemFormData.controls['title'].disable()
-          }
-          
-          if(this.isASupplierItem && this.itemFormData.controls['description'].value !== '') {
-            this.itemFormData.controls['description'].disable()
+
+          if (
+            this.isASupplierItem &&
+            this.itemFormData.controls['title'].value !== ''
+          ) {
+            this.itemFormData.controls['title'].disable();
           }
 
+          if (
+            this.isASupplierItem &&
+            this.itemFormData.controls['description'].value !== ''
+          ) {
+            this.itemFormData.controls['description'].disable();
+          }
 
           this.itemFormData.valueChanges.subscribe(() => {
             this.isFormUpdated = true;
@@ -1034,6 +1039,8 @@ export class ItemCreationComponent implements OnInit {
       name: this.itemFormData.value['title'],
       description: this.itemFormData.value['description'],
       pricing: this.itemFormData.value['pricing'],
+      stock: Number(this.itemFormData.value['stock']),
+      notificationStockLimit: Number(this.itemFormData['notificationStockLimit']),
       images,
       merchant: this.merchantsService.merchantData?._id,
       content: [],
@@ -1171,6 +1178,9 @@ export class ItemCreationComponent implements OnInit {
       await this.itemsService.updateItem(itemInput, this.item._id);
     }
 
+    this.itemsService.temporalItemInput = null;
+    this.itemsService.temporalItem = null;
+
     this.router.navigate(['admin/dashboard']);
 
     unlockUI();
@@ -1273,6 +1283,9 @@ export class ItemCreationComponent implements OnInit {
   }
 
   back() {
+    this.itemsService.temporalItem = null;
+    this.itemsService.temporalItemInput = null;
+
     if (
       this.itemsService.createUserAlongWithItem &&
       this.headerService.flowRouteForEachPage['florist-creating-item']
