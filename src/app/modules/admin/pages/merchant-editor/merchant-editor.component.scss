@@ -14,7 +14,7 @@
   align-items: center;
   width: 100%;
   height: 46px;
-  padding: 0 16px;
+  padding: 0 0 0 16px;
   background: #181d17;
 
   p {
@@ -30,6 +30,7 @@
   button {
     color: #fff;
     font-size: 25px;
+    padding: 0;
   }
 }
 
@@ -50,6 +51,10 @@
 }
 
 .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
   .form-title {
     font-size: 13px;
     font-family: "Inter", sans-serif;
@@ -74,7 +79,6 @@
 
   input {
     border: none;
-    border-bottom: 1px solid #181d17;
     color: #7b7b7b;
     font-weight: 700;
     font-size: 17px;
@@ -88,7 +92,6 @@
   align-items: center;
   width: 100%;
   padding: 0 16px;
-  border: 0.94px solid #c4c5c3;
   border-radius: 4px;
   background: white;
   box-shadow: 0 4px 4px #00000040;
