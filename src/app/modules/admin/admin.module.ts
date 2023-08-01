@@ -82,6 +82,7 @@ import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-c
 import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
 import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
 import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
+import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -520,6 +521,10 @@ const routes: Routes = [
   {
     path: 'order-filtering',
     component: OrderFilteringComponent
+  },
+  {
+    path: 'admin-orders',
+    component: AdminOrdersComponent
   }
 ];
 
@@ -584,7 +589,8 @@ const routes: Routes = [
     //InventoryCreatorComponent,
     OrderProgressFilteringComponent,
     OrderProgressComponent,
-    OrderFilteringComponent
+    OrderFilteringComponent,
+    AdminOrdersComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [
