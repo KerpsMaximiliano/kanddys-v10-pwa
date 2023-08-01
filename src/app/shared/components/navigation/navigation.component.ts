@@ -283,11 +283,11 @@ export class NavigationComponent implements OnInit {
       links: [
         {
           text: 'Mi KiosKo 💰',
-          routerLink: ['/admin/dashboard'],
+          routerLink: ['/admin/supplier-dashboard'],
           queryParams: {
             supplierMode: true,
           },
-          hardcodedURL: '/admin/dashboard?supplierMode=true',
+          hardcodedURL: '/admin/supplier-dashboard?supplierMode=true',
           linkName: 'my-dashboard'
         } /*
         {
