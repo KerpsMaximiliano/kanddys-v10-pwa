@@ -49,7 +49,7 @@ export class ItemSubOrder extends Model<ItemSubOrder> {
   amount: number;
   creator: User;
   deliveryLocation: DeliveryLocation;
-  item?: ExtendedItem;
+  item?: ExtendedItem | null;
   itemSelected: string[];
   merchant: Merchant;
   params: ItemSubOrderParams[];
