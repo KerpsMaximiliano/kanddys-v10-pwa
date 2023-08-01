@@ -63,7 +63,7 @@ export class InventoryComponent implements OnInit {
       this.mode = 'TEMPORAL_QUOTATIONS_WITHOUT_USER_SESSION';
       this.temporalQuotations = this.quotationsService.temporalQuotations;
 
-      localStorage.removeItem("selectedTemporalQuotation");
+      localStorage.removeItem('selectedTemporalQuotation');
 
       //If there are no temporal quotations in the service, it retrieves them from the localStorage
       if (this.temporalQuotations.length === 0) {
@@ -202,6 +202,9 @@ export class InventoryComponent implements OnInit {
                 this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
               if (isUserAMerchant) {
+                this.headerService.flowRouteForEachPage['quotations-link'] =
+                  this.router.url;
+
                 this.router.navigate(['ecommerce/item-management']);
               } else {
                 this.matDialog.open(LoginDialogComponent, {

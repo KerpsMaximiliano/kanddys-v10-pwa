@@ -167,6 +167,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   answerLimitOptionsForMultipleSelection = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
   ];
+  requiredFieldInterval: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -254,7 +255,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           };
         }
 
-        setInterval(() => {
+        this.requiredFieldInterval = setInterval(() => {
           if (
             this.currentStepStatus === 'INVALID' &&
             this.currentStepIndex > 0
@@ -1347,6 +1348,8 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         step.statusChangeSubscription.unsubscribe();
       }
     }
+
+    clearInterval(this.requiredFieldInterval);
   }
 
   // Define a constant for the minimum distance to consider a swipe

@@ -68,6 +68,9 @@ const fullItem = `
   createdAt
   amountMerchantCoin
   stock
+  notificationStock
+  notificationStockLimit
+  notificationStockPhoneOrEmail
   images {
     _id
     active
@@ -132,6 +135,11 @@ const fullItem = `
     _id
     reference
     active
+  }
+  categories {
+    _id
+    name
+    description
   }
   layout
   ctaText
@@ -288,6 +296,7 @@ export const listItems = gql`
       type
       stock
       notificationStockLimit
+      notificationStockPhoneOrEmail
       parentItem
     }
   }
