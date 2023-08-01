@@ -46,6 +46,9 @@ import {
   orderByStatusDelivery,
   higherIncomeBuyersByMerchant,
   entryMerchant,
+  currencyStartByMerchant,
+  walletsByCurrency,
+  ordersCommissionableItemsCount,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -513,5 +516,42 @@ export class MerchantsService {
 
     if (!result || result?.errors) return undefined;
     return result.entryMerchant;
+  }
+
+  async currencyStartByMerchant(
+    merchantId: string
+  ): Promise<any> {
+    const response = await this.graphql.query({
+      query: currencyStartByMerchant,
+      variables: { merchantId },
+      fetchPolicy: 'cache-first',
+    });
+
+    return response?.currencyStartByMerchant;
+  }
+
+  async walletsByCurrency(
+    paginate: PaginationInput
+  ): Promise<any[]> {
+    const response = await this.graphql.query({
+      query: walletsByCurrency,
+      variables: { paginate },
+      fetchPolicy: 'cache-first',
+    });
+
+    return response?.walletsByCurrency;
+  }
+
+  async ordersCommissionableItemsCount(
+    userId: string,
+    merchantId: string,
+  ): Promise<any[]> {
+    const response = await this.graphql.query({
+      query: ordersCommissionableItemsCount,
+      variables: { userId: [userId], merchantId },
+      fetchPolicy: 'cache-first',
+    });
+
+    return response?.ordersCommissionableItemsCount;
   }
 }

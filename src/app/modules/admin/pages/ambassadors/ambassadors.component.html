@@ -10,73 +10,24 @@
   </div>
   <div class="content">
     <p class="content-title">Embajadores</p>
-    <div class="content-card">
-      <div class="content-card-top">
-        <div class="flex">
-          <div class="content-card-img"></div>
-          <p class="content-card-title">EmbajadorID</p>
+    <ng-container *ngIf="walletsByCurrency.length">
+      <div class="content-card" *ngFor="let wallet of walletsByCurrency;">
+        <div class="content-card-top">
+          <div class="flex">
+            <div class="content-card-img"></div>
+            <p class="content-card-title">{{ ambassadorOrders[wallet.owner._id]? ambassadorOrders[wallet.owner._id].user?.name || ambassadorOrders[wallet.owner._id].user?.phone || ambassadorOrders[wallet.owner._id].user?.email: '' }}</p>
+          </div>
+          <p class="content-card-payment">{{ wallet.metadata.usesStars }} pagos</p>
         </div>
-        <p class="content-card-payment">10 pagos</p>
-      </div>
-      <app-progress-bar
-        text="$35 de $50 para pagarle por PayPal"
-        [status]="50"
-      ></app-progress-bar>
-      <div class="hr-container">
-        <hr />
-      </div>
-      <p class="content-card-desc">10 Facturas con artículos comisionables</p>
-    </div>
-    <div class="content-card">
-      <div class="content-card-top">
-        <div class="flex">
-          <div class="content-card-img"></div>
-          <p class="content-card-title">EmbajadorID</p>
+        <app-progress-bar
+          text="${{ wallet.balance }} de ${{ total }} para pagarle por PayPal"
+          [status]="getPorcentage(wallet.balance, total)"
+        ></app-progress-bar>
+        <div class="hr-container">
+          <hr />
         </div>
-        <p class="content-card-payment">10 pagos</p>
+        <p class="content-card-desc">{{ ambassadorOrders[wallet.owner._id]? ambassadorOrders[wallet.owner._id].count: 0 }} Facturas con artículos comisionables</p>
       </div>
-      <app-progress-bar
-        text="$35 de $50 para pagarle por PayPal"
-        [status]="50"
-      ></app-progress-bar>
-      <div class="hr-container">
-        <hr />
-      </div>
-      <p class="content-card-desc">10 Facturas con artículos comisionables</p>
-    </div>
-    <div class="content-card">
-      <div class="content-card-top">
-        <div class="flex">
-          <div class="content-card-img"></div>
-          <p class="content-card-title">EmbajadorID</p>
-        </div>
-        <p class="content-card-payment">10 pagos</p>
-      </div>
-      <app-progress-bar
-        text="$35 de $50 para pagarle por PayPal"
-        [status]="90"
-      ></app-progress-bar>
-      <div class="hr-container">
-        <hr />
-      </div>
-      <p class="content-card-desc">10 Facturas con artículos comisionables</p>
-    </div>
-    <div class="content-card">
-      <div class="content-card-top">
-        <div class="flex">
-          <div class="content-card-img"></div>
-          <p class="content-card-title">EmbajadorID</p>
-        </div>
-        <p class="content-card-payment">10 pagos</p>
-      </div>
-      <app-progress-bar
-        text="$35 de $50 para pagarle por PayPal"
-        [status]="20"
-      ></app-progress-bar>
-      <div class="hr-container">
-        <hr />
-      </div>
-      <p class="content-card-desc">10 Facturas con artículos comisionables</p>
-    </div>
+    </ng-container>
   </div>
 </div>
