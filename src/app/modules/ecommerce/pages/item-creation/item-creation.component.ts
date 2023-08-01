@@ -332,6 +332,8 @@ export class ItemCreationComponent implements OnInit {
       },
     });
     this.allTags = tagsByUser ? tagsByUser : [];
+    this.tagsInItem = {};
+    this.itemTagsIds = [];
 
     for (const tag of this.allTags) {
       this.tagsById[tag._id] = tag;
@@ -824,7 +826,6 @@ export class ItemCreationComponent implements OnInit {
               selected: this.itemTagsIds.includes(tag._id),
             }))
           : [],
-          /*
         rightIcon: {
           iconName: 'add',
           callback: (data) => {
@@ -850,13 +851,35 @@ export class ItemCreationComponent implements OnInit {
               if (!result?.controls['new-tag'].valid) {
                 this.headerService.showErrorToast('Tag inválido');
               } else {
-                const tagToCreate = result?.value['new-tag'];
+                if (this.headerService.user) {
+                  const tagToCreate = result?.value['new-tag'];
 
-                console.log('EL TAG', tagToCreate);
+                  lockUI();
+                  await this.tagsService.createTag({
+                    entity: 'item',
+                    name: tagToCreate,
+                    merchant: this.merchantsService.merchantData?._id,
+                  });
+
+                  await this.getTags();
+
+                  unlockUI();
+
+                  bottomSheetRef.dismiss();
+                } else {
+                  this.allTags.push({
+                    _id: 'created-tag-' + result?.value['new-tag'],
+                    entity: 'item',
+                    name: result?.value['new-tag'],
+                    merchant: null,
+                  } as any);
+
+                  bottomSheetRef.dismiss();
+                }
               }
             });
           },
-        },*/
+        },
       },
     });
 

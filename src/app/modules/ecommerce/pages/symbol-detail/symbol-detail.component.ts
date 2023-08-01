@@ -594,7 +594,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     const prevIndex = this.currentMediaSlide;
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
 
-    console.log(this.currentMediaSlide);
+    //console.log(this.currentMediaSlide);
 
     if (this.genericModelTemplate.slides[prevIndex].type === 'VIDEO') {
       this.playCurrentSlideVideo('media' + prevIndex);
@@ -738,7 +738,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       .map(() => `${'1'}fr`)
       .join(' ');
 
-    console.log(this.fractions);
+    //console.log(this.fractions);
   }
 
   itemInCart() {
@@ -889,7 +889,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   async saveProduct() {
-    if (this.itemData.type === 'supplier') {
+    if (this.itemData && this.itemData.type === 'supplier') {
       const foundItemIndex =
         this.quotationsService.selectedItemsForQuotation.findIndex(
           (itemId) => itemId === this.itemData._id
@@ -909,7 +909,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       }
 
       if (this.quotationsService.quotationToUpdate) {
-        lockUI()
+        lockUI();
         await this.quotationsService.updateQuotation(
           {
             items: this.quotationsService.selectedItemsForQuotation,
@@ -923,21 +923,24 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     }
 
     if (this.mode === 'preview' || this.mode === 'image-preview') return;
-    if (!this.isItemInCart && !this.headerService.saleflow.canBuyMultipleItems)
+    if (!this.isItemInCart && this.headerService.saleflow && !this.headerService.saleflow?.canBuyMultipleItems)
       this.headerService.emptyOrderProducts();
-    const product: ItemSubOrderInput = {
-      item: this.itemData._id,
-      amount: 1,
-    };
 
-    this.headerService.storeOrderProduct(product);
+    if (this.itemData && this.headerService.saleflow) {
+      const product: ItemSubOrderInput = {
+        item: this.itemData._id,
+        amount: 1,
+      };
 
-    this.appService.events.emit({
-      type: 'added-item',
-      data: this.itemData._id,
-    });
-    this.itemInCart();
-    if (this.isItemInCart) this.goToCheckout();
+      this.headerService.storeOrderProduct(product);
+
+      this.appService.events.emit({
+        type: 'added-item',
+        data: this.itemData._id,
+      });
+      this.itemInCart();
+      if (this.isItemInCart) this.goToCheckout();
+    }
   }
 
   goToCheckout() {

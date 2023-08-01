@@ -314,6 +314,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             lockUI();
             const createdItemId = parsedData.createdItem;
 
+            const item = await this._ItemsService.item(createdItemId);
+
             const saleflowDefault = await this._SaleflowService.saleflowDefault(
               this._MerchantsService.merchantData._id
             );
@@ -353,7 +355,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             }
 
             unlockUI();
-            window.location.href = environment.uri + '/admin/dashboard';
+
+            window.location.href =
+              environment.uri +
+              (item.type !== 'supplier'
+                ? '/admin/dashboard'
+                : '/admin/supplier-dashboard?supplierMode=true');
           } catch (error) {
             unlockUI();
 
