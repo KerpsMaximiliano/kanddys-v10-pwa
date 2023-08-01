@@ -300,68 +300,81 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     //await this.getItemsBoughtByMe();
-    this.route.queryParams.subscribe(async ({view, showItems, jsondata}) => {
+    this.route.queryParams.subscribe(async ({ view, showItems, jsondata }) => {
       this.showItems = showItems;
       this.supplierMode = JSON.parse(
         this.route.snapshot.queryParamMap.get('supplierMode') || 'false'
       );
-  
+
       if (jsondata) {
         let parsedData = JSON.parse(decodeURIComponent(jsondata));
-  
+
         if (parsedData.createdItem) {
           try {
             lockUI();
             const createdItemId = parsedData.createdItem;
-  
+
             const saleflowDefault = await this._SaleflowService.saleflowDefault(
               this._MerchantsService.merchantData._id
             );
-  
+
             await this._ItemsService.authItem(
               this._MerchantsService.merchantData._id,
               createdItemId
             );
-  
+
             await this._SaleflowService.addItemToSaleFlow(
               {
                 item: createdItemId,
               },
               saleflowDefault._id
             );
-  
+
             if (parsedData.createdWebformId) {
-              await this.webformsService.authWebform(parsedData.createdWebformId);
-  
+              await this.webformsService.authWebform(
+                parsedData.createdWebformId
+              );
+
               await this.webformsService.itemAddWebForm(
                 createdItemId,
                 parsedData.createdWebformId
               );
             }
-  
+
+            if (parsedData.tagsToAssignIds) {
+              const tagsToAssignIds: Array<string> =
+                parsedData.tagsToAssignIds.split('-');
+
+              await Promise.all(
+                tagsToAssignIds.map((tagId) =>
+                  this.tagsService.itemAddTag(tagId, createdItemId)
+                )
+              );
+            }
+
             unlockUI();
             window.location.href = environment.uri + '/admin/dashboard';
           } catch (error) {
             unlockUI();
-  
+
             console.error(error);
           }
         }
-  
+
         if (parsedData.quotationItems) {
           try {
             lockUI();
             await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-  
+
             const saleflow = await this._SaleflowService.saleflowDefault(
               this._MerchantsService.merchantData?._id
             );
-  
+
             const quotationItemsIDs = parsedData.quotationItems.split('-');
-  
+
             this.headerService.saleflow = saleflow;
             this.headerService.storeSaleflow(saleflow);
-  
+
             const supplierSpecificItemsInput: PaginationInput = {
               findBy: {
                 _id: {
@@ -374,17 +387,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 page: 1,
               },
             };
-  
+
             //Fetches supplier specfic items, meaning they already are on the saleflow
             let quotationItems: Array<Item> = [];
-  
+
             quotationItems = (
               await this._ItemsService.listItems(supplierSpecificItemsInput)
             )?.listItems;
-  
+
             if (quotationItems?.length) {
               this.items = quotationItems;
-  
+
               if (!this.items[0].merchant) {
                 await Promise.all(
                   this.items.map((item) =>
@@ -394,7 +407,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                     )
                   )
                 );
-  
+
                 await Promise.all(
                   this.items.map((item) =>
                     this._SaleflowService.addItemToSaleFlow(
@@ -407,20 +420,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 );
               }
             }
-  
+
             unlockUI();
-            window.location.href = environment.uri + '/admin/dashboard?supplierMode=true';
+            window.location.href =
+              environment.uri + '/admin/dashboard?supplierMode=true';
           } catch (error) {
             unlockUI();
-  
+
             console.error(error);
           }
         }
       }
-  
+
       if (view)
         this.view = view as 'sold' | 'notSold' | 'hidden' | 'all' | 'default';
-  
+
       if (this._SaleflowService.saleflowData) {
         await this.inicializeItems(true, false, true, true);
         this.getTags();
@@ -441,8 +455,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           }
         },
       });
-    })
-
+    });
   }
 
   async getItemsBoughtByMe() {
@@ -491,10 +504,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.notSoldItems = Object.values(notSoldItems)[0] as Array<Item>;
     this.itemsIndexesByList['NOT_SOLD'] = {};
 
-    if(this.supplierMode) {
-      this.notSoldItems = this.notSoldItems.filter(item => item.parentItem);
+    if (this.supplierMode) {
+      this.notSoldItems = this.notSoldItems.filter((item) => item.parentItem);
     } else {
-      this.notSoldItems = this.notSoldItems.filter(item => item.type !== 'supplier');
+      this.notSoldItems = this.notSoldItems.filter(
+        (item) => item.type !== 'supplier'
+      );
     }
 
     this.notSoldItems.forEach((item, index) => {
@@ -602,10 +617,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       const items = response;
       let itemsQueryResult = items?.listItems;
 
-      if(this.supplierMode) {
-        itemsQueryResult = itemsQueryResult.filter(item => item.parentItem);
+      if (this.supplierMode) {
+        itemsQueryResult = itemsQueryResult.filter((item) => item.parentItem);
       } else {
-        itemsQueryResult = itemsQueryResult.filter(item => item.type !== 'supplier');
+        itemsQueryResult = itemsQueryResult.filter(
+          (item) => item.type !== 'supplier'
+        );
       }
 
       /*
@@ -718,10 +735,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         return item.item;
       });
 
-      if(this.supplierMode) {
-        this.soldItems = this.soldItems.filter(item => item.parentItem);
-      }else {
-        this.soldItems = this.soldItems.filter(item => item.type !== 'supplier');
+      if (this.supplierMode) {
+        this.soldItems = this.soldItems.filter((item) => item.parentItem);
+      } else {
+        this.soldItems = this.soldItems.filter(
+          (item) => item.type !== 'supplier'
+        );
       }
 
       this.itemsIndexesByList['SOLD'] = {};

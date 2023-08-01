@@ -188,7 +188,7 @@ export class NavigationComponent implements OnInit {
           linkName: 'my-dashboard'
         },
         {
-          text: 'Carritos de proveedores',
+          text: 'Carrito del Proveedor (yo compro)',
           routerLink: ['/ecommerce/supplier-items-selector'],
           possibleRedirection: ['/ecommerce/quotations'],
           linkName: 'quotations-link'

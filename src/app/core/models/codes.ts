@@ -1,9 +1,6 @@
 import { Model } from '../objects/model';
 import { IpUser, User } from './user';
-
-export class CommunityCategory extends Model<CommunityCategory> {
-    name: string;
-}
+import { CommunityCategory } from './community-categories';
 
 export class Code extends Model<Code> {
     description?: string;

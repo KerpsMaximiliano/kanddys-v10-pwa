@@ -97,7 +97,6 @@ export class ItemSelectorComponent implements OnInit {
           createQuotationFromExistingQuotation,
           updatingTemporalQuotation,
         }) => {
-
           this.supplierMode = JSON.parse(supplierMode || 'false');
           this.createQuotationFromExistingQuotation = JSON.parse(
             createQuotationFromExistingQuotation || 'false'
@@ -235,8 +234,10 @@ export class ItemSelectorComponent implements OnInit {
               if (value === '') {
                 this.itemsToShow = JSON.parse(JSON.stringify(this.items));
               } else {
-                this.itemsToShow = this.items.filter((item) =>
-                  item.name.toLowerCase().includes(value.toLowerCase())
+                this.itemsToShow = this.items.filter(
+                  (item) =>
+                    item.name.toLowerCase().includes(value.toLowerCase()) ||
+                    item.description.toLowerCase().includes(value.toLowerCase())
                 );
               }
 

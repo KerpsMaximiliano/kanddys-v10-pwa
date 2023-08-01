@@ -19,7 +19,14 @@ import { environment } from 'src/environments/environment';
 import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
 
 interface Field {
-  type: 'text' | 'email' | 'phone' | 'file' | 'number' | 'currency';
+  type:
+    | 'text'
+    | 'email'
+    | 'phone'
+    | 'file'
+    | 'number'
+    | 'currency'
+    | 'email-or-phone';
   validators: Array<ValidatorFn>;
   name: string;
   placeholder?: string;
@@ -53,6 +60,7 @@ export class FormComponent implements OnInit {
   ];
   PhoneNumberFormat = PhoneNumberFormat;
   keyboardVisible: boolean = false;
+  phoneOrEmailVisible: 'phone' | 'email' = 'phone';
 
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
@@ -91,6 +99,7 @@ export class FormComponent implements OnInit {
           )
             firstEditableFieldFound = true;
           break;
+        case 'email-or-phone':
         case 'text':
         case 'currency':
         case 'phone':
@@ -134,6 +143,12 @@ export class FormComponent implements OnInit {
 
   updateFieldValue(index: number, value: any) {
     this.formGroup.get(this.data.fields[index].name).setValue(value);
+  }
+
+  updatePhoneOrEmailValue(index: number, value: any, previousValue: string) {
+    this.phoneOrEmailVisible = previousValue === 'phone' ? 'email' : 'phone';
+
+    this.updateFieldValue(index, '');
   }
 
   // Listen for focusin and focusout events to track keyboard visibility changes
@@ -193,7 +208,7 @@ export class FormComponent implements OnInit {
     const containerRect = container.getBoundingClientRect();
     const dialogRect = dialog.getBoundingClientRect();
 
-    console.log(containerRect, dialogRect)
+    console.log(containerRect, dialogRect);
 
     this.dialogRef.updatePosition({
       top:

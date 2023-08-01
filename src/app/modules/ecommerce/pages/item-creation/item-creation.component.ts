@@ -8,9 +8,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { CommunityCategory } from 'src/app/core/models/community-categories';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SlideInput } from 'src/app/core/models/post';
+import { Tag, TagInput } from 'src/app/core/models/tags';
 import {
   Answer,
   Question,
@@ -19,6 +21,7 @@ import {
   WebformInput,
 } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { CommunityCategoriesService } from 'src/app/core/services/community-categories.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import {
@@ -27,6 +30,7 @@ import {
 } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { TagsService } from 'src/app/core/services/tags.service';
 import {
   ResponsesByQuestion,
   WebformsService,
@@ -39,6 +43,7 @@ import {
 } from 'src/app/shared/dialogs/form/form.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-dialog.component';
+import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
 import { environment } from 'src/environments/environment';
 
 interface ExtendedAnswer extends Answer {
@@ -109,6 +114,21 @@ export class ItemCreationComponent implements OnInit {
   isASupplierItem: boolean = false;
   isCurrentUserAMerchant: boolean = false;
 
+  //Tags variables
+  allTags: Array<Tag> = [];
+  tagsInItem: Record<string, boolean> = {};
+  tagsById: Record<string, Tag> = {};
+  itemTagsIds: Array<string> = [];
+  tagsString: string = null;
+  tagsToCreate: Array<TagInput> = [];
+
+  //Categories to create
+  allCategories: Array<CommunityCategory> = [];
+  categoriesInItem: Record<string, boolean> = {};
+  categoryById: Record<string, CommunityCategory> = {};
+  itemCategoriesIds: Array<string> = [];
+  categoriesString: string = null;
+
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
@@ -119,8 +139,10 @@ export class ItemCreationComponent implements OnInit {
     private webformsService: WebformsService,
     private saleflowService: SaleFlowService,
     public merchantsService: MerchantsService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     private translate: TranslateService,
+    private tagsService: TagsService,
+    private communityCategoriesService: CommunityCategoriesService,
     private authService: AuthService,
     private location: Location,
     private route: ActivatedRoute,
@@ -144,144 +166,224 @@ export class ItemCreationComponent implements OnInit {
             );
         }
 
-        if (!itemId) {
-          this.typeOfFlow = 'ITEM_CREATION';
-          this.itemFormData = this.fb.group({
-            title: [this.itemsService.temporalItemInput?.name || ''],
-            description: [
-              this.itemsService.temporalItemInput?.description || '',
-            ],
-            pricing: [
-              this.itemsService.temporalItemInput?.pricing || 0,
-              Validators.compose([Validators.required, Validators.min(0.1)]),
-            ],
-            stock: [
-              this.itemsService.temporalItemInput?.stock || '',
-              !this.isASupplierItem
-                ? []
-                : Validators.compose([Validators.required]),
-            ],
-            notificationStockLimit: [
-              this.itemsService.temporalItemInput?.notificationStockLimit || '',
-              !this.isASupplierItem
-                ? []
-                : Validators.compose([Validators.min(1)]),
-            ],
-            defaultLayout: [
-              this.itemsService.temporalItemInput?.layout || this.layout,
-            ],
-            ctaName: [this.itemsService.temporalItemInput?.ctaText],
-          });
-
-          if (this.itemsService.temporalItemInput?.slides) {
-            this.itemSlides = this.itemsService.temporalItemInput?.slides;
-          }
-
-          for (const question of this.itemsService.questionsToAddToItem) {
-            if (question.required) this.requiredQuestionsCounter.required++;
-            else this.requiredQuestionsCounter.notRequired++;
-          }
-        } else {
-          this.item = await this.itemsService.item(itemId);
-
-          if (this.item.type === 'supplier') this.isASupplierItem = true;
-
-          this.typeOfFlow =
-            this.item.type === 'supplier'
-              ? 'UPDATE_EXISTING_SUPPLIER_ITEM'
-              : 'UPDATE_EXISTING_ITEM';
-
-          this.isCurrentUserAMerchant =
-            await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-
-          const isCurrentMerchantTheSameAsTheItemMerchant =
-            this.item.merchant?._id === this.merchantsService.merchantData?._id;
-
-          if (
-            this.item &&
-            this.isCurrentUserAMerchant &&
-            !isCurrentMerchantTheSameAsTheItemMerchant
-          ) {
-            this.router.navigate(['/auth/login']);
-          }
-
-          if (!this.itemsService.temporalItem) {
-            this.itemsService.temporalItem = this.item;
-          }
-
-          this.headerService.flowRoute = this.router.url;
-
-          this.itemFormData = this.fb.group({
-            title: [this.itemsService.temporalItem?.name || ''],
-            description: [this.itemsService.temporalItem?.description || ''],
-            pricing: [
-              this.itemsService.temporalItem?.pricing || 0,
-              Validators.compose([Validators.required, Validators.min(0.1)]),
-            ],
-            stock: [
-              this.itemsService.temporalItem?.stock || '',
-              !this.isASupplierItem
-                ? []
-                : Validators.compose([Validators.required]),
-            ],
-            notificationStockLimit: [
-              this.itemsService.temporalItem?.notificationStockLimit || '',
-              !this.isASupplierItem
-                ? []
-                : Validators.compose([Validators.min(1)]),
-            ],
-            defaultLayout: [
-              this.itemsService.temporalItem?.layout || this.layout,
-            ],
-            ctaName: [this.itemsService.temporalItem?.ctaText],
-          });
-
-          if (
-            this.isASupplierItem &&
-            this.itemFormData.controls['title'].value !== ''
-          ) {
-            this.itemFormData.controls['title'].disable();
-          }
-
-          if (
-            this.isASupplierItem &&
-            this.itemFormData.controls['description'].value !== ''
-          ) {
-            this.itemFormData.controls['description'].disable();
-          }
-
-          this.itemFormData.valueChanges.subscribe(() => {
-            this.isFormUpdated = true;
-          });
-
-          if (this.itemsService.temporalItem?.images) {
-            this.itemSlides = this.item.images
-              .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
-              .map(({ index, ...image }) => {
-                return {
-                  url: completeImageURL(image.value),
-                  index,
-                  type: 'poster',
-                  text: '',
-                };
-              });
-          }
-
-          if (this.item.webForms && this.item.webForms.length) {
-            const webform = await this.webformsService.webform(
-              this.item.webForms[0].reference
-            );
-
-            await this.getQuestions();
-            await this.getAnswersForWebform();
-
-            this.webform = webform;
-          }
-
-          await this.getSells();
-        }
+        await this.getItemData(itemId ? itemId : null);
+        await this.getTags();
+        await this.getCategories();
       });
     });
+  }
+
+  async getItemData(itemId: string = null) {
+    if (!itemId) {
+      this.typeOfFlow = 'ITEM_CREATION';
+      this.itemFormData = this.fb.group({
+        title: [this.itemsService.temporalItemInput?.name || ''],
+        description: [this.itemsService.temporalItemInput?.description || ''],
+        pricing: [
+          this.itemsService.temporalItemInput?.pricing || 0,
+          Validators.compose([Validators.required, Validators.min(0.1)]),
+        ],
+        stock: [
+          this.itemsService.temporalItemInput?.stock || '',
+          !this.isASupplierItem
+            ? []
+            : Validators.compose([Validators.required]),
+        ],
+        notificationStockLimit: [
+          this.itemsService.temporalItemInput?.notificationStockLimit || '',
+          !this.isASupplierItem ? [] : Validators.compose([Validators.min(1)]),
+        ],
+        notificationStockPhoneOrEmail: [
+          this.itemsService.temporalItemInput?.notificationStockPhoneOrEmail ||
+            '',
+          !this.isASupplierItem
+            ? []
+            : Validators.compose([Validators.required]),
+        ],
+        categories: [this.itemsService.temporalItemInput?.categories || ''],
+        tags: [this.itemsService.temporalItemInput?.tags || ''],
+        defaultLayout: [
+          this.itemsService.temporalItemInput?.layout || this.layout,
+        ],
+        ctaName: [this.itemsService.temporalItemInput?.ctaText],
+      });
+
+      if (this.itemsService.temporalItemInput?.slides) {
+        this.itemSlides = this.itemsService.temporalItemInput?.slides;
+      }
+
+      for (const question of this.itemsService.questionsToAddToItem) {
+        if (question.required) this.requiredQuestionsCounter.required++;
+        else this.requiredQuestionsCounter.notRequired++;
+      }
+    } else {
+      this.item = await this.itemsService.item(itemId);
+
+      if (this.item.type === 'supplier') this.isASupplierItem = true;
+
+      this.typeOfFlow =
+        this.item.type === 'supplier'
+          ? 'UPDATE_EXISTING_SUPPLIER_ITEM'
+          : 'UPDATE_EXISTING_ITEM';
+
+      this.isCurrentUserAMerchant =
+        await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+      const isCurrentMerchantTheSameAsTheItemMerchant =
+        this.item.merchant?._id === this.merchantsService.merchantData?._id;
+
+      if (
+        this.item &&
+        this.isCurrentUserAMerchant &&
+        !isCurrentMerchantTheSameAsTheItemMerchant
+      ) {
+        this.router.navigate(['/auth/login']);
+      }
+
+      if (!this.itemsService.temporalItem) {
+        this.itemsService.temporalItem = this.item;
+      }
+
+      this.headerService.flowRoute = this.router.url;
+
+      //TODO agregar categorias al type del item
+
+      this.itemFormData = this.fb.group({
+        title: [this.itemsService.temporalItem?.name || ''],
+        description: [this.itemsService.temporalItem?.description || ''],
+        pricing: [
+          this.itemsService.temporalItem?.pricing || 0,
+          Validators.compose([Validators.required, Validators.min(0.1)]),
+        ],
+        stock: [
+          this.itemsService.temporalItem?.stock || '',
+          !this.isASupplierItem
+            ? []
+            : Validators.compose([Validators.required]),
+        ],
+        notificationStockLimit: [
+          this.itemsService.temporalItem?.notificationStockLimit || '',
+          !this.isASupplierItem ? [] : Validators.compose([Validators.min(1)]),
+        ],
+        notificationStockPhoneOrEmail: [
+          this.itemsService.temporalItem?.notificationStockPhoneOrEmail || '',
+          !this.isASupplierItem
+            ? []
+            : Validators.compose([Validators.required]),
+        ],
+        tags: [this.itemsService.temporalItemInput?.tags || ''],
+        defaultLayout: [this.itemsService.temporalItem?.layout || this.layout],
+        ctaName: [this.itemsService.temporalItem?.ctaText],
+      });
+
+      if (
+        this.isASupplierItem &&
+        this.itemFormData.controls['title'].value !== ''
+      ) {
+        this.itemFormData.controls['title'].disable();
+      }
+
+      if (
+        this.isASupplierItem &&
+        this.itemFormData.controls['description'].value !== ''
+      ) {
+        this.itemFormData.controls['description'].disable();
+      }
+
+      this.itemFormData.valueChanges.subscribe(() => {
+        this.isFormUpdated = true;
+      });
+
+      if (this.itemsService.temporalItem?.images) {
+        this.itemSlides = this.item.images
+          .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+          .map(({ index, ...image }) => {
+            return {
+              url: completeImageURL(image.value),
+              index,
+              type: 'poster',
+              text: '',
+            };
+          });
+      }
+
+      if (this.item.webForms && this.item.webForms.length) {
+        const webform = await this.webformsService.webform(
+          this.item.webForms[0].reference
+        );
+
+        await this.getQuestions();
+        await this.getAnswersForWebform();
+
+        this.webform = webform;
+      }
+
+      await this.getSells();
+    }
+  }
+
+  async getTags() {
+    const tagsByUser = await this.tagsService.tagsByUser({
+      findBy: {
+        entity: 'item',
+      },
+      options: {
+        limit: -1,
+      },
+    });
+    this.allTags = tagsByUser ? tagsByUser : [];
+
+    for (const tag of this.allTags) {
+      this.tagsById[tag._id] = tag;
+    }
+
+    if (this.item) {
+      for (const tag of this.allTags) {
+        if (this.item.tags.includes(tag._id)) {
+          this.itemTagsIds.push(tag._id);
+          this.tagsInItem[tag._id] = true;
+        } else {
+          this.tagsInItem[tag._id] = false;
+        }
+      }
+    }
+
+    if (this.itemTagsIds.length > 0)
+      this.tagsString = this.itemTagsIds
+        .map((tagId) => this.tagsById[tagId].name)
+        .join(', ');
+    else this.tagsString = null;
+  }
+
+  async getCategories() {
+    const categories =
+      await this.communityCategoriesService.communitycategories({
+        filters: {},
+      });
+    this.allCategories = categories;
+
+    for (const category of this.allCategories) {
+      this.categoryById[category._id] = category;
+    }
+
+    const categoryIdsInItem =
+      this.item && this.item.categories
+        ? this.item.categories.map((category) => category._id)
+        : [];
+
+    if (this.item) {
+      for (const category of this.allCategories) {
+        if (categoryIdsInItem.includes(category._id)) {
+          this.itemCategoriesIds.push(category._id);
+        }
+      }
+    }
+
+    if (this.itemCategoriesIds.length > 0)
+      this.categoriesString = this.itemCategoriesIds
+        .map((categoryId) => this.categoryById[categoryId].name)
+        .join(', ');
+    else this.categoriesString = null;
   }
 
   async getQuestions(): Promise<void> {
@@ -653,6 +755,13 @@ export class ItemCreationComponent implements OnInit {
             type: 'number',
             validators: [Validators.pattern(/[\S]/), Validators.min(1)],
           },
+          {
+            label: 'Recipiente de la notificación',
+            name: 'notification-receiver',
+            type: 'email-or-phone',
+            placeholder: 'Escribe el WhatsApp o eMail..',
+            validators: [Validators.pattern(/[\S]/)],
+          },
         ];
         fieldsArrayForFieldValidation.push({
           fieldName: 'stock',
@@ -663,6 +772,11 @@ export class ItemCreationComponent implements OnInit {
           fieldName: 'notificationStockLimit',
           fieldKey: 'minimal-stock-notification',
           fieldTextDescription: 'Cantidad mínima para recibir notificación',
+        });
+        fieldsArrayForFieldValidation.push({
+          fieldName: 'notificationStockPhoneOrEmail',
+          fieldKey: 'notification-receiver',
+          fieldTextDescription: 'Recipiente de la notificación',
         });
         break;
     }
@@ -692,6 +806,148 @@ export class ItemCreationComponent implements OnInit {
         }
       });
     });
+  };
+
+  openTagsDialog = () => {
+    //TODO - Include the case when the user isn't logged/registered and is trying to create tags with the item
+
+    const bottomSheetRef = this._bottomSheet.open(TagFilteringComponent, {
+      data: {
+        title: 'Tags',
+        titleIcon: {
+          show: false,
+        },
+        categories: this.allTags
+          ? this.allTags.map((tag) => ({
+              _id: tag._id,
+              name: tag.name,
+              selected: this.itemTagsIds.includes(tag._id),
+            }))
+          : [],
+          /*
+        rightIcon: {
+          iconName: 'add',
+          callback: (data) => {
+            let fieldsToCreate: FormData = {
+              fields: [
+                {
+                  name: 'new-tag',
+                  placeholder: 'Nuevo tag',
+                  type: 'text',
+                  validators: [Validators.pattern(/[\S]/), Validators.required],
+                },
+              ],
+            };
+
+            unlockUI();
+
+            const dialogRef = this.dialog.open(FormComponent, {
+              data: fieldsToCreate,
+              disableClose: true,
+            });
+
+            dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+              if (!result?.controls['new-tag'].valid) {
+                this.headerService.showErrorToast('Tag inválido');
+              } else {
+                const tagToCreate = result?.value['new-tag'];
+
+                console.log('EL TAG', tagToCreate);
+              }
+            });
+          },
+        },*/
+      },
+    });
+
+    bottomSheetRef.instance.selectionOutput.subscribe(
+      async (tagsAdded: Array<string>) => {
+        if (this.item) {
+          const addedTags = tagsAdded.filter(
+            (tagId) => !this.tagsInItem[tagId]
+          );
+          const removedTags = Object.keys(this.tagsInItem).filter(
+            (tagId) => this.tagsInItem[tagId] && !tagsAdded.includes(tagId)
+          );
+
+          await Promise.all(
+            addedTags.map((tagId) =>
+              this.tagsService.itemAddTag(tagId, this.item._id)
+            )
+          );
+          await Promise.all(
+            removedTags.map((tagId) =>
+              this.tagsService.itemRemoveTag(tagId, this.item._id)
+            )
+          );
+
+          for (const tagId of addedTags) {
+            this.tagsInItem[tagId] = true;
+            this.itemTagsIds = tagsAdded;
+          }
+
+          for (const tagId of removedTags) {
+            this.tagsInItem[tagId] = false;
+            this.itemTagsIds = tagsAdded;
+          }
+
+          if (this.itemTagsIds.length > 0)
+            this.tagsString = this.itemTagsIds
+              .map((tagId) => this.tagsById[tagId].name)
+              .join(', ');
+          else this.tagsString = null;
+        } else {
+          this.tagsToCreate = tagsAdded.map(
+            (tagId) =>
+              ({
+                entity: 'item',
+                merchant: this.merchantsService.merchantData?._id
+                  ? this.merchantsService.merchantData?._id
+                  : null,
+                name: this.tagsById[tagId].name,
+                status: 'active',
+              } as TagInput)
+          );
+        }
+      }
+    );
+  };
+
+  openCategoriesDialog = () => {
+    const bottomSheetRef = this._bottomSheet.open(TagFilteringComponent, {
+      data: {
+        title: 'Categorias donde se exhibe',
+        titleIcon: {
+          show: false,
+        },
+        categories: this.allCategories.map((category) => ({
+          _id: category._id,
+          name: category.name,
+          selected: this.itemCategoriesIds.includes(category._id),
+        })),
+      },
+    });
+
+    bottomSheetRef.instance.selectionOutput.subscribe(
+      async (categoriesAdded: Array<string>) => {
+        if (this.item) {
+          await this.itemsService.updateItem(
+            {
+              categories: categoriesAdded,
+            },
+            this.item._id
+          );
+        }
+
+        this.itemCategoriesIds = categoriesAdded;
+
+        if (this.itemCategoriesIds.length > 0)
+          this.categoriesString = this.itemCategoriesIds
+            .map((categoryId) => this.categoryById[categoryId].name)
+            .join(', ');
+        else this.categoriesString = null;
+      }
+    );
   };
 
   async createWebform(
@@ -1040,7 +1296,16 @@ export class ItemCreationComponent implements OnInit {
       description: this.itemFormData.value['description'],
       pricing: this.itemFormData.value['pricing'],
       stock: Number(this.itemFormData.value['stock']),
-      notificationStockLimit: Number(this.itemFormData['notificationStockLimit']),
+      notificationStockLimit: Number(
+        this.itemFormData.value['notificationStockLimit']
+      ),
+      notificationStockPhoneOrEmail: this.itemFormData.value[
+        'notificationStockPhoneOrEmail'
+      ].e164Number
+        ? this.itemFormData.value[
+            'notificationStockPhoneOrEmail'
+          ].e164Number.split('+')[1]
+        : this.itemFormData.value['notificationStockPhoneOrEmail'],
       images,
       merchant: this.merchantsService.merchantData?._id,
       content: [],
@@ -1107,6 +1372,11 @@ export class ItemCreationComponent implements OnInit {
               createdItem: createdItem._id,
             };
 
+            if (this.itemTagsIds.length > 0) {
+              queryParamsForRedirectionRoute.tagsToAssignIds =
+                this.itemTagsIds.join('-');
+            }
+
             if (this.itemsService.questionsToAddToItem.length) {
               const createdWebformId = await this.createWebform(
                 this.itemsService.questionsToAddToItem,
@@ -1155,6 +1425,8 @@ export class ItemCreationComponent implements OnInit {
     }
 
     if (!this.item) {
+      itemInput.tags = this.itemTagsIds.length > 0 ? this.itemTagsIds : [];
+
       const createdItem = (await this.itemsService.createItem(itemInput))
         ?.createItem;
       await this.saleflowService.addItemToSaleFlow(
