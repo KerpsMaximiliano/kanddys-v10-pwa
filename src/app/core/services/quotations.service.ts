@@ -31,7 +31,11 @@ export class QuotationsService {
   quotationItemsInputBeingEdited: Array<ItemInput> = null;
   quotationBeingEdited: Quotation = null;
   quotationInCart: Quotation = null;
+
+  //Variables for keeping track of the items that are being added to a quotation before said quotation is created
+  //Or while you are editing it
   selectedItemsForQuotation: Array<string> = [];
+  quotationToUpdate: Quotation = null; 
 
   typeOfQuotationBeingEdited: 'DATABASE_QUOTATION' | 'TEMPORAL_QUOTATION' = 'DATABASE_QUOTATION';
   typeOfProvider: 'REGISTERED_SUPPLIER' | 'NEW_SUPPLIER' = null;

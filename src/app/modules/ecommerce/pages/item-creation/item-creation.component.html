@@ -121,7 +121,11 @@
             ></app-currency-input>
           </div>
 
-          <div class="field-text" (click)="openFormForField('STOCK')" *ngIf="itemFormData.controls['stock'].value && isASupplierItem">
+          <div
+            class="field-text"
+            (click)="openFormForField('STOCK')"
+            *ngIf="itemFormData.controls['stock'].value && isASupplierItem"
+          >
             <label for="">Cantidad disponible para vender</label>
 
             <input
@@ -341,7 +345,11 @@
             </ng-template>
           </div>
 
-          <div class="field-text" (click)="openFormForField('STOCK')" *ngIf="itemFormData.controls['stock'].value && !isASupplierItem">
+          <div
+            class="field-text"
+            (click)="openFormForField('STOCK')"
+            *ngIf="itemFormData.controls['stock'].value && !isASupplierItem"
+          >
             <label for="">Cantidad disponible para vender</label>
 
             <input
@@ -365,6 +373,24 @@
               No se está mostrando a Floristerias
             </p>
           </div>
+
+          <ng-container
+            *ngIf="itemCategoriesIds.length > 0 && !isASupplierItem"
+          >
+            <div class="field-text" (click)="openCategoriesDialog()">
+              <label for="">Categorias donde se exhibe</label>
+
+              <span>{{ categoriesString }}</span>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="itemTagsIds.length > 0 && !isASupplierItem">
+            <div class="field-text" (click)="openTagsDialog()">
+              <label for="">Tags para búsquedas</label>
+
+              <span>{{ tagsString }}</span>
+            </div>
+          </ng-container>
         </section>
 
         <section
@@ -462,6 +488,36 @@
             >
             </ng-container>
           </ng-container>
+
+          <ng-container
+            *ngIf="itemCategoriesIds.length === 0 && headerService.user"
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Categorias donde se exhibe',
+                  iconCallback: openCategoriesDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemTagsIds.length === 0 && headerService.user">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Tags para  búsquedas',
+                  iconCallback: openTagsDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
         </section>
 
         <section *ngIf="typeOfFlow === 'UPDATE_EXISTING_ITEM'">
@@ -521,6 +577,34 @@
                   fieldLabel: 'Cantidad disponible para vender',
                   iconCallback: openFormForField,
                   fieldNameForCallback: 'STOCK',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemCategoriesIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Categorias donde se exhibe',
+                  iconCallback: openCategoriesDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemTagsIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Tags para búsquedas',
+                  iconCallback: openTagsDialog,
                   notRequired: true
                 }
               "

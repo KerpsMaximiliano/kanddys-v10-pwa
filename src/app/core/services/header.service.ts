@@ -641,6 +641,35 @@ export class HeaderService {
     });
   }
 
+  buildURL(url, queryParams = null) {
+    // Check if queryParams is defined and is an object
+    if (queryParams && typeof queryParams === "object") {
+      // Get an array of keys from the queryParams object
+      const keys = Object.keys(queryParams);
+  
+      // Check if there are any query parameters to append
+      if (keys.length > 0) {
+        // Initialize an array to hold the query parameters
+        const queryArr = [];
+  
+        // Loop through the keys and build the query parameter string
+        keys.forEach((key) => {
+          const value = queryParams[key];
+          const encodedValue = encodeURIComponent(value); // URL-encode the value
+          queryArr.push(`${key}=${encodedValue}`);
+        });
+  
+        // Join the queryArr with "&" to create the final query parameter string
+        const queryString = queryArr.join("&");
+  
+        // Append the query string to the URL
+        url += `?${queryString}`;
+      }
+    }
+  
+    return url;
+  }
+
   redirectFromQueryParams() {
     let redirectionRoute = this.flowRoute;
 
