@@ -535,6 +535,7 @@ const routes: Routes = [
     path: 'admin-orders',
     component: AdminOrdersComponent
   },
+  {
     path: 'ambassadors-pending-payments',
     component: AmbassadorsPaymentsComponent
   },
