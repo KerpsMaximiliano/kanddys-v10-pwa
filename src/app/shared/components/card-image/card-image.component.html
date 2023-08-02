@@ -1,0 +1,37 @@
+<div class="content-comission-card">
+  <div class="content-comission-card-top">
+    <div class="flex">
+      <div class="content-comission-card-img"></div>
+      <p class="content-comission-card-title">{{title}}</p>
+    </div>
+    <p class="content-comission-card-payment">{{paymentText}}</p>
+  </div>
+  <div class="content-commision-card-bar">
+    {{barText}}
+  </div>
+  <div class="flex-space-between">
+    <p class="content-comission-card-desc" *ngIf="!paid">
+      Paga a <strong> kioskero@ghs.com </strong> por PayPal y sube el screenshot
+      para confirmar el pago.
+    </p>
+    <p class="content-comission-card-desc" *ngIf="paid">
+      Screenshot que representa el pago que hiciste a
+      <strong> kioskero@ghs.com </strong> por PayPal en {{paymentText}}
+    </p>
+    <div class="content-comission-card-img-container">
+      <div
+        (click)="selectFile()"
+        class="content-comission-card-img-uploader-container"
+      >
+        <mat-icon *ngIf="imageUrl == null && !paid">add</mat-icon>
+        <img [src]="imageUrl" *ngIf="imageUrl != null" />
+      </div>
+    </div>
+  </div>
+</div>
+<input
+  type="file"
+  #fileInput
+  (change)="onFileSelected($event)"
+  style="display: none"
+/>
