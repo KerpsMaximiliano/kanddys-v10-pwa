@@ -78,7 +78,7 @@ export class OrderFilteringComponent implements OnInit {
         from: this.start_date as any,
         to: this.end_date as any,
       };
-    
+
     const orders = (
       await this.merchantsService.ordersByMerchant(
         _id,
