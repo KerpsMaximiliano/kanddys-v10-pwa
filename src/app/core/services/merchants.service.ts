@@ -46,6 +46,10 @@ import {
   orderByStatusDelivery,
   higherIncomeBuyersByMerchant,
   entryMerchant,
+  currencyStartByMerchant,
+  walletsByCurrency,
+  paginateUsers,
+  payUserStarAffiliate
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -513,5 +517,60 @@ export class MerchantsService {
 
     if (!result || result?.errors) return undefined;
     return result.entryMerchant;
+  }
+
+  async currencyStartByMerchant(
+    merchantId: string
+  ) {
+    const result = await this.graphql.query({
+      query: currencyStartByMerchant,
+      variables: { merchantId },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.currencyStartByMerchant;
+  }
+
+  async walletsByCurrency(
+    paginate: PaginationInput,
+  ) {
+    const result = await this.graphql.query({
+      query: walletsByCurrency,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.walletsByCurrency;
+  }
+
+  async paginateUsers (input: PaginationInput) {
+    const result = await this.graphql.query({
+      query: paginateUsers,
+      variables: { input },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    console.log(result)
+    return result.paginateUsers;
+  }
+
+  async payUserStarAffiliate (
+    screenshot : File, 
+    paymentMethod : string, 
+    userId : string, 
+    merchantId : string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: payUserStarAffiliate,
+      variables: { screenshot, paymentMethod, userId, merchantId },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.payUserStarAffiliate;
   }
 }
