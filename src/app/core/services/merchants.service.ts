@@ -553,7 +553,6 @@ export class MerchantsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result)
     return result.paginateUsers;
   }
 
