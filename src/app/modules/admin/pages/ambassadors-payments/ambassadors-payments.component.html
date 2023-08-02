@@ -13,19 +13,19 @@
     <app-card-image 
       *ngFor="let user of users; index as i" title="{{user.name || user.email || user.phone}}" 
       barText="Listo para pagar la comisión de ${{wallets[i].balance}}" 
-      paymentText="{{wallets[i].userStars || 0}} pagos"
+      paymentText="{{wallets[i].metadata.usesStars || 0}} pagos"
       (paymentImage)="onPaymentImage($event, i)"
     >
     </app-card-image>
 
     <p class="content-title content-title-margin">Embajadores</p>
-    <div class="content-comission-card">
+    <div *ngFor="let user of users; index as i" class="content-comission-card">
         <div class="content-comission-card-top">
         <div class="flex">
             <div class="content-comission-card-img"></div>
-            <p class="content-comission-card-title">EmbajadorID</p>
+            <p class="content-comission-card-title">{{user.name || user.email || user.phone}}</p>
         </div>
-        <p class="content-comission-card-payment">10 pagos</p>
+        <p class="content-comission-card-payment">{{wallets[i].metadata.usesStars || 0}} pagos</p>
     </div>
       <div class="content-commision-card-bar">
           $35 de $50 para pagarle por PayPal
