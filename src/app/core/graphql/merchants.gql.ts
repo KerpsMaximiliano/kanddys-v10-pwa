@@ -484,3 +484,71 @@ export const higherIncomeBuyersByMerchant = gql`
     higherIncomeBuyersByMerchant(paginate: $paginate)
   }
 `;
+
+export const currencyStartByMerchant = gql`
+  query currencyStartByMerchant($merchantId: ObjectID!) {
+    currencyStartByMerchant(merchantId: $merchantId)
+  }
+`;
+
+export const walletsByCurrency = gql`
+  query walletsByCurrency($paginate: PaginationInput!) {
+    walletsByCurrency(paginate: $paginate) {
+      _id
+      balance
+      metadata {
+        usesStars
+        isRedeemable
+      }
+      currency {
+        merchant {
+          _id
+          name
+        }
+      }
+      owner {
+        _id
+      }
+      createdAt
+    }
+  }
+`;
+
+export const paginateUsers = gql`
+  query paginateUsers($input: PaginationInput!) {
+    paginateUsers(input: $input) {
+      results {
+        _id
+        name
+        email
+        phone
+        createdAt
+      }
+    }
+  }
+`;
+
+export const payUserStarAffiliate = gql`
+  mutation payUserStarAffiliate(
+    $screenshot: Upload!
+    $paymentMethod: String!
+    $userId: ObjectID!
+    $merchantId: ObjectID!
+  ) {
+    payUserStarAffiliate(
+      screenshot: $screenshot
+      paymentMethod: $paymentMethod
+      userId: $userId
+      merchantId: $merchantId
+    ) {
+      _id
+      ammount
+    }
+  }
+`;
+
+export const ordersCommissionableItemsCount = gql`
+  query ordersCommissionableItemsCount ($userId: [ObjectID!]!, $merchantId: ObjectID!) {
+    ordersCommissionableItemsCount (userId: $userId, merchantId: $merchantId)
+  }
+`;

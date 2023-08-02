@@ -129,6 +129,7 @@ export class DeliveryZonesComponent implements OnInit {
           }
         }
       )
+      console.log(result)
       
       this.deliveryIncomes.push({
         deliveryZone,

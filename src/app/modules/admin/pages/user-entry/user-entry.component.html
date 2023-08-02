@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="flex-space-between">
+    <mat-icon class="back-icon">chevron_left</mat-icon>
+    <div class="continue-text" (click)="sendForm()" *ngIf="!form.invalid">
+      Continuar
+    </div>
+  </div>
+  <form [formGroup]="form">
+    <div class="input-container">
+      <p>Escribe el WhatsApp de la persona que recibirá la factura:</p>
+      <input type="phone" formControlName="phone" placeholder="+xx-xxx-xxxx" />
+    </div>
+    <div class="input-container">
+      <p>Escribe el correo de la persona que recibirá la factura:</p>
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="correo@gmail.com"
+        pattern="[\w\._]{5,30}\+?[\w]{0,10}@[\w\.\~]{3,}\.\w{2,5}"
+      />
+    </div>
+    <div class="input-container input-container-margin">
+      <p>¿Cómo se llama este nuevo comprador?</p>
+      <input
+        type="text"
+        formControlName="name"
+        placeholder="Pedro García"
+        pattern="^[a-zA-Z]+( [a-zA-Z]+)?$"
+      />
+    </div>
+    <div class="option-buttons-container">
+      <div class="option-button option-button-selected">
+        No puede comprar a crédito
+      </div>
+      <div class="option-button">Si puede comprar a crédito</div>
+    </div>
+  </form>
+</div>
