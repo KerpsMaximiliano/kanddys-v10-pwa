@@ -78,7 +78,6 @@ export class AmbassadorPaymentsLibraryComponent implements OnInit {
       })
     });
     this.users = userInfo;
-    console.log("🚀 ~ file: ambassador-payments-library.component.ts:82 ~ AmbassadorPaymentsLibraryComponent ~ parseUserInfo ~ userInfo:", userInfo)
   }
 
   getComission(ammount: string){
@@ -86,7 +85,7 @@ export class AmbassadorPaymentsLibraryComponent implements OnInit {
   }
 
   formatDate(createdAt){
-    return moment(createdAt).format("YYYY-MM-DD");
+    return moment(createdAt).format("YYYY-MM-DD h:mm:ss");
   }
 
 }
