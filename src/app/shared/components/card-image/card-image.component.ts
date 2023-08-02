@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-card-image',
@@ -12,6 +12,8 @@ export class CardImageComponent implements OnInit {
   @Input() paid = false;
   @Input() imageUrl = null;
   @Input() barText = '';
+  selectedFile: File | null = null;
+  @Output() paymentImage = new EventEmitter<File>();
 
   constructor() { }
 
@@ -21,12 +23,11 @@ export class CardImageComponent implements OnInit {
     if(this.paid) return;
     this.fileInput.nativeElement.click();
   }
-  selectedFile: File | null = null;
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     this.selectedFile = file;
-
+    
     if (file) {
       const reader = new FileReader();
       reader.onload = e => {
@@ -36,5 +37,8 @@ export class CardImageComponent implements OnInit {
     } else {
       this.imageUrl = null;
     }
+    setTimeout(() => {
+      this.paymentImage.emit(event)
+    }, 1000)
   }
 }
