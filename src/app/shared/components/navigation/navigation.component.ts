@@ -27,6 +27,7 @@ import { SwiperOptions } from 'swiper';
 import { FormComponent, FormData } from '../../dialogs/form/form.component';
 import { FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-navigation',
@@ -93,7 +94,7 @@ export class NavigationComponent implements OnInit {
         {
           text: 'Registrar nuevos afiliados 📒',
           routerLink: ['/admin/merchants-entry'],
-          linkName: 'affiliate-entry'
+          linkName: 'affiliate-entry',
         },
       ],
     },
@@ -185,13 +186,13 @@ export class NavigationComponent implements OnInit {
         {
           text: 'Mi KiosKo 💰',
           routerLink: ['/admin/dashboard'],
-          linkName: 'my-dashboard'
+          linkName: 'my-dashboard',
         },
         {
           text: 'Carrito del Proveedor (yo compro)',
           routerLink: ['/ecommerce/supplier-items-selector'],
           possibleRedirection: ['/ecommerce/quotations'],
-          linkName: 'quotations-link'
+          linkName: 'quotations-link',
         } /*
         {
           text: 'Carritos de compradores',
@@ -288,7 +289,7 @@ export class NavigationComponent implements OnInit {
             supplierMode: true,
           },
           hardcodedURL: '/admin/supplier-dashboard?supplierMode=true',
-          linkName: 'my-dashboard'
+          linkName: 'my-dashboard',
         } /*
         {
           text: 'Carritos de compradores',
@@ -344,8 +345,12 @@ export class NavigationComponent implements OnInit {
     private itemsService: ItemsService,
     private router: Router,
     private matDialog: MatDialog,
+    private translate: TranslateService,
     private matSnackBar: MatSnackBar
-  ) {}
+  ) {
+    translate.setDefaultLang('en');
+    translate.use('en');
+  }
 
   async ngOnInit() {
     if (localStorage.getItem('session-token')) {
@@ -587,7 +592,7 @@ export class NavigationComponent implements OnInit {
             this.headerService.flowRouteForEachPage['florist-creating-item'] =
               this.router.url;
             this.router.navigate(['/ecommerce/item-management']);
-          } else {
+          } else if (result?.value[field.fieldKey] !== undefined) {
             this.headerService.showErrorToast();
           }
         } catch (error) {
@@ -630,9 +635,8 @@ export class NavigationComponent implements OnInit {
   }
 
   redirectToLink(link: any) {
-    this.headerService.flowRouteForEachPage[link.linkName] =
-    this.router.url;
-    
+    this.headerService.flowRouteForEachPage[link.linkName] = this.router.url;
+
     //console.log("ARMANDO");
 
     this.headerService.flowRoute = this.headerService.buildURL(

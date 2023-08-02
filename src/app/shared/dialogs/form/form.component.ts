@@ -127,6 +127,7 @@ export class FormComponent implements OnInit {
 
     setTimeout(() => {
       if (this.data.automaticallyFocusFirstField && firstEditableFieldFound) {
+        console.log(document.querySelector(firstEditableFieldId) as HTMLElement);
         (document.querySelector(firstEditableFieldId) as HTMLElement).focus();
       }
     }, 300);
@@ -173,6 +174,7 @@ export class FormComponent implements OnInit {
     const dialogElement = this.elementRef.nativeElement.parentElement;
 
     const clickedInsideDialog = dialogElement.contains(event.target as Node);
+    console.log('Element focused:', event.target);
 
     if (
       clickedInsideDialog &&

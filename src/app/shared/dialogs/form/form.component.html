@@ -153,7 +153,7 @@
     <button class="cancel" (click)="close()">
       {{ "cancel" | translate }}
     </button>
-    <button class="accept" [mat-dialog-close]="formGroup" cdkFocusInitial>
+    <button class="accept" [mat-dialog-close]="formGroup" [disabled]="!formGroup.valid">
       {{ "save-changes" | translate }}
     </button>
   </div>

@@ -509,3 +509,8 @@ input {
 ::ng-deep .mat-form-field-appearance-fill .mat-form-field-underline::before {
   background-color: #fed230;
 }
+
+::ng-deep .confirmation-dialog .mat-dialog-container {
+  padding: 24px !important;
+  background: #fff !important;
+}
