@@ -10,7 +10,14 @@
   </div>
   <div class="content">
     <p class="content-title">Comisiones por pagar a Embajadores</p>
-    <app-card-image title="EmbajadorId" barText="Listo para pagar la comisión de $50" paymentText="10 pagos"></app-card-image>
+    <input type="file" (change)="onPaymentImage($event, 0)" /><!--test input-->
+    <app-card-image 
+      *ngFor="let user of users; index as i" title="{{user.name || user.email || user.phone}}" 
+      barText="Listo para pagar la comisión de ${{wallets[i].balance}}" 
+      paymentText="{{wallets[i].userStars || 0}} pagos"
+      (paymentImage)="onPaymentImage($event, i)"
+    >
+    </app-card-image>
 
     <p class="content-title content-title-margin">Embajadores</p>
     <div class="content-comission-card">
