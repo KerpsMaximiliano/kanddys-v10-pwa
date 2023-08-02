@@ -502,7 +502,7 @@ export class MerchantsService {
   async entryMerchant(
     merchantID: string,
     merchantInput: MerchantInput,
-    userInput: UserInput,
+    userInput: UserInput
   ) {
     const result = await this.graphql.mutate({
       mutation: entryMerchant,
