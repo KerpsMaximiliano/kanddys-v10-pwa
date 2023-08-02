@@ -70,8 +70,23 @@
         <p class="content-card-title">
           {{ quotation?.name ? quotation.name : "Cotización sin nombre" }}
         </p>
-        <p class="content-card-quantity">
-          {{ quotation?.items?.length }} artículos
+        <p class="content-card-quantity" *ngIf="quotation?._id">
+          {{ quotation?.items?.length }} artículos. Promedio: ${{
+            !averageByQuotations[quotation?._id]
+              ? "Cargando..."
+              : (averageByQuotations[quotation?._id] | number : "1.2-2")
+          }}
+        </p>
+
+        <p
+          class="content-card-quantity"
+          *ngIf="!quotation?._id"
+        >
+          {{ quotation?.items?.length }} artículos. Promedio: ${{
+            !quotation.customId && !averageByQuotations[quotation?.customId]
+              ? "Cargando..."
+              : (averageByQuotations[quotation?.customId] | number : "1.2-2")
+          }}
         </p>
       </div>
     </div>
