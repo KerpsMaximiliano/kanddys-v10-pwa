@@ -704,7 +704,7 @@ export class ArticleDetailComponent implements OnInit {
     if (this.mode === 'preview') {
       this._ItemsService.itemUrls = [];
       return this.router.navigate([
-        `/admin/item-creation/${this.itemData._id}`,
+        `/ecommerce/item-management/${this.itemData._id}`,
       ]);
     }
     if (this.mode === 'image-preview') {

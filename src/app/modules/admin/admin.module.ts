@@ -67,7 +67,7 @@ import { RenameQuestionComponent } from './pages/rename-question/rename-question
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
 import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 import { MerchantsEntryComponent } from './pages/merchants-entry/merchants-entry.component';
-import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
+import { ItemCreationComponent as ItemCreation2Component } from './pages/item-creation/item-creation.component';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
@@ -83,6 +83,9 @@ import { OrderProgressFilteringComponent } from './pages/order-progress-filterin
 import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
 import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
 import { AmbassadorPaymentsLibraryComponent } from './pages/ambassador-payments-library/ambassador-payments-library.component';
+import { AmbassadorsComponent } from './pages/ambassadors/ambassadors.component';
+import { UserSearchComponent } from './pages/user-search/user-search.component';
+import { UserEntryComponent } from './pages/user-entry/user-entry.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -128,11 +131,11 @@ const routes: Routes = [
       },
       {
         path: 'item-creation/:itemId',
-        component: ItemCreationComponent,
+        component: ItemCreation2Component,
       },
       {
         path: 'item-creation',
-        component: ItemCreationComponent,
+        component: ItemCreation2Component,
       },
       {
         path: 'merchant-items',
@@ -222,6 +225,10 @@ const routes: Routes = [
       },
       {
         path: 'dashboard',
+        component: AdminDashboardComponent,
+      },
+      {
+        path: 'supplier-dashboard',
         component: AdminDashboardComponent,
       },
       {
@@ -426,10 +433,11 @@ const routes: Routes = [
     path: 'order-process/:merchantId',
     component: OrderProcessComponent,
   },
+  /*
   {
     path: 'article-detail/:articleId',
     component: ArticleDetailComponent,
-  },
+  },*/
   {
     path: 'reportings',
     component: ReportingsComponent,
@@ -524,6 +532,18 @@ const routes: Routes = [
   {
     path: 'ambassador-payments',
     component: AmbassadorPaymentsLibraryComponent
+  },
+  {
+    path: 'ambassadors',
+    component: AmbassadorsComponent
+  },
+  {
+    path: 'user-search',
+    component: UserSearchComponent
+  },
+  {
+    path: 'user-entry',
+    component: UserEntryComponent
   }
 ];
 
@@ -578,7 +598,7 @@ const routes: Routes = [
     RenameQuestionComponent,
     RewardsDisplayComponent,
     MerchantsEntryComponent,
-    ItemCreationComponent,
+    ItemCreation2Component,
     ItemSelectorComponent,
     SupplierRegisterComponent,
     /*
@@ -589,7 +609,10 @@ const routes: Routes = [
     OrderProgressFilteringComponent,
     OrderProgressComponent,
     OrderFilteringComponent,
-    AmbassadorPaymentsLibraryComponent
+    AmbassadorPaymentsLibraryComponent,
+    AmbassadorsComponent,
+    UserSearchComponent,
+    UserEntryComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [

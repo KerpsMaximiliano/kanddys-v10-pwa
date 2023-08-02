@@ -6,18 +6,22 @@ import {
   answerFrequent,
   answerPaginate,
   answersInWebformGroupedByUser,
+  authWebform,
   createAnswer,
   createWebform,
   itemAddWebForm,
   itemRemoveWebForm,
   itemUpdateWebForm,
   orderAddAnswer,
+  precreateWebform,
   questionAddAnswerDefault,
+  questionAddAnswerDefaultWithoutUser,
   questionPaginate,
   questionUpdateAnswerDefault,
   updateWebform,
   webform,
   webformAddQuestion,
+  webformAddQuestionWithoutUser,
   webformByMerchant,
   webformRemoveQuestion,
   webforms,
@@ -110,6 +114,23 @@ export class WebformsService {
     return result?.createWebform;
   }
 
+  async precreateWebform(input: WebformInput): Promise<Webform> {
+    const result = await this.graphql.mutate({
+      mutation: precreateWebform,
+      variables: { input },
+    });
+    return result?.precreateWebform;
+  }
+
+  async authWebform(webformId: string): Promise<Webform> {
+    const result = await this.graphql.mutate({
+      mutation: authWebform,
+      variables: { webformId },
+    });
+    return result?.authWebform;
+  }
+
+
   async updateWebform(id: string, input: WebformInput): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: updateWebform,
@@ -156,6 +177,19 @@ export class WebformsService {
     return result?.webformAddQuestion;
   }
 
+  async webformAddQuestionWithoutUser(
+    input: QuestionInput[],
+    id: string
+  ): Promise<Webform> {
+    this.webformId = id;
+    const result = await this.graphql.mutate({
+      mutation: webformAddQuestionWithoutUser,
+      variables: { input, id },
+      context: { useMultipart: true },
+    });
+    return result?.webformAddQuestionWithoutUser;
+  }
+
   async webformRemoveQuestion(
     questionId: Array<string>,
     id: string
@@ -179,6 +213,20 @@ export class WebformsService {
       context: { useMultipart: true },
     });
     return result?.questionAddAnswerDefault;
+  }
+
+  async questionAddAnswerDefaultWithoutUser(
+    input: AnswerDefaultInput[],
+    questionId: string,
+    webformId: string
+  ): Promise<Webform> {
+
+    const result = await this.graphql.mutate({
+      mutation: questionAddAnswerDefaultWithoutUser,
+      variables: { input, questionId, webformId },
+      context: { useMultipart: true },
+    });
+    return result?.questionAddAnswerDefaultWithoutUser;
   }
 
   async questionUpdateAnswerDefault (

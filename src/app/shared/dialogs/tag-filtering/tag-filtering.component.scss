@@ -32,6 +32,13 @@
     width: 40px;
     height: 40px;
   }
+
+  .icons {
+    color: var(--el-verdecito, #87cd9b);
+    font-size: 32.381px;
+    width: fit-content;
+    font-weight: bold;
+  }
 }
 
 .modal-title {
@@ -60,7 +67,6 @@
 }
 
 .modal-category {
- 
   color: #f6f6f6;
   font-family: InterMedium;
   font-size: 16px;
@@ -74,10 +80,10 @@
   border-radius: 29px;
 }
 
-.modal-category-selected{
- color: #181d17;
- background: #C4C5C3;
- font-weight: 700;
+.modal-category-selected {
+  color: #181d17;
+  background: #c4c5c3;
+  font-weight: 700;
 }
 
 ::ng-deep.mat-bottom-sheet-container {

@@ -204,8 +204,8 @@ export const deleteLocation = gql`
 `;
 
 export const listItems = gql`
-  query listItems($params: PaginationInput) {
-    listItems(params: $params) {
+  query listItems($params: PaginationInput, $searchName: String) {
+    listItems(params: $params, searchName: $searchName) {
       _id
       content
       name
@@ -268,8 +268,8 @@ export const listItems = gql`
 `;
 
 export const hotListItems = gql`
-  query listItems($params: PaginationInput) {
-    listItems(params: $params) {
+  query listItems($params: PaginationInput, $searchName: String) {
+    listItems(params: $params, searchName: $searchName) {
       _id
       status
     }

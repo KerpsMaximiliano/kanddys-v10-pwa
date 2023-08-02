@@ -10,8 +10,10 @@
           : "Detalles del articulo"
       }}
     </h2>
-
+    
     <div *ngIf="item" class="options-wrapper">
+    <img src="../../../../../assets/icons/switch-on.svg" *ngIf="item.status!='disabled'"/>
+    <img src="../../../../../assets/icons/switch-off.svg" *ngIf="item.status=='disabled'"/>
       <img
         [src]="
           currentView === 'ITEM_FORM'
@@ -23,7 +25,6 @@
           currentView =
             currentView === 'ITEM_FORM' ? 'ITEM_METRICS' : 'ITEM_FORM'
         "
-        style="cursor: pointer;"
       />
       <img [src]="assetsFolder + '/dots-black.svg'" alt="more options" />
     </div>
@@ -32,6 +33,9 @@
   <main [formGroup]="itemFormData">
     <ng-container [ngSwitch]="currentView">
       <ng-container *ngSwitchCase="'ITEM_FORM'">
+        <div class="disabled-item-container" *ngIf="item?.status=='disabled'">
+          El artículo está oculto 
+        </div>
         <label
           for="file"
           class="itemContainer add"
@@ -286,20 +290,22 @@
         >
           <h3>FUNCIONALIDADES OPCIONALES</h3>
 
-          <div class="row" *ngIf="!itemFormData.controls['title'].value" (click)="openFormForField('TITLE')">
+          <div class="row" *ngIf="!itemFormData.controls['title'].value">
             <span>Texto principal y centralizado</span>
 
             <img
+              (click)="openFormForField('TITLE')"
               [src]="assetsFolder + '/add_button_circle.svg'"
               alt="add media"
               class="upload-media"
             />
           </div>
 
-          <div class="row" *ngIf="!itemFormData.controls['description'].value" (click)="openFormForField('DESCRIPTION')">
+          <div class="row" *ngIf="!itemFormData.controls['description'].value">
             <span>Texto más largo</span>
 
             <img
+              (click)="openFormForField('DESCRIPTION')"
               [src]="assetsFolder + '/add_button_circle.svg'"
               alt="add media"
               class="upload-media"
@@ -313,21 +319,22 @@
               !webform &&
               !item
             "
-            (click)="goToWebformCreationOrEdition()"
           >
             <span>Preguntas a compradores</span>
 
             <img
+              (click)="goToWebformCreationOrEdition()"
               [src]="assetsFolder + '/add_button_circle.svg'"
               alt="add media"
               class="upload-media"
             />
           </div>
 
-          <div class="row" *ngIf="!webform && item" (click)="goToWebformCreationOrEdition()">
+          <div class="row" *ngIf="!webform && item">
             <span>Preguntas a compradores</span>
 
             <img
+              (click)="goToWebformCreationOrEdition()"
               [src]="assetsFolder + '/add_button_circle.svg'"
               alt="add media"
               class="upload-media"
@@ -388,12 +395,6 @@
       </ng-container>
 
       <ng-container *ngSwitchCase="'ITEM_METRICS'">
-        <div style="margin-bottom: 2em;">
-          <p class="link-button" (click)="copyToClipboard()">Copia el link</p>
-          <p class="link-button" (click)="downloadQr(articleQrCode)">Descarga el QR</p>
-          <p class="link-button" (click)="share()">Compártelo</p>
-          <p class="link-button" (click)="goToItemDetail('PREVIEW')">Míralo como la ven los compradores</p>
-        </div>
         <h3 class="metrics-title">Información interna que sólo tu ves:</h3>
 
         <div class="metric">
@@ -441,20 +442,4 @@
       Actualizar
     </button>
   </footer>
-</div>
-
-<div
-  style="display: none;"
-  *ngIf="itemURL"
->
-  <qrcode
-    #articleQrCode
-    [qrdata]="itemURL"
-    [elementType]="'img'"
-    [width]="500"
-    [style.margin-top.px]="-25"
-    [errorCorrectionLevel]="'M'"
-    [allowEmptyString]="true"
-    colorDark="#000000"
-  ></qrcode>
 </div>

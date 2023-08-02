@@ -467,7 +467,8 @@ const declarations = [
   InventoryComponent,
   SupplierRegistrationComponent,
   ProgressBarComponent,
-  CardImageComponent
+  CardImageComponent,
+  ProgressBarComponent
 ];
 
 @NgModule({

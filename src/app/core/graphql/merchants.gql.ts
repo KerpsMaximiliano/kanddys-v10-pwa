@@ -484,3 +484,41 @@ export const higherIncomeBuyersByMerchant = gql`
     higherIncomeBuyersByMerchant(paginate: $paginate)
   }
 `;
+
+export const currencyStartByMerchant = gql`
+  query currencyStartByMerchant($merchantId: ObjectID!) {
+    currencyStartByMerchant(merchantId: $merchantId)
+  }
+`;
+
+export const walletsByCurrency = gql`
+  query walletsByCurrency ($paginate: PaginationInput!) {
+    walletsByCurrency(paginate: $paginate) {
+      _id
+      balance
+      metadata {
+        usesStars
+        isRedeemable
+      }
+      currency {
+        merchant {
+          _id
+          name
+        }
+      }
+      owner {
+        _id
+      }
+      owner {
+        _id
+      }
+      createdAt
+    }
+  }
+`;
+
+export const ordersCommissionableItemsCount = gql`
+  query ordersCommissionableItemsCount ($userId: [ObjectID!]!, $merchantId: ObjectID!) {
+    ordersCommissionableItemsCount (userId: $userId, merchantId: $merchantId)
+  }
+`;

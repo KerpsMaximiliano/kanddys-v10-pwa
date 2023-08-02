@@ -24,6 +24,6 @@ export class MsgDialogComponent implements OnInit {
 
   closeDialog() {
     this.closeSignal.emit(true);
-    //this.router.navigate(['admin/item-creation/' + this.item._id]);
+    //this.router.navigate(['ecommerce/item-management/' + this.item._id]);
   }
 }

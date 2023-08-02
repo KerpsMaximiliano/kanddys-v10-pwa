@@ -463,7 +463,7 @@
       acceso al contenido.
     </p>
 
-    <div class="section" *ngIf="headerService.order.receiverData">
+    <div class="section" *ngIf="headerService.order?.receiverData">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Recipiente</h2>
       </div>
@@ -479,12 +479,12 @@
         style="padding: 17px"
       >
         <ul class="receiverData">
-          <li>Lo recibirá: {{ headerService.order.receiverData.receiver }}</li>
-          <li *ngIf="headerService.order.receiverData.receiverPhoneNumber">
-            Telefono: {{ headerService.order.receiverData.receiverPhoneNumber }}
+          <li>Lo recibirá: {{ headerService.order?.receiverData.receiver }}</li>
+          <li *ngIf="headerService.order?.receiverData.receiverPhoneNumber">
+            Telefono: {{ headerService.order?.receiverData.receiverPhoneNumber }}
           </li>
-          <li *ngIf="headerService.order.receiverData.sender">
-            Envía: {{ headerService.order.receiverData.sender }}
+          <li *ngIf="headerService.order?.receiverData.sender">
+            Envía: {{ headerService.order?.receiverData.sender }}
           </li>
         </ul>
       </button>
