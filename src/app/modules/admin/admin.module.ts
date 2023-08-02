@@ -82,6 +82,7 @@ import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-c
 import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
 import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
 import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
+import { UserSearchComponent } from './pages/user-search/user-search.component';
 import { UserEntryComponent } from './pages/user-entry/user-entry.component';
 
 const routes: Routes = [
@@ -527,6 +528,10 @@ const routes: Routes = [
     component: OrderFilteringComponent
   },
   {
+    path: 'user-search',
+    component: UserSearchComponent
+  },
+  {
     path: 'user-entry',
     component: UserEntryComponent
   }
@@ -594,6 +599,7 @@ const routes: Routes = [
     OrderProgressFilteringComponent,
     OrderProgressComponent,
     OrderFilteringComponent,
+    UserSearchComponent,
     UserEntryComponent
   ],
   exports: [ArticleCreatorComponent],
