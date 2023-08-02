@@ -34,14 +34,11 @@ export class AmbassadorsPaymentsComponent implements OnInit {
     })
     await this.MerchantsService.currencyStartByMerchant(this.merchantId).then((data)=>{
       this.walletQuery.findBy.currency = data.affiliate._id;
-      console.log(this.walletQuery.findBy)
     })
     let walletUsers : string;
     await this.MerchantsService.walletsByCurrency(this.walletQuery).then((data)=>{
-        console.log(data)
         this.wallets = data
         walletUsers = data.map((wallet) => wallet.owner._id)
-        console.log(walletUsers)
     })
     this.MerchantsService.paginateUsers({
       findBy: {
@@ -49,21 +46,17 @@ export class AmbassadorsPaymentsComponent implements OnInit {
       }
     }).then((data)=>{
       this.users = data.results;
-      console.log(this.users)
     })
   }
 
   async onPaymentImage(event: any, index: number) {
-    setTimeout(() => {
-      console.log(event)
       this.MerchantsService.payUserStarAffiliate(
         event.target.files[0],
         "bank-transfer",
-        this.merchantId,
         this.wallets[index].owner._id,
+        this.merchantId,
         ).then((data)=>{
           console.log(data)
       })
-    }, 5000)
   }
 }

@@ -530,7 +530,7 @@ export const paginateUsers = gql`
 
 export const payUserStarAffiliate = gql`
   mutation payUserStarAffiliate(
-    $screenshot: File!
+    $screenshot: Upload!
     $paymentMethod: String!
     $userId: ObjectID!
     $merchantId: ObjectID!
