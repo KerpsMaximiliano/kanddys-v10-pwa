@@ -27,7 +27,6 @@ export class CardImageComponent implements OnInit {
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     this.selectedFile = file;
-    
     if (file) {
       const reader = new FileReader();
       reader.onload = e => {
@@ -37,8 +36,6 @@ export class CardImageComponent implements OnInit {
     } else {
       this.imageUrl = null;
     }
-    setTimeout(() => {
-      this.paymentImage.emit(event)
-    }, 1000)
+    this.paymentImage.emit(event)
   }
 }
