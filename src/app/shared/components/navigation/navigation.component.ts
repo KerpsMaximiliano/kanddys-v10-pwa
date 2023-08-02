@@ -313,7 +313,7 @@ export class NavigationComponent implements OnInit {
         button: {
           text: 'Administración de mis artículos',
           callback: () => {
-            this.router.navigate(['/admin/dashboard'], {
+            this.router.navigate(['/admin/supplier-dashboard'], {
               queryParams: {
                 supplierMode: true,
               },

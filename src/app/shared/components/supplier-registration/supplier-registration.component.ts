@@ -710,7 +710,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         });
       }
 
-      this.router.navigate(['/admin/dashboard'], {
+      this.router.navigate(['/admin/supplier-dashboard'], {
         queryParams: {
           supplierMode: true
         }

@@ -38,6 +38,8 @@ import {
   itemUpdateImage,
   itemTotalPagination,
   itemsByMerchantNosale,
+  salesPositionOfItemByMerchant,
+  buyersByItemInMerchantStore,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -55,6 +57,8 @@ import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 import { ExtendedQuestionInput } from 'src/app/shared/components/form-creator/form-creator.component';
 import { SlideInput } from '../models/post';
+import { Tag } from '../models/tags';
+import { CommunityCategory } from '../models/community-categories';
 
 export interface ExtendedItemInput extends ItemInput {
   slides?: Array<SlideInput>;
@@ -80,6 +84,23 @@ export class ItemsService {
   questionsToAddToItem: Array<ExtendedQuestionInput> = [];
   modifiedImagesFromExistingItem: boolean = false;
   createUserAlongWithItem: boolean = false;
+
+  //stores tags & categories for the current item being created
+  /*
+  allTags: Array<Tag> = null;
+  tagsInItem: Record<string, boolean> = null;
+  tagsById: Record<string, Tag> = null;
+  itemTagsIds: Array<string> = null;
+  tagsString: string = null;
+  tagsToCreate: Array<Tag> = null;
+  tagsToCreateIDs: Array<string> = null;
+
+  allCategories: Array<ItemCategory> = null;
+  categoriesInItem: Record<string, boolean> = null;
+  categoryById: Record<string, ItemCategory> = null;
+  itemCategoriesIds: Array<string> = null;
+  categoriesString: string = null;
+  categoriesToCreate: Array<ItemCategory> = null;*/
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;
@@ -252,6 +273,38 @@ export class ItemsService {
     }
   }
 
+  async salesPositionOfItemByMerchant(
+    itemID: string,
+    paginate: PaginationInput
+  ): Promise<number> {
+    try {
+      const response = await this.graphql.query({
+        query: salesPositionOfItemByMerchant,
+        variables: { itemID, paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return response?.salesPositionOfItemByMerchant;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async buyersByItemInMerchantStore(
+    itemID: string,
+    paginate: PaginationInput
+  ): Promise<number> {
+    try {
+      const response = await this.graphql.query({
+        query: buyersByItemInMerchantStore,
+        variables: { itemID, paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return response?.buyersByItemInMerchantStore;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async totalByItem(
     merchantId: string,
     itemId?: string[]
@@ -338,10 +391,10 @@ export class ItemsService {
   }
 
   // Agregar categoria
-  async createItemCategory(input: ItemCategoryInput): Promise<ItemCategory> {
+  async createItemCategory(input: ItemCategoryInput, isAdmin = false): Promise<ItemCategory> {
     const result = await this.graphql.mutate({
       mutation: createItemCategory,
-      variables: { input },
+      variables: { isAdmin, input },
       context: { useMultipart: true },
     });
     if (!result || result?.errors) return undefined;

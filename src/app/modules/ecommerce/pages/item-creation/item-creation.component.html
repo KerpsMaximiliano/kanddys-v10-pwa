@@ -49,7 +49,7 @@
         >
           {{
             typeOfFlow === "UPDATE_EXISTING_ITEM"
-              ? "Vendes. Si quieres pagas comisión a vendedores para más alacance."
+              ? "Vendes. Si quieres pagas comisión a vendedores para más alcance."
               : "Esta plataforma te pone al frente de floristerias que necesitan exactamente lo que ofreces."
           }}
         </p>
@@ -464,7 +464,10 @@
             (itemsService.questionsToAddToItem.length === 0 &&
               !webform &&
               !item) ||
-            (item && !webform && typeOfFlow === 'ITEM_CREATION')
+            (item && !webform && typeOfFlow === 'ITEM_CREATION') ||
+            (itemCategoriesIds.length === 0 &&
+              typeOfFlow === 'ITEM_CREATION') ||
+            (itemTagsIds.length === 0 && typeOfFlow === 'ITEM_CREATION')
           "
         >
           <h2 class="section-title">FUNCIONALIDADES OPCIONALES</h2>
@@ -489,9 +492,7 @@
             </ng-container>
           </ng-container>
 
-          <ng-container
-            *ngIf="itemCategoriesIds.length === 0 && headerService.user"
-          >
+          <ng-container *ngIf="itemCategoriesIds.length === 0">
             <ng-container
               *ngTemplateOutlet="
                 addField;
@@ -685,6 +686,28 @@
           <h4>Cantidad de veces vendido</h4>
 
           <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
+        </div>
+
+        <div class="metric">
+          <h4>Lugar en ventas en tu KiosKo</h4>
+
+          <p>
+            {{
+              salesPositionInStore > 0
+                ? salesPositionInStore
+                : "No se ha vendido todavía"
+            }}
+          </p>
+        </div>
+
+        <div class="metric">
+          <h4>Cantidad de compradores diferentes</h4>
+
+          <p>
+            {{
+              buyersInStore > 0 ? buyersInStore : "No lo han comprado todavía"
+            }}
+          </p>
         </div>
       </ng-container>
     </ng-container>

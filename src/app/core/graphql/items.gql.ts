@@ -204,6 +204,25 @@ export const bestSellersByMerchant = gql`
   }
 `;
 
+export const salesPositionOfItemByMerchant = gql`
+  query salesPositionOfItemByMerchant(
+    $itemID: ObjectID!
+    $paginate: PaginationInput!
+  ) {
+    salesPositionOfItemByMerchant(itemID: $itemID, paginate: $paginate)
+  }
+`;
+
+export const buyersByItemInMerchantStore = gql`
+  query buyersByItemInMerchantStore(
+    $itemID: ObjectID!
+    $paginate: PaginationInput!
+  ) {
+    buyersByItemInMerchantStore(itemID: $itemID, paginate: $paginate)
+  }
+`;
+
+
 export const totalByItem = gql`
   query totalByItem($itemId: [ObjectID!], $merchantId: ObjectID!) {
     totalByItem(itemId: $itemId, merchantId: $merchantId)
@@ -598,8 +617,8 @@ export const itemCategoriesList = gql`
 `;
 
 export const createItemCategory = gql`
-  mutation createItemCategory($input: ItemCategoryInput!) {
-    createItemCategory(input: $input) {
+  mutation createItemCategory($isAdmin: Boolean, $input: ItemCategoryInput!) {
+    createItemCategory(isAdmin: $isAdmin, input: $input) {
       merchant {
         _id
       }

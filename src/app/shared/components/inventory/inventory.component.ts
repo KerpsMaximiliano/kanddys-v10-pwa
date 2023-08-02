@@ -27,6 +27,7 @@ export class InventoryComponent implements OnInit {
   openNavigation: boolean = false;
   merchant: Merchant;
   quotations: Quotation[] = [];
+  averageByQuotations: Record<string, number> = {};
   temporalQuotations: QuotationInput[] = [];
   mode:
     | 'QUOTATIONS_OF_EXISTING_USER_SESSION'
@@ -79,7 +80,53 @@ export class InventoryComponent implements OnInit {
           if (Array.isArray(storedTemporalQuotations)) {
             this.temporalQuotations = storedTemporalQuotations;
             this.quotationsService.temporalQuotations = this.temporalQuotations;
+
+            const matchesByEachQuotation =
+              await this.quotationsService.multipleQuotationMatchesByItems(
+                this.quotationsService.temporalQuotations.map(
+                  (quotation) => quotation.items
+                ),
+                {}
+              );
+
+            for (const matchesByQuotation of matchesByEachQuotation) {
+              this.quotationsService.temporalQuotations.forEach(
+                (quotation, index) => {
+                  const quotationItemsString = quotation.items.join('-');
+                  if (
+                    quotationItemsString === matchesByQuotation.quotationItems
+                  ) {
+                    this.quotationsService.temporalQuotations[index].customId =
+                      quotationItemsString;
+                    this.averageByQuotations[quotationItemsString] =
+                      matchesByQuotation.averageOfProviders;
+                  }
+                }
+              );
+            }
           }
+        }
+      } else {
+        const matchesByEachQuotation =
+          await this.quotationsService.multipleQuotationMatchesByItems(
+            this.quotationsService.temporalQuotations.map(
+              (quotation) => quotation.items
+            ),
+            {}
+          );
+
+        for (const matchesByQuotation of matchesByEachQuotation) {
+          this.quotationsService.temporalQuotations.forEach(
+            (quotation, index) => {
+              const quotationItemsString = quotation.items.join('-');
+              if (quotationItemsString === matchesByQuotation.quotationItems) {
+                this.quotationsService.temporalQuotations[index].customId =
+                  quotationItemsString;
+                this.averageByQuotations[quotationItemsString] =
+                  matchesByQuotation.averageOfProviders;
+              }
+            }
+          );
         }
       }
     } else {
@@ -115,6 +162,17 @@ export class InventoryComponent implements OnInit {
         },
       });
       this.quotations = result;
+
+      const matchesByEachQuotation =
+        await this.quotationsService.multipleQuotationMatches(
+          this.quotations.map((quotation) => quotation._id),
+          {}
+        );
+
+      for (const matchesByQuotation of matchesByEachQuotation) {
+        this.averageByQuotations[matchesByQuotation.quotationId] =
+          matchesByQuotation.averageOfProviders;
+      }
 
       if (this.quotations.length === 0) {
         this.router.navigate(['/ecommerce/supplier-items-selector']);
