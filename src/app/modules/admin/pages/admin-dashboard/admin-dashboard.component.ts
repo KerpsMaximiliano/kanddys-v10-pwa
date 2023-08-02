@@ -14,7 +14,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
+import {
+  Item,
+  ItemCategory,
+  ItemImageInput,
+  ItemInput,
+} from 'src/app/core/models/item';
 import { ItemOrder } from 'src/app/core/models/order';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
@@ -309,10 +314,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       if (jsondata) {
         let parsedData = JSON.parse(decodeURIComponent(jsondata));
 
+        //console.log('parsedData', parsedData);
+
         if (parsedData.createdItem) {
           try {
             lockUI();
             const createdItemId = parsedData.createdItem;
+
+            const item = await this._ItemsService.item(createdItemId);
 
             const saleflowDefault = await this._SaleflowService.saleflowDefault(
               this._MerchantsService.merchantData._id
@@ -341,6 +350,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               );
             }
 
+            //For existing tags that are going to be assigned to the item
             if (parsedData.tagsToAssignIds) {
               const tagsToAssignIds: Array<string> =
                 parsedData.tagsToAssignIds.split('-');
@@ -352,8 +362,79 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               );
             }
 
+            //For tags the user created while not being logged-in
+            if (parsedData.itemTagsToCreate?.length > 0) {
+              const createdTags: Array<Tag> = [];
+
+              for await (const tagName of parsedData.itemTagsToCreate) {
+                const createdTag = await this.tagsService.createTag({
+                  entity: 'item',
+                  merchant: this._MerchantsService.merchantData._id,
+                  name: tagName,
+                  status: 'active',
+                });
+
+                createdTags.push(createdTag);
+              }
+
+              let tagIndex = 0;
+              for await (const createdTag of createdTags) {
+                if (
+                  parsedData.tagsIndexesToAssignAfterCreated?.length > 0 &&
+                  parsedData.tagsIndexesToAssignAfterCreated.includes(tagIndex)
+                ) {
+                  await this.tagsService.itemAddTag(
+                    createdTags[tagIndex]._id,
+                    createdItemId
+                  );
+                }
+                tagIndex++;
+              }
+            }
+
+            //For itemCategories the user created while not being logged-in
+            if (parsedData.itemCategoriesToCreate?.length > 0) {
+              const createdCategories: Array<ItemCategory> = [];
+
+              for await (const categoryName of parsedData.itemCategoriesToCreate) {
+                const createdCategory =
+                  await this._ItemsService.createItemCategory(
+                    {
+                      merchant: this._MerchantsService.merchantData?._id,
+                      name: categoryName,
+                      active: true,
+                    },
+                    false
+                  );
+
+                createdCategories.push(createdCategory);
+              }
+
+              if (
+                parsedData.categoriesIndexesToAssignAfterCreated?.length > 0
+              ) {
+                await this._ItemsService.updateItem(
+                  {
+                    category: createdCategories
+                      .filter((category, index) =>
+                        parsedData.categoriesIndexesToAssignAfterCreated.includes(
+                          index
+                        )
+                      )
+                      .map((category) => category._id),
+                  },
+                  createdItemId
+                );
+              }
+            }
+
             unlockUI();
-            window.location.href = environment.uri + '/admin/dashboard';
+
+            window.location.href =
+              environment.uri +
+              (item.type !== 'supplier'
+                ? '/admin/dashboard'
+                : '/admin/supplier-dashboard?supplierMode=true');
           } catch (error) {
             unlockUI();
 
@@ -423,13 +504,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
             unlockUI();
             window.location.href =
-              environment.uri + '/admin/dashboard?supplierMode=true';
+              environment.uri + '/admin/supplier-dashboard?supplierMode=true';
           } catch (error) {
             unlockUI();
 
             console.error(error);
           }
         }
+
+        return;
       }
 
       if (view)
@@ -865,7 +948,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                           };
                         }
                       );
-                      console.log(images);
+                      //console.log(images);
                       if (!pricing) return;
                       lockUI();
                       const itemInput: ItemInput = {

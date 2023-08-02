@@ -9,7 +9,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CommunityCategory } from 'src/app/core/models/community-categories';
-import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
+import {
+  Item,
+  ItemCategory,
+  ItemImageInput,
+  ItemInput,
+} from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SlideInput } from 'src/app/core/models/post';
 import { Tag, TagInput } from 'src/app/core/models/tags';
@@ -113,6 +118,8 @@ export class ItemCreationComponent implements OnInit {
   isFormUpdated: boolean = false;
   isASupplierItem: boolean = false;
   isCurrentUserAMerchant: boolean = false;
+  salesPositionInStore: number = 0;
+  buyersInStore: number = 0;
 
   //Tags variables
   allTags: Array<Tag> = [];
@@ -120,14 +127,16 @@ export class ItemCreationComponent implements OnInit {
   tagsById: Record<string, Tag> = {};
   itemTagsIds: Array<string> = [];
   tagsString: string = null;
-  tagsToCreate: Array<TagInput> = [];
+  tagsToCreate: Array<Tag> = [];
+  tagsToCreateIDs: Array<string> = [];
 
   //Categories to create
-  allCategories: Array<CommunityCategory> = [];
+  allCategories: Array<ItemCategory> = [];
   categoriesInItem: Record<string, boolean> = {};
   categoryById: Record<string, CommunityCategory> = {};
   itemCategoriesIds: Array<string> = [];
   categoriesString: string = null;
+  categoriesToCreate: Array<ItemCategory> = [];
 
   constructor(
     private fb: FormBuilder,
@@ -228,6 +237,32 @@ export class ItemCreationComponent implements OnInit {
 
       this.isCurrentUserAMerchant =
         await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+      const salesPositionInStore =
+        await this.itemsService.salesPositionOfItemByMerchant(this.item._id, {
+          findBy: {
+            merchant: this.item.merchant._id,
+          },
+          options: {
+            limit: -1,
+          },
+        });
+
+      const buyersInStore = await this.itemsService.buyersByItemInMerchantStore(
+        this.item._id,
+        {
+          findBy: {
+            merchant: this.item.merchant._id,
+          },
+          options: {
+            limit: -1,
+          },
+        }
+      );
+
+      if (salesPositionInStore)
+        this.salesPositionInStore = salesPositionInStore;
+      if (buyersInStore >= 0) this.buyersInStore = buyersInStore;
 
       const isCurrentMerchantTheSameAsTheItemMerchant =
         this.item.merchant?._id === this.merchantsService.merchantData?._id;
@@ -332,6 +367,8 @@ export class ItemCreationComponent implements OnInit {
       },
     });
     this.allTags = tagsByUser ? tagsByUser : [];
+    this.tagsInItem = {};
+    this.itemTagsIds = [];
 
     for (const tag of this.allTags) {
       this.tagsById[tag._id] = tag;
@@ -356,10 +393,19 @@ export class ItemCreationComponent implements OnInit {
   }
 
   async getCategories() {
-    const categories =
-      await this.communityCategoriesService.communitycategories({
-        filters: {},
-      });
+    this.categoriesString = '';
+    this.itemCategoriesIds = [];
+    const categories = (
+      await this.itemsService.itemCategories(
+        this.merchantsService.merchantData._id,
+        {
+          options: {
+            limit: -1,
+          },
+        }
+      )
+    )?.itemCategoriesList;
+
     this.allCategories = categories;
 
     for (const category of this.allCategories) {
@@ -367,8 +413,8 @@ export class ItemCreationComponent implements OnInit {
     }
 
     const categoryIdsInItem =
-      this.item && this.item.categories
-        ? this.item.categories.map((category) => category._id)
+      this.item && this.item.category
+        ? this.item.category.map((category) => category._id)
         : [];
 
     if (this.item) {
@@ -817,14 +863,17 @@ export class ItemCreationComponent implements OnInit {
         titleIcon: {
           show: false,
         },
-        categories: this.allTags
+        categories: this.headerService.user
           ? this.allTags.map((tag) => ({
               _id: tag._id,
               name: tag.name,
               selected: this.itemTagsIds.includes(tag._id),
             }))
-          : [],
-          /*
+          : this.tagsToCreate.map((tag) => ({
+              _id: tag._id,
+              name: tag.name,
+              selected: this.itemTagsIds.includes(tag._id),
+            })),
         rightIcon: {
           iconName: 'add',
           callback: (data) => {
@@ -841,6 +890,8 @@ export class ItemCreationComponent implements OnInit {
 
             unlockUI();
 
+            bottomSheetRef.dismiss();
+
             const dialogRef = this.dialog.open(FormComponent, {
               data: fieldsToCreate,
               disableClose: true,
@@ -850,13 +901,41 @@ export class ItemCreationComponent implements OnInit {
               if (!result?.controls['new-tag'].valid) {
                 this.headerService.showErrorToast('Tag inválido');
               } else {
-                const tagToCreate = result?.value['new-tag'];
+                if (this.headerService.user) {
+                  const tagToCreate = result?.value['new-tag'];
 
-                console.log('EL TAG', tagToCreate);
+                  lockUI();
+                  await this.tagsService.createTag({
+                    entity: 'item',
+                    name: tagToCreate,
+                    merchant: this.merchantsService.merchantData?._id,
+                  });
+
+                  await this.getTags();
+
+                  unlockUI();
+
+                  this.openTagsDialog();
+                } else {
+                  this.tagsToCreate.push({
+                    _id: 'created-tag-' + result?.value['new-tag'],
+                    entity: 'item',
+                    name: result?.value['new-tag'],
+                    merchant: null,
+                  } as any);
+                  this.tagsById['created-tag-' + result?.value['new-tag']] = {
+                    _id: 'created-tag-' + result?.value['new-tag'],
+                    entity: 'item',
+                    name: result?.value['new-tag'],
+                    merchant: null,
+                  } as any;
+
+                  this.openTagsDialog();
+                }
               }
             });
           },
-        },*/
+        },
       },
     });
 
@@ -897,17 +976,11 @@ export class ItemCreationComponent implements OnInit {
               .join(', ');
           else this.tagsString = null;
         } else {
-          this.tagsToCreate = tagsAdded.map(
-            (tagId) =>
-              ({
-                entity: 'item',
-                merchant: this.merchantsService.merchantData?._id
-                  ? this.merchantsService.merchantData?._id
-                  : null,
-                name: this.tagsById[tagId].name,
-                status: 'active',
-              } as TagInput)
-          );
+          this.itemTagsIds = tagsAdded;
+
+          this.tagsString = this.itemTagsIds
+            .map((tagId) => this.tagsById[tagId].name)
+            .join(', ');
         }
       }
     );
@@ -920,11 +993,82 @@ export class ItemCreationComponent implements OnInit {
         titleIcon: {
           show: false,
         },
-        categories: this.allCategories.map((category) => ({
-          _id: category._id,
-          name: category.name,
-          selected: this.itemCategoriesIds.includes(category._id),
-        })),
+        categories: this.headerService.user
+          ? this.allCategories.map((category) => ({
+              _id: category._id,
+              name: category.name,
+              selected: this.itemCategoriesIds.includes(category._id),
+            }))
+          : this.categoriesToCreate.map((category) => ({
+              _id: category._id,
+              name: category.name,
+              selected: this.itemCategoriesIds.includes(category._id),
+            })),
+        rightIcon: {
+          iconName: 'add',
+          callback: (data) => {
+            let fieldsToCreate: FormData = {
+              fields: [
+                {
+                  name: 'new-category',
+                  placeholder: 'Nueva categoría',
+                  type: 'text',
+                  validators: [Validators.pattern(/[\S]/), Validators.required],
+                },
+              ],
+            };
+
+            unlockUI();
+
+            bottomSheetRef.dismiss();
+
+            const dialogRef = this.dialog.open(FormComponent, {
+              data: fieldsToCreate,
+              disableClose: true,
+            });
+
+            dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+              if (!result?.controls['new-category'].valid) {
+                this.headerService.showErrorToast('Categoría inválida');
+              } else {
+                if (this.headerService.user) {
+                  const categoryName = result?.value['new-category'];
+
+                  lockUI();
+                  await this.itemsService.createItemCategory(
+                    {
+                      merchant: this.merchantsService.merchantData?._id,
+                      name: categoryName,
+                      active: true,
+                    },
+                    false
+                  );
+
+                  await this.getCategories();
+
+                  unlockUI();
+
+                  this.openCategoriesDialog();
+                } else {
+                  this.categoriesToCreate.push({
+                    _id: 'created-category-' + result?.value['new-category'],
+                    name: result?.value['new-category'],
+                    merchant: null,
+                  } as any);
+                  this.categoryById[
+                    'created-category-' + result?.value['new-category']
+                  ] = {
+                    _id: 'created-category-' + result?.value['new-category'],
+                    name: result?.value['new-category'],
+                    merchant: null,
+                  } as any;
+
+                  this.openCategoriesDialog();
+                }
+              }
+            });
+          },
+        },
       },
     });
 
@@ -933,7 +1077,7 @@ export class ItemCreationComponent implements OnInit {
         if (this.item) {
           await this.itemsService.updateItem(
             {
-              categories: categoriesAdded,
+              category: categoriesAdded,
             },
             this.item._id
           );
@@ -1278,6 +1422,26 @@ export class ItemCreationComponent implements OnInit {
     };
 
     this.itemsService.temporalItemInput = itemInput;
+
+    /*
+    this.itemsService.allTags = this.allTags;
+    this.itemsService.tagsInItem = this.tagsInItem;
+    this.itemsService.itemTagsIds = this.itemTagsIds;
+    this.itemsService.tagsById = this.tagsById;
+    this.itemsService.tagsString = this.tagsString;
+
+    this.itemsService.allCategories = this.allCategories;
+    this.itemsService.categoriesInItem = this.categoriesInItem;
+    this.itemsService.itemCategoriesIds = this.itemCategoriesIds;
+    this.itemsService.categoryById = this.categoryById;
+    this.itemsService.categoriesString = this.categoriesString;
+
+    this.itemsService.tagsToCreate = this.tagsToCreate;
+    this.itemsService.tagsById = this.tagsById;
+
+    this.itemsService.categoriesToCreate = this.categoriesToCreate;
+    this.itemsService.categoryById = this.categoryById;
+    */
   };
 
   async saveItem() {
@@ -1364,6 +1528,8 @@ export class ItemCreationComponent implements OnInit {
           if (result.controls.email.valid || result.controls.phone.valid) {
             lockUI();
 
+            itemInput.tags = [];
+
             const createdItem = (
               await this.itemsService.createPreItem(itemInput)
             )?.createPreItem;
@@ -1372,9 +1538,66 @@ export class ItemCreationComponent implements OnInit {
               createdItem: createdItem._id,
             };
 
+            if (this.tagsToCreate.length) {
+              queryParamsForRedirectionRoute.itemTagsToCreate =
+                this.tagsToCreate
+                  .filter((tag) => tag._id.includes('created-tag'))
+                  .map((tag) => tag.name);
+
+              queryParamsForRedirectionRoute.tagsIndexesToAssignAfterCreated =
+                this.tagsToCreate
+                  .map((tag, index) => ({
+                    _id: tag._id,
+                    index,
+                  }))
+                  .filter(
+                    (tag) =>
+                      tag._id.includes('created-tag') &&
+                      this.itemTagsIds.includes(tag._id)
+                  )
+                  .map((tag) => tag.index);
+
+              this.itemTagsIds = this.itemTagsIds.filter(
+                (tagId) => !tagId.includes('created-tag')
+              );
+            }
+
+            if (this.categoriesToCreate.length) {
+              queryParamsForRedirectionRoute.itemCategoriesToCreate =
+                this.categoriesToCreate
+                  .filter((category) =>
+                    category._id.includes('created-category')
+                  )
+                  .map((category) => category.name);
+
+              queryParamsForRedirectionRoute.categoriesIndexesToAssignAfterCreated =
+                this.categoriesToCreate
+                  .map((category, index) => ({
+                    _id: category._id,
+                    index,
+                  }))
+                  .filter(
+                    (category) =>
+                      category._id.includes('created-category') &&
+                      this.itemCategoriesIds.includes(category._id)
+                  )
+                  .map((category) => category.index);
+
+              this.itemCategoriesIds = this.itemCategoriesIds.filter(
+                (categoryId) => !categoryId.includes('created-category')
+              );
+            }
+
+            //for existing tags
             if (this.itemTagsIds.length > 0) {
               queryParamsForRedirectionRoute.tagsToAssignIds =
                 this.itemTagsIds.join('-');
+            }
+
+            //for existing itemCategories
+            if (this.itemCategoriesIds.length > 0) {
+              queryParamsForRedirectionRoute.categoriesToAssignIds =
+                this.itemCategoriesIds.join('-');
             }
 
             if (this.itemsService.questionsToAddToItem.length) {
@@ -1422,6 +1645,8 @@ export class ItemCreationComponent implements OnInit {
           }
         }
       });
+
+      return;
     }
 
     if (!this.item) {
