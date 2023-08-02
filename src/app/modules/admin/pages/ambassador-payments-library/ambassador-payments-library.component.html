@@ -3,10 +3,7 @@
     <mat-icon>chevron_left</mat-icon>
     <p>Pagos de EmbajadorID</p>
 </div> 
-<div class="content">
-    <app-card-image [paid]="true" title="KioskoId" paymentText="FechaId" barText="$50 de comisión pagada"></app-card-image>
-    <app-card-image [paid]="true" title="KioskoId" paymentText="FechaId" barText="$50 de comisión pagada"></app-card-image>
-    <app-card-image [paid]="true" title="KioskoId" paymentText="FechaId" barText="$50 de comisión pagada"></app-card-image>
-    <app-card-image [paid]="true" title="KioskoId" paymentText="FechaId" barText="$50 de comisión pagada"></app-card-image>
+<div class="content" *ngFor="let user of users">
+    <app-card-image [paid]="true" [title]="getTitle(user.user[0])" [paymentText]="formatDate(user.createdAt)" [barText]="getComission(user.amount)" [imageUrl]="user.img"></app-card-image>
 </div>
 </div>
