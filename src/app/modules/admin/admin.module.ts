@@ -614,7 +614,7 @@ const routes: Routes = [
     OrderProgressFilteringComponent,
     OrderProgressComponent,
     OrderFilteringComponent,
-    AmbassadorsPaymentsComponent
+    AmbassadorsPaymentsComponent,
     AmbassadorPaymentsLibraryComponent,
     AmbassadorsComponent,
     UserSearchComponent,
