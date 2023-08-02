@@ -3,7 +3,6 @@
     <div class="flex">
       <mat-icon
         style="cursor: pointer"
-        *ngIf="!supplierEdition"
         (click)="back()"
         >close</mat-icon
       >
@@ -27,7 +26,7 @@
     <section
       *ngIf="
         !itemFormData.controls['title'].value ||
-        (!itemFormData.controls['description'].value && !existingItem) ||
+        (!itemFormData.controls['description'].value && !supplierEdition) ||
         itemSlides.length === 0 ||
         itemFormData.controls['pricing'].value === 0 ||
         !itemFormData.controls['stock'].value
@@ -50,7 +49,7 @@
       </ng-container>
 
       <ng-container
-        *ngIf="!itemFormData.controls['description'].value && !existingItem"
+        *ngIf="!itemFormData.controls['description'].value && !supplierEdition"
       >
         <ng-container
           *ngTemplateOutlet="
@@ -143,6 +142,33 @@
     >
       <h2 class="section-title">DATOS LLENOS</h2>
 
+      <div
+        *ngIf="itemFormData.controls['pricing'].value !== 0"
+        class="price-wrapper"
+        [ngClass]="{
+          'no-shadows': itemFormData.controls['pricing'].value !== 0
+        }"
+      >
+        <app-currency-input
+          [innerLabel]="'Precio*'"
+          [innerLabelStyles]="{
+            fontFamily: 'InterLight',
+            fontStyle: 'italic',
+            fontSize: '13px'
+          }"
+          [fieldStyles]="{
+            boxShadow: 'none',
+            backgroundColor: 'white',
+            borderRadius: '6px',
+            padding: '8px 0px'
+          }"
+          [initialValue]="itemFormData.controls['pricing'].value"
+          (onInputEvent)="updateItemPrice($event)"
+          placeholderColor="#7B7B7B"
+          currencyLabel=""
+        ></app-currency-input>
+      </div>
+
       <div class="field-text" *ngIf="itemFormData.controls['title'].value">
         <label for="">Texto principal y centralizado</label>
 
@@ -180,14 +206,19 @@
         </div>
       </div>
 
+      <ng-container
+        *ngIf="!itemFormData.controls['description'].value && supplierEdition"
+      >
+        <div class="field-text">
+          <label>Texto mas largo</label>
+
+          <span>Sin mostrar</span>
+        </div>
+      </ng-container>
+
       <div
         class="added-slides"
-        *ngIf="
-          itemSlides.length > 0 &&
-          renderQrContent &&
-          !quotationsService.supplierItemsAdjustmentsConfig
-            ?.quotationItemBeingEdited
-        "
+        *ngIf="itemSlides.length > 0 && renderQrContent"
       >
         <app-qr-content
           [slides]="itemSlides"
@@ -210,33 +241,6 @@
       </div>
 
       <div
-        *ngIf="itemFormData.controls['pricing'].value !== 0"
-        class="price-wrapper"
-        [ngClass]="{
-          'no-shadows': itemFormData.controls['pricing'].value !== 0
-        }"
-      >
-        <app-currency-input
-          [innerLabel]="'Precio*'"
-          [innerLabelStyles]="{
-            fontFamily: 'InterLight',
-            fontStyle: 'italic',
-            fontSize: '13px'
-          }"
-          [fieldStyles]="{
-            boxShadow: 'none',
-            backgroundColor: 'white',
-            borderRadius: '6px',
-            padding: '8px 0px'
-          }"
-          [initialValue]="itemFormData.controls['pricing'].value"
-          (onInputEvent)="updateItemPrice($event)"
-          placeholderColor="#7B7B7B"
-          currencyLabel=""
-        ></app-currency-input>
-      </div>
-
-      <div
         *ngIf="itemFormData.controls['stock'].value"
         class="content-inventary-container"
         [ngClass]="{
@@ -251,6 +255,15 @@
           [disabled]="true"
           formControlName="stock"
         />
+
+        <p
+          *ngIf="itemFormData.controls['notificationStockLimit'].value"
+          class="notification-limit"
+        >
+          Se notificará a tú numero de teléfono cuando lleguen a
+          {{ itemFormData.controls["notificationStockLimit"].value }}
+        </p>
+
         <p
           class="content-inventary-detail"
           *ngIf="itemFormData.controls['stock'].value === '0'"
@@ -289,15 +302,15 @@
   let-iconCallback="iconCallback"
   let-fieldNameForCallback="fieldNameForCallback"
 >
-  <div class="item-field empty">
+  <div
+    class="item-field empty"
+    (click)="
+      fieldNameForCallback ? iconCallback(fieldNameForCallback) : iconCallback()
+    "
+  >
     <div class="field-name">{{ fieldLabel }}</div>
 
     <img
-      (click)="
-        fieldNameForCallback
-          ? iconCallback(fieldNameForCallback)
-          : iconCallback()
-      "
       class="add-icon"
       [src]="assetsFolder + '/add_button_circle.svg'"
       alt="fill value"

@@ -146,7 +146,6 @@
       }
 
       .row {
-        cursor: pointer;
         width: 100%;
         display: flex;
         justify-content: space-between;
@@ -294,7 +293,6 @@ footer {
   }
 
   .right {
-    margin-left: auto;
     font-family: InterBold;
   }
 }
@@ -312,9 +310,20 @@ footer {
   }
 }
 
-.link-button {
-  cursor: pointer;
-  color: #2874AD;
-  font-size: 17px;
-  font-family: InterBold;
+.disabled-item-container{
+  border-radius: 7px;
+background: #702015;
+height: 53px;
+width: 100%;
+color: #F6F6F6;
+text-align: center;
+font-family: InterMedium;
+font-size: 17px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+display:flex;
+align-items: center;
+margin-bottom: 12px;
+justify-content: center;
 }

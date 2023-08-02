@@ -171,7 +171,8 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
                 if (supplierSpecificItems?.length > 0) {
                   this.router.navigate([
-                    '/admin/item-creation/' + supplierSpecificItems[0]._id,
+                    '/ecommerce/item-management/' +
+                      supplierSpecificItems[0]._id,
                   ]);
                 }
 
@@ -187,10 +188,21 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               this.router.navigate(['/ecommerce/supplier-items-selector']);
             }
 
+            const editingOrUpdatingBasedOnQuotation =
+              this.quotationsService.supplierItemsAdjustmentsConfig
+                ?.quotationItemBeingEdited.quotationItemInMemory ||
+              this.updateItem;
+
             this.itemFormData = this.fb.group({
-              title: [this.itemsService.temporalItemInput?.name || '', Validators.compose([Validators.required])],
+              title: [
+                this.itemsService.temporalItemInput?.name || '',
+                Validators.compose([Validators.required]),
+              ],
               description: [
                 this.itemsService.temporalItemInput?.description || '',
+                Validators.compose(
+                  !editingOrUpdatingBasedOnQuotation ? [Validators.required] : []
+                ),
               ],
               pricing: [
                 this.itemsService.temporalItemInput?.pricing || 0,
@@ -201,12 +213,17 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               ],
               stock: [
                 this.itemsService.temporalItemInput?.stock || '',
-                Validators.compose([Validators.required]),
+                Validators.compose([Validators.required, Validators.min(1)]),
               ],
               notificationStockLimit: [
                 this.itemsService.temporalItemInput?.notificationStockLimit ||
                   '',
                 Validators.compose([Validators.min(1)]),
+              ],
+              notificationStockPhoneOrEmail: [
+                this.itemsService.temporalItemInput
+                  ?.notificationStockPhoneOrEmail || '',
+                Validators.compose([Validators.required]),
               ],
             });
 
@@ -292,7 +309,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         };
 
         if (this.itemSlides.length === 1 && !file.type.includes('video')) {
-          routeForItemEntity = 'admin/items-slides-editor';
+          routeForItemEntity = 'ecommerce/items-slides-editor-2';
 
           if (this.existingItem && this.itemId)
             routeForItemEntity += '/' + this.itemId;
@@ -304,7 +321,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           this.itemSlides.length === 1 &&
           file.type.includes('video')
         ) {
-          routeForItemEntity = 'admin/slides-editor';
+          routeForItemEntity = 'ecommerce/slides-editor-2';
           queryParams.addEditingImageToExistingItem =
             this.existingItem && this.itemId && this.updateItem;
 
@@ -320,7 +337,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
           if (this.updateItem) routeForItemEntity += '/' + this.itemId;
         } else if (this.itemSlides.length > 1) {
-          routeForItemEntity = 'admin/slides-editor';
+          routeForItemEntity = 'ecommerce/slides-editor-2';
 
           if (this.updateItem) routeForItemEntity += '/' + this.itemId;
         }
@@ -334,7 +351,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             queryParams,
           });
         } else if (fileList.length > 1 && i === fileList.length - 1) {
-          this.router.navigate(['admin/slides-editor'], {
+          this.router.navigate(['ecommerce/slides-editor-2'], {
             queryParams,
           });
         }
@@ -363,12 +380,15 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         useSlidesInMemory: false,
       };
 
-      return this.router.navigate(['admin/slides-editor/' + this.itemId], {
-        queryParams,
-      });
+      return this.router.navigate(
+        ['ecommerce/slides-editor-2/' + this.itemId],
+        {
+          queryParams,
+        }
+      );
     }
 
-    this.router.navigate(['admin/slides-editor'], {
+    this.router.navigate(['ecommerce/slides-editor-2'], {
       queryParams: {
         entity: 'item',
         redirectFromFlowRoute: true,
@@ -415,6 +435,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   ) => {
     let fieldsToCreate: FormData = {
       fields: [],
+      automaticallyFocusFirstField: true,
     };
     if (fieldName === 'TITLE') {
       fieldsToCreate.fields = [
@@ -446,6 +467,13 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           label: 'Cantidad mínima para recibir notificación',
           name: 'minimal-stock-notification',
           type: 'number',
+          validators: [Validators.pattern(/[\S]/)],
+        },
+        {
+          label: 'Recipiente de la notificación',
+          name: 'notification-receiver',
+          type: 'email-or-phone',
+          placeholder: 'Escribe el WhatsApp o eMail..',
           validators: [Validators.pattern(/[\S]/)],
         },
       ];
@@ -487,10 +515,14 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           fieldName: 'notificationStockLimit',
           fieldKey: 'minimal-stock-notification',
         },
+        {
+          fieldName: 'notificationStockPhoneOrEmail',
+          fieldKey: 'notification-receiver',
+        },
       ];
 
       fields.forEach((field) => {
-        console.log(field);
+        //console.log(field);
         if (result?.value[field.fieldKey]) {
           this.itemFormData.patchValue({
             [field.fieldName]: result?.value[field.fieldKey],
@@ -539,11 +571,19 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           const itemInput: ItemInput = {
             pricing: Number(this.itemFormData.value['pricing']),
             stock: Number(this.itemFormData.value['stock']),
+            description: this.itemFormData.value['description'],
             useStock: true,
             notificationStock: true,
             notificationStockLimit: Number(
               this.itemFormData.value['notificationStockLimit']
             ),
+            notificationStockPhoneOrEmail: this.itemFormData.value[
+              'notificationStockPhoneOrEmail'
+            ].e164Number
+              ? this.itemFormData.value[
+                  'notificationStockPhoneOrEmail'
+                ].e164Number.split('+')[1]
+              : this.itemFormData.value['notificationStockPhoneOrEmail'],
           };
 
           await this.itemsService.updateItem(itemInput, this.itemId);
@@ -553,8 +593,28 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             duration: 5000,
           });
 
-          this.router.navigate(['/admin/dashboard']);
           unlockUI();
+
+          if (
+            this.quotationsService.supplierItemsAdjustmentsConfig
+              .quotationItemBeingEdited
+          ) {
+            return this.router.navigate(
+              [
+                this.quotationId
+                  ? `ecommerce/supplier-register/${this.quotationId}`
+                  : `ecommerce/supplier-register`,
+              ],
+              {
+                queryParams: {
+                  supplierMerchantId: this.merchantsService.merchantData?._id,
+                  requesterId: this.requesterId,
+                },
+              }
+            );
+          }
+
+          this.router.navigate(['/admin/dashboard']);
         } catch (error) {
           this.snackbar.open('Ocurrió un error al actualizar el producto', '', {
             duration: 5000,
@@ -572,25 +632,38 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         const itemInput: ItemInput = {
           pricing: Number(this.itemFormData.value['pricing']),
           stock: Number(this.itemFormData.value['stock']),
+          description: this.itemFormData.value['description'],
           useStock: true,
           notificationStock: true,
           notificationStockLimit: Number(
             this.itemFormData.value['notificationStockLimit']
           ),
+          notificationStockPhoneOrEmail: this.itemFormData.value[
+            'notificationStockPhoneOrEmail'
+          ].e164Number
+            ? this.itemFormData.value[
+                'notificationStockPhoneOrEmail'
+              ].e164Number.split('+')[1]
+            : this.itemFormData.value['notificationStockPhoneOrEmail'],
         };
 
-        const quotation =
+        const itemInQuotation =
           this.quotationsService.supplierItemsAdjustmentsConfig?.quotationItems[
             this.quotationsService.supplierItemsAdjustmentsConfig
               ?.quotationItemBeingEdited.indexInQuotations
           ];
 
-        quotation.pricing = itemInput.pricing;
-        quotation.stock = itemInput.stock;
+        itemInQuotation.pricing = itemInput.pricing;
+        itemInQuotation.stock = itemInput.stock;
+        itemInQuotation.description = itemInput.description;
+        itemInQuotation.notificationStockLimit =
+          itemInput.notificationStockLimit;
+        itemInQuotation.notificationStockPhoneOrEmail =
+          itemInput.notificationStockPhoneOrEmail;
 
         this.quotationsService.supplierItemsAdjustmentsConfig.quotationItems[
           this.quotationsService.supplierItemsAdjustmentsConfig?.quotationItemBeingEdited.indexInQuotations
-        ] = quotation;
+        ] = itemInQuotation;
 
         unlockUI();
 
@@ -611,6 +684,13 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         notificationStockLimit: Number(
           this.itemFormData.value['notificationStockLimit']
         ),
+        notificationStockPhoneOrEmail: this.itemFormData.value[
+          'notificationStockPhoneOrEmail'
+        ].e164Number
+          ? this.itemFormData.value[
+              'notificationStockPhoneOrEmail'
+            ].e164Number.split('+')[1]
+          : this.itemFormData.value['notificationStockPhoneOrEmail'],
         images,
         content: [],
         currencies: [],
@@ -628,10 +708,10 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       this.itemsService.itemPrice = null;
 
       if (this.loggedMerchant) {
-        itemInput.merchant = this.merchantsService.merchantData?._id;
+        itemInput.merchant = this.loggedMerchant?._id;
 
         const saleflowDefault = await this.saleflowService.saleflowDefault(
-          this.merchantsService.merchantData._id
+          this.loggedMerchant._id
         );
 
         if (!this.existingItem) {
@@ -724,9 +804,17 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               itemInput.parentItem = this.itemId;
 
               lockUI();
-              const createdItem = (
+              let createdItem = (
                 await this.itemsService.createPreItem(itemInput)
               )?.createPreItem;
+
+              if(!this.existingItem) {
+                itemInput.parentItem = createdItem._id;
+                
+                createdItem = (
+                  await this.itemsService.createPreItem(itemInput)
+                )?.createPreItem;
+              }
 
               await this.authService.generateMagicLink(
                 phone || email,
@@ -766,7 +854,8 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
       unlockUI();
     } catch (error) {
-      console.log('Ocurrio un error', error);
+      console.error(error);
+      unlockUI();
       this.snackbar.open('Error al crear el producto', 'Cerrar', {
         duration: 3000,
       });

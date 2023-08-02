@@ -80,20 +80,21 @@ export class SaleFlowService {
 
   async listItems(
     params: PaginationInput,
-    justPromise?: boolean
+    justPromise?: boolean,
+    searchName?: string
   ): Promise<{ listItems: Item[] }> {
     try {
       if (!justPromise) {
         const response = await this.graphql.query({
           query: listItems,
-          variables: { params },
+          variables: { params, searchName },
           fetchPolicy: 'no-cache',
         });
         return response;
       } else {
         const promise = this.graphql.query({
           query: listItems,
-          variables: { params },
+          variables: { params, searchName },
           fetchPolicy: 'no-cache',
         });
         return promise;

@@ -122,6 +122,26 @@ export const createWebform = gql`
   }
 `;
 
+export const precreateWebform = gql`
+  mutation precreateWebform($input: WebformInput!) {
+    precreateWebform(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const authWebform = gql`
+  mutation authWebform($webformId: ObjectID!) {
+    authWebform(webformId: $webformId) {
+      _id
+      user {
+        _id
+        name
+      }
+    }
+  }
+`;
+
 export const updateWebform = gql`
   mutation updateWebform($input: WebformInput!, $id: ObjectID!) {
     updateWebform(input: $input, id: $id) {
@@ -162,9 +182,25 @@ export const questionAddAnswerDefault = gql`
   }
 `;
 
+export const questionAddAnswerDefaultWithoutUser = gql`
+  mutation questionAddAnswerDefaultWithoutUser($input: [AnswerDefaultInput!]!, $questionId: ObjectID!, $webformId: ObjectID!) {
+    questionAddAnswerDefaultWithoutUser(input: $input, questionId: $questionId, webformId: $webformId) {
+      ${webformBody}
+    }
+  }
+`;
+
 export const questionUpdateAnswerDefault = gql`
   mutation questionUpdateAnswerDefault($input: AnswerDefaultInput!, $answerDefaultId: ObjectID!, $questionId: ObjectID!, $webformId: ObjectID!) {
     questionUpdateAnswerDefault(input: $input, answerDefaultId: $answerDefaultId, questionId: $questionId, webformId: $webformId) {
+      ${webformBody}
+    }
+  }
+`;
+
+export const webformAddQuestionWithoutUser = gql`
+  mutation webformAddQuestionWithoutUser($input: [QuestionInput!]!, $id: ObjectID!) {
+    webformAddQuestionWithoutUser(input: $input, id: $id) {
       ${webformBody}
     }
   }

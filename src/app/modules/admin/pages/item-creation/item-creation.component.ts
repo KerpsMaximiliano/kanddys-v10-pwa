@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
@@ -30,15 +30,12 @@ import {
   WebformsService,
 } from 'src/app/core/services/webforms.service';
 import { ExtendedQuestionInput } from 'src/app/shared/components/form-creator/form-creator.component';
-import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import {
   FormComponent,
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
 import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-dialog.component';
 import { environment } from 'src/environments/environment';
-import { Clipboard } from '@angular/cdk/clipboard';
-import { NgNavigatorShareService } from 'ng-navigator-share';
 
 interface ExtendedAnswer extends Answer {
   responsesGroupedByQuestion: Array<{
@@ -52,7 +49,7 @@ interface ExtendedAnswer extends Answer {
 }
 
 @Component({
-  selector: 'app-item-creation',
+  selector: 'app-item-creation-2',
   templateUrl: './item-creation.component.html',
   styleUrls: ['./item-creation.component.scss'],
 })
@@ -100,13 +97,7 @@ export class ItemCreationComponent implements OnInit {
   totalIncome: number = 0;
   currentView: 'ITEM_FORM' | 'ITEM_METRICS' = 'ITEM_FORM';
   assetsFolder: string = environment.assetsUrl;
-  URI: string = environment.uri;
   isFormUpdated: boolean = false;
-  itemFormInitialValue: any = null;
-
-  itemURL: string = '';
-
-  @ViewChild('articleQrCode', { read: ElementRef }) articleQrCode: ElementRef;
 
   constructor(
     private fb: FormBuilder,
@@ -121,9 +112,7 @@ export class ItemCreationComponent implements OnInit {
     private translate: TranslateService,
     private route: ActivatedRoute,
     private gpt3Service: Gpt3Service,
-    private _bottomSheet: MatBottomSheet,
-    private clipboard: Clipboard,
-    private ngNavigatorShareService: NgNavigatorShareService
+    private _bottomSheet: MatBottomSheet
   ) {}
 
   ngOnInit(): void {
@@ -145,12 +134,6 @@ export class ItemCreationComponent implements OnInit {
             ctaName: [this.itemsService.temporalItemInput?.ctaText],
           });
 
-          this.itemFormData.valueChanges.subscribe(() => {
-            this.isFormUpdated = true;
-          });
-
-          this.itemFormInitialValue = { ...this.itemFormData.value };
-
           if (this.itemsService.temporalItemInput?.slides) {
             this.itemSlides = this.itemsService.temporalItemInput?.slides;
           }
@@ -161,8 +144,6 @@ export class ItemCreationComponent implements OnInit {
           }
         } else {
           this.item = await this.itemsService.item(itemId);
-
-          this.itemURL = `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`;
 
           if (!this.itemsService.temporalItem) {
             this.itemsService.temporalItem = this.item;
@@ -182,8 +163,6 @@ export class ItemCreationComponent implements OnInit {
             ],
             ctaName: [this.itemsService.temporalItem?.ctaText],
           });
-
-          this.itemFormInitialValue = { ...this.itemFormData.value };
 
           this.itemFormData.valueChanges.subscribe(() => {
             this.isFormUpdated = true;
@@ -394,12 +373,8 @@ export class ItemCreationComponent implements OnInit {
         content['_type'] = file.type;
         this.itemSlides.push(content);
 
-        const label = await this.getObjectLabel(
-          file,
-          this.merchantsService.merchantData._id
-        );
-        if (this.itemFormData.controls['description'].value === '' && label)
-          await this.generateAIDescription(label);
+        const label = await this.getObjectLabel(file, this.merchantsService.merchantData._id);
+        if (this.itemFormData.controls['description'].value === '' && label) await this.generateAIDescription(label);
 
         this.saveTemporalItemInMemory();
 
@@ -420,32 +395,12 @@ export class ItemCreationComponent implements OnInit {
 
         let routeForItemEntity;
 
-        if (
-          this.item &&
-          this.itemSlides.length === 1 &&
-          !file.type.includes('video')
-        ) {
+        if (this.item && this.itemSlides.length === 1) {
           routeForItemEntity = 'admin/items-slides-editor/' + +this.item._id;
-        } else if (
-          this.item &&
-          this.itemSlides.length === 1 &&
-          file.type.includes('video')
-        ) {
-          routeForItemEntity = 'admin/slides-editor/' + this.item._id;
         } else if (this.item && this.itemSlides.length > 1) {
           routeForItemEntity = 'admin/slides-editor/' + this.item._id;
-        } else if (
-          !this.item &&
-          this.itemSlides.length === 1 &&
-          !file.type.includes('video')
-        ) {
+        } else if (!this.item && this.itemSlides.length === 1) {
           routeForItemEntity = 'admin/items-slides-editor';
-        } else if (
-          !this.item &&
-          this.itemSlides.length === 1 &&
-          file.type.includes('video')
-        ) {
-          routeForItemEntity = 'admin/slides-editor';
         } else if (!this.item && this.itemSlides.length > 1) {
           routeForItemEntity = 'admin/slides-editor';
         }
@@ -549,7 +504,7 @@ export class ItemCreationComponent implements OnInit {
                   },
                 },
               });
-            },
+            }
           },
         ];
         break;
@@ -844,7 +799,7 @@ export class ItemCreationComponent implements OnInit {
         unlockUI();
 
         this.webformsService.formCreationData = null;
-        this.router.navigate(['/admin/item-creation/' + this.item._id]);
+        this.router.navigate(['/ecommerce/item-management/' + this.item._id]);
       } catch (error) {
         unlockUI();
 
@@ -950,14 +905,14 @@ export class ItemCreationComponent implements OnInit {
   async openMetaDescriptionDialog() {
     const bottomSheetRef = this._bottomSheet.open(InputDialogComponent, {
       data: {
-        label: `Escribe las características de tu producto, cada una separada por una coma, para generar una descripción con inteligencia artificial`,
-        styles: {
-          fullScreen: true,
+          label: `Escribe las características de tu producto, cada una separada por una coma, para generar una descripción con inteligencia artificial`,
+          styles: {
+            fullScreen: true,
+          },
+          callback: async (metaDescription) => {
+            if (metaDescription) this.generateAIDescription(metaDescription)
+          }
         },
-        callback: async (metaDescription) => {
-          if (metaDescription) this.generateAIDescription(metaDescription);
-        },
-      },
     });
   }
 
@@ -977,15 +932,15 @@ export class ItemCreationComponent implements OnInit {
   }
 
   async generateAIDescription(prompt?: string) {
-    lockUI();
+    lockUI()
     try {
       const result = await this.gpt3Service.generateCompletionForMerchant(
         this.merchantsService.merchantData._id,
-        prompt
-          ? `
-          Genera una descripción corta para un producto que está compuesto por las siguientes características: ${prompt}
+        prompt ?
         `
-          : `Genera una descripción corta para un producto de una tienda que vende en un ecommerce`
+          Genera una descripción corta para un producto que está compuesto por las siguientes características: ${prompt}
+        ` :
+        `Genera una descripción corta para un producto de una tienda que vende en un ecommerce`
       );
 
       this.itemFormData.patchValue({
@@ -993,7 +948,7 @@ export class ItemCreationComponent implements OnInit {
       });
 
       this.itemFormData.controls['description'].markAsDirty();
-
+      
       console.log(result);
       unlockUI();
     } catch (error) {
@@ -1031,35 +986,13 @@ export class ItemCreationComponent implements OnInit {
   }
 
   back() {
-    //this.itemsService.temporalItemInput = null;
-
-    if (
-      this.isFormUpdated ||
-      JSON.stringify(this.itemFormInitialValue) !==
-        JSON.stringify(this.itemFormData.value)
-    ) {
-      let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          title: `¿Descartar cambios?`,
-          description: `¿Quieres regresar sin guardar tus cambios?`,
-        },
-      });
-      dialogRef.afterClosed().subscribe(async (result) => {
-        if (result === 'confirm') {
-          this.itemsService.temporalItem = null;
-          this.itemsService.temporalItemInput = null;
-          this.router.navigate(['admin/dashboard']);
-        }
-      });
-    } else {
-      this.itemsService.temporalItem = null;
-      this.itemsService.temporalItemInput = null;
-      this.router.navigate(['admin/dashboard']);
-    }
+    this.itemsService.temporalItem = null;
+    this.router.navigate(['admin/dashboard']);
   }
 
   goToReorderMedia() {
     this.saveTemporalItemInMemory();
+
 
     if (!this.item)
       this.router.navigate(['admin/slides-editor'], {
@@ -1074,56 +1007,5 @@ export class ItemCreationComponent implements OnInit {
         },
       });
     }
-  }
-
-  copyToClipboard() {
-    this.clipboard.copy(
-      `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`
-    );
-    this.snackbar.open('Enlace copiado en el portapapeles', '', {
-      duration: 2000,
-    });
-  }
-
-  share() {
-    this.ngNavigatorShareService.share({
-      title: '',
-      url: `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/article-detail/item/${this.item._id}?mode=saleflow`,
-    });
-  }
-
-  downloadQr(qrElment: ElementRef) {
-    const parentElement = qrElment.nativeElement.querySelector('img').src;
-    let blobData = this.convertBase64ToBlob(parentElement);
-    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
-      //IE
-      (window.navigator as any).msSaveOrOpenBlob(blobData);
-    } else {
-      // chrome
-      const blob = new Blob([blobData], { type: 'image/png' });
-      const url = window.URL.createObjectURL(blob);
-      // window.open(url);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = this.item._id;
-      link.click();
-    }
-  }
-
-  private convertBase64ToBlob(Base64Image: string) {
-    // SPLIT INTO TWO PARTS
-    const parts = Base64Image.split(';base64,');
-    // HOLD THE CONTENT TYPE
-    const imageType = parts[0].split(':')[1];
-    // DECODE BASE64 STRING
-    const decodedData = window.atob(parts[1]);
-    // CREATE UNIT8ARRAY OF SIZE SAME AS ROW DATA LENGTH
-    const uInt8Array = new Uint8Array(decodedData.length);
-    // INSERT ALL CHARACTER CODE INTO UINT8ARRAY
-    for (let i = 0; i < decodedData.length; ++i) {
-      uInt8Array[i] = decodedData.charCodeAt(i);
-    }
-    // RETURN BLOB IMAGE AFTER CONVERSION
-    return new Blob([uInt8Array], { type: imageType });
   }
 }

@@ -6,6 +6,84 @@
   padding: 24px !important;
   background: #fff !important;
 }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 23px;
+  background-color: #181d17;
+
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 17px;
+  padding-bottom: 13px;
+  height: auto;
+  background-color: #fff;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.06));
+  margin-bottom: 20px;
+
+  .title {
+    color: #272727;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin: 0px;
+    overflow: hidden;
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+
+  .close {
+    color: #c4c5c3;
+    text-align: right;
+    font-family: InterLight;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    background: transparent;
+  }
+
+  .left-area {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+
+    i {
+      color: #7b7b7b;
+      font-size: 1.2rem;
+      margin-top: 2px;
+    }
+  }
+
+  .right-area {
+    display: flex;
+    align-items: flex-end;
+
+    .header-text {
+      font-family: "RobotoRegular";
+      font-size: 0.875rem;
+      color: #c4c5c3;
+      margin-right: 6px;
+    }
+
+    img {
+      width: 14px;
+      margin: 0;
+      filter: brightness(2);
+    }
+  }
+}
 
 .header {
   padding: 13px 17px 16px 17px;
@@ -45,6 +123,83 @@
 
 .item-wrapper {
   margin-bottom: 7px;
+
+  .item-card {
+    width: 100%;
+    background: white;
+    border-radius: 7px;
+    padding: 15px;
+    display: flex;
+    column-gap: 10px;
+  }
+
+  .left-column {
+    .product-image {
+      width: 82px;
+      height: 81px;
+      left: 15px;
+      top: 14px;
+      background: #d9d9d9;
+      border-radius: 7px;
+    }
+  }
+
+  .middle-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .item-name {
+      color: #181d17;
+      font-size: 17px;
+      font-family: InterRegular;
+      font-weight: 400;
+      word-wrap: break-word;
+    }
+
+    .item-description {
+      color: #7b7b7b;
+      font-size: 13px;
+      font-family: InterRegular;
+      font-weight: 400;
+      line-height: 13.65px;
+      word-wrap: break-word;
+      padding-top: 5px;
+
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+    }
+
+    .item-price {
+      color: #181d17;
+      font-size: 17px;
+      font-family: InterRegular;
+      font-weight: 400;
+      word-wrap: break-word;
+      padding-top: 4px;
+      margin-top: auto;
+    }
+  }
+
+  .right-column {
+    .edit-btn {
+      padding: 10px 28px;
+      background: #87cd9b;
+      border-radius: 39px;
+      border: 0.5px #c4c5c3 solid;
+      font-family: InterRegular;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      max-width: 101px;
+      margin-top: 2px;
+    }
+  }
 }
 
 footer {
@@ -54,15 +209,16 @@ footer {
   width: 100%;
   padding: 11px 17px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   font-size: 17px;
-  background: var(--el-mas-oscuro, #181d17);
+  background: var(--el-verdecito, #87CD9B);
+
 
   button {
     border: none;
-    color: #87cd9b !important;
-    background: var(--el-mas-oscuro, #181d17);
+    color: #181D17 !important;
+    background: var(--el-verdecito, #87CD9B);
     font-family: InterBold;
     font-size: 16px;
     font-style: normal;
@@ -81,4 +237,18 @@ footer {
   .right {
     margin-left: auto;
   }
+}
+
+.adjustments-not-ready {
+  background: var(--plomito, #c4c5c3);
+  display: flex;
+  justify-content: center;
+  padding: 9px 15px;
+  color: #181d17;
+  text-align: center;
+  font-family: InterBold;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
 }

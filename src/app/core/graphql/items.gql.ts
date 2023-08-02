@@ -68,6 +68,9 @@ const fullItem = `
   createdAt
   amountMerchantCoin
   stock
+  notificationStock
+  notificationStockLimit
+  notificationStockPhoneOrEmail
   images {
     _id
     active
@@ -133,6 +136,11 @@ const fullItem = `
     reference
     active
   }
+  categories {
+    _id
+    name
+    description
+  }
   layout
   ctaText
   ctaBehavior
@@ -195,6 +203,25 @@ export const bestSellersByMerchant = gql`
     bestSellersByMerchant(isObjectID: $isObjectID, paginate: $paginate)
   }
 `;
+
+export const salesPositionOfItemByMerchant = gql`
+  query salesPositionOfItemByMerchant(
+    $itemID: ObjectID!
+    $paginate: PaginationInput!
+  ) {
+    salesPositionOfItemByMerchant(itemID: $itemID, paginate: $paginate)
+  }
+`;
+
+export const buyersByItemInMerchantStore = gql`
+  query buyersByItemInMerchantStore(
+    $itemID: ObjectID!
+    $paginate: PaginationInput!
+  ) {
+    buyersByItemInMerchantStore(itemID: $itemID, paginate: $paginate)
+  }
+`;
+
 
 export const totalByItem = gql`
   query totalByItem($itemId: [ObjectID!], $merchantId: ObjectID!) {
@@ -288,6 +315,7 @@ export const listItems = gql`
       type
       stock
       notificationStockLimit
+      notificationStockPhoneOrEmail
       parentItem
     }
   }
@@ -589,8 +617,8 @@ export const itemCategoriesList = gql`
 `;
 
 export const createItemCategory = gql`
-  mutation createItemCategory($input: ItemCategoryInput!) {
-    createItemCategory(input: $input) {
+  mutation createItemCategory($isAdmin: Boolean, $input: ItemCategoryInput!) {
+    createItemCategory(isAdmin: $isAdmin, input: $input) {
       merchant {
         _id
       }
