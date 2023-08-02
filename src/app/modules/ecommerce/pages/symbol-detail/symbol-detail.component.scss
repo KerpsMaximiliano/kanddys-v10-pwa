@@ -13,6 +13,21 @@ header {
   padding-top: 8.71px;
   padding-bottom: 11.69px;
 
+  .close {
+    color: #c4c5c3;
+    text-align: right;
+    font-family: Inter;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    background: transparent;
+    margin-right: 11px;
+  }
+
   .go-back-arrow {
     filter: invert(52%) sepia(12%) saturate(26%) hue-rotate(353deg)
       brightness(90%) contrast(85%);
@@ -79,7 +94,7 @@ main {
   margin-bottom: 14px;
   color: #fff;
   text-align: center;
-  font-size: 15px;
+  font-size: 23px;
   font-family: InterRegular;
   font-weight: normal;
   overflow: hidden;
@@ -92,6 +107,10 @@ main {
   &.expanded {
     margin: 0px;
     margin-bottom: 14px;
+  }
+
+  &.small {
+    font-size: 15px !important;
   }
 }
 
@@ -167,4 +186,8 @@ video {
 
 .add-to-cart {
   cursor: pointer;
+}
+
+.hidden {
+  opacity: 0;
 }

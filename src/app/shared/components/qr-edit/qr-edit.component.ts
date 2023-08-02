@@ -445,8 +445,8 @@ export class QrEditComponent implements OnInit {
           if (
             isImage(itemUpdated.images[itemUpdated.images.length - 1].value)
           ) {
+            this._Router.navigate([`admin/create-article/${this.item._id}`]);
           }
-          this._Router.navigate([`admin/create-article/${this.item._id}`]);
 
           if (
             itemUpdated &&
@@ -467,8 +467,6 @@ export class QrEditComponent implements OnInit {
             ) {
               uploadedVideoURL = 'https://' + uploadedVideoURL;
             }
-
-            console.log(auxiliarFileExtension);
 
             this.gridArray.push({
               _id: addedImage?.images[addedImage.images.length - 1]?._id,
@@ -531,7 +529,7 @@ export class QrEditComponent implements OnInit {
                 'admin/items-slides-editor' + this.item._id,
               ]);
             } else {
-              this._Router.navigate(['admin/items-slides-editor']);
+              this._Router.navigate(['ecommerce/items-slides-editor-2']);
             }
           };
         }
@@ -600,7 +598,7 @@ export class QrEditComponent implements OnInit {
       if (this.redirectFromFlowRoute)
         return this.headerService.redirectFromQueryParams();
 
-      this._Router.navigate([`admin/item-creation/${this.item._id}`]);
+      this._Router.navigate([`ecommerce/item-management/${this.item._id}`]);
       return;
     }
     const slides: Array<SlideInput> = this.gridArray.map(
@@ -623,7 +621,7 @@ export class QrEditComponent implements OnInit {
       if (this.redirectFromFlowRoute)
         return this.headerService.redirectFromQueryParams();
 
-      this._Router.navigate(['admin/item-creation']);
+      this._Router.navigate(['ecommerce/item-management']);
       return;
     }
 
@@ -769,10 +767,11 @@ export class QrEditComponent implements OnInit {
       });
     } else if (this.entity === 'item' && !this.item) {
       this._ItemsService.editingSlide = index;
-      this._Router.navigate(['admin/items-slides-editor'], {
+      this._Router.navigate(['ecommerce/items-slides-editor-2'], {
         queryParams,
       });
     } else {
+      //console.log("C")
       this._PostsService.editingSlide = index;
 
       this._Router.navigate(
@@ -789,7 +788,7 @@ export class QrEditComponent implements OnInit {
   }
 
   async deleteImage(index: number) {
-    console.log('image index', index, this.item.images[index]._id);
+    //console.log('image index', index, this.item.images[index]._id);
 
     if (this.item) {
       this._ItemsService.itemImages.splice(index, 1);

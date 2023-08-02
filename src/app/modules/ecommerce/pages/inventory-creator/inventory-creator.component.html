@@ -3,7 +3,6 @@
     <div class="flex">
       <mat-icon
         style="cursor: pointer"
-        *ngIf="!supplierEdition"
         (click)="back()"
         >close</mat-icon
       >
@@ -27,7 +26,7 @@
     <section
       *ngIf="
         !itemFormData.controls['title'].value ||
-        !itemFormData.controls['description'].value ||
+        (!itemFormData.controls['description'].value && !supplierEdition) ||
         itemSlides.length === 0 ||
         itemFormData.controls['pricing'].value === 0 ||
         !itemFormData.controls['stock'].value
@@ -49,7 +48,9 @@
         </ng-container>
       </ng-container>
 
-      <ng-container *ngIf="!itemFormData.controls['description'].value">
+      <ng-container
+        *ngIf="!itemFormData.controls['description'].value && !supplierEdition"
+      >
         <ng-container
           *ngTemplateOutlet="
             emptyItem;
@@ -204,6 +205,16 @@
           }}</span>
         </div>
       </div>
+
+      <ng-container
+        *ngIf="!itemFormData.controls['description'].value && supplierEdition"
+      >
+        <div class="field-text">
+          <label>Texto mas largo</label>
+
+          <span>Sin mostrar</span>
+        </div>
+      </ng-container>
 
       <div
         class="added-slides"

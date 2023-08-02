@@ -524,6 +524,10 @@ export const paginateUsers = gql`
         phone
         createdAt
       }
+      owner {
+        _id
+      }
+      createdAt
     }
   }
 `;
@@ -544,5 +548,11 @@ export const payUserStarAffiliate = gql`
       _id
       ammount
     }
+  }
+`;
+
+export const ordersCommissionableItemsCount = gql`
+  query ordersCommissionableItemsCount ($userId: [ObjectID!]!, $merchantId: ObjectID!) {
+    ordersCommissionableItemsCount (userId: $userId, merchantId: $merchantId)
   }
 `;

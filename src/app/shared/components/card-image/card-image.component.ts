@@ -24,6 +24,8 @@ export class CardImageComponent implements OnInit {
     this.fileInput.nativeElement.click();
   }
 
+  selectedFile: File | null = null;
+
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     this.selectedFile = file;

@@ -5,6 +5,8 @@ import { Quotation, QuotationInput } from '../models/quotations';
 import {
   createQuotation,
   deleteQuotation,
+  multipleQuotationMatches,
+  multipleQuotationMatchesByItems,
   quotation,
   quotationCoincidences,
   quotationCoincidencesByItem,
@@ -31,7 +33,11 @@ export class QuotationsService {
   quotationItemsInputBeingEdited: Array<ItemInput> = null;
   quotationBeingEdited: Quotation = null;
   quotationInCart: Quotation = null;
+
+  //Variables for keeping track of the items that are being added to a quotation before said quotation is created
+  //Or while you are editing it
   selectedItemsForQuotation: Array<string> = [];
+  quotationToUpdate: Quotation = null; 
 
   typeOfQuotationBeingEdited: 'DATABASE_QUOTATION' | 'TEMPORAL_QUOTATION' = 'DATABASE_QUOTATION';
   typeOfProvider: 'REGISTERED_SUPPLIER' | 'NEW_SUPPLIER' = null;
@@ -95,6 +101,42 @@ export class QuotationsService {
 
       if (!result || result?.errors) return undefined;
       return result?.quotationCoincidences;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async multipleQuotationMatches(
+    quotationsIds: Array<string>,
+    paginationOptionsInput: PaginationOptionsInput
+  ): Promise<Array<any>> {
+    try {
+      const result = await this.graphql.query({
+        query: multipleQuotationMatches,
+        variables: { quotationsIds, paginationOptionsInput },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.multipleQuotationMatches;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async multipleQuotationMatchesByItems(
+    quotationsItems: Array<Array<string>>,
+    paginationOptionsInput: PaginationOptionsInput
+  ): Promise<Array<any>> {
+    try {
+      const result = await this.graphql.query({
+        query: multipleQuotationMatchesByItems,
+        variables: { quotationsItems, paginationOptionsInput },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.multipleQuotationMatchesByItems;
     } catch (e) {
       console.log(e);
     }

@@ -8,17 +8,19 @@
         </a>
       </div>
       <div class="flex" (click)="openNavigation = true" style="cursor: pointer">
-        <p>Cotiza y compra a suplidores</p>
+        <p>Carritos de proveedores</p>
         <mat-icon>menu</mat-icon>
       </div>
     </div>
 
-    <div class="dates-container">
-      <div class="progress progress-selected">Cotizaciones</div>
-      <div class="progress" style="margin-left: 7px" (click)="goToOrders()">
-        Compras
+    <!--
+      <div class="dates-container">
+        <div class="progress progress-selected">Cotizaciones</div>
+        <div class="progress" style="margin-left: 7px" (click)="goToOrders()">
+          Compras
+        </div>
       </div>
-    </div>
+    -->
 
     <div class="content">
       <ng-container *ngIf="'TEMPORAL_QUOTATIONS_WITHOUT_USER_SESSION'">
@@ -68,8 +70,23 @@
         <p class="content-card-title">
           {{ quotation?.name ? quotation.name : "Cotización sin nombre" }}
         </p>
-        <p class="content-card-quantity">
-          {{ quotation?.items?.length }} artículos
+        <p class="content-card-quantity" *ngIf="quotation?._id">
+          {{ quotation?.items?.length }} artículos. Promedio: ${{
+            !averageByQuotations[quotation?._id]
+              ? "Cargando..."
+              : (averageByQuotations[quotation?._id] | number : "1.2-2")
+          }}
+        </p>
+
+        <p
+          class="content-card-quantity"
+          *ngIf="!quotation?._id"
+        >
+          {{ quotation?.items?.length }} artículos. Promedio: ${{
+            !quotation.customId && !averageByQuotations[quotation?.customId]
+              ? "Cargando..."
+              : (averageByQuotations[quotation?.customId] | number : "1.2-2")
+          }}
         </p>
       </div>
     </div>

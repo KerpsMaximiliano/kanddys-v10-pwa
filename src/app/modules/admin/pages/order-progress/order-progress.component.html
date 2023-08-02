@@ -11,66 +11,38 @@
     </div>
     <div class="dates-container">
         <div class="progress" *ngFor="let i of progress" [ngClass]="{'progress-selected':i.selected}" (click)="select(i.id)">
-            {{i.name}}
+            {{orderDeliveryStatus(i.name)}}
+            {{"(" + orderDeliveryLength(i.name) + ")"}} 
         </div>
     </div>
     <div class="content">
       <div class="content-title-container">
         <p class="content-title">
-            87 facturas. $14,457 de ingresos. $4,4589 de beneficio.
+            {{filterData().length}} facturas. ${{calcTotalPrice().toFixed(2)}} de beneficio.
         </p>
       </div>
       <div class="content-cards-container">
-        <div class="content-card">
-          <div>
-            <p class="content-card-title">CompradorId</p>
-            <p class="content-card-extra-info">N478, hace FechaID</p>
+        <div
+        class="content-card"
+        *ngFor="let order of filterData(); index as i"
+      >
+        <div class="display-flex">
+          <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->
+          <div
+            class="content-card-img"
+            [style]="'border-radius: 50%; width: 66px; height:66px; background-repeat: no-repeat; background-size: 66px; background-image: url('+(order.user!=null?order.user.image:default_image)+'), url('+ default_image +')'">
           </div>
-          <div>
-            <p class="content-card-price">$14,452</p>
-            <p class="content-card-extra-info">4 artículos</p>
-          </div>
-        </div>
-        <div class="content-card">
-          <div>
-            <p class="content-card-title">CompradorId</p>
-            <p class="content-card-extra-info">N478, hace FechaID</p>
-          </div>
-          <div>
-            <p class="content-card-price">$14,452</p>
-            <p class="content-card-extra-info">4 artículos</p>
+          <div class="content-card-info">
+            <p class="content-card-title">{{ order.user != null ? (order.user.name || order.user.email || order.user.phone) : "Usuario borrado" }}</p>
+            <p class="content-card-extra-info">{{ shortFormatID(order.dateId) }}</p>
           </div>
         </div>
-        <div class="content-card">
-          <div>
-            <p class="content-card-title">CompradorId</p>
-            <p class="content-card-extra-info">N478, hace FechaID</p>
-          </div>
-          <div>
-            <p class="content-card-price">$14,452</p>
-            <p class="content-card-extra-info">4 artículos</p>
-          </div>
+        <div>
+          <p class="content-card-price">${{ calcTotal(order.subtotals).toFixed(2) }}</p>
+          <p class="content-card-extra-info">{{ order.items.length }} artículos</p>
         </div>
-        <div class="content-card">
-          <div>
-            <p class="content-card-title">CompradorId</p>
-            <p class="content-card-extra-info">N478, hace FechaID</p>
-          </div>
-          <div>
-            <p class="content-card-price">$14,452</p>
-            <p class="content-card-extra-info">4 artículos</p>
-          </div>
-        </div>
-        <div class="content-card">
-          <div>
-            <p class="content-card-title">CompradorId</p>
-            <p class="content-card-extra-info">N478, hace FechaID</p>
-          </div>
-          <div>
-            <p class="content-card-price">$14,452</p>
-            <p class="content-card-extra-info">4 artículos</p>
-          </div>
-        </div>
+      </div>
+        
       </div>
     </div>
   </div>

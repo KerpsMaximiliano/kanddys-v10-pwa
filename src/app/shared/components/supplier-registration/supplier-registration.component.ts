@@ -512,6 +512,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           useStock: true,
           notificationStock: true,
           notificationStockLimit: Number(item.notificationStockLimit),
+          notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
           images,
           layout: 'EXPANDED-SLIDE',
         };
@@ -581,6 +582,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       layout: item.layout,
       stock: item.stock,
       notificationStockLimit: item.notificationStockLimit,
+      notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail
     };
 
     if (!item.pricing || item.stock === null || !item.merchant) {
@@ -664,6 +666,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               useStock: true,
               notificationStock: true,
               notificationStockLimit: item.notificationStockLimit,
+              notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
               images:
                 this.quotationsService.supplierItemsAdjustmentsConfig
                   .itemsThatArentInSupplierSaleflow[index].images,
@@ -707,7 +710,11 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         });
       }
 
-      this.router.navigate(['/admin/dashboard']);
+      this.router.navigate(['/admin/supplier-dashboard'], {
+        queryParams: {
+          supplierMode: true
+        }
+      });
     } catch (error) {
       console.error(error);
       this.snackbar.open('Error al crear/actualizar los productos', 'Cerrar', {
@@ -738,6 +745,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               useStock: true,
               notificationStock: true,
               notificationStockLimit: item.notificationStockLimit,
+              notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
               images:
                 this.quotationsService.supplierItemsAdjustmentsConfig
                   .itemsThatArentInSupplierSaleflow[index].images,

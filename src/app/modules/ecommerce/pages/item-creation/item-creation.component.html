@@ -1,0 +1,779 @@
+<div class="container">
+  <header>
+    <div class="close" (click)="back()">X</div>
+    <h2>
+      {{
+        !item
+          ? "Nuevo artículo para vender"
+          : typeOfFlow === "UPDATE_EXISTING_ITEM"
+          ? "Artículo en venta"
+          : "Artículo de proveedor"
+      }}
+    </h2>
+
+    <div *ngIf="item" class="options-wrapper">
+      <img
+        (click)="toggleItemVisibility()"
+        [src]="
+          assetsFolder +
+          (item.status === 'active' ? '/toggle-on.svg' : '/toggle-off.svg')
+        "
+      />
+      <img
+        [src]="
+          currentView === 'ITEM_FORM'
+            ? assetsFolder + '/icon_info.png'
+            : assetsFolder + '/dropdown_icon.png'
+        "
+        alt="open internal information"
+        (click)="
+          currentView =
+            currentView === 'ITEM_FORM' ? 'ITEM_METRICS' : 'ITEM_FORM'
+        "
+      />
+    </div>
+  </header>
+
+  <main
+    [formGroup]="itemFormData"
+    *ngIf="itemFormData"
+    [ngClass]="{
+      existingItemContainer: typeOfFlow !== 'ITEM_CREATION'
+    }"
+  >
+    <ng-container [ngSwitch]="currentView">
+      <ng-container *ngSwitchCase="'ITEM_FORM'">
+        <p
+          class="intro-text"
+          *ngIf="typeOfFlow !== 'ITEM_CREATION' && item?.status == 'active'"
+        >
+          {{
+            typeOfFlow === "UPDATE_EXISTING_ITEM"
+              ? "Vendes. Si quieres pagas comisión a vendedores para más alcance."
+              : "Esta plataforma te pone al frente de floristerias que necesitan exactamente lo que ofreces."
+          }}
+        </p>
+
+        <div class="disabled-item-container" *ngIf="item?.status == 'disabled'">
+          El artículo está oculto
+        </div>
+
+        <section
+          *ngIf="
+            itemSlides.length === 0 ||
+            itemFormData.controls['pricing'].value === 0
+          "
+        >
+          <h2 class="section-title">DATOS POR LLENAR</h2>
+
+          <ng-container *ngIf="itemSlides.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Slides visuales',
+                  iconCallback: emitFileInputClick
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemFormData.controls['pricing'].value === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Precio',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'PRICE'
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+        </section>
+
+        <section>
+          <h2 class="section-title">DATOS LLENOS</h2>
+
+          <div
+            *ngIf="itemFormData.controls['pricing'].value !== 0"
+            class="price-wrapper no-shadows"
+          >
+            <app-currency-input
+              [innerLabel]="'Precio*'"
+              [innerLabelStyles]="{
+                fontFamily: 'InterLight',
+                fontStyle: 'italic',
+                fontSize: '13px'
+              }"
+              [fieldStyles]="{
+                boxShadow: 'none',
+                backgroundColor: 'white',
+                borderRadius: '6px',
+                padding: '8px 0px'
+              }"
+              [initialValue]="itemFormData.controls['pricing'].value"
+              (onInputEvent)="updateItemPrice($event)"
+              placeholderColor="#7B7B7B"
+              currencyLabel=""
+            ></app-currency-input>
+          </div>
+
+          <div
+            class="field-text"
+            (click)="openFormForField('STOCK')"
+            *ngIf="itemFormData.controls['stock'].value && isASupplierItem"
+          >
+            <label for="">Cantidad disponible para vender</label>
+
+            <input
+              type="text"
+              placeholder="Escribe"
+              [formControlName]="'stock'"
+            />
+
+            <p
+              *ngIf="itemFormData.controls['notificationStockLimit'].value"
+              class="notification-limit"
+            >
+              Se notificará a tú numero de teléfono cuando lleguen a
+              {{ itemFormData.controls["notificationStockLimit"].value }}
+            </p>
+
+            <p
+              class="content-inventary-detail"
+              *ngIf="itemFormData.controls['stock'].value === '0'"
+            >
+              No se está mostrando a Floristerias
+            </p>
+          </div>
+
+          <div class="field-text" *ngIf="itemFormData.controls['title'].value">
+            <label for="">Texto principal y centralizado</label>
+
+            <input
+              type="text"
+              placeholder="Escribe"
+              [formControlName]="'title'"
+            />
+          </div>
+
+          <div
+            class="field-text"
+            *ngIf="itemFormData.controls['description'].value"
+            style="padding-bottom: 40px"
+          >
+            <label for="">Texto más largo</label>
+
+            <textarea
+              cols="30"
+              rows="3"
+              placeholder="Escribe"
+              [formControlName]="'description'"
+            ></textarea>
+
+            <button
+              *ngIf="merchantsService.merchantData"
+              (click)="openMetaDescriptionDialog()"
+              class="icon-button"
+            >
+              <img
+                [src]="assetsFolder + '/hat-wizard-solid.svg'"
+                alt=""
+                *ngIf="itemFormData.controls['description'].value"
+              />
+            </button>
+          </div>
+
+          <div class="field-text" *ngIf="!isASupplierItem">
+            <label for="">Nombre del botón</label>
+
+            <input
+              type="text"
+              placeholder="Agregar al carrito"
+              [formControlName]="'ctaName'"
+            />
+          </div>
+
+          <div
+            class="added-slides"
+            *ngIf="itemSlides.length > 0 && renderQrContent"
+          >
+            <app-qr-content
+              [slides]="itemSlides"
+              [showButton]="!isASupplierItem"
+              [showReorderButton]="!isASupplierItem"
+              [title]="'Slides visuales'"
+              [mode]="'SMALL'"
+              [editing]="false"
+              [defaultText]="'Incluyes fotos, memes, videos o música.'"
+              (buttonClicked)="!isASupplierItem ? emitFileInputClick() : null"
+              (buttonClicked2)="!isASupplierItem ? goToReorderMedia() : null"
+            ></app-qr-content>
+          </div>
+
+          <div class="layout-row" *ngIf="itemSlides.length > 0">
+            <mat-accordion>
+              <mat-expansion-panel
+                (opened)="isLayoutDropdownOpened = true"
+                (closed)="isLayoutDropdownOpened = false"
+                hideToggle
+              >
+                <mat-expansion-panel-header>
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                      width: 100%;
+                    "
+                  >
+                    <span> Layout de los slides predeterminado </span>
+                    <mat-icon
+                      [ngStyle]="{
+                        color: '#7B7B7B',
+                        marginLeft: '10px'
+                      }"
+                      >{{
+                        isLayoutDropdownOpened
+                          ? "keyboard_arrow_down"
+                          : "keyboard_arrow_right"
+                      }}
+                    </mat-icon>
+                  </div>
+                </mat-expansion-panel-header>
+
+                <div class="layouts-options">
+                  <div
+                    class="image-layout-wrapper"
+                    (click)="selectLayout('EXPANDED-SLIDE')"
+                  >
+                    <img
+                      class="image-layout"
+                      [src]="assetsFolder + '/Expanded-Slide-icon.png'"
+                      alt="expanded slide"
+                    />
+                    <input
+                      type="radio"
+                      formControlName="defaultLayout"
+                      [value]="'EXPANDED-SLIDE'"
+                    />
+                  </div>
+                  <div
+                    class="image-layout-wrapper"
+                    (click)="selectLayout('ZOOMED-OUT-INFO')"
+                  >
+                    <img
+                      class="image-layout"
+                      [src]="assetsFolder + '/minimized-slides.png'"
+                      alt="minimized slides"
+                    />
+                    <input
+                      type="radio"
+                      formControlName="defaultLayout"
+                      [value]="'ZOOMED-OUT-INFO'"
+                    />
+                  </div>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+
+          <div
+            class="field-text"
+            *ngIf="
+              itemsService.questionsToAddToItem &&
+              itemsService.questionsToAddToItem.length > 0
+            "
+          >
+            <h6>Formulario de preguntas</h6>
+
+            <ng-container
+              *ngIf="
+                requiredQuestionsCounter.required > 0;
+                else notRequiredQuestions
+              "
+            >
+              <h4>
+                {{
+                  requiredQuestionsCounter.required + " preguntas obligatorias"
+                }}
+
+                <ng-container *ngIf="requiredQuestionsCounter.notRequired > 0">
+                  {{ " y " + requiredQuestionsCounter.notRequired + " mas" }}
+                </ng-container>
+              </h4>
+            </ng-container>
+
+            <ng-template #notRequiredQuestions>
+              <h4>
+                {{ requiredQuestionsCounter.notRequired + " preguntas" }}
+              </h4>
+            </ng-template>
+          </div>
+
+          <div
+            class="field-text hover"
+            *ngIf="webform && item"
+            (click)="goToWebformCreationOrEdition()"
+          >
+            <h6>Formulario de preguntas</h6>
+
+            <ng-container
+              *ngIf="
+                requiredQuestionsCounter.required > 0;
+                else notRequiredQuestions
+              "
+            >
+              <h4>
+                {{
+                  requiredQuestionsCounter.required + " preguntas obligatorias"
+                }}
+
+                <ng-container *ngIf="requiredQuestionsCounter.notRequired > 0">
+                  {{ " y " + requiredQuestionsCounter.notRequired + " mas" }}
+                </ng-container>
+              </h4>
+            </ng-container>
+
+            <ng-template #notRequiredQuestions>
+              <h4>
+                {{ requiredQuestionsCounter.notRequired + " preguntas" }}
+              </h4>
+            </ng-template>
+          </div>
+
+          <div
+            class="field-text"
+            (click)="openFormForField('STOCK')"
+            *ngIf="itemFormData.controls['stock'].value && !isASupplierItem"
+          >
+            <label for="">Cantidad disponible para vender</label>
+
+            <input
+              type="text"
+              placeholder="Escribe"
+              [formControlName]="'stock'"
+            />
+
+            <p
+              *ngIf="itemFormData.controls['notificationStockLimit'].value"
+              class="notification-limit"
+            >
+              Se notificará a tú numero de teléfono cuando lleguen a
+              {{ itemFormData.controls["notificationStockLimit"].value }}
+            </p>
+
+            <p
+              class="content-inventary-detail"
+              *ngIf="itemFormData.controls['stock'].value === '0'"
+            >
+              No se está mostrando a Floristerias
+            </p>
+          </div>
+
+          <ng-container
+            *ngIf="itemCategoriesIds.length > 0 && !isASupplierItem"
+          >
+            <div class="field-text" (click)="openCategoriesDialog()">
+              <label for="">Categorias donde se exhibe</label>
+
+              <span>{{ categoriesString }}</span>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="itemTagsIds.length > 0 && !isASupplierItem">
+            <div class="field-text" (click)="openTagsDialog()">
+              <label for="">Tags para búsquedas</label>
+
+              <span>{{ tagsString }}</span>
+            </div>
+          </ng-container>
+        </section>
+
+        <section
+          *ngIf="
+            (!itemFormData.controls['title'].value ||
+              !itemFormData.controls['description'].value) &&
+            typeOfFlow === 'ITEM_CREATION'
+          "
+        >
+          <h2 class="section-title">
+            OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
+          </h2>
+
+          <ng-container *ngIf="!itemFormData.controls['title'].value">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Texto principal y centralizado',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'TITLE',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="!itemFormData.controls['description'].value">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Texto más largo',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'DESCRIPTION',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+        </section>
+
+        <section
+          *ngIf="
+            !itemFormData.controls['stock'].value &&
+            typeOfFlow === 'ITEM_CREATION'
+          "
+        >
+          <h2 class="section-title">OPCIONAL- PARA QUE VENDAN POR TI</h2>
+
+          <ng-container>
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Cantidad disponible para vender',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'STOCK',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+        </section>
+
+        <section
+          *ngIf="
+            (itemsService.questionsToAddToItem.length === 0 &&
+              !webform &&
+              !item) ||
+            (item && !webform && typeOfFlow === 'ITEM_CREATION') ||
+            (itemCategoriesIds.length === 0 &&
+              typeOfFlow === 'ITEM_CREATION') ||
+            (itemTagsIds.length === 0 && typeOfFlow === 'ITEM_CREATION')
+          "
+        >
+          <h2 class="section-title">FUNCIONALIDADES OPCIONALES</h2>
+
+          <ng-container
+            *ngIf="
+              itemsService.questionsToAddToItem.length === 0 &&
+              !webform &&
+              !item
+            "
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Preguntas a compradores',
+                  iconCallback: goToWebformCreationOrEdition,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemCategoriesIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Categorias donde se exhibe',
+                  iconCallback: openCategoriesDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemTagsIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Tags para  búsquedas',
+                  iconCallback: openTagsDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+        </section>
+
+        <section *ngIf="typeOfFlow === 'UPDATE_EXISTING_ITEM'">
+          <h2 class="section-title">FUNCIONALIDADES OPCIONALES</h2>
+
+          <ng-container *ngIf="!itemFormData.controls['title'].value">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Texto principal y centralizado',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'TITLE',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="!itemFormData.controls['description'].value">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Texto más largo',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'DESCRIPTION',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container
+            *ngIf="itemsService.questionsToAddToItem.length === 0 && !webform"
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Preguntas a compradores',
+                  iconCallback: goToWebformCreationOrEdition,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="!itemFormData.controls['stock'].value">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Cantidad disponible para vender',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'STOCK',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemCategoriesIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Categorias donde se exhibe',
+                  iconCallback: openCategoriesDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemTagsIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Tags para búsquedas',
+                  iconCallback: openTagsDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+        </section>
+
+        <input
+          type="file"
+          id="file"
+          [style.display]="'none'"
+          (change)="loadFile($event)"
+          multiple
+          [accept]="[
+            '.png',
+            '.jpg',
+            '.jpeg',
+            '.webp',
+            '.webm',
+            '.mp4',
+            '.m4v',
+            '.mpg',
+            '.mpeg',
+            '.mpeg4',
+            '.mov',
+            '.3gp',
+            '.mts',
+            '.m2ts',
+            '.mxf'
+          ]"
+        />
+
+        <!--
+        <div class="optional-stuff">
+          <h3>FUNCIONALIDADES PARA QUE VENDAN POR TI</h3>
+    
+          <div class="row">
+            <span>Inventario para que se auto-oculte</span>
+    
+            <img
+              (click)="(null)"
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+    
+          <div class="row">
+            <span>¿Qué es?</span>
+    
+            <img
+              (click)="(null)"
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+    
+          <div class="row">
+            <span>% de comisión que pagarás a vendedor..</span>
+    
+            <img
+              (click)="(null)"
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
+              alt="add media"
+              class="upload-media"
+            />
+          </div>
+        </div>
+      -->
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'ITEM_METRICS'">
+        <h3 class="metrics-title">Información interna que sólo tu ves:</h3>
+
+        <div class="metric">
+          <h4>Cantidad de veces vendido</h4>
+
+          <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
+        </div>
+
+        <div class="metric">
+          <h4>Lugar en ventas en tu KiosKo</h4>
+
+          <p>
+            {{
+              salesPositionInStore > 0
+                ? salesPositionInStore
+                : "No se ha vendido todavía"
+            }}
+          </p>
+        </div>
+
+        <div class="metric">
+          <h4>Cantidad de compradores diferentes</h4>
+
+          <p>
+            {{
+              buyersInStore > 0 ? buyersInStore : "No lo han comprado todavía"
+            }}
+          </p>
+        </div>
+      </ng-container>
+    </ng-container>
+  </main>
+
+  <footer
+    [ngClass]="{
+      existingItem: typeOfFlow !== 'ITEM_CREATION'
+    }"
+  >
+    <button
+      class="left"
+      (click)="
+        !(itemFormData?.valid && itemSlides.length > 0)
+          ? goToItemDetail('DEMO')
+          : goToItemDetail('PREVIEW')
+      "
+    >
+      {{
+        itemFormData?.valid && itemSlides.length > 0
+          ? "Preview"
+          : "Mira un demo"
+      }}
+    </button>
+    <button
+      class="right"
+      *ngIf="itemFormData?.valid && itemSlides.length > 0 && !item"
+      (click)="saveItem()"
+    >
+      Guardar
+    </button>
+
+    <button
+      class="right"
+      *ngIf="
+        itemFormData?.valid && itemSlides.length > 0 && isFormUpdated && item
+      "
+      (click)="saveItem()"
+    >
+      Actualizar
+    </button>
+  </footer>
+</div>
+
+<ng-template
+  #addField
+  let-fieldLabel="fieldLabel"
+  let-iconCallback="iconCallback"
+  let-fieldNameForCallback="fieldNameForCallback"
+  let-notRequired="notRequired"
+>
+  <div
+    class="item-field"
+    [ngClass]="{
+      empty: !notRequired
+    }"
+    (click)="
+      fieldNameForCallback ? iconCallback(fieldNameForCallback) : iconCallback()
+    "
+  >
+    <div class="field-name">{{ fieldLabel }}</div>
+
+    <img
+      class="add-icon"
+      [src]="assetsFolder + '/add_button_circle.svg'"
+      alt="fill value"
+    />
+  </div>
+</ng-template>

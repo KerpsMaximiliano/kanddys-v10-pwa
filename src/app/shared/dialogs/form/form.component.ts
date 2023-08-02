@@ -19,7 +19,14 @@ import { environment } from 'src/environments/environment';
 import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
 
 interface Field {
-  type: 'text' | 'email' | 'phone' | 'file' | 'number' | 'currency';
+  type:
+    | 'text'
+    | 'email'
+    | 'phone'
+    | 'file'
+    | 'number'
+    | 'currency'
+    | 'email-or-phone';
   validators: Array<ValidatorFn>;
   name: string;
   placeholder?: string;
@@ -52,6 +59,8 @@ export class FormComponent implements OnInit {
     CountryISO.UnitedStates,
   ];
   PhoneNumberFormat = PhoneNumberFormat;
+  keyboardVisible: boolean = false;
+  phoneOrEmailVisible: 'phone' | 'email' = 'phone';
 
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
@@ -67,6 +76,10 @@ export class FormComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({});
+
+    if (!this.data.automaticallyFocusFirstField) {
+      this.data.automaticallyFocusFirstField = true;
+    }
 
     let firstEditableFieldFound = false;
     let alreadyFocusedFirstEditableField = false;
@@ -86,6 +99,7 @@ export class FormComponent implements OnInit {
           )
             firstEditableFieldFound = true;
           break;
+        case 'email-or-phone':
         case 'text':
         case 'currency':
         case 'phone':
@@ -112,7 +126,7 @@ export class FormComponent implements OnInit {
     }
 
     setTimeout(() => {
-      if(this.data.automaticallyFocusFirstField && firstEditableFieldFound) {
+      if (this.data.automaticallyFocusFirstField && firstEditableFieldFound) {
         (document.querySelector(firstEditableFieldId) as HTMLElement).focus();
       }
     }, 300);
@@ -131,6 +145,12 @@ export class FormComponent implements OnInit {
     this.formGroup.get(this.data.fields[index].name).setValue(value);
   }
 
+  updatePhoneOrEmailValue(index: number, value: any, previousValue: string) {
+    this.phoneOrEmailVisible = previousValue === 'phone' ? 'email' : 'phone';
+
+    this.updateFieldValue(index, '');
+  }
+
   // Listen for focusin and focusout events to track keyboard visibility changes
   @HostListener('window:focusout', ['$event'])
   onFocusChange(event: FocusEvent) {
@@ -143,6 +163,7 @@ export class FormComponent implements OnInit {
       event.target instanceof HTMLInputElement &&
       this.viewportRuler.getViewportRect().width <= 500
     ) {
+      this.keyboardVisible = false;
       this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
     }
   }
@@ -158,7 +179,42 @@ export class FormComponent implements OnInit {
       event.target instanceof HTMLInputElement &&
       this.viewportRuler.getViewportRect().width <= 500
     ) {
+      this.keyboardVisible = true;
       this.dialogRef.updatePosition({ top: '50px' }); // Reset the position when the keyboard is hidden
     }
+  }
+
+  @HostListener('window:popstate', ['$event'])
+  onBackButtonPress(event: PopStateEvent) {
+    // Add your custom logic here for what should happen when the back button is pressed.
+    // For example, you can navigate to a different route or show a confirmation dialog.
+    console.log('boton de ir hacia atras presionado');
+    if (
+      this.keyboardVisible &&
+      this.viewportRuler.getViewportRect().width <= 500
+    ) {
+      this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
+    }
+  }
+
+  updateDialogPosition() {
+    const container = document.querySelector(
+      '.cdk-overlay-container'
+    ) as HTMLElement;
+    const dialog = document.querySelector(
+      '#' + this.dialogRef.id
+    ) as HTMLElement;
+
+    const containerRect = container.getBoundingClientRect();
+    const dialogRect = dialog.getBoundingClientRect();
+
+    console.log(containerRect, dialogRect);
+
+    this.dialogRef.updatePosition({
+      top:
+        (containerRect.height - dialogRect.height) / 2 +
+        containerRect.top +
+        'px',
+    });
   }
 }

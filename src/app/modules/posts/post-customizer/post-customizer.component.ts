@@ -118,9 +118,9 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
 
   env: string = environment.assetsUrl;
   // CUSTOMIZER
-  // apiURL = 'http://localhost:3500';
+  apiURL = 'http://localhost:3500';
   isMobile: boolean = false;
-  apiURL = 'https://api.kanddys.com';
+  // apiURL = 'https://api.kanddys.com';
   itemId: string;
   item: Item;
   customizerValueID: string;

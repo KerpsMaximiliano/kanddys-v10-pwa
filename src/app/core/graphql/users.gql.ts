@@ -34,6 +34,20 @@ export const user = gql`
   }
 `;
 
+export const paginateUsers = gql `
+  query paginateUsers($input: PaginationInput!) {
+    paginateUsers(input: $input){
+      results{
+        _id
+        name
+        email
+        phone
+        createdAt
+      }
+    }
+  }
+`;
+
 export const buyersByItem = gql`
   query buyersByItem($itemId: ObjectID!) {
     buyersByItem(itemId: $itemId) {
