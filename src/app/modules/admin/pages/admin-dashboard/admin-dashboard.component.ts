@@ -14,7 +14,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
+import {
+  Item,
+  ItemCategory,
+  ItemImageInput,
+  ItemInput,
+} from 'src/app/core/models/item';
 import { ItemOrder } from 'src/app/core/models/order';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
@@ -300,68 +305,157 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     //await this.getItemsBoughtByMe();
-    this.route.queryParams.subscribe(async ({view, showItems, jsondata}) => {
+    this.route.queryParams.subscribe(async ({ view, showItems, jsondata }) => {
       this.showItems = showItems;
       this.supplierMode = JSON.parse(
         this.route.snapshot.queryParamMap.get('supplierMode') || 'false'
       );
-  
+
       if (jsondata) {
         let parsedData = JSON.parse(decodeURIComponent(jsondata));
-  
+
+        //console.log('parsedData', parsedData);
+
         if (parsedData.createdItem) {
           try {
             lockUI();
             const createdItemId = parsedData.createdItem;
-  
+
+            const item = await this._ItemsService.item(createdItemId);
+
             const saleflowDefault = await this._SaleflowService.saleflowDefault(
               this._MerchantsService.merchantData._id
             );
-  
+
             await this._ItemsService.authItem(
               this._MerchantsService.merchantData._id,
               createdItemId
             );
-  
+
             await this._SaleflowService.addItemToSaleFlow(
               {
                 item: createdItemId,
               },
               saleflowDefault._id
             );
-  
+
             if (parsedData.createdWebformId) {
-              await this.webformsService.authWebform(parsedData.createdWebformId);
-  
+              await this.webformsService.authWebform(
+                parsedData.createdWebformId
+              );
+
               await this.webformsService.itemAddWebForm(
                 createdItemId,
                 parsedData.createdWebformId
               );
             }
-  
+
+            //For existing tags that are going to be assigned to the item
+            if (parsedData.tagsToAssignIds) {
+              const tagsToAssignIds: Array<string> =
+                parsedData.tagsToAssignIds.split('-');
+
+              await Promise.all(
+                tagsToAssignIds.map((tagId) =>
+                  this.tagsService.itemAddTag(tagId, createdItemId)
+                )
+              );
+            }
+
+            //For tags the user created while not being logged-in
+            if (parsedData.itemTagsToCreate?.length > 0) {
+              const createdTags: Array<Tag> = [];
+
+              for await (const tagName of parsedData.itemTagsToCreate) {
+                const createdTag = await this.tagsService.createTag({
+                  entity: 'item',
+                  merchant: this._MerchantsService.merchantData._id,
+                  name: tagName,
+                  status: 'active',
+                });
+
+                createdTags.push(createdTag);
+              }
+
+              let tagIndex = 0;
+              for await (const createdTag of createdTags) {
+                if (
+                  parsedData.tagsIndexesToAssignAfterCreated?.length > 0 &&
+                  parsedData.tagsIndexesToAssignAfterCreated.includes(tagIndex)
+                ) {
+                  await this.tagsService.itemAddTag(
+                    createdTags[tagIndex]._id,
+                    createdItemId
+                  );
+                }
+                tagIndex++;
+              }
+            }
+
+            //For itemCategories the user created while not being logged-in
+            if (parsedData.itemCategoriesToCreate?.length > 0) {
+              const createdCategories: Array<ItemCategory> = [];
+
+              for await (const categoryName of parsedData.itemCategoriesToCreate) {
+                const createdCategory =
+                  await this._ItemsService.createItemCategory(
+                    {
+                      merchant: this._MerchantsService.merchantData?._id,
+                      name: categoryName,
+                      active: true,
+                    },
+                    false
+                  );
+
+                createdCategories.push(createdCategory);
+              }
+
+              if (
+                parsedData.categoriesIndexesToAssignAfterCreated?.length > 0
+              ) {
+                await this._ItemsService.updateItem(
+                  {
+                    category: createdCategories
+                      .filter((category, index) =>
+                        parsedData.categoriesIndexesToAssignAfterCreated.includes(
+                          index
+                        )
+                      )
+                      .map((category) => category._id),
+                  },
+                  createdItemId
+                );
+              }
+            }
+
             unlockUI();
-            window.location.href = environment.uri + '/admin/dashboard';
+
+            window.location.href =
+              environment.uri +
+              (item.type !== 'supplier'
+                ? '/admin/dashboard'
+                : '/admin/supplier-dashboard?supplierMode=true');
           } catch (error) {
             unlockUI();
-  
+
             console.error(error);
           }
         }
-  
+
         if (parsedData.quotationItems) {
           try {
             lockUI();
             await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-  
+
             const saleflow = await this._SaleflowService.saleflowDefault(
               this._MerchantsService.merchantData?._id
             );
-  
+
             const quotationItemsIDs = parsedData.quotationItems.split('-');
-  
+
             this.headerService.saleflow = saleflow;
             this.headerService.storeSaleflow(saleflow);
-  
+
             const supplierSpecificItemsInput: PaginationInput = {
               findBy: {
                 _id: {
@@ -374,17 +468,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 page: 1,
               },
             };
-  
+
             //Fetches supplier specfic items, meaning they already are on the saleflow
             let quotationItems: Array<Item> = [];
-  
+
             quotationItems = (
               await this._ItemsService.listItems(supplierSpecificItemsInput)
             )?.listItems;
-  
+
             if (quotationItems?.length) {
               this.items = quotationItems;
-  
+
               if (!this.items[0].merchant) {
                 await Promise.all(
                   this.items.map((item) =>
@@ -394,7 +488,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                     )
                   )
                 );
-  
+
                 await Promise.all(
                   this.items.map((item) =>
                     this._SaleflowService.addItemToSaleFlow(
@@ -407,20 +501,23 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                 );
               }
             }
-  
+
             unlockUI();
-            window.location.href = environment.uri + '/admin/dashboard?supplierMode=true';
+            window.location.href =
+              environment.uri + '/admin/supplier-dashboard?supplierMode=true';
           } catch (error) {
             unlockUI();
-  
+
             console.error(error);
           }
         }
+
+        return;
       }
-  
+
       if (view)
         this.view = view as 'sold' | 'notSold' | 'hidden' | 'all' | 'default';
-  
+
       if (this._SaleflowService.saleflowData) {
         await this.inicializeItems(true, false, true, true);
         this.getTags();
@@ -441,8 +538,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           }
         },
       });
-    })
-
+    });
   }
 
   async getItemsBoughtByMe() {
@@ -491,10 +587,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.notSoldItems = Object.values(notSoldItems)[0] as Array<Item>;
     this.itemsIndexesByList['NOT_SOLD'] = {};
 
-    if(this.supplierMode) {
-      this.notSoldItems = this.notSoldItems.filter(item => item.parentItem);
+    if (this.supplierMode) {
+      this.notSoldItems = this.notSoldItems.filter((item) => item.parentItem);
     } else {
-      this.notSoldItems = this.notSoldItems.filter(item => item.type !== 'supplier');
+      this.notSoldItems = this.notSoldItems.filter(
+        (item) => item.type !== 'supplier'
+      );
     }
 
     this.notSoldItems.forEach((item, index) => {
@@ -602,10 +700,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       const items = response;
       let itemsQueryResult = items?.listItems;
 
-      if(this.supplierMode) {
-        itemsQueryResult = itemsQueryResult.filter(item => item.parentItem);
+      if (this.supplierMode) {
+        itemsQueryResult = itemsQueryResult.filter((item) => item.parentItem);
       } else {
-        itemsQueryResult = itemsQueryResult.filter(item => item.type !== 'supplier');
+        itemsQueryResult = itemsQueryResult.filter(
+          (item) => item.type !== 'supplier'
+        );
       }
 
       /*
@@ -718,10 +818,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         return item.item;
       });
 
-      if(this.supplierMode) {
-        this.soldItems = this.soldItems.filter(item => item.parentItem);
-      }else {
-        this.soldItems = this.soldItems.filter(item => item.type !== 'supplier');
+      if (this.supplierMode) {
+        this.soldItems = this.soldItems.filter((item) => item.parentItem);
+      } else {
+        this.soldItems = this.soldItems.filter(
+          (item) => item.type !== 'supplier'
+        );
       }
 
       this.itemsIndexesByList['SOLD'] = {};
@@ -846,7 +948,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                           };
                         }
                       );
-                      console.log(images);
+                      //console.log(images);
                       if (!pricing) return;
                       lockUI();
                       const itemInput: ItemInput = {

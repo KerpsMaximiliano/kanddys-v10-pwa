@@ -2,6 +2,7 @@ import { Model } from '../objects/model';
 import { Merchant } from './merchant';
 import { Calendar } from './calendar';
 import { ItemWebform, Webform } from './webform';
+import { CommunityCategory } from './community-categories';
 
 export class ItemParamValue extends Model<ItemParamValue> {
   name?: string;
@@ -58,6 +59,7 @@ export class Item extends Model<Item> {
   hasSelection?: boolean;
   merchant?: Merchant;
   category: ItemCategory[];
+  categories: CommunityCategory[];
   name: string;
   images: ItemImage[];
   featuredImage: string;
@@ -102,6 +104,7 @@ export class Item extends Model<Item> {
   parentItem?: string;
   notificationStockLimit?: number;
   type?: 'default' | 'supplier';
+  notificationStockPhoneOrEmail?: string;
 }
 
 export class ItemImage extends Model<ItemImage> {
@@ -206,6 +209,7 @@ export class ItemInput {
   ctaBehavior?: 'ADD_TO_CART';
   type?: string;
   parentItem?: string;
+  notificationStockPhoneOrEmail?: string;
 }
 
 export class ItemImageInput {

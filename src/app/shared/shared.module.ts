@@ -226,6 +226,8 @@ import { TagFilteringComponent } from './dialogs/tag-filtering/tag-filtering.com
 import { ItemSelectorComponent } from './components/item-selector/item-selector.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { SupplierRegistrationComponent } from './components/supplier-registration/supplier-registration.component';
+import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
+import { CardImageComponent } from './components/card-image/card-image.component';
 
 const imports = [
   CommonModule,
@@ -463,7 +465,9 @@ const declarations = [
   TagFilteringComponent,
   ItemSelectorComponent,
   InventoryComponent,
-  SupplierRegistrationComponent
+  SupplierRegistrationComponent,
+  ProgressBarComponent,
+  CardImageComponent
 ];
 
 @NgModule({

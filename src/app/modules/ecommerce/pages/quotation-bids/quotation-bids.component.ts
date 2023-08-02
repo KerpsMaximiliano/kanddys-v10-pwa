@@ -401,6 +401,8 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   async editQuotation() {
+    this.headerService.flowRouteForEachPage['quotations-link'] = this.router.url;
+
     if (this.typeOfQuotation === 'DATABASE_QUOTATION') {
       if (!this.headerService.user) {
         let quotationInput: QuotationInput = {

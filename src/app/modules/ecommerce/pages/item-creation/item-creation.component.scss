@@ -118,7 +118,8 @@
       }
 
       input,
-      textarea {
+      textarea,
+      span {
         border: none;
         font-size: 17px;
         font-family: InterBold;
@@ -126,10 +127,10 @@
         &::placeholder {
           color: #7b7b7b;
         }
-        
+
         &:disabled {
           background-color: #fff;
-          color: #7B7B7B;
+          color: #7b7b7b;
         }
       }
 
@@ -238,7 +239,7 @@
 }
 
 .layout-row {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .layouts-options {

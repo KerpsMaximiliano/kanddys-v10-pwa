@@ -97,9 +97,6 @@ export class ItemSelectorComponent implements OnInit {
           createQuotationFromExistingQuotation,
           updatingTemporalQuotation,
         }) => {
-          console.log("this.router.url", this.router.url);
-          console.log("queryParams", this.route.queryParams);
-
           this.supplierMode = JSON.parse(supplierMode || 'false');
           this.createQuotationFromExistingQuotation = JSON.parse(
             createQuotationFromExistingQuotation || 'false'
@@ -132,10 +129,14 @@ export class ItemSelectorComponent implements OnInit {
                 ? 'NEW_QUOTATION_BASED_ON_EXISTING_QUOTATION'
                 : 'QUOTATION_UPDATE';
 
-              if (this.mode === 'QUOTATION_UPDATE')
+              if (this.mode === 'QUOTATION_UPDATE') {
                 await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+                this.quotationService.quotationToUpdate = this.quotation;
+              }
 
               this.selectedItems = this.quotation.items;
+              this.quotationService.selectedItemsForQuotation =
+                this.selectedItems;
               this.items = (
                 await this.itemsService.listItems(pagination)
               )?.listItems;
@@ -233,8 +234,10 @@ export class ItemSelectorComponent implements OnInit {
               if (value === '') {
                 this.itemsToShow = JSON.parse(JSON.stringify(this.items));
               } else {
-                this.itemsToShow = this.items.filter((item) =>
-                  item.name.toLowerCase().includes(value.toLowerCase())
+                this.itemsToShow = this.items.filter(
+                  (item) =>
+                    item.name.toLowerCase().includes(value.toLowerCase()) ||
+                    item.description.toLowerCase().includes(value.toLowerCase())
                 );
               }
 
@@ -291,6 +294,8 @@ export class ItemSelectorComponent implements OnInit {
       if (isIncludedInItemsToShow)
         this.selectedItems.push(this.items[index]._id);
     });
+
+    this.quotationService.selectedItemsForQuotation = this.selectedItems;
   };
 
   changeView() {
@@ -347,6 +352,15 @@ export class ItemSelectorComponent implements OnInit {
   }
 
   back() {
+    if (this.headerService.flowRouteForEachPage['quotations-link']) {
+      this.headerService.flowRoute =
+        this.headerService.flowRouteForEachPage['quotations-link'];
+      this.headerService.redirectFromQueryParams();
+
+      delete this.headerService.flowRouteForEachPage['quotations-link'];
+      return;
+    }
+
     this.location.back();
   }
 
@@ -367,6 +381,8 @@ export class ItemSelectorComponent implements OnInit {
             this.merchantService.merchantData._id,
             quotationInput
           );
+
+          this.quotationService.selectedItemsForQuotation = [];
 
           this.router.navigate([
             `/ecommerce/quotation-bids/${createdQuotation._id}`,
@@ -405,6 +421,8 @@ export class ItemSelectorComponent implements OnInit {
             JSON.stringify(temporalQuotations)
           );
 
+          this.quotationService.selectedItemsForQuotation = [];
+
           this.router.navigate(['/ecommerce/quotations']);
           unlockUI();
           break;
@@ -418,6 +436,8 @@ export class ItemSelectorComponent implements OnInit {
           );
 
           this.quotationService.selectedItemsForQuotation = [];
+
+          this.quotationService.quotationToUpdate = null;
 
           unlockUI();
           this.router.navigate([
@@ -458,6 +478,8 @@ export class ItemSelectorComponent implements OnInit {
                     JSON.stringify(temporalQuotations)
                   );
 
+                  this.quotationService.selectedItemsForQuotation = [];
+
                   this.router.navigate(['/ecommerce/quotations']);
                 }
 
@@ -468,10 +490,12 @@ export class ItemSelectorComponent implements OnInit {
                   this.quotationService.selectedTemporalQuotation =
                     temporalQuotations[foundIndex];
 
-                    localStorage.setItem(
-                      'selectedTemporalQuotation',
-                      JSON.stringify(this.quotationService.selectedTemporalQuotation)
-                    );                
+                  localStorage.setItem(
+                    'selectedTemporalQuotation',
+                    JSON.stringify(
+                      this.quotationService.selectedTemporalQuotation
+                    )
+                  );
 
                   localStorage.setItem(
                     'temporalQuotations',
@@ -482,6 +506,8 @@ export class ItemSelectorComponent implements OnInit {
             }
 
             unlockUI();
+
+            this.quotationService.selectedItemsForQuotation = [];
 
             this.router.navigate(['/ecommerce/quotation-bids']);
           }
@@ -543,7 +569,7 @@ export class ItemSelectorComponent implements OnInit {
     this.itemsService.temporalItemInput = {
       name: item.name,
       layout: item.layout,
-      description: item.description
+      description: item.description,
     };
     this.itemsService.temporalItem = item;
 

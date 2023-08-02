@@ -83,6 +83,11 @@ import { OrderProgressFilteringComponent } from './pages/order-progress-filterin
 import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
 import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
 import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
+import { AmbassadorsPaymentsComponent } from './pages/ambassadors-payments/ambassadors-payments.component';
+import { AmbassadorPaymentsLibraryComponent } from './pages/ambassador-payments-library/ambassador-payments-library.component';
+import { AmbassadorsComponent } from './pages/ambassadors/ambassadors.component';
+import { UserSearchComponent } from './pages/user-search/user-search.component';
+import { UserEntryComponent } from './pages/user-entry/user-entry.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -222,6 +227,10 @@ const routes: Routes = [
       },
       {
         path: 'dashboard',
+        component: AdminDashboardComponent,
+      },
+      {
+        path: 'supplier-dashboard',
         component: AdminDashboardComponent,
       },
       {
@@ -525,6 +534,25 @@ const routes: Routes = [
   {
     path: 'admin-orders',
     component: AdminOrdersComponent
+  },
+    path: 'ambassadors-pending-payments',
+    component: AmbassadorsPaymentsComponent
+  },
+  {
+    path: 'ambassador-payments',
+    component: AmbassadorPaymentsLibraryComponent
+  },
+  {
+    path: 'ambassadors',
+    component: AmbassadorsComponent
+  },
+  {
+    path: 'user-search',
+    component: UserSearchComponent
+  },
+  {
+    path: 'user-entry',
+    component: UserEntryComponent
   }
 ];
 
@@ -590,7 +618,12 @@ const routes: Routes = [
     OrderProgressFilteringComponent,
     OrderProgressComponent,
     OrderFilteringComponent,
-    AdminOrdersComponent
+    AdminOrdersComponent,
+    AmbassadorsPaymentsComponent,
+    AmbassadorPaymentsLibraryComponent,
+    AmbassadorsComponent,
+    UserSearchComponent,
+    UserEntryComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [

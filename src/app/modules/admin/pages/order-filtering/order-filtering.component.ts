@@ -55,7 +55,7 @@ export class OrderFilteringComponent implements OnInit {
     return this.orders.filter(order => order.orderStatus == 'to confirm').length
   }
 
-  async filterData() {
+  async filterData(dateRangeFilter?: boolean) {
     if (this.start_date == "" || this.end_date == "") {
       console.log("please input search date range")
       return;
@@ -72,10 +72,13 @@ export class OrderFilteringComponent implements OnInit {
         sortBy: 'createdAt:desc'
       },
     };
-    pagination.options.range = {
-      from: this.start_date as any,
-      to: this.end_date as any,
-    };
+
+    if (dateRangeFilter)
+      pagination.options.range = {
+        from: this.start_date as any,
+        to: this.end_date as any,
+      };
+
     const orders = (
       await this.merchantsService.ordersByMerchant(
         _id,
@@ -96,7 +99,7 @@ export class OrderFilteringComponent implements OnInit {
   change_end_date(type: string, event) {
     this.end_date = event.value;
     console.log("start: ", this.start_date, "\nend: ", this.end_date)
-    this.filterData();
+    this.filterData(true);
   }
 
   ngOnInit(): void {

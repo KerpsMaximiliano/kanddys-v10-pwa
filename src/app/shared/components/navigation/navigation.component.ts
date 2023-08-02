@@ -66,6 +66,7 @@ export class NavigationComponent implements OnInit {
       queryParams?: Record<string, any>;
       possibleRedirectionQueryParams?: Record<string, any>;
       hardcodedURL?: string;
+      linkName: string;
     }>;
     textList?: Array<{
       title?: string;
@@ -92,6 +93,7 @@ export class NavigationComponent implements OnInit {
         {
           text: 'Registrar nuevos afiliados 📒',
           routerLink: ['/admin/merchants-entry'],
+          linkName: 'affiliate-entry'
         },
       ],
     },
@@ -183,10 +185,13 @@ export class NavigationComponent implements OnInit {
         {
           text: 'Mi KiosKo 💰',
           routerLink: ['/admin/dashboard'],
+          linkName: 'my-dashboard'
         },
         {
-          text: 'Carritos de proveedores',
+          text: 'Carrito del Proveedor (yo compro)',
           routerLink: ['/ecommerce/supplier-items-selector'],
+          possibleRedirection: ['/ecommerce/quotations'],
+          linkName: 'quotations-link'
         } /*
         {
           text: 'Carritos de compradores',
@@ -278,11 +283,12 @@ export class NavigationComponent implements OnInit {
       links: [
         {
           text: 'Mi KiosKo 💰',
-          routerLink: ['/admin/dashboard'],
+          routerLink: ['/admin/supplier-dashboard'],
           queryParams: {
             supplierMode: true,
           },
-          hardcodedURL: '/admin/dashboard?supplierMode=true',
+          hardcodedURL: '/admin/supplier-dashboard?supplierMode=true',
+          linkName: 'my-dashboard'
         } /*
         {
           text: 'Carritos de compradores',
@@ -307,7 +313,7 @@ export class NavigationComponent implements OnInit {
         button: {
           text: 'Administración de mis artículos',
           callback: () => {
-            this.router.navigate(['/admin/dashboard'], {
+            this.router.navigate(['/admin/supplier-dashboard'], {
               queryParams: {
                 supplierMode: true,
               },
@@ -429,7 +435,7 @@ export class NavigationComponent implements OnInit {
       }
     }
 
-    console.log('this.isCurrentUserASupplier', this.isCurrentUserASupplier);
+    //console.log('this.isCurrentUserASupplier', this.isCurrentUserASupplier);
 
     if (!this.isCurrentUserASupplier) {
       //tab proveedor no registrado
@@ -528,10 +534,9 @@ export class NavigationComponent implements OnInit {
       });
 
       if (this.quotations.length > 0) {
-        /*
         this.tabs[2].links[this.tabs[2].links.length - 1].routerLink = [
           '/ecommerce/quotations',
-        ];*/
+        ];
       }
     }
   }
@@ -621,6 +626,22 @@ export class NavigationComponent implements OnInit {
       if (value.user?._id || value.session.user._id) {
         this.close();
       }
+    });
+  }
+
+  redirectToLink(link: any) {
+    this.headerService.flowRouteForEachPage[link.linkName] =
+    this.router.url;
+    
+    //console.log("ARMANDO");
+
+    this.headerService.flowRoute = this.headerService.buildURL(
+      link.routerLink.join('/'),
+      link.queryParams ? link.queryParams : null
+    );
+
+    this.router.navigate(link.routerLink, {
+      queryParams: link.queryParams ? link.queryParams : {},
     });
   }
 
