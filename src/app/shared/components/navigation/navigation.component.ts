@@ -283,11 +283,11 @@ export class NavigationComponent implements OnInit {
       links: [
         {
           text: 'Mi KiosKo 💰',
-          routerLink: ['/admin/dashboard'],
+          routerLink: ['/admin/supplier-dashboard'],
           queryParams: {
             supplierMode: true,
           },
-          hardcodedURL: '/admin/dashboard?supplierMode=true',
+          hardcodedURL: '/admin/supplier-dashboard?supplierMode=true',
           linkName: 'my-dashboard'
         } /*
         {
@@ -313,7 +313,7 @@ export class NavigationComponent implements OnInit {
         button: {
           text: 'Administración de mis artículos',
           callback: () => {
-            this.router.navigate(['/admin/dashboard'], {
+            this.router.navigate(['/admin/supplier-dashboard'], {
               queryParams: {
                 supplierMode: true,
               },

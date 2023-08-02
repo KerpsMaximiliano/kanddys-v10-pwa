@@ -224,6 +224,10 @@ const routes: Routes = [
         component: AdminDashboardComponent,
       },
       {
+        path: 'supplier-dashboard',
+        component: AdminDashboardComponent,
+      },
+      {
         path: 'tags-view',
         component: TagsViewComponent,
       },

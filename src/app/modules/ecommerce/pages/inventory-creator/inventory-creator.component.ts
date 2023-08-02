@@ -708,10 +708,10 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       this.itemsService.itemPrice = null;
 
       if (this.loggedMerchant) {
-        itemInput.merchant = this.merchantsService.merchantData?._id;
+        itemInput.merchant = this.loggedMerchant?._id;
 
         const saleflowDefault = await this.saleflowService.saleflowDefault(
-          this.merchantsService.merchantData._id
+          this.loggedMerchant._id
         );
 
         if (!this.existingItem) {
@@ -804,9 +804,17 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               itemInput.parentItem = this.itemId;
 
               lockUI();
-              const createdItem = (
+              let createdItem = (
                 await this.itemsService.createPreItem(itemInput)
               )?.createPreItem;
+
+              if(!this.existingItem) {
+                itemInput.parentItem = createdItem._id;
+                
+                createdItem = (
+                  await this.itemsService.createPreItem(itemInput)
+                )?.createPreItem;
+              }
 
               await this.authService.generateMagicLink(
                 phone || email,
