@@ -53,7 +53,6 @@ export class ItemsSlidesEditorComponent implements OnInit {
   }
 
   async onEditSubmit(result: CroppResult) {
-    console.log('result', result);
     try {
       const file = new File([result.blob], 'image.jpg', {
         type: 'image/jpg',
@@ -108,7 +107,7 @@ export class ItemsSlidesEditorComponent implements OnInit {
             );
           } else {
             this.router.navigate(
-              [`/ecommerce/${this.merchantsService.merchantData.slug}/qr-edit`],
+              [`/ecommerce/slides-editor-2`],
               {
                 queryParams: {
                   entity: 'item',

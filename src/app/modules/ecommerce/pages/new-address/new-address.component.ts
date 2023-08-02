@@ -341,6 +341,8 @@ export class NewAddressComponent implements OnInit {
 
     //console.log('this.headerService.user', this.headerService.user);
 
+    console.log(this.headerService.user, save)
+
     if (save && !this.headerService.user) {
       // this.authSelect('address');
 
@@ -380,9 +382,11 @@ export class NewAddressComponent implements OnInit {
         this.headerService.saleflow.module.appointment?.isActive;
 
 
+      console.log(addressInput);
+      console.log(this.addresses);
       console.log(this.addresses[this.selectedDeliveryIndex]);
 
-      let redirectionRoute = this.addresses[this.selectedDeliveryIndex].street
+      let redirectionRoute = addressInput.street
         ? `../receiver-form` 
         : isAppointmentActive
         ? `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`

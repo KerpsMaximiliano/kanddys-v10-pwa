@@ -45,6 +45,30 @@ export const quotationCoincidences = gql`
   }
 `;
 
+export const multipleQuotationMatches = gql`
+  query multipleQuotationMatches(
+    $quotationsIds: [ObjectID!]
+    $paginationOptionsInput: PaginationOptionsInput
+  ) {
+    multipleQuotationMatches(
+      quotationsIds: $quotationsIds
+      paginationOptionsInput: $paginationOptionsInput
+    )
+  }
+`;
+
+export const multipleQuotationMatchesByItems = gql`
+  query multipleQuotationMatchesByItems(
+    $quotationsItems: [[ObjectID!]!]
+    $paginationOptionsInput: PaginationOptionsInput
+  ) {
+    multipleQuotationMatchesByItems(
+      quotationsItems: $quotationsItems
+      paginationOptionsInput: $paginationOptionsInput
+    )
+  }
+`;
+
 export const quotationCoincidencesByItem = gql`
   query quotationCoincidencesByItem(
     $paginationOptionsInput: PaginationOptionsInput

@@ -26,6 +26,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -113,6 +114,8 @@ export class HeaderService {
   ecommerceDataLoaded = new Subject<boolean>();
   navigationTabState: any = null;
   redirectFromFlowRoute: boolean = false;
+  flowRouteForEachPage: Record<string, string> = {};
+
 
   public session: Session;
   constructor(
@@ -124,6 +127,7 @@ export class HeaderService {
     private saleflowService: SaleFlowService,
     private authService: AuthService,
     public matDialog: MatDialog,
+    private matSnackBar: MatSnackBar,
     private router: Router
   ) {
     this.auth.me().then((data) => {
@@ -180,7 +184,7 @@ export class HeaderService {
   }
 
   isUserLogged() {
-    if(this.user) return true;
+    if (this.user) return true;
     else return false;
   }
 
@@ -624,6 +628,46 @@ export class HeaderService {
   removeTempNewItem() {
     this.newTempItem = null;
     this.newTempItemRoute = null;
+  }
+
+  showErrorToast(
+    message: string = 'Ocurrió un error',
+    duration: number = 3000,
+    optionalErrorCssClass: string = 'snack-toast-error'
+  ) {
+    this.matSnackBar.open(message, '', {
+      duration,
+      panelClass: optionalErrorCssClass,
+    });
+  }
+
+  buildURL(url, queryParams = null) {
+    // Check if queryParams is defined and is an object
+    if (queryParams && typeof queryParams === "object") {
+      // Get an array of keys from the queryParams object
+      const keys = Object.keys(queryParams);
+  
+      // Check if there are any query parameters to append
+      if (keys.length > 0) {
+        // Initialize an array to hold the query parameters
+        const queryArr = [];
+  
+        // Loop through the keys and build the query parameter string
+        keys.forEach((key) => {
+          const value = queryParams[key];
+          const encodedValue = encodeURIComponent(value); // URL-encode the value
+          queryArr.push(`${key}=${encodedValue}`);
+        });
+  
+        // Join the queryArr with "&" to create the final query parameter string
+        const queryString = queryArr.join("&");
+  
+        // Append the query string to the URL
+        url += `?${queryString}`;
+      }
+    }
+  
+    return url;
   }
 
   redirectFromQueryParams() {

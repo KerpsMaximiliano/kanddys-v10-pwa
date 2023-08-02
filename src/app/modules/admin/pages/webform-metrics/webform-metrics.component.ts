@@ -204,7 +204,7 @@ export class WebformMetricsComponent implements OnInit, OnDestroy {
   };
 
   async goBack() {
-    return this._Router.navigate(['/admin/item-creation/' + this.itemId]);
+    return this._Router.navigate(['/ecommerce/item-management/' + this.itemId]);
   }
 
   goToPreview = async () => {
