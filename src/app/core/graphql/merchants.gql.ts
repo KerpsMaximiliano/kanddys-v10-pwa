@@ -492,7 +492,7 @@ export const currencyStartByMerchant = gql`
 `;
 
 export const walletsByCurrency = gql`
-  query walletsByCurrency ($paginate: PaginationInput!) {
+  query walletsByCurrency($paginate: PaginationInput!) {
     walletsByCurrency(paginate: $paginate) {
       _id
       balance
@@ -509,10 +509,44 @@ export const walletsByCurrency = gql`
       owner {
         _id
       }
+      createdAt
+    }
+  }
+`;
+
+export const paginateUsers = gql`
+  query paginateUsers($input: PaginationInput!) {
+    paginateUsers(input: $input) {
+      results {
+        _id
+        name
+        email
+        phone
+        createdAt
+      }
       owner {
         _id
       }
       createdAt
+    }
+  }
+`;
+
+export const payUserStarAffiliate = gql`
+  mutation payUserStarAffiliate(
+    $screenshot: Upload!
+    $paymentMethod: String!
+    $userId: ObjectID!
+    $merchantId: ObjectID!
+  ) {
+    payUserStarAffiliate(
+      screenshot: $screenshot
+      paymentMethod: $paymentMethod
+      userId: $userId
+      merchantId: $merchantId
+    ) {
+      _id
+      ammount
     }
   }
 `;

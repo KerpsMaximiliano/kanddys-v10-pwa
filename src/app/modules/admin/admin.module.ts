@@ -82,6 +82,7 @@ import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-c
 import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
 import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
 import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
+import { AmbassadorsPaymentsComponent } from './pages/ambassadors-payments/ambassadors-payments.component';
 import { AmbassadorPaymentsLibraryComponent } from './pages/ambassador-payments-library/ambassador-payments-library.component';
 import { AmbassadorsComponent } from './pages/ambassadors/ambassadors.component';
 import { UserSearchComponent } from './pages/user-search/user-search.component';
@@ -530,6 +531,10 @@ const routes: Routes = [
     component: OrderFilteringComponent
   },
   {
+    path: 'ambassadors-pending-payments',
+    component: AmbassadorsPaymentsComponent
+  },
+  {
     path: 'ambassador-payments',
     component: AmbassadorPaymentsLibraryComponent
   },
@@ -609,6 +614,7 @@ const routes: Routes = [
     OrderProgressFilteringComponent,
     OrderProgressComponent,
     OrderFilteringComponent,
+    AmbassadorsPaymentsComponent
     AmbassadorPaymentsLibraryComponent,
     AmbassadorsComponent,
     UserSearchComponent,

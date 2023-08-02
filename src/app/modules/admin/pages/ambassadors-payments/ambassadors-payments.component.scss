@@ -1,0 +1,210 @@
+.container {
+  height: 100vh;
+  overflow-y: scroll;
+  background: #f6f6f6;
+}
+
+.header {
+  background: #181d17;
+  padding-left: 19px;
+  padding-right: 19px;
+  padding-top: 11px;
+  padding-bottom: 9px;
+}
+
+.flex {
+  display: flex;
+}
+
+.header-top-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  mat-icon {
+    color: #87cd9b;
+    font-size: 30px;
+    margin-top: -4px;
+    width: auto;
+  }
+}
+
+.header-top-text {
+  color: #87cd9b;
+  font-weight: 400;
+  font-family: InterMedium;
+  font-size: 17px;
+  margin: 0;
+  margin-right: 7px;
+}
+
+.content {
+  background: #f6f6f6;
+  padding: 18px;
+  padding-bottom: 120px;
+}
+
+.content-title {
+  color: #181d17;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.content-comission-card {
+  background: #fff;
+  width: 100%;
+  border-radius: 8px;
+  padding-top: 16px;
+  padding-left: 18px;
+  padding-right: 18px;
+  padding-bottom: 16px;
+  margin-top: 7px;
+}
+
+.content-comission-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-comission-card-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e9e371;
+  margin-right: 10px;
+}
+
+.content-comission-card-title {
+  color: #272727;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin: 0;
+}
+
+.content-comission-card-payment {
+  color: #7b7b7b;
+  text-align: right;
+  font-family: InterMedium;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin: 0;
+}
+
+.content-commision-card-bar {
+  border-radius: 6px;
+  background: linear-gradient(
+    180deg,
+    #f7d455 0%,
+    rgba(247, 212, 85, 0.67) 51.04%,
+    #f7d455 100%
+  );
+  width: 100%;
+  height: 31px;
+  color: #181d17;
+  font-family: InterMedium;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  padding-left: 11px;
+  margin-top: 10px;
+}
+
+.content-comission-card-desc {
+  color: #7b7b7b;
+  font-family: InterMedium;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: normal;
+  margin: 0;
+  width: 70%;
+}
+
+.content-comission-card-img-container {
+  width: 30%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.content-comission-card-img-uploader-container {
+  border-radius: 6px;
+  background: linear-gradient(
+    180deg,
+    #f7d455 0%,
+    rgba(247, 212, 85, 0.67) 51.04%,
+    #f7d455 100%
+  );
+  width: 78px;
+  height: 78px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  mat-icon{
+    color: #272727;
+    font-size: 60px;
+    height: 60px;
+    width: 60px;
+    font-weight: bold;
+  }
+  img{
+    width: 78px;
+    height: 78px;
+  }
+}
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.flex-space-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.content-title-margin{
+    margin-top:29px;
+}
+
+.hr-container{
+    margin-top:14px;
+    margin-left:-8px;
+    margin-right: -8px;
+    hr{
+        border:1px solid #E9E9E9;
+        margin:0;
+    }
+}
+
+.content-ambassador-card-text{
+    color: #272727;
+font-family: InterMedium;
+font-size: 17px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+margin-top:16px;
+}
+
+
+@media (max-width: 400px) {
+  .content-comission-card-desc {
+    font-size: 15px;
+  }
+}
