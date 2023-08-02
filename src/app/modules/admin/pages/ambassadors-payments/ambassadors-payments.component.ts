@@ -35,7 +35,7 @@ export class AmbassadorsPaymentsComponent implements OnInit {
     await this.MerchantsService.currencyStartByMerchant(this.merchantId).then((data) => {
       this.walletQuery.findBy.currency = data.affiliate._id;
     })
-    let walletUsers: string;
+    let walletUsers: any;
     await this.MerchantsService.walletsByCurrency(this.walletQuery).then((data) => {
       this.wallets = data
       walletUsers = data.map((wallet) => wallet.owner._id)

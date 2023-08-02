@@ -524,10 +524,6 @@ export const paginateUsers = gql`
         phone
         createdAt
       }
-      owner {
-        _id
-      }
-      createdAt
     }
   }
 `;
