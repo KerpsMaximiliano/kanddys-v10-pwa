@@ -18,4 +18,5 @@ export class QuotationInput {
   name?: string;
   items?: Array<string>;
   merchant?: string;
+  customId?: string;
 }

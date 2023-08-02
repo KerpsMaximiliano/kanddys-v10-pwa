@@ -208,7 +208,7 @@ export class MerchantItemsComponent implements OnInit {
   goToDetail(id: string) {
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
-    this.router.navigate([`admin/item-creation/${id}`]);
+    this.router.navigate([`ecommerce/item-management/${id}`]);
   }
 
   errorScreen() {
@@ -236,7 +236,7 @@ export class MerchantItemsComponent implements OnInit {
 
   createItem() {
     this.headerService.flowRoute = this.router.url;
-    this.router.navigate([`admin/item-creation/`]);
+    this.router.navigate([`ecommerce/item-management/`]);
   }
 
   openDeleteDialog(item: Item) {
@@ -597,7 +597,7 @@ export class MerchantItemsComponent implements OnInit {
             text: 'ADICIONAR',
             mode: 'func',
             func: () => {
-              this.router.navigate(['admin/item-creation/']);
+              this.router.navigate(['ecommerce/item-management/']);
             },
           },
           {
@@ -655,7 +655,7 @@ export class MerchantItemsComponent implements OnInit {
       {
         text: 'Adicionar nuevo artículo',
         callback: () => {
-          this.router.navigate(['admin/item-creation']);
+          this.router.navigate(['ecommerce/item-management']);
         },
       },
       {

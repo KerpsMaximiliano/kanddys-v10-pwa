@@ -64,7 +64,7 @@ export class TextOrImageComponent implements OnInit {
           }
 
           if (this.webformService.webformQuestions.length === 0) {
-            this.router.navigate(['admin/item-creation/' + this.itemId]);
+            this.router.navigate(['ecommerce/item-management/' + this.itemId]);
           }
 
           //Checks wether the user is on a desktop device or not
@@ -255,7 +255,7 @@ export class TextOrImageComponent implements OnInit {
       ].answerDefault = optionsToAdd;
 
       if (this.itemId && !this.updatingWebform && !this.updatingQuestion)
-        return this.router.navigate(['admin/item-creation/' + this.itemId], {
+        return this.router.navigate(['ecommerce/item-management/' + this.itemId], {
           queryParams: {
             resumeWebform: true,
           },
