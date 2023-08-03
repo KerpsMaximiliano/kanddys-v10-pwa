@@ -590,7 +590,7 @@ export class CartComponent implements OnInit {
         this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
 
         this.totalPrice = this.items.reduce(
-          (acc, curr) => acc + curr.pricing,
+          (acc, curr) => acc + curr.pricing * this.itemObjects[curr._id]?.amount,
           0
         );
 

@@ -1792,6 +1792,20 @@ export class ItemCreationComponent implements OnInit {
       this.headerService.redirectFromQueryParams();
     } else {
       this.itemsService.temporalItem = null;
+
+      if (this.item) {
+        const route =
+          this.item.type !== 'supplier'
+            ? 'admin/dashboard'
+            : 'admin/supplier-dashboard';
+        const queryParams =
+          this.item.type === 'supplier' ? { supplierMode: true } : {};
+
+        return this.router.navigate([route], {
+          queryParams,
+        });
+      }
+
       this.router.navigate(['admin/dashboard']);
     }
   }

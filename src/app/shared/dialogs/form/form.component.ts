@@ -158,13 +158,26 @@ export class FormComponent implements OnInit {
 
     const clickedInsideDialog = dialogElement.contains(event.target as Node);
 
+    const container = document.querySelector(
+      '.cdk-overlay-container'
+    ) as HTMLElement;
+    const dialog = document.querySelector(
+      '#' + this.dialogRef.id
+      ) as HTMLElement;
+
     if (
+      container &&
+      dialog &&
       clickedInsideDialog &&
       event.target instanceof HTMLInputElement &&
       this.viewportRuler.getViewportRect().width <= 500
     ) {
       this.keyboardVisible = false;
-      this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
+      const screenHeight = window.innerHeight;
+      const dialogHeight = dialog.clientHeight;
+      const marginTop = (screenHeight - dialogHeight) / 2;
+
+      this.dialogRef.updatePosition({ top: marginTop + 'px' }); 
     }
   }
 
@@ -173,10 +186,12 @@ export class FormComponent implements OnInit {
     const dialogElement = this.elementRef.nativeElement.parentElement;
 
     const clickedInsideDialog = dialogElement.contains(event.target as Node);
+    const target = event.target;
 
     if (
       clickedInsideDialog &&
-      event.target instanceof HTMLInputElement &&
+      target instanceof HTMLInputElement &&
+      !['country-search-box'].includes((target as HTMLInputElement).id) &&
       this.viewportRuler.getViewportRect().width <= 500
     ) {
       this.keyboardVisible = true;
@@ -186,14 +201,26 @@ export class FormComponent implements OnInit {
 
   @HostListener('window:popstate', ['$event'])
   onBackButtonPress(event: PopStateEvent) {
+    const container = document.querySelector(
+      '.cdk-overlay-container'
+    ) as HTMLElement;
+    const dialog = document.querySelector(
+      '#' + this.dialogRef.id
+    ) as HTMLElement;
+
     // Add your custom logic here for what should happen when the back button is pressed.
     // For example, you can navigate to a different route or show a confirmation dialog.
-    console.log('boton de ir hacia atras presionado');
     if (
+      container &&
+      dialog &&
       this.keyboardVisible &&
       this.viewportRuler.getViewportRect().width <= 500
     ) {
-      this.dialogRef.updatePosition({ top: '50%' }); // Reset the position when the keyboard is hidden
+      const screenHeight = window.innerHeight;
+      const dialogHeight = dialog.clientHeight;
+      const marginTop = (screenHeight - dialogHeight) / 2;
+
+      this.dialogRef.updatePosition({ top: marginTop + 'px' }); // Reset the position when the keyboard is hidden
     }
   }
 
@@ -207,8 +234,6 @@ export class FormComponent implements OnInit {
 
     const containerRect = container.getBoundingClientRect();
     const dialogRect = dialog.getBoundingClientRect();
-
-    console.log(containerRect, dialogRect);
 
     this.dialogRef.updatePosition({
       top:
