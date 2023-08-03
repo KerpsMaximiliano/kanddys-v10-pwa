@@ -85,6 +85,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             let items;
             this.quotationId = quotationId;
 
+            console.log("parsedData", parsedData);
+
             if (!parsedData) {
               const lastCurrentQuotationRequest: {
                 supplierMerchantId?: string;
@@ -95,6 +97,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               } = JSON.parse(
                 localStorage.getItem('lastCurrentQuotationRequest')
               );
+
+              console.log("ESCENARIO A")
 
               supplierMerchantId =
                 lastCurrentQuotationRequest.supplierMerchantId;
@@ -134,8 +138,12 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               temporalQuotation = parsedData.temporalQuotation;
               quotationName = parsedData.quotationName;
 
+              console.log("ESCENARIO B")
+
               this.storeQueryParams(parsedData as any);
             }
+
+            console.log("items", items);
 
             this.quotationName = quotationName;
 
@@ -621,6 +629,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
+    this.quotationsService.supplierItemsAdjustmentsConfig = null;
     if (this.quotationId) {
       return this.router.navigate([
         '/ecommerce/quotation-bids/' + this.quotationId,
