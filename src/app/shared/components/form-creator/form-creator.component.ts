@@ -1331,7 +1331,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   redirectToMediaUploadPage(optionIndex: number) {
-    //console.log('REDIRGIENDO AL MEDIA UPLOAD');
+    console.log('REDIRGIENDO AL MEDIA UPLOAD');
 
     this.router.navigate(['/admin/media-upload/webform-question'], {
       queryParams: {

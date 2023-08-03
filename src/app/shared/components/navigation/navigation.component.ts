@@ -290,11 +290,16 @@ export class NavigationComponent implements OnInit {
           },
           hardcodedURL: '/admin/supplier-dashboard?supplierMode=true',
           linkName: 'my-dashboard',
-        } /*
+        },
         {
-          text: 'Carritos de compradores',
+          text: 'Carrito del Proveedor (yo vendo)',
           routerLink: ['/ecommerce/supplier-items-selector'],
-        },*/,
+          queryParams: {
+            supplierMode: true,
+          },
+          hardcodedURL: '/ecommerce/supplier-items-selector?supplierMode=true',
+          linkName: 'quotations-link',
+        } 
       ],
       textList: [
         {
