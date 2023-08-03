@@ -82,6 +82,7 @@ import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-c
 import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
 import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
 import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
+import { MonetizationsFormComponent } from './pages/monetizations-form/monetizations-form.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -510,7 +511,7 @@ const routes: Routes = [
   */
   {
     path: 'supplier-orders',
-    component: OrderProgressFilteringComponent
+    component: OrderProgressFilteringComponent,
   },
   /*
   {
@@ -519,12 +520,16 @@ const routes: Routes = [
   },*/
   {
     path: 'order-progress',
-    component: OrderProgressComponent
+    component: OrderProgressComponent,
   },
   {
     path: 'order-filtering',
-    component: OrderFilteringComponent
-  }
+    component: OrderFilteringComponent,
+  },
+  {
+    path: 'monetization-form',
+    component: MonetizationsFormComponent,
+  },
 ];
 
 @NgModule({
@@ -588,7 +593,8 @@ const routes: Routes = [
     //InventoryCreatorComponent,
     OrderProgressFilteringComponent,
     OrderProgressComponent,
-    OrderFilteringComponent
+    OrderFilteringComponent,
+    MonetizationsFormComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
