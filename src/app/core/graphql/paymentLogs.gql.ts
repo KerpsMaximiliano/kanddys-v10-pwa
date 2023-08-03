@@ -33,3 +33,16 @@ export const paymentlogByOrder = gql`
     }
   }
 `;
+
+export const paymentLogStarPaginate = gql`
+  query paymentLogStarPaginate($paginate: PaginationInput!){
+    paymentLogStarPaginate(paginate: $paginate) {
+      _id
+      ammount
+      user
+      metadata
+      paymentMethod
+      createdAt
+    }
+  }
+`;

@@ -150,10 +150,10 @@
     </ng-container>
   </div>
   <div mat-dialog-actions class="buttons-flex">
-    <button class="cancel" (click)="close()">
+    <button class="cancel cancel-form-dialog" (click)="close()">
       {{ "cancel" | translate }}
     </button>
-    <button class="accept" [mat-dialog-close]="formGroup" cdkFocusInitial>
+    <button class="accept" [mat-dialog-close]="formGroup" [disabled]="!formGroup.valid">
       {{ "save-changes" | translate }}
     </button>
   </div>

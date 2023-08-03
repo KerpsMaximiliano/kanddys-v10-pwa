@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="header">
+    <div class="header-top-container">
+      <img src="../../../../../assets/icons/info.svg" />
+      <div class="flex">
+        <p class="header-top-text">Comisiones a embajadores 🧾</p>
+        <mat-icon>menu</mat-icon>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <p class="content-title">Comisiones por pagar a Embajadores</p>
+    <app-card-image 
+      *ngFor="let user of users; index as i" title="{{user.name || user.email || user.phone}}" 
+      barText="Listo para pagar la comisión de ${{wallets[i].balance}}" 
+      paymentText="{{wallets[i].metadata.usesStars || 0}} pagos"
+      (paymentImage)="onPaymentImage($event, i)"
+    >
+    </app-card-image>
+
+    <p class="content-title content-title-margin">Embajadores</p>
+    <div *ngFor="let user of users; index as i" class="content-comission-card">
+        <div class="content-comission-card-top">
+        <div class="flex">
+            <div class="content-comission-card-img"></div>
+            <p class="content-comission-card-title">{{user.name || user.email || user.phone}}</p>
+        </div>
+        <p class="content-comission-card-payment">{{wallets[i].metadata.usesStars || 0}} pagos</p>
+    </div>
+      <div class="content-commision-card-bar">
+          $35 de $50 para pagarle por PayPal
+      </div>
+      <div class="hr-container">
+        <hr />
+      </div>
+      <p class="content-ambassador-card-text">
+          10 Facturas con artículos comisionables
+      </p>
+    </div>
+  </div>
+</div>

@@ -180,18 +180,12 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               }
             }
 
-            if (
-              !this.itemsService.temporalItemInput?.name &&
-              !this.existingItem &&
-              !merchantRegistration
-            ) {
-              this.router.navigate(['/ecommerce/supplier-items-selector']);
-            }
-
+            //TODO volver a revisar si agregar existingItem no daño algo más
             const editingOrUpdatingBasedOnQuotation =
               this.quotationsService.supplierItemsAdjustmentsConfig
                 ?.quotationItemBeingEdited.quotationItemInMemory ||
-              this.updateItem;
+              this.updateItem ||
+              existingItem;
 
             this.itemFormData = this.fb.group({
               title: [
@@ -201,7 +195,9 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               description: [
                 this.itemsService.temporalItemInput?.description || '',
                 Validators.compose(
-                  !editingOrUpdatingBasedOnQuotation ? [Validators.required] : []
+                  !editingOrUpdatingBasedOnQuotation
+                    ? [Validators.required]
+                    : []
                 ),
               ],
               pricing: [
@@ -738,7 +734,11 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           this.itemsService.temporalItemInput = null;
           this.itemsService.modifiedImagesFromExistingItem = false;
 
-          this.router.navigate(['/admin/dashboard']);
+          this.router.navigate(['/admin/supplier-dashboard'], {
+            queryParams: {
+              supplierMode: true,
+            },
+          });
         } else {
           itemInput.parentItem = this.itemsService.temporalItem._id;
 
@@ -760,7 +760,11 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           this.itemsService.temporalItemInput = null;
           this.itemsService.modifiedImagesFromExistingItem = false;
 
-          this.router.navigate(['/admin/dashboard']);
+          this.router.navigate(['/admin/supplier-dashboard'], {
+            queryParams: {
+              supplierMode: true,
+            },
+          });
         }
       } else {
         let fieldsToCreate: FormData = {
@@ -808,12 +812,11 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
                 await this.itemsService.createPreItem(itemInput)
               )?.createPreItem;
 
-              if(!this.existingItem) {
+              if (!this.existingItem) {
                 itemInput.parentItem = createdItem._id;
-                
-                createdItem = (
-                  await this.itemsService.createPreItem(itemInput)
-                )?.createPreItem;
+
+                createdItem = (await this.itemsService.createPreItem(itemInput))
+                  ?.createPreItem;
               }
 
               await this.authService.generateMagicLink(

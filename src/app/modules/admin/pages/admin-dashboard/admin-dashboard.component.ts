@@ -518,6 +518,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       if (view)
         this.view = view as 'sold' | 'notSold' | 'hidden' | 'all' | 'default';
 
+        this._ItemsService.temporalItem = null;
+        this._ItemsService.temporalItemInput = null;
+        this._ItemsService.temporalItem = null;
+
       if (this._SaleflowService.saleflowData) {
         await this.inicializeItems(true, false, true, true);
         this.getTags();
@@ -1111,7 +1115,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async newArticle() {
-    this.router.navigate(['ecommerce/item-management']);
+    if (!this.supplierMode) this.router.navigate(['ecommerce/item-management']);
+    else this.router.navigate(['ecommerce/inventory-creator']);
+
     /*
     let dialogRef = this.dialog.open(StepperFormComponent);
     dialogRef

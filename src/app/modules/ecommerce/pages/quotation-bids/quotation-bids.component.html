@@ -112,14 +112,14 @@
         </div>
 
         <div class="optional-stuff">
-          <p class="content-title-light">Información:</p>
+          <p class="content-title-light">FUNCIONALIDADES PARA PROVEEDORES:</p>
 
           <div class="item-field empty" (click)="changeView(true)">
             <div class="field-name">
               {{
-                !isCurrentUserASupplier
-                  ? "Registrarme como Proveedor"
-                  : "Quiero convertirme en proveedor de estos productos"
+                isTheCurrentUserTheQuotationMerchant
+                  ? "Ajustar los precios de esta cotización"
+                  : "Añadir mi precio a los artículos de esta cotización"
               }}
             </div>
 
