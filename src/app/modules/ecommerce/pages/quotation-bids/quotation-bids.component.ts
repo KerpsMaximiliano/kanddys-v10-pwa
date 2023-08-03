@@ -293,6 +293,8 @@ export class QuotationBidsComponent implements OnInit {
             this.merchantsService.merchantData?._id;
         }
 
+        console.log("queryParams", queryParams);
+
         //console.log('/ecommerce/supplier-register/' + this.quotation._id);
         return this.router.navigate(
           ['/ecommerce/supplier-register/' + this.quotation._id],
