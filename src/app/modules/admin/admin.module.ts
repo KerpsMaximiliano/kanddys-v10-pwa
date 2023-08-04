@@ -537,9 +537,6 @@ const routes: Routes = [
     component: MonetizationsFormComponent,
   },
   {
-    component: OrderFilteringComponent
-  },
-  {
     path: 'admin-orders',
     component: AdminOrdersComponent
   },
