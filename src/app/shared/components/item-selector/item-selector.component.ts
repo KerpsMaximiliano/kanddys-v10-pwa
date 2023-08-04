@@ -236,8 +236,8 @@ export class ItemSelectorComponent implements OnInit {
               } else {
                 this.itemsToShow = this.items.filter(
                   (item) =>
-                    item.name.toLowerCase().includes(value.toLowerCase()) ||
-                    item.description.toLowerCase().includes(value.toLowerCase())
+                    item.name?.toLowerCase().includes(value.toLowerCase()) ||
+                    item.description?.toLowerCase().includes(value.toLowerCase())
                 );
               }
 

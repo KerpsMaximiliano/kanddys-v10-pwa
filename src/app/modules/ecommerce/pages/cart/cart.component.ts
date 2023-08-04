@@ -87,6 +87,8 @@ export class CartComponent implements OnInit {
   playVideoOnFullscreen = playVideoOnFullscreen;
   isOrderFromAQuotation: boolean = false;
 
+  progress: 'checkout' | 'other';
+
   constructor(
     public headerService: HeaderService,
     private saleflowService: SaleFlowService,
@@ -106,7 +108,7 @@ export class CartComponent implements OnInit {
   async ngOnInit() {
     console.log(this.headerService.saleflow);
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ item, wait, redirectFromFlowRoute }) => {
+      async ({ item, wait, redirectFromFlowRoute, progress }) => {
         this.wait = wait;
         this.redirectFromFlowRoute = Boolean(redirectFromFlowRoute);
 
@@ -115,6 +117,8 @@ export class CartComponent implements OnInit {
         else {
           this.redirectFromFlowRoute = this.headerService.redirectFromFlowRoute;
         }
+
+        if (progress) this.progress = progress;
 
         if (this.wait)
           this.headerService.ecommerceDataLoaded.subscribe({
@@ -590,7 +594,7 @@ export class CartComponent implements OnInit {
         this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
 
         this.totalPrice = this.items.reduce(
-          (acc, curr) => acc + curr.pricing,
+          (acc, curr) => acc + curr.pricing * this.itemObjects[curr._id]?.amount,
           0
         );
 
@@ -958,6 +962,13 @@ export class CartComponent implements OnInit {
   }
 
   openSubmitDialog() {
+    if (this.progress === 'checkout') {
+      return this.router.navigate(
+        [
+          `/ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+        ]
+      );
+    }
     if (
       !this.isSuppliersBuyerFlow(this.items) &&
       this.headerService.saleflow?.module?.post &&

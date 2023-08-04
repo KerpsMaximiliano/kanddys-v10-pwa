@@ -5,7 +5,7 @@
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-black.svg"
         class="back-btn"
         alt="back"
-        (click)="saveOrUpdate()"
+        (click)="steps.length > 1 ? saveOrUpdate() : back()"
       />
       <div class="title">Creando un formulario de preguntas</div>
       <div class="x-btn" (click)="back()">X</div>
@@ -239,9 +239,8 @@
                           .text === ''
                       "
                     >
-                      <div></div>
-                      <div></div>
                       <img
+                        style="margin-left: auto;"
                         (click)="redirectToMediaUploadPage(i)"
                         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/galery.svg"
                         class="swipe-icon"

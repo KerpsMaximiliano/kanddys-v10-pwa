@@ -1172,6 +1172,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         title: `Guardar cambios`,
         description: `¿Quieres guardar el formulario sin esta pregunta que está incompleta?`,
       },
+      panelClass: 'confirmation-dialog'
     });
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result === 'confirm') {
@@ -1301,6 +1302,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         title: `Borrar pregunta`,
         description: `¿Estás seguro de que deseas borrar esta pregunta?`,
       },
+      panelClass: 'confirmation-dialog'
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'confirm') {
@@ -1329,7 +1331,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   redirectToMediaUploadPage(optionIndex: number) {
-    //console.log('REDIRGIENDO AL MEDIA UPLOAD');
+    console.log('REDIRGIENDO AL MEDIA UPLOAD');
 
     this.router.navigate(['/admin/media-upload/webform-question'], {
       queryParams: {
@@ -1408,6 +1410,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         title: `Pregunta incompleta`,
         description: `¿Quieres borrar el progreso de esta pregunta?`,
       },
+      panelClass: 'confirmation-dialog'
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'confirm') {

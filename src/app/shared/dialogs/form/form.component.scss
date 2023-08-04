@@ -101,6 +101,15 @@ button {
     &:hover {
       background-color: darken($color: #87cd9b, $amount: 5);
     }
+
+    &:disabled {
+      background-color: darken($color: #a2a3a1, $amount: 10);
+
+      &:hover {
+        cursor: not-allowed;
+        background-color: darken($color: #a2a3a1, $amount: 10);
+      }
+    }
   }
 
   &.cancel {

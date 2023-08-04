@@ -53,6 +53,7 @@
   margin-left: 4px;
   padding-left: 13px;
   padding-top: 6px;
+  cursor: pointer;
 }
 
 .date-box-title {
@@ -143,7 +144,7 @@
 
 .content-card-extra-info {
   color: #7b7b7b;
-  text-align: right;
+  text-align: left;
   font-family: InterMedium;
   font-size: 15px;
   font-style: italic;
@@ -151,6 +152,25 @@
   line-height: normal;
   margin-top: 6px;
   margin-bottom: 0;
+}
+
+.mat-form-field-infix {
+  max-width: 150px !important;
+}
+
+.display-flex {
+  display: flex;
+}
+
+.content-card-info {
+  margin: auto 15px;
+}
+
+.contnet-card-img {
+  width: 66px;
+  background-size: 66px;
+  background-repeat: no-repeat;
+  background-image: url('https://cdn-icons-png.flaticon.com/512/149/149071.png');
 }
 
 @media (max-width: 400px) {
