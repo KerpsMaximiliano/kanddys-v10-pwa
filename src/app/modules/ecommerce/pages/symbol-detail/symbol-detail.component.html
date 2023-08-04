@@ -5,30 +5,33 @@
   }"
 >
   <header>
-    <button class="close"
-    (click)="back()"
-    >X</button>
+    <img
+      style="cursor: pointer"
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/back.svg"
+      alt="go back to previous slide"
+      [ngClass]="
+        !(genericModelTemplate?.slides?.length > 1 &&
+        currentMediaSlide > 0) ? 'hidden' : ''
+      "
+    />
 
-    <div class="arrows">
-      <img
-        style="cursor: pointer"
-        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/back.svg"
-        alt="go back to previous slide"
-        [ngClass]="
-          !(genericModelTemplate?.slides?.length > 1 &&
-          currentMediaSlide > 0) ? 'hidden' : ''
-        "
-      />
-      <img
-        style="cursor: pointer; padding-left: 10px;"
-        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/next.svg"
-        alt="go to next slide"
-        [ngClass]="
-          !(genericModelTemplate?.slides?.length > 1 &&
-          currentMediaSlide !== genericModelTemplate?.slides?.length - 1) ? 'hidden' : ''
-        "
-      />
-    </div>
+    <img
+      style="cursor: pointer"
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-double-up-black.svg"
+      alt="go back to previous page"
+      class="go-back-arrow"
+      (click)="back()"
+    />
+
+    <img
+      style="cursor: pointer"
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/next.svg"
+      alt="go to next slide"
+      [ngClass]="
+        !(genericModelTemplate?.slides?.length > 1 &&
+        currentMediaSlide !== genericModelTemplate?.slides?.length - 1) ? 'hidden' : ''
+      "
+    />
   </header>
 
   <main
