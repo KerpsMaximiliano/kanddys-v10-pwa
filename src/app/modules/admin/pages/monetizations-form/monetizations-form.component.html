@@ -1,0 +1,74 @@
+<div class="page-container">
+  <header class="page-header">
+    <section class="group">
+      <button type="button">
+        <img src="../../../../../assets/icons/icon-close.svg" alt="" />
+      </button>
+      <p>Monetizaciones</p>
+    </section>
+    <div class="btn-group">
+      <button type="button" (click)="isSwitchActive = !isSwitchActive">
+        <img [src]="setSwitchIcon()" alt="" />
+      </button>
+      <button class="btn-dropdown" type="button">
+        <img src="../../../../../assets/icons/dropdown.svg" alt="" />
+      </button>
+    </div>
+  </header>
+  <form class="page-form">
+    <section class="card card-error" *ngIf="!isSwitchActive">
+      <p>
+        Todavia no estás monetizando porque te falta llenar los datos
+        administrativos
+      </p>
+    </section>
+    <section class="form-group form-full">
+      <p class="form-title">DATOS LLENOS</p>
+      <div class="input-group slider">
+        <p>Slides visuales</p>
+        <div class="slider-container">
+          <div class="slider-item" *ngFor="let item of sliderData">
+            <img
+              [src]="item.src"
+              alt=""
+              width="26"
+              height="26"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="paypal">Cuenta de PayPal donde recibes el $</label>
+        <input type="text" name="paypal" placeholder="ID" />
+      </div>
+      <div class="input-group">
+        <label for="slug">User Slug</label>
+        <input type="text" name="slug" placeholder="ID" />
+      </div>
+      <div class="input-group">
+        <label for="shop-name">Nombre del KiosKo</label>
+        <input type="text" name="shop-name" placeholder="ID" />
+      </div>
+      <div class="input-group">
+        <label for="own-name-shop">Nombre y Apellido del dueño KiosKo</label>
+        <input type="text" name="own-name-shop" placeholder="Nombre" />
+      </div>
+    </section>
+    <section class="form-group form-optional-function">
+      <p class="form-title">DATOS POR LLENAR</p>
+      <div class="card">
+        <p>Correo electrónico del dueño</p>
+        <button type="button">
+          <img src="../../../../../assets/icons/add-button.svg" alt="" />
+        </button>
+      </div>
+      <div class="card">
+        <p>Celular / WhatsApp del dueño</p>
+        <button type="button">
+          <img src="../../../../../assets/icons/add-button.svg" alt="" />
+        </button>
+      </div>
+    </section>
+  </form>
+</div>
