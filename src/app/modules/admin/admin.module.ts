@@ -89,6 +89,7 @@ import { AmbassadorPaymentsLibraryComponent } from './pages/ambassador-payments-
 import { AmbassadorsComponent } from './pages/ambassadors/ambassadors.component';
 import { UserSearchComponent } from './pages/user-search/user-search.component';
 import { UserEntryComponent } from './pages/user-entry/user-entry.component';
+import { AmbassadorDashboardComponent } from './pages/ambassador-dashboard/ambassador-dashboard.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -538,28 +539,32 @@ const routes: Routes = [
   },
   {
     path: 'admin-orders',
-    component: AdminOrdersComponent
+    component: AdminOrdersComponent,
   },
   {
     path: 'ambassadors-pending-payments',
-    component: AmbassadorsPaymentsComponent
+    component: AmbassadorsPaymentsComponent,
   },
   {
     path: 'ambassador-payments',
-    component: AmbassadorPaymentsLibraryComponent
+    component: AmbassadorPaymentsLibraryComponent,
   },
   {
     path: 'ambassadors',
-    component: AmbassadorsComponent
+    component: AmbassadorsComponent,
+  },
+  {
+    path: 'ambassador-dashboard',
+    component: AmbassadorDashboardComponent,
   },
   {
     path: 'user-search',
-    component: UserSearchComponent
+    component: UserSearchComponent,
   },
   {
     path: 'user-entry',
-    component: UserEntryComponent
-  }
+    component: UserEntryComponent,
+  },
 ];
 
 @NgModule({
@@ -630,7 +635,8 @@ const routes: Routes = [
     AmbassadorPaymentsLibraryComponent,
     AmbassadorsComponent,
     UserSearchComponent,
-    UserEntryComponent
+    UserEntryComponent,
+    AmbassadorDashboardComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
