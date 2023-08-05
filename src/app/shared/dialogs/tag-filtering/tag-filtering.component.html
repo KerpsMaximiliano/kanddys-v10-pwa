@@ -1,8 +1,8 @@
 <div class="container">
   <div class="modal-top-container">
     <p class="modal-title">
-      <ng-container *ngIf="!data.titleIcon"> 🖇️️ </ng-container>
-      <ng-container *ngIf="data.titleIcon.show">
+      <ng-container *ngIf="!data?.titleIcon"> 🖇️️ </ng-container>
+      <ng-container *ngIf="data?.titleIcon?.show">
         {{ data.titleIcon.icon }}
       </ng-container>
 
@@ -15,7 +15,7 @@
       (click)="data.rightCTA?.callback()"
       *ngIf="data.rightCTA"
     >
-      {{ data.rightCTA?.text }}
+      {{ data?.rightCTA?.text }}
     </p>
 
     <mat-icon
@@ -23,7 +23,7 @@
       *ngIf="data.rightIcon"
       (click)="data.rightIcon?.callback()"
       [ngStyle]="data.rightIcon?.styles"
-      >{{ data.rightIcon.iconName }}</mat-icon
+      >{{ data?.rightIcon?.iconName }}</mat-icon
     >
   </div>
   <div class="modal-categories-container">
@@ -33,7 +33,7 @@
       [ngClass]="{ 'modal-category-selected': i.selected }"
       (click)="select(i._id)"
     >
-      {{ i.name }}
+      {{ i?.name }}
     </div>
   </div>
 </div>
