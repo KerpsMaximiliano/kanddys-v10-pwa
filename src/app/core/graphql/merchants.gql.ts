@@ -180,8 +180,16 @@ export const createMerchant = gql`
 `;
 
 export const entryMerchant = gql`
-  mutation entryMerchant($merchantID: ObjectID!, $merchantInput: MerchantInput, $userInput: UserInput) {
-    entryMerchant(merchantID: $merchantID, merchantInput: $merchantInput, userInput: $userInput)
+  mutation entryMerchant(
+    $merchantID: ObjectID!
+    $merchantInput: MerchantInput
+    $userInput: UserInput
+  ) {
+    entryMerchant(
+      merchantID: $merchantID
+      merchantInput: $merchantInput
+      userInput: $userInput
+    )
   }
 `;
 
@@ -491,6 +499,36 @@ export const currencyStartByMerchant = gql`
   }
 `;
 
+export const merchantFuncionality = gql`
+  query merchantFuncionality($merchantId: ObjectID!) {
+    merchantFuncionality(merchantId: $merchantId) {
+      _id
+      merchant
+      reward {
+        active
+        expiryMonth
+        expires
+        rewardPercentage
+        rewardPercentageReferral
+        buyersLimit
+        amountBuyer
+        affiliateLimit
+        amountAffiliate
+        solidaryLimit
+        amountSolidary
+      }
+      queryPercentage
+      minOrder
+      maxOrder
+      countOrder
+      payPlataformFee
+      questionDeliveryZone{
+        value
+      }
+    }
+  }
+`;
+
 export const walletsByCurrency = gql`
   query walletsByCurrency($paginate: PaginationInput!) {
     walletsByCurrency(paginate: $paginate) {
@@ -512,6 +550,28 @@ export const walletsByCurrency = gql`
       createdAt
     }
   }
+`;
+
+export const updateMerchantFuncionality = gql`
+mutation updateMerchantFuncionality($input: MerchantFuncionalityInput!,$merchantId:ObjectID!) {
+  updateMerchantFuncionality(input: $input,merchantId:$merchantId){
+    _id
+      merchant
+      reward {
+        active
+        expiryMonth
+        expires
+        rewardPercentage
+        rewardPercentageReferral
+        buyersLimit
+        amountBuyer
+        affiliateLimit
+        amountAffiliate
+        solidaryLimit
+        amountSolidary
+      }
+  }
+}
 `;
 
 export const paginateUsers = gql`

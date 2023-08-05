@@ -29,9 +29,10 @@ export class ItemAdminCardComponent implements OnInit {
   @Input() item: Item = null;
   @Input() typeOfList: string = null;
   @Input() unitSalesCounter: number = 0;
+  @Input() hideDotsOptions: boolean = false;
   @Output() changeStatusAction = new EventEmitter();
   URI: string = environment.uri;
-
+  stockString: string = null;
   truncateString = truncateString;
 
   constructor(
@@ -49,7 +50,12 @@ export class ItemAdminCardComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.stockString =
+      this.item.stock < 12
+        ? this.item.stock + ' unidades disponibles'
+        : Math.floor(this.item.stock / 12) + ' docenas disponibles';
+  }
 
   async openDotsDialog() {
     let showArticleText: string = null;

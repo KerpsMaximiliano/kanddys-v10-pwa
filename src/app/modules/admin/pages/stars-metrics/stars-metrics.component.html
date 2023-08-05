@@ -1,0 +1,46 @@
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+  <div class="container">
+    <div class="header">
+      <div class="header-top-container">
+        <img src="../../../../../assets/icons/info.svg" />
+        <div class="flex" (click)="openNavigation = !openNavigation">
+          <p class="header-top-text">Recompensas de ✨ para 🚀</p>
+          <mat-icon>menu</mat-icon>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <p class="content-title">Compradores con ✨</p>
+      <div class="content-cards-container">
+        <div class="content-card" *ngFor="let wallet of walletCurrencies">
+          <div class="content-card-top-container">
+            <div class="flex-space-between">
+              <div class="flex">
+                <div class="content-card-img"></div>
+                <div class="content-card-merchant">
+                  {{
+                    wallet.owner.name ||
+                      wallet.owner.email ||
+                      wallet.owner.phone
+                  }}
+                </div>
+              </div>
+              <div class="content-card-swaps">
+                {{ wallet.metadata ? wallet.metadata?.usesStars : 0 }} canjeos
+              </div>
+            </div>
+            <app-progress-bar
+              [text]="getText(wallet)"
+              [status]="getPercentage(wallet)"
+            ></app-progress-bar>
+          </div>
+          <hr />
+          <p class="content-card-bill">
+            {{ wallet.orderIncomes?.count || 0 }} Facturas en total,
+            {{ wallet.orderIncomes?.total || 0 | currency }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-navigation>

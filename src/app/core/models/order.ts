@@ -75,6 +75,7 @@ export class ItemSubOrderInput {
   isScenario?: boolean;
   limitScenario?: number;
   name?: string;
+  notAvailable?: boolean;
 }
 
 export type OrderStatusType =

@@ -1,0 +1,35 @@
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+<div class="container">
+  <div class="header">
+    <div class="header-top" (click)="openNavigation = !openNavigation">
+      <p>{{totalStars}} ✨</p>
+      <mat-icon>menu</mat-icon>
+    </div>
+    <p class="header-title">
+      Ganas 50 ✨ por cada $1.00 que factures y al llegar a 1,000 ✨ la canjeas
+      por un descuento.
+    </p>
+  </div>
+  <div class="content">
+    <p class="content-title">✨ Ganadas</p>
+    <div class="content-cards-container">
+      <div class="content-card" *ngFor="let i of walletUserStarsList">
+        <div class="content-card-top-container">
+          <div class="flex-space-between">
+            <div class="flex">
+              <div class="content-card-img"></div>
+              <div class="content-card-merchant">{{i.currency?.merchant?.name || i.currency?.merchant?.email || i.currency?.merchant?.phone}}</div>
+            </div>
+            <div class="content-card-swaps">{{i.metadata?.usesStars || 0}} canjeos</div>
+          </div>
+          <app-progress-bar [text]="getText(i)"[status]="getPercentage(i)"></app-progress-bar>
+        </div>
+          <hr />
+          <p class="content-card-bill">
+            {{i.orderIncomes?.count || 0 }} Facturas en total
+          </p>
+      </div>
+    </div>
+  </div>
+</div>
+</app-navigation>

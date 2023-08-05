@@ -571,6 +571,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       this.swiperConfig.spaceBetween = 0;
       this.layout = 'EXPANDED-SLIDE';
     }
+
+    console.log(this.layout);
   }
 
   expandDescriptionAndShowAllSlidesSwiper() {

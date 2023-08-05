@@ -14,6 +14,6 @@ export class ProgressBarComponent implements OnInit {
   ngOnInit(): void {}
 
   statusCompleted() {
-    return this.status + '%';
+    return this.status > 100 ? 100 : this.status + '%';
   }
 }
