@@ -74,6 +74,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
     lowStock: 0,
     noSale: 0,
   };
+  itemsSelledCountByItemId: Record<string, number> = {};
 
   //Pagination-specific variables
   paginationState: {
@@ -82,12 +83,12 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 4,
+    pageSize: 15,
     status: 'complete',
   };
   reachTheEndOfPagination: boolean = false;
   renderItemsPromise: Promise<{ listItems: Item[] }>;
-  selectedTags: Tag[] = [];
+  selectedTags: String[] = [];
   allItems: Item[] = [];
   allItemsCopy: Item[] = [];
   soldItems: Item[] = [];
@@ -140,6 +141,11 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
         supplierMode = JSON.parse(supplierMode || 'false');
         this.encodedJSONData = jsondata;
         this.mode = !supplierMode ? 'STANDARD' : 'SUPPLIER';
+
+        if(this.encodedJSONData) {
+          this.parseMagicLinkData();
+        }
+
         await this.getItemMetrics();
 
         if (this.saleflowService.saleflowData) {
@@ -158,15 +164,15 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy() {
-    this.queryParamsSubscription.unsubscribe();
-    this.saleflowLoadedSubscription.unsubscribe();
-    this.tagsDialogListSelectionSubscription.unsubscribe();
-    this.tagsRemovalListSubscription.unsubscribe();
+    this.queryParamsSubscription?.unsubscribe();
+    this.saleflowLoadedSubscription?.unsubscribe();
+    this.tagsDialogListSelectionSubscription?.unsubscribe();
+    this.tagsRemovalListSubscription?.unsubscribe();
   }
 
   initializeItemsAndTagsData = async () => {
-    await this.getTags();
-    await this.getCategories();
+    Promise.all([this.getTags(), this.getCategories()]);
+
     await this.inicializeItems(true, false, true, true);
     /*
     this.getTags();
@@ -199,13 +205,15 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  async infinitePagination() {
-    const targetClass = '.dashboard-page';
+  async infinitePagination(trigger: 'SEARCH-VIEW' | 'LIST-VIEW') {
+    const targetClass =
+      trigger === 'LIST-VIEW' ? '.dashboard-page' : '.search-container';
     const page = document.querySelector(targetClass);
     const pageScrollHeight = page.scrollHeight;
     const verticalScroll = window.innerHeight + page.scrollTop;
+    const difference = Math.abs(verticalScroll - pageScrollHeight);
 
-    if (verticalScroll >= pageScrollHeight) {
+    if (verticalScroll >= pageScrollHeight || difference <= 50) {
       if (
         this.paginationState.status === 'complete' &&
         // this.tagsLoaded &&
@@ -267,8 +275,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
       ];
     }
 
-    if (this.selectedTags.length)
-      pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
+    if (this.selectedTags.length) pagination.findBy.tags = this.selectedTags;
 
     if (this.itemSearchbar.value !== '') {
       let regexQueries: Array<any> = [
@@ -291,8 +298,10 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
       ];
 
       if (this.mode !== 'SUPPLIER') {
-        let regexQueryWithTypeNull = [...regexQueries];
-        let regexQueryWithTypeDefault = [...regexQueries];
+        let regexQueryWithTypeNull = JSON.parse(JSON.stringify(regexQueries));
+        let regexQueryWithTypeDefault = JSON.parse(
+          JSON.stringify(regexQueries)
+        );
 
         regexQueryWithTypeNull = regexQueryWithTypeNull.map((query) => {
           query.type = null;
@@ -300,11 +309,13 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
           return query;
         });
 
-        regexQueryWithTypeDefault = regexQueryWithTypeNull.map((query) => {
+        regexQueryWithTypeDefault = regexQueryWithTypeDefault.map((query) => {
           query.type = 'default';
 
           return query;
         });
+
+        console.log(regexQueryWithTypeDefault, regexQueryWithTypeNull);
 
         regexQueries = regexQueryWithTypeNull.concat(regexQueryWithTypeDefault);
       }
@@ -371,7 +382,6 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async getSoldItems() {
-    /*
     try {
       const pagination: PaginationInput = {
         findBy: {
@@ -382,17 +392,15 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
         },
       };
 
-      if (this.selectedTags.length)
-        pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
+      if (this.selectedTags.length) pagination.findBy.tags = this.selectedTags;
 
       const result = (await this.itemsService.bestSellersByMerchant(
         false,
         pagination
       )) as any[];
 
-      this.soldItems = result.map((item) => {
+      result.forEach((item) => {
         this.itemsSelledCountByItemId[item.item._id] = item.count;
-        return item.item;
       });
 
       if (this.mode === 'SUPPLIER') {
@@ -404,12 +412,13 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.log(error);
-    }*/
+    }
   }
 
   async getItemMetrics() {
     const queryResponse = await this.itemsService.itemsQuantityOfFilters(
-      this.merchantsService.merchantData._id
+      this.merchantsService.merchantData._id,
+      this.mode === 'STANDARD' ? null : 'supplier'
     );
 
     this.itemsMetricsToDisplay = queryResponse
@@ -457,6 +466,11 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async addNewArticle() {
+    if (!this.headerService.flowRouteForEachPage)
+      this.headerService.flowRouteForEachPage = {};
+    
+      this.headerService.flowRouteForEachPage['dashboard-to-supplier-creation'] = this.router.url;
+
     if (this.mode === 'STANDARD')
       this.router.navigate(['ecommerce/item-management']);
     else this.router.navigate(['ecommerce/inventory-creator']);
@@ -859,6 +873,16 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
 
   changeView = async (newView: 'LIST' | 'SEARCH') => {
     this.view = newView;
+
+    if (newView === 'SEARCH') {
+      setTimeout(() => {
+        (
+          document.querySelector(
+            '#search-from-results-view'
+          ) as HTMLInputElement
+        )?.focus();
+      }, 100);
+    }
   };
 
   isVideoWrapper(filename: string) {
@@ -875,7 +899,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
         categories: this.allTags.map((tag) => ({
           _id: tag._id,
           name: tag.name,
-          selected: false,
+          selected: this.selectedTags.includes(tag._id),
         })),
         rightIcon: {
           iconName: 'add',
@@ -1000,11 +1024,16 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
           },
         },
       },
+      panelClass: ['tag-filtering'],
     });
 
     this.tagsDialogListSelectionSubscription =
       bottomSheetRef.instance.selectionOutput.subscribe(
-        async (tagsAdded: Array<string>) => {}
+        async (tagsAdded: Array<string>) => {
+          this.selectedTags = tagsAdded;
+
+          await this.inicializeItems(true, false, true);
+        }
       );
   };
 

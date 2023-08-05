@@ -597,7 +597,8 @@ export class ItemsService {
   }
 
   itemsQuantityOfFilters = async (
-    merchantId: string
+    merchantId: string,
+    typeOfItem: string = null
   ): Promise<{
     all: number;
     archived: number;
@@ -609,7 +610,7 @@ export class ItemsService {
     try {
       const response = await this.graphql.query({
         query: itemsQuantityOfFilters, //add listItems to gqls,
-        variables: { merchantId },
+        variables: { merchantId, typeOfItem },
         fetchPolicy: 'no-cache',
       });
       if (!response) return;

@@ -870,6 +870,12 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   }
 
   back() {
+
+    if(this.headerService.flowRouteForEachPage['dashboard-to-supplier-creation']) {
+      this.headerService.flowRoute = this.headerService.flowRouteForEachPage['dashboard-to-supplier-creation'];
+      this.headerService.redirectFromQueryParams(); 
+    }
+
     if (
       this.quotationsService.supplierItemsAdjustmentsConfig
         ?.quotationItemBeingEdited.quotationItemInMemory

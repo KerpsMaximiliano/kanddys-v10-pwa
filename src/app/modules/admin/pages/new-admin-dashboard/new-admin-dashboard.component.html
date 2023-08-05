@@ -1,5 +1,8 @@
 <app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
-  <div class="dashboard-page container" (scroll)="infinitePagination()">
+  <div
+    class="dashboard-page container"
+    (scroll)="infinitePagination('LIST-VIEW')"
+  >
     <header class="header">
       <button
         mat-icon-button
@@ -79,8 +82,23 @@
                 <div class="option">⏰</div>
                 <div class="option">💰</div>
               -->
-              <div class="option" (click)="openTagsDialog()">🏷️</div>
-              <div class="option" (click)="openCategoriesDialog()">🖇️️</div>
+              <div
+                class="option"
+                *ngIf="allTags.length > 0"
+                (click)="openTagsDialog()"
+              >
+                🏷️
+              </div>
+
+              <!--
+                <div
+                  class="option"
+                  *ngIf="allCategories.length > 0"
+                  (click)="openCategoriesDialog()"
+                >
+                  🖇️️
+                </div>
+              -->
             </div>
           </form>
 
@@ -101,6 +119,11 @@
                 <div class="item-wrapper">
                   <app-item-admin-card
                     [item]="item"
+                    [unitSalesCounter]="
+                      itemsSelledCountByItemId[item._id]
+                        ? itemsSelledCountByItemId[item._id]
+                        : 0
+                    "
                     [hideDotsOptions]="true"
                   ></app-item-admin-card>
                 </div>
@@ -123,13 +146,17 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEARCH'">
-          <div class="search-container">
+          <div
+            class="search-container"
+            (scroll)="infinitePagination('SEARCH-VIEW')"
+          >
             <div class="close-wrapper">
               <button class="close" (click)="changeView('LIST')">X</button>
 
               <form class="search-bar-wrapper">
                 <input
                   type="text"
+                  id="search-from-results-view"
                   name="item-search"
                   class="input search-bar"
                   placeholder="Buscar..."
